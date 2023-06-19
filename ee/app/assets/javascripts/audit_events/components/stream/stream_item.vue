@@ -221,7 +221,7 @@ export default {
       <stream-destination-editor
         v-if="isEditing"
         :item="item"
-        class="gl-pr-4 gl-pl-6 gl-pb-5"
+        class="gl-pr-0 gl-pl-6 gl-pb-5"
         @updated="onUpdated"
         @error="onEditorError"
         @cancel="toggleEditMode"

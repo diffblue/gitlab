@@ -45,6 +45,7 @@ const { CREATING_ERROR, UPDATING_ERROR } = AUDIT_STREAMS_NETWORK_ERRORS;
 
 const thClasses = `gl-p-0! gl-border-0!`;
 const tdClasses = `gl-p-3! gl-border-0!`;
+const finalTdClasses = `gl-float-right gl-p-3! gl-pr-0! gl-border-0!`;
 
 export default {
   components: {
@@ -532,7 +533,7 @@ export default {
       key: 'actions',
       label: '',
       thClass: thClasses,
-      tdClass: tdClasses,
+      tdClass: finalTdClasses,
     },
   ],
 };
