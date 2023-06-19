@@ -14,9 +14,15 @@ module EE
         private
 
         def access_as_user
-          return if authorizations.empty?
+          unless agent.project.licensed_feature_available?(:cluster_agents_user_impersonation)
+            return forbidden('User impersonation requires EEP license.')
+          end
 
-          response_base.merge(
+          if authorizations.empty?
+            return forbidden('You must be a member of `projects` or `groups` under the `user_access` keyword.')
+          end
+
+          payload = response_base.merge(
             access_as: {
               user: {
                 projects: projects_payload,
@@ -24,6 +30,8 @@ module EE
               }
             }
           )
+
+          success(payload: payload)
         end
 
         def projects_payload

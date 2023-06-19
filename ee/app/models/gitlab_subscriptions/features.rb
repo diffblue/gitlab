@@ -86,6 +86,7 @@ module GitlabSubscriptions
       ci_cd_projects
       ci_secrets_management
       cluster_agents_ci_impersonation
+      cluster_agents_user_impersonation
       cluster_deployments
       code_owner_approval_required
       commit_committer_check

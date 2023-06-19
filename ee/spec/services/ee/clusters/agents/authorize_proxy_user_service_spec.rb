@@ -25,12 +25,15 @@ RSpec.describe Clusters::Agents::AuthorizeProxyUserService, feature_category: :d
   end
 
   before do
+    stub_licensed_features(cluster_agents_user_impersonation: true)
     Clusters::Agents::Authorizations::UserAccess::RefreshService.new(agent, config: user_access_config).execute
   end
 
   it 'returns forbidden when user has no access to any project', :aggregate_failures do
     expect(service_response).to be_error
     expect(service_response.reason).to eq :forbidden
+    expect(service_response.message)
+      .to eq 'You must be a member of `projects` or `groups` under the `user_access` keyword.'
   end
 
   it "returns the user's authorizations when they have access", :aggregate_failures do
@@ -44,5 +47,17 @@ RSpec.describe Clusters::Agents::AuthorizeProxyUserService, feature_category: :d
         groups: [{ id: deployment_group.id, roles: %i[guest reporter developer maintainer] }]
       }
     })
+  end
+
+  context 'when the agent configuration project does not have EEP license' do
+    before do
+      stub_licensed_features(cluster_agents_user_impersonation: false)
+    end
+
+    it 'returns an error', :aggregate_failures do
+      expect(service_response).to be_error
+      expect(service_response.reason).to eq :forbidden
+      expect(service_response.message).to eq 'User impersonation requires EEP license.'
+    end
   end
 end
