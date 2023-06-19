@@ -11,8 +11,8 @@ module Gitlab
             PromptRoles = ::Gitlab::Llm::Chain::Utils::Prompt
             TextUtils = Gitlab::Llm::Chain::Utils::TextProcessing
 
-            NAME = 'JsonReader'
-            DESCRIPTION = 'A tool useful to handle JSON data format. ' \
+            NAME = 'Resource Reader'
+            DESCRIPTION = 'Useful tool when you need to get information or ask questions about specific resource. ' \
                           'Action Input for this tools always starts with: `data`'
 
             # anthropic token limit:

@@ -13,8 +13,8 @@ module Gitlab
             MAX_RETRIES = 3
             RESOURCE_NAME = 'issue'
             NAME = "IssueIdentifier"
-            DESCRIPTION = "Useful tool for when you need to identify and fetch information or ask questions " \
-                          "about a specific issue. Always start with this tool if you don't have the issue identified."
+            DESCRIPTION = 'Useful tool when you need to identify a specific issue. ' \
+                          'Do not use this tool if you have already identified the issue.'
 
             PROVIDER_PROMPT_CLASSES = {
               anthropic: ::Gitlab::Llm::Chain::Tools::IssueIdentifier::Prompts::Anthropic,
@@ -101,7 +101,7 @@ module Gitlab
 
                 # now the issue in context is being referenced in user input.
                 context.resource = issue
-                content = "I now have the JSON information about the issue ##{issue.iid}."
+                content = "I identified the issue #{json[:ResourceIdentifier]}."
 
                 logger.debug(message: "Answer", class: self.class.to_s, content: content)
                 return Answer.new(status: :ok, context: context, content: content, tool: nil)
@@ -129,7 +129,7 @@ module Gitlab
 
             def already_identified?
               identifier_action_regex = /(?=Action: IssueIdentifier)/
-              json_loaded_regex = /(?=I now have the JSON information about the issue)/
+              json_loaded_regex = /(?=I identified the issue)/
 
               issue_identifier_calls = options[:suggestions].scan(identifier_action_regex).size
               issue_identifier_json_loaded = options[:suggestions].scan(json_loaded_regex).size
@@ -190,7 +190,7 @@ module Gitlab
 
             def already_identified_answer
               resource = context.resource
-              content = "You already have identified the issue ##{resource.iid}, read carefully."
+              content = "You already have identified the issue #{resource.to_global_id}, read carefully."
               logger.debug(message: "Answer", class: self.class.to_s, content: content)
 
               ::Gitlab::Llm::Chain::Answer.new(

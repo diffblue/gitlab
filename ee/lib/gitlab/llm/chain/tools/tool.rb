@@ -59,6 +59,12 @@ module Gitlab
 
             Answer.error_answer(context: context, content: content)
           end
+
+          def wrong_resource
+            content = "I am sorry, I cannot proceed with this resource, it is #{resource_name}."
+
+            Answer.error_answer(context: context, content: content)
+          end
         end
       end
     end

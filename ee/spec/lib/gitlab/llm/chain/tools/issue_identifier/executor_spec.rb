@@ -9,7 +9,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
       allow(ai_request).to receive(:request).and_return(ai_response)
       allow(context).to receive(:ai_request).and_return(ai_request)
 
-      response = "I now have the JSON information about the issue ##{resource_iid}."
+      response = "I identified the issue #{resource_id}."
       expect(tool.execute.content).to eq(response)
     end
   end
@@ -32,7 +32,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
   describe '#description' do
     it 'returns tool description' do
       expect(described_class::DESCRIPTION)
-        .to include('Useful tool for when you need to identify and fetch information')
+        .to include('Useful tool when you need to identify a specific issue')
     end
   end
 
@@ -117,21 +117,21 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
         end
 
         context 'when issue is the current issue in context' do
-          let(:resource_iid) { issue1.iid }
+          let(:resource_id) { 'current' }
           let(:ai_response) { "{\"ResourceIdentifierType\": \"current\", \"ResourceIdentifier\": \"current\"}" }
 
           it_behaves_like 'success response'
         end
 
         context 'when issue is identified by iid' do
-          let(:resource_iid) { issue2.iid }
+          let(:resource_id) { issue2.iid }
           let(:ai_response) { "{\"ResourceIdentifierType\": \"iid\", \"ResourceIdentifier\": #{issue2.iid}}" }
 
           it_behaves_like 'success response'
         end
 
         context 'when is issue identified with reference' do
-          let(:resource_iid) { issue2.iid }
+          let(:resource_id) { reference }
           let(:reference) { issue2.to_reference(full: true) }
           let(:ai_response) do
             "{\"ResourceIdentifierType\": \"reference\", \"ResourceIdentifier\": \"#{reference}\"}"
@@ -142,7 +142,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
 
         # Skipped pending https://gitlab.com/gitlab-org/gitlab/-/issues/413509
         xcontext 'when is issue identified with url' do
-          let(:resource_iid) { issue2.iid }
+          let(:resource_id) { issue2.iid }
           let(:url) { Gitlab::Saas.com_url + Gitlab::Routing.url_helpers.project_issue_path(project, issue2) }
           let(:ai_response) { "{\"ResourceIdentifierType\": \"url\", \"ResourceIdentifier\": \"#{url}\"}" }
 
@@ -166,7 +166,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
             context.container = group
           end
 
-          let(:resource_iid) { issue2.iid }
+          let(:resource_id) { issue2.iid }
           let(:ai_response) { "{\"ResourceIdentifierType\": \"iid\", \"ResourceIdentifier\": #{issue2.iid}}" }
 
           it_behaves_like 'success response'
@@ -175,7 +175,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
             let_it_be(:project) { create(:project, group: group) }
             let_it_be(:issue3) { create(:issue, iid: issue2.iid, project: project) }
 
-            let(:resource_iid) { issue2.iid }
+            let(:resource_id) { issue2.iid }
             let(:ai_response) { "{\"ResourceIdentifierType\": \"iid\", \"ResourceIdentifier\": #{issue2.iid}}" }
 
             it_behaves_like 'issue not found response'
@@ -188,7 +188,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
           end
 
           context 'when issue is the current issue in context' do
-            let(:resource_iid) { issue2.iid }
+            let(:resource_id) { issue2.iid }
             let(:ai_response) { "{\"ResourceIdentifierType\": \"iid\", \"ResourceIdentifier\": #{issue2.iid}}" }
 
             it_behaves_like 'success response'
@@ -201,21 +201,21 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
           end
 
           context 'when issue is identified by iid' do
-            let(:resource_iid) { issue2.iid }
+            let(:resource_id) { issue2.iid }
             let(:ai_response) { "{\"ResourceIdentifierType\": \"iid\", \"ResourceIdentifier\": #{issue2.iid}}" }
 
             it_behaves_like 'issue not found response'
           end
 
           context 'when issue is the current issue in context' do
-            let(:resource_iid) { issue1.iid }
+            let(:resource_id) { 'current' }
             let(:ai_response) { "{\"ResourceIdentifierType\": \"current\", \"ResourceIdentifier\": \"current\"}" }
 
             it_behaves_like 'success response'
           end
 
           context 'when is issue identified with reference' do
-            let(:resource_iid) { issue2.iid }
+            let(:resource_id) { reference }
             let(:reference) { issue2.to_reference(full: true) }
             let(:ai_response) do
               "{\"ResourceIdentifierType\": \"reference\", \"ResourceIdentifier\": \"#{reference}\"}"
@@ -225,7 +225,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
           end
 
           context 'when is issue identified with not-full reference' do
-            let(:resource_iid) { issue2.iid }
+            let(:resource_id) { reference }
             let(:reference) { issue2.to_reference(full: false) }
             let(:ai_response) do
               "{\"ResourceIdentifierType\": \"reference\", \"ResourceIdentifier\": \"#{reference}\"}"
@@ -235,7 +235,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
           end
 
           xcontext 'when is issue identified with url' do
-            let(:resource_iid) { issue2.iid }
+            let(:resource_id) { issue2.iid }
             let(:url) { Gitlab::Saas.com_url + Gitlab::Routing.url_helpers.project_issue_path(project, issue2) }
             let(:ai_response) { "{\"ResourceIdentifierType\": \"url\", \"ResourceIdentifier\": \"#{url}\"}" }
 
@@ -244,12 +244,11 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
         end
 
         context 'when issue was already identified' do
-          let(:resource_iid) { issue1.iid }
           let(:ai_response) { "{\"ResourceIdentifierType\": \"iid\", \"ResourceIdentifier\": #{issue1.iid}}" }
 
           before do
             input_variables[:suggestions] = "Action: IssueIdentifier\nActionInput: #{issue1.iid}"
-            input_variables[:suggestions] += "Observation: I now have the JSON information about the issue #1"
+            input_variables[:suggestions] += "Observation: I identified the issue ##{issue1.id}"
             input_variables[:suggestions] += "Action: IssueIdentifier\nActionInput: #{issue1.iid}"
           end
 
@@ -258,7 +257,8 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
             allow(ai_request).to receive_message_chain(:complete, :dig, :to_s, :strip).and_return(ai_response)
             allow(context).to receive(:ai_request).and_return(ai_request)
 
-            response = "You already have identified the issue ##{context.resource.iid}, read carefully."
+            response = "You already have identified the issue #{context.resource.to_global_id}, read carefully."
+
             expect(tool.execute.content).to eq(response)
           end
         end

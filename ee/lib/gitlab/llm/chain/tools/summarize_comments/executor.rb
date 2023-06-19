@@ -11,9 +11,10 @@ module Gitlab
                           "comments or discussions on a given resource."
 
             def perform
+              return wrong_resource unless resource.is_a?(Noteable)
               return already_summarized_answer if already_summarized?
 
-              content = if resource.is_a?(Noteable) && resource.notes.by_humans.exists?
+              content = if resource.notes.by_humans.exists?
                           service_response = ::Llm::GenerateSummaryService.new(
                             context.current_user, resource, { sync: true, skip_cache: true }
                           ).execute
