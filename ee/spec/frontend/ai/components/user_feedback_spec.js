@@ -51,6 +51,21 @@ describe('UserFeedback', () => {
       createComponent();
     });
 
+    it('fires tracking event with extra data passed from prop', () => {
+      const eventExtraData = { foo: 'bar' };
+
+      createComponent({ eventName: EXPLAIN_CODE_TRACKING_EVENT_NAME, eventExtraData });
+      firstButton().vm.$emit('click');
+
+      expect(Tracking.event).toHaveBeenCalledWith(
+        undefined,
+        EXPLAIN_CODE_TRACKING_EVENT_NAME,
+        expect.objectContaining({
+          extra: expect.objectContaining(eventExtraData),
+        }),
+      );
+    });
+
     it('fires tracking event  when component is destroyed if button was clicked', () => {
       firstButton().vm.$emit('click');
 
