@@ -17,6 +17,7 @@ fragment WorkItem on WorkItem {
     id
     fullPath
     archived
+    name
   }
   author {
     ...Author

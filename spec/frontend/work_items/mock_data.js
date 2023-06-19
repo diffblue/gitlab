@@ -97,6 +97,7 @@ export const workItemQueryResponse = {
         id: '1',
         fullPath: 'test-project-path',
         archived: false,
+        name: 'Project name',
       },
       workItemType: {
         __typename: 'WorkItemType',
@@ -200,6 +201,7 @@ export const updateWorkItemMutationResponse = {
           id: '1',
           fullPath: 'test-project-path',
           archived: false,
+          name: 'Project name',
         },
         workItemType: {
           __typename: 'WorkItemType',
@@ -307,6 +309,7 @@ export const convertWorkItemMutationResponse = {
           id: '1',
           fullPath: 'test-project-path',
           archived: false,
+          name: 'Project name',
         },
         workItemType: {
           __typename: 'WorkItemType',
@@ -462,6 +465,7 @@ export const workItemResponseFactory = ({
         id: '1',
         fullPath: 'test-project-path',
         archived: false,
+        name: 'Project name',
       },
       workItemType,
       userPermissions: {
@@ -734,6 +738,7 @@ export const createWorkItemMutationResponse = {
           id: '1',
           fullPath: 'test-project-path',
           archived: false,
+          name: 'Project name',
         },
         workItemType: {
           __typename: 'WorkItemType',
@@ -968,6 +973,7 @@ export const workItemHierarchyEmptyResponse = {
               id: '1',
               fullPath: 'test-project-path',
               archived: false,
+              name: 'Project name',
             },
             userPermissions: {
               deleteWorkItem: false,
@@ -1030,6 +1036,7 @@ export const workItemHierarchyNoUpdatePermissionResponse = {
         id: '1',
         fullPath: 'test-project-path',
         archived: false,
+        name: 'Project name',
       },
       confidential: false,
       widgets: [
@@ -1182,6 +1189,7 @@ export const workItemHierarchyResponse = {
               id: '1',
               fullPath: 'test-project-path',
               archived: false,
+              name: 'Project name',
             },
             description: 'Issue description',
             state: 'OPEN',
@@ -1262,6 +1270,7 @@ export const workItemObjectiveWithChild = {
     id: '1',
     fullPath: 'test-project-path',
     archived: false,
+    name: 'Project name',
   },
   userPermissions: {
     deleteWorkItem: true,
@@ -1345,6 +1354,7 @@ export const workItemHierarchyTreeResponse = {
         id: '1',
         fullPath: 'test-project-path',
         archived: false,
+        name: 'Project name',
       },
       widgets: [
         {
@@ -1435,6 +1445,7 @@ export const changeIndirectWorkItemParentMutationResponse = {
           id: '1',
           fullPath: 'test-project-path',
           archived: false,
+          name: 'Project name',
         },
         reference: 'test-project-path#13',
         createNoteEmail:
@@ -1501,6 +1512,7 @@ export const changeWorkItemParentMutationResponse = {
           id: '1',
           fullPath: 'test-project-path',
           archived: false,
+          name: 'Project name',
         },
         reference: 'test-project-path#2',
         createNoteEmail:
@@ -1977,6 +1989,8 @@ export const mockWorkItemNotesResponse = {
                       lastEditedBy: null,
                       system: true,
                       internal: false,
+                      maxAccessLevelOfAuthor: 'Owner',
+                      authorIsContributor: false,
                       discussion: {
                         id: 'gid://gitlab/Discussion/9c17769ca29798eddaed539d010da12723561234',
                       },
@@ -2026,6 +2040,8 @@ export const mockWorkItemNotesResponse = {
                       lastEditedBy: null,
                       system: true,
                       internal: false,
+                      maxAccessLevelOfAuthor: 'Owner',
+                      authorIsContributor: false,
                       discussion: {
                         id: 'gid://gitlab/Discussion/9c17769ca29798eddaed539d010da12723565678',
                       },
@@ -2074,6 +2090,8 @@ export const mockWorkItemNotesResponse = {
                       lastEditedBy: null,
                       system: true,
                       internal: false,
+                      maxAccessLevelOfAuthor: 'Owner',
+                      authorIsContributor: false,
                       discussion: {
                         id: 'gid://gitlab/Discussion/9c17769ca29798eddaed539d010da12723560987',
                       },
@@ -2182,6 +2200,8 @@ export const mockWorkItemNotesByIidResponse = {
                             lastEditedBy: null,
                             system: true,
                             internal: false,
+                            maxAccessLevelOfAuthor: null,
+                            authorIsContributor: false,
                             discussion: {
                               id:
                                 'gid://gitlab/Discussion/9c17769ca29798eddaed539d010da12723561234',
@@ -2233,6 +2253,8 @@ export const mockWorkItemNotesByIidResponse = {
                             lastEditedBy: null,
                             system: true,
                             internal: false,
+                            maxAccessLevelOfAuthor: null,
+                            authorIsContributor: false,
                             discussion: {
                               id:
                                 'gid://gitlab/Discussion/9c17769ca29798eddaed539d010da12723568765',
@@ -2285,6 +2307,8 @@ export const mockWorkItemNotesByIidResponse = {
                             lastEditedBy: null,
                             system: true,
                             internal: false,
+                            maxAccessLevelOfAuthor: null,
+                            authorIsContributor: false,
                             discussion: {
                               id:
                                 'gid://gitlab/Discussion/9c17769ca29798eddaed539d010da12723569876',
@@ -2395,6 +2419,8 @@ export const mockMoreWorkItemNotesResponse = {
                             lastEditedBy: null,
                             system: true,
                             internal: false,
+                            maxAccessLevelOfAuthor: 'Owner',
+                            authorIsContributor: false,
                             discussion: {
                               id:
                                 'gid://gitlab/Discussion/9c17769ca29798eddaed539d010da1112356a59e',
@@ -2446,6 +2472,8 @@ export const mockMoreWorkItemNotesResponse = {
                             lastEditedBy: null,
                             system: true,
                             internal: false,
+                            maxAccessLevelOfAuthor: 'Owner',
+                            authorIsContributor: false,
                             discussion: {
                               id:
                                 'gid://gitlab/Discussion/9c17769ca29798eddaed539d010da1272356a59e',
@@ -2495,6 +2523,8 @@ export const mockMoreWorkItemNotesResponse = {
                             lastEditedBy: null,
                             system: true,
                             internal: false,
+                            maxAccessLevelOfAuthor: 'Owner',
+                            authorIsContributor: false,
                             discussion: {
                               id:
                                 'gid://gitlab/Discussion/9c17769ca29798eddaed539d010da12723569876',
@@ -2563,6 +2593,8 @@ export const createWorkItemNoteResponse = {
                 lastEditedAt: null,
                 url: 'http://127.0.0.1:3000/flightjs/Flight/-/work_items/37?iid_path=true#note_191',
                 lastEditedBy: null,
+                maxAccessLevelOfAuthor: 'Owner',
+                authorIsContributor: false,
                 discussion: {
                   id: 'gid://gitlab/Discussion/c872ba2d7d3eb780d2255138d67ca8b04f65b122',
                   __typename: 'Discussion',
@@ -2614,6 +2646,8 @@ export const mockWorkItemCommentNote = {
   lastEditedBy: null,
   system: false,
   internal: false,
+  maxAccessLevelOfAuthor: 'Owner',
+  authorIsContributor: false,
   discussion: {
     id: 'gid://gitlab/Discussion/9c17769ca29798eddaed539d010da12723569876',
   },
@@ -2635,6 +2669,16 @@ export const mockWorkItemCommentNote = {
     webUrl: 'http://127.0.0.1:3000/root',
     __typename: 'UserCore',
   },
+};
+
+export const mockWorkItemCommentNoteByContributor = {
+  ...mockWorkItemCommentNote,
+  authorIsContributor: true,
+};
+
+export const mockWorkItemCommentByMaintainer = {
+  ...mockWorkItemCommentNote,
+  maxAccessLevelOfAuthor: 'Maintainer',
 };
 
 export const mockWorkItemNotesResponseWithComments = {
@@ -2698,6 +2742,8 @@ export const mockWorkItemNotesResponseWithComments = {
                             url:
                               'http://127.0.0.1:3000/flightjs/Flight/-/work_items/37?iid_path=true#note_191',
                             lastEditedBy: null,
+                            maxAccessLevelOfAuthor: 'Owner',
+                            authorIsContributor: false,
                             discussion: {
                               id:
                                 'gid://gitlab/Discussion/2bb1162fd0d39297d1a68fdd7d4083d3780af0f3',
@@ -2736,6 +2782,8 @@ export const mockWorkItemNotesResponseWithComments = {
                             url:
                               'http://127.0.0.1:3000/flightjs/Flight/-/work_items/37?iid_path=true#note_191',
                             lastEditedBy: null,
+                            maxAccessLevelOfAuthor: 'Owner',
+                            authorIsContributor: false,
                             discussion: {
                               id:
                                 'gid://gitlab/Discussion/2bb1162fd0d39297d1a68fdd7d4083d3780af0f3',
@@ -2783,6 +2831,8 @@ export const mockWorkItemNotesResponseWithComments = {
                             lastEditedBy: null,
                             system: false,
                             internal: false,
+                            maxAccessLevelOfAuthor: 'Owner',
+                            authorIsContributor: false,
                             discussion: {
                               id:
                                 'gid://gitlab/Discussion/9c17769ca29798eddaed539d010da12723560987',
@@ -2855,6 +2905,8 @@ export const workItemNotesCreateSubscriptionResponse = {
               lastEditedBy: null,
               system: true,
               internal: false,
+              maxAccessLevelOfAuthor: 'Owner',
+              authorIsContributor: false,
               discussion: {
                 id: 'gid://gitlab/Discussion/9c17769ca29798eddaed539d010da12723560987',
               },
@@ -2925,6 +2977,8 @@ export const workItemNotesUpdateSubscriptionResponse = {
       lastEditedBy: null,
       system: true,
       internal: false,
+      maxAccessLevelOfAuthor: 'Owner',
+      authorIsContributor: false,
       discussion: {
         id: 'gid://gitlab/Discussion/9c17769ca29798eddaed539d010da12723560987',
       },
@@ -2976,6 +3030,8 @@ export const workItemSystemNoteWithMetadata = {
   lastEditedAt: '2023-05-05T07:19:37Z',
   url: 'https://gdk.test:3443/flightjs/Flight/-/work_items/46#note_1651',
   lastEditedBy: null,
+  maxAccessLevelOfAuthor: 'Owner',
+  authorIsContributor: false,
   discussion: {
     id: 'gid://gitlab/Discussion/7d4a46ea0525e2eeed451f7b718b0ebe73205374',
     __typename: 'Discussion',
@@ -3068,6 +3124,8 @@ export const workItemNotesWithSystemNotesWithChangedDescription = {
                             lastEditedAt: '2023-05-10T05:21:01Z',
                             url: 'https://gdk.test:3443/gnuwget/Wget2/-/work_items/79#note_1687',
                             lastEditedBy: null,
+                            maxAccessLevelOfAuthor: 'Owner',
+                            authorIsContributor: false,
                             discussion: {
                               id:
                                 'gid://gitlab/Discussion/aa72f4c2f3eef66afa6d79a805178801ce4bd89f',
@@ -3128,6 +3186,8 @@ export const workItemNotesWithSystemNotesWithChangedDescription = {
                             lastEditedAt: '2023-05-10T05:21:05Z',
                             url: 'https://gdk.test:3443/gnuwget/Wget2/-/work_items/79#note_1688',
                             lastEditedBy: null,
+                            maxAccessLevelOfAuthor: 'Owner',
+                            authorIsContributor: false,
                             discussion: {
                               id:
                                 'gid://gitlab/Discussion/a7d3cf7bd72f7a98f802845f538af65cb11a02cc',
@@ -3189,6 +3249,8 @@ export const workItemNotesWithSystemNotesWithChangedDescription = {
                             lastEditedAt: '2023-05-10T05:21:08Z',
                             url: 'https://gdk.test:3443/gnuwget/Wget2/-/work_items/79#note_1689',
                             lastEditedBy: null,
+                            maxAccessLevelOfAuthor: 'Owner',
+                            authorIsContributor: false,
                             discussion: {
                               id:
                                 'gid://gitlab/Discussion/391eed1ee0a258cc966a51dde900424f3b51b95d',
