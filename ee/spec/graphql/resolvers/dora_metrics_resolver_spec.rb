@@ -63,14 +63,17 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01', fea
       it 'returns metrics from production for the last 3 months from the production environment, grouped by day' do
         expect(resolve_metrics).to eq(
           [
+            *empty_metric_rows(from: '2021-02-01', to: '2021-02-28'),
             metric_row('date' => '2021-03-01', 'deployment_frequency' => 18),
+            *empty_metric_rows(from: '2021-03-02', to: '2021-03-31'),
             metric_row('date' => '2021-04-01', 'deployment_frequency' => 17),
             metric_row('date' => '2021-04-02', 'deployment_frequency' => 16),
             metric_row('date' => '2021-04-03', 'deployment_frequency' => 15),
             metric_row('date' => '2021-04-04', 'deployment_frequency' => 14),
             metric_row('date' => '2021-04-05', 'deployment_frequency' => 13),
             metric_row('date' => '2021-04-06', 'deployment_frequency' => 12),
-            metric_row('date' => '2021-04-07', 'deployment_frequency' => nil)
+            metric_row('date' => '2021-04-07', 'deployment_frequency' => nil),
+            *empty_metric_rows(from: '2021-04-08', to: '2021-05-01')
           ])
       end
 
@@ -98,14 +101,17 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01', fea
         it 'returns the metrics grouped by day (the default)' do
           expect(resolve_metrics).to eq(
             [
+              *empty_metric_rows(from: '2021-02-01', to: '2021-02-28'),
               metric_row('date' => '2021-03-01', 'deployment_frequency' => 18),
+              *empty_metric_rows(from: '2021-03-02', to: '2021-03-31'),
               metric_row('date' => '2021-04-01', 'deployment_frequency' => 17),
               metric_row('date' => '2021-04-02', 'deployment_frequency' => 16),
               metric_row('date' => '2021-04-03', 'deployment_frequency' => 15),
               metric_row('date' => '2021-04-04', 'deployment_frequency' => 14),
               metric_row('date' => '2021-04-05', 'deployment_frequency' => 13),
               metric_row('date' => '2021-04-06', 'deployment_frequency' => 12),
-              metric_row('date' => '2021-04-07', 'deployment_frequency' => nil)
+              metric_row('date' => '2021-04-07', 'deployment_frequency' => nil),
+              *empty_metric_rows(from: '2021-04-08', to: '2021-05-01')
             ])
         end
       end
@@ -121,8 +127,10 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01', fea
 
           expect(resolve_metrics).to eq(
             [
+              *empty_metric_rows(from: '2021-02-01', to: '2021-02-01'),
               metric_row('date' => '2021-03-01', 'deployment_frequency' => deployments_in_march.fdiv(days_in_march)),
-              metric_row('date' => '2021-04-01', 'deployment_frequency' => deployments_in_april.fdiv(days_in_april))
+              metric_row('date' => '2021-04-01', 'deployment_frequency' => deployments_in_april.fdiv(days_in_april)),
+              *empty_metric_rows(from: '2021-05-01', to: '2021-05-01')
             ])
         end
       end
@@ -148,7 +156,8 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01', fea
               metric_row('date' => '2021-04-04', 'deployment_frequency' => 14),
               metric_row('date' => '2021-04-05', 'deployment_frequency' => 13),
               metric_row('date' => '2021-04-06', 'deployment_frequency' => 12),
-              metric_row('date' => '2021-04-07', 'deployment_frequency' => nil)
+              metric_row('date' => '2021-04-07', 'deployment_frequency' => nil),
+              *empty_metric_rows(from: '2021-04-08', to: '2021-05-01')
             ])
         end
       end
@@ -159,7 +168,9 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01', fea
         it 'returns metrics for data on or before the provided date' do
           expect(resolve_metrics).to eq(
             [
+              *empty_metric_rows(from: '2021-02-01', to: '2021-02-28'),
               metric_row('date' => '2021-03-01', 'deployment_frequency' => 18),
+              *empty_metric_rows(from: '2021-03-02', to: '2021-03-31'),
               metric_row('date' => '2021-04-01', 'deployment_frequency' => 17),
               metric_row('date' => '2021-04-02', 'deployment_frequency' => 16),
               metric_row('date' => '2021-04-03', 'deployment_frequency' => 15)
@@ -206,14 +217,17 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01', fea
         it 'returns metrics for all environments combined' do
           expect(resolve_metrics).to eq(
             [
+              *empty_metric_rows(from: '2021-02-01', to: '2021-02-28'),
               metric_row('date' => '2021-03-01', 'deployment_frequency' => 18),
+              *empty_metric_rows(from: '2021-03-02', to: '2021-03-31'),
               metric_row('date' => '2021-04-01', 'deployment_frequency' => 27),
               metric_row('date' => '2021-04-02', 'deployment_frequency' => 16),
               metric_row('date' => '2021-04-03', 'deployment_frequency' => 15),
               metric_row('date' => '2021-04-04', 'deployment_frequency' => 14),
               metric_row('date' => '2021-04-05', 'deployment_frequency' => 13),
               metric_row('date' => '2021-04-06', 'deployment_frequency' => 12),
-              metric_row('date' => '2021-04-07', 'deployment_frequency' => nil)
+              metric_row('date' => '2021-04-07', 'deployment_frequency' => nil),
+              *empty_metric_rows(from: '2021-04-08', to: '2021-05-01')
             ])
         end
       end
@@ -245,5 +259,15 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01', fea
     row = ::Dora::DailyMetrics::AVAILABLE_METRICS.index_with { |_key| nil }.merge(extra)
     row['date'] = Date.parse(row['date']) if row['date'].is_a?(String)
     row
+  end
+
+  def empty_metric_rows(from:, to:)
+    empty_rows = []
+
+    (from.to_date..to.to_date).step(1) do |date|
+      empty_rows << metric_row('date' => date)
+    end
+
+    empty_rows
   end
 end

@@ -39,6 +39,18 @@ module Dora
       success(data: data)
     end
 
+    def start_date
+      @start_date ||= params[:start_date] || 3.months.ago.to_date
+    end
+
+    def end_date
+      @end_date ||= params[:end_date] || Time.current.to_date
+    end
+
+    def interval
+      @interval ||= params[:interval] || DEFAULT_INTERVAL
+    end
+
     private
 
     # The deployment frequency DB query returns the number of deployments which is not
@@ -148,20 +160,8 @@ module Dora
       end
     end
 
-    def start_date
-      params[:start_date] || 3.months.ago.to_date
-    end
-
-    def end_date
-      params[:end_date] || Time.current.to_date
-    end
-
     def environment_tiers
       params[:environment_tiers] || DEFAULT_ENVIRONMENT_TIERS
-    end
-
-    def interval
-      params[:interval] || DEFAULT_INTERVAL
     end
 
     def metrics
