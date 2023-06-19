@@ -51,8 +51,18 @@ RSpec.describe IncidentManagement::IssuableResourceLinks::CreateService, feature
       end
 
       it 'creates a system note notification' do
-        expect(SystemNoteService).to receive(:issuable_resource_link_added).with(incident, project, current_user,
-          link_type.to_s)
+        resource_link = instance_double(IncidentManagement::IssuableResourceLink, save: true)
+
+        expect(IncidentManagement::IssuableResourceLink)
+          .to receive(:new)
+          .with(args.merge({ issue: incident }))
+          .and_return(resource_link)
+        expect(SystemNoteService).to receive(:issuable_resource_link_added).with(
+          incident,
+          project,
+          current_user,
+          resource_link
+        )
         expect(SystemNoteService).not_to receive(:issuable_resource_link_removed)
 
         execute
