@@ -20,8 +20,10 @@ RSpec.describe 'Project security discover page', :js, :saas, feature_category: :
 
         expect(page).to have_content "Your project #{project.name} is not in a group"
         expect(page).to have_content "#{project.name} is a personal project, so none of this is available."
-        expect(page).to have_link('Learn to move a project to a group',
-                                  href: help_page_path('tutorials/move_personal_project_to_a_group'))
+        expect(page).to have_link(
+          'Learn to move a project to a group',
+          href: help_page_path('tutorials/move_personal_project_to_a_group')
+        )
       end
     end
 

@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Identity Verification', :clean_gitlab_redis_rate_limiting, :js,
-feature_category: :system_access do
+  feature_category: :system_access do
   include EmailHelpers
   include SessionsHelper
 
