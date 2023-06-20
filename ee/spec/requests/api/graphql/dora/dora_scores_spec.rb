@@ -6,10 +6,12 @@ RSpec.describe 'Query.[group](fullPath).doraPerformanceScoreCounts', :freeze_tim
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group) }
+  let_it_be(:subgroup) { create(:group, parent: group) }
   let_it_be(:project_1) { create(:project, group: group) }
   let_it_be(:project_2) { create(:project, group: group) }
   let_it_be(:project_3) { create(:project, group: group) }
-  let_it_be(:project_4) { create(:project, group: group) }
+  let_it_be(:project_4) { create(:project, group: subgroup) }
+  let_it_be(:unrelated_project) { create(:project) }
   let_it_be(:reporter) { create(:user) }
   let_it_be(:other_user) { create(:user) }
 
@@ -165,6 +167,13 @@ RSpec.describe 'Query.[group](fullPath).doraPerformanceScoreCounts', :freeze_tim
       create(:dora_performance_score, project: project_4, date: beginning_of_last_month,
         deployment_frequency: nil, lead_time_for_changes: nil, time_to_restore_service: nil,
         change_failure_rate: 'high')
+    end
+
+    let_it_be(:scores_for_unrelated_project) do
+      # wow, they're doing great! We're not interested in their scores though
+      create(:dora_performance_score, project: unrelated_project, date: beginning_of_last_month,
+        deployment_frequency: 'high', lead_time_for_changes: 'low', time_to_restore_service: 'low',
+        change_failure_rate: 'low')
     end
 
     describe 'working query' do
