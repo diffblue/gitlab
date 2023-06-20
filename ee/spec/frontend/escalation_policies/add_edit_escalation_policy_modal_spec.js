@@ -14,13 +14,14 @@ import {
 } from 'ee/escalation_policies/constants';
 import createEscalationPolicyMutation from 'ee/escalation_policies/graphql/mutations/create_escalation_policy.mutation.graphql';
 import updateEscalationPolicyMutation from 'ee/escalation_policies/graphql/mutations/update_escalation_policy.mutation.graphql';
+import { stubComponent } from 'helpers/stub_component';
 import waitForPromises from 'helpers/wait_for_promises';
 import mockPolicies from './mocks/mockPolicies.json';
 
 describe('AddEditsEscalationPolicyModal', () => {
   let wrapper;
   const projectPath = 'group/project';
-  const mockHideModal = jest.fn();
+  const modalHideSpy = jest.fn();
   const mutate = jest.fn();
   const mockEscalationPolicy = cloneDeep(mockPolicies[0]);
   const updatedName = 'Policy name';
@@ -48,9 +49,14 @@ describe('AddEditsEscalationPolicyModal', () => {
           mutate,
         },
       },
+      stubs: {
+        GlModal: stubComponent(GlModal, {
+          methods: {
+            hide: modalHideSpy,
+          },
+        }),
+      },
     });
-
-    wrapper.vm.$refs.addUpdateEscalationPolicyModal.hide = mockHideModal;
   };
 
   const findModal = () => wrapper.findComponent(GlModal);
@@ -228,7 +234,7 @@ describe('AddEditsEscalationPolicyModal', () => {
       mutate.mockResolvedValueOnce({ data: { escalationPolicyCreate: { errors: [] } } });
       findModal().vm.$emit('primary', { preventDefault: jest.fn() });
       await waitForPromises();
-      expect(mockHideModal).toHaveBeenCalled();
+      expect(modalHideSpy).toHaveBeenCalled();
     });
 
     it("doesn't hide a modal and shows error alert on creation failure", async () => {
@@ -237,7 +243,7 @@ describe('AddEditsEscalationPolicyModal', () => {
       findModal().vm.$emit('primary', { preventDefault: jest.fn() });
       await waitForPromises();
       const alert = findAlert();
-      expect(mockHideModal).not.toHaveBeenCalled();
+      expect(modalHideSpy).not.toHaveBeenCalled();
       expect(alert.exists()).toBe(true);
       expect(alert.text()).toContain(error);
     });
