@@ -118,12 +118,7 @@ module Security
     end
 
     def target_branch_report(merge_request)
-      target_pipeline = if Feature.enabled?(:scan_result_policy_latest_completed_pipeline, project)
-                          merge_request.latest_completed_target_branch_pipeline_for_scan_result_policy
-                        else
-                          merge_request.latest_pipeline_for_target_branch
-                        end
-
+      target_pipeline = merge_request.latest_completed_target_branch_pipeline_for_scan_result_policy
       ::Gitlab::LicenseScanning.scanner_for_pipeline(project, target_pipeline).report
     end
 

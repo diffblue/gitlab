@@ -114,26 +114,6 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       it_behaves_like 'triggers policy bot comment', true
     end
 
-    context 'with scan_result_policy_latest_completed_pipeline feature flag' do
-      let(:vulnerability_states) { %w[newly_detected] }
-
-      let_it_be(:running_target_pipeline) do
-        create(:ee_ci_pipeline, :running, project: project, ref: merge_request.target_branch)
-      end
-
-      context 'when feature flag is disabled' do
-        before do
-          stub_feature_flags(scan_result_policy_latest_completed_pipeline: false)
-        end
-
-        it_behaves_like 'does not update approvals_required'
-      end
-
-      context 'when feature flag is enabled' do
-        it_behaves_like 'sets approvals_required to 0'
-      end
-    end
-
     context 'when there are no violated approval rules' do
       let(:vulnerabilities_allowed) { 100 }
 

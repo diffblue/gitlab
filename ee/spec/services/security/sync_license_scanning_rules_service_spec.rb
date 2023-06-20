@@ -43,30 +43,6 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
       end
     end
 
-    context 'when scan_result_policy_latest_completed_pipeline feature flag is disabled' do
-      let_it_be(:scan_result_policy_read) do
-        create(:scan_result_policy_read, license_states: ['detected'], match_on_inclusion: false)
-      end
-
-      let_it_be(:license_compliance_rule) do
-        create(:report_approver_rule, :license_scanning,
-          merge_request: merge_request,
-          approvals_required: 1,
-          scan_result_policy_read: scan_result_policy_read
-        )
-      end
-
-      let_it_be(:running_pipeline) { create(:ee_ci_pipeline, :running, project: project) }
-
-      before do
-        stub_feature_flags(scan_result_policy_latest_completed_pipeline: false)
-      end
-
-      it 'does not require approval' do
-        expect { execute }.to change { license_compliance_rule.reload.approvals_required }.from(1).to(0)
-      end
-    end
-
     context 'with license_finding security policy' do
       let(:license_states) { ['newly_detected'] }
       let(:match_on_inclusion) { true }

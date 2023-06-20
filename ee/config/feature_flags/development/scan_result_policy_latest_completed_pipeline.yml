@@ -1,8 +1,0 @@
----
-name: scan_result_policy_latest_completed_pipeline
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/122048
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/414016
-milestone: '16.1'
-type: development
-group: group::security policies
-default_enabled: true
