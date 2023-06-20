@@ -343,14 +343,14 @@ RSpec.describe ApplicationSetting do
         end
 
         context 'when not empty' do
-          let(:alerted_user_ids) { [1, 2] }
+          let(:alerted_user_ids) { [1, 3, 2] }
 
           before do
             subject.update_attribute(:git_rate_limit_users_alertlist, alerted_user_ids)
           end
 
-          it 'returns the set user ids' do
-            expect(subject.git_rate_limit_users_alertlist).to eq(alerted_user_ids)
+          it 'returns the ordered set of user ids' do
+            expect(subject.git_rate_limit_users_alertlist).to eq([1, 2, 3])
           end
         end
       end

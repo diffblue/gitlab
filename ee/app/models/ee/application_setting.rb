@@ -524,7 +524,7 @@ module EE
     end
 
     def git_rate_limit_users_alertlist
-      self[:git_rate_limit_users_alertlist].presence || ::User.admins.active.pluck_primary_key
+      (self[:git_rate_limit_users_alertlist].presence || ::User.admins.active.pluck_primary_key).sort
     end
 
     def package_metadata_purl_types_names
