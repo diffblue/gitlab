@@ -16,14 +16,6 @@ module API
       end
 
       resource :namespaces, requirements: ::API::API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
-        helpers do
-          params :purchased_subscription_add_on_attributes do
-            requires :quantity, type: Integer, desc: 'The quantity of the purchase'
-            requires :expires_on, type: Date, desc: 'The date when purchase expires on'
-            requires :purchase_xid, type: String, desc: 'The purchase identifier (example: the subscription name)'
-          end
-        end
-
         desc 'Create an add-on purchase for the namespace' do
           detail 'Creates a subscription add-on record for the given namespaces and add-on'
           success ::EE::API::Entities::GitlabSubscriptions::AddOnPurchase
@@ -34,7 +26,9 @@ module API
           ]
         end
         params do
-          use :purchased_subscription_add_on_attributes
+          requires :quantity, type: Integer, desc: 'The quantity of the purchase'
+          requires :expires_on, type: Date, desc: 'The date when purchase expires on'
+          requires :purchase_xid, type: String, desc: 'The purchase identifier (example: the subscription name)'
         end
         post ":id/subscription_add_on_purchase/:add_on_name" do
           result = ::GitlabSubscriptions::AddOnPurchases::CreateService.new(
@@ -78,7 +72,9 @@ module API
           ]
         end
         params do
-          use :purchased_subscription_add_on_attributes
+          requires :expires_on, type: Date, desc: 'The date when purchase expires on'
+          optional :quantity, type: Integer, desc: 'The quantity of the purchase'
+          optional :purchase_xid, type: String, desc: 'The purchase identifier (example: the subscription name)'
         end
         put ":id/subscription_add_on_purchase/:add_on_name" do
           result = ::GitlabSubscriptions::AddOnPurchases::UpdateService.new(

@@ -234,7 +234,7 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
 
         context 'when the add-on purchase exists' do
           let_it_be(:expires_on) { Date.current + 6.months }
-          let_it_be(:add_on_purchase) do
+          let_it_be_with_reload(:add_on_purchase) do
             create(
               :gitlab_subscription_add_on_purchase,
               namespace: namespace,
@@ -245,7 +245,7 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
             )
           end
 
-          it 'creates a new add-on purchase' do
+          it 'updates the found add-on purchase' do
             expect do
               put_add_on_purchase
               add_on_purchase.reload
@@ -261,6 +261,28 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
               'expires_on' => params[:expires_on],
               'purchase_xid' => params[:purchase_xid]
             )
+          end
+
+          context 'with only required params' do
+            let(:params) { { expires_on: (Date.current + 1.year).to_s } }
+
+            it 'updates the add-on purchase' do
+              expect do
+                put_add_on_purchase
+                add_on_purchase.reload
+              end.to change { add_on_purchase.expires_on }.from(expires_on).to(params[:expires_on].to_date)
+                .and not_change { add_on_purchase.quantity }
+
+              expect(response).to have_gitlab_http_status(:success)
+              expect(json_response).to eq(
+                'namespace_id' => namespace_id,
+                'namespace_name' => namespace.name,
+                'add_on' => add_on.name.titleize,
+                'quantity' => add_on_purchase.quantity,
+                'expires_on' => params[:expires_on],
+                'purchase_xid' => add_on_purchase.purchase_xid
+              )
+            end
           end
 
           context 'when the add-on purchase cannot be saved' do
