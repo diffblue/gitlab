@@ -9,12 +9,11 @@ module AuditEvents
           header = params[:header]
           return header_error if header.blank?
 
-          if header.destroy
-            audit(action: :destroy, header: header, message: audit_message(header.key))
-            ServiceResponse.success
-          else
-            ServiceResponse.error(message: Array(header.errors))
-          end
+          success, response = destroy_header(params[:header])
+
+          audit(action: :destroy, header: header, message: audit_message(header.key)) if success
+
+          response
         end
 
         private

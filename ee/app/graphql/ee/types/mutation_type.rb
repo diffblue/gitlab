@@ -121,6 +121,7 @@ module EE
         mount_mutation ::Mutations::Forecasting::BuildForecast, alpha: { milestone: '16.0' }
         mount_mutation ::Mutations::AuditEvents::Streaming::InstanceHeaders::Create
         mount_mutation ::Mutations::AuditEvents::Streaming::InstanceHeaders::Update
+        mount_mutation ::Mutations::AuditEvents::Streaming::InstanceHeaders::Destroy
 
         prepend(Types::DeprecatedMutations)
       end

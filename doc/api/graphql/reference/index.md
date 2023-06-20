@@ -1295,6 +1295,24 @@ Input type: `AuditEventsStreamingInstanceHeadersCreateInput`
 | <a id="mutationauditeventsstreaminginstanceheaderscreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationauditeventsstreaminginstanceheaderscreateheader"></a>`header` | [`AuditEventsStreamingInstanceHeader`](#auditeventsstreaminginstanceheader) | Created header. |
 
+### `Mutation.auditEventsStreamingInstanceHeadersDestroy`
+
+Input type: `AuditEventsStreamingInstanceHeadersDestroyInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationauditeventsstreaminginstanceheadersdestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationauditeventsstreaminginstanceheadersdestroyheaderid"></a>`headerId` | [`AuditEventsStreamingInstanceHeaderID!`](#auditeventsstreaminginstanceheaderid) | Header to delete. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationauditeventsstreaminginstanceheadersdestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationauditeventsstreaminginstanceheadersdestroyerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+
 ### `Mutation.auditEventsStreamingInstanceHeadersUpdate`
 
 Input type: `AuditEventsStreamingInstanceHeadersUpdateInput`

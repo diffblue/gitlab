@@ -18,6 +18,12 @@ module AuditEvents
           [false, ServiceResponse.error(message: Array(header.errors))]
         end
       end
+
+      def destroy_header(header)
+        return true, ServiceResponse.success if header.destroy
+
+        [false, ServiceResponse.error(message: Array(header.errors))]
+      end
     end
   end
 end
