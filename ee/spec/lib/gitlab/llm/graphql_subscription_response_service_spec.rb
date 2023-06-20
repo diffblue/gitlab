@@ -116,5 +116,16 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
       it_behaves_like 'graphql subscription response'
       it_behaves_like 'with a markup format option'
     end
+
+    context 'for internal request' do
+      let(:options) { { request_id: 'uuid', internal_request: true } }
+
+      it 'returns response but does not cache or broadcast' do
+        expect(GraphqlTriggers).not_to receive(:ai_completion_response)
+        expect(Gitlab::Llm::Cache).not_to receive(:new)
+
+        expect(subject[:content]).to eq(response_body)
+      end
+    end
   end
 end

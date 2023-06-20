@@ -90,6 +90,14 @@ RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_c
 
           it 'responds with summary' do
             expect(tool).not_to receive(:request)
+            expect_next_instance_of(
+              ::Llm::GenerateSummaryService,
+              user,
+              issue1,
+              { sync: true, internal_request: true }
+            ) do |service|
+              expect(service).to receive(:execute).and_call_original
+            end
 
             response = "I know the summary of the notes, comments, discussions for the"
             expect(tool.execute.content).to include(response)
