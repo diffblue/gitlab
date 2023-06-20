@@ -14,6 +14,7 @@ module AuditEvents
     has_many :event_type_filters, class_name: 'AuditEvents::Streaming::EventTypeFilter'
 
     validate :root_level_group?
+    validates :name, uniqueness: { scope: :namespace_id }
 
     # TODO: Remove audit_operation.present? guard clause once we implement names for all the audit event types.
     # Epic: https://gitlab.com/groups/gitlab-org/-/epics/8497

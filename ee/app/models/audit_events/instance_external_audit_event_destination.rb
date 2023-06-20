@@ -12,6 +12,8 @@ module AuditEvents
     has_many :headers, class_name: 'AuditEvents::Streaming::InstanceHeader'
     has_many :event_type_filters, class_name: 'AuditEvents::Streaming::InstanceEventTypeFilter'
 
+    validates :name, uniqueness: true
+
     attr_encrypted :verification_token,
       mode: :per_attribute_iv,
       algorithm: 'aes-256-gcm',
