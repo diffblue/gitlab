@@ -28,6 +28,14 @@ RSpec.describe AuditEvents::InstanceExternalAuditEventDestination, feature_categ
       expect(subject).not_to be_valid
       expect(subject.errors.full_messages).to contain_exactly('Headers are limited to 20 per destination')
     end
+
+    it 'validates uniqueness of name' do
+      create(:instance_external_audit_event_destination, name: 'Test Destination')
+      destination = build(:instance_external_audit_event_destination, name: 'Test Destination')
+
+      expect(destination).not_to be_valid
+      expect(destination.errors.full_messages).to include('Name has already been taken')
+    end
   end
 
   describe '#headers_hash' do

@@ -8,11 +8,14 @@ module AuditEvents
     MAXIMUM_HEADER_COUNT = 20
 
     included do
+      before_validation :assign_default_name
+
       validates :destination_url, public_url: true, presence: true
       validates :destination_url, uniqueness: true, length: { maximum: 255 }
       validates :verification_token, length: { in: 16..24 }, allow_nil: true
       validates :verification_token, presence: true, on: :update
       validate :no_more_than_20_headers?
+      validates :name, length: { maximum: 72 }
 
       has_secure_token :verification_token, length: 24
 
@@ -25,6 +28,10 @@ module AuditEvents
       end
 
       private
+
+      def assign_default_name
+        self.name ||= "Destination_#{SecureRandom.uuid}"
+      end
 
       def no_more_than_20_headers?
         return unless headers.count > MAXIMUM_HEADER_COUNT
