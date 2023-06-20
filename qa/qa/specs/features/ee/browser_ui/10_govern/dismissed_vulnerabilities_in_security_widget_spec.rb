@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Govern', :runner, product_group: :threat_insights do
+  RSpec.describe 'Govern', :runner, product_group: :threat_insights,
+    quarantine: {
+      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/415495',
+      type: :flaky
+    } do
     describe 'Dismissed vulnerabilities in MR security widget' do
       let(:secret_detection_report) { "gl-secret-detection-report.json" }
       let(:secret_detection_report_mr) { "gl-secret-detection-report-mr.json" }
