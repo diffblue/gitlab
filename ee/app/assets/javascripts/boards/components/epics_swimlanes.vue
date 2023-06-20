@@ -123,6 +123,9 @@ export default {
         ? this.isLoadingMore
         : this.epicsSwimlanesFetchInProgress.epicLanesFetchMoreInProgress;
     },
+    canAdminEpic() {
+      return this.epicsToUse[0]?.userPermissions?.adminEpic;
+    },
     treeRootWrapper() {
       return this.canAdminList ? Draggable : DRAGGABLE_TAG;
     },
@@ -246,6 +249,7 @@ export default {
           boardId: this.boardId,
           filterParams: this.filtersToUse,
           highlightedLists: this.highlightedLists,
+          canAdminEpic: this.canAdminEpic,
         },
       };
     },
@@ -373,6 +377,8 @@ export default {
                 :filter-params="filtersToUse"
                 :is-loading-more-issues="isLoadingMoreIssues"
                 :highlighted-lists-apollo="highlightedLists"
+                :can-admin-epic="canAdminEpic"
+                :lists="lists"
                 @updatePageInfo="updatePageInfo"
                 @issuesLoaded="isLoadingMoreIssues = false"
               />

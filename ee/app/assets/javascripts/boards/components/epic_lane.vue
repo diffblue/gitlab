@@ -38,6 +38,11 @@ export default {
       required: false,
       default: false,
     },
+    canAdminEpic: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     boardId: {
       type: String,
       required: true,
@@ -232,6 +237,8 @@ export default {
         :board-id="boardId"
         :filter-params="filterParams"
         :highlighted-lists-apollo="highlightedLists"
+        :can-admin-epic="canAdminEpic"
+        :lists="lists"
       />
     </div>
   </div>

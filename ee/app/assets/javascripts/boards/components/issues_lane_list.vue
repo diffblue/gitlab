@@ -5,10 +5,17 @@ import { mapState, mapActions } from 'vuex';
 import BoardCard from '~/boards/components/board_card.vue';
 import BoardNewIssue from '~/boards/components/board_new_issue.vue';
 import eventHub from '~/boards/eventhub';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { STATUS_CLOSED } from '~/issues/constants';
+import {
+  addItemToList,
+  removeItemFromList,
+  updateIssueCountAndWeight,
+} from '~/boards/graphql/cache_updates';
 import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
+import { shouldCloneCard } from '~/boards/boards_util';
 import { defaultSortableOptions } from '~/sortable/constants';
-import { BoardType, EpicFilterType } from 'ee/boards/constants';
+import { BoardType, EpicFilterType, listIssuablesQueries } from 'ee/boards/constants';
 
 export default {
   components: {
@@ -27,12 +34,21 @@ export default {
       required: false,
       default: () => [],
     },
+    lists: {
+      type: Array,
+      required: true,
+    },
     isUnassignedIssuesLane: {
       type: Boolean,
       required: false,
       default: false,
     },
     canAdminList: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    canAdminEpic: {
       type: Boolean,
       required: false,
       default: false,
@@ -64,6 +80,7 @@ export default {
   data() {
     return {
       showIssueForm: false,
+      toListId: null,
     };
   },
   apollo: {
@@ -91,20 +108,18 @@ export default {
     },
   },
   computed: {
-    ...mapState([
-      'activeId',
-      'canAdminEpic',
-      'listsFlags',
-      'highlightedLists',
-      'fullBoardIssuesCount',
-    ]),
+    ...mapState(['listsFlags', 'highlightedLists', 'fullBoardIssuesCount']),
     baseVariables() {
       return {
         fullPath: this.fullPath,
         boardId: this.boardId,
         isGroup: this.boardType === BoardType.group,
         isProject: this.boardType === BoardType.project,
-        filters: { ...this.filterParams, epicWildcardId: EpicFilterType.none.toUpperCase() },
+        // filters: { ...this.filterParams, epicWildcardId: EpicFilterType.none.toUpperCase() },
+        filters: this.isUnassignedIssuesLane
+          ? { ...this.filterParams, epicWildcardId: EpicFilterType.none.toUpperCase() }
+          : { ...this.filterParams, epicId: this.epicId },
+
         first: 10,
       };
     },
@@ -155,6 +170,13 @@ export default {
     highlighted() {
       return this.highlightedListsToUse.includes(this.list.id);
     },
+    toList() {
+      if (!this.toListId) {
+        return {};
+      }
+      return this.lists.find((list) => list.id === this.toListId);
+    },
+
     boardItemsSizeExceedsMax() {
       return (
         this.list.maxIssueCount > 0 &&
@@ -242,22 +264,155 @@ export default {
         }
       }
 
-      this.moveIssue({
-        itemId,
-        itemIid,
-        itemPath,
-        fromListId: from.dataset.listId,
-        toListId: to.dataset.listId,
-        moveBeforeId,
-        moveAfterId,
-        epicId: from.dataset.epicId !== to.dataset.epicId ? to.dataset.epicId || null : undefined,
-      });
+      if (this.isApolloBoard) {
+        this.moveBoardItem(
+          {
+            iid: itemIid,
+            epicId: to.dataset.epicId,
+            fromListId: from.dataset.listId,
+            toListId: to.dataset.listId,
+            moveBeforeId,
+            moveAfterId,
+          },
+          newIndex,
+        );
+      } else {
+        this.moveIssue({
+          itemId,
+          itemIid,
+          itemPath,
+          fromListId: from.dataset.listId,
+          toListId: to.dataset.listId,
+          moveBeforeId,
+          moveAfterId,
+          epicId: from.dataset.epicId !== to.dataset.epicId ? to.dataset.epicId || null : undefined,
+        });
+      }
     },
     async fetchMoreIssues() {
       await this.$apollo.queries.currentListWithUnassignedIssues.fetchMore({
         variables: { ...this.baseVariables, id: this.list.id, after: this.pageInfo.endCursor },
       });
       this.$emit('issuesLoaded');
+    },
+    isItemInTheList(itemIid) {
+      const items = this.toList?.issues?.nodes || [];
+      return items.some((item) => item.iid === itemIid);
+    },
+    shouldCloneCard(epicId = null) {
+      return shouldCloneCard(this.list.listType, this.toList.listType) && epicId === this.epicId;
+    },
+    moveItemVariables({
+      iid,
+      epicId = null,
+      fromListId,
+      toListId,
+      moveBeforeId,
+      moveAfterId,
+      itemToMove,
+    }) {
+      return {
+        iid,
+        epicId,
+        boardId: this.boardId,
+        projectPath: itemToMove.referencePath.split(/[#]/)[0],
+        moveBeforeId: moveBeforeId ? getIdFromGraphQLId(moveBeforeId) : undefined,
+        moveAfterId: moveAfterId ? getIdFromGraphQLId(moveAfterId) : undefined,
+        fromListId: getIdFromGraphQLId(fromListId),
+        toListId: getIdFromGraphQLId(toListId),
+      };
+    },
+    async moveBoardItem(variables, newIndex) {
+      const { fromListId, toListId, iid, epicId } = variables;
+      this.toListId = toListId;
+
+      const itemToMove = this.issuesToUse.find((item) => item.iid === iid);
+
+      if (this.shouldCloneCard(epicId) && this.isItemInTheList(iid)) {
+        return;
+      }
+
+      try {
+        await this.$apollo.mutate({
+          mutation: listIssuablesQueries.issue.moveMutation,
+          variables: this.moveItemVariables({ ...variables, itemToMove }),
+          update: (cache, { data: { issuableMoveList } }) =>
+            this.updateCacheAfterMovingItem({
+              cache,
+              issuableMoveList,
+              fromListId,
+              toListId,
+              epicId,
+              newIndex,
+            }),
+          optimisticResponse: {
+            issuableMoveList: {
+              issuable: itemToMove,
+              errors: [],
+            },
+          },
+        });
+      } catch {
+        // TODO: handle error
+      }
+    },
+    updateCacheAfterMovingItem({
+      cache,
+      issuableMoveList,
+      fromListId,
+      toListId,
+      newIndex,
+      epicId,
+    }) {
+      const { issuable } = issuableMoveList;
+
+      // Remove issue from one epic lane
+      if (!this.shouldCloneCard(epicId)) {
+        const variables = { ...this.baseVariables };
+
+        if (this.isUnassignedIssuesLane) {
+          variables.id = this.list.id;
+        }
+        removeItemFromList({
+          query: listsIssuesQuery,
+          variables,
+          boardType: this.boardType,
+          id: issuable.id,
+          issuableType: 'issue',
+          listId: fromListId,
+          cache,
+        });
+      }
+
+      // Add issue to another epic lane
+      const variables = {
+        ...this.baseVariables,
+        filters: epicId
+          ? { ...this.filterParams, epicId }
+          : { ...this.filterParams, epicWildcardId: 'NONE' },
+      };
+      if (!epicId) {
+        variables.id = this.toListId;
+      }
+      addItemToList({
+        query: listsIssuesQuery,
+        variables,
+        issuable,
+        newIndex,
+        boardType: this.boardType,
+        issuableType: 'issue',
+        listId: toListId,
+        cache,
+      });
+
+      updateIssueCountAndWeight({
+        fromListId,
+        toListId,
+        filterParams: this.filterParams,
+        issuable,
+        shouldClone: this.shouldCloneCard(epicId),
+        cache,
+      });
     },
   },
 };
