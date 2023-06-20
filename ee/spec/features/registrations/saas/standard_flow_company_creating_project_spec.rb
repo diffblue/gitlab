@@ -75,7 +75,7 @@ RSpec.describe 'Standard flow for user picking company and creating a project', 
     end
 
     context 'when not opting into a trial' do
-      it 'registers the user and creates a group and project reaching onboarding' do
+      it 'registers the user, has some lead submission failures and creates a group and project reaching onboarding' do
         sign_up_method.call
 
         ensure_onboarding { expect_to_see_welcome_form }
@@ -85,7 +85,14 @@ RSpec.describe 'Standard flow for user picking company and creating a project', 
 
         ensure_onboarding { expect_to_see_company_form }
 
-        fill_in_company_form(trial: false, glm: false)
+        # failure
+        fill_in_company_form(trial: false, glm: false, success: false)
+        click_on 'Continue'
+
+        expect_to_see_company_form_failure
+
+        # success
+        fill_in_company_form(trial: false, glm: false, success: true)
         click_on 'Continue'
 
         ensure_onboarding { expect_to_see_group_and_project_creation_form }
