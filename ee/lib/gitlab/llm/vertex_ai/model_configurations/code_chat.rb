@@ -6,6 +6,7 @@ module Gitlab
       module ModelConfigurations
         class CodeChat < Base
           NAME = 'codechat-bison'
+          MAX_OUTPUT_TOKENS = 2048
 
           def payload(content)
             {
@@ -19,7 +20,7 @@ module Gitlab
                   ]
                 }
               ],
-              parameters: Configuration.default_payload_parameters
+              parameters: Configuration.payload_parameters(maxOutputTokens: MAX_OUTPUT_TOKENS)
             }
           end
         end

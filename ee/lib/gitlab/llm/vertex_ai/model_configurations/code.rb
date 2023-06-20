@@ -6,6 +6,7 @@ module Gitlab
       module ModelConfigurations
         class Code < Base
           NAME = 'code-bison'
+          MAX_OUTPUT_TOKENS = 2048
 
           def payload(content)
             {
@@ -14,7 +15,7 @@ module Gitlab
                   prefix: content
                 }
               ],
-              parameters: Configuration.default_payload_parameters
+              parameters: Configuration.payload_parameters(maxOutputTokens: MAX_OUTPUT_TOKENS)
             }
           end
         end

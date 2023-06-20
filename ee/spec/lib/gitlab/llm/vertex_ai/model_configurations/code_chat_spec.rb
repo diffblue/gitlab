@@ -17,7 +17,9 @@ RSpec.describe Gitlab::Llm::VertexAi::ModelConfigurations::CodeChat, feature_cat
               ]
             }
           ],
-          parameters: Gitlab::Llm::VertexAi::Configuration.default_payload_parameters
+          parameters: Gitlab::Llm::VertexAi::Configuration.payload_parameters(
+            maxOutputTokens: Gitlab::Llm::VertexAi::ModelConfigurations::CodeChat::MAX_OUTPUT_TOKENS
+          )
         }
       )
     end

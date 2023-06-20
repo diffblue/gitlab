@@ -14,7 +14,7 @@ module Gitlab
                   content: content
                 }
               ],
-              parameters: Configuration.default_payload_parameters
+              parameters: Configuration.payload_parameters
             }
           end
         end

@@ -94,4 +94,26 @@ RSpec.describe Gitlab::Llm::VertexAi::Configuration, feature_category: :not_owne
       )
     end
   end
+
+  describe '.payload_parameters' do
+    it 'returns the default payload parameters merged with overwritten parameters' do
+      expect(described_class.payload_parameters).to eq(
+        {
+          temperature: 0.2,
+          maxOutputTokens: 1024,
+          topK: 40,
+          topP: 0.95
+        }
+      )
+
+      new_payload = {
+        temperature: 0.5,
+        maxOutputTokens: 4098,
+        topK: 20,
+        topP: 0.91
+      }
+
+      expect(described_class.payload_parameters(new_payload)).to eq(new_payload)
+    end
+  end
 end
