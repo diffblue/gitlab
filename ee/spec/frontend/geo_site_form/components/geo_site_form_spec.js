@@ -24,16 +24,15 @@ jest.mock('~/lib/utils/url_utility', () => ({
 describe('GeoSiteForm', () => {
   let wrapper;
 
-  const propsData = {
-    site: MOCK_SITE,
-    selectiveSyncTypes: MOCK_SELECTIVE_SYNC_TYPES,
-    syncShardsOptions: MOCK_SYNC_SHARDS,
-  };
-
-  const createComponent = () => {
+  const createComponent = (props = {}) => {
     wrapper = shallowMount(GeoSiteForm, {
       store: initStore(MOCK_SITES_PATH),
-      propsData,
+      propsData: {
+        site: MOCK_SITE,
+        selectiveSyncTypes: MOCK_SELECTIVE_SYNC_TYPES,
+        syncShardsOptions: MOCK_SYNC_SHARDS,
+        ...props,
+      },
     });
   };
 
@@ -44,21 +43,13 @@ describe('GeoSiteForm', () => {
   const findGeoSiteCancelButton = () => wrapper.find('#site-cancel-button');
 
   describe('template', () => {
-    beforeEach(() => {
-      createComponent();
-    });
-
     describe.each`
       primarySite | showCore | showSelectiveSync | showCapacities
       ${true}     | ${true}  | ${false}          | ${true}
       ${false}    | ${true}  | ${true}           | ${true}
     `(`conditional fields`, ({ primarySite, showCore, showSelectiveSync, showCapacities }) => {
       beforeEach(() => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          siteData: { ...wrapper.vm.siteData, primary: primarySite },
-        });
+        createComponent({ site: { MOCK_SITE, primary: primarySite } });
       });
 
       it(`it ${showCore ? 'shows' : 'hides'} the Core Field`, () => {
@@ -77,6 +68,7 @@ describe('GeoSiteForm', () => {
     describe('Save Button', () => {
       describe('with errors on form', () => {
         beforeEach(() => {
+          createComponent();
           wrapper.vm.$store.state.formErrors.name = 'Test Error';
         });
 
@@ -87,6 +79,8 @@ describe('GeoSiteForm', () => {
 
       describe('with mo errors on form', () => {
         it('does not disable button', () => {
+          createComponent();
+
           expect(findGeoSiteSaveButton().attributes('disabled')).toBeUndefined();
         });
       });
@@ -131,12 +125,7 @@ describe('GeoSiteForm', () => {
 
     describe('removeSyncOption', () => {
       beforeEach(() => {
-        createComponent();
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          siteData: { ...wrapper.vm.siteData, selectiveSyncShards: [MOCK_SYNC_SHARDS[0].value] },
-        });
+        createComponent({ site: { selectiveSyncShards: [MOCK_SYNC_SHARDS[0].value] } });
       });
 
       it('should remove value from siteData', () => {
@@ -160,8 +149,7 @@ describe('GeoSiteForm', () => {
 
     describe('when site prop does not exist', () => {
       beforeEach(() => {
-        propsData.site = null;
-        createComponent();
+        createComponent({ site: null });
       });
 
       it('sets siteData to the default site data', () => {
