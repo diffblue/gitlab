@@ -452,72 +452,40 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
 
     context "summarize_diff command" do
       let(:content) { "/summarize_diff" }
+      let(:summarize_flag) { true }
+      let(:summarize_diff_enabled) { true }
 
       before do
-        stub_licensed_features(summarize_mr_changes: true)
+        stub_feature_flags(summarize_diff_quick_action: summarize_flag)
+
+        allow(::Llm::MergeRequests::SummarizeDiffService).to receive(:enabled?).and_return(summarize_diff_enabled)
       end
 
-      context "when :openai_experimentation feature flag is disabled" do
-        before do
-          stub_feature_flags(openai_experimentation: false)
-        end
-
-        it "doesn't apply /summarize_diff" do
-          _, _, msg = service.execute(content, merge_request)
-
-          expect(msg).to include("Could not apply summarize_diff command")
-        end
-      end
-
-      context "when :summarize_diff_quick_action feature flag is disabled" do
-        before do
-          stub_feature_flags(summarize_diff_quick_action: false)
-        end
-
-        it "doesn't apply /summarize_diff" do
-          _, _, msg = service.execute(content, merge_request)
-
-          expect(msg).to include("Could not apply summarize_diff command")
-        end
-      end
-
-      context "when :openai_experimentation feature flag is enabled" do
-        before do
-          stub_feature_flags(openai_experimentation: true)
-
-          allow_next_instance_of(::Llm::MergeRequests::SummarizeDiffService) do |service|
-            allow(service).to receive(:enabled?).and_return(true)
-          end
-        end
-
-        context "when summarize_mr_changes is disabled" do
-          before do
-            stub_licensed_features(summarize_mr_changes: false)
-          end
-
-          it "doesn't apply /summarize_diff" do
-            _, _, msg = service.execute(content, merge_request)
-
-            expect(msg).to include("Could not apply summarize_diff command")
-          end
-        end
-
+      context "when the checks are enabled" do
         it "applies /summarize_diff" do
           _, _, msg = service.execute(content, merge_request)
 
           expect(msg).to include("Request for summary queued")
         end
+      end
 
-        context "when :summarize_diff_quick_action feature flag is disabled" do
-          before do
-            stub_feature_flags(summarize_diff_quick_action: false)
-          end
+      context "when :summarize_diff_quick_action feature flag is disabled" do
+        let(:summarize_flag) { false }
 
-          it "doesn't apply /summarize_diff" do
-            _, _, msg = service.execute(content, merge_request)
+        it "doesn't apply /summarize_diff" do
+          _, _, msg = service.execute(content, merge_request)
 
-            expect(msg).to include("Could not apply summarize_diff command")
-          end
+          expect(msg).to include("Could not apply summarize_diff command")
+        end
+      end
+
+      context "when SummarizeDiffService is disabled" do
+        let(:summarize_diff_enabled) { false }
+
+        it "doesn't apply /summarize_diff" do
+          _, _, msg = service.execute(content, merge_request)
+
+          expect(msg).to include("Could not apply summarize_diff command")
         end
       end
     end

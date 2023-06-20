@@ -16,8 +16,11 @@ module EE
       with_replicator ::Geo::MergeRequestDiffReplicator
 
       has_one :merge_request_diff_detail, autosave: false, inverse_of: :merge_request_diff
+      has_one :merge_request_diff_llm_summary, class_name: 'MergeRequest::DiffLlmSummary'
 
       after_save :save_verification_details
+
+      after_create_commit :prepare_diff_summary, unless: :importing?
 
       scope :has_external_diffs, -> { with_files.where(stored_externally: true) }
       scope :project_id_in, ->(ids) { where(merge_request_id: ::MergeRequest.where(target_project_id: ids)) }
@@ -29,6 +32,22 @@ module EE
 
       def verification_state_object
         merge_request_diff_detail
+      end
+
+      def prepare_diff_summary
+        return unless ::Feature.enabled?(:summarize_diff_automatically, project)
+
+        llm_service_bot = ::User.llm_bot
+
+        return unless llm_service_bot
+        return if merge_head?
+
+        if Llm::MergeRequests::SummarizeDiffService.enabled?(group: project.root_ancestor, user: llm_service_bot)
+          ::MergeRequests::Llm::SummarizeMergeRequestWorker.perform_async(
+            llm_service_bot.id,
+            { type: ::MergeRequests::Llm::SummarizeMergeRequestWorker::PREPARE_DIFF_SUMMARY, diff_id: id }
+          )
+        end
       end
     end
 

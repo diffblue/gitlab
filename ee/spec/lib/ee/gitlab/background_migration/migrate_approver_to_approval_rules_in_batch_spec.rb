@@ -11,7 +11,7 @@ RSpec.describe Gitlab::BackgroundMigration::MigrateApproverToApprovalRulesInBatc
     it 'migrates individual target' do
       allow(Gitlab::BackgroundMigration::MigrateApproverToApprovalRules).to receive(:new).and_return(job)
 
-      merge_requests = create_list(:merge_request, 3)
+      merge_requests = create_list(:merge_request, 3, :skip_diff_creation)
 
       expect(job).to receive(:perform).exactly(3).times
 

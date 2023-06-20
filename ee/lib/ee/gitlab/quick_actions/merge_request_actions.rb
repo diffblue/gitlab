@@ -28,16 +28,16 @@ module EE
           types MergeRequest
           condition do
             ::Feature.enabled?(:summarize_diff_quick_action, current_user) &&
-              ::License.feature_available?(:summarize_mr_changes) &&
-              ::Llm::MergeRequests::SummarizeDiffService.new(
-                merge_request: quick_action_target,
+              ::Llm::MergeRequests::SummarizeDiffService.enabled?(
+                group: quick_action_target.project.root_ancestor,
                 user: current_user
-              ).enabled?
+              )
           end
           command :summarize_diff do
             ::MergeRequests::Llm::SummarizeMergeRequestWorker.new.perform(
-              quick_action_target.id,
-              current_user.id
+              current_user.id,
+              { 'type' => ::MergeRequests::Llm::SummarizeMergeRequestWorker::SUMMARIZE_QUICK_ACTION,
+                'merge_request_id' => quick_action_target.id }
             )
           end
         end
