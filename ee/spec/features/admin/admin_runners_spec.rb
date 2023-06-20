@@ -17,11 +17,11 @@ RSpec.describe "Admin Runners", feature_category: :runner_fleet do
 
   describe "Admin Runners page", :js do
     context "with a GitLab version and runner releases" do
-      let!(:runner) { create(:ci_runner, :instance, version: runner_version) }
+      let_it_be(:runner) { create(:ci_runner, :instance, version: '15.0.0') }
+      let_it_be(:runner_manager) { create(:ci_runner_machine, runner: runner, version: '15.0.0') }
 
-      before do
-        stub_runner_releases(available_runner_releases, gitlab_version: '15.1.0')
-      end
+      let(:upgrade_status) { :unavailable }
+      let!(:runner_version) { create(:ci_runner_version, version: '15.0.0', status: upgrade_status) }
 
       shared_examples 'upgrade is recommended' do
         it 'shows an orange upgrade recommended icon' do
@@ -55,9 +55,6 @@ RSpec.describe "Admin Runners", feature_category: :runner_fleet do
         end
 
         describe 'filters' do
-          let(:runner_version) { '15.0.0' }
-          let(:available_runner_releases) { %w[15.0.0] }
-
           it 'shows upgrade filter' do
             focus_filtered_search
 
@@ -67,30 +64,20 @@ RSpec.describe "Admin Runners", feature_category: :runner_fleet do
           end
         end
 
-        describe 'recommended to upgrade (patch)' do
-          let(:runner_version) { '15.0.0' }
-          let(:available_runner_releases) { %w[15.0.1] }
+        describe 'recommended to upgrade' do
+          let(:upgrade_status) { :recommended }
 
           it_behaves_like 'upgrade is recommended'
         end
 
-        describe 'available to upgrade (minor)' do
-          let(:runner_version) { '15.0.0' }
-          let(:available_runner_releases) { %w[15.1.0] }
-
-          it_behaves_like 'upgrade is available'
-        end
-
-        describe 'available to upgrade (major)' do
-          let(:runner_version) { '14.0.0' }
-          let(:available_runner_releases) { %w[15.1.0] }
+        describe 'available to upgrade' do
+          let(:upgrade_status) { :available }
 
           it_behaves_like 'upgrade is available'
         end
 
         describe 'no upgrade available' do
-          let(:runner_version) { '15.0.0' }
-          let(:available_runner_releases) { %w[15.0.0] }
+          let(:upgrade_status) { :unavailable }
 
           it_behaves_like 'no upgrade shown'
         end
@@ -98,8 +85,7 @@ RSpec.describe "Admin Runners", feature_category: :runner_fleet do
 
       shared_examples 'runner upgrade disabled' do
         describe 'filters' do
-          let(:runner_version) { '15.0.0' }
-          let(:available_runner_releases) { %w[15.0.0] }
+          let(:upgrade_status) { :unavailable }
 
           it 'does not show upgrade filter' do
             focus_filtered_search
@@ -111,8 +97,7 @@ RSpec.describe "Admin Runners", feature_category: :runner_fleet do
         end
 
         describe 'can upgrade' do
-          let(:runner_version) { '15.0.0' }
-          let(:available_runner_releases) { %w[15.0.0 15.0.1 15.1.0] }
+          let(:upgrade_status) { :available }
 
           it_behaves_like 'no upgrade shown'
         end

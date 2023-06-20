@@ -7,7 +7,7 @@ module EE
         extend ActiveSupport::Concern
 
         RUNNER_UPGRADE_STATUS_TRANSLATIONS = {
-          error: nil
+          not_processed: nil
         }.freeze
 
         prepended do
@@ -19,8 +19,6 @@ module EE
             null: true,
             description: 'Private projects\' "compute cost factor" associated with the runner (GitLab.com only).'
 
-          # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/411945
-          # this should take the maximum status from runner managers
           field :upgrade_status, ::Types::Ci::RunnerUpgradeStatusEnum,
             null: true,
             description: 'Availability of upgrades for the runner.',
@@ -29,9 +27,16 @@ module EE
           def upgrade_status
             return unless upgrade_status_available?
 
-            _, status = ::Gitlab::Ci::RunnerUpgradeCheck.new(::Gitlab::VERSION)
-              .check_runner_upgrade_suggestion(runner.version)
-            RUNNER_UPGRADE_STATUS_TRANSLATIONS.fetch(status, status)
+            BatchLoader::GraphQL.for(object.id).batch(key: :upgrade_status) do |runner_ids, loader|
+              aggregate_status_by_runner_id = upgrade_status_by_runner_id(runner_ids)
+
+              runner_ids.each do |runner_id|
+                status = aggregate_status_by_runner_id[runner_id]
+                status = RUNNER_UPGRADE_STATUS_TRANSLATIONS.fetch(status, status)
+
+                loader.call(runner_id, status)
+              end
+            end
           end
 
           private
@@ -40,6 +45,12 @@ module EE
             return false unless ::Gitlab::Ci::RunnerReleases.instance.enabled?
 
             Ability.allowed?(current_user, :read_runner_upgrade_status)
+          end
+
+          def upgrade_status_by_runner_id(runner_ids)
+            ::Ci::RunnerManager
+              .for_runner(runner_ids)
+              .aggregate_upgrade_status_by_runner_id
           end
         end
       end
