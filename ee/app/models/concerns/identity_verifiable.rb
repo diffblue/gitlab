@@ -2,6 +2,7 @@
 
 module IdentityVerifiable
   include Gitlab::Utils::StrongMemoize
+  include Gitlab::Experiment::Dsl
   extend ActiveSupport::Concern
 
   VERIFICATION_METHODS = {
@@ -65,6 +66,12 @@ module IdentityVerifiable
       methods.prepend VERIFICATION_METHODS[:CREDIT_CARD] if credit_card_verification_enabled?
     when Arkose::VerifyResponse::RISK_BAND_MEDIUM.downcase
       methods.prepend VERIFICATION_METHODS[:PHONE_NUMBER] if phone_number_verification_enabled?
+    when Arkose::VerifyResponse::RISK_BAND_LOW.downcase
+      if phone_number_verification_enabled?
+        experiment(:phone_verification_for_low_risk_users, user: self) do |e|
+          e.candidate { methods.prepend VERIFICATION_METHODS[:PHONE_NUMBER] }
+        end
+      end
     end
 
     methods
