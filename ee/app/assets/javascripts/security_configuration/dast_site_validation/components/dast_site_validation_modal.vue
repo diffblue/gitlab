@@ -64,7 +64,7 @@ export default {
       tokenId: null,
       validationMethod: DAST_SITE_VALIDATION_METHOD_TEXT_FILE,
       validationPath: '',
-      helpUrl: helpPagePath('user/application_security/dast/index', {
+      helpUrl: helpPagePath('user/application_security/dast/proxy-based', {
         anchor: 'site-profile-validation',
       }),
     };

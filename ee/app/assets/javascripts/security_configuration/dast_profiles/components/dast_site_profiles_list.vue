@@ -167,7 +167,7 @@ export default {
     <template #head(validationStatus)="{ label }">
       {{ label }}
       <gl-link
-        href="https://docs.gitlab.com/ee/user/application_security/dast/#site-profile-validation"
+        href="https://docs.gitlab.com/ee/user/application_security/dast/proxy-based#site-profile-validation"
         target="_blank"
         class="gl-text-gray-300 gl-ml-2"
       >
