@@ -14,13 +14,15 @@ RSpec.describe 'Dashboard todos', feature_category: :team_planning do
     let_it_be(:target) { create(:epic, group: group) }
     let_it_be(:note) { create(:note, noteable: target, note: "#{user.to_reference} hello world") }
     let_it_be(:todo) do
-      create(:todo, :mentioned,
-             user: user,
-             project: nil,
-             group: group,
-             target: target,
-             author: user,
-             note: note)
+      create(
+        :todo, :mentioned,
+        user: user,
+        project: nil,
+        group: group,
+        target: target,
+        author: user,
+        note: note
+      )
     end
 
     before do

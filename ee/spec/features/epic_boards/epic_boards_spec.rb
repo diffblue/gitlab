@@ -408,13 +408,15 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
     # ensure there is enough horizontal space for four lists
     resize_window(2000, 800)
 
-    drag_to(selector: selector,
-            scrollable: '#board-app',
-            list_from_index: list_from_index,
-            from_index: from_index,
-            to_index: to_index,
-            list_to_index: list_to_index,
-            perform_drop: perform_drop)
+    drag_to(
+      selector: selector,
+      scrollable: '#board-app',
+      list_from_index: list_from_index,
+      from_index: from_index,
+      to_index: to_index,
+      list_to_index: list_to_index,
+      perform_drop: perform_drop
+    )
   end
 
   def click_value(filter, value)

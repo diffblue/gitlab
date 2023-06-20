@@ -527,12 +527,12 @@ RSpec.describe 'Admin updates EE-only settings' do
 
         expect(page).to have_content(
           s_('GitAbuse|Number of repositories should be between %{minNumRepos}-%{maxNumRepos}.') %
-          { minNumRepos: 0, maxNumRepos: 10000 }
+            { minNumRepos: 0, maxNumRepos: 10000 }
         )
 
         expect(page).to have_content(
           s_('GitAbuse|Reporting time period should be between %{minTimePeriod}-%{maxTimePeriod} seconds.') %
-          { minTimePeriod: 0, maxTimePeriod: 864000 }
+            { minTimePeriod: 0, maxTimePeriod: 864000 }
         )
         expect(page).to have_button _('Save changes'), disabled: true
       end

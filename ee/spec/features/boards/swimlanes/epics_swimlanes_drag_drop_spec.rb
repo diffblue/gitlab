@@ -169,14 +169,16 @@ RSpec.describe 'epics swimlanes', :js, feature_category: :team_planning do
     # ensure there is enough horizontal space for four boards
     resize_window(2000, 1200)
 
-    drag_to(selector: selector,
-            scrollable: '#board-app',
-            list_from_index: list_from_index,
-            from_index: from_index,
-            to_index: to_index,
-            list_to_index: list_to_index,
-            perform_drop: perform_drop,
-            extra_height: 50)
+    drag_to(
+      selector: selector,
+      scrollable: '#board-app',
+      list_from_index: list_from_index,
+      from_index: from_index,
+      to_index: to_index,
+      list_to_index: list_to_index,
+      perform_drop: perform_drop,
+      extra_height: 50
+    )
   end
 
   def wait_for_board_cards(board_number, expected_cards)

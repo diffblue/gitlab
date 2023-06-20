@@ -103,12 +103,14 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
       from = board.lists.first
       to = list
 
-      drag_to(selector: '.board-list',
-              scrollable: '#board-app',
-              list_from_index: 0,
-              from_index: 0,
-              to_index: 0,
-              list_to_index: 1)
+      drag_to(
+        selector: '.board-list',
+        scrollable: '#board-app',
+        list_from_index: 0,
+        from_index: 0,
+        to_index: 0,
+        list_to_index: 1
+      )
 
       expect(card_weight_badge(from)).to have_content('3')
       expect(card_weight_badge(to)).to have_content('2')

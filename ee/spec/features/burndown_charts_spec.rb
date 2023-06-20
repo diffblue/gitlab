@@ -5,10 +5,13 @@ require 'spec_helper'
 RSpec.describe 'Burndown charts', :js, feature_category: :team_planning do
   let(:current_user) { create(:user) }
   let(:milestone) do
-    create(:milestone, project: project,
-                       group: group,
-                       start_date: Date.current,
-                       due_date: Date.tomorrow)
+    create(
+      :milestone,
+      project: project,
+      group: group,
+      start_date: Date.current,
+      due_date: Date.tomorrow
+    )
   end
 
   before do

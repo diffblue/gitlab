@@ -100,8 +100,9 @@ RSpec.describe 'SAML access enforcement', feature_category: :system_access do
 
       it 'allows access to resource' do
         expect(page).not_to have_content('Page Not Found')
-        expect(page.title).not_to have_content(format(_('SAML single sign-on for %{group_name}'),
-        group_name: group.name) )
+        expect(page.title).not_to have_content(
+          format(_('SAML single sign-on for %{group_name}'), group_name: group.name)
+        )
         expect(page).to have_content(resource_name)
         expect(page).to have_current_path(resource_path, ignore_query: true)
       end

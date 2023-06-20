@@ -11,8 +11,7 @@ RSpec.describe 'Admin::Emails', :clean_gitlab_redis_shared_state do
     gitlab_enable_admin_mode_sign_in(admin)
   end
 
-  context 'when `send_emails_from_admin_area` feature is not licensed',
-  feature_category: :system_access do
+  context 'when `send_emails_from_admin_area` feature is not licensed', feature_category: :system_access do
     before do
       stub_licensed_features(send_emails_from_admin_area: false)
       stub_application_setting(usage_ping_enabled: false)
@@ -56,8 +55,7 @@ RSpec.describe 'Admin::Emails', :clean_gitlab_redis_shared_state do
     end
   end
 
-  context 'when `send_emails_from_admin_area` feature is licensed',
-  :js, feature_category: :system_access do
+  context 'when `send_emails_from_admin_area` feature is licensed', :js, feature_category: :system_access do
     let(:rate_limited_alert) do
       'An email notification was recently sent from the admin panel. '\
       'Please wait 10 minutes before attempting to send another message.'
