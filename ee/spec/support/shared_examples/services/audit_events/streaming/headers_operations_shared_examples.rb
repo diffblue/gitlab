@@ -64,3 +64,31 @@ RSpec.shared_examples 'header updation' do
     end
   end
 end
+
+RSpec.shared_examples 'header deletion' do
+  context 'when deletion is successful' do
+    it 'destroys the header' do
+      expect { response }.to change { destination.headers.count }.by(-1)
+      expect(response).to be_success
+    end
+  end
+
+  context 'when deletion is unsuccessful' do
+    before do
+      allow(header).to receive(:destroy).and_return(false)
+      allow(header).to receive(:errors).and_return('foo')
+    end
+
+    it 'does not destroy the header' do
+      expect { service.execute }.not_to change { destination.headers.count }
+    end
+
+    it 'has an error response' do
+      response = service.execute
+
+      expect(response).to be_error
+      expect(response.errors)
+        .to match_array ['foo']
+    end
+  end
+end

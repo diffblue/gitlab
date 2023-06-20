@@ -19,11 +19,13 @@ RSpec.describe AuditEvents::Streaming::Headers::DestroyService do
   end
 
   describe '#execute' do
+    let(:response) { service.execute }
+
     context 'when no header is provided' do
       let(:params) { super().merge( header: nil) }
 
       it 'does not destroy the header' do
-        expect { service.execute }.not_to change { destination.headers.count }
+        expect { response }.not_to change { destination.headers.count }
       end
 
       it 'has an error response' do
@@ -34,14 +36,9 @@ RSpec.describe AuditEvents::Streaming::Headers::DestroyService do
       end
     end
 
+    it_behaves_like 'header deletion'
+
     context 'when the header is destroyed successfully' do
-      let(:response) { service.execute }
-
-      it 'destroys the header' do
-        expect { response }.to change { destination.headers.count }.by(-1)
-        expect(response).to be_success
-      end
-
       it 'sends the audit streaming event' do
         audit_context = {
           name: 'audit_events_streaming_headers_destroy',
