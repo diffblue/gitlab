@@ -3,9 +3,22 @@
 require 'spec_helper'
 
 RSpec.describe RemoteDevelopment::WorkspacesFinder, feature_category: :remote_development do
+  include ::RemoteDevelopment::Workspaces::States
+
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:workspace_a) { create(:workspace, user: current_user, updated_at: 2.days.ago) }
-  let_it_be(:workspace_b) { create(:workspace, user: current_user, updated_at: 1.day.ago) }
+  let_it_be(:project_a) { create(:project, :public) }
+  let_it_be(:project_b) { create(:project, :public) }
+  let_it_be(:workspace_a) do
+    create(:workspace, user: current_user, updated_at: 2.days.ago, project_id: project_a.id,
+      actual_state: ::RemoteDevelopment::Workspaces::States::RUNNING
+    )
+  end
+
+  let_it_be(:workspace_b) do
+    create(:workspace, user: current_user, updated_at: 1.day.ago, project_id: project_b.id,
+      actual_state: ::RemoteDevelopment::Workspaces::States::TERMINATED
+    )
+  end
 
   subject { described_class.new(current_user, params).execute }
 
@@ -37,6 +50,26 @@ RSpec.describe RemoteDevelopment::WorkspacesFinder, feature_category: :remote_de
       let(:params) { { ids: [workspace_a.id] } }
 
       it "returns only current user's workspaces matching the specified IDs" do
+        # noinspection RubyResolve
+        expect(subject).to contain_exactly(workspace_a)
+      end
+    end
+
+    context 'with project_ids in params' do
+      # noinspection RubyResolve
+      let(:params) { { project_ids: [project_a.id] } }
+
+      it "returns only current user's workspaces matching the specified project IDs" do
+        # noinspection RubyResolve
+        expect(subject).to contain_exactly(workspace_a)
+      end
+    end
+
+    context 'with include_actual_states in params' do
+      # noinspection RubyResolve
+      let(:params) { { include_actual_states: [::RemoteDevelopment::Workspaces::States::RUNNING] } }
+
+      it "returns only current user's workspaces not matching the specified actual_states" do
         # noinspection RubyResolve
         expect(subject).to contain_exactly(workspace_a)
       end
