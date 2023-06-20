@@ -10,28 +10,15 @@ RSpec.describe 'Query.runner(id)', feature_category: :runner_fleet do
 
   shared_examples 'runner details fetch operation returning expected upgradeStatus' do
     let(:query) do
-      managers = <<~GRAPHQL
-        managers{
-          nodes {
-            upgradeStatus
-          }
-        }
-      GRAPHQL
-      wrap_fields(query_graphql_path(query_path, "id upgradeStatus #{managers}"))
+      managers_path = query_graphql_path(%i[managers nodes], 'id upgradeStatus')
+
+      wrap_fields(query_graphql_path(query_path, "id upgradeStatus #{managers_path}"))
     end
 
     let(:query_path) do
       [
         [:runner, { id: runner.to_global_id.to_s }]
       ]
-    end
-
-    before do
-      allow_next_instance_of(::Gitlab::Ci::RunnerUpgradeCheck) do |instance|
-        allow(instance).to receive(:check_runner_upgrade_suggestion)
-          .and_return([nil, upgrade_status])
-          .twice # once for the runner and another for the runner manager
-      end
     end
 
     it 'retrieves expected fields' do
@@ -41,7 +28,10 @@ RSpec.describe 'Query.runner(id)', feature_category: :runner_fleet do
 
       expect(runner_data).not_to be_nil
       expect(runner_data).to match a_graphql_entity_for(runner, upgrade_status: expected_upgrade_status)
-      expect(graphql_dig_at(runner_data, :managers, :nodes, 0, :upgrade_status)).to eq(expected_upgrade_status)
+      expect(graphql_dig_at(runner_data, :managers, :nodes)).to match [
+        a_graphql_entity_for(runner_manager1, upgrade_status: expected_manager1_upgrade_status),
+        a_graphql_entity_for(runner_manager2, upgrade_status: expected_manager2_upgrade_status)
+      ]
     end
 
     context 'when fetching runner releases is disabled' do
@@ -61,97 +51,142 @@ RSpec.describe 'Query.runner(id)', feature_category: :runner_fleet do
   end
 
   describe 'upgradeStatus', :saas do
-    let_it_be(:runner) { create(:ci_runner, description: 'Runner 1', version: '14.1.0', revision: 'a') }
-    let_it_be(:runner_manager) { create(:ci_runner_machine, runner: runner, version: '14.1.0', revision: 'a') }
+    let_it_be(:runner) { create(:ci_runner, description: 'Runner 1', version: '14.1.0', revision: 'b') }
 
-    context 'requested by non-paid user' do
-      let(:current_user) { admin }
-
-      context 'with RunnerUpgradeCheck returning :available' do
-        let(:upgrade_status) { :available }
-        let(:expected_upgrade_status) { nil } # non-paying users always see nil
-
-        it_behaves_like('runner details fetch operation returning expected upgradeStatus')
-      end
-    end
-
-    context 'requested on an instance with runner_upgrade_management' do
-      let(:current_user) { admin }
-
-      before do
-        stub_licensed_features(runner_upgrade_management: true)
+    context 'with runner with 2 runner managers' do
+      let_it_be(:runner_manager2) do
+        create(:ci_runner_machine, runner: runner, version: '14.0.0', revision: 'a')
       end
 
-      context 'with RunnerUpgradeCheck returning :error' do
-        let(:upgrade_status) { :error }
-        let(:expected_upgrade_status) { nil }
-
-        it_behaves_like('runner details fetch operation returning expected upgradeStatus')
+      let_it_be(:runner_manager1) do
+        create(:ci_runner_machine, runner: runner, version: '14.1.0', revision: 'b')
       end
 
-      context 'with RunnerUpgradeCheck returning :unavailable' do
-        let(:upgrade_status) { :unavailable }
-        let(:expected_upgrade_status) { 'NOT_AVAILABLE' }
-
-        it_behaves_like('runner details fetch operation returning expected upgradeStatus')
+      let!(:manager1_version) do
+        create(:ci_runner_version, version: runner_manager1.version, status: db_version_status(manager1_version_status))
       end
 
-      context 'with RunnerUpgradeCheck returning :available' do
-        let(:upgrade_status) { :available }
-        let(:expected_upgrade_status) { 'AVAILABLE' }
-
-        it_behaves_like('runner details fetch operation returning expected upgradeStatus')
+      let!(:manager2_version) do
+        create(:ci_runner_version, version: runner_manager2.version, status: db_version_status(manager2_version_status))
       end
 
-      context 'with RunnerUpgradeCheck returning :recommended' do
-        let(:upgrade_status) { :recommended }
-        let(:expected_upgrade_status) { 'RECOMMENDED' }
+      let(:manager1_version_status) { nil }
+      let(:manager2_version_status) { nil }
 
-        it_behaves_like('runner details fetch operation returning expected upgradeStatus')
+      def db_version_status(status)
+        status == :error ? nil : status
       end
 
-      context 'with RunnerUpgradeCheck returning :invalid_version' do
-        let(:upgrade_status) { :invalid_version }
-        let(:expected_upgrade_status) { 'INVALID' }
+      context 'with mocked RunnerUpgradeCheck' do
+        using RSpec::Parameterized::TableSyntax
 
-        it_behaves_like('runner details fetch operation returning expected upgradeStatus')
-      end
-    end
+        before do
+          # Set up stubs for runner manager status checks
+          allow_next_instance_of(::Gitlab::Ci::RunnerUpgradeCheck) do |instance|
+            allow(instance).to receive(:check_runner_upgrade_suggestion)
+              .with(runner_manager1.version)
+              .and_return([nil, manager1_version_status])
+              .once
+            allow(instance).to receive(:check_runner_upgrade_suggestion)
+              .with(runner_manager2.version)
+              .and_return([nil, manager2_version_status])
+              .once
+          end
+        end
 
-    context 'requested by paid user' do
-      let_it_be(:ultimate_group) { create(:group_with_plan, plan: :ultimate_plan) }
-      let_it_be(:user) { create(:user, :admin, namespace: create(:user_namespace)) }
+        shared_examples 'when runner managers have all possible statuses' do
+          where(:manager1_version_status, :manager2_version_status,
+                :expected_manager1_upgrade_status,
+                :expected_manager2_upgrade_status, :expected_upgrade_status) do
+            :error           | :error           | nil             | nil             | nil
+            :invalid_version | :invalid_version | 'INVALID'       | 'INVALID'       | 'INVALID'
+            :unavailable     | :unavailable     | 'NOT_AVAILABLE' | 'NOT_AVAILABLE' | 'NOT_AVAILABLE'
+            :unavailable     | :available       | 'NOT_AVAILABLE' | 'AVAILABLE'     | 'AVAILABLE'
+            :unavailable     | :recommended     | 'NOT_AVAILABLE' | 'RECOMMENDED'   | 'RECOMMENDED'
+            :available       | :unavailable     | 'AVAILABLE'     | 'NOT_AVAILABLE' | 'AVAILABLE'
+            :available       | :available       | 'AVAILABLE'     | 'AVAILABLE'     | 'AVAILABLE'
+            :available       | :recommended     | 'AVAILABLE'     | 'RECOMMENDED'   | 'RECOMMENDED'
+            :recommended     | :recommended     | 'RECOMMENDED'   | 'RECOMMENDED'   | 'RECOMMENDED'
+          end
 
-      let(:current_user) { user }
+          with_them do
+            it_behaves_like 'runner details fetch operation returning expected upgradeStatus'
+          end
+        end
 
-      before do
-        ultimate_group.add_reporter(user)
-      end
+        context 'requested by non-paid user' do
+          let(:current_user) { admin }
 
-      context 'with RunnerUpgradeCheck returning :unavailable' do
-        let(:upgrade_status) { :unavailable }
-        let(:expected_upgrade_status) { 'NOT_AVAILABLE' }
+          context 'with RunnerUpgradeCheck returning :available' do
+            let(:manager1_version_status) { :available }
+            let(:manager2_version_status) { :available }
+            let(:expected_manager1_upgrade_status) { nil }
+            let(:expected_manager2_upgrade_status) { nil }
+            let(:expected_upgrade_status) { nil } # non-paying users always see nil
 
-        it_behaves_like('runner details fetch operation returning expected upgradeStatus')
-      end
+            it_behaves_like 'runner details fetch operation returning expected upgradeStatus'
+          end
+        end
 
-      context 'with RunnerUpgradeCheck returning :available' do
-        let(:upgrade_status) { :available }
-        let(:expected_upgrade_status) { 'AVAILABLE' }
+        context 'requested on an instance with runner_upgrade_management' do
+          let(:current_user) { admin }
 
-        it_behaves_like('runner details fetch operation returning expected upgradeStatus')
-      end
+          before do
+            stub_licensed_features(runner_upgrade_management: true)
+          end
 
-      context 'with RunnerUpgradeCheck returning :recommended' do
-        let(:upgrade_status) { :recommended }
-        let(:expected_upgrade_status) { 'RECOMMENDED' }
+          it_behaves_like 'when runner managers have all possible statuses'
 
-        it_behaves_like('runner details fetch operation returning expected upgradeStatus')
+          context 'with multiple runners' do
+            let(:admin2) { create(:admin) }
+            let(:query) do
+              managers_path = query_graphql_path(%i[managers nodes], 'upgradeStatus')
+
+              wrap_fields(query_graphql_path(%i[runners nodes], "id upgradeStatus #{managers_path}"))
+            end
+
+            it 'does not generate N+1 queries', :request_store, :use_sql_query_cache do
+              # warm-up cache and so on:
+              personal_access_token = create(:personal_access_token, user: admin)
+              personal_access_token2 = create(:personal_access_token, user: admin)
+              args = { current_user: admin, token: { personal_access_token: personal_access_token } }
+              args2 = { current_user: admin2, token: { personal_access_token: personal_access_token2 } }
+
+              control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+                post_graphql(query, **args)
+              end
+
+              create(:ci_runner, version: runner_manager1.version)
+
+              expect { post_graphql(query, **args2) }.not_to exceed_all_query_limit(control)
+            end
+          end
+        end
+
+        context 'requested by paid user' do
+          let_it_be(:user) { create(:user, :admin, namespace: create(:user_namespace)) }
+          let_it_be(:ultimate_group) do
+            create(:group_with_plan, plan: :ultimate_plan).tap { |g| g.add_reporter(user) }
+          end
+
+          let(:current_user) { user }
+
+          it_behaves_like 'when runner managers have all possible statuses'
+        end
       end
 
       context 'integration test with Gitlab::Ci::RunnerUpgradeCheck' do
+        before do
+          stub_licensed_features(runner_upgrade_management: true)
+          stub_runner_releases(%w[14.0.0 14.1.0])
+        end
+
+        let(:current_user) { admin }
+
         let(:query) do
-          wrap_fields(query_graphql_path(query_path, 'id upgradeStatus'))
+          managers_path = query_graphql_path(%i[managers nodes], 'id upgradeStatus')
+
+          wrap_fields(query_graphql_path(query_path, "id upgradeStatus #{managers_path}"))
         end
 
         let(:query_path) do
@@ -160,18 +195,14 @@ RSpec.describe 'Query.runner(id)', feature_category: :runner_fleet do
           ]
         end
 
-        before do
-          stub_runner_releases(%w[14.1.0 14.1.1])
-        end
-
-        it 'retrieves expected fields', :aggregate_failures do
+        it 'retrieves expected fields' do
           post_graphql(query, current_user: current_user)
 
-          expect(::Gitlab::Ci::RunnerUpgradeCheck).to have_received(:new).with(::Gitlab::VERSION)
-
           runner_data = graphql_data_at(:runner)
-          expect(runner_data).not_to be_nil
-          expect(runner_data).to match a_graphql_entity_for(runner, upgrade_status: 'RECOMMENDED')
+          expect(graphql_dig_at(runner_data, :managers, :nodes)).to match [
+            a_graphql_entity_for(runner_manager1, upgrade_status: 'NOT_AVAILABLE'),
+            a_graphql_entity_for(runner_manager2, upgrade_status: 'AVAILABLE')
+          ]
         end
       end
     end
