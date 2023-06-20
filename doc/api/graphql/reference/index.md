@@ -853,6 +853,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="queryworkspacesids"></a>`ids` | [`[RemoteDevelopmentWorkspaceID!]`](#remotedevelopmentworkspaceid) | Array of global workspace IDs. For example, `["gid://gitlab/RemoteDevelopment::Workspace/1"]`. |
+| <a id="queryworkspacesincludeactualstates"></a>`includeActualStates` | [`[String!]`](#string) | Includes all workspaces that match any of the actual states. |
+| <a id="queryworkspacesprojectids"></a>`projectIds` | [`[ProjectID!]`](#projectid) | Filter workspaces by project id. |
 
 ## `Mutation` type
 
@@ -17931,6 +17933,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mergerequestassigneeworkspacesids"></a>`ids` | [`[RemoteDevelopmentWorkspaceID!]`](#remotedevelopmentworkspaceid) | Array of global workspace IDs. For example, `["gid://gitlab/RemoteDevelopment::Workspace/1"]`. |
+| <a id="mergerequestassigneeworkspacesincludeactualstates"></a>`includeActualStates` | [`[String!]`](#string) | Includes all workspaces that match any of the actual states. |
+| <a id="mergerequestassigneeworkspacesprojectids"></a>`projectIds` | [`[ProjectID!]`](#projectid) | Filter workspaces by project id. |
 
 ### `MergeRequestAuthor`
 
@@ -18204,6 +18208,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mergerequestauthorworkspacesids"></a>`ids` | [`[RemoteDevelopmentWorkspaceID!]`](#remotedevelopmentworkspaceid) | Array of global workspace IDs. For example, `["gid://gitlab/RemoteDevelopment::Workspace/1"]`. |
+| <a id="mergerequestauthorworkspacesincludeactualstates"></a>`includeActualStates` | [`[String!]`](#string) | Includes all workspaces that match any of the actual states. |
+| <a id="mergerequestauthorworkspacesprojectids"></a>`projectIds` | [`[ProjectID!]`](#projectid) | Filter workspaces by project id. |
 
 ### `MergeRequestDiffLlmSummary`
 
@@ -18511,6 +18517,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mergerequestparticipantworkspacesids"></a>`ids` | [`[RemoteDevelopmentWorkspaceID!]`](#remotedevelopmentworkspaceid) | Array of global workspace IDs. For example, `["gid://gitlab/RemoteDevelopment::Workspace/1"]`. |
+| <a id="mergerequestparticipantworkspacesincludeactualstates"></a>`includeActualStates` | [`[String!]`](#string) | Includes all workspaces that match any of the actual states. |
+| <a id="mergerequestparticipantworkspacesprojectids"></a>`projectIds` | [`[ProjectID!]`](#projectid) | Filter workspaces by project id. |
 
 ### `MergeRequestPermissions`
 
@@ -18803,6 +18811,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mergerequestreviewerworkspacesids"></a>`ids` | [`[RemoteDevelopmentWorkspaceID!]`](#remotedevelopmentworkspaceid) | Array of global workspace IDs. For example, `["gid://gitlab/RemoteDevelopment::Workspace/1"]`. |
+| <a id="mergerequestreviewerworkspacesincludeactualstates"></a>`includeActualStates` | [`[String!]`](#string) | Includes all workspaces that match any of the actual states. |
+| <a id="mergerequestreviewerworkspacesprojectids"></a>`projectIds` | [`[ProjectID!]`](#projectid) | Filter workspaces by project id. |
 
 ### `Metadata`
 
@@ -23316,6 +23326,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="usercoreworkspacesids"></a>`ids` | [`[RemoteDevelopmentWorkspaceID!]`](#remotedevelopmentworkspaceid) | Array of global workspace IDs. For example, `["gid://gitlab/RemoteDevelopment::Workspace/1"]`. |
+| <a id="usercoreworkspacesincludeactualstates"></a>`includeActualStates` | [`[String!]`](#string) | Includes all workspaces that match any of the actual states. |
+| <a id="usercoreworkspacesprojectids"></a>`projectIds` | [`[ProjectID!]`](#projectid) | Filter workspaces by project id. |
 
 ### `UserMergeRequestInteraction`
 
@@ -28335,6 +28347,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="userworkspacesids"></a>`ids` | [`[RemoteDevelopmentWorkspaceID!]`](#remotedevelopmentworkspaceid) | Array of global workspace IDs. For example, `["gid://gitlab/RemoteDevelopment::Workspace/1"]`. |
+| <a id="userworkspacesincludeactualstates"></a>`includeActualStates` | [`[String!]`](#string) | Includes all workspaces that match any of the actual states. |
+| <a id="userworkspacesprojectids"></a>`projectIds` | [`[ProjectID!]`](#projectid) | Filter workspaces by project id. |
 
 #### `WorkItemWidget`
 

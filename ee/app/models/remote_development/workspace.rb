@@ -41,6 +41,9 @@ module RemoteDevelopment
       where('desired_state_updated_at >= responded_to_agent_at').or(where(responded_to_agent_at: nil))
     end
 
+    scope :by_project_ids, ->(ids) { where(project_id: ids) }
+    scope :with_actual_states, ->(actual_states) { where(actual_state: actual_states) }
+
     before_save :touch_desired_state_updated_at, if: ->(workspace) do
       workspace.new_record? || workspace.desired_state_changed?
     end
