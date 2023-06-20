@@ -17,7 +17,6 @@ module Gitlab
                                   daily_billable_users_count
                                   expires_at
                                   license_id
-                                  md5
                                   plan
                                   sha256
                                   subscription_id
