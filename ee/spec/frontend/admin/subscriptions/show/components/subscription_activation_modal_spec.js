@@ -1,6 +1,8 @@
 import { GlModal } from '@gitlab/ui';
-import { mount, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
+import { stubComponent } from 'helpers/stub_component';
+
 import SubscriptionActivationErrors from 'ee/admin/subscriptions/show/components/subscription_activation_errors.vue';
 import SubscriptionActivationForm from 'ee/admin/subscriptions/show/components/subscription_activation_form.vue';
 import SubscriptionActivationModal from 'ee/admin/subscriptions/show/components/subscription_activation_modal.vue';
@@ -18,6 +20,7 @@ const modalId = 'fake-modal-id';
 
 describe('SubscriptionActivationModal', () => {
   let wrapper;
+  const submitSpy = jest.fn();
 
   const findGlModal = () => wrapper.findComponent(GlModal);
   const firePrimaryEvent = () => findGlModal().vm.$emit('primary', { preventDefault });
@@ -26,15 +29,24 @@ describe('SubscriptionActivationModal', () => {
   const findSubscriptionActivationForm = () => wrapper.findComponent(SubscriptionActivationForm);
 
   const createComponent = (options = {}) => {
-    const { props = {}, mountFn = shallowMount } = options;
-    wrapper = mountFn(SubscriptionActivationModal, {
+    const { props = {} } = options;
+    wrapper = shallowMount(SubscriptionActivationModal, {
       propsData: {
         modalId,
         visible: false,
         ...props,
       },
+      stubs: {
+        SubscriptionActivationForm: stubComponent(SubscriptionActivationForm, {
+          methods: { submit: submitSpy },
+        }),
+      },
     });
   };
+
+  afterEach(() => {
+    submitSpy.mockClear();
+  });
 
   describe('idle state', () => {
     beforeEach(() => {
@@ -79,14 +91,10 @@ describe('SubscriptionActivationModal', () => {
   });
 
   describe('subscription activation', () => {
-    let submitSpy;
-
     describe('when the "primary" button is clicked', () => {
       beforeEach(async () => {
-        createComponent({ mountFn: mount, props: { visible: true } });
-        // Wait for $refs.form to be present
+        createComponent({ props: { visible: true } });
         await nextTick();
-        submitSpy = jest.spyOn(wrapper.vm.$refs.form, 'submit');
       });
 
       it('submits the form', () => {
@@ -95,17 +103,14 @@ describe('SubscriptionActivationModal', () => {
       });
 
       it('shows loading in the button', async () => {
-        submitSpy.mockImplementation(() => {});
         firePrimaryEvent();
         // Wait for submit to emit event
         await nextTick();
         expect(findGlModal().props('actionPrimary').attributes.loading).toEqual(true);
       });
 
-      it('stops loading in the button', async () => {
+      it('shows loading in modal trigger', () => {
         firePrimaryEvent();
-        // Wait for submit to emit event
-        await nextTick();
         expect(findGlModal().props('actionPrimary').attributes.loading).toEqual(false);
       });
     });
