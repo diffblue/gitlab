@@ -40,12 +40,38 @@ describe('CiResourcesList', () => {
   const findPrevBtn = () => wrapper.findByTestId('prevButton');
   const findNextBtn = () => wrapper.findByTestId('nextButton');
 
+  describe('contains only one page', () => {
+    const response = generateCatalogResponseWithOnlyOnePage();
+    const { nodes, pageInfo, count } = response.data.ciCatalogResources;
+
+    beforeEach(async () => {
+      await createComponent({
+        props: { currentPage: 1, resources: nodes, pageInfo, totalCount: count },
+      });
+    });
+
+    it('shows the right number of items', () => {
+      expect(findResourcesListItems()).toHaveLength(5);
+    });
+
+    it('hides the keyset control for previous page', () => {
+      expect(findPrevBtn().exists()).toBe(false);
+    });
+
+    it('hides the keyset control for next page', () => {
+      expect(findNextBtn().exists()).toBe(false);
+    });
+
+    it('shows the correct count of current page', () => {
+      expect(findPageCount().text()).toContain('1 of 1');
+    });
+  });
+
   describe.each`
-    generateResponse                          | previousPageState | nextPageState | pageText    | expectedTotal                   | currentPage
-    ${generateCatalogResponseWithOnlyOnePage} | ${'disabled'}     | ${'disabled'} | ${'1 of 1'} | ${5}                            | ${1}
-    ${generateCatalogResponse}                | ${'disabled'}     | ${'enabled'}  | ${'1 of 2'} | ${ciCatalogResourcesItemsCount} | ${1}
-    ${generateCatalogResponsePage2}           | ${'enabled'}      | ${'enabled'}  | ${'2 of 4'} | ${ciCatalogResourcesItemsCount} | ${2}
-    ${generateCatalogResponseLastPage}        | ${'enabled'}      | ${'disabled'} | ${'2 of 2'} | ${ciCatalogResourcesItemsCount} | ${2}
+    generateResponse                   | previousPageState | nextPageState | pageText    | expectedTotal                   | currentPage
+    ${generateCatalogResponse}         | ${'disabled'}     | ${'enabled'}  | ${'1 of 2'} | ${ciCatalogResourcesItemsCount} | ${1}
+    ${generateCatalogResponsePage2}    | ${'enabled'}      | ${'enabled'}  | ${'2 of 4'} | ${ciCatalogResourcesItemsCount} | ${2}
+    ${generateCatalogResponseLastPage} | ${'enabled'}      | ${'disabled'} | ${'2 of 2'} | ${ciCatalogResourcesItemsCount} | ${2}
   `(
     'when on page $pageText',
     ({
