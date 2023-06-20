@@ -124,7 +124,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           it 'proxy request to saas' do
             expect(Gitlab::Workhorse).to receive(:send_url)
               .with(
-                'https://gitlab.com/api/v4/code_suggestions/tokens',
+                "#{Gitlab::Saas.com_url}/api/v4/code_suggestions/tokens",
                 include(headers: include("Authorization" => ["Bearer ai_access_token"]))
               )
 
