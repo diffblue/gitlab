@@ -6,7 +6,7 @@ module Gitlab
       class Configuration
         DEFAULT_SCOPE = 'https://www.googleapis.com/auth/cloud-platform'
         DEFAULT_TEMPERATURE = 0.2
-        DEFAULT_MAX_TOKENS = 1024
+        DEFAULT_MAX_OUTPUT_TOKENS = 1024
         DEFAULT_TOP_K = 40
         DEFAULT_TOP_P = 0.95
 
@@ -17,10 +17,14 @@ module Gitlab
         def self.default_payload_parameters
           {
             temperature: DEFAULT_TEMPERATURE,
-            maxOutputTokens: DEFAULT_MAX_TOKENS,
+            maxOutputTokens: DEFAULT_MAX_OUTPUT_TOKENS,
             topK: DEFAULT_TOP_K,
             topP: DEFAULT_TOP_P
           }
+        end
+
+        def self.payload_parameters(params = {})
+          default_payload_parameters.merge(params)
         end
 
         def access_token

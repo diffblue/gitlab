@@ -20,7 +20,9 @@ RSpec.describe Gitlab::Llm::VertexAi::ModelConfigurations::Code, feature_categor
               prefix: 'foo'
             }
           ],
-          parameters: Gitlab::Llm::VertexAi::Configuration.default_payload_parameters
+          parameters: Gitlab::Llm::VertexAi::Configuration.payload_parameters(
+            maxOutputTokens: Gitlab::Llm::VertexAi::ModelConfigurations::Code::MAX_OUTPUT_TOKENS
+          )
         }
       )
     end
