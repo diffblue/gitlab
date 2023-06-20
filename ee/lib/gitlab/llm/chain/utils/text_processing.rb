@@ -7,8 +7,8 @@ module Gitlab
         class TextProcessing
           STOP_REGEX = /Observation:/
 
-          def self.text_before_stop_word(text)
-            text.split(STOP_REGEX).first
+          def self.text_before_stop_word(text, stop_word = STOP_REGEX)
+            text.split(stop_word).first
           end
 
           def self.extract_keys(input)
