@@ -9,7 +9,7 @@ export default {
     GlSprintf,
     GlLink,
   },
-  dastSiteValidationDocsPath: helpPagePath('user/application_security/dast/index', {
+  dastSiteValidationDocsPath: helpPagePath('user/application_security/dast/proxy-based', {
     anchor: 'site-profile-validation',
   }),
   i18n: {
