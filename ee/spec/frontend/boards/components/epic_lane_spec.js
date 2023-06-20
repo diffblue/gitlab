@@ -109,8 +109,9 @@ describe('EpicLane', () => {
       expect(wrapper.text()).toContain(mockEpic.title);
     });
 
-    it('renders one IssuesLaneList component per list passed in props', () => {
+    it('renders one IssuesLaneList component per list passed in props passing lists as props', () => {
       expect(wrapper.findAllComponents(IssuesLaneList)).toHaveLength(wrapper.props('lists').length);
+      expect(wrapper.findComponent(IssuesLaneList).props('lists')).toEqual(wrapper.props('lists'));
     });
 
     it('hides issues when collapsing', async () => {

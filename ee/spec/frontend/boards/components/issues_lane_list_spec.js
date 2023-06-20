@@ -4,13 +4,21 @@ import VueApollo from 'vue-apollo';
 import Draggable from 'vuedraggable';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { DraggableItemTypes } from 'ee_else_ce/boards/constants';
+import listQuery from 'ee_else_ce/boards/graphql/board_lists_deferred.query.graphql';
 import IssuesLaneList from 'ee/boards/components/issues_lane_list.vue';
-import { mockList } from 'jest/boards/mock_data';
 import BoardCard from '~/boards/components/board_card.vue';
 import { ListType } from '~/boards/constants';
 import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 import { createStore } from '~/boards/stores';
-import { mockIssues, mockGroupIssuesResponse } from '../mock_data';
+import issueMoveListMutation from 'ee/boards/graphql/issue_move_list.mutation.graphql';
+import { mockList, boardListQueryResponse } from 'jest/boards/mock_data';
+import {
+  mockIssues,
+  mockGroupIssuesResponse,
+  mockLists,
+  moveIssueMutationResponse,
+} from '../mock_data';
 
 Vue.use(VueApollo);
 
@@ -20,12 +28,14 @@ describe('IssuesLaneList', () => {
   let mockApollo;
 
   const listIssuesQueryHandlerSuccess = jest.fn().mockResolvedValue(mockGroupIssuesResponse());
+  const moveIssueMutationHandlerSuccess = jest.fn().mockResolvedValue(moveIssueMutationResponse);
 
   const createComponent = ({
     listType = ListType.backlog,
     listProps = {},
     collapsed = false,
     isUnassignedIssuesLane = false,
+    canAdminEpic = false,
     isApolloBoard = false,
   } = {}) => {
     const listMock = {
@@ -40,7 +50,44 @@ describe('IssuesLaneList', () => {
       listMock.user = {};
     }
 
-    mockApollo = createMockApollo([[listsIssuesQuery, listIssuesQueryHandlerSuccess]]);
+    mockApollo = createMockApollo([
+      [listsIssuesQuery, listIssuesQueryHandlerSuccess],
+      [issueMoveListMutation, moveIssueMutationHandlerSuccess],
+    ]);
+    const baseVariables = {
+      fullPath: 'gitlab-org',
+      boardId: 'gid://gitlab/Board/1',
+      isGroup: true,
+      isProject: false,
+      first: 10,
+    };
+    mockApollo.clients.defaultClient.writeQuery({
+      query: listsIssuesQuery,
+      variables: {
+        ...baseVariables,
+        filters: { epicId: null },
+      },
+      data: mockGroupIssuesResponse().data,
+    });
+    mockApollo.clients.defaultClient.writeQuery({
+      query: listsIssuesQuery,
+      variables: {
+        ...baseVariables,
+        filters: { epicWildcardId: 'NONE' },
+        id: 'gid://gitlab/List/2',
+      },
+      data: mockGroupIssuesResponse('gid://gitlab/List/2').data,
+    });
+    mockApollo.clients.defaultClient.writeQuery({
+      query: listQuery,
+      variables: { id: 'gid://gitlab/List/1', filters: {} },
+      data: boardListQueryResponse({ listId: 'gid://gitlab/List/1' }).data,
+    });
+    mockApollo.clients.defaultClient.writeQuery({
+      query: listQuery,
+      variables: { id: 'gid://gitlab/List/2', filters: {} },
+      data: boardListQueryResponse({ listId: 'gid://gitlab/List/2' }).data,
+    });
 
     wrapper = shallowMount(IssuesLaneList, {
       apolloProvider: mockApollo,
@@ -50,8 +97,10 @@ describe('IssuesLaneList', () => {
         list: listMock,
         issues: mockIssues,
         canAdminList: true,
+        canAdminEpic,
         isUnassignedIssuesLane,
         filterParams: {},
+        lists: mockLists,
       },
       provide: {
         fullPath: 'gitlab-org',
@@ -63,6 +112,10 @@ describe('IssuesLaneList', () => {
 
   const findDraggable = () => wrapper.findComponent(Draggable);
   const findList = () => wrapper.find('ul');
+
+  const endDrag = (params) => {
+    findDraggable().vm.$emit('end', params);
+  };
 
   describe('if list is expanded', () => {
     beforeEach(() => {
@@ -118,16 +171,7 @@ describe('IssuesLaneList', () => {
 
   describe('drag & drop issue', () => {
     beforeEach(() => {
-      const defaultStore = createStore();
-      store = {
-        ...defaultStore,
-        state: {
-          ...defaultStore.state,
-          canAdminEpic: true,
-        },
-      };
-
-      createComponent();
+      createComponent({ canAdminEpic: true });
     });
 
     describe('handleDragOnStart', () => {
@@ -215,10 +259,27 @@ describe('IssuesLaneList', () => {
   });
 
   describe('Apollo boards', () => {
+    const endDragVariables = {
+      oldIndex: 1,
+      newIndex: 0,
+      item: {
+        dataset: {
+          draggableItemType: DraggableItemTypes.card,
+          itemId: mockIssues[0].id,
+          itemIid: mockIssues[0].iid,
+          itemPath: mockIssues[0].referencePath,
+        },
+      },
+      to: {
+        children: [],
+        dataset: { listId: 'gid://gitlab/List/2', epicID: 'gid://gitlab/Epic/41' },
+      },
+      from: { dataset: { listId: 'gid://gitlab/List/1' } },
+    };
     it.each`
-      isUnassignedIssuesLane | queryCalledTimes
-      ${true}                | ${1}
-      ${false}               | ${0}
+      isUnassignedIssuesLane | queryCalledTimes | performsQuery
+      ${true}                | ${1}             | ${true}
+      ${false}               | ${0}             | ${false}
     `(
       'fetches issues $performsQuery when isUnassignedIssuesLane is $isUnassignedIssuesLane',
       async ({ isUnassignedIssuesLane, queryCalledTimes }) => {
@@ -229,5 +290,17 @@ describe('IssuesLaneList', () => {
         expect(listIssuesQueryHandlerSuccess).toHaveBeenCalledTimes(queryCalledTimes);
       },
     );
+
+    it('calls moveIssue mutation on drag & drop card', async () => {
+      createComponent({ isApolloBoard: true, canAdminEpic: true });
+
+      await waitForPromises();
+
+      endDrag(endDragVariables);
+
+      await waitForPromises();
+
+      expect(moveIssueMutationHandlerSuccess).toHaveBeenCalled();
+    });
   });
 });
