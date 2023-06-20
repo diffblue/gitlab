@@ -53,7 +53,7 @@ module QA
             end
 
             def wait_for_pipeline_job_replication(name)
-              QA::Runtime::Logger.debug(%Q(#{self.class.name} - wait_for_pipeline_job_replication))
+              QA::Runtime::Logger.debug(%(#{self.class.name} - wait_for_pipeline_job_replication))
               wait_until(max_duration: Runtime::Geo.max_file_replication_time) do
                 has_job?(name)
               end

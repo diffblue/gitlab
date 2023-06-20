@@ -18,7 +18,7 @@ module QA
           end
 
           def wait_for_project_replication(project_name)
-            QA::Runtime::Logger.debug(%Q[#{self.class.name} - wait_for_project_replication])
+            QA::Runtime::Logger.debug(%[#{self.class.name} - wait_for_project_replication])
             wait_until(max_duration: Runtime::Geo.max_db_replication_time) do
               filter_by_name(project_name)
 
