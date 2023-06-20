@@ -38,7 +38,8 @@ module Gitlab
 
                 Provide your answer in JSON form! The answer should be just the JSON without any other commentary!
                 Make sure the response is a valid JSON. Follow the exact JSON format:
-
+                Question: the user question
+                Response:
                 ```json
                 {
                   "ResourceIdentifierType": <ResourceIdentifierType>
@@ -46,8 +47,9 @@ module Gitlab
                 }
                 ```
 
-                Example of an issue reference:
-                The user question or request may include: https://some.host.name/some/long/path/-/issues/410692
+                Examples of issue reference identifier:
+
+                Question: The user question or request may include https://some.host.name/some/long/path/-/issues/410692
                 Response:
                 ```json
                 {
@@ -56,8 +58,7 @@ module Gitlab
                 }
                 ```
 
-                Another example of an issue reference:
-                The user question or request may include: #12312312
+                Question: the user question or request may include: #12312312
                 Response:
                 ```json
                 {
@@ -66,8 +67,7 @@ module Gitlab
                 }
                 ```
 
-                Third example of an issue reference:
-                The user question or request may include: long/groups/path#12312312
+                Question: the user question or request may include long/groups/path#12312312
                 Response:
                 ```json
                 {
@@ -87,6 +87,11 @@ module Gitlab
             def initialize(context:, options:)
               super
               @retries = 0
+
+              # This tool seems to perform just fine just with the information from the question.
+              # So we can ignore zero-shot agent suggestions, and only use tool's own suggestions, in cases when it
+              # needs to retry for any reason.
+              options[:suggestions] = +""
             end
 
             def perform
@@ -138,6 +143,7 @@ module Gitlab
             end
 
             def extract_json(response)
+              response = (Utils::TextProcessing.text_before_stop_word(response, /Question:/) || response).to_s.strip
               content_after_ticks = response.split(/```json/, 2).last
               content_between_ticks = content_after_ticks&.split(/```/, 2)&.first
 
@@ -160,7 +166,7 @@ module Gitlab
             def by_iid(resource_identifier)
               return unless projects_from_context
 
-              issues = Issue.in_projects(projects_from_context).iid_in(resource_identifier)
+              issues = Issue.in_projects(projects_from_context).iid_in(resource_identifier.to_i)
 
               return issues.first if issues.one?
             end
@@ -183,7 +189,7 @@ module Gitlab
               context.current_user.authorized_projects.find_by_full_path(project_path.join('/')) if project_path
             end
 
-            # This method should not be memoized because the options change over time
+            # This method should not be memoized because the options change each iteration, e.g options[:suggestions]
             def base_prompt
               Utils::Prompt.no_role_text(PROMPT_TEMPLATE, options)
             end
