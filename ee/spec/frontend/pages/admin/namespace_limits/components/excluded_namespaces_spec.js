@@ -1,8 +1,8 @@
 import { shallowMount, mount } from '@vue/test-utils';
 import { GlAlert, GlTable, GlButton, GlModal } from '@gitlab/ui';
 import MockAdapter from 'axios-mock-adapter';
-import { stubComponent } from 'helpers/stub_component';
 import waitForPromises from 'helpers/wait_for_promises';
+import { stubComponent } from 'helpers/stub_component';
 import ExcludedNamespacesForm from 'ee/pages/admin/namespace_limits/components/excluded_namespaces_form.vue';
 import {
   LIST_EXCLUSIONS_ENDPOINT,
@@ -17,17 +17,15 @@ import { mockData } from '../mock_data';
 describe('ExcludedNamespaces', () => {
   let wrapper;
   let axiosMock;
+  const showMock = jest.fn();
   const listExclusionsEndpoint = LIST_EXCLUSIONS_ENDPOINT.replace(':version', 'v4');
   const deleteExclusionEndpoint = DELETE_EXCLUSION_ENDPOINT.replace(':version', 'v4');
-  const modalShowSpy = jest.fn();
 
   const createComponent = ({ mountFn = shallowMount } = {}) => {
     wrapper = mountFn(ExcludedNamespaces, {
       stubs: {
         GlModal: stubComponent(GlModal, {
-          methods: {
-            show: modalShowSpy,
-          },
+          methods: { show: showMock },
         }),
       },
     });
@@ -45,7 +43,7 @@ describe('ExcludedNamespaces', () => {
   });
 
   afterEach(() => {
-    axiosMock.restore();
+    showMock.mockClear();
   });
 
   describe('rendering components', () => {
@@ -114,7 +112,7 @@ describe('ExcludedNamespaces', () => {
     });
 
     it('opens confirmation modal when delete button is clicked', () => {
-      expect(modalShowSpy).toHaveBeenCalled();
+      expect(showMock).toHaveBeenCalled();
       expect(findModal().props()).toMatchObject({
         title: 'Deletion confirmation',
         actionPrimary: { text: 'Confirm deletion' },
