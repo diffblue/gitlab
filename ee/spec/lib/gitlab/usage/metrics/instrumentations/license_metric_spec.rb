@@ -17,18 +17,6 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::LicenseMetric do
     let(:expected_value) { current_license.expires_at }
   end
 
-  context 'when in FIPS mode', :fips_mode do
-    it_behaves_like 'a correct instrumented metric value', { time_frame: 'none', options: { attribute: 'md5' } } do
-      let(:expected_value) { nil }
-    end
-  end
-
-  context 'when not in FIPS mode' do
-    it_behaves_like 'a correct instrumented metric value', { time_frame: 'none', options: { attribute: 'md5' } } do
-      let(:expected_value) { current_license.md5 }
-    end
-  end
-
   it_behaves_like 'a correct instrumented metric value', { time_frame: 'none', options: { attribute: 'trial_ends_on' } } do
     let(:expected_value) { ::License.trial_ends_on }
   end

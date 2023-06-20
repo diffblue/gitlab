@@ -24,7 +24,7 @@ RSpec.describe Gitlab::UsageDataMetrics, feature_category: :service_ping do
 
     context 'with instrumentation_class' do
       it 'includes top level keys' do
-        expect(subject).to include(:license_md5)
+        expect(subject).to include(:license_sha256)
         expect(subject).to include(:license_subscription_id)
       end
 

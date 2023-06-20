@@ -5,7 +5,9 @@ product_section: fulfillment
 product_stage: fulfillment
 product_group: license
 value_type: string
-status: active
+status: removed
+removed_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/123386
+milestone_removed: 16.2
 time_frame: none
 data_source: license
 instrumentation_class: LicenseMetric
