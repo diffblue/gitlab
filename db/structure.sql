@@ -30658,6 +30658,8 @@ CREATE INDEX index_ci_triggers_on_owner_id ON ci_triggers USING btree (owner_id)
 
 CREATE INDEX index_ci_triggers_on_project_id ON ci_triggers USING btree (project_id);
 
+CREATE UNIQUE INDEX index_ci_triggers_on_token ON ci_triggers USING btree (token);
+
 CREATE INDEX index_ci_unit_test_failures_on_build_id ON ci_unit_test_failures USING btree (build_id);
 
 CREATE INDEX index_ci_unit_test_failures_on_partition_id_build_id ON ci_unit_test_failures USING btree (partition_id, build_id);
