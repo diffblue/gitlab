@@ -49,6 +49,8 @@ class ApprovalProjectRule < ApplicationRecord
   validates :vulnerability_states, inclusion: { in: APPROVAL_VULNERABILITY_STATES.keys }
   validates :protected_branches, presence: true, if: -> { scan_finding? && !applies_to_all_protected_branches? }
 
+  delegate :vulnerability_attributes, to: :scan_result_policy_read, allow_nil: true
+
   def applies_to_branch?(branch)
     return !applies_to_all_protected_branches? if protected_branches.empty?
 

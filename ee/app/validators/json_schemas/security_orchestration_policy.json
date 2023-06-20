@@ -416,6 +416,18 @@
                     ]
                   }
                 },
+                "vulnerability_attributes": {
+                  "type": "object",
+                  "properties": {
+                    "false_positive": {
+                      "type": "boolean"
+                    },
+                    "fix_available": {
+                      "type": "boolean"
+                    }
+                  },
+                  "additionalProperties": false
+                },
                 "match_on_inclusion": {
                   "type": "boolean",
                   "description": "Specifies whether to match licenses on inclusion or exclusion."

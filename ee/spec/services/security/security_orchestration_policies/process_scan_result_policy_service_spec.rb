@@ -261,6 +261,23 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       end
     end
 
+    context 'with vulnerability_attributes' do
+      let(:vulnerability_attributes) { { false_positive: true, fix_available: false } }
+      let(:policy) { build(:scan_result_policy, name: 'Test Policy', vulnerability_attributes: vulnerability_attributes) }
+
+      it 'creates approval rules' do
+        expect { subject }.to change { project.approval_rules.count }.by(1)
+
+        expect(project.approval_rules.last.vulnerability_attributes).to eq({ 'false_positive' => true, 'fix_available' => false })
+      end
+
+      it 'creates a ScanResultPolicyRead' do
+        expect { subject }.to change { project.security_orchestration_policy_configuration.scan_result_policy_reads.count }.by(1)
+
+        expect(project.security_orchestration_policy_configuration.scan_result_policy_reads.last.vulnerability_attributes).to eq({ 'false_positive' => true, 'fix_available' => false })
+      end
+    end
+
     context 'with a specific number of rules' do
       using RSpec::Parameterized::TableSyntax
 

@@ -52,6 +52,10 @@ FactoryBot.define do
       branches { ['master'] }
     end
 
+    transient do
+      vulnerability_attributes { {} }
+    end
+
     sequence(:name) { |n| "test-policy-#{n}" }
     description { 'This policy considers only container scanning and critical severities' }
     enabled { true }
@@ -63,7 +67,8 @@ FactoryBot.define do
           scanners: %w[container_scanning],
           vulnerabilities_allowed: 0,
           severity_levels: %w[critical],
-          vulnerability_states: %w[detected]
+          vulnerability_states: %w[detected],
+          vulnerability_attributes: vulnerability_attributes
         }
       ]
     end
