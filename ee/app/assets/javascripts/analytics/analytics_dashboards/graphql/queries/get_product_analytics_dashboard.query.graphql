@@ -11,6 +11,7 @@ query getProductAnalyticsDashboard($projectPath: ID!, $slug: String) {
           nodes {
             title
             gridAttributes
+            queryOverrides
             visualization {
               type
               options

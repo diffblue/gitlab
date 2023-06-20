@@ -378,7 +378,7 @@ export default {
               <panels-base
                 :title="panel.title"
                 :visualization="panel.visualization"
-                :query-overrides="panel.queryOverrides"
+                :query-overrides="panel.queryOverrides || undefined"
                 :filters="filters"
                 @error="handlePanelError(panel.title, $event)"
               />

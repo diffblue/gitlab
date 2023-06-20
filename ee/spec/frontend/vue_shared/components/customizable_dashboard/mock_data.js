@@ -31,14 +31,16 @@ export const dashboard = {
       title: __('Test A'),
       gridAttributes: { width: 3, height: 3 },
       visualization: cubeLineChart,
-      queryOverrides: {},
+      queryOverrides: null,
     },
     {
       id: 2,
       title: __('Test B'),
       gridAttributes: { width: 2, height: 4 },
       visualization: cubeLineChart,
-      queryOverrides: {},
+      queryOverrides: {
+        limit: 200,
+      },
     },
   ],
 };
