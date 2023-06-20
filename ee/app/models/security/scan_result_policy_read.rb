@@ -15,6 +15,8 @@ module Security
     validates :match_on_inclusion, inclusion: { in: [true, false], message: 'must be a boolean value' }
     validates :role_approvers, inclusion: { in: Gitlab::Access.all_values }
     validates :age_value, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
+    validates :vulnerability_attributes, json_schema: { filename: 'scan_result_policy_vulnerability_attributes' },
+      allow_blank: true
 
     def newly_detected?
       license_states.include?(ApprovalProjectRule::NEWLY_DETECTED)

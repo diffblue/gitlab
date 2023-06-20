@@ -21,6 +21,13 @@ RSpec.describe Security::ScanResultPolicyRead, feature_category: :security_polic
     it { is_expected.not_to allow_value(-1).for(:age_value) }
     it { is_expected.to allow_value(0, 1).for(:age_value) }
     it { is_expected.to allow_value(nil).for(:age_value) }
+
+    it { is_expected.not_to allow_value("string").for(:vulnerability_attributes) }
+    it { is_expected.to allow_value({}).for(:vulnerability_attributes) }
+
+    it do
+      is_expected.to allow_value({ false_positive: true, fix_available: false }).for(:vulnerability_attributes)
+    end
   end
 
   describe 'enums' do

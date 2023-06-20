@@ -66,6 +66,10 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
     it { is_expected.to have_many(:approval_merge_request_rules).through(:approval_merge_request_rule_sources) }
   end
 
+  describe 'delegations' do
+    it { is_expected.to delegate_method(:vulnerability_attributes).to(:scan_result_policy_read).allow_nil }
+  end
+
   describe '.regular' do
     it 'returns non-report_approver records' do
       rules = create_list(:approval_project_rule, 2)
