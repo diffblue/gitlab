@@ -128,43 +128,6 @@
                       }
                     }
                   }
-                },
-                "clusters": {
-                  "type": "object",
-                  "minProperties": 1,
-                  "maxProperties": 1,
-                  "additionalProperties": false,
-                  "patternProperties": {
-                    "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$": {
-                      "type": "object",
-                      "properties": {
-                        "namespaces": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        },
-                        "resources": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        },
-                        "containers": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        },
-                        "kinds": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        }
-                      }
-                    }
-                  }
                 }
               },
               "if": {
