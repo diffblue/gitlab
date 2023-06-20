@@ -111,6 +111,17 @@ export default {
     enableIssuesAutoComplete() {
       return this.issuableType === TYPE_ISSUE && this.autoCompleteIssues;
     },
+    isOpen() {
+      return (
+        (!this.itemsFetchResultEmpty && this.showRelatedItems) ||
+        this.showAddItemForm ||
+        this.showCreateEpicForm ||
+        this.showCreateIssueForm
+      );
+    },
+    isOpenString() {
+      return this.isOpen ? 'true' : 'false';
+    },
   },
   mounted() {
     this.fetchItems({
@@ -181,16 +192,14 @@ export default {
 <template>
   <div class="related-items-tree-container">
     <div
-      class="related-items-tree card card-slim gl-mt-4 gl-mb-0 gl-bg-gray-10"
+      class="related-items-tree gl-new-card gl-mt-4"
       :class="{
         'disabled-content': disableContents,
         'overflow-auto': directChildren.length > $options.OVERFLOW_AFTER,
       }"
+      :aria-expanded="isOpenString"
     >
-      <related-items-tree-header
-        :class="{ 'border-bottom-0': itemsFetchResultEmpty || !showRelatedItems }"
-        @toggleRelatedItemsView="handleRelatedItemsView"
-      />
+      <related-items-tree-header @toggleRelatedItemsView="handleRelatedItemsView" />
       <slot-switch
         v-if="visibleForm && parentItem.confidential"
         :active-slot-names="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ [
@@ -215,11 +224,12 @@ export default {
         :active-slot-names="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ [
           visibleForm,
         ] /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
-        class="card-body add-item-form-container gl-m-4 gl-mb-1 gl-bg-white gl-border-1 gl-border-solid gl-border-gray-100 gl-rounded-base"
+        class="gl-new-card-add-form gl-m-4"
         :class="{
-          'border-bottom-0': itemsFetchResultEmpty,
+          'gl-mb-1': !itemsFetchResultEmpty,
           'gl-show-field-errors': itemAddFailure,
         }"
+        data-testid="add-item-form"
       >
         <template #[$options.FORM_SLOTS.addItem]>
           <add-item-form

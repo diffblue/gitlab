@@ -96,14 +96,10 @@ export default {
 </script>
 
 <template>
-  <div
-    class="card-header gl-display-flex gl-pl-5 gl-pr-4 gl-py-4 gl-flex-direction-column gl-sm-flex-direction-row gl-bg-white"
-  >
-    <div
-      class="gl-display-flex gl-flex-grow-1 gl-flex-shrink-0 gl-flex-wrap gl-flex-direction-column gl-sm-flex-direction-row"
-    >
+  <div class="gl-new-card-header">
+    <div class="gl-new-card-title-wrapper">
       <div class="gl-display-flex gl-flex-shrink-0 gl-align-items-center gl-flex-wrap">
-        <h3 class="card-title h5 gl-my-0 gl-flex-shrink-0">
+        <h3 class="gl-new-card-title">
           {{ allowSubEpics ? __('Child issues and epics') : $options.treeTitle[parentItem.type] }}
         </h3>
         <div
@@ -196,7 +192,7 @@ export default {
           @showCreateEpicForm="showCreateEpicForm"
         />
       </div>
-      <div class="gl-pl-3 gl-ml-3 gl-border-l-1 gl-border-l-solid gl-border-l-gray-100">
+      <div class="gl-new-card-toggle">
         <gl-button
           category="tertiary"
           size="small"

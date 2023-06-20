@@ -159,7 +159,7 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
     describe 'Epic metadata' do
       it 'shows epic tab `Issues`' do
         page.within('.related-items-tree-container') do
-          expect(find('h3.card-title')).to have_content('Issues')
+          expect(find('h3.gl-new-card-title')).to have_content('Issues')
         end
       end
 

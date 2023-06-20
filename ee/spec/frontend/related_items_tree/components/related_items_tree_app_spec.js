@@ -240,7 +240,7 @@ describe('RelatedItemsTreeApp', () => {
       });
 
       await nextTick();
-      expect(wrapper.find('.add-item-form-container').isVisible()).toBe(true);
+      expect(wrapper.findByTestId('add-item-form').isVisible()).toBe(true);
     });
 
     it('does not render create issue form', () => {
@@ -320,7 +320,6 @@ describe('RelatedItemsTreeApp', () => {
 
         await nextTick();
 
-        expect(findRelatedItemsTreeHeader().classes().includes('border-bottom-0')).toBe(!toggled);
         expect(wrapper.findByTestId('related-items-container').exists()).toBe(toggled);
       },
     );

@@ -77,7 +77,7 @@ RSpec.describe 'Epic Issues', :js, feature_category: :portfolio_management do
       find(".related-items-tree-container .js-add-epics-issues-button").click
       find('.related-items-tree-container .js-add-epics-issues-button .dropdown-item', text: 'Add an existing issue').click
       fill_in 'Paste issue link', with: "#{references} "
-      within '.add-item-form-container' do
+      within '.gl-new-card-add-form' do
         click_button 'Add'
       end
 
@@ -88,7 +88,7 @@ RSpec.describe 'Epic Issues', :js, feature_category: :portfolio_management do
       find('.related-items-tree-container .js-add-epics-issues-button').click
       find('.related-items-tree-container .js-add-epics-issues-button .dropdown-item', text: 'Add an existing epic').click
       fill_in 'Paste epic link', with: "#{references} "
-      within '.add-item-form-container' do
+      within '.gl-new-card-add-form' do
         click_button 'Add'
       end
 
