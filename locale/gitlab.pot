@@ -49746,6 +49746,9 @@ msgstr ""
 msgid "UserProfile|An error occurred loading the followers. Please refresh the page to try again."
 msgstr ""
 
+msgid "UserProfile|An error occurred loading the following. Please refresh the page to try again."
+msgstr ""
+
 msgid "UserProfile|An error occurred loading the personal projects. Please refresh the page to try again."
 msgstr ""
 
