@@ -75,10 +75,6 @@ describe('BoardSettingsWipLimit', () => {
     }
   };
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   describe('when activeList is present', () => {
     describe('when activeListWipLimit is 0', () => {
       it('renders "None" in the block', () => {
