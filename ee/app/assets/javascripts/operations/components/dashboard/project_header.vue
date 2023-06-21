@@ -78,7 +78,6 @@ export default {
       :title="title"
       :aria-label="title"
       icon="close"
-      data-qa-selector="remove_project_button"
       data-testid="remove-project-button"
       @click="onRemove"
     />

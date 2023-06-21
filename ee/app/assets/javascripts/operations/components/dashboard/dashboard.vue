@@ -139,7 +139,7 @@ export default {
       :title="s__('OperationsDashboard|Add projects')"
       :action-primary="actionPrimary"
       :action-cancel="$options.modal.actionCancel"
-      data-qa-selector="add_projects_modal"
+      data-testid="add-projects-modal"
       @canceled="onCancel"
       @primary="onOk"
     >
@@ -168,7 +168,6 @@ export default {
         variant="confirm"
         category="primary"
         data-testid="add-projects-button"
-        data-qa-selector="add_projects_button"
       >
         {{ s__('OperationsDashboard|Add projects') }}
       </gl-button>
@@ -217,7 +216,6 @@ export default {
             v-gl-modal="$options.modalId"
             variant="confirm"
             data-testid="add-projects-button"
-            data-qa-selector="add_projects_button"
           >
             {{ s__('OperationsDashboard|Add projects') }}
           </gl-button>
