@@ -336,8 +336,8 @@ describe('Vulnerability Header', () => {
         expect(findStatusDescription().props()).toEqual({
           vulnerability,
           user,
-          isLoadingVulnerability: wrapper.vm.isLoadingVulnerability,
-          isLoadingUser: wrapper.vm.isLoadingUser,
+          isLoadingVulnerability: false,
+          isLoadingUser: false,
           isStatusBolded: false,
         });
       });
@@ -357,19 +357,19 @@ describe('Vulnerability Header', () => {
     });
 
     it('should show the resolution alert component', () => {
-      const alert = findResolutionAlert();
-
-      expect(alert.exists()).toBe(true);
+      expect(findResolutionAlert().exists()).toBe(true);
     });
 
     it('should pass down the default branch name', () => {
-      const alert = findResolutionAlert();
-
-      expect(alert.props().defaultBranchName).toEqual(branchName);
+      expect(findResolutionAlert().props('defaultBranchName')).toEqual(branchName);
     });
 
     it('the resolution alert component should not be shown if when the vulnerability is already resolved', async () => {
-      wrapper.vm.vulnerability.state = 'resolved';
+      createWrapper({
+        vulnerability: {
+          state: 'resolved',
+        },
+      });
       await nextTick();
       const alert = findResolutionAlert();
 
