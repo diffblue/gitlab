@@ -26,6 +26,9 @@ export const HTML_SCRIPT_SETUP = `<script src="https://unpkg.com/@gitlab/applica
 window.glClient.page();
 </script>`;
 
+export const BROWSER_SDK_DOCS_URL =
+  'https://gitlab.com/gitlab-org/analytics-section/product-analytics/gl-application-sdk-browser#browser-sdk-initialization-options';
+
 export const SHORT_POLLING_INTERVAL = 1000;
 
 export const LONG_POLLING_INTERVAL = 2500;

@@ -17,6 +17,10 @@ module EE
         @seat_count_data = generate_seat_count_alert_data(@project)
       end
 
+      before_action do
+        push_frontend_feature_flag(:product_analytics_snowplow_support)
+      end
+
       feature_category :groups_and_projects, [:restore]
     end
 

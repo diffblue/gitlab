@@ -34891,6 +34891,9 @@ msgstr ""
 msgid "ProductAnalytics|Feature Usages"
 msgstr ""
 
+msgid "ProductAnalytics|For more information, see the %{linkStart}docs%{linkEnd}."
+msgstr ""
+
 msgid "ProductAnalytics|For the product analytics dashboard to start showing you some data, you need to add the analytics tracking code to your project."
 msgstr ""
 
