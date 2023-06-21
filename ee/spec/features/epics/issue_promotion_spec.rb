@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Issue promotion', :js, feature_category: :portfolio_management do
+  include Features::AutocompleteHelpers
   include Features::NotesHelpers
 
   let(:group) { create(:group) }
@@ -87,11 +88,5 @@ RSpec.describe 'Issue promotion', :js, feature_category: :portfolio_management d
         end
       end
     end
-  end
-
-  private
-
-  def find_autocomplete_menu
-    find('.atwho-view ul', visible: true)
   end
 end
