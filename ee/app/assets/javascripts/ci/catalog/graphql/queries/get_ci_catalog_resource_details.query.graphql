@@ -1,29 +1,26 @@
-query getCiCatalogResourceDetails {
-  ciCatalogResourcesDetails @client {
-    nodes {
+query getCiCatalogResourceDetails($id: CiCatalogResourceID!) {
+  ciCatalogResource(id: $id) {
+    id
+    icon
+    name
+    description
+    readmeHtml
+    rootNamespace {
       id
-      icon
+      fullPath
       name
-      description
-      readmeHtml
-      rootNamespace {
+    }
+    statistics @client {
+      issues
+      mergeRequests
+    }
+    starCount
+    forksCount
+    versions(first: 1) {
+      nodes {
         id
-        fullPath
-        name
-      }
-      statistics {
-        id
-        starCount
-        forkCount
-        issues
-        mergeRequests
-      }
-      versions {
-        nodes {
-          id
-          releasedAt
-          tagName
-        }
+        tagName
+        releasedAt
       }
     }
   }

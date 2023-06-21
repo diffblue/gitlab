@@ -1,3 +1,26 @@
+export const catalogDetailsMock = {
+  data: {
+    ciCatalogResource: {
+      __typename: 'CiCatalogResource',
+      id: 1,
+      icon: null,
+      description: 'This is the description of the repo',
+      name: 'Ruby',
+      readmeHtml: '<h1>Hello world</h1>',
+      rootNamespace: { id: 1, fullPath: '/group/project', name: 'my-dumb-project' },
+      starCount: 1,
+      forksCount: 2,
+      statistics: {
+        issues: 10,
+        mergeRequests: 1,
+      },
+      versions: {
+        nodes: [{ id: 1, tagName: 'v1.0.2', releasedAt: '2022-08-23T17:19:09Z' }],
+      },
+    },
+  },
+};
+
 const generateResourcesNodes = (count = 20, startId = 0) => {
   const nodes = [];
   for (let i = startId; i < startId + count; i += 1) {
