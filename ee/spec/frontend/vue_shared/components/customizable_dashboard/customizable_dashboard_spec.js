@@ -164,7 +164,8 @@ describe('CustomizableDashboard', () => {
         expect(findPanels().at(index).props()).toMatchObject({
           title,
           visualization,
-          queryOverrides,
+          // The panel component defaults `queryOverrides` to {} when falsy
+          queryOverrides: queryOverrides || {},
         });
 
         expect(findGridStackPanels().at(index).attributes()).toMatchObject({

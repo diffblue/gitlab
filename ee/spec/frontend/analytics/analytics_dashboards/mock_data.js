@@ -101,6 +101,9 @@ export const getGraphQLDashboard = (options = {}, withPanels = true) => {
               width: 6,
               height: 5,
             },
+            queryOverrides: {
+              limit: 200,
+            },
             visualization: {
               type: 'LineChart',
               options: {
