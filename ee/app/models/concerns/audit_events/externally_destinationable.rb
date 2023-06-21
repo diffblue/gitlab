@@ -11,7 +11,6 @@ module AuditEvents
       before_validation :assign_default_name
 
       validates :destination_url, public_url: true, presence: true
-      validates :destination_url, uniqueness: true, length: { maximum: 255 }
       validates :verification_token, length: { in: 16..24 }, allow_nil: true
       validates :verification_token, presence: true, on: :update
       validate :no_more_than_20_headers?
