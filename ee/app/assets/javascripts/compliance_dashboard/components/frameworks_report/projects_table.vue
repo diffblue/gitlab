@@ -57,6 +57,10 @@ export default {
       type: String,
       required: true,
     },
+    hasFilters: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {
@@ -79,6 +83,11 @@ export default {
 
     hasSelectedAllProjects() {
       return this.selectedRows.length === this.projects.length;
+    },
+    noProjectsText() {
+      return this.hasFilters
+        ? this.$options.i18n.noProjectsFoundMatchingFilters
+        : this.$options.i18n.noProjectsFound;
     },
   },
   methods: {
@@ -231,6 +240,7 @@ export default {
     editTitle: s__('ComplianceFrameworks|Edit compliance framework'),
 
     noProjectsFound: s__('ComplianceReport|No projects found'),
+    noProjectsFoundMatchingFilters: s__('ComplianceReport|No projects found that match filters'),
     addFrameworkMessage: s__('ComplianceReport|Add framework'),
 
     successApplyToastMessage: s__('ComplianceReport|Framework successfully applied'),
@@ -349,7 +359,7 @@ export default {
       </template>
       <template #empty>
         <div class="gl-my-5 gl-text-center" data-testid="projects-table-empty-state">
-          {{ $options.i18n.noProjectsFound }}
+          {{ noProjectsText }}
         </div>
       </template>
     </gl-table>

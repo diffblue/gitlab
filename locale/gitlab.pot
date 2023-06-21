@@ -11765,6 +11765,9 @@ msgstr ""
 msgid "ComplianceReport|No projects found"
 msgstr ""
 
+msgid "ComplianceReport|No projects found that match filters"
+msgstr ""
+
 msgid "ComplianceReport|No violations found"
 msgstr ""
 
