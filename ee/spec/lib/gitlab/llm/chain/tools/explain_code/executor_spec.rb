@@ -3,7 +3,17 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Chain::Tools::ExplainCode::Executor, feature_category: :shared do
-  subject(:tool) { described_class.new(context: nil, options: { input: 'input' }) }
+  let_it_be(:user) { create(:user) }
+
+  let(:ai_request_double) { instance_double(Gitlab::Llm::Chain::Requests::Anthropic) }
+
+  let(:context) do
+    Gitlab::Llm::Chain::GitlabContext.new(
+      current_user: user, container: nil, resource: user, ai_request: ai_request_double
+    )
+  end
+
+  subject(:tool) { described_class.new(context: context, options: { input: 'input' }) }
 
   describe '#name' do
     it 'returns tool name' do
@@ -52,6 +62,18 @@ RSpec.describe Gitlab::Llm::Chain::Tools::ExplainCode::Executor, feature_categor
 
         expect(tool.execute.content)
           .to eq('I am sorry, I am unable to find the explain code answer you are looking for.')
+      end
+    end
+
+    context 'when code tool was already used' do
+      before do
+        context.tools_used << described_class.name
+      end
+
+      it 'returns already used answer' do
+        allow(tool).to receive(:request).and_return('response')
+
+        expect(tool.execute.content).to eq('You already have the answer from ExplainCode tool, read carefully.')
       end
     end
   end

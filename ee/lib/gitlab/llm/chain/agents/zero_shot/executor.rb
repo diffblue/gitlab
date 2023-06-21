@@ -52,6 +52,8 @@ module Gitlab
                 )
 
                 tool_answer = tool.execute
+                # track a successful tool usage, to avoid cycling through same tools multiple times
+                context.tools_used << tool_class if tool_answer.status != :not_executed
 
                 return tool_answer if tool_answer.is_final?
 

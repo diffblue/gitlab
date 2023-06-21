@@ -3,14 +3,20 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_redis_chat, feature_category: :shared do
+  let_it_be(:user) { create(:user) }
+
   let(:input) { 'foo' }
-  let(:user) { create(:user) }
-  let(:context) { instance_double(Gitlab::Llm::Chain::GitlabContext, current_user: user) }
   let(:ai_request_double) { instance_double(Gitlab::Llm::Chain::Requests::Anthropic) }
-  let(:tool_answer) { instance_double(Gitlab::Llm::Chain::Answer, is_final?: false, content: 'Bar') }
+  let(:tool_answer) { instance_double(Gitlab::Llm::Chain::Answer, is_final?: false, content: 'Bar', status: :ok) }
   let(:tool_double) { instance_double(Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor) }
   let(:tools) { [Gitlab::Llm::Chain::Tools::IssueIdentifier] }
   let(:response_double) { "I know the final answer\nFinal Answer: FooBar" }
+
+  let(:context) do
+    Gitlab::Llm::Chain::GitlabContext.new(
+      current_user: user, container: nil, resource: user, ai_request: ai_request_double
+    )
+  end
 
   subject(:agent) { described_class.new(user_input: input, tools: tools, context: context) }
 

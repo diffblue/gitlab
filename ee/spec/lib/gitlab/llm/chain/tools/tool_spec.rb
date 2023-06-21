@@ -3,12 +3,28 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Chain::Tools::Tool, feature_category: :shared do
-  let(:context) { instance_double(Gitlab::Llm::Chain::GitlabContext) }
+  let_it_be(:user) { create(:user) }
+
   let(:options) { {} }
+  let(:ai_request_double) { instance_double(Gitlab::Llm::Chain::Requests::Anthropic) }
+
+  let(:context) do
+    Gitlab::Llm::Chain::GitlabContext.new(
+      current_user: user,
+      container: nil,
+      resource: user,
+      ai_request: ai_request_double,
+      tools_used: [Gitlab::Llm::Chain::Tools::IssueIdentifier]
+    )
+  end
 
   subject { described_class.new(context: context, options: options) }
 
   describe '#execute' do
+    it 'raises NotImplementedError' do
+      expect { subject.authorize }.to raise_error(NotImplementedError)
+    end
+
     context 'when authorize returns true' do
       before do
         allow(subject).to receive(:authorize).and_return(true)
@@ -32,11 +48,17 @@ RSpec.describe Gitlab::Llm::Chain::Tools::Tool, feature_category: :shared do
         subject.execute
       end
     end
-  end
 
-  describe '#authorize' do
-    it 'raises NotImplementedError' do
-      expect { subject.authorize }.to raise_error(NotImplementedError)
+    context 'when tool already used' do
+      it 'returns already used answer' do
+        allow(subject).to receive(:already_used?).and_return(true)
+
+        content = "You already have the answer from #{described_class::NAME} tool, read carefully."
+        answer = subject.execute
+
+        expect(answer.content).to eq(content)
+        expect(answer.status).to eq(:not_executed)
+      end
     end
   end
 

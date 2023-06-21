@@ -73,12 +73,10 @@ RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_c
 
           context 'when resource was already summarized' do
             before do
-              input_variables[:suggestions] = "Action: SummarizeComments\n"
-              input_variables[:suggestions] += "I know the summary of the notes, comments, discussions for the"
-              input_variables[:suggestions] += "Action: SummarizeComments"
+              context.tools_used << described_class.name
             end
 
-            it 'returns already symmarized response' do
+            it 'returns already summarized response' do
               expect(tool).not_to receive(:request)
 
               response = "You already have the summary of the notes, comments, discussions for the " \

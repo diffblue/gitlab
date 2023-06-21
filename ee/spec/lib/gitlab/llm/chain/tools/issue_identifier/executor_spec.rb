@@ -237,6 +237,24 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
             it_behaves_like 'success response'
           end
         end
+
+        context 'when issue was already identified' do
+          let(:resource_iid) { issue1.iid }
+          let(:ai_response) { "{\"ResourceIdentifierType\": \"iid\", \"ResourceIdentifier\": #{issue1.iid}}" }
+
+          before do
+            context.tools_used << described_class.name
+          end
+
+          it 'returns already identified response' do
+            ai_request = double
+            allow(ai_request).to receive_message_chain(:complete, :dig, :to_s, :strip).and_return(ai_response)
+            allow(context).to receive(:ai_request).and_return(ai_request)
+
+            response = "You already have identified the issue #{context.resource.to_global_id}, read carefully."
+            expect(tool.execute.content).to eq(response)
+          end
+        end
       end
     end
   end
