@@ -141,4 +141,10 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :not_owned do # 
 
     it_behaves_like 'forwarding the request correctly'
   end
+
+  describe '#code_completion' do
+    subject(:response) { described_class.new(user).code_completion(content: 'anything', **options) }
+
+    it_behaves_like 'forwarding the request correctly'
+  end
 end

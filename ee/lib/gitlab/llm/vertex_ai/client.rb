@@ -63,11 +63,25 @@ module Gitlab
           )
         end
 
+        # @param [Array<Hash>] content - Input hash with `prefix` and `suffix` keys
+        #   - Use the suffix to generate code in the middle of existing code.
+        #   - The model will try to generate code from the prefix to the suffix.
+        # @param [Hash] options - Additional options to pass to the request
+        def code_completion(content:, **options)
+          request(
+            content: content,
+            config: Configuration.new(
+              model_config: ModelConfigurations::CodeCompletion.new
+            ),
+            **options
+          )
+        end
+
         private
 
         attr_reader :logger
 
-        retry_methods_with_exponential_backoff :chat, :text, :code, :messages_chat
+        retry_methods_with_exponential_backoff :chat, :text, :code, :messages_chat, :code_completion
 
         def request(content:, config:, **options)
           logger.debug(message: "Performing request to Vertex", config: config)
