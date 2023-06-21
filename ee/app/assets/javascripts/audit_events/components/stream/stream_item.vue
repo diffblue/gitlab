@@ -15,10 +15,9 @@ import {
 import { __ } from '~/locale';
 import { createAlert } from '~/alert';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
-import deleteExternalDestination from '../../graphql/mutations/delete_external_destination.mutation.graphql';
-import deleteInstanceExternalDestination from '../../graphql/mutations/delete_instance_external_destination.mutation.graphql';
 import { AUDIT_STREAMS_NETWORK_ERRORS, STREAM_ITEMS_I18N } from '../../constants';
 import StreamDestinationEditor from './stream_destination_editor.vue';
+import StreamDeleteModal from './stream_delete_modal.vue';
 
 export default {
   components: {
@@ -34,6 +33,7 @@ export default {
     GlButton,
     GlIcon,
     StreamDestinationEditor,
+    StreamDeleteModal,
   },
   directives: {
     GlTooltip,
@@ -49,6 +49,7 @@ export default {
     return {
       isEditing: false,
       isDeleting: false,
+      markedForDeletion: {},
     };
   },
   computed: {
@@ -74,7 +75,7 @@ export default {
         {
           text: __('Delete'),
           extraAttrs: { 'data-testid': 'delete-btn', class: 'gl-text-red-500!' },
-          action: () => this.deleteDestination(),
+          action: () => this.markForDeletion(),
         },
       ];
     },
@@ -90,9 +91,6 @@ export default {
     },
     isInstance() {
       return this.groupPath === 'instance';
-    },
-    destinationDestroyMutation() {
-      return this.isInstance ? deleteInstanceExternalDestination : deleteExternalDestination;
     },
   },
   methods: {
@@ -111,42 +109,24 @@ export default {
         ? queryData.externalAuditEventDestinationCreate
         : queryData.group.externalAuditEventDestinationCreate;
     },
-    async deleteDestination() {
+    markForDeletion() {
+      this.markedForDeletion = this.item;
+      this.$refs.deleteModal.show();
+    },
+    onDeleting() {
       this.isDeleting = true;
-      try {
-        const { data } = await this.$apollo.mutate({
-          mutation: this.destinationDestroyMutation,
-          variables: {
-            id: this.item.id,
-            isInstance: this.isInstance,
-          },
-          context: {
-            isSingleRequest: true,
-          },
-        });
-
-        const errors = this.isInstance
-          ? data.instanceExternalAuditEventDestinationDestroy.errors
-          : data.externalAuditEventDestinationDestroy.errors;
-
-        if (errors.length > 0) {
-          createAlert({
-            message: errors[0],
-          });
-          this.$emit('error');
-        } else {
-          this.$emit('deleted');
-        }
-      } catch (error) {
-        createAlert({
-          message: AUDIT_STREAMS_NETWORK_ERRORS.DELETING_ERROR,
-          captureError: true,
-          error,
-        });
-        this.$emit('error');
-      } finally {
-        this.isDeleting = false;
-      }
+    },
+    onDelete() {
+      this.$emit('deleted');
+      this.isDeleting = false;
+    },
+    onError(error) {
+      createAlert({
+        message: AUDIT_STREAMS_NETWORK_ERRORS.DELETING_ERROR,
+        captureError: true,
+        error,
+      });
+      this.$emit('error');
     },
   },
   i18n: { ...AUDIT_STREAMS_NETWORK_ERRORS, ...STREAM_ITEMS_I18N },
@@ -227,5 +207,12 @@ export default {
         @cancel="toggleEditMode"
       />
     </gl-collapse>
+    <stream-delete-modal
+      ref="deleteModal"
+      :item="markedForDeletion"
+      @deleting="onDeleting"
+      @delete="onDelete"
+      @error="onError"
+    />
   </li>
 </template>
