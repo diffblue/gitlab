@@ -16,6 +16,7 @@ module Users
 
     def perform
       return unless Feature.enabled?(:delete_unconfirmed_users_setting)
+      return if ::Gitlab::CurrentSettings.email_confirmation_setting_off?
       return unless ::Gitlab::CurrentSettings.delete_unconfirmed_users?
       return unless License.feature_available?(:delete_unconfirmed_users)
       return unless admin_bot_id
