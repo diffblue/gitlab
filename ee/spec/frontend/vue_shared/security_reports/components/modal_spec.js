@@ -21,11 +21,7 @@ describe('Security Reports modal', () => {
   let wrapper;
   let modal;
 
-  const mountComponent = (
-    propsData,
-    mountFn = shallowMount,
-    { deprecateVulnerabilitiesFeedback = true } = {},
-  ) => {
+  const mountComponent = (propsData, mountFn = shallowMount) => {
     wrapper = mountFn(Modal, {
       attrs: {
         static: true,
@@ -37,7 +33,6 @@ describe('Security Reports modal', () => {
         isCreatingMergeRequest: false,
         ...propsData,
       },
-      provide: { glFeatures: { deprecateVulnerabilitiesFeedback } },
       stubs: { GlModal },
     });
     modal = wrapper.findComponent(GlModal);
@@ -100,14 +95,6 @@ describe('Security Reports modal', () => {
           created_at: transition.created_at,
         });
       });
-
-      it('renders dismissal note - deprecateVulnerabilitiesFeedback feature flag disabled', () => {
-        const feedback = {};
-        propsData.modal.vulnerability.dismissalFeedback = feedback;
-        mountComponent(propsData, shallowMount, { deprecateVulnerabilitiesFeedback: false });
-
-        expect(findDismissalNote().props('feedback')).toBe(feedback);
-      });
     });
 
     describe('with about to be dismissed finding', () => {
@@ -129,14 +116,6 @@ describe('Security Reports modal', () => {
           author: transition.author,
           created_at: transition.created_at,
         });
-      });
-
-      it('renders dismissal note - deprecateVulnerabilitiesFeedback feature flag disabled', () => {
-        const feedback = {};
-        propsData.modal.vulnerability.dismissalFeedback = feedback;
-        mountComponent(propsData, shallowMount, { deprecateVulnerabilitiesFeedback: false });
-
-        expect(findDismissalNote().props('feedback')).toBe(feedback);
       });
     });
 
@@ -173,15 +152,6 @@ describe('Security Reports modal', () => {
       it(`can't create merge request when there is an existing merge request`, () => {
         modalData.vulnerability.merge_request_links = [{}];
         mountComponent({ modal: modalData });
-
-        expect(findModalFooter().props('canCreateMergeRequest')).toBe(false);
-      });
-
-      it(`can't create merge request when there is an existing merge request - deprecateVulnerabilitiesFeedback feature flag off`, () => {
-        modalData.vulnerability.merge_request_feedback = {};
-        mountComponent({ modal: modalData }, shallowMount, {
-          deprecateVulnerabilitiesFeedback: false,
-        });
 
         expect(findModalFooter().props('canCreateMergeRequest')).toBe(false);
       });
@@ -275,37 +245,6 @@ describe('Security Reports modal', () => {
     });
   });
 
-  describe('issue note - deprecateVulnerabilitiesFeedback feature flag disabled', () => {
-    const modalData = createState().modal;
-    modalData.vulnerability.project = {};
-
-    it('shows issue note with expected props', () => {
-      modalData.vulnerability.issue_feedback = { issue_iid: 1, issue_url: 'url' };
-      mountComponent({ modal: modalData }, shallowMount, {
-        deprecateVulnerabilitiesFeedback: false,
-      });
-
-      expect(findIssueNote().props()).toMatchObject({
-        feedback: modalData.vulnerability.issue_feedback,
-        project: modalData.vulnerability.project,
-      });
-    });
-
-    it.each`
-      issue                                 | isShown
-      ${null}                               | ${false}
-      ${{}}                                 | ${false}
-      ${{ issue_iid: 1, issue_url: 'url' }} | ${true}
-    `('shows issue note? $isShown when issue is $issue', ({ issue, isShown }) => {
-      modalData.vulnerability.issue_feedback = issue;
-      mountComponent({ modal: modalData }, shallowMount, {
-        deprecateVulnerabilitiesFeedback: false,
-      });
-
-      expect(findIssueNote().exists()).toBe(isShown);
-    });
-  });
-
   describe('merge request note', () => {
     const mergeRequest = { merge_request_path: 'path' };
 
@@ -320,24 +259,6 @@ describe('Security Reports modal', () => {
         const modalData = createState().modal;
         modalData.vulnerability.merge_request_links = mergeRequestLinks;
         mountComponent({ modal: modalData });
-
-        expect(wrapper.findComponent(MergeRequestNote).exists()).toBe(isShown);
-      },
-    );
-
-    it.each`
-      mergeRequestFeedback | isShown
-      ${mergeRequest}      | ${true}
-      ${{}}                | ${false}
-      ${null}              | ${false}
-    `(
-      'shows the merge request note? $isShown when mergeRequestFeedback is $mergeRequestFeedback, deprecateVulnerabilitiesFeedback feature flag disabled',
-      ({ mergeRequestFeedback, isShown }) => {
-        const modalData = createState().modal;
-        modalData.vulnerability.merge_request_feedback = mergeRequestFeedback;
-        mountComponent({ modal: modalData }, shallowMount, {
-          deprecateVulnerabilitiesFeedback: false,
-        });
 
         expect(wrapper.findComponent(MergeRequestNote).exists()).toBe(isShown);
       },
@@ -478,15 +399,6 @@ describe('Security Reports modal', () => {
     it('adds the dismissal comment if the finding is already dismissed', async () => {
       propsData.modal.vulnerability.state_transitions = [transition];
       mountComponent(propsData);
-      await addCommentAndSubmit(comment);
-
-      expect(wrapper.emitted('addDismissalComment')[0][0]).toBe(comment);
-      expect(findDismissalCommentBoxToggle().props('errorMessage')).toBe('');
-    });
-
-    it('adds the dismissal comment if the finding is already dismissed - deprecateVulnerabilitiesFeedback feature flag disabled', async () => {
-      propsData.modal.vulnerability.dismissal_feedback = {};
-      mountComponent(propsData, shallowMount, { deprecateVulnerabilitiesFeedback: false });
       await addCommentAndSubmit(comment);
 
       expect(wrapper.emitted('addDismissalComment')[0][0]).toBe(comment);

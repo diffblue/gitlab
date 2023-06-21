@@ -37,6 +37,7 @@ describe('Vulnerability Footer', () => {
     canModifyRelatedIssues: true,
     relatedIssuesHelpPath: 'help/path',
     pipeline: {},
+    mergeRequestLinks: [],
   };
 
   let discussion1;
@@ -273,11 +274,11 @@ describe('Vulnerability Footer', () => {
 
     it('shows merge request note when a merge request exists for the vulnerability', () => {
       // The object itself does not matter, we just want to make sure it's passed to the issue note.
-      const mergeRequestFeedback = {};
+      const mergeRequestLinks = [{}];
 
-      createWrapper({ properties: { mergeRequestFeedback } });
+      createWrapper({ properties: { mergeRequestLinks } });
       expect(findMergeRequestNote().exists()).toBe(true);
-      expect(findMergeRequestNote().props('feedback')).toBe(mergeRequestFeedback);
+      expect(findMergeRequestNote().props('feedback')).toBe(mergeRequestLinks.at(-1));
     });
   });
 

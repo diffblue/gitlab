@@ -61,9 +61,7 @@ export default {
     Vue.set(state.modal, 'error', null);
   },
   [types.RECEIVE_CREATE_ISSUE_SUCCESS](state, payload) {
-    const url = gon.features.deprecateVulnerabilitiesFeedback
-      ? getCreatedIssueForVulnerability(payload).issue_url
-      : payload.issue_url;
+    const url = getCreatedIssueForVulnerability(payload).issue_url;
 
     // We don't cancel the loading state here because we're navigating away from the page
     visitUrl(url);
@@ -80,15 +78,8 @@ export default {
     const vulnerability = state.vulnerabilities.find((vuln) =>
       isSameVulnerability(vuln, payload.vulnerability),
     );
-    // When the feature flag is on, the payload is the entire updated vulnerability. When it's off, the payload is only
-    // the dismissal feedback object.
-    if (gon.features.deprecateVulnerabilitiesFeedback) {
-      const updated = payload.data.securityFindingDismiss.securityFinding.vulnerability;
-      updateFindingFromGraphqlResponse(vulnerability, updated);
-    } else {
-      vulnerability.state = 'dismissed';
-      vulnerability.dismissal_feedback = payload.data;
-    }
+    const updated = payload.data.securityFindingDismiss.securityFinding.vulnerability;
+    updateFindingFromGraphqlResponse(vulnerability, updated);
 
     state.isDismissingVulnerability = false;
     Vue.set(state.modal.vulnerability, 'isDismissed', true);
@@ -139,12 +130,8 @@ export default {
       isSameVulnerability(vuln, payload.vulnerability),
     );
     if (vulnerability) {
-      if (gon.features.deprecateVulnerabilitiesFeedback) {
-        const updated = payload.data.securityFindingDismiss.securityFinding.vulnerability;
-        updateFindingFromGraphqlResponse(vulnerability, updated);
-      } else {
-        vulnerability.dismissal_feedback = payload.data;
-      }
+      const updated = payload.data.securityFindingDismiss.securityFinding.vulnerability;
+      updateFindingFromGraphqlResponse(vulnerability, updated);
 
       state.isDismissingVulnerability = false;
       Vue.set(state.modal.vulnerability, 'isDismissed', true);
@@ -161,12 +148,8 @@ export default {
   [types.RECEIVE_DELETE_DISMISSAL_COMMENT_SUCCESS](state, payload) {
     const vulnerability = state.vulnerabilities.find((vuln) => vuln.id === payload.id);
     if (vulnerability) {
-      if (gon.features.deprecateVulnerabilitiesFeedback) {
-        const updated = payload.data.securityFindingDismiss.securityFinding.vulnerability;
-        updateFindingFromGraphqlResponse(vulnerability, updated);
-      } else {
-        vulnerability.dismissal_feedback = payload.data;
-      }
+      const updated = payload.data.securityFindingDismiss.securityFinding.vulnerability;
+      updateFindingFromGraphqlResponse(vulnerability, updated);
 
       state.isDismissingVulnerability = false;
       Vue.set(state.modal.vulnerability, 'isDismissed', true);
@@ -184,15 +167,8 @@ export default {
     const vulnerability = state.vulnerabilities.find((vuln) =>
       isSameVulnerability(vuln, payload.vulnerability),
     );
-    // When the feature flag is on, the payload is the entire updated vulnerability. When it's off, the payload is only
-    // the dismissal feedback object.
-    if (gon.features.deprecateVulnerabilitiesFeedback) {
-      const updated = payload.data.securityFindingRevertToDetected.securityFinding.vulnerability;
-      updateFindingFromGraphqlResponse(vulnerability, updated);
-    } else {
-      vulnerability.state = 'detected';
-      vulnerability.dismissal_feedback = null;
-    }
+    const updated = payload.data.securityFindingRevertToDetected.securityFinding.vulnerability;
+    updateFindingFromGraphqlResponse(vulnerability, updated);
 
     state.isDismissingVulnerability = false;
     Vue.set(state.modal.vulnerability, 'isDismissed', false);
@@ -216,9 +192,7 @@ export default {
     Vue.set(state.modal, 'error', null);
   },
   [types.RECEIVE_CREATE_MERGE_REQUEST_SUCCESS](state, payload) {
-    const url = gon.features.deprecateVulnerabilitiesFeedback
-      ? payload.merge_request_links.at(-1).merge_request_path
-      : payload.merge_request_path;
+    const url = payload.merge_request_links.at(-1).merge_request_path;
     // We don't cancel the loading state here because we're navigating away from the page
     visitUrl(url);
   },

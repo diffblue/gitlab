@@ -14,4 +14,5 @@ export const mockVulnerability = {
     full_path: '/project_full_path',
   },
   identifiers: [],
+  mergeRequestLinks: [],
 };

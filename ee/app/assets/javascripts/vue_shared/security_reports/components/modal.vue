@@ -102,42 +102,30 @@ export default {
       return this.modal.vulnerability;
     },
     issueData() {
-      return this.glFeatures.deprecateVulnerabilitiesFeedback
-        ? getCreatedIssueForVulnerability(this.vulnerability)
-        : this.vulnerability?.issue_feedback;
+      return getCreatedIssueForVulnerability(this.vulnerability);
     },
     hasIssue() {
-      // Issues can be deleted. After an issue is deleted, issue_feedback will still be an object, but it won't have
-      // an issue_iid. issue_links however will remove the object from the array. Once we enable and remove the
-      // deprecate_vulnerabilities_feedback feature flag, it's no longer necessary to check for issue_iid, and this
-      // computed property can be deleted in favor of checking whether issueData is truthy instead.
-      return Boolean(this.issueData?.issue_iid);
+      return Boolean(this.issueData);
     },
     mergeRequestData() {
-      return this.glFeatures.deprecateVulnerabilitiesFeedback
-        ? this.vulnerability?.merge_request_links?.at(-1)
-        : this.vulnerability?.merge_request_feedback;
+      return this.vulnerability?.merge_request_links?.at(-1);
     },
     dismissalData() {
-      if (this.glFeatures.deprecateVulnerabilitiesFeedback) {
-        const transition = getDismissalTransitionForVulnerability(this.vulnerability);
+      const transition = getDismissalTransitionForVulnerability(this.vulnerability);
 
-        if (!transition) {
-          return null;
-        }
-
-        const commentDetails = transition.comment
-          ? { comment: transition.comment, comment_author: transition.author }
-          : null;
-        // Return the dismissal data in the format the dismissal note expects.
-        return {
-          author: transition.author,
-          created_at: transition.created_at,
-          comment_details: commentDetails,
-        };
+      if (!transition) {
+        return null;
       }
 
-      return this.vulnerability?.dismissalFeedback || this.vulnerability?.dismissal_feedback;
+      const commentDetails = transition.comment
+        ? { comment: transition.comment, comment_author: transition.author }
+        : null;
+      // Return the dismissal data in the format the dismissal note expects.
+      return {
+        author: transition.author,
+        created_at: transition.created_at,
+        comment_details: commentDetails,
+      };
     },
     isEditingDismissalComment() {
       return this.dismissalData && this.modal.isCommentingOnDismissal;

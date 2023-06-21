@@ -21,18 +21,11 @@ describe('Security Dashboard Table Row', () => {
   let wrapper;
   let store;
 
-  const createComponent = (
-    mountFunc,
-    { props = {} } = {},
-    { deprecateVulnerabilitiesFeedback = true } = {},
-  ) => {
+  const createComponent = (mountFunc, { props = {} } = {}) => {
     wrapper = mountFunc(SecurityDashboardTableRow, {
       store,
       propsData: {
         ...props,
-      },
-      provide: {
-        glFeatures: { deprecateVulnerabilitiesFeedback },
       },
     });
   };
@@ -169,34 +162,6 @@ describe('Security Dashboard Table Row', () => {
     );
   });
 
-  describe('vulnerability dismissal - deprecateVulnerabilitiesFeedback feature flag disabled', () => {
-    let vulnerability;
-
-    beforeEach(() => {
-      vulnerability = cloneDeep(mockDataVulnerabilities[0]);
-    });
-
-    it.each`
-      dismissalFeedback          | isLabelShown | isIconShown
-      ${{}}                      | ${true}      | ${false}
-      ${{ comment_details: {} }} | ${true}      | ${true}
-      ${null}                    | ${false}     | ${false}
-    `(
-      'shows dismissal badge: $isLabelShown, shows dismissal comment icon: $isIconShown',
-      ({ dismissalFeedback, isLabelShown, isIconShown }) => {
-        vulnerability.dismissal_feedback = dismissalFeedback;
-        createComponent(
-          shallowMountExtended,
-          { props: { vulnerability } },
-          { deprecateVulnerabilitiesFeedback: false },
-        );
-
-        expect(findDismissalLabel().exists()).toBe(isLabelShown);
-        expect(findDismissalCommentIcon().exists()).toBe(isIconShown);
-      },
-    );
-  });
-
   describe('with created issue', () => {
     const vulnerability = mockDataVulnerabilities[3];
 
@@ -206,41 +171,6 @@ describe('Security Dashboard Table Row', () => {
       expect(findVulnerabilityIssueLink().props()).toMatchObject({
         issue: getCreatedIssueForVulnerability(vulnerability),
         projectName: vulnerability.project.name,
-      });
-    });
-
-    it('does not show the vulnerability issue link if there is no issue iid', () => {
-      const vuln = cloneDeep(vulnerability);
-      vuln.issue_links[0].issue_iid = null;
-      createComponent(shallowMount, { props: { vulnerability: vuln } });
-
-      expect(findVulnerabilityIssueLink().exists()).toBe(false);
-    });
-
-    describe('deprecateVulnerabilitiesFeedback feature flag disabled', () => {
-      it('shows the vulnerability issue link with the expected props', () => {
-        createComponent(
-          shallowMount,
-          { props: { vulnerability } },
-          { deprecateVulnerabilitiesFeedback: false },
-        );
-
-        expect(findVulnerabilityIssueLink().props()).toMatchObject({
-          issue: vulnerability.issue_feedback,
-          projectName: vulnerability.project.name,
-        });
-      });
-
-      it('does not show the vulnerability issue link if there is no issue iid', () => {
-        const vuln = cloneDeep(vulnerability);
-        vuln.issue_feedback.issue_iid = null;
-        createComponent(
-          shallowMount,
-          { props: { vulnerability: vuln } },
-          { deprecateVulnerabilitiesFeedback: false },
-        );
-
-        expect(findVulnerabilityIssueLink().exists()).toBe(false);
       });
     });
   });
