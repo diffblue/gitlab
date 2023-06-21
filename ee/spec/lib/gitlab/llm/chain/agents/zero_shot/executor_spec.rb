@@ -113,4 +113,67 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       end
     end
   end
+
+  describe 'real requests', :real_ai_request, :saas do
+    using RSpec::Parameterized::TableSyntax
+
+    let_it_be_with_reload(:group) { create(:group_with_plan, :public, plan: :ultimate_plan) }
+    let_it_be(:project) { create(:project, group: group) }
+
+    let(:executor) do
+      resource = user
+      ai_request = ::Gitlab::Llm::Chain::Requests::Anthropic.new(user)
+      context = ::Gitlab::Llm::Chain::GitlabContext.new(
+        current_user: user,
+        container: resource.try(:resource_parent)&.root_ancestor,
+        resource: resource,
+        ai_request: ai_request
+      )
+
+      described_class.new(
+        user_input: input,
+        tools: Gitlab::Llm::Completions::Chat::TOOLS,
+        context: context
+      )
+    end
+
+    before do
+      stub_licensed_features(ai_features: true)
+      stub_ee_application_setting(should_check_namespace_plan: true)
+      group.add_owner(user)
+      group.namespace_settings.update!(
+        third_party_ai_features_enabled: true,
+        experiment_features_enabled: true
+      )
+    end
+
+    context 'with predefined issue' do
+      let_it_be(:label) { create(:label, project: project, title: 'ai-enablement') }
+      let_it_be(:milestone) { create(:milestone, project: project, title: 'milestone1', due_date: 3.days.from_now) }
+      let_it_be(:issue) do
+        create(:issue, project: project, title: 'A testing issue for AI reliability',
+          description: 'This issue is about evaluating reliability of various AI providers.',
+          labels: [label], created_at: 2.days.ago, milestone: milestone)
+      end
+
+      # rubocop: disable Layout/LineLength
+      where(:input_template, :tools, :answer_match) do
+        'Can you list all labels on %{issue_identifier} issue?'                       | ['IssueIdentifier', 'Resource Reader'] | /ai-enablement/
+        'How old is %<issue_identifier>s issue?'                                      | ['IssueIdentifier', 'Resource Reader'] | /2 days/
+        'For which milestone is %<issue_identifier>s issue? And how long until then?' | ['IssueIdentifier', 'Resource Reader'] | /milestone1.*3 days/
+      end
+      # rubocop: enable Layout/LineLength
+
+      with_them do
+        let(:input) { format(input_template, issue_identifier: issue.to_reference(full: true)) }
+
+        it 'answers query using expected tools', :aggregate_failures do
+          answer = executor.execute
+
+          expect(executor.prompt).to match_llm_tools(tools)
+          expect(answer.content).to match_llm_answer(answer_match)
+        end
+      end
+    end
+  end
 end
