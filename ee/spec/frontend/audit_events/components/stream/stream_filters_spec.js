@@ -36,7 +36,10 @@ describe('StreamWithFilters', () => {
       showSelectAllButtonLabel: AUDIT_STREAMS_FILTERING.SELECT_ALL,
       resetButtonLabel: AUDIT_STREAMS_FILTERING.UNSELECT_ALL,
       headerText: AUDIT_STREAMS_FILTERING.SELECT_EVENTS,
+      noResultsText: StreamFilters.i18n.noResultsText,
+      searchPlaceholder: StreamFilters.i18n.searchPlaceholder,
       multiple: true,
+      searchable: true,
       toggleClass: 'gl-max-w-full',
     });
     expect(findCollapsibleListbox().classes('gl-max-w-full')).toBe(true);
@@ -109,5 +112,23 @@ describe('StreamWithFilters', () => {
         [mockAuditEventDefinitions.map((definition) => definition.event_name)],
       ]);
     });
+  });
+
+  describe('search', () => {
+    it('does not filter items if searchTerm is empty string', async () => {
+      await findCollapsibleListbox().vm.$emit('search', '');
+
+      expect(findCollapsibleListbox().props('items')).toEqual(mockStreamFiltersOptions);
+    });
+  });
+
+  it('filters items correctly when searching', async () => {
+    // Capitalize "Approval" to test that casing is ignored when matching items with the searchTerm
+    await findCollapsibleListbox().vm.$emit('search', 'Merge Approval');
+
+    expect(findCollapsibleListbox().props('items')).toMatchObject([
+      { value: 'update_merge_approval_rule', text: 'Update merge approval rule' },
+      { value: 'create_merge_approval_rule', text: 'Create merge approval rule' },
+    ]);
   });
 });
