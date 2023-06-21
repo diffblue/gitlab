@@ -13,7 +13,6 @@ import {
   DEFAULT_DESIRED_STATE,
   DEFAULT_DEVFILE_PATH,
   ROUTES,
-  PROJECT_VISIBILITY,
   WORKSPACES_LIST_PAGE_SIZE,
 } from 'ee/remote_development/constants';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -149,10 +148,6 @@ describe('remote_development/pages/create.vue', () => {
   describe('default', () => {
     beforeEach(() => {
       createWrapper();
-    });
-
-    it('limits projects search to public projects', () => {
-      expect(findSearchProjectsListbox().props().visibility).toBe(PROJECT_VISIBILITY.public);
     });
 
     it('displays a cancel button that allows navigating to the workspaces list', () => {

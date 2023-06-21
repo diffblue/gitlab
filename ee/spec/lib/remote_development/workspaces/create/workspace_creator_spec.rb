@@ -8,7 +8,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceCreator, featur
   include_context 'with remote development shared fixtures'
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:project, reload: true) { create(:project, :public, :in_group, :repository) }
+  let_it_be(:project, reload: true) { create(:project, :in_group, :repository) }
   let_it_be(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
   let_it_be(:personal_access_token) { create(:personal_access_token, user: user) }
   let(:random_string) { 'abcdef' }

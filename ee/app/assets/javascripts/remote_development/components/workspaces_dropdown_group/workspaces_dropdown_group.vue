@@ -18,7 +18,7 @@ export const i18n = {
   workspacesGroupLabel: s__('Workspaces|Your workspaces'),
   newWorkspaceButton: s__('Workspaces|New workspace'),
   noWorkspacesMessage: s__(
-    'Workspaces|A workspace is a virtual sandbox environment for your code in GitLab. You can create a workspace for a public project.',
+    'Workspaces|A workspace is a virtual sandbox environment for your code in GitLab.',
   ),
   loadingWorkspacesFailedMessage: s__('Workspaces|Could not load workspaces'),
   noWorkspacesSupportMessage: __('To set up this feature, contact your administrator.'),

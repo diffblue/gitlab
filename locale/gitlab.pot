@@ -53795,7 +53795,7 @@ msgstr ""
 msgid "Workspaces"
 msgstr ""
 
-msgid "Workspaces|A workspace is a virtual sandbox environment for your code in GitLab. You can create a workspace for a public project."
+msgid "Workspaces|A workspace is a virtual sandbox environment for your code in GitLab."
 msgstr ""
 
 msgid "Workspaces|Cancel"
@@ -53892,9 +53892,6 @@ msgid "Workspaces|Unknown state"
 msgstr ""
 
 msgid "Workspaces|Workspaces"
-msgstr ""
-
-msgid "Workspaces|You can create a workspace for public projects only."
 msgstr ""
 
 msgid "Workspaces|You can't create a workspace for this project"
@@ -55965,9 +55962,6 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "finding is not found or is already attached to a vulnerability"
-msgstr ""
-
-msgid "for Workspace is required to be public"
 msgstr ""
 
 msgid "for Workspace must have an associated RemoteDevelopmentAgentConfig"

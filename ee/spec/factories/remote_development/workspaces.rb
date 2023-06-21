@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :workspace, class: 'RemoteDevelopment::Workspace' do
-    project factory: [:project, :public, :in_group]
+    project factory: [:project, :in_group]
     user
     agent factory: [:ee_cluster_agent, :with_remote_development_agent_config]
     personal_access_token

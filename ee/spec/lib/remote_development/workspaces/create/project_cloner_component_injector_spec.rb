@@ -7,7 +7,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::ProjectClonerComponentInje
 
   let_it_be(:group) { create(:group, name: "test-group") }
   let_it_be(:project) do
-    create(:project, :public, :in_group, :repository, path: "test-project", namespace: group)
+    create(:project, :in_group, :repository, path: "test-project", namespace: group)
   end
 
   let(:flattened_devfile_name) { 'example.flattened-devfile.yaml' }
