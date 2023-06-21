@@ -1,4 +1,3 @@
-import { nextTick } from 'vue';
 import { shallowMount } from '@vue/test-utils';
 import { useFakeDate } from 'helpers/fake_date';
 import CurrentDayIndicator from 'ee/roadmap/components/current_day_indicator.vue';
@@ -44,18 +43,8 @@ describe('CurrentDayIndicator', () => {
   it('renders span element containing class `current-day-indicator`', () => {
     createComponent();
 
-    expect(wrapper.classes('current-day-indicator')).toBe(true);
-  });
-
-  it('initializes currentDate and indicatorStyles props with default values', () => {
-    createComponent();
-
-    const currentDate = mockTimeframeMonths[0];
-
-    expect(wrapper.vm.currentDate.getDate()).toBe(currentDate.getDate());
-    expect(wrapper.vm.currentDate.getMonth()).toBe(currentDate.getMonth());
-    expect(wrapper.vm.currentDate.getFullYear()).toBe(currentDate.getFullYear());
-    expect(wrapper.vm.indicatorStyles).toBeDefined();
+    expect(findCurrentDayIndicator().exists()).toBe(true);
+    expect(findCurrentDayIndicator().classes('current-day-indicator')).toBe(true);
   });
 
   describe('when presetType is QUARTERS and currentDate is within current quarter', () => {
@@ -125,13 +114,11 @@ describe('CurrentDayIndicator', () => {
         useFakeDate(timeframeItem);
         window.gon.first_day_of_week = firstDayOfWeek;
 
-        beforeEach(async () => {
+        beforeEach(() => {
           createComponent({
             presetType: PRESET_TYPES.WEEKS,
             timeframeItem,
           });
-
-          await nextTick();
         });
 
         it(`sets indicator style correctly`, () => {

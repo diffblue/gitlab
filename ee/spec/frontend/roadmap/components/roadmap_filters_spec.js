@@ -77,6 +77,7 @@ describe('RoadmapFilters', () => {
   };
 
   const findSettingsButton = () => wrapper.findByTestId('settings-button');
+  const findFilteredSearchBar = () => wrapper.findComponent(FilteredSearchBar);
 
   beforeEach(() => {
     wrapper = createComponent();
@@ -156,7 +157,7 @@ describe('RoadmapFilters', () => {
       let filteredSearchBar;
 
       beforeEach(() => {
-        filteredSearchBar = wrapper.findComponent(FilteredSearchBar);
+        filteredSearchBar = findFilteredSearchBar();
       });
 
       it('component is rendered with correct namespace & recent search key', () => {
@@ -266,11 +267,10 @@ describe('RoadmapFilters', () => {
           gon.current_user_avatar_url = 'avatar/url';
 
           wrapper = createComponent();
-          filteredSearchBar = wrapper.findComponent(FilteredSearchBar);
         });
 
         it('includes `Author`, `Milestone`, `Confidential`, `Epic`, `Group`, `Label` and `My-Reaction` tokens', () => {
-          expect(filteredSearchBar.props('tokens')).toEqual([
+          expect(findFilteredSearchBar().props('tokens')).toEqual([
             {
               ...mockAuthorTokenConfig,
               preloadedUsers: [
