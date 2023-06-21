@@ -28,5 +28,21 @@ RSpec.describe Geo::ProjectWikiRepositoryReplicator, feature_category: :geo_repl
     end
   end
 
-  include_examples 'a verifiable replicator'
+  include_examples 'a verifiable replicator' do
+    describe '#verify' do
+      context 'when wiki git repository does not exist' do
+        let(:project) { create(:project, wiki_repository: build(:project_wiki_repository, project: nil)) }
+        let(:model_record) { project.wiki_repository }
+
+        it 'creates an empty git repository' do
+          expect { replicator.verify }
+            .to change { model_record.wiki_repository_exists? }
+            .from(false)
+            .to(true)
+
+          expect(replicator.primary_checksum).to be_present
+        end
+      end
+    end
+  end
 end
