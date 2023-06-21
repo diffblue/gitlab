@@ -24,6 +24,7 @@ import { modifyPolicy } from 'ee/security_orchestration/components/policy_editor
 import {
   SECURITY_POLICY_ACTIONS,
   EDITOR_MODE_RULE,
+  EDITOR_MODE_YAML,
   PARSING_ERROR_MESSAGE,
 } from 'ee/security_orchestration/components/policy_editor/constants';
 import DimDisableContainer from 'ee/security_orchestration/components/policy_editor/dim_disable_container.vue';
@@ -108,9 +109,11 @@ describe('ScanResultPolicyEditor', () => {
   const findAllDisabledComponents = () => wrapper.findAllComponents(DimDisableContainer);
   const findAllRuleBuilders = () => wrapper.findAllComponents(PolicyRuleBuilder);
 
-  const changesToRuleMode = () => {
+  const changesToRuleMode = () =>
     findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_RULE);
-  };
+
+  const changesToYamlMode = () =>
+    findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_YAML);
 
   const verifiesParsingError = () => {
     expect(findPolicyEditorLayout().props('hasParsingError')).toBe(true);
@@ -295,16 +298,38 @@ describe('ScanResultPolicyEditor', () => {
       },
     );
 
-    it('passes errors with the cause of `approver_ids` to the action builder', async () => {
+    describe('error handling', () => {
       const error = {
         message: 'There was an error',
         cause: [{ field: 'approver_ids' }, { field: 'approver_ids' }],
       };
-      modifyPolicy.mockRejectedValue(error);
-      factory();
-      await findPolicyEditorLayout().vm.$emit('save-policy');
-      await waitForPromises();
-      expect(findPolicyActionBuilder().props('errors')).toEqual(error.cause);
+
+      beforeEach(() => {
+        modifyPolicy.mockRejectedValue(error);
+        factory();
+      });
+
+      describe('when in rule mode', () => {
+        it('passes errors with the cause of `approver_ids` to the action builder', async () => {
+          await findPolicyEditorLayout().vm.$emit('save-policy');
+          await waitForPromises();
+
+          expect(findPolicyActionBuilder().props('errors')).toEqual(error.cause);
+          expect(wrapper.emitted('error')).toContainEqual(['']);
+        });
+      });
+
+      describe('when in yaml mode', () => {
+        beforeEach(() => changesToYamlMode());
+
+        it('emits errors', async () => {
+          await findPolicyEditorLayout().vm.$emit('save-policy');
+          await waitForPromises();
+
+          expect(findPolicyActionBuilder().props('errors')).toEqual([]);
+          expect(wrapper.emitted('error')).toContainEqual([''], [error.message]);
+        });
+      });
     });
   });
 

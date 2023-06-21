@@ -124,6 +124,9 @@ export default {
     hasEmptyRules() {
       return this.policy.rules?.length === 0 || this.policy.rules?.at(0)?.type === '';
     },
+    isActiveRuleMode() {
+      return this.mode === EDITOR_MODE_RULE && !this.hasParsingError;
+    },
   },
   watch: {
     invalidBranches(branches) {
@@ -153,7 +156,7 @@ export default {
       this.updateYamlEditorValue(this.policy);
     },
     handleError(error) {
-      if (error.cause?.length) {
+      if (this.isActiveRuleMode && error.cause?.length) {
         const updatedErrors = error.cause.reduce(
           (acc, cause) => {
             switch (cause.field) {
@@ -234,10 +237,10 @@ export default {
     },
     async changeEditorMode(mode) {
       this.mode = mode;
-      if (mode === EDITOR_MODE_RULE && !this.hasParsingError) {
-        if (this.invalidForRuleMode()) {
-          this.hasParsingError = true;
-        } else if (!this.hasEmptyRules && this.namespaceType === NAMESPACE_TYPES.PROJECT) {
+      if (this.isActiveRuleMode) {
+        this.hasParsingError = this.invalidForRuleMode();
+
+        if (!this.hasEmptyRules && this.namespaceType === NAMESPACE_TYPES.PROJECT) {
           this.invalidBranches = await getInvalidBranches({
             branches: this.allBranches(),
             projectId: this.namespaceId,
