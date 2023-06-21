@@ -9,6 +9,58 @@
 # - model_record
 # - replicator
 #
+
+RSpec.shared_examples 'a counter of succeeded available verifiables' do |count_method|
+  specify do
+    verifiable.verification_started!
+    verifiable.verification_succeeded_with_checksum!('some checksum', Time.current)
+
+    expect(described_class.send(count_method)).to eq(1)
+  end
+
+  it 'excludes other verification states' do
+    verifiable.verification_started!
+
+    expect(described_class.send(count_method)).to eq(0)
+
+    verifiable.verification_failed_with_message!('some error message')
+
+    expect(described_class.send(count_method)).to eq(0)
+
+    verifiable.verification_pending!
+
+    expect(described_class.send(count_method)).to eq(0)
+  end
+end
+
+RSpec.shared_examples 'a counter of failed available verifiables' do |count_method|
+  specify do
+    verifiable.verification_started!
+    verifiable.verification_failed_with_message!('some error message')
+
+    # This bypasses the registry state attribute to :synced again
+    # since available_verifiables return synced registries
+    # and we need that state to count it properly.
+    verifiable.update_attribute(:state, 2) if count_method == :verification_failed_count
+
+    expect(described_class.send(count_method)).to eq(1)
+  end
+
+  it 'excludes other verification states' do
+    verifiable.verification_started!
+
+    expect(described_class.send(count_method)).to eq(0)
+
+    verifiable.verification_succeeded_with_checksum!('foo', Time.current)
+
+    expect(described_class.send(count_method)).to eq(0)
+
+    verifiable.verification_pending!
+
+    expect(described_class.send(count_method)).to eq(0)
+  end
+end
+
 RSpec.shared_examples 'a verifiable replicator' do
   include EE::GeoHelpers
 
@@ -49,29 +101,6 @@ RSpec.shared_examples 'a verifiable replicator' do
       it 'returns false' do
         expect(described_class.verification_enabled?).to be_falsey
       end
-    end
-  end
-
-  RSpec.shared_examples 'a counter of succeeded available verifiables' do |count_method|
-    specify do
-      verifiable.verification_started!
-      verifiable.verification_succeeded_with_checksum!('some checksum', Time.current)
-
-      expect(described_class.send(count_method)).to eq(1)
-    end
-
-    it 'excludes other verification states' do
-      verifiable.verification_started!
-
-      expect(described_class.send(count_method)).to eq(0)
-
-      verifiable.verification_failed_with_message!('some error message')
-
-      expect(described_class.send(count_method)).to eq(0)
-
-      verifiable.verification_pending!
-
-      expect(described_class.send(count_method)).to eq(0)
     end
   end
 
@@ -154,34 +183,6 @@ RSpec.shared_examples 'a verifiable replicator' do
 
         expect(described_class.verified_count).to be_nil
       end
-    end
-  end
-
-  RSpec.shared_examples 'a counter of failed available verifiables' do |count_method|
-    specify do
-      verifiable.verification_started!
-      verifiable.verification_failed_with_message!('some error message')
-
-      # This bypasses the registry state attribute to :synced again
-      # since available_verifiables return synced registries
-      # and we need that state to count it properly.
-      verifiable.update_attribute(:state, 2) if count_method == :verification_failed_count
-
-      expect(described_class.send(count_method)).to eq(1)
-    end
-
-    it 'excludes other verification states' do
-      verifiable.verification_started!
-
-      expect(described_class.send(count_method)).to eq(0)
-
-      verifiable.verification_succeeded_with_checksum!('foo', Time.current)
-
-      expect(described_class.send(count_method)).to eq(0)
-
-      verifiable.verification_pending!
-
-      expect(described_class.send(count_method)).to eq(0)
     end
   end
 
