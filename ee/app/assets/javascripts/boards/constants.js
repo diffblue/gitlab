@@ -3,10 +3,12 @@ import { FilterFields as FilterFieldsCE } from '~/boards/constants';
 import destroyBoardListMutation from '~/boards/graphql/board_list_destroy.mutation.graphql';
 import updateBoardListMutation from '~/boards/graphql/board_list_update.mutation.graphql';
 import listIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
+import { TYPENAME_ISSUE, TYPENAME_EPIC } from '~/graphql_shared/constants';
 import { TYPE_EPIC, TYPE_ISSUE } from '~/issues/constants';
 import { s__ } from '~/locale';
 
 import toggleListCollapsedMutation from '~/boards/graphql/client/board_toggle_collapsed.mutation.graphql';
+import issueCreateMutation from '~/boards/graphql/issue_create.mutation.graphql';
 import issueMoveListMutation from './graphql/issue_move_list.mutation.graphql';
 import boardListsQuery from './graphql/board_lists.query.graphql';
 import destroyEpicBoardListMutation from './graphql/epic_board_list_destroy.mutation.graphql';
@@ -20,6 +22,7 @@ import createBoardListMutation from './graphql/board_list_create.mutation.graphq
 import createEpicBoardListMutation from './graphql/epic_board_list_create.mutation.graphql';
 import epicMoveListMutation from './graphql/epic_move_list.mutation.graphql';
 import toggleEpicListCollapsedMutation from './graphql/client/epic_board_toggle_collapsed.mutation.graphql';
+import epicCreateMutation from './graphql/epic_create.mutation.graphql';
 
 export * from '~/boards/constants';
 
@@ -206,10 +209,74 @@ export const listIssuablesQueries = {
   [TYPE_ISSUE]: {
     query: listIssuesQuery,
     moveMutation: issueMoveListMutation,
+    createMutation: issueCreateMutation,
+    optimisticResponse: {
+      assignees: { nodes: [], __typename: 'UserCoreConnection' },
+      blocked: false,
+      blockedByCount: 0,
+      confidential: false,
+      dueDate: null,
+      emailsDisabled: false,
+      epic: null,
+      healthStatus: null,
+      hidden: false,
+      humanTimeEstimate: null,
+      humanTotalTimeSpent: null,
+      id: 'gid://gitlab/Issue/-1',
+      iid: '-1',
+      iteration: null,
+      labels: { nodes: [], __typename: 'LabelConnection' },
+      milestone: null,
+      referencePath: ' ',
+      relativePosition: null,
+      severity: 'UNKNOWN',
+      timeEstimate: 0,
+      title: '',
+      totalTimeSpent: 0,
+      type: 'ISSUE',
+      webUrl: '',
+      weight: null,
+      __typename: TYPENAME_ISSUE,
+    },
   },
   [TYPE_EPIC]: {
     query: gon?.features?.epicColorHighlight ? listEpicsWithColorQuery : listEpicsQuery,
     moveMutation: epicMoveListMutation,
+    createMutation: epicCreateMutation,
+    optimisticResponse: {
+      blocked: false,
+      blockedByCount: 0,
+      closedAt: null,
+      confidential: false,
+      createdAt: null,
+      descendantCounts: {
+        closedEpics: 0,
+        closedIssues: 0,
+        openedEpics: 0,
+        openedIssues: 0,
+        __typename: 'EpicDescendantCount',
+      },
+      descendantWeightSum: {
+        closedIssues: 0,
+        openedIssues: 0,
+        __typename: 'EpicDescendantWeights',
+      },
+      group: null,
+      hasIssues: false,
+      id: 'gid://gitlab/Epic/-1',
+      iid: '-1',
+      labels: { nodes: [], __typename: 'LabelConnection' },
+      reference: '',
+      referencePath: ' ',
+      relativePosition: null,
+      state: 'opened',
+      subscribed: true,
+      title: '',
+      webPath: '',
+      webUrl: '',
+      ...(gon?.features?.epicColorHighlight ? { color: '' } : {}),
+      __typename: TYPENAME_EPIC,
+    },
   },
 };
 

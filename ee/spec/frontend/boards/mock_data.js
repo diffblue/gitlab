@@ -43,9 +43,14 @@ import { mockLabelList } from 'jest/boards/mock_data';
 export const mockEpicBoard = {
   id: 'gid://gitlab/Board::EpicBoard/1',
   name: 'Development',
+  hideBacklogList: false,
+  hideClosedList: false,
+  webPath: '/groups/gitlab-org/-/epic_boards/1',
   labels: {
     nodes: [{ id: 'gid://gitlab/Label/32', title: 'Deliverable' }],
+    __typename: 'LabelConnection',
   },
+  __typename: 'EpicBoard',
 };
 
 export const mockEpicBoardResponse = {
@@ -958,6 +963,26 @@ export const moveEpicMutationResponse = {
       issuable: rawEpic,
       errors: [],
       __typename: 'EpicMoveListPayload',
+    },
+  },
+};
+
+export const createIssueMutationResponse = {
+  data: {
+    createIssuable: {
+      issuable: rawIssue,
+      errors: [],
+      __typename: 'CreateIssuePayload',
+    },
+  },
+};
+
+export const createEpicMutationResponse = {
+  data: {
+    createIssuable: {
+      issuable: { ...rawEpic, id: 'gid://gitlab/Epic/35' },
+      errors: [],
+      __typename: 'CreateEpicPayload',
     },
   },
 };

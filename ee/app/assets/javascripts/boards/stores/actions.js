@@ -780,11 +780,11 @@ export default {
         variables: { input: formatEpicInput(epicInput, boardConfig) },
       })
       .then(({ data }) => {
-        if (data.createEpic.errors?.length) {
-          throw new Error(data.createEpic.errors[0]);
+        if (data.createIssuable.errors?.length) {
+          throw new Error(data.createIssuable.errors[0]);
         }
 
-        const rawEpic = data.createEpic?.epic;
+        const rawEpic = data.createIssuable?.issuable;
         const formattedEpic = formatEpic(rawEpic);
         dispatch('removeListItem', { listId: list.id, itemId: placeholderId });
         dispatch('addListItem', { list, item: formattedEpic, position: 0 });
