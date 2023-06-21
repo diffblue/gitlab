@@ -24315,7 +24315,6 @@ CREATE TABLE vulnerability_occurrences (
     vulnerability_id bigint,
     details jsonb DEFAULT '{}'::jsonb NOT NULL,
     description text,
-    message text,
     solution text,
     cve text,
     location jsonb,
@@ -24323,7 +24322,6 @@ CREATE TABLE vulnerability_occurrences (
     uuid_convert_string_to_uuid uuid DEFAULT '00000000-0000-0000-0000-000000000000'::uuid NOT NULL,
     CONSTRAINT check_4a3a60f2ba CHECK ((char_length(solution) <= 7000)),
     CONSTRAINT check_ade261da6b CHECK ((char_length(description) <= 15000)),
-    CONSTRAINT check_df6dd20219 CHECK ((char_length(message) <= 3000)),
     CONSTRAINT check_f602da68dd CHECK ((char_length(cve) <= 48400))
 );
 
