@@ -3,10 +3,6 @@
 RSpec.shared_examples 'supports keyset pagination' do
   include KeysetPaginationHelpers
 
-  before do
-    stub_feature_flags(audit_event_group_rollup: false)
-  end
-
   it 'paginates the records correctly' do
     get api(url, admin, admin_mode: true), params: { pagination: 'keyset', per_page: 1 }
 

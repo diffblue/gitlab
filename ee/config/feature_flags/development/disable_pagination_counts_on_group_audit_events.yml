@@ -1,8 +1,0 @@
----
-name: disable_pagination_counts_on_group_audit_events
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/122851
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/414258
-milestone: '16.1'
-type: development
-group: group::compliance
-default_enabled: false

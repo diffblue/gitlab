@@ -867,8 +867,6 @@ RSpec.describe API::Groups, :aggregate_failures, feature_category: :groups_and_p
 
         before do
           stub_licensed_features(audit_events: true)
-          stub_feature_flags(disable_pagination_counts_on_group_audit_events: false)
-          stub_feature_flags(audit_event_group_rollup: false)
         end
 
         it 'returns 200 response' do
@@ -885,50 +883,6 @@ RSpec.describe API::Groups, :aggregate_failures, feature_category: :groups_and_p
           expect(response).to include_pagination_headers
           expect(response.headers['X-Total']).to eq(audit_events_counts.to_s)
           expect(response.headers['X-Page']).to eq('1')
-        end
-
-        context 'with :audit_event_group_rollup enabled' do
-          before do
-            stub_feature_flags(audit_event_group_rollup: true)
-          end
-
-          it 'disables pagination counts' do
-            get api(path, user)
-
-            expect(response).to have_gitlab_http_status(:ok)
-            expect(response.headers).not_to include('X-Total')
-            expect(response.headers).not_to include('X-Total-Pages')
-          end
-        end
-
-        context 'with :disable_pagination_counts_on_group_audit_events enabled' do
-          before do
-            stub_feature_flags(disable_pagination_counts_on_group_audit_events: true)
-            stub_feature_flags(audit_event_group_rollup: false)
-          end
-
-          it 'disables pagination counts' do
-            get api(path, user)
-
-            expect(response).to have_gitlab_http_status(:ok)
-            expect(response.headers).not_to include('X-Total')
-            expect(response.headers).not_to include('X-Total-Pages')
-          end
-
-          context 'with :disable_pagination_counts_on_group_audit_events disabled' do
-            before do
-              stub_feature_flags(disable_pagination_counts_on_group_audit_events: false)
-              stub_feature_flags(audit_event_group_rollup: false)
-            end
-
-            it 'enables pagination counts' do
-              get api(path, user)
-
-              expect(response).to have_gitlab_http_status(:ok)
-              expect(response.headers).to include('X-Total')
-              expect(response.headers).to include('X-Total-Pages')
-            end
-          end
         end
 
         it 'does not include audit events of a different group' do

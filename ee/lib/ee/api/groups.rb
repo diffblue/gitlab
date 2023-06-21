@@ -175,13 +175,7 @@ module EE
                 params: audit_event_finder_params
               ).execute
 
-              # If audit_event_group_rollup is enabled we *must* paginate without a count.
-              # If audit_event_group_rollup is disabled we can experiment with toggling count on and off
-              without_count = ::Feature.enabled?(:audit_event_group_rollup, user_group) ||
-                ::Feature.enabled?(:disable_pagination_counts_on_group_audit_events, user_group)
-
-              present paginate_with_strategies(audit_events, paginator_params: { without_count: without_count }),
-                with: EE::API::Entities::AuditEvent
+              present paginate_with_strategies(audit_events), with: EE::API::Entities::AuditEvent
             end
 
             desc 'Get a specific audit event in this group.' do
