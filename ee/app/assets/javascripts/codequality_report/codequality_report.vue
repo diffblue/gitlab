@@ -110,6 +110,10 @@ export default {
   },
   methods: {
     fetchMoreViolations() {
+      if (!this.codequalityViolations.pageInfo.endCursor) {
+        return; // stop fetching if endCursor is null
+      }
+
       this.$apollo.queries.codequalityViolations
         .fetchMore({
           variables: {

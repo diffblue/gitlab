@@ -88,6 +88,45 @@ describe('Codequality report app', () => {
     });
   });
 
+  describe('when the endcursor is null', () => {
+    beforeEach(async () => {
+      const endOfListResponse = {
+        data: {
+          project: {
+            id: '1',
+            pipeline: {
+              id: 'pipeline-1',
+              codeQualityReports: {
+                ...codeQualityViolations,
+                pageInfo: {
+                  hasNextPage: false,
+                  hasPreviousPage: true,
+                  startCursor: null,
+                  endCursor: null,
+                  __typename: 'PageInfo',
+                },
+              },
+            },
+          },
+        },
+      };
+
+      createComponent(jest.fn().mockResolvedValue(endOfListResponse));
+      await waitForPromises();
+    });
+
+    it('stops adding listitems', async () => {
+      expect(findReportSection().props().unresolvedIssues).toHaveLength(
+        codeQualityViolations.count,
+      );
+      findInfiniteScroll().vm.$emit('bottomReached');
+      await waitForPromises();
+      expect(findReportSection().props().unresolvedIssues).toHaveLength(
+        codeQualityViolations.count,
+      );
+    });
+  });
+
   describe('when there are no codequality issues', () => {
     beforeEach(async () => {
       const emptyResponse = {
