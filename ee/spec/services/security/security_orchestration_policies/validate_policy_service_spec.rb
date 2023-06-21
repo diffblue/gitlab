@@ -30,6 +30,18 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
       it { expect(result[:status]).to eq(:success) }
     end
 
+    shared_examples 'sets validation errors' do |message:, field: described_class::DEFAULT_VALIDATION_ERROR_FIELD, level: :error, title: nil|
+      describe 'validation errors' do
+        subject(:errors) { result[:validation_errors] }
+
+        specify { expect(errors).to be_one }
+
+        specify do
+          expect(errors.first).to include(field: field, level: level, message: message, title: title || anything)
+        end
+      end
+    end
+
     shared_examples 'checks policy type' do
       context 'when policy type is not provided' do
         let(:policy_type) { nil }
@@ -37,6 +49,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
         it { expect(result[:status]).to eq(:error) }
         it { expect(result[:message]).to eq('Invalid policy') }
         it { expect(result[:details]).to match_array(['Invalid policy type']) }
+
+        it_behaves_like 'sets validation errors', message: 'Invalid policy type'
       end
 
       context 'when policy type is invalid' do
@@ -45,6 +59,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
         it { expect(result[:status]).to eq(:error) }
         it { expect(result[:message]).to eq('Invalid policy') }
         it { expect(result[:details]).to match_array(['Invalid policy type']) }
+
+        it_behaves_like 'sets validation errors', message: 'Invalid policy type'
       end
 
       context 'when policy type is valid' do
@@ -59,6 +75,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
         it { expect(result[:status]).to eq(:error) }
         it { expect(result[:message]).to eq('Invalid policy') }
         it { expect(result[:details]).to match_array(['Empty policy name']) }
+
+        it_behaves_like 'sets validation errors', message: 'Empty policy name'
       end
 
       context 'when policy name is invalid' do
@@ -67,6 +85,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
         it { expect(result[:status]).to eq(:error) }
         it { expect(result[:message]).to eq('Invalid policy') }
         it { expect(result[:details]).to match_array(['Empty policy name']) }
+
+        it_behaves_like 'sets validation errors', message: 'Empty policy name'
       end
 
       context 'when policy name is valid' do
@@ -108,9 +128,9 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
         context 'when branches and branch_type are missing' do
           using RSpec::Parameterized::TableSyntax
 
-          where(:policy_type, :branches, :branch_type, :status, :details) do
-            'scan_result_policy'    | nil | nil | :success | nil
-            'scan_execution_policy' | nil | nil | :error   | ['Policy cannot be enabled without branch information']
+          where(:policy_type, :branches, :branch_type, :status, :details, :field) do
+            'scan_result_policy'    | nil | nil | :success | nil                                                     | nil
+            'scan_execution_policy' | nil | nil | :error   | ['Policy cannot be enabled without branch information'] | :branches
           end
 
           with_them do
@@ -121,6 +141,12 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
 
             it { expect(result[:status]).to eq(status) }
             it { expect(result[:details]).to eq(details) }
+
+            it_behaves_like 'sets validation errors', field: :branches, message: 'Policy cannot be enabled without branch information' do
+              before do
+                skip if status != :error
+              end
+            end
 
             it_behaves_like 'checks only if policy is enabled'
           end
@@ -225,18 +251,10 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
             details: ['Required approvals exceed eligible approvers'])
         end
 
-        describe 'validation errors' do
-          let(:error) { result[:validation_errors].first }
-
-          specify do
-            expect(result[:validation_errors]).to contain_exactly(error)
-
-            expect(error).to eq(field: 'approvers_ids',
-              level: :error,
-              message: 'Required approvals exceed eligible approvers',
-              title: 'Logic error')
-          end
-        end
+        it_behaves_like 'sets validation errors',
+          field: :approvers_ids,
+          message: 'Required approvals exceed eligible approvers',
+          title: 'Logic error'
       end
 
       shared_examples 'passes validation' do
@@ -412,6 +430,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
       let_it_be(:container) { nil }
 
       it_behaves_like 'checks policy type'
+      it_behaves_like 'checks policy name'
       it_behaves_like 'checks if branches are provided in rule'
     end
 
@@ -436,6 +455,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
         let_it_be(:container) { create(:project, :empty_repo) }
 
         it_behaves_like 'checks policy type'
+        it_behaves_like 'checks policy name'
         it_behaves_like 'checks if branches exist for the provided branch_type' do
           where(:policy_type, :branch_type, :status) do
             :scan_execution_policy | 'all' | :error
@@ -455,6 +475,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
         end
 
         it_behaves_like 'checks policy type'
+        it_behaves_like 'checks policy name'
         it_behaves_like 'checks if branches are provided in rule'
         it_behaves_like 'checks if branches are defined in the project'
         it_behaves_like 'checks if required approvals exceed eligible approvers'
@@ -478,6 +499,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
         end
 
         it_behaves_like 'checks policy type'
+        it_behaves_like 'checks policy name'
         it_behaves_like 'checks if branches are provided in rule'
         it_behaves_like 'checks if branches are defined in the project'
         it_behaves_like 'checks if required approvals exceed eligible approvers'
@@ -500,6 +522,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
         end
 
         it_behaves_like 'checks policy type'
+        it_behaves_like 'checks policy name'
         it_behaves_like 'checks if branches exist for the provided branch_type' do
           where(:policy_type, :branch_type, :status) do
             :scan_execution_policy | 'all' | :success
@@ -532,6 +555,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
       let_it_be(:container) { create(:group) }
 
       it_behaves_like 'checks policy type'
+      it_behaves_like 'checks policy name'
       it_behaves_like 'checks if branches are provided in rule'
       it_behaves_like 'checks if required approvals exceed eligible approvers'
     end

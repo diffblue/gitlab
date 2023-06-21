@@ -7,24 +7,26 @@ module Security
 
       ValidationError = Struct.new(:field, :level, :message, :title)
 
+      DEFAULT_VALIDATION_ERROR_FIELD = :base
+
       def execute
         return error_with_title(s_('SecurityOrchestration|Empty policy name')) if blank_name?
 
         return success if policy_disabled?
 
         return error_with_title(s_('SecurityOrchestration|Invalid policy type')) if invalid_policy_type?
-        return error_with_title(s_('SecurityOrchestration|Policy cannot be enabled without branch information')) if blank_branch_for_rule?
-        return error_with_title(s_('SecurityOrchestration|Policy cannot be enabled for non-existing branches (%{branches})') % { branches: missing_branch_names.join(', ') }) if missing_branch_for_rule?
-        return error_with_title(s_('SecurityOrchestration|Branch types don\'t match any existing branches.')) if invalid_branch_types?
+        return error_with_title(s_('SecurityOrchestration|Policy cannot be enabled without branch information'), field: :branches) if blank_branch_for_rule?
+        return error_with_title(s_('SecurityOrchestration|Policy cannot be enabled for non-existing branches (%{branches})') % { branches: missing_branch_names.join(', ') }, field: :branches) if missing_branch_for_rule?
+        return error_with_title(s_('SecurityOrchestration|Branch types don\'t match any existing branches.'), field: :branches) if invalid_branch_types?
 
-        return error_with_title(s_('SecurityOrchestration|Required approvals exceed eligible approvers'), title: s_('SecurityOrchestration|Logic error'), field: "approvers_ids") if required_approvals_exceed_eligible_approvers?
+        return error_with_title(s_('SecurityOrchestration|Required approvals exceed eligible approvers'), title: s_('SecurityOrchestration|Logic error'), field: :approvers_ids) if required_approvals_exceed_eligible_approvers?
 
         success
       end
 
       private
 
-      def error_with_title(message, title: nil, field: nil, level: :error)
+      def error_with_title(message, field: DEFAULT_VALIDATION_ERROR_FIELD, title: nil, level: :error)
         pass_back = {
           details: [message],
           validation_errors: [ValidationError.new(field, level, message, title).to_h]
