@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'GFM autocomplete', :js, feature_category: :portfolio_management do
+  include Features::AutocompleteHelpers
+
   let_it_be(:user) { create(:user, name: '💃speciąl someone💃', username: 'someone.special') }
   let_it_be(:group) { create(:group) }
   let_it_be(:epic) { create(:epic, group: group) }
@@ -224,13 +226,5 @@ RSpec.describe 'GFM autocomplete', :js, feature_category: :portfolio_management 
         not_shown.each { |resource| expect(page).not_to have_content(resource.title) }
       end
     end
-  end
-
-  def find_autocomplete_menu
-    find('.atwho-view ul', visible: true)
-  end
-
-  def find_highlighted_autocomplete_item
-    find('.atwho-view li.cur', visible: true)
   end
 end
