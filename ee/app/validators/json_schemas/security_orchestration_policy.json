@@ -104,7 +104,7 @@
                 },
                 "timezone": {
                   "type": "string",
-                  "description": "Timezone to apply to the cadence."
+                  "description": "Time zone to apply to the cadence. Value must be an IANA Time Zone Database identifier, for example: `America/New_York`."
                 },
                 "agents": {
                   "type": "object",

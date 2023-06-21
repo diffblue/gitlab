@@ -332,6 +332,14 @@ RSpec.describe Security::OrchestrationPolicyRuleSchedule, feature_category: :sec
       it { is_expected.to eq(Time.zone.name) }
     end
 
+    context 'when timezone defined in the rule is empty string' do
+      let(:rules) do
+        [{ type: 'schedule', branches: %w[production], cadence: '*/20 * * * *', timezone: '' }]
+      end
+
+      it { is_expected.to eq(Time.zone.name) }
+    end
+
     context 'when timezone is defined in the rule' do
       let(:rules) do
         [{ type: 'schedule', branches: %w[production], cadence: '*/20 * * * *', timezone: 'Europe/Amsterdam' }]

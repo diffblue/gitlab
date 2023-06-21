@@ -426,12 +426,62 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
       end
     end
 
+    shared_examples 'checks if timezone is valid' do
+      context 'when timezone is not provided' do
+        it { expect(result[:status]).to eq(:success) }
+      end
+
+      context 'when timezone is provided' do
+        let(:rule) do
+          {
+            branches: ['master'],
+            cadence: '0 0 * * *',
+            timezone: timezone
+          }
+        end
+
+        context 'when timezone is valid' do
+          let(:timezone) { 'Europe/Amsterdam' }
+
+          it { expect(result[:status]).to eq(:success) }
+        end
+
+        context 'when timezone valid ActiveSupport::TimeZone, but not TZInfo::Timezone' do
+          let(:timezone) { 'Pacific Time (US & Canada)' }
+
+          it_behaves_like 'sets validation errors', field: :timezone, message: 'Timezone is invalid'
+
+          it { expect(result[:status]).to eq(:error) }
+          it { expect(result[:details]).to match_array(['Timezone is invalid']) }
+        end
+
+        context 'when timezone is empty string' do
+          let(:timezone) { '' }
+
+          it_behaves_like 'sets validation errors', field: :timezone, message: 'Timezone is invalid'
+
+          it { expect(result[:status]).to eq(:error) }
+          it { expect(result[:details]).to match_array(['Timezone is invalid']) }
+        end
+
+        context 'when timezone is invalid' do
+          let(:timezone) { 'invalid' }
+
+          it_behaves_like 'sets validation errors', field: :timezone, message: 'Timezone is invalid'
+
+          it { expect(result[:status]).to eq(:error) }
+          it { expect(result[:details]).to match_array(['Timezone is invalid']) }
+        end
+      end
+    end
+
     context 'when project or namespace is not provided' do
       let_it_be(:container) { nil }
 
       it_behaves_like 'checks policy type'
       it_behaves_like 'checks policy name'
       it_behaves_like 'checks if branches are provided in rule'
+      it_behaves_like 'checks if timezone is valid'
     end
 
     context 'when project is provided' do
@@ -479,6 +529,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
         it_behaves_like 'checks if branches are provided in rule'
         it_behaves_like 'checks if branches are defined in the project'
         it_behaves_like 'checks if required approvals exceed eligible approvers'
+        it_behaves_like 'checks if timezone is valid'
         it_behaves_like 'checks if branches exist for the provided branch_type' do
           where(:policy_type, :branch_type, :status) do
             :scan_execution_policy | 'all' | :success
@@ -503,6 +554,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
         it_behaves_like 'checks if branches are provided in rule'
         it_behaves_like 'checks if branches are defined in the project'
         it_behaves_like 'checks if required approvals exceed eligible approvers'
+        it_behaves_like 'checks if timezone is valid'
         it_behaves_like 'checks if branches exist for the provided branch_type' do
           where(:policy_type, :branch_type, :status) do
             :scan_execution_policy | 'all' | :success
@@ -558,6 +610,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
       it_behaves_like 'checks policy name'
       it_behaves_like 'checks if branches are provided in rule'
       it_behaves_like 'checks if required approvals exceed eligible approvers'
+      it_behaves_like 'checks if timezone is valid'
     end
   end
 end
