@@ -361,4 +361,16 @@ RSpec.describe GroupsHelper do
       it { is_expected.to include(is_saas: 'true') }
     end
   end
+
+  describe '#can_admin_service_accounts?', feature_category: :user_management do
+    it 'returns true when current_user can admin members' do
+      stub_licensed_features(service_accounts: true)
+
+      expect(helper.can_admin_service_accounts?(group)).to be(true)
+    end
+
+    it 'returns false when current_user can not admin members' do
+      expect(helper.can_admin_service_accounts?(group)).to be(false)
+    end
+  end
 end

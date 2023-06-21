@@ -25,8 +25,21 @@ RSpec.describe 'groups/group_members/index', feature_category: :groups_and_proje
 
       expect(rendered).to have_content('Group members')
       expect(rendered).to have_content("You're viewing members of")
+      expect(rendered).not_to have_link(_('Create service account'), href: new_group_service_account_path(group))
       expect(rendered).to have_content('To manage seats for all members associated with this group and its subgroups')
       expect(rendered).to have_link('usage quotas page', href: group_usage_quotas_path(group.root_ancestor))
+    end
+
+    context 'when managing service account is enabled' do
+      before do
+        allow(view).to receive(:can_admin_service_accounts?).with(group).and_return(true)
+      end
+
+      it 'display button to create service accounts' do
+        render
+
+        expect(rendered).to have_link(_('Create service account'), href: new_group_service_account_path(group))
+      end
     end
   end
 end

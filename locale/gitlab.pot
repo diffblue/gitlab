@@ -42317,6 +42317,9 @@ msgstr ""
 msgid "Service Account Key"
 msgstr ""
 
+msgid "Service Accounts"
+msgstr ""
+
 msgid "Service Accounts keys authorize GitLab to deploy your Google Cloud project"
 msgstr ""
 
