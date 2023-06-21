@@ -109,10 +109,13 @@ class ApprovalWrappedRule
   # and/or allow MR authors to approve their own merge
   # requests (in case only one approval is needed).
   def approvals_left
-    strong_memoize(:approvals_left) do
-      approvals_left_count = approvals_required - approved_approvers.size
+    cross_join_issue = "https://gitlab.com/gitlab-org/gitlab/-/issues/417459"
+    ::Gitlab::Database.allow_cross_joins_across_databases(url: cross_join_issue) do
+      strong_memoize(:approvals_left) do
+        approvals_left_count = approvals_required - approved_approvers.size
 
-      [approvals_left_count, 0].max
+        [approvals_left_count, 0].max
+      end
     end
   end
 

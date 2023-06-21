@@ -75,6 +75,7 @@ module MergeRequests
         .where(users: { field => values })
         .group('merge_requests.id')
         .having("COUNT(users.id) = ?", values.size)
+        .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417459")
     end
 
     def with_users_filtered_by_criteria(items)

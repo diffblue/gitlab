@@ -768,6 +768,7 @@ module EE
 
       members = members.not_banned_in(root_ancestor)
       users_without_bots(members).with_state(:active)
+        .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417455")
     end
 
     # Members belonging to Groups invited to collaborate with Groups and Subgroups

@@ -11,14 +11,18 @@ module ApprovalRules
     def execute
       return unless merge_request.merged?
 
-      ApplicationRecord.transaction do
-        if merge_request.approval_rules.regular.exists?
-          merge_group_members_into_users
-        else
-          copy_project_approval_rules
-        end
+      # fails ee/spec/services/approval_rules/finalize_service_spec.rb
+      cross_join_issue = "https://gitlab.com/gitlab-org/gitlab/-/issues/417459"
+      ::Gitlab::Database.allow_cross_joins_across_databases(url: cross_join_issue) do
+        ApplicationRecord.transaction do
+          if merge_request.approval_rules.regular.exists?
+            merge_group_members_into_users
+          else
+            copy_project_approval_rules
+          end
 
-        merge_request.approval_rules.each(&:sync_approved_approvers)
+          merge_request.approval_rules.each(&:sync_approved_approvers)
+        end
       end
     end
 
