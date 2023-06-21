@@ -11,7 +11,8 @@ RSpec.describe Gitlab::Llm::StageCheck, feature_category: :no_category do # rubo
 
   describe ".available?" do
     let(:feature_name) { :summarize_comments }
-    let(:group) { create(:group_with_plan, :private, plan: :ultimate_plan) }
+    let(:root_group) { create(:group_with_plan, :private, plan: :ultimate_plan) }
+    let(:group) { create(:group, :private, parent: root_group) }
 
     context 'with experiment feature' do
       before do
@@ -20,14 +21,16 @@ RSpec.describe Gitlab::Llm::StageCheck, feature_category: :no_category do # rubo
 
       context 'when experimental setting is false' do
         it 'returns false' do
-          group.namespace_settings.update!(experiment_features_enabled: false)
+          root_group.namespace_settings.update!(experiment_features_enabled: false)
+
           expect(described_class.available?(group, feature_name)).to eq(false)
         end
       end
 
       context 'when experimental setting is true' do
         it 'returns true' do
-          group.namespace_settings.update!(experiment_features_enabled: true)
+          root_group.namespace_settings.update!(experiment_features_enabled: true)
+
           expect(described_class.available?(group, feature_name)).to eq(true)
         end
       end
@@ -40,14 +43,16 @@ RSpec.describe Gitlab::Llm::StageCheck, feature_category: :no_category do # rubo
 
       context 'when experimental setting is false' do
         it 'returns false' do
-          group.namespace_settings.update!(experiment_features_enabled: false)
+          root_group.namespace_settings.update!(experiment_features_enabled: false)
+
           expect(described_class.available?(group, feature_name)).to eq(false)
         end
       end
 
       context 'when experimental setting is true' do
         it 'returns true' do
-          group.namespace_settings.update!(experiment_features_enabled: true)
+          root_group.namespace_settings.update!(experiment_features_enabled: true)
+
           expect(described_class.available?(group, feature_name)).to eq(true)
         end
       end
@@ -61,14 +66,22 @@ RSpec.describe Gitlab::Llm::StageCheck, feature_category: :no_category do # rubo
 
       context 'when third party feature setting is false' do
         it 'returns false' do
-          group.namespace_settings.update!(third_party_ai_features_enabled: false, experiment_features_enabled: true)
+          root_group.namespace_settings.update!(
+            third_party_ai_features_enabled: false,
+
+            experiment_features_enabled: true)
+
           expect(described_class.available?(group, feature_name)).to eq(false)
         end
       end
 
       context 'when third party feature setting is true' do
         it 'returns true' do
-          group.namespace_settings.update!(third_party_ai_features_enabled: true, experiment_features_enabled: true)
+          root_group.namespace_settings.update!(
+            third_party_ai_features_enabled: true,
+            experiment_features_enabled: true
+          )
+
           expect(described_class.available?(group, feature_name)).to eq(true)
         end
       end
@@ -82,7 +95,10 @@ RSpec.describe Gitlab::Llm::StageCheck, feature_category: :no_category do # rubo
 
       context 'when third party setting is false and experimental setting is true' do
         it 'returns false' do
-          group.namespace_settings.update!(third_party_ai_features_enabled: false, experiment_features_enabled: true)
+          root_group.namespace_settings.update!(
+            third_party_ai_features_enabled: false,
+            experiment_features_enabled: true
+          )
 
           expect(described_class.available?(group, feature_name)).to eq(false)
         end
@@ -90,14 +106,22 @@ RSpec.describe Gitlab::Llm::StageCheck, feature_category: :no_category do # rubo
 
       context 'when third party setting is true and experimental setting is true' do
         it 'returns true' do
-          group.namespace_settings.update!(third_party_ai_features_enabled: true, experiment_features_enabled: true)
+          root_group.namespace_settings.update!(
+            third_party_ai_features_enabled: true,
+            experiment_features_enabled: true
+          )
+
           expect(described_class.available?(group, feature_name)).to eq(true)
         end
       end
 
       context 'when experimental setting is false and third party setting is true' do
         it 'returns true' do
-          group.namespace_settings.update!(third_party_ai_features_enabled: true, experiment_features_enabled: false)
+          root_group.namespace_settings.update!(
+            third_party_ai_features_enabled: true,
+            experiment_features_enabled: false
+          )
+
           expect(described_class.available?(group, feature_name)).to eq(false)
         end
       end

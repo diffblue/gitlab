@@ -19,7 +19,7 @@ module Gitlab
           end
 
           def self.container_authorized?(container:)
-            Gitlab::Llm::StageCheck.available?(container.root_ancestor, :chat)
+            Gitlab::Llm::StageCheck.available?(container, :chat)
           end
 
           def self.resource_authorized?(resource:, user:)

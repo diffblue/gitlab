@@ -12,7 +12,7 @@ module Llm
         user.can?(:read_build_trace, job) &&
         Feature.enabled?(:ai_build_failure_cause, job.project) &&
         job.project.licensed_feature_available?(:ai_analyze_ci_job_failure) &&
-        Gitlab::Llm::StageCheck.available?(job.resource_parent.root_ancestor, :ai_analyze_ci_job_failure)
+        Gitlab::Llm::StageCheck.available?(job.resource_parent, :ai_analyze_ci_job_failure)
     end
 
     private

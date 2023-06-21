@@ -246,7 +246,7 @@ module EE
       condition(:fill_in_merge_request_template_enabled) do
         ::Feature.enabled?(:fill_in_mr_template, subject) &&
           subject.licensed_feature_available?(:fill_in_merge_request_template) &&
-          ::Gitlab::Llm::StageCheck.available?(subject.root_ancestor, :fill_in_merge_request_template)
+          ::Gitlab::Llm::StageCheck.available?(subject, :fill_in_merge_request_template)
       end
 
       rule { visual_review_bot }.policy do

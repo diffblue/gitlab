@@ -33,7 +33,7 @@ class EpicPolicy < BasePolicy
   condition(:summarize_notes_enabled, scope: :subject) do
     ::Feature.enabled?(:summarize_comments, @subject.group) &&
       @subject.group.licensed_feature_available?(:summarize_notes) &&
-      Gitlab::Llm::StageCheck.available?(@subject.group.root_ancestor, :summarize_notes)
+      Gitlab::Llm::StageCheck.available?(@subject.group, :summarize_notes)
   end
 
   rule { can?(:read_epic) }.policy do
