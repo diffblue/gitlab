@@ -44,8 +44,10 @@ RSpec.describe Admin::PlanLimits::UpdateService, feature_category: :shared do
         end
       end
 
-      it 'logs the allowwed attributes only' do
-        expect(limits.send(:limits_history)).to eq(
+      it 'logs the allowed attributes only' do
+        update_plan_limits
+
+        expect(limits.limits_history).to eq(
           { "enforcement_limit" =>
                                 [{ "user_id" => user.id, "username" => user.username,
                                    "timestamp" => current_timestamp, "value" => 15 }],
