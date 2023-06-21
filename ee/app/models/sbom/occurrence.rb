@@ -33,7 +33,7 @@ module Sbom
     end
 
     scope :filter_by_package_managers, ->(package_managers) do
-      where(source_id: Sbom::Source.get_ids_filtered_by_package_managers(package_managers))
+      where(source_id: Sbom::Source.filter_by_package_managers(package_managers).select(:id))
     end
 
     scope :filter_by_component_names, ->(component_names) do

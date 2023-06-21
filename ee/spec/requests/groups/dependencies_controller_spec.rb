@@ -126,13 +126,19 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
                     'location' => sbom_occurrence_npm.location.as_json,
                     'name' => sbom_occurrence_npm.name,
                     'packager' => sbom_occurrence_npm.packager,
-                    'version' => sbom_occurrence_npm.version
+                    'version' => sbom_occurrence_npm.version,
+                    'occurrence_count' => 1,
+                    'project_count' => 1,
+                    "project" => { "full_path" => project.full_path, "name" => project.name }
                   },
                   {
                     'location' => sbom_occurrence_bundler.location.as_json,
                     'name' => sbom_occurrence_bundler.name,
                     'packager' => sbom_occurrence_bundler.packager,
-                    'version' => sbom_occurrence_bundler.version
+                    'version' => sbom_occurrence_bundler.version,
+                    'occurrence_count' => 1,
+                    'project_count' => 1,
+                    "project" => { "full_path" => project.full_path, "name" => project.name }
                   }
                 ]
               }
@@ -142,6 +148,20 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
               subject
 
               expect(json_response).to eq(expected_response)
+            end
+
+            it 'avoids N+1 database queries related to projects and routes' do
+              control = ActiveRecord::QueryRecorder.new(skip_cached: false) { subject }
+
+              project_routes_count = control.log.count do |entry|
+                entry[/\Aselect.+routes.+from.+routes.+where.+routes(.+source_id|.+source_type.+project){2}/i]
+              end
+              project_count = control.log.count do |entry|
+                entry[/\Aselect.+projects.+from.+projects.+where.+projects.+id/i]
+              end
+
+              expect(project_routes_count).to eq(1)
+              expect(project_count).to eq(1)
             end
 
             context 'with sorting params' do

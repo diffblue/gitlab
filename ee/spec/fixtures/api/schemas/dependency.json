@@ -26,6 +26,29 @@
         "type": "string"
       }
     },
+    "project": {
+      "type": [
+        "object"
+      ],
+      "properties": {
+        "full_path": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "project_count": {
+      "type": [
+        "integer"
+      ]
+    },
+    "occurrence_count": {
+      "type": [
+        "integer"
+      ]
+    },
     "vulnerabilities": {
       "type": "array",
       "properties": {

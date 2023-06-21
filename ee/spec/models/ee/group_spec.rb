@@ -2707,9 +2707,13 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       it { is_expected.to be_empty }
 
       context 'with occurrences' do
-        let!(:sbom_occurence) { create(:sbom_occurrence, project: project) }
+        let!(:sbom_occurrence) { create(:sbom_occurrence, project: project) }
 
-        it { is_expected.to eq [sbom_occurence] }
+        it 'returns occurrences with aggregated ids' do
+          expect(subject).to eq([sbom_occurrence])
+          expect(subject.pluck(:project_count)).to eq([1])
+          expect(subject.pluck(:occurrence_count)).to eq([1])
+        end
       end
     end
   end

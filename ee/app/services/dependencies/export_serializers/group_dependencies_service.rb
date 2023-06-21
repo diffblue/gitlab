@@ -13,7 +13,7 @@ module Dependencies
 
       def execute
         [].tap do |list|
-          group_dependencies.each_batch do |batch|
+          group_dependencies.in_batches do |batch|  # rubocop: disable Cop/InBatches
             list.concat(build_list_for(batch))
           end
         end

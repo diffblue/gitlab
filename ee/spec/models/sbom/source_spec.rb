@@ -25,15 +25,6 @@ RSpec.describe Sbom::Source, type: :model, feature_category: :dependency_managem
     end
   end
 
-  describe '.get_ids_filtered_by_package_managers' do
-    let_it_be(:source_bundler) { create(:sbom_source, packager_name: 'bundler') }
-    let_it_be(:source_yarn) { create(:sbom_source, packager_name: 'yarn') }
-
-    subject { described_class.get_ids_filtered_by_package_managers(%w[bundler npm]) }
-
-    it { is_expected.to eq([source_bundler.id]) }
-  end
-
   describe 'source validation' do
     subject { build(:sbom_source, source: source_attributes) }
 

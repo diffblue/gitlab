@@ -43,6 +43,21 @@ RSpec.describe DependencyEntity do
           is_expected.to eq(dependency.except(:vulnerabilities, :package_manager, :iid))
         end
       end
+
+      context 'with project' do
+        let(:dependency) { build(:dependency, project: project) }
+
+        before do
+          allow(request).to receive(:project).and_return(nil)
+        end
+
+        it 'includes project name and full_path' do
+          result = subject
+
+          expect(result.dig(:project, :full_path)).to eq(project.full_path)
+          expect(result.dig(:project, :name)).to eq(project.name)
+        end
+      end
     end
 
     context 'when all required features are unavailable' do
