@@ -1,5 +1,9 @@
-import { approversOutOfSync } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/actions';
-import { GROUP_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
+import {
+  APPROVER_TYPE_DICT,
+  approversOutOfSync,
+  actionHasType,
+} from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/actions';
+import { GROUP_TYPE, USER_TYPE, ROLE_TYPE } from 'ee/security_orchestration/constants';
 
 describe('approversOutOfSync', () => {
   const userApprover = {
@@ -194,5 +198,21 @@ describe('approversOutOfSync', () => {
         expect(approversOutOfSync(action, approvers)).toBe(result);
       },
     );
+  });
+});
+
+describe('actionHasType', () => {
+  it.each`
+    action                                              | type          | output
+    ${{ key: 'value' }}                                 | ${ROLE_TYPE}  | ${false}
+    ${{ [APPROVER_TYPE_DICT[ROLE_TYPE][0]]: 'value' }}  | ${USER_TYPE}  | ${false}
+    ${{ [APPROVER_TYPE_DICT[USER_TYPE][0]]: 'value' }}  | ${GROUP_TYPE} | ${false}
+    ${{ [APPROVER_TYPE_DICT[ROLE_TYPE][0]]: 'value' }}  | ${ROLE_TYPE}  | ${true}
+    ${{ [APPROVER_TYPE_DICT[USER_TYPE][0]]: 'value' }}  | ${USER_TYPE}  | ${true}
+    ${{ [APPROVER_TYPE_DICT[USER_TYPE][1]]: 'value' }}  | ${USER_TYPE}  | ${true}
+    ${{ [APPROVER_TYPE_DICT[GROUP_TYPE][0]]: 'value' }} | ${GROUP_TYPE} | ${true}
+    ${{ [APPROVER_TYPE_DICT[GROUP_TYPE][1]]: 'value' }} | ${GROUP_TYPE} | ${true}
+  `('returns $output when action is $action and type is $type', ({ action, type, output }) => {
+    expect(actionHasType(action, type)).toBe(output);
   });
 });

@@ -1,7 +1,7 @@
 import { nextTick } from 'vue';
 import { GlAlert } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import { GROUP_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
+import { GROUP_TYPE, USER_TYPE, ROLE_TYPE } from 'ee/security_orchestration/constants';
 import PolicyActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_action_builder.vue';
 import PolicyActionApprovers from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_action_approvers.vue';
 import { APPROVER_TYPE_LIST_ITEMS } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/actions';
@@ -105,17 +105,15 @@ describe('PolicyActionBuilder', () => {
     });
 
     it('emits "updateApprovers" with the appropriate values on "updateApprover"', async () => {
-      expect(wrapper.emitted('updateApprovers')).toBeUndefined();
       await emit('updateApprovers', { [USER_TYPE]: [MOCK_USER_APPROVERS[0]] });
-      expect(wrapper.emitted('updateApprovers')[0]).toEqual([
+      expect(wrapper.emitted('updateApprovers')[1]).toEqual([
         { [USER_TYPE]: [MOCK_USER_APPROVERS[0]] },
       ]);
     });
 
     it('emits "changed" with the appropriate values on "updateApprover"', async () => {
-      expect(wrapper.emitted('changed')).toBeUndefined();
       await emit('updateApprovers', { [USER_TYPE]: [MOCK_USER_APPROVERS[0]] });
-      expect(wrapper.emitted('changed')[0]).toEqual([
+      expect(wrapper.emitted('changed')[1]).toEqual([
         {
           approvals_required: 1,
           type: 'require_approval',
@@ -126,9 +124,8 @@ describe('PolicyActionBuilder', () => {
 
     it('emits "changed" with the appropriate values on "updateApprovalsRequired"', async () => {
       expect(findActionApprover().props('approvalsRequired')).toBe(1);
-      expect(wrapper.emitted('changed')).toBeUndefined();
       await emit('updateApprovalsRequired', 2);
-      expect(wrapper.emitted('changed')[0]).toEqual([
+      expect(wrapper.emitted('changed')[1]).toEqual([
         {
           approvals_required: 2,
           type: 'require_approval',
@@ -187,7 +184,7 @@ describe('PolicyActionBuilder', () => {
 
       it('removes existing approvers of the old type', async () => {
         await emit('updateApprovers', { [USER_TYPE]: [MOCK_USER_APPROVERS[0]] });
-        expect(wrapper.emitted('changed')[0]).toEqual([
+        expect(wrapper.emitted('changed')[1]).toEqual([
           {
             approvals_required: 1,
             type: 'require_approval',
@@ -195,7 +192,7 @@ describe('PolicyActionBuilder', () => {
           },
         ]);
         await changeApproverType();
-        expect(wrapper.emitted('changed')[1]).toEqual([
+        expect(wrapper.emitted('changed')[2]).toEqual([
           {
             approvals_required: 1,
             type: 'require_approval',
@@ -205,11 +202,11 @@ describe('PolicyActionBuilder', () => {
 
       it('emits "updateApprovers" with the appropriate values', async () => {
         await emit('updateApprovers', { [USER_TYPE]: [MOCK_USER_APPROVERS[0]] });
-        expect(wrapper.emitted('updateApprovers')[0]).toEqual([
+        expect(wrapper.emitted('updateApprovers')[1]).toEqual([
           { [USER_TYPE]: [MOCK_USER_APPROVERS[0]] },
         ]);
         await changeApproverType();
-        expect(wrapper.emitted('updateApprovers')[1]).toEqual([{}]);
+        expect(wrapper.emitted('updateApprovers')[2]).toEqual([{}]);
       });
     });
   });
@@ -239,7 +236,7 @@ describe('PolicyActionBuilder', () => {
 
     it('removes existing approvers of the old type', async () => {
       await emit('updateApprovers', { [USER_TYPE]: [MOCK_USER_APPROVERS[0]] });
-      expect(wrapper.emitted('changed')[0]).toEqual([
+      expect(wrapper.emitted('changed')[1]).toEqual([
         {
           approvals_required: 1,
           type: 'require_approval',
@@ -247,7 +244,7 @@ describe('PolicyActionBuilder', () => {
         },
       ]);
       await removeApproverType();
-      expect(wrapper.emitted('changed')[1]).toEqual([
+      expect(wrapper.emitted('changed')[2]).toEqual([
         {
           approvals_required: 1,
           type: 'require_approval',
@@ -257,11 +254,11 @@ describe('PolicyActionBuilder', () => {
 
     it('emits "updateApprovers" with the appropriate values', async () => {
       await emit('updateApprovers', { [USER_TYPE]: [MOCK_USER_APPROVERS[0]] });
-      expect(wrapper.emitted('updateApprovers')[0]).toEqual([
+      expect(wrapper.emitted('updateApprovers')[1]).toEqual([
         { [USER_TYPE]: [MOCK_USER_APPROVERS[0]] },
       ]);
       await removeApproverType();
-      expect(wrapper.emitted('updateApprovers')[1]).toEqual([{}]);
+      expect(wrapper.emitted('updateApprovers')[2]).toEqual([{}]);
     });
   });
 
@@ -305,6 +302,28 @@ describe('PolicyActionBuilder', () => {
       expect(findAllActionApprovers()).toHaveLength(2);
       expect(findAllActionApprovers().at(0).props('approverType')).toBe(GROUP_TYPE);
       expect(findAllActionApprovers().at(1).props('approverType')).toBe(USER_TYPE);
+    });
+  });
+
+  describe('updates role approvers', () => {
+    it('updates role approvers with new values', () => {
+      createWrapper({
+        initAction: { ...DEFAULT_ACTION, role_approvers: ['developer'] },
+        existingApprovers: { [ROLE_TYPE]: ['owner'] },
+      });
+      expect(wrapper.emitted('changed')).toEqual([
+        [{ ...DEFAULT_ACTION, role_approvers: ['developer'] }],
+      ]);
+      expect(wrapper.emitted('updateApprovers')).toEqual([[{ [ROLE_TYPE]: ['developer'] }]]);
+    });
+
+    it('updates role approvers with no values', () => {
+      createWrapper({
+        initAction: DEFAULT_ACTION,
+        existingApprovers: { [ROLE_TYPE]: ['owner'] },
+      });
+      expect(wrapper.emitted('changed')).toEqual([[DEFAULT_ACTION]]);
+      expect(wrapper.emitted('updateApprovers')).toEqual([[{}]]);
     });
   });
 });

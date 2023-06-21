@@ -173,6 +173,7 @@ export default {
           <component
             :is="approverComponent"
             :existing-approvers="existingApprovers[approverType]"
+            @error="$emit('error')"
             @updateSelectedApprovers="
               handleApproversUpdate({
                 updatedApprovers: $event,
