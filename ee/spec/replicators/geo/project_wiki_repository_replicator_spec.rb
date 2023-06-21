@@ -36,7 +36,7 @@ RSpec.describe Geo::ProjectWikiRepositoryReplicator, feature_category: :geo_repl
 
         it 'creates an empty git repository' do
           expect { replicator.verify }
-            .to change { model_record.wiki_repository_exists? }
+            .to change { model_record.repository.exists? }
             .from(false)
             .to(true)
 
