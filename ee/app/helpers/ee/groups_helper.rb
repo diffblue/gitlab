@@ -10,6 +10,11 @@ module EE
       "Max size for repositories within this group #{show_lfs}. Can be overridden inside each project. For no limit, enter 0. To inherit the global value, leave blank."
     end
 
+    override :can_admin_service_accounts?
+    def can_admin_service_accounts?(group)
+      Ability.allowed?(current_user, :admin_service_accounts, group)
+    end
+
     override :remove_group_message
     def remove_group_message(group)
       return super unless group.licensed_feature_available?(:adjourned_deletion_for_projects_and_groups)

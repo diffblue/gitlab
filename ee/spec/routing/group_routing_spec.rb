@@ -101,4 +101,10 @@ RSpec.describe 'Group routing', "routing" do
       expect(get('/groups/gitlabhq/-/hooks/1/hook_logs/1')).to route_to('groups/hook_logs#show', group_id: 'gitlabhq', hook_id: '1', id: '1')
     end
   end
+
+  describe 'service accounts' do
+    it 'routes to the new service account' do
+      expect(get('/groups/gitlabhq/-/service_accounts/new')).to route_to('groups/service_accounts#index', group_id: 'gitlabhq', vueroute: 'new')
+    end
+  end
 end

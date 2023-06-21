@@ -217,5 +217,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
     resource :roadmap, only: [:show], controller: 'roadmap'
 
     post '/restore' => '/groups#restore', as: :restore
+
+    resources :service_accounts, path: 'service_accounts(/*vueroute)', action: :index
   end
 end
