@@ -123,7 +123,7 @@ RSpec.describe Gitlab::Ci::Reports::DependencyList::Report, feature_category: :s
     it 'stores given dependency params in the map' do
       report.add_dependency(dependency)
 
-      expect(report.dependencies).to eq([dependency])
+      expect(report.dependencies).to match_array([dependency])
     end
 
     it 'does not duplicate same dependency' do
