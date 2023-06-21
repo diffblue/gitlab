@@ -32,6 +32,7 @@ query getNamespaceStorageStatistics(
     }
     projects(
       includeSubgroups: true
+      notAimedForDeletion: true
       search: $searchTerm
       first: $first
       last: $last
