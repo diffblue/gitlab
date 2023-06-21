@@ -6,7 +6,7 @@ RSpec.describe Vulnerabilities::IssueLinkPolicy, feature_category: :vulnerabilit
   let(:vulnerability_issue_link) { build(:vulnerabilities_issue_link, vulnerability: vulnerability, issue: issue) }
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, namespace: user.namespace) }
+  let_it_be(:project) { create(:project, :private) }
   let_it_be(:vulnerability) { create(:vulnerability, project: project) }
   let_it_be(:issue) { create(:issue, project: project) }
 
@@ -38,20 +38,43 @@ RSpec.describe Vulnerabilities::IssueLinkPolicy, feature_category: :vulnerabilit
   end
 
   describe ':read_issue_link' do
-    before do
-      allow(Ability).to receive(:allowed?).with(user, :read_issue, issue).and_return(allowed?)
+    describe 'using the issue#readable_by?' do
+      before do
+        allow(issue).to receive(:readable_by?).with(user).and_return(allowed?)
+      end
+
+      context 'when the associated issue can not be read by the user' do
+        let(:allowed?) { false }
+
+        it { is_expected.to be_disallowed(:read_issue_link) }
+      end
+
+      context 'when the associated issue can be read by the user' do
+        let(:allowed?) { true }
+
+        it { is_expected.to be_allowed(:read_issue_link) }
+      end
     end
 
-    context 'when the associated issue can not be read by the user' do
-      let(:allowed?) { false }
+    describe 'when the vulnerability and the issue belong to different projects' do
+      let_it_be(:other_project) { create(:project, :public) }
+      let_it_be(:issue) { create(:issue, project: other_project) }
 
-      it { is_expected.to be_disallowed(:read_issue_link) }
-    end
+      context 'when the issues are disabled for the vulnerable project' do
+        before do
+          project.project_feature.update_column(:issues_access_level, ProjectFeature::DISABLED)
+        end
 
-    context 'when the associated issue can be read by the user' do
-      let(:allowed?) { true }
+        it { is_expected.to be_allowed(:read_issue_link) }
+      end
 
-      it { is_expected.to be_allowed(:read_issue_link) }
+      context 'when the issues are disabled for the issue project' do
+        before do
+          other_project.project_feature.update_column(:issues_access_level, ProjectFeature::DISABLED)
+        end
+
+        it { is_expected.to be_disallowed(:read_issue_link) }
+      end
     end
   end
 end
