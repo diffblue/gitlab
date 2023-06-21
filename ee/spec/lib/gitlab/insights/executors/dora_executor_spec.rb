@@ -194,5 +194,35 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor, time_travel_to: '2021-
         end
       end
     end
+
+    context 'when period_limit is a string' do
+      let(:query_params) do
+        {
+          metric: 'deployment_frequency',
+          group_by: 'month',
+          period_limit: "5"
+        }
+      end
+
+      it 'returns correctly aggregated data' do
+        expected_result = [0, deployment_frequency(date2, 50), 0, deployment_frequency(date1, 5), 0]
+
+        expect(serialized_data['datasets'].first['data']).to eq(expected_result)
+      end
+
+      context 'when is a invalid string' do
+        let(:query_params) do
+          {
+            metric: 'deployment_frequency',
+            group_by: 'day',
+            period_limit: "a invalid string"
+          }
+        end
+
+        it 'uses default of 15' do
+          expect(serialized_data['datasets'].first['data'].size).to eq(15)
+        end
+      end
+    end
   end
 end

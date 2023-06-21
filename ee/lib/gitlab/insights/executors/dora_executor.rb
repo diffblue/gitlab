@@ -100,7 +100,10 @@ module Gitlab
         end
 
         def period_limit
-          query_params[:period_limit] || 15
+          @period_limit ||= begin
+            limit = query_params[:period_limit].to_i
+            limit > 0 ? limit : 15
+          end
         end
 
         def dora_interval
