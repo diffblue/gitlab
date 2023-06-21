@@ -95,8 +95,6 @@ module Gitlab
             end
 
             def perform
-              return already_identified_answer if already_identified?
-
               MAX_RETRIES.times do
                 json = extract_json(request)
                 issue = identify_issue(json[:ResourceIdentifierType], json[:ResourceIdentifier])
@@ -130,16 +128,6 @@ module Gitlab
 
             def authorize
               Utils::Authorizer.context_authorized?(context: context)
-            end
-
-            def already_identified?
-              identifier_action_regex = /(?=Action: IssueIdentifier)/
-              json_loaded_regex = /(?=I identified the issue)/
-
-              issue_identifier_calls = options[:suggestions].scan(identifier_action_regex).size
-              issue_identifier_json_loaded = options[:suggestions].scan(json_loaded_regex).size
-
-              issue_identifier_calls > 1 && issue_identifier_json_loaded >= 1
             end
 
             def extract_json(response)
@@ -194,13 +182,13 @@ module Gitlab
               Utils::Prompt.no_role_text(PROMPT_TEMPLATE, options)
             end
 
-            def already_identified_answer
+            def already_used_answer
               resource = context.resource
               content = "You already have identified the issue #{resource.to_global_id}, read carefully."
               logger.debug(message: "Answer", class: self.class.to_s, content: content)
 
               ::Gitlab::Llm::Chain::Answer.new(
-                status: :ok, context: context, content: content, tool: nil, is_final: false
+                status: :not_executed, context: context, content: content, tool: nil, is_final: false
               )
             end
 

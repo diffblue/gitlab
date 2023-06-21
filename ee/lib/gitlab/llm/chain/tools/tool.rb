@@ -21,6 +21,7 @@ module Gitlab
           end
 
           def execute
+            return already_used_answer if already_used?
             return not_found unless authorize
 
             perform
@@ -64,6 +65,19 @@ module Gitlab
             content = "I am sorry, I cannot proceed with this resource, it is #{resource_name}."
 
             Answer.error_answer(context: context, content: content)
+          end
+
+          def already_used_answer
+            content = "You already have the answer from #{self.class::NAME} tool, read carefully."
+            logger.debug(message: "Answer", class: self.class.to_s, content: content)
+
+            ::Gitlab::Llm::Chain::Answer.new(
+              status: :not_executed, context: context, content: content, tool: nil, is_final: false
+            )
+          end
+
+          def already_used?
+            context.tools_used.include?(self.class.name)
           end
         end
       end

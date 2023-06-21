@@ -12,7 +12,6 @@ module Gitlab
 
             def perform
               return wrong_resource unless resource.is_a?(Noteable)
-              return already_summarized_answer if already_summarized?
 
               content = if resource.notes.by_humans.exists?
                           service_response = ::Llm::GenerateSummaryService.new(
@@ -49,23 +48,13 @@ module Gitlab
               ].join("\n")
             end
 
-            def already_summarized_answer
+            def already_used_answer
               content = "You already have the summary of the notes, comments, discussions for the " \
                         "#{resource_name} ##{resource.iid} in your context, read carefully."
 
               ::Gitlab::Llm::Chain::Answer.new(
-                status: :ok, context: context, content: content, tool: nil, is_final: false
+                status: :not_executed, context: context, content: content, tool: nil, is_final: false
               )
-            end
-
-            def already_summarized?
-              summarize_action_regex = /(?=Action: SummarizeComments)/
-              resource_summarized_regex = /(?=I know the summary of the notes, comments, discussions for the)/
-
-              summarize_action_count = options[:suggestions]&.scan(summarize_action_regex)&.size.to_i
-              resource_summarized = options[:suggestions]&.scan(resource_summarized_regex)&.size.to_i
-
-              summarize_action_count > 1 && resource_summarized >= 1
             end
 
             def resource
