@@ -8,6 +8,7 @@ import {
   IMPORT_NPM_PACKAGE,
   INIT_TRACKING,
   HTML_SCRIPT_SETUP,
+  BROWSER_SDK_DOCS_URL,
 } from 'ee/product_analytics/onboarding/constants';
 import AnalyticsClipboardInput from '../../shared/analytics_clipboard_input.vue';
 
@@ -87,7 +88,11 @@ export default {
     summaryText: s__(
       'ProductAnalytics|After your application has been instrumented and data is being collected, you can visualize and monitor behaviors in your %{linkStart}analytics dashboards%{linkEnd}.',
     ),
+    furtherBrowserSDKInfo: s__(
+      `ProductAnalytics|For more information, see the %{linkStart}docs%{linkEnd}.`,
+    ),
   },
+  BROWSER_SDK_DOCS_URL,
 };
 </script>
 
@@ -139,7 +144,17 @@ export default {
     </section>
 
     <p>
-      <gl-sprintf :message="$options.i18n.summaryText">
+      <gl-sprintf
+        :message="$options.i18n.furtherBrowserSDKInfo"
+        data-testid="further-browser-sdk-info"
+      >
+        <template #link="{ content }">
+          <gl-link :href="$options.BROWSER_SDK_DOCS_URL">{{ content }}</gl-link>
+        </template>
+      </gl-sprintf>
+    </p>
+    <p>
+      <gl-sprintf :message="$options.i18n.summaryText" data-testid="summary-text">
         <template #link="{ content }">
           <gl-link :href="dashboardsPath">{{ content }}</gl-link>
         </template>
