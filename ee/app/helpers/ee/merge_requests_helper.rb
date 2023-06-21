@@ -29,5 +29,9 @@ module EE
 
       super.merge(data)
     end
+
+    def summarize_llm_enabled?(project, user)
+      ::Llm::MergeRequests::SummarizeDiffService.enabled?(group: project.root_ancestor, user: user)
+    end
   end
 end

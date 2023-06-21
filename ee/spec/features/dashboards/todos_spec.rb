@@ -78,4 +78,57 @@ RSpec.describe 'Dashboard todos', feature_category: :team_planning do
       end
     end
   end
+
+  context 'when user has review request todo', :saas do
+    let_it_be(:namespace) { create(:group_with_plan, plan: :ultimate_plan) }
+    let_it_be(:project) { create(:project, group: namespace) }
+    let_it_be(:merge_request) { create(:merge_request, :skip_diff_creation, source_project: project) }
+    let_it_be(:merge_request_diff) { create(:merge_request_diff, merge_request: merge_request) }
+    let_it_be(:todo) { create(:todo, :review_requested, user: user, project: project, target: merge_request) }
+
+    before_all do
+      project.add_developer(user)
+    end
+
+    before do
+      stub_ee_application_setting(should_check_namespace_plan: true)
+
+      stub_licensed_features(
+        summarize_mr_changes: true,
+        ai_features: true
+      )
+
+      project.reload.root_ancestor.namespace_settings.update!(
+        experiment_features_enabled: true,
+        third_party_ai_features_enabled: true
+      )
+
+      sign_in(user)
+    end
+
+    it 'does not show todo with diff summary' do
+      visit page_path
+
+      page.within('.js-todos-all') do
+        expect(page).not_to have_selector('.todo-diff-summary')
+      end
+    end
+
+    context 'when merge request has diff summary' do
+      let!(:diff_summary) do
+        create(
+          :merge_request_diff_llm_summary,
+          merge_request_diff: merge_request_diff
+        )
+      end
+
+      it 'shows the todo with diff summary' do
+        visit page_path
+
+        page.within('.js-todos-all .todo-diff-summary') do
+          expect(page).to have_content(diff_summary.content)
+        end
+      end
+    end
+  end
 end
