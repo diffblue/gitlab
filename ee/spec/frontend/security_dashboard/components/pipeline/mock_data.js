@@ -533,8 +533,18 @@ export const pipelineSecurityReportFinding = {
     { url: 'http://example.com/link-2', name: 'links name - 1' },
   ],
   identifiers: [
-    { url: 'http://example.com/identifier-1', name: 'identifiers name - 1' },
-    { url: 'http://example.com/identifier-2', name: 'Identifiers name - 2' },
+    {
+      url: 'http://example.com/identifier-1',
+      name: 'identifiers name - 1',
+      externalType: 'CVE',
+      externalId: '020',
+    },
+    {
+      url: 'http://example.com/identifier-2',
+      name: 'Identifiers name - 2',
+      externalType: 'CVE',
+      externalId: '021',
+    },
   ],
   evidenceSource: {
     name: 'evidenceSource name',

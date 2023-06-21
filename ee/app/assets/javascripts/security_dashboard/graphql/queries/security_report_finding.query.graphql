@@ -104,6 +104,8 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
         identifiers {
           name
           url
+          externalType
+          externalId
         }
         issueLinks {
           nodes {
