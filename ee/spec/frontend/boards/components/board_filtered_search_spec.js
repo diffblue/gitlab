@@ -1,6 +1,7 @@
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { stubComponent } from 'helpers/stub_component';
 import BoardFilteredSearch from 'ee/boards/components/board_filtered_search.vue';
 import BoardFilteredSearchCe from '~/boards/components/board_filtered_search.vue';
 import { createStore } from '~/boards/stores';
@@ -11,16 +12,25 @@ Vue.use(Vuex);
 describe('ee/BoardFilteredSearch', () => {
   let wrapper;
   let store;
+  const updateTokensSpy = jest.fn();
 
   const createComponent = ({ provide = {} } = {}) => {
     wrapper = mountExtended(BoardFilteredSearch, {
       store,
-      propsData: { tokens: [], board: {} },
+      propsData: {
+        tokens: [],
+        board: {},
+      },
       provide: {
         boardBaseUrl: 'root',
         isApolloBoard: false,
         initialFilterParams: [],
         ...provide,
+      },
+      stubs: {
+        BoardFilteredSearchCe: stubComponent(BoardFilteredSearchCe, {
+          methods: { updateTokens: updateTokensSpy },
+        }),
       },
     });
   };
@@ -59,13 +69,10 @@ describe('ee/BoardFilteredSearch', () => {
   });
 
   describe('when Apollo boards FF is on', () => {
-    let updateTokensSpy;
-
     beforeEach(async () => {
       createComponent({ provide: { isApolloBoard: true } });
 
       jest.spyOn(urlUtility, 'updateHistory');
-      updateTokensSpy = jest.spyOn(wrapper.vm.$refs.filteredSearch, 'updateTokens');
 
       wrapper.setProps({
         board: { labels: [{ title: 'test', color: 'black', id: '1' }] },
