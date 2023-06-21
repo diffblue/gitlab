@@ -33,6 +33,7 @@ describe('ProjectsTable component', () => {
 
   const groupPath = 'group-path';
   const rootAncestorPath = 'root-ancestor-path';
+  const hasFilters = false;
 
   const COMPLIANCE_FRAMEWORK_COLUMN_IDX = 3;
   const ROW_WITH_FRAMEWORK_IDX = 0;
@@ -72,6 +73,7 @@ describe('ProjectsTable component', () => {
       propsData: {
         groupPath,
         rootAncestorPath,
+        hasFilters,
         ...props,
       },
       stubs: {
@@ -101,6 +103,7 @@ describe('ProjectsTable component', () => {
       wrapper = createComponent({ projects: [], isLoading: false });
 
       const emptyState = findEmptyState();
+
       expect(findLoadingIcon().exists()).toBe(false);
       expect(emptyState.exists()).toBe(true);
       expect(emptyState.text()).toBe('No projects found');
@@ -116,6 +119,18 @@ describe('ProjectsTable component', () => {
         'Project path',
         'Compliance framework',
       ]);
+    });
+  });
+
+  describe('when filters are aplied and no projects are found', () => {
+    it('renders the empty state with updated text', () => {
+      wrapper = createComponent({ projects: [], isLoading: false, hasFilters: true });
+
+      const emptyState = findEmptyState();
+
+      expect(findLoadingIcon().exists()).toBe(false);
+      expect(emptyState.exists()).toBe(true);
+      expect(emptyState.text()).toBe('No projects found that match filters');
     });
   });
 
@@ -143,6 +158,7 @@ describe('ProjectsTable component', () => {
 
       it('renders indeterminate state when not all rows are selected', async () => {
         await selectRow(0);
+
         expect(isIndeterminate(findSelectAllCheckbox())).toBe(true);
       });
 
@@ -166,7 +182,6 @@ describe('ProjectsTable component', () => {
 
       it('clears selection when clicking checkbox in indeterminate state', async () => {
         await selectRow(0);
-
         await findSelectAllCheckbox().find('label').trigger('click');
 
         expect(findSelectedRows()).toHaveLength(0);
@@ -196,11 +211,11 @@ describe('ProjectsTable component', () => {
       const [, projectName, projectPath, framework] = findTableRowData(idx).wrappers.map((d) =>
         d.text(),
       );
+      const expectedFrameworkName =
+        projects[idx].complianceFrameworks[0]?.name ?? 'add-framework-stub';
 
       expect(projectName).toBe('Gitlab Shell');
       expect(projectPath).toBe('gitlab-org/gitlab-shell');
-      const expectedFrameworkName =
-        projects[idx].complianceFrameworks[0]?.name ?? 'add-framework-stub';
       expect(framework).toContain(expectedFrameworkName);
     });
 
@@ -230,9 +245,7 @@ describe('ProjectsTable component', () => {
       it('clicking undo in toast reverts changes', async () => {
         await waitForPromises();
 
-        const undoFn = toastMock.show.mock.calls[0][1].action.onClick;
-
-        undoFn();
+        toastMock.show.mock.calls[0][1].action.onClick();
 
         expect(projectSetComplianceFrameworkMutation).toHaveBeenCalledTimes(operations.length * 2);
         operations.forEach((operation) => {
@@ -307,9 +320,11 @@ describe('ProjectsTable component', () => {
 
       it('when create modal successfully creates framework calls mutation on selected project', () => {
         const NEW_FRAMEWORK = { id: 'new-framework-id' };
+
         findCreateModal()
           .findComponent(CreateForm)
           .vm.$emit('success', { framework: NEW_FRAMEWORK });
+
         expect(projectSetComplianceFrameworkMutation).toHaveBeenCalledTimes(1);
         expect(projectSetComplianceFrameworkMutation).toHaveBeenCalledWith({
           projectId: projects[ROW_WITHOUT_FRAMEWORK_IDX].id,
@@ -355,6 +370,7 @@ describe('ProjectsTable component', () => {
 
     describe('when add framework selection is made', () => {
       const NEW_FRAMEWORK_ID = 'new-framework-id';
+
       beforeEach(() => {
         findTableRowData(ROW_WITHOUT_FRAMEWORK_IDX)
           .at(COMPLIANCE_FRAMEWORK_COLUMN_IDX)

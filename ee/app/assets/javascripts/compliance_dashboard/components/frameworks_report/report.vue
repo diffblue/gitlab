@@ -1,7 +1,6 @@
 <script>
 import * as Sentry from '@sentry/browser';
 import { GlAlert } from '@gitlab/ui';
-
 import { fetchPolicies } from '~/lib/graphql';
 import { s__ } from '~/locale';
 
@@ -119,6 +118,9 @@ export default {
     perPage() {
       return parseInt(this.$route.query.perPage || GRAPHQL_PAGE_SIZE, 10);
     },
+    hasFilters() {
+      return this.filters.length !== 0;
+    },
   },
   methods: {
     loadPrevPage(previousCursor) {
@@ -200,6 +202,7 @@ export default {
       :projects="projects.list"
       :root-ancestor-path="rootAncestorPath"
       :group-path="groupPath"
+      :has-filters="hasFilters"
       @updated="showUpdatePopoverIfNeeded"
     />
 
