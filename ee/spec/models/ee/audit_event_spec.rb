@@ -189,27 +189,6 @@ RSpec.describe AuditEvent, type: :model, feature_category: :audit_events do
     end
   end
 
-  describe '#by_group' do
-    subject(:audit_events) { described_class.by_group(group) }
-
-    let_it_be(:user) { create(:user) }
-    let_it_be(:group) { create(:group) }
-    let_it_be(:project) { create(:project, group: group) }
-
-    before do
-      2.times { create(:project_audit_event, user: user, target_project: project) }
-      2.times { create(:group_audit_event, user: user, target_group: project.group) }
-
-      # should not show up in results
-      2.times { create(:group_audit_event, user: user, target_group: create(:group)) }
-    end
-
-    it 'returns both Group and Project audit events related to the given group' do
-      expect(audit_events.count).to eq 4
-      expect(audit_events.map(&:entity_type).uniq).to match_array %w[Project Group]
-    end
-  end
-
   describe '.by_entity' do
     let_it_be(:project_event_1) { create(:project_audit_event) }
     let_it_be(:project_event_2) { create(:project_audit_event) }
