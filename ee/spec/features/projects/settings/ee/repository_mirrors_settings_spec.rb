@@ -52,9 +52,11 @@ RSpec.describe 'Project settings > [EE] repository', feature_category: :source_c
       let(:personal_access_token) { '461171575b95eeb61fba5face8ab838853d0121f' }
       let(:password) { 'my-secret-pass' }
       let(:external_project) do
-        create(:project_empty_repo,
-               :mirror,
-               import_url: "https://#{personal_access_token}:#{password}@github.com/testngalog2/newrepository.git")
+        create(
+          :project_empty_repo,
+          :mirror,
+          import_url: "https://#{personal_access_token}:#{password}@github.com/testngalog2/newrepository.git"
+        )
       end
 
       before do
@@ -94,8 +96,10 @@ RSpec.describe 'Project settings > [EE] repository', feature_category: :source_c
 
     context 'with a non-mirrored imported project', :js do
       let(:external_project) do
-        create(:project_empty_repo,
-               import_url: "https://12345@github.com/testngalog2/newrepository.git")
+        create(
+          :project_empty_repo,
+          import_url: "https://12345@github.com/testngalog2/newrepository.git"
+        )
       end
 
       before do

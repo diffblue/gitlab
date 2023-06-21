@@ -11,9 +11,11 @@ RSpec.describe 'Email Confirmation', feature_category: :onboarding do
 
   let(:user) { User.find_by_username(new_user.username) }
 
-  where(identity_verification: [true, false],
-        require_admin_approval_after_user_signup: [true, false],
-        email_confirmation_setting: %w[off soft hard])
+  where(
+    identity_verification: [true, false],
+    require_admin_approval_after_user_signup: [true, false],
+    email_confirmation_setting: %w[off soft hard]
+  )
 
   with_them do
     before do

@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Group elastic search', :js, :elastic, :sidekiq_inline, :disable_rate_limiter,
-feature_category: :global_search do
+  feature_category: :global_search do
   let_it_be(:user) { create(:user) }
 
   let(:group) { create(:group) }
