@@ -572,7 +572,7 @@ module EE
 
     def max_personal_access_token_lifetime_from_now
       if max_personal_access_token_lifetime.present?
-        max_personal_access_token_lifetime.days.from_now
+        Date.current + max_personal_access_token_lifetime
       else
         ::Gitlab::CurrentSettings.max_personal_access_token_lifetime_from_now
       end

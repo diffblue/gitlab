@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::PersonalAccessTokensHelper do
+RSpec.describe EE::PersonalAccessTokensHelper, feature_category: :system_access do
   let(:group) do
     build(:group, max_personal_access_token_lifetime: group_level_max_personal_access_token_lifetime)
   end
@@ -93,14 +93,14 @@ RSpec.describe EE::PersonalAccessTokensHelper do
     end
   end
 
-  describe '#personal_access_token_max_expiry_date' do
+  describe '#personal_access_token_max_expiry_date', :freeze_time do
     subject { helper.personal_access_token_max_expiry_date }
 
     shared_examples_for 'instance level PAT expiry setting' do
       context 'the instance has an expiry setting' do
         let(:instance_level_max_personal_access_token_lifetime) { 20 }
 
-        it { is_expected.to be_like_time(20.days.from_now) }
+        it { is_expected.to eq(Date.current + 20.days) }
       end
 
       context 'the instance does not have an expiry setting' do
@@ -114,7 +114,7 @@ RSpec.describe EE::PersonalAccessTokensHelper do
       context 'when the managed group has a PAT expiry policy' do
         let(:group_level_max_personal_access_token_lifetime) { 10 }
 
-        it { is_expected.to be_like_time(10.days.from_now) }
+        it { is_expected.to eq(Date.current + 10.days) }
       end
 
       context 'when the managed group does not have a PAT expiry setting' do
