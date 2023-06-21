@@ -15,10 +15,12 @@ describe('ComplianceReportsApp component', () => {
     groupPath: 'group-path',
     mergeCommitsCsvExportPath: '/csv',
     frameworksCsvExportPath: '/framework_report.csv',
+    violationsCsvExportPath: '/compliance_violation_reports.csv',
   };
 
   const findHeader = () => wrapper.findComponent(ReportHeader);
   const findMergeCommitsExportButton = () => wrapper.findComponent(MergeCommitsExportButton);
+  const findViolationsExportButton = () => wrapper.findByTestId('violations-export');
   const findFrameworkExportButton = () => wrapper.findByTestId('framework-export');
   const findTabs = () => wrapper.findComponent(GlTabs);
   const findFrameworksTab = () => wrapper.findByTestId('frameworks-tab');
@@ -80,6 +82,10 @@ describe('ComplianceReportsApp component', () => {
       expect(findMergeCommitsExportButton().exists()).toBe(true);
     });
 
+    it('renders the violations export button', () => {
+      expect(findViolationsExportButton().exists()).toBe(true);
+    });
+
     it('does not render the framework export button', () => {
       expect(findFrameworkExportButton().exists()).toBe(false);
     });
@@ -89,6 +95,13 @@ describe('ComplianceReportsApp component', () => {
       findTabs().vm.$emit('input', TABS.indexOf(ROUTE_VIOLATIONS));
 
       expect(findMergeCommitsExportButton().exists()).toBe(false);
+    });
+
+    it('does not render the violations export button when there is no CSV path', () => {
+      wrapper = createComponent({ violationsCsvExportPath: null }, mount);
+      findTabs().vm.$emit('input', TABS.indexOf(ROUTE_VIOLATIONS));
+
+      expect(findViolationsExportButton().exists()).toBe(false);
     });
   });
 

@@ -32,6 +32,11 @@ export default {
       required: false,
       default: '',
     },
+    violationsCsvExportPath: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
   computed: {
     isViolationsReport() {
@@ -40,8 +45,11 @@ export default {
     isFrameworksReport() {
       return this.$route.name === ROUTE_FRAMEWORKS;
     },
-    showViolationsExportButton() {
+    showMergeCommitsExportButton() {
       return Boolean(this.mergeCommitsCsvExportPath) && this.isViolationsReport;
+    },
+    showViolationsExportButton() {
+      return Boolean(this.violationsCsvExportPath) && this.isViolationsReport;
     },
     showFrameworksExportButton() {
       return Boolean(this.frameworksCsvExportPath) && this.isFrameworksReport;
@@ -61,10 +69,15 @@ export default {
   ROUTE_VIOLATIONS,
   ROUTE_FRAMEWORKS,
   i18n: {
-    export: s__('Compliance Report|Export as CSV'),
-    exportTitle: s__(
-      'Compliance Report|Export frameworks as CSV. You will be emailed after export is processed.',
-    ),
+    export: s__('Compliance Report|Export full report as CSV'),
+    exportTitle: {
+      frameworks: s__(
+        'Compliance Report|Export frameworks as CSV. You will be emailed after the export is processed.',
+      ),
+      violations: s__(
+        'Compliance Report|Export merge request violations as CSV. You will be emailed after the export is processed.',
+      ),
+    },
     frameworksTab: s__('Compliance Report|Frameworks'),
     heading: __('Compliance report'),
     standardsAdherenceTab: s__('Compliance Report|Standards Adherence'),
@@ -82,21 +95,35 @@ export default {
       :documentation-path="$options.documentationPath"
     >
       <template #actions>
-        <merge-commits-export-button
-          v-if="showViolationsExportButton"
-          :merge-commits-csv-export-path="mergeCommitsCsvExportPath"
-        />
-        <gl-button
-          v-if="showFrameworksExportButton"
-          v-gl-tooltip.hover
-          :title="$options.i18n.exportTitle"
-          :aria-label="$options.i18n.export"
-          icon="export"
-          data-testid="framework-export"
-          :href="frameworksCsvExportPath"
-        >
-          {{ $options.i18n.export }}
-        </gl-button>
+        <div align="right">
+          <merge-commits-export-button
+            v-if="showMergeCommitsExportButton"
+            :merge-commits-csv-export-path="mergeCommitsCsvExportPath"
+          />
+          <gl-button
+            v-if="showViolationsExportButton"
+            v-gl-tooltip.hover
+            :title="$options.i18n.exportTitle.violations"
+            :aria-label="$options.i18n.export"
+            icon="export"
+            data-testid="violations-export"
+            class="gl-mt-3"
+            :href="violationsCsvExportPath"
+          >
+            {{ $options.i18n.export }}
+          </gl-button>
+          <gl-button
+            v-if="showFrameworksExportButton"
+            v-gl-tooltip.hover
+            :title="$options.i18n.exportTitle.frameworks"
+            :aria-label="$options.i18n.export"
+            icon="export"
+            data-testid="framework-export"
+            :href="frameworksCsvExportPath"
+          >
+            {{ $options.i18n.export }}
+          </gl-button>
+        </div>
       </template>
     </report-header>
 
