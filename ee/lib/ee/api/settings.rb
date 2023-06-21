@@ -73,6 +73,10 @@ module EE
               attrs = attrs.except(:disable_personal_access_tokens)
             end
 
+            unless License.feature_available?(:delete_unconfirmed_users)
+              attrs = attrs.except(:delete_unconfirmed_users_attributes)
+            end
+
             attrs
           end
           # rubocop:enable Metrics/CyclomaticComplexity

@@ -32,6 +32,9 @@ module EE
           expose(*EE::ApplicationSettingsHelper.git_abuse_rate_limit_attributes, if: ->(_instance, _options) do
             ::License.feature_available?(:git_abuse_rate_limit)
           end)
+          expose(*EE::ApplicationSettingsHelper.delete_unconfirmed_users_attributes, if: ->(_instance, _options) do
+            ::License.feature_available?(:delete_unconfirmed_users)
+          end)
         end
       end
     end

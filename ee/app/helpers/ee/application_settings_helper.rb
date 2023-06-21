@@ -121,6 +121,7 @@ module EE
       merge_request_appovers_rules_attributes +
       password_complexity_attributes +
       git_abuse_rate_limit_attributes +
+      delete_unconfirmed_users_attributes +
        %i[
          email_additional_text
          file_template_project_id
@@ -163,6 +164,13 @@ module EE
         git_rate_limit_users_allowlist
         git_rate_limit_users_alertlist
         auto_ban_user_on_excessive_projects_download
+      ]
+    end
+
+    def self.delete_unconfirmed_users_attributes
+      %i[
+        delete_unconfirmed_users
+        unconfirmed_users_delete_after_days
       ]
     end
 

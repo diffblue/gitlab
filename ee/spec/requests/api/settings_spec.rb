@@ -369,4 +369,16 @@ RSpec.describe API::Settings, 'EE Settings', :aggregate_failures, feature_catego
 
     it_behaves_like 'settings for licensed features'
   end
+
+  context 'delete unconfirmed users setting' do
+    let(:feature) { :delete_unconfirmed_users }
+    let(:settings) do
+      {
+        delete_unconfirmed_users: true,
+        unconfirmed_users_delete_after_days: 30
+      }
+    end
+
+    it_behaves_like 'settings for licensed features'
+  end
 end
