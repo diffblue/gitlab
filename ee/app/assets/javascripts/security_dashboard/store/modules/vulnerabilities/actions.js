@@ -10,7 +10,6 @@ import download from '~/lib/utils/downloader';
 import { s__, n__, sprintf } from '~/locale';
 import toast from '~/vue_shared/plugins/global_toast';
 import {
-  FEEDBACK_TYPE_DISMISSAL,
   FEEDBACK_TYPE_ISSUE,
   FEEDBACK_TYPE_MERGE_REQUEST,
 } from '~/vue_shared/security_reports/constants';
@@ -235,20 +234,7 @@ export const dismissSelectedVulnerabilities = (
   dispatch('requestDismissSelectedVulnerabilities');
 
   const promises = dismissibleVulnerabilities.map((vulnerability) =>
-    gon.features.deprecateVulnerabilitiesFeedback
-      ? dismissFinding(vulnerability, comment)
-      : axios.post(vulnerability.create_vulnerability_feedback_dismissal_path, {
-          vulnerability_feedback: {
-            category: vulnerability.report_type,
-            comment,
-            feedback_type: FEEDBACK_TYPE_DISMISSAL,
-            project_fingerprint: vulnerability.project_fingerprint,
-            finding_uuid: vulnerability.uuid,
-            vulnerability_data: {
-              id: vulnerability.id,
-            },
-          },
-        }),
+    dismissFinding(vulnerability, comment),
   );
 
   return Promise.all(promises)
@@ -317,9 +303,7 @@ export const dismissVulnerability = (
           text: s__('SecurityReports|Undo dismiss'),
           onClick: (e, toastObject) => {
             const shouldRevertDismiss = Boolean(
-              gon.features.deprecateVulnerabilitiesFeedback
-                ? getDismissalTransitionForVulnerability(vulnerability)
-                : vulnerability.dismissal_feedback,
+              getDismissalTransitionForVulnerability(vulnerability),
             );
 
             if (shouldRevertDismiss) {
@@ -333,22 +317,7 @@ export const dismissVulnerability = (
       }
     : {};
 
-  const action = gon.features.deprecateVulnerabilitiesFeedback
-    ? dismissFinding(vulnerability, comment)
-    : axios.post(vulnerability.create_vulnerability_feedback_dismissal_path, {
-        vulnerability_feedback: {
-          category: vulnerability.report_type,
-          comment,
-          feedback_type: FEEDBACK_TYPE_DISMISSAL,
-          pipeline_id: state.pipelineId,
-          project_fingerprint: vulnerability.project_fingerprint,
-          finding_uuid: vulnerability.uuid,
-          vulnerability_data: {
-            ...vulnerability,
-            category: vulnerability.report_type,
-          },
-        },
-      });
+  const action = dismissFinding(vulnerability, comment);
 
   action
     .then(({ data }) => {
@@ -388,12 +357,7 @@ export const receiveDismissVulnerabilityError = ({ commit }, { flashError }) => 
 
 export const addDismissalComment = ({ dispatch }, { vulnerability, comment }) => {
   dispatch('requestAddDismissalComment');
-  const dismissalFeedback = vulnerability.dismissal_feedback;
-  const isEditingComment = Boolean(
-    gon.features.deprecateVulnerabilitiesFeedback
-      ? getDismissalTransitionForVulnerability(vulnerability).comment
-      : dismissalFeedback.comment_details?.comment,
-  );
+  const isEditingComment = Boolean(getDismissalTransitionForVulnerability(vulnerability).comment);
 
   const toastMsg = isEditingComment
     ? sprintf(s__("SecurityReports|Comment edited on '%{vulnerabilityName}'"), {
@@ -403,13 +367,7 @@ export const addDismissalComment = ({ dispatch }, { vulnerability, comment }) =>
         vulnerabilityName: vulnerability.name,
       });
 
-  const action = gon.features.deprecateVulnerabilitiesFeedback
-    ? dismissFinding(vulnerability, comment)
-    : axios.patch(dismissalFeedback.destroy_vulnerability_feedback_dismissal_path, {
-        project_id: dismissalFeedback.project_id,
-        id: dismissalFeedback.id,
-        comment,
-      });
+  const action = dismissFinding(vulnerability, comment);
 
   action
     .then(({ data }) => {
@@ -424,17 +382,11 @@ export const addDismissalComment = ({ dispatch }, { vulnerability, comment }) =>
 
 export const deleteDismissalComment = ({ dispatch }, { vulnerability }) => {
   dispatch('requestDeleteDismissalComment');
-  const dismissalFeedback = vulnerability.dismissal_feedback;
   const toastMsg = sprintf(s__("SecurityReports|Comment deleted on '%{vulnerabilityName}'"), {
     vulnerabilityName: vulnerability.name,
   });
 
-  const action = gon.features.deprecateVulnerabilitiesFeedback
-    ? dismissFinding(vulnerability, '')
-    : axios.patch(dismissalFeedback.destroy_vulnerability_feedback_dismissal_path, {
-        project_id: dismissalFeedback.project_id,
-        comment: '',
-      });
+  const action = dismissFinding(vulnerability, '');
 
   action
     .then(({ data }) => {
@@ -482,12 +434,10 @@ export const hideDismissalDeleteButtons = ({ commit }) => {
 export const revertDismissVulnerability = ({ dispatch }, { vulnerability, flashError }) => {
   dispatch('requestUndoDismiss');
 
-  const action = gon.features.deprecateVulnerabilitiesFeedback
-    ? defaultClient.mutate({
-        mutation: revertFindingToDetectedMutation,
-        variables: { uuid: vulnerability.uuid },
-      })
-    : axios.delete(vulnerability.dismissal_feedback.destroy_vulnerability_feedback_dismissal_path);
+  const action = defaultClient.mutate({
+    mutation: revertFindingToDetectedMutation,
+    variables: { uuid: vulnerability.uuid },
+  });
 
   return action
     .then(({ data }) => {

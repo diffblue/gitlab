@@ -49,27 +49,16 @@ export default {
       return location && (location.image || location.file || location.path);
     },
     dismissalData() {
-      return this.glFeatures.deprecateVulnerabilitiesFeedback
-        ? getDismissalTransitionForVulnerability(this.vulnerability)
-        : this.vulnerability.dismissal_feedback;
+      return getDismissalTransitionForVulnerability(this.vulnerability);
     },
     dismissalComment() {
-      // state_transitions has a comment string, dismissal_feedback has a comment_details object.
-      return this.glFeatures.deprecateVulnerabilitiesFeedback
-        ? this.dismissalData?.comment
-        : this.dismissalData?.comment_details;
+      return this.dismissalData?.comment;
     },
     issueData() {
-      return this.glFeatures.deprecateVulnerabilitiesFeedback
-        ? getCreatedIssueForVulnerability(this.vulnerability)
-        : this.vulnerability.issue_feedback;
+      return getCreatedIssueForVulnerability(this.vulnerability);
     },
     hasIssue() {
-      // Issues can be deleted. After an issue is deleted, issue_feedback will still be an object, but it won't have
-      // an issue_iid. issue_links however will remove the object from the array. Once we enable and remove the
-      // deprecate_vulnerabilities_feedback feature flag, it's no longer necessary to check for issue_iid, and this
-      // computed property can be deleted in favor of checking whether issueData is truthy instead.
-      return Boolean(this.issueData?.issue_iid);
+      return Boolean(this.issueData);
     },
     canDismissVulnerability() {
       const path = this.vulnerability.create_vulnerability_feedback_dismissal_path;

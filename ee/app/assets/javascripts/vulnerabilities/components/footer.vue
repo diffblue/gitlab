@@ -110,9 +110,7 @@ export default {
         : null;
     },
     mergeRequest() {
-      return this.glFeatures.deprecateVulnerabilitiesFeedback
-        ? this.vulnerability.mergeRequestLinks.at(-1)
-        : this.vulnerability.mergeRequestFeedback;
+      return this.vulnerability.mergeRequestLinks.at(-1);
     },
   },
   watch: {

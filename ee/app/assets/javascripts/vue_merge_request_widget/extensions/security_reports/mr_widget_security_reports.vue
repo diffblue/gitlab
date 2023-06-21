@@ -83,7 +83,7 @@ export default {
       },
       result({ data }) {
         const finding = data.project.pipeline.securityReportFinding;
-        const { mergeRequest, stateComment, dismissedBy, dismissedAt, vulnerability } = finding;
+        const { mergeRequest, vulnerability } = finding;
 
         if (mergeRequest) {
           this.$set(this.modalData.vulnerability, 'hasMergeRequest', true);
@@ -95,11 +95,7 @@ export default {
             merge_request_iid: mergeRequest.iid,
           };
 
-          if (this.glFeatures.deprecateVulnerabilitiesFeedback) {
-            this.modalData.vulnerability.merge_request_links = [mergeRequestData];
-          } else {
-            this.modalData.vulnerability.merge_request_feedback = mergeRequestData;
-          }
+          this.modalData.vulnerability.merge_request_links = [mergeRequestData];
         }
 
         const issue = finding.issueLinks?.nodes.find((x) => x.linkType === 'CREATED')?.issue;
@@ -114,26 +110,12 @@ export default {
             link_type: 'created',
           };
 
-          if (this.glFeatures.deprecateVulnerabilitiesFeedback) {
-            this.modalData.vulnerability.issue_links = [issueData];
-          } else {
-            this.modalData.vulnerability.issue_feedback = issueData;
-          }
+          this.modalData.vulnerability.issue_links = [issueData];
         }
 
-        if (this.glFeatures.deprecateVulnerabilitiesFeedback) {
-          this.modalData.vulnerability.state_transitions = vulnerability
-            ? vulnerability.stateTransitions.nodes.map(convertObjectPropsToSnakeCase)
-            : [];
-        } else if (dismissedAt) {
-          this.$set(this.modalData.vulnerability, 'dismissal_feedback', {
-            comment_details: stateComment
-              ? { comment: stateComment, comment_author: dismissedBy }
-              : null,
-            author: dismissedBy,
-            created_at: finding.dismissedAt,
-          });
-        }
+        this.modalData.vulnerability.state_transitions = vulnerability
+          ? vulnerability.stateTransitions.nodes.map(convertObjectPropsToSnakeCase)
+          : [];
       },
       skip() {
         return !this.modalData;
@@ -398,9 +380,7 @@ export default {
           },
         })
         .then(({ data }) => {
-          const url = this.glFeatures.deprecateVulnerabilitiesFeedback
-            ? getCreatedIssueForVulnerability(data).issue_url
-            : data.issue_url;
+          const url = getCreatedIssueForVulnerability(data).issue_url;
 
           visitUrl(url);
         })
@@ -508,9 +488,7 @@ export default {
       const finding = this.modalData.vulnerability;
 
       const isEditingDismissalContent = Boolean(
-        this.glFeatures.deprecateVulnerabilitiesFeedback
-          ? getDismissalTransitionForVulnerability(finding).comment
-          : finding.dismissal_feedback?.comment_details?.comment,
+        getDismissalTransitionForVulnerability(finding).comment,
       );
 
       const errorMsg = s__('SecurityReports|There was an error adding the comment.');
@@ -564,9 +542,7 @@ export default {
           },
         })
         .then(({ data }) => {
-          const url = this.glFeatures.deprecateVulnerabilitiesFeedback
-            ? data.merge_request_links.at(-1).merge_request_path
-            : data.merge_request_path;
+          const url = data.merge_request_links.at(-1).merge_request_path;
 
           visitUrl(url);
         })

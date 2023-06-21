@@ -84,7 +84,6 @@ describe('MR Widget Security Reports', () => {
     mountFn = shallowMountExtended,
     findingHandler = [findingQuery, findingQueryMockData()],
     additionalHandlers = [],
-    deprecateVulnerabilitiesFeedback = true,
   } = {}) => {
     wrapper = mountFn(MRSecurityWidget, {
       apolloProvider: createMockApollo([findingHandler, ...additionalHandlers]),
@@ -117,9 +116,6 @@ describe('MR Widget Security Reports', () => {
           apiFuzzingHelp,
         },
       },
-      provide: {
-        glFeatures: { deprecateVulnerabilitiesFeedback },
-      },
       stubs: {
         MrWidgetRow,
       },
@@ -133,7 +129,6 @@ describe('MR Widget Security Reports', () => {
     mockDataProps,
     mrProps = {},
     additionalHandlers,
-    deprecateVulnerabilitiesFeedback,
   }) => {
     mockDataFn(mockDataProps);
     createComponent({
@@ -142,7 +137,6 @@ describe('MR Widget Security Reports', () => {
       propsData: {
         mr: mrProps,
       },
-      deprecateVulnerabilitiesFeedback,
     });
 
     await waitForPromises();
@@ -500,14 +494,12 @@ describe('MR Widget Security Reports', () => {
       mockDataProps = {},
       mrProps,
       additionalHandlers,
-      deprecateVulnerabilitiesFeedback,
     } = {}) => {
       await createComponentAndExpandWidget({
         mockDataFn: mockWithData,
         mockDataProps,
         mrProps,
         additionalHandlers,
-        deprecateVulnerabilitiesFeedback,
       });
 
       // Click on the vulnerability name
@@ -579,52 +571,6 @@ describe('MR Widget Security Reports', () => {
       });
     });
 
-    it('renders the modal when the finding is clicked - deprecateVulnerabilitiesFeedback feature flag disabled', async () => {
-      await createComponentExpandWidgetAndOpenModal({ deprecateVulnerabilitiesFeedback: false });
-
-      const modal = findModal();
-
-      expect(modal.props('canCreateIssue')).toBe(false);
-      expect(modal.props('isDismissingVulnerability')).toBe(false);
-      expect(modal.props('isLoadingAdditionalInfo')).toBe(true);
-
-      await waitForPromises();
-
-      expect(modal.props('isLoadingAdditionalInfo')).toBe(false);
-
-      const { dismissedBy, dismissedAt, stateComment, mergeRequest, issueLinks } = findingMockData;
-      const { issue } = issueLinks.nodes[0];
-
-      expect(modal.props('modal')).toMatchObject({
-        title: 'Password leak',
-        error: null,
-        isShowingDeleteButtons: false,
-        vulnerability: {
-          uuid: '0',
-          severity: 'critical',
-          name: 'Password leak',
-          dismissal_feedback: {
-            author: dismissedBy,
-            created_at: dismissedAt,
-            comment_details: { comment: stateComment },
-          },
-          merge_request_feedback: {
-            author: mergeRequest.author,
-            merge_request_path: mergeRequest.webUrl,
-            created_at: mergeRequest.createdAt,
-            merge_request_iid: mergeRequest.iid,
-          },
-          issue_feedback: {
-            author: issue.author,
-            created_at: issue.createdAt,
-            issue_url: issue.webUrl,
-            issue_iid: issue.iid,
-            link_type: 'created',
-          },
-        },
-      });
-    });
-
     it('downloads a patch when the downloadPatch event is emitted', async () => {
       await createComponentExpandWidgetAndOpenModal({
         mockDataProps: {
@@ -649,35 +595,6 @@ describe('MR Widget Security Reports', () => {
         });
 
         await createComponentExpandWidgetAndOpenModal({
-          mrProps: {
-            createVulnerabilityFeedbackDismissalPath,
-          },
-        });
-
-        const spy = jest.spyOn(urlUtils, 'visitUrl');
-
-        expect(findModal().props('isCreatingMergeRequest')).toBe(false);
-
-        findModal().vm.$emit('createMergeRequest');
-
-        await nextTick();
-
-        expect(findModal().props('isCreatingMergeRequest')).toBe(true);
-
-        await waitForPromises();
-
-        expect(spy).toHaveBeenCalledWith(mergeRequestPath);
-      });
-
-      it('handles merge request creation - success - deprecateVulnerabilitiesFeedback feature flag disabled', async () => {
-        const mergeRequestPath = '/merge/request/1';
-
-        mockAxios.onPost(createVulnerabilityFeedbackMergeRequestPath).replyOnce(HTTP_STATUS_OK, {
-          merge_request_path: mergeRequestPath,
-        });
-
-        await createComponentExpandWidgetAndOpenModal({
-          deprecateVulnerabilitiesFeedback: false,
           mrProps: {
             createVulnerabilityFeedbackDismissalPath,
           },
@@ -760,27 +677,6 @@ describe('MR Widget Security Reports', () => {
         expect(spy).toHaveBeenCalledWith('/my/issue/url');
       });
 
-      it('handles issue creation - success - deprecateVulnerabilitiesFeedback feature flag disabled', async () => {
-        await createComponentExpandWidgetAndOpenModal({
-          deprecateVulnerabilitiesFeedback: false,
-          mrProps: {
-            createVulnerabilityFeedbackIssuePath,
-          },
-        });
-
-        mockAxios.onPost(createVulnerabilityFeedbackIssuePath).replyOnce(HTTP_STATUS_OK, {
-          issue_url: '/my/issue/url',
-        });
-
-        const spy = jest.spyOn(urlUtils, 'visitUrl');
-
-        findModal().vm.$emit('createNewIssue');
-
-        await waitForPromises();
-
-        expect(spy).toHaveBeenCalledWith('/my/issue/url');
-      });
-
       it('handles issue creation - error', async () => {
         mockAxios.onPost(createVulnerabilityFeedbackIssuePath).replyOnce(HTTP_STATUS_BAD_REQUEST);
 
@@ -846,155 +742,147 @@ describe('MR Widget Security Reports', () => {
       });
     });
 
-    describe.each([true, false])(
-      'dismissal comment - deprecateVulnerabilities feature flag %s',
-      (deprecateVulnerabilitiesFeedback) => {
-        let mockDataProps;
+    describe('dismissal comment', () => {
+      let mockDataProps;
 
-        beforeEach(() => {
-          mockDataProps = {
-            state: 'dismissed',
-            state_transitions: [
-              {
-                author: {},
-                to_state: 'DISMISSED',
-              },
-            ],
-            dismissal_feedback: {
+      beforeEach(() => {
+        mockDataProps = {
+          state: 'dismissed',
+          state_transitions: [
+            {
               author: {},
-              project_id: 20,
-              id: 15,
+              to_state: 'DISMISSED',
             },
-          };
+          ],
+          dismissal_feedback: {
+            author: {},
+            project_id: 20,
+            id: 15,
+          },
+        };
+      });
+
+      it.each`
+        event                                  | booleanValue
+        ${'openDismissalCommentBox'}           | ${true}
+        ${'closeDismissalCommentBox'}          | ${false}
+        ${'editVulnerabilityDismissalComment'} | ${true}
+      `('handles opening dismissal comment for event $event', async ({ event, booleanValue }) => {
+        await createComponentExpandWidgetAndOpenModal({
+          mockDataProps,
         });
 
-        it.each`
-          event                                  | booleanValue
-          ${'openDismissalCommentBox'}           | ${true}
-          ${'closeDismissalCommentBox'}          | ${false}
-          ${'editVulnerabilityDismissalComment'} | ${true}
-        `('handles opening dismissal comment for event $event', async ({ event, booleanValue }) => {
-          await createComponentExpandWidgetAndOpenModal({
-            mockDataProps,
-            deprecateVulnerabilitiesFeedback,
-          });
+        expect(findModal().props('modal').isCommentingOnDismissal).toBeUndefined();
 
-          expect(findModal().props('modal').isCommentingOnDismissal).toBeUndefined();
+        findModal().vm.$emit(event);
 
-          findModal().vm.$emit(event);
+        await waitForPromises();
 
-          await waitForPromises();
+        expect(findModal().props('modal').isCommentingOnDismissal).toBe(booleanValue);
+      });
 
-          expect(findModal().props('modal').isCommentingOnDismissal).toBe(booleanValue);
+      it('adds the dismissal comment - success', async () => {
+        await createComponentExpandWidgetAndOpenModal({
+          mockDataProps,
+          additionalHandlers: [[dismissFindingMutation, DISMISSAL_RESPONSE]],
         });
 
-        it('adds the dismissal comment - success', async () => {
-          await createComponentExpandWidgetAndOpenModal({
-            mockDataProps,
-            additionalHandlers: [[dismissFindingMutation, DISMISSAL_RESPONSE]],
-          });
+        findModal().vm.$emit('addDismissalComment', 'Edited comment');
 
-          findModal().vm.$emit('addDismissalComment', 'Edited comment');
+        await waitForPromises();
 
-          await waitForPromises();
+        expect(toast).toHaveBeenCalledWith("Comment added to 'Password leak'");
+        expect(emitSpy).toHaveBeenCalledWith(BV_HIDE_MODAL, 'modal-mrwidget-security-issue');
+      });
 
-          expect(toast).toHaveBeenCalledWith("Comment added to 'Password leak'");
-          expect(emitSpy).toHaveBeenCalledWith(BV_HIDE_MODAL, 'modal-mrwidget-security-issue');
+      it('edits the dismissal comment - success', async () => {
+        await createComponentExpandWidgetAndOpenModal({
+          mockDataProps,
+          additionalHandlers: [[dismissFindingMutation, DISMISSAL_RESPONSE]],
         });
 
-        it('edits the dismissal comment - success', async () => {
-          await createComponentExpandWidgetAndOpenModal({
-            mockDataProps,
-            deprecateVulnerabilitiesFeedback,
-            additionalHandlers: [[dismissFindingMutation, DISMISSAL_RESPONSE]],
-          });
+        await waitForPromises();
 
-          await waitForPromises();
+        findModal().vm.$emit('addDismissalComment', 'Edited comment');
 
-          findModal().vm.$emit('addDismissalComment', 'Edited comment');
+        await waitForPromises();
 
-          await waitForPromises();
+        expect(toast).toHaveBeenCalledWith("Comment edited on 'Password leak'");
+        expect(emitSpy).toHaveBeenCalledWith(BV_HIDE_MODAL, 'modal-mrwidget-security-issue');
+      });
 
-          expect(toast).toHaveBeenCalledWith("Comment edited on 'Password leak'");
-          expect(emitSpy).toHaveBeenCalledWith(BV_HIDE_MODAL, 'modal-mrwidget-security-issue');
+      it('adds the dismissal comment - error', async () => {
+        await createComponentExpandWidgetAndOpenModal({
+          mockDataProps,
+          additionalHandlers: [[dismissFindingMutation, jest.fn().mockRejectedValue()]],
         });
 
-        it('adds the dismissal comment - error', async () => {
-          await createComponentExpandWidgetAndOpenModal({
-            mockDataProps,
-            deprecateVulnerabilitiesFeedback,
-            additionalHandlers: [[dismissFindingMutation, jest.fn().mockRejectedValue()]],
-          });
+        findModal().vm.$emit('addDismissalComment', 'Edited comment');
 
-          findModal().vm.$emit('addDismissalComment', 'Edited comment');
+        await waitForPromises();
 
-          await waitForPromises();
+        expect(toast).not.toHaveBeenCalled();
+        expect(findModal().props('modal').error).toBe('There was an error adding the comment.');
+      });
 
-          expect(toast).not.toHaveBeenCalled();
-          expect(findModal().props('modal').error).toBe('There was an error adding the comment.');
+      it('deletes the dismissal comment - success', async () => {
+        mockDataProps.dismissal_feedback.comment_details = {
+          comment: 'Existing comment',
+          comment_author: { id: 15 },
+        };
+
+        await createComponentExpandWidgetAndOpenModal({
+          mockDataProps,
+          additionalHandlers: [[dismissFindingMutation, DISMISSAL_RESPONSE]],
         });
 
-        it('deletes the dismissal comment - success', async () => {
-          mockDataProps.dismissal_feedback.comment_details = {
-            comment: 'Existing comment',
-            comment_author: { id: 15 },
-          };
+        expect(findModal().props('modal').isShowingDeleteButtons).toBe(false);
 
-          await createComponentExpandWidgetAndOpenModal({
-            mockDataProps,
-            deprecateVulnerabilitiesFeedback,
-            additionalHandlers: [[dismissFindingMutation, DISMISSAL_RESPONSE]],
-          });
+        // This displays the `Delete` button
+        findModal().vm.$emit('showDismissalDeleteButtons');
+        await nextTick();
 
-          expect(findModal().props('modal').isShowingDeleteButtons).toBe(false);
+        expect(findModal().props('modal').isShowingDeleteButtons).toBe(true);
 
-          // This displays the `Delete` button
-          findModal().vm.$emit('showDismissalDeleteButtons');
-          await nextTick();
+        // This triggers the actual delete call
+        findModal().vm.$emit('deleteDismissalComment');
+        await nextTick();
 
-          expect(findModal().props('modal').isShowingDeleteButtons).toBe(true);
+        await waitForPromises();
 
-          // This triggers the actual delete call
-          findModal().vm.$emit('deleteDismissalComment');
-          await nextTick();
+        expect(toast).toHaveBeenCalledWith("Comment deleted on 'Password leak'");
+        expect(emitSpy).toHaveBeenCalledWith(BV_HIDE_MODAL, 'modal-mrwidget-security-issue');
+      });
 
-          await waitForPromises();
+      it('deletes the dismissal comment - error', async () => {
+        mockDataProps.dismissal_feedback.comment_details = {
+          comment: 'Existing comment',
+          comment_author: { id: 15 },
+        };
 
-          expect(toast).toHaveBeenCalledWith("Comment deleted on 'Password leak'");
-          expect(emitSpy).toHaveBeenCalledWith(BV_HIDE_MODAL, 'modal-mrwidget-security-issue');
+        await createComponentExpandWidgetAndOpenModal({
+          mockDataProps,
+          additionalHandlers: [[dismissFindingMutation, jest.fn().mockRejectedValue()]],
         });
 
-        it('deletes the dismissal comment - error', async () => {
-          mockDataProps.dismissal_feedback.comment_details = {
-            comment: 'Existing comment',
-            comment_author: { id: 15 },
-          };
+        expect(findModal().props('modal').isShowingDeleteButtons).toBe(false);
 
-          await createComponentExpandWidgetAndOpenModal({
-            mockDataProps,
-            deprecateVulnerabilitiesFeedback,
-            additionalHandlers: [[dismissFindingMutation, jest.fn().mockRejectedValue()]],
-          });
+        // This displays the `Delete` button
+        findModal().vm.$emit('showDismissalDeleteButtons');
+        await nextTick();
 
-          expect(findModal().props('modal').isShowingDeleteButtons).toBe(false);
+        expect(findModal().props('modal').isShowingDeleteButtons).toBe(true);
 
-          // This displays the `Delete` button
-          findModal().vm.$emit('showDismissalDeleteButtons');
-          await nextTick();
+        // This triggers the actual delete call
+        findModal().vm.$emit('deleteDismissalComment');
+        await nextTick();
 
-          expect(findModal().props('modal').isShowingDeleteButtons).toBe(true);
+        await waitForPromises();
 
-          // This triggers the actual delete call
-          findModal().vm.$emit('deleteDismissalComment');
-          await nextTick();
-
-          await waitForPromises();
-
-          expect(toast).not.toHaveBeenCalled();
-          expect(findModal().props('modal').error).toBe('There was an error deleting the comment.');
-        });
-      },
-    );
+        expect(toast).not.toHaveBeenCalled();
+        expect(findModal().props('modal').error).toBe('There was an error deleting the comment.');
+      });
+    });
 
     describe('undo dismissing finding', () => {
       let mockDataProps;

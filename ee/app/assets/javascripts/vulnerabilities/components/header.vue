@@ -79,9 +79,7 @@ export default {
       return this.vulnerability.remediations?.[0]?.diff?.length > 0;
     },
     mergeRequest() {
-      return this.glFeatures.deprecateVulnerabilitiesFeedback
-        ? this.vulnerability.mergeRequestLinks.at(-1)
-        : this.vulnerability.mergeRequestFeedback;
+      return this.vulnerability.mergeRequestLinks.at(-1);
     },
     canCreateMergeRequest() {
       return !this.mergeRequest && this.vulnerability.createMrUrl && this.hasRemediation;
@@ -194,9 +192,7 @@ export default {
           },
         })
         .then(({ data }) => {
-          const mergeRequestPath = this.glFeatures.deprecateVulnerabilitiesFeedback
-            ? data.merge_request_links.at(-1).merge_request_path
-            : data.merge_request_path;
+          const mergeRequestPath = data.merge_request_links.at(-1).merge_request_path;
 
           redirectTo(mergeRequestPath); // eslint-disable-line import/no-deprecated
         })
