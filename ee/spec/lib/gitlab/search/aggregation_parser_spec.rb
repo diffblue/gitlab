@@ -105,6 +105,39 @@ RSpec.describe Gitlab::Search::AggregationParser do
             parent_full_name: label2.project.full_name
           )
         end
+
+        context 'when the label record does not exist' do
+          let!(:elastic_aggregations) do
+            {
+              'aggregations' =>
+              {
+                'labels' =>
+                {
+                  'buckets' =>
+                  [
+                    { 'key' => non_existing_record_id.to_s, 'doc_count' => 14 },
+                    { 'key' => label2.id.to_s, 'doc_count' => 6 }
+                  ]
+                }
+              }
+            }
+          end
+
+          it 'adds label-specific fields for existing records only' do
+            expect { subject }.not_to exceed_query_limit(5)
+
+            expect(subject.length).to eq(1)
+            expect(subject.first.name).to eq('labels')
+            expect(subject.first.buckets.first.symbolize_keys).to match(
+              key: label2.id.to_s,
+              count: 6,
+              title: label2.title,
+              type: label2.type,
+              color: label2.color.to_s,
+              parent_full_name: label2.project.full_name
+            )
+          end
+        end
       end
     end
 
