@@ -73,9 +73,9 @@ describe('GeoReplicableApp', () => {
         replicableItems.length ? 'with' : 'without'
       } replicableItems`, () => {
         beforeEach(() => {
-          wrapper.vm.$store.state.isLoading = isLoading;
-          wrapper.vm.$store.state.replicableItems = replicableItems;
-          wrapper.vm.$store.state.paginationData.total = replicableItems.length;
+          store.state.isLoading = isLoading;
+          store.state.replicableItems = replicableItems;
+          store.state.paginationData.total = replicableItems.length;
         });
 
         it(`${showReplicableItems ? 'shows' : 'hides'} the replicable items`, () => {
