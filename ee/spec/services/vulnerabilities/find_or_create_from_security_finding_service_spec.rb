@@ -49,7 +49,7 @@ feature_category: :vulnerability_management do
   it 'matches an expected checksum' do
     code_file_path = Rails.root.join("ee/app/services/vulnerabilities/find_or_create_from_security_finding_service.rb")
     code_definition = File.read(code_file_path)
-    expected_checksum = "4b77c25eb8c5129c27f7a7f6ea4a062dea604d7ed07c34246cb6ae25de9927b3"
+    expected_checksum = "0633c251bf0e23ef17c2f64ca4df7e666de169eb43d605711d3a6f31a4457871"
     expect(Digest::SHA256.hexdigest(code_definition)).to eq(expected_checksum)
   end
 
@@ -72,7 +72,13 @@ feature_category: :vulnerability_management do
 
     context 'when the vulnerability state is different from the requested one' do
       it 'updates the state' do
-        expect { subject }.to change { vulnerability.reload.state }.from("detected").to("dismissed")
+        expect do
+          subject
+
+          vulnerability.reload
+        end.to change { vulnerability.state }.from("detected").to("dismissed")
+           .and change { vulnerability.dismissed_by }.from(nil).to(user)
+           .and change { vulnerability.dismissed_at }.from(nil)
       end
 
       context 'when comment and dismissal_reason is not given' do
