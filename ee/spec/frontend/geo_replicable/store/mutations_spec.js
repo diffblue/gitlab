@@ -175,9 +175,9 @@ describe('GeoReplicable Store Mutations', () => {
     ${types.REQUEST_INITIATE_ALL_REPLICABLE_SYNCS}         | ${false}      | ${true}
     ${types.RECEIVE_INITIATE_ALL_REPLICABLE_SYNCS_SUCCESS} | ${true}       | ${false}
     ${types.RECEIVE_INITIATE_ALL_REPLICABLE_SYNCS_ERROR}   | ${true}       | ${false}
-    ${types.REQUEST_INITIATE_REPLICABLE_SYNC}              | ${false}      | ${true}
-    ${types.RECEIVE_INITIATE_REPLICABLE_SYNC_SUCCESS}      | ${true}       | ${false}
-    ${types.RECEIVE_INITIATE_REPLICABLE_SYNC_ERROR}        | ${true}       | ${false}
+    ${types.REQUEST_INITIATE_REPLICABLE_ACTION}            | ${false}      | ${true}
+    ${types.RECEIVE_INITIATE_REPLICABLE_ACTION_SUCCESS}    | ${true}       | ${false}
+    ${types.RECEIVE_INITIATE_REPLICABLE_ACTION_ERROR}      | ${true}       | ${false}
   `(`Sync Mutations:`, ({ mutation, loadingBefore, loadingAfter }) => {
     describe(`${mutation}`, () => {
       it(`sets isLoading to ${loadingAfter}`, () => {

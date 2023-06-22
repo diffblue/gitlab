@@ -1,4 +1,4 @@
-import { GlLink, GlButton } from '@gitlab/ui';
+import { GlLink } from '@gitlab/ui';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -20,7 +20,7 @@ describe('GeoReplicableItem', () => {
   const mockReplicable = MOCK_BASIC_FETCH_DATA_MAP[0];
 
   const actionSpies = {
-    initiateReplicableSync: jest.fn(),
+    initiateReplicableAction: jest.fn(),
   };
 
   const defaultProps = {
@@ -51,7 +51,8 @@ describe('GeoReplicableItem', () => {
   const findReplicableItemSyncStatus = () =>
     findReplicableItemHeader().findComponent(GeoReplicableStatus);
   const findReplicableItemLink = () => findReplicableItemHeader().findComponent(GlLink);
-  const findResyncButton = () => findReplicableItemHeader().findComponent(GlButton);
+  const findResyncButton = () => wrapper.findByTestId('geo-resync-item');
+  const findReverifyButton = () => wrapper.findByTestId('geo-reverify-item');
   const findReplicableItemNoLinkText = () => findReplicableItemHeader().find('span');
   const findReplicableItemTimeAgos = () => wrapper.findAllComponents(GeoReplicableTimeAgo);
   const findReplicableTimeAgosDateStrings = () =>
@@ -60,51 +61,121 @@ describe('GeoReplicableItem', () => {
     findReplicableItemTimeAgos().wrappers.map((w) => w.props('defaultText'));
 
   describe.each`
-    graphqlFieldName         | geoRegistriesUpdateMutation | link                         | nonLink                | showAction
-    ${null}                  | ${false}                    | ${`/${mockReplicable.name}`} | ${false}               | ${true}
-    ${null}                  | ${true}                     | ${`/${mockReplicable.name}`} | ${false}               | ${true}
-    ${MOCK_GRAPHQL_REGISTRY} | ${false}                    | ${false}                     | ${mockReplicable.name} | ${false}
-    ${MOCK_GRAPHQL_REGISTRY} | ${true}                     | ${false}                     | ${mockReplicable.name} | ${true}
-  `('template', ({ graphqlFieldName, geoRegistriesUpdateMutation, link, nonLink, showAction }) => {
-    describe(`when graphqlFieldName is ${graphqlFieldName} and feature flag geoRegistriesUpdateMutation is ${geoRegistriesUpdateMutation}`, () => {
+    geoRegistriesUpdateMutation | verificationEnabled
+    ${false}                    | ${false}
+    ${false}                    | ${true}
+    ${true}                     | ${false}
+    ${true}                     | ${true}
+  `('template', ({ geoRegistriesUpdateMutation, verificationEnabled }) => {
+    describe(`when graphqlFieldName is null, verificationEnabled is ${verificationEnabled} and feature flag geoRegistriesUpdateMutation is ${geoRegistriesUpdateMutation}`, () => {
       beforeEach(() => {
-        createComponent(null, { graphqlFieldName }, { geoRegistriesUpdateMutation });
+        createComponent(
+          null,
+          { graphqlFieldName: null, verificationEnabled },
+          { geoRegistriesUpdateMutation },
+        );
       });
 
       it('renders GeoReplicableStatus', () => {
         expect(findReplicableItemSyncStatus().exists()).toBe(true);
       });
 
-      it(`does ${link ? '' : 'not '}render GlLink with correct link`, () => {
-        expect(
-          findReplicableItemLink().exists() && findReplicableItemLink().attributes('href'),
-        ).toBe(link);
+      it('renders title as GlLink with correct link', () => {
+        expect(findReplicableItemLink().attributes('href')).toBe(`/${mockReplicable.name}`);
       });
 
-      it(`does ${nonLink ? '' : 'not '}render No link title`, () => {
-        expect(
-          findReplicableItemNoLinkText().exists() && findReplicableItemNoLinkText().text(),
-        ).toBe(nonLink);
+      it('does not render title as plain text', () => {
+        expect(findReplicableItemNoLinkText().exists()).toBe(false);
       });
 
-      it(`does ${showAction ? '' : 'not '}render Resync Button`, () => {
-        expect(findResyncButton().exists()).toBe(showAction);
+      it('renders Resync Button', () => {
+        expect(findResyncButton().exists()).toBe(true);
+      });
+
+      it('does not render Reverify Button', () => {
+        expect(findReverifyButton().exists()).toBe(false);
       });
     });
   });
+
+  describe.each`
+    geoRegistriesUpdateMutation | verificationEnabled | showResyncAction | showReverifyAction
+    ${false}                    | ${false}            | ${false}         | ${false}
+    ${false}                    | ${true}             | ${false}         | ${false}
+    ${true}                     | ${false}            | ${true}          | ${false}
+    ${true}                     | ${true}             | ${true}          | ${true}
+  `(
+    'template',
+    ({
+      geoRegistriesUpdateMutation,
+      verificationEnabled,
+      showResyncAction,
+      showReverifyAction,
+    }) => {
+      describe(`when graphqlFieldName is ${MOCK_GRAPHQL_REGISTRY}, verificationEnabled is ${verificationEnabled} and feature flag geoRegistriesUpdateMutation is ${geoRegistriesUpdateMutation}`, () => {
+        beforeEach(() => {
+          createComponent(
+            null,
+            { graphqlFieldName: MOCK_GRAPHQL_REGISTRY, verificationEnabled },
+            { geoRegistriesUpdateMutation },
+          );
+        });
+
+        it('renders GeoReplicableStatus', () => {
+          expect(findReplicableItemSyncStatus().exists()).toBe(true);
+        });
+
+        it('does not render title as a link', () => {
+          expect(findReplicableItemLink().exists()).toBe(false);
+        });
+
+        it('renders title as plain text', () => {
+          expect(findReplicableItemNoLinkText().text()).toBe(mockReplicable.name);
+        });
+
+        it(`${showResyncAction ? 'does' : 'does not'} render Resync Button`, () => {
+          expect(findResyncButton().exists()).toBe(showResyncAction);
+        });
+
+        it(`${showReverifyAction ? 'does' : 'does not'} render Reverify Button`, () => {
+          expect(findReverifyButton().exists()).toBe(showReverifyAction);
+        });
+      });
+    },
+  );
 
   describe('Resync button action', () => {
     beforeEach(() => {
       createComponent();
     });
 
-    it('calls initiateReplicableSync when clicked', () => {
+    it('calls initiateReplicableAction when clicked', () => {
       findResyncButton().vm.$emit('click');
 
-      expect(actionSpies.initiateReplicableSync).toHaveBeenCalledWith(expect.any(Object), {
+      expect(actionSpies.initiateReplicableAction).toHaveBeenCalledWith(expect.any(Object), {
         registryId: defaultProps.registryId,
         name: defaultProps.name,
         action: ACTION_TYPES.RESYNC,
+      });
+    });
+  });
+
+  describe('Reverify button action', () => {
+    beforeEach(() => {
+      createComponent(
+        null,
+        { graphqlFieldName: MOCK_GRAPHQL_REGISTRY, verificationEnabled: true },
+        { geoRegistriesUpdateMutation: true },
+      );
+    });
+
+    it('calls initiateReplicableAction when clicked', () => {
+      findReverifyButton().vm.$emit('click');
+
+      expect(actionSpies.initiateReplicableAction).toHaveBeenCalledWith(expect.any(Object), {
+        registryId: defaultProps.registryId,
+        name: defaultProps.name,
+        action: ACTION_TYPES.REVERIFY,
       });
     });
   });

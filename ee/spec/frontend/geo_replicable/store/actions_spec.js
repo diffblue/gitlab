@@ -522,25 +522,25 @@ describe('GeoReplicable Store Actions', () => {
     });
   });
 
-  describe('requestInitiateReplicableSync', () => {
-    it('should commit mutation REQUEST_INITIATE_REPLICABLE_SYNC', async () => {
+  describe('requestInitiateReplicableAction', () => {
+    it('should commit mutation REQUEST_INITIATE_REPLICABLE_ACTION', async () => {
       await testAction(
-        actions.requestInitiateReplicableSync,
+        actions.requestInitiateReplicableAction,
         null,
         state,
-        [{ type: types.REQUEST_INITIATE_REPLICABLE_SYNC }],
+        [{ type: types.REQUEST_INITIATE_REPLICABLE_ACTION }],
         [],
       );
     });
   });
 
-  describe('receiveInitiateReplicableSyncSuccess', () => {
-    it('should commit mutation RECEIVE_INITIATE_REPLICABLE_SYNC_SUCCESS and call fetchReplicableItems and toast', async () => {
+  describe('receiveInitiateReplicableActionSuccess', () => {
+    it('should commit mutation RECEIVE_INITIATE_REPLICABLE_ACTION_SUCCESS and call fetchReplicableItems and toast', async () => {
       await testAction(
-        actions.receiveInitiateReplicableSyncSuccess,
+        actions.receiveInitiateReplicableActionSuccess,
         { action: ACTION_TYPES.RESYNC, name: 'test' },
         state,
-        [{ type: types.RECEIVE_INITIATE_REPLICABLE_SYNC_SUCCESS }],
+        [{ type: types.RECEIVE_INITIATE_REPLICABLE_ACTION_SUCCESS }],
         [{ type: 'fetchReplicableItems' }],
       );
       expect(toast).toHaveBeenCalledTimes(1);
@@ -548,13 +548,13 @@ describe('GeoReplicable Store Actions', () => {
     });
   });
 
-  describe('receiveInitiateReplicableSyncError', () => {
-    it('should commit mutation RECEIVE_INITIATE_REPLICABLE_SYNC_ERROR', async () => {
+  describe('receiveInitiateReplicableActionError', () => {
+    it('should commit mutation RECEIVE_INITIATE_REPLICABLE_ACTION_ERROR', async () => {
       await testAction(
-        actions.receiveInitiateReplicableSyncError,
+        actions.receiveInitiateReplicableActionError,
         { action: ACTION_TYPES.RESYNC, registryId: 1, name: 'test' },
         state,
-        [{ type: types.RECEIVE_INITIATE_REPLICABLE_SYNC_ERROR }],
+        [{ type: types.RECEIVE_INITIATE_REPLICABLE_ACTION_ERROR }],
         [],
       );
       expect(createAlert).toHaveBeenCalledTimes(1);
@@ -566,21 +566,21 @@ describe('GeoReplicable Store Actions', () => {
     const registryId = 1;
     const name = 'test';
 
-    describe('initiateReplicableSync', () => {
+    describe('initiateReplicableAction', () => {
       describe('with graphql', () => {
         beforeEach(() => {
           state.useGraphQl = true;
         });
 
-        it('calls initiateReplicableSyncGraphQl', async () => {
+        it('calls initiateReplicableActionGraphQl', async () => {
           await testAction(
-            actions.initiateReplicableSync,
+            actions.initiateReplicableAction,
             { registryId, name, action },
             state,
             [],
             [
-              { type: 'requestInitiateReplicableSync' },
-              { type: 'initiateReplicableSyncGraphQl', payload: { registryId, name, action } },
+              { type: 'requestInitiateReplicableAction' },
+              { type: 'initiateReplicableActionGraphQl', payload: { registryId, name, action } },
             ],
           );
         });
@@ -591,22 +591,22 @@ describe('GeoReplicable Store Actions', () => {
           state.useGraphQl = false;
         });
 
-        it('calls initiateReplicableSyncRestful', async () => {
+        it('calls initiateReplicableActionRestful', async () => {
           await testAction(
-            actions.initiateReplicableSync,
+            actions.initiateReplicableAction,
             { registryId, name, action },
             state,
             [],
             [
-              { type: 'requestInitiateReplicableSync' },
-              { type: 'initiateReplicableSyncRestful', payload: { registryId, name, action } },
+              { type: 'requestInitiateReplicableAction' },
+              { type: 'initiateReplicableActionRestful', payload: { registryId, name, action } },
             ],
           );
         });
       });
     });
 
-    describe('initiateReplicableSyncGraphQl', () => {
+    describe('initiateReplicableActionGraphQl', () => {
       describe('on success', () => {
         beforeEach(() => {
           jest.spyOn(mockGeoGqClient, 'mutate').mockResolvedValue({});
@@ -614,13 +614,13 @@ describe('GeoReplicable Store Actions', () => {
 
         it('should call mockGeoClient with correct parameters and success actions', () => {
           testAction(
-            actions.initiateReplicableSyncGraphQl,
+            actions.initiateReplicableActionGraphQl,
             { registryId, name, action },
             state,
             [],
             [
               {
-                type: 'receiveInitiateReplicableSyncSuccess',
+                type: 'receiveInitiateReplicableActionSuccess',
                 payload: { name, action },
               },
             ],
@@ -645,13 +645,13 @@ describe('GeoReplicable Store Actions', () => {
 
         it('should call mockGeoClient with correct parameters and error actions', () => {
           testAction(
-            actions.initiateReplicableSyncGraphQl,
+            actions.initiateReplicableActionGraphQl,
             { registryId, name, action },
             state,
             [],
             [
               {
-                type: 'receiveInitiateReplicableSyncError',
+                type: 'receiveInitiateReplicableActionError',
                 payload: { name },
               },
             ],
@@ -670,7 +670,7 @@ describe('GeoReplicable Store Actions', () => {
       });
     });
 
-    describe('initiateReplicableSyncRestful', () => {
+    describe('initiateReplicableActionRestful', () => {
       describe('on success', () => {
         beforeEach(() => {
           jest.spyOn(Api, 'initiateGeoReplicableSync').mockResolvedValue(MOCK_BASIC_POST_RESPONSE);
@@ -678,11 +678,11 @@ describe('GeoReplicable Store Actions', () => {
 
         it('should dispatch the request with correct replicable param and success actions', () => {
           testAction(
-            actions.initiateReplicableSyncRestful,
+            actions.initiateReplicableActionRestful,
             { registryId, name, action },
             state,
             [],
-            [{ type: 'receiveInitiateReplicableSyncSuccess', payload: { name, action } }],
+            [{ type: 'receiveInitiateReplicableActionSuccess', payload: { name, action } }],
           );
           expect(Api.initiateGeoReplicableSync).toHaveBeenCalledWith(MOCK_REPLICABLE_TYPE, {
             projectId: registryId,
@@ -700,13 +700,13 @@ describe('GeoReplicable Store Actions', () => {
 
         it('should dispatch the request and error actions', async () => {
           await testAction(
-            actions.initiateReplicableSyncRestful,
+            actions.initiateReplicableActionRestful,
             { registryId, name, action },
             state,
             [],
             [
               {
-                type: 'receiveInitiateReplicableSyncError',
+                type: 'receiveInitiateReplicableActionError',
                 payload: { name: 'test' },
               },
             ],

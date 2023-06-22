@@ -34,13 +34,13 @@ export default {
   [types.RECEIVE_INITIATE_ALL_REPLICABLE_SYNCS_ERROR](state) {
     state.isLoading = false;
   },
-  [types.REQUEST_INITIATE_REPLICABLE_SYNC](state) {
+  [types.REQUEST_INITIATE_REPLICABLE_ACTION](state) {
     state.isLoading = true;
   },
-  [types.RECEIVE_INITIATE_REPLICABLE_SYNC_SUCCESS](state) {
+  [types.RECEIVE_INITIATE_REPLICABLE_ACTION_SUCCESS](state) {
     state.isLoading = false;
   },
-  [types.RECEIVE_INITIATE_REPLICABLE_SYNC_ERROR](state) {
+  [types.RECEIVE_INITIATE_REPLICABLE_ACTION_ERROR](state) {
     state.isLoading = false;
   },
 };

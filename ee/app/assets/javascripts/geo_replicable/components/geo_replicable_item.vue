@@ -14,6 +14,7 @@ export default {
     unknown: __('Unknown'),
     nA: __('Not applicable.'),
     resync: s__('Geo|Resync'),
+    reverify: s__('Geo|Reverify'),
     lastVerified: s__('Geo|Last time verified'),
   },
   components: {
@@ -66,12 +67,17 @@ export default {
         },
       ];
     },
-    showActions() {
+    showResyncAction() {
       return !this.useGraphQl || this.glFeatures.geoRegistriesUpdateMutation;
+    },
+    showReverifyAction() {
+      return (
+        this.useGraphQl && this.verificationEnabled && this.glFeatures.geoRegistriesUpdateMutation
+      );
     },
   },
   methods: {
-    ...mapActions(['initiateReplicableSync']),
+    ...mapActions(['initiateReplicableAction']),
   },
   actionTypes: ACTION_TYPES,
 };
@@ -92,14 +98,28 @@ export default {
         >{{ name }}</gl-link
       >
       <span v-if="useGraphQl" class="gl-font-weight-bold">{{ name }}</span>
-      <gl-button
-        v-if="showActions"
-        class="gl-ml-auto"
-        size="small"
-        @click="initiateReplicableSync({ registryId, name, action: $options.actionTypes.RESYNC })"
-      >
-        {{ $options.i18n.resync }}
-      </gl-button>
+      <div v-if="showResyncAction || showReverifyAction">
+        <gl-button
+          v-if="showResyncAction"
+          data-testid="geo-resync-item"
+          size="small"
+          @click="
+            initiateReplicableAction({ registryId, name, action: $options.actionTypes.RESYNC })
+          "
+        >
+          {{ $options.i18n.resync }}
+        </gl-button>
+        <gl-button
+          v-if="showReverifyAction"
+          data-testid="geo-reverify-item"
+          size="small"
+          @click="
+            initiateReplicableAction({ registryId, name, action: $options.actionTypes.REVERIFY })
+          "
+        >
+          {{ $options.i18n.reverify }}
+        </gl-button>
+      </div>
     </div>
     <div class="gl-display-flex gl-align-items-center gl-flex-wrap">
       <geo-replicable-time-ago
