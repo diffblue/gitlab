@@ -23,11 +23,13 @@ module GitlabSubscriptions
       # rubocop: enable CodeReuse/ActiveRecord
 
       def update_add_on_purchase
-        add_on_purchase.update(
+        attributes = {
           quantity: quantity,
           expires_on: expires_on,
           purchase_xid: purchase_xid
-        )
+        }.compact
+
+        add_on_purchase.update(attributes)
       end
 
       def error_response
