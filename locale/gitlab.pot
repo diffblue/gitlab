@@ -18672,6 +18672,9 @@ msgstr ""
 msgid "Failed to add a resource link"
 msgstr ""
 
+msgid "Failed to add emoji. Please try again"
+msgstr ""
+
 msgid "Failed to apply commands."
 msgstr ""
 
@@ -18852,6 +18855,9 @@ msgid "Failed to remove a Zoom meeting"
 msgstr ""
 
 msgid "Failed to remove a to-do item for the design."
+msgstr ""
+
+msgid "Failed to remove emoji. Please try again"
 msgstr ""
 
 msgid "Failed to remove mirror."
@@ -51942,9 +51948,6 @@ msgid "WorkItem|Due date"
 msgstr ""
 
 msgid "WorkItem|Existing task"
-msgstr ""
-
-msgid "WorkItem|Failed to award emoji"
 msgstr ""
 
 msgid "WorkItem|Health status"
