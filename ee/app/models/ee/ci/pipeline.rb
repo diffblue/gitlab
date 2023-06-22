@@ -31,6 +31,13 @@ module EE
           joins(:downloadable_artifacts).where(ci_builds: { name: %w[sast secret_detection dependency_scanning container_scanning dast] })
         end
 
+        scope :latest_completed_pipeline_ids_per_source, ->(sha) do
+          complete
+            .group(:source)
+            .select('max(id) as id')
+            .for_sha(sha)
+        end
+
         # This structure describes feature levels
         # to access the file types for given reports
         REPORT_LICENSED_FEATURES = {

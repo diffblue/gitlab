@@ -29,6 +29,22 @@ RSpec.describe Ci::Pipeline do
     end
   end
 
+  describe '.latest_completed_pipeline_ids_per_source', feature_category: :security_policy_management do
+    let_it_be(:push_pipeline_1) { create(:ci_pipeline, :success, project: project, source: Enums::Ci::Pipeline.sources[:push], sha: 'sha') }
+    let_it_be(:web_pipeline) { create(:ci_pipeline, :success, project: project, source: Enums::Ci::Pipeline.sources[:web], sha: 'sha') }
+    let_it_be(:merge_request_pipeline_1) { create(:ci_pipeline, :failed, project: project, source: Enums::Ci::Pipeline.sources[:merge_request_event], sha: 'sha') }
+    let_it_be(:security_policy_pipeline) { create(:ci_pipeline, :success, project: project, source: Enums::Ci::Pipeline.sources[:security_orchestration_policy], sha: 'sha') }
+
+    let_it_be(:push_pipeline_2) { create(:ci_pipeline, :success, project: project, source: Enums::Ci::Pipeline.sources[:push], sha: 'sha') }
+    let_it_be(:merge_request_pipeline_2) { create(:ci_pipeline, :success, project: project, source: Enums::Ci::Pipeline.sources[:merge_request_event], sha: 'sha') }
+    let_it_be(:web_pipeline_with_different_sha) { create(:ci_pipeline, :success, project: project, source: Enums::Ci::Pipeline.sources[:web], sha: 'sha2') }
+
+    it 'returns expected pipeline ids' do
+      expect(described_class.latest_completed_pipeline_ids_per_source('sha'))
+        .to contain_exactly(web_pipeline, security_policy_pipeline, push_pipeline_2, merge_request_pipeline_2)
+    end
+  end
+
   describe '#batch_lookup_report_artifact_for_file_type' do
     shared_examples '#batch_lookup_report_artifact_for_file_type' do |file_type, license|
       context 'when feature is available' do
