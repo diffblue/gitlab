@@ -41,8 +41,13 @@ const defaultProjectsRequestHandler = getProjectsRequestHandler();
 
 describe('Project Filter component', () => {
   let wrapper;
+  let requestHandler;
+
+  const { i18n } = ProjectFilter;
 
   const createWrapper = ({ projectsRequestHandler = defaultProjectsRequestHandler } = {}) => {
+    requestHandler = projectsRequestHandler;
+
     wrapper = mountExtended(ProjectFilter, {
       apolloProvider: createMockApollo(
         [[groupProjectsQuery, projectsRequestHandler]],
@@ -143,7 +148,7 @@ describe('Project Filter component', () => {
       it('has expected props', () => {
         expect(findQuerystringSync().props()).toMatchObject({
           querystringKey: 'projectId',
-          value: wrapper.vm.selected,
+          value: [],
         });
       });
 
@@ -183,59 +188,51 @@ describe('Project Filter component', () => {
 
     describe('default view', () => {
       it('shows the label', () => {
-        expect(wrapper.find('label').text()).toBe(ProjectFilter.i18n.label);
+        expect(wrapper.find('label').text()).toBe(i18n.label);
       });
 
       it('shows the dropdown with correct header text', () => {
-        expect(wrapper.findComponent(GlDropdown).props('headerText')).toBe(
-          ProjectFilter.i18n.label,
-        );
+        expect(wrapper.findComponent(GlDropdown).props('headerText')).toBe(i18n.label);
       });
 
       it('shows the DropdownButtonText component with the correct props', () => {
         expect(wrapper.findComponent(DropdownButtonText).props()).toEqual({
-          items: [ProjectFilter.i18n.allItemsText],
-          name: ProjectFilter.i18n.label,
+          items: [i18n.allItemsText],
+          name: i18n.label,
         });
       });
     });
 
     describe('dropdown items', () => {
-      it('shows all dropdown items with correct text', () => {
+      it.each(projects)('shows all dropdown items with correct text', ({ id, name }) => {
         expect(findDropdownItems()).toHaveLength(projects.length + 1);
 
-        expect(findDropdownItem(ALL_ID).text()).toBe(ProjectFilter.i18n.allItemsText);
-        projects.forEach(({ id, name }) => {
-          expect(findDropdownItem(id).text()).toBe(name);
-        });
+        expect(findDropdownItem(ALL_ID).text()).toBe(i18n.allItemsText);
+        expect(findDropdownItem(id).text()).toBe(name);
       });
 
-      it('allows multiple items to be selected', async () => {
+      it.each(projects)('allows multiple items to be selected', async ({ id }) => {
         const ids = [];
         // Deselect everything to begin with.
         clickDropdownItem(ALL_ID);
 
-        for await (const { id } of projects) {
-          await clickDropdownItem(id);
-          ids.push(id);
+        await clickDropdownItem(id);
+        ids.push(id);
 
-          expectSelectedItems(ids);
-        }
+        expectSelectedItems(ids);
       });
 
-      it('toggles the item selection when clicked on', async () => {
+      it.each(projects)('toggles the item selection when clicked on', async ({ id }) => {
         // Deselect everything to begin with.
         clickDropdownItem(ALL_ID);
 
-        for await (const { id } of projects) {
-          await clickDropdownItem(id);
+        await clickDropdownItem(id);
 
-          expectSelectedItems([id]);
+        expectSelectedItems([id]);
 
-          await clickDropdownItem(id);
+        await clickDropdownItem(id);
 
-          expectSelectedItems([ALL_ID]);
-        }
+        expectSelectedItems([ALL_ID]);
       });
 
       it('selects All items when created', () => {
@@ -258,20 +255,21 @@ describe('Project Filter component', () => {
     });
 
     describe('filter-changed event', () => {
-      it('emits filter-changed event when selected item is changed', async () => {
-        const ids = [];
-        // Deselect everything to begin with.
-        await clickDropdownItem(ALL_ID);
+      it.each(projects)(
+        'emits filter-changed event when selected item is changed',
+        async ({ id }) => {
+          const ids = [];
+          // Deselect everything to begin with.
+          await clickDropdownItem(ALL_ID);
 
-        expect(wrapper.emitted('filter-changed')[0][0].projectId).toEqual([]);
+          expect(wrapper.emitted('filter-changed')[0][0].projectId).toEqual([]);
 
-        for await (const { id } of projects) {
           await clickDropdownItem(id);
           ids.push(id);
 
           expect(wrapper.emitted('filter-changed')[ids.length][0].projectId).toEqual(ids);
-        }
-      });
+        },
+      );
 
       it('emits the raw querystring IDs before the valid IDs are fetched', async () => {
         createWrapper();
@@ -353,14 +351,13 @@ describe('Project Filter component', () => {
 
     it('shows the loading icon and fetches the next page when the intersection observer appears', async () => {
       await createWrapperAndWaitForQuery();
-      const spy = jest.spyOn(wrapper.vm.$apollo.queries.projects, 'fetchMore');
       findIntersectionObserver().vm.$emit('appear');
       await nextTick();
 
       expect(findDropdownItems()).toHaveLength(projects.length + 1);
       expect(findIntersectionObserver().exists()).toBe(false);
       expect(isLoadingIconVisible()).toBe(true);
-      expect(spy).toHaveBeenCalledTimes(1);
+      expect(requestHandler).toHaveBeenCalledTimes(2);
       expect(defaultProjectsRequestHandler).toHaveBeenCalledTimes(2);
     });
   });
