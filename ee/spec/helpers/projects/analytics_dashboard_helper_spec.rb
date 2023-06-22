@@ -11,15 +11,15 @@ RSpec.describe Projects::AnalyticsDashboardHelper, feature_category: :value_stre
     stub_licensed_features(project_level_analytics_dashboard: true)
   end
 
-  describe '#analytics_dashboard_available?' do
+  describe '#project_analytics_dashboard_available?' do
     context 'when feature flag is disabled' do
       before do
-        stub_feature_flags(product_analytics_dashboards: false)
+        stub_feature_flags(combined_analytics_dashboards: false)
       end
 
       it 'is false for group and personal projects' do
-        expect(helper.analytics_dashboard_available?(group_project)).to be_falsey
-        expect(helper.analytics_dashboard_available?(personal_project)).to be_falsey
+        expect(helper.project_analytics_dashboard_available?(group_project)).to be_falsey
+        expect(helper.project_analytics_dashboard_available?(personal_project)).to be_falsey
       end
     end
 
@@ -29,17 +29,17 @@ RSpec.describe Projects::AnalyticsDashboardHelper, feature_category: :value_stre
       end
 
       it 'is false for group and personal projects' do
-        expect(helper.analytics_dashboard_available?(group_project)).to be_falsey
-        expect(helper.analytics_dashboard_available?(personal_project)).to be_falsey
+        expect(helper.project_analytics_dashboard_available?(group_project)).to be_falsey
+        expect(helper.project_analytics_dashboard_available?(personal_project)).to be_falsey
       end
     end
 
     it 'is true for group project' do
-      expect(helper.analytics_dashboard_available?(group_project)).to be_truthy
+      expect(helper.project_analytics_dashboard_available?(group_project)).to be_truthy
     end
 
     it 'is false for personal project' do
-      expect(helper.analytics_dashboard_available?(personal_project)).to be_falsey
+      expect(helper.project_analytics_dashboard_available?(personal_project)).to be_falsey
     end
   end
 end
