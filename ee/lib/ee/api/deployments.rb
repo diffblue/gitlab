@@ -21,6 +21,7 @@ module EE
             optional :comment, type: String, desc: 'A comment to go with the approval'
             optional :represented_as, type: String, desc: 'The name of the User/Group/Role to use for the approval, when the user belongs to multiple approval rules'
           end
+          route_setting :authentication, job_token_allowed: true
           post ':id/deployments/:deployment_id/approval' do
             authorize! :read_deployment, user_project
 
