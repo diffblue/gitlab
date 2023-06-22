@@ -167,8 +167,14 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
     include_context 'when user is allowed to see usage quotas'
 
     let!(:project) do
-      create(:project, :with_ci_minutes, amount_used: 100, shared_runners_duration: 1000, namespace: group,
-                                         shared_runners_enabled: true)
+      create(
+        :project,
+        :with_ci_minutes,
+        amount_used: 100,
+        shared_runners_duration: 1000,
+        namespace: group,
+        shared_runners_enabled: true
+      )
     end
 
     let(:per_page) { 20 }

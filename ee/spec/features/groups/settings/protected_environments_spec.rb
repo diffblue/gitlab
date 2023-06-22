@@ -77,8 +77,13 @@ RSpec.describe 'Protected Environments', :js, feature_category: :environment_man
     before do
       deploy_access_level = build(:protected_environment_deploy_access_level, group: operator_group)
 
-      create(:protected_environment, :group_level, name: 'production', group: organization,
-                                                   deploy_access_levels: [deploy_access_level])
+      create(
+        :protected_environment,
+        :group_level,
+        name: 'production',
+        group: organization,
+        deploy_access_levels: [deploy_access_level]
+      )
 
       visit group_settings_ci_cd_path(organization)
     end

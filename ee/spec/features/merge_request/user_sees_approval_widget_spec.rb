@@ -50,10 +50,12 @@ RSpec.describe 'Merge request > User sees approval widget', :js, feature_categor
       let(:members) { create_list(:user, 2) }
 
       let!(:rule) do
-        create(:approval_merge_request_rule,
-               merge_request: merge_request,
-               users: members,
-               approvals_required: 1)
+        create(
+          :approval_merge_request_rule,
+          merge_request: merge_request,
+          users: members,
+          approvals_required: 1
+        )
       end
 
       before do
@@ -80,10 +82,12 @@ RSpec.describe 'Merge request > User sees approval widget', :js, feature_categor
         let(:code_owners) { create_list(:user, 2) }
 
         let!(:code_owner_rule) do
-          create(:code_owner_rule,
-                 merge_request: merge_request,
-                 users: code_owners,
-                 name: '*.js')
+          create(
+            :code_owner_rule,
+            merge_request: merge_request,
+            users: code_owners,
+            name: '*.js'
+          )
         end
 
         before do

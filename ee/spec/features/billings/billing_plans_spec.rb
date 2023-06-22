@@ -315,9 +315,14 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :bi
       let(:plan) { free_plan }
 
       let!(:subscription) do
-        create(:gitlab_subscription,
-               namespace: namespace, hosted_plan: plan,
-               trial: true, trial_ends_on: Date.current.tomorrow, seats: 15)
+        create(
+          :gitlab_subscription,
+          namespace: namespace,
+          hosted_plan: plan,
+          trial: true,
+          trial_ends_on: Date.current.tomorrow,
+          seats: 15
+        )
       end
 
       before do
