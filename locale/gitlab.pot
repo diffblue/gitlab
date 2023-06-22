@@ -16376,7 +16376,7 @@ msgstr ""
 msgid "DomainVerification|The following domains are configured for projects in this group. Users with email addresses that match a verified domain do not need to confirm their account."
 msgstr ""
 
-msgid "DomainVerification|To verify ownership of your domain, add the above key to a TXT record within your DNS configuration. %{link_to_help}"
+msgid "DomainVerification|To verify ownership of your domain, add the above key to a TXT record within your DNS configuration within seven days. %{link_to_help}"
 msgstr ""
 
 msgid "Don't have a group?"
@@ -47683,7 +47683,7 @@ msgstr ""
 msgid "To"
 msgstr ""
 
-msgid "To %{link_to_help} of your domain, add the above key to a TXT record within your DNS configuration."
+msgid "To %{link_to_help} of your domain, add the above key to a TXT record within your DNS configuration within seven days."
 msgstr ""
 
 msgid "To Do"
