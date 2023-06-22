@@ -1,4 +1,4 @@
-- can_see_analytics_dashboards = can?(current_user, :read_group_analytics_dashboards, @group)
+- can_see_analytics_dashboards = group_analytics_dashboard_available?(@group)
 - can_see_insights = @group.insights_available?
 - can_see_vsd_settings = can?(current_user, :modify_value_stream_dashboard_settings, @group)
 
