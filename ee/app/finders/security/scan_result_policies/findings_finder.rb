@@ -25,7 +25,7 @@ module Security
       def execute
         findings = security_findings
 
-        findings = findings.by_severity_levels(params[:severity_levels]) if params[:severity_levels]
+        findings = findings.by_severity_levels(params[:severity_levels]) if params[:severity_levels].present?
         findings = findings.by_report_types(params[:scanners]) if params[:scanners].present?
         findings = undismissed_security_findings(findings) if only_new_undismissed_findings?
         findings = findings.by_state(:dismissed) if only_new_dismissed_findings?

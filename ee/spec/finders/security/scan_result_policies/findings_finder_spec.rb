@@ -30,6 +30,12 @@ RSpec.describe Security::ScanResultPolicies::FindingsFinder, feature_category: :
       let(:params) { { severity_levels: ['high'] } }
 
       it { is_expected.to contain_exactly(high_severity_finding) }
+
+      context 'when it is an empty array' do
+        let(:params) { { severity_levels: [] } }
+
+        it { is_expected.to contain_exactly(high_severity_finding, container_scanning_finding, dismissed_finding) }
+      end
     end
 
     context 'with scanners' do
