@@ -51,10 +51,21 @@ module Gitlab
         code_owners_file&.optional_section?(section)
       end
 
-      def track_file_validation
-        return if code_owners_file.valid?
+      def file_valid?
+        code_owners_file.valid?
+      end
+      strong_memoize_attr :file_valid?
 
-        code_owners_file.errors.each do |error|
+      def file_errors
+        file_valid?
+        code_owners_file.errors
+      end
+      strong_memoize_attr :file_errors
+
+      def track_file_validation
+        return if file_valid?
+
+        file_errors.each do |error|
           Gitlab::Tracking.event(
             self.class.name,
             'file_validation',
