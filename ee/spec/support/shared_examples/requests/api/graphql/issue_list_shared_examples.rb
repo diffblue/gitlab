@@ -85,6 +85,143 @@ RSpec.shared_examples 'graphql issue list request spec EE' do
     end
   end
 
+  describe 'filtering' do
+    context 'when filtering by weight' do
+      context 'when filtering for all issues with an assigned weight' do
+        let(:issue_filter_params) do
+          { weight_wildcard_id: :ANY }
+        end
+
+        it 'returns all issues with an assigned weight' do
+          post_query
+
+          expect(issue_ids).to match_array([issue_b, issue_c, issue_d, issue_e].map { |i| i.to_gid.to_s })
+        end
+      end
+
+      context 'when filtering for all issues without an assigned weight' do
+        let(:issue_filter_params) do
+          { weight_wildcard_id: :NONE }
+        end
+
+        it 'returns all issues without an assigned weight' do
+          post_query
+
+          expect(issue_ids).to match_array([issue_a].map { |i| i.to_gid.to_s })
+        end
+      end
+
+      context 'when both weight and weight_wildcard_id filters are provided' do
+        let(:issue_filter_params) do
+          { weight: "4", weight_wildcard_id: :ANY }
+        end
+
+        it 'returns a mutually exclusive param error' do
+          post_query
+
+          expect_graphql_errors_to_include(
+            'only one of [weight, weightWildcardId] arguments is allowed at the same time.'
+          )
+        end
+      end
+    end
+
+    context 'when filtering by iteration' do
+      let_it_be(:cadence) do
+        create(:iterations_cadence, group: group1, active: true, duration_in_weeks: 1, title: 'one week iterations')
+      end
+
+      let_it_be(:iteration) do
+        create(
+          :current_iteration,
+          :skip_future_date_validation,
+          iterations_cadence: cadence,
+          title: 'one test',
+          group: group1,
+          start_date: 1.day.ago,
+          due_date: Date.today)
+      end
+
+      let_it_be(:project) { create(:project, group: group1) }
+      let_it_be(:issue_1) { create(:issue, project: project, iteration: iteration) }
+      let_it_be(:issue_2) { create(:issue, project: project, iteration: iteration) }
+      let(:issues_with_cadence) { [issue_1, issue_2].map { |i| i.to_gid.to_s } }
+
+      context 'when filtering for issues in an iteration' do
+        let(:issue_filter_params) do
+          { iteration_title: iteration.title }
+        end
+
+        it 'returns all issues in the iteration' do
+          post_query
+
+          expect(issue_ids).to match_array([issue_1, issue_2].map { |i| i.to_gid.to_s })
+        end
+      end
+
+      context 'when filtering for issues in an iteration by iteration cadence' do
+        let(:issue_filter_params) do
+          { iteration_cadence_id: [cadence.to_gid.to_s] }
+        end
+
+        it 'returns all issues in the iteration' do
+          post_query
+
+          expect(issue_ids).to match_array(issues_with_cadence)
+        end
+      end
+    end
+
+    context 'when filtering by epic' do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:epic_a) { create(:epic, group: group1) }
+      let_it_be(:epic_b) { create(:epic, group: group1) }
+
+      before_all do
+        issue_a.epic = epic_a
+        issue_c.epic = epic_b
+      end
+
+      context 'when filtering for all issues with epics' do
+        let(:issue_filter_params) do
+          { epic_wildcard_id: :ANY }
+        end
+
+        it 'returns all issues with epics' do
+          post_query
+
+          expect(issue_ids).to match_array([issue_a, issue_c].map { |i| i.to_gid.to_s })
+        end
+      end
+
+      context 'when filtering for issues without epics' do
+        let(:issue_filter_params) do
+          { epic_wildcard_id: :NONE }
+        end
+
+        it 'returns all issues without epics' do
+          post_query
+
+          expect(issue_ids).to match_array([issue_b, issue_d, issue_e].map { |i| i.to_gid.to_s })
+        end
+      end
+
+      context 'when both epic_id and epic_wildcard_id filters are provided' do
+        let(:issue_filter_params) do
+          { epic_id: epic_a.to_gid, epic_wildcard_id: :ANY }
+        end
+
+        it 'returns a mutually exclusive param error' do
+          post_query
+
+          expect_graphql_errors_to_include(
+            'only one of [epicId, epicWildcardId] arguments is allowed at the same time.'
+          )
+        end
+      end
+    end
+  end
+
   describe 'blocked' do
     let_it_be(:link1) { create(:issue_link, source: issue_a, target: issue_b, link_type: 'blocks') }
     let_it_be(:link2) { create(:issue_link, source: issue_c, target: issue_b, link_type: 'blocks') }

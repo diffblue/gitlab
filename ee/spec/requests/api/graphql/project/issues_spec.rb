@@ -6,7 +6,8 @@ RSpec.describe 'getting an issue list for a project', feature_category: :team_pl
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:project) { create(:project).tap { |project| project.add_developer(current_user) } }
+  let_it_be(:group1) { create(:group).tap { |group| group.add_developer(current_user) } }
+  let_it_be(:project) { create(:project, group: group1) }
   let_it_be(:public_project) { project }
   let_it_be(:issue_a) { create(:issue, project: project) }
   let_it_be(:issue_b) { create(:issue, project: project, weight: 1) }
