@@ -21,7 +21,7 @@ RSpec.describe Users::BlockService, feature_category: :user_management do
         context 'when user block operation succeeds' do
           it 'logs an audit event', :aggregate_failures do
             expect(::Gitlab::Audit::Auditor).to receive(:audit).with(hash_including({
-              name: 'user_approved'
+              name: 'user_blocked'
             })).and_call_original
 
             expect { operation }.to change { AuditEvent.count }.by(1)
