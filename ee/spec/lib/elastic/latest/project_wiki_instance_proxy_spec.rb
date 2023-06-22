@@ -32,19 +32,5 @@ RSpec.describe Elastic::Latest::ProjectWikiInstanceProxy, feature_category: :glo
 
       subject.elastic_search_as_wiki_page('foo', **params)
     end
-
-    context 'when use_base_class_in_proxy_util is disabled' do
-      before do
-        stub_feature_flags(use_base_class_in_proxy_util: false)
-      end
-
-      it 'uses provided repository_id' do
-        params[:options][:repository_id] = "wiki_63"
-
-        expect(subject.class).to receive(:elastic_search_as_wiki_page).with('foo', params)
-
-        subject.elastic_search_as_wiki_page('foo', **params)
-      end
-    end
   end
 end

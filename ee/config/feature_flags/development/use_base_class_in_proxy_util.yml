@@ -1,8 +1,0 @@
----
-name: use_base_class_in_proxy_util
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/121442
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/412706
-milestone: '16.1'
-type: development
-group: group::global search
-default_enabled: false

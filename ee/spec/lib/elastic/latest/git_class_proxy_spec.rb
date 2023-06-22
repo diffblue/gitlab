@@ -477,18 +477,6 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic, :sidekiq_inline, featur
     assert_named_queries('doc:is_a:blob', 'blob:match:search_terms')
   end
 
-  context 'when use_base_class_in_proxy_util is disabled' do
-    before do
-      stub_feature_flags(use_base_class_in_proxy_util: false)
-    end
-
-    it "names elasticsearch queries" do
-      subject.elastic_search_as_found_blob('*')
-
-      assert_named_queries('doc:is_a:blob', 'blob:match:search_terms')
-    end
-  end
-
   context 'when backfilling migration is complete' do
     let_it_be(:user) { create(:user) }
 
