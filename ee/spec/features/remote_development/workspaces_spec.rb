@@ -99,7 +99,29 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
         expect(page).to have_button('Stop')
         expect(page).to have_button('Terminate')
 
-        # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409780 - Add state transition to TERMINATED
+        click_button 'Stop'
+
+        # SIMULATE THIRD POLL FROM AGENTK TO UPDATE WORKSPACE TO STOPPING STATE
+
+        simulate_third_poll(id: id, name: name, namespace: namespace)
+
+        # ASSERT WORKSPACE SHOWS STOPPING STATE IN UI
+        expect_workspace_state_indicator(RemoteDevelopment::Workspaces::States::STOPPING)
+
+        # ASSERT ACTION BUTTONS ARE CORRECT FOR STOPPING STATE
+        # TODO: What other buttons are there?
+        expect(page).to have_button('Terminate')
+
+        # SIMULATE FOURTH POLL FROM AGENTK TO UPDATE WORKSPACE TO STOPPED STATE
+
+        simulate_fourth_poll(id: id, name: name, namespace: namespace)
+
+        # ASSERT WORKSPACE SHOWS STOPPED STATE IN UI
+        expect_workspace_state_indicator(RemoteDevelopment::Workspaces::States::STOPPED)
+
+        # ASSERT ACTION BUTTONS ARE CORRECT FOR STOPPED STATE
+        expect(page).to have_button('Start')
+        expect(page).to have_button('Terminate')
       end
 
       def simulate_first_poll(id:, name:, namespace:)
@@ -166,6 +188,89 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
         expect(info.fetch(:namespace)).to eq(namespace)
         expect(info.fetch(:desired_state)).to eq(RemoteDevelopment::Workspaces::States::RUNNING)
         expect(info.fetch(:actual_state)).to eq(RemoteDevelopment::Workspaces::States::RUNNING)
+        expect(info.fetch(:deployment_resource_version)).to eq(resource_version)
+        expect(info.fetch(:config_to_apply)).to be_nil
+      end
+
+      def simulate_third_poll(id:, name:, namespace:)
+        # SIMULATE THIRD POLL REQUEST FROM AGENTK TO UPDATE WORKSPACE TO STOPPING STATE
+
+        resource_version = '1'
+        workspace_agent_info = create_workspace_agent_info(
+          workspace_id: id,
+          workspace_name: name,
+          workspace_namespace: namespace,
+          agent_id: agent.id,
+          owning_inventory: "#{name}-workspace-inventory",
+          resource_version: resource_version,
+          previous_actual_state: RemoteDevelopment::Workspaces::States::RUNNING,
+          current_actual_state: RemoteDevelopment::Workspaces::States::STOPPING,
+          workspace_exists: true,
+          user_name: user.name,
+          user_email: user.email
+        )
+        reconcile_post_response =
+          simulate_agentk_reconcile_post(workspace_agent_infos: [workspace_agent_info])
+
+        # ASSERT ON RESPONSE TO THIRD POLL REQUEST
+
+        expect(reconcile_post_response.code).to eq(HTTP::Status::CREATED)
+        infos = Gitlab::Json.parse(reconcile_post_response.body).deep_symbolize_keys[:workspace_rails_infos]
+        expect(infos.length).to eq(1)
+        info = infos.first
+
+        expect(info.fetch(:name)).to eq(name)
+        expect(info.fetch(:namespace)).to eq(namespace)
+        expect(info.fetch(:desired_state)).to eq(RemoteDevelopment::Workspaces::States::STOPPED)
+        expect(info.fetch(:actual_state)).to eq(RemoteDevelopment::Workspaces::States::STOPPING)
+        expect(info.fetch(:deployment_resource_version)).to eq(resource_version)
+
+        expected_config_to_apply = create_config_to_apply(
+          workspace_id: id,
+          workspace_name: name,
+          workspace_namespace: namespace,
+          agent_id: agent.id,
+          owning_inventory: "#{name}-workspace-inventory",
+          started: false,
+          user_name: user.name,
+          user_email: user.email
+        )
+
+        config_to_apply = info.fetch(:config_to_apply)
+        expect(config_to_apply).to eq(expected_config_to_apply)
+      end
+
+      def simulate_fourth_poll(id:, name:, namespace:)
+        # SIMULATE FOURTH POLL REQUEST FROM AGENTK TO UPDATE WORKSPACE TO STOPPED STATE
+
+        resource_version = '2'
+        workspace_agent_info = create_workspace_agent_info(
+          workspace_id: id,
+          workspace_name: name,
+          workspace_namespace: namespace,
+          agent_id: agent.id,
+          owning_inventory: "#{name}-workspace-inventory",
+          resource_version: resource_version,
+          previous_actual_state: RemoteDevelopment::Workspaces::States::STOPPING,
+          current_actual_state: RemoteDevelopment::Workspaces::States::STOPPED,
+          workspace_exists: true,
+          user_name: user.name,
+          user_email: user.email
+        )
+        reconcile_post_response =
+          simulate_agentk_reconcile_post(workspace_agent_infos: [workspace_agent_info])
+
+        # ASSERT ON RESPONSE TO THIRD POLL REQUEST
+
+        expect(reconcile_post_response.code).to eq(HTTP::Status::CREATED)
+        infos = Gitlab::Json.parse(reconcile_post_response.body).deep_symbolize_keys[:workspace_rails_infos]
+        expect(infos.length).to eq(1)
+        info = infos.first
+
+        expect(info.fetch(:name)).to eq(name)
+        expect(info.fetch(:namespace)).to eq(namespace)
+        expect(info.fetch(:desired_state)).to eq(RemoteDevelopment::Workspaces::States::STOPPED)
+        expect(info.fetch(:actual_state)).to eq(RemoteDevelopment::Workspaces::States::STOPPED)
         expect(info.fetch(:deployment_resource_version)).to eq(resource_version)
         expect(info.fetch(:config_to_apply)).to be_nil
       end
