@@ -121,8 +121,6 @@ describe('Board List Header Component', () => {
         GlDisclosureDropdownItem,
       },
     });
-
-    wrapper.vm.$refs.headerListActions = { close: jest.fn() };
   };
 
   const newEpicText = 'Create new epic';
@@ -213,7 +211,7 @@ describe('Board List Header Component', () => {
       it('emits event if no active List', () => {
         // Shares the same behavior for any settings-enabled List type
         createComponent({ listType: hasSettings[0] });
-        wrapper.vm.openSidebarSettings();
+        findSettingsButton().trigger('click');
 
         expect(sidebarEventHub.$emit).toHaveBeenCalledWith('sidebar.closeAll');
       });
@@ -225,7 +223,7 @@ describe('Board List Header Component', () => {
             activeId: mockLabelList.id,
           },
         });
-        wrapper.vm.openSidebarSettings();
+        findSettingsButton().trigger('click');
 
         expect(sidebarEventHub.$emit).not.toHaveBeenCalled();
       });
