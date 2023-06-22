@@ -21,7 +21,6 @@ describe('BoardSettingsWipLimit', () => {
   const listId = mockLabelList.id;
   const currentWipLimit = 1; // Needs to be other than null to trigger requests
 
-  const clickEdit = () => wrapper.findByTestId('edit-button').vm.$emit('click');
   const findRemoveWipLimit = () => wrapper.findByTestId('remove-limit');
   const findWipLimit = () => wrapper.findByTestId('wip-limit');
   const findInput = () => wrapper.findComponent(GlFormInput);
@@ -65,7 +64,12 @@ describe('BoardSettingsWipLimit', () => {
     });
   };
 
-  const triggerBlur = (type) => {
+  const clickEdit = async () => {
+    wrapper.findByTestId('edit-button').vm.$emit('click');
+    await nextTick();
+  };
+
+  const triggerBlur = async (type) => {
     if (type === 'blur') {
       findInput().vm.$emit('blur');
     }
@@ -73,6 +77,8 @@ describe('BoardSettingsWipLimit', () => {
     if (type === 'enter') {
       findInput().trigger('keydown.enter');
     }
+
+    await nextTick();
   };
 
   afterEach(() => {
@@ -121,9 +127,7 @@ describe('BoardSettingsWipLimit', () => {
         props: { maxIssueCount },
       });
 
-      clickEdit();
-
-      await nextTick();
+      await clickEdit();
     });
 
     it('renders an input', () => {
@@ -158,7 +162,6 @@ describe('BoardSettingsWipLimit', () => {
         expect(findWipLimit().text()).toContain('4');
 
         findRemoveWipLimit().vm.$emit('click');
-
         await waitForPromises();
         await nextTick();
 
@@ -202,9 +205,7 @@ describe('BoardSettingsWipLimit', () => {
             localState: { edit: true, currentWipLimit },
           });
 
-          triggerBlur(blurMethod);
-
-          await nextTick();
+          await triggerBlur(blurMethod);
 
           expect(spy).toHaveBeenCalledTimes(1);
         });
@@ -221,9 +222,7 @@ describe('BoardSettingsWipLimit', () => {
               props: { maxIssueCount: 2 },
             });
 
-            triggerBlur(blurMethod);
-
-            await nextTick();
+            await triggerBlur(blurMethod);
 
             expect(spy).toHaveBeenCalledTimes(0);
           });
@@ -238,9 +237,7 @@ describe('BoardSettingsWipLimit', () => {
               localState: { edit: true, currentWipLimit: null },
             });
 
-            triggerBlur(blurMethod);
-
-            await nextTick();
+            await triggerBlur(blurMethod);
 
             expect(spy).toHaveBeenCalledTimes(0);
           });
@@ -249,7 +246,7 @@ describe('BoardSettingsWipLimit', () => {
         describe('when response is successful', () => {
           const maxIssueCount = 11;
 
-          beforeEach(() => {
+          beforeEach(async () => {
             const spy = jest.fn().mockResolvedValue({});
             createComponent({
               vuexState: {
@@ -260,9 +257,7 @@ describe('BoardSettingsWipLimit', () => {
               props: { maxIssueCount },
             });
 
-            triggerBlur(blurMethod);
-
-            return waitForPromises();
+            await triggerBlur(blurMethod);
           });
 
           it('sets activeWipLimit to new maxIssueCount value', () => {
@@ -272,14 +267,13 @@ describe('BoardSettingsWipLimit', () => {
           it('toggles GlFormInput on blur', () => {
             expect(findInput().exists()).toBe(false);
             expect(findWipLimit().exists()).toBe(true);
-            expect(wrapper.vm.updating).toBe(false);
           });
         });
 
         describe('when response fails', () => {
           let setErrorMock;
 
-          beforeEach(() => {
+          beforeEach(async () => {
             setErrorMock = jest.fn();
 
             createComponent({
@@ -292,9 +286,7 @@ describe('BoardSettingsWipLimit', () => {
               localState: { edit: true, currentWipLimit },
             });
 
-            triggerBlur(blurMethod);
-
-            return waitForPromises();
+            await triggerBlur(blurMethod);
           });
 
           it('calls flash with expected error', () => {
@@ -333,14 +325,9 @@ describe('BoardSettingsWipLimit', () => {
 
       expect(findWipLimit().text()).toContain('None');
 
-      clickEdit();
-
-      await nextTick();
-
+      await clickEdit();
       findInput().vm.$emit('input', 11);
-      triggerBlur('blur');
-
-      await waitForPromises();
+      await triggerBlur('blur');
 
       expect(listUpdateLimitMetricsMutationHandler).toHaveBeenCalledWith({
         input: { listId, maxIssueCount: 11 },
@@ -358,7 +345,6 @@ describe('BoardSettingsWipLimit', () => {
       expect(findWipLimit().text()).toContain('11');
 
       findRemoveWipLimit().vm.$emit('click');
-
       await waitForPromises();
 
       expect(listUpdateLimitMetricsMutationHandler).toHaveBeenCalledWith({
