@@ -7,4 +7,4 @@
       = clipboard_button(target: '#domain_verification', class: 'btn-default d-none d-sm-block')
   %p.form-text.text-muted
     - link_to_help = link_to(s_('DomainVerification|How to set up DNS records?'), help_page_path('user/project/pages/custom_domains_ssl_tls_certification/index.md', anchor: '3-set-up-dns-records'))
-    = s_("DomainVerification|To verify ownership of your domain, add the above key to a TXT record within your DNS configuration. %{link_to_help}").html_safe % { link_to_help: link_to_help }
+    = s_("DomainVerification|To verify ownership of your domain, add the above key to a TXT record within your DNS configuration within seven days. %{link_to_help}").html_safe % { link_to_help: link_to_help }
