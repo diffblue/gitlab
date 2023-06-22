@@ -48,9 +48,7 @@ export const DEFAULT_SEARCH_DELAY = 500;
 
 export const ACTION_TYPES = {
   RESYNC: 'resync',
-  // Below not implemented yet
   REVERIFY: 'reverify',
-  FORCE_REDOWNLOAD: 'force_redownload',
 };
 
 export const PREV = 'prev';

@@ -138,29 +138,29 @@ export const initiateAllReplicableSyncs = ({ state, dispatch }, action) => {
 };
 
 // Initiate Replicable Sync
-export const requestInitiateReplicableSync = ({ commit }) =>
-  commit(types.REQUEST_INITIATE_REPLICABLE_SYNC);
-export const receiveInitiateReplicableSyncSuccess = ({ commit, dispatch }, { name, action }) => {
+export const requestInitiateReplicableAction = ({ commit }) =>
+  commit(types.REQUEST_INITIATE_REPLICABLE_ACTION);
+export const receiveInitiateReplicableActionSuccess = ({ commit, dispatch }, { name, action }) => {
   toast(sprintf(__('%{name} is scheduled for %{action}'), { name, action }));
-  commit(types.RECEIVE_INITIATE_REPLICABLE_SYNC_SUCCESS);
+  commit(types.RECEIVE_INITIATE_REPLICABLE_ACTION_SUCCESS);
   dispatch('fetchReplicableItems');
 };
-export const receiveInitiateReplicableSyncError = ({ commit }, { name }) => {
+export const receiveInitiateReplicableActionError = ({ commit }, { name }) => {
   createAlert({
     message: sprintf(__('There was an error syncing project %{name}'), { name }),
   });
-  commit(types.RECEIVE_INITIATE_REPLICABLE_SYNC_ERROR);
+  commit(types.RECEIVE_INITIATE_REPLICABLE_ACTION_ERROR);
 };
 
-export const initiateReplicableSync = ({ state, dispatch }, { registryId, name, action }) => {
-  dispatch('requestInitiateReplicableSync');
+export const initiateReplicableAction = ({ state, dispatch }, { registryId, name, action }) => {
+  dispatch('requestInitiateReplicableAction');
 
   return state.useGraphQl
-    ? dispatch('initiateReplicableSyncGraphQl', { registryId, name, action })
-    : dispatch('initiateReplicableSyncRestful', { registryId, name, action });
+    ? dispatch('initiateReplicableActionGraphQl', { registryId, name, action })
+    : dispatch('initiateReplicableActionRestful', { registryId, name, action });
 };
 
-export const initiateReplicableSyncGraphQl = (
+export const initiateReplicableActionGraphQl = (
   { state, dispatch },
   { registryId, name, action },
 ) => {
@@ -175,20 +175,20 @@ export const initiateReplicableSyncGraphQl = (
         registryClass: state.graphqlMutationRegistryClass,
       },
     })
-    .then(() => dispatch('receiveInitiateReplicableSyncSuccess', { name, action }))
+    .then(() => dispatch('receiveInitiateReplicableActionSuccess', { name, action }))
     .catch(() => {
-      dispatch('receiveInitiateReplicableSyncError', { name });
+      dispatch('receiveInitiateReplicableActionError', { name });
     });
 };
 
-export const initiateReplicableSyncRestful = (
+export const initiateReplicableActionRestful = (
   { state, dispatch },
   { registryId, name, action },
 ) => {
   Api.initiateGeoReplicableSync(state.replicableType, { projectId: registryId, action })
-    .then(() => dispatch('receiveInitiateReplicableSyncSuccess', { name, action }))
+    .then(() => dispatch('receiveInitiateReplicableActionSuccess', { name, action }))
     .catch(() => {
-      dispatch('receiveInitiateReplicableSyncError', { name });
+      dispatch('receiveInitiateReplicableActionError', { name });
     });
 };
 
