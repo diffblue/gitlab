@@ -6,7 +6,6 @@ module Groups
       def initialize(group:, user:)
         @group = group
         @user = user
-        @group_member = group.member(user)
       end
 
       def execute
@@ -14,14 +13,12 @@ module Groups
           return error(s_('EnterpriseUsers|The user is already an enterprise user of the group'))
         end
 
-        return error(s_('EnterpriseUsers|The user is not a member of the group')) unless @group_member
-
         unless user_matches_the_enterprise_user_definition_for_the_group?
           return error(s_('EnterpriseUsers|The user does not match the "Enterprise User" definition for the group'))
         end
 
         if @user.user_detail.update(enterprise_group_id: @group.id, enterprise_group_associated_at: Time.current)
-          Notify.provisioned_member_access_granted_email(@group_member.id).deliver_later
+          Notify.enterprise_user_account_created_email(@user.id).deliver_later
 
           log_info(message: 'Marked the user as an enterprise user of the group')
 
@@ -66,8 +63,9 @@ module Groups
         @user.user_detail.provisioned_by_group_id == @group.id
       end
 
-      def group_subscription_was_purchased_or_renewed_2021_02_01_or_later?
-        @group.paid? && @group.gitlab_subscription.start_date >= Date.new(2021, 2, 1)
+      def user_group_member_and_group_subscription_was_purchased_or_renewed_2021_02_01_or_later?
+        @group.member?(@user) &&
+          (@group.paid? && @group.gitlab_subscription.start_date >= Date.new(2021, 2, 1))
       end
 
       # The "Enterprise User" definition: https://about.gitlab.com/handbook/support/workflows/gitlab-com_overview.html#enterprise-users
@@ -76,7 +74,7 @@ module Groups
           user_was_created_2021_02_01_or_later? ||
           user_has_saml_or_scim_identity_tied_to_group? ||
           user_provisioned_by_group? ||
-          group_subscription_was_purchased_or_renewed_2021_02_01_or_later?)
+          user_group_member_and_group_subscription_was_purchased_or_renewed_2021_02_01_or_later?)
       end
     end
   end

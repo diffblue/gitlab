@@ -24,10 +24,6 @@ RSpec.describe Groups::EnterpriseUsers::CreateService, :saas, feature_category: 
 
   subject(:service) { described_class.new(group: group, user: user) }
 
-  before do
-    group.add_guest(user)
-  end
-
   describe '#execute' do
     shared_examples 'marks the user as an enterprise user of the group' do
       it 'returns a successful response', :aggregate_failures do
@@ -43,7 +39,7 @@ RSpec.describe Groups::EnterpriseUsers::CreateService, :saas, feature_category: 
 
         service.execute
 
-        user.user_detail.reload
+        user.reload
 
         expect(user.user_detail.enterprise_group_id).not_to eq(previous_enterprise_group_id)
         expect(user.user_detail.enterprise_group_id).to eq(group.id)
@@ -54,16 +50,16 @@ RSpec.describe Groups::EnterpriseUsers::CreateService, :saas, feature_category: 
 
         service.execute
 
-        user.user_detail.reload
+        user.reload
 
         expect(user.user_detail.enterprise_group_associated_at).not_to eq(previous_enterprise_group_associated_at)
         expect(user.user_detail.enterprise_group_associated_at).to eq(Time.current)
       end
 
-      it 'enqueues provisioned_member_access_granted_email email for later delivery to the user' do
+      it 'enqueues enterprise_user_account_created_email email for later delivery to the user' do
         expect do
           service.execute
-        end.to have_enqueued_mail(Notify, :provisioned_member_access_granted_email).with(group.member(user).id)
+        end.to have_enqueued_mail(Notify, :enterprise_user_account_created_email).with(user.id)
       end
 
       it 'logs message with info level about marking the user as an enterprise user of the group' do
@@ -115,7 +111,7 @@ RSpec.describe Groups::EnterpriseUsers::CreateService, :saas, feature_category: 
 
         service.execute
 
-        user.user_detail.reload
+        user.reload
 
         expect(user.user_detail.enterprise_group_id).to eq(previous_enterprise_group_id)
       end
@@ -125,7 +121,7 @@ RSpec.describe Groups::EnterpriseUsers::CreateService, :saas, feature_category: 
 
         service.execute
 
-        user.user_detail.reload
+        user.reload
 
         expect(user.user_detail.enterprise_group_associated_at).to eq(previous_enterprise_group_associated_at)
       end
@@ -151,17 +147,6 @@ RSpec.describe Groups::EnterpriseUsers::CreateService, :saas, feature_category: 
       include_examples(
         'does not mark the user as an enterprise user of the group',
         'The user is already an enterprise user of the group'
-      )
-    end
-
-    context 'when the user is not a member of the group' do
-      before do
-        group.member(user).destroy!
-      end
-
-      include_examples(
-        'does not mark the user as an enterprise user of the group',
-        'The user is not a member of the group'
       )
     end
 
@@ -266,20 +251,53 @@ RSpec.describe Groups::EnterpriseUsers::CreateService, :saas, feature_category: 
               'does not mark the user as an enterprise user of the group',
               'The user does not match the "Enterprise User" definition for the group'
             )
+
+            context 'when user is a group member' do
+              before do
+                group.add_guest(user)
+              end
+
+              include_examples(
+                'does not mark the user as an enterprise user of the group',
+                'The user does not match the "Enterprise User" definition for the group'
+              )
+            end
           end
 
           context 'when at 2021-02-01' do
             let(:gitlab_subscription_start_date) { Time.utc(2021, 2, 1) }
 
-            include_examples 'marks the user as an enterprise user of the group'
-            include_examples 'marks the enterprise user of another group as an enterprise user of the group'
+            include_examples(
+              'does not mark the user as an enterprise user of the group',
+              'The user does not match the "Enterprise User" definition for the group'
+            )
+
+            context 'when user is a group member' do
+              before do
+                group.add_guest(user)
+              end
+
+              include_examples 'marks the user as an enterprise user of the group'
+              include_examples 'marks the enterprise user of another group as an enterprise user of the group'
+            end
           end
 
           context 'when after 2021-02-01' do
             let(:gitlab_subscription_start_date) { Time.utc(2021, 2, 1) + 1.day }
 
-            include_examples 'marks the user as an enterprise user of the group'
-            include_examples 'marks the enterprise user of another group as an enterprise user of the group'
+            include_examples(
+              'does not mark the user as an enterprise user of the group',
+              'The user does not match the "Enterprise User" definition for the group'
+            )
+
+            context 'when user is a group member' do
+              before do
+                group.add_guest(user)
+              end
+
+              include_examples 'marks the user as an enterprise user of the group'
+              include_examples 'marks the enterprise user of another group as an enterprise user of the group'
+            end
           end
         end
       end
@@ -335,10 +353,16 @@ RSpec.describe Groups::EnterpriseUsers::CreateService, :saas, feature_category: 
             context 'when after 2021-02-01' do
               let(:gitlab_subscription_start_date) { Time.utc(2021, 2, 1) + 1.day }
 
-              include_examples(
-                'does not mark the user as an enterprise user of the group',
-                'The user does not match the "Enterprise User" definition for the group'
-              )
+              context 'when user is a group member' do
+                before do
+                  group.add_guest(user)
+                end
+
+                include_examples(
+                  'does not mark the user as an enterprise user of the group',
+                  'The user does not match the "Enterprise User" definition for the group'
+                )
+              end
             end
           end
         end

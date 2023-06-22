@@ -17,6 +17,12 @@ FactoryBot.modify do
       end
     end
 
+    trait :enterprise_user do
+      after(:create) do |user, evaluator|
+        user.user_detail.update!(enterprise_group_id: create(:group).id, enterprise_group_associated_at: Time.current)
+      end
+    end
+
     trait :service_user do
       user_type { :service_user }
     end
