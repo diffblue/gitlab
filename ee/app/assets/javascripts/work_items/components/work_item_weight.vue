@@ -1,17 +1,14 @@
 <script>
 import { GlForm, GlFormGroup, GlFormInput } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
-import workItemWeightSubscription from 'ee/graphql_shared/subscriptions/issuable_weight.subscription.graphql';
 import { __ } from '~/locale';
 import Tracking from '~/tracking';
 import {
   sprintfWorkItem,
-  i18n,
   I18N_WORK_ITEM_ERROR_UPDATING,
   TRACKING_CATEGORY_SHOW,
 } from '~/work_items/constants';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
-import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
 
 /* eslint-disable @gitlab/require-i18n-strings */
 const allowedKeys = [
@@ -80,34 +77,6 @@ export default {
     return {
       isEditing: false,
     };
-  },
-  apollo: {
-    workItem: {
-      query: workItemByIidQuery,
-      variables() {
-        return {
-          fullPath: this.fullPath,
-          iid: this.workItemIid,
-        };
-      },
-      update(data) {
-        return data.workspace.workItems.nodes[0];
-      },
-      skip() {
-        return !this.workItemIid;
-      },
-      error() {
-        this.$emit('error', i18n.fetchError);
-      },
-      subscribeToMore: {
-        document: workItemWeightSubscription,
-        variables() {
-          return {
-            issuableId: this.workItemId,
-          };
-        },
-      },
-    },
   },
   computed: {
     placeholder() {

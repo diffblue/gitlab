@@ -2,7 +2,6 @@ import { GlForm, GlFormInput } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import WorkItemWeight from 'ee/work_items/components/work_item_weight.vue';
-import workItemWeightSubscription from 'ee/graphql_shared/subscriptions/issuable_weight.subscription.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mockTracking } from 'helpers/tracking_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
@@ -10,12 +9,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { __ } from '~/locale';
 import { TRACKING_CATEGORY_SHOW } from '~/work_items/constants';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
-import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
-import {
-  updateWorkItemMutationResponse,
-  workItemByIidResponseFactory,
-  workItemWeightSubscriptionResponse,
-} from 'jest/work_items/mock_data';
+import { updateWorkItemMutationResponse } from 'jest/work_items/mock_data';
 
 describe('WorkItemWeight component', () => {
   Vue.use(VueApollo);
@@ -24,9 +18,6 @@ describe('WorkItemWeight component', () => {
 
   const workItemId = 'gid://gitlab/WorkItem/1';
   const workItemType = 'Task';
-  const workItemQueryResponse = workItemByIidResponseFactory({ canUpdate: true, canDelete: true });
-  const workItemQueryHandler = jest.fn().mockResolvedValue(workItemQueryResponse);
-  const weightSubscriptionHandler = jest.fn().mockResolvedValue(workItemWeightSubscriptionResponse);
 
   const findForm = () => wrapper.findComponent(GlForm);
   const findInput = () => wrapper.findComponent(GlFormInput);
@@ -40,11 +31,7 @@ describe('WorkItemWeight component', () => {
     mutationHandler = jest.fn().mockResolvedValue(updateWorkItemMutationResponse),
   } = {}) => {
     wrapper = mountExtended(WorkItemWeight, {
-      apolloProvider: createMockApollo([
-        [workItemByIidQuery, workItemQueryHandler],
-        [workItemWeightSubscription, weightSubscriptionHandler],
-        [updateWorkItemMutation, mutationHandler],
-      ]),
+      apolloProvider: createMockApollo([[updateWorkItemMutation, mutationHandler]]),
       propsData: {
         canUpdate,
         weight,
@@ -62,12 +49,6 @@ describe('WorkItemWeight component', () => {
       findInput().vm.$emit('focus');
     }
   };
-
-  it('has a subscription', () => {
-    createComponent();
-
-    expect(weightSubscriptionHandler).toHaveBeenCalledWith({ issuableId: workItemId });
-  });
 
   describe('`issue_weights` licensed feature', () => {
     describe.each`
@@ -236,19 +217,5 @@ describe('WorkItemWeight component', () => {
         });
       });
     });
-  });
-
-  it('fetches the work item', async () => {
-    createComponent();
-    await waitForPromises();
-
-    expect(workItemQueryHandler).toHaveBeenCalled();
-  });
-
-  it('skips fetching the work item when missing workItemIid', async () => {
-    createComponent({ workItemIid: '' });
-    await waitForPromises();
-
-    expect(workItemQueryHandler).not.toHaveBeenCalled();
   });
 });

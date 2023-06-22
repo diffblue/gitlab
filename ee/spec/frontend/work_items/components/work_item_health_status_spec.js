@@ -8,7 +8,6 @@ import { mockTracking } from 'helpers/tracking_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
-import workItemHealthStatusSubscription from 'ee/work_items/graphql/work_item_health_status.subscription.graphql';
 import { TRACKING_CATEGORY_SHOW } from '~/work_items/constants';
 import {
   HEALTH_STATUS_AT_RISK,
@@ -21,17 +20,12 @@ import {
 import {
   updateWorkItemMutationResponse,
   workItemByIidResponseFactory,
-  workItemHealthStatusSubscriptionResponse,
 } from 'jest/work_items/mock_data';
 
 describe('WorkItemHealthStatus component', () => {
   Vue.use(VueApollo);
 
   let wrapper;
-
-  const healthStatusSubscriptionHandler = jest
-    .fn()
-    .mockResolvedValue(workItemHealthStatusSubscriptionResponse);
 
   const workItemId = 'gid://gitlab/WorkItem/1';
   const workItemType = 'Task';
@@ -54,7 +48,6 @@ describe('WorkItemHealthStatus component', () => {
       apolloProvider: createMockApollo([
         [workItemByIidQuery, workItemQueryHandler],
         [updateWorkItemMutation, mutationHandler],
-        [workItemHealthStatusSubscription, healthStatusSubscriptionHandler],
       ]),
       propsData: {
         canUpdate,

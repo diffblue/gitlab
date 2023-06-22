@@ -6,28 +6,13 @@ import WorkItemWeight from 'ee/work_items/components/work_item_weight.vue';
 import WorkItemProgress from 'ee/work_items/components/work_item_progress.vue';
 import WorkItemIteration from 'ee/work_items/components/work_item_iteration.vue';
 import WorkItemHealthStatus from 'ee/work_items/components/work_item_health_status.vue';
-import workItemWeightSubscription from 'ee/graphql_shared/subscriptions/issuable_weight.subscription.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import {
-  workItemDatesSubscriptionResponse,
-  workItemTitleSubscriptionResponse,
-  workItemByIidResponseFactory,
-  workItemWeightSubscriptionResponse,
-  workItemAssigneesSubscriptionResponse,
-  workItemIterationSubscriptionResponse,
-  workItemMilestoneSubscriptionResponse,
-  workItemHealthStatusSubscriptionResponse,
-} from 'jest/work_items/mock_data';
+import { workItemByIidResponseFactory } from 'jest/work_items/mock_data';
 import WorkItemDetail from '~/work_items/components/work_item_detail.vue';
 import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
-import workItemDatesSubscription from '~/graphql_shared/subscriptions/work_item_dates.subscription.graphql';
-import workItemTitleSubscription from '~/work_items/graphql/work_item_title.subscription.graphql';
-import workItemAssigneesSubscription from '~/work_items/graphql/work_item_assignees.subscription.graphql';
-import workItemMilestoneSubscription from '~/work_items/graphql/work_item_milestone.subscription.graphql';
-import workItemIterationSubscription from 'ee/work_items/graphql/work_item_iteration.subscription.graphql';
-import workItemHealthStatusSubscription from 'ee/work_items/graphql/work_item_health_status.subscription.graphql';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
+import workItemUpdatedSubscription from '~/work_items/graphql/work_item_updated.subscription.graphql';
 
 describe('WorkItemDetail component', () => {
   let wrapper;
@@ -36,21 +21,9 @@ describe('WorkItemDetail component', () => {
 
   const workItemQueryResponse = workItemByIidResponseFactory({ canUpdate: true, canDelete: true });
   const successHandler = jest.fn().mockResolvedValue(workItemQueryResponse);
-  const datesSubscriptionHandler = jest.fn().mockResolvedValue(workItemDatesSubscriptionResponse);
-  const titleSubscriptionHandler = jest.fn().mockResolvedValue(workItemTitleSubscriptionResponse);
-  const weightSubscriptionHandler = jest.fn().mockResolvedValue(workItemWeightSubscriptionResponse);
-  const assigneesSubscriptionHandler = jest
+  const workItemUpdatedSubscriptionHandler = jest
     .fn()
-    .mockResolvedValue(workItemAssigneesSubscriptionResponse);
-  const milestoneSubscriptionHandler = jest
-    .fn()
-    .mockResolvedValue(workItemMilestoneSubscriptionResponse);
-  const iterationSubscriptionHandler = jest
-    .fn()
-    .mockResolvedValue(workItemIterationSubscriptionResponse);
-  const healthStatusSubscriptionHandler = jest
-    .fn()
-    .mockResolvedValue(workItemHealthStatusSubscriptionResponse);
+    .mockResolvedValue({ data: { workItemUpdated: null } });
 
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findWorkItemWeight = () => wrapper.findComponent(WorkItemWeight);
@@ -66,13 +39,7 @@ describe('WorkItemDetail component', () => {
     wrapper = shallowMount(WorkItemDetail, {
       apolloProvider: createMockApollo([
         [workItemByIidQuery, handler],
-        [workItemDatesSubscription, datesSubscriptionHandler],
-        [workItemTitleSubscription, titleSubscriptionHandler],
-        [workItemWeightSubscription, weightSubscriptionHandler],
-        [workItemAssigneesSubscription, assigneesSubscriptionHandler],
-        [workItemIterationSubscription, iterationSubscriptionHandler],
-        [workItemMilestoneSubscription, milestoneSubscriptionHandler],
-        [workItemHealthStatusSubscription, healthStatusSubscriptionHandler],
+        [workItemUpdatedSubscription, workItemUpdatedSubscriptionHandler],
         confidentialityMock,
       ]),
       provide: {

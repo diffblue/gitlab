@@ -15,7 +15,6 @@ import Tracking from '~/tracking';
 import { s__ } from '~/locale';
 import { groupByIterationCadences, getIterationPeriod } from 'ee/iterations/utils';
 import {
-  i18n,
   I18N_WORK_ITEM_ERROR_UPDATING,
   sprintfWorkItem,
   TRACKING_CATEGORY_SHOW,
@@ -25,8 +24,6 @@ import { STATUS_OPEN } from '~/issues/constants';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import projectIterationsQuery from 'ee/work_items/graphql/project_iterations.query.graphql';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
-import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
-import workItemIterationSubscription from 'ee/work_items/graphql/work_item_iteration.subscription.graphql';
 
 const noIterationId = 'no-iteration-id';
 
@@ -128,32 +125,6 @@ export default {
     },
   },
   apollo: {
-    workItem: {
-      query: workItemByIidQuery,
-      variables() {
-        return {
-          fullPath: this.fullPath,
-          iid: this.workItemIid,
-        };
-      },
-      update(data) {
-        return data.workspace.workItems.nodes[0];
-      },
-      skip() {
-        return !this.workItemIid;
-      },
-      error() {
-        this.$emit('error', i18n.fetchError);
-      },
-      subscribeToMore: {
-        document: workItemIterationSubscription,
-        variables() {
-          return {
-            issuableId: this.workItemId,
-          };
-        },
-      },
-    },
     iterations: {
       query: projectIterationsQuery,
       variables() {
