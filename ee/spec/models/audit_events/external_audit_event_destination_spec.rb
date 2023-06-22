@@ -30,6 +30,25 @@ RSpec.describe AuditEvents::ExternalAuditEventDestination, feature_category: :au
       expect(subject.errors.full_messages).to contain_exactly('Headers are limited to 20 per destination')
     end
 
+    context 'for destination_url' do
+      let_it_be(:group_2) { create(:group) }
+
+      it 'does not create destination with same url for a group' do
+        create(:external_audit_event_destination, destination_url: 'http://www.test.com', group: group)
+        destination = build(:external_audit_event_destination, destination_url: 'http://www.test.com', group: group)
+
+        expect(destination).not_to be_valid
+        expect(destination.errors.full_messages).to include('Destination url has already been taken')
+      end
+
+      it 'creates destination with same url for different groups' do
+        create(:external_audit_event_destination, destination_url: 'http://www.test.com', group: group)
+        destination = build(:external_audit_event_destination, destination_url: 'http://www.test.com', group: group_2)
+
+        expect(destination).to be_valid
+      end
+    end
+
     it 'validates uniqueness of name scoped to namespace' do
       create(:external_audit_event_destination, name: 'Test Destination', group: group)
       destination = build(:external_audit_event_destination, name: 'Test Destination', group: group)

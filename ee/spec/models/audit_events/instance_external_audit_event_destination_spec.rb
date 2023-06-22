@@ -29,6 +29,14 @@ RSpec.describe AuditEvents::InstanceExternalAuditEventDestination, feature_categ
       expect(subject.errors.full_messages).to contain_exactly('Headers are limited to 20 per destination')
     end
 
+    it 'validates uniqueness of destination_url' do
+      create(:instance_external_audit_event_destination, destination_url: 'https://www.test.com')
+      destination = build(:instance_external_audit_event_destination, destination_url: 'https://www.test.com')
+
+      expect(destination).not_to be_valid
+      expect(destination.errors.full_messages).to include('Destination url has already been taken')
+    end
+
     it 'validates uniqueness of name' do
       create(:instance_external_audit_event_destination, name: 'Test Destination')
       destination = build(:instance_external_audit_event_destination, name: 'Test Destination')

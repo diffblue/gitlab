@@ -15,6 +15,7 @@ module AuditEvents
 
     validate :root_level_group?
     validates :name, uniqueness: { scope: :namespace_id }
+    validates :destination_url, uniqueness: { scope: :namespace_id }, length: { maximum: 255 }
 
     # TODO: Remove audit_operation.present? guard clause once we implement names for all the audit event types.
     # Epic: https://gitlab.com/groups/gitlab-org/-/epics/8497

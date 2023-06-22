@@ -13,6 +13,7 @@ module AuditEvents
     has_many :event_type_filters, class_name: 'AuditEvents::Streaming::InstanceEventTypeFilter'
 
     validates :name, uniqueness: true
+    validates :destination_url, uniqueness: true, length: { maximum: 255 }
 
     attr_encrypted :verification_token,
       mode: :per_attribute_iv,
