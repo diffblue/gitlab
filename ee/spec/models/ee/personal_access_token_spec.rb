@@ -4,17 +4,16 @@ require 'spec_helper'
 
 RSpec.describe PersonalAccessToken, feature_category: :system_access do
   describe 'scopes' do
+    let_it_be(:expiration_date) { 30.days.from_now }
+    let_it_be(:pat) { create(:personal_access_token, expires_at: expiration_date) }
     let_it_be(:expired_token) { create(:personal_access_token, expires_at: 1.day.ago) }
     let_it_be(:valid_token) { create(:personal_access_token, expires_at: 1.day.from_now) }
     let_it_be(:long_expiry_token) do
       create(
         :personal_access_token,
-        expires_at: described_class::MAX_PERSONAL_ACCESS_TOKEN_LIFETIME_IN_DAYS.days.from_now
+        expires_at: Date.current + described_class::MAX_PERSONAL_ACCESS_TOKEN_LIFETIME_IN_DAYS
       )
     end
-
-    let(:expiration_date) { 30.days.from_now }
-    let!(:pat) { create(:personal_access_token, expires_at: expiration_date) }
 
     describe 'with_expires_at_after' do
       subject { described_class.with_expires_at_after(2.days.from_now) }
@@ -49,18 +48,20 @@ RSpec.describe PersonalAccessToken, feature_category: :system_access do
 
     context 'with expiration policy' do
       let(:instance_level_pat_expiration_policy) { 30 }
-      let(:instance_level_max_expiration_date) { instance_level_pat_expiration_policy.days.from_now }
+      let(:instance_level_max_expiration_date) { Date.current + instance_level_pat_expiration_policy }
 
       before do
         stub_ee_application_setting(max_personal_access_token_lifetime: instance_level_pat_expiration_policy)
       end
 
       shared_examples_for 'PAT expiry rules are enforced' do
-        it 'requires to be less or equal than the max_personal_access_token_lifetime' do
-          personal_access_token.expires_at = max_expiration_date + 1.day
+        it 'requires to be less or equal than the max_personal_access_token_lifetime', :freeze_time do
+          personal_access_token.expires_at = max_expiration_date + 1
 
           expect(personal_access_token).not_to be_valid
-          expect(personal_access_token.errors[:expires_at].first).to eq('is invalid')
+          expect(personal_access_token.errors.full_messages.to_sentence).to eq(
+            "Expiration date must be before #{max_expiration_date}"
+          )
         end
 
         it "is invalid" do
@@ -92,7 +93,7 @@ RSpec.describe PersonalAccessToken, feature_category: :system_access do
 
           context 'when the group has enforced a PAT expiry rule' do
             let(:group_level_pat_expiration_policy) { 20 }
-            let(:group_level_max_expiration_date) { group_level_pat_expiration_policy.days.from_now }
+            let(:group_level_max_expiration_date) { Date.current + group_level_pat_expiration_policy }
 
             it_behaves_like 'PAT expiry rules are enforced' do
               let(:max_expiration_date) { group_level_max_expiration_date }

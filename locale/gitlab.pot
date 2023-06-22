@@ -55053,6 +55053,9 @@ msgstr ""
 msgid "must be at least 1 day"
 msgstr ""
 
+msgid "must be before %{expiry_date}"
+msgstr ""
+
 msgid "must be greater than start date"
 msgstr ""
 
@@ -55084,9 +55087,6 @@ msgid "must belong to same project of the work item."
 msgstr ""
 
 msgid "must contain only a discord user ID."
-msgstr ""
-
-msgid "must expire in 365 days"
 msgstr ""
 
 msgid "must have a repository"

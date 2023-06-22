@@ -1055,11 +1055,11 @@ RSpec.describe ApplicationSetting do
       let(:days_from_now) { 30 }
 
       it 'is a date time' do
-        expect(subject).to be_a Time
+        expect(subject).to be_a Date
       end
 
       it 'is in the future' do
-        expect(subject).to be > Time.zone.now
+        expect(subject).to be > Date.current
       end
 
       it 'is in days_from_now' do

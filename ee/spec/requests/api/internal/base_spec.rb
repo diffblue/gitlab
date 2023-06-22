@@ -478,7 +478,7 @@ RSpec.describe API::Internal::Base do
     end
   end
 
-  describe 'POST /internal/personal_access_token' do
+  describe 'POST /internal/personal_access_token', :system_access do
     let_it_be(:key) { create(:key, user: user) }
 
     let(:instance_level_max_personal_access_token_lifetime) { nil }
@@ -491,19 +491,20 @@ RSpec.describe API::Internal::Base do
     context 'with a max token lifetime on the instance' do
       let(:instance_level_max_personal_access_token_lifetime) { 10 }
 
-      it 'returns an error message when the expiry date exceeds the max token lifetime' do
+      it 'returns an error message when the expiry date exceeds the max token lifetime', :freeze_time do
+        max_expiry_date = Date.current + instance_level_max_personal_access_token_lifetime
         post api('/internal/personal_access_token'),
              params: {
                key_id: key.id,
                name: 'newtoken',
                scopes: %w(read_api read_repository),
-               expires_at: (instance_level_max_personal_access_token_lifetime + 1).days.from_now.to_date.to_s
+               expires_at: max_expiry_date + 1
              },
              headers: gitlab_shell_internal_api_request_header
 
         aggregate_failures do
           expect(json_response['success']).to eq(false)
-          expect(json_response['message']).to eq("Failed to create token: Expires at is invalid")
+          expect(json_response['message']).to eq("Failed to create token: Expiration date must be before #{max_expiry_date.iso8601}")
         end
       end
 

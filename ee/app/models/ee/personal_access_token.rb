@@ -77,8 +77,12 @@ module EE
 
     def expires_at_before_max_expiry_date
       return if expires_at.blank?
+      return unless expires_at > max_expiry_date
 
-      errors.add(:expires_at, :invalid) if expires_at > max_expiry_date
+      errors.add(
+        :expires_at,
+        format(_("must be before %{expiry_date}"), expiry_date: max_expiry_date)
+      )
     end
 
     def expiration_policy_licensed?

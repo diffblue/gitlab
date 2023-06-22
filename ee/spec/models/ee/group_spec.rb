@@ -2332,8 +2332,8 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     context 'when max_personal_access_token_lifetime is defined' do
       let(:days_from_now) { 30 }
 
-      it 'is a date time' do
-        expect(subject).to be_a Time
+      it 'is a date' do
+        expect(subject).to be_a Date
       end
 
       it 'is in the future' do

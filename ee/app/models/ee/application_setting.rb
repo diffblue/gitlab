@@ -489,7 +489,9 @@ module EE
     end
 
     def max_personal_access_token_lifetime_from_now
-      max_personal_access_token_lifetime&.days&.from_now
+      return unless max_personal_access_token_lifetime
+
+      Date.current + max_personal_access_token_lifetime
     end
 
     def max_ssh_key_lifetime_from_now
