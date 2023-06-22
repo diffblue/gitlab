@@ -1,9 +1,21 @@
 #import "~/graphql_shared/fragments/page_info.fragment.graphql"
 
-query userWorkspacesList($first: Int, $before: String, $after: String) {
+query userWorkspacesList(
+  $first: Int
+  $before: String
+  $after: String
+  $includeActualStates: [String!]
+  $projectIds: [ProjectID!]
+) {
   currentUser {
     id
-    workspaces(first: $first, before: $before, after: $after) {
+    workspaces(
+      first: $first
+      before: $before
+      after: $after
+      includeActualStates: $includeActualStates
+      projectIds: $projectIds
+    ) {
       nodes {
         id
         name

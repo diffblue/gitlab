@@ -6,7 +6,7 @@ import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPE_WORKSPACE } from '~/graphql_shared/constants';
 import { WORKSPACE_STATES } from '../../constants';
 import workspaceUpdateMutation from '../../graphql/mutations/workspace_update.mutation.graphql';
-import WorkspaceStateIndicator from './workspace_state_indicator.vue';
+import WorkspaceStateIndicator from '../common/workspace_state_indicator.vue';
 import WorkspaceActions from './workspace_actions.vue';
 
 const isTerminated = (w) => w.actualState === WORKSPACE_STATES.terminated;

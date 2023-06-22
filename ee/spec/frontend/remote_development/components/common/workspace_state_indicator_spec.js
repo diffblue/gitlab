@@ -2,7 +2,7 @@ import { shallowMount } from '@vue/test-utils';
 import { GlIcon } from '@gitlab/ui';
 import WorkspaceStateIndicator, {
   i18n,
-} from 'ee/remote_development/components/list/workspace_state_indicator.vue';
+} from 'ee/remote_development/components/common/workspace_state_indicator.vue';
 import {
   WORKSPACE_STATES,
   FILL_CLASS_GREEN,

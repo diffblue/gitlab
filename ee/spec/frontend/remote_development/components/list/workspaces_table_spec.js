@@ -11,7 +11,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import workspaceUpdateMutation from 'ee/remote_development/graphql/mutations/workspace_update.mutation.graphql';
 import WorkspacesTable, { i18n } from 'ee/remote_development/components/list/workspaces_table.vue';
 import WorkspaceActions from 'ee/remote_development/components/list/workspace_actions.vue';
-import WorkspaceStateIndicator from 'ee/remote_development/components/list/workspace_state_indicator.vue';
+import WorkspaceStateIndicator from 'ee/remote_development/components/common/workspace_state_indicator.vue';
 import { populateWorkspacesWithProjectNames } from 'ee/remote_development/services/utils';
 import { WORKSPACE_STATES, WORKSPACE_DESIRED_STATES } from 'ee/remote_development/constants';
 import {
