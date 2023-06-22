@@ -45551,9 +45551,6 @@ msgstr ""
 msgid "Terraform|Terraform init command"
 msgstr ""
 
-msgid "Terraform|Terraform reports"
-msgstr ""
-
 msgid "Terraform|Terraform states"
 msgstr ""
 

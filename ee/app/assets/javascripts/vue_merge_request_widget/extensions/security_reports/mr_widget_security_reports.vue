@@ -54,7 +54,7 @@ export default {
   },
   data() {
     return {
-      isLoading: false,
+      isLoading: true,
       isCreatingIssue: false,
       isDismissingFinding: false,
       isCreatingMergeRequest: false,

@@ -192,11 +192,10 @@ describe('MR Widget Security Reports', () => {
     });
 
     it('handles loading state', async () => {
-      expect(findSummaryText().props()).toMatchObject({ isLoading: false });
-      findWidget().vm.$emit('is-loading', true);
-      await nextTick();
       expect(findSummaryText().props()).toMatchObject({ isLoading: true });
-      expect(findSummaryHighlights().exists()).toBe(false);
+      findWidget().vm.$emit('is-loading', false);
+      await nextTick();
+      expect(findSummaryText().props()).toMatchObject({ isLoading: false });
     });
 
     it('does not display the summary highlights component', () => {
