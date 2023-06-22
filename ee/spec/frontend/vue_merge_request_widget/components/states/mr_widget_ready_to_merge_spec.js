@@ -2,7 +2,6 @@ import { GlLink, GlSprintf } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import MergeImmediatelyConfirmationDialog from 'ee/vue_merge_request_widget/components/merge_immediately_confirmation_dialog.vue';
 import MergeTrainFailedPipelineConfirmationDialog from 'ee/vue_merge_request_widget/components/merge_train_failed_pipeline_confirmation_dialog.vue';
-import MergeTrainHelperIcon from 'ee/vue_merge_request_widget/components/merge_train_helper_icon.vue';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { stubComponent } from 'helpers/stub_component';
 import ReadyToMerge from '~/vue_merge_request_widget/components/states/ready_to_merge.vue';
@@ -11,7 +10,6 @@ import {
   MT_MERGE_STRATEGY,
   MTWPS_MERGE_STRATEGY,
 } from '~/vue_merge_request_widget/constants';
-import { MERGE_TRAIN_BUTTON_TEXT } from '~/vue_merge_request_widget/i18n';
 
 describe('ReadyToMerge', () => {
   let wrapper;
@@ -20,12 +18,6 @@ describe('ReadyToMerge', () => {
   const service = {
     merge: () => Promise.resolve({ res: { data: { status: '' } } }),
     poll: () => {},
-  };
-
-  const activePipeline = {
-    id: 1,
-    path: 'path/to/pipeline',
-    active: true,
   };
 
   const mr = {
@@ -75,7 +67,6 @@ describe('ReadyToMerge', () => {
         MergeImmediatelyConfirmationDialog: stubComponent(MergeImmediatelyConfirmationDialog, {
           methods: { show: showMock },
         }),
-        MergeTrainHelperIcon,
         GlSprintf,
         GlLink,
         MergeTrainFailedPipelineConfirmationDialog,
@@ -86,59 +77,10 @@ describe('ReadyToMerge', () => {
   const findMergeButton = () => wrapper.findByTestId('merge-button');
   const findMergeImmediatelyDropdown = () => wrapper.findByTestId('merge-immediately-dropdown');
   const findMergeImmediatelyButton = () => wrapper.findByTestId('merge-immediately-button');
-  const findMergeTrainHelperIcon = () => wrapper.findComponent(MergeTrainHelperIcon);
   const findMergeTrainFailedPipelineConfirmationDialog = () =>
     wrapper.findComponent(MergeTrainFailedPipelineConfirmationDialog);
   const findMergeImmediatelyConfirmationDialog = () =>
     wrapper.findComponent(MergeImmediatelyConfirmationDialog);
-
-  describe('Merge button text', () => {
-    it.each`
-      availableAutoMergeStrategies | mergeTrainsCount | expectedText
-      ${[]}                        | ${0}             | ${'Merge'}
-      ${[MWPS_MERGE_STRATEGY]}     | ${0}             | ${'Merge when pipeline succeeds'}
-      ${[MT_MERGE_STRATEGY]}       | ${0}             | ${'Start merge train'}
-      ${[MT_MERGE_STRATEGY]}       | ${1}             | ${'Add to merge train'}
-      ${[MTWPS_MERGE_STRATEGY]}    | ${0}             | ${'Start merge train when pipeline succeeds'}
-      ${[MTWPS_MERGE_STRATEGY]}    | ${1}             | ${'Add to merge train when pipeline succeeds'}
-    `(
-      'displays $expectedText with merge strategy $availableAutoMergeStrategies and merge train count $mergeTrainsCount',
-      ({ availableAutoMergeStrategies, mergeTrainsCount, expectedText }) => {
-        createComponent({ availableAutoMergeStrategies, mergeTrainsCount });
-
-        expect(findMergeButton().text()).toBe(expectedText);
-      },
-    );
-
-    it('displays "Merge in progress"', () => {
-      createComponent({}, shallowMountExtended, { isMergingImmediately: true });
-
-      expect(findMergeButton().text()).toBe('Merge in progress');
-    });
-  });
-
-  describe('shouldRenderMergeTrainHelperIcon', () => {
-    it('should render the helper icon if MTWPS is available and the user has not yet pressed the MTWPS button', () => {
-      createComponent({
-        onlyAllowMergeIfPipelineSucceeds: true,
-        availableAutoMergeStrategies: [MTWPS_MERGE_STRATEGY],
-        autoMergeEnabled: false,
-      });
-
-      expect(findMergeTrainHelperIcon().exists()).toBe(true);
-    });
-  });
-
-  describe('merge train helper icon', () => {
-    it('does not render the merge train helper icon if the MTWPS strategy is not available', () => {
-      createComponent({
-        availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
-        headPipeline: activePipeline,
-      });
-
-      expect(findMergeTrainHelperIcon().exists()).toBe(false);
-    });
-  });
 
   describe('Merge Immediately Dropdown', () => {
     it('should return false if no pipeline is active', () => {
@@ -229,7 +171,7 @@ describe('ReadyToMerge', () => {
       expect(showMock).toHaveBeenCalled();
 
       expect(findMergeTrainFailedPipelineConfirmationDialog().props('visible')).toBe(false);
-      expect(findMergeButton().text()).toBe('Start merge train');
+      expect(findMergeButton().text()).toBe('Merge');
       expect(mr.transitionStateMachine).toHaveBeenCalledTimes(0);
     });
 
@@ -262,47 +204,7 @@ describe('ReadyToMerge', () => {
     });
   });
 
-  describe('Merge train text', () => {
-    describe('pipeline failed', () => {
-      beforeEach(() => {
-        createComponent({
-          isPipelineFailed: true,
-          availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
-          hasCI: true,
-          onlyAllowMergeIfPipelineSucceeds: false,
-        });
-      });
-
-      it('merge button text should contain ellipsis', () => {
-        expect(findMergeButton().text()).toBe(MERGE_TRAIN_BUTTON_TEXT.failed);
-      });
-    });
-
-    describe('pipeline passed', () => {
-      beforeEach(() => {
-        createComponent({
-          availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
-          hasCI: true,
-          onlyAllowMergeIfPipelineSucceeds: false,
-          headPipeline: {
-            id: 'gid://gitlab/Pipeline/1',
-            path: 'path/to/pipeline',
-            status: 'passed',
-          },
-        });
-      });
-
-      it('merge button text should not contain ellipsis', () => {
-        expect(findMergeButton().text()).toBe(MERGE_TRAIN_BUTTON_TEXT.passed);
-      });
-    });
-  });
-
-  describe('Merge button text with auto_merge_labels_mr_widget feature flag turned on', () => {
-    beforeEach(() => {
-      window.gon = { features: { autoMergeLabelsMrWidget: true } };
-    });
-
+  describe('Merge button text', () => {
     it.each`
       availableAutoMergeStrategies | mergeTrainsCount | expectedText
       ${[]}                        | ${0}             | ${'Merge'}

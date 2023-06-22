@@ -8,7 +8,6 @@ import {
   PIPELINE_FAILED_STATE,
 } from '~/vue_merge_request_widget/constants';
 import base from '~/vue_merge_request_widget/mixins/ready_to_merge';
-import { MERGE_TRAIN_BUTTON_TEXT } from '~/vue_merge_request_widget/i18n';
 
 export const MERGE_DISABLED_TEXT_UNAPPROVED = s__(
   'mrWidget|Merge blocked: all required approvals must be given.',
@@ -57,22 +56,6 @@ export default {
     },
     pipelineMustSucceedConflictText() {
       return PIPELINE_MUST_SUCCEED_CONFLICT_TEXT;
-    },
-    autoMergeTextLegacy() {
-      if (this.preferredAutoMergeStrategy === MTWPS_MERGE_STRATEGY) {
-        if (this.stateData.mergeTrainsCount === 0) {
-          return __('Start merge train when pipeline succeeds');
-        }
-        return __('Add to merge train when pipeline succeeds');
-      } else if (this.preferredAutoMergeStrategy === MT_MERGE_STRATEGY) {
-        if (this.stateData.mergeTrainsCount === 0) {
-          const pipelineFailed = this.status === PIPELINE_FAILED_STATE || this.isPipelineFailed;
-
-          return pipelineFailed ? MERGE_TRAIN_BUTTON_TEXT.failed : MERGE_TRAIN_BUTTON_TEXT.passed;
-        }
-        return __('Add to merge train');
-      }
-      return __('Merge when pipeline succeeds');
     },
     autoMergeText() {
       if (this.preferredAutoMergeStrategy === MT_MERGE_STRATEGY) {

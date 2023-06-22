@@ -25,7 +25,6 @@ RSpec.describe 'User adds a merge request to a merge train', :js, feature_catego
     merge_request.all_pipelines.first.succeed!
     merge_request.update_head_pipeline
     stub_ci_pipeline_yaml_file(YAML.dump(ci_yaml))
-    stub_feature_flags(auto_merge_labels_mr_widget: false)
 
     sign_in(user)
   end
@@ -33,7 +32,8 @@ RSpec.describe 'User adds a merge request to a merge train', :js, feature_catego
   it "shows 'Start merge train' button" do
     visit project_merge_request_path(project, merge_request)
 
-    expect(page).to have_button('Start merge train')
+    expect(page).to have_button('Merge')
+    expect(page).to have_content('Add to merge train')
   end
 
   context 'when merge_trains EEP license is not available' do
@@ -41,17 +41,17 @@ RSpec.describe 'User adds a merge request to a merge train', :js, feature_catego
       stub_licensed_features(merge_trains: false)
     end
 
-    it 'does not show Start merge train' do
+    it 'does not show Start merge train helper text' do
       visit project_merge_request_path(project, merge_request)
 
-      expect(page).not_to have_button('Start merge train')
+      expect(page).not_to have_content('Start merge train')
     end
   end
 
   context "when user clicks 'Start merge train' button" do
     before do
       visit project_merge_request_path(project, merge_request)
-      click_button 'Start merge train'
+      click_button 'Merge'
       wait_for_requests
     end
 
@@ -90,7 +90,8 @@ RSpec.describe 'User adds a merge request to a merge train', :js, feature_catego
       it 'cancels automatic merge' do
         page.within('.mr-state-widget') do
           expect(page).not_to have_content("Added to the merge train by #{user.name}")
-          expect(page).to have_button('Start merge train')
+          expect(page).to have_button('Merge')
+          expect(page).to have_content('Add to merge train')
         end
       end
     end
@@ -103,10 +104,11 @@ RSpec.describe 'User adds a merge request to a merge train', :js, feature_catego
         target_project: project, target_branch: 'master')
     end
 
-    it "shows 'Add to merge train' button" do
+    it "shows 'Merge' button and 'Add to merge train' helper text" do
       visit project_merge_request_path(project, merge_request)
 
-      expect(page).to have_button('Add to merge train')
+      expect(page).to have_button('Merge')
+      expect(page).to have_content('Add to merge train')
     end
   end
 end
