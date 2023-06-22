@@ -2,18 +2,20 @@ import { cloneDeep } from 'lodash';
 import { TEST_HOST } from 'helpers/test_constants';
 import { WORKSPACE_DESIRED_STATES, WORKSPACE_STATES } from 'ee/remote_development/constants';
 
-const WORKSPACE = {
+export const WORKSPACE = {
   id: 1,
   name: 'Workspace 1',
   namespace: 'Namespace',
   projectId: 'gid://gitlab/Project/2',
-  desiredState: 'Running',
-  actualState: 'Started',
+  desiredState: WORKSPACE_DESIRED_STATES.restartRequested,
+  actualState: WORKSPACE_STATES.starting,
   url: `${TEST_HOST}/workspace/1`,
   devfileRef: 'main',
   devfilePath: '.devfile.yaml',
   createdAt: '2023-05-01T18:24:34Z',
 };
+
+export const PROJECT_ID = 'gid://gitlab/Project/2';
 
 export const WORKSPACE_QUERY_RESULT = {
   data: {
