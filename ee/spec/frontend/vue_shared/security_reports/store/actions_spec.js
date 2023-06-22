@@ -46,10 +46,6 @@ const createDismissedVulnerability = (options) =>
     isDismissed: true,
   });
 
-afterEach(() => {
-  jest.clearAllMocks();
-});
-
 describe('security reports actions', () => {
   let mockedState;
   let mock;

@@ -188,10 +188,6 @@ describe('EE - DastSiteProfileList', () => {
     );
 
     describe('Actions', () => {
-      beforeEach(() => {
-        jest.clearAllMocks();
-      });
-
       const VALIDATE_BUTTON_COL_INDEX = 3;
 
       it('validate button should open correct modal', async () => {

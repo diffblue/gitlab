@@ -28,7 +28,6 @@ describe('remote_development/router/index.js', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
     window.location.hash = '';
   });
 

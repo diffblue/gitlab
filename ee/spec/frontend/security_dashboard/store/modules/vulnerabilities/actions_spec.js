@@ -35,10 +35,6 @@ describe('vulnerability actions', () => {
       state = initialState();
     });
 
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-
     describe('setPipelineId', () => {
       const pipelineId = 123;
 

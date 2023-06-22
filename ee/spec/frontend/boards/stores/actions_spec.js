@@ -520,10 +520,6 @@ describe('updateListWipLimit', () => {
     axios.put.mockResolvedValue({ data: {} });
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   it('commit UPDATE_LIST_SUCCESS mutation on success', () => {
     const maxIssueCount = 0;
     const activeId = 1;
