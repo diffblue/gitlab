@@ -37,7 +37,7 @@ export default {
     },
 
     widgets() {
-      return [this.securityReportsWidget].filter((w) => w);
+      return [this.terraformPlansWidget, this.securityReportsWidget].filter((w) => w);
     },
   },
 
