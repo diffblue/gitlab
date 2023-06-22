@@ -70,15 +70,46 @@ RSpec.describe 'Query.[project|group](fullPath).dora.metrics', feature_category:
 
       expect(data).to eq(
         [
+          *empty_metric_rows(from: '2020-11-01', to: '2020-12-31'),
           { 'deploymentFrequency' => 3, 'date' => '2021-01-01' },
           { 'deploymentFrequency' => 3, 'date' => '2021-01-02' },
           { 'deploymentFrequency' => 2, 'date' => '2021-01-03' },
           { 'deploymentFrequency' => 2, 'date' => '2021-01-04' },
           { 'deploymentFrequency' => 1, 'date' => '2021-01-05' },
           { 'deploymentFrequency' => 1, 'date' => '2021-01-06' },
-          { 'deploymentFrequency' => nil, 'date' => '2021-01-07' }
+          { 'deploymentFrequency' => nil, 'date' => '2021-01-07' },
+          *empty_metric_rows(from: '2021-01-08', to: '2021-02-01')
+
         ]
       )
+    end
+
+    context 'when date field is not selected' do
+      let(:query_body) do
+        <<~QUERY
+          dora {
+            metrics {
+              deploymentFrequency
+            }
+          }
+        QUERY
+      end
+
+      it 'does not fill date range with nil values' do
+        post_query
+
+        expect(data).to eq(
+          [
+            { 'deploymentFrequency' => 3 },
+            { 'deploymentFrequency' => 3 },
+            { 'deploymentFrequency' => 2 },
+            { 'deploymentFrequency' => 2 },
+            { 'deploymentFrequency' => 1 },
+            { 'deploymentFrequency' => 1 },
+            { 'deploymentFrequency' => nil }
+          ]
+        )
+      end
     end
 
     context 'when querying multiple metrics' do
@@ -118,16 +149,47 @@ RSpec.describe 'Query.[project|group](fullPath).dora.metrics', feature_category:
 
       expect(data).to eq(
         [
+          *empty_metric_rows(from: '2020-11-01', to: '2020-12-31'),
           { 'deploymentFrequency' => 3, 'date' => '2021-01-01' },
           { 'deploymentFrequency' => 3, 'date' => '2021-01-02' },
           { 'deploymentFrequency' => 2, 'date' => '2021-01-03' },
           { 'deploymentFrequency' => 2, 'date' => '2021-01-04' },
           { 'deploymentFrequency' => 1, 'date' => '2021-01-05' },
           { 'deploymentFrequency' => 1, 'date' => '2021-01-06' },
-          { 'deploymentFrequency' => nil, 'date' => '2021-01-07' },
-          { 'deploymentFrequency' => 4, 'date' => '2021-01-09' }
+          *empty_metric_rows(from: '2021-01-07', to: '2021-01-08'),
+          { 'deploymentFrequency' => 4, 'date' => '2021-01-09' },
+          *empty_metric_rows(from: '2021-01-10', to: '2021-02-01')
         ]
       )
+    end
+
+    context 'when date field is not selected' do
+      let(:query_body) do
+        <<~QUERY
+          dora {
+            metrics {
+              deploymentFrequency
+            }
+          }
+        QUERY
+      end
+
+      it 'does not fill date range with nil values' do
+        post_query
+
+        expect(data).to eq(
+          [
+            { 'deploymentFrequency' => 3 },
+            { 'deploymentFrequency' => 3 },
+            { 'deploymentFrequency' => 2 },
+            { 'deploymentFrequency' => 2 },
+            { 'deploymentFrequency' => 1 },
+            { 'deploymentFrequency' => 1 },
+            { 'deploymentFrequency' => nil },
+            { 'deploymentFrequency' => 4 }
+          ]
+        )
+      end
     end
 
     context 'when querying multiple metrics' do
@@ -215,5 +277,17 @@ RSpec.describe 'Query.[project|group](fullPath).dora.metrics', feature_category:
         )
       end
     end
+  end
+
+  def empty_metric_rows(from:, to:)
+    empty_rows = []
+
+    (from.to_date..to.to_date).step(1) do |date|
+      row = { 'date' => date.to_s }
+      row['deploymentFrequency'] = nil
+      empty_rows << row
+    end
+
+    empty_rows
   end
 end
