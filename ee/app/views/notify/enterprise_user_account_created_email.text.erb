@@ -1,0 +1,13 @@
+<%= _('Your GitLab account is now an Enterprise User (%{source_link}):') % { source_link: help_page_url('user/enterprise_user/index') } %>
+<%= _('Username: %{username}') % { username: @user.username } %>
+<%= _('Email: %{email}') % { email: @user.email } %>
+<%= _('GitLab group: %{source_link}').html_safe % { source_link: @user.user_detail.enterprise_group.web_url } %>
+
+
+<%= _('By using a primary email tied to an Enterprise e-mail address, it is understood that this account is an Enterprise User.') %>
+<%= _('To ensure no loss of personal content, this account should only be used for matters related to %{group_name}.') % { group_name: @user.user_detail.enterprise_group.human_name } %>
+<%= _('For individual use, create a separate account under your personal email address, not tied to the Enterprise email domain.') %>
+<%- unless @user.confirmed? %>
+  <%= _('As this is a newly created account, to get started, click the link below to confirm your account.') %>
+  <%= confirmation_url(@user, confirmation_token: @user.confirmation_token) %>
+<%- end %>

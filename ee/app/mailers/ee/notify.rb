@@ -10,6 +10,7 @@ module EE
     # See https://gitlab.com/gitlab-org/gitlab/issues/7846
     prepended do
       include ::Emails::Epics
+      include ::Emails::EnterpriseUsers
       include ::Emails::Requirements
       include ::Emails::UserCap
       include ::Emails::FreeUserCap

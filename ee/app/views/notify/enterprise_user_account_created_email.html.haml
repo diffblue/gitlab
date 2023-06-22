@@ -1,0 +1,22 @@
+%tr
+  %td.text-content
+    %p
+      = _('Your GitLab account is now an %{source_link}:').html_safe % { source_link: link_to(_('Enterprise User'), help_page_url('user/enterprise_user/index'), target: '_blank', rel: 'noopener noreferrer', class: :highlight)}
+    %p
+      = _('Username: %{username}') % { username: @user.username }
+      %br
+      = _('Email: %{email}') % { email: @user.email }
+      %br
+      = _('GitLab group: %{source_link}').html_safe % { source_link: link_to(@user.user_detail.enterprise_group.human_name, @user.user_detail.enterprise_group.web_url, target: '_blank', rel: 'noopener noreferrer', class: :highlight) }
+
+%tr
+  %td.text-content
+    %p
+      = _('By using a primary email tied to an Enterprise e-mail address, it is understood that this account is an Enterprise User.')
+      = _('To ensure no loss of personal content, this account should only be used for matters related to %{group_name}.') % { group_name: @user.user_detail.enterprise_group.human_name }
+      = _('For individual use, create a separate account under your personal email address, not tied to the Enterprise email domain.')
+    - unless @user.confirmed?
+      %p
+        = _('As this is a newly created account, to get started, click the link below to confirm your account.')
+      %p
+        = link_to 'Confirm your account', confirmation_url(@user, confirmation_token: @user.confirmation_token)
