@@ -106,6 +106,16 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       end
     end
 
+    context 'when approval rules are empty' do
+      let!(:report_approver_rule) { nil }
+
+      it 'does not enqueue Security::GeneratePolicyViolationCommentWorker' do
+        expect(Security::GeneratePolicyViolationCommentWorker).not_to receive(:perform_async)
+
+        service
+      end
+    end
+
     context 'when security scan is removed in current pipeline' do
       let_it_be(:pipeline) { create(:ee_ci_pipeline, project: project, ref: merge_request.source_branch) }
 
