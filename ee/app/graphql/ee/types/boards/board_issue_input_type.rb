@@ -8,7 +8,7 @@ module EE
 
         prepended do
           # NONE/ANY epic filter can not be negated
-          argument :epic_wildcard_id, ::Types::Boards::EpicWildcardIdEnum,
+          argument :epic_wildcard_id, ::Types::EpicWildcardIdEnum,
                    required: false,
                    description: 'Filter by epic ID wildcard. Incompatible with epicId.'
 
@@ -20,7 +20,7 @@ module EE
                    required: false,
                    description: 'Filter by a list of iteration cadence IDs.'
 
-          argument :weight_wildcard_id, ::Types::Boards::WeightWildcardIdEnum,
+          argument :weight_wildcard_id, ::Types::WeightWildcardIdEnum,
                    required: false,
                    description: 'Filter by weight ID wildcard. Incompatible with weight.'
 
