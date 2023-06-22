@@ -9,19 +9,7 @@ module Elastic
     def initialize(target, use_separate_indices: false)
       super(target)
 
-      const_name = if Feature.disabled?(:use_base_class_in_proxy_util)
-                     if use_separate_indices
-                       if target.class.superclass.abstract_class?
-                         "#{target.class.name}Config"
-                       else
-                         "#{target.class.superclass.name}Config"
-                       end
-                     else
-                       'Config'
-                     end
-                   else
-                     use_separate_indices ? "#{target.class.base_class}Config" : 'Config'
-                   end
+      const_name = use_separate_indices ? "#{target.class.base_class}Config" : 'Config'
 
       config = version_namespace.const_get(const_name, false)
 

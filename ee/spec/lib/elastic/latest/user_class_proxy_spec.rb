@@ -200,20 +200,6 @@ RSpec.describe Elastic::Latest::UserClassProxy, feature_category: :global_search
       expect(filter_query[:term]).to include({ in_forbidden_state: hash_including(value: false) })
     end
 
-    context 'when use_base_class_in_proxy_util is disabled' do
-      before do
-        stub_feature_flags(use_base_class_in_proxy_util: false)
-      end
-
-      it 'has a term with forbidden_state eq false' do
-        expect(query_hash.count).to eq(1)
-        filter_query = query_hash.first
-
-        expect(filter_query).to have_key(:term)
-        expect(filter_query[:term]).to include({ in_forbidden_state: hash_including(value: false) })
-      end
-    end
-
     context 'when the user is an admin' do
       let(:options) { { admin: true } }
 

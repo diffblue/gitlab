@@ -37,16 +37,4 @@ RSpec.describe Elastic::Latest::ProjectWikiClassProxy, :elastic, feature_categor
 
     assert_named_queries('doc:is_a:wiki_blob', 'blob:match:search_terms')
   end
-
-  context 'when use_base_class_in_proxy_util is disabled' do
-    before do
-      stub_feature_flags(use_base_class_in_proxy_util: false)
-    end
-
-    it 'names elasticsearch queries' do
-      subject.elastic_search_as_wiki_page('*')
-
-      assert_named_queries('doc:is_a:wiki_blob', 'blob:match:search_terms')
-    end
-  end
 end

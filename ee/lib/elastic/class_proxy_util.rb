@@ -13,19 +13,7 @@ module Elastic
 
       # use_separate_indices check is needed to load custom mappings for AR and non-AR classes
       # For example, Issue and Commit
-      const_name = if Feature.disabled?(:use_base_class_in_proxy_util)
-                     if use_separate_indices
-                       if target.superclass == Object || target.superclass.abstract_class?
-                         "#{target.name}Config"
-                       else
-                         "#{target.superclass.name}Config"
-                       end
-                     else
-                       'Config'
-                     end
-                   else
-                     use_separate_indices ? "#{target.base_class}Config" : 'Config'
-                   end
+      const_name = use_separate_indices ? "#{target.base_class}Config" : 'Config'
 
       config = version_namespace.const_get(const_name, false)
 

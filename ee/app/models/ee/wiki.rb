@@ -22,11 +22,6 @@ module EE
       def use_separate_indices?
         ::Elastic::DataMigrationService.migration_has_finished?(:migrate_wikis_to_separate_index)
       end
-
-      # This method might be removed once the feature_flag use_base_class_in_proxy_util is fully rolled out
-      def abstract_class?
-        false
-      end
     end
   end
 end

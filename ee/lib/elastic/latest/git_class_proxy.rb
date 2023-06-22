@@ -279,15 +279,11 @@ module Elastic
 
         options[:no_join_project] = disable_project_joins_for_blob? if options[:scope].eql?('blob')
 
-        if options[:features].eql?('wiki') && use_separate_wiki_index?
-          fields = %w[content file_name path]
-
-          if Feature.disabled?(:use_base_class_in_proxy_util)
-            options[:index_name] = Elastic::Latest::WikiConfig.index_name
-          end
-        else
-          fields = %w[blob.content blob.file_name blob.path]
-        end
+        fields = if options[:features].eql?('wiki') && use_separate_wiki_index?
+                   %w[content file_name path]
+                 else
+                   %w[blob.content blob.file_name blob.path]
+                 end
 
         bool_expr = apply_simple_query_string(
           name: context.name(:blob, :match, :search_terms),

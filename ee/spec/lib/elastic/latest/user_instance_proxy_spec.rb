@@ -109,16 +109,6 @@ RSpec.describe Elastic::Latest::UserInstanceProxy, feature_category: :global_sea
   end
 
   describe '#es_parent' do
-    context 'when use_base_class_in_proxy_util is disabled' do
-      before do
-        stub_feature_flags(use_base_class_in_proxy_util: false)
-      end
-
-      it 'is nil so that elasticsearch routing is disabled' do
-        expect(subject.es_parent).to be_nil
-      end
-    end
-
     it 'is nil so that elasticsearch routing is disabled' do
       expect(subject.es_parent).to be_nil
     end

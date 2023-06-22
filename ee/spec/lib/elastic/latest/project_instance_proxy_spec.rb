@@ -42,20 +42,6 @@ RSpec.describe Elastic::Latest::ProjectInstanceProxy, feature_category: :global_
           expect(result).to include(feature => ProjectFeature::PRIVATE) # rubocop:disable GitlabSecurity/PublicSend
         end
       end
-
-      context 'when feature_flag use_base_class_in_proxy_util is disabled' do
-        before do
-          stub_feature_flags(use_base_class_in_proxy_util: false)
-        end
-
-        it 'sets all tracked feature access levels to PRIVATE' do
-          result = subject.as_indexed_json.with_indifferent_access
-
-          Elastic::Latest::ProjectInstanceProxy::TRACKED_FEATURE_SETTINGS.each do |feature|
-            expect(result).to include(feature => ProjectFeature::PRIVATE) # rubocop:disable GitlabSecurity/PublicSend
-          end
-        end
-      end
     end
   end
 end
