@@ -2821,6 +2821,9 @@ msgstr ""
 msgid "Add new directory"
 msgstr ""
 
+msgid "Add new webhook"
+msgstr ""
+
 msgid "Add or remove a user."
 msgstr ""
 
@@ -2852,9 +2855,6 @@ msgid "Add start and due date"
 msgstr ""
 
 msgid "Add suggestion to batch"
-msgstr ""
-
-msgid "Add system hook"
 msgstr ""
 
 msgid "Add text to the sign-in page. Markdown enabled."
@@ -19251,9 +19251,6 @@ msgid "File %{current} of %{total}"
 msgstr ""
 
 msgid "File Hooks"
-msgstr ""
-
-msgid "File Hooks (%{count})"
 msgstr ""
 
 msgid "File Tree"
