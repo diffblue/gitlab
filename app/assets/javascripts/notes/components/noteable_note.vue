@@ -442,7 +442,12 @@ export default {
     </div>
 
     <div v-if="isMRDiffView" class="timeline-avatar gl-float-left gl-pt-2">
-      <gl-avatar-link :href="author.path">
+      <gl-avatar-link
+        :href="author.path"
+        :data-user-id="author.id"
+        :data-username="author.username"
+        class="js-user-link"
+      >
         <gl-avatar
           :src="author.avatar_url"
           :entity-name="author.username"
@@ -455,7 +460,12 @@ export default {
     </div>
 
     <div v-else class="timeline-avatar gl-float-left">
-      <gl-avatar-link :href="author.path">
+      <gl-avatar-link
+        :href="author.path"
+        :data-user-id="author.id"
+        :data-username="author.username"
+        class="js-user-link"
+      >
         <gl-avatar
           :src="author.avatar_url"
           :entity-name="author.username"
