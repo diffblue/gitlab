@@ -28,7 +28,7 @@ RSpec.describe ProjectStatistics do
 
         statistics.reload
 
-        expect(statistics.storage_size).to eq(other_sizes * 7)
+        expect(statistics.storage_size).to eq(other_sizes * 6)
       end
     end
 
@@ -47,7 +47,7 @@ RSpec.describe ProjectStatistics do
 
         statistics.reload
 
-        expect(statistics.storage_size).to eq(other_sizes * 7 + uploads_size)
+        expect(statistics.storage_size).to eq(other_sizes * 6 + uploads_size)
       end
     end
   end
