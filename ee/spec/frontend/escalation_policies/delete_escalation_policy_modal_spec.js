@@ -32,13 +32,8 @@ describe('DeleteEscalationPolicyModal', () => {
   const cachedPolicy =
     getEscalationPoliciesQueryResponse.data.project.incidentManagementEscalationPolicies.nodes[0];
 
-  const createComponent = ({ data = {}, props = {} } = {}) => {
+  const createComponent = ({ props = {} } = {}) => {
     wrapper = shallowMount(DeleteEscalationPolicyModal, {
-      data() {
-        return {
-          ...data,
-        };
-      },
       propsData: {
         modalId: deleteEscalationPolicyModalId,
         escalationPolicy,
