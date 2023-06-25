@@ -12,5 +12,5 @@
     = _("The repository can be committed to, and issues, comments and other entities can be created.")
     = _('Only active projects show up in the search and on the dashboard.')
   - c.with_actions do
-    = link_to _('Restore project'), namespace_project_restore_path(project.namespace, project),
-        method: :post, class: "gl-button btn btn-confirm"
+    = render Pajamas::ButtonComponent.new(href: namespace_project_restore_path(project.namespace, project), method: :post, variant: :confirm) do
+      = _('Restore project')
