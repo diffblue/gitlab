@@ -13,6 +13,7 @@ module EE
               if ::Feature.enabled?(:remote_development_feature_flag) &&
                 ::License.feature_available?(:remote_development) # rubocop:disable Layout/MultilineOperationIndentation - Currently can't override default RubyMine formatting
 
+                # NOTE: We are explicitly ignoring any failures here. See the comment in the service for more details.
                 ::RemoteDevelopment::AgentConfig::UpdateService.new.execute(agent: agent, config: config)
               end
 
