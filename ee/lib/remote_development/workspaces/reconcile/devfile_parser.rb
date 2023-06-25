@@ -6,6 +6,15 @@ module RemoteDevelopment
   module Workspaces
     module Reconcile
       class DevfileParser
+        # @param [String] processed_devfile
+        # @param [String] name
+        # @param [String] namespace
+        # @param [Integer] replicas
+        # @param [String] domain_template
+        # @param [Hash] labels
+        # @param [Hash] annotations
+        # @param [User] user
+        # @return [Hash]
         def get_all(processed_devfile:, name:, namespace:, replicas:, domain_template:, labels:, annotations:, user:)
           workspace_resources_yaml = Devfile::Parser.get_all(
             processed_devfile,
@@ -33,6 +42,8 @@ module RemoteDevelopment
         #       move the logic of setting the security context in the `devfile_processor` as part of workspace creation.
         RUN_AS_USER = 5001
 
+        # @param [Hash] workspace_resources
+        # @return [Hash]
         def set_security_context(workspace_resources:)
           workspace_resources.each do |workspace_resource|
             next unless workspace_resource['kind'] == 'Deployment'
@@ -67,6 +78,9 @@ module RemoteDevelopment
           workspace_resources
         end
 
+        # @param [Hash] workspace_resources
+        # @param [User] user
+        # @return [Hash]
         def set_git_configuration(workspace_resources:, user:)
           workspace_resources.each do |workspace_resource|
             next unless workspace_resource.fetch('kind') == 'Deployment'

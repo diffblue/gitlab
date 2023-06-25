@@ -8,12 +8,17 @@ module RemoteDevelopment
       class DevfileProcessor
         WORKSPACE_VOLUME = 'gl-workspace-data'
 
+        # @param [String] devfile_yaml_string
+        # @param [String] editor
+        # @param [String] project
+        # @param [String] workspace_root
+        # @return [Array<(Hash | nil, RemoteDevelopment::Error | nil)>]
         def process(devfile_yaml_string:, editor:, project:, workspace_root:)
           devfile_validator = DevfileValidator.new
-          devfile = YAML.safe_load(devfile_yaml_string)
+          devfile = YAML.safe_load(devfile_yaml_string).to_h
           devfile_validator.pre_flatten_validate(devfile: devfile)
           flattened_devfile_yaml = Devfile::Parser.flatten(devfile_yaml_string)
-          flattened_devfile = YAML.safe_load(flattened_devfile_yaml)
+          flattened_devfile = YAML.safe_load(flattened_devfile_yaml).to_h
           devfile_validator.post_flatten_validate(flattened_devfile: flattened_devfile)
 
           flattened_devfile = add_workspace_volume(flattened_devfile: flattened_devfile, volume_name: WORKSPACE_VOLUME)
@@ -37,6 +42,11 @@ module RemoteDevelopment
 
         # noinspection RubyUnusedLocalVariable
         # rubocop:disable Lint/UnusedMethodArgument
+        # @param [Hash] flattened_devfile
+        # @param [String] editor
+        # @param [String] volume_reference
+        # @param [String] volume_mount_dir
+        # @return [Hash]
         def add_editor(flattened_devfile:, editor:, volume_reference:, volume_mount_dir:)
           editor_port = 60001
           # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409775 - choose image based on which editor is passed.
@@ -133,6 +143,11 @@ module RemoteDevelopment
         end
         # rubocop:enable Lint/UnusedMethodArgument
 
+        # @param [Hash] flattened_devfile
+        # @param [String] project
+        # @param [String] volume_reference
+        # @param [String] volume_mount_dir
+        # @return [Hash]
         def add_project_cloner(flattened_devfile:, project:, volume_reference:, volume_mount_dir:)
           # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/408448
           #       replace the alpine/git docker image with one that is published by gitlab for security / reliability
@@ -200,6 +215,9 @@ module RemoteDevelopment
           flattened_devfile
         end
 
+        # @param [Hash] flattened_devfile
+        # @param [String] volume_name
+        # @return [Hash]
         def add_workspace_volume(flattened_devfile:, volume_name:)
           component = {
             'name' => volume_name,

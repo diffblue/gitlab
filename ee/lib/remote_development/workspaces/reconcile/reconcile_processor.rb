@@ -8,6 +8,10 @@ module RemoteDevelopment
         include UpdateType
 
         # rubocop:disable Metrics/AbcSize
+        # @param [Clusters::Agent] agent
+        # @param [Array<Hash>] workspace_agent_infos
+        # @param [String] update_type
+        # @return [Array<(Hash | nil, RemoteDevelopment::Error | nil)>]
         def process(agent:, workspace_agent_infos:, update_type:)
           logger.debug(
             message: 'Beginning ReconcileProcessor',
@@ -128,6 +132,9 @@ module RemoteDevelopment
 
         private
 
+        # @param [RemoteDevelopment::Workspace] workspace
+        # @param [String (frozen)] update_type
+        # @return [void, String]
         def config_to_apply(workspace:, update_type:)
           # NOTE: If update_type==FULL, we always return the config.
           return if update_type == PARTIAL &&
@@ -144,6 +151,11 @@ module RemoteDevelopment
           desired_config_to_apply_array.join
         end
 
+        # @param [Hash] workspace_agent_infos_by_name
+        # @param [Array] persisted_workspace_names
+        # @param [String] agent_id
+        # @param [String] update_type
+        # @return [void]
         def check_for_orphaned_workspaces(
           workspace_agent_infos_by_name:,
           persisted_workspace_names:,
@@ -166,8 +178,13 @@ module RemoteDevelopment
             orphaned_workspace_names: orphaned_workspace_agent_infos.map(&:name),
             orphaned_workspace_namespaces: orphaned_workspace_agent_infos.map(&:namespace)
           )
+          nil
         end
 
+        # @param [RemoteDevelopment::Workspace] persisted_workspace
+        # @param [String] deployment_resource_version
+        # @param [String] actual_state
+        # @return [void]
         def update_persisted_workspace_with_latest_info(
           persisted_workspace:,
           deployment_resource_version:,
@@ -195,10 +212,13 @@ module RemoteDevelopment
           persisted_workspace.deployment_resource_version = deployment_resource_version if deployment_resource_version
 
           persisted_workspace.save!
+
+          nil
         end
 
         # TODO: https://gitlab.com/groups/gitlab-org/-/epics/10461
         #       Dry up memoized logger factory to a shared concern
+        # @return [RemoteDevelopment::Logger]
         def logger
           @logger ||= RemoteDevelopment::Logger.build
         end

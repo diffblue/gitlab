@@ -7,6 +7,8 @@ module RemoteDevelopment
       class DesiredConfigGenerator
         include States
 
+        # @param [RemoteDevelopment::Workspaces::Workspace] workspace
+        # @return [Hash]
         def generate_desired_config(workspace:)
           name = workspace.name
           namespace = workspace.namespace
@@ -44,6 +46,8 @@ module RemoteDevelopment
 
         private
 
+        # @param [String] desired_state
+        # @return [Integer]
         def get_workspace_replicas(desired_state:)
           return 1 if [
             CREATION_REQUESTED,
@@ -54,6 +58,10 @@ module RemoteDevelopment
         end
 
         # noinspection RubyInstanceMethodNamingConvention
+        # @param [String] name
+        # @param [String] namespace
+        # @param [String] agent_id
+        # @return [Array(Hash, String (frozen))]
         def create_workspace_inventory_config_map(name:, namespace:, agent_id:)
           owning_inventory = "#{name}-workspace-inventory"
           workspace_inventory_config_map = {
@@ -67,13 +75,18 @@ module RemoteDevelopment
                 'agent.gitlab.com/id': agent_id.to_s
               }
             }
-          }.deep_stringify_keys
+          }.deep_stringify_keys.to_h
           [workspace_inventory_config_map, owning_inventory]
         end
 
+        # @param [String] agent_id
+        # @param [String] owning_inventory
+        # @param [String] domain_template
+        # @param [String] workspace_id
+        # @return [Array<(Hash, Hash)]
         def get_labels_and_annotations(agent_id:, owning_inventory:, domain_template:, workspace_id:)
           labels = {
-            'agent.gitlab.com/id' => agent_id.to_s
+            'agent.gitlab.com/id' => agent_id
           }
           annotations = {
             'config.k8s.io/owning-inventory' => owning_inventory.to_s,

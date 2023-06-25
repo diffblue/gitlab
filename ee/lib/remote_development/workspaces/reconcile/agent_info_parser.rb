@@ -4,6 +4,8 @@ module RemoteDevelopment
   module Workspaces
     module Reconcile
       class AgentInfoParser
+        # @param [Hash] workspace_agent_info
+        # @return [RemoteDevelopment::Workspaces::Reconcile::AgentInfo]
         def parse(workspace_agent_info:)
           # workspace_agent_info.fetch('latest_k8s_deployment_info') is not used since the field may not be present
           latest_k8s_deployment_info = workspace_agent_info['latest_k8s_deployment_info']

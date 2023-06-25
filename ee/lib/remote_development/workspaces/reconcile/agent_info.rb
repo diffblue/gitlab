@@ -6,6 +6,11 @@ module RemoteDevelopment
       class AgentInfo
         attr_reader :name, :namespace, :actual_state, :deployment_resource_version
 
+        # @param [String] name
+        # @param [String] namespace
+        # @param [String] actual_state
+        # @param [String] deployment_resource_version
+        # @return [RemoteDevelopment::Workspaces::Reconcile::AgentInfo]
         def initialize(name:, namespace:, actual_state:, deployment_resource_version:)
           @name = name
           @namespace = namespace
@@ -13,6 +18,8 @@ module RemoteDevelopment
           @deployment_resource_version = deployment_resource_version
         end
 
+        # @param [RemoteDevelopment::Workspaces::AgentInfo] other
+        # @return [TrueClass, FalseClass]
         def ==(other)
           return false unless other && self.class == other.class
 
