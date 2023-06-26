@@ -31,7 +31,7 @@ RSpec.describe 'layouts/project', feature_category: :groups_and_projects do
       expect(rendered)
         .to have_link('user profile preferences', href: profile_preferences_path(anchor: 'code-suggestions-settings'))
       help_url = help_page_path(
-        'user/project/repository/code_suggestions', anchor: 'enable-code-suggestions-in-vs-code'
+        'user/project/repository/code_suggestions'
       )
       expect(rendered).to have_link('see the documentation', href: help_url)
       profile_url = profile_preferences_path(anchor: 'code-suggestions-settings')
