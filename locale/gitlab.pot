@@ -2703,6 +2703,9 @@ msgstr ""
 msgid "Add a numbered list"
 msgstr ""
 
+msgid "Add a quick action"
+msgstr ""
+
 msgid "Add a related epic"
 msgstr ""
 
@@ -12516,9 +12519,6 @@ msgid "Content"
 msgstr ""
 
 msgid "Content parsed with %{link}."
-msgstr ""
-
-msgid "ContentEditor|For %{quickActionsDocsLinkStart}quick actions%{quickActionsDocsLinkEnd}, type %{keyboardStart}/%{keyboardEnd}."
 msgstr ""
 
 msgid "ContentEditor|You have to provide a renderMarkdown function or a custom serializer"
@@ -27865,9 +27865,6 @@ msgstr ""
 msgid "MarkdownEditor|header"
 msgstr ""
 
-msgid "MarkdownToolbar|Supports %{markdownDocsLinkStart}Markdown%{markdownDocsLinkEnd}"
-msgstr ""
-
 msgid "Marked"
 msgstr ""
 
@@ -30933,9 +30930,6 @@ msgid "Note: current forks will keep their visibility level."
 msgstr ""
 
 msgid "NoteForm|Note"
-msgstr ""
-
-msgid "NoteToolbar|Supports %{markdownDocsLinkStart}Markdown%{markdownDocsLinkEnd}. For %{quickActionsDocsLinkStart}quick actions%{quickActionsDocsLinkEnd}, type %{keyboardStart}/%{keyboardEnd}."
 msgstr ""
 
 msgid "Notes"
@@ -45029,10 +45023,10 @@ msgstr ""
 msgid "Switch to GitLab Next"
 msgstr ""
 
-msgid "Switch to Markdown"
+msgid "Switch to plain text editing"
 msgstr ""
 
-msgid "Switch to rich text"
+msgid "Switch to rich text editing"
 msgstr ""
 
 msgid "Switch to the source to copy the file contents"
