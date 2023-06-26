@@ -55,11 +55,11 @@ RSpec.describe Ci::ExternalPullRequests::ProcessGithubEventService, feature_cate
 
           it 'enqueues Ci::ExternalPullRequests::CreatePipelineWorker' do
             expect { subject.execute(params) }
-             .to change { ExternalPullRequest.count }.by(1)
+             .to change { ::Ci::ExternalPullRequest.count }.by(1)
              .and change { ::Ci::ExternalPullRequests::CreatePipelineWorker.jobs.count }.by(1)
 
             args = ::Ci::ExternalPullRequests::CreatePipelineWorker.jobs.last['args']
-            pull_request = ExternalPullRequest.last
+            pull_request = ::Ci::ExternalPullRequest.last
 
             expect(args[0]).to eq(project.id)
             expect(args[1]).to eq(user.id)
@@ -74,9 +74,9 @@ RSpec.describe Ci::ExternalPullRequests::ProcessGithubEventService, feature_cate
           it 'only saves pull request info' do
             expect(Ci::CreatePipelineService).not_to receive(:new)
 
-            expect { subject.execute(params) }.to change { ExternalPullRequest.count }.by(1)
+            expect { subject.execute(params) }.to change { ::Ci::ExternalPullRequest.count }.by(1)
 
-            pull_request = ExternalPullRequest.last
+            pull_request = ::Ci::ExternalPullRequest.last
 
             expect(pull_request).to be_persisted
             expect(pull_request.project).to eq(project)

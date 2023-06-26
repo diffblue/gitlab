@@ -86,13 +86,13 @@ RSpec.describe API::ProjectMirror, feature_category: :source_code_management do
           shared_examples_for 'triggering pipeline creation' do
             it 'enqueues Ci::ExternalPullRequests::CreatePipelineWorker' do
               expect { send_request }
-                .to change { ExternalPullRequest.count }.by(1)
+                .to change { ::Ci::ExternalPullRequest.count }.by(1)
                 .and change { ::Ci::ExternalPullRequests::CreatePipelineWorker.jobs.count }.by(1)
 
               expect(response).to have_gitlab_http_status(:ok)
 
               args = ::Ci::ExternalPullRequests::CreatePipelineWorker.jobs.last['args']
-              pull_request = ExternalPullRequest.last
+              pull_request = ::Ci::ExternalPullRequest.last
 
               expect(args[0]).to eq(project_mirrored.id)
               expect(args[1]).to eq(user.id)

@@ -22,7 +22,7 @@ module Ci
         # and the pipeline is created for all newly pushed branches.
         # At that point we will be able to reference it back if a pull request
         # was created.
-        ::ExternalPullRequest.create_or_update_from_params(params).tap do |pull_request|
+        ::Ci::ExternalPullRequest.create_or_update_from_params(params).tap do |pull_request|
           if pull_request.errors.empty?
             Ci::ExternalPullRequests::CreatePipelineService.new(project, current_user)
               .execute(pull_request)
