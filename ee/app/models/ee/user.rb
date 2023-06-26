@@ -686,5 +686,21 @@ module EE
     def should_delay_delete?(*args)
       super && !has_paid_namespace?(exclude_trials: true)
     end
+
+    override :audit_lock_access
+    def audit_lock_access
+      unless access_locked?
+        reason = nil
+        reason = 'excessive failed login attempts' if attempts_exceeded?
+
+        ::Gitlab::Audit::Auditor.audit(
+          name: 'user_access_locked',
+          author: ::User.admin_bot,
+          scope: self,
+          target: self,
+          message: ['User access locked', reason].compact.join(' - ')
+        )
+      end
+    end
   end
 end
