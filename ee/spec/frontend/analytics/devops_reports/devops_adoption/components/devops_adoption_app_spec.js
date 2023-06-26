@@ -24,6 +24,7 @@ import { mockTracking } from 'helpers/tracking_helper';
 import DevopsScore from '~/analytics/devops_reports/components/devops_score.vue';
 import API from '~/api';
 import { groupNodes, devopsAdoptionNamespaceData } from '../mock_data';
+import { GITLAB_INTERNAL_EVENT_CATEGORY } from '../../../../../../../app/assets/javascripts/tracking/constants';
 
 jest.mock('ee/analytics/devops_reports/devops_adoption/utils/cache_updates', () => ({
   addEnabledNamespacesToCache: jest.fn(),
@@ -374,8 +375,8 @@ describe('DevopsAdoptionApp', () => {
           wrapper.findByTestId(testId).vm.$emit('click');
 
           expect(API.trackRedisHllUserEvent).toHaveBeenCalledWith(event);
-          expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_tab', {
-            label: 'redis_hll_counters.analytics.analytics_total_unique_counts_monthly',
+          expect(trackingSpy).toHaveBeenCalledWith(GITLAB_INTERNAL_EVENT_CATEGORY, event, {
+            category: GITLAB_INTERNAL_EVENT_CATEGORY,
             context: {
               schema: 'iglu:com.gitlab/gitlab_service_ping/jsonschema/1-0-0',
               data: {
