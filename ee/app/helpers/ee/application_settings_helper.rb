@@ -18,6 +18,7 @@ module EE
         :elasticsearch_indexed_field_length_limit,
         :elasticsearch_indexed_file_size_limit_kb,
         :elasticsearch_indexing,
+        :elasticsearch_requeue_workers,
         :elasticsearch_limit_indexing,
         :elasticsearch_max_bulk_concurrency,
         :elasticsearch_max_bulk_size_mb,

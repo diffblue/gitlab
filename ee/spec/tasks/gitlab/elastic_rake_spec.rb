@@ -438,6 +438,7 @@ feature_category: :global_search do
       expected_regex = Regexp.new([
         'Indexing enabled:\\s+yes\\s+',
         'Search enabled:\\s+yes\\s+',
+        'Requeue Indexing workers:\\s+no\\s+',
         'Pause indexing:\\s+no\\s+',
         'Indexing restrictions enabled:\\s+no\\s+'
       ].join(''))

@@ -260,6 +260,7 @@ namespace :gitlab do
       puts "Server distribution:\t\t#{helper.server_info[:distribution] || "unknown".color(:red)}"
       puts "Indexing enabled:\t\t#{setting.elasticsearch_indexing? ? "yes".color(:green) : "no"}"
       puts "Search enabled:\t\t\t#{setting.elasticsearch_search? ? "yes".color(:green) : "no"}"
+      puts "Requeue Indexing workers:\t#{setting.elasticsearch_requeue_workers? ? "yes".color(:green) : "no"}"
       puts "Pause indexing:\t\t\t#{setting.elasticsearch_pause_indexing? ? "yes".color(:yellow) : "no"}"
       puts "Indexing restrictions enabled:\t#{setting.elasticsearch_limit_indexing? ? "yes".color(:yellow) : "no"}"
       puts "File size limit:\t\t#{setting.elasticsearch_indexed_file_size_limit_kb} KiB"
