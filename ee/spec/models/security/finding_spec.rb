@@ -238,8 +238,8 @@ RSpec.describe Security::Finding, feature_category: :vulnerability_management do
 
     it {
       is_expected.to eq({
-        Security::Scan.scan_types['dast'] => 1,
-        Security::Scan.scan_types['sast'] => 2
+        'dast' => 1,
+        'sast' => 2
       })
     }
   end
