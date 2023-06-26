@@ -2,10 +2,9 @@
 import { GlAlert, GlTabs, GlTab } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import DevopsScore from '~/analytics/devops_reports/components/devops_score.vue';
-import API from '~/api';
 import dateformat from '~/lib/dateformat';
 import { mergeUrlParams, updateHistory, getParameterValues } from '~/lib/utils/url_utility';
-import Tracking from '~/tracking';
+import { InternalEvents } from '~/tracking';
 import {
   I18N_GROUPS_QUERY_ERROR,
   I18N_ENABLED_NAMESPACE_QUERY_ERROR,
@@ -39,7 +38,7 @@ export default {
     GlTabs,
     GlTab,
   },
-  mixins: [Tracking.mixin()],
+  mixins: [InternalEvents.mixin()],
   inject: {
     isGroup: {
       default: false,
@@ -262,33 +261,17 @@ export default {
     },
     trackDevopsScoreTabClick() {
       if (!this.devopsScoreTabClicked) {
-        API.trackRedisHllUserEvent(this.$options.trackDevopsScoreTabClickEvent);
-        this.trackSnowplowEvent(this.$options.trackDevopsScoreTabClickEvent);
-
+        this.track_event(this.$options.trackDevopsScoreTabClickEvent);
         this.devopsScoreTabClicked = true;
       }
     },
     trackDevopsTabClick() {
       if (!this.adoptionTabClicked) {
-        API.trackRedisHllUserEvent(this.$options.trackDevopsTabClickEvent);
-        this.trackSnowplowEvent(this.$options.trackDevopsTabClickEvent);
-
+        this.track_event(this.$options.trackDevopsTabClickEvent);
         this.adoptionTabClicked = true;
       }
     },
 
-    trackSnowplowEvent(event) {
-      this.track('click_tab', {
-        label: 'redis_hll_counters.analytics.analytics_total_unique_counts_monthly',
-        context: {
-          schema: 'iglu:com.gitlab/gitlab_service_ping/jsonschema/1-0-0',
-          data: {
-            event_name: event,
-            data_source: 'redis_hll',
-          },
-        },
-      });
-    },
     trackCardSelected(card) {
       const index = this.$options.devopsAdoptionTableConfiguration.findIndex(
         ({ key }) => card.key === key,
