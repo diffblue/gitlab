@@ -240,7 +240,7 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
         it 'renders company page :new' do
           post :create, params: params.merge(trial_onboarding_flow: trial_onboarding_flow)
 
-          expect(response).to have_gitlab_http_status(:ok)
+          expect(response).to have_gitlab_http_status(:unprocessable_entity)
           expect(response).to render_template(:new)
           expect(flash[:alert]).to eq('failed')
         end

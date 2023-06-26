@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 # EE:SaaS
-# TODO: namespace https://gitlab.com/gitlab-org/gitlab/-/issues/338394
 module Subscriptions
   class TrialsController < ApplicationController
     include OneTrustCSP

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module GitlabSubscriptions
   class CreateTrialOrLeadService
     def initialize(user:, params:)
@@ -15,7 +16,7 @@ module GitlabSubscriptions
         ServiceResponse.success
       else
         error_message = response.dig(:data, :errors) || 'Submission failed'
-        ServiceResponse.error(message: error_message, http_status: :unprocessable_entity)
+        ServiceResponse.error(message: error_message, reason: :submission_failed)
       end
     end
 
