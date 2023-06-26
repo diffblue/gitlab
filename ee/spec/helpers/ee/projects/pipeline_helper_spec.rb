@@ -278,7 +278,7 @@ RSpec.describe Projects::PipelineHelper, feature_category: :pipeline_composition
         failed: pipeline.failure_reason?.to_s,
         auto_devops: pipeline.auto_devops_source?.to_s,
         detached: pipeline.detached_merge_request_pipeline?.to_s,
-        stuck: pipeline.stuck?,
+        stuck: pipeline.stuck?.to_s,
         compute_credits: pipeline.total_ci_minutes_consumed
       })
     end

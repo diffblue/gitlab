@@ -8,7 +8,6 @@ RSpec.describe 'Pipeline', :js, feature_category: :continuous_integration do
   let_it_be(:project, reload: true) { create(:project, :repository, namespace: namespace) }
 
   before do
-    stub_feature_flags(pipeline_details_header_vue: false)
     sign_in(user)
     project.add_developer(user)
   end
@@ -140,23 +139,23 @@ RSpec.describe 'Pipeline', :js, feature_category: :continuous_integration do
       end
 
       context 'pipeline has finished' do
-        it 'shows pipeline stats with flag on' do
+        it 'shows pipeline compute credits and time ago' do
           visit project_pipeline_path(project, finished_pipeline)
 
-          within '.pipeline-info' do
-            expect(page).to have_content("in #{finished_pipeline.duration} seconds, " \
-                                         "using #{finished_pipeline.total_ci_minutes_consumed} compute credits, " \
-                                         "and was queued for #{finished_pipeline.queued_duration} seconds")
+          within '[data-testid="pipeline-details-header"]' do
+            expect(page).to have_selector('[data-testid="compute-credits"]')
+            expect(page).to have_selector('[data-testid="pipeline-time-ago"]')
           end
         end
       end
 
       context 'pipeline has not finished' do
-        it 'does not show pipeline stats' do
+        it 'does not show pipeline compute credits and time ago' do
           subject
 
-          within '.pipeline-info' do
-            expect(page).not_to have_selector('[data-testid="pipeline-stats-text"]')
+          within '[data-testid="pipeline-details-header"]' do
+            expect(page).not_to have_selector('[data-testid="compute-credits"]')
+            expect(page).not_to have_selector('[data-testid="pipeline-time-ago"]')
           end
         end
       end
