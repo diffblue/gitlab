@@ -92,17 +92,32 @@ RSpec.describe GitlabSubscriptions::CreateTrialOrLeadService, feature_category: 
           registration_objective: '_jtbd_'
         }).execute
 
-        expect(result.is_a?(ServiceResponse)).to be true
         expect(result.success?).to be true
       end
 
-      it 'error while creating trial or lead' do
-        allow(Gitlab::SubscriptionPortal::Client).to receive(service).and_return({ success: false })
+      context 'when creating trial or lead fails without an error message from the client' do
+        it 'error while creating trial or lead' do
+          allow(Gitlab::SubscriptionPortal::Client).to receive(service).and_return({ success: false })
 
-        result = described_class.new(user: user, params: { trial_onboarding_flow: trial_onboarding_flow }).execute
+          result = described_class.new(user: user, params: { trial_onboarding_flow: trial_onboarding_flow }).execute
 
-        expect(result.is_a?(ServiceResponse)).to be true
-        expect(result.success?).to be false
+          expect(result.success?).to be false
+          expect(result.reason).to eq(:submission_failed)
+          expect(result.errors).to match(['Submission failed'])
+        end
+      end
+
+      context 'when creating trial or lead fails with an error message from the client' do
+        it 'error while creating trial or lead' do
+          response = { success: false, data: { errors: '_error_' } }
+          allow(Gitlab::SubscriptionPortal::Client).to receive(service).and_return(response)
+
+          result = described_class.new(user: user, params: { trial_onboarding_flow: trial_onboarding_flow }).execute
+
+          expect(result.success?).to be false
+          expect(result.reason).to eq(:submission_failed)
+          expect(result.errors).to match(['_error_'])
+        end
       end
     end
   end

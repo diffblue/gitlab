@@ -35,8 +35,8 @@ module Registrations
         save_onboarding_step_url(path, current_user)
         redirect_to path
       else
-        flash.now[:alert] = result[:message]
-        render :new, status: result.http_status
+        flash.now[:alert] = result.errors.to_sentence
+        render :new, status: :unprocessable_entity
       end
     end
 
