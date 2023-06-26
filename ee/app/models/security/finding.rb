@@ -64,6 +64,9 @@ module Security
     scope :by_report_types, -> (report_types) { joins(:scan).merge(Scan.by_scan_types(report_types)) }
     scope :by_scan, -> (scans) { where(scan: scans) }
     scope :by_scanners, -> (scanners) { where(scanner: scanners) }
+    scope :by_project_id_and_pipeline_ids, -> (project_id, pipeline_ids) do
+      joins(:scan).merge(Security::Scan.succeeded.by_project(project_id).by_pipeline_ids(pipeline_ids))
+    end
     scope :by_state, -> (states) do
       states = Array(states).map(&:to_s)
 
@@ -148,8 +151,8 @@ module Security
         active_partition&.value || column_defaults['partition_number']
       end
 
-      def fetch_uuids
-        pluck(:uuid)
+      def distinct_uuids
+        distinct.pluck(:uuid)
       end
 
       private

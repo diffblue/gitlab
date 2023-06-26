@@ -162,6 +162,41 @@ RSpec.describe Security::Finding, feature_category: :vulnerability_management do
     end
   end
 
+  describe '.by_project_id_and_pipeline_ids' do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:pipeline_1) { create(:ee_ci_pipeline, :success, project: project) }
+    let_it_be(:pipeline_2) { create(:ee_ci_pipeline, :success, project: project) }
+    let_it_be(:pipeline_3) { create(:ee_ci_pipeline, :success, project: project) }
+
+    let_it_be(:finding_1) do
+      create(:security_finding,
+        scan: create(:security_scan, project: project, pipeline: pipeline_1, status: :succeeded)
+      )
+    end
+
+    let_it_be(:finding_2) do
+      create(:security_finding,
+        scan: create(:security_scan, project: project, pipeline: pipeline_2, status: :succeeded)
+      )
+    end
+
+    let_it_be(:finding_3) do
+      create(:security_finding,
+        scan: create(:security_scan, project: project, pipeline: pipeline_3, status: :succeeded)
+      )
+    end
+
+    subject(:findings) { described_class.by_project_id_and_pipeline_ids(project.id, [pipeline_1.id, pipeline_2.id]) }
+
+    it { is_expected.to contain_exactly(finding_1, finding_2) }
+
+    context 'when the pipelines belongs to different project' do
+      let_it_be(:project) { create(:project) }
+
+      it { is_expected.to be_empty }
+    end
+  end
+
   describe '.undismissed_by_vulnerability' do
     let(:expected_findings) { [finding_2] }
 
@@ -331,11 +366,11 @@ RSpec.describe Security::Finding, feature_category: :vulnerability_management do
     end
   end
 
-  describe '.fetch_uuids' do
-    it 'returns the uuids of findings' do
-      findings = create_list(:security_finding, 2)
+  describe '.distinct_uuids' do
+    it 'returns distinct uuids of findings' do
+      create(:security_finding, uuid: finding_1.uuid)
 
-      expect(described_class.fetch_uuids).to include(findings.first.uuid, findings.second.uuid)
+      expect(described_class.distinct_uuids).to contain_exactly(finding_1.uuid, finding_2.uuid)
     end
   end
 
