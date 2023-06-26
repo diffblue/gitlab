@@ -103,6 +103,8 @@ module EE
 
       has_many :dependency_list_exports, class_name: 'Dependencies::DependencyListExport', inverse_of: :author
 
+      has_many :assigned_add_ons, class_name: 'GitlabSubscriptions::UserAddOnAssignment', inverse_of: :user
+
       scope :not_managed, ->(group: nil) {
         scope = where(managing_group_id: nil)
         scope = scope.or(where.not(managing_group_id: group.id)) if group

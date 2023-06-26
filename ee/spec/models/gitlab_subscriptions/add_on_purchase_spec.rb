@@ -8,6 +8,11 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :subscripti
   describe 'associations' do
     it { is_expected.to belong_to(:add_on).with_foreign_key(:subscription_add_on_id).inverse_of(:add_on_purchases) }
     it { is_expected.to belong_to(:namespace) }
+
+    it do
+      is_expected.to have_many(:assigned_users)
+        .class_name('GitlabSubscriptions::UserAddOnAssignment').inverse_of(:add_on_purchase)
+    end
   end
 
   describe 'validations' do
