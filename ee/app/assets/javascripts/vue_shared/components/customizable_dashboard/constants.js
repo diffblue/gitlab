@@ -14,3 +14,5 @@ export const CURSOR_GRABBING_CLASS = 'gl-cursor-grabbing!';
 export const I18N_VISUALIZATION_SELECTOR_NEW = s__('ProductAnalytics|Create a visualization');
 
 export const I18N_PRODUCT_ANALYTICS_TITLE = __('Product analytics');
+
+export const NEW_DASHBOARD_SLUG = 'new';

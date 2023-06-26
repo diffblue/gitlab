@@ -17,6 +17,25 @@ export const I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER_CUBEJS_ERROR = s__(
   'Analytics|An error occurred while loading data',
 );
 
+export const I18N_DASHBOARD_VISUALIZATION_DESIGNER_NAME_ERROR = s__(
+  'Analytics|Enter a visualization name',
+);
+export const I18N_DASHBOARD_VISUALIZATION_DESIGNER_MEASURE_ERROR = s__(
+  'Analytics|Select a measurement',
+);
+export const I18N_DASHBOARD_VISUALIZATION_DESIGNER_TYPE_ERROR = s__(
+  'Analytics|Select a visualization type',
+);
+export const I18N_DASHBOARD_VISUALIZATION_DESIGNER_ALREADY_EXISTS_ERROR = s__(
+  'Analytics|A visualization with that name already exists.',
+);
+export const I18N_DASHBOARD_VISUALIZATION_DESIGNER_SAVE_ERROR = s__(
+  'Analytics|Error while saving visualization.',
+);
+export const I18N_DASHBOARD_VISUALIZATION_DESIGNER_SAVE_SUCCESS = s__(
+  'Analytics|Visualization was saved successfully',
+);
+
 export const I18N_ALERT_NO_POINTER_TITLE = s__('Analytics|Custom dashboards');
 export const I18N_ALERT_NO_POINTER_BUTTON = s__('Analytics|Configure Dashboard Project');
 export const I18N_ALERT_NO_POINTER_DESCRIPTION = s__(
