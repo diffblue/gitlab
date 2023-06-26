@@ -2762,4 +2762,52 @@ RSpec.describe User, feature_category: :system_access do
       end
     end
   end
+
+  describe '#lock_access!' do
+    let_it_be(:gitlab_admin_bot) { described_class.admin_bot }
+    let_it_be_with_reload(:user) { create(:user) }
+
+    subject { user.lock_access! }
+
+    before do
+      stub_licensed_features(admin_audit_log: true)
+    end
+
+    it 'logs a user_access_locked audit event' do
+      expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+        hash_including(
+          name: 'user_access_locked',
+          author: gitlab_admin_bot,
+          scope: user,
+          target: user,
+          message: 'User access locked'
+        )
+      ).and_call_original
+      expect { subject }.to change { AuditEvent.count }.by(1)
+    end
+
+    context 'when reason for access lock is excessive failed login attempts' do
+      before do
+        allow(user).to receive(:attempts_exceeded?).and_return(true)
+      end
+
+      it 'logs a user_access_locked audit event with the correct message' do
+        expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+          hash_including(message: 'User access locked - excessive failed login attempts')
+        )
+
+        subject
+      end
+    end
+
+    context 'when user access is already locked' do
+      before do
+        user.lock_access!
+      end
+
+      it 'does not log an audit event' do
+        expect { subject }.not_to change { AuditEvent.count }
+      end
+    end
+  end
 end

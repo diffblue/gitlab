@@ -2063,6 +2063,7 @@ class User < ApplicationRecord
   # override, from Devise
   def lock_access!(opts = {})
     Gitlab::AppLogger.info("Account Locked: username=#{username}")
+    audit_lock_access
     super
   end
 
@@ -2589,6 +2590,9 @@ class User < ApplicationRecord
   def prefix_for_feed_token
     FEED_TOKEN_PREFIX
   end
+
+  # method overriden in EE
+  def audit_lock_access; end
 end
 
 User.prepend_mod_with('User')
