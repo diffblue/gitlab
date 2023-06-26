@@ -2,10 +2,10 @@
 
 module GitlabSubscriptions
   class AddOnPurchase < ApplicationRecord
-    self.table_name = 'subscription_add_on_purchases'
-
     belongs_to :add_on, foreign_key: :subscription_add_on_id, inverse_of: :add_on_purchases
     belongs_to :namespace
+
+    has_many :assigned_users, class_name: 'GitlabSubscriptions::UserAddOnAssignment', inverse_of: :add_on_purchase
 
     validates :add_on, :namespace, :expires_on, presence: true
     validates :subscription_add_on_id, uniqueness: { scope: :namespace_id }
