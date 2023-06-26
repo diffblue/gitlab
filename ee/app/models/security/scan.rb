@@ -35,6 +35,7 @@ module Security
     scope :by_project, -> (project) { where(project: project) }
     scope :distinct_scan_types, -> { select(:scan_type).distinct.pluck(:scan_type) }
     scope :scoped_project, -> { where('security_scans.project_id = projects.id') }
+    scope :by_pipeline_ids, ->(pipeline_ids) { where(pipeline_id: pipeline_ids) }
 
     scope :has_dismissal_feedback, -> do
       # The `category` enum on `vulnerability_feedback` table starts from 0 but the `scan_type` enum

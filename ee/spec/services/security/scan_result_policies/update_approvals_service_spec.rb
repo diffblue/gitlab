@@ -12,12 +12,26 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
     let_it_be(:uuids) { Array.new(5) { SecureRandom.uuid } }
     let_it_be(:merge_request) { create(:merge_request, source_branch: 'feature-branch', target_branch: 'master') }
     let_it_be(:project) { merge_request.project }
-    let_it_be(:pipeline) { create(:ee_ci_pipeline, project: project, ref: merge_request.source_branch) }
-    let_it_be(:target_pipeline) do
-      create(:ee_ci_pipeline, :success, project: project, ref: merge_request.target_branch)
+    let_it_be(:pipeline) do
+      create(:ee_ci_pipeline, :success, project: project, ref: merge_request.source_branch, sha: 'feature-sha')
     end
 
-    let_it_be(:pipeline_scan) { create(:security_scan, pipeline: pipeline, scan_type: 'dependency_scanning') }
+    let_it_be(:target_pipeline) do
+      create(:ee_ci_pipeline, :success, project: project, ref: merge_request.target_branch, sha: 'target-sha')
+    end
+
+    let_it_be(:pipeline_scan) do
+      create(:security_scan, :succeeded, project: project, pipeline: pipeline, scan_type: 'dependency_scanning')
+    end
+
+    let_it_be(:target_scan) do
+      create(:security_scan, :succeeded,
+        project: project,
+        pipeline: target_pipeline,
+        scan_type: 'dependency_scanning'
+      )
+    end
+
     let_it_be(:pipeline_findings) do
       create_list(:security_finding, 5, scan: pipeline_scan, severity: 'high') do |finding, i|
         finding.update_column(:uuid, uuids[i])
@@ -36,7 +50,6 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
     end
 
     before do
-      target_scan = create(:security_scan, pipeline: target_pipeline, scan_type: 'dependency_scanning')
       create_list(:security_finding, 5, scan: target_scan, severity: 'high') do |finding, i|
         finding.update_column(:uuid, uuids[i])
       end
@@ -107,7 +120,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
     end
 
     context 'when security scan is removed in current pipeline' do
-      let_it_be(:pipeline) { create(:ee_ci_pipeline, project: project, ref: merge_request.source_branch) }
+      let_it_be(:pipeline) { create(:ee_ci_pipeline, :success, project: project, ref: merge_request.source_branch) }
 
       it_behaves_like 'does not update approvals_required'
 
@@ -234,8 +247,10 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
     context 'when there are preexisting findings that exceed the allowed limit' do
       context 'when target pipeline is not empty' do
-        let_it_be(:pipeline) { create(:ee_ci_pipeline, project: project, ref: merge_request.source_branch) }
-        let_it_be(:pipeline_scan) { create(:security_scan, pipeline: pipeline, scan_type: 'dependency_scanning') }
+        let_it_be(:pipeline) { create(:ee_ci_pipeline, :success, project: project, ref: merge_request.source_branch) }
+        let_it_be(:pipeline_scan) do
+          create(:security_scan, :succeeded, pipeline: pipeline, scan_type: 'dependency_scanning')
+        end
 
         let(:vulnerability_states) { %w[detected] }
 
@@ -289,6 +304,73 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       context 'when target pipeline is nil' do
         let_it_be(:merge_request) do
           create(:merge_request, source_branch: 'feature-branch', target_branch: 'target-branch')
+        end
+
+        it_behaves_like 'does not update approvals_required'
+
+        it_behaves_like 'triggers policy bot comment', true
+      end
+    end
+
+    context 'with multiple pipeline' do
+      let_it_be(:related_uuids) { Array.new(5) { SecureRandom.uuid } }
+      let_it_be(:related_source_pipeline) do
+        create(:ee_ci_pipeline, :success,
+          project: project,
+          source: :schedule,
+          ref: merge_request.source_branch,
+          sha: pipeline.sha
+        )
+      end
+
+      let_it_be(:related_target_pipeline) do
+        create(:ee_ci_pipeline, :success,
+          project: project,
+          source: :schedule,
+          ref: merge_request.target_branch,
+          sha: target_pipeline.sha
+        )
+      end
+
+      let_it_be(:related_pipeline_scan) do
+        create(:security_scan, :succeeded,
+          project: project,
+          pipeline: related_source_pipeline,
+          scan_type: 'dependency_scanning'
+        )
+      end
+
+      let_it_be(:related_pipeline_findings) do
+        create_list(:security_finding, 5, scan: related_pipeline_scan, severity: 'high') do |finding, i|
+          finding.update_column(:uuid, related_uuids[i])
+        end
+      end
+
+      let_it_be(:related_target_scan) do
+        create(:security_scan, :succeeded,
+          project: project,
+          pipeline: related_target_pipeline,
+          scan_type: 'dependency_scanning'
+        )
+      end
+
+      before do
+        create_list(:security_finding, 5, scan: related_target_scan, severity: 'high') do |finding, i|
+          finding.update_column(:uuid, related_uuids[i])
+        end
+
+        create_list(:vulnerabilities_finding, 5, project: project) do |finding, i|
+          vulnerability = create(:vulnerability, project: project)
+          finding.update_columns(uuid: related_uuids[i], vulnerability_id: vulnerability.id)
+        end
+      end
+
+      context 'when security scan is removed in related pipeline' do
+        let_it_be(:pipeline) do
+          create(:ee_ci_pipeline, :success,
+            project: project,
+            ref: merge_request.source_branch
+          )
         end
 
         it_behaves_like 'does not update approvals_required'

@@ -3,7 +3,8 @@
 # Security::ScanResultPolicies::FindingsFinder
 #
 # This finder returns `Security::Finding` for a given pipeline
-# with conditions matching the rules in scan result policies.
+# and a list of given pipeline ids with conditions matching the rules
+# configured in scan result policies.
 #
 # Arguments:
 #   pipeline - pipeline for which the findings should be returned
@@ -12,15 +13,17 @@
 #     severity_levels:      Array<String>
 #     check_dismissed:      Boolean
 #     vulnerability_states: Array<String>
+#     related_pipeline_ids: Array<Integer>
 module Security
   module ScanResultPolicies
     class FindingsFinder
-      def initialize(pipeline, params = {})
+      def initialize(project, pipeline, params = {})
+        @project = project
         @pipeline = pipeline
         @params = params
       end
 
-      attr_reader :pipeline, :params
+      attr_reader :project, :pipeline, :params
 
       def execute
         findings = security_findings
@@ -38,6 +41,10 @@ module Security
       def security_findings
         return Security::Finding.none unless pipeline
 
+        if params[:related_pipeline_ids].present?
+          return Security::Finding.by_project_id_and_pipeline_ids(project.id, params[:related_pipeline_ids])
+        end
+
         pipeline.security_findings
       end
 
@@ -54,7 +61,7 @@ module Security
       end
 
       def undismissed_security_findings(findings)
-        if Feature.enabled?(:deprecate_vulnerabilities_feedback, pipeline.project)
+        if Feature.enabled?(:deprecate_vulnerabilities_feedback, project)
           findings.undismissed_by_vulnerability
         else
           findings.undismissed
