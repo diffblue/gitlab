@@ -5,15 +5,24 @@ require 'spec_helper'
 RSpec.describe Gitlab::Analytics::CycleAnalytics, feature_category: :team_planning do
   using RSpec::Parameterized::TableSyntax
 
-  let_it_be(:user) { create(:user) }
+  let_it_be(:developer) { create(:user) }
+  let_it_be(:reporter) { create(:user) }
+  let_it_be(:guest) { create(:user) }
   let_it_be(:not_member_user) { create(:user) }
-  let_it_be(:group) { create(:group).tap { |g| g.add_developer(user) } }
+  let_it_be(:group) do
+    create(:group).tap do |g|
+      g.add_guest(guest)
+      g.add_reporter(reporter)
+      g.add_reporter(developer)
+    end
+  end
 
   let_it_be(:models) do
     {
       nil: nil,
       issue: create(:issue),
       project_namespace: create(:project, group: group).reload.project_namespace,
+      public_project_namespace: create(:project, :public, group: group).reload.project_namespace,
       group: group
     }
   end
@@ -21,7 +30,9 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics, feature_category: :team_planni
   let_it_be(:users) do
     {
       nil: nil,
-      member: user,
+      developer_user: developer,
+      reporter_user: reporter,
+      guest_user: guest,
       not_member: not_member_user
     }
   end
@@ -35,6 +46,9 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics, feature_category: :team_planni
       :project_namespace | nil | false
       :project_namespace | :cycle_analytics_for_groups | false
       :project_namespace | :cycle_analytics_for_projects | true
+      :public_project_namespace | nil | false
+      :public_project_namespace | :cycle_analytics_for_groups | false
+      :public_project_namespace | :cycle_analytics_for_projects | true
       :group | nil | false
       :group | :cycle_analytics_for_groups | true
       :group | :cycle_analytics_for_projects | false
@@ -77,26 +91,74 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics, feature_category: :team_planni
   end
 
   describe '.allowed?' do
-    where(:model, :user, :outcome) do
-      :nil | :member | false
-      :issue | :member | false
-      :issue | :not_member | false
-      :project_namespace | :nil | false
-      :project_namespace | :member | true
-      :project_namespace | :not_member | false
-      :group | :nil | false
-      :group | :member | true
-      :group | :not_member | false
-    end
-
-    before do
-      stub_licensed_features(cycle_analytics_for_projects: true, cycle_analytics_for_groups: true)
+    where(:model, :licensed, :user, :outcome) do
+      :nil                      | true  | :developer_user | false
+      :issue                    | true  | :developer_user | false
+      :issue                    | true  | :reporter_user  | false
+      :issue                    | true  | :guest_user     | false
+      :issue                    | true  | :not_member     | false
+      :project_namespace        | true  | :nil            | false
+      :project_namespace        | true  | :reporter_user  | true
+      :project_namespace        | true  | :guest_user     | false
+      :project_namespace        | true  | :not_member     | false
+      :public_project_namespace | true  | :nil            | false
+      :public_project_namespace | true  | :reporter_user  | true
+      :public_project_namespace | true  | :guest_user     | false
+      :public_project_namespace | true  | :not_member     | false
+      :project_namespace        | false | :nil            | false
+      :project_namespace        | false | :reporter_user  | true
+      :project_namespace        | false | :guest_user     | true
+      :project_namespace        | false | :not_member     | false
+      :public_project_namespace | false | :nil            | true
+      :public_project_namespace | false | :reporter_user  | true
+      :public_project_namespace | false | :guest_user     | true
+      :public_project_namespace | false | :not_member     | true
+      :group                    | true  | :nil            | false
+      :group                    | true  | :reporter_user  | true
+      :group                    | true  | :guest_user     | false
+      :group                    | true  | :not_member     | false
     end
 
     with_them do
+      before do
+        stub_licensed_features(cycle_analytics_for_projects: licensed, cycle_analytics_for_groups: licensed)
+      end
+
       subject { described_class.allowed?(users.fetch(user), models.fetch(model)) }
 
       it { is_expected.to eq(outcome) }
+    end
+  end
+
+  describe '.subject_for_access_check' do
+    subject(:subject_for_access_check) { described_class.subject_for_access_check(model) }
+
+    context 'when Namespaces::ProjectNamespace is given' do
+      let(:model) { models[:project_namespace] }
+
+      it { is_expected.to eq(model.project) }
+    end
+
+    context 'when Group is given' do
+      let(:model) { models[:group] }
+
+      it { is_expected.to eq(model) }
+    end
+
+    context 'when something else is given' do
+      let(:model) { models[:issue] }
+
+      it 'raises error' do
+        expect { subject_for_access_check }.to raise_error(/Unsupported subject given/)
+      end
+    end
+
+    context 'when nil is given' do
+      let(:model) { nil }
+
+      it 'raises error' do
+        expect { subject_for_access_check }.to raise_error(/Unsupported subject given/)
+      end
     end
   end
 end

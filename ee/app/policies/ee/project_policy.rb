@@ -190,6 +190,11 @@ module EE
         @subject.okrs_mvc_feature_flag_enabled? && @subject.feature_available?(:okrs)
       end
 
+      with_scope :subject
+      condition(:licensed_cycle_analytics_available, scope: :subject) do
+        @subject.feature_available?(:cycle_analytics_for_projects)
+      end
+
       condition(:user_banned_from_namespace) do
         next unless @user.is_a?(User)
 
@@ -340,6 +345,17 @@ module EE
         enable :read_on_demand_dast_scan
         enable :create_on_demand_dast_scan
         enable :edit_on_demand_dast_scan
+      end
+
+      # If licensed but not reporter+, prevent access
+      rule { ~reporter & licensed_cycle_analytics_available }.policy do
+        prevent :read_cycle_analytics
+      end
+
+      # If licensed and reporter+, allow access
+      rule { reporter & licensed_cycle_analytics_available }.policy do
+        enable :read_cycle_analytics
+        enable :modify_value_stream
       end
 
       rule { can?(:read_merge_request) & can?(:read_pipeline) }.enable :read_merge_train
