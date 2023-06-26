@@ -13,7 +13,6 @@ module EE
           push_frontend_feature_flag(:deprecate_vulnerabilities_feedback, project, type: :development)
           push_frontend_feature_flag(:standalone_finding_modal, project, type: :development)
           push_frontend_feature_flag(:dora_charts_forecast, project.namespace)
-          push_frontend_feature_flag(:pipeline_details_header_vue, project)
         end
 
         feature_category :software_composition_analysis, [:licenses]
