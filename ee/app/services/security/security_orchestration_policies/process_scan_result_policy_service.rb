@@ -26,7 +26,7 @@ module Security
         policy[:rules].first(Security::ScanResultPolicy::LIMIT).each_with_index do |rule, rule_index|
           next unless rule_type_allowed?(rule[:type])
 
-          scan_result_policy_read = create_scan_result_policy(rule, action_info, project)
+          scan_result_policy_read = create_scan_result_policy(rule, action_info, project, rule_index)
 
           create_software_license_policies(rule, rule_index, scan_result_policy_read) if license_finding?(rule)
 
@@ -54,9 +54,10 @@ module Security
         end
       end
 
-      def create_scan_result_policy(rule, action_info, project)
+      def create_scan_result_policy(rule, action_info, project, rule_index)
         policy_configuration.scan_result_policy_reads.create!(
           orchestration_policy_idx: policy_index,
+          rule_idx: rule_index,
           license_states: rule[:license_states],
           match_on_inclusion: rule[:match_on_inclusion] || false,
           role_approvers: role_access_levels(action_info[:role_approvers]),
