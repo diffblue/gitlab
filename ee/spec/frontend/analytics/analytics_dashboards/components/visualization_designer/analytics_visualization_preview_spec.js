@@ -5,6 +5,7 @@ import {
   PANEL_VISUALIZATION_HEIGHT,
 } from 'ee/analytics/analytics_dashboards/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { TEST_VISUALIZATION } from '../../mock_data';
 
 describe('AnalyticsVisualizationPreview', () => {
   let wrapper;
@@ -15,6 +16,8 @@ describe('AnalyticsVisualizationPreview', () => {
 
   const selectDisplayType = jest.fn();
 
+  const resultVisualization = TEST_VISUALIZATION();
+
   const createWrapper = (props = {}) => {
     wrapper = shallowMountExtended(AnalyticsVisualizationPreview, {
       propsData: {
@@ -24,7 +27,7 @@ describe('AnalyticsVisualizationPreview', () => {
         isQueryPresent: false,
         loading: false,
         resultSet: { tableColumns: () => [], tablePivot: () => [] },
-        resultVisualization: {},
+        resultVisualization,
         ...props,
       },
     });
@@ -95,6 +98,7 @@ describe('AnalyticsVisualizationPreview', () => {
   describe('resultSet and visualization is selected', () => {
     beforeEach(() => {
       createWrapper({
+        title: 'Hello world',
         isQueryPresent: true,
         displayType: PANEL_DISPLAY_TYPES.VISUALIZATION,
         selectedVisualizationType: 'LineChart',
@@ -102,9 +106,13 @@ describe('AnalyticsVisualizationPreview', () => {
     });
 
     it('should render visualization', () => {
-      expect(wrapper.findByTestId('preview-visualization').attributes('style')).toBe(
-        `height: ${PANEL_VISUALIZATION_HEIGHT};`,
-      );
+      const preview = wrapper.findByTestId('preview-visualization');
+
+      expect(preview.attributes('style')).toBe(`height: ${PANEL_VISUALIZATION_HEIGHT};`);
+      expect(preview.props()).toMatchObject({
+        title: 'Hello world',
+        visualization: resultVisualization,
+      });
     });
   });
 

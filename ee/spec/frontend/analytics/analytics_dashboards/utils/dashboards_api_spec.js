@@ -10,10 +10,13 @@ import {
   saveCustomDashboard,
   getProductAnalyticsVisualizationList,
   getProductAnalyticsVisualization,
+  saveProductAnalyticsVisualization,
   CUSTOM_DASHBOARDS_PATH,
   PRODUCT_ANALYTICS_VISUALIZATIONS_PATH,
   CREATE_FILE_ACTION,
   UPDATE_FILE_ACTION,
+  CONFIGURATION_FILE_TYPE,
+  DASHBOARD_BRANCH,
 } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import {
   TEST_CUSTOM_DASHBOARDS_PROJECT,
@@ -64,7 +67,9 @@ describe('AnalyticsDashboard', () => {
     it('get a single dashboard', async () => {
       const expectedUrl = `${dummyUrlRoot}/${
         TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath
-      }/-/raw/main/${encodeURIComponent(CUSTOM_DASHBOARDS_PATH + 'abc.yml'.replace(/^\//, ''))}`;
+      }/-/raw/main/${encodeURIComponent(
+        CUSTOM_DASHBOARDS_PATH + `abc${CONFIGURATION_FILE_TYPE}`.replace(/^\//, ''),
+      )}`;
 
       mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, TEST_CUSTOM_DASHBOARD());
       jest.spyOn(axios, 'get');
@@ -95,12 +100,12 @@ describe('AnalyticsDashboard', () => {
       });
 
       const callPayload = {
-        branch: 'main',
+        branch: DASHBOARD_BRANCH,
         commit_message: isNewFile ? 'Create dashboard abc' : 'Updating dashboard abc',
         actions: [
           {
             action,
-            file_path: `${CUSTOM_DASHBOARDS_PATH}${dashboardId}.yml`,
+            file_path: `${CUSTOM_DASHBOARDS_PATH}${dashboardId}${CONFIGURATION_FILE_TYPE}`,
             previous_path: undefined,
             content: 'id: test\n',
             encoding: 'text',
@@ -144,7 +149,7 @@ describe('AnalyticsDashboard', () => {
       const expectedUrl = `${dummyUrlRoot}/${
         TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath
       }/-/raw/main/${encodeURIComponent(
-        PRODUCT_ANALYTICS_VISUALIZATIONS_PATH + 'abc.yml'.replace(/^\//, ''),
+        PRODUCT_ANALYTICS_VISUALIZATIONS_PATH + `abc${CONFIGURATION_FILE_TYPE}`.replace(/^\//, ''),
       )}`;
 
       mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, TEST_CUSTOM_DASHBOARD());
@@ -153,6 +158,43 @@ describe('AnalyticsDashboard', () => {
       expect(axios.get).toHaveBeenCalledWith(expectedUrl, {
         params: { cb: dummyRandom },
       });
+    });
+  });
+
+  describe('visualization save functions', () => {
+    beforeEach(() => {
+      jest.spyOn(service, 'commit').mockResolvedValue({ data: {} });
+    });
+
+    it('save a new visualization', async () => {
+      const visualizationName = 'abc';
+
+      const result = await saveProductAnalyticsVisualization(
+        visualizationName,
+        { id: 'test' },
+        TEST_CUSTOM_DASHBOARDS_PROJECT,
+      );
+
+      const callPayload = {
+        branch: DASHBOARD_BRANCH,
+        commit_message: 'Updating visualization abc',
+        actions: [
+          {
+            action: 'create',
+            file_path: `${PRODUCT_ANALYTICS_VISUALIZATIONS_PATH}${visualizationName}${CONFIGURATION_FILE_TYPE}`,
+            content: 'id: test\n',
+            encoding: 'text',
+          },
+        ],
+        start_sha: undefined,
+      };
+
+      expect(service.commit).toHaveBeenCalledWith(
+        TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
+        callPayload,
+      );
+
+      expect(result).toEqual({ data: {} });
     });
   });
 });
