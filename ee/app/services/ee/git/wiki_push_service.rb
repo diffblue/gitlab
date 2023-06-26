@@ -9,10 +9,7 @@ module EE
       def execute
         super
 
-        if (::Feature.disabled?(:maintain_group_wiki_index, wiki.container) || !::Wiki.use_separate_indices?) &&
-            wiki.is_a?(::GroupWiki)
-          return
-        end
+        return unless wiki.is_a?(::ProjectWiki) || ::Wiki.use_separate_indices?
 
         return unless wiki.container.use_elasticsearch? && default_branch_changes.any?
 
