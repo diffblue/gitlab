@@ -15,10 +15,12 @@ namespace :gitlab do
           args.with_defaults(issue: 'http://127.0.0.1:3001/jashkenas/Underscore/-/issues/41')
 
           zero_shot_prompt_action = "the action to take, should be one from this list"
-
+          counter = 0.0
+          correct_answers_counter = 0
           ::CSV.read(FILENAME).each do |row|
             next if row[0].blank?
 
+            counter += 1
             question = format(row[0], { issue_identifier: args.issue })
             logger.info("question: #{question}")
             logger.info("expected tool(s): #{row[1]}")
@@ -29,8 +31,11 @@ namespace :gitlab do
             actions = agent.prompt.scan(/Action: (?<action>.+?)(?=$)/)
             actions.reject! { |action| action.first.start_with?(zero_shot_prompt_action) }
 
+            correct_answers_counter += accuracy_check(actions, row[1])
+
             logger.info("tools used: #{actions}")
             logger.info("actual response: #{response.content}")
+            logger.info("current accuracy rate #{(correct_answers_counter / counter) * 100}%")
             logger.info("\n\n")
           end
         end
@@ -64,6 +69,20 @@ namespace :gitlab do
           tools: tools,
           context: context
         )
+      end
+
+      def accuracy_check(actions, answer)
+        actions = actions.flatten
+        answer = answer.split(', ')
+        final_rating = 0
+
+        if actions == answer
+          final_rating += 1
+        elsif actions.uniq == answer
+          final_rating += answer.size / actions.size
+        end
+
+        final_rating
       end
     end
   end

@@ -13,12 +13,12 @@ Create a function in Python to call the spotify API to get my playlists,ExplainC
 
 Please summarize the %<issue_identifier>s issue,"IssueIdentifier, SummarizeComments"
 Summarize the %<issue_identifier>s issue with bullet points,"IssueIdentifier, SummarizeComments"
-Can you list all the labels on %<issue_identifier>s issue?,"IssueIdentifier, JsonReader"
-How old is the %<issue_identifier>s issue?,"IssueIdentifier, JsonReader"
-For which milestone is the %<issue_identifier>s issue? And how long until then,"IssueIdentifier, JsonReader"
+Can you list all the labels on %<issue_identifier>s issue?,"IssueIdentifier, Resource Reader"
+How old is the %<issue_identifier>s issue?,"IssueIdentifier, Resource Reader"
+For which milestone is the %<issue_identifier>s issue? And how long until then,"IssueIdentifier, Resource Reader"
 Summarize the comments into bullet points on %<issue_identifier>s issue,"IssueIdentifier, SummarizeComments"
 
-How do I change my password in GitLab?,Documentation
-How do I fork a project?,Documentation
-How do I clone a repository?,Documentation
-How do I create a template?,Documentation
+How do I change my password in GitLab?,GitlabDocumentation
+How do I fork a project?,GitlabDocumentation
+How do I clone a repository?,GitlabDocumentation
+How do I create a template?,GitlabDocumentation
