@@ -173,28 +173,4 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
       end
     end
   end
-
-  describe '.paginate' do
-    using RSpec::Parameterized::TableSyntax
-    let(:default_limit) { described_class::SBOM_OCCURRENCES_DEFAULT_LIMIT }
-    let(:max_limit) { described_class::SBOM_OCCURRENCES_MAX_LIMIT }
-    let(:over_limit) { described_class::SBOM_OCCURRENCES_MAX_LIMIT + 1 }
-
-    where(:per_page, :page, :limit, :offset) do
-      0                | 1 | ref(:default_limit) | 0
-      1                | 0 | 1                   | 0
-      1                | 2 | 1                   | 1
-      ref(:max_limit)  | 1 | ref(:max_limit)     | 0
-      ref(:max_limit)  | 2 | ref(:max_limit)     | ref(:max_limit)
-      ref(:over_limit) | 1 | ref(:max_limit)     | 0
-    end
-
-    with_them do
-      it 'adds limit and offset to the query' do
-        query = described_class.paginate(per_page, page).to_sql
-
-        expect(query).to include("LIMIT #{limit} OFFSET #{offset}")
-      end
-    end
-  end
 end

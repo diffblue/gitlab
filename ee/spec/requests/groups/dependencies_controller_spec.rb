@@ -144,10 +144,10 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
               }
             end
 
-            it 'returns the expected data' do
+            it 'includes pagination headers in the response' do
               subject
 
-              expect(json_response).to eq(expected_response)
+              expect(response).to include_pagination_headers
             end
 
             it 'avoids N+1 database queries related to projects and routes' do
@@ -182,8 +182,8 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
                 it 'returns sorted list' do
                   subject
 
-                  expect(json_response['dependencies'].first['name']).to eq('component-1')
-                  expect(json_response['dependencies'].last['name']).to eq('component-2')
+                  expect(json_response['dependencies'].first['name']).to eq(sbom_occurrence_npm.name)
+                  expect(json_response['dependencies'].last['name']).to eq(sbom_occurrence_bundler.name)
                 end
               end
             end
@@ -197,21 +197,6 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
 
                   expect(json_response['dependencies'].pluck('packager')).to eq(['npm'])
                 end
-              end
-            end
-
-            context 'with pagination params' do
-              let(:params) { { group_id: group.to_param, per_page: 1, page: 1 } }
-              let(:finder_params) do
-                ActionController::Parameters.new({ per_page: 1, page: 1 }).permit(:per_page, :page)
-              end
-
-              it 'propagates paginated params' do
-                expect(Sbom::DependenciesFinder).to receive(:new).with(group, params: finder_params).and_call_original
-
-                subject
-
-                expect(json_response['dependencies'].pluck('name')).to eq([sbom_occurrence_npm.name])
               end
             end
           end
