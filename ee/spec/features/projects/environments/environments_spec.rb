@@ -25,9 +25,12 @@ RSpec.describe 'Environments page', :js, feature_category: :environment_manageme
 
   context 'when an environment is protected and user has access to it' do
     before do
-      create(:protected_environment,
-             project: project, name: 'production',
-             authorize_user_to_deploy: user)
+      create(
+        :protected_environment,
+        project: project,
+        name: 'production',
+        authorize_user_to_deploy: user
+      )
     end
 
     context 'when environment has manual actions' do
@@ -35,16 +38,23 @@ RSpec.describe 'Environments page', :js, feature_category: :environment_manageme
       let!(:build) { create(:ci_build, pipeline: pipeline, environment: 'production') }
 
       let!(:deployment) do
-        create(:deployment,
-               :success,
-               environment: environment, deployable: build,
-               sha: project.commit.id)
+        create(
+          :deployment,
+          :success,
+          environment: environment,
+          deployable: build,
+          sha: project.commit.id
+        )
       end
 
       let!(:action) do
-        create(:ci_build, :manual,
-               pipeline: pipeline, name: 'deploy to production',
-               environment: 'production')
+        create(
+          :ci_build,
+          :manual,
+          pipeline: pipeline,
+          name: 'deploy to production',
+          environment: 'production'
+        )
       end
 
       before do
@@ -88,10 +98,13 @@ RSpec.describe 'Environments page', :js, feature_category: :environment_manageme
       let!(:build) { create(:ci_build, :success, pipeline: pipeline, environment: 'production') }
 
       let!(:deployment) do
-        create(:deployment,
-               :success,
-               environment: environment, deployable: build,
-               sha: project.commit.id)
+        create(
+          :deployment,
+          :success,
+          environment: environment,
+          deployable: build,
+          sha: project.commit.id
+        )
       end
 
       before do
@@ -108,9 +121,12 @@ RSpec.describe 'Environments page', :js, feature_category: :environment_manageme
 
   context 'when environment is protected and user does not have access to it' do
     before do
-      create(:protected_environment,
-             project: project, name: 'production',
-             authorize_user_to_deploy: create(:user))
+      create(
+        :protected_environment,
+        project: project,
+        name: 'production',
+        authorize_user_to_deploy: create(:user)
+      )
     end
 
     context 'when environment has manual actions' do
@@ -118,16 +134,23 @@ RSpec.describe 'Environments page', :js, feature_category: :environment_manageme
       let!(:build) { create(:ci_build, pipeline: pipeline, environment: 'production') }
 
       let!(:deployment) do
-        create(:deployment,
-               :success,
-               environment: environment, deployable: build,
-               sha: project.commit.id)
+        create(
+          :deployment,
+          :success,
+          environment: environment,
+          deployable: build,
+          sha: project.commit.id
+        )
       end
 
       let!(:action) do
-        create(:ci_build, :manual,
-               pipeline: pipeline, name: 'deploy to production',
-               environment: 'production')
+        create(
+          :ci_build,
+          :manual,
+          pipeline: pipeline,
+          name: 'deploy to production',
+          environment: 'production'
+        )
       end
 
       before do
@@ -172,10 +195,13 @@ RSpec.describe 'Environments page', :js, feature_category: :environment_manageme
       let!(:build) { create(:ci_build, :success, pipeline: pipeline, environment: 'production') }
 
       let!(:deployment) do
-        create(:deployment,
-               :success,
-               environment: environment, deployable: build,
-               sha: project.commit.id)
+        create(
+          :deployment,
+          :success,
+          environment: environment,
+          deployable: build,
+          sha: project.commit.id
+        )
       end
 
       before do
@@ -200,9 +226,12 @@ RSpec.describe 'Environments page', :js, feature_category: :environment_manageme
     end
 
     let!(:prometheus_alert) do
-      create(:prometheus_alert,
-             project: project, environment: environment,
-             prometheus_metric: prometheus_metric)
+      create(
+        :prometheus_alert,
+        project: project,
+        environment: environment,
+        prometheus_metric: prometheus_metric
+      )
     end
 
     let!(:prometheus_metric) do

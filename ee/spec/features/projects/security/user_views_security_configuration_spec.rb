@@ -17,9 +17,17 @@ RSpec.describe 'User sees Security Configuration table', :js, feature_category: 
 
   context 'with security_dashboard feature available' do
     before do
-      stub_licensed_features(security_dashboard: true, sast: true, sast_iac: true, dast: true,
-                             dependency_scanning: true, container_scanning: true, coverage_fuzzing: true,
-                             api_fuzzing: true, security_configuration_in_ui: true)
+      stub_licensed_features(
+        security_dashboard: true,
+        sast: true,
+        sast_iac: true,
+        dast: true,
+        dependency_scanning: true,
+        container_scanning: true,
+        coverage_fuzzing: true,
+        api_fuzzing: true,
+        security_configuration_in_ui: true
+      )
     end
 
     context 'with no SAST report' do
