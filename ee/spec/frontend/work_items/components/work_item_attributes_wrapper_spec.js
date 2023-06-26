@@ -1,61 +1,57 @@
-import { GlAlert } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import WorkItemWeight from 'ee/work_items/components/work_item_weight.vue';
+import { shallowMount } from '@vue/test-utils';
 import WorkItemProgress from 'ee/work_items/components/work_item_progress.vue';
-import WorkItemIteration from 'ee/work_items/components/work_item_iteration.vue';
 import WorkItemHealthStatus from 'ee/work_items/components/work_item_health_status.vue';
-import createMockApollo from 'helpers/mock_apollo_helper';
+import WorkItemWeight from 'ee/work_items/components/work_item_weight.vue';
+import WorkItemIteration from 'ee/work_items/components/work_item_iteration.vue';
 import waitForPromises from 'helpers/wait_for_promises';
-import { workItemByIidResponseFactory } from 'jest/work_items/mock_data';
-import WorkItemDetail from '~/work_items/components/work_item_detail.vue';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import { workItemResponseFactory } from 'jest/work_items/mock_data';
+
+import WorkItemAttributesWrapper from '~/work_items/components/work_item_attributes_wrapper.vue';
 import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 import workItemUpdatedSubscription from '~/work_items/graphql/work_item_updated.subscription.graphql';
 
-describe('WorkItemDetail component', () => {
+describe('EE WorkItemAttributesWrapper component', () => {
   let wrapper;
 
   Vue.use(VueApollo);
 
-  const workItemQueryResponse = workItemByIidResponseFactory({ canUpdate: true, canDelete: true });
+  const workItemQueryResponse = workItemResponseFactory({ canUpdate: true, canDelete: true });
+
   const successHandler = jest.fn().mockResolvedValue(workItemQueryResponse);
   const workItemUpdatedSubscriptionHandler = jest
     .fn()
     .mockResolvedValue({ data: { workItemUpdated: null } });
 
-  const findAlert = () => wrapper.findComponent(GlAlert);
+  const findWorkItemIteration = () => wrapper.findComponent(WorkItemIteration);
   const findWorkItemWeight = () => wrapper.findComponent(WorkItemWeight);
   const findWorkItemProgress = () => wrapper.findComponent(WorkItemProgress);
-  const findWorkItemIteration = () => wrapper.findComponent(WorkItemIteration);
   const findWorkItemHealthStatus = () => wrapper.findComponent(WorkItemHealthStatus);
 
   const createComponent = ({
+    workItem = workItemQueryResponse.data.workItem,
     handler = successHandler,
-    workItemsMvcEnabled = false,
     confidentialityMock = [updateWorkItemMutation, jest.fn()],
   } = {}) => {
-    wrapper = shallowMount(WorkItemDetail, {
+    wrapper = shallowMount(WorkItemAttributesWrapper, {
       apolloProvider: createMockApollo([
         [workItemByIidQuery, handler],
         [workItemUpdatedSubscription, workItemUpdatedSubscriptionHandler],
         confidentialityMock,
       ]),
+      propsData: {
+        workItem,
+      },
       provide: {
-        glFeatures: {
-          workItemsMvc: workItemsMvcEnabled,
-        },
         hasIssueWeightsFeature: true,
         hasIterationsFeature: true,
-        hasIssuableHealthStatusFeature: true,
         hasOkrsFeature: true,
+        hasIssuableHealthStatusFeature: true,
         projectNamespace: 'namespace',
         fullPath: 'group/project',
-        reportAbusePath: '/report/abuse/path',
-      },
-      propsData: {
-        workItemIid: '1',
       },
     });
   };
@@ -69,24 +65,22 @@ describe('WorkItemDetail component', () => {
       it(`${
         iterationWidgetPresent ? 'renders' : 'does not render'
       } iteration component`, async () => {
-        const response = workItemByIidResponseFactory({ iterationWidgetPresent });
-        const handler = jest.fn().mockResolvedValue(response);
-        createComponent({ handler });
+        const response = workItemResponseFactory({ iterationWidgetPresent });
+        createComponent({ workItem: response.data.workItem });
         await waitForPromises();
 
         expect(findWorkItemIteration().exists()).toBe(exists);
       });
     });
 
-    it('shows an error message when it emits an `error` event', async () => {
+    it('emits an error event to the wrapper', async () => {
       createComponent();
-      await waitForPromises();
       const updateError = 'Failed to update';
 
       findWorkItemIteration().vm.$emit('error', updateError);
-      await waitForPromises();
+      await nextTick();
 
-      expect(findAlert().text()).toBe(updateError);
+      expect(wrapper.emitted('error')).toEqual([[updateError]]);
     });
   });
 
@@ -96,25 +90,23 @@ describe('WorkItemDetail component', () => {
       ${'when widget is returned from API'}     | ${true}             | ${true}
       ${'when widget is not returned from API'} | ${false}            | ${false}
     `('$description', ({ weightWidgetPresent, exists }) => {
-      it(`${weightWidgetPresent ? 'renders' : 'does not render'} weight component`, async () => {
-        const response = workItemByIidResponseFactory({ weightWidgetPresent });
-        const handler = jest.fn().mockResolvedValue(response);
-        createComponent({ handler });
-        await waitForPromises();
+      it(`${weightWidgetPresent ? 'renders' : 'does not render'} weight component`, () => {
+        const response = workItemResponseFactory({ weightWidgetPresent });
+        createComponent({ workItem: response.data.workItem });
 
         expect(findWorkItemWeight().exists()).toBe(exists);
       });
     });
 
-    it('shows an error message when it emits an `error` event', async () => {
-      createComponent();
-      await waitForPromises();
+    it('emits an error event to the wrapper', async () => {
+      const response = workItemResponseFactory({ weightWidgetPresent: true });
+      createComponent({ workItem: response.data.workItem });
       const updateError = 'Failed to update';
 
       findWorkItemWeight().vm.$emit('error', updateError);
-      await waitForPromises();
+      await nextTick();
 
-      expect(findAlert().text()).toBe(updateError);
+      expect(wrapper.emitted('error')).toEqual([[updateError]]);
     });
   });
 
@@ -126,25 +118,23 @@ describe('WorkItemDetail component', () => {
     `('$description', ({ healthStatusWidgetPresent, exists }) => {
       it(`${
         healthStatusWidgetPresent ? 'renders' : 'does not render'
-      } healthStatus component`, async () => {
-        const response = workItemByIidResponseFactory({ healthStatusWidgetPresent });
-        const handler = jest.fn().mockResolvedValue(response);
-        createComponent({ handler });
-        await waitForPromises();
+      } healthStatus component`, () => {
+        const response = workItemResponseFactory({ healthStatusWidgetPresent });
+        createComponent({ workItem: response.data.workItem });
 
         expect(findWorkItemHealthStatus().exists()).toBe(exists);
       });
     });
 
-    it('shows an error message when it emits an `error` event', async () => {
-      createComponent();
-      await waitForPromises();
+    it('emits an error event to the wrapper', async () => {
+      const response = workItemResponseFactory({ healthStatusWidgetPresent: true });
+      createComponent({ workItem: response.data.workItem });
       const updateError = 'Failed to update';
 
       findWorkItemHealthStatus().vm.$emit('error', updateError);
-      await waitForPromises();
+      await nextTick();
 
-      expect(findAlert().text()).toBe(updateError);
+      expect(wrapper.emitted('error')).toEqual([[updateError]]);
     });
   });
 
@@ -154,27 +144,23 @@ describe('WorkItemDetail component', () => {
       ${'when widget is returned from API'}     | ${true}               | ${true}
       ${'when widget is not returned from API'} | ${false}              | ${false}
     `('$description', ({ progressWidgetPresent, exists }) => {
-      it(`${
-        progressWidgetPresent ? 'renders' : 'does not render'
-      } progress component`, async () => {
-        const response = workItemByIidResponseFactory({ progressWidgetPresent });
-        const handler = jest.fn().mockResolvedValue(response);
-        createComponent({ handler });
-        await waitForPromises();
+      it(`${progressWidgetPresent ? 'renders' : 'does not render'} progress component`, () => {
+        const response = workItemResponseFactory({ progressWidgetPresent });
+        createComponent({ workItem: response.data.workItem });
 
         expect(findWorkItemProgress().exists()).toBe(exists);
       });
     });
 
-    it('shows an error message when it emits an `error` event', async () => {
-      createComponent();
-      await waitForPromises();
+    it('emits an error event to the wrapper', async () => {
+      const response = workItemResponseFactory({ progressWidgetPresent: true });
+      createComponent({ workItem: response.data.workItem });
       const updateError = 'Failed to update';
 
       findWorkItemProgress().vm.$emit('error', updateError);
-      await waitForPromises();
+      await nextTick();
 
-      expect(findAlert().text()).toBe(updateError);
+      expect(wrapper.emitted('error')).toEqual([[updateError]]);
     });
   });
 });
