@@ -468,7 +468,8 @@ data before running `pg_basebackup`.
    sudo -i
    ```
 
-1. Choose a database-friendly name to use for your **secondary** site to
+1. Choose a [database-friendly name](https://www.postgresql.org/docs/13/warm-standby.html#STREAMING-REPLICATION-SLOTS-MANIPULATION)
+   to use for your **secondary** site to
    use as the replication slot name. For example, if your domain is
    `secondary.geo.example.com`, use `secondary_example` as the slot
    name as shown in the commands below.
