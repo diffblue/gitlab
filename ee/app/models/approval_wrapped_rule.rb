@@ -97,8 +97,6 @@ class ApprovalWrappedRule
   end
 
   def allow_merge_when_invalid?
-    return true if Feature.disabled?(:invalid_scan_result_policy_prevents_merge, merge_request.target_project)
-
     !approval_rule.from_scan_result_policy? ||
       Security::OrchestrationPolicyConfiguration.policy_management_project?(project)
   end
