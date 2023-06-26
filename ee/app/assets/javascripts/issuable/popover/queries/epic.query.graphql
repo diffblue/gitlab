@@ -1,0 +1,16 @@
+query epic($fullPath: ID!, $iid: ID) {
+  group(fullPath: $fullPath) {
+    id
+    epic(iid: $iid) {
+      id
+      iid
+      title
+      state
+      createdAt
+      confidential
+      reference
+      startDate
+      dueDate
+    }
+  }
+}

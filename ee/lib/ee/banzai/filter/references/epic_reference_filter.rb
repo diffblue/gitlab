@@ -27,12 +27,18 @@ module EE
             urls.group_epic_url(group, epic, only_path: context[:only_path])
           end
 
+          def reference_class(object_sym, tooltip: false)
+            super
+          end
+
           def data_attributes_for(text, group, object, link_content: false, link_reference: false)
             {
               original: escape_html_entities(text),
               link: link_content,
               link_reference: link_reference,
               group: group.id,
+              group_path: group.full_path,
+              iid: object.iid,
               object_sym => object.id
             }
           end

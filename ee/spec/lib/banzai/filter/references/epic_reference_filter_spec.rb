@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Banzai::Filter::References::EpicReferenceFilter do
+RSpec.describe Banzai::Filter::References::EpicReferenceFilter, feature_category: :portfolio_management do
   include FilterSpecHelper
 
   let(:urls) { Gitlab::Routing.url_helpers }
@@ -42,7 +42,7 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter do
     end
 
     it 'includes default classes' do
-      expect(doc.css('a').first.attr('class')).to eq('gfm gfm-epic has-tooltip')
+      expect(doc.css('a').first.attr('class')).to eq('gfm gfm-epic')
     end
 
     it 'includes a data-group attribute' do
@@ -50,6 +50,20 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter do
 
       expect(link).to have_attribute('data-group')
       expect(link.attr('data-group')).to eq(group.id.to_s)
+    end
+
+    it 'includes a data-group-path attribute' do
+      link = doc.css('a').first
+
+      expect(link).to have_attribute('data-group-path')
+      expect(link.attr('data-group-path')).to eq(epic.group.full_path)
+    end
+
+    it 'includes a data-iid attribute' do
+      link = doc.css('a').first
+
+      expect(link).to have_attribute('data-iid')
+      expect(link.attr('data-iid')).to eq(epic.iid.to_s)
     end
 
     it 'includes a data-epic attribute' do
@@ -114,7 +128,7 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter do
     end
 
     it 'includes default classes' do
-      expect(doc.css('a').first.attr('class')).to eq('gfm gfm-epic has-tooltip')
+      expect(doc.css('a').first.attr('class')).to eq('gfm gfm-epic')
     end
 
     it 'ignores invalid epic IIDs' do
@@ -144,7 +158,7 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter do
     end
 
     it 'includes default classes' do
-      expect(doc(full_ref_text).css('a').first.attr('class')).to eq('gfm gfm-epic has-tooltip')
+      expect(doc(full_ref_text).css('a').first.attr('class')).to eq('gfm gfm-epic')
     end
   end
 
@@ -168,7 +182,7 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter do
     end
 
     it 'includes default classes' do
-      expect(doc(full_ref_text).css('a').first.attr('class')).to eq('gfm gfm-epic has-tooltip')
+      expect(doc(full_ref_text).css('a').first.attr('class')).to eq('gfm gfm-epic')
     end
   end
 
@@ -199,7 +213,7 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter do
     end
 
     it 'includes default classes' do
-      expect(doc(full_ref_text).css('a').first.attr('class')).to eq('gfm gfm-epic has-tooltip')
+      expect(doc(full_ref_text).css('a').first.attr('class')).to eq('gfm gfm-epic')
     end
   end
 
@@ -221,7 +235,7 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter do
     end
 
     it 'includes default classes' do
-      expect(doc(text).css('a').first.attr('class')).to eq('gfm gfm-epic has-tooltip')
+      expect(doc(text).css('a').first.attr('class')).to eq('gfm gfm-epic')
     end
 
     it 'matches link reference with trailing slash' do
@@ -251,7 +265,7 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter do
     end
 
     it 'includes default classes' do
-      expect(doc(text).css('a').first.attr('class')).to eq('gfm gfm-epic has-tooltip')
+      expect(doc(text).css('a').first.attr('class')).to eq('gfm gfm-epic')
     end
   end
 
@@ -275,7 +289,7 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter do
     end
 
     it 'includes default classes' do
-      expect(doc(text).css('a').first.attr('class')).to eq('gfm gfm-epic has-tooltip')
+      expect(doc(text).css('a').first.attr('class')).to eq('gfm gfm-epic')
     end
   end
 
