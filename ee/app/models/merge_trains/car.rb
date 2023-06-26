@@ -85,15 +85,8 @@ module MergeTrains
         .merge(MergeRequest.preload_routables)
     end
 
-    class << self
-      # get the first car in every train for a project
-      # could be a class method on train since it has to do with many trains.
-      # rename: MergeTrains::Train.all_first_cars(project)
-      def first_cars_in_trains(project)
-        active.where(target_project: project)
-              .select('DISTINCT ON (target_branch) *')
-              .order(:target_branch, :id)
-      end
+    scope :first_on_each_train, ->(project) do
+      active.where(target_project: project).select('DISTINCT ON (target_branch) *').order(:target_branch, :id)
     end
 
     def all_next
