@@ -27,7 +27,7 @@ module Groups
     end
 
     def dependency_list_params
-      params.permit(:sort_by, :sort, :page, :per_page, package_managers: [])
+      params.permit(:sort_by, :sort, package_managers: [])
     end
 
     def collect_dependencies
@@ -35,13 +35,9 @@ module Groups
     end
 
     def serialized_dependencies
-      DependencyListEntity.represent(collect_dependencies, entity_request)
-    end
-
-    def entity_request
-      {
-        request: EntityRequest.new(project: nil, user: current_user)
-      }
+      DependencyListSerializer.new(
+        project: nil,
+        user: current_user).with_pagination(request, response).represent(collect_dependencies)
     end
 
     def render_not_authorized

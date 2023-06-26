@@ -18,12 +18,6 @@ RSpec.describe Sbom::DependenciesFinder, feature_category: :dependency_managemen
         expect(dependencies.first.id).to eq(occurrence_1.id)
         expect(dependencies.last.id).to eq(occurrence_3.id)
       end
-
-      it 'returns records based on the default pagination' do
-        query = dependencies.to_sql
-
-        expect(query).to include('LIMIT 25 OFFSET 0')
-      end
     end
 
     context 'with params' do
@@ -110,22 +104,6 @@ RSpec.describe Sbom::DependenciesFinder, feature_category: :dependency_managemen
           component_names = dependencies.map(&:name)
 
           expect(component_names).to eq([occurrence_1.name])
-        end
-      end
-
-      context 'with pagination parameters' do
-        let_it_be(:params) do
-          {
-            per_page: 2,
-            page: 1
-          }
-        end
-
-        it 'returns records based on the pagination' do
-          query = dependencies.to_sql
-
-          expect(query).to include('LIMIT 2 OFFSET 0')
-          expect(dependencies).to match_array([occurrence_1, occurrence_2])
         end
       end
 
