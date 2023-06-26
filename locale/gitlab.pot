@@ -50181,7 +50181,7 @@ msgstr ""
 msgid "ValueStreamAnalytics|High vulnerabilities over time."
 msgstr ""
 
-msgid "ValueStreamAnalytics|Key metrics"
+msgid "ValueStreamAnalytics|Lifecycle metrics"
 msgstr ""
 
 msgid "ValueStreamAnalytics|Median time an incident was open on a production environment in the given time period."

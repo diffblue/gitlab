@@ -36,7 +36,7 @@ RSpec.describe 'Project > Value stream analytics', :js, feature_category: :value
       metrics_groups = page.all(metrics_groups_selector)
       expect(metrics_groups.count).to eq(1)
 
-      expect(metrics_groups.first).to have_content "Key metrics"
+      expect(metrics_groups.first).to have_content "Lifecycle metrics"
     end
   end
 

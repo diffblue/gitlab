@@ -100,7 +100,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
         wait_for_requests
       end
 
-      it 'displays key metrics', :aggregate_failures do
+      it 'displays lifecycle metrics', :aggregate_failures do
         lead_time = page.all(card_metric_selector).first
 
         expect(lead_time).to have_content(_('Lead Time'))
