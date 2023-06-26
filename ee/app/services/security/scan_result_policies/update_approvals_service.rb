@@ -33,7 +33,7 @@ module Security
       delegate :project, to: :pipeline
 
       def violates_approval_rule?(approval_rule)
-        target_pipeline_uuids = findings_uuids(target_pipeline, approval_rule)
+        target_pipeline_uuids = target_pipeline_findings_uuids(approval_rule)
 
         return true if findings_count_violated?(approval_rule, target_pipeline_uuids)
         return true if preexisting_findings_count_violated?(approval_rule, target_pipeline_uuids)
@@ -42,6 +42,10 @@ module Security
       end
 
       def scan_removed?
+        if multi_pipeline_scan_result_policies_enabled?
+          return (security_scan_types(related_target_pipeline_ids) - security_scan_types(related_pipeline_ids)).any?
+        end
+
         (Array.wrap(target_pipeline&.security_scan_types) - pipeline.security_scan_types).any?
       end
       strong_memoize_attr :scan_removed?
@@ -60,7 +64,7 @@ module Security
       def findings_count_violated?(approval_rule, target_pipeline_uuids)
         vulnerabilities_allowed = approval_rule.vulnerabilities_allowed
 
-        pipeline_uuids = findings_uuids(pipeline, approval_rule, true)
+        pipeline_uuids = pipeline_findings_uuids(approval_rule)
         new_uuids = pipeline_uuids - target_pipeline_uuids
 
         if only_newly_detected?(approval_rule)
@@ -97,13 +101,55 @@ module Security
         end
       end
 
-      def findings_uuids(pipeline, approval_rule, check_dismissed = false)
-        Security::ScanResultPolicies::FindingsFinder.new(pipeline, {
+      def related_pipeline_sources
+        Enums::Ci::Pipeline.ci_and_security_orchestration_sources.values
+      end
+
+      def security_scan_types(pipeline_ids)
+        Security::Scan.by_pipeline_ids(pipeline_ids).distinct_scan_types
+      end
+
+      def related_target_pipeline_ids
+        return [] unless target_pipeline
+
+        Security::RelatedPipelinesFinder.new(target_pipeline, { sources: related_pipeline_sources }).execute
+      end
+      strong_memoize_attr :related_target_pipeline_ids
+
+      def related_pipeline_ids
+        Security::RelatedPipelinesFinder.new(pipeline, { sources: related_pipeline_sources }).execute
+      end
+      strong_memoize_attr :related_pipeline_ids
+
+      def multi_pipeline_scan_result_policies_enabled?
+        Feature.enabled?(:multi_pipeline_scan_result_policies, pipeline.project)
+      end
+      strong_memoize_attr :multi_pipeline_scan_result_policies_enabled?
+
+      def target_pipeline_findings_uuids(approval_rule)
+        pipeline_ids = related_target_pipeline_ids if multi_pipeline_scan_result_policies_enabled?
+        findings_uuids(target_pipeline, approval_rule, pipeline_ids)
+      end
+
+      def pipeline_findings_uuids(approval_rule)
+        pipeline_ids = related_pipeline_ids if multi_pipeline_scan_result_policies_enabled?
+        findings_uuids(pipeline, approval_rule, pipeline_ids, true)
+      end
+
+      def findings_uuids(pipeline, approval_rule, pipeline_ids, check_dismissed = false)
+        finder_params = {
           vulnerability_states: approval_rule.vulnerability_states_for_branch,
           severity_levels: approval_rule.severity_levels,
           scanners: approval_rule.scanners,
           check_dismissed: check_dismissed
-        }).execute.fetch_uuids
+        }
+
+        finder_params[:related_pipeline_ids] = pipeline_ids if pipeline_ids.present?
+
+        Security::ScanResultPolicies::FindingsFinder
+          .new(project, pipeline, finder_params)
+          .execute
+          .distinct_uuids
       end
 
       def vulnerabilities_count_for_uuids(uuids, approval_rule)
