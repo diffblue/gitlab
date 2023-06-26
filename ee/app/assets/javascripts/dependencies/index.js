@@ -2,7 +2,7 @@ import Vue from 'vue';
 import DependenciesApp from './components/app.vue';
 import createStore from './store';
 
-export default () => {
+export default (namespaceType) => {
   const el = document.querySelector('#js-dependencies-app');
 
   const {
@@ -28,6 +28,7 @@ export default () => {
       endpoint,
       exportEndpoint,
       supportDocumentationPath,
+      namespaceType,
     },
     render(createElement) {
       return createElement(DependenciesApp);

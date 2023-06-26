@@ -10,6 +10,7 @@ import {
 } from '@gitlab/ui';
 import { cloneDeep } from 'lodash';
 import { s__ } from '~/locale';
+import { NAMESPACE_PROJECT } from '../constants';
 import DependencyLicenseLinks from './dependency_license_links.vue';
 import DependencyLocation from './dependency_location.vue';
 import DependencyVulnerabilities from './dependency_vulnerabilities.vue';
@@ -26,6 +27,12 @@ const tdClass = (defaultClasses = []) => (value, key, item) => {
   return classes;
 };
 
+const sharedFields = [
+  { key: 'component', label: s__('Dependencies|Component'), tdClass: tdClass() },
+  { key: 'packager', label: s__('Dependencies|Packager'), tdClass: tdClass() },
+  { key: 'location', label: s__('Dependencies|Location'), tdClass: tdClass(['gl-md-max-w-26']) },
+];
+
 export default {
   name: 'DependenciesTable',
   components: {
@@ -40,6 +47,7 @@ export default {
     GlPopover,
     GlLink,
   },
+  inject: ['namespaceType'],
   props: {
     dependencies: {
       type: Array,
@@ -57,7 +65,13 @@ export default {
   },
   computed: {
     anyDependencyHasVulnerabilities() {
-      return this.localDependencies.some(({ vulnerabilities }) => vulnerabilities.length > 0);
+      return this.localDependencies.some(({ vulnerabilities }) => vulnerabilities?.length > 0);
+    },
+    fields() {
+      return this.isProjectNamespace ? this.$options.projectFields : this.$options.groupFields;
+    },
+    isProjectNamespace() {
+      return this.namespaceType === NAMESPACE_PROJECT;
     },
   },
   watch: {
@@ -79,12 +93,14 @@ export default {
       }));
     },
   },
-  fields: [
-    { key: 'component', label: s__('Dependencies|Component'), tdClass: tdClass() },
-    { key: 'packager', label: s__('Dependencies|Packager'), tdClass: tdClass() },
-    { key: 'location', label: s__('Dependencies|Location'), tdClass: tdClass(['gl-md-max-w-26']) },
+  projectFields: [
+    ...sharedFields,
     { key: 'license', label: s__('Dependencies|License'), tdClass: tdClass() },
     { key: 'isVulnerable', label: '', tdClass: tdClass(['gl-text-right']) },
+  ],
+  groupFields: [
+    ...sharedFields,
+    { key: 'projects', label: s__('Dependencies|Projects'), tdClass: tdClass() },
   ],
   DEPENDENCIES_PER_PAGE: 20,
   DEPENDENCY_PATH_LINK:
@@ -100,7 +116,7 @@ export default {
 
 <template>
   <gl-table
-    :fields="$options.fields"
+    :fields="fields"
     :items="localDependencies"
     :busy="isLoading"
     data-qa-selector="dependencies_table_content"
