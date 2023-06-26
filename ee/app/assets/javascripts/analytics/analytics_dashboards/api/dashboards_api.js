@@ -3,11 +3,11 @@ import axios from '~/lib/utils/axios_utils';
 import service from '~/ide/services/';
 import { s__, sprintf } from '~/locale';
 
-const DASHBOARD_BRANCH = 'main';
+export const DASHBOARD_BRANCH = 'main';
 export const CUSTOM_DASHBOARDS_PATH = '.gitlab/dashboards/';
-export const PRODUCT_ANALYTICS_VISUALIZATIONS_PATH =
-  '.gitlab/dashboards/product_analytics/visualizations/';
+export const PRODUCT_ANALYTICS_VISUALIZATIONS_PATH = '.gitlab/analytics/dashboards/visualizations/';
 
+export const CONFIGURATION_FILE_TYPE = '.yaml';
 export const CREATE_FILE_ACTION = 'create';
 export const UPDATE_FILE_ACTION = 'update';
 
@@ -28,7 +28,7 @@ const getFileFromCustomDashboardProject = async (directory, fileId, projectInfo)
     `${gon.relative_url_root}/${
       projectInfo.fullPath
     }/-/raw/${DASHBOARD_BRANCH}/${encodeURIComponent(
-      `${directory}${fileId}.yml`.replace(/^\//, ''),
+      `${directory}${fileId}${CONFIGURATION_FILE_TYPE}`.replace(/^\//, ''),
     )}`,
     { params: { cb: Math.random() } },
   );
@@ -45,6 +45,28 @@ export async function getProductAnalyticsVisualization(visualizationId, projectI
     visualizationId,
     projectInfo,
   );
+}
+
+export async function saveProductAnalyticsVisualization(
+  visualizationName,
+  visualizationCode,
+  projectInfo,
+) {
+  const payload = {
+    branch: DASHBOARD_BRANCH,
+    commit_message: sprintf(s__('Analytics|Updating visualization %{visualizationName}'), {
+      visualizationName,
+    }),
+    actions: [
+      {
+        action: CREATE_FILE_ACTION,
+        file_path: `${PRODUCT_ANALYTICS_VISUALIZATIONS_PATH}${visualizationName}${CONFIGURATION_FILE_TYPE}`,
+        content: stringify(visualizationCode, null),
+        encoding: 'text',
+      },
+    ],
+  };
+  return service.commit(projectInfo.fullPath, payload);
 }
 
 export async function getCustomDashboards(projectInfo) {
@@ -71,7 +93,7 @@ export async function saveCustomDashboard({
     actions: [
       {
         action,
-        file_path: `${CUSTOM_DASHBOARDS_PATH}${dashboardId}.yml`,
+        file_path: `${CUSTOM_DASHBOARDS_PATH}${dashboardId}${CONFIGURATION_FILE_TYPE}`,
         content: stringify(dashboardObject, null),
         encoding: 'text',
       },

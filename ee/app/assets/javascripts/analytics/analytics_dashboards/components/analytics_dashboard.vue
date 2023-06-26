@@ -110,7 +110,7 @@ export default {
   },
   apollo: {
     // TODO: Add retrieval of visualizations for Snowplow
-    //  https://gitlab.com/gitlab-org/gitlab/-/issues/411597
+    // https://gitlab.com/gitlab-org/gitlab/-/issues/414281
     dashboard: {
       query: getProductAnalyticsDashboardQuery,
       variables() {

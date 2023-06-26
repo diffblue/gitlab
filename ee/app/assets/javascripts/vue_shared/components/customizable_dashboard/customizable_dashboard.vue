@@ -15,6 +15,7 @@ import {
   GRIDSTACK_CELL_HEIGHT,
   GRIDSTACK_MIN_ROW,
   CURSOR_GRABBING_CLASS,
+  NEW_DASHBOARD_SLUG,
 } from './constants';
 import VisualizationSelector from './dashboard_editor/visualization_selector.vue';
 import { filtersToQueryParams } from './utils';
@@ -114,6 +115,14 @@ export default {
     isNewDashboard(isNew) {
       this.editing = isNew;
     },
+    '$route.params.editing': {
+      handler(editing) {
+        if (editing !== undefined) {
+          this.editing = editing;
+        }
+      },
+      immediate: true,
+    },
   },
   async created() {
     try {
@@ -203,7 +212,8 @@ export default {
       }
     },
     routeToVisualizationDesigner() {
-      this.$router.push({ name: 'visualization-designer' });
+      const dashboard = this.isNewDashboard ? NEW_DASHBOARD_SLUG : this.dashboard.slug;
+      this.$router.push({ name: 'visualization-designer', params: { dashboard } });
     },
     async saveEdit(submitEvent) {
       submitEvent.preventDefault();

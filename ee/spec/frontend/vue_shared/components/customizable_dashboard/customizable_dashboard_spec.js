@@ -11,6 +11,7 @@ import {
   GRIDSTACK_CSS_HANDLE,
   GRIDSTACK_CELL_HEIGHT,
   GRIDSTACK_MIN_ROW,
+  NEW_DASHBOARD_SLUG,
 } from 'ee/vue_shared/components/customizable_dashboard/constants';
 import { loadCSSFile } from '~/lib/utils/css_utils';
 import { createAlert } from '~/alert';
@@ -55,7 +56,12 @@ describe('CustomizableDashboard', () => {
     push: jest.fn(),
   };
 
-  const createWrapper = (props = {}, loadedDashboard = dashboard, provide = {}) => {
+  const createWrapper = (
+    props = {},
+    loadedDashboard = dashboard,
+    provide = {},
+    routeParams = {},
+  ) => {
     const loadDashboard = { ...loadedDashboard };
     loadDashboard.default = { ...loadDashboard };
 
@@ -70,6 +76,9 @@ describe('CustomizableDashboard', () => {
       },
       mocks: {
         $router,
+        $route: {
+          params: routeParams,
+        },
       },
       provide,
     });
@@ -236,6 +245,21 @@ describe('CustomizableDashboard', () => {
       expect(findEditButton().exists()).toBe(true);
     });
 
+    describe('when mounted with the $route.editing param', () => {
+      beforeEach(() => {
+        createWrapper(
+          {},
+          dashboard,
+          { glFeatures: { combinedAnalyticsDashboardsEditor: true } },
+          { editing: true },
+        );
+      });
+
+      it('opens the dashboard in edit mode', () => {
+        expect(findVisualizationSelector().exists()).toBe(true);
+      });
+    });
+
     describe('when editing', () => {
       beforeEach(() => {
         findEditButton().vm.$emit('click');
@@ -321,7 +345,12 @@ describe('CustomizableDashboard', () => {
       it('routes to the designer when a "create" event is recieved', async () => {
         await findVisualizationSelector().vm.$emit('create');
 
-        expect($router.push).toHaveBeenCalledWith({ name: 'visualization-designer' });
+        expect($router.push).toHaveBeenCalledWith({
+          name: 'visualization-designer',
+          params: {
+            dashboard: dashboard.slug,
+          },
+        });
       });
     });
   });
@@ -406,6 +435,17 @@ describe('CustomizableDashboard', () => {
       await findForm().vm.$emit('submit', new Event('submit'));
 
       expect(findCodeView().exists()).toBe(false);
+    });
+
+    it('routes to the designer with `dashboard: "new"` when a "create" event is recieved', async () => {
+      await findVisualizationSelector().vm.$emit('create');
+
+      expect($router.push).toHaveBeenCalledWith({
+        name: 'visualization-designer',
+        params: {
+          dashboard: NEW_DASHBOARD_SLUG,
+        },
+      });
     });
   });
 

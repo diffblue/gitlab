@@ -51,6 +51,11 @@ export default {
       required: false,
       default: null,
     },
+    title: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
   computed: {
     dataTableResults() {
@@ -114,7 +119,7 @@ export default {
         data-testid="grid-stack-panel"
       >
         <div
-          class="grid-stack-item-content gl-shadow gl-rounded-base gl-p-4 gl-display-flex gl-flex-direction-column gl-bg-white"
+          class="grid-stack-item-content gl-shadow-sm gl-rounded-base gl-p-4 gl-display-flex gl-flex-direction-column gl-bg-white"
         >
           <strong class="gl-mb-2">{{ s__('Analytics|Resulting Data') }}</strong>
           <div class="gl-overflow-y-auto gl-h-full">
@@ -135,7 +140,7 @@ export default {
       >
         <panels-base
           v-if="selectedVisualizationType"
-          :title="resultVisualization.title"
+          :title="title"
           :visualization="resultVisualization"
           :style="{ height: $options.PANEL_VISUALIZATION_HEIGHT }"
           data-testid="preview-visualization"
@@ -150,9 +155,12 @@ export default {
         </div>
       </div>
 
-      <div v-if="displayType === $options.PANEL_DISPLAY_TYPES.CODE" class="gl-m-4">
+      <div
+        v-if="displayType === $options.PANEL_DISPLAY_TYPES.CODE"
+        class="gl-bg-white gl-m-5 gl-p-4 gl-shadow-sm gl-rounded-base"
+      >
         <pre
-          class="code highlight gl-display-flex gl-bg-white"
+          class="code highlight gl-display-flex gl-bg-transparent gl-border-none"
           data-testid="preview-code"
         ><code>{{ resultVisualization }}</code></pre>
       </div>
