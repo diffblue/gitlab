@@ -89,7 +89,7 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
         code_added: a_hash_including(url: %r{/-/ide/project/#{project.full_path}/edit\z}),
         code_owners_enabled: a_hash_including(url: %r{/user/project/code_owners#set-up-code-owners\z}),
         required_mr_approvals_enabled: a_hash_including(
-          url: %r{/ci/pipelines/settings#coverage-check-approval-rule\z}
+          url: %r{/ci/testing/code_coverage#coverage-check-approval-rule\z}
         ),
         license_scanning_run: a_hash_including(
           url: help_page_path(described_class::LICENSE_SCANNING_RUN_PATH)
@@ -151,7 +151,7 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
               enabled: true
             ),
             required_mr_approvals_enabled: a_hash_including(
-              url: help_page_path('ci/pipelines/settings', anchor: 'coverage-check-approval-rule'),
+              url: help_page_path('ci/testing/code_coverage', anchor: 'coverage-check-approval-rule'),
               enabled: true
             )
           }
@@ -178,7 +178,7 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
               enabled: true
             ),
             required_mr_approvals_enabled: a_hash_including(
-              url: help_page_path('ci/pipelines/settings', anchor: 'coverage-check-approval-rule'),
+              url: help_page_path('ci/testing/code_coverage', anchor: 'coverage-check-approval-rule'),
               enabled: true
             )
           }
@@ -198,7 +198,7 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
               enabled: true
             ),
             required_mr_approvals_enabled: a_hash_including(
-              url: help_page_path('ci/pipelines/settings', anchor: 'coverage-check-approval-rule'),
+              url: help_page_path('ci/testing/code_coverage', anchor: 'coverage-check-approval-rule'),
               enabled: true
             )
           }

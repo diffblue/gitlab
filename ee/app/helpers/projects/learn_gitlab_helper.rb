@@ -97,7 +97,8 @@ module Projects
 
       trial_items = {
         trial_started: project_project_members_path(project),
-        required_mr_approvals_enabled: help_page_path('ci/pipelines/settings', anchor: 'coverage-check-approval-rule'),
+        required_mr_approvals_enabled: help_page_path('ci/testing/code_coverage',
+          anchor: 'coverage-check-approval-rule'),
         code_owners_enabled: help_page_path('user/project/code_owners', anchor: 'set-up-code-owners')
       }
 
