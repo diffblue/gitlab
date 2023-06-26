@@ -59,7 +59,7 @@ module EE
       def with_target_import_tier
         # self-managed instances are singlular plans, so they do not need
         # these filters
-        return all unless ::Gitlab.com?
+        return all unless ::Gitlab.com_except_jh?
         return all if ::ContainerRegistry::Migration.all_plans?
 
         if ::ContainerRegistry::Migration.limit_gitlab_org?
