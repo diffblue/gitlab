@@ -1,3 +1,4 @@
+import { NAMESPACE_PROJECT } from 'ee/dependencies/constants';
 import initDependenciesApp from 'ee/dependencies';
 
-initDependenciesApp();
+initDependenciesApp(NAMESPACE_PROJECT);

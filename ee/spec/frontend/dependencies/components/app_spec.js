@@ -1,4 +1,5 @@
 import { GlEmptyState, GlLoadingIcon, GlLink } from '@gitlab/ui';
+import MockAdapter from 'axios-mock-adapter';
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -12,10 +13,14 @@ import { DEPENDENCY_LIST_TYPES } from 'ee/dependencies/store/constants';
 import { REPORT_STATUS } from 'ee/dependencies/store/modules/list/constants';
 import { TEST_HOST } from 'helpers/test_constants';
 import { getDateInPast } from '~/lib/utils/datetime_utility';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
+import axios from '~/lib/utils/axios_utils';
 
 describe('DependenciesApp component', () => {
   let store;
   let wrapper;
+  let mock;
+
   const { namespace: allNamespace } = DEPENDENCY_LIST_TYPES.all;
 
   const basicAppProps = {
@@ -24,9 +29,10 @@ describe('DependenciesApp component', () => {
     emptyStateSvgPath: '/bar.svg',
     documentationPath: TEST_HOST,
     supportDocumentationPath: `${TEST_HOST}/dependency_scanning#supported-languages`,
+    namespaceType: 'project',
   };
 
-  const factory = ({ ...options } = {}) => {
+  const factory = ({ provide } = {}) => {
     store = createStore();
     jest.spyOn(store, 'dispatch').mockImplementation();
 
@@ -36,8 +42,7 @@ describe('DependenciesApp component', () => {
       mount(DependenciesApp, {
         store,
         stubs,
-        ...options,
-        provide: basicAppProps,
+        provide: { ...basicAppProps, ...provide },
       }),
     );
   };
@@ -105,6 +110,7 @@ describe('DependenciesApp component', () => {
   const findHeader = () => wrapper.find('section > header');
   const findHeaderHelpLink = () => findHeader().findComponent(GlLink);
   const findHeaderJobLink = () => wrapper.findComponent({ ref: 'jobLink' });
+  const findTimeAgoMessage = () => wrapper.findByTestId('time-ago-message');
 
   const expectComponentWithProps = (Component, props = {}) => {
     const componentWrapper = wrapper.findComponent(Component);
@@ -145,7 +151,12 @@ describe('DependenciesApp component', () => {
 
   describe('on creation', () => {
     beforeEach(() => {
+      mock = new MockAdapter(axios);
       factory();
+    });
+
+    afterEach(() => {
+      mock.restore();
     });
 
     it('dispatches the correct initial actions', () => {
@@ -191,12 +202,31 @@ describe('DependenciesApp component', () => {
         expectDependenciesTable();
       });
 
+      describe('with namespaceType set to group', () => {
+        beforeEach(async () => {
+          mock
+            .onGet(basicAppProps.endpoint)
+            .reply(HTTP_STATUS_OK, { dependencies: [], report: { status: REPORT_STATUS.OK } });
+          factory({ provide: { namespaceType: 'group' } });
+
+          await nextTick();
+        });
+
+        it('does not show a link to the latest job', () => {
+          expect(findHeaderJobLink().exists()).toBe(false);
+        });
+
+        it('does not show when the last job ran', () => {
+          expect(findTimeAgoMessage().exists()).toBe(false);
+        });
+      });
+
       it('shows a link to the latest job', () => {
         expect(findHeaderJobLink().attributes('href')).toBe('/jobs/foo/321');
       });
 
       it('shows when the last job ran', () => {
-        expect(findHeader().text()).toContain('1 week ago');
+        expect(findTimeAgoMessage().text()).toBe('• 1 week ago');
       });
 
       it('shows a link to the dependencies documentation page', () => {

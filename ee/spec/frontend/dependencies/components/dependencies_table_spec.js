@@ -10,11 +10,15 @@ import { makeDependency } from './utils';
 describe('DependenciesTable component', () => {
   let wrapper;
 
-  const createComponent = ({ propsData, ...options } = {}) => {
+  const basicAppProps = {
+    namespaceType: 'project',
+  };
+
+  const createComponent = ({ propsData, provide } = {}) => {
     wrapper = mount(DependenciesTable, {
-      ...options,
       propsData: { ...propsData },
       stubs: { ...stubChildren(DependenciesTable), GlTable: false, DependencyLocation: false },
+      provide: { ...basicAppProps, ...provide },
     });
   };
 
@@ -80,26 +84,33 @@ describe('DependenciesTable component', () => {
   });
 
   describe('given an empty list of dependencies', () => {
-    beforeEach(() => {
-      createComponent({
-        propsData: {
-          dependencies: [],
-          isLoading: false,
-        },
+    describe.each`
+      namespaceType | fields
+      ${'project'}  | ${DependenciesTable.projectFields}
+      ${'group'}    | ${DependenciesTable.groupFields}
+    `('with namespaceType set to $namespaceType', ({ namespaceType, fields }) => {
+      beforeEach(() => {
+        createComponent({
+          propsData: {
+            dependencies: [],
+            isLoading: false,
+          },
+          provide: { namespaceType },
+        });
       });
-    });
 
-    it('renders the table header', () => {
-      const expectedLabels = DependenciesTable.fields.map(({ label }) => label);
-      const headerCells = wrapper.findAll('thead th');
+      it('renders the table header', () => {
+        const expectedLabels = fields.map(({ label }) => label);
+        const headerCells = wrapper.findAll('thead th');
 
-      expectedLabels.forEach((expectedLabel, i) => {
-        expect(headerCells.at(i).text()).toContain(expectedLabel);
+        expectedLabels.forEach((expectedLabel, i) => {
+          expect(headerCells.at(i).text()).toContain(expectedLabel);
+        });
       });
-    });
 
-    it('does not render any rows', () => {
-      expect(findTableRows()).toHaveLength(0);
+      it('does not render any rows', () => {
+        expect(findTableRows()).toHaveLength(0);
+      });
     });
   });
 
