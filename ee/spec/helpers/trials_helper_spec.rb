@@ -63,6 +63,7 @@ RSpec.describe TrialsHelper, feature_category: :purchase do
   end
 
   describe '#create_company_form_data' do
+    let(:user) { build_stubbed(:user) }
     let(:extra_params) do
       {
         trial: 'true',
@@ -78,14 +79,17 @@ RSpec.describe TrialsHelper, feature_category: :purchase do
 
     before do
       allow(helper).to receive(:params).and_return(params)
+      allow(helper).to receive(:current_user).and_return(user)
     end
 
     it 'allows overriding data with params' do
-      submit_path = {
-        submit_path: "/users/sign_up/company?#{extra_params.to_query}"
+      attributes = {
+        submit_path: "/users/sign_up/company?#{extra_params.to_query}",
+        first_name: user.first_name,
+        last_name: user.last_name
       }
 
-      expect(helper.create_company_form_data).to match(submit_path)
+      expect(helper.create_company_form_data).to match(attributes)
     end
   end
 

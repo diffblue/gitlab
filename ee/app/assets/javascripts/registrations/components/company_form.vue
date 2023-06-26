@@ -11,6 +11,8 @@ import {
 import {
   LEADS_COMPANY_NAME_LABEL,
   LEADS_COMPANY_SIZE_LABEL,
+  LEADS_FIRST_NAME_LABEL,
+  LEADS_LAST_NAME_LABEL,
   LEADS_PHONE_NUMBER_LABEL,
   companySizes,
 } from 'ee/vue_shared/leads/constants';
@@ -44,7 +46,7 @@ export default {
       experiment: 'automatic_trial_registration',
     }),
   ],
-  inject: ['submitPath'],
+  inject: ['user', 'submitPath'],
   props: {
     trial: {
       type: Boolean,
@@ -59,6 +61,7 @@ export default {
   },
   data() {
     return {
+      ...this.user,
       companyName: '',
       companySize: null,
       phoneNumber: null,
@@ -106,6 +109,8 @@ export default {
     },
   },
   i18n: {
+    firstNameLabel: LEADS_FIRST_NAME_LABEL,
+    lastNameLabel: LEADS_LAST_NAME_LABEL,
     companyNameLabel: LEADS_COMPANY_NAME_LABEL,
     companySizeLabel: LEADS_COMPANY_SIZE_LABEL,
     companySizeSelectPrompt: TRIAL_COMPANY_SIZE_PROMPT,
@@ -133,6 +138,36 @@ export default {
     <input :value="$options.csrf.token" type="hidden" name="authenticity_token" />
     <gl-form-text class="gl-font-base gl-text-gray-400 gl-pb-3">{{ descriptionText }}</gl-form-text>
     <div class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-mt-5">
+      <gl-form-group
+        :label="$options.i18n.firstNameLabel"
+        label-size="sm"
+        label-for="first_name"
+        class="gl-mr-5 gl-w-half gl-xs-w-full"
+      >
+        <gl-form-input
+          id="first_name"
+          :value="firstName"
+          name="first_name"
+          data-testid="first_name"
+          required
+        />
+      </gl-form-group>
+      <gl-form-group
+        :label="$options.i18n.lastNameLabel"
+        label-size="sm"
+        label-for="last_name"
+        class="gl-w-half gl-xs-w-full"
+      >
+        <gl-form-input
+          id="last_name"
+          :value="lastName"
+          name="last_name"
+          data-testid="last_name"
+          required
+        />
+      </gl-form-group>
+    </div>
+    <div class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row">
       <gl-form-group
         :label="$options.i18n.companyNameLabel"
         label-size="sm"

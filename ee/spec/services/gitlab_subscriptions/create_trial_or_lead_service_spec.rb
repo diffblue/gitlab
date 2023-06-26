@@ -87,6 +87,8 @@ RSpec.describe GitlabSubscriptions::CreateTrialOrLeadService, feature_category: 
           .and_return({ success: true })
 
         result = described_class.new(user: user, params: {
+          first_name: user.first_name,
+          last_name: user.last_name,
           trial_onboarding_flow: trial_onboarding_flow,
           jobs_to_be_done_other: '_comment_',
           registration_objective: '_jtbd_'

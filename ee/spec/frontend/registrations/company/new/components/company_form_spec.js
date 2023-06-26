@@ -19,6 +19,10 @@ describe('RegistrationForm', () => {
     return mountFunction(RegistrationForm, {
       provide: {
         submitPath: SUBMIT_PATH,
+        user: {
+          firstName: 'Joe',
+          lastName: 'Doe',
+        },
       },
       propsData: {
         ...propsData,
@@ -76,6 +80,8 @@ describe('RegistrationForm', () => {
 
       it.each`
         testid
+        ${'first_name'}
+        ${'last_name'}
         ${'company_name'}
         ${'company_size'}
         ${'country'}

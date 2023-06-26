@@ -46,6 +46,8 @@ module Registrations
       params.permit(
         :company_name,
         :company_size,
+        :first_name,
+        :last_name,
         :phone_number,
         :country,
         :state,

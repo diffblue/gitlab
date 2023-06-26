@@ -57,14 +57,14 @@ module SaasRegistrationHelpers
     user_signs_in
   end
 
-  def sso_sign_up(params = {})
+  def sso_sign_up(params = {}, name: 'Registering User')
     stub_feature_flags(
       arkose_labs_oauth_signup_challenge: true,
       identity_verification: true
     )
 
     with_omniauth_full_host do
-      user_signs_up_with_sso(params)
+      user_signs_up_with_sso(params, name: name)
 
       expect_to_see_identity_verification_page
 
@@ -90,8 +90,8 @@ module SaasRegistrationHelpers
     click_button 'Register'
   end
 
-  def user_signs_up_with_sso(params = {}, provider: 'google_oauth2')
-    mock_auth_hash(provider, 'external_uid', user_email, name: 'Registering User')
+  def user_signs_up_with_sso(params = {}, provider: 'google_oauth2', name: 'Registering User')
+    mock_auth_hash(provider, 'external_uid', user_email, name: name)
     stub_omniauth_setting(block_auto_created_users: false)
 
     if block_given?
@@ -115,8 +115,8 @@ module SaasRegistrationHelpers
     end
   end
 
-  def user_signs_up_through_trial_with_sso(params = {}, provider: 'google_oauth2')
-    user_signs_up_with_sso({}, provider: provider) do
+  def user_signs_up_through_trial_with_sso(params = {}, provider: 'google_oauth2', name: 'Registering User')
+    user_signs_up_with_sso({}, provider: provider, name: name) do
       visit new_trial_registration_path(params)
 
       expect_to_be_on_trial_user_registration
@@ -145,14 +145,14 @@ module SaasRegistrationHelpers
     user_signs_in
   end
 
-  def sso_trial_registration_sign_up(params = {})
+  def sso_trial_registration_sign_up(params = {}, name: 'Registering User')
     stub_feature_flags(
       arkose_labs_oauth_signup_challenge: true,
       identity_verification: true
     )
 
     with_omniauth_full_host do
-      user_signs_up_through_trial_with_sso(params)
+      user_signs_up_through_trial_with_sso(params, name: name)
 
       expect_to_see_identity_verification_page
 
@@ -374,7 +374,7 @@ module SaasRegistrationHelpers
     fill_in 'blank_project_name', with: 'Test Project'
   end
 
-  def fills_in_group_and_project_creation_form_with_trial
+  def fills_in_group_and_project_creation_form_with_trial(glm: true)
     fills_in_group_and_project_creation_form
 
     service_instance = instance_double(GitlabSubscriptions::Trials::ApplyTrialService)
@@ -393,7 +393,9 @@ module SaasRegistrationHelpers
         kind: 'group',
         trial_ends_on: nil
       }
-    }.merge(glm_params)
+    }
+
+    trial_user_information.merge!(glm_params) if glm
 
     expect(GitlabSubscriptions::Trials::ApplyTrialWorker)
       .to receive(:perform_async).with(
@@ -402,7 +404,7 @@ module SaasRegistrationHelpers
       ).and_call_original
   end
 
-  def fill_in_company_form(trial: true, glm: true, success: true)
+  def fill_in_company_form(with_last_name: false, trial: true, glm: true, success: true)
     result = if success
                ServiceResponse.success
              else
@@ -411,9 +413,18 @@ module SaasRegistrationHelpers
 
     expect(GitlabSubscriptions::CreateTrialOrLeadService).to receive(:new).with(
       user: user,
-      params: company_params(trial: trial, glm: glm)
+      params: company_params(user, trial: trial, glm: glm)
     ).and_return(instance_double(GitlabSubscriptions::CreateTrialOrLeadService, execute: result))
 
+    fill_in_company_user_last_name if with_last_name
+    fill_company_form_fields
+  end
+
+  def fill_in_company_user_last_name
+    fill_in 'last_name', with: 'User'
+  end
+
+  def fill_company_form_fields
     fill_in 'company_name', with: 'Test Company'
     select '1 - 99', from: 'company_size'
     select 'United States of America', from: 'country'
@@ -422,10 +433,12 @@ module SaasRegistrationHelpers
     fill_in 'website_url', with: 'https://gitlab.com'
   end
 
-  def company_params(trial: true, glm: true)
+  def company_params(user, trial: true, glm: true)
     base_params = ActionController::Parameters.new(
       company_name: 'Test Company',
       company_size: '1-99',
+      first_name: user.first_name,
+      last_name: 'User',
       phone_number: '+1234567890',
       country: 'US',
       state: 'FL',

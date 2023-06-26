@@ -109,6 +109,40 @@ RSpec.describe 'Standard flow for user picking company and creating a project', 
     end
   end
 
+  context 'when last name is missing for SSO and has to be filled in' do
+    it 'registers the user, has some lead submission failures and creates a group and project reaching onboarding' do
+      sso_sign_up(name: 'Registering')
+
+      ensure_onboarding { expect_to_see_welcome_form }
+
+      fills_in_welcome_form
+      click_on 'Continue'
+
+      ensure_onboarding { expect_to_see_company_form }
+
+      # failure
+      fill_company_form_fields
+      click_on 'Continue'
+
+      expect(page).to have_native_text_validation_message('last_name')
+
+      # success
+      fill_in_company_form(with_last_name: true, trial: false, glm: false)
+      click_on 'Continue'
+
+      ensure_onboarding { expect_to_see_group_and_project_creation_form }
+
+      fills_in_group_and_project_creation_form
+      click_on 'Create project'
+
+      expect_to_be_in_continuous_onboarding
+
+      click_on 'Ok, let\'s go'
+
+      expect_to_be_in_learn_gitlab
+    end
+  end
+
   def fills_in_welcome_form
     select 'Software Developer', from: 'user_role'
     select 'A different reason', from: 'user_registration_objective'
