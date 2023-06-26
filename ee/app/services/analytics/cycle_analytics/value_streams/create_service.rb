@@ -61,7 +61,10 @@ module Analytics
         end
 
         def authorize!
-          unless ::Gitlab::Analytics::CycleAnalytics.allowed?(current_user, namespace)
+          subject = Gitlab::Analytics::CycleAnalytics.subject_for_access_check(namespace)
+          can_modify_value_stream = can?(current_user, :modify_value_stream, subject)
+
+          unless can_modify_value_stream
             ServiceResponse.error(message: 'Forbidden', http_status: :forbidden, payload: { errors: nil })
           end
         end

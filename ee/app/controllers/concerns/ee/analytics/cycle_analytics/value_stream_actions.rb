@@ -77,6 +77,12 @@ module EE
             ::Gitlab::Analytics::CycleAnalytics.allowed?(current_user, namespace)
         end
 
+        def authorize_modification
+          subject = ::Gitlab::Analytics::CycleAnalytics.subject_for_access_check(namespace)
+
+          render_404 unless can?(current_user, :modify_value_stream, subject)
+        end
+
         def create_params
           params.require(:value_stream).permit(:name, stages: stage_create_params)
         end
