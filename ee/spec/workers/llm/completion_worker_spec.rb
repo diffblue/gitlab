@@ -19,7 +19,7 @@ RSpec.describe Llm::CompletionWorker, feature_category: :team_planning do
     let(:options) { { 'key' => 'value' } }
     let(:ai_template) { { method: :completions, prompt: 'something', options: { temperature: 0.7 } } }
     let(:ai_action_name) { :summarize_comments }
-    let(:params) { options.merge(request_id: 'uuid') }
+    let(:params) { options.merge(request_id: 'uuid', internal_request: true) }
 
     subject { described_class.new.perform(user_id, resource_id, resource_type, ai_action_name, params) }
 
@@ -29,7 +29,7 @@ RSpec.describe Llm::CompletionWorker, feature_category: :team_planning do
 
         expect(Gitlab::Llm::CompletionsFactory)
           .to receive(:completion)
-          .with(ai_action_name, { request_id: 'uuid' })
+          .with(ai_action_name, match({ internal_request: true, request_id: 'uuid' }))
           .and_return(completion)
 
         expect(completion)
