@@ -17,7 +17,7 @@ module Sbom
         sbom_occurrences.order_by_package_name(params[:sort])
       else
         sbom_occurrences.order_by_id
-      end.paginate(params[:per_page].to_i, params[:page].to_i)
+      end
     end
 
     private
