@@ -43,6 +43,7 @@ RSpec.describe User, feature_category: :system_access do
     it { is_expected.to have_many(:namespace_bans).class_name('Namespaces::NamespaceBan') }
     it { is_expected.to have_many(:dependency_list_exports).class_name('Dependencies::DependencyListExport') }
     it { is_expected.to have_many(:elevated_members).class_name('Member') }
+    it { is_expected.to have_many(:assigned_add_ons).class_name('GitlabSubscriptions::UserAddOnAssignment').inverse_of(:user) }
   end
 
   describe 'nested attributes' do
