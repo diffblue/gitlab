@@ -13,7 +13,7 @@ RSpec.describe ElasticIndexBulkCronWorker, feature_category: :global_search do
 
   before do
     stub_const("Elastic::ProcessBookkeepingService::SHARDS", shards)
-    stub_ee_application_setting(elasticsearch_indexing: true)
+    stub_ee_application_setting(elasticsearch_indexing: true, elasticsearch_requeue_workers: true)
   end
 
   describe '.perform' do
@@ -119,6 +119,18 @@ RSpec.describe ElasticIndexBulkCronWorker, feature_category: :global_search do
         expect(described_class).to receive(:perform_in).with(described_class::RESCHEDULE_INTERVAL, shard_number)
 
         worker.perform(shard_number)
+      end
+
+      context 'when requeue is disabled' do
+        before do
+          stub_ee_application_setting(elasticsearch_requeue_workers: false)
+        end
+
+        it 'does not requeues the worker' do
+          expect(described_class).not_to receive(:perform_in).with(described_class::RESCHEDULE_INTERVAL, shard_number)
+
+          worker.perform(shard_number)
+        end
       end
     end
 

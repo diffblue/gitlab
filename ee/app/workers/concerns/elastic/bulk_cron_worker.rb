@@ -67,6 +67,7 @@ module Elastic
     def should_requeue?(records_count:, failures_count:)
       return false unless records_count
       return false if failures_count > 0
+      return false unless Gitlab::CurrentSettings.elasticsearch_requeue_workers?
 
       records_count > 0
     end

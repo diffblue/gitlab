@@ -45,10 +45,13 @@
               - first_pending_migration = Elastic::DataMigrationService.pending_migrations.first if elasticsearch_available
               - pending_migration_running_and_pauses_indexing = first_pending_migration&.running? && first_pending_migration&.pause_indexing?
               - disable_checkbox = !Gitlab::CurrentSettings.elasticsearch_indexing? || pending_migration_running_and_pauses_indexing || @last_elasticsearch_reindexing_task&.in_progress?
-              = f.gitlab_ui_checkbox_component :elasticsearch_pause_indexing, s_('AdminSettings|Pause Elasticsearch indexing'), checkbox_options: { data: { qa_selector: 'pause_checkbox' }, disabled: disable_checkbox }, help_text: pending_migration_running_and_pauses_indexing ? s_('AdminSettings|There are Advanced Search migrations pending that require indexing to pause. Indexing must remain paused until GitLab completes the migrations.') : s_('AdminSettings|When paused, GitLab still tracks the changes. This is useful for cluster/index migrations.')
+              = f.gitlab_ui_checkbox_component :elasticsearch_pause_indexing, s_('AdminSettings|Pause Elasticsearch indexing'), checkbox_options: { data: { qa_selector: 'pause_checkbox' }, disabled: disable_checkbox }, help_text: pending_migration_running_and_pauses_indexing ? s_('AdminSettings|There are Advanced Search migrations pending that require indexing to pause. Indexing must remain paused until GitLab completes the migrations.') : s_('AdminSettings|Use for cluster and index migrations. When indexing is paused, GitLab still tracks changes.')
 
             .form-group
               = f.gitlab_ui_checkbox_component :elasticsearch_search, s_('AdminSettings|Search with Elasticsearch enabled'), checkbox_options: { data: { qa_selector: 'search_checkbox' } }, help_text: s_('AdminSettings|Disable Elasticsearch until indexing completes.')
+
+            .form-group
+              = f.gitlab_ui_checkbox_component :elasticsearch_requeue_workers, s_('AdminSettings|Requeue indexing workers'), checkbox_options: { data: { qa_selector: 'requeue_workers_checkbox' } }, help_text: s_('AdminSettings|Improve non-code indexing throughput by enqueuing Sidekiq jobs until all documents are processed.')
 
             .form-group
               = f.label :elasticsearch_url, 'URL', class: 'label-bold'
