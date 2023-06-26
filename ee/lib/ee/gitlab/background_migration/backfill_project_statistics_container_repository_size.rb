@@ -83,7 +83,7 @@ module EE
 
           def container_repositories_size
             strong_memoize(:container_repositories_size) do
-              next unless ::Gitlab.com?
+              next unless ::Gitlab.com_except_jh?
               next 0 if container_repositories.empty?
               next unless container_repositories.all_migrated?
               next unless ::ContainerRegistry::GitlabApiClient.supports_gitlab_api?
