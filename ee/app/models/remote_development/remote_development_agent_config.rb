@@ -12,6 +12,7 @@ module RemoteDevelopment
 
     validates :enabled, presence: true
     validates :agent, presence: true
+    validates :dns_zone, hostname: true
 
     # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409772 - Make this a type:enum
     validates :enabled, inclusion: { in: [true], message: 'is currently immutable, and must be set to true' }
