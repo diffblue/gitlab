@@ -1,8 +1,9 @@
 - page_title s_('GroupSAML|SAML Group Links')
 %h1.page-title.gl-font-size-h-display= s_('GroupSAML|SAML Group Links')
 %p.gl-mb-0= s_('GroupSAML|Use SAML group links to manage group membership using SAML.')
-%p
-  = html_escape(s_('%{strongOpen}Warning:%{strongClose} SAML group links can cause GitLab to automatically remove members from groups.')) % { strongOpen: '<strong>'.html_safe, strongClose: '</strong>'.html_safe }
-  = link_to _('Learn more.'), help_page_path('user/group/saml_sso/group_sync', anchor: 'automatic-member-removal')
+= render Pajamas::AlertComponent.new(variant: :warning, dismissible: false, alert_options: {class: 'gl-mt-3 gl-mb-4'}) do |c|
+  - c.with_body do
+    = html_escape(s_('%{strongOpen}Warning:%{strongClose} SAML group links can cause GitLab to automatically change member roles or remove members from groups.')) % { strongOpen: '<strong>'.html_safe, strongClose: '</strong>'.html_safe }
+    = link_to _('Read the documentation before applying changes.'), help_page_path('user/group/saml_sso/group_sync', anchor: 'automatic-member-removal')
 = render 'form', group: @group
 = render 'saml_group_links', group: @group
