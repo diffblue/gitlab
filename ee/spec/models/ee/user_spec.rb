@@ -140,13 +140,14 @@ RSpec.describe User, feature_category: :system_access do
     end
 
     describe '.unconfirmed_and_created_before' do
-      it 'returns unconfirmed, active, human users created before timestamp passed in' do
+      it 'returns unconfirmed, active, human users who never signed in and were created before timestamp passed in' do
         cut_off_datetime = 7.days.ago
         _confirmed_user_created_before_cut_off = create(:user, confirmed_at: Time.current, created_at: cut_off_datetime - 1.day)
         _confirmed_user_created_after_cut_off = create(:user, confirmed_at: Time.current, created_at: cut_off_datetime + 1.day)
         _unconfirmed_user_created_after_cut_off = create(:user, :unconfirmed, created_at: cut_off_datetime + 1.day)
         _unconfirmed_bot_user_created_before_cut_off = create(:user, :bot, :unconfirmed, created_at: cut_off_datetime - 1.day)
         _deactivated_user_created_before_cut_off = create(:user, :unconfirmed, :deactivated, created_at: cut_off_datetime - 1.day)
+        _unconfirmed_user_who_signed_in = create(:user, :unconfirmed, created_at: cut_off_datetime - 1.day, sign_in_count: 1)
         unconfirmed_user_created_before_cut_off = create(:user, :unconfirmed, created_at: cut_off_datetime - 1.day)
 
         expect(described_class.unconfirmed_and_created_before(cut_off_datetime)).to match_array(

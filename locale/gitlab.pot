@@ -55056,6 +55056,9 @@ msgstr ""
 msgid "must be before %{expiry_date}"
 msgstr ""
 
+msgid "must be false when email confirmation setting is off"
+msgstr ""
+
 msgid "must be greater than start date"
 msgstr ""
 

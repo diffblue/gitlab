@@ -211,11 +211,21 @@ module EE
       validates :allow_account_deletion,
         inclusion: { in: [true, false], message: N_('must be a boolean value') }
 
-      validates :unconfirmed_users_delete_after_days,
-        numericality: { only_integer: true, greater_than: 0 }
+      validates :delete_unconfirmed_users,
+        inclusion: { in: [true, false], message: N_('must be a boolean value') },
+        unless: :email_confirmation_setting_off?
 
       validates :delete_unconfirmed_users,
-        inclusion: { in: [true, false], message: N_('must be a boolean value') }
+        inclusion: { in: [false], message: N_('must be false when email confirmation setting is off') },
+        if: :email_confirmation_setting_off?
+
+      validates :unconfirmed_users_delete_after_days,
+        numericality: { only_integer: true, greater_than: 0 },
+        unless: :email_confirmation_setting_soft?
+
+      validates :unconfirmed_users_delete_after_days,
+        numericality: { only_integer: true, greater_than: proc { Devise.allow_unconfirmed_access_for.in_days.to_i } },
+        if: :email_confirmation_setting_soft?
 
       alias_attribute :delayed_project_deletion, :delayed_project_removal
 
