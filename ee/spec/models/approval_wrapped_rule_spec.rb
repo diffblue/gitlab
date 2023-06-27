@@ -157,52 +157,38 @@ RSpec.describe ApprovalWrappedRule, feature_category: :code_review_workflow do
   describe '#allow_merge_when_invalid?' do
     subject { described_class.new(merge_request, rule).allow_merge_when_invalid? }
 
-    context 'when feature "invalid_scan_result_policy_prevents_merge" is disabled' do
-      before do
-        stub_feature_flags(invalid_scan_result_policy_prevents_merge: false)
+    context 'when report_type is scan_finding' do
+      let(:rule) { create(:report_approver_rule, :scan_finding) }
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when report_type is license_scanning and scan_result_policy_read is attached' do
+      let(:rule) do
+        create(:report_approver_rule, :license_scanning, scan_result_policy_read: scan_result_policy_read)
       end
+
+      let_it_be(:scan_result_policy_read) { create(:scan_result_policy_read) }
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when report_type is nil' do
+      let(:rule) { create(:approval_merge_request_rule, report_type: nil) }
 
       it { is_expected.to eq(true) }
     end
 
-    context 'when feature "invalid_scan_result_policy_prevents_merge" is enabled' do
+    context 'when project is a policy management project' do
       before do
-        stub_feature_flags(invalid_scan_result_policy_prevents_merge: merge_request.target_project)
+        create(:security_orchestration_policy_configuration, security_policy_management_project: merge_request.project)
       end
 
-      context 'when report_type is scan_finding' do
-        let(:rule) { create(:report_approver_rule, :scan_finding) }
-
-        it { is_expected.to eq(false) }
+      let(:rule) do
+        create(:report_approver_rule, :scan_finding)
       end
 
-      context 'when report_type is license_scanning and scan_result_policy_read is attached' do
-        let(:rule) do
-          create(:report_approver_rule, :license_scanning, scan_result_policy_read: scan_result_policy_read)
-        end
-
-        let_it_be(:scan_result_policy_read) { create(:scan_result_policy_read) }
-
-        it { is_expected.to eq(false) }
-      end
-
-      context 'when report_type is nil' do
-        let(:rule) { create(:approval_merge_request_rule, report_type: nil) }
-
-        it { is_expected.to eq(true) }
-      end
-
-      context 'when project is a policy management project' do
-        before do
-          create(:security_orchestration_policy_configuration, security_policy_management_project: merge_request.project)
-        end
-
-        let(:rule) do
-          create(:report_approver_rule, :scan_finding)
-        end
-
-        it { is_expected.to eq(true) }
-      end
+      it { is_expected.to eq(true) }
     end
   end
 

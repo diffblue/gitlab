@@ -269,7 +269,7 @@ RSpec.describe 'Git HTTP requests', feature_category: :source_code_management do
 
     before do
       enforce_namespace_storage_limit(group)
-      set_storage_size_limit(group, megabytes: 8)
+      set_enforcement_limit(group, megabytes: 8)
     end
 
     it_behaves_like 'pushes are allowed'

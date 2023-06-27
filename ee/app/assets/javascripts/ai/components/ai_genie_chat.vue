@@ -9,6 +9,7 @@ import {
   GlFormTextarea,
   GlForm,
   GlIcon,
+  GlFormText,
 } from '@gitlab/ui';
 import { throttle } from 'lodash';
 import { renderMarkdown } from '~/notes/utils';
@@ -28,6 +29,7 @@ export default {
     GlFormTextarea,
     GlForm,
     GlIcon,
+    GlFormText,
     AiGenieLoader,
     AiPredefinedPrompts,
   },
@@ -295,6 +297,11 @@ export default {
             />
           </template>
         </gl-form-input-group>
+        <gl-form-text
+          class="gl-text-gray-400 gl-line-height-20 gl-mt-3"
+          data-testid="chat-legal-disclaimer"
+          >{{ $options.i18n.GENIE_CHAT_LEGAL_DISCLAIMER }}</gl-form-text
+        >
       </gl-form>
     </footer>
   </aside>

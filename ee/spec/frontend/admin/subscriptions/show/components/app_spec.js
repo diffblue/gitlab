@@ -54,6 +54,7 @@ describe('SubscriptionManagementApp', () => {
   useFakeDate(2021, 2, 16);
 
   let wrapper;
+  let requestHandler;
 
   const findSubscriptionBreakdown = () => wrapper.findComponent(SubscriptionBreakdown);
   const findNoActiveSubscription = () => wrapper.findComponent(NoActiveSubscription);
@@ -70,6 +71,13 @@ describe('SubscriptionManagementApp', () => {
   let futureSubscriptionsResolver;
   const createMockApolloProvider = ([currentResolver, pastResolver, futureResolver]) => {
     Vue.use(VueApollo);
+
+    requestHandler = {
+      currentResolver,
+      pastResolver,
+      futureResolver,
+    };
+
     return createMockApollo([
       [getCurrentLicense, currentResolver],
       [getPastLicenseHistory, pastResolver],
@@ -285,15 +293,7 @@ describe('SubscriptionManagementApp', () => {
           pastSubscriptionsResolver,
           futureSubscriptionsResolver,
         ]);
-        jest
-          .spyOn(wrapper.vm.$apollo.queries.currentSubscription, 'refetch')
-          .mockImplementation(jest.fn());
-        jest
-          .spyOn(wrapper.vm.$apollo.queries.pastLicenseHistoryEntries, 'refetch')
-          .mockImplementation(jest.fn());
-        jest
-          .spyOn(wrapper.vm.$apollo.queries.futureLicenseHistoryEntries, 'refetch')
-          .mockImplementation(jest.fn());
+
         await waitForPromises();
       });
 
@@ -333,13 +333,9 @@ describe('SubscriptionManagementApp', () => {
         );
         await nextTick();
 
-        expect(wrapper.vm.$apollo.queries.currentSubscription.refetch).toHaveBeenCalledTimes(1);
-        expect(wrapper.vm.$apollo.queries.pastLicenseHistoryEntries.refetch).toHaveBeenCalledTimes(
-          1,
-        );
-        expect(
-          wrapper.vm.$apollo.queries.futureLicenseHistoryEntries.refetch,
-        ).toHaveBeenCalledTimes(1);
+        expect(requestHandler.currentResolver).toHaveBeenCalledTimes(2);
+        expect(requestHandler.pastResolver).toHaveBeenCalledTimes(2);
+        expect(requestHandler.futureResolver).toHaveBeenCalledTimes(2);
       });
     });
 

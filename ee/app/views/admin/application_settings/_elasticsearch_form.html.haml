@@ -96,6 +96,12 @@
                 = html_escape(_("Learn more about shards and replicas in the %{configuration_link_start}Advanced Search configuration%{configuration_link_end} documentation. Changes don't take place until you %{recreated_link_start}recreate%{recreated_link_end} the index.")) % { configuration_link_start: configuration_link_start, configuration_link_end: '</a>'.html_safe, recreated_link_start: recreated_link_start, recreated_link_end: '</a>'.html_safe }
 
             .form-group
+              = f.label :elasticsearch_worker_number_of_shards, _('Number of shards for non-code indexing'), class: 'label-bold'
+              = f.number_field :elasticsearch_worker_number_of_shards, value: @application_setting.elasticsearch_worker_number_of_shards, max: Elastic::ProcessBookkeepingService::SHARDS_MAX, class: 'form-control gl-form-input'
+              .form-text.gl-text-gray-600.gl-mt-0
+                = _('Improve indexing performance by increasing Sidekiq load. Values greater than the current shard limit (%{limit}) are not allowed.') % { limit: Elastic::ProcessBookkeepingService::SHARDS_MAX }
+
+            .form-group
               = f.label :elasticsearch_indexed_file_size_limit_kb, _('Maximum file size indexed (KiB)'), class: 'label-bold'
               = f.number_field :elasticsearch_indexed_file_size_limit_kb, value: @application_setting.elasticsearch_indexed_file_size_limit_kb, class: 'form-control gl-form-input'
               .form-text.gl-text-gray-600.gl-mt-0

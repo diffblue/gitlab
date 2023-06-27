@@ -55,6 +55,19 @@ const makeHeader = () => ({
   value: 'header-value',
 });
 
+export const mockInstanceExternalDestinationHeader = () => ({
+  id: uniqueId('gid://gitlab/AuditEvents::Streaming::Header/'),
+  key: uniqueId('header-key-'),
+  value: uniqueId('header-value-'),
+});
+
+const makeInstanceHeader = () => ({
+  __typename: 'AuditEventsStreamingInstanceHeader',
+  id: `header-id-${uniqueId()}`,
+  key: `header-key-${uniqueId()}`,
+  value: 'header-value',
+});
+
 export const mockExternalDestinations = [
   {
     __typename: 'ExternalAuditEventDestination',
@@ -84,12 +97,18 @@ export const mockInstanceExternalDestinations = [
     id: 'test_id1',
     destinationUrl: mockExternalDestinationUrl,
     verificationToken: verification[0],
+    headers: {
+      nodes: [],
+    },
   },
   {
     __typename: 'InstanceExternalAuditEventDestination',
     id: 'test_id2',
     destinationUrl: 'https://apiv2.gitlab.com',
     verificationToken: verification[1],
+    headers: {
+      nodes: [makeInstanceHeader(), makeInstanceHeader()],
+    },
   },
 ];
 
@@ -179,6 +198,35 @@ export const destinationHeaderDeleteMutationPopulator = (errors = []) => ({
   },
 });
 
+export const destinationInstanceHeaderCreateMutationPopulator = (errors = []) => ({
+  data: {
+    auditEventsStreamingInstanceHeadersCreate: {
+      errors,
+      clientMutationId: uniqueId(),
+      header: makeInstanceHeader(),
+    },
+  },
+});
+
+export const destinationInstanceHeaderUpdateMutationPopulator = (errors = []) => ({
+  data: {
+    auditEventsStreamingInstanceHeadersUpdate: {
+      errors,
+      clientMutationId: uniqueId(),
+      header: makeInstanceHeader(),
+    },
+  },
+});
+
+export const destinationInstanceHeaderDeleteMutationPopulator = (errors = []) => ({
+  data: {
+    auditEventsStreamingInstanceHeadersDestroy: {
+      errors,
+      clientMutationId: uniqueId(),
+    },
+  },
+});
+
 export const mockSvgPath = 'mock/path';
 
 export const mockAuditEventDefinitions = [
@@ -239,6 +287,9 @@ export const destinationInstanceCreateMutationPopulator = (errors = []) => {
       group: {
         name: groupPath,
         id: testGroupId,
+      },
+      headers: {
+        nodes: [],
       },
     },
   };

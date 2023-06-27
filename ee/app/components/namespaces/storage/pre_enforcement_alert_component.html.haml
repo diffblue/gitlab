@@ -1,6 +1,6 @@
 .gl-mt-3.container-fluid{ class: content_class }
   = render Pajamas::AlertComponent.new(variant: :warning,
-    dismissible: dismissible?,
+    dismissible: true,
     alert_options: { class: 'js-storage-pre-enforcement-alert', data: callout_data}) do |c|
     - c.with_body do
       %p= text_paragraph_1

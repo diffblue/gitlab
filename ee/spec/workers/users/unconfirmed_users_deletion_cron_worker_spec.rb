@@ -12,6 +12,14 @@ RSpec.describe Users::UnconfirmedUsersDeletionCronWorker, feature_category: :use
   let_it_be(:bot_user) { create(:user, :bot, :unconfirmed, created_at: cut_off_datetime - 1.day) }
   let_it_be(:admin_bot) { ::User.admin_bot }
 
+  let_it_be(:unconfirmed_user_created_after_cut_off) do
+    create(:user, :unconfirmed, created_at: cut_off_datetime + 1.day)
+  end
+
+  let_it_be(:unconfirmed_user_who_signed_in) do
+    create(:user, :unconfirmed, created_at: cut_off_datetime - 1.day, sign_in_count: 1)
+  end
+
   describe '#perform', :sidekiq_inline do
     context 'when setting for deleting unconfirmed users is set' do
       before do
@@ -21,8 +29,15 @@ RSpec.describe Users::UnconfirmedUsersDeletionCronWorker, feature_category: :use
         stub_application_setting_enum('email_confirmation_setting', 'hard')
       end
 
-      it 'destroys active, unconfirmed users created before unconfirmed_users_delete_after_days days' do
-        users_to_keep = [unconfirmed_user_to_keep, confirmed_user, banned_user, bot_user]
+      it 'destroys unconfirmed users who never signed in & signed up before unconfirmed_users_delete_after_days days' do
+        admin_bot = ::User.admin_bot
+        users_to_keep = [
+          unconfirmed_user_created_after_cut_off,
+          unconfirmed_user_who_signed_in,
+          confirmed_user,
+          banned_user,
+          bot_user
+        ]
 
         worker.perform
 

@@ -237,15 +237,6 @@ RETURN NULL;
 END
 $$;
 
-CREATE FUNCTION trigger_023e82d8e257() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-  NEW."id_convert_to_bigint" := NEW."id";
-  RETURN NEW;
-END;
-$$;
-
 CREATE FUNCTION trigger_080e73845bfd() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -11767,6 +11758,10 @@ CREATE TABLE application_settings (
     default_branch_protection_defaults jsonb DEFAULT '{}'::jsonb NOT NULL,
     gitlab_shell_operation_limit integer DEFAULT 600,
     elasticsearch_requeue_workers boolean DEFAULT false NOT NULL,
+<<<<<<< HEAD
+=======
+    elasticsearch_worker_number_of_shards integer DEFAULT 2 NOT NULL,
+>>>>>>> source-project/master
     CONSTRAINT app_settings_container_reg_cleanup_tags_max_list_size_positive CHECK ((container_registry_cleanup_tags_service_max_list_size >= 0)),
     CONSTRAINT app_settings_container_registry_pre_import_tags_rate_positive CHECK ((container_registry_pre_import_tags_rate >= (0)::numeric)),
     CONSTRAINT app_settings_dep_proxy_ttl_policies_worker_capacity_positive CHECK ((dependency_proxy_ttl_group_policy_worker_capacity >= 0)),
@@ -13669,7 +13664,6 @@ CREATE SEQUENCE ci_pipeline_schedules_id_seq
 ALTER SEQUENCE ci_pipeline_schedules_id_seq OWNED BY ci_pipeline_schedules.id;
 
 CREATE TABLE ci_pipeline_variables (
-    id_convert_to_bigint integer DEFAULT 0 NOT NULL,
     key character varying NOT NULL,
     value text,
     encrypted_value text,
@@ -22602,9 +22596,6 @@ CREATE TABLE sent_notifications (
     recipient_id integer,
     commit_id character varying,
     reply_key character varying NOT NULL,
-    line_code character varying,
-    note_type character varying,
-    "position" text,
     in_reply_to_discussion_id character varying,
     id bigint NOT NULL
 );
@@ -33174,7 +33165,7 @@ CREATE INDEX index_users_on_state_and_user_type ON users USING btree (state, use
 
 CREATE UNIQUE INDEX index_users_on_static_object_token ON users USING btree (static_object_token);
 
-CREATE INDEX index_users_on_unconfirmed_and_created_at_for_active_humans ON users USING btree (created_at, id) WHERE ((confirmed_at IS NULL) AND ((state)::text = 'active'::text) AND (user_type = 0));
+CREATE INDEX index_users_on_unconfirmed_created_at_active_type_sign_in_count ON users USING btree (created_at, id) WHERE ((confirmed_at IS NULL) AND ((state)::text = 'active'::text) AND (user_type = 0) AND (sign_in_count = 0));
 
 CREATE INDEX index_users_on_unconfirmed_email ON users USING btree (unconfirmed_email) WHERE (unconfirmed_email IS NOT NULL);
 
@@ -35135,8 +35126,6 @@ CREATE TRIGGER projects_loose_fk_trigger AFTER DELETE ON projects REFERENCING OL
 CREATE TRIGGER push_rules_loose_fk_trigger AFTER DELETE ON push_rules REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
 
 CREATE TRIGGER tags_loose_fk_trigger AFTER DELETE ON tags REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
-
-CREATE TRIGGER trigger_023e82d8e257 BEFORE INSERT OR UPDATE ON ci_pipeline_variables FOR EACH ROW EXECUTE FUNCTION trigger_023e82d8e257();
 
 CREATE TRIGGER trigger_080e73845bfd BEFORE INSERT OR UPDATE ON notes FOR EACH ROW EXECUTE FUNCTION trigger_080e73845bfd();
 

@@ -7,7 +7,7 @@
       close_button_options: { class: 'js-close-callout', data: { testid: 'code_suggestions_alert_dismiss' }}) do |c|
       - c.with_body do
         - preference_link_start = '<a href="%{url}">'.html_safe % { url: profile_preferences_path(anchor: 'code-suggestions-settings') }
-        - docs_link_start = '<a href="%{url}">'.html_safe % { url: help_page_path('user/project/repository/code_suggestions', anchor: 'enable-code-suggestions-in-vs-code') }
+        - docs_link_start = '<a href="%{url}">'.html_safe % { url: help_page_path('user/project/repository/code_suggestions') }
         - link_end = '</a>'.html_safe
         = s_("CodeSuggestionsAlert|Code faster and more efficiently with AI-powered code suggestions in VS Code. 13 languages are supported, including JavaScript, Python, Go, Java, and Kotlin. Enable Code Suggestions in your %{preference_link_start}user profile preferences%{link_end} or %{docs_link_start}see the documentation%{link_end} to learn more.").html_safe % { preference_link_start: preference_link_start,
           docs_link_start: docs_link_start, link_end: link_end }

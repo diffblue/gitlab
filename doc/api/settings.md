@@ -375,6 +375,7 @@ listed in the descriptions of the relevant settings.
 | `elasticsearch_requeue_workers` **(PREMIUM)**   | boolean          | no                                   | Enable automatic requeuing of indexing workers. This improves non-code indexing throughput by enqueuing Sidekiq jobs until all documents are processed. |
 | `elasticsearch_limit_indexing` **(PREMIUM)** | boolean      | no                                   | Limit Elasticsearch to index certain namespaces and projects. |
 | `elasticsearch_max_bulk_concurrency` **(PREMIUM)** | integer | no                                   | Maximum concurrency of Elasticsearch bulk requests per indexing operation. This only applies to repository indexing operations. |
+| `elasticsearch_worker_number_of_shards` **(PREMIUM)** | integer | no                                   | Number of indexing worker shards. This improves non-code indexing throughput by enqueuing more parallel Sidekiq jobs. Default is `2`. |
 | `elasticsearch_max_bulk_size_mb` **(PREMIUM)** | integer    | no                                   | Maximum size of Elasticsearch bulk indexing requests in MB. This only applies to repository indexing operations. |
 | `elasticsearch_namespace_ids` **(PREMIUM)** | array of integers | no                                  | The namespaces to index via Elasticsearch if `elasticsearch_limit_indexing` is enabled. |
 | `elasticsearch_project_ids` **(PREMIUM)** | array of integers | no                                  | The projects to index via Elasticsearch if `elasticsearch_limit_indexing` is enabled. |

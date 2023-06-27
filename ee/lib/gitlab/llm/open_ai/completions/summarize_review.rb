@@ -52,7 +52,7 @@ module Gitlab
             draft_notes_content = []
 
             draft_notes.each do |draft_note|
-              draft_note_line = "File path: #{draft_note.file_path}\nComment: #{draft_note.note}\n\n"
+              draft_note_line = "Comment: #{draft_note.note}\n"
 
               if (draft_notes_content.length + draft_note_line.length) < INPUT_CONTENT_LIMIT
                 draft_notes_content << draft_note_line

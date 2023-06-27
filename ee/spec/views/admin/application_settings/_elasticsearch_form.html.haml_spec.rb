@@ -103,6 +103,16 @@ RSpec.describe 'admin/application_settings/_elasticsearch_form', feature_categor
     end
   end
 
+  context 'when number of shards is set' do
+    let(:application_setting) { build(:application_setting, elasticsearch_worker_number_of_shards: 4) }
+
+    it 'has field with "Number of shards for non-code indexing" label and correct value' do
+      render
+      expect(rendered).to have_field('Number of shards for non-code indexing')
+      expect(page.find_field('Number of shards for non-code indexing').value).to eq('4')
+    end
+  end
+
   context 'when elasticsearch_aws_secret_access_key is set' do
     let(:application_setting) { build(:application_setting, elasticsearch_aws_secret_access_key: 'elasticsearch_aws_secret_access_key') }
 

@@ -10,11 +10,44 @@ feature_category: :global_search do
   let(:issue) { fake_refs.first }
   let(:issue_spec) { issue.serialize }
 
+  before do
+    stub_ee_application_setting(elasticsearch_worker_number_of_shards: described_class::SHARDS_MAX)
+  end
+
+  describe '.active_number_of_shards' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:worker_number_of_shards, :result) do
+      0  | 1
+      2  | 2
+      20 | 16
+      15 | 15
+    end
+
+    with_them do
+      before do
+        stub_ee_application_setting(elasticsearch_worker_number_of_shards: worker_number_of_shards)
+      end
+
+      it 'returns smaller number' do
+        expect(described_class.active_number_of_shards).to eq(result)
+      end
+    end
+  end
+
   describe '.shard_number' do
     it 'returns correct shard number' do
       shard = described_class.shard_number(ref_class.serialize(fake_refs.first))
 
       expect(shard).to eq(9)
+    end
+
+    it 'returns correct shard number when number_of_shards has been changed' do
+      stub_ee_application_setting(elasticsearch_worker_number_of_shards: 2)
+
+      shard = described_class.shard_number(ref_class.serialize(fake_refs.first))
+
+      expect(shard).to eq(1)
     end
   end
 
@@ -131,7 +164,7 @@ feature_category: :global_search do
     context 'limit is less than refs count' do
       before do
         stub_const('Elastic::ProcessBookkeepingService::SHARD_LIMIT', 2)
-        stub_const('Elastic::ProcessBookkeepingService::SHARDS_NUMBER', 2)
+        stub_const('Elastic::ProcessBookkeepingService::SHARDS_MAX', 2)
       end
 
       it 'processes only up to limit' do

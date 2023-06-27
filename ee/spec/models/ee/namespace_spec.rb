@@ -1130,7 +1130,7 @@ RSpec.describe Namespace do
 
     before do
       enforce_namespace_storage_limit(namespace)
-      set_storage_size_limit(namespace, megabytes: 10)
+      set_enforcement_limit(namespace, megabytes: 10)
     end
 
     it 'returns true if the namespace is over the storage limit', :saas do
@@ -1593,7 +1593,7 @@ RSpec.describe Namespace do
 
     context 'when namespace storage limits are enabled for free namespaces and disabled for paid' do
       before do
-        set_storage_size_limit(namespace, megabytes: 100)
+        set_enforcement_limit(namespace, megabytes: 100)
         enforce_namespace_storage_limit(namespace)
       end
 

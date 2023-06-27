@@ -1,16 +1,17 @@
 <script>
 import { GlButton, GlSorting, GlSortingItem, GlTooltipDirective } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
+import { omit } from 'lodash';
 import { __, s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { NAMESPACE_PROJECT } from '../constants';
 import { DEPENDENCY_LIST_TYPES } from '../store/constants';
-import { SORT_FIELDS, SORT_ASCENDING } from '../store/modules/list/constants';
+import { SORT_FIELDS, SORT_ASCENDING, SORT_FIELD_SEVERITY } from '../store/modules/list/constants';
 
 export default {
   i18n: {
     exportAsJson: s__('Dependencies|Export as JSON'),
     sortDirectionLabel: __('Sort direction'),
-    sortFields: SORT_FIELDS,
   },
   name: 'DependenciesActions',
   components: {
@@ -22,6 +23,7 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   mixins: [glFeatureFlagsMixin()],
+  inject: ['namespaceType'],
   props: {
     namespace: {
       type: String,
@@ -49,7 +51,13 @@ export default {
       },
     }),
     sortFieldName() {
-      return this.$options.i18n.sortFields[this.sortField];
+      return this.sortFields[this.sortField];
+    },
+    sortFields() {
+      return this.isProjectNamespace ? SORT_FIELDS : omit(SORT_FIELDS, SORT_FIELD_SEVERITY);
+    },
+    isProjectNamespace() {
+      return this.namespaceType === NAMESPACE_PROJECT;
     },
   },
   methods: {
@@ -83,7 +91,7 @@ export default {
       @sortDirectionChange="toggleSortOrder"
     >
       <gl-sorting-item
-        v-for="(name, field) in $options.i18n.sortFields"
+        v-for="(name, field) in sortFields"
         :key="field"
         :active="isCurrentSortField(field)"
         @click="setSortField(field)"

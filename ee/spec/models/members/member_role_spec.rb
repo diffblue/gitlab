@@ -102,54 +102,24 @@ RSpec.describe MemberRole, feature_category: :system_access do
       end
 
       context 'when base_access_level is too low' do
-        context 'when custom_roles_vulnerability FF is enabled' do
-          it 'creates a validation error' do
-            member_role.base_access_level = Gitlab::Access::MINIMAL_ACCESS
-            member_role.read_vulnerability = true
+        it 'creates a validation error' do
+          member_role.base_access_level = Gitlab::Access::MINIMAL_ACCESS
+          member_role.read_vulnerability = true
 
-            expect(member_role).not_to be_valid
-            expect(member_role.errors[:base_access_level])
-              .to include(s_("MemberRole|minimal base access level must be Guest (10)."))
-          end
-        end
-
-        context 'when custom_roles_vulnerability FF is disabled' do
-          before do
-            stub_feature_flags(custom_roles_vulnerability: false)
-          end
-
-          it 'is valid' do
-            member_role.base_access_level = Gitlab::Access::MINIMAL_ACCESS
-            member_role.read_vulnerability = true
-
-            expect(member_role).to be_valid
-          end
+          expect(member_role).not_to be_valid
+          expect(member_role.errors[:base_access_level])
+            .to include(s_("MemberRole|minimal base access level must be Guest (10)."))
         end
       end
 
       context 'when requirement is not met' do
-        context 'when custom_roles_vulnerability FF is enabled' do
-          it 'creates a validation error' do
-            member_role.base_access_level = Gitlab::Access::GUEST
-            member_role.admin_vulnerability = true
+        it 'creates a validation error' do
+          member_role.base_access_level = Gitlab::Access::GUEST
+          member_role.admin_vulnerability = true
 
-            expect(member_role).not_to be_valid
-            expect(member_role.errors[:admin_vulnerability])
-              .to include(s_("MemberRole|read_vulnerability has to be enabled in order to enable admin_vulnerability."))
-          end
-        end
-
-        context 'when custom_roles_vulnerability FF is disabled' do
-          before do
-            stub_feature_flags(custom_roles_vulnerability: false)
-          end
-
-          it 'is valid' do
-            member_role.base_access_level = Gitlab::Access::GUEST
-            member_role.admin_vulnerability = true
-
-            expect(member_role).to be_valid
-          end
+          expect(member_role).not_to be_valid
+          expect(member_role.errors[:admin_vulnerability])
+            .to include(s_("MemberRole|read_vulnerability has to be enabled in order to enable admin_vulnerability."))
         end
       end
     end

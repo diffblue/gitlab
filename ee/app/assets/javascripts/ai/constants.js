@@ -25,6 +25,9 @@ export const i18n = {
   GENIE_CHAT_SUBMIT_LABEL: s__('AI|Send chat message.'),
   GENIE_CHAT_EMPTY_STATE_TITLE: s__('AI|Ask a question'),
   GENIE_CHAT_EMPTY_STATE_DESC: s__('AI|AI generated explanations will appear here.'),
+  GENIE_CHAT_LEGAL_DISCLAIMER: s__(
+    "AI|May provide inappropriate responses not representative of GitLab's views. Do not input personal data.",
+  ),
 };
 export const TOO_LONG_ERROR_TYPE = 'too-long';
 export const AI_GENIE_DEBOUNCE = 300;

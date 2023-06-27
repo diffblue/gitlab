@@ -115,6 +115,7 @@ GEM
     acme-client (2.0.11)
       faraday (>= 1.0, < 3.0.0)
       faraday-retry (~> 1.0)
+<<<<<<< HEAD
     actioncable (7.0.5)
       actionpack (= 7.0.5)
       activesupport (= 7.0.5)
@@ -126,27 +127,55 @@ GEM
       activerecord (= 7.0.5)
       activestorage (= 7.0.5)
       activesupport (= 7.0.5)
+=======
+    actioncable (7.0.5.1)
+      actionpack (= 7.0.5.1)
+      activesupport (= 7.0.5.1)
+      nio4r (~> 2.0)
+      websocket-driver (>= 0.6.1)
+    actionmailbox (7.0.5.1)
+      actionpack (= 7.0.5.1)
+      activejob (= 7.0.5.1)
+      activerecord (= 7.0.5.1)
+      activestorage (= 7.0.5.1)
+      activesupport (= 7.0.5.1)
+>>>>>>> source-project/master
       mail (>= 2.7.1)
       net-imap
       net-pop
       net-smtp
+<<<<<<< HEAD
     actionmailer (7.0.5)
       actionpack (= 7.0.5)
       actionview (= 7.0.5)
       activejob (= 7.0.5)
       activesupport (= 7.0.5)
+=======
+    actionmailer (7.0.5.1)
+      actionpack (= 7.0.5.1)
+      actionview (= 7.0.5.1)
+      activejob (= 7.0.5.1)
+      activesupport (= 7.0.5.1)
+>>>>>>> source-project/master
       mail (~> 2.5, >= 2.5.4)
       net-imap
       net-pop
       net-smtp
       rails-dom-testing (~> 2.0)
+<<<<<<< HEAD
     actionpack (7.0.5)
       actionview (= 7.0.5)
       activesupport (= 7.0.5)
+=======
+    actionpack (7.0.5.1)
+      actionview (= 7.0.5.1)
+      activesupport (= 7.0.5.1)
+>>>>>>> source-project/master
       rack (~> 2.0, >= 2.2.4)
       rack-test (>= 0.6.3)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.0, >= 1.2.0)
+<<<<<<< HEAD
     actiontext (7.0.5)
       actionpack (= 7.0.5)
       activerecord (= 7.0.5)
@@ -156,10 +185,22 @@ GEM
       nokogiri (>= 1.8.5)
     actionview (7.0.5)
       activesupport (= 7.0.5)
+=======
+    actiontext (7.0.5.1)
+      actionpack (= 7.0.5.1)
+      activerecord (= 7.0.5.1)
+      activestorage (= 7.0.5.1)
+      activesupport (= 7.0.5.1)
+      globalid (>= 0.6.0)
+      nokogiri (>= 1.8.5)
+    actionview (7.0.5.1)
+      activesupport (= 7.0.5.1)
+>>>>>>> source-project/master
       builder (~> 3.1)
       erubi (~> 1.4)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.1, >= 1.2.0)
+<<<<<<< HEAD
     activejob (7.0.5)
       activesupport (= 7.0.5)
       globalid (>= 0.3.6)
@@ -179,6 +220,27 @@ GEM
       marcel (~> 1.0)
       mini_mime (>= 1.1.0)
     activesupport (7.0.5)
+=======
+    activejob (7.0.5.1)
+      activesupport (= 7.0.5.1)
+      globalid (>= 0.3.6)
+    activemodel (7.0.5.1)
+      activesupport (= 7.0.5.1)
+    activerecord (7.0.5.1)
+      activemodel (= 7.0.5.1)
+      activesupport (= 7.0.5.1)
+    activerecord-explain-analyze (0.1.0)
+      activerecord (>= 4)
+      pg
+    activestorage (7.0.5.1)
+      actionpack (= 7.0.5.1)
+      activejob (= 7.0.5.1)
+      activerecord (= 7.0.5.1)
+      activesupport (= 7.0.5.1)
+      marcel (~> 1.0)
+      mini_mime (>= 1.1.0)
+    activesupport (7.0.5.1)
+>>>>>>> source-project/master
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
@@ -1220,6 +1282,7 @@ GEM
     rack-test (2.1.0)
       rack (>= 1.3)
     rack-timeout (0.6.3)
+<<<<<<< HEAD
     rails (7.0.5)
       actioncable (= 7.0.5)
       actionmailbox (= 7.0.5)
@@ -1234,6 +1297,22 @@ GEM
       activesupport (= 7.0.5)
       bundler (>= 1.15.0)
       railties (= 7.0.5)
+=======
+    rails (7.0.5.1)
+      actioncable (= 7.0.5.1)
+      actionmailbox (= 7.0.5.1)
+      actionmailer (= 7.0.5.1)
+      actionpack (= 7.0.5.1)
+      actiontext (= 7.0.5.1)
+      actionview (= 7.0.5.1)
+      activejob (= 7.0.5.1)
+      activemodel (= 7.0.5.1)
+      activerecord (= 7.0.5.1)
+      activestorage (= 7.0.5.1)
+      activesupport (= 7.0.5.1)
+      bundler (>= 1.15.0)
+      railties (= 7.0.5.1)
+>>>>>>> source-project/master
     rails-controller-testing (1.0.5)
       actionpack (>= 5.0.1.rc1)
       actionview (>= 5.0.1.rc1)
@@ -1246,9 +1325,15 @@ GEM
     rails-i18n (7.0.3)
       i18n (>= 0.7, < 2)
       railties (>= 6.0.0, < 8)
+<<<<<<< HEAD
     railties (7.0.5)
       actionpack (= 7.0.5)
       activesupport (= 7.0.5)
+=======
+    railties (7.0.5.1)
+      actionpack (= 7.0.5.1)
+      activesupport (= 7.0.5.1)
+>>>>>>> source-project/master
       method_source
       rake (>= 12.2)
       thor (~> 1.0)
@@ -1914,7 +1999,11 @@ DEPENDENCIES
   rack-oauth2 (~> 1.21.3)
   rack-proxy (~> 0.7.6)
   rack-timeout (~> 0.6.3)
+<<<<<<< HEAD
   rails (~> 7.0.5)
+=======
+  rails (~> 7.0.5.1)
+>>>>>>> source-project/master
   rails-controller-testing
   rails-i18n (~> 7.0)
   rainbow (~> 3.0)

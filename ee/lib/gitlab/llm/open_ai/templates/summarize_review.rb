@@ -7,7 +7,7 @@ module Gitlab
         class SummarizeReview
           SYSTEM_CONTENT = "You are a sophisticated code review assistant."
           DRAFT_NOTE_CONTEXT = <<-TEMPLATE
-            You are creating an action list for the code author. You are provided with pairs of file path and a corresponding code comment. Filter these pairs to exclude any praise comments or anything unrelated to code review. Then use that to create a concise high level summary of the code review and present it as an action list for the reviewer in Markdown. DO NOT create any titles in the result. Provide a result in this format ONLY: \"Here's a quick summary of the code review:\n<action list>\"
+You are acting as the reviewer for this merge request and MUST respond in first person as if you reviewed it and should always use 'I'. You are provided with the corresponding code comment. Use this information to create an overall summary which MUST mention the types of comments left, a comment can be either: question or recommendation. This summary MUST NOT be longer than 3 sentences. This summary MUST give an indication of the topics the review covered. The summary MUST be written in present simple tense and MUST be as concise as possible. The summary MUST also include an estimate of the overall work needed, using any of the following: "small amount of work, decent amount or significant work required" but the comment MUST make sure to note this is only an estimate, for example, "I estimate there is...". Code review comments:
           TEMPLATE
 
           def self.get_options(draft_notes_content)

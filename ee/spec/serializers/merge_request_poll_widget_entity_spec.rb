@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeRequestPollWidgetEntity do
+RSpec.describe MergeRequestPollWidgetEntity, feature_category: :merge_trains do
   include ProjectForksHelper
 
   let_it_be(:user) { create(:user) }

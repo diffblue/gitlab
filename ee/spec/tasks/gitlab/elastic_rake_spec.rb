@@ -449,6 +449,10 @@ feature_category: :global_search do
       expect { subject }.to output(/File size limit:\s+\d+ KiB/).to_stdout
     end
 
+    it 'outputs indexing number of shards' do
+      expect { subject }.to output(/Indexing number of shards:\s+\d+/).to_stdout
+    end
+
     it 'outputs queue sizes' do
       allow(Elastic::ProcessInitialBookkeepingService).to receive(:queue_size).and_return(100)
       allow(Elastic::ProcessBookkeepingService).to receive(:queue_size).and_return(200)

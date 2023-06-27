@@ -74,6 +74,10 @@ module EE
         presence: { message: "can't be blank when using aws hosted elasticsearch" },
         if: ->(setting) { setting.elasticsearch_indexing? && setting.elasticsearch_aws? }
 
+      validates :elasticsearch_worker_number_of_shards,
+        presence: true,
+        numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: Elastic::ProcessBookkeepingService::SHARDS_MAX }
+
       validates :elasticsearch_indexed_file_size_limit_kb,
         presence: true,
         numericality: { only_integer: true, greater_than: 0 }
@@ -211,11 +215,21 @@ module EE
       validates :allow_account_deletion,
         inclusion: { in: [true, false], message: N_('must be a boolean value') }
 
-      validates :unconfirmed_users_delete_after_days,
-        numericality: { only_integer: true, greater_than: 0 }
+      validates :delete_unconfirmed_users,
+        inclusion: { in: [true, false], message: N_('must be a boolean value') },
+        unless: :email_confirmation_setting_off?
 
       validates :delete_unconfirmed_users,
-        inclusion: { in: [true, false], message: N_('must be a boolean value') }
+        inclusion: { in: [false], message: N_('must be false when email confirmation setting is off') },
+        if: :email_confirmation_setting_off?
+
+      validates :unconfirmed_users_delete_after_days,
+        numericality: { only_integer: true, greater_than: 0 },
+        unless: :email_confirmation_setting_soft?
+
+      validates :unconfirmed_users_delete_after_days,
+        numericality: { only_integer: true, greater_than: proc { Devise.allow_unconfirmed_access_for.in_days.to_i } },
+        if: :email_confirmation_setting_soft?
 
       alias_attribute :delayed_project_deletion, :delayed_project_removal
 

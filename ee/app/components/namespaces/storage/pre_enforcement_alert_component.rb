@@ -30,10 +30,6 @@ module Namespaces
         over_user_limit?(root_namespace)
       end
 
-      def dismissible?
-        !root_namespace.over_storage_limit?
-      end
-
       def content_class
         "container-limited limit-container-width" unless user.layout == "fluid"
       end

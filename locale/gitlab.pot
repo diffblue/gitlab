@@ -1959,6 +1959,9 @@ msgstr ""
 msgid "AI|I don't see how I can help. Please give better instructions!"
 msgstr ""
 
+msgid "AI|May provide inappropriate responses not representative of GitLab's views. Do not input personal data."
+msgstr ""
+
 msgid "AI|Populate issue description"
 msgstr ""
 
@@ -7807,6 +7810,9 @@ msgid "Boards|An error occurred while fetching child groups. Please try again."
 msgstr ""
 
 msgid "Boards|An error occurred while fetching group projects. Please try again."
+msgstr ""
+
+msgid "Boards|An error occurred while fetching groups. Please try again."
 msgstr ""
 
 msgid "Boards|An error occurred while fetching issues. Please reload the page."
@@ -15134,7 +15140,13 @@ msgstr ""
 msgid "Dependencies|Packager"
 msgstr ""
 
+msgid "Dependencies|Projects"
+msgstr ""
+
 msgid "Dependencies|Software Bill of Materials (SBOM) based on the %{linkStart}latest successful%{linkEnd} scan"
+msgstr ""
+
+msgid "Dependencies|Software Bill of Materials (SBOM) based on the latest successful scan of each project."
 msgstr ""
 
 msgid "Dependencies|The %{codeStartTag}dependency_scanning%{codeEndTag} job has failed and cannot generate the list. Please ensure the job is running properly and run the pipeline again."
@@ -23409,6 +23421,9 @@ msgstr ""
 msgid "Improve customer support with Service Desk"
 msgstr ""
 
+msgid "Improve indexing performance by increasing Sidekiq load. Values greater than the current shard limit (%{limit}) are not allowed."
+msgstr ""
+
 msgid "Improve quality with test cases"
 msgstr ""
 
@@ -31519,6 +31534,9 @@ msgstr ""
 msgid "Number of shards"
 msgstr ""
 
+msgid "Number of shards for non-code indexing"
+msgstr ""
+
 msgid "OK"
 msgstr ""
 
@@ -33286,9 +33304,6 @@ msgstr ""
 msgid "Pipeline URL"
 msgstr ""
 
-msgid "Pipeline artifacts"
-msgstr ""
-
 msgid "Pipeline creation rate limits"
 msgstr ""
 
@@ -33488,6 +33503,9 @@ msgid "PipelineSchedules|Active"
 msgstr ""
 
 msgid "PipelineSchedules|All"
+msgstr ""
+
+msgid "PipelineSchedules|An error occurred while creating the pipeline schedule."
 msgstr ""
 
 msgid "PipelineSchedules|Are you sure you want to delete this pipeline schedule?"
@@ -35114,6 +35132,9 @@ msgid "ProfileSession|on"
 msgstr ""
 
 msgid "Profiles| You are about to permanently delete %{yourAccount}, and all of the issues, merge requests, and groups linked to your account. Once you confirm %{deleteAccount}, it cannot be undone or recovered."
+msgstr ""
+
+msgid "Profiles| You are about to permanently delete %{yourAccount}, and all of the issues, merge requests, and groups linked to your account. Once you confirm %{deleteAccount}, it cannot be undone or recovered. You might have to wait seven days before creating a new account with the same username or email."
 msgstr ""
 
 msgid "Profiles| You are going to change the username %{currentUsernameBold} to %{newUsernameBold}. Profile and projects will be redirected to the %{newUsername} namespace but this redirect will expire once the %{currentUsername} namespace is registered by another user or group. Please update your Git repository remotes as soon as possible."
@@ -49288,9 +49309,6 @@ msgstr ""
 msgid "UsageQuota|Pipeline artifacts and job artifacts, created with CI/CD."
 msgstr ""
 
-msgid "UsageQuota|Pipeline artifacts created by CI/CD."
-msgstr ""
-
 msgid "UsageQuota|Pipelines"
 msgstr ""
 
@@ -55048,6 +55066,9 @@ msgid "must be at least 1 day"
 msgstr ""
 
 msgid "must be before %{expiry_date}"
+msgstr ""
+
+msgid "must be false when email confirmation setting is off"
 msgstr ""
 
 msgid "must be greater than start date"
