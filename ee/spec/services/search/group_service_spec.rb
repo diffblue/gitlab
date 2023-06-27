@@ -270,9 +270,10 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
     end
 
     context 'wiki' do
-      let_it_be_with_reload(:project) { create(:project, :wiki_repo) }
+      let_it_be_with_reload(:project) { create(:project, :wiki_repo, :in_group) }
 
       let(:group) { project.namespace }
+      let(:project_wiki) { create(:project_wiki, project: project, user: user) }
       let(:projects) { [project] }
       let(:scope) { 'wiki_blobs' }
       let(:search) { 'term' }
@@ -283,7 +284,7 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
 
       with_them do
         before do
-          project.wiki.create_page('test.md', "# term")
+          project_wiki.create_page('test.md', "# term")
           project.wiki.index_wiki_blobs
         end
 

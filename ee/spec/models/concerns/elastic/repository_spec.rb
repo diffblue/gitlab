@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Repository, :elastic do
+RSpec.describe Repository, :elastic, feature_category: :global_search do
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
   end
