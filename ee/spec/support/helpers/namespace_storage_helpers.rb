@@ -2,7 +2,7 @@
 
 module NamespaceStorageHelpers
   def set_enforcement_limit(namespace, megabytes:)
-    namespace.gitlab_subscription.hosted_plan.actual_limits.update!(enforcement_limit: megabytes)
+    namespace.actual_plan.actual_limits.update!(enforcement_limit: megabytes)
   end
 
   def set_used_storage(namespace, megabytes:)
