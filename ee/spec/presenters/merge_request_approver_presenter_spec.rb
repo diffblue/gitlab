@@ -29,7 +29,7 @@ RSpec.describe MergeRequestApproverPresenter do
   def expect_code_owner_loader_init
     expect(Gitlab::CodeOwners::Loader).to receive(:new).with(
       merge_request.target_project,
-      merge_request.target_branch,
+      merge_request.target_branch_ref,
       file_paths
     ).and_return(code_owner_loader)
 

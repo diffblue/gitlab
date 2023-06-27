@@ -61,7 +61,7 @@ module Gitlab
 
       Loader.new(
         merge_request.target_project,
-        merge_request.target_branch,
+        merge_request.target_branch_ref,
         paths)&.entries || []
     end
 
@@ -71,7 +71,7 @@ module Gitlab
 
       Loader.new(
         merge_request.target_project,
-        merge_request.target_branch,
+        merge_request.target_branch_ref,
         paths_for_merge_request(merge_request, merge_request_diff)
       )
     end
