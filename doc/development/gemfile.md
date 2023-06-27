@@ -119,8 +119,6 @@ Read more about [Gems development guidelines](gems.md).
 When upgrading the Rails gem and its dependencies, you also should update the following:
 
 - The [`Gemfile` in the `qa` directory](https://gitlab.com/gitlab-org/gitlab/-/blob/master/qa/Gemfile).
-- The [`Gemfile` in Gitaly Ruby](https://gitlab.com/gitlab-org/gitaly/-/blob/master/ruby/Gemfile),
-  to ensure that we ship only one version of these gems.
 
 You should also update npm packages that follow the current version of Rails:
 
