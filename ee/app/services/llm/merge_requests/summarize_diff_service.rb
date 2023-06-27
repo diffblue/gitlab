@@ -67,3 +67,5 @@ module Llm
     end
   end
 end
+
+Llm::MergeRequests::SummarizeDiffService.prepend_mod
