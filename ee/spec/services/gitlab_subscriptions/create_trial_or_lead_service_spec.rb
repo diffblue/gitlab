@@ -109,14 +109,24 @@ RSpec.describe GitlabSubscriptions::CreateTrialOrLeadService, feature_category: 
 
       context 'when creating trial or lead fails with an error message from the client' do
         it 'error while creating trial or lead' do
-          response = { success: false, data: { errors: '_error_' } }
-          allow(Gitlab::SubscriptionPortal::Client).to receive(service).and_return(response)
+          message = "Last name can't be blank"
+          response = Net::HTTPUnprocessableEntity.new(1.0, '422', 'Error')
+          gitlab_http_response = instance_double(
+            HTTParty::Response,
+            code: response.code,
+            parsed_response: { errors: message }.stringify_keys,
+            response: response,
+            body: {}
+          )
+          # going deeper than usual here to verify the API doesn't change and break this area that relies on
+          # symbols for `error`
+          allow(Gitlab::HTTP).to receive(:post).and_return(gitlab_http_response)
 
           result = described_class.new(user: user, params: { trial_onboarding_flow: trial_onboarding_flow }).execute
 
           expect(result.success?).to be false
           expect(result.reason).to eq(:submission_failed)
-          expect(result.errors).to match(['_error_'])
+          expect(result.errors).to match([message])
         end
       end
     end
