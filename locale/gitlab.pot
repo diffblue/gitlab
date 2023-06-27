@@ -42002,6 +42002,9 @@ msgstr ""
 msgid "SecurityReports|There was an error adding the comment."
 msgstr ""
 
+msgid "SecurityReports|There was an error creating a Jira issue for the finding. Please try again."
+msgstr ""
+
 msgid "SecurityReports|There was an error creating the issue."
 msgstr ""
 
