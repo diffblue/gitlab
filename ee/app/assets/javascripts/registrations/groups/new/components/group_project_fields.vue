@@ -1,5 +1,12 @@
 <script>
-import { GlFormGroup, GlFormInput, GlTooltipDirective } from '@gitlab/ui';
+import {
+  GlFormGroup,
+  GlFormInput,
+  GlTooltipDirective,
+  GlFormCheckbox,
+  GlFormText,
+} from '@gitlab/ui';
+
 import { GlBreakpointInstance as bp } from '@gitlab/ui/dist/utils';
 import { debounce } from 'lodash';
 import { mapState, mapActions } from 'vuex';
@@ -16,6 +23,8 @@ export default {
   components: {
     GlFormGroup,
     GlFormInput,
+    GlFormCheckbox,
+    GlFormText,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -39,6 +48,10 @@ export default {
     },
     projectName: {
       type: String,
+      required: true,
+    },
+    initializeWithReadme: {
+      type: Boolean,
       required: true,
     },
     rootUrl: {
@@ -136,6 +149,8 @@ export default {
     tooltipTitle: s__('ProjectsNew|Projects are organized into groups'),
     urlHeader: s__('ProjectsNew|Your project will be created at:'),
     urlFooter: s__('ProjectsNew|You can always change your URL later'),
+    readmeLabel: s__('ProjectsNew|Include a Getting Started README'),
+    readmeDescription: s__("ProjectsNew|Recommended if you're new to GitLab"),
     urlSlash: __('/'),
   },
 };
@@ -224,5 +239,15 @@ export default {
     <p class="form-text text-muted gl-text-center gl-mb-5!">
       {{ $options.i18n.urlFooter }}
     </p>
+
+    <gl-form-group v-if="!importGroup">
+      <gl-form-checkbox name="project[initialize_with_readme]" :checked="initializeWithReadme">
+        {{ $options.i18n.readmeLabel }}
+
+        <gl-form-text>
+          {{ $options.i18n.readmeDescription }}
+        </gl-form-text>
+      </gl-form-checkbox>
+    </gl-form-group>
   </div>
 </template>
