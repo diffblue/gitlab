@@ -65,7 +65,6 @@ export default {
     { key: 'repository', label: __('Repository') },
     { key: 'snippets', label: __('Snippets') },
     { key: 'buildArtifacts', label: __('Jobs') },
-    { key: 'pipelineArtifacts', label: __('Pipelines') },
     { key: 'lfsObjects', label: __('LFS') },
     { key: 'packages', label: __('Packages') },
     { key: 'wiki', label: __('Wiki') },
@@ -164,10 +163,6 @@ export default {
 
     <template #cell(buildArtifacts)="{ item: project }">
       <number-to-human-size :value="project.statistics.buildArtifactsSize" />
-    </template>
-
-    <template #cell(pipelineArtifacts)="{ item: project }">
-      <number-to-human-size :value="project.statistics.pipelineArtifactsSize" />
     </template>
 
     <template #cell(packages)="{ item: project }">

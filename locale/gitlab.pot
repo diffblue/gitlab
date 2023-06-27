@@ -33268,9 +33268,6 @@ msgstr ""
 msgid "Pipeline URL"
 msgstr ""
 
-msgid "Pipeline artifacts"
-msgstr ""
-
 msgid "Pipeline creation rate limits"
 msgstr ""
 
@@ -49274,9 +49271,6 @@ msgid "UsageQuota|Pending Members"
 msgstr ""
 
 msgid "UsageQuota|Pipeline artifacts and job artifacts, created with CI/CD."
-msgstr ""
-
-msgid "UsageQuota|Pipeline artifacts created by CI/CD."
 msgstr ""
 
 msgid "UsageQuota|Pipelines"
