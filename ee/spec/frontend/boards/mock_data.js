@@ -704,6 +704,26 @@ export const mockGroup2 = {
 
 export const mockSubGroups = [mockGroup0, mockGroup1, mockGroup2];
 
+export const mockGroupsResponse = (subGroups = [mockGroup1, mockGroup2]) => ({
+  data: {
+    group: {
+      ...mockGroup0,
+      descendantGroups: {
+        nodes: subGroups,
+        pageInfo: {
+          hasNextPage: true,
+          hasPreviousPage: false,
+          startCursor: 'abc',
+          endCursor: 'bcd',
+          __typename: 'PageInfo',
+        },
+        __typename: 'GroupConnection',
+      },
+      __typename: 'Group',
+    },
+  },
+});
+
 export const mockTokens = (
   fetchLabels,
   fetchUsers,

@@ -1,5 +1,5 @@
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions } from 'vuex';
 import BoardNewItem from '~/boards/components/board_new_item.vue';
 import { toggleFormEventPrefix } from '~/boards/constants';
 import eventHub from '~/boards/eventhub';
@@ -19,8 +19,12 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      selectedGroup: {},
+    };
+  },
   computed: {
-    ...mapState(['selectedGroup']),
     formEventPrefix() {
       return toggleFormEventPrefix.epic;
     },
@@ -62,6 +66,6 @@ export default {
     @form-submit="submit"
     @form-cancel="cancel"
   >
-    <group-select :list="list" />
+    <group-select v-model="selectedGroup" :list="list" />
   </board-new-item>
 </template>
