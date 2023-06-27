@@ -1,8 +1,13 @@
 <script>
+import { GlIcon, GlLink } from '@gitlab/ui';
 import { n__, s__, sprintf } from '~/locale';
 import { formatDate } from '~/lib/utils/datetime_utility';
 
 export default {
+  components: {
+    GlIcon,
+    GlLink,
+  },
   props: {
     statistics: {
       required: true,
@@ -11,6 +16,10 @@ export default {
     versions: {
       required: true,
       type: Array,
+    },
+    webPath: {
+      required: true,
+      type: String,
     },
   },
   computed: {
@@ -27,17 +36,36 @@ export default {
       return this.$options.i18n.lastReleaseMissing;
     },
     openedIssuesText() {
-      return n__('%d opened Issue', '%d opened Issues', this.statistics.issues);
+      return n__('%d Issue', '%d Issues', this.statistics.issues);
     },
     openedMergeRequestText() {
-      return n__(
-        '%d opened Merge Request',
-        '%d opened Merge Requests',
-        this.statistics.mergeRequests,
-      );
+      return n__('%d Merge Request', '%d Merge Requests', this.statistics.mergeRequests);
     },
     releasedAt() {
       return this.hasVersion && formatDate(this.versions[0].releasedAt, 'yyyy-mm-dd');
+    },
+    statsConfig() {
+      return [
+        {
+          icon: 'project',
+          link: `${this.webPath}`,
+          text: this.$options.i18n.projectLink,
+        },
+        {
+          icon: 'issues',
+          link: `${this.webPath}/issues`,
+          text: this.openedIssuesText,
+        },
+        {
+          icon: 'merge-request',
+          link: `${this.webPath}/merge_requests`,
+          text: this.openedMergeRequestText,
+        },
+        {
+          icon: 'clock',
+          text: this.lastReleaseText,
+        },
+      ];
     },
   },
   i18n: {
@@ -48,14 +76,18 @@ export default {
   },
 };
 </script>
+
 <template>
-  <div>
-    <h3>{{ $options.i18n.title }}</h3>
-    <ul class="gl-list-style-none">
-      <li>{{ $options.i18n.projectLink }}</li>
-      <li>{{ openedIssuesText }}</li>
-      <li>{{ openedMergeRequestText }}</li>
-      <li>{{ lastReleaseText }}</li>
+  <div class="gl-mt-5 gl-ml-11">
+    <div class="gl-font-lg gl-font-weight-bold gl-mb-2">{{ $options.i18n.title }}</div>
+    <ul class="gl-list-style-none gl-p-0 gl-display-flex gl-flex-direction-column gl-gap-2">
+      <li v-for="stat in statsConfig" :key="`${stat.icon}`">
+        <gl-icon class="gl-text-primary" :name="stat.icon" />
+        <gl-link v-if="stat.link" :href="stat.link" class="gl-ml-3"> {{ stat.text }} </gl-link>
+        <span v-else class="gl-ml-3 gl-text-secondary">
+          {{ stat.text }}
+        </span>
+      </li>
     </ul>
   </div>
 </template>

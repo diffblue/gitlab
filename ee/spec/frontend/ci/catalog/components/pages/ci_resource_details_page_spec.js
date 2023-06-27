@@ -87,8 +87,11 @@ describe('CiResourceDetailsPage', () => {
       it('passes expected props', () => {
         expect(findHeaderComponent().props()).toEqual({
           description: defaultDetailsValues.description,
+          icon: defaultDetailsValues.icon,
           name: defaultDetailsValues.name,
+          resourceId: defaultDetailsValues.id,
           rootNamespace: defaultDetailsValues.rootNamespace,
+          webPath: defaultDetailsValues.webPath,
         });
       });
     });
@@ -102,6 +105,7 @@ describe('CiResourceDetailsPage', () => {
         expect(findAboutComponent().props()).toEqual({
           statistics: defaultDetailsValues.statistics,
           versions: defaultDetailsValues.versions.nodes,
+          webPath: defaultDetailsValues.webPath,
         });
       });
     });
