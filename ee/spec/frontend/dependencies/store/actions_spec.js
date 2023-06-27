@@ -29,7 +29,7 @@ describe('Dependencies actions', () => {
     actionName                         | payload
     ${'setDependenciesEndpoint'}       | ${TEST_HOST}
     ${'setExportDependenciesEndpoint'} | ${TEST_HOST}
-    ${'fetchDependencies'}             | ${undefined}
+    ${'setSortField'}                  | ${undefined}
   `('$actionName', ({ actionName, payload }) => {
     it(`dispatches the ${actionName} action on each list module`, () => {
       const state = createState();
