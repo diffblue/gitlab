@@ -2,12 +2,8 @@
 
 module PackageMetadata
   class CompressedPackageDataObject
-    def self.parse(text, purl_type)
-      parsed = ::Gitlab::Json.parse(text)
-      new(purl_type: purl_type, **parsed.transform_keys(&:to_sym))
-    rescue JSON::ParserError => e
-      Gitlab::AppJsonLogger.error(class: name, message: e.message)
-      nil
+    def self.create(data, purl_type)
+      new(purl_type: purl_type, **data.transform_keys(&:to_sym))
     end
 
     attr_accessor :purl_type, :default_licenses, :lowest_version, :highest_version, :other_licenses

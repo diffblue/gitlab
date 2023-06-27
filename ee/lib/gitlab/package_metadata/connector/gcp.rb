@@ -33,13 +33,7 @@ require 'google/cloud/storage'
 module Gitlab
   module PackageMetadata
     module Connector
-      class Gcp
-        def initialize(bucket_name, version_format, purl_type)
-          @bucket_name = bucket_name
-          @version_format = version_format
-          @purl_type = purl_type
-        end
-
+      class Gcp < BaseConnector
         def data_after(checkpoint)
           return all_files if checkpoint.blank?
 
@@ -56,64 +50,43 @@ module Gitlab
 
         private
 
-        attr_reader :bucket_name, :version_format, :purl_type
-
-        class DataFile
-          include Enumerable
-
-          attr_reader :sequence, :chunk, :version_format, :purl_type
-
-          def initialize(file, file_prefix, file_suffix, version_format, purl_type)
-            @file = file
-            @sequence, @chunk = file.name.delete_prefix(file_prefix).delete_suffix(".#{file_suffix}")
-              .split('/').map(&:to_i)
-            @version_format = version_format
-            @purl_type = purl_type
-          end
-
-          def each(&blk)
-            @file.download(skip_decompress: true).each_line do |line|
-              data_object = parse(line, purl_type)
-
-              yield data_object if data_object
-            end
-          end
-
-          def checkpoint?(checkpoint)
-            sequence == checkpoint.sequence && chunk == checkpoint.chunk
-          end
-
-          def parse(line, purl_type)
-            if version_format == ::PackageMetadata::SyncConfiguration::VERSION_FORMAT_V2
-              ::PackageMetadata::CompressedPackageDataObject.parse(line, purl_type)
-            else
-              ::PackageMetadata::DataObject.from_csv(line, purl_type)
-            end
-          end
+        # gcp file_prefix has a trailing slash, so the base connector definition
+        # is updated to add the trailing slash.
+        def file_prefix
+          File.join(super, '')
         end
 
         def all_files
-          bucket.files(prefix: file_prefix).all.lazy
-            .map do |file|
-              DataFile.new(file, file_prefix, file_suffix, version_format, purl_type)
-            end
-        end
+          bucket.files(prefix: file_prefix).all.lazy.map do |file|
+            sequence, chunk = sequence_and_chunk_from(file.name)
 
-        def file_prefix
-          registry_id = ::PackageMetadata::SyncConfiguration.registry_id(purl_type)
-          "#{version_format}/#{registry_id}/"
-        end
-
-        def file_suffix
-          version_format == ::PackageMetadata::SyncConfiguration::VERSION_FORMAT_V2 ? 'ndjson' : 'csv'
+            data_file_class.new(GcpFileWrapper.new(file), sequence, chunk)
+          end
         end
 
         def bucket
-          connection.bucket(bucket_name, skip_lookup: true)
+          connection.bucket(sync_config.base_uri, skip_lookup: true)
         end
 
         def connection
           @connection ||= Google::Cloud::Storage.anonymous
+        end
+
+        # GcpFileWrapper ensures that #download is only called on the gcp file when caller needs to access the data.
+        class GcpFileWrapper
+          def initialize(gcp_file)
+            @gcp_file = gcp_file
+          end
+
+          def each_line(&block)
+            io.each_line(&block)
+          end
+
+          private
+
+          def io
+            @io ||= @gcp_file.download(skip_decompress: true)
+          end
         end
       end
     end
