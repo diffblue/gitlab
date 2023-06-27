@@ -242,14 +242,14 @@ RSpec.shared_examples 'security findings finder' do
           let(:page) { 2 }
           # Limit per_page to force pagination on smaller dataset
           let(:per_page) { 2 }
-          let(:expected_uuids) { Security::Finding.pluck(:uuid)[4..5] }
+          let(:expected_uuids) { Security::Finding.deduplicated.ordered.pluck(:uuid)[2..3] }
 
           it { is_expected.to match_array(expected_uuids) }
         end
 
         context 'when the per_page is provided' do
           let(:per_page) { 1 }
-          let(:expected_uuids) { [Security::Finding.pick(:uuid)] }
+          let(:expected_uuids) { [Security::Finding.deduplicated.ordered.pick(:uuid)] }
 
           it { is_expected.to match_array(expected_uuids) }
         end
