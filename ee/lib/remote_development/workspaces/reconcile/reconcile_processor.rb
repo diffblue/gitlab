@@ -136,7 +136,7 @@ module RemoteDevelopment
           workspace_resources = DesiredConfigGenerator.new.generate_desired_config(workspace: workspace)
 
           desired_config_to_apply_array = workspace_resources.map do |resource|
-            YAML.dump(resource)
+            YAML.dump(resource.deep_stringify_keys)
           end
 
           return unless desired_config_to_apply_array.present?
