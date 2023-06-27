@@ -8,24 +8,15 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
   include NamespaceStorageHelpers
   include FreeUserCapHelpers
 
-  let(:over_storage_limit) { false }
-
   let_it_be(:group) { create(:group_with_plan, :with_root_storage_statistics, plan: :free_plan) }
   let_it_be_with_refind(:user) { create(:user) }
 
   subject(:component) { described_class.new(context: group, user: user) }
 
   before do
-    stub_ee_application_setting(should_check_namespace_plan: true)
-    stub_ee_application_setting(enforce_namespace_storage_limit: true)
-    group.root_storage_statistics.update!(
-      storage_size: 5.gigabytes
-    )
-    set_notification_limit(group, megabytes: 500)
-
-    allow_next_instance_of(::Namespaces::Storage::RootSize) do |group|
-      allow(group).to receive(:above_size_limit?).and_return(over_storage_limit)
-    end
+    stub_ee_application_setting(should_check_namespace_plan: true, automatic_purchased_storage_allocation: true)
+    set_notification_limit(group, megabytes: 5_000)
+    set_used_storage(group, megabytes: 5_100)
   end
 
   describe 'when qalifies for combnined users and storage alert' do
@@ -33,8 +24,6 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
       create(:group_with_plan, :with_root_storage_statistics, :private, plan: :free_plan,
         name: 'over_users_and_storage')
     end
-
-    let(:over_storage_limit) { true }
 
     before do
       group.add_guest(user)
@@ -46,6 +35,70 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
       render_inline(component)
 
       expect(page).not_to have_text "A namespace storage limit will soon be enforced"
+    end
+  end
+
+  describe 'enforcement phases' do
+    context 'when namespace is in pre-enforcement phase and no enforcement is set' do
+      before do
+        group.add_guest(user)
+      end
+
+      it 'renders the alert' do
+        render_inline(component)
+
+        expect(page).to have_css('.js-storage-pre-enforcement-alert')
+      end
+    end
+
+    context 'when namespace is in the phased rollout of enforcement' do
+      before do
+        group.add_guest(user)
+        enforce_namespace_storage_limit(group)
+      end
+
+      it 'renders the alert if used_storage is less than enforcement_limit' do
+        set_enforcement_limit(group, megabytes: 6_000)
+
+        render_inline(component)
+
+        expect(page).to have_css('.js-storage-pre-enforcement-alert')
+      end
+
+      it 'does not render the alert if used_storage is higher than enforcement_limit' do
+        set_enforcement_limit(group, megabytes: 4_000)
+
+        render_inline(component)
+
+        expect(page).not_to have_css('.js-storage-pre-enforcement-alert')
+      end
+    end
+
+    context 'when namespace is NOT in phased rollout and uses dashboard limit for enforcement' do
+      # After we enable Namespace enforcement, namespaces created after that date will use
+      # the dashboard limit https://about.gitlab.com/pricing/faq-efficient-free-tier/#q-what-is-changing-with-storage
+      # the dashboard limit is stored in the storage_size_limit plan limit
+
+      before do
+        group.add_guest(user)
+        enforce_namespace_storage_limit(group)
+      end
+
+      it 'renders the alert if used_storage is less than storage_size_limit' do
+        set_dashboard_limit(group, megabytes: 6_000)
+
+        render_inline(component)
+
+        expect(page).to have_css('.js-storage-pre-enforcement-alert')
+      end
+
+      it 'does not render the alert if used_storage is higher than storage_size_limit' do
+        set_dashboard_limit(group, megabytes: 4_000)
+
+        render_inline(component)
+
+        expect(page).not_to have_css('.js-storage-pre-enforcement-alert')
+      end
     end
   end
 
@@ -79,7 +132,6 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
       expect(page).to have_css("[data-feature-id='namespace_storage_pre_enforcement_banner']")
       expect(page).to have_css("[data-dismiss-endpoint='#{group_callouts_path}']")
       expect(page).to have_css("[data-group-id='#{group.root_ancestor.id}']")
-      expect(page).not_to have_css(".gl-alert-not-dismissible")
     end
 
     context 'when the user dismissed the alert under 14 days ago', :freeze_time do
@@ -156,13 +208,8 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
 
     context 'when namespace is below the notification limit' do
       before do
-        create(
-          :group_callout,
-          user: user,
-          group: group,
-          feature_name: 'namespace_storage_pre_enforcement_banner'
-        )
-        allow(::Namespaces::Storage::Enforcement).to receive(:show_pre_enforcement_alert?).and_return(false)
+        enforce_namespace_storage_limit(group)
+        set_notification_limit(group, megabytes: 6_000)
       end
 
       it 'does not render' do
@@ -172,26 +219,9 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
       end
     end
 
-    context 'when user is allowed to see but not dismiss the alert' do
-      let(:over_storage_limit) { true }
-
-      before do
-        group.add_guest(user)
-      end
-
-      it 'renders the correct callout data' do
-        render_inline(component)
-
-        expect(page).to have_css(".gl-alert-not-dismissible")
-        expect(page).to have_css("[data-feature-id='namespace_storage_pre_enforcement_banner']")
-        expect(page).to have_css("[data-group-id='#{group.root_ancestor.id}']")
-      end
-    end
-
     context 'when group does not meet the criteria to render the alert' do
       it 'does not render' do
-        allow(::Namespaces::Storage::Enforcement)
-          .to receive(:show_pre_enforcement_alert?).and_return(false)
+        set_notification_limit(group, megabytes: 6_000)
 
         render_inline(component)
 

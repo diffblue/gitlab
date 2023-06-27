@@ -312,7 +312,7 @@ RSpec.describe API::Internal::Base do
         project.add_developer(user)
         create(:gitlab_subscription, :ultimate, namespace: group)
         create(:namespace_root_storage_statistics, namespace: group)
-        set_storage_size_limit(group, megabytes: 4)
+        set_enforcement_limit(group, megabytes: 4)
       end
 
       before do

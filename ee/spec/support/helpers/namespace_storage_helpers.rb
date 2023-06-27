@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module NamespaceStorageHelpers
-  def set_storage_size_limit(namespace, megabytes:)
+  def set_enforcement_limit(namespace, megabytes:)
     namespace.gitlab_subscription.hosted_plan.actual_limits.update!(enforcement_limit: megabytes)
   end
 

@@ -452,7 +452,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
           before do
             create(:gitlab_subscription, :ultimate, namespace: namespace)
             create(:namespace_root_storage_statistics, namespace: namespace)
-            set_storage_size_limit(namespace, megabytes: 100)
+            set_enforcement_limit(namespace, megabytes: 100)
             set_used_storage(namespace, megabytes: 20)
           end
 
@@ -488,7 +488,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
           before do
             create(:gitlab_subscription, :ultimate, namespace: namespace)
             create(:namespace_root_storage_statistics, namespace: namespace)
-            set_storage_size_limit(namespace, megabytes: 100)
+            set_enforcement_limit(namespace, megabytes: 100)
             set_used_storage(namespace, megabytes: 101)
           end
 
@@ -508,7 +508,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
           before do
             create(:gitlab_subscription, :ultimate, namespace: namespace)
             create(:namespace_root_storage_statistics, namespace: namespace)
-            set_storage_size_limit(namespace, megabytes: 100)
+            set_enforcement_limit(namespace, megabytes: 100)
             set_used_storage(namespace, megabytes: 20)
           end
 
@@ -546,7 +546,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
           before do
             create(:gitlab_subscription, :ultimate, namespace: namespace)
             create(:namespace_root_storage_statistics, namespace: namespace)
-            set_storage_size_limit(namespace, megabytes: 100)
+            set_enforcement_limit(namespace, megabytes: 100)
             set_used_storage(namespace, megabytes: 101)
           end
 

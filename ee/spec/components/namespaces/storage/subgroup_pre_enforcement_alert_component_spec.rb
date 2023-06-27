@@ -10,8 +10,7 @@ RSpec.describe Namespaces::Storage::SubgroupPreEnforcementAlertComponent, :saas,
   subject(:component) { described_class.new(context: subgroup, user: user) }
 
   before do
-    stub_ee_application_setting(should_check_namespace_plan: true)
-    stub_ee_application_setting(enforce_namespace_storage_limit: true)
+    stub_ee_application_setting(should_check_namespace_plan: true, automatic_purchased_storage_allocation: true)
   end
 
   context 'when subgroup' do

@@ -18,8 +18,8 @@ module Namespaces
         root_namespace = namespace.root_ancestor
 
         ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
-          !root_namespace.paid? &&
-          over_pre_enforcement_notification_limit?(root_namespace) &&
+          ::Gitlab::CurrentSettings.automatic_purchased_storage_allocation? &&
+          !root_namespace.paid? && in_pre_enforcement_phase?(root_namespace) &&
           ::Feature.enabled?(:namespace_storage_limit_show_preenforcement_banner, root_namespace)
       end
 
@@ -55,6 +55,19 @@ module Namespaces
       end
 
       private
+
+      def in_pre_enforcement_phase?(root_namespace)
+        # a Namespace is in the pre-enforcement phase if all the following are true:
+        # - their storage usage is over the notification limit
+        # - their storage usage is under the enforcement limit
+        # - the namespace is not being excluded from storage limits
+
+        # above_size_limit? will return true if enforcement is enabled and the
+        # namespace is above the applicable limit
+        return false if ::Namespaces::Storage::RootSize.new(root_namespace).above_size_limit?
+
+        over_pre_enforcement_notification_limit?(root_namespace)
+      end
 
       def enforceable_namespace?(root_namespace)
         return false if root_namespace.opensource_plan?

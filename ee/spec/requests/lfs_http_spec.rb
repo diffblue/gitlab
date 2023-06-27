@@ -115,7 +115,7 @@ RSpec.describe 'Git LFS API and storage', feature_category: :source_code_managem
             create(:gitlab_subscription, :ultimate, namespace: namespace)
             create(:namespace_root_storage_statistics, namespace: namespace)
             enforce_namespace_storage_limit(namespace)
-            set_storage_size_limit(namespace, megabytes: 100)
+            set_enforcement_limit(namespace, megabytes: 100)
             set_used_storage(namespace, megabytes: 140)
           end
 
@@ -132,7 +132,7 @@ RSpec.describe 'Git LFS API and storage', feature_category: :source_code_managem
             create(:gitlab_subscription, :ultimate, namespace: namespace)
             create(:namespace_root_storage_statistics, namespace: namespace)
             enforce_namespace_storage_limit(namespace)
-            set_storage_size_limit(namespace, megabytes: 200)
+            set_enforcement_limit(namespace, megabytes: 200)
             set_used_storage(namespace, megabytes: 100)
           end
 
@@ -163,7 +163,7 @@ RSpec.describe 'Git LFS API and storage', feature_category: :source_code_managem
                 project.update!(namespace: namespace)
                 stub_ee_application_setting(dashboard_limit_enabled: true)
                 enforce_namespace_storage_limit(namespace)
-                set_storage_size_limit(namespace, megabytes: 100)
+                set_enforcement_limit(namespace, megabytes: 100)
                 set_used_storage(namespace, megabytes: 90)
                 allow_next_instance_of(Repositories::LfsApiController) do |instance|
                   allow(instance).to receive(:lfs_upload_access?).and_return(false)
@@ -192,7 +192,7 @@ RSpec.describe 'Git LFS API and storage', feature_category: :source_code_managem
                 create(:gitlab_subscription, :ultimate, namespace: group)
                 create(:namespace_root_storage_statistics, namespace: group)
                 enforce_namespace_storage_limit(group)
-                set_storage_size_limit(group, megabytes: 70)
+                set_enforcement_limit(group, megabytes: 70)
                 set_used_storage(group, megabytes: 80)
               end
 
@@ -311,7 +311,7 @@ RSpec.describe 'Git LFS API and storage', feature_category: :source_code_managem
               create(:gitlab_subscription, :ultimate, namespace: namespace)
               create(:namespace_root_storage_statistics, namespace: namespace)
               enforce_namespace_storage_limit(namespace)
-              set_storage_size_limit(namespace, megabytes: 50)
+              set_enforcement_limit(namespace, megabytes: 50)
               set_used_storage(namespace, megabytes: 8)
             end
 

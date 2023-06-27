@@ -85,8 +85,7 @@ RSpec.describe 'Project', :js, feature_category: :groups_and_projects do
     let_it_be(:storage_banner_text) { "A namespace storage limit will soon be enforced" }
 
     before do
-      stub_ee_application_setting(should_check_namespace_plan: true)
-      stub_ee_application_setting(enforce_namespace_storage_limit: true)
+      stub_ee_application_setting(should_check_namespace_plan: true, automatic_purchased_storage_allocation: true)
       set_notification_limit(group, megabytes: 1000)
 
       group.root_storage_statistics.update!(

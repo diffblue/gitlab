@@ -180,7 +180,7 @@ RSpec.describe API::Commits, feature_category: :source_code_management do
         create(:gitlab_subscription, :ultimate, namespace: namespace)
         create(:namespace_root_storage_statistics, namespace: namespace)
         enforce_namespace_storage_limit(namespace)
-        set_storage_size_limit(namespace, megabytes: 5)
+        set_enforcement_limit(namespace, megabytes: 5)
         set_used_storage(namespace, megabytes: 6)
       end
 
@@ -233,7 +233,7 @@ RSpec.describe API::Commits, feature_category: :source_code_management do
         create(:gitlab_subscription, :ultimate, namespace: namespace)
         create(:namespace_root_storage_statistics, namespace: namespace)
         enforce_namespace_storage_limit(namespace)
-        set_storage_size_limit(namespace, megabytes: 5)
+        set_enforcement_limit(namespace, megabytes: 5)
         set_used_storage(namespace, megabytes: 6)
       end
 
