@@ -71,7 +71,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::SummarizeReview, feature_catego
 
         expect(Gitlab::Llm::OpenAi::Templates::SummarizeReview)
           .to receive(:get_options)
-          .with("File path: #{draft_note_by_current_user.file_path}\nComment: #{draft_note_by_current_user.note}\n\n")
+          .with("Comment: #{draft_note_by_current_user.note}\n")
           .and_return(ai_options)
 
         expect_next_instance_of(Gitlab::Llm::OpenAi::Client) do |instance|
