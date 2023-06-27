@@ -208,6 +208,19 @@ RSpec.describe Gitlab::CodeOwners, feature_category: :source_code_management do
 
         expect(entries.count).to be(1)
       end
+
+      context 'when the single commit gets amended' do
+        before do
+          head_commit_sha = merge_request.merge_request_diff.head_commit_sha
+          expect(merge_request).to receive(:commit_shas).with(limit: 2).and_return([head_commit_sha])
+        end
+
+        it 'identifies codeowner entries from the merge_request_diff' do
+          entries = described_class.entries_since_merge_request_commit(merge_request)
+
+          expect(entries.count).to be(2)
+        end
+      end
     end
 
     context 'with sha' do
@@ -221,6 +234,15 @@ RSpec.describe Gitlab::CodeOwners, feature_category: :source_code_management do
         entries = described_class.entries_since_merge_request_commit(merge_request, sha: feature_sha1)
 
         expect(entries.count).to be(2)
+      end
+
+      context 'when the sha is the same as head_commit_sha' do
+        it 'identifies codeowner entries from the merge_request_diff' do
+          head_commit_sha = merge_request.merge_request_diff.head_commit_sha
+          entries = described_class.entries_since_merge_request_commit(merge_request, sha: head_commit_sha)
+
+          expect(entries.count).to be(2)
+        end
       end
     end
   end
