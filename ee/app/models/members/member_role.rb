@@ -25,12 +25,8 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   validate :max_count_per_group_hierarchy, on: :create
   validate :validate_namespace_locked, on: :update
   validate :attributes_locked_after_member_associated, on: :update
-  validate :validate_minimal_base_access_level, if: ->(member_role) do
-    Feature.enabled?(:custom_roles_vulnerability, member_role.namespace&.root_ancestor)
-  end
-  validate :validate_requirements, if: ->(member_role) do
-    Feature.enabled?(:custom_roles_vulnerability, member_role.namespace&.root_ancestor)
-  end
+  validate :validate_minimal_base_access_level
+  validate :validate_requirements
 
   validates_associated :members
 
