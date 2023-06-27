@@ -4,11 +4,7 @@ module QA
   RSpec.describe 'Fulfillment', :requires_admin,
     only: { subdomain: :staging },
     feature_flag: { name: 'namespace_storage_limit', scope: :group },
-    product_group: :utilization,
-    quarantine: {
-      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/412812',
-      type: :stale
-    } do
+    product_group: :utilization do
     describe 'Utilization' do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:owner_api_client) { Runtime::API::Client.new(:gitlab, user: owner_user) }
@@ -68,11 +64,11 @@ module QA
                 ::QA::Support::WaitForRequests.wait_for_requests # handle element loading text
                 usage_quota.namespace_usage_total.squish
               end
-                .to eventually_match(%r{\d+\.\d+ Ki?B / \d+.\d+ Gi?B Namespace storage used}i)
+                .to eventually_match(%r{\d+\.\d+ Ki?B Namespace storage used}i)
                       .within(max_attempts: 10, reload_page: page, sleep_interval: 1)
               expect(usage_quota.storage_purchased.squish).to match(%r{Total purchased storage \d+.\d Gi?B}i)
-              expect(usage_quota.dependency_proxy_size).to match(%r{0 bytes}i)
-              expect(usage_quota.container_registry_size).to match(%r{0 bytes}i)
+              expect(usage_quota.dependency_proxy_size).to match(%r{0 B}i)
+              expect(usage_quota.container_registry_size).to match(%r{0 B}i)
               expect(usage_quota.group_usage_message)
                 .to match(%r{Usage of group resources across the projects in the #{free_plan_group.path} group}i)
             end
