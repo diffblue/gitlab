@@ -23,6 +23,8 @@ module Registrations
           namespace: group)
       end
 
+      experiment(:phone_verification_for_low_risk_users, user: user).track(:assignment, namespace: group)
+
       apply_trial if in_trial_onboarding_flow?
     end
 

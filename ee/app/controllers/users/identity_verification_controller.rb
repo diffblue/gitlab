@@ -84,6 +84,7 @@ module Users
       sign_in(@user)
       session.delete(:verification_user_id)
       set_redirect_url
+      experiment(:phone_verification_for_low_risk_users, user: @user).track(:registration_completed)
 
       render 'devise/sessions/successful_verification'
     end

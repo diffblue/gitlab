@@ -498,6 +498,13 @@ feature_category: :system_access do
         expect(controller.stored_location_for(:user)).to eq(stored_user_return_to_path)
       end
     end
+
+    it 'tracks phone_verification_for_low_risk_users registration_completed event', :experiment do
+      expect(experiment(:phone_verification_for_low_risk_users))
+        .to track(:registration_completed).on_next_instance.with_context(user: user)
+
+      get success_identity_verification_path
+    end
   end
 
   describe 'GET verify_credit_card' do
