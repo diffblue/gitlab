@@ -6,13 +6,14 @@ RSpec.describe PackageMetadata::CompressedPackageDataObject, feature_category: :
   describe '.parse' do
     let(:purl_type) { 'npm' }
 
-    subject(:parse) { described_class.parse(text, purl_type) }
+    subject(:create) { described_class.create(hash, purl_type) }
 
-    context 'when text is well-formed' do
-      let(:text) do
-        '{"name": "xpp3/xpp3", "lowest_version": "1.1.4c", "other_licenses": [{"licenses": ["unknown"], ' \
-          '"versions": ["1.1.2a", "1.1.2a_min", "1.1.3.3", "1.1.3.3_min", "1.1.3.4.O", "1.1.3.4-RC3", ' \
-          '"1.1.3.4-RC8"]}], "highest_version": "2.3.5d", "default_licenses": ["unknown", "Apache-1.1", "CC-PDDC"]}'
+    context 'when hash is well-formed' do
+      let(:hash) do
+        { "name" => "xpp3/xpp3", "lowest_version" => "1.1.4c",
+          "other_licenses" => [{ "licenses" => ["unknown"], "versions" => ["1.1.2a", "1.1.2a_min", "1.1.3.3",
+            "1.1.3.3_min", "1.1.3.4.O", "1.1.3.4-RC3", "1.1.3.4-RC8"] }],
+          "highest_version" => "2.3.5d", "default_licenses" => ["unknown", "Apache-1.1", "CC-PDDC"] }
       end
 
       it {
@@ -24,57 +25,25 @@ RSpec.describe PackageMetadata::CompressedPackageDataObject, feature_category: :
       }
     end
 
-    context 'when text is escaped unicode' do
-      let(:text) do
-        (+'{"name": "xpp3/xpp3", "lowest_version": "1.1.4c", "other_licenses": [{"licenses": ["unknown"], ' \
-          '"versions": ["1.1.2a", "1.1.2a_min", "1.1.3.3", "1.1.3.3_min", "1.1.3.4.O", "1.1.3.4-RC3", ' \
-          '"1.1.3.4-RC8"]}],  "highest_version": "2.3.5d", "default_licenses": ["unknown", "Apache-1.1", "CC-PDDC"]}')
-          .force_encoding('ASCII-8BIT')
-      end
+    context 'when hash is missing attribute' do
+      subject(:create!) { described_class.create(hash, purl_type) }
 
-      it {
-        is_expected.to eq(described_class.new(purl_type: purl_type, name: 'xpp3/xpp3',
-          default_licenses: ['unknown', 'Apache-1.1', 'CC-PDDC'], lowest_version: '1.1.4c', highest_version: '2.3.5d',
-          other_licenses: [{ 'licenses' => ['unknown'],
-                             'versions' => ['1.1.2a', '1.1.2a_min', '1.1.3.3', '1.1.3.3_min', '1.1.3.4.O',
-                               '1.1.3.4-RC3', '1.1.3.4-RC8'] }]))
-      }
-    end
-
-    context 'when text is missing attribute' do
       context 'and it is name' do
-        let(:text) { '{ "default_licenses": ["Apache-1.1"] }' }
+        let(:hash) {  { "default_licenses" => ["unknown", "Apache-1.1", "CC-PDDC"] } }
 
-        specify { expect { parse }.to raise_error(ArgumentError) }
+        specify { expect { create! }.to raise_error(ArgumentError) }
       end
 
       context 'and it is default_licenses' do
-        let(:text) { '{ "name": "foo" }' }
+        let(:hash) { { "name" => "xpp3/xpp3" } }
 
-        specify { expect { parse }.to raise_error(ArgumentError) }
+        specify { expect { create! }.to raise_error(ArgumentError) }
       end
 
       context 'and it is not madantory' do
-        let(:text) { '{"name": "foo", "default_licenses": ["Apache-1.1"] }' }
+        let(:hash) { { "name" => "xpp3/xpp3", "default_licenses" => ["unknown", "Apache-1.1", "CC-PDDC"] } }
 
-        specify { expect { parse }.not_to raise_error }
-      end
-    end
-
-    context 'when invalid json' do
-      let(:text) do
-        '{"name": "xpp3/xpp3", '
-      end
-
-      it { is_expected.to eq(nil) }
-
-      it 'logs the error' do
-        expect(::Gitlab::AppJsonLogger)
-          .to receive(:error)
-          .with(class: described_class.name,
-            message: "unexpected character (after name) at line 1, column 22 [parse.c:733] in " \
-                     "'{\"name\": \"xpp3/xpp3\", ")
-        parse
+        specify { expect { create! }.not_to raise_error }
       end
     end
   end
