@@ -645,11 +645,21 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
         end
 
         describe "actions" do
+          let(:approvals_required) { 1 }
           let(:action) do
             {
               type: "require_approval",
-              approvals_required: 1
+              approvals_required: approvals_required
             }
+          end
+
+          context "with invalid required approvals" do
+            let(:approvals_required) { 101 }
+
+            specify do
+              expect(errors).to include(
+                "property '/scan_result_policy/0/actions/0/approvals_required' is invalid: error_type=maximum")
+            end
           end
 
           context "without approvers" do
