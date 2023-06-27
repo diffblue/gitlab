@@ -36,65 +36,63 @@ const storageTypes = [
 ];
 
 describe('ProjectList', () => {
-  describe('Normal state', () => {
+  beforeEach(() => {
+    createComponent();
+  });
+
+  describe('Table header', () => {
+    it.each(storageTypes)('$key', ({ key }) => {
+      const th = wrapper.findByTestId(`th-${key}`);
+      const hasHelpLink = Boolean(projectHelpLinks[key]);
+
+      expect(th.findComponent(StorageTypeHelpLink).exists()).toBe(hasHelpLink);
+    });
+
+    it('shows warning icon for container registry type', () => {
+      const storageTypeWarning = wrapper
+        .findByTestId('th-containerRegistry')
+        .findComponent(StorageTypeWarning);
+
+      expect(storageTypeWarning.exists()).toBe(true);
+    });
+  });
+
+  describe('Project items are rendered', () => {
+    let tableText;
     beforeEach(() => {
-      createComponent();
+      tableText = findTable().text();
     });
 
-    describe('Table header', () => {
+    describe.each(projects)('$name', (project) => {
+      it('renders project name with namespace', () => {
+        const relativeProjectPath = project.nameWithNamespace.split(' / ').slice(1).join(' / ');
+        expect(tableText).toContain(relativeProjectPath);
+      });
+
       it.each(storageTypes)('$key', ({ key }) => {
-        const th = wrapper.findByTestId(`th-${key}`);
-        const hasHelpLink = Boolean(projectHelpLinks[key]);
-
-        expect(th.findComponent(StorageTypeHelpLink).exists()).toBe(hasHelpLink);
-      });
-
-      it('show warning icon for container registry type', () => {
-        const storageTypeWarning = wrapper
-          .findByTestId('th-containerRegistry')
-          .findComponent(StorageTypeWarning);
-
-        expect(storageTypeWarning.exists()).toBe(true);
+        const expectedText = numberToHumanSize(project.statistics[`${key}Size`], 1);
+        expect(tableText).toContain(expectedText);
       });
     });
 
-    describe('Project items are rendered', () => {
-      let tableText;
-      beforeEach(() => {
-        tableText = findTable().text();
-      });
+    it.each`
+      project        | projectUrlWithUsageQuotas
+      ${projects[0]} | ${'http://localhost/frontend-fixtures/twitter/-/usage_quotas'}
+      ${projects[1]} | ${'http://localhost/frontend-fixtures/html5-boilerplate/-/usage_quotas'}
+      ${projects[2]} | ${'http://localhost/frontend-fixtures/dummy-project/-/usage_quotas'}
+    `('renders project link as usage_quotas URL', ({ project, projectUrlWithUsageQuotas }) => {
+      createComponent({ props: { projects: [project] } });
 
-      describe.each(projects)('$name', (project) => {
-        it('renders project name with namespace', () => {
-          const relativeProjectPath = project.nameWithNamespace.split(' / ').slice(1).join(' / ');
-          expect(tableText).toContain(relativeProjectPath);
-        });
-
-        it.each(storageTypes)('$key', ({ key }) => {
-          const expectedText = numberToHumanSize(project.statistics[`${key}Size`], 1);
-          expect(tableText).toContain(expectedText);
-        });
-      });
-
-      it.each`
-        project        | projectUrlWithUsageQuotas
-        ${projects[0]} | ${'http://localhost/frontend-fixtures/twitter/-/usage_quotas'}
-        ${projects[1]} | ${'http://localhost/frontend-fixtures/html5-boilerplate/-/usage_quotas'}
-        ${projects[2]} | ${'http://localhost/frontend-fixtures/dummy-project/-/usage_quotas'}
-      `('renders project link as usage_quotas URL', ({ project, projectUrlWithUsageQuotas }) => {
-        createComponent({ props: { projects: [project] } });
-
-        expect(wrapper.findByTestId('project-link').attributes('href')).toBe(
-          projectUrlWithUsageQuotas,
-        );
-      });
+      expect(wrapper.findByTestId('project-link').attributes('href')).toBe(
+        projectUrlWithUsageQuotas,
+      );
     });
+  });
 
-    describe('Empty state', () => {
-      it('displays empty state message', () => {
-        createComponent({ props: { projects: [] } });
-        expect(findTable().findAll('tr').at(1).text()).toBe('No projects to display.');
-      });
+  describe('Empty state', () => {
+    it('displays empty state message', () => {
+      createComponent({ props: { projects: [] } });
+      expect(findTable().findAll('tr').at(1).text()).toBe('No projects to display.');
     });
   });
 });
