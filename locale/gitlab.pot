@@ -3855,9 +3855,6 @@ msgstr ""
 msgid "AdminUsers|Is using seat"
 msgstr ""
 
-msgid "AdminUsers|Issues and merge requests authored by this user are hidden from other users."
-msgstr ""
-
 msgid "AdminUsers|It's you!"
 msgstr ""
 
@@ -3901,6 +3898,9 @@ msgid "AdminUsers|Personal projects, group and user history will be left intact"
 msgstr ""
 
 msgid "AdminUsers|Private profile"
+msgstr ""
+
+msgid "AdminUsers|Projects, issues, merge requests, and comments of this user are hidden from other users."
 msgstr ""
 
 msgid "AdminUsers|Reactivating a user will:"
