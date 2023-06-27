@@ -14,6 +14,11 @@ export default {
       required: false,
       default: () => [],
     },
+    state: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
   },
   computed: {
     hasValidRoles() {
@@ -50,7 +55,7 @@ export default {
     :items="roles"
     is-check-centered
     multiple
-    toggle-class="gl-max-w-26"
+    :toggle-class="['gl-max-w-26', { 'gl-inset-border-1-red-500!': !state }]"
     :selected="existingApprovers"
     :toggle-text="toggleText"
     @select="handleSelectedRoles"

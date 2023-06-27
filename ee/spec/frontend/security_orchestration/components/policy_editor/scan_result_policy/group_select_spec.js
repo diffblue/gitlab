@@ -100,6 +100,13 @@ describe('GroupSelect component', () => {
       await waitForApolloAndVue();
     });
 
+    it('displays the correct listbox toggle class', () => {
+      expect(findListbox().props('toggleClass')).toEqual([
+        'gl-max-w-26',
+        { 'gl-inset-border-1-red-500!': false },
+      ]);
+    });
+
     it('filters groups when search is performed in listbox', async () => {
       expect(searchNamespaceGroupsQueryHandlerSuccess).toHaveBeenCalledWith({
         rootNamespacePath,
@@ -139,6 +146,20 @@ describe('GroupSelect component', () => {
       findListbox().vm.$emit('select', [group.id]);
       findListbox().vm.$emit('select', []);
       expect(wrapper.emitted('updateSelectedApprovers')[1]).toEqual([[]]);
+    });
+  });
+
+  describe('custom props', () => {
+    beforeEach(async () => {
+      createComponent({ propsData: { state: false } });
+      await waitForApolloAndVue();
+    });
+
+    it('displays the correct listbox toggle class', () => {
+      expect(findListbox().props('toggleClass')).toEqual([
+        'gl-max-w-26',
+        { 'gl-inset-border-1-red-500!': true },
+      ]);
     });
   });
 

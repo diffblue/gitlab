@@ -65,7 +65,7 @@ describe('UserSelect component', () => {
   const projectSearchQueryHandlerSuccess = jest.fn().mockResolvedValue(PROJECT_MEMBER_RESPONSE);
   const groupSearchQueryHandlerSuccess = jest.fn().mockResolvedValue(GROUP_MEMBER_RESPONSE);
 
-  const createComponent = ({ provide = {} } = {}) => {
+  const createComponent = ({ propsData = {}, provide = {} } = {}) => {
     const fakeApollo = createMockApollo([
       [searchProjectMembers, projectSearchQueryHandlerSuccess],
       [searchGroupMembers, groupSearchQueryHandlerSuccess],
@@ -75,6 +75,7 @@ describe('UserSelect component', () => {
       apolloProvider: fakeApollo,
       propsData: {
         existingApprovers: [],
+        ...propsData,
       },
       provide: {
         namespacePath,
@@ -96,6 +97,13 @@ describe('UserSelect component', () => {
     beforeEach(async () => {
       createComponent();
       await waitForApolloAndVue();
+    });
+
+    it('displays the correct listbox toggle class', () => {
+      expect(findListbox().props('toggleClass')).toEqual([
+        'gl-max-w-26',
+        { 'gl-inset-border-1-red-500!': false },
+      ]);
     });
 
     it('filters users when search is performed in listbox', async () => {
@@ -139,6 +147,19 @@ describe('UserSelect component', () => {
       findListbox().vm.$emit('select', []);
       await nextTick();
       expect(wrapper.emitted('updateSelectedApprovers')[1]).toEqual([[]]);
+    });
+  });
+
+  describe('custom props', () => {
+    beforeEach(() => {
+      createComponent({ propsData: { state: false } });
+    });
+
+    it('displays the correct listbox toggle class', () => {
+      expect(findListbox().props('toggleClass')).toEqual([
+        'gl-max-w-26',
+        { 'gl-inset-border-1-red-500!': true },
+      ]);
     });
   });
 
