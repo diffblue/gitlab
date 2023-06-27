@@ -74,6 +74,10 @@ module EE
         presence: { message: "can't be blank when using aws hosted elasticsearch" },
         if: ->(setting) { setting.elasticsearch_indexing? && setting.elasticsearch_aws? }
 
+      validates :elasticsearch_worker_number_of_shards,
+        presence: true,
+        numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: Elastic::ProcessBookkeepingService::SHARDS_MAX }
+
       validates :elasticsearch_indexed_file_size_limit_kb,
         presence: true,
         numericality: { only_integer: true, greater_than: 0 }

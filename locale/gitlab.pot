@@ -23418,6 +23418,9 @@ msgstr ""
 msgid "Improve customer support with Service Desk"
 msgstr ""
 
+msgid "Improve indexing performance by increasing Sidekiq load. Values greater than the current shard limit (%{limit}) are not allowed."
+msgstr ""
+
 msgid "Improve quality with test cases"
 msgstr ""
 
@@ -31526,6 +31529,9 @@ msgid "Number of replicas"
 msgstr ""
 
 msgid "Number of shards"
+msgstr ""
+
+msgid "Number of shards for non-code indexing"
 msgstr ""
 
 msgid "OK"

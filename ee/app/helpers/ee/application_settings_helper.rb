@@ -20,6 +20,7 @@ module EE
         :elasticsearch_indexing,
         :elasticsearch_requeue_workers,
         :elasticsearch_limit_indexing,
+        :elasticsearch_worker_number_of_shards,
         :elasticsearch_max_bulk_concurrency,
         :elasticsearch_max_bulk_size_mb,
         :elasticsearch_namespace_ids,

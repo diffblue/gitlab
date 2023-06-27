@@ -264,6 +264,7 @@ namespace :gitlab do
       puts "Pause indexing:\t\t\t#{setting.elasticsearch_pause_indexing? ? "yes".color(:yellow) : "no"}"
       puts "Indexing restrictions enabled:\t#{setting.elasticsearch_limit_indexing? ? "yes".color(:yellow) : "no"}"
       puts "File size limit:\t\t#{setting.elasticsearch_indexed_file_size_limit_kb} KiB"
+      puts "Indexing number of shards:\t#{Elastic::ProcessBookkeepingService.active_number_of_shards}"
 
       puts ""
       puts "Indexing Queues".color(:yellow)
