@@ -16,9 +16,10 @@ module Auth
 
     loggable_arguments 1
 
-    def perform(user_id, group_link_ids)
+    def perform(user_id, group_link_ids, provider = 'saml')
       @group_link_ids = group_link_ids
       @user = User.find_by_id(user_id)
+      @provider = provider
 
       return unless user && sync_enabled? && groups_to_sync?
 
@@ -30,7 +31,7 @@ module Auth
     attr_reader :group_link_ids, :user
 
     def sync_enabled?
-      Gitlab::Auth::Saml::Config.new.group_sync_enabled?
+      Gitlab::Auth::Saml::Config.new(@provider).group_sync_enabled?
     end
 
     def groups_to_sync?
@@ -99,7 +100,7 @@ module Auth
     end
 
     def preload_groups(group_ids)
-      Group.by_id(group_ids).group_by(&:id).transform_values(&:first)
+      Group.by_id(group_ids).index_by(&:id)
     end
   end
 end
