@@ -51,13 +51,20 @@ export default {
       <div class="gl-w-70p">
         <ci-resource-header
           :description="resourceDetails.description"
+          :icon="resourceDetails.icon"
           :name="resourceDetails.name"
+          :resource-id="resourceDetails.id"
           :root-namespace="resourceDetails.rootNamespace"
+          :web-path="resourceDetails.webPath"
         />
         <ci-resource-details :readme-html="resourceDetails.readmeHtml" />
       </div>
       <div>
-        <ci-resource-about :statistics="resourceDetails.statistics" :versions="versions" />
+        <ci-resource-about
+          :statistics="resourceDetails.statistics"
+          :versions="versions"
+          :web-path="resourceDetails.webPath"
+        />
       </div>
     </div>
   </div>
