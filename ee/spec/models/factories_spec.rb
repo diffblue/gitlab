@@ -197,7 +197,7 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
       factories_based_on_view.each do |factory|
         view = build(factory).class.table_name
         view_gitlab_schema = Gitlab::Database::GitlabSchema.table_schema(view)
-        Gitlab::Database::EachDatabase.each_database_connection(include_shared: false) do |connection|
+        Gitlab::Database::EachDatabase.each_connection(include_shared: false) do |connection|
           next unless Gitlab::Database.gitlab_schemas_for_connection(connection).include?(view_gitlab_schema)
 
           swapout_view_for_table(view, connection: connection)
