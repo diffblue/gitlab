@@ -63,25 +63,25 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
 
         result = client.activate('activation_code_abc', automated: false)
 
-        expect(result).to eq(
-          {
-            license_key: license_key,
-            success: true,
-            future_subscriptions: [
-              {
-                "cloud_license_enabled" => true,
-                "offline_cloud_license_enabled" => false,
-                "plan" => "ultimate",
-                "name" => "User Example",
-                "company" => "Example Inc",
-                "email" => "user@example.com",
-                "starts_at" => future_date.to_s,
-                "expires_at" => (future_date + 1.year).to_s,
-                "users_in_license_count" => 10
-              }
-            ]
-          }
-        )
+        expected_result = {
+          license_key: license_key,
+          success: true,
+          future_subscriptions: [
+            {
+              "cloud_license_enabled" => true,
+              "offline_cloud_license_enabled" => false,
+              "plan" => "ultimate",
+              "name" => "User Example",
+              "company" => "Example Inc",
+              "email" => "user@example.com",
+              "starts_at" => future_date.to_s,
+              "expires_at" => (future_date + 1.year).to_s,
+              "users_in_license_count" => 10
+            }
+          ]
+        }
+
+        expect(result).to eq(expected_result)
       end
     end
 
@@ -110,21 +110,23 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
 
     context 'when remote server returns error' do
       it 'returns connectivity error' do
-        stub_request(:any, graphql_url)
-          .to_return(status: [500, "Internal Server Error"], body: 'body')
+        response = Net::HTTPServerError.new(1.0, '500', 'Internal Server Error')
+        gitlab_http_response = instance_double(
+          HTTParty::Response,
+          code: response.code,
+          parsed_response: { errors: 'Internal Server Error' },
+          response: response,
+          body: 'body'
+        )
+        allow(Gitlab::HTTP).to receive(:post).and_return(gitlab_http_response)
         allow(Gitlab::ErrorTracking).to receive(:log_exception)
 
         result = client.activate('activation_code_abc', automated: false)
 
         expect(result).to eq({ errors: described_class::CONNECTIVITY_ERROR, success: false })
-
         expect(Gitlab::ErrorTracking).to have_received(:log_exception).with(
           instance_of(::Gitlab::SubscriptionPortal::Client::ResponseError),
-          {
-            status: 500,
-            message: "Internal Server Error",
-            body: 'body'
-          }
+          { status: response.code, message: "HTTP status code: #{response.code}", body: 'body' }
         )
       end
     end
@@ -148,10 +150,6 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
     subject(:plan_upgrade_offer) { client.plan_upgrade_offer(namespace_id: namespace_id) }
 
     context 'when the response contains errors' do
-      before do
-        expect(client).to receive(:execute_graphql_query).and_return(response)
-      end
-
       let(:response) do
         {
           success: true,
@@ -162,6 +160,8 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
       end
 
       it 'returns a failure' do
+        expect(client).to receive(:execute_graphql_query).and_return(response)
+
         expect(plan_upgrade_offer).to eq({ success: false })
       end
     end
@@ -177,23 +177,27 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
 
       with_them do
         before do
-          allow(client).to receive(:execute_graphql_query).and_return({
-              success: true,
-              data: { "data" => { "subscription" => {
-                "eoaStarterBronzeEligible" => eligible,
-                "assistedUpgradePlanId" => assisted_plan_id,
-                "freeUpgradePlanId" => free_plan_id
-                } } }
-          })
+          result = {
+            success: true,
+            data: { "data" => { "subscription" => {
+              "eoaStarterBronzeEligible" => eligible,
+              "assistedUpgradePlanId" => assisted_plan_id,
+              "freeUpgradePlanId" => free_plan_id
+            } } }
+          }
+
+          allow(client).to receive(:execute_graphql_query).and_return(result)
         end
 
         it 'returns the correct response' do
-          expect(plan_upgrade_offer).to eq({
+          result = {
             success: true,
             eligible_for_free_upgrade: eligible,
             assisted_upgrade_plan_id: assisted_plan_id,
             free_upgrade_plan_id: free_plan_id
-          })
+          }
+
+          expect(plan_upgrade_offer).to eq(result)
         end
       end
 
@@ -206,12 +210,14 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
         end
 
         it 'returns the correct response' do
-          expect(plan_upgrade_offer).to eq({
+          result = {
             success: true,
             eligible_for_free_upgrade: nil,
             assisted_upgrade_plan_id: nil,
             free_upgrade_plan_id: nil
-          })
+          }
+
+          expect(plan_upgrade_offer).to eq(result)
         end
       end
     end
@@ -405,22 +411,20 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
 
         expect(Gitlab::ErrorTracking)
           .to receive(:track_and_raise_for_dev_exception)
-          .with(
-            a_kind_of(Gitlab::SubscriptionPortal::Client::ResponseError),
-            query: params[:query],
-            response: response[:data]
-          )
+                .with(
+                  a_kind_of(Gitlab::SubscriptionPortal::Client::ResponseError),
+                  query: params[:query],
+                  response: response[:data]
+                )
 
         expect(client).to receive(:http_post).with('graphql', headers, params).and_return(response)
 
-        expect(subject).to eq(
-          success: false,
-          errors: [{
-            "locations" => [{ "column" => 3, "line" => 2 }],
-            "message" => "You must be logged in to access this resource",
-            "path" => ["getPlans"]
-          }]
-        )
+        error = {
+          "locations" => [{ "column" => 3, "line" => 2 }],
+          "message" => "You must be logged in to access this resource",
+          "path" => ["getPlans"]
+        }
+        expect(subject).to eq(success: false, errors: [error])
       end
     end
   end
@@ -457,9 +461,30 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
         planId: plan_id,
         eligibleForPurchase: true,
         namespaces: [
-          { id: user_namespace.id, parentId: nil, plan: "default", trial: false, kind: 'user', membersCountWithDescendants: nil },
-          { id: group_namespace.id, parentId: nil, plan: "default", trial: false, kind: 'group', membersCountWithDescendants: 0 },
-          { id: subgroup.id, parentId: group_namespace.id, plan: "default", trial: false, kind: 'group', membersCountWithDescendants: 0 }
+          {
+            id: user_namespace.id,
+            parentId: nil,
+            plan: "default",
+            trial: false,
+            kind: 'user',
+            membersCountWithDescendants: nil
+          },
+          {
+            id: group_namespace.id,
+            parentId: nil,
+            plan: "default",
+            trial: false,
+            kind: 'group',
+            membersCountWithDescendants: 0
+          },
+          {
+            id: subgroup.id,
+            parentId: group_namespace.id,
+            plan: "default",
+            trial: false,
+            kind: 'group',
+            membersCountWithDescendants: 0
+          }
         ]
       }
     end
@@ -516,20 +541,18 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
 
         expect(Gitlab::ErrorTracking)
           .to receive(:track_and_raise_for_dev_exception)
-          .with(
-            a_kind_of(Gitlab::SubscriptionPortal::Client::ResponseError),
-            query: params[:query], response: response[:data])
+                .with(
+                  a_kind_of(Gitlab::SubscriptionPortal::Client::ResponseError),
+                  query: params[:query], response: response[:data])
 
         expect(client).to receive(:http_post).with('graphql', headers, params).and_return(response)
 
-        expect(subject).to eq(
-          success: false,
-          errors: [{
-            "locations" => [{ "column" => 3, "line" => 2 }],
-            "message" => "You must be logged in to access this resource",
-            "path" => ["namespaceEligibility"]
-          }]
-        )
+        error = {
+          "locations" => [{ "column" => 3, "line" => 2 }],
+          "message" => "You must be logged in to access this resource",
+          "path" => ["namespaceEligibility"]
+        }
+        expect(subject).to eq(success: false, errors: [error])
       end
     end
   end
@@ -591,9 +614,23 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
     end
 
     it 'returns connectivity error when remote server returns error' do
-      stub_request(:any, graphql_url).to_return(status: [500, "Internal Server Error"])
+      response = Net::HTTPServerError.new(1.0, '500', 'Internal Server Error')
+      gitlab_http_response = instance_double(
+        HTTParty::Response,
+        code: response.code,
+        parsed_response: { errors: 'Internal Server Error' },
+        response: response,
+        body: {}
+      )
+      allow(Gitlab::HTTP).to receive(:post).and_return(gitlab_http_response)
+      allow(Gitlab::ErrorTracking).to receive(:log_exception)
 
       expect(update_request).to eq({ errors: described_class::CONNECTIVITY_ERROR, success: false })
+
+      expect(Gitlab::ErrorTracking).to have_received(:log_exception).with(
+        instance_of(::Gitlab::SubscriptionPortal::Client::ResponseError),
+        { status: response.code, message: "HTTP status code: #{response.code}", body: {} }
+      )
     end
 
     it 'returns connectivity error when the remote server is unreachable' do
@@ -676,13 +713,15 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
           GQL
         }
 
+        message = "Argument 'maxSeatsUsed' on InputObject 'SendSeatOverageNotificationEmailInput' has an " \
+                  "invalid value (null). Expected type 'Int!'."
         portal_response = {
           success: true,
           data: {
             "errors" => [
               {
-                "message" => "Argument 'maxSeatsUsed' on InputObject 'SendSeatOverageNotificationEmailInput' has an invalid value (null). Expected type 'Int!'.",
-                "locations" => [{ "line": 2, "column": 43 }],
+                "message" => message,
+                "locations" => [{ line: 2, column: 43 }],
                 "path" => %w[mutation sendSeatOverageNotificationEmail input maxSeatsUsed],
                 "extensions" => {
                   "code" => "argumentLiteralsIncompatible",
@@ -720,13 +759,13 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
       {
         variables: { namespaces: [] },
         query: <<~GQL
-        mutation($namespaces: [NamespaceSeatOverageInput!]) {
-          sendSeatOverageNotificationEmail(input: {
-            namespaces: $namespaces
-          }) {
-            errors
+          mutation($namespaces: [NamespaceSeatOverageInput!]) {
+            sendSeatOverageNotificationEmail(input: {
+              namespaces: $namespaces
+            }) {
+              errors
+            }
           }
-        }
         GQL
       }
     end
@@ -754,13 +793,15 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
 
     context 'when the subscription portal response is unsuccessful' do
       it 'returns an error response' do
+        message = "Argument 'maxSeatsUsed' on InputObject 'SendSeatOverageNotificationEmailInput' has an " \
+                  "invalid value (null). Expected type 'Int!'."
         portal_response = {
           success: true,
           data: {
             "errors" => [
               {
-                "message" => "Argument 'maxSeatsUsed' on InputObject 'SendSeatOverageNotificationEmailInput' has an invalid value (null). Expected type 'Int!'.",
-                "locations" => [{ "line": 2, "column": 43 }],
+                "message" => message,
+                "locations" => [{ line: 2, column: 43 }],
                 "path" => %w[mutation sendSeatOverageNotificationEmail input maxSeatsUsed],
                 "extensions" => {
                   "code" => "argumentLiteralsIncompatible",
