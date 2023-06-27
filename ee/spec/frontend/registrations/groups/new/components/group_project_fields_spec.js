@@ -1,6 +1,6 @@
 import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
-import { GlFormInput } from '@gitlab/ui';
+import { GlFormInput, GlFormCheckbox } from '@gitlab/ui';
 import { GlBreakpointInstance } from '@gitlab/ui/dist/utils';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
@@ -22,6 +22,7 @@ describe('GroupProjectFields', () => {
     groupId: '',
     groupName: '',
     projectName: '',
+    initializeWithReadme: false,
     rootUrl: 'https://example.com/',
   };
 
@@ -45,6 +46,7 @@ describe('GroupProjectFields', () => {
   };
 
   const findInputByTestId = (testId) => wrapper.findByTestId(testId);
+  const findCheckbox = () => wrapper.findComponent(GlFormCheckbox);
 
   const buildUrl = (groupPath = DEFAULT_GROUP_PATH, projectPath = DEFAULT_PROJECT_PATH) =>
     `${initialProps.rootUrl}${groupPath}/${projectPath}`;
@@ -268,6 +270,34 @@ describe('GroupProjectFields', () => {
         createComponent({ importGroup: true });
 
         expect(wrapper.text()).toContain(buildUrl());
+      });
+    });
+  });
+
+  describe('readme checkbox', () => {
+    describe('when create group', () => {
+      describe('when includes readme', () => {
+        it('renders checked checkbox', () => {
+          createComponent({ initializeWithReadme: true });
+
+          expect(findCheckbox().attributes('checked')).toBe('true');
+        });
+      });
+
+      describe('when does not include readme', () => {
+        it('renders unchecked checkbox', () => {
+          createComponent({ initializeWithReadme: false });
+
+          expect(findCheckbox().attributes('checked')).toBe(undefined);
+        });
+      });
+    });
+
+    describe('when import group', () => {
+      it('does not render checkbox', () => {
+        createComponent({ importGroup: true });
+
+        expect(findCheckbox().exists()).toBe(false);
       });
     });
   });

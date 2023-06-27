@@ -36,6 +36,7 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
           webUrl
           nameWithNamespace
           fullPath
+          hasJiraVulnerabilityIssueCreationEnabled
         }
         evidence {
           summary
@@ -143,6 +144,16 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
           id
           userPermissions {
             createVulnerabilityFeedback
+          }
+          externalIssueLinks {
+            nodes {
+              id
+              linkType
+              externalIssue {
+                externalTracker
+                webUrl
+              }
+            }
           }
           mergeRequest {
             id

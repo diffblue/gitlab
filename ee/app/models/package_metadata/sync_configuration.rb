@@ -24,18 +24,19 @@ module PackageMetadata
 
     def self.all_by_enabled_purl_type
       storage_type = get_storage_type
+      base_uri = storage_type == :offline ? OFFLINE_STORAGE_LOCATION : BUCKET_NAME
 
       configs = []
 
       if Feature.enabled?(:compressed_package_metadata_synchronization)
         configs.concat(permitted_purl_types.map do |purl_type, _|
-          new(storage_type, BUCKET_NAME, VERSION_FORMAT_V2, purl_type)
+          new(storage_type, base_uri, VERSION_FORMAT_V2, purl_type)
         end)
       end
 
       if Feature.enabled?(:package_metadata_synchronization)
         configs.concat(permitted_purl_types.map do |purl_type, _|
-          new(storage_type, BUCKET_NAME, VERSION_FORMAT_V1, purl_type)
+          new(storage_type, base_uri, VERSION_FORMAT_V1, purl_type)
         end)
       end
 
@@ -65,6 +66,10 @@ module PackageMetadata
       @base_uri = base_uri
       @version_format = version_format
       @purl_type = purl_type
+    end
+
+    def v2?
+      version_format == 'v2'
     end
   end
 end

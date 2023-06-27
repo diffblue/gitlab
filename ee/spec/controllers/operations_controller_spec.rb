@@ -89,10 +89,6 @@ RSpec.describe OperationsController, feature_category: :release_orchestration do
         let(:open_alerts) { alert_events.select(&:triggered?) + alert_events.select(&:acknowledged?) }
         let(:last_firing_alert) { open_alerts.last.prometheus_alert }
 
-        let(:alert_path) do
-          metrics_project_environment_path(project, environment)
-        end
-
         let(:alert_json_path) do
           project_prometheus_alert_path(
             project,
@@ -122,7 +118,6 @@ RSpec.describe OperationsController, feature_category: :release_orchestration do
             .to eq(remove_operations_project_path(project_id: project.id))
           expect(expected_project['last_deployment']['id']).to eq(deployment.id)
           expect(expected_project['alert_count']).to eq(open_alerts.size)
-          expect(expected_project['alert_path']).to eq(alert_path)
           expect(expected_project['last_alert']['id']).to eq(last_firing_alert.id)
         end
 

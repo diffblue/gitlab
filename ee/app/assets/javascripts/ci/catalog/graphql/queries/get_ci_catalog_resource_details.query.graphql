@@ -5,6 +5,7 @@ query getCiCatalogResourceDetails($id: CiCatalogResourceID!) {
     name
     description
     readmeHtml
+    webPath
     rootNamespace {
       id
       fullPath

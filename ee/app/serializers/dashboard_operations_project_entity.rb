@@ -24,9 +24,6 @@ class DashboardOperationsProjectEntity < Grape::Entity
   end
 
   expose :alert_count, if: -> (*) { !upgrade_required }
-  expose :alert_path, if: -> (*) { !upgrade_required && last_deployment } do |_|
-    metrics_project_environment_path(project, last_deployment.environment)
-  end
   expose :last_alert, using: PrometheusAlertEntity, if: -> (*) { !upgrade_required && last_alert? }
 
   private

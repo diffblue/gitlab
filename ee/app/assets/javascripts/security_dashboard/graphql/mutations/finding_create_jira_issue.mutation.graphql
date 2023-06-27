@@ -1,0 +1,13 @@
+mutation vulnerabilityJiraIssueCreate($vulnerabilityId: VulnerabilityID!) {
+  vulnerabilityExternalIssueLinkCreate(
+    input: { id: $vulnerabilityId, linkType: CREATED, externalTracker: JIRA }
+  ) {
+    errors
+    externalIssueLink {
+      id
+      externalIssue {
+        webUrl
+      }
+    }
+  }
+}

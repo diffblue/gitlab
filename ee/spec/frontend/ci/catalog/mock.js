@@ -2,7 +2,7 @@ export const catalogDetailsMock = {
   data: {
     ciCatalogResource: {
       __typename: 'CiCatalogResource',
-      id: 1,
+      id: `gid://gitlab/CiCatalogResource/1`,
       icon: null,
       description: 'This is the description of the repo',
       name: 'Ruby',
@@ -17,6 +17,7 @@ export const catalogDetailsMock = {
       versions: {
         nodes: [{ id: 1, tagName: 'v1.0.2', releasedAt: '2022-08-23T17:19:09Z' }],
       },
+      webPath: 'path/to/project',
     },
   },
 };

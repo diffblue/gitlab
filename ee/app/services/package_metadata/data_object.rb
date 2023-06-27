@@ -4,22 +4,22 @@ require 'csv'
 
 module PackageMetadata
   class DataObject
-    EXPECTED_CSV_FIELDS = 3
+    EXPECTED_NUMBER_OF_FIELDS = 3
     MAX_NAME_LENGTH = 255
     MAX_VERSION_LENGTH = 255
     MAX_LICENSE_LENGTH = 50
 
-    def self.from_csv(text, purl_type)
-      parsed = CSV.parse_line(text.dup.force_encoding('UTF-8'))&.reject { |field| field.nil? || field.empty? }
-      return unless parsed&.count == EXPECTED_CSV_FIELDS
+    def self.create(data, purl_type)
+      unless data&.compact&.size == EXPECTED_NUMBER_OF_FIELDS
+        Gitlab::AppJsonLogger.warn(class: name,
+          message: "Invalid data passed to .create: #{data}")
+        return
+      end
 
-      name = parsed[0].slice(0, MAX_NAME_LENGTH)
-      version = parsed[1].slice(0, MAX_VERSION_LENGTH)
-      license = parsed[2].slice(0, MAX_LICENSE_LENGTH)
+      name = data[0].slice(0, MAX_NAME_LENGTH)
+      version = data[1].slice(0, MAX_VERSION_LENGTH)
+      license = data[2].slice(0, MAX_LICENSE_LENGTH)
       new(name, version, license, purl_type)
-    rescue CSV::MalformedCSVError => e
-      Gitlab::AppJsonLogger.error(class: self.name, message: 'csv parsing error', error: e)
-      nil
     end
 
     attr_accessor :version, :license, :purl_type,
