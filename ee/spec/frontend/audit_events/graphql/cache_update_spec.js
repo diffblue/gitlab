@@ -17,6 +17,7 @@ import {
   mockInstanceExternalDestinations,
   instanceDestinationDataPopulator,
   destinationInstanceCreateMutationPopulator,
+  destinationInstanceHeaderCreateMutationPopulator,
 } from '../mock_data';
 
 describe('Audit Events GraphQL cache updates', () => {
@@ -139,6 +140,7 @@ describe('Audit Events GraphQL cache updates', () => {
 
       addAuditEventStreamingHeader({
         store: cache,
+        fullPath: GROUP_NOT_IN_CACHE,
         destinationId: firstDestination.id,
         newHeader,
       });
@@ -300,6 +302,71 @@ describe('Audit Events GraphQL cache updates', () => {
           store: cache,
           fullPath: 'instance',
           destinationId: 'fake-id',
+        }),
+      ).not.toThrow();
+    });
+  });
+
+  describe('addInstanceAuditEventStreamingHeader', () => {
+    const newHeader = destinationInstanceHeaderCreateMutationPopulator().data
+      .auditEventsStreamingInstanceHeadersCreate.header;
+
+    it('adds new header to destination', () => {
+      const [firstDestination] = getInstanceDestinations();
+      const originalLength = firstDestination.headers.nodes.length;
+
+      addAuditEventStreamingHeader({
+        store: cache,
+        fullPath: 'instance',
+        destinationId: firstDestination.id,
+        newHeader,
+      });
+
+      const [firstDestinationAfterCreate] = getInstanceDestinations();
+      expect(firstDestinationAfterCreate.headers.nodes).toHaveLength(originalLength + 1);
+      expect(firstDestinationAfterCreate.headers.nodes).toStrictEqual(
+        expect.arrayContaining([expect.objectContaining({ id: newHeader.id })]),
+      );
+    });
+
+    it('does not throw on non-existing destination', () => {
+      expect(() =>
+        addAuditEventStreamingHeader({
+          store: cache,
+          fullPath: 'instance',
+          destinationId: 'non-existing-id',
+          newHeader,
+        }),
+      ).not.toThrow();
+    });
+  });
+
+  describe('removeInstanceAuditEventStreamingHeader', () => {
+    it('removes new header from destination', () => {
+      const [, secondDestination] = getInstanceDestinations();
+      const [firstHeader, ...restHeaders] = secondDestination.headers.nodes;
+
+      removeAuditEventStreamingHeader({
+        store: cache,
+        fullPath: 'instance',
+        destinationId: secondDestination.id,
+        headerId: firstHeader.id,
+      });
+
+      const [, secondDestinationAfterRemove] = getInstanceDestinations();
+      expect(secondDestinationAfterRemove.headers.nodes).toHaveLength(restHeaders.length);
+      expect(secondDestinationAfterRemove.headers.nodes).not.toStrictEqual(
+        expect.arrayContaining([expect.objectContaining({ id: firstHeader.id })]),
+      );
+    });
+
+    it('does not throw on non-existing destination', () => {
+      expect(() =>
+        removeAuditEventStreamingHeader({
+          store: cache,
+          fullPath: 'instance',
+          destinationId: 'non-existing-id',
+          headerId: 'fake-id',
         }),
       ).not.toThrow();
     });

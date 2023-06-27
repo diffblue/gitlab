@@ -25,6 +25,9 @@ import deleteExternalDestinationFilters from '../../graphql/mutations/delete_ext
 import addExternalDestinationFilters from '../../graphql/mutations/add_external_destination_filters.mutation.graphql';
 import instanceExternalAuditEventDestinationCreate from '../../graphql/mutations/create_instance_external_destination.mutation.graphql';
 import deleteInstanceExternalDestination from '../../graphql/mutations/delete_instance_external_destination.mutation.graphql';
+import externalInstanceAuditEventDestinationHeaderCreate from '../../graphql/mutations/create_instance_external_destination_header.mutation.graphql';
+import externalInstanceAuditEventDestinationHeaderUpdate from '../../graphql/mutations/update_instance_external_destination_header.mutation.graphql';
+import externalInstanceAuditEventDestinationHeaderDelete from '../../graphql/mutations/delete_instance_external_destination_header.mutation.graphql';
 import {
   ADD_STREAM_EDITOR_I18N,
   AUDIT_STREAMS_NETWORK_ERRORS,
@@ -124,6 +127,36 @@ export default {
     destinationDestroyMutation() {
       return this.isInstance ? deleteInstanceExternalDestination : deleteExternalDestination;
     },
+    headersCreateMutation() {
+      return this.isInstance
+        ? externalInstanceAuditEventDestinationHeaderCreate
+        : externalAuditEventDestinationHeaderCreate;
+    },
+    headersUpdateMutation() {
+      return this.isInstance
+        ? externalInstanceAuditEventDestinationHeaderUpdate
+        : externalAuditEventDestinationHeaderUpdate;
+    },
+    headersDestroyMutation() {
+      return this.isInstance
+        ? externalInstanceAuditEventDestinationHeaderDelete
+        : externalAuditEventDestinationHeaderDelete;
+    },
+    headersCreateString() {
+      return this.isInstance
+        ? 'auditEventsStreamingInstanceHeadersCreate'
+        : 'auditEventsStreamingHeadersCreate';
+    },
+    headersUpdateString() {
+      return this.isInstance
+        ? 'auditEventsStreamingInstanceHeadersUpdate'
+        : 'auditEventsStreamingHeadersUpdate';
+    },
+    headersDestroyString() {
+      return this.isInstance
+        ? 'auditEventsStreamingInstanceHeadersDestroy'
+        : 'auditEventsStreamingHeadersDestroy';
+    },
   },
   mounted() {
     const existingHeaders = mapItemHeadersToFormData(this.item);
@@ -193,65 +226,84 @@ export default {
       };
     },
     async addDestinationHeaders(destinationId, headers) {
+      const { groupPath: fullPath } = this;
       const mutations = headers
         .filter((header) => this.isHeaderFilled(header))
         .map((header) => {
           return this.$apollo.mutate({
-            mutation: externalAuditEventDestinationHeaderCreate,
+            mutation: this.headersCreateMutation,
             variables: {
               destinationId,
               key: header.name,
               value: header.value,
+              isInstance: this.isInstance,
             },
-            update(cache, { data }) {
-              if (data.auditEventsStreamingHeadersCreate.errors.length) {
+            update(cache, { data }, args) {
+              const errors = args.variables.isInstance
+                ? data.auditEventsStreamingInstanceHeadersCreate.errors
+                : data.auditEventsStreamingHeadersCreate.errors;
+
+              if (errors.length) {
                 return;
               }
 
+              const newHeader = args.variables.isInstance
+                ? data.auditEventsStreamingInstanceHeadersCreate.header
+                : data.auditEventsStreamingHeadersCreate.header;
+
               addAuditEventStreamingHeader({
                 store: cache,
+                fullPath,
                 destinationId,
-                newHeader: data.auditEventsStreamingHeadersCreate.header,
+                newHeader,
               });
             },
           });
         });
 
-      return mapAllMutationErrors(mutations, 'auditEventsStreamingHeadersCreate');
+      return mapAllMutationErrors(mutations, this.headersCreateString);
     },
     async updateDestinationHeaders(headers) {
       const mutations = headers
         .filter((header) => this.isHeaderFilled(header))
         .map((header) => {
           return this.$apollo.mutate({
-            mutation: externalAuditEventDestinationHeaderUpdate,
+            mutation: this.headersUpdateMutation,
             variables: {
               headerId: header.id,
               key: header.name,
               value: header.value,
+              isInstance: this.isInstance,
             },
           });
         });
 
-      return mapAllMutationErrors(mutations, 'auditEventsStreamingHeadersUpdate');
+      return mapAllMutationErrors(mutations, this.headersUpdateString);
     },
     async deleteDestinationHeaders(headers) {
       const { id: destinationId } = this.item;
+      const { groupPath: fullPath } = this;
       const mutations = headers
         .filter((header) => this.isHeaderFilled(header))
         .map((header) => {
           return this.$apollo.mutate({
-            mutation: externalAuditEventDestinationHeaderDelete,
+            mutation: this.headersDestroyMutation,
             variables: {
               headerId: header.id,
+              isInstance: this.isInstance,
             },
-            update(cache, { data }) {
-              if (data.auditEventsStreamingHeadersDestroy.errors.length) {
+            update(cache, { data }, args) {
+              const errors = args.variables.isInstance
+                ? data.auditEventsStreamingInstanceHeadersDestroy.errors
+                : data.auditEventsStreamingHeadersDestroy.errors;
+
+              if (errors.length) {
                 return;
               }
 
               removeAuditEventStreamingHeader({
                 store: cache,
+                fullPath,
                 destinationId,
                 headerId: header.id,
               });
@@ -259,7 +311,7 @@ export default {
           });
         });
 
-      return mapAllMutationErrors(mutations, 'auditEventsStreamingHeadersDestroy');
+      return mapAllMutationErrors(mutations, this.headersDestroyString);
     },
     async deleteCreatedDestination(destinationId) {
       const { groupPath: fullPath } = this;
@@ -379,7 +431,7 @@ export default {
           }
         }
 
-        if (this.filters?.length > 0 && destinationId) {
+        if (!this.isInstance && this.filters?.length > 0 && destinationId) {
           const addDestinationFiltersErrors = await this.addDestinationFilters(
             destinationId,
             this.filters,
@@ -428,7 +480,7 @@ export default {
 
         errors.push(...(await this.addDestinationHeaders(this.item.id, headersToAdd)));
 
-        if (!isEqual(this.item.eventTypeFilters, this.filters)) {
+        if (!this.isInstance && !isEqual(this.item?.eventTypeFilters, this.filters)) {
           const removeFilters = this.item.eventTypeFilters.filter((f) => !this.filters.includes(f));
           const addFilters = this.filters.filter((f) => !this.item.eventTypeFilters.includes(f));
           if (removeFilters?.length) {
@@ -577,7 +629,7 @@ export default {
         />
       </gl-form-group>
 
-      <div v-if="!isInstance" class="gl-mb-5">
+      <div class="gl-mb-5">
         <strong class="gl-display-block gl-mb-3">{{ $options.i18n.HEADERS_LABEL }}</strong>
         <gl-table-lite :items="headers" :fields="$options.fields">
           <template #cell(active)="{ index, item: { active } }">

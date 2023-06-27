@@ -25,6 +25,10 @@ import deleteExternalDestination from 'ee/audit_events/graphql/mutations/delete_
 import deleteExternalDestinationFilters from 'ee/audit_events/graphql/mutations/delete_external_destination_filters.mutation.graphql';
 import addExternalDestinationFilters from 'ee/audit_events/graphql/mutations/add_external_destination_filters.mutation.graphql';
 import instanceExternalAuditEventDestinationCreate from 'ee/audit_events/graphql/mutations/create_instance_external_destination.mutation.graphql';
+import deleteInstanceExternalDestination from 'ee/audit_events/graphql/mutations/delete_instance_external_destination.mutation.graphql';
+import externalInstanceAuditEventDestinationHeaderCreate from 'ee/audit_events/graphql/mutations/create_instance_external_destination_header.mutation.graphql';
+import externalInstanceAuditEventDestinationHeaderUpdate from 'ee/audit_events/graphql/mutations/update_instance_external_destination_header.mutation.graphql';
+import externalInstanceAuditEventDestinationHeaderDelete from 'ee/audit_events/graphql/mutations/delete_instance_external_destination_header.mutation.graphql';
 import StreamDestinationEditor from 'ee/audit_events/components/stream/stream_destination_editor.vue';
 import StreamFilters from 'ee/audit_events/components/stream/stream_filters.vue';
 import { AUDIT_STREAMS_NETWORK_ERRORS, ADD_STREAM_EDITOR_I18N } from 'ee/audit_events/constants';
@@ -45,7 +49,13 @@ import {
   mockAddFilterSelect,
   mockAddFilterRemaining,
   instanceGroupPath,
+  mockInstanceExternalDestinations,
+  mockInstanceExternalDestinationHeader,
   destinationInstanceCreateMutationPopulator,
+  destinationInstanceDeleteMutationPopulator,
+  destinationInstanceHeaderCreateMutationPopulator,
+  destinationInstanceHeaderUpdateMutationPopulator,
+  destinationInstanceHeaderDeleteMutationPopulator,
 } from '../../mock_data';
 
 Vue.use(VueApollo);
@@ -271,6 +281,7 @@ describe('StreamDestinationEditor', () => {
         expect(headerCreateSpy).toHaveBeenCalledTimes(1);
         expect(headerCreateSpy).toHaveBeenCalledWith({
           destinationId: 'test-create-id',
+          isInstance: false,
           key: 'row header',
           value: 'row value',
         });
@@ -502,16 +513,21 @@ describe('StreamDestinationEditor', () => {
           await setupUpdatedHeaders(updatedHeader, addedHeader);
 
           expect(headerDeleteSpy).toHaveBeenCalledTimes(1);
-          expect(headerDeleteSpy).toHaveBeenCalledWith({ headerId: deletedHeader.id });
+          expect(headerDeleteSpy).toHaveBeenCalledWith({
+            headerId: deletedHeader.id,
+            isInstance: false,
+          });
           expect(headerUpdateSpy).toHaveBeenCalledTimes(1);
           expect(headerUpdateSpy).toHaveBeenCalledWith({
             headerId: updatedHeader.id,
+            isInstance: false,
             key: updatedHeader.key,
             value: updatedHeader.newValue,
           });
           expect(headerCreateSpy).toHaveBeenCalledTimes(1);
           expect(headerCreateSpy).toHaveBeenCalledWith({
             destinationId: item.id,
+            isInstance: false,
             key: addedHeader.key,
             value: addedHeader.value,
           });
@@ -770,6 +786,144 @@ describe('StreamDestinationEditor', () => {
       });
     });
 
+    describe('add destination event with headers', () => {
+      it('should emit add event after destination and headers are added', async () => {
+        createComponent({
+          mountFn: mountExtended,
+          apolloHandlers: [
+            [
+              instanceExternalAuditEventDestinationCreate,
+              jest.fn().mockResolvedValue(destinationInstanceCreateMutationPopulator()),
+            ],
+            [
+              externalInstanceAuditEventDestinationHeaderCreate,
+              jest.fn().mockResolvedValue(destinationInstanceHeaderCreateMutationPopulator()),
+            ],
+          ],
+        });
+
+        findDestinationUrl().vm.$emit('input', 'https://example.test');
+        await setHeadersRowData(0, { name: 'row header', value: 'row value' });
+        await findAddHeaderBtn().trigger('click');
+        await setHeadersRowData(1, { name: 'row header 1', value: 'row value 1' });
+        findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+        await waitForPromises();
+
+        expect(findAlertErrors()).toHaveLength(0);
+        expect(wrapper.emitted('error')).toBeUndefined();
+        expect(wrapper.emitted('added')).toBeDefined();
+      });
+
+      it('should ignore empty headers and emit add event after destination and headers are added', async () => {
+        const headerCreateSpy = jest
+          .fn()
+          .mockResolvedValue(destinationInstanceHeaderCreateMutationPopulator());
+
+        createComponent({
+          mountFn: mountExtended,
+          apolloHandlers: [
+            [
+              instanceExternalAuditEventDestinationCreate,
+              jest.fn().mockResolvedValue(destinationInstanceCreateMutationPopulator()),
+            ],
+            [externalInstanceAuditEventDestinationHeaderCreate, headerCreateSpy],
+          ],
+        });
+
+        findDestinationUrl().vm.$emit('input', 'https://example.test');
+        await setHeadersRowData(0, { name: 'row header', value: 'row value' });
+        await findAddHeaderBtn().trigger('click');
+        await setHeadersRowData(1, { name: '', value: '' });
+        findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+        await waitForPromises();
+
+        expect(findAlertErrors()).toHaveLength(0);
+        expect(headerCreateSpy).toHaveBeenCalledTimes(1);
+        expect(headerCreateSpy).toHaveBeenCalledWith({
+          destinationId: 'test-create-id',
+          isInstance: true,
+          key: 'row header',
+          value: 'row value',
+        });
+        expect(wrapper.emitted('error')).toBeUndefined();
+        expect(wrapper.emitted('added')).toBeDefined();
+      });
+
+      it('should not emit add destination event and reports error when server returns error while adding headers', async () => {
+        const errorMsg = 'Destination hosts limit exceeded';
+        createComponent({
+          mountFn: mountExtended,
+          apolloHandlers: [
+            [
+              instanceExternalAuditEventDestinationCreate,
+              jest.fn().mockResolvedValue(destinationInstanceCreateMutationPopulator()),
+            ],
+            [
+              externalInstanceAuditEventDestinationHeaderCreate,
+              jest
+                .fn()
+                .mockResolvedValueOnce(destinationInstanceHeaderCreateMutationPopulator())
+                .mockResolvedValue(destinationInstanceHeaderCreateMutationPopulator([errorMsg])),
+            ],
+            [
+              deleteInstanceExternalDestination,
+              jest.fn().mockResolvedValue(destinationInstanceDeleteMutationPopulator()),
+            ],
+          ],
+        });
+
+        findDestinationUrl().vm.$emit('input', 'https://example.test');
+        await setHeadersRowData(0, { name: 'row header', value: 'row value' });
+        await findAddHeaderBtn().trigger('click');
+        await setHeadersRowData(1, { name: 'row header 1', value: 'row value 1' });
+        findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+        await waitForPromises();
+
+        expect(findAlertErrors()).toHaveLength(1);
+        expect(findAlertErrors().at(0).text()).toBe(errorMsg);
+        expect(wrapper.emitted('error')).toBeDefined();
+        expect(wrapper.emitted('added')).toBeUndefined();
+      });
+
+      it('should not emit add destination event and reports error when network error occurs while adding headers', async () => {
+        const sentryError = new Error('Network error');
+        const sentryCaptureExceptionSpy = jest.spyOn(Sentry, 'captureException');
+        createComponent({
+          mountFn: mountExtended,
+          apolloHandlers: [
+            [
+              instanceExternalAuditEventDestinationCreate,
+              jest.fn().mockResolvedValue(destinationInstanceCreateMutationPopulator()),
+            ],
+            [
+              externalInstanceAuditEventDestinationHeaderCreate,
+              jest
+                .fn()
+                .mockResolvedValueOnce(destinationInstanceHeaderCreateMutationPopulator())
+                .mockRejectedValue(sentryError),
+            ],
+            [
+              deleteInstanceExternalDestination,
+              jest.fn().mockResolvedValue(destinationInstanceDeleteMutationPopulator()),
+            ],
+          ],
+        });
+
+        findDestinationUrl().vm.$emit('input', 'https://example.test');
+        await setHeadersRowData(0, { name: 'row header', value: 'row value' });
+        await findAddHeaderBtn().trigger('click');
+        await setHeadersRowData(1, { name: 'row header 1', value: 'row value 1' });
+        findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+        await waitForPromises();
+
+        expect(findAlertErrors()).toHaveLength(1);
+        expect(findAlertErrors().at(0).text()).toBe(AUDIT_STREAMS_NETWORK_ERRORS.CREATING_ERROR);
+        expect(sentryCaptureExceptionSpy).toHaveBeenCalledWith(sentryError);
+        expect(wrapper.emitted('error')).toBeDefined();
+        expect(wrapper.emitted('added')).toBeUndefined();
+      });
+    });
+
     describe('cancel event', () => {
       beforeEach(() => {
         createComponent();
@@ -779,6 +933,235 @@ describe('StreamDestinationEditor', () => {
         findCancelStreamBtn().vm.$emit('click');
 
         expect(wrapper.emitted('cancel')).toBeDefined();
+      });
+    });
+
+    describe('HTTP headers table', () => {
+      beforeEach(() => {
+        createComponent({ mountFn: mountExtended });
+      });
+
+      it('should add a new blank row if the add row button is clicked', async () => {
+        await findAddHeaderBtn().trigger('click');
+
+        expect(findHeadersRows()).toHaveLength(2);
+      });
+
+      it.each`
+        name     | value    | disabled
+        ${'abc'} | ${''}    | ${true}
+        ${''}    | ${'abc'} | ${true}
+        ${'abc'} | ${'abc'} | ${false}
+      `(
+        'should enable the add button only when both the name and value are filled',
+        async ({ name, value, disabled }) => {
+          await findDestinationUrl().setValue('https://example.test');
+          await setHeadersRowData(0, { name, value });
+
+          expect(findAddStreamBtn().props('disabled')).toBe(disabled);
+        },
+      );
+
+      it('should delete a row when the delete button is clicked', async () => {
+        await setHeadersRowData(0, { name: 'row header', value: 'row value' });
+        await findAddHeaderBtn().trigger('click');
+        await setHeadersRowData(1, { name: 'row header 2', value: 'row value 2' });
+        await findAddHeaderBtn().trigger('click');
+
+        expect(findHeadersRows()).toHaveLength(3);
+
+        await findHeaderDeleteBtn(1).trigger('click');
+
+        expect(findHeadersRows()).toHaveLength(2);
+        expect(findHeaderNameInput(0).element.value).toBe('row header');
+        expect(findHeaderValueInput(0).element.value).toBe('row value');
+        expect(findHeaderNameInput(1).element.value).toBe('');
+        expect(findHeaderValueInput(1).element.value).toBe('');
+      });
+
+      it('should add a blank row if the only row is deleted', async () => {
+        await setHeadersRowData(0, { name: 'row header', value: '' });
+
+        expect(findHeadersRows()).toHaveLength(1);
+
+        await findHeaderDeleteBtn(0).trigger('click');
+
+        expect(findHeadersRows()).toHaveLength(1);
+        expect(findHeaderNameInput(0).element.value).toBe('');
+        expect(findHeaderValueInput(0).element.value).toBe('');
+      });
+
+      it('should show the maximum number of rows message when the maximum is reached', async () => {
+        // Max headers === 3 and one row already exists
+        await findAddHeaderBtn().trigger('click');
+        await findAddHeaderBtn().trigger('click');
+
+        expect(findHeadersRows()).toHaveLength(maxHeaders);
+        expect(findAddHeaderBtn().exists()).toBe(false);
+        expect(findMaximumHeadersText()).toMatchInterpolatedText(
+          sprintf(ADD_STREAM_EDITOR_I18N.MAXIMUM_HEADERS_TEXT, { number: maxHeaders }),
+        );
+      });
+    });
+
+    describe('when editing an existing destination', () => {
+      const item = {
+        ...mockInstanceExternalDestinations[0],
+        headers: {
+          nodes: [mockInstanceExternalDestinationHeader(), mockInstanceExternalDestinationHeader()],
+        },
+      };
+
+      describe('renders', () => {
+        beforeEach(() => {
+          createComponent({ mountFn: mountExtended, props: { item } });
+        });
+
+        it('should not render the destinations warning', () => {
+          expect(findWarningMessage().exists()).toBe(false);
+        });
+
+        it('disables the destination URL field', () => {
+          expect(findDestinationUrl().element.value).toBe(
+            mockInstanceExternalDestinations[0].destinationUrl,
+          );
+          expect(findDestinationUrl().attributes('disabled')).toBeDefined();
+        });
+
+        it('changes the save button text', () => {
+          expect(findAddStreamBtn().attributes('name')).toBe(
+            ADD_STREAM_EDITOR_I18N.SAVE_BUTTON_NAME,
+          );
+          expect(findAddStreamBtn().text()).toBe(ADD_STREAM_EDITOR_I18N.SAVE_BUTTON_TEXT);
+        });
+      });
+
+      describe('update destinations headers', () => {
+        const updatedHeader = { ...item.headers.nodes[0], newValue: 'CHANGED_VALUE' };
+        const deletedHeader = item.headers.nodes[1];
+        const addedHeader = mockInstanceExternalDestinationHeader();
+
+        const setupUpdatedHeaders = async (updated, added) => {
+          findDestinationUrl().vm.$emit('input', 'https://example.test');
+          await setHeadersRowData(0, { name: updated.key, value: updated.newValue });
+          await findHeaderDeleteBtn(1).trigger('click');
+          await setHeadersRowData(1, { name: added.key, value: added.value });
+          findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+
+          return waitForPromises();
+        };
+
+        it('emits the updated event when the headers are added, updated, and deleted', async () => {
+          const headerCreateSpy = jest
+            .fn()
+            .mockResolvedValue(destinationInstanceHeaderCreateMutationPopulator());
+          const headerUpdateSpy = jest
+            .fn()
+            .mockResolvedValue(destinationInstanceHeaderUpdateMutationPopulator());
+          const headerDeleteSpy = jest
+            .fn()
+            .mockResolvedValue(destinationInstanceHeaderDeleteMutationPopulator());
+
+          createComponent({
+            mountFn: mountExtended,
+            props: { item },
+            apolloHandlers: [
+              [externalInstanceAuditEventDestinationHeaderCreate, headerCreateSpy],
+              [externalInstanceAuditEventDestinationHeaderUpdate, headerUpdateSpy],
+              [externalInstanceAuditEventDestinationHeaderDelete, headerDeleteSpy],
+            ],
+          });
+
+          await setupUpdatedHeaders(updatedHeader, addedHeader);
+
+          expect(headerDeleteSpy).toHaveBeenCalledTimes(1);
+          expect(headerDeleteSpy).toHaveBeenCalledWith({
+            headerId: deletedHeader.id,
+            isInstance: true,
+          });
+          expect(headerUpdateSpy).toHaveBeenCalledTimes(1);
+          expect(headerUpdateSpy).toHaveBeenCalledWith({
+            headerId: updatedHeader.id,
+            isInstance: true,
+            key: updatedHeader.key,
+            value: updatedHeader.newValue,
+          });
+          expect(headerCreateSpy).toHaveBeenCalledTimes(1);
+          expect(headerCreateSpy).toHaveBeenCalledWith({
+            destinationId: item.id,
+            isInstance: true,
+            key: addedHeader.key,
+            value: addedHeader.value,
+          });
+          expect(findAlertErrors()).toHaveLength(0);
+          expect(wrapper.emitted('error')).toBeUndefined();
+          expect(wrapper.emitted('updated')).toBeDefined();
+        });
+
+        it('should not emit updated event and reports error when server returns error while saving', async () => {
+          const errorMsg =
+            'An error occurred when updating external audit event stream destination. Please try it again.';
+
+          createComponent({
+            mountFn: mountExtended,
+            props: { item },
+            apolloHandlers: [
+              [
+                externalInstanceAuditEventDestinationHeaderCreate,
+                jest
+                  .fn()
+                  .mockResolvedValue(destinationInstanceHeaderCreateMutationPopulator([errorMsg])),
+              ],
+              [
+                externalInstanceAuditEventDestinationHeaderUpdate,
+                jest.fn().mockResolvedValue(destinationInstanceHeaderUpdateMutationPopulator()),
+              ],
+              [
+                externalInstanceAuditEventDestinationHeaderDelete,
+                jest.fn().mockResolvedValue(destinationInstanceHeaderDeleteMutationPopulator()),
+              ],
+            ],
+          });
+
+          await setupUpdatedHeaders(updatedHeader, addedHeader);
+
+          expect(findAlertErrors()).toHaveLength(1);
+          expect(findAlertErrors().at(0).text()).toBe(errorMsg);
+          expect(wrapper.emitted('error')).toBeDefined();
+          expect(wrapper.emitted('updated')).toBeUndefined();
+        });
+
+        it('should not emit updated event and reports error when network error occurs while saving', async () => {
+          const sentryError = new Error('Network error');
+          const sentryCaptureExceptionSpy = jest.spyOn(Sentry, 'captureException');
+
+          createComponent({
+            mountFn: mountExtended,
+            props: { item },
+            apolloHandlers: [
+              [
+                externalInstanceAuditEventDestinationHeaderCreate,
+                jest.fn().mockResolvedValue(destinationInstanceHeaderUpdateMutationPopulator()),
+              ],
+              [
+                externalInstanceAuditEventDestinationHeaderUpdate,
+                jest.fn().mockRejectedValue(sentryError),
+              ],
+              [
+                externalInstanceAuditEventDestinationHeaderDelete,
+                jest.fn().mockResolvedValue(destinationInstanceHeaderDeleteMutationPopulator()),
+              ],
+            ],
+          });
+
+          await setupUpdatedHeaders(updatedHeader, addedHeader);
+
+          expect(findAlertErrors()).toHaveLength(1);
+          expect(findAlertErrors().at(0).text()).toBe(AUDIT_STREAMS_NETWORK_ERRORS.UPDATING_ERROR);
+          expect(sentryCaptureExceptionSpy).toHaveBeenCalledWith(sentryError);
+          expect(wrapper.emitted('error')).toBeDefined();
+          expect(wrapper.emitted('updated')).toBeUndefined();
+        });
       });
     });
   });
