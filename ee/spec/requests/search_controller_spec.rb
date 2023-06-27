@@ -48,7 +48,8 @@ RSpec.describe SearchController, type: :request, feature_category: :global_searc
 
       context 'for issues scope' do
         let(:object) { :issue }
-        let(:creation_args) { { project: project, title: 'foo' } }
+        let(:labels) { create_list(:label, 3, project: project) }
+        let(:creation_args) { { project: project, title: 'foo', labels: labels } }
         let(:params) { { search: 'foo', scope: 'issues' } }
         # some N+1 queries still exist
         # each issue runs an extra query for project routes
@@ -59,8 +60,9 @@ RSpec.describe SearchController, type: :request, feature_category: :global_searc
 
       context 'for merge_request scope' do
         let(:creation_traits) { [:unique_branches] }
+        let(:labels) { create_list(:label, 3, project: project) }
         let(:object) { :merge_request }
-        let(:creation_args) { { source_project: project, title: 'foo' } }
+        let(:creation_args) { { source_project: project, title: 'foo', labels: labels } }
         let(:params) { { search: 'foo', scope: 'merge_requests' } }
         # some N+1 queries still exist
         # each merge request runs an extra query for project routes
