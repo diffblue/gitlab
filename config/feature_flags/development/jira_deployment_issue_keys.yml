@@ -1,13 +1,7 @@
 ---
-<<<<<<<< HEAD:config/feature_flags/development/jira_deployment_issue_keys.yml
 name: jira_deployment_issue_keys
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/123455
 rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/415025
-========
-name: persist_failed_pipelines_from_schedules
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/124371
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/416297
->>>>>>>> source-project/master:config/feature_flags/development/persist_failed_pipelines_from_schedules.yml
 milestone: '16.2'
 type: development
 group: group::import and integrate

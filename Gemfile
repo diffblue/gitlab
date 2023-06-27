@@ -13,11 +13,7 @@ gem 'bundler-checksum', '~> 0.1.0', path: 'vendor/gems/bundler-checksum', requir
 # NOTE: When incrementing the major or minor version here, also increment activerecord_version
 # in vendor/gems/attr_encrypted/attr_encrypted.gemspec until we resolve
 # https://gitlab.com/gitlab-org/gitlab/-/issues/375713
-<<<<<<< HEAD
-gem 'rails', '~> 7.0.5'
-=======
 gem 'rails', '~> 7.0.5.1'
->>>>>>> source-project/master
 
 gem 'bootsnap', '~> 1.16.0', require: false
 
