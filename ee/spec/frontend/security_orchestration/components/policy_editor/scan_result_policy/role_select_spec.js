@@ -16,11 +16,11 @@ describe('RoleSelect component', () => {
   let wrapper;
   const namespacePath = 'path/to/namespace';
 
-  const createComponent = ({ props = {} } = {}) => {
+  const createComponent = ({ propsData = {} } = {}) => {
     wrapper = shallowMount(RoleSelect, {
       propsData: {
         existingApprovers: [],
-        ...props,
+        ...propsData,
       },
       provide: {
         namespacePath,
@@ -42,6 +42,13 @@ describe('RoleSelect component', () => {
       expect(wrapper.emitted('updateSelectedApprovers')).toEqual([[[role]]]);
     });
 
+    it('displays the correct listbox toggle class', () => {
+      expect(findListbox().props('toggleClass')).toEqual([
+        'gl-max-w-26',
+        { 'gl-inset-border-1-red-500!': false },
+      ]);
+    });
+
     it('displays the correct toggle text', () => {
       expect(findListbox().props('toggleText')).toBe('Choose specific role');
     });
@@ -51,11 +58,24 @@ describe('RoleSelect component', () => {
     });
   });
 
+  describe('custom props', () => {
+    beforeEach(() => {
+      createComponent({ propsData: { state: false } });
+    });
+
+    it('displays the correct listbox toggle class', () => {
+      expect(findListbox().props('toggleClass')).toEqual([
+        'gl-max-w-26',
+        { 'gl-inset-border-1-red-500!': true },
+      ]);
+    });
+  });
+
   describe('with valid approvers', () => {
     const role = { text: 'Developer', value: 'developer' };
 
     beforeEach(() => {
-      createComponent({ props: { existingApprovers: [role.value] } });
+      createComponent({ propsData: { existingApprovers: [role.value] } });
     });
 
     it('displays the correct toggle text', () => {
@@ -77,12 +97,12 @@ describe('RoleSelect component', () => {
     const invalidRole = 'invalid';
 
     it('displays the correct toggle text', () => {
-      createComponent({ props: { existingApprovers: [invalidRole] } });
+      createComponent({ propsData: { existingApprovers: [invalidRole] } });
       expect(findListbox().props('toggleText')).toBe('Choose specific role');
     });
 
     it('emits an error when a user updates to an invalid role', async () => {
-      createComponent({ props: { existingApprovers: [validRole] } });
+      createComponent({ propsData: { existingApprovers: [validRole] } });
       await wrapper.setProps({ existingApprovers: [invalidRole] });
       expect(wrapper.emitted('error')).toEqual([[]]);
     });

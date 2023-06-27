@@ -22,7 +22,7 @@ RSpec.describe Search::GlobalService, feature_category: :global_search do
     shared_examples 'search does not use has_parent' do |scope|
       let(:results) { described_class.new(nil, search: '*').execute.objects(scope) }
       let(:es_host) { Gitlab::CurrentSettings.elasticsearch_url[0] }
-      let(:search_url) { Addressable::Template.new("#{es_host}/{index}/_search{?params*}") }
+      let(:search_url) { %r{#{es_host}/[\w-]+/_search} }
 
       it 'does not use joins to apply permissions' do
         request = a_request(:post, search_url).with do |req|

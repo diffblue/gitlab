@@ -248,12 +248,12 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
         specify do
           expect(result).to include(status: :error,
             message: 'Invalid policy',
-            details: ['Required approvals exceed eligible approvers'])
+            details: ['Required approvals exceed eligible approvers.'])
         end
 
         it_behaves_like 'sets validation errors',
           field: :approvers_ids,
-          message: 'Required approvals exceed eligible approvers',
+          message: 'Required approvals exceed eligible approvers.',
           title: 'Logic error'
       end
 

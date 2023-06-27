@@ -25,6 +25,11 @@ export default {
       required: false,
       default: () => [],
     },
+    state: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
   },
   apollo: {
     groups: {
@@ -109,7 +114,7 @@ export default {
     searchable
     is-check-centered
     multiple
-    toggle-class="gl-max-w-26"
+    :toggle-class="['gl-max-w-26', { 'gl-inset-border-1-red-500!': !state }]"
     :searching="$apollo.loading"
     :selected="selectedGroupsValues"
     :toggle-text="toggleText"

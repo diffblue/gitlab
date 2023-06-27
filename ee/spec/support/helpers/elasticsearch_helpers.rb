@@ -3,8 +3,7 @@
 module ElasticsearchHelpers
   def assert_named_queries(*expected_names)
     es_host = Gitlab::CurrentSettings.elasticsearch_url.first
-    search_uri =
-      Addressable::Template.new("#{es_host}/{index}/_search{?params*}")
+    search_uri = %r{#{es_host}/[\w-]+/_search}
 
     ensure_names_present = lambda do |req|
       payload = Gitlab::Json.parse(req.body)

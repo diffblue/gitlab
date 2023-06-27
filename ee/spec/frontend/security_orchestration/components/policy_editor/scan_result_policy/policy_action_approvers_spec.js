@@ -117,6 +117,11 @@ describe('PolicyActionApprovers', () => {
       expect(approvalsRequiredInput.exists()).toBe(true);
       expect(approvalsRequiredInput.attributes('state')).toBe(undefined);
     });
+
+    it('renders the approver dropdown with an invalid state', () => {
+      factory({ propsData: { approverType: USER_TYPE, errors: [{ field: 'approvers_ids' }] } });
+      expect(findUserSelect().props('state')).toBe(false);
+    });
   });
 
   describe('selected approver types', () => {
@@ -131,10 +136,11 @@ describe('PolicyActionApprovers', () => {
       });
     });
 
-    it('renders the user select when the "user" type approver is selected', async () => {
+    it('renders the user select with the correct props when the "user" type approver is selected', async () => {
       factory({ propsData: { approverType: USER_TYPE } });
       await nextTick();
       expect(findUserSelect().exists()).toBe(true);
+      expect(findUserSelect().props('state')).toBe(true);
     });
 
     it('renders the group select when the "group" type approver is selected', async () => {
