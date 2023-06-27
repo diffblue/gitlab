@@ -22,7 +22,8 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic, :sidekiq_inline, featur
     let_it_be(:user) { create(:user) }
 
     context 'when type is wiki_blob' do
-      let_it_be(:wiki_project) { create(:project, :wiki_repo, :private, :wiki_private) }
+      let_it_be(:project2) { create(:project, :public, group: group) }
+      let_it_be(:project2_wiki) { create(:project_wiki, project: project2, user: user) }
       let(:included_class) { Elastic::Latest::WikiClassProxy }
 
       subject { included_class.new(project.wiki.class, use_separate_indices: ProjectWiki.use_separate_indices?) }
@@ -47,7 +48,7 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic, :sidekiq_inline, featur
         let(:search_options) do
           {
             current_user: user,
-            project_ids: [project.id],
+            project_ids: [project.id, project2.id],
             group_ids: [project.namespace.id],
             public_and_internal_projects: false,
             order_by: nil,
@@ -93,8 +94,8 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic, :sidekiq_inline, featur
       context 'if migrate_wikis_to_separate_index is not finished' do
         before do
           set_elasticsearch_migration_to(:migrate_wikis_to_separate_index, including: false)
-          wiki_project.wiki.create_page('home_page', 'Bla bla term')
-          wiki_project.wiki.index_wiki_blobs
+          project2_wiki.create_page('home_page', 'Bla bla term')
+          project2_wiki.index_wiki_blobs
           ensure_elasticsearch_index!
         end
 
@@ -109,8 +110,8 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic, :sidekiq_inline, featur
       context 'if migrate_wikis_to_separate_index is finished' do
         before do
           set_elasticsearch_migration_to(:migrate_wikis_to_separate_index, including: true)
-          wiki_project.wiki.create_page('home_page', 'Bla bla term')
-          wiki_project.wiki.index_wiki_blobs
+          project2_wiki.create_page('home_page', 'Bla bla term')
+          project2_wiki.index_wiki_blobs
           ensure_elasticsearch_index!
         end
 

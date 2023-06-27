@@ -135,8 +135,9 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
     let(:project) { double(:project) }
     let(:content) { "foo\nbar\nbaz\n" }
     let(:path) { 'path/file.ext' }
-    let(:blob) do
+    let(:source) do
       {
+        'project_id' => 1,
         'blob' => {
           'commit_sha' => 'sha',
           'content' => content,
@@ -146,7 +147,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
     end
 
     it 'returns an unhighlighted blob when no highlight data is present' do
-      parsed = described_class.parse_search_result({ '_source' => blob }, project)
+      parsed = described_class.parse_search_result({ '_source' => source }, project)
 
       expect(parsed).to be_kind_of(::Gitlab::Search::FoundBlob)
       expect(parsed).to have_attributes(
@@ -160,7 +161,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
 
     it 'parses the blob with highlighting' do
       result = {
-        '_source' => blob,
+        '_source' => source,
         'highlight' => {
           'blob.content' => ["foo\n#{::Elastic::Latest::GitClassProxy::HIGHLIGHT_START_TAG}bar#{::Elastic::Latest::GitClassProxy::HIGHLIGHT_END_TAG}\nbaz\n"]
         }
@@ -184,7 +185,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
 
     it 'sets the correct matched_lines_count when the searched text found on the multiple lines' do
       result = {
-        '_source' => blob,
+        '_source' => source,
         'highlight' => {
           'blob.content' => ["foo\n#{::Elastic::Latest::GitClassProxy::HIGHLIGHT_START_TAG}bar#{::Elastic::Latest::GitClassProxy::HIGHLIGHT_END_TAG}\nbaz\nfoo\n#{::Elastic::Latest::GitClassProxy::HIGHLIGHT_START_TAG}bar#{::Elastic::Latest::GitClassProxy::HIGHLIGHT_END_TAG}\nbaz\n"]
         }
@@ -231,7 +232,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
         END
 
         result = {
-          '_source' => blob,
+          '_source' => source,
           'highlight' => {
             'blob.content' => [highlighted_content]
           }
@@ -266,7 +267,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
 
       it 'still parses the basename from the path with reasonable amount of time' do
         Timeout.timeout(3.seconds) do
-          parsed = described_class.parse_search_result({ '_source' => blob }, project)
+          parsed = described_class.parse_search_result({ '_source' => source }, project)
 
           expect(parsed).to be_kind_of(::Gitlab::Search::FoundBlob)
           expect(parsed).to have_attributes(
