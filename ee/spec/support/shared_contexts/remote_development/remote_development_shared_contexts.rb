@@ -47,7 +47,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
     spec_replicas = [ # rubocop:disable Style/MultilineTernaryOperator
       RemoteDevelopment::Workspaces::States::STOPPED, RemoteDevelopment::Workspaces::States::STOPPING
     ].include?(current_actual_state) ? 0 : 1
-    host_template = get_workspace_host_template(workspace_name, dns_zone)
+    host_template_annotation = get_workspace_host_template_annotation(workspace_name, dns_zone)
+    host_template_environment_variable = get_workspace_host_template_env_var(workspace_name, dns_zone)
     root_url = Gitlab::Routing.url_helpers.root_url
 
     # rubocop:disable Lint/UnreachableCode, Lint/DuplicateBranch
@@ -255,7 +256,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
       metadata:
         annotations:
           config.k8s.io/owning-inventory: #{owning_inventory}
-          workspaces.gitlab.com/host-template: #{host_template}
+          workspaces.gitlab.com/host-template: #{host_template_annotation}
           workspaces.gitlab.com/id: \'#{workspace_id}\'
         creationTimestamp: null
         labels:
@@ -274,7 +275,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
           metadata:
             annotations:
               config.k8s.io/owning-inventory: #{owning_inventory}
-              workspaces.gitlab.com/host-template: #{host_template}
+              workspaces.gitlab.com/host-template: #{host_template_annotation}
               workspaces.gitlab.com/id: \'#{workspace_id}\'
             creationTimestamp: null
             labels:
@@ -294,6 +295,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
                 value: "/projects"
               - name: PROJECT_SOURCE
                 value: "/projects"
+              - name: GL_WORKSPACE_DOMAIN_TEMPLATE
+                value: #{host_template_environment_variable}
               image: quay.io/mloriedo/universal-developer-image:ubi8-dw-demo
               imagePullPolicy: Always
               name: tooling-container
@@ -330,6 +333,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
                 value: #{user_name}
               - name: GIT_AUTHOR_EMAIL
                 value: #{user_email}
+              - name: GL_WORKSPACE_DOMAIN_TEMPLATE
+                value: #{host_template_environment_variable}
               image: alpine/git:2.36.3
               imagePullPolicy: Always
               name: gl-cloner-injector-gl-cloner-injector-command-1
@@ -357,6 +362,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
                 value: "/projects"
               - name: PROJECT_SOURCE
                 value: "/projects"
+              - name: GL_WORKSPACE_DOMAIN_TEMPLATE
+                value: #{host_template_environment_variable}
               image: registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:1
               imagePullPolicy: Always
               name: gl-editor-injector-gl-editor-injector-command-2
@@ -425,7 +432,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
     dns_zone: 'workspaces.localdev.me'
   )
     spec_replicas = started == true ? "1" : "0"
-    host_template = get_workspace_host_template(workspace_name, dns_zone)
+    host_template_annotation = get_workspace_host_template_annotation(workspace_name, dns_zone)
+    host_template_environment_variable = get_workspace_host_template_env_var(workspace_name, dns_zone)
     root_url = Gitlab::Routing.url_helpers.root_url
     inventory_config = <<~RESOURCES_YAML
       ---
@@ -446,7 +454,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
       metadata:
         annotations:
           config.k8s.io/owning-inventory: #{owning_inventory}
-          workspaces.gitlab.com/host-template: #{host_template}
+          workspaces.gitlab.com/host-template: #{host_template_annotation}
           workspaces.gitlab.com/id: \'#{workspace_id}\'
         creationTimestamp: null
         labels:
@@ -464,7 +472,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
           metadata:
             annotations:
               config.k8s.io/owning-inventory: #{owning_inventory}
-              workspaces.gitlab.com/host-template: #{host_template}
+              workspaces.gitlab.com/host-template: #{host_template_annotation}
               workspaces.gitlab.com/id: \'#{workspace_id}\'
             creationTimestamp: null
             labels:
@@ -484,6 +492,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
                 value: "/projects"
               - name: PROJECT_SOURCE
                 value: "/projects"
+              - name: GL_WORKSPACE_DOMAIN_TEMPLATE
+                value: #{host_template_environment_variable}
               image: quay.io/mloriedo/universal-developer-image:ubi8-dw-demo
               imagePullPolicy: Always
               name: tooling-container
@@ -520,6 +530,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
                 value: #{user_name}
               - name: GIT_AUTHOR_EMAIL
                 value: #{user_email}
+              - name: GL_WORKSPACE_DOMAIN_TEMPLATE
+                value: #{host_template_environment_variable}
               image: alpine/git:2.36.3
               imagePullPolicy: Always
               name: gl-cloner-injector-gl-cloner-injector-command-1
@@ -547,6 +559,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
                 value: "/projects"
               - name: PROJECT_SOURCE
                 value: "/projects"
+              - name: GL_WORKSPACE_DOMAIN_TEMPLATE
+                value: #{host_template_environment_variable}
               image: registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:1
               imagePullPolicy: Always
               name: gl-editor-injector-gl-editor-injector-command-2
@@ -581,7 +595,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
       metadata:
         annotations:
           config.k8s.io/owning-inventory: #{owning_inventory}
-          workspaces.gitlab.com/host-template: #{host_template}
+          workspaces.gitlab.com/host-template: #{host_template_annotation}
           workspaces.gitlab.com/id: \'#{workspace_id}\'
         creationTimestamp: null
         labels:
@@ -603,7 +617,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
       metadata:
         annotations:
           config.k8s.io/owning-inventory: #{owning_inventory}
-          workspaces.gitlab.com/host-template: #{host_template}
+          workspaces.gitlab.com/host-template: #{host_template_annotation}
           workspaces.gitlab.com/id: \'#{workspace_id}\'
         creationTimestamp:
         labels:
@@ -631,8 +645,12 @@ RSpec.shared_context 'with remote development shared fixtures' do
   end
   # rubocop:enable Metrics/ParameterLists
 
-  def get_workspace_host_template(workspace_name, dns_zone)
-    "\"{{.port}}-#{workspace_name}.#{dns_zone}\""
+  def get_workspace_host_template_annotation(workspace_name, dns_zone)
+    %("{{.port}}-#{workspace_name}.#{dns_zone}")
+  end
+
+  def get_workspace_host_template_env_var(workspace_name, dns_zone)
+    %("${PORT}-#{workspace_name}.#{dns_zone}")
   end
 
   def example_devfile

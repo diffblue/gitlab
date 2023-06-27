@@ -11,15 +11,19 @@ module RemoteDevelopment
             processed_devfile,
             name,
             namespace,
-            YAML.dump(labels),
-            YAML.dump(annotations),
+            YAML.dump(labels.deep_stringify_keys),
+            YAML.dump(annotations.deep_stringify_keys),
             replicas,
             domain_template,
             'none'
           )
           workspace_resources = YAML.load_stream(workspace_resources_yaml)
           workspace_resources = set_security_context(workspace_resources: workspace_resources)
-          set_git_configuration(workspace_resources: workspace_resources, user: user)
+          workspace_resources = set_git_configuration(workspace_resources: workspace_resources, user: user)
+          set_workspace_environment_variables(
+            workspace_resources: workspace_resources,
+            domain_template: domain_template
+          )
         end
 
         private
@@ -86,6 +90,29 @@ module RemoteDevelopment
                   'value' => user.email
                 }
               ])
+            end
+          end
+          workspace_resources
+        end
+
+        def set_workspace_environment_variables(workspace_resources:, domain_template:)
+          env_variables = [
+            {
+              'name' => 'GL_WORKSPACE_DOMAIN_TEMPLATE',
+              'value' => domain_template.sub(/{{.port}}/, "${PORT}")
+            }
+          ]
+          workspace_resources.each do |workspace_resource|
+            next unless workspace_resource['kind'] == 'Deployment'
+
+            pod_spec = workspace_resource['spec']['template']['spec']
+
+            pod_spec['initContainers'].each do |init_containers|
+              init_containers.fetch('env').concat(env_variables)
+            end
+
+            pod_spec['containers'].each do |container|
+              container.fetch('env').concat(env_variables)
             end
           end
           workspace_resources

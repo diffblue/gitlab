@@ -30,7 +30,7 @@ module RemoteDevelopment
             volume_mount_dir: workspace_root
           )
 
-          YAML.dump(flattened_devfile)
+          YAML.dump(flattened_devfile.deep_stringify_keys)
         end
 
         private
