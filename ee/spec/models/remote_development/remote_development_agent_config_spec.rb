@@ -29,4 +29,18 @@ RSpec.describe RemoteDevelopment::RemoteDevelopmentAgentConfig, feature_category
         .to match_array(['Dns zone is currently immutable, and cannot be updated. Create a new agent instead.'])
     end
   end
+
+  describe 'validations' do
+    context 'when config has an invalid dns_zone' do
+      let_it_be(:config) { build(:remote_development_agent_config, dns_zone: "invalid dns zone") }
+
+      subject { config }
+
+      it 'prevents config from being created' do
+        subject.save # rubocop:disable Rails/SaveBang
+        expect(subject.errors.full_messages)
+          .to match_array(['Dns zone contains invalid characters (valid characters: [a-z0-9\\-])'])
+      end
+    end
+  end
 end
