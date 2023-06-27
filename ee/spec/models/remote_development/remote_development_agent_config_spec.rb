@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe RemoteDevelopment::RemoteDevelopmentAgentConfig, feature_category: :remote_development do
-  let_it_be(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
+  let_it_be_with_reload(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
 
   subject { agent.remote_development_agent_config }
 
