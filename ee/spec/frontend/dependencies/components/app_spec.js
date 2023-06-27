@@ -163,8 +163,20 @@ describe('DependenciesApp component', () => {
       expect(store.dispatch.mock.calls).toEqual([
         ['setDependenciesEndpoint', basicAppProps.endpoint],
         ['setExportDependenciesEndpoint', basicAppProps.exportEndpoint],
-        ['fetchDependencies'],
+        ['setSortField', 'severity'],
       ]);
+    });
+
+    describe('with namespaceType set to group', () => {
+      beforeEach(() => {
+        factory({ provide: { namespaceType: 'group' } });
+      });
+
+      it('dispatches setSortField with packager', () => {
+        expect(store.dispatch.mock.calls).toEqual(
+          expect.arrayContaining([['setSortField', 'packager']]),
+        );
+      });
     });
 
     it('shows only the loading icon', () => {
