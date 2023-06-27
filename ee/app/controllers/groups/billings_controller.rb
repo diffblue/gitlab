@@ -8,7 +8,6 @@ class Groups::BillingsController < Groups::ApplicationController
 
   before_action only: [:index] do
     push_frontend_feature_flag(:refresh_billings_seats, type: :ops)
-    push_frontend_feature_flag(:auditor_billing_page_access)
   end
 
   before_action only: :index do
@@ -58,10 +57,6 @@ class Groups::BillingsController < Groups::ApplicationController
   end
 
   def verify_authorization
-    if Feature.enabled?(:auditor_billing_page_access, @group)
-      authorize_billings_page!
-    else
-      authorize_admin_group!
-    end
+    authorize_billings_page!
   end
 end

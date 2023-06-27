@@ -110,7 +110,6 @@ module EE
           get ":id/gitlab_subscription", urgency: :low, feature_category: :purchase do
             if current_user.auditor?
               namespace = find_namespace(params[:id])
-              unauthorized! unless ::Feature.enabled?(:auditor_billing_page_access, namespace)
 
               authorize! :read_billing, namespace
             else

@@ -271,35 +271,33 @@ RSpec.describe BillingPlansHelper, :saas, feature_category: :subscription_manage
   end
 
   describe '#can_edit_billing?' do
-    let(:group_with_flag) { build(:group) }
-    let(:group_without_flag) { build(:group) }
+    let(:auditor_group) { build(:group) }
     let(:auditor) { create(:auditor) }
     let(:dev) { create(:user) }
+    let(:admin) { create(:user, admin: true) }
 
-    describe 'when feature flag is set to true for group' do
-      before do
-        stub_feature_flags(auditor_billing_page_access: group_with_flag)
-
-        group_with_flag.add_developer(dev)
-        group_with_flag.add_guest(auditor)
-      end
-
-      it 'is true for auditor' do
-        allow(helper).to receive(:current_user).and_return(auditor)
-
-        expect(helper.can_edit_billing?(group_with_flag)).to eq(true)
-      end
-
-      it 'is false for developer' do
-        allow(helper).to receive(:current_user).and_return(dev)
-
-        expect(helper.can_edit_billing?(group_with_flag)).to eq(true)
-      end
+    before do
+      auditor_group.add_developer(dev)
+      auditor_group.add_guest(auditor)
+      auditor_group.add_owner(admin)
     end
 
-    it 'is true for group without feature flag set' do
-      stub_feature_flags(auditor_billing_page_access: false)
-      expect(helper.can_edit_billing?(group_without_flag)).to eq(true)
+    it 'is false for guest' do
+      allow(helper).to receive(:current_user).and_return(auditor)
+
+      expect(helper.can_edit_billing?(auditor_group)).to eq(false)
+    end
+
+    it 'is false for developer' do
+      allow(helper).to receive(:current_user).and_return(dev)
+
+      expect(helper.can_edit_billing?(auditor_group)).to eq(false)
+    end
+
+    it 'is true for admin' do
+      allow(helper).to receive(:current_user).and_return(admin)
+
+      expect(helper.can_edit_billing?(auditor_group)).to eq(true)
     end
   end
 

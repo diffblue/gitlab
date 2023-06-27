@@ -626,33 +626,18 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :groups_a
     end
 
     context 'with an auditor' do
-      context 'without :auditor_billing_page_access feature flag' do
-        before do
-          stub_feature_flags(auditor_billing_page_access: false)
-          do_get_subscription(auditor)
-        end
-
-        it 'returns an unauthorized error' do
-          expect(response).to have_gitlab_http_status(:unauthorized)
-        end
+      before do
+        do_get_subscription(auditor)
       end
 
-      context 'with :auditor_billing_page_access feature flag' do
+      it_behaves_like 'authorized user using group namespace for billing'
+
+      context 'using a user namespace' do
         before do
-          stub_feature_flags(auditor_billing_page_access: namespace)
-          do_get_subscription(auditor)
+          do_get_subscription(auditor, auditor.namespace.id)
         end
 
-        it_behaves_like 'authorized user using group namespace for billing'
-
-        context 'using a user namespace' do
-          before do
-            stub_feature_flags(auditor_billing_page_access: auditor.namespace)
-            do_get_subscription(auditor, auditor.namespace.id)
-          end
-
-          it_behaves_like 'authorized user using user namespace for billing'
-        end
+        it_behaves_like 'authorized user using user namespace for billing'
       end
     end
 

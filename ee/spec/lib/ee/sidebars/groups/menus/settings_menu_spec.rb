@@ -219,7 +219,6 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
         let(:check_billing) { true }
 
         before do
-          stub_feature_flags(auditor_billing_page_access: group)
           allow(::Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(check_billing)
         end
 
@@ -227,14 +226,6 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
 
         it 'does not show any other menu items' do
           expect(menu.renderable_items.length).to equal(1)
-        end
-
-        context 'when auditor_billing_page_access FF is disabled' do
-          before do
-            stub_feature_flags(auditor_billing_page_access: false)
-          end
-
-          it { is_expected.not_to be_present }
         end
       end
     end
