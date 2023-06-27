@@ -8,7 +8,7 @@ module QA
           class SecurityDashboard < QA::Page::Base
             view 'ee/app/assets/javascripts/security_dashboard/components/shared/vulnerability_report/vulnerability_list.vue' do
               element :vulnerability
-              element :vulnerability_report_checkbox_all
+              element :vulnerability_checkbox_all
               element :false_positive_vulnerability
               element :vulnerability_remediated_badge_content
               element :vulnerability_issue_created_badge_content
@@ -16,7 +16,7 @@ module QA
             end
 
             view 'ee/app/assets/javascripts/security_dashboard/components/shared/vulnerability_report/selection_summary.vue' do
-              element :vulnerability_card_status_dropdown
+              element :status_listbox
               element :change_status_button
               element :dismissal_reason_listbox
               element :change_status_comment_textbox
@@ -43,7 +43,7 @@ module QA
             end
 
             def select_all_vulnerabilities
-              check_element(:vulnerability_report_checkbox_all, true)
+              check_element(:vulnerability_checkbox_all, true)
             end
 
             def select_single_vulnerability(vulnerability_name)
@@ -51,7 +51,7 @@ module QA
             end
 
             def change_state(status, dismissal_reason = "not_applicable")
-              click_element(:vulnerability_card_status_dropdown)
+              click_element(:status_listbox)
               click_element(:"listbox-item-#{status}")
 
               if status.include?("dismissed")
