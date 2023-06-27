@@ -50,7 +50,15 @@ module Gitlab
       return [] unless merge_request.project.feature_available?(:code_owners)
 
       sha ||= merge_request.commit_shas(limit: 2).last
-      paths = merge_request.merge_request_diff.compare_with(sha).modified_paths
+      merge_request_diff = merge_request.merge_request_diff
+
+      paths = if sha == merge_request_diff.head_commit_sha
+                # NOTE: The sha could be the same as the head_commit_sha if there is only 1 commit and that got amended.
+                paths_for_merge_request(merge_request, merge_request_diff)
+              else
+                merge_request_diff.compare_with(sha).modified_paths
+              end
+
       Loader.new(
         merge_request.target_project,
         merge_request.target_branch,
