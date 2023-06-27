@@ -156,7 +156,7 @@ RSpec.describe Groups::HooksController, feature_category: :webhooks do
         end
 
         it 'is successful' do
-          hook.update!(url_variables: { 'a' => 'x', 'b' => 'z' })
+          hook.update!(url_variables: { 'b' => 'z' })
 
           patch :update, params: { group_id: group.to_param, id: hook, hook: hook_params }
 
