@@ -20,7 +20,7 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
 
   before do
     create_statistics
-    set_storage_size_limit(namespace, megabytes: 100)
+    set_enforcement_limit(namespace, megabytes: 100)
   end
 
   describe '#above_size_limit?' do
@@ -47,7 +47,7 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
 
       context 'when limit is 0' do
         before do
-          set_storage_size_limit(namespace, megabytes: 0)
+          set_enforcement_limit(namespace, megabytes: 0)
           namespace.update!(additional_purchased_storage_size: 0)
         end
 
@@ -83,7 +83,7 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
 
     context 'when limit is 0' do
       before do
-        set_storage_size_limit(namespace, megabytes: 0)
+        set_enforcement_limit(namespace, megabytes: 0)
       end
 
       it { is_expected.to eq(0) }
@@ -275,7 +275,7 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
 
   describe '#limit' do
     before do
-      set_storage_size_limit(namespace, megabytes: 15_000)
+      set_enforcement_limit(namespace, megabytes: 15_000)
     end
 
     subject { model.limit }
@@ -298,7 +298,7 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
 
     context 'when there is no additional purchased storage or plan limit set' do
       before do
-        set_storage_size_limit(namespace, megabytes: 0)
+        set_enforcement_limit(namespace, megabytes: 0)
         namespace.update!(additional_purchased_storage_size: 0)
       end
 
@@ -309,7 +309,7 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
       let(:key) { 'root_storage_size_limit' }
 
       before do
-        set_storage_size_limit(namespace, megabytes: 70_000)
+        set_enforcement_limit(namespace, megabytes: 70_000)
         namespace.update!(additional_purchased_storage_size: 34_000)
       end
 
@@ -341,7 +341,7 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
 
     with_them do
       it 'returns the percentage of remaining storage rounding down to the nearest integer' do
-        set_storage_size_limit(namespace, megabytes: limit)
+        set_enforcement_limit(namespace, megabytes: limit)
         set_used_storage(namespace, megabytes: used)
 
         expect(model.used_storage_percentage).to eq(expected_percentage)
@@ -369,7 +369,7 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
 
     with_them do
       it 'returns the percentage of remaining storage rounding down to the nearest integer' do
-        set_storage_size_limit(namespace, megabytes: limit)
+        set_enforcement_limit(namespace, megabytes: limit)
         set_used_storage(namespace, megabytes: used)
 
         expect(model.remaining_storage_percentage).to eq(expected_percentage)
@@ -395,7 +395,7 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
 
     with_them do
       it 'returns the remaining storage size in bytes' do
-        set_storage_size_limit(namespace, megabytes: limit)
+        set_enforcement_limit(namespace, megabytes: limit)
         set_used_storage(namespace, megabytes: used)
 
         expect(model.remaining_storage_size).to eq(expected_size)
@@ -413,7 +413,7 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
 
   describe '#exceeded_size' do
     before do
-      set_storage_size_limit(namespace, megabytes: 100)
+      set_enforcement_limit(namespace, megabytes: 100)
     end
 
     context 'when given a parameter' do
@@ -485,7 +485,7 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
 
     context 'when storage size limit is 0' do
       before do
-        set_storage_size_limit(namespace, megabytes: 0)
+        set_enforcement_limit(namespace, megabytes: 0)
       end
 
       it 'returns false' do

@@ -13,7 +13,7 @@ RSpec.describe EE::Gitlab::NamespaceStorageSizeErrorMessage, :saas do
   let(:error_message) { described_class.new(checker: size_checker, message_params: message_params) }
 
   before do
-    set_storage_size_limit(namespace, megabytes: 10)
+    set_enforcement_limit(namespace, megabytes: 10)
     set_used_storage(namespace, megabytes: 12)
   end
 

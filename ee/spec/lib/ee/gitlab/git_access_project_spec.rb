@@ -81,7 +81,7 @@ RSpec.describe Gitlab::GitAccessProject do
 
         context 'when namespace storage size is below the limit' do
           before do
-            set_storage_size_limit(namespace, megabytes: 5)
+            set_enforcement_limit(namespace, megabytes: 5)
             set_used_storage(namespace, megabytes: 3)
           end
 
@@ -138,7 +138,7 @@ RSpec.describe Gitlab::GitAccessProject do
 
         context 'when namespace storage size is above the limit' do
           before do
-            set_storage_size_limit(namespace, megabytes: 5)
+            set_enforcement_limit(namespace, megabytes: 5)
             set_used_storage(namespace, megabytes: 6)
           end
 
@@ -163,7 +163,7 @@ RSpec.describe Gitlab::GitAccessProject do
 
         context 'when namespace storage size limit is not set' do
           before do
-            set_storage_size_limit(namespace, megabytes: 0)
+            set_enforcement_limit(namespace, megabytes: 0)
             set_used_storage(namespace, megabytes: 3)
           end
 
@@ -179,7 +179,7 @@ RSpec.describe Gitlab::GitAccessProject do
       context 'when GIT_OBJECT_DIRECTORY_RELATIVE env var is not set' do
         context 'when namespace storage size is below the limit' do
           before do
-            set_storage_size_limit(namespace, megabytes: 4)
+            set_enforcement_limit(namespace, megabytes: 4)
             set_used_storage(namespace, megabytes: 3)
           end
 
@@ -211,7 +211,7 @@ RSpec.describe Gitlab::GitAccessProject do
               let(:repository_size_limit) { 2.megabytes }
 
               before do
-                set_storage_size_limit(project.namespace, megabytes: 6)
+                set_enforcement_limit(project.namespace, megabytes: 6)
               end
 
               it 'accepts the push' do
@@ -240,7 +240,7 @@ RSpec.describe Gitlab::GitAccessProject do
 
             context 'when new change size does not exceed the namespace storage limit' do
               before do
-                set_storage_size_limit(project.namespace, megabytes: 6)
+                set_enforcement_limit(project.namespace, megabytes: 6)
               end
 
               it 'accepts the push' do
@@ -256,7 +256,7 @@ RSpec.describe Gitlab::GitAccessProject do
 
         context 'when namespace storage size is above the limit' do
           before do
-            set_storage_size_limit(namespace, megabytes: 5)
+            set_enforcement_limit(namespace, megabytes: 5)
             set_used_storage(namespace, megabytes: 6)
           end
 
@@ -279,7 +279,7 @@ RSpec.describe Gitlab::GitAccessProject do
 
         context 'when namespace storage size limit is not set' do
           before do
-            set_storage_size_limit(namespace, megabytes: 0)
+            set_enforcement_limit(namespace, megabytes: 0)
             set_used_storage(namespace, megabytes: 3)
           end
 
@@ -300,7 +300,7 @@ RSpec.describe Gitlab::GitAccessProject do
 
         context 'when the root namespace storage size is above the limit' do
           before do
-            set_storage_size_limit(group, megabytes: 5)
+            set_enforcement_limit(group, megabytes: 5)
             set_used_storage(group, megabytes: 6)
             create(:namespace_root_storage_statistics, namespace: subgroup)
             set_used_storage(subgroup, megabytes: 1)

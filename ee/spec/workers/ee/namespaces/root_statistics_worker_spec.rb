@@ -25,7 +25,7 @@ RSpec.describe Namespaces::RootStatisticsWorker, '#perform', :saas, feature_cate
 
     context 'when the namespace is running low on storage' do
       it 'sends a notification email' do
-        set_storage_size_limit(group, megabytes: 10)
+        set_enforcement_limit(group, megabytes: 10)
         project.statistics.update!(repository_size: 9.megabytes)
 
         expect(mailer).to receive(:notify_limit_warning).with(
@@ -89,7 +89,7 @@ RSpec.describe Namespaces::RootStatisticsWorker, '#perform', :saas, feature_cate
 
     context 'when the namespace is running low on storage' do
       it 'does not send a notification email' do
-        set_storage_size_limit(group, megabytes: 10)
+        set_enforcement_limit(group, megabytes: 10)
         project.statistics.update!(repository_size: 9.megabytes)
 
         expect(mailer).not_to receive(:notify_limit_warning)

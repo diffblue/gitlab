@@ -34,7 +34,7 @@ RSpec.describe API::Files, feature_category: :source_code_management do
         create(:gitlab_subscription, :ultimate, namespace: group)
         create(:namespace_root_storage_statistics, namespace: group)
         enforce_namespace_storage_limit(group)
-        set_storage_size_limit(group, megabytes: 5)
+        set_enforcement_limit(group, megabytes: 5)
         set_used_storage(group, megabytes: 6)
       end
 
@@ -61,7 +61,7 @@ RSpec.describe API::Files, feature_category: :source_code_management do
         create(:gitlab_subscription, :ultimate, namespace: group)
         create(:namespace_root_storage_statistics, namespace: group)
         enforce_namespace_storage_limit(group)
-        set_storage_size_limit(group, megabytes: 5)
+        set_enforcement_limit(group, megabytes: 5)
         set_used_storage(group, megabytes: 6)
       end
 
@@ -87,7 +87,7 @@ RSpec.describe API::Files, feature_category: :source_code_management do
         create(:gitlab_subscription, :ultimate, namespace: group)
         create(:namespace_root_storage_statistics, namespace: group)
         enforce_namespace_storage_limit(group)
-        set_storage_size_limit(group, megabytes: 5)
+        set_enforcement_limit(group, megabytes: 5)
         set_used_storage(group, megabytes: 6)
       end
 

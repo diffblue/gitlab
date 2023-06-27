@@ -46,7 +46,7 @@ RSpec.describe Commits::CreateService, feature_category: :source_code_management
         create(:gitlab_subscription, :ultimate, namespace: group)
         create(:namespace_root_storage_statistics, namespace: group)
         enforce_namespace_storage_limit(group)
-        set_storage_size_limit(group, megabytes: 1)
+        set_enforcement_limit(group, megabytes: 1)
         set_used_storage(group, megabytes: 2)
       end
 

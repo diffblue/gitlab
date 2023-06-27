@@ -20,7 +20,7 @@ RSpec.describe "Merge request > User merges with namespace storage limits", :js,
   before do
     project.add_developer(user)
     enforce_namespace_storage_limit(group)
-    set_storage_size_limit(group, megabytes: 10)
+    set_enforcement_limit(group, megabytes: 10)
     sign_in(user)
   end
 
