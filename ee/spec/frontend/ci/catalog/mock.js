@@ -39,16 +39,12 @@ const generateResourcesNodes = (count = 20, startId = 0) => {
         path: 'namespacePath',
       },
       starCount: 10,
-      versions: {
-        __typename: 'ReleaseConnection',
-        nodes: [
-          {
-            id: '3',
-            tagName: '1.0.0',
-            releasedAt: Date.now(),
-            author: { id: 1, webUrl: 'profile/1', name: 'username' },
-          },
-        ],
+      latestVersion: {
+        __typename: 'Release',
+        id: '3',
+        tagName: '1.0.0',
+        releasedAt: Date.now(),
+        author: { id: 1, webUrl: 'profile/1', name: 'username' },
       },
       webPath: 'path/to/project',
     });

@@ -31,16 +31,14 @@ query getCiCatalogResources(
         path
       }
       starCount
-      versions(first: 1) {
-        nodes {
+      latestVersion {
+        id
+        tagName
+        releasedAt
+        author {
           id
-          tagName
-          releasedAt
-          author {
-            id
-            name
-            webUrl
-          }
+          name
+          webUrl
         }
       }
       webPath
