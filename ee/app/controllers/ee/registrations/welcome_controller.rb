@@ -11,6 +11,10 @@ module EE
         include GoogleAnalyticsCSP
         include Onboarding::SetRedirect
         include RegistrationsTracking
+
+        before_action only: :show do
+          push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
+        end
       end
 
       private
