@@ -484,10 +484,36 @@ RSpec.describe ApplicationSetting do
       it { is_expected.not_to allow_value(0).for(:package_metadata_purl_types) }
     end
 
-    context "unconfirmed user deletion" do
-      it { is_expected.to allow_value(true, false).for(:delete_unconfirmed_users) }
+    context "unconfirmed user deletion", feature_category: :user_management do
+      context 'email confirmation is set to hard' do
+        before do
+          stub_application_setting_enum('email_confirmation_setting', 'hard')
+        end
 
-      it { is_expected.to validate_numericality_of(:unconfirmed_users_delete_after_days).is_greater_than(0) }
+        it { is_expected.to allow_value(true, false).for(:delete_unconfirmed_users) }
+        it { is_expected.to validate_numericality_of(:unconfirmed_users_delete_after_days).is_greater_than(0) }
+      end
+
+      context 'email confirmation is set to soft' do
+        let(:allow_unconfirmed_access_for) { 3 }
+
+        before do
+          stub_application_setting_enum('email_confirmation_setting', 'soft')
+          allow(Devise).to receive(:allow_unconfirmed_access_for).and_return(allow_unconfirmed_access_for.days)
+        end
+
+        it { is_expected.to allow_value(true, false).for(:delete_unconfirmed_users) }
+        it { is_expected.to validate_numericality_of(:unconfirmed_users_delete_after_days).is_greater_than(allow_unconfirmed_access_for) }
+      end
+
+      context 'email confirmation is is off' do
+        before do
+          stub_application_setting_enum('email_confirmation_setting', 'off')
+        end
+
+        it { is_expected.to allow_value(false).for(:delete_unconfirmed_users) }
+        it { is_expected.not_to allow_value(true).for(:delete_unconfirmed_users) }
+      end
     end
   end
 
