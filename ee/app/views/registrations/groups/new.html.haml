@@ -35,14 +35,8 @@
                 group_id: @group.id,
                 group_name: @group.name,
                 project_name: @project.name,
+                initialize_with_readme: @initialize_with_readme.to_s,
                 root_url: root_url } }
-
-              .form-group
-                = render Pajamas::CheckboxTagComponent.new(name: 'project[initialize_with_readme]', checked: true) do |c|
-                  = c.with_label do
-                    = s_('ProjectsNew|Include a Getting Started README')
-                  = c.with_help_text do
-                    = s_('ProjectsNew|Recommended if you\'re new to GitLab')
 
               = submit_tag _('Create project'), class: 'btn gl-button btn-confirm btn-block', data: { qa_selector: 'submit_button' }
 

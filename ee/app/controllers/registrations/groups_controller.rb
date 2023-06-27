@@ -22,6 +22,7 @@ module Registrations
     def new
       @group = Group.new(visibility_level: Gitlab::CurrentSettings.default_group_visibility)
       @project = Project.new(namespace: @group)
+      @initialize_with_readme = true
 
       track_event('view_new_group_action')
     end
@@ -40,6 +41,7 @@ module Registrations
       else
         @group = result.payload[:group]
         @project = result.payload[:project]
+        @initialize_with_readme = params.dig(:project, :initialize_with_readme)
 
         render :new
       end

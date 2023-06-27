@@ -25,7 +25,15 @@ const mountGroupProjectFields = (el, store) => {
     return null;
   }
 
-  const { importGroup, groupPersisted, groupId, groupName, projectName, rootUrl } = el.dataset;
+  const {
+    importGroup,
+    groupPersisted,
+    groupId,
+    groupName,
+    projectName,
+    initializeWithReadme,
+    rootUrl,
+  } = el.dataset;
 
   return new Vue({
     el,
@@ -38,6 +46,7 @@ const mountGroupProjectFields = (el, store) => {
           groupId: groupId || '',
           groupName: groupName || '',
           projectName: projectName || '',
+          initializeWithReadme: parseBoolean(initializeWithReadme),
           rootUrl,
         },
       });
