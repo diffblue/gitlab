@@ -89,6 +89,16 @@ module EE
       ::Geo::RepositoryUpdatedService.new(self).execute
     end
 
+    # This method requires a fully qualified ref to ensure the correct file is
+    # loaded.
+    #
+    # If the ref is not fully qualified and ambiguous we may return the
+    # wrong blob.
+    #
+    # For example if we have a branch named `refs/heads/develop` and
+    # a tag named `refs/tags/develop`, passing just `ref: 'develop'` will
+    # return the blob for the tag. To resolve this pass either
+    # `refs/heads/develop` or `refs/tags/develop`
     def code_owners_blob(ref:)
       possible_code_owner_blobs = ::Gitlab::CodeOwners::FILE_PATHS.map { |path| [ref, path] }
       blobs_at(possible_code_owner_blobs).compact.first

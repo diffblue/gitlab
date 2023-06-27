@@ -23,6 +23,6 @@ class ApprovalWrappedCodeOwnerRule < ApprovalWrappedRule
   private
 
   def section_optional?
-    Gitlab::CodeOwners.optional_section?(project, merge_request.target_branch, section)
+    Gitlab::CodeOwners.optional_section?(project, merge_request.target_branch_ref, section)
   end
 end

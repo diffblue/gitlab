@@ -108,7 +108,7 @@ RSpec.describe Gitlab::CodeOwners, feature_category: :source_code_management do
       subject(:entries) { described_class.entries_for_merge_request(merge_request, merge_request_diff: merge_request_diff) }
 
       let(:merge_request_diff) { nil }
-      let(:codeowner_lookup_ref) { merge_request.target_branch }
+      let(:codeowner_lookup_ref) { merge_request.target_branch_ref }
       let(:merge_request) do
         create(
           :merge_request,
