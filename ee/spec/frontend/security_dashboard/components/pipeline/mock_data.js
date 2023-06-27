@@ -469,6 +469,7 @@ export const pipelineSecurityReportFinding = {
     webUrl: 'project fullName',
     nameWithNamespace: 'Secure Ex / Security Reports',
     fullPath: 'project fullPath',
+    hasJiraVulnerabilityIssueCreationEnabled: false,
   },
   scanner: {
     id: '1',
@@ -561,6 +562,9 @@ export const pipelineSecurityReportFinding = {
     id: '1',
     userPermissions: {
       createVulnerabilityFeedback: true,
+    },
+    externalIssueLinks: {
+      nodes: [],
     },
     mergeRequest: {
       id: '2',
@@ -663,3 +667,30 @@ export const securityFindingCreateIssueMutationResponse = {
     },
   },
 };
+
+export const securityFindingCreateExternalIssueMutationResponse = {
+  data: {
+    vulnerabilityExternalIssueLinkCreate: {
+      errors: [],
+      externalIssueLink: {
+        id: '1',
+        externalIssue: {
+          webUrl: 'https://jira.com/issue/1',
+        },
+      },
+    },
+  },
+};
+
+export const getVulnerabilityExternalIssuesQueryResponse = ({
+  externalIssues = [{ id: '1', externalIssue: { webUrl: 'https://jira.com/1' } }],
+} = {}) => ({
+  data: {
+    vulnerability: {
+      ...pipelineSecurityReportFinding.vulnerability,
+      externalIssueLinks: {
+        nodes: [...externalIssues],
+      },
+    },
+  },
+});
