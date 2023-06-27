@@ -89,6 +89,7 @@ RSpec.describe 'Query.vulnerabilities.issueLinks', feature_category: :vulnerabil
       # 12) Select project
       # 13) Select route
       # 14) Select vulnerability occurrences
+      # 15) Select vulnerability reads
       # 15) Select vulnerability scanners
       # 16) Select vulnerability identifiers join table
       # 17) Select vulnerability identifiers
@@ -101,7 +102,7 @@ RSpec.describe 'Query.vulnerabilities.issueLinks', feature_category: :vulnerabil
       # 24) Select project features
       # 25) Loading the project authorizations
       # 26) Loading the namespace
-      expect { query_issue_links }.not_to exceed_query_limit(26)
+      expect { query_issue_links }.not_to exceed_query_limit(27)
     end
   end
 
