@@ -123,7 +123,7 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRe
 
     context 'when project_statistics backfill runs' do
       before do
-        allow(::Gitlab).to receive(:com?).and_return(true)
+        allow(::Gitlab).to receive(:com_except_jh?).and_return(true)
         allow(::ContainerRegistry::GitlabApiClient).to receive(:supports_gitlab_api?).and_return(true)
       end
 

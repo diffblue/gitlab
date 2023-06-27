@@ -12,7 +12,11 @@ describe('DependenciesActions component', () => {
   let wrapper;
   const { namespace } = DEPENDENCY_LIST_TYPES.all;
 
-  const factory = ({ propsData, featureFlags = {} } = {}) => {
+  const objectBasicProp = {
+    namespaceType: 'project',
+  };
+
+  const factory = ({ propsData, provide } = {}) => {
     store = createStore();
     jest.spyOn(store, 'dispatch').mockImplementation();
 
@@ -22,11 +26,7 @@ describe('DependenciesActions component', () => {
       stubs: {
         GlSortingItem,
       },
-      provide: {
-        glFeatures: {
-          ...featureFlags,
-        },
-      },
+      provide: { ...objectBasicProp, ...provide },
     });
   };
 
@@ -55,6 +55,29 @@ describe('DependenciesActions component', () => {
         Object.keys(SORT_FIELDS).map((field) => [`${namespace}/setSortField`, field]),
       ),
     );
+  });
+
+  describe('with namespaceType set to group', () => {
+    beforeEach(async () => {
+      factory({
+        propsData: { namespace },
+        provide: { namespaceType: 'group' },
+      });
+      store.state[namespace].endpoint = `${TEST_HOST}/dependencies.json`;
+      await nextTick();
+    });
+
+    it('dispatches the right setSortField action apart from severity', () => {
+      const sortingItems = wrapper.findAllComponents(GlSortingItem).wrappers;
+
+      sortingItems.forEach((item) => {
+        item.vm.$emit('click');
+      });
+
+      expect(store.dispatch.mock.calls).not.toEqual(
+        expect.arrayContaining([[`${namespace}/setSortField`, 'severity']]),
+      );
+    });
   });
 
   it('dispatches the toggleSortOrder action on clicking the sort order button', () => {

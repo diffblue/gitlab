@@ -8,8 +8,7 @@ RSpec.describe 'User visits their profile', feature_category: :user_profile do
   let_it_be_with_refind(:user) { create(:user) }
 
   before do
-    stub_ee_application_setting(should_check_namespace_plan: true)
-    stub_ee_application_setting(enforce_namespace_storage_limit: true)
+    stub_ee_application_setting(should_check_namespace_plan: true, automatic_purchased_storage_allocation: true)
     sign_in(user)
   end
 

@@ -159,30 +159,41 @@ RSpec.describe Namespaces::Storage::Enforcement, :saas, feature_category: :consu
 
     let_it_be(:group) { create(:group_with_plan, :with_root_storage_statistics, plan: :free_plan) }
 
-    context 'with application settings set to false' do
-      context 'when should_check_namespace_plan? is false' do
-        before do
-          allow(::Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(false)
-        end
-
-        it 'returns false' do
-          expect(show_pre_enforcement_alert?).to eq(false)
-        end
+    context 'with all possible scenarios' do
+      where(
+        :should_check_namespace_plan,
+        :automatic_purchased_storage_allocation,
+        :root_namespace_paid,
+        :show_preenforcement_banner_enabled,
+        :total_storage,
+        :notification_limit,
+        :enforcement_limit,
+        :expected_result
+      ) do
+        true  | true  | false | true  | 11  | 10 | 12 | true  # Over notification_limit, under enforcement_limit
+        true  | true  | false | true  | 11  | 12 | 13 | false # Under notification_limit, under enforcement_limit
+        true  | true  | false | true  | 12  | 10 | 11 | false # Over notification_limit, over enforcement_limit
+        false | true  | false | true  | 11  | 10 | 12 | false # Isolating :should_check_namespace_plan
+        true  | false | false | true  | 11  | 10 | 12 | false # Isolating :automatic_purchased_storage_allocation
+        true  | true  | true  | true  | 11  | 10 | 12 | false # Isolating :root_namespace_paid
+        true  | true  | false | false | 11  | 10 | 12 | false # Isolating :show_preenforcement_banner_enabled
       end
-    end
-
-    context 'with application settings set' do
-      before do
-        allow(::Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(true)
-      end
-
-      context 'when the namespace exceeds the notification limit' do
+      with_them do
         before do
-          allow(described_class).to receive(:over_pre_enforcement_notification_limit?).and_return(true)
+          stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan,
+            automatic_purchased_storage_allocation: automatic_purchased_storage_allocation,
+            enforce_namespace_storage_limit: true)
+
+          allow(group.root_ancestor).to receive(:paid?).and_return(root_namespace_paid)
+          stub_feature_flags(namespace_storage_limit_show_preenforcement_banner: show_preenforcement_banner_enabled)
+
+          set_notification_limit(group, megabytes: notification_limit)
+          set_used_storage(group, megabytes: total_storage)
+          set_enforcement_limit(group, megabytes: enforcement_limit)
         end
 
-        it 'returns true' do
-          expect(show_pre_enforcement_alert?).to eq(true)
+        it 'returns the expected result' do
+          expect(show_pre_enforcement_alert?).to eq(expected_result)
         end
       end
     end

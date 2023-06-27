@@ -67,6 +67,21 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::UpdateProcessor, feature_catego
           expect(config_instance).to be_nil
         end
       end
+
+      context 'when dns_zone is invalid' do
+        let(:dns_zone) { "invalid dns zone" }
+
+        it 'does not create the record and returns error' do
+          result = subject
+
+          expect(result[0]).to be_nil
+          expect(result[1].message).to match(/Error.*Dns zone.*/)
+          expect(result[1].reason).to eq(:bad_request)
+
+          config_instance = agent.reload.remote_development_agent_config
+          expect(config_instance).to be_nil
+        end
+      end
     end
   end
 end

@@ -7,10 +7,9 @@ import {
   GlIntersectionObserver,
   GlLoadingIcon,
 } from '@gitlab/ui';
-import { mapActions, mapState } from 'vuex';
 import { s__ } from '~/locale';
-import { featureAccessLevel } from '~/pages/projects/shared/permissions/constants';
-import { ListType } from '../constants';
+import { setError } from '~/boards/graphql/cache_updates';
+import subgroupsQuery from '../graphql/sub_groups.query.graphql';
 
 export default {
   name: 'GroupSelect',
@@ -19,6 +18,7 @@ export default {
     dropdownText: s__(`BoardNewEpic|Select a group`),
     searchPlaceholder: s__(`BoardNewEpic|Search groups`),
     emptySearchResult: s__(`BoardNewEpic|No matching results`),
+    errorFetchingGroups: s__('Boards|An error occurred while fetching groups. Please try again.'),
   },
   defaultFetchOptions: {
     with_issues_enabled: true,
@@ -34,9 +34,17 @@ export default {
     GlDropdownText,
     GlSearchBoxByType,
   },
-  inject: ['groupId'],
+  inject: ['groupId', 'fullPath'],
+  model: {
+    prop: 'selectedGroup',
+    event: 'selectGroup',
+  },
   props: {
     list: {
+      type: Object,
+      required: true,
+    },
+    selectedGroup: {
       type: Object,
       required: true,
     },
@@ -44,49 +52,94 @@ export default {
   data() {
     return {
       initialLoading: true,
+      isLoadingMore: false,
       searchTerm: '',
+      group: {},
     };
   },
+  apollo: {
+    group: {
+      query: subgroupsQuery,
+      variables() {
+        return {
+          search: this.searchTerm,
+          fullPath: this.fullPath,
+        };
+      },
+      result({ data }) {
+        this.initialLoading = false;
+        this.selectGroup(data.group.id);
+      },
+      error(error) {
+        setError({
+          error,
+          message: this.$options.i18n.errorFetchingGroups,
+        });
+      },
+    },
+  },
   computed: {
-    ...mapState(['subGroupsFlags', 'subGroups', 'selectedGroup']),
     selectedGroupName() {
       return this.selectedGroup.name || s__('BoardNewEpic|Loading groups');
     },
-    fetchOptions() {
-      const additionalAttrs = {};
-      if (this.list.type && this.list.type !== ListType.backlog) {
-        additionalAttrs.min_access_level = featureAccessLevel.EVERYONE;
-      }
-
+    currentGroup() {
+      const { id, name, fullName, __typename } = this.group;
       return {
-        ...this.$options.defaultFetchOptions,
-        ...additionalAttrs,
+        __typename,
+        id,
+        name,
+        fullName,
+        fullPath: this.group.fullPath,
       };
+    },
+    subGroups() {
+      const subgroups = this.group.descendantGroups?.nodes || [];
+      return [this.currentGroup, ...subgroups];
+    },
+    isLoading() {
+      return this.$apollo.queries.group.loading && !this.isLoadingMore;
     },
     isFetchResultEmpty() {
       return this.subGroups.length === 0;
     },
+    pageInfo() {
+      return this.group.descendantGroups?.pageInfo;
+    },
     hasNextPage() {
-      return this.subGroupsFlags.pageInfo?.hasNextPage;
+      return this.pageInfo?.hasNextPage;
     },
   },
   watch: {
-    searchTerm() {
-      this.fetchSubGroups({ search: this.searchTerm });
+    hasNextPage() {
+      return this.pageInfo?.hasNextPage;
     },
-  },
-  async mounted() {
-    await this.fetchSubGroups();
-
-    this.initialLoading = false;
   },
   methods: {
-    ...mapActions(['fetchSubGroups', 'setSelectedGroup']),
     selectGroup(groupId) {
-      this.setSelectedGroup(this.subGroups.find((group) => group.id === groupId));
+      this.$emit(
+        'selectGroup',
+        this.subGroups.find((group) => group.id === groupId),
+      );
     },
-    loadMoreGroups() {
-      this.fetchSubGroups({ search: this.searchTerm, fetchNext: true });
+    async loadMoreGroups() {
+      this.isLoadingMore = true;
+
+      try {
+        await this.$apollo.queries.group.fetchMore({
+          variables: {
+            search: this.searchTerm,
+            fullPath: this.fullPath,
+            after: this.pageInfo?.endCursor,
+          },
+        });
+      } catch (error) {
+        setError({
+          error,
+          message: this.$options.i18n.errorFetchingGroups,
+        });
+      } finally {
+        this.isLoadingMore = false;
+      }
     },
   },
 };
@@ -115,25 +168,22 @@ export default {
         :placeholder="$options.i18n.searchPlaceholder"
       />
       <gl-dropdown-item
-        v-for="group in subGroups"
-        v-show="!subGroupsFlags.isLoading"
-        :key="group.id"
+        v-for="item in subGroups"
+        v-show="!isLoading"
+        :key="item.id"
         :name="group.name"
-        @click="selectGroup(group.id)"
+        @click="selectGroup(item.id)"
       >
-        {{ group.fullName }}
+        {{ item.fullName }}
       </gl-dropdown-item>
-      <gl-dropdown-text v-show="subGroupsFlags.isLoading" data-testid="dropdown-text-loading-icon">
+      <gl-dropdown-text v-show="isLoading" data-testid="dropdown-text-loading-icon">
         <gl-loading-icon class="gl-mx-auto" size="sm" />
       </gl-dropdown-text>
-      <gl-dropdown-text
-        v-if="isFetchResultEmpty && !subGroupsFlags.isLoading"
-        data-testid="empty-result-message"
-      >
+      <gl-dropdown-text v-if="isFetchResultEmpty && !isLoading" data-testid="empty-result-message">
         <span class="gl-text-gray-500">{{ $options.i18n.emptySearchResult }}</span>
       </gl-dropdown-text>
       <gl-intersection-observer v-if="hasNextPage" @appear="loadMoreGroups">
-        <gl-loading-icon v-if="subGroupsFlags.isLoadingMore" size="lg" />
+        <gl-loading-icon v-if="isLoadingMore" size="lg" />
       </gl-intersection-observer>
     </gl-dropdown>
   </div>

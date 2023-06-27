@@ -4,8 +4,6 @@ export const SORT_FIELD_NAME = 'name';
 export const SORT_FIELD_PACKAGER = 'packager';
 export const SORT_FIELD_SEVERITY = 'severity';
 
-export const DEFAULT_SORT_FIELD = SORT_FIELD_SEVERITY;
-
 export const SORT_FIELDS = {
   [SORT_FIELD_NAME]: s__('Dependencies|Component name'),
   [SORT_FIELD_PACKAGER]: s__('Dependencies|Packager'),

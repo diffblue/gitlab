@@ -58,10 +58,10 @@ RSpec.describe 'Group', feature_category: :groups_and_projects do
     let_it_be(:storage_banner_text) { "A namespace storage limit will soon be enforced" }
 
     before do
-      stub_ee_application_setting(should_check_namespace_plan: true)
+      stub_ee_application_setting(should_check_namespace_plan: true, automatic_purchased_storage_allocation: true)
       set_used_storage(group, megabytes: 13)
       set_notification_limit(group, megabytes: 12)
-      group.add_maintainer(user)
+      group.add_guest(user)
       sign_in(user)
     end
 
@@ -95,7 +95,7 @@ RSpec.describe 'Group', feature_category: :groups_and_projects do
     end
   end
 
-  describe 'combined storage and users alert', :saas do
+  describe 'combined storage and users pre-enforcement alert', :saas do
     let_it_be_with_refind(:group) do
       create(:group_with_plan, :with_root_storage_statistics, :private, plan: :free_plan,
         name: 'over_storage_and_users')
@@ -109,7 +109,7 @@ RSpec.describe 'Group', feature_category: :groups_and_projects do
     before do
       set_notification_limit(group, megabytes: 10_000)
       set_dashboard_limit(group, megabytes: 5_000)
-      stub_ee_application_setting(should_check_namespace_plan: true)
+      stub_ee_application_setting(should_check_namespace_plan: true, automatic_purchased_storage_allocation: true)
     end
 
     context 'when owner' do
@@ -120,7 +120,7 @@ RSpec.describe 'Group', feature_category: :groups_and_projects do
         enforce_free_user_caps
       end
 
-      context 'when the group is over both storage/users limits' do
+      context 'when the group is over both storage notification and users limits' do
         before do
           set_used_storage(group, megabytes: 11_000)
         end
@@ -155,7 +155,7 @@ RSpec.describe 'Group', feature_category: :groups_and_projects do
         enforce_free_user_caps
       end
 
-      context 'when the group is over both storage/users limits' do
+      context 'when the group is over both storage notification and users limits' do
         before do
           set_used_storage(group, megabytes: 11_000)
         end

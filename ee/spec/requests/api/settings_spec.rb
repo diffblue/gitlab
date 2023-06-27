@@ -379,6 +379,11 @@ RSpec.describe API::Settings, 'EE Settings', :aggregate_failures, feature_catego
       }
     end
 
+    before do
+      # email confirmation cannot be `off` if `delete_unconfirmed_users` is true
+      stub_application_setting_enum('email_confirmation_setting', 'soft')
+    end
+
     it_behaves_like 'settings for licensed features'
   end
 end

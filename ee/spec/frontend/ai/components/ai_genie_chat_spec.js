@@ -37,6 +37,7 @@ describe('AiGenieChat', () => {
   const findPredefined = () => wrapper.findComponent(AiPredefinedPrompts);
   const findChatInput = () => wrapper.findByTestId('chat-prompt-input');
   const findCloseChatButton = () => wrapper.findByTestId('chat-close-button');
+  const findLegalDisclaimer = () => wrapper.findByTestId('chat-legal-disclaimer');
 
   beforeEach(() => {
     createComponent();
@@ -230,6 +231,11 @@ describe('AiGenieChat', () => {
       it('renders prompt input if `isChatAvailable` prop is `true`', () => {
         createComponent({ propsData: { messages, isChatAvailable: true } });
         expect(findChatInput().exists()).toBe(true);
+      });
+
+      it('renders the legal disclaimer if `isChatAvailable` prop is `true', () => {
+        createComponent({ propsData: { messages, isChatAvailable: true } });
+        expect(findLegalDisclaimer().exists()).toBe(true);
       });
     });
 

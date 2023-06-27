@@ -116,7 +116,7 @@ export default {
     },
   },
   watch: {
-    cronInterval() {
+    cronInterval(val) {
       // updates field validation state when model changes, as
       // glFieldError only updates on input.
       if (this.sendNativeErrors) {
@@ -124,6 +124,8 @@ export default {
           gl.pipelineScheduleFieldErrors.updateFormValidityState();
         });
       }
+
+      this.$emit('cronValue', val);
     },
     radioValue: {
       immediate: true,

@@ -26,7 +26,7 @@ RSpec.describe Namespaces::CombinedStorageUsers::PreEnforcement, :saas, feature_
       set_notification_limit(namespace, megabytes: 5_000)
       exceed_user_cap(namespace)
       enforce_free_user_caps
-      stub_ee_application_setting(should_check_namespace_plan: true)
+      stub_ee_application_setting(should_check_namespace_plan: true, automatic_purchased_storage_allocation: true)
     end
 
     context 'when the namespace is over both storage/users limits' do
@@ -106,7 +106,7 @@ RSpec.describe Namespaces::CombinedStorageUsers::PreEnforcement, :saas, feature_
 
     before do
       set_notification_limit(namespace, megabytes: 5_000)
-      stub_ee_application_setting(should_check_namespace_plan: true)
+      stub_ee_application_setting(should_check_namespace_plan: true, automatic_purchased_storage_allocation: true)
     end
 
     context 'when the namespace is over storage limit' do

@@ -25,7 +25,6 @@ query getNamespaceStorageStatistics(
       lfsObjectsSize
       containerRegistrySize
       buildArtifactsSize
-      pipelineArtifactsSize
       packagesSize
       wikiSize
       snippetsSize
@@ -56,7 +55,6 @@ query getNamespaceStorageStatistics(
           lfsObjectsSize
           containerRegistrySize
           buildArtifactsSize
-          pipelineArtifactsSize
           packagesSize
           wikiSize
           snippetsSize

@@ -26,7 +26,7 @@ RSpec.describe 'Git LFS File Locking API', :saas, feature_category: :source_code
     allow(Gitlab.config.lfs).to receive(:enabled).and_return(true)
 
     enforce_namespace_storage_limit(namespace)
-    set_storage_size_limit(namespace, megabytes: 10)
+    set_enforcement_limit(namespace, megabytes: 10)
     set_used_storage(namespace, megabytes: 11)
 
     project.add_developer(developer)

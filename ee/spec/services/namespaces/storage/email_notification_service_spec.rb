@@ -30,7 +30,7 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
 
       with_them do
         it 'sends an out of storage notification when the namespace runs out of storage' do
-          set_storage_size_limit(group, megabytes: limit)
+          set_enforcement_limit(group, megabytes: limit)
           set_used_storage(group, megabytes: current_size)
           set_notification_level(last_notification_level)
 
@@ -67,7 +67,7 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
 
       with_them do
         it 'sends a storage limit notification when storage is running low' do
-          set_storage_size_limit(group, megabytes: limit)
+          set_enforcement_limit(group, megabytes: limit)
           set_used_storage(group, megabytes: current_size)
           set_notification_level(last_notification_level)
 
@@ -98,7 +98,7 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
 
       with_them do
         it 'does not send an email when there is sufficient storage remaining' do
-          set_storage_size_limit(group, megabytes: limit)
+          set_enforcement_limit(group, megabytes: limit)
           set_used_storage(group, megabytes: current_size)
           set_notification_level(last_notification_level)
 
@@ -124,7 +124,7 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
 
       with_them do
         it 'does not send an email when there is no storage limit' do
-          set_storage_size_limit(group, megabytes: limit)
+          set_enforcement_limit(group, megabytes: limit)
           set_used_storage(group, megabytes: current_size)
           set_notification_level(last_notification_level)
 
@@ -138,7 +138,7 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
       end
 
       it 'sends an email to all group owners' do
-        set_storage_size_limit(group, megabytes: 100)
+        set_enforcement_limit(group, megabytes: 100)
         set_used_storage(group, megabytes: 200)
         owner2 = create(:user)
         group.add_owner(owner2)
@@ -161,7 +161,7 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
       end
 
       it 'does not send an out of storage notification twice' do
-        set_storage_size_limit(group, megabytes: 100)
+        set_enforcement_limit(group, megabytes: 100)
         set_used_storage(group, megabytes: 200)
         set_notification_level(:exceeded)
 
@@ -178,7 +178,7 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
 
       with_them do
         it 'does not send a storage limit notification for the same threshold twice' do
-          set_storage_size_limit(group, megabytes: limit)
+          set_enforcement_limit(group, megabytes: limit)
           set_used_storage(group, megabytes: current_size)
           set_notification_level(last_notification_level)
 
@@ -208,7 +208,7 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
         end
 
         it 'sends a limit notification' do
-          set_storage_size_limit(namespace, megabytes: 100)
+          set_enforcement_limit(namespace, megabytes: 100)
           set_used_storage(namespace, megabytes: 85)
           owner = namespace.owner
 
@@ -225,7 +225,7 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
         end
 
         it 'sends an out of storage notification' do
-          set_storage_size_limit(namespace, megabytes: 100)
+          set_enforcement_limit(namespace, megabytes: 100)
           set_used_storage(namespace, megabytes: 550)
           owner = namespace.owner
 

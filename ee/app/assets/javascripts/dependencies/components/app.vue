@@ -1,9 +1,14 @@
 <script>
 import { GlEmptyState, GlIcon, GlLoadingIcon, GlSprintf, GlLink } from '@gitlab/ui';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { __ } from '~/locale';
+import { __, s__ } from '~/locale';
 import { DEPENDENCY_LIST_TYPES } from '../store/constants';
-import { REPORT_STATUS } from '../store/modules/list/constants';
+import { NAMESPACE_PROJECT } from '../constants';
+import {
+  REPORT_STATUS,
+  SORT_FIELD_SEVERITY,
+  SORT_FIELD_PACKAGER,
+} from '../store/modules/list/constants';
 import DependenciesActions from './dependencies_actions.vue';
 import DependencyListIncompleteAlert from './dependency_list_incomplete_alert.vue';
 import DependencyListJobFailedAlert from './dependency_list_job_failed_alert.vue';
@@ -28,6 +33,7 @@ export default {
     'endpoint',
     'supportDocumentationPath',
     'exportEndpoint',
+    'namespaceType',
   ],
   data() {
     return {
@@ -81,17 +87,29 @@ export default {
       };
       return map[this.reportInfo.status];
     },
+    isProjectNamespace() {
+      return this.namespaceType === NAMESPACE_PROJECT;
+    },
+    message() {
+      return this.isProjectNamespace
+        ? s__(
+            'Dependencies|Software Bill of Materials (SBOM) based on the %{linkStart}latest successful%{linkEnd} scan',
+          )
+        : s__(
+            'Dependencies|Software Bill of Materials (SBOM) based on the latest successful scan of each project.',
+          );
+    },
   },
   created() {
     this.setDependenciesEndpoint(this.endpoint);
     this.setExportDependenciesEndpoint(this.exportEndpoint);
-    this.fetchDependencies();
+    this.setSortField(this.isProjectNamespace ? SORT_FIELD_SEVERITY : SORT_FIELD_PACKAGER);
   },
   methods: {
     ...mapActions([
       'setDependenciesEndpoint',
       'setExportDependenciesEndpoint',
-      'fetchDependencies',
+      'setSortField',
       'setCurrentList',
     ]),
     dismissIncompleteListAlert() {
@@ -153,13 +171,7 @@ export default {
           </gl-link>
         </h2>
         <p class="mb-0">
-          <gl-sprintf
-            :message="
-              s__(
-                'Dependencies|Software Bill of Materials (SBOM) based on the %{linkStart}latest successful%{linkEnd} scan',
-              )
-            "
-          >
+          <gl-sprintf :message="message">
             <template #link="{ content }">
               <gl-link v-if="reportInfo.jobPath" ref="jobLink" :href="reportInfo.jobPath">{{
                 content
@@ -167,7 +179,7 @@ export default {
               <template v-else>{{ content }}</template>
             </template>
           </gl-sprintf>
-          <span v-if="generatedAtTimeAgo">
+          <span v-if="generatedAtTimeAgo" data-testid="time-ago-message">
             <span aria-hidden="true">&bull;</span>
             <span class="text-secondary">{{ generatedAtTimeAgo }}</span>
           </span>

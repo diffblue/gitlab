@@ -11,8 +11,8 @@ export const setDependenciesEndpoint = (handle, endpoint) =>
 export const setExportDependenciesEndpoint = (handle, payload) =>
   dispatchForNamespaces(handle, 'setExportDependenciesEndpoint', payload);
 
-export const fetchDependencies = (handle, payload) =>
-  dispatchForNamespaces(handle, 'fetchDependencies', payload);
+export const setSortField = (handle, payload) =>
+  dispatchForNamespaces(handle, 'setSortField', payload);
 
 export const setCurrentList = ({ state, commit }, payload) => {
   if (state.listTypes.map(({ namespace }) => namespace).includes(payload)) {

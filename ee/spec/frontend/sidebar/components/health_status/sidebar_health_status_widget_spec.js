@@ -54,6 +54,9 @@ describe('SidebarHealthStatusWidget component', () => {
         iid: '1',
         issuableType,
       },
+      stubs: {
+        SidebarEditableItem,
+      },
     });
   };
 
@@ -86,7 +89,6 @@ describe('SidebarHealthStatusWidget component', () => {
       const healthStatus = HEALTH_STATUS_AT_RISK;
       const mutationHandler = createMutationHandler({ healthStatus });
       mountComponent({ healthStatus: HEALTH_STATUS_ON_TRACK, mutationHandler });
-      wrapper.vm.$refs.editable.collapse = jest.fn();
 
       findHealthStatusDropdown().vm.$emit('change', healthStatus);
       await waitForPromises();
@@ -103,7 +105,7 @@ describe('SidebarHealthStatusWidget component', () => {
       const healthStatus = HEALTH_STATUS_AT_RISK;
       const mutationHandler = createMutationHandler({ healthStatus });
       mountComponent({ healthStatus, mutationHandler });
-      wrapper.vm.$refs.editable.collapse = jest.fn();
+
       await waitForPromises();
 
       findHealthStatusDropdown().vm.$emit('change', healthStatus);
@@ -115,7 +117,6 @@ describe('SidebarHealthStatusWidget component', () => {
     it('shows an alert message when there is an error', async () => {
       const error = new Error('oh no');
       mountComponent({ mutationHandler: jest.fn().mockRejectedValue(error) });
-      wrapper.vm.$refs.editable.collapse = jest.fn();
 
       findHealthStatusDropdown().vm.$emit('change', HEALTH_STATUS_AT_RISK);
       await waitForPromises();
@@ -132,7 +133,6 @@ describe('SidebarHealthStatusWidget component', () => {
       const mutationHandler = createMutationHandler({ healthStatus });
       mountComponent({ mutationHandler });
       const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
-      wrapper.vm.$refs.editable.collapse = jest.fn();
 
       findHealthStatusDropdown().vm.$emit('change', healthStatus);
       await waitForPromises();

@@ -2,13 +2,18 @@
 
 module Elastic
   class ProcessBookkeepingService
+    SHARDS_MIN = 1
+    SHARDS_MAX = 16
     SHARD_LIMIT = 1_000
-    SHARDS_NUMBER = 16
-    SHARDS = 0.upto(SHARDS_NUMBER - 1).to_a
+    SHARDS = 0.upto(SHARDS_MAX - 1).to_a
 
     class << self
+      def active_number_of_shards
+        Gitlab::CurrentSettings.elasticsearch_worker_number_of_shards.clamp(SHARDS_MIN, SHARDS_MAX)
+      end
+
       def shard_number(data)
-        Elastic::BookkeepingShardService.shard_number(number_of_shards: SHARDS_NUMBER, data: data)
+        Elastic::BookkeepingShardService.shard_number(number_of_shards: active_number_of_shards, data: data)
       end
 
       def redis_set_key(shard_number)

@@ -2104,7 +2104,7 @@ class User < ApplicationRecord
   end
 
   def terms_accepted?
-    return true if project_bot?
+    return true if project_bot? || service_account?
 
     accepted_term_id.present?
   end
@@ -2311,7 +2311,7 @@ class User < ApplicationRecord
     return super if ::Gitlab::CurrentSettings.email_confirmation_setting_soft?
 
     # Following devise logic for method, we want to return `true`
-    # See: https://github.com/heartcombo/devise/blob/main/lib/devise/models/confirmable.rb#L191-L218
+    # See: https://github.com/heartcombo/devise/blob/ec0674523e7909579a5a008f16fb9fe0c3a71712/lib/devise/models/confirmable.rb#L191-L218
     true
   end
   alias_method :in_confirmation_period?, :confirmation_period_valid?

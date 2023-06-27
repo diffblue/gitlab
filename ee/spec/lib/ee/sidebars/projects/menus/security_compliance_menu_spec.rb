@@ -77,29 +77,13 @@ RSpec.describe Sidebars::Projects::Menus::SecurityComplianceMenu, feature_catego
           :license_compliance, :scan_policies, :audit_events]
       end
 
-      context 'when custom_roles_vulnerability FF is enabled' do
-        before do
-          stub_feature_flags(custom_roles_vulnerability: true)
-        end
-
-        it 'displays the vulnerability report menu item' do
-          expect(renderable_items.find { |i| i.item_id == :vulnerability_report }).not_to be_nil
-        end
-
-        it 'does not display other pages' do
-          disallowed_pages.each do |page_id|
-            expect(renderable_items.find { |i| i.item_id == page_id }).to be_nil
-          end
-        end
+      it 'displays the vulnerability report menu item' do
+        expect(renderable_items.find { |i| i.item_id == :vulnerability_report }).not_to be_nil
       end
 
-      context 'when custom_roles_vulnerability FF is disabled' do
-        before do
-          stub_feature_flags(custom_roles_vulnerability: false)
-        end
-
-        it 'does not display the vulnerability report menu item' do
-          expect(renderable_items.find { |i| i.item_id == :vulnerability_report }).to be_nil
+      it 'does not display other pages' do
+        disallowed_pages.each do |page_id|
+          expect(renderable_items.find { |i| i.item_id == page_id }).to be_nil
         end
       end
     end
