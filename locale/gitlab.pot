@@ -7812,6 +7812,9 @@ msgstr ""
 msgid "Boards|An error occurred while fetching group projects. Please try again."
 msgstr ""
 
+msgid "Boards|An error occurred while fetching groups. Please try again."
+msgstr ""
+
 msgid "Boards|An error occurred while fetching issues. Please reload the page."
 msgstr ""
 
