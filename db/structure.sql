@@ -31478,6 +31478,10 @@ CREATE INDEX index_issues_on_moved_to_id ON issues USING btree (moved_to_id) WHE
 
 CREATE INDEX index_issues_on_namespace_id ON issues USING btree (namespace_id);
 
+CREATE INDEX index_issues_on_project_health_status_asc_work_item_type ON issues USING btree (project_id, health_status, id DESC, state_id, work_item_type_id);
+
+CREATE INDEX index_issues_on_project_health_status_desc_work_item_type ON issues USING btree (project_id, health_status DESC NULLS LAST, id DESC, state_id, work_item_type_id);
+
 CREATE INDEX index_issues_on_project_id_and_created_at_issue_type_incident ON issues USING btree (project_id, created_at) WHERE (issue_type = 1);
 
 CREATE UNIQUE INDEX index_issues_on_project_id_and_external_key ON issues USING btree (project_id, external_key) WHERE (external_key IS NOT NULL);
