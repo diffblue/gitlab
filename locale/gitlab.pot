@@ -22412,12 +22412,6 @@ msgstr ""
 msgid "HeaderAction|Okay!"
 msgstr ""
 
-msgid "HeaderAction|incident"
-msgstr ""
-
-msgid "HeaderAction|issue"
-msgstr ""
-
 msgid "Headers"
 msgstr ""
 
@@ -54451,6 +54445,9 @@ msgstr ""
 msgid "in project %{link_to_project}"
 msgstr ""
 
+msgid "incident"
+msgstr ""
+
 msgid "instance completed"
 msgid_plural "instances completed"
 msgstr[0] ""
@@ -55488,6 +55485,9 @@ msgid "tag name"
 msgstr ""
 
 msgid "terraform states"
+msgstr ""
+
+msgid "test case"
 msgstr ""
 
 msgid "the correct format."
