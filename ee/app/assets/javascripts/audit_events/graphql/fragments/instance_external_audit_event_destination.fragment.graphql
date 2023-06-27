@@ -1,5 +1,12 @@
+#import "./audit_event_streaming_instance_header.fragment.graphql"
+
 fragment InstanceExternalAuditEventDestinationFragment on InstanceExternalAuditEventDestination {
   id
   destinationUrl
   verificationToken
+  headers {
+    nodes {
+      ...AuditEventStreamingHeaderFragment
+    }
+  }
 }

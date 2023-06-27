@@ -2,8 +2,10 @@ import produce from 'immer';
 import getExternalDestinationsQuery from './queries/get_external_destinations.query.graphql';
 import getInstanceExternalDestinationsQuery from './queries/get_instance_external_destinations.query.graphql';
 import ExternalAuditEventDestinationFragment from './fragments/external_audit_event_destination.fragment.graphql';
+import InstanceExternalAuditEventDestinationFragment from './fragments/instance_external_audit_event_destination.fragment.graphql';
 
 const EXTERNAL_AUDIT_EVENT_DESTINATION_TYPENAME = 'ExternalAuditEventDestination';
+const INSTANCE_EXTERNAL_AUDIT_EVENT_DESTINATION_TYPENAME = 'InstanceExternalAuditEventDestination';
 
 function makeDestinationIdRecord(store, id) {
   return {
@@ -13,6 +15,17 @@ function makeDestinationIdRecord(store, id) {
     }),
     fragment: ExternalAuditEventDestinationFragment,
     fragmentName: 'ExternalAuditEventDestinationFragment',
+  };
+}
+
+function makeInstanceDestinationIdRecord(store, id) {
+  return {
+    id: store.identify({
+      __typename: INSTANCE_EXTERNAL_AUDIT_EVENT_DESTINATION_TYPENAME,
+      id,
+    }),
+    fragment: InstanceExternalAuditEventDestinationFragment,
+    fragmentName: 'InstanceExternalAuditEventDestinationFragment',
   };
 }
 
@@ -66,10 +79,12 @@ export function removeAuditEventsStreamingDestination({ store, fullPath, destina
   store.writeQuery({ query: getDestinationQuery, variables: { fullPath }, data });
 }
 
-export function addAuditEventStreamingHeader({ store, destinationId, newHeader }) {
-  const destinationIdRecord = makeDestinationIdRecord(store, destinationId);
+export function addAuditEventStreamingHeader({ store, fullPath, destinationId, newHeader }) {
+  const destinationIdRecord =
+    fullPath === 'instance'
+      ? makeInstanceDestinationIdRecord(store, destinationId)
+      : makeDestinationIdRecord(store, destinationId);
   const sourceDestination = store.readFragment(destinationIdRecord);
-
   if (!sourceDestination) {
     return;
   }
@@ -80,8 +95,11 @@ export function addAuditEventStreamingHeader({ store, destinationId, newHeader }
   store.writeFragment({ ...destinationIdRecord, data: destination });
 }
 
-export function removeAuditEventStreamingHeader({ store, destinationId, headerId }) {
-  const destinationIdRecord = makeDestinationIdRecord(store, destinationId);
+export function removeAuditEventStreamingHeader({ store, fullPath, destinationId, headerId }) {
+  const destinationIdRecord =
+    fullPath === 'instance'
+      ? makeInstanceDestinationIdRecord(store, destinationId)
+      : makeDestinationIdRecord(store, destinationId);
   const sourceDestination = store.readFragment(destinationIdRecord);
 
   if (!sourceDestination) {
