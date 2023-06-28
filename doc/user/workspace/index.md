@@ -62,6 +62,17 @@ To create a workspace:
 The workspace might take a few minutes to start. To access the workspace, under **Preview**, select the workspace link.
 You also have access to the terminal and can install any necessary dependencies.
 
+## Deleting data associated with a workspace
+
+When you delete a project, agent, user, or token associated with a workspace:
+
+- The workspace is deleted from both the user interface and the Kubernetes cluster.
+- In the Kubernetes cluster, the running workspace resources become orphaned.
+
+To clean up orphaned resources, an administrator must manually delete the workspace in Kubernetes.
+
+For more information about our plans to change the current behavior, see [issue 414384](https://gitlab.com/gitlab-org/gitlab/-/issues/414384).
+
 ## Devfile
 
 A devfile is a file that defines a development environment by specifying the necessary tools, languages, runtimes, and other components for a GitLab project.
@@ -174,4 +185,4 @@ You might not be able to create a workspace due to a known issue in the GitLab a
 {"level":"info","time":"2023-01-01T00:00:00.000Z","msg":"failed to renew lease gitlab-agent-remote-dev-dev/agent-123XX-lock: timed out waiting for the condition\n","agent_id":XXXX}
 ```
 
-This issue occurs when an agent instance cannot renew its leadership lease, which results in the shutdown of leader-only modules including the `remote_development` module. The workaround is to restart the agent instance.
+This issue occurs when an agent instance cannot renew its leadership lease, which results in the shutdown of leader-only modules including the `remote_development` module. To resolve this issue, restart the agent instance.

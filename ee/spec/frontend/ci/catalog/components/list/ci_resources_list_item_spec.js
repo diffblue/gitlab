@@ -69,13 +69,13 @@ describe('CiResourcesListItem', () => {
 
     it('renders the user link', () => {
       expect(findUserLink().exists()).toBe(true);
-      expect(findUserLink().attributes('href')).toBe(resource.versions.nodes[0].author.webUrl);
+      expect(findUserLink().attributes('href')).toBe(resource.latestVersion.author.webUrl);
     });
 
     describe('release time', () => {
       describe('when there is no release data', () => {
         beforeEach(() => {
-          createComponent({ props: { resource: { ...resource, versions: null } } });
+          createComponent({ props: { resource: { ...resource, latestVersion: null } } });
         });
 
         it('does not render the release', () => {

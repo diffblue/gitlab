@@ -15,7 +15,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_c
   describe '#description' do
     it 'returns tool description' do
       desc = 'This tool is useful when you need to create a summary ' \
-             'of all notes, comments or discussions on a given resource.'
+             'of all notes, comments or discussions on a given, identified resource.'
 
       expect(described_class::DESCRIPTION).to include(desc)
     end

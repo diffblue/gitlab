@@ -11549,13 +11549,28 @@ msgstr ""
 msgid "CompareRevisions|Branches"
 msgstr ""
 
+msgid "CompareRevisions|Changes are shown as if the %{boldStart}source%{boldEnd} revision was being merged into the %{boldStart}target%{boldEnd} revision. %{linkStart}Learn more about comparing revisions.%{linkEnd}"
+msgstr ""
+
+msgid "CompareRevisions|Commits on Source (%{commits_amount})"
+msgstr ""
+
 msgid "CompareRevisions|Compare"
+msgstr ""
+
+msgid "CompareRevisions|Compare revisions"
 msgstr ""
 
 msgid "CompareRevisions|Create merge request"
 msgstr ""
 
 msgid "CompareRevisions|Filter by Git revision"
+msgstr ""
+
+msgid "CompareRevisions|Include changes to target since source was created"
+msgstr ""
+
+msgid "CompareRevisions|Only incoming changes from source"
 msgstr ""
 
 msgid "CompareRevisions|Select Git revision"
@@ -11565,6 +11580,12 @@ msgid "CompareRevisions|Select branch/tag"
 msgstr ""
 
 msgid "CompareRevisions|Select target project"
+msgstr ""
+
+msgid "CompareRevisions|Show changes"
+msgstr ""
+
+msgid "CompareRevisions|Swap"
 msgstr ""
 
 msgid "CompareRevisions|Swap revisions"
@@ -19277,6 +19298,9 @@ msgid "Files with large changes are collapsed by default."
 msgstr ""
 
 msgid "Files, directories, and submodules in the path %{path} for commit reference %{ref}"
+msgstr ""
+
+msgid "Fill in merge request template"
 msgstr ""
 
 msgid "Fill in the fields below, turn on %{strong_open}Enable SAML authentication for this group%{strong_close}, and press %{strong_open}Save changes%{strong_close}"
@@ -28129,7 +28153,13 @@ msgstr ""
 msgid "Maximum number of requests per minute for each raw path (default is `300`). Set to `0` to disable throttling."
 msgstr ""
 
+msgid "Maximum number of stages per value stream exceeded"
+msgstr ""
+
 msgid "Maximum number of unique IP addresses per user."
+msgstr ""
+
+msgid "Maximum number of value streams per namespace exceeded"
 msgstr ""
 
 msgid "Maximum number of variables loaded (2000)"
@@ -28790,6 +28820,12 @@ msgid "MergeRequest|Reviewed by @%{username} but not yet approved"
 msgstr ""
 
 msgid "MergeRequest|Search (e.g. *.vue) (%{MODIFIER_KEY}P)"
+msgstr ""
+
+msgid "MergeRequest|This description was generated for revision %{revision} using AI"
+msgstr ""
+
+msgid "MergeRequest|This description was generated using AI"
 msgstr ""
 
 msgid "MergeTopics|%{sourceTopic} will be removed"
@@ -38532,6 +38568,9 @@ msgstr ""
 msgid "Replace audio"
 msgstr ""
 
+msgid "Replace current template with filled in placeholders"
+msgstr ""
+
 msgid "Replace file"
 msgstr ""
 
@@ -45896,6 +45935,9 @@ msgstr ""
 msgid "The current user is not authorized to access the job log."
 msgstr ""
 
+msgid "The current user is not authorized to create the pipeline schedule"
+msgstr ""
+
 msgid "The current user is not authorized to update the pipeline schedule"
 msgstr ""
 
@@ -47750,9 +47792,6 @@ msgid "Title:"
 msgstr ""
 
 msgid "Titles"
-msgstr ""
-
-msgid "Titles and Descriptions"
 msgstr ""
 
 msgid "To"

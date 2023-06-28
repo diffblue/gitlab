@@ -1,0 +1,23 @@
+mutation fillInMergeRequestTemplate(
+  $sourceProjectGqlId: ID
+  $targetProjectGqlId: AiModelID!
+  $source: String!
+  $target: String!
+  $mrTitle: String!
+  $templateContent: String!
+) {
+  aiAction(
+    input: {
+      fillInMergeRequestTemplate: {
+        resourceId: $targetProjectGqlId
+        sourceProjectId: $sourceProjectGqlId
+        sourceBranch: $source
+        targetBranch: $target
+        title: $mrTitle
+        content: $templateContent
+      }
+    }
+  ) {
+    errors
+  }
+}

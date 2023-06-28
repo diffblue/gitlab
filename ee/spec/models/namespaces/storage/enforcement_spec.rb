@@ -158,6 +158,7 @@ RSpec.describe Namespaces::Storage::Enforcement, :saas, feature_category: :consu
     subject(:show_pre_enforcement_alert?) { described_class.show_pre_enforcement_alert?(group) }
 
     let_it_be(:group) { create(:group_with_plan, :with_root_storage_statistics, plan: :free_plan) }
+    let_it_be(:namespace_limit) { create(:namespace_limit, namespace: group) }
 
     context 'with all possible scenarios' do
       where(
@@ -178,6 +179,7 @@ RSpec.describe Namespaces::Storage::Enforcement, :saas, feature_category: :consu
         true  | true  | true  | true  | 11  | 10 | 12 | false # Isolating :root_namespace_paid
         true  | true  | false | false | 11  | 10 | 12 | false # Isolating :show_preenforcement_banner_enabled
       end
+
       with_them do
         before do
           stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan,
@@ -194,6 +196,78 @@ RSpec.describe Namespaces::Storage::Enforcement, :saas, feature_category: :consu
 
         it 'returns the expected result' do
           expect(show_pre_enforcement_alert?).to eq(expected_result)
+        end
+      end
+    end
+
+    context 'when tracking pre-enforcement notifications', :use_clean_rails_memory_store_caching do
+      before do
+        stub_ee_application_setting(should_check_namespace_plan: true,
+          automatic_purchased_storage_allocation: true,
+          enforce_namespace_storage_limit: true)
+
+        stub_feature_flags(namespace_storage_limit_show_preenforcement_banner: true)
+
+        set_notification_limit(group, megabytes: 10)
+        set_used_storage(group, megabytes: 11)
+      end
+
+      context 'when the namespace has never reached the limit before', :freeze_time do
+        it 'updates the pre_enforcement_notification_at timestamp' do
+          namespace_limit.update!(pre_enforcement_notification_at: nil)
+
+          show_pre_enforcement_alert?
+
+          namespace_limit.reload
+
+          expect(namespace_limit.pre_enforcement_notification_at).to be_like_time(Time.current)
+          expect(Rails.cache.read(['namespaces', group.id, 'pre_enforcement_tracking'])).to eq(true)
+        end
+
+        context 'when cache exists' do
+          before do
+            show_pre_enforcement_alert?
+          end
+
+          it 'does not update the database' do
+            namespace_limit.update!(pre_enforcement_notification_at: nil)
+
+            expect(namespace_limit).not_to receive(:update)
+
+            expect do
+              expect(show_pre_enforcement_alert?).to be(true)
+            end.not_to change { namespace_limit.pre_enforcement_notification_at }
+          end
+        end
+      end
+
+      context 'when the namespace has previously reached the limit' do
+        context 'with no cache' do
+          before do
+            namespace_limit.update!(pre_enforcement_notification_at: Time.current)
+          end
+
+          it 'does not update the pre_enforcement_notification_at timestamp' do
+            expect(namespace_limit).not_to receive(:update)
+
+            expect { show_pre_enforcement_alert? }.not_to change { namespace_limit.pre_enforcement_notification_at }
+          end
+        end
+
+        context 'when cache exists' do
+          before do
+            show_pre_enforcement_alert?
+          end
+
+          it 'does not update the database' do
+            namespace_limit.update!(pre_enforcement_notification_at: nil)
+
+            expect(namespace_limit).not_to receive(:update)
+
+            expect do
+              expect(show_pre_enforcement_alert?).to be(true)
+            end.not_to change { namespace_limit.pre_enforcement_notification_at }
+          end
         end
       end
     end

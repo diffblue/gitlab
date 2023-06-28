@@ -1,8 +1,10 @@
 <script>
 import { GlCollapsibleListbox } from '@gitlab/ui';
+import { groupBy, partition } from 'lodash';
+import fuzzaldrinPlus from 'fuzzaldrin-plus';
+import { __ } from '~/locale';
 import { humanize } from '~/lib/utils/text_utility';
 import { getSelectedOptionsText } from '~/lib/utils/listbox_helpers';
-import { __ } from '~/locale';
 import { AUDIT_STREAMS_FILTERING } from '../../constants';
 
 const MAX_OPTIONS_SHOWN = 3;
@@ -24,22 +26,40 @@ export default {
     };
   },
   computed: {
-    options() {
+    humanizedEvents() {
       return this.auditEventDefinitions.map((event) => ({
         value: event.event_name,
         text: humanize(event.event_name),
+        category: humanize(event.feature_category),
       }));
     },
-    filteredOptions() {
-      if (!this.searchTerm) {
-        return this.options;
+    filteredEvents() {
+      if (this.searchTerm) {
+        return fuzzaldrinPlus.filter(this.humanizedEvents, this.searchTerm, { key: 'text' });
       }
 
-      return this.options.filter(({ text }) => text.toLowerCase().includes(this.searchTerm));
+      return this.humanizedEvents;
+    },
+    partitionedEvents() {
+      return partition(this.filteredEvents, ({ value }) => this.value.includes(value));
+    },
+    options() {
+      const [selectedEvents, unselectedEvents] = this.partitionedEvents;
+      const selectedOptions = {
+        text: __('Selected'),
+        options: selectedEvents,
+      };
+      const groupedEvents = groupBy(unselectedEvents, 'category');
+      const unselectedOptions = Object.entries(groupedEvents).map(([category, events]) => ({
+        text: category,
+        options: events,
+      }));
+
+      return selectedEvents.length ? [selectedOptions, ...unselectedOptions] : unselectedOptions;
     },
     toggleText() {
       return getSelectedOptionsText({
-        options: this.options,
+        options: this.humanizedEvents,
         selected: this.value,
         placeholder: this.$options.i18n.SELECT_EVENTS,
         maxOptionsShown: MAX_OPTIONS_SHOWN,
@@ -50,7 +70,7 @@ export default {
     selectAll() {
       this.$emit(
         'input',
-        this.options.map((option) => option.value),
+        this.humanizedEvents.map((option) => option.value),
       );
     },
     updateSearchTerm(searchTerm) {
@@ -67,7 +87,7 @@ export default {
 
 <template>
   <gl-collapsible-listbox
-    :items="filteredOptions"
+    :items="options"
     :selected="value"
     :toggle-text="toggleText"
     :header-text="$options.i18n.SELECT_EVENTS"

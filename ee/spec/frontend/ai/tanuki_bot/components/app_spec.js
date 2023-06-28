@@ -37,7 +37,7 @@ describe('GitLab Chat', () => {
     setMessages: jest.fn(),
   };
 
-  let subscriptionHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_SUCCESS_RES);
+  const subscriptionHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_SUCCESS_RES);
   const tanukiMutationHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_BOT_MUTATATION_RES);
   let chatMutationHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_BOT_MUTATATION_RES);
   const queryHandlerMock = jest.fn().mockResolvedValue(MOCK_CHAT_CACHED_MESSAGES_RES);
@@ -231,7 +231,7 @@ describe('GitLab Chat', () => {
         ${null}             | ${MOCK_USER_ID}
       `(`with resourceId = $resourceId`, ({ resourceId, expectedResourceId }) => {
         beforeEach(async () => {
-          subscriptionHandlerMock = jest.fn().mockRejectedValue({ errors: [] });
+          subscriptionHandlerMock.mockRejectedValueOnce({ errors: [] });
           createComponent({}, { gitlabDuo: true }, { userId: MOCK_USER_ID, resourceId });
 
           helpCenterState.showTanukiBotChatDrawer = true;

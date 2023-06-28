@@ -59,7 +59,7 @@ export default {
       return formatDate(this.latestVersion?.releasedAt);
     },
     latestVersion() {
-      return this.resource.versions?.nodes[0];
+      return this.resource?.latestVersion || {};
     },
     releasedAt() {
       return getTimeago().format(this.latestVersion?.releasedAt);
