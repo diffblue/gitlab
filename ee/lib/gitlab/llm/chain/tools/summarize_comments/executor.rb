@@ -8,7 +8,7 @@ module Gitlab
           class Executor < Tool
             NAME = "SummarizeComments"
             DESCRIPTION = "This tool is useful when you need to create a summary of all notes, " \
-                          "comments or discussions on a given resource."
+                          "comments or discussions on a given, identified resource."
 
             def perform
               return wrong_resource unless resource.is_a?(Noteable)

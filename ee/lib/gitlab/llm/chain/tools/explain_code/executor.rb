@@ -9,7 +9,7 @@ module Gitlab
             include Concerns::AiDependent
 
             NAME = 'ExplainCode'
-            DESCRIPTION = 'Useful tool to explain code snippets.'
+            DESCRIPTION = 'Useful tool to explain code snippets and blocks.'
             RESOURCE_NAME = 'explain code answer'
             PROVIDER_PROMPT_CLASSES = {
               anthropic: ::Gitlab::Llm::Chain::Tools::ExplainCode::Prompts::Anthropic,
