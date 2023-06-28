@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlTooltipDirective } from '@gitlab/ui';
+import { GlButton, GlTooltip } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { WORKSPACE_DESIRED_STATES, WORKSPACE_STATES } from '../../constants';
 
@@ -79,9 +79,7 @@ const ACTIONS = [
 export default {
   components: {
     GlButton,
-  },
-  directives: {
-    GlTooltip: GlTooltipDirective,
+    GlTooltip,
   },
   props: {
     actualState: {
@@ -91,6 +89,11 @@ export default {
     desiredState: {
       type: String,
       required: true,
+    },
+    compact: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   computed: {
@@ -110,6 +113,9 @@ export default {
         },
       );
     },
+    compactButtonProps() {
+      return this.compact ? { category: 'tertiary', size: 'small' } : {};
+    },
   },
   methods: {
     onClick(actionDesiredState) {
@@ -123,8 +129,8 @@ export default {
   <div class="gl-display-flex gl-justify-content-end">
     <span
       v-for="(action, idx) in actions"
+      :id="`action-wrapper-${idx}`"
       :key="action.key"
-      v-gl-tooltip="action.tooltip"
       :class="idx > 0 ? 'gl-ml-2' : ''"
     >
       <gl-button
@@ -132,9 +138,13 @@ export default {
         :loading="action.isLoading"
         :aria-label="action.tooltip"
         :icon="action.icon"
+        v-bind="compactButtonProps"
         :data-qa-selector="`workspace_${action.key}_button`"
-        @click="onClick(action.desiredState)"
+        @click.stop.prevent="onClick(action.desiredState)"
       />
+      <gl-tooltip boundary="viewport" :target="`action-wrapper-${idx}`">
+        {{ action.tooltip }}
+      </gl-tooltip>
     </span>
   </div>
 </template>

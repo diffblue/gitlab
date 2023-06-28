@@ -139,17 +139,31 @@ describe('remote_development/pages/list.vue', () => {
   });
 
   describe('when workspace table emits updateFailed event', () => {
-    it('displays the error attached to the event', async () => {
-      const error = 'Failed to stop workspace';
+    const error = 'Failed to stop workspace';
 
+    beforeEach(async () => {
       createWrapper();
       await waitForPromises();
 
       findTable().vm.$emit('updateFailed', { error });
+    });
 
+    it('displays the error attached to the event', async () => {
       await nextTick();
 
       expect(findAlert().text()).toBe(error);
+    });
+
+    describe('when workspace table emits updateSucceed event', () => {
+      it('dismisses the previous update error', async () => {
+        expect(findAlert().text()).toBe(error);
+
+        findTable().vm.$emit('updateSucceed');
+
+        await nextTick();
+
+        expect(findAlert().exists()).toBe(false);
+      });
     });
   });
 

@@ -161,6 +161,7 @@ export default {
           :workspaces="workspaces"
           data-qa-selector="workspace_list_item"
           @updateFailed="onUpdateFailed"
+          @updateSucceed="clearError"
         />
         <workspaces-list-pagination :page-info="pageInfo" @input="onPaginationInput" />
       </div>

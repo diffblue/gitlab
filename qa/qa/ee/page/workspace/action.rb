@@ -5,7 +5,7 @@ module QA
     module Page
       module Workspace
         class Action < QA::Page::Base
-          view 'ee/app/assets/javascripts/remote_development/components/list/workspace_actions.vue' do
+          view 'ee/app/assets/javascripts/remote_development/components/common/workspace_actions.vue' do
             element :workspace_button, ':data-qa-selector="`workspace_${action.key}_button`"' # rubocop:disable QA/ElementWithPattern
           end
 

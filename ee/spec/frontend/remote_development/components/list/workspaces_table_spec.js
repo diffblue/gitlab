@@ -3,21 +3,14 @@ import { cloneDeep } from 'lodash';
 import VueApollo from 'vue-apollo';
 import Vue from 'vue';
 import { GlLink, GlTableLite } from '@gitlab/ui';
-import { logError } from '~/lib/logger';
-import { convertToGraphQLId } from '~/graphql_shared/utils';
-import { TYPE_WORKSPACE } from '~/graphql_shared/constants';
-import createMockApollo from 'helpers/mock_apollo_helper';
-import waitForPromises from 'helpers/wait_for_promises';
-import workspaceUpdateMutation from 'ee/remote_development/graphql/mutations/workspace_update.mutation.graphql';
-import WorkspacesTable, { i18n } from 'ee/remote_development/components/list/workspaces_table.vue';
-import WorkspaceActions from 'ee/remote_development/components/list/workspace_actions.vue';
+import WorkspacesTable from 'ee/remote_development/components/list/workspaces_table.vue';
+import WorkspaceActions from 'ee/remote_development/components/common/workspace_actions.vue';
 import WorkspaceStateIndicator from 'ee/remote_development/components/common/workspace_state_indicator.vue';
 import { populateWorkspacesWithProjectNames } from 'ee/remote_development/services/utils';
 import { WORKSPACE_STATES, WORKSPACE_DESIRED_STATES } from 'ee/remote_development/constants';
 import {
   USER_WORKSPACES_QUERY_RESULT,
   USER_WORKSPACES_PROJECT_NAMES_QUERY_RESULT,
-  WORKSPACE_UPDATE_MUTATION_RESULT,
 } from '../../mock_data';
 
 jest.mock('~/lib/logger');
@@ -48,7 +41,12 @@ const findWorkspaceActions = (tableRow) => tableRow.findComponent(WorkspaceActio
 
 describe('remote_development/components/list/workspaces_table.vue', () => {
   let wrapper;
-  let workspaceUpdateMutationHandler;
+  let updateWorkspaceMutationMock;
+  const UpdateWorkspaceMutationStub = {
+    render() {
+      return this.$scopedSlots.default({ update: updateWorkspaceMutationMock });
+    },
+  };
 
   const createWrapper = ({
     workspaces = populateWorkspacesWithProjectNames(
@@ -56,20 +54,16 @@ describe('remote_development/components/list/workspaces_table.vue', () => {
       USER_WORKSPACES_PROJECT_NAMES_QUERY_RESULT.data.projects.nodes,
     ),
   } = {}) => {
-    workspaceUpdateMutationHandler = jest.fn();
-    workspaceUpdateMutationHandler.mockResolvedValueOnce(WORKSPACE_UPDATE_MUTATION_RESULT);
-
-    const mockApollo = createMockApollo([
-      [workspaceUpdateMutation, workspaceUpdateMutationHandler],
-    ]);
-
+    updateWorkspaceMutationMock = jest.fn();
     wrapper = mount(WorkspacesTable, {
-      apolloProvider: mockApollo,
       provide: {
         emptyStateSvgPath: SVG_PATH,
       },
       propsData: {
         workspaces,
+      },
+      stubs: {
+        UpdateWorkspaceMutation: UpdateWorkspaceMutationStub,
       },
     });
   };
@@ -85,6 +79,7 @@ describe('remote_development/components/list/workspaces_table.vue', () => {
 
     return customData;
   };
+  const findUpdateWorkspaceMutation = () => wrapper.findComponent(UpdateWorkspaceMutationStub);
 
   describe('default (with nodes)', () => {
     beforeEach(() => {
@@ -107,6 +102,7 @@ describe('remote_development/components/list/workspaces_table.vue', () => {
             actionsProps: {
               actualState: x.actualState,
               desiredState: x.desiredState,
+              compact: false,
             },
             ...(x.actualState === WORKSPACE_STATES.running
               ? {
@@ -130,83 +126,40 @@ describe('remote_development/components/list/workspaces_table.vue', () => {
     });
   });
 
+  describe.each`
+    event              | payload
+    ${'updateFailed'}  | ${['error message']}
+    ${'updateSucceed'} | ${[]}
+  `('when updateWorspaceMutation triggers $event event', ({ event, payload }) => {
+    it('bubbles up event', () => {
+      createWrapper();
+
+      expect(wrapper.emitted(event)).toBe(undefined);
+
+      findUpdateWorkspaceMutation().vm.$emit(event, payload[0]);
+
+      expect(wrapper.emitted(event)).toEqual([payload]);
+    });
+  });
+
   describe('workspace actions is clicked', () => {
     const TEST_WORKSPACE_IDX = 1;
     const TEST_DESIRED_STATE = WORKSPACE_DESIRED_STATES.terminated;
-
     let workspace;
     let workspaceActions;
-
     beforeEach(() => {
       createWrapper();
-
       const row = findTableRows(wrapper).at(TEST_WORKSPACE_IDX);
-
       workspace =
         USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces.nodes[TEST_WORKSPACE_IDX];
       workspaceActions = findWorkspaceActions(row);
-    });
 
-    it(`sets workspace desiredState using the workspaceUpdate mutation`, async () => {
       workspaceActions.vm.$emit('click', TEST_DESIRED_STATE);
-
-      await waitForPromises();
-
-      expect(workspaceUpdateMutationHandler).toHaveBeenCalledWith({
-        input: {
-          desiredState: TEST_DESIRED_STATE,
-          id: convertToGraphQLId(TYPE_WORKSPACE, workspace.id),
-        },
-      });
     });
 
-    describe('when the workspaceUpdate mutation returns an error response', () => {
-      const errorMessage = 'Updating workspace failed';
-
-      beforeEach(async () => {
-        const errorResponse = cloneDeep(WORKSPACE_UPDATE_MUTATION_RESULT);
-
-        errorResponse.data.workspaceUpdate.errors = [errorMessage];
-
-        workspaceUpdateMutationHandler.mockReset();
-        workspaceUpdateMutationHandler.mockResolvedValueOnce(errorResponse);
-
-        workspaceActions.vm.$emit('click', TEST_DESIRED_STATE);
-
-        await waitForPromises();
-      });
-
-      it('emits an updateFailed event', () => {
-        expect(wrapper.emitted('updateFailed')[0]).toEqual([
-          {
-            error: errorMessage,
-          },
-        ]);
-      });
-    });
-
-    describe('when the workspaceUpdate mutation fails', () => {
-      const error = new Error();
-
-      beforeEach(async () => {
-        workspaceUpdateMutationHandler.mockReset();
-        workspaceUpdateMutationHandler.mockRejectedValueOnce(error);
-
-        workspaceActions.vm.$emit('click', TEST_DESIRED_STATE);
-
-        await waitForPromises();
-      });
-
-      it('emits an updateFailed event', () => {
-        expect(wrapper.emitted('updateFailed')[0]).toEqual([
-          {
-            error: i18n.updateWorkspaceFailedMessage,
-          },
-        ]);
-      });
-
-      it('logs the error', () => {
-        expect(logError).toHaveBeenCalledWith(error);
+    it('calls the update method provided by the WorkspaceUpdateMutation component', () => {
+      expect(updateWorkspaceMutationMock).toHaveBeenCalledWith(workspace.id, {
+        desiredState: TEST_DESIRED_STATE,
       });
     });
   });
