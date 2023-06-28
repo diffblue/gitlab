@@ -78,13 +78,6 @@ export const UPDATE_STREAM_MESSAGE = s__('AuditStreams|Stream updated successful
 export const DELETE_STREAM_MESSAGE = s__('AuditStreams|Stream deleted successfully');
 
 export const STREAM_ITEMS_I18N = {
-  VERIFICATION_TOKEN_TOOLTIP: s__('AuditStreams|Verification token'),
-  VERIFICATION_TOKEN_MODAL_CONTENT: s__('AuditStreams|Verification token for the %{link} stream'),
-  EDIT_BUTTON_LABEL: s__('AuditStreams|Edit %{link}'),
-  DELETE_BUTTON_LABEL: s__('AuditStreams|Delete %{link}'),
-  VIEW_BUTTON_LABEL: s__('AuditStreams|View verification token'),
-  EDIT_BUTTON_TOOLTIP: __('Edit'),
-  DELETE_BUTTON_TOOLTIP: __('Delete'),
   FILTER_TOOLTIP_LABEL: s__(
     'AuditStreams|Destination has filters applied. %{linkStart}What are filters?%{linkEnd}',
   ),
@@ -101,6 +94,7 @@ export const ADD_STREAM_EDITOR_I18N = {
   ),
   DESTINATION_URL_LABEL: s__('AuditStreams|Destination URL'),
   DESTINATION_URL_PLACEHOLDER: 'https://api.gitlab.com',
+  VERIFICATION_TOKEN_LABEL: s__('AuditStreams|Verification token'),
   HEADERS_LABEL: s__('AuditStreams|Custom HTTP headers (optional)'),
   TABLE_COLUMN_NAME_LABEL: s__('AuditStreams|Header'),
   TABLE_COLUMN_VALUE_LABEL: s__('AuditStreams|Value'),
@@ -119,6 +113,7 @@ export const ADD_STREAM_EDITOR_I18N = {
   SAVE_BUTTON_NAME: s__('AuditStreams|Save external stream destination'),
   CANCEL_BUTTON_TEXT: __('Cancel'),
   CANCEL_BUTTON_NAME: s__('AuditStreams|Cancel editing'),
+  DELETE_BUTTON_TEXT: s__('AuditStreams|Delete destination'),
   HEADER_FILTERING: s__('AuditStreams|Event filtering (optional)'),
   FILTER_BY_STREAM_EVENT: s__('AuditStreams|Filter by stream event'),
 };
