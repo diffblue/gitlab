@@ -621,19 +621,19 @@ RSpec.describe ApplicationHelper do
 
   describe '#link_button_to', feature_category: :design_system do
     let(:content) { 'Button content' }
-    let(:options) { '#' }
-    let(:html_options) { {} }
+    let(:href) { '#' }
+    let(:options) { {} }
 
     RSpec.shared_examples 'basic behavior' do
       it 'renders a basic link button' do
         expect(subject.name).to eq('a')
         expect(subject.classes).to include(*%w[gl-button btn btn-md btn-default])
-        expect(subject.attr('href')).to eq(options)
+        expect(subject.attr('href')).to eq(href)
         expect(subject.content.strip).to eq(content)
       end
 
       describe 'variant option' do
-        let(:html_options) { { variant: :danger } }
+        let(:options) { { variant: :danger } }
 
         it 'renders the variant class' do
           expect(subject.classes).to include('btn-danger')
@@ -641,7 +641,7 @@ RSpec.describe ApplicationHelper do
       end
 
       describe 'category option' do
-        let(:html_options) { { category: :tertiary } }
+        let(:options) { { category: :tertiary } }
 
         it 'renders the category class' do
           expect(subject.classes).to include('btn-default-tertiary')
@@ -649,7 +649,7 @@ RSpec.describe ApplicationHelper do
       end
 
       describe 'size option' do
-        let(:html_options) { { size: :small } }
+        let(:options) { { size: :small } }
 
         it 'renders the small class' do
           expect(subject.classes).to include('btn-sm')
@@ -657,7 +657,7 @@ RSpec.describe ApplicationHelper do
       end
 
       describe 'block option' do
-        let(:html_options) { { block: true } }
+        let(:options) { { block: true } }
 
         it 'renders the block class' do
           expect(subject.classes).to include('btn-block')
@@ -665,7 +665,7 @@ RSpec.describe ApplicationHelper do
       end
 
       describe 'selected option' do
-        let(:html_options) { { selected: true } }
+        let(:options) { { selected: true } }
 
         it 'renders the selected class' do
           expect(subject.classes).to include('selected')
@@ -673,7 +673,7 @@ RSpec.describe ApplicationHelper do
       end
 
       describe 'target option' do
-        let(:html_options) { { target: '_blank' } }
+        let(:options) { { target: '_blank' } }
 
         it 'renders the target attribute' do
           expect(subject.attr('target')).to eq('_blank')
@@ -681,7 +681,7 @@ RSpec.describe ApplicationHelper do
       end
 
       describe 'method option' do
-        let(:html_options) { { method: :post } }
+        let(:options) { { method: :post } }
 
         it 'renders the data-method attribute' do
           expect(subject.attr('data-method')).to eq('post')
@@ -689,7 +689,7 @@ RSpec.describe ApplicationHelper do
       end
 
       describe 'icon option' do
-        let(:html_options) { { icon: 'remove' } }
+        let(:options) { { icon: 'remove' } }
 
         it 'renders the icon' do
           icon = subject.at_css('svg.gl-icon')
@@ -699,7 +699,7 @@ RSpec.describe ApplicationHelper do
 
       describe 'icon only' do
         let(:content) { nil }
-        let(:html_options) { { icon: 'remove' } }
+        let(:options) { { icon: 'remove' } }
 
         it 'renders the icon-only class' do
           expect(subject.classes).to include('btn-icon')
@@ -708,7 +708,7 @@ RSpec.describe ApplicationHelper do
 
       describe 'arbitrary html options' do
         let(:content) { nil }
-        let(:html_options) { { data: { foo: true }, aria: { labelledby: 'foo' } } }
+        let(:options) { { data: { foo: true }, aria: { labelledby: 'foo' } } }
 
         it 'renders the attributes' do
           expect(subject.attr('data-foo')).to eq('true')
@@ -719,7 +719,7 @@ RSpec.describe ApplicationHelper do
 
     describe 'without block' do
       subject do
-        tag = helper.link_button_to content, options, **html_options
+        tag = helper.link_button_to content, href, options
         Nokogiri::HTML.fragment(tag).first_element_child
       end
 
@@ -728,7 +728,7 @@ RSpec.describe ApplicationHelper do
 
     describe 'with block' do
       subject do
-        tag = helper.link_button_to options, **html_options do
+        tag = helper.link_button_to href, options do
           content
         end
         Nokogiri::HTML.fragment(tag).first_element_child
