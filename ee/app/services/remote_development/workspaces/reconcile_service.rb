@@ -18,6 +18,9 @@ module RemoteDevelopment
       #       See https://gitlab.com/gitlab-org/remote-development/gitlab-remote-development-docs/-/blob/main/doc/remote-development-feature-architectural-standards.md
       #       for more discussion on this topic.
 
+      # @param [Clusters::Agent] agent
+      # @param [Hash] params
+      # @return [ServiceResponse]
       def execute(agent:, params:)
         # NOTE: We rely on the authentication from the internal kubernetes endpoint and kas so we don't do any
         #       additional authorization checks here.
@@ -52,6 +55,9 @@ module RemoteDevelopment
 
       private
 
+      # @param [Clusters::Agent] agent
+      # @param [Hash] params
+      # @return [ServiceResponse]
       def process(agent, params)
         parsed_params, error = RemoteDevelopment::Workspaces::Reconcile::ParamsParser.new.parse(params: params)
         return ServiceResponse.error(message: error.message, reason: error.reason) if error

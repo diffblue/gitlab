@@ -48,6 +48,7 @@ describe('ReadyToMerge', () => {
     userPermissions: { canMerge: true },
     mergeable: true,
     transitionStateMachine: jest.fn(),
+    state: 'readyToMerge',
   };
 
   const createComponent = (mrUpdates = {}, mountFn = shallowMountExtended, data = {}) => {
@@ -185,7 +186,6 @@ describe('ReadyToMerge', () => {
       await nextTick();
 
       expect(findMergeTrainFailedPipelineConfirmationDialog().props('visible')).toBe(false);
-      expect(findMergeButton().text()).toBe('Merge in progress');
       expect(mr.transitionStateMachine).toHaveBeenCalledWith({ transition: 'start-merge' });
     });
 
@@ -198,7 +198,6 @@ describe('ReadyToMerge', () => {
       await clickMergeImmediately();
 
       expect(showMock).not.toHaveBeenCalled();
-      expect(findMergeButton().text()).toBe('Merge in progress');
       expect(findMergeTrainFailedPipelineConfirmationDialog().props('visible')).toBe(false);
       expect(mr.transitionStateMachine).toHaveBeenCalled();
     });

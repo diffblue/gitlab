@@ -24,8 +24,7 @@ module Resolvers
       def resolve(**args)
         unless ::Feature.enabled?(:remote_development_feature_flag)
           # noinspection RubyMismatchedArgumentType
-          raise ::Gitlab::Graphql::Errors::ResourceNotAvailable,
-            "'remote_development_feature_flag' feature flag is disabled"
+          raise_resource_not_available_error! "'remote_development_feature_flag' feature flag is disabled"
         end
 
         unless License.feature_available?(:remote_development)

@@ -20,11 +20,15 @@ module RemoteDevelopment
       #
       #       See https://gitlab.com/gitlab-org/remote-development/gitlab-remote-development-docs/-/blob/main/doc/remote-development-feature-architectural-standards.md
       #       for more discussion on this topic.
+      # @param [User] current_user
+      # @return [void]
       def initialize(current_user:)
         @current_user = current_user
       end
 
       # noinspection RubyNilAnalysis,RubyResolve
+      # @param [Hash] params
+      # @return [ServiceResponse]
       def execute(params:)
         project = params[:project]
         return ServiceResponse.error(message: 'Unauthorized', reason: :unauthorized) unless authorized?(project)
@@ -40,6 +44,8 @@ module RemoteDevelopment
 
       private
 
+      # @param [Project] project
+      # @return [TrueClass, FalseClass]
       def authorized?(project)
         current_user&.can?(:create_workspace, project)
       end

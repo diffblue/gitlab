@@ -7,6 +7,8 @@ module RemoteDevelopment
       class CreateProcessor
         include States
 
+        # @param [Hash] params
+        # @return [Array<(Hash | nil, RemoteDevelopment::Error | nil)>]
         def process(params:)
           agent = params.fetch(:agent)
           unless agent.remote_development_agent_config

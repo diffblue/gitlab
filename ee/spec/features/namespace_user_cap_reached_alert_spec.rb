@@ -3,12 +3,11 @@
 require 'spec_helper'
 
 RSpec.describe 'Namespace user cap reached alert', :feature, :js, :use_clean_rails_memory_store_caching,
-feature_category: :seat_cost_management do
+  feature_category: :seat_cost_management do
   include ReactiveCachingHelpers
 
   let_it_be(:group, refind: true) do
-    create(:group, :public,
-           namespace_settings: create(:namespace_settings, new_user_signups_cap: 2))
+    create(:group, :public, namespace_settings: create(:namespace_settings, new_user_signups_cap: 2))
   end
 
   let_it_be(:subgroup, refind: true) { create(:group, parent: group) }
@@ -114,8 +113,7 @@ feature_category: :seat_cost_management do
     end
 
     it 'is dismissed independently for each root group' do
-      other_group = create(:group, :public,
-                           namespace_settings: create(:namespace_settings, new_user_signups_cap: 1))
+      other_group = create(:group, :public, namespace_settings: create(:namespace_settings, new_user_signups_cap: 1))
       other_group.add_owner(owner)
       stub_cache(other_group)
       sign_in(owner)

@@ -20,16 +20,30 @@ RSpec.describe 'Environment detail page', feature_category: :environment_managem
 
     before(:all) do
       create(:project_group_link, :reporter, project: project, group: operator_group)
-      create(:protected_environment, project: project, name: environment.name,
-                                     authorize_group_to_deploy: operator_group)
+      create(
+        :protected_environment,
+        project: project,
+        name: environment.name,
+        authorize_group_to_deploy: operator_group
+      )
 
       create(:deployment, :success, environment: environment, sha: project.commit('HEAD~1').id).tap do |deployment|
-        create(:ci_build, :manual, pipeline: deployment.deployable.pipeline, name: 'stop production',
-                                   environment: environment.name)
+        create(
+          :ci_build,
+          :manual,
+          pipeline: deployment.deployable.pipeline,
+          name: 'stop production',
+          environment: environment.name
+        )
       end
       create(:deployment, :success, environment: environment, sha: project.commit('HEAD~0').id).tap do |deployment|
-        create(:ci_build, :manual, pipeline: deployment.deployable.pipeline, name: 'stop production',
-                                   environment: environment.name)
+        create(
+          :ci_build,
+          :manual,
+          pipeline: deployment.deployable.pipeline,
+          name: 'stop production',
+          environment: environment.name
+        )
       end
     end
 

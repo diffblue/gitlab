@@ -18,8 +18,13 @@ RSpec.describe 'User sees feature flag list', :js, feature_category: :feature_fl
 
   context 'with new version flags' do
     before do
-      create(:operations_feature_flag, :new_version_flag,
-             project: project, name: 'my_flag', active: false)
+      create(
+        :operations_feature_flag,
+        :new_version_flag,
+        project: project,
+        name: 'my_flag',
+        active: false
+      )
     end
 
     it 'user updates the status toggle' do

@@ -102,7 +102,7 @@ export default {
     },
   },
   i18n,
-  testRunsHelpPath: helpPagePath('ci/unit_test_reports'),
+  testRunsHelpPath: helpPagePath('ci/testing/unit_test_reports'),
   codeQualityHelpPath: helpPagePath('ci/testing/code_quality'),
   coverageHelpPath: helpPagePath('ci/pipelines/settings', {
     anchor: 'add-test-coverage-results-to-a-merge-request',
