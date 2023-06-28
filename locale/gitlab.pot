@@ -11561,13 +11561,28 @@ msgstr ""
 msgid "CompareRevisions|Branches"
 msgstr ""
 
+msgid "CompareRevisions|Changes are shown as if the %{boldStart}source%{boldEnd} revision was being merged into the %{boldStart}target%{boldEnd} revision. %{linkStart}Learn more about comparing revisions.%{linkEnd}"
+msgstr ""
+
+msgid "CompareRevisions|Commits on Source (%{commits_amount})"
+msgstr ""
+
 msgid "CompareRevisions|Compare"
+msgstr ""
+
+msgid "CompareRevisions|Compare revisions"
 msgstr ""
 
 msgid "CompareRevisions|Create merge request"
 msgstr ""
 
 msgid "CompareRevisions|Filter by Git revision"
+msgstr ""
+
+msgid "CompareRevisions|Include changes to target since source was created"
+msgstr ""
+
+msgid "CompareRevisions|Only incoming changes from source"
 msgstr ""
 
 msgid "CompareRevisions|Select Git revision"
@@ -11577,6 +11592,12 @@ msgid "CompareRevisions|Select branch/tag"
 msgstr ""
 
 msgid "CompareRevisions|Select target project"
+msgstr ""
+
+msgid "CompareRevisions|Show changes"
+msgstr ""
+
+msgid "CompareRevisions|Swap"
 msgstr ""
 
 msgid "CompareRevisions|Swap revisions"
