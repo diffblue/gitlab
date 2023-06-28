@@ -41,6 +41,12 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
 
         execute
       end
+
+      it 'does not generate policy violation comment' do
+        expect(Security::GeneratePolicyViolationCommentWorker).not_to receive(:perform_async)
+
+        execute
+      end
     end
 
     context 'with license_finding security policy' do
@@ -51,7 +57,7 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
         create(:scan_result_policy_read, license_states: license_states, match_on_inclusion: match_on_inclusion)
       end
 
-      let(:license_finding_rule) do
+      let!(:license_finding_rule) do
         create(:report_approver_rule, :license_scanning, merge_request: merge_request, approvals_required: 1,
           scan_result_policy_read: scan_result_policy_read)
       end
@@ -67,6 +73,8 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
           expect { execute }.to change { license_finding_rule.reload.approvals_required }.from(1).to(0)
         end
       end
+
+      it_behaves_like 'triggers policy bot comment', :license_scanning, false
 
       using RSpec::Parameterized::TableSyntax
 

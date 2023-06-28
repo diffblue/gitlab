@@ -60,14 +60,14 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       end
     end
 
-    subject(:service) do
+    subject(:execute) do
       described_class.new(merge_request: merge_request, pipeline: pipeline).execute
     end
 
     shared_examples_for 'does not update approvals_required' do
       it do
         expect do
-          service
+          execute
         end.not_to change { report_approver_rule.reload.approvals_required }
       end
     end
@@ -75,7 +75,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
     shared_examples_for 'sets approvals_required to 0' do
       it do
         expect do
-          service
+          execute
         end.to change { report_approver_rule.reload.approvals_required }.from(2).to(0)
       end
     end
@@ -88,34 +88,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       it 'does not call VulnerabilitiesCountService' do
         expect(Security::ScanResultPolicies::VulnerabilitiesCountService).not_to receive(:new)
 
-        service
-      end
-    end
-
-    shared_examples_for 'triggers policy bot comment' do |violated_policy|
-      context 'when feature flag "security_policy_approval_notification" is enabled' do
-        before do
-          stub_feature_flags(security_policy_approval_notification: project)
-        end
-
-        it 'enqueues Security::GeneratePolicyViolationCommentWorker' do
-          expect(Security::GeneratePolicyViolationCommentWorker).to receive(:perform_async)
-                                                                      .with(merge_request.id, violated_policy)
-
-          service
-        end
-      end
-
-      context 'when feature flag "security_policy_approval_notification" is disabled' do
-        before do
-          stub_feature_flags(security_policy_approval_notification: false)
-        end
-
-        it 'does not enqueue Security::GeneratePolicyViolationCommentWorker' do
-          expect(Security::GeneratePolicyViolationCommentWorker).not_to receive(:perform_async)
-
-          service
-        end
+        execute
       end
     end
 
@@ -125,7 +98,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       it 'does not enqueue Security::GeneratePolicyViolationCommentWorker' do
         expect(Security::GeneratePolicyViolationCommentWorker).not_to receive(:perform_async)
 
-        service
+        execute
       end
     end
 
@@ -134,7 +107,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
       it_behaves_like 'does not update approvals_required'
 
-      it_behaves_like 'triggers policy bot comment', true
+      it_behaves_like 'triggers policy bot comment', :scan_finding, true
     end
 
     context 'when there are no violated approval rules' do
@@ -142,7 +115,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
       it_behaves_like 'sets approvals_required to 0'
 
-      it_behaves_like 'triggers policy bot comment', false
+      it_behaves_like 'triggers policy bot comment', :scan_finding, false
     end
 
     context 'when target pipeline is nil' do
@@ -152,7 +125,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
       it_behaves_like 'does not update approvals_required'
 
-      it_behaves_like 'triggers policy bot comment', true
+      it_behaves_like 'triggers policy bot comment', :scan_finding, true
     end
 
     context 'when the number of findings in current pipeline exceed the allowed limit' do
@@ -175,7 +148,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       context 'when vulnerabilities count exceeds the allowed limit' do
         it_behaves_like 'does not update approvals_required'
 
-        it_behaves_like 'triggers policy bot comment', true
+        it_behaves_like 'triggers policy bot comment', :scan_finding, true
       end
 
       context 'when new findings are introduced and it exceeds the allowed limit' do
@@ -189,7 +162,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
         it_behaves_like 'does not update approvals_required'
 
-        it_behaves_like 'triggers policy bot comment', true
+        it_behaves_like 'triggers policy bot comment', :scan_finding, true
 
         context 'when there are no new dismissed vulnerabilities' do
           let(:vulnerabilities_allowed) { 0 }
@@ -269,7 +242,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
           it_behaves_like 'sets approvals_required to 0'
 
-          it_behaves_like 'triggers policy bot comment', false
+          it_behaves_like 'triggers policy bot comment', :scan_finding, false
         end
 
         context 'when vulnerability_states has new_needs_triage' do
@@ -277,7 +250,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
           it_behaves_like 'sets approvals_required to 0'
 
-          it_behaves_like 'triggers policy bot comment', false
+          it_behaves_like 'triggers policy bot comment', :scan_finding, false
         end
 
         context 'when vulnerability_states has new_dismissed' do
@@ -285,7 +258,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
           it_behaves_like 'sets approvals_required to 0'
 
-          it_behaves_like 'triggers policy bot comment', false
+          it_behaves_like 'triggers policy bot comment', :scan_finding, false
         end
 
         context 'when vulnerability_states has new_needs_triage and new_dismissed' do
@@ -293,13 +266,13 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
           it_behaves_like 'sets approvals_required to 0'
 
-          it_behaves_like 'triggers policy bot comment', false
+          it_behaves_like 'triggers policy bot comment', :scan_finding, false
         end
 
         context 'when vulnerabilities count exceeds the allowed limit' do
           it_behaves_like 'does not update approvals_required'
 
-          it_behaves_like 'triggers policy bot comment', true
+          it_behaves_like 'triggers policy bot comment', :scan_finding, true
         end
 
         context 'when vulnerabilities count does not exceed the allowed limit' do
@@ -307,7 +280,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
           it_behaves_like 'sets approvals_required to 0'
 
-          it_behaves_like 'triggers policy bot comment', false
+          it_behaves_like 'triggers policy bot comment', :scan_finding, false
         end
       end
 
@@ -318,7 +291,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
         it_behaves_like 'does not update approvals_required'
 
-        it_behaves_like 'triggers policy bot comment', true
+        it_behaves_like 'triggers policy bot comment', :scan_finding, true
       end
     end
 
@@ -385,7 +358,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
         it_behaves_like 'does not update approvals_required'
 
-        it_behaves_like 'triggers policy bot comment', true
+        it_behaves_like 'triggers policy bot comment', :scan_finding, true
       end
     end
   end

@@ -202,4 +202,15 @@ RSpec.describe Note, feature_category: :team_planning do
       end
     end
   end
+
+  describe '.note_starting_with' do
+    it 'returns a note matching the prefix' do
+      create(:note)
+      create(:note, note: 'non-matching prefix note')
+      create(:note, note: 'non-matching')
+      matching_note = create(:note, note: 'prefix note')
+
+      expect(described_class.note_starting_with('prefix')).to contain_exactly(matching_note)
+    end
+  end
 end
