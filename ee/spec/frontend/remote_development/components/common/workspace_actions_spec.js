@@ -1,22 +1,18 @@
 import { shallowMount } from '@vue/test-utils';
-import { GlButton } from '@gitlab/ui';
-import WorkspaceActions from 'ee/remote_development/components/list/workspace_actions.vue';
+import { GlButton, GlTooltip } from '@gitlab/ui';
+import WorkspaceActions from 'ee/remote_development/components/common/workspace_actions.vue';
 import {
   WORKSPACE_STATES as ACTUAL,
   WORKSPACE_DESIRED_STATES as DESIRED,
 } from 'ee/remote_development/constants';
-import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 
-describe('ee/remote_development/components/list/workspace_actions', () => {
+describe('ee/remote_development/components/common/workspace_actions', () => {
   let wrapper;
 
   const createWrapper = (props = {}) => {
     wrapper = shallowMount(WorkspaceActions, {
       propsData: {
         ...props,
-      },
-      directives: {
-        GlTooltip: createMockDirective('gl-tooltip'),
       },
     });
   };
@@ -26,15 +22,18 @@ describe('ee/remote_development/components/list/workspace_actions', () => {
     findButtons().wrappers.find((x) => x.attributes('aria-label') === label);
   const findButtonsAsData = () =>
     findButtons().wrappers.map((button) => ({
-      tooltip: getBinding(button.element.parentNode, 'gl-tooltip').value,
       ariaLabel: button.attributes('aria-label'),
       icon: button.props('icon'),
       disabled: button.props('disabled'),
       loading: button.props('loading'),
     }));
+  const findTooltipsAsData = () =>
+    wrapper.findAllComponents(GlTooltip).wrappers.map((tooltip) => ({
+      text: tooltip.text(),
+      target: tooltip.props().target,
+    }));
 
   const createButtonData = (tooltip, icon, loading = false) => ({
-    tooltip,
     icon,
     ariaLabel: tooltip,
     disabled: loading,
@@ -98,6 +97,12 @@ describe('ee/remote_development/components/list/workspace_actions', () => {
       createWrapper({ actualState, desiredState });
 
       expect(findButtonsAsData()).toEqual(buttonsData);
+      expect(findTooltipsAsData()).toEqual(
+        buttonsData.map((buttonData, idx) => ({
+          text: buttonData.ariaLabel,
+          target: `action-wrapper-${idx}`,
+        })),
+      );
     },
   );
 
@@ -124,15 +129,38 @@ describe('ee/remote_development/components/list/workspace_actions', () => {
   `(
     'when clicking "$buttonLabel", emits "click" with "$actionDesiredState"',
     ({ actualState, desiredState, buttonLabel, actionDesiredState }) => {
+      const mockEvent = { stopPropagation: jest.fn(), preventDefault: jest.fn() };
+
       createWrapper({ actualState, desiredState });
 
       expect(wrapper.emitted('click')).toBeUndefined();
 
       const button = findButtonWithLabel(buttonLabel);
 
-      button.vm.$emit('click');
+      button.vm.$emit('click', mockEvent);
 
       expect(wrapper.emitted('click')).toEqual([[actionDesiredState]]);
+      expect(mockEvent.stopPropagation).toHaveBeenCalled();
+      expect(mockEvent.preventDefault).toHaveBeenCalled();
     },
   );
+
+  describe('when compact mode', () => {
+    beforeEach(() => {
+      createWrapper({
+        actualState: ACTUAL.creationRequested,
+        desiredState: DESIRED.running,
+        compact: true,
+      });
+    });
+
+    it('sets buttons as small and category tertiary', () => {
+      findButtons().wrappers.forEach((button) => {
+        expect(button.props()).toMatchObject({
+          category: 'tertiary',
+          size: 'small',
+        });
+      });
+    });
+  });
 });
