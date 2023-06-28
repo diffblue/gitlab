@@ -24,7 +24,7 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
   end
 
   describe '#above_size_limit?' do
-    subject { model.above_size_limit? }
+    subject(:above_size_limit?) { model.above_size_limit? }
 
     before do
       allow(namespace).to receive(:temporary_storage_increase_enabled?).and_return(false)
@@ -58,11 +58,67 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
         it { is_expected.to eq(false) }
       end
 
-      context 'when above limit' do
+      context 'when above limit', :use_clean_rails_memory_store_caching do
         let(:current_size) { 101.megabytes }
 
         context 'when temporary storage increase is disabled' do
+          let(:namespace_limit) { namespace.namespace_limit }
+
           it { is_expected.to eq(true) }
+
+          context 'when the namespace has never been above the limit before', :freeze_time do
+            it 'updates the first_enforced_at timestamp' do
+              expect { above_size_limit? }.to change { namespace_limit.first_enforced_at }
+
+              namespace_limit.reload
+
+              expect(namespace_limit.first_enforced_at).to be_like_time(Time.current)
+            end
+
+            context 'when cache exists' do
+              before do
+                above_size_limit?
+              end
+
+              it 'does not update the database' do
+                namespace_limit.update!(first_enforced_at: nil)
+
+                expect(namespace_limit).not_to receive(:update)
+
+                expect do
+                  expect(above_size_limit?).to be(true)
+                end.not_to change { namespace_limit.first_enforced_at }
+              end
+            end
+          end
+
+          context 'when the namespace has been above the limit before' do
+            before do
+              namespace_limit.update!(first_enforced_at: Time.current)
+            end
+
+            context 'with no cache' do
+              it 'does not update the timestamp' do
+                expect { above_size_limit? }.not_to change { namespace_limit.first_enforced_at }
+              end
+            end
+
+            context 'when cache exists' do
+              before do
+                above_size_limit?
+              end
+
+              it 'does not update the database' do
+                namespace_limit.update!(first_enforced_at: nil)
+
+                expect(namespace_limit).not_to receive(:update)
+
+                expect do
+                  expect(above_size_limit?).to be(true)
+                end.not_to change { namespace_limit.first_enforced_at }
+              end
+            end
+          end
         end
 
         context 'when temporary storage increase is enabled' do

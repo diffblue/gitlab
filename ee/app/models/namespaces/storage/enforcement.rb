@@ -17,10 +17,11 @@ module Namespaces
       def show_pre_enforcement_alert?(namespace)
         root_namespace = namespace.root_ancestor
 
-        ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
-          ::Gitlab::CurrentSettings.automatic_purchased_storage_allocation? &&
-          !root_namespace.paid? && in_pre_enforcement_phase?(root_namespace) &&
-          ::Feature.enabled?(:namespace_storage_limit_show_preenforcement_banner, root_namespace)
+        return false unless in_pre_enforcement_phase?(root_namespace)
+
+        update_pre_enforcement_timestamp(root_namespace)
+
+        true
       end
 
       def over_pre_enforcement_notification_limit?(root_namespace)
@@ -58,15 +59,32 @@ module Namespaces
 
       def in_pre_enforcement_phase?(root_namespace)
         # a Namespace is in the pre-enforcement phase if all the following are true:
+        # - the application settings for rollout are enabled
+        # - the namespace is not on a paid plan
         # - their storage usage is over the notification limit
         # - their storage usage is under the enforcement limit
         # - the namespace is not being excluded from storage limits
+
+        return false unless ::Feature.enabled?(:namespace_storage_limit_show_preenforcement_banner, root_namespace)
+        return false unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
+        return false unless ::Gitlab::CurrentSettings.automatic_purchased_storage_allocation?
+        return false if root_namespace.paid?
 
         # above_size_limit? will return true if enforcement is enabled and the
         # namespace is above the applicable limit
         return false if ::Namespaces::Storage::RootSize.new(root_namespace).above_size_limit?
 
         over_pre_enforcement_notification_limit?(root_namespace)
+      end
+
+      def update_pre_enforcement_timestamp(root_namespace)
+        Rails.cache.fetch(['namespaces', root_namespace.id, 'pre_enforcement_tracking'], expires_in: 7.days) do
+          namespace_limit = root_namespace.namespace_limit
+
+          next if namespace_limit.pre_enforcement_notification_at.present?
+
+          namespace_limit.update(pre_enforcement_notification_at: Time.current)
+        end
       end
 
       def enforceable_namespace?(root_namespace)
