@@ -23,7 +23,7 @@ RSpec.describe 'Project show page', :js, feature_category: :groups_and_projects 
       let_it_be(:group) { create(:group) }
       let_it_be(:project) { create(:project, :repository, namespace: group) }
 
-      it 'renders the tier badge and popover when clicked', time_travel_to: 14.days.from_now do
+      it 'renders the tier badge and popover when clicked' do
         expect(tier_badge_element).to be_present
 
         tier_badge_element.click
@@ -36,7 +36,7 @@ RSpec.describe 'Project show page', :js, feature_category: :groups_and_projects 
     context 'when project is not part of a group' do
       let_it_be(:project) { create(:project, :repository, namespace: user.namespace) }
 
-      it 'does not render the tier badge', time_travel_to: 14.days.from_now do
+      it 'does not render the tier badge' do
         expect(page).not_to have_selector(tier_badge_selector)
       end
     end
