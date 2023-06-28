@@ -19279,6 +19279,9 @@ msgstr ""
 msgid "Files, directories, and submodules in the path %{path} for commit reference %{ref}"
 msgstr ""
 
+msgid "Fill in merge request template"
+msgstr ""
+
 msgid "Fill in the fields below, turn on %{strong_open}Enable SAML authentication for this group%{strong_close}, and press %{strong_open}Save changes%{strong_close}"
 msgstr ""
 
@@ -28790,6 +28793,12 @@ msgid "MergeRequest|Reviewed by @%{username} but not yet approved"
 msgstr ""
 
 msgid "MergeRequest|Search (e.g. *.vue) (%{MODIFIER_KEY}P)"
+msgstr ""
+
+msgid "MergeRequest|This description was generated for revision %{revision} using AI"
+msgstr ""
+
+msgid "MergeRequest|This description was generated using AI"
 msgstr ""
 
 msgid "MergeTopics|%{sourceTopic} will be removed"
@@ -38530,6 +38539,9 @@ msgid "Replace all label(s)"
 msgstr ""
 
 msgid "Replace audio"
+msgstr ""
+
+msgid "Replace current template with filled in placeholders"
 msgstr ""
 
 msgid "Replace file"
