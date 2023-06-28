@@ -3,7 +3,6 @@ import { GlLink, GlSprintf, GlSkeletonLoader, GlLoadingIcon } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import UserAvatarLink from '~/vue_shared/components/user_avatar/user_avatar_link.vue';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { DISMISSAL_REASONS } from '../constants';
 
 export default {
@@ -15,8 +14,6 @@ export default {
     GlLoadingIcon,
     UserAvatarLink,
   },
-
-  mixins: [glFeatureFlagsMixin()],
 
   props: {
     vulnerability: {
@@ -90,10 +87,6 @@ export default {
     dismissalReasonText() {
       return DISMISSAL_REASONS[this.dismissalReason];
     },
-
-    shouldShowDismissalReason() {
-      return this.glFeatures.dismissalReason;
-    },
   },
 };
 </script>
@@ -105,7 +98,7 @@ export default {
     <gl-sprintf v-else-if="time" :message="statusText">
       <template #status="{ content }">
         <span :class="{ 'gl-font-weight-bold': isStatusBolded }" data-testid="status">
-          <template v-if="shouldShowDismissalReason && hasDismissalReason">
+          <template v-if="hasDismissalReason">
             {{ content }}: {{ dismissalReasonText }} &middot;
           </template>
           <template v-else>{{ content }} &middot;</template>

@@ -17,25 +17,26 @@ RSpec.describe 'Projects > Merge Requests > User edits a merge request', feature
     end
 
     let(:project) do
-      create(:project, :custom_repo,
-             files: { 'docs/CODEOWNERS' => "[Backend]\n*.rb @ruby-owner\n*.js @js-owner" })
+      create(:project, :custom_repo, files: { 'docs/CODEOWNERS' => "[Backend]\n*.rb @ruby-owner\n*.js @js-owner" })
     end
 
     let(:merge_request) do
-      create(:merge_request,
-             source_project: project,
-             target_project: project,
-             target_branch: 'master',
-             source_branch: 'feature')
+      create(
+        :merge_request,
+        source_project: project,
+        target_project: project,
+        target_branch: 'master',
+        source_branch: 'feature'
+      )
     end
 
     let(:ruby_owner) { create(:user, username: 'ruby-owner') }
 
     before do
       project.add_developer(ruby_owner)
-      project.repository.create_file(user, 'ruby.rb', '# a ruby file',
-                                     message: 'Add a ruby file',
-                                     branch_name: 'feature')
+      project.repository.create_file(
+        user, 'ruby.rb', '# a ruby file', message: 'Add a ruby file', branch_name: 'feature'
+      )
 
       create(:protected_branch,
         name: 'master',

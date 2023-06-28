@@ -105,7 +105,7 @@ export default {
         isNumber(getIdFromGraphQLId(this.pipeline.id)) &&
         isString(this.pipeline.path) &&
         this.preferredAutoMergeStrategy === MTWPS_MERGE_STRATEGY &&
-        !this.stateData.autoMergeEnabled
+        !this.state.autoMergeEnabled
       );
     },
     shouldShowMergeImmediatelyDropdown() {
@@ -113,7 +113,7 @@ export default {
         return true;
       }
 
-      return this.isPipelineActive && !this.stateData.onlyAllowMergeIfPipelineSucceeds;
+      return this.isPipelineActive && !this.state.onlyAllowMergeIfPipelineSucceeds;
     },
     isMergeImmediatelyDangerous() {
       return [MT_MERGE_STRATEGY, MTWPS_MERGE_STRATEGY].includes(this.preferredAutoMergeStrategy);

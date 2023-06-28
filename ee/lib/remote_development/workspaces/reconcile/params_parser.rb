@@ -8,6 +8,8 @@ module RemoteDevelopment
       class ParamsParser
         include UpdateType
 
+        # @param [Hash] params
+        # @return [Array<(Hash | nil, RemoteDevelopment::Error | nil)>]
         def parse(params:)
           error_message = validate_params(params)
 
@@ -31,6 +33,8 @@ module RemoteDevelopment
 
         private
 
+        # @param [Hash] params
+        # @return [void, String]
         def validate_params(params)
           schema = JSONSchemer.schema({
             "type" => "object",

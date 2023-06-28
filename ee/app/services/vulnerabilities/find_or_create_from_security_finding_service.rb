@@ -62,7 +62,10 @@ module Vulnerabilities
 
         Vulnerabilities::StateTransition.create!(state_transition_params)
 
-        vulnerability.update!(state: @state)
+        update_params = { state: @state }
+        update_params.merge!(dismissed_by: @current_user, dismissed_at: Time.current) if @state.to_sym == :dismissed
+
+        vulnerability.update!(update_params)
 
         create_system_note(vulnerability)
       end

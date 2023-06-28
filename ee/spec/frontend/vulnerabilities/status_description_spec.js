@@ -86,28 +86,6 @@ describe('Vulnerability status description component', () => {
     });
   });
 
-  // Remove this test once dismissalReason feature flag is on by default
-  describe('when the "dismissalReason" feature flag is disabled', () => {
-    it('does not show the dismissal reason in the state text', () => {
-      createWrapper(
-        {
-          vulnerability: {
-            state: 'dismissed',
-            stateTransitions: [
-              {
-                dismissalReason: 'used_in_tests',
-              },
-            ],
-            pipeline: {},
-          },
-        },
-        false,
-      );
-
-      expect(statusEl().text()).toBe('Dismissed ·');
-    });
-  });
-
   describe('time ago', () => {
     it('uses the pipeline created date when the vulnerability state is "detected"', () => {
       const pipelineDateString = createDate('2001');

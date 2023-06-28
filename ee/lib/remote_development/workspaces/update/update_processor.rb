@@ -4,6 +4,9 @@ module RemoteDevelopment
   module Workspaces
     module Update
       class UpdateProcessor
+        # @param [RemoteDevelopment::Workspace] workspace
+        # @param [Hash] params
+        # @return [Array<(Hash | nil, RemoteDevelopment::Error | nil)>]
         def process(workspace:, params:)
           if workspace.update(params)
             payload = { workspace: workspace }

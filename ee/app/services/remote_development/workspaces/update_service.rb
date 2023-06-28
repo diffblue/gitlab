@@ -20,10 +20,15 @@ module RemoteDevelopment
       #
       #       See https://gitlab.com/gitlab-org/remote-development/gitlab-remote-development-docs/-/blob/main/doc/remote-development-feature-architectural-standards.md
       #       for more discussion on this topic.
+      # @param [User] current_user
+      # @return [void]
       def initialize(current_user:)
         @current_user = current_user
       end
 
+      # @param [RemoteDevelopment::Workspace] workspace
+      # @param [Hash] params
+      # @return [ServiceResponse]
       def execute(workspace:, params:)
         return ServiceResponse.error(message: 'Unauthorized', reason: :unauthorized) unless authorized?(workspace)
 
@@ -37,6 +42,8 @@ module RemoteDevelopment
         ServiceResponse.success(payload: payload)
       end
 
+      # @param [RemoteDevelopment::Workspace] workspace
+      # @return [TrueClass, FalseClass]
       def authorized?(workspace)
         current_user&.can?(:update_workspace, workspace)
       end

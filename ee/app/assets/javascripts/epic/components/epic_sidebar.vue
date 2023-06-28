@@ -112,6 +112,7 @@ export default {
       'right-sidebar-collapsed': sidebarCollapsed,
     }"
     :data-signed-in="isUserSignedIn"
+    data-always-show-toggle
     class="right-sidebar epic-sidebar"
     :aria-label="__('Epic')"
   >

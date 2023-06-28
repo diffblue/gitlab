@@ -3,6 +3,9 @@
 module RemoteDevelopment
   module AgentConfig
     class UpdateProcessor
+      # @param [Clusters::Agent] agent
+      # @param [Hash] config
+      # @return [Array<(Hash | nil, RemoteDevelopment::Error | nil)>]
       def process(agent:, config:)
         config_from_agent_config_file = config[:remote_development]
 

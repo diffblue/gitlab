@@ -12,7 +12,6 @@ import download from '~/lib/utils/downloader';
 import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import UsersCache from '~/lib/utils/users_cache';
 import { s__ } from '~/locale';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { VULNERABILITY_STATE_OBJECTS, FEEDBACK_TYPES, HEADER_ACTION_BUTTONS } from '../constants';
 import { normalizeGraphQLVulnerability, normalizeGraphQLLastStateTransition } from '../helpers';
 import ResolutionAlert from './resolution_alert.vue';
@@ -28,12 +27,8 @@ export default {
     ResolutionAlert,
     SplitButton,
     StatusDescription,
-    VulnerabilityStateDropdownDeprecated: () =>
-      import('./vulnerability_state_dropdown_deprecated.vue'),
     VulnerabilityStateDropdown: () => import('./vulnerability_state_dropdown.vue'),
   },
-
-  mixins: [glFeatureFlagMixin()],
 
   props: {
     vulnerability: {
@@ -240,15 +235,9 @@ export default {
         <label class="mb-0 mx-2">{{ __('Status') }}</label>
         <gl-loading-icon v-if="isLoadingVulnerability" size="sm" class="d-inline" />
         <vulnerability-state-dropdown
-          v-else-if="glFeatures.dismissalReason"
-          :initial-state="vulnerability.state"
-          :initial-dismissal-reason="initialDismissalReason"
-          :disabled="disabledChangeState"
-          @change="changeVulnerabilityState"
-        />
-        <vulnerability-state-dropdown-deprecated
           v-else
           :initial-state="vulnerability.state"
+          :initial-dismissal-reason="initialDismissalReason"
           :disabled="disabledChangeState"
           @change="changeVulnerabilityState"
         />
