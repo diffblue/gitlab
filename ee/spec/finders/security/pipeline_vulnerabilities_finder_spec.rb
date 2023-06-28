@@ -426,21 +426,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder, feature_category: :vulne
         context 'when the given state is `dismissed`' do
           let(:state) { 'dismissed' }
 
-          context 'when `deprecate_vulnerabilities_feedback` feature flag enabled' do
-            before do
-              stub_feature_flags(deprecate_vulnerabilities_feedback: true)
-            end
-
-            it { is_expected.to match_array([finding_with_associated_vulnerability.uuid]) }
-          end
-
-          context 'when `deprecate_vulnerabilities_feedback` feature flag disabled' do
-            before do
-              stub_feature_flags(deprecate_vulnerabilities_feedback: false)
-            end
-
-            it { is_expected.to match_array([finding_with_associated_vulnerability.uuid, finding_with_feedback.uuid]) }
-          end
+          it { is_expected.to match_array([finding_with_associated_vulnerability.uuid]) }
         end
 
         context 'when the given state is `detected`' do
