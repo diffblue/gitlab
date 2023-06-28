@@ -335,7 +335,7 @@ describe('AiGenie', () => {
 
     describe('error handling', () => {
       it('if the subscription fails, genie gets :error set with the error message', async () => {
-        subscriptionHandlerMock = jest.fn().mockRejectedValue({ errors: [] });
+        subscriptionHandlerMock.mockRejectedValueOnce({ errors: [] });
         createComponent();
         await requestExplanation();
         await waitForPromises();
