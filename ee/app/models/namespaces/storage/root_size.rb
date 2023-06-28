@@ -14,8 +14,11 @@ module Namespaces
 
       def above_size_limit?
         return false unless valid_enforcement?
+        return false unless usage_ratio > 1
 
-        usage_ratio > 1
+        update_first_enforcement_timestamp
+
+        true
       end
 
       def usage_ratio
@@ -121,6 +124,16 @@ module Namespaces
 
       def inverted_cost_factor_for_forks
         1 - COST_FACTOR_FOR_FORKS
+      end
+
+      def update_first_enforcement_timestamp
+        Rails.cache.fetch(['namespaces', root_namespace.id, 'first_enforcement_tracking'], expires_in: 7.days) do
+          namespace_limit = root_namespace.namespace_limit
+
+          next if namespace_limit.first_enforced_at.present?
+
+          namespace_limit.update(first_enforced_at: Time.current)
+        end
       end
     end
   end
