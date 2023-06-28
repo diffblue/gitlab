@@ -1,12 +1,24 @@
 import { GlCollapsibleListbox } from '@gitlab/ui';
+import fuzzaldrinPlus from 'fuzzaldrin-plus';
 import { shallowMount } from '@vue/test-utils';
 import StreamFilters from 'ee/audit_events/components/stream/stream_filters.vue';
 import { AUDIT_STREAMS_FILTERING } from 'ee/audit_events/constants';
-import {
-  mockExternalDestinations,
-  mockAuditEventDefinitions,
-  mockStreamFiltersOptions,
-} from '../../mock_data';
+import { mockExternalDestinations, mockAuditEventDefinitions } from '../../mock_data';
+
+const EXPECTED_ITEMS = [
+  {
+    text: 'Selected',
+    options: [
+      { text: 'Add gpg key', value: 'add_gpg_key' },
+      { text: 'User created', value: 'user_created' },
+    ],
+  },
+  { text: 'User management', options: [{ text: 'User blocked', value: 'user_blocked' }] },
+  {
+    text: 'Compliance management',
+    options: [{ text: 'Project unarchived', value: 'project_unarchived' }],
+  },
+];
 
 describe('StreamWithFilters', () => {
   let wrapper;
@@ -31,7 +43,7 @@ describe('StreamWithFilters', () => {
 
   it('renders correctly', () => {
     expect(findCollapsibleListbox().props()).toMatchObject({
-      items: mockStreamFiltersOptions,
+      items: EXPECTED_ITEMS,
       selected: mockExternalDestinations[1].eventTypeFilters,
       showSelectAllButtonLabel: AUDIT_STREAMS_FILTERING.SELECT_ALL,
       resetButtonLabel: AUDIT_STREAMS_FILTERING.UNSELECT_ALL,
@@ -55,37 +67,28 @@ describe('StreamWithFilters', () => {
     });
 
     it('displays a humanized event name when 1 event is selected', () => {
-      createComponent({ value: ['repository_download_operation'] });
+      createComponent({ value: ['add_gpg_key'] });
 
-      expect(findCollapsibleListbox().props('toggleText')).toBe('Repository download operation');
+      expect(findCollapsibleListbox().props('toggleText')).toBe('Add gpg key');
     });
 
     it('displays a comma-separated list of humanized event names when 3 events are selected', () => {
       createComponent({
-        value: [
-          'repository_download_operation',
-          'update_merge_approval_rule',
-          'create_merge_approval_rule',
-        ],
+        value: ['add_gpg_key', 'user_created', 'user_blocked'],
       });
 
       expect(findCollapsibleListbox().props('toggleText')).toBe(
-        'Repository download operation, Update merge approval rule, Create merge approval rule',
+        'Add gpg key, User created, User blocked',
       );
     });
 
     it('appends "+1 more" when 4 events are selected', () => {
       createComponent({
-        value: [
-          'repository_download_operation',
-          'update_merge_approval_rule',
-          'create_merge_approval_rule',
-          'project_unarchived',
-        ],
+        value: ['add_gpg_key', 'user_created', 'user_blocked', 'project_unarchived'],
       });
 
       expect(findCollapsibleListbox().props('toggleText')).toBe(
-        'Repository download operation, Update merge approval rule, Create merge approval rule +1 more',
+        'Add gpg key, User created, User blocked +1 more',
       );
     });
   });
@@ -115,20 +118,79 @@ describe('StreamWithFilters', () => {
   });
 
   describe('search', () => {
+    beforeEach(() => {
+      jest.spyOn(fuzzaldrinPlus, 'filter');
+    });
+
     it('does not filter items if searchTerm is empty string', async () => {
       await findCollapsibleListbox().vm.$emit('search', '');
 
-      expect(findCollapsibleListbox().props('items')).toEqual(mockStreamFiltersOptions);
+      expect(fuzzaldrinPlus.filter).not.toHaveBeenCalled();
+      expect(findCollapsibleListbox().props('items')).toMatchObject(EXPECTED_ITEMS);
+    });
+
+    it('filters items correctly when searching', async () => {
+      // Omit 'e' in 'user' to test for fuzzy search
+      await findCollapsibleListbox().vm.$emit('search', 'usr');
+
+      const expected = [
+        {
+          text: 'Selected',
+          options: [{ text: 'User created', value: 'user_created' }],
+        },
+        {
+          text: 'User management',
+          options: [{ text: 'User blocked', value: 'user_blocked' }],
+        },
+      ];
+      expect(findCollapsibleListbox().props('items')).toMatchObject(expected);
+      expect(fuzzaldrinPlus.filter).toHaveBeenCalled();
     });
   });
 
-  it('filters items correctly when searching', async () => {
-    // Capitalize "Approval" to test that casing is ignored when matching items with the searchTerm
-    await findCollapsibleListbox().vm.$emit('search', 'Merge Approval');
+  describe('groups', () => {
+    it('renders "Selected" group with selected items', () => {
+      createComponent({
+        value: ['add_gpg_key', 'user_created', 'user_blocked'],
+      });
 
-    expect(findCollapsibleListbox().props('items')).toMatchObject([
-      { value: 'update_merge_approval_rule', text: 'Update merge approval rule' },
-      { value: 'create_merge_approval_rule', text: 'Create merge approval rule' },
-    ]);
+      const expected = [
+        {
+          text: 'Selected',
+          options: [
+            { text: 'Add gpg key', value: 'add_gpg_key' },
+            { text: 'User created', value: 'user_created' },
+            { text: 'User blocked', value: 'user_blocked' },
+          ],
+        },
+        {
+          text: 'Compliance management',
+          options: [{ text: 'Project unarchived', value: 'project_unarchived' }],
+        },
+      ];
+      expect(findCollapsibleListbox().props('items')).toMatchObject(expected);
+    });
+
+    it('does not render "Selected" group if no items are selected', () => {
+      createComponent({
+        value: [],
+      });
+
+      expect(
+        findCollapsibleListbox()
+          .props('items')
+          .map((group) => group.text),
+      ).not.toContain('Selected');
+    });
+
+    it('renders only "Selected" group if all items are selected', () => {
+      createComponent({
+        value: ['add_gpg_key', 'user_created', 'user_blocked', 'project_unarchived'],
+      });
+
+      const items = findCollapsibleListbox().props('items');
+      expect(items).toHaveLength(1);
+      expect(items[0].text).toBe('Selected');
+    });
   });
 });
