@@ -138,8 +138,6 @@ module Vulnerabilities
     end
 
     def state
-      return 'dismissed' if dismissal_feedback.present? && Feature.disabled?(:deprecate_vulnerabilities_feedback, project)
-
       if vulnerability.nil? || vulnerability.detected?
         'detected'
       elsif vulnerability.resolved?

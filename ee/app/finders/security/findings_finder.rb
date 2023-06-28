@@ -85,11 +85,7 @@ module Security
     end
 
     def undismissed_security_findings
-      if Feature.enabled?(:deprecate_vulnerabilities_feedback, project)
-        all_security_findings.undismissed_by_vulnerability
-      else
-        all_security_findings.undismissed
-      end
+      all_security_findings.undismissed_by_vulnerability
     end
 
     def all_security_findings

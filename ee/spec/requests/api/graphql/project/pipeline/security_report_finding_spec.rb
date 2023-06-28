@@ -93,39 +93,16 @@ feature_category: :continuous_integration do
       end
 
       context 'when the finding has been dismissed' do
-        context 'when :deprecate_vulnerabilities_feedback feature flag is disabled' do
-          let!(:dismissal_feedback) do
-            create(:vulnerability_feedback, :dismissal,
-                  project: project,
-                  pipeline: pipeline,
-                  finding_uuid: security_finding.uuid)
-          end
-
-          before do
-            stub_feature_flags(deprecate_vulnerabilities_feedback: false)
-          end
-
-          it 'returns a finding in the dismissed state' do
-            expect(security_report_finding['name']).to eq(expected_finding.name)
-          end
+        let!(:vulnerability) { create(:vulnerability, :dismissed, project: project) }
+        let!(:vulnerability_finding) do
+          create(:vulnerabilities_finding,
+                 project: project,
+                 vulnerability: vulnerability,
+                 uuid: security_finding.uuid)
         end
 
-        context 'when :deprecate_vulnerabilities_feedback feature flag is enabled' do
-          let!(:vulnerability) { create(:vulnerability, :dismissed, project: project) }
-          let!(:vulnerability_finding) do
-            create(:vulnerabilities_finding,
-                   project: project,
-                   vulnerability: vulnerability,
-                   uuid: security_finding.uuid)
-          end
-
-          before do
-            stub_feature_flags(deprecate_vulnerabilities_feedback: true)
-          end
-
-          it 'returns a finding in the dismissed state' do
-            expect(security_report_finding['name']).to eq(expected_finding.name)
-          end
+        it 'returns a finding in the dismissed state' do
+          expect(security_report_finding['name']).to eq(expected_finding.name)
         end
       end
     end

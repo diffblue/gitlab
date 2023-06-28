@@ -20,7 +20,6 @@ RSpec.describe Mutations::Security::Finding::Dismiss do
     context 'when the user has permission to dismiss the security finding' do
       before do
         stub_licensed_features(security_dashboard: true)
-        stub_feature_flags(deprecate_vulnerabilities_feedback: false)
       end
 
       context 'when user does not have access to the project' do

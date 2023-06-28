@@ -146,36 +146,12 @@ RSpec.shared_examples 'security findings finder' do
           let(:finding_to_dismiss) { Security::Finding.first }
 
           before do
-            stub_feature_flags(deprecate_vulnerabilities_feedback: deprecate_vulnerabilities_feedback?)
+            vulnerability_finding = create(:vulnerabilities_finding, uuid: finding_to_dismiss.uuid)
+
+            create(:vulnerability, state: :dismissed, findings: [vulnerability_finding])
           end
 
-          context 'when the `deprecate_vulnerabilities_feedback` feature is enabled' do
-            let(:deprecate_vulnerabilities_feedback?) { true }
-
-            before do
-              vulnerability_finding = create(:vulnerabilities_finding, uuid: finding_to_dismiss.uuid)
-
-              create(:vulnerability, state: :dismissed, findings: [vulnerability_finding])
-            end
-
-            it { is_expected.to be(7) }
-          end
-
-          context 'when the `deprecate_vulnerabilities_feedback` feature is disabled' do
-            let(:deprecate_vulnerabilities_feedback?) { false }
-
-            before do
-              create(
-                :vulnerability_feedback,
-                :dismissal,
-                project: pipeline.project,
-                category: :dependency_scanning,
-                finding_uuid: finding_to_dismiss.uuid
-              )
-            end
-
-            it { is_expected.to be(7) }
-          end
+          it { is_expected.to be(7) }
         end
 
         context 'when the scope is provided as `all`' do

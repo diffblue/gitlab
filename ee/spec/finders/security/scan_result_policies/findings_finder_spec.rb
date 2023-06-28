@@ -54,14 +54,6 @@ RSpec.describe Security::ScanResultPolicies::FindingsFinder, feature_category: :
         let(:params) { { check_dismissed: true, vulnerability_states: ['new_needs_triage'] } }
 
         it { is_expected.to contain_exactly(high_severity_finding, container_scanning_finding) }
-
-        context 'when deprecate_vulnerabilities_feedback is disabled' do
-          before do
-            stub_feature_flags(deprecate_vulnerabilities_feedback: false)
-          end
-
-          it { is_expected.to contain_exactly(high_severity_finding, container_scanning_finding) }
-        end
       end
 
       context 'when check_dismissed is false' do

@@ -649,17 +649,6 @@ RSpec.describe Vulnerabilities::Finding, feature_category: :vulnerability_manage
         expect(dismissed_finding.state).to eq 'dismissed'
       end
 
-      context 'when a vulnerability present for a dismissed finding' do
-        before do
-          create(:vulnerability, project: dismissed_finding.project, findings: [dismissed_finding])
-          stub_feature_flags(deprecate_vulnerabilities_feedback: false)
-        end
-
-        it 'still reports a dismissed state' do
-          expect(dismissed_finding.state).to eq 'dismissed'
-        end
-      end
-
       context 'when a non-dismissal feedback present for a finding belonging to a closed vulnerability' do
         before do
           create(:vulnerability_feedback, :issue, project: resolved_finding.project)

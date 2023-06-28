@@ -136,19 +136,7 @@ module Security
     end
 
     def in_selected_state?(finding)
-      params[:state].blank? || states.include?(computed_finding_state(finding))
-    end
-
-    # Here we are checking the state of the `vulnerability` and preloaded `feedback` records
-    # instead of checking the `finding.state` as the `state` method of the `finding` fires
-    # an additional database query to load the `feedback` record for each `finding`.
-    def computed_finding_state(finding)
-      if Feature.enabled?(:deprecate_vulnerabilities_feedback, pipeline.project)
-        finding.state
-      else
-        finding.vulnerability&.state ||
-          (dismissal_feedback?(finding) ? 'dismissed' : 'detected')
-      end
+      params[:state].blank? || states.include?(finding.state)
     end
 
     def include_dismissed?
@@ -162,7 +150,7 @@ module Security
     end
 
     def dismissal_feedback?(finding)
-      return true if Feature.enabled?(:deprecate_vulnerabilities_feedback, pipeline.project) && finding.vulnerability&.dismissed?
+      return true if finding.vulnerability&.dismissed?
 
       if pipeline.project.licensed_feature_available?(:vulnerability_finding_signatures) && !finding.signatures.empty?
         dismissal_feedback_by_finding_signatures(finding)
