@@ -84,7 +84,7 @@ export const mockExternalDestinations = [
     id: 'test_id2',
     destinationUrl: 'https://apiv2.gitlab.com',
     verificationToken: verification[1],
-    eventTypeFilters: ['repository_download_operation', 'update_merge_approval_rule'],
+    eventTypeFilters: ['add_gpg_key', 'user_created'],
     headers: {
       nodes: [makeHeader(), makeHeader()],
     },
@@ -231,33 +231,26 @@ export const mockSvgPath = 'mock/path';
 
 export const mockAuditEventDefinitions = [
   {
-    event_name: 'repository_download_operation',
+    event_name: 'add_gpg_key',
+    feature_category: 'compliance_management',
   },
   {
-    event_name: 'update_merge_approval_rule',
+    event_name: 'user_created',
+    feature_category: 'user_management',
   },
   {
-    event_name: 'create_merge_approval_rule',
+    event_name: 'user_blocked',
+    feature_category: 'user_management',
   },
   {
     event_name: 'project_unarchived',
+    feature_category: 'compliance_management',
   },
 ];
-export const mockRemoveFilterSelect = ['repository_download_operation'];
-export const mockRemoveFilterRemaining = ['update_merge_approval_rule'];
-export const mockAddFilterSelect = [
-  'repository_download_operation',
-  'update_merge_approval_rule',
-  'create_merge_approval_rule',
-];
-export const mockAddFilterRemaining = ['create_merge_approval_rule'];
-
-export const mockStreamFiltersOptions = [
-  { value: 'repository_download_operation', text: 'Repository download operation' },
-  { value: 'update_merge_approval_rule', text: 'Update merge approval rule' },
-  { value: 'create_merge_approval_rule', text: 'Create merge approval rule' },
-  { value: 'project_unarchived', text: 'Project unarchived' },
-];
+export const mockRemoveFilterSelect = ['add_gpg_key'];
+export const mockRemoveFilterRemaining = ['user_created'];
+export const mockAddFilterSelect = ['add_gpg_key', 'user_created', 'user_blocked'];
+export const mockAddFilterRemaining = ['user_blocked'];
 
 export const destinationFilterRemoveMutationPopulator = (errors = []) => ({
   data: {
