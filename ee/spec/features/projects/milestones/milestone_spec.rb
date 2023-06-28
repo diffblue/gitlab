@@ -17,10 +17,7 @@ RSpec.describe 'Milestones on EE', feature_category: :team_planning do
 
   context 'burndown charts' do
     let(:milestone) do
-      create(:milestone,
-             project: project,
-             start_date: Date.yesterday,
-             due_date: Date.tomorrow)
+      create(:milestone, project: project, start_date: Date.yesterday, due_date: Date.tomorrow)
     end
 
     context 'with the milestone charts feature available' do
