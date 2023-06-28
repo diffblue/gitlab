@@ -1,10 +1,7 @@
 <script>
 import {
   GlBadge,
-  GlDisclosureDropdown,
-  GlFormInputGroup,
   GlLink,
-  GlModal,
   GlPopover,
   GlSprintf,
   GlCollapse,
@@ -12,28 +9,19 @@ import {
   GlButton,
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
-import { __ } from '~/locale';
-import { createAlert } from '~/alert';
-import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
-import { AUDIT_STREAMS_NETWORK_ERRORS, STREAM_ITEMS_I18N } from '../../constants';
+import { STREAM_ITEMS_I18N } from '../../constants';
 import StreamDestinationEditor from './stream_destination_editor.vue';
-import StreamDeleteModal from './stream_delete_modal.vue';
 
 export default {
   components: {
-    ClipboardButton,
     GlBadge,
-    GlDisclosureDropdown,
-    GlFormInputGroup,
     GlLink,
-    GlModal,
     GlPopover,
     GlSprintf,
     GlCollapse,
     GlButton,
     GlIcon,
     StreamDestinationEditor,
-    StreamDeleteModal,
   },
   directives: {
     GlTooltip,
@@ -48,44 +36,9 @@ export default {
   data() {
     return {
       isEditing: false,
-      isDeleting: false,
-      markedForDeletion: {},
     };
   },
   computed: {
-    primaryModalAction() {
-      return { text: __('Done') };
-    },
-    actions() {
-      return [
-        {
-          text: __('Edit'),
-          extraAttrs: { 'data-testid': 'edit-btn' },
-          action: () => {
-            this.toggleEditMode();
-          },
-        },
-        {
-          text: this.$options.i18n.VIEW_BUTTON_LABEL,
-          extraAttrs: { 'data-testid': 'view-btn' },
-          action: () => {
-            this.$refs.tokenModal.show();
-          },
-        },
-        {
-          text: __('Delete'),
-          extraAttrs: { 'data-testid': 'delete-btn', class: 'gl-text-red-500!' },
-          action: () => this.markForDeletion(),
-        },
-      ];
-    },
-    verificationTokenClasses() {
-      if (this.isEditing) {
-        return '';
-      }
-
-      return 'gl-mr-3';
-    },
     isItemFiltered() {
       return Boolean(this.item?.eventTypeFilters?.length);
     },
@@ -101,6 +54,9 @@ export default {
       this.toggleEditMode();
       this.$emit('updated', event);
     },
+    onDelete($event) {
+      this.$emit('deleted', $event);
+    },
     onEditorError() {
       this.$emit('error');
     },
@@ -109,33 +65,14 @@ export default {
         ? queryData.externalAuditEventDestinationCreate
         : queryData.group.externalAuditEventDestinationCreate;
     },
-    markForDeletion() {
-      this.markedForDeletion = this.item;
-      this.$refs.deleteModal.show();
-    },
-    onDeleting() {
-      this.isDeleting = true;
-    },
-    onDelete() {
-      this.$emit('deleted');
-      this.isDeleting = false;
-    },
-    onError(error) {
-      createAlert({
-        message: AUDIT_STREAMS_NETWORK_ERRORS.DELETING_ERROR,
-        captureError: true,
-        error,
-      });
-      this.$emit('error');
-    },
   },
-  i18n: { ...AUDIT_STREAMS_NETWORK_ERRORS, ...STREAM_ITEMS_I18N },
+  i18n: STREAM_ITEMS_I18N,
 };
 </script>
 
 <template>
   <li class="list-item py-0">
-    <div class="gl-display-flex gl-align-items-center gl-justify-content-space-between gl-py-5">
+    <div class="gl-display-flex gl-align-items-center gl-justify-content-space-between gl-py-6">
       <gl-button
         variant="link"
         class="gl-text-body! gl-font-weight-bold gl-min-w-0"
@@ -171,31 +108,6 @@ export default {
           {{ $options.i18n.FILTER_BADGE_LABEL }}
         </gl-badge>
       </template>
-      <gl-disclosure-dropdown
-        class="gl-ml-3"
-        icon="ellipsis_v"
-        :loading="isDeleting"
-        :toggle-text="__('Actions')"
-        no-caret
-        text-sr-only
-        :items="actions"
-      />
-      <gl-modal
-        ref="tokenModal"
-        :title="$options.i18n.VERIFICATION_TOKEN_TOOLTIP"
-        modal-id="tokenModal"
-        :action-primary="primaryModalAction"
-      >
-        <gl-sprintf :message="$options.i18n.VERIFICATION_TOKEN_MODAL_CONTENT">
-          <template #link>{{ item.destinationUrl }}</template> </gl-sprintf
-        >:
-
-        <gl-form-input-group readonly :value="item.verificationToken" class="gl-mt-5">
-          <template #append>
-            <clipboard-button :text="item.verificationToken" :title="__('Copy to clipboard')" />
-          </template>
-        </gl-form-input-group>
-      </gl-modal>
     </div>
     <gl-collapse :visible="isEditing">
       <stream-destination-editor
@@ -203,16 +115,10 @@ export default {
         :item="item"
         class="gl-pr-0 gl-pl-6 gl-pb-5"
         @updated="onUpdated"
+        @deleted="onDelete"
         @error="onEditorError"
         @cancel="toggleEditMode"
       />
     </gl-collapse>
-    <stream-delete-modal
-      ref="deleteModal"
-      :item="markedForDeletion"
-      @deleting="onDeleting"
-      @delete="onDelete"
-      @error="onError"
-    />
   </li>
 </template>

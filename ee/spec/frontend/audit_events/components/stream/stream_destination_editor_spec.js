@@ -10,6 +10,8 @@ import {
 } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { sprintf } from '~/locale';
+import { createAlert } from '~/alert';
+import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
@@ -31,6 +33,7 @@ import externalInstanceAuditEventDestinationHeaderUpdate from 'ee/audit_events/g
 import externalInstanceAuditEventDestinationHeaderDelete from 'ee/audit_events/graphql/mutations/delete_instance_external_destination_header.mutation.graphql';
 import StreamDestinationEditor from 'ee/audit_events/components/stream/stream_destination_editor.vue';
 import StreamFilters from 'ee/audit_events/components/stream/stream_filters.vue';
+import StreamDeleteModal from 'ee/audit_events/components/stream/stream_delete_modal.vue';
 import { AUDIT_STREAMS_NETWORK_ERRORS, ADD_STREAM_EDITOR_I18N } from 'ee/audit_events/constants';
 import {
   destinationCreateMutationPopulator,
@@ -40,6 +43,7 @@ import {
   destinationHeaderDeleteMutationPopulator,
   groupPath,
   mockExternalDestinations,
+  mockInstanceExternalDestinations,
   mockExternalDestinationHeader,
   destinationFilterRemoveMutationPopulator,
   destinationFilterUpdateMutationPopulator,
@@ -49,7 +53,6 @@ import {
   mockAddFilterSelect,
   mockAddFilterRemaining,
   instanceGroupPath,
-  mockInstanceExternalDestinations,
   mockInstanceExternalDestinationHeader,
   destinationInstanceCreateMutationPopulator,
   destinationInstanceDeleteMutationPopulator,
@@ -58,6 +61,7 @@ import {
   destinationInstanceHeaderDeleteMutationPopulator,
 } from '../../mock_data';
 
+jest.mock('~/alert');
 Vue.use(VueApollo);
 
 describe('StreamDestinationEditor', () => {
@@ -65,6 +69,7 @@ describe('StreamDestinationEditor', () => {
   let groupPathProvide = groupPath;
 
   const maxHeaders = 3;
+  const defaultDeleteSpy = jest.fn().mockResolvedValue(destinationDeleteMutationPopulator());
 
   const createComponent = ({
     mountFn = shallowMountExtended,
@@ -78,6 +83,7 @@ describe('StreamDestinationEditor', () => {
   } = {}) => {
     const mockApollo = createMockApollo(apolloHandlers);
     wrapper = mountFn(StreamDestinationEditor, {
+      attachTo: document.body,
       provide: {
         groupPath: groupPathProvide,
         maxHeaders,
@@ -98,9 +104,16 @@ describe('StreamDestinationEditor', () => {
   const findAddHeaderBtn = () => wrapper.findByTestId('add-header-row-button');
   const findAddStreamBtn = () => wrapper.findByTestId('stream-destination-add-button');
   const findCancelStreamBtn = () => wrapper.findByTestId('stream-destination-cancel-button');
+  const findDeleteBtn = () => wrapper.findByTestId('stream-destination-delete-button');
+  const findDeleteModal = () => wrapper.findComponent(StreamDeleteModal);
 
   const findDestinationUrlFormGroup = () => wrapper.findByTestId('destination-url-form-group');
   const findDestinationUrl = () => wrapper.findByTestId('destination-url');
+
+  const findVerificationTokenFormGroup = () =>
+    wrapper.findByTestId('verification-token-form-group');
+  const findVerificationToken = () => wrapper.findByTestId('verification-token');
+  const findClipboardButton = () => wrapper.findComponent(ClipboardButton);
 
   const findFilteringHeader = () => wrapper.findByTestId('filtering-header');
   const findAccordion = () => wrapper.findComponent(GlAccordion);
@@ -125,6 +138,10 @@ describe('StreamDestinationEditor', () => {
     await setHeaderValueInput(trIdx, value);
   };
 
+  afterEach(() => {
+    createAlert.mockClear();
+  });
+
   describe('Group StreamDestinationEditor', () => {
     describe('when initialized', () => {
       describe('destinations URL', () => {
@@ -144,6 +161,12 @@ describe('StreamDestinationEditor', () => {
             ADD_STREAM_EDITOR_I18N.DESTINATION_URL_PLACEHOLDER,
           );
         });
+      });
+
+      it('does not render verification token', () => {
+        createComponent();
+
+        expect(findVerificationTokenFormGroup().exists()).toBe(false);
       });
 
       describe('HTTP headers', () => {
@@ -168,6 +191,12 @@ describe('StreamDestinationEditor', () => {
           expect(findHeaderCheckbox(0).find('input').attributes('disabled')).toBeDefined();
           expect(findHeaderDeleteBtn(0).exists()).toBe(true);
         });
+      });
+
+      it('does not render delete button', () => {
+        createComponent();
+
+        expect(findDeleteBtn().exists()).toBe(false);
       });
     });
 
@@ -305,10 +334,7 @@ describe('StreamDestinationEditor', () => {
                 .mockResolvedValueOnce(destinationHeaderCreateMutationPopulator())
                 .mockResolvedValue(destinationHeaderCreateMutationPopulator([errorMsg])),
             ],
-            [
-              deleteExternalDestination,
-              jest.fn().mockResolvedValue(destinationDeleteMutationPopulator()),
-            ],
+            [deleteExternalDestination, defaultDeleteSpy],
           ],
         });
 
@@ -342,10 +368,7 @@ describe('StreamDestinationEditor', () => {
                 .mockResolvedValueOnce(destinationHeaderCreateMutationPopulator())
                 .mockRejectedValue(sentryError),
             ],
-            [
-              deleteExternalDestination,
-              jest.fn().mockResolvedValue(destinationDeleteMutationPopulator()),
-            ],
+            [deleteExternalDestination, defaultDeleteSpy],
           ],
         });
 
@@ -455,6 +478,11 @@ describe('StreamDestinationEditor', () => {
           createComponent({ mountFn: mountExtended, props: { item } });
         });
 
+        it('renders the delete modal', () => {
+          expect(findDeleteModal().exists()).toBe(true);
+          expect(findDeleteModal().props('item')).toBe(item);
+        });
+
         it('should not render the destinations warning', () => {
           expect(findWarningMessage().exists()).toBe(false);
         });
@@ -466,11 +494,28 @@ describe('StreamDestinationEditor', () => {
           expect(findDestinationUrl().attributes('disabled')).toBeDefined();
         });
 
+        it('renders verification token and clipboard button', () => {
+          expect(findVerificationTokenFormGroup().classes('gl-max-w-34')).toBe(true);
+          expect(findVerificationToken().attributes('readonly')).toBeDefined();
+          expect(findVerificationToken().props('value')).toBe(item.verificationToken);
+          expect(findClipboardButton().props('text')).toBe(item.verificationToken);
+          expect(findClipboardButton().props('title')).toBe('Copy to clipboard');
+        });
+
         it('changes the save button text', () => {
           expect(findAddStreamBtn().attributes('name')).toBe(
             ADD_STREAM_EDITOR_I18N.SAVE_BUTTON_NAME,
           );
           expect(findAddStreamBtn().text()).toBe(ADD_STREAM_EDITOR_I18N.SAVE_BUTTON_TEXT);
+        });
+
+        it('renders the delete button', () => {
+          expect(findDeleteBtn().attributes('name')).toBe(
+            ADD_STREAM_EDITOR_I18N.DELETE_BUTTON_TEXT,
+          );
+          expect(findDeleteBtn().classes('gl-ml-auto')).toBe(true);
+          expect(findDeleteBtn().props('variant')).toBe('danger');
+          expect(findDeleteBtn().text()).toBe(ADD_STREAM_EDITOR_I18N.DELETE_BUTTON_TEXT);
         });
       });
 
@@ -593,6 +638,36 @@ describe('StreamDestinationEditor', () => {
           expect(sentryCaptureExceptionSpy).toHaveBeenCalledWith(sentryError);
           expect(wrapper.emitted('error')).toBeDefined();
           expect(wrapper.emitted('updated')).toBeUndefined();
+        });
+      });
+
+      describe('deleting', () => {
+        beforeEach(() => {
+          createComponent({ mountFn: mountExtended, props: { item } });
+        });
+
+        it('should emit deleted on success operation', async () => {
+          const deleteButton = findDeleteBtn();
+          await deleteButton.trigger('click');
+          await findDeleteModal().vm.$emit('deleting');
+
+          expect(deleteButton.props('loading')).toBe(true);
+
+          await findDeleteModal().vm.$emit('delete');
+
+          expect(deleteButton.props('loading')).toBe(false);
+          expect(wrapper.emitted('deleted')).toEqual([[item.id]]);
+        });
+
+        it('shows the alert for the error', () => {
+          const errorMsg = 'An error occurred';
+          findDeleteModal().vm.$emit('error', errorMsg);
+
+          expect(createAlert).toHaveBeenCalledWith({
+            message: AUDIT_STREAMS_NETWORK_ERRORS.DELETING_ERROR,
+            captureError: true,
+            error: errorMsg,
+          });
         });
       });
     });
@@ -720,6 +795,16 @@ describe('StreamDestinationEditor', () => {
           expect(findDestinationUrl().attributes('placeholder')).toBe(
             ADD_STREAM_EDITOR_I18N.DESTINATION_URL_PLACEHOLDER,
           );
+        });
+
+        it('does not render verification token', () => {
+          expect(findVerificationTokenFormGroup().exists()).toBe(false);
+        });
+
+        it('does not render delete button', () => {
+          createComponent();
+
+          expect(findDeleteBtn().exists()).toBe(false);
         });
       });
     });
@@ -1017,6 +1102,11 @@ describe('StreamDestinationEditor', () => {
           createComponent({ mountFn: mountExtended, props: { item } });
         });
 
+        it('renders the delete modal', () => {
+          expect(findDeleteModal().exists()).toBe(true);
+          expect(findDeleteModal().props('item')).toBe(item);
+        });
+
         it('should not render the destinations warning', () => {
           expect(findWarningMessage().exists()).toBe(false);
         });
@@ -1026,6 +1116,14 @@ describe('StreamDestinationEditor', () => {
             mockInstanceExternalDestinations[0].destinationUrl,
           );
           expect(findDestinationUrl().attributes('disabled')).toBeDefined();
+        });
+
+        it('renders verification token and clipboard button', () => {
+          expect(findVerificationTokenFormGroup().classes('gl-max-w-34')).toBe(true);
+          expect(findVerificationToken().attributes('readonly')).toBeDefined();
+          expect(findVerificationToken().props('value')).toBe(item.verificationToken);
+          expect(findClipboardButton().props('text')).toBe(item.verificationToken);
+          expect(findClipboardButton().props('title')).toBe('Copy to clipboard');
         });
 
         it('changes the save button text', () => {
@@ -1161,6 +1259,36 @@ describe('StreamDestinationEditor', () => {
           expect(sentryCaptureExceptionSpy).toHaveBeenCalledWith(sentryError);
           expect(wrapper.emitted('error')).toBeDefined();
           expect(wrapper.emitted('updated')).toBeUndefined();
+        });
+      });
+
+      describe('deleting', () => {
+        beforeEach(() => {
+          createComponent({ mountFn: mountExtended, props: { item } });
+        });
+
+        it('should emit deleted on success operation', async () => {
+          const deleteButton = findDeleteBtn();
+          await deleteButton.trigger('click');
+          await findDeleteModal().vm.$emit('deleting');
+
+          expect(deleteButton.props('loading')).toBe(true);
+
+          await findDeleteModal().vm.$emit('delete');
+
+          expect(deleteButton.props('loading')).toBe(false);
+          expect(wrapper.emitted('deleted')).toEqual([[item.id]]);
+        });
+
+        it('shows the alert for the error', () => {
+          const errorMsg = 'An error occurred';
+          findDeleteModal().vm.$emit('error', errorMsg);
+
+          expect(createAlert).toHaveBeenCalledWith({
+            message: AUDIT_STREAMS_NETWORK_ERRORS.DELETING_ERROR,
+            captureError: true,
+            error: errorMsg,
+          });
         });
       });
     });
