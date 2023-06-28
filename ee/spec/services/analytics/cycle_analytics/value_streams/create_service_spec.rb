@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Analytics::CycleAnalytics::ValueStreams::CreateService do
+RSpec.describe Analytics::CycleAnalytics::ValueStreams::CreateService, feature_category: :value_stream_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:group, refind: true) { create(:group) }
 
@@ -65,6 +65,17 @@ RSpec.describe Analytics::CycleAnalytics::ValueStreams::CreateService do
 
           errors = subject.payload[:errors].details
           expect(errors[:'stages[0].name']).to eq([{ error: :blank }])
+        end
+      end
+
+      context 'when value stream is invalid' do
+        it 'returns error message' do
+          stub_const('Analytics::CycleAnalytics::ValueStream::MAX_VALUE_STREAMS_PER_NAMESPACE', 0)
+
+          expect(subject).to be_error
+          expect(subject.payload[:errors].details).to eq(
+            { namespace: [{ error: _('Maximum number of value streams per namespace exceeded') }] }
+          )
         end
       end
 

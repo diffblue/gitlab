@@ -24,7 +24,7 @@ module Analytics
           else
             # workaround to properly index nested stage errors
             # More info: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/51623#note_490919557
-            value_stream.valid?(:context_to_validate_all_stages)
+            value_stream.valid?(:create)
             ServiceResponse.error(message: 'Invalid parameters', payload: { errors: value_stream.errors, value_stream: value_stream }, http_status: :unprocessable_entity)
           end
         end
