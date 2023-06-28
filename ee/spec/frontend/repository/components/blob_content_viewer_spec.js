@@ -30,6 +30,7 @@ const mockAxios = new MockAdapter(axios);
 let wrapper;
 let mockResolver;
 
+Vue.use(Vuex);
 Vue.use(VueApollo);
 
 const explainCodeSubscriptionResponse = {
