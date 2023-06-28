@@ -43,8 +43,11 @@ module Security
 
       return if license_approval_rules.empty?
 
-      denied_rules = license_approval_rules.reject { |rule| violates_policy?(merge_request, rule) }
-      ApprovalMergeRequestRule.remove_required_approved(denied_rules)
+      violated_rules, unviolated_rules = license_approval_rules.partition do |rule|
+        violates_policy?(merge_request, rule)
+      end
+      ApprovalMergeRequestRule.remove_required_approved(unviolated_rules)
+      generate_policy_bot_comment(merge_request, violated_rules.any?)
     end
 
     ## Checks if a policy rule violates the following conditions:
@@ -135,5 +138,15 @@ module Security
       report.license_names.concat(report.licenses.filter_map(&:id)).compact.uniq
     end
     strong_memoize_attr :license_names_from_report
+
+    def generate_policy_bot_comment(merge_request, violated_policy)
+      return if Feature.disabled?(:security_policy_approval_notification, pipeline.project)
+
+      Security::GeneratePolicyViolationCommentWorker.perform_async(
+        merge_request.id,
+        { 'report_type' => Security::ScanResultPolicies::PolicyViolationComment::REPORT_TYPES[:license_scanning],
+          'violated_policy' => violated_policy }
+      )
+    end
   end
 end
