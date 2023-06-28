@@ -3,6 +3,9 @@
 module RemoteDevelopment
   module AgentConfig
     class UpdateService
+      # @param [Clusters::Agent] agent
+      # @param [Hash] config
+      # @return [Hash, FalseClass]
       def execute(agent:, config:)
         # NOTE: We rely on the authentication from the internal kubernetes endpoint and kas so we don't do any
         #       additional authorization checks here.
@@ -37,6 +40,9 @@ module RemoteDevelopment
 
         return false if error
 
+        # NOTE: This noinspection will be removed soon with a refactoring to the UpdateProcessor return type.
+        #       For now it is just to get a clean RubyMine "Inspect Code" run for the Remote Development feature.
+        # noinspection RubyScope
         payload
       end
     end

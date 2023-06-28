@@ -27,11 +27,15 @@ module RemoteDevelopment
         # We must ensure that devfiles are not created with a schema version different than the required version
         REQUIRED_DEVFILE_SCHEMA_VERSION = '2.2.0'
 
+        # @param [Hash] devfile
+        # @return [void]
         def pre_flatten_validate(devfile:)
           validate_schema_version(devfile: devfile)
           validate_parent(devfile: devfile)
         end
 
+        # @param [Hash] flattened_devfile
+        # @return [void]
         def post_flatten_validate(flattened_devfile:)
           validate_projects(flattened_devfile: flattened_devfile)
           validate_components(
@@ -46,6 +50,8 @@ module RemoteDevelopment
 
         private
 
+        # @param [Hash] devfile
+        # @return [void]
         def validate_schema_version(devfile:)
           minimum_schema_version = Gem::Version.new(REQUIRED_DEVFILE_SCHEMA_VERSION)
           devfile_schema_version_string = devfile.fetch('schemaVersion')
@@ -63,16 +69,22 @@ module RemoteDevelopment
             required_version: REQUIRED_DEVFILE_SCHEMA_VERSION)
         end
 
+        # @param [Hash] devfile
+        # @return [void]
         def validate_parent(devfile:)
           arg_err!(_("Inheriting from 'parent' is not yet supported")) if devfile['parent']
         end
 
+        # @param [Hash] flattened_devfile
+        # @return [void]
         def validate_projects(flattened_devfile:)
           arg_err!(_("'starterProjects' is not yet supported")) if flattened_devfile['starterProjects']
 
           arg_err!(_("'projects' is not yet supported")) if flattened_devfile['projects']
         end
 
+        # @param [Hash] flattened_devfile
+        # @return [void]
         def validate_components(flattened_devfile:)
           components = flattened_devfile['components']
 
@@ -89,6 +101,10 @@ module RemoteDevelopment
               inject_editor_components.pluck('name')) # rubocop:disable CodeReuse/ActiveRecord - this pluck isn't from ActiveRecord, it's from ActiveSupport
           end
 
+          # NOTE: This noinspection will be removed soon with a refactoring to eliminate arg_err!, and directly return
+          #       within the guard clause. For now it is just to get a clean RubyMine "Inspect Code" run for the
+          #       Remote Development feature.
+          # noinspection RubyNilAnalysis
           arg_err!(_("Components must have a 'name'")) unless components.all? { |component| component['name'].present? }
 
           # Ensure no component name starts with restricted_prefix
@@ -111,6 +127,8 @@ module RemoteDevelopment
           end
         end
 
+        # @param [Hash] component
+        # @return [void]
         def validate_container(component:)
           container = component['container']
           return unless container
@@ -124,6 +142,9 @@ module RemoteDevelopment
           validate_endpoints(component_name: component_name, container: container)
         end
 
+        # @param [Hash] component_name
+        # @param [Hash] container
+        # @return [void]
         def validate_endpoints(component_name:, container:)
           return unless container['endpoints']
 
@@ -139,6 +160,8 @@ module RemoteDevelopment
           end
         end
 
+        # @param [Hash] flattened_devfile
+        # @return [void]
         def validate_commands(flattened_devfile:)
           commands = flattened_devfile['commands']
           return if commands.nil?
@@ -170,6 +193,8 @@ module RemoteDevelopment
           end
         end
 
+        # @param [Hash] flattened_devfile
+        # @return [void]
         def validate_events(flattened_devfile:)
           events = flattened_devfile['events']
           return if events.nil?
@@ -192,6 +217,8 @@ module RemoteDevelopment
           end
         end
 
+        # @param [Hash] flattened_devfile
+        # @return [void]
         def validate_variables(flattened_devfile:)
           variables = flattened_devfile['variables']
           return if variables.nil?
@@ -211,6 +238,10 @@ module RemoteDevelopment
           end
         end
 
+        # @param [String] msg
+        # @param [Object] format_args
+        # @return [String]
+        # @raise [ArgumentError]
         def arg_err!(msg, *format_args)
           msg = format(msg, *format_args) unless format_args.empty?
           raise ArgumentError, msg

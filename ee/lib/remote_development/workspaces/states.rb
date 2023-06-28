@@ -36,12 +36,16 @@ module RemoteDevelopment
         UNKNOWN # NOTE: This is used if agentk couldn't determine the state, e.g. if informer does not provide the phase
       ].freeze
 
-      def valid_desired_state?(string)
-        VALID_DESIRED_STATES.include?(string)
+      # @param [String] state
+      # @return [TrueClass, FalseClass]
+      def valid_desired_state?(state)
+        VALID_DESIRED_STATES.include?(state)
       end
 
-      def valid_actual_state?(string)
-        VALID_ACTUAL_STATES.include?(string)
+      # @param [String] state
+      # @return [TrueClass, FalseClass]
+      def valid_actual_state?(state)
+        VALID_ACTUAL_STATES.include?(state)
       end
     end
   end

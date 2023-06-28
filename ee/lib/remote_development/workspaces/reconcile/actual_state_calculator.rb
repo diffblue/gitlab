@@ -34,6 +34,9 @@ module RemoteDevelopment
         ].freeze
 
         # rubocop: disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+        # @param [Hash] latest_k8s_deployment_info
+        # @param [String (frozen)] termination_progress
+        # @return [String (frozen)]
         def calculate_actual_state(latest_k8s_deployment_info:, termination_progress: nil)
           return TERMINATING if termination_progress == TERMINATION_PROGRESS_TERMINATING
           return TERMINATED if termination_progress == TERMINATION_PROGRESS_TERMINATED

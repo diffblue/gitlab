@@ -6,7 +6,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::DevfileValidator, feature_
   include_context 'with remote development shared fixtures'
 
   let(:devfile_name) { 'example.devfile.yaml' }
-  let(:devfile) { YAML.safe_load(read_devfile(devfile_name)) }
+  let(:devfile) { YAML.safe_load(read_devfile(devfile_name)).to_h }
 
   describe '#validate' do
     subject do
