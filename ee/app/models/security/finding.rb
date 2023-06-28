@@ -103,16 +103,6 @@ module Security
       )
     end
 
-    scope :undismissed, -> do
-      where(
-        'NOT EXISTS (?)',
-        Scan.select(1)
-          .has_dismissal_feedback
-          .where('security_scans.id = security_findings.scan_id')
-          .where('vulnerability_feedback.finding_uuid = security_findings.uuid')
-      )
-    end
-
     scope :ordered, -> { order(severity: :desc, id: :asc) }
     scope :with_pipeline_entities, -> { preload(build: [:job_artifacts, :pipeline]) }
     scope :with_scan, -> { preload(:scan) }

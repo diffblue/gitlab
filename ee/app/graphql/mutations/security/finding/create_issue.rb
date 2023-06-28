@@ -23,10 +23,6 @@ module Mutations
 
         def resolve(uuid:, project:)
           project = authorized_find!(id: project)
-          unless ::Feature.enabled?(:deprecate_vulnerabilities_feedback, project)
-            return { errors: ['Feature flag disabled'] }
-          end
-
           params = { security_finding_uuid: uuid }
           issue_response = ::Vulnerabilities::SecurityFinding::CreateIssueService.new(project: project,
                                                                                       current_user: current_user,

@@ -98,41 +98,5 @@ RSpec.describe Vulnerabilities::FindingSerializer, feature_category: :vulnerabil
     end
   end
 
-  context 'when deprecate_vulnerabilities_feedback is enabled' do
-    include_examples '#represent'
-
-    describe "#represent" do
-      context 'when preload is requested' do
-        let(:opts) { { preload: true } }
-        let(:resource) { create(:vulnerabilities_finding, project: project) }
-
-        it 'vulnerability feedbacks are not preloaded' do
-          expect(Gitlab::Vulnerabilities::FindingsPreloader).not_to receive(:preload!)
-
-          subject
-        end
-      end
-    end
-  end
-
-  context 'when deprecate_vulnerabilities_feedback is disabled' do
-    before do
-      stub_feature_flags(deprecate_vulnerabilities_feedback: false)
-    end
-
-    include_examples '#represent'
-
-    describe "#represent" do
-      context 'when preload is requested' do
-        let(:opts) { { preload: true } }
-        let(:resource) { create(:vulnerabilities_finding, project: project) }
-
-        it 'vulnerability feedbacks are preloaded' do
-          expect(Gitlab::Vulnerabilities::FindingsPreloader).to receive(:preload!).with(resource)
-
-          subject
-        end
-      end
-    end
-  end
+  include_examples '#represent'
 end

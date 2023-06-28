@@ -42,76 +42,60 @@ RSpec.describe 'Creating an Issue from a Security::Finding', feature_category: :
     )
   end
 
-  context 'when deprecate_vulnerabilities_feedback feature flag is disabled' do
-    before do
-      project.add_developer(current_user)
-      stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+  context 'when the user does not have permission' do
+    it_behaves_like 'a mutation that returns a top-level access error'
+
+    it 'does not create a new vulnerability' do
+      expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(Vulnerability, :count)
     end
 
-    it 'returns a successful response with a blank issue' do
-      post_graphql_mutation(mutation, current_user: current_user)
+    it 'does not create a new issue' do
+      expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(Issue, :count)
+    end
 
-      expect(response).to have_gitlab_http_status(:success)
-      expect(graphql_mutation_response(mutation_name)['errors']).to match_array(['Feature flag disabled'])
+    it 'does not create a new issue link' do
+      expect do
+        post_graphql_mutation(mutation, current_user: current_user)
+      end.not_to change(Vulnerabilities::IssueLink, :count)
     end
   end
 
-  context 'when deprecate_vulnerabilities_feedback feature flag is enabled' do
-    context 'when the user does not have permission' do
-      it_behaves_like 'a mutation that returns a top-level access error'
+  context 'when the user has permission' do
+    before do
+      project.add_developer(current_user)
+    end
 
-      it 'does not create a new vulnerability' do
-        expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(Vulnerability, :count)
+    context 'with valid parameters' do
+      it 'returns a successful response' do
+        post_graphql_mutation(mutation, current_user: current_user)
+
+        expect(response).to have_gitlab_http_status(:success)
+        expect(graphql_mutation_response(mutation_name)['errors']).to be_empty
       end
 
-      it 'does not create a new issue' do
-        expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(Issue, :count)
+      it 'does create a new vulnerability' do
+        expect { post_graphql_mutation(mutation, current_user: current_user) }.to change(Vulnerability, :count).by(1)
       end
 
-      it 'does not create a new issue link' do
+      it 'does create a new issue' do
+        expect { post_graphql_mutation(mutation, current_user: current_user) }.to change(Issue, :count).by(1)
+      end
+
+      it 'does create a new issue link' do
         expect do
           post_graphql_mutation(mutation, current_user: current_user)
-        end.not_to change(Vulnerabilities::IssueLink, :count)
+        end.to change(Vulnerabilities::IssueLink, :count).by(1)
       end
     end
 
-    context 'when the user has permission' do
+    context 'when security_dashboard is disabled' do
       before do
-        project.add_developer(current_user)
+        stub_licensed_features(security_dashboard: false)
       end
 
-      context 'with valid parameters' do
-        it 'returns a successful response' do
-          post_graphql_mutation(mutation, current_user: current_user)
-
-          expect(response).to have_gitlab_http_status(:success)
-          expect(graphql_mutation_response(mutation_name)['errors']).to be_empty
-        end
-
-        it 'does create a new vulnerability' do
-          expect { post_graphql_mutation(mutation, current_user: current_user) }.to change(Vulnerability, :count).by(1)
-        end
-
-        it 'does create a new issue' do
-          expect { post_graphql_mutation(mutation, current_user: current_user) }.to change(Issue, :count).by(1)
-        end
-
-        it 'does create a new issue link' do
-          expect do
-            post_graphql_mutation(mutation, current_user: current_user)
-          end.to change(Vulnerabilities::IssueLink, :count).by(1)
-        end
-      end
-
-      context 'when security_dashboard is disabled' do
-        before do
-          stub_licensed_features(security_dashboard: false)
-        end
-
-        it_behaves_like 'a mutation that returns top-level errors',
-                        errors: ['The resource that you are attempting to access does not '\
-                 'exist or you don\'t have permission to perform this action']
-      end
+      it_behaves_like 'a mutation that returns top-level errors',
+                      errors: ['The resource that you are attempting to access does not '\
+               'exist or you don\'t have permission to perform this action']
     end
   end
 

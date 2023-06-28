@@ -7,7 +7,6 @@ module Projects
 
       before_action do
         push_frontend_feature_flag(:create_vulnerability_jira_issue_via_graphql, @project)
-        push_frontend_feature_flag(:deprecate_vulnerabilities_feedback, @project)
         push_frontend_feature_flag(:dismissal_reason, @project)
         push_frontend_feature_flag(:openai_experimentation, @project)
       end

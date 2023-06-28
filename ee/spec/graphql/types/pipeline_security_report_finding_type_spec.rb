@@ -87,9 +87,6 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
 
   before do
     stub_licensed_features(sast: true, dependency_scanning: true, security_dashboard: true, sast_fp_reduction: true)
-
-    stub_feature_flags(deprecate_vulnerabilities_feedback: false)
-
     project.add_developer(user)
   end
 

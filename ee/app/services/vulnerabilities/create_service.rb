@@ -70,19 +70,11 @@ module Vulnerabilities
     end
 
     def determine_dismissed_at
-      if Feature.enabled?(:deprecate_vulnerabilities_feedback, @project)
-        @state&.to_sym == :dismissed ? Time.current : nil
-      else
-        existing_dismissal_feedback&.created_at
-      end
+      @state&.to_sym == :dismissed ? Time.current : nil
     end
 
     def determine_dismissed_by_id
-      if Feature.enabled?(:deprecate_vulnerabilities_feedback, @project)
-        @state&.to_sym == :dismissed ? @author.id : nil
-      else
-        existing_dismissal_feedback&.author_id
-      end
+      @state&.to_sym == :dismissed ? @author.id : nil
     end
 
     def create_state_transition_if_needed(vulnerability, from_state)
@@ -104,10 +96,6 @@ module Vulnerabilities
 
     def create_system_note(vulnerability)
       SystemNoteService.change_vulnerability_state(vulnerability, @author)
-    end
-
-    def existing_dismissal_feedback
-      strong_memoize(:existing_dismissal_feedback) { finding.dismissal_feedback }
     end
 
     def finding

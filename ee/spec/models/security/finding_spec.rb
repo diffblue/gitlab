@@ -209,34 +209,6 @@ RSpec.describe Security::Finding, feature_category: :vulnerability_management do
     it { is_expected.to match_array(expected_findings) }
   end
 
-  describe '.undismissed' do
-    let(:expected_findings) { [finding_2] }
-
-    subject { described_class.undismissed }
-
-    before do
-      finding_2.update! scan: scan_1
-
-      create(
-        :vulnerability_feedback,
-        :dismissal,
-        project: scan_1.project,
-        category: scan_1.scan_type,
-        finding_uuid: finding_1.uuid
-      )
-
-      create(
-        :vulnerability_feedback,
-        :dismissal,
-        project: scan_2.project,
-        category: scan_2.scan_type,
-        finding_uuid: finding_2.uuid
-      )
-    end
-
-    it { is_expected.to match_array(expected_findings) }
-  end
-
   describe '.ordered' do
     let_it_be(:finding_3) { create(:security_finding, severity: :critical) }
     let_it_be(:finding_4) { create(:security_finding, severity: :critical) }
