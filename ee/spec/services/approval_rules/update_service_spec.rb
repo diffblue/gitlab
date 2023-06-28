@@ -287,12 +287,30 @@ RSpec.describe ApprovalRules::UpdateService do
           end
         end
 
-        context 'when rule update operation fails' do
-          before do
-            allow(approval_rule).to receive(:update).and_return(false)
+        context 'when rule update operation fails', :request_store do
+          context 'when user is added to approval group' do
+            it 'does not log any audit event' do
+              expect do
+                described_class.new(approval_rule, user,
+                  user_ids: [approver.id, new_approver.id],
+                  approvals_required: ApprovalRuleLike::APPROVALS_REQUIRED_MAX + 1).execute
+              end.not_to change { AuditEvent.count }
+            end
+          end
+
+          context 'when user is removed from approval group' do
+            it 'does not log any audit event' do
+              expect do
+                described_class.new(approval_rule, user,
+                  user_ids: [],
+                  approvals_required: ApprovalRuleLike::APPROVALS_REQUIRED_MAX + 1).execute
+              end.not_to change { AuditEvent.count }
+            end
           end
 
           it 'does not log any audit event' do
+            allow(approval_rule).to receive(:update).and_return(false)
+
             expect do
               described_class.new(approval_rule, user, approvals_required: 1).execute
             end.not_to change { AuditEvent.count }

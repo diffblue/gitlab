@@ -25,3 +25,17 @@ RSpec.shared_context 'audit event queue' do
     end
   end
 end
+
+RSpec.shared_context 'invalid record creates no audit event' do
+  before do
+    allow(::Gitlab::Audit::EventQueue).to receive(:active?).and_return(true)
+  end
+
+  context 'when record is invalid' do
+    it 'does not add message to audit event queue' do
+      invalid_action
+
+      expect(::Gitlab::Audit::EventQueue.current).to be_empty
+    end
+  end
+end
