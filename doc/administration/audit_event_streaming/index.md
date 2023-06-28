@@ -92,7 +92,7 @@ To list the streaming destinations for a top-level group:
 1. On the left sidebar, at the top, select **Search GitLab** (**{search}**) to find your group.
 1. Select **Secure > Audit events**.
 1. On the main area, select **Streams** tab.
-1. To the right of the item, select **Edit** (**{pencil}**) to see all the custom HTTP headers.
+1. Select the stream URL to expand it and see all the custom HTTP headers.
 
 ### For instance streaming destinations
 
@@ -128,7 +128,7 @@ To update a streaming destination's custom HTTP headers:
 1. On the left sidebar, at the top, select **Search GitLab** (**{search}**) to find your group.
 1. Select **Secure > Audit events**.
 1. On the main area, select **Streams** tab.
-1. To the right of the item, select **Edit** (**{pencil}**).
+1. Select the stream URL to expand.
 1. Locate the **Custom HTTP headers** table.
 1. Locate the header that you wish to update.
 1. Ignore the **Active** checkbox because it isn't functional. To track progress on adding functionality to the
@@ -179,14 +179,16 @@ To delete a streaming destination:
 1. On the left sidebar, at the top, select **Search GitLab** (**{search}**) to find your group.
 1. Select **Secure > Audit events**.
 1. On the main area, select the **Streams** tab.
-1. To the right of the item, select **Delete** (**{remove}**).
+1. Select the stream URL to expand.
+1. Select **Delete destination**.
+1. Confirm by selecting **Delete destination** in the modal.
 
 To delete only the custom HTTP headers for a streaming destination:
 
 1. On the left sidebar, at the top, select **Search GitLab** (**{search}**) to find your group.
 1. Select **Secure > Audit events**.
 1. On the main area, select the **Streams** tab.
-1. To the right of the item, **Edit** (**{pencil}**).
+1. Select the stream URL to expand.
 1. Locate the **Custom HTTP headers** table.
 1. Locate the header that you wish to remove.
 1. To the right of the header, select **Delete** (**{remove}**).
@@ -210,7 +212,9 @@ To delete the streaming destinations for an instance:
 1. Select **Admin Area**.
 1. On the left sidebar, select **Monitoring > Audit Events**.
 1. On the main area, select the **Streams** tab.
-1. To the right of the item, select **Delete** (**{remove}**).
+1. Select the stream URL to expand.
+1. Select **Delete destination**.
+1. Confirm by selecting **Delete destination** in the modal.
 
 To delete only the custom HTTP headers for a streaming destination:
 
@@ -247,7 +251,8 @@ To list streaming destinations and see the verification tokens:
 1. On the left sidebar, at the top, select **Search GitLab** (**{search}**) to find your group.
 1. Select **Secure > Audit events**.
 1. On the main area, select the **Streams**.
-1. View the verification token on the right side of each item.
+1. Select the stream URL to expand.
+1. Locate the **Verification token** input.
 
 ### Instance streaming destinations
 
@@ -283,7 +288,7 @@ To update a streaming destination's event filters:
 1. On the left sidebar, at the top, select **Search GitLab** (**{search}**) to find your group.
 1. Select **Secure > Audit events**.
 1. On the main area, select the **Streams** tab.
-1. To the right of the item, select **Edit** (**{pencil}**).
+1. Select the stream URL to expand.
 1. Select **Filter by stream event**.
 1. Select the dropdown list and select or clear the required event types.
 1. Select **Save** to update the event filters.

@@ -16,6 +16,8 @@ import {
 import { isEmpty, isEqual } from 'lodash';
 import * as Sentry from '@sentry/browser';
 import { GlTooltipDirective as GlTooltip } from '@gitlab/ui/dist/directives/tooltip';
+import { createAlert } from '~/alert';
+import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import externalAuditEventDestinationCreate from '../../graphql/mutations/create_external_destination.mutation.graphql';
 import deleteExternalDestination from '../../graphql/mutations/delete_external_destination.mutation.graphql';
 import externalAuditEventDestinationHeaderCreate from '../../graphql/mutations/create_external_destination_header.mutation.graphql';
@@ -43,6 +45,7 @@ import {
 } from '../../graphql/cache_update';
 import { mapAllMutationErrors, mapItemHeadersToFormData } from '../../utils';
 import StreamFilters from './stream_filters.vue';
+import StreamDeleteModal from './stream_delete_modal.vue';
 
 const { CREATING_ERROR, UPDATING_ERROR } = AUDIT_STREAMS_NETWORK_ERRORS;
 
@@ -65,6 +68,8 @@ export default {
     GlSprintf,
     GlTableLite,
     StreamFilters,
+    StreamDeleteModal,
+    ClipboardButton,
   },
   directives: {
     GlTooltip,
@@ -172,6 +177,22 @@ export default {
     this.filters = this.item.eventTypeFilters || [];
   },
   methods: {
+    onDeleting() {
+      this.loading = true;
+    },
+    onDelete() {
+      this.$emit('deleted', this.item.id);
+      this.loading = false;
+    },
+    onError(error) {
+      this.loading = false;
+      createAlert({
+        message: AUDIT_STREAMS_NETWORK_ERRORS.DELETING_ERROR,
+        captureError: true,
+        error,
+      });
+      this.$emit('error');
+    },
     clearError(index) {
       this.errors.splice(index, 1);
     },
@@ -328,7 +349,6 @@ export default {
           const errors = args.variables.isInstance
             ? data.instanceExternalAuditEventDestinationDestroy.errors
             : data.externalAuditEventDestinationDestroy.errors;
-
           if (errors.length) {
             return;
           }
@@ -513,6 +533,9 @@ export default {
         this.loading = false;
       }
     },
+    deleteDestination() {
+      this.$refs.deleteModal.show();
+    },
     isHeaderFilled(header) {
       return header.name !== '' && header.value !== '';
     },
@@ -627,6 +650,23 @@ export default {
           :disabled="isEditing"
           data-testid="destination-url"
         />
+      </gl-form-group>
+
+      <gl-form-group
+        v-if="isEditing"
+        :label="$options.i18n.VERIFICATION_TOKEN_LABEL"
+        class="gl-max-w-34"
+        data-testid="verification-token-form-group"
+      >
+        <gl-form-input-group
+          readonly
+          :value="item.verificationToken"
+          data-testid="verification-token"
+        >
+          <template #append>
+            <clipboard-button :text="item.verificationToken" :title="__('Copy to clipboard')" />
+          </template>
+        </gl-form-input-group>
       </gl-form-group>
 
       <div class="gl-mb-5">
@@ -754,7 +794,25 @@ export default {
           @click="$emit('cancel')"
           >{{ $options.i18n.CANCEL_BUTTON_TEXT }}</gl-button
         >
+        <gl-button
+          v-if="isEditing"
+          :name="$options.i18n.DELETE_BUTTON_TEXT"
+          :loading="loading"
+          variant="danger"
+          class="gl-ml-auto"
+          data-testid="stream-destination-delete-button"
+          @click="deleteDestination"
+          >{{ $options.i18n.DELETE_BUTTON_TEXT }}</gl-button
+        >
       </div>
     </gl-form>
+    <stream-delete-modal
+      v-if="isEditing"
+      ref="deleteModal"
+      :item="item"
+      @deleting="onDeleting"
+      @delete="onDelete"
+      @error="onError"
+    />
   </div>
 </template>
