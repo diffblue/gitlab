@@ -1,6 +1,6 @@
 import VueApollo from 'vue-apollo';
-import Vue from 'vue';
-import { GlLoadingIcon, GlLink, GlAlert } from '@gitlab/ui';
+import Vue, { nextTick } from 'vue';
+import { GlLoadingIcon, GlAlert } from '@gitlab/ui';
 import { logError } from '~/lib/logger';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -11,6 +11,7 @@ import userWorkspacesListQuery from 'ee/remote_development/graphql/queries/user_
 import {
   WORKSPACES_DROPDOWN_GROUP_PAGE_SIZE,
   WORKSPACE_STATES,
+  WORKSPACE_DESIRED_STATES,
 } from 'ee/remote_development/constants';
 import {
   USER_WORKSPACES_QUERY_EMPTY_RESULT,
@@ -26,6 +27,12 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
   let wrapper;
   let mockApollo;
   let userWorkspacesListQueryHandler;
+  let updateWorkspaceMutationMock;
+  const UpdateWorkspaceMutationStub = {
+    render() {
+      return this.$scopedSlots.default({ update: updateWorkspaceMutationMock });
+    },
+  };
 
   const buildMockApollo = () => {
     userWorkspacesListQueryHandler = jest.fn().mockResolvedValueOnce(USER_WORKSPACES_QUERY_RESULT);
@@ -33,18 +40,24 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
     mockApollo = createMockApollo([[userWorkspacesListQuery, userWorkspacesListQueryHandler]]);
   };
   const createWrapper = () => {
+    updateWorkspaceMutationMock = jest.fn();
+
     wrapper = shallowMountExtended(WorkspacesDropdownGroup, {
       apolloProvider: mockApollo,
       provide: {
         projectId: PROJECT_ID,
       },
+      stubs: {
+        UpdateWorkspaceMutation: UpdateWorkspaceMutationStub,
+      },
     });
   };
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
-  const findWorkspacesLink = () => wrapper.findComponent(GlLink);
   const findAllWorkspaceItems = () => wrapper.findAllComponents(WorkspaceDropdownItem);
   const findNoWorkspacesMessage = () => wrapper.findByTestId('no-workspaces-message');
   const findLoadingWorkspacesErrorMessage = () => wrapper.findComponent(GlAlert);
+  const findUpdateWorkspaceErrorAlert = () => wrapper.findByTestId('update-workspace-error-alert');
+  const findUpdateWorkspaceMutation = () => wrapper.findComponent(UpdateWorkspaceMutationStub);
 
   beforeEach(() => {
     buildMockApollo();
@@ -149,6 +162,45 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
     it('does not display error message', () => {
       expect(findLoadingWorkspacesErrorMessage().exists()).toBe(false);
     });
+
+    describe('when a workspace item emits "updateWorkspace" event', () => {
+      it('calls the update method provided by the WorkspaceUpdateMutation component', () => {
+        const { nodes: workspaces } = USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces;
+        const eventPayload = { desiredState: WORKSPACE_DESIRED_STATES.running };
+
+        findAllWorkspaceItems().at(0).vm.$emit('updateWorkspace', eventPayload);
+
+        expect(updateWorkspaceMutationMock).toHaveBeenCalledWith(workspaces[0].id, eventPayload);
+      });
+    });
+  });
+
+  describe('when executing the update workspace mutation fails', () => {
+    const error = 'error message';
+
+    beforeEach(async () => {
+      createWrapper();
+
+      findUpdateWorkspaceMutation().vm.$emit('updateFailed', { error });
+
+      await nextTick();
+    });
+
+    it('displays error message', () => {
+      expect(findUpdateWorkspaceErrorAlert().text()).toContain(error);
+    });
+
+    describe('when the update workspace mutation succeeds after failing', () => {
+      it('hides the previous error message', async () => {
+        expect(findUpdateWorkspaceErrorAlert().exists()).toBe(true);
+
+        findUpdateWorkspaceMutation().vm.$emit('updateSucceed');
+
+        await nextTick();
+
+        expect(findUpdateWorkspaceErrorAlert().exists()).toBe(false);
+      });
+    });
   });
 
   describe('when user does not have workspaces', () => {
@@ -166,10 +218,6 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
 
     it('displays no workspaces message', () => {
       expect(findNoWorkspacesMessage().exists()).toBe(true);
-    });
-
-    it('displays links pointing to the workspaces documentation', () => {
-      expect(findWorkspacesLink().attributes().href).toBe('/help/user/workspace/index.md');
     });
 
     it('does not display error message', () => {
