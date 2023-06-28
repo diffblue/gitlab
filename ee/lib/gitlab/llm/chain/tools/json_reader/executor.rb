@@ -12,7 +12,8 @@ module Gitlab
             TextUtils = Gitlab::Llm::Chain::Utils::TextProcessing
 
             NAME = 'Resource Reader'
-            DESCRIPTION = 'Useful tool when you need to get information or ask questions about specific resource. ' \
+            DESCRIPTION = 'Useful tool when you need to get information or ask questions about specific resource ' \
+                          'that was already identified. ' \
                           'Action Input for this tools always starts with: `data`'
 
             # anthropic token limit:

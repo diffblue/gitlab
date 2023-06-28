@@ -23,7 +23,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::ExplainCode::Executor, feature_categor
 
   describe '#description' do
     it 'returns tool description' do
-      desc = 'Useful tool to explain code snippets.'
+      desc = 'Useful tool to explain code snippets and blocks.'
 
       expect(described_class::DESCRIPTION).to include(desc)
     end

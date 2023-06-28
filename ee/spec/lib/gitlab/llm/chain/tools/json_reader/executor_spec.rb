@@ -43,7 +43,8 @@ RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failu
   describe '#description' do
     it 'returns tool description' do
       expect(described_class::DESCRIPTION)
-        .to include('Useful tool when you need to get information or ask questions about specific resource. ' \
+        .to include('Useful tool when you need to get information or ask questions about specific ' \
+                    'resource that was already identified. ' \
                     'Action Input for this tools always starts with: `data`')
     end
   end
