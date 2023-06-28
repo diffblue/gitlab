@@ -50,7 +50,7 @@ To add streaming destinations to a top-level group:
    20 headers per streaming destination.
 1. After all headers have been filled out, select **Add** to add the new streaming destination.
 
-### Instance streaming destinations
+### Instance streaming destinations **(ULTIMATE SELF)**
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/398107) in GitLab 16.1 [with a flag](../feature_flags.md) named `ff_external_audit_events`. Disabled by default.
 
@@ -70,7 +70,12 @@ To add a streaming destination for an instance:
 1. On the main area, select **Streams** tab.
 1. Select **Add streaming destination** to show the section for adding destinations.
 1. Enter the destination URL to add.
-1. Select **Add** to add the new streaming destination.
+1. Optional. To add custom HTTP headers, select **Add header** to create a new name and value pair, and input their values. Repeat this step for as many name and value pairs are required. You can add up to 20 headers per streaming destination.
+1. Ignore the **Active** checkbox because it isn't functional. To track progress on adding functionality to the
+   **Active** checkbox, see [issue 367509](https://gitlab.com/gitlab-org/gitlab/-/issues/367509).
+1. Select **Add header** to create a new name and value pair. Repeat this step for as many name and value pairs are required. You can add up to
+   20 headers per streaming destination.
+1. After all headers have been filled out, select **Add** to add the new streaming destination.
 
 ## List streaming destinations
 
@@ -132,6 +137,32 @@ To update a streaming destination's custom HTTP headers:
    20 headers per streaming destination.
 1. Select **Save** to update the streaming destination.
 
+### Instance streaming destinations **(ULTIMATE SELF)**
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/398107) in GitLab 16.1 [with a flag](../feature_flags.md) named `ff_external_audit_events`. Disabled by default.
+
+FLAG:
+On self-managed GitLab, by default this feature is not available. To make it available, ask an administrator to [enable the feature flag](../feature_flags.md) named
+`ff_external_audit_events`. On GitLab.com, this feature is not available. The feature is not ready for production use.
+
+Prerequisites:
+
+- Administrator access on the instance.
+
+To update the streaming destinations for an instance:
+
+1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. Select **Secure > Audit events**.
+1. On the main area, select the **Streams** tab.
+1. To the right of the item, select **Edit** (**{pencil}**).
+1. Locate the **Custom HTTP headers** table.
+1. Locate the header that you wish to update.
+1. Ignore the **Active** checkbox because it isn't functional. To track progress on adding functionality to the
+   **Active** checkbox, see [issue 367509](https://gitlab.com/gitlab-org/gitlab/-/issues/367509).
+1. Select **Add header** to create a new name and value pair. Enter as many name and value pairs as required. You can add up to
+   20 headers per streaming destination.
+1. Select **Save** to update the streaming destination.
+
 ## Delete streaming destinations
 
 Delete streaming destinations for a top-level group or an entire instance. When the last destination is successfully
@@ -180,6 +211,18 @@ To delete the streaming destinations for an instance:
 1. On the left sidebar, select **Monitoring > Audit Events**.
 1. On the main area, select the **Streams** tab.
 1. To the right of the item, select **Delete** (**{remove}**).
+
+To delete only the custom HTTP headers for a streaming destination:
+
+1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. Select **Admin Area**.
+1. On the left sidebar, select **Monitoring > Audit Events**.
+1. On the main area, select the **Streams** tab.
+1. To the right of the item, **Edit** (**{pencil}**).
+1. Locate the **Custom HTTP headers** table.
+1. Locate the header that you wish to remove.
+1. To the right of the header, select **Delete** (**{remove}**).
+1. Select **Save** to update the streaming destination.
 
 ## Verify event authenticity
 
