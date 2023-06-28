@@ -5,6 +5,10 @@ import { __ } from '~/locale';
 import { createAlert } from '~/alert';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 
+const EVENTS = {
+  replace: 'replace',
+};
+
 export default {
   components: {
     GlDisclosureDropdown,
@@ -22,6 +26,7 @@ export default {
     return {
       loading: false,
       errorAlert: null,
+      method: undefined,
     };
   },
   computed: {
@@ -91,12 +96,15 @@ export default {
   },
   methods: {
     insertResponse(response) {
-      this.$emit('input', response);
+      const event = this.method ? EVENTS[this.method] : 'input';
+      this.$emit(event, response);
     },
-    beforeAction() {
+    beforeAction(item) {
       if (this.loading) {
         return false;
       }
+
+      this.method = item.method;
 
       this.errorAlert?.dismiss();
 
@@ -107,17 +115,17 @@ export default {
       this.loading = false;
     },
     onAbstractAction(item) {
-      if (!this.beforeAction()) return;
+      if (!this.beforeAction(item)) return;
       item
         .handler()
         .then((response) => {
-          this.insertResponse(response);
+          this.insertResponse(response, item);
         })
         .catch(this.handleError)
         .finally(this.afterAction);
     },
     onApolloAction(item) {
-      if (!this.beforeAction()) return;
+      if (!this.beforeAction(item)) return;
       this.$apollo
         .mutate(item.apolloMutation())
         .then(({ data: { aiAction } }) => {
