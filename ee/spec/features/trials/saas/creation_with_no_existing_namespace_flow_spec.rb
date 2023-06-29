@@ -2,9 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Trial lead submission, group and trial creation', :saas, :js, feature_category: :purchase do
-  include Features::TrialHelpers
-
+RSpec.describe 'Trial lead submission, group and trial creation', :saas_trial, :js, feature_category: :purchase do
   let_it_be(:user) { create(:user) } # rubocop:disable Gitlab/RSpec/AvoidSetup
 
   context 'when creating lead, group and applying trial is successful' do

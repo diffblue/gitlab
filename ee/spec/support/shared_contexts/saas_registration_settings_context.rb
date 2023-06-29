@@ -26,8 +26,12 @@ RSpec.shared_context 'with saas settings for registration flows', shared_context
       arkose_labs_signup_challenge: false,
       # currently being rolled out, not yet on in prod
       identity_verification: false,
-      ensure_onboarding: true
+      ensure_onboarding: true,
+      gitlab_gtm_datalayer: true,
+      gtm_nonce: true
     )
+
+    stub_config(extra: { 'google_tag_manager_nonce_id' => 'key' })
 
     enforce_terms
   end
