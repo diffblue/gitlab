@@ -218,19 +218,8 @@ RSpec.describe Boards::Issues::ListService, services: true, feature_category: :t
       end
 
       context 'when search param is present' do
-        before do
-          stub_feature_flags(issues_full_text_search: false)
-        end
-
         it 'returns correct issues' do
-          params = { board_id: board.id, search: 'Iss' }
-
-          issues = described_class.new(parent, user, params).execute
-          expect(issues).to contain_exactly(opened_issue1, opened_issue2, reopened_issue1)
-        end
-
-        it 'returns correct issues using 2 characters' do
-          params = { board_id: board.id, search: 'Is' }
+          params = { board_id: board.id, search: 'Issue' }
 
           issues = described_class.new(parent, user, params).execute
           expect(issues).to contain_exactly(opened_issue1, opened_issue2, reopened_issue1)
