@@ -25,7 +25,11 @@ module EE
           null: true, description: 'Current limit metric for the list.'
 
         field :total_weight, GraphQL::Types::Int,
-          null: true, description: 'Total weight of all issues in the list.'
+          null: true, description: 'Total weight of all issues in the list.',
+          deprecated: { reason: 'Use `totalIssueWeight`', milestone: '16.2' }
+
+        field :total_issue_weight, GraphQL::Types::BigInt,
+          null: true, description: 'Total weight of all issues in the list, encoded as a string.'
 
         def milestone
           ::Gitlab::Graphql::Loaders::BatchModelLoader.new(::Milestone, object.milestone_id).find
@@ -40,6 +44,10 @@ module EE
         end
 
         def total_weight
+          total_issue_weight
+        end
+
+        def total_issue_weight
           metadata[:total_weight]
         end
       end
