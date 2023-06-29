@@ -149,6 +149,7 @@ export default {
                 type="number"
                 class="gl-w-11! gl-mx-3"
                 :min="1"
+                :max="100"
                 data-testid="approvals-required-input"
                 @update="approvalsRequiredChanged"
               />

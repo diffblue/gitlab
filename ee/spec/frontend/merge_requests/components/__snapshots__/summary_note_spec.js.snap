@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Merge request summary note component renders summary note 1`] = `
+"<summary-note-wrapper-stub>
+  <h5 class=\\"gl-m-0\\">Merge request change summary</h5>
+  <time-ago-tooltip-stub time=\\"created-at\\" tooltipplacement=\\"top\\" cssclass=\\"\\" datetimeformat=\\"DATE_WITH_TIME_FORMAT\\" class=\\"gl-white-space-nowrap gl-font-sm gl-text-gray-600\\"></time-ago-tooltip-stub>
+  <p class=\\"gl-m-0\\">
+    AI content
+  </p>
+  <user-feedback-stub eventname=\\"proposed_changes_summary\\" promptlocation=\\"\\" size=\\"small\\" category=\\"tertiary\\" icononly=\\"true\\"></user-feedback-stub>
+  <gl-link-stub target=\\"_blank\\" href=\\"https://gitlab.com/gitlab-org/gitlab/-/issues/408726\\">
+    Leave feedback
+  </gl-link-stub>
+</summary-note-wrapper-stub>"
+`;
