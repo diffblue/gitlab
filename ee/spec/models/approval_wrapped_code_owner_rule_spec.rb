@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ApprovalWrappedCodeOwnerRule do
+RSpec.describe ApprovalWrappedCodeOwnerRule, feature_category: :code_review_workflow do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be_with_reload(:merge_request) { create(:merge_request) }
@@ -37,6 +37,15 @@ RSpec.describe ApprovalWrappedCodeOwnerRule do
           allow(subject.project)
             .to receive(:code_owner_approval_required_available?).and_return(true)
           allow(Gitlab::CodeOwners).to receive(:optional_section?).and_return(optional_section)
+        end
+
+        it 'checks the rule is in an optional codeowners section' do
+          subject.approvals_required
+          # If the repo includes `refs/heads/develop` and `refs/tags/develop`,
+          # passing `ref = 'develop'` will return the `CODEOWNER` file in `refs/tags/develop`
+          # when we actually want to reference the branch. To prevent this we
+          # pass `merge_request.target_branch_ref`.
+          expect(Gitlab::CodeOwners).to have_received(:optional_section?).with(subject.project, merge_request.target_branch_ref, rule.section)
         end
 
         context "when the project doesn't require code owner approval on all MRs" do

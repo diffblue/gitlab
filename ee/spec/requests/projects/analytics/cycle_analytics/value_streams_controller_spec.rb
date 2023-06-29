@@ -6,7 +6,7 @@ RSpec.describe Projects::Analytics::CycleAnalytics::ValueStreamsController, feat
   let_it_be(:user) { create(:user) }
   let_it_be(:another_user) { create(:user) }
   let_it_be(:group) { create(:group) }
-  let_it_be(:project) { create(:project, group: group) }
+  let_it_be(:project, refind: true) { create(:project, group: group) }
   let_it_be(:namespace) { project.project_namespace }
 
   let(:path_prefix) { %i[namespace project] }
@@ -31,6 +31,22 @@ RSpec.describe Projects::Analytics::CycleAnalytics::ValueStreamsController, feat
             expect(json_response.first['id']).to eq('default')
           end
         end
+      end
+    end
+
+    context 'when the project has lower visibility level' do
+      subject(:request) { delete path_for(value_streams.first) }
+
+      before do
+        project.update!(visibility_level: Project::PUBLIC)
+      end
+
+      it 'disallows deleting the record' do
+        login_as(another_user)
+
+        request
+
+        expect(response).to have_gitlab_http_status(:not_found)
       end
     end
   end

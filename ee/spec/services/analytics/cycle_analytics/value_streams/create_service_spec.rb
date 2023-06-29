@@ -5,17 +5,15 @@ require 'spec_helper'
 RSpec.describe Analytics::CycleAnalytics::ValueStreams::CreateService, feature_category: :value_stream_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:group, refind: true) { create(:group) }
+  let_it_be(:project, refind: true) { create(:project, group: group) }
 
   let(:params) { {} }
 
-  subject { described_class.new(namespace: group, params: params, current_user: user).execute }
+  subject { described_class.new(namespace: namespace, params: params, current_user: user).execute }
 
-  it_behaves_like 'common value stream service examples'
-
-  context 'when the feature is available' do
+  shared_examples 'when the feature is available' do
     before do
       group.add_developer(user)
-      stub_licensed_features(cycle_analytics_for_groups: true)
     end
 
     context 'when stage params are passed' do
@@ -101,5 +99,27 @@ RSpec.describe Analytics::CycleAnalytics::ValueStreams::CreateService, feature_c
         end
       end
     end
+  end
+
+  context 'when group is given' do
+    let(:namespace) { group }
+
+    before do
+      stub_licensed_features(cycle_analytics_for_groups: true)
+    end
+
+    it_behaves_like 'common value stream service examples'
+    it_behaves_like 'when the feature is available'
+  end
+
+  context 'when project namespace is given' do
+    let(:namespace) { project.project_namespace }
+
+    before do
+      stub_licensed_features(cycle_analytics_for_projects: true)
+    end
+
+    it_behaves_like 'common value stream service examples'
+    it_behaves_like 'when the feature is available'
   end
 end

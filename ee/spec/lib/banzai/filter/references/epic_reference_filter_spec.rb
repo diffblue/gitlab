@@ -324,4 +324,18 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter, feature_category
       end.not_to exceed_all_query_limit(max_count)
     end
   end
+
+  # The way in which regex patterns were combined caused a ReDOS problem.
+  # See https://gitlab.com/gitlab-org/gitlab/-/issues/409802
+  describe 'protects against malicious backtracking resulting in a ReDOS' do
+    let(:context) { { project: nil, group: group } }
+
+    it 'fails fast' do
+      content = "http://1#{'..1' * 333_300}"
+
+      expect do
+        Timeout.timeout(5.seconds) { reference_filter(content, context) }
+      end.not_to raise_error
+    end
+  end
 end
