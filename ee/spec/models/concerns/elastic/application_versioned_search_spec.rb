@@ -20,11 +20,16 @@ RSpec.describe Elastic::ApplicationVersionedSearch, feature_category: :global_se
 
   describe '.elastic_index_dependant_association' do
     it 'adds the associations to elastic_index_dependants' do
-      klass.elastic_index_dependant_association(:widgets, on_change: :title, depends_on_finished_migration: :test_migration)
+      klass.elastic_index_dependant_association(:widgets, on_change: [:title, :description], depends_on_finished_migration: :test_migration)
 
       expect(klass.elastic_index_dependants).to include({
         association_name: :widgets,
         on_change: :title,
+        depends_on_finished_migration: :test_migration
+      })
+      expect(klass.elastic_index_dependants).to include({
+        association_name: :widgets,
+        on_change: :description,
         depends_on_finished_migration: :test_migration
       })
     end
