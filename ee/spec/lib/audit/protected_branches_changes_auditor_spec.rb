@@ -69,6 +69,14 @@ RSpec.describe Audit::ProtectedBranchesChangesAuditor, :request_store, feature_c
           service.execute
         end
       end
+
+      context "when #{setting} does not change" do
+        it 'does not create audit event' do
+          protected_branch.update_attribute(setting, false)
+
+          expect { service.execute }.not_to change(AuditEvent, :count)
+        end
+      end
     end
 
     include_examples 'settings', :allow_force_push, 'protected_branch_allow_force_push_updated'
@@ -115,6 +123,12 @@ RSpec.describe Audit::ProtectedBranchesChangesAuditor, :request_store, feature_c
                                                                                          anything)
 
           service.execute
+        end
+      end
+
+      context 'when access levels does not change' do
+        it 'does not create audit event' do
+          expect { service.execute }.not_to change(AuditEvent, :count)
         end
       end
     end
