@@ -1,4 +1,5 @@
 import { nextTick } from 'vue';
+import * as Sentry from '@sentry/browser';
 import { GlCollapsibleListbox, GlLoadingIcon, GlListboxItem } from '@gitlab/ui';
 import MockAdapter from 'axios-mock-adapter';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -96,6 +97,8 @@ describe('ProtectedBranchesDropdown', () => {
 
         expect(findListBox().props('items')).toEqual(MOCKED_LISTBOX_ITEMS);
         expect(findAllListboxItems()).toHaveLength(MOCKED_LISTBOX_ITEMS.length);
+
+        expect(wrapper.emitted('error')).toEqual([[{ hasErrored: false }]]);
       });
 
       it('should select all branches in multiple mode', async () => {
@@ -180,13 +183,39 @@ describe('ProtectedBranchesDropdown', () => {
     });
 
     it('should emmit error when loading fails', async () => {
+      const sentrySpy = jest.spyOn(Sentry, 'captureException');
+
       createComponent();
 
       await openDropdown();
 
-      expect(wrapper.emitted('apiError')).toHaveLength(1);
+      expect(wrapper.emitted('error')).toHaveLength(1);
       expect(findAllListboxItems()).toHaveLength(0);
       expect(findEmptyState().text()).toBe('No results found');
+      expect(sentrySpy).toHaveBeenCalledWith(new Error('Request failed with status code 400'));
+    });
+
+    it('should have error class when hasError', async () => {
+      createComponent({
+        propsData: {
+          hasError: true,
+        },
+      });
+
+      await openDropdown();
+
+      expect(wrapper.emitted('error')).toEqual([
+        [
+          {
+            error: new Error('Request failed with status code 400'),
+            hasErrored: true,
+          },
+        ],
+      ]);
+
+      expect(findListBox().props('toggleClass')).toEqual({
+        'gl-inset-border-1-red-500!': true,
+      });
     });
   });
 });

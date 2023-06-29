@@ -1,9 +1,14 @@
+import { GlAlert } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import DefaultRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/default_rule_builder.vue';
 import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_builder.vue';
 import SecurityScanRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/security_scan_rule_builder.vue';
 import LicenseScanRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/license_scan_rule_builder.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+import {
+  SCAN_FINDING,
+  LICENSE_FINDING,
+} from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib';
 import {
   emptyBuildRule,
   securityScanBuildRule,
@@ -43,6 +48,7 @@ describe('PolicyRuleBuilder', () => {
     });
   };
 
+  const findAlert = () => wrapper.findComponent(GlAlert);
   const findEmptyScanRuleBuilder = () => wrapper.findComponent(DefaultRuleBuilder);
   const findSecurityScanRule = () => wrapper.findComponent(SecurityScanRuleBuilder);
   const findLicenseScanRule = () => wrapper.findComponent(LicenseScanRuleBuilder);
@@ -114,5 +120,29 @@ describe('PolicyRuleBuilder', () => {
         expect(wrapper.emitted().remove).toHaveLength(1);
       },
     );
+  });
+
+  describe('error handling', () => {
+    it.each`
+      findComponent               | rule
+      ${findEmptyScanRuleBuilder} | ${''}
+      ${findSecurityScanRule}     | ${SCAN_FINDING}
+      ${findLicenseScanRule}      | ${LICENSE_FINDING}
+    `('should display correct error message', async ({ findComponent, rule }) => {
+      factory({
+        propsData: {
+          initRule: { type: rule },
+        },
+      });
+
+      const error = new Error('test error message');
+
+      expect(findAlert().exists()).toBe(false);
+
+      await findComponent().vm.$emit('error', error);
+
+      expect(findAlert().exists()).toBe(true);
+      expect(findAlert().text()).toBe(error.message);
+    });
   });
 });

@@ -1,5 +1,6 @@
 <script>
 import { GlCollapsibleListbox } from '@gitlab/ui';
+import * as Sentry from '@sentry/browser';
 import { debounce } from 'lodash';
 import Api from 'ee/api';
 import { __ } from '~/locale';
@@ -35,6 +36,11 @@ export default {
       type: [Array, String, Number],
       required: false,
       default: () => [],
+    },
+    hasError: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   data() {
@@ -84,10 +90,11 @@ export default {
 
       try {
         this.branches = await Api.projectProtectedBranches(this.projectId, term);
-        this.$emit('apiError', { hasErrored: false });
+        this.$emit('error', { hasErrored: false });
       } catch (error) {
-        this.$emit('apiError', { hasErrored: true, error });
+        this.$emit('error', { hasErrored: true, error });
         this.branches = [];
+        Sentry.captureException(error);
       } finally {
         this.loading = false;
         this.openedOnce = true;
@@ -114,6 +121,7 @@ export default {
     :reset-button-label="$options.i18n.resetLabel"
     :show-select-all-button-label="$options.i18n.selectAllLabel"
     :toggle-text="toggleText"
+    :toggle-class="{ 'gl-inset-border-1-red-500!': hasError }"
     :selected="selected"
     searchable
     @shown.once="fetchBranches"
