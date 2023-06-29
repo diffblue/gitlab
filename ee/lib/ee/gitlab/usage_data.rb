@@ -139,13 +139,6 @@ module EE
           end
         end
 
-        override :jira_usage
-        def jira_usage
-          super.merge(
-            projects_jira_issuelist_active: projects_jira_issuelist_active
-          )
-        end
-
         # Omitted because no user, creator or author associated: `auto_devops_disabled`, `auto_devops_enabled`
         # Omitted because not in use anymore: `gcp_clusters`, `gcp_clusters_disabled`, `gcp_clusters_enabled`
         # rubocop:disable CodeReuse/ActiveRecord
@@ -334,17 +327,6 @@ module EE
             finish: maximum_id(::ApprovalMergeRequestRule, :merge_request_id)
           )
         end
-
-        def projects_jira_issuelist_active
-          # rubocop: disable UsageData/LargeTable:
-          min_id = minimum_id(::Integrations::JiraTrackerData.where(issues_enabled: true), :integration_id)
-          max_id = maximum_id(::Integrations::JiraTrackerData.where(issues_enabled: true), :integration_id)
-          # rubocop: enable UsageData/LargeTable:
-          # rubocop: disable UsageData/DistinctCountByLargeForeignKey
-          distinct_count(::Integrations::Jira.active.left_outer_joins(:jira_tracker_data).where(jira_tracker_data: { issues_enabled: true }), start: min_id, finish: max_id)
-          # rubocop: enable UsageData/DistinctCountByLargeForeignKey
-        end
-        # rubocop:enable CodeReuse/ActiveRecord
 
         # rubocop:disable CodeReuse/ActiveRecord
         def projects_with_sectional_code_owner_rules(time_period)
