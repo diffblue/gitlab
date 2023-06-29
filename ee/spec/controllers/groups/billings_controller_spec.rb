@@ -72,7 +72,6 @@ RSpec.describe Groups::BillingsController, :saas, feature_category: :purchase do
 
     context 'auditor' do
       before do
-        stub_feature_flags(auditor_billing_page_access: group)
         sign_in(auditor)
       end
 
@@ -81,7 +80,6 @@ RSpec.describe Groups::BillingsController, :saas, feature_category: :purchase do
 
     context 'owner' do
       before do
-        stub_feature_flags(auditor_billing_page_access: group)
         sign_in(owner)
       end
 
@@ -101,16 +99,6 @@ RSpec.describe Groups::BillingsController, :saas, feature_category: :purchase do
         allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(false)
 
         sign_in(owner)
-
-        get_index
-
-        is_expected.to have_gitlab_http_status(:not_found)
-      end
-
-      it 'renders 404 when user is an auditor without feature flag' do
-        stub_feature_flags(auditor_billing_page_access: false)
-
-        sign_in(auditor)
 
         get_index
 
