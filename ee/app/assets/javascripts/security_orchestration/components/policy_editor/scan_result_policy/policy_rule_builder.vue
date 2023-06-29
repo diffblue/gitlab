@@ -1,4 +1,5 @@
 <script>
+import { GlAlert } from '@gitlab/ui';
 import { SCAN_FINDING, LICENSE_FINDING } from './lib';
 import SecurityScanRuleBuilder from './security_scan_rule_builder.vue';
 import LicenseScanRuleBuilder from './license_scan_rule_builder.vue';
@@ -6,6 +7,7 @@ import DefaultRuleBuilder from './default_rule_builder.vue';
 
 export default {
   components: {
+    GlAlert,
     DefaultRuleBuilder,
     SecurityScanRuleBuilder,
     LicenseScanRuleBuilder,
@@ -32,6 +34,7 @@ export default {
 
     return {
       previousRules,
+      error: null,
     };
   },
   computed: {
@@ -62,32 +65,44 @@ export default {
       const value = this.previousRules[rule.type] || rule;
       this.$emit('changed', value);
     },
+    handleError(error) {
+      this.error = error;
+    },
   },
 };
 </script>
 
 <template>
-  <default-rule-builder
-    v-if="isEmptyRule"
-    :init-rule="initRule"
-    @changed="updateRule"
-    @remove="removeRule"
-    @set-scan-type="setScanType"
-  />
+  <div>
+    <gl-alert v-if="error" :dismissible="false" class="gl-mb-3" variant="danger">
+      {{ error.message }}
+    </gl-alert>
 
-  <security-scan-rule-builder
-    v-else-if="isSecurityRule"
-    :init-rule="initRule"
-    @changed="updateRule"
-    @remove="removeRule"
-    @set-scan-type="setScanType"
-  />
+    <default-rule-builder
+      v-if="isEmptyRule"
+      :init-rule="initRule"
+      @error="handleError"
+      @changed="updateRule"
+      @remove="removeRule"
+      @set-scan-type="setScanType"
+    />
 
-  <license-scan-rule-builder
-    v-else-if="isLicenseRule"
-    :init-rule="initRule"
-    @changed="updateRule"
-    @remove="removeRule"
-    @set-scan-type="setScanType"
-  />
+    <security-scan-rule-builder
+      v-else-if="isSecurityRule"
+      :init-rule="initRule"
+      @error="handleError"
+      @changed="updateRule"
+      @remove="removeRule"
+      @set-scan-type="setScanType"
+    />
+
+    <license-scan-rule-builder
+      v-else-if="isLicenseRule"
+      :init-rule="initRule"
+      @error="handleError"
+      @changed="updateRule"
+      @remove="removeRule"
+      @set-scan-type="setScanType"
+    />
+  </div>
 </template>
