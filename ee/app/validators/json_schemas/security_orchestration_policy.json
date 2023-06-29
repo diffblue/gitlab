@@ -526,7 +526,9 @@
                 },
                 "approvals_required": {
                   "description": "Specifies a number of required merge request approvals.",
-                  "type": "integer"
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 100
                 },
                 "user_approvers": {
                   "description": "Specifies a list of users (by usernames) required to approve affected merge request.",
