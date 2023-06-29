@@ -328,7 +328,7 @@ module ApplicationHelper
     class_names << 'with-system-header' if appearance.show_header?
     class_names << 'with-system-footer' if appearance.show_footer?
 
-    class_names
+    class_names.join(' ')
   end
 
   # Returns active css class when condition returns true
