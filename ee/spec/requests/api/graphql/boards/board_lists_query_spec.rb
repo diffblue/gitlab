@@ -15,10 +15,10 @@ RSpec.describe 'get board lists', feature_category: :team_planning do
   let_it_be(:assignee)           { create(:assignee) }
   let_it_be(:assignee2)          { create(:assignee) }
   let_it_be(:label)              { create(:group_label, group: group) }
-  let_it_be(:label2)             { create(:group_label, group: group) }
 
   let(:params)            { '' }
   let(:board)             {}
+  let(:fields)            { all_graphql_fields_for('board_lists'.classify) }
   let(:board_parent_type) { board_parent.class.to_s.downcase }
   let(:board_data)        { graphql_data[board_parent_type]['boards']['edges'].first['node'] }
   let(:lists_data)        { board_data['lists']['edges'] }
@@ -44,7 +44,7 @@ RSpec.describe 'get board lists', feature_category: :team_planning do
               }
               edges {
                 node {
-                  #{all_graphql_fields_for('board_lists'.classify)}
+                  #{fields}
                 }
               }
             }
@@ -119,6 +119,8 @@ RSpec.describe 'get board lists', feature_category: :team_planning do
       end
 
       describe 'total issue count and weight' do
+        let(:label2) { create(:group_label, group: group) }
+
         it 'returns total count and weight of issues matching issue filters' do
           label_list = create(:list, board: board, label: label, position: 10)
           create(:issue, project: project, labels: [label, label2], weight: 2)
@@ -132,6 +134,50 @@ RSpec.describe 'get board lists', feature_category: :team_planning do
             expect(list_node['title']).to eq label_list.title
             expect(list_node['issuesCount']).to eq 1
             expect(list_node['totalWeight']).to eq 2
+          end
+        end
+      end
+
+      describe 'totalWeight and totalIssueWeight fields with very large total weight values' do
+        let!(:label3) { create(:group_label, group: group) }
+        let!(:label_list) { create(:list, board: board, label: label3, position: 10) }
+
+        before do
+          create(:issue, project: project, labels: [label3], weight: GraphQL::Types::Int::MAX)
+          create(:issue, project: project, labels: [label3], weight: 1)
+        end
+
+        context 'when requesting totalWeight field' do
+          let(:fields) do
+            <<~GQL
+            totalWeight
+            GQL
+          end
+
+          it 'returns error' do
+            post_graphql(query(id: global_id_of(label_list), issueFilters: { labelName: label3.title }), current_user: current_user)
+
+            expect_graphql_errors_to_include(/Integer out of bounds/)
+          end
+        end
+
+        context 'when requesting totalIssueWeight field' do
+          let(:fields) do
+            <<~GQL
+            title
+            totalIssueWeight
+            GQL
+          end
+
+          it 'returns large value successfully' do
+            post_graphql(query(id: global_id_of(label_list), issueFilters: { labelName: label3.title }), current_user: current_user)
+
+            aggregate_failures do
+              list_node = lists_data[0]['node']
+
+              expect(list_node['title']).to eq label_list.title
+              expect(list_node['totalIssueWeight']).to eq (GraphQL::Types::Int::MAX + 1).to_s
+            end
           end
         end
       end
