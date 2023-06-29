@@ -3,4 +3,5 @@
   %p= s_("BillingPlans|This group uses the plan associated with its parent group.")
   - parent_billing_page_link = link_to top_level_group.full_name, group_billings_path(top_level_group)
   %p= s_("BillingPlans|To manage the plan for this group, visit the billing section of %{parent_billing_page_link}.").html_safe % { parent_billing_page_link: parent_billing_page_link }
-  = link_to s_("BillingPlans|Manage plan"), group_billings_path(top_level_group), class: 'btn btn-confirm gl-button'
+  = render Pajamas::ButtonComponent.new(href: group_billings_path(top_level_group), variant: :confirm) do
+    = s_("BillingPlans|Manage plan")
