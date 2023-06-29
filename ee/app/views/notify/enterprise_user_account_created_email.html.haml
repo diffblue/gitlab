@@ -12,8 +12,8 @@
 %tr
   %td.text-content
     %p
-      = _('By using a primary email tied to an Enterprise e-mail address, it is understood that this account is an Enterprise User.')
-      = _('To ensure no loss of personal content, this account should only be used for matters related to %{group_name}.') % { group_name: @user.user_detail.enterprise_group.human_name }
+      = _('By using a primary email tied to an Enterprise email address, you acknowledge that this account is an Enterprise User.')
+      = _('To ensure no loss of access to personal content, only use this account for matters related to %{group_name}.') % { group_name: @user.user_detail.enterprise_group.human_name }
       = _('For individual use, create a separate account under your personal email address, not tied to the Enterprise email domain.')
     - unless @user.confirmed?
       %p
