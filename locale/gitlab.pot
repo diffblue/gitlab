@@ -21022,6 +21022,9 @@ msgstr ""
 msgid "GlobalSearch|Merge requests that I'm a reviewer"
 msgstr ""
 
+msgid "GlobalSearch|No labels found"
+msgstr ""
+
 msgid "GlobalSearch|Project"
 msgstr ""
 
