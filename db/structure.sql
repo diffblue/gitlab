@@ -10,6 +10,19 @@ CREATE EXTENSION IF NOT EXISTS btree_gist;
 
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
+CREATE FUNCTION assign_p_ci_builds_id_value() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."id" IS NOT NULL THEN
+  RAISE WARNING 'Manually assigning ids is not allowed, the value will be ignored';
+END IF;
+NEW."id" := nextval('ci_builds_id_seq'::regclass);
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION delete_associated_project_namespace() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -13225,15 +13238,6 @@ CREATE TABLE p_ci_builds (
 )
 PARTITION BY LIST (partition_id);
 
-CREATE SEQUENCE ci_builds_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER SEQUENCE ci_builds_id_seq OWNED BY p_ci_builds.id;
-
 CREATE TABLE ci_builds (
     status character varying,
     finished_at timestamp without time zone,
@@ -13276,12 +13280,21 @@ CREATE TABLE ci_builds (
     waiting_for_resource_at timestamp with time zone,
     processed boolean,
     scheduling_type smallint,
-    id bigint DEFAULT nextval('ci_builds_id_seq'::regclass) NOT NULL,
+    id bigint NOT NULL,
     stage_id bigint,
     partition_id bigint NOT NULL,
     CONSTRAINT check_1e2fbd1b39 CHECK ((lock_version IS NOT NULL))
 );
 ALTER TABLE ONLY p_ci_builds ATTACH PARTITION ci_builds FOR VALUES IN ('100');
+
+CREATE SEQUENCE ci_builds_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE ci_builds_id_seq OWNED BY p_ci_builds.id;
 
 CREATE TABLE p_ci_builds_metadata (
     project_id integer NOT NULL,
@@ -25826,8 +25839,6 @@ ALTER TABLE ONLY organizations ALTER COLUMN id SET DEFAULT nextval('organization
 
 ALTER TABLE ONLY p_batched_git_ref_updates_deletions ALTER COLUMN id SET DEFAULT nextval('p_batched_git_ref_updates_deletions_id_seq'::regclass);
 
-ALTER TABLE ONLY p_ci_builds ALTER COLUMN id SET DEFAULT nextval('ci_builds_id_seq'::regclass);
-
 ALTER TABLE ONLY p_ci_builds_metadata ALTER COLUMN id SET DEFAULT nextval('ci_builds_metadata_id_seq'::regclass);
 
 ALTER TABLE ONLY p_ci_job_annotations ALTER COLUMN id SET DEFAULT nextval('p_ci_job_annotations_id_seq'::regclass);
@@ -35697,6 +35708,8 @@ ALTER INDEX p_ci_builds_name_id_idx ATTACH PARTITION index_security_ci_builds_on
 ALTER INDEX p_ci_builds_scheduled_at_idx ATTACH PARTITION partial_index_ci_builds_on_scheduled_at_with_scheduled_jobs;
 
 ALTER INDEX p_ci_builds_token_encrypted_partition_id_idx ATTACH PARTITION unique_ci_builds_token_encrypted_and_partition_id;
+
+CREATE TRIGGER assign_p_ci_builds_id_trigger BEFORE INSERT ON ci_builds FOR EACH ROW EXECUTE FUNCTION assign_p_ci_builds_id_value();
 
 CREATE TRIGGER chat_names_loose_fk_trigger AFTER DELETE ON chat_names REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
 
