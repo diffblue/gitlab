@@ -5,9 +5,9 @@ require 'spec_helper'
 RSpec.describe Arkose::BlockedUsersReportWorker, '#perform', feature_category: :insider_threat do
   subject(:worker) { described_class.new }
 
-  context 'when the feature flag arkose_labs_login_challenge is disabled' do
+  context 'when the feature flag arkose_labs_signup_challenge is disabled' do
     before do
-      stub_feature_flags(arkose_labs_login_challenge: false)
+      stub_feature_flags(arkose_labs_signup_challenge: false)
     end
 
     it 'does not report the blocked users' do
@@ -19,9 +19,9 @@ RSpec.describe Arkose::BlockedUsersReportWorker, '#perform', feature_category: :
     end
   end
 
-  context 'when the feature flag arkose_labs_login_challenge is enabled' do
+  context 'when the feature flag arkose_labs_signup_challenge is enabled' do
     before do
-      stub_feature_flags(arkose_labs_login_challenge: true)
+      stub_feature_flags(arkose_labs_signup_challenge: true)
     end
 
     context 'when the blocked users are reported' do
