@@ -29,6 +29,8 @@ module EE
           gon.registration_validation_form_url = ::Gitlab::Routing.url_helpers
                                                                   .subscription_portal_registration_validation_form_url
         end
+
+        push_frontend_feature_flag(:ai_chat_history_context, current_user)
       end
 
       # Exposes if a licensed feature is available.

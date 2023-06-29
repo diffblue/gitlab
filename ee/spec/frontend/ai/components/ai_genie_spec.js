@@ -5,6 +5,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import AiGenie from 'ee/ai/components/ai_genie.vue';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
+import AiGenieChatConversation from 'ee/ai/components/ai_genie_chat_conversation.vue';
 import CodeBlockHighlighted from '~/vue_shared/components/code_block_highlighted.vue';
 import UserFeedback from 'ee/ai/components/user_feedback.vue';
 import { generateExplainCodePrompt, generateChatPrompt } from 'ee/ai/utils';
@@ -15,6 +16,7 @@ import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import explainCodeMutation from 'ee/ai/graphql/explain_code.mutation.graphql';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import LineHighlighter from '~/blob/line_highlighter';
+import { MOCK_USER_MESSAGE, MOCK_TANUKI_MESSAGE } from '../tanuki_bot/mock_data';
 
 const aiResponseFormatted = 'Formatted AI response';
 
@@ -76,7 +78,7 @@ describe('AiGenie', () => {
       },
       stubs: {
         AiGenieChat,
-        UserFeedback,
+        AiGenieChatConversation,
       },
       apolloProvider,
     });
@@ -84,8 +86,9 @@ describe('AiGenie', () => {
   const findButton = () => wrapper.findComponent(GlButton);
   const findGenieChat = () => wrapper.findComponent(AiGenieChat);
   const findCodeBlock = () => wrapper.findComponent(CodeBlockHighlighted);
-  const findUserFeedback = () => wrapper.findComponent(UserFeedback);
   const findLegalWarning = () => wrapper.findByTestId('chat-legal-warning-gitlab-usage');
+  const findAllUserFeedback = () => wrapper.findAllComponents(UserFeedback);
+
   const getRangeAtMock = (top = () => 0) => {
     return jest.fn((rangePosition) => {
       return {
@@ -377,20 +380,21 @@ describe('AiGenie', () => {
     });
   });
 
-  describe('UserFeedback', () => {
-    beforeEach(() => {
-      createComponent();
+  it('renders the User Feedback component for every assistent mesage', () => {
+    createComponent({
+      data: {
+        // the first 2 messages will be ignored in the component
+        // as those normally represent the `system` and the first `user` prompts
+        // we don't care about those here, hence sending `undefined`
+        messages: [undefined, undefined, MOCK_USER_MESSAGE, MOCK_TANUKI_MESSAGE],
+      },
     });
-    it('is rendered', async () => {
-      await simulateSelectText();
-      await requestExplanation();
-      expect(findUserFeedback().exists()).toBe(true);
-    });
-    it('receives expected props', async () => {
-      await simulateSelectText();
-      await requestExplanation();
-      expect(findUserFeedback().props('eventName')).toBe(EXPLAIN_CODE_TRACKING_EVENT_NAME);
-      expect(findUserFeedback().props('promptLocation')).toBe('before_content');
+
+    expect(findAllUserFeedback().length).toBe(1);
+
+    findAllUserFeedback().wrappers.forEach((component) => {
+      expect(component.props('eventName')).toBe(EXPLAIN_CODE_TRACKING_EVENT_NAME);
+      expect(component.props('promptLocation')).toBe('after_content');
     });
   });
 

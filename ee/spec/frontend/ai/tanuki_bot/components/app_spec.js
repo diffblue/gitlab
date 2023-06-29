@@ -4,6 +4,7 @@ import Vuex from 'vuex';
 import VueApollo from 'vue-apollo';
 import TanukiBotChatApp from 'ee/ai/tanuki_bot/components/app.vue';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
+import AiGenieChatConversation from 'ee/ai/components/ai_genie_chat_conversation.vue';
 import UserFeedback from 'ee/ai/components/user_feedback.vue';
 import { i18n } from 'ee/ai/constants';
 import { TANUKI_BOT_TRACKING_EVENT_NAME } from 'ee/ai/tanuki_bot/constants';
@@ -68,6 +69,7 @@ describe('GitLab Chat', () => {
       stubs: {
         AiGenieChat,
         GlSprintf,
+        AiGenieChatConversation,
       },
       provide: {
         glFeatures,
@@ -79,6 +81,7 @@ describe('GitLab Chat', () => {
   const findWarning = () => wrapper.findByTestId('chat-legal-warning');
   const findGenieChat = () => wrapper.findComponent(AiGenieChat);
   const findGeneratedByAI = () => wrapper.findByText(i18n.GENIE_CHAT_LEGAL_GENERATED_BY_AI);
+  const findAllUserFeedback = () => wrapper.findAllComponents(UserFeedback);
 
   describe('rendering', () => {
     beforeEach(() => {
@@ -160,15 +163,16 @@ describe('GitLab Chat', () => {
     });
 
     it('renders the User Feedback component for every assistent mesage', () => {
-      const getPromptLocationSpy = jest.spyOn(AiGenieChat.methods, 'getPromptLocation');
-      getPromptLocationSpy.mockReturnValue('foo');
       createComponent({
         messages: [MOCK_USER_MESSAGE, MOCK_TANUKI_MESSAGE, MOCK_USER_MESSAGE, MOCK_TANUKI_MESSAGE],
       });
-      const userFeedbackComponents = wrapper.findAllComponents(UserFeedback);
-      expect(userFeedbackComponents.length).toBe(2);
-      expect(userFeedbackComponents.at(0).props('eventName')).toBe(TANUKI_BOT_TRACKING_EVENT_NAME);
-      expect(userFeedbackComponents.at(0).props('promptLocation')).toBe('foo');
+
+      expect(findAllUserFeedback().length).toBe(2);
+
+      findAllUserFeedback().wrappers.forEach((component) => {
+        expect(component.props('eventName')).toBe(TANUKI_BOT_TRACKING_EVENT_NAME);
+        expect(component.props('promptLocation')).toBe('after_content');
+      });
     });
 
     describe('when input is submitted', () => {

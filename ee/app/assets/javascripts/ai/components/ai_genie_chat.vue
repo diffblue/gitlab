@@ -12,11 +12,12 @@ import {
   GlFormText,
 } from '@gitlab/ui';
 import { throttle } from 'lodash';
-import { renderMarkdown } from '~/notes/utils';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SafeHtml from '~/vue_shared/directives/safe_html';
-import { i18n, GENIE_CHAT_MODEL_ROLES } from '../constants';
+import { i18n, GENIE_CHAT_RESET_MESSAGE } from '../constants';
 import AiGenieLoader from './ai_genie_loader.vue';
 import AiPredefinedPrompts from './ai_predefined_prompts.vue';
+import AiGenieChatConversation from './ai_genie_chat_conversation.vue';
 
 export default {
   name: 'AiGenieChat',
@@ -32,10 +33,12 @@ export default {
     GlFormText,
     AiGenieLoader,
     AiPredefinedPrompts,
+    AiGenieChatConversation,
   },
   directives: {
     SafeHtml,
   },
+  mixins: [glFeatureFlagMixin()],
   props: {
     messages: {
       type: Array,
@@ -82,27 +85,46 @@ export default {
     hasMessages() {
       return this.messages.length > 0;
     },
+    conversations() {
+      if (!this.hasMessages) {
+        return [];
+      }
+
+      let conversationIndex = 0;
+      const conversations = [[]];
+
+      this.messages.forEach((message) => {
+        if (message.content === GENIE_CHAT_RESET_MESSAGE) {
+          conversationIndex += 1;
+          conversations[conversationIndex] = [];
+        } else {
+          conversations[conversationIndex].push(message);
+        }
+      });
+
+      return conversations;
+    },
+    resetDisabled() {
+      if (this.isLoading || !this.hasMessages) {
+        return true;
+      }
+
+      const lastMessage = this.messages[this.messages.length - 1];
+      return lastMessage.content === GENIE_CHAT_RESET_MESSAGE;
+    },
   },
   watch: {
-    async isLoading() {
+    isLoading() {
       this.isHidden = false;
-      await this.$nextTick();
-      if (this.$refs.lastMessage?.length) {
-        this.$refs.lastMessage
-          .at(0)
-          .scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
-      }
+      this.scrollToBottom();
     },
-    messages() {
+    async messages() {
+      await this.$nextTick();
       this.prompt = '';
     },
   },
-  async mounted() {
-    await this.$nextTick();
-
-    if (this.$refs.drawer) {
-      this.$refs.drawer.scrollTop = this.$refs.drawer.scrollHeight;
-    }
+  mounted() {
+    this.scrollToBottom();
   },
   methods: {
     hideChat() {
@@ -111,6 +133,9 @@ export default {
     },
     sendChatPrompt() {
       if (this.prompt) {
+        if (this.prompt === GENIE_CHAT_RESET_MESSAGE && this.resetDisabled) {
+          return;
+        }
         this.$emit('send-chat-prompt', this.prompt);
       }
     },
@@ -118,27 +143,18 @@ export default {
       this.prompt = prompt;
       this.sendChatPrompt();
     },
-    getPromptLocation(index) {
-      return index ? 'after_content' : 'before_content';
-    },
-    isLastMessage(index) {
-      return index === this.messages.length - 1;
-    },
-    isAssistantMessage(message) {
-      return message.role.toLowerCase() === GENIE_CHAT_MODEL_ROLES.assistant;
-    },
-    isUserMessage(message) {
-      return message.role.toLowerCase() === GENIE_CHAT_MODEL_ROLES.user;
-    },
-    getMessageContent(message) {
-      return renderMarkdown(message.content || message.errors[0]);
-    },
     handleScrolling: throttle(function handleScrollingDebounce() {
       const { scrollTop, offsetHeight, scrollHeight } = this.$refs.drawer;
 
       this.scrolledToBottom = scrollTop + offsetHeight >= scrollHeight;
     }),
-    renderMarkdown,
+    async scrollToBottom() {
+      await this.$nextTick();
+
+      if (this.$refs.drawer) {
+        this.$refs.drawer.scrollTop = this.$refs.drawer.scrollHeight;
+      }
+    },
   },
   i18n,
 };
@@ -207,32 +223,20 @@ export default {
             },
           ]"
         >
-          <template v-if="hasMessages || isLoading">
-            <div
-              v-for="(message, index) in messages"
-              :key="`${message.role}-${index}`"
-              :ref="isLastMessage(index) ? 'lastMessage' : undefined"
-              class="gl-py-3 gl-px-4 gl-mb-4 gl-rounded-lg gl-line-height-20 ai-genie-chat-message"
-              :class="{
-                'gl-ml-auto gl-bg-blue-100 gl-text-blue-900 gl-rounded-bottom-right-none': isUserMessage(
-                  message,
-                ),
-                'gl-rounded-bottom-left-none gl-text-gray-900 gl-bg-gray-50': isAssistantMessage(
-                  message,
-                ),
-                'gl-mb-0!': isLastMessage(index) && !isLoading,
-              }"
-            >
-              <div v-safe-html="getMessageContent(message)"></div>
-              <slot
-                v-if="isAssistantMessage(message)"
-                name="feedback"
-                :prompt-location="getPromptLocation(index)"
-                :message="message"
-              ></slot>
-            </div>
-          </template>
-          <template v-else>
+          <ai-genie-chat-conversation
+            v-for="(conversation, index) in conversations"
+            :key="`conversation-${index}`"
+            :messages="conversation"
+            :is-loading="isLoading"
+            :show-delimiter="index > 0"
+            class="gl-display-flex gl-flex-direction-column gl-justify-content-end"
+          >
+            <template #feedback="{ message, promptLocation }">
+              <slot name="feedback" :prompt-location="promptLocation" :message="message"></slot>
+            </template>
+          </ai-genie-chat-conversation>
+
+          <template v-if="!hasMessages && !isLoading">
             <div key="empty-state" class="gl-display-flex gl-flex-grow-1">
               <gl-empty-state
                 :svg-path="emptySvgPath"
@@ -270,7 +274,7 @@ export default {
       class="gl-drawer-footer gl-drawer-footer-sticky gl-p-5 gl-border-t gl-bg-white"
       :class="{ 'gl-drawer-body-scrim-on-footer': !scrolledToBottom }"
     >
-      <gl-form @submit.stop.prevent="sendChatPrompt">
+      <gl-form data-testid="chat-prompt-form" @submit.stop.prevent="sendChatPrompt">
         <gl-form-input-group>
           <div
             class="ai-genie-chat-input gl-flex-grow-1 gl-vertical-align-top gl-max-w-full gl-min-h-8 gl-inset-border-1-gray-400 gl-rounded-base"
