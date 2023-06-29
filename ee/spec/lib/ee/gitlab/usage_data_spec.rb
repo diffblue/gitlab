@@ -96,7 +96,6 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
           ldap_users
           operations_dashboard_default_dashboard
           operations_dashboard_users_with_projects_added
-          projects_jira_issuelist_active
           projects_mirrored_with_pipelines_enabled
           projects_reporting_ci_cd_back_to_github
           status_page_issues
@@ -108,7 +107,6 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
       expect(count_data[:status_page_projects]).to eq(1)
       expect(count_data[:status_page_issues]).to eq(1)
       expect(count_data[:issues_with_health_status]).to eq(2)
-      expect(count_data[:projects_jira_issuelist_active]).to eq(1)
       expect(count_data[:epic_issues]).to eq(2)
     end
 
