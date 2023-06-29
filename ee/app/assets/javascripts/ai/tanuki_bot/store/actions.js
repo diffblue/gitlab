@@ -1,9 +1,21 @@
 import { MESSAGE_TYPES } from '../constants';
+import { GENIE_CHAT_RESET_MESSAGE } from '../../constants';
 import * as types from './mutation_types';
 
 export const sendUserMessage = ({ commit }, msg) => {
   commit(types.SET_LOADING, true);
   commit(types.ADD_USER_MESSAGE, msg);
+};
+
+export const receiveMutationResponse = ({ commit }, { data, message }) => {
+  const hasErrors = data?.aiAction?.errors?.length > 0;
+
+  if (hasErrors) {
+    commit(types.SET_LOADING, false);
+    commit(types.ADD_ERROR_MESSAGE);
+  } else if (message === GENIE_CHAT_RESET_MESSAGE) {
+    commit(types.SET_LOADING, false);
+  }
 };
 
 export const receiveTanukiBotMessage = ({ commit, dispatch }, data) => {

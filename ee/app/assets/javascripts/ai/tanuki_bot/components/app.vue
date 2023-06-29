@@ -94,6 +94,7 @@ export default {
       'sendUserMessage',
       'receiveTanukiBotMessage',
       'tanukiBotMessageError',
+      'receiveMutationResponse',
       'setMessages',
     ]),
     sendMessage(question) {
@@ -106,6 +107,9 @@ export default {
             question,
             resourceId: this.resourceId || this.userId,
           },
+        })
+        .then(({ data }) => {
+          this.receiveMutationResponse({ data, message: question });
         })
         .catch(() => {
           this.tanukiBotMessageError();

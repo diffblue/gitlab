@@ -1962,6 +1962,9 @@ msgstr ""
 msgid "AI|May provide inappropriate responses not representative of GitLab's views. Do not input personal data."
 msgstr ""
 
+msgid "AI|New chat"
+msgstr ""
+
 msgid "AI|Populate issue description"
 msgstr ""
 

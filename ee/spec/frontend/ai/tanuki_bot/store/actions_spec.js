@@ -2,6 +2,7 @@ import * as actions from 'ee/ai/tanuki_bot/store/actions';
 import * as types from 'ee/ai/tanuki_bot/store/mutation_types';
 import createState from 'ee/ai/tanuki_bot/store/state';
 import testAction from 'helpers/vuex_action_helper';
+import { GENIE_CHAT_RESET_MESSAGE } from 'ee/ai/constants';
 import {
   MOCK_USER_MESSAGE,
   MOCK_TANUKI_MESSAGE,
@@ -69,6 +70,32 @@ describe('TanukiBot Store Actions', () => {
           state,
           expectedActions: [{ type: 'tanukiBotMessageError' }],
         });
+      });
+    });
+  });
+
+  describe('receiveMutationResponse', () => {
+    it('on success it should dispatch the correct mutations', () => {
+      return testAction({
+        action: actions.receiveMutationResponse,
+        payload: { data: { aiAction: { errors: [] } }, message: GENIE_CHAT_RESET_MESSAGE },
+        state,
+        expectedMutations: [{ type: types.SET_LOADING, payload: false }],
+      });
+    });
+
+    it('on error it should dispatch the correct mutations', () => {
+      return testAction({
+        action: actions.receiveMutationResponse,
+        payload: {
+          data: { aiAction: { errors: ['some error'] } },
+          message: GENIE_CHAT_RESET_MESSAGE,
+        },
+        state,
+        expectedMutations: [
+          { type: types.SET_LOADING, payload: false },
+          { type: types.ADD_ERROR_MESSAGE },
+        ],
       });
     });
   });

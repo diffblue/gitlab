@@ -1,15 +1,23 @@
-import { GlEmptyState, GlButton, GlBadge } from '@gitlab/ui';
+import { GlEmptyState, GlBadge } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import AiGenieLoader from 'ee/ai/components/ai_genie_loader.vue';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
+import AiGenieChatConversation from 'ee/ai/components/ai_genie_chat_conversation.vue';
 import AiPredefinedPrompts from 'ee/ai/components/ai_predefined_prompts.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { i18n, GENIE_CHAT_MODEL_ROLES } from 'ee/ai/constants';
+import waitForPromises from 'helpers/wait_for_promises';
+import { i18n, GENIE_CHAT_MODEL_ROLES, GENIE_CHAT_RESET_MESSAGE } from 'ee/ai/constants';
 
 describe('AiGenieChat', () => {
   let wrapper;
 
-  const createComponent = ({ propsData = {}, data = {}, scopedSlots = {}, slots = {} } = {}) => {
+  const createComponent = ({
+    propsData = {},
+    data = {},
+    scopedSlots = {},
+    slots = {},
+    glFeatures = { aiChatHistoryContext: true },
+  } = {}) => {
     wrapper = shallowMountExtended(AiGenieChat, {
       propsData,
       data() {
@@ -22,15 +30,19 @@ describe('AiGenieChat', () => {
       stubs: {
         AiGenieLoader,
       },
+      provide: {
+        glFeatures,
+      },
     });
   };
 
   const findChatComponent = () => wrapper.findByTestId('chat-component');
-  const findCloseButton = () => wrapper.findComponent(GlButton);
+  const findCloseButton = () => wrapper.findByTestId('chat-close-button');
+  const findChatConversations = () => wrapper.findAllComponents(AiGenieChatConversation);
   const findCustomLoader = () => wrapper.findComponent(AiGenieLoader);
-  const findChatMessages = () => wrapper.findAll('.ai-genie-chat-message');
   const findError = () => wrapper.findByTestId('chat-error');
   const findFooter = () => wrapper.findByTestId('chat-footer');
+  const findPromptForm = () => wrapper.findByTestId('chat-prompt-form');
   const findGeneratedByAI = () => wrapper.findByText(i18n.GENIE_CHAT_LEGAL_GENERATED_BY_AI);
   const findBadge = () => wrapper.findComponent(GlBadge);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
@@ -78,55 +90,56 @@ describe('AiGenieChat', () => {
       });
     });
 
+    describe('conversations', () => {
+      it('renders one conversation when no reset message is present', () => {
+        const newMessages = [
+          {
+            role: GENIE_CHAT_MODEL_ROLES.user,
+            content: 'How are you?',
+          },
+          {
+            role: GENIE_CHAT_MODEL_ROLES.assistant,
+            content: 'Great!',
+          },
+        ];
+        createComponent({ propsData: { messages: newMessages } });
+
+        expect(findChatConversations().length).toEqual(1);
+        expect(findChatConversations().at(0).props('showDelimiter')).toEqual(false);
+      });
+
+      it('renders one conversation when no message is present', () => {
+        const newMessages = [];
+        createComponent({ propsData: { messages: newMessages } });
+
+        expect(findChatConversations().length).toEqual(0);
+      });
+
+      it('splits it up into multiple conversations when reset message is present', () => {
+        const newMessages = [
+          {
+            role: GENIE_CHAT_MODEL_ROLES.user,
+            content: 'Message 1',
+          },
+          {
+            role: GENIE_CHAT_MODEL_ROLES.assistant,
+            content: 'Great!',
+          },
+          {
+            role: GENIE_CHAT_MODEL_ROLES.user,
+            content: GENIE_CHAT_RESET_MESSAGE,
+          },
+        ];
+        createComponent({ propsData: { messages: newMessages } });
+
+        expect(findChatConversations().length).toEqual(2);
+        expect(findChatConversations().at(0).props('showDelimiter')).toEqual(false);
+        expect(findChatConversations().at(1).props('showDelimiter')).toEqual(true);
+      });
+    });
+
     describe('slots', () => {
       const slotContent = 'As Gregor Samsa awoke one morning from uneasy dreams';
-
-      describe('the feedback slot', () => {
-        const slotElement = `<template>${slotContent}</template>`;
-
-        it.each(['assistant', 'ASSISTANT'])(
-          'renders the content passed to the "feedback" slot when role is %s',
-          (role) => {
-            createComponent({
-              propsData: {
-                messages: [
-                  {
-                    role: GENIE_CHAT_MODEL_ROLES.user,
-                    content: 'User foo',
-                  },
-                  {
-                    role,
-                    content: 'Assistent bar',
-                  },
-                ],
-              },
-              scopedSlots: { feedback: slotElement },
-            });
-            expect(findChatMessages().at(0).text()).not.toContain(slotContent);
-            expect(findChatMessages().at(1).text()).toContain(slotContent);
-          },
-        );
-
-        it('sends correct `message` in the `slotProps` for the components users to consume', () => {
-          createComponent({
-            propsData: {
-              messages: [
-                {
-                  role: GENIE_CHAT_MODEL_ROLES.assistant,
-                  content: slotContent,
-                },
-              ],
-            },
-            scopedSlots: {
-              feedback: `<template #feedback="slotProps">
-              Hello {{ slotProps.message.content }}
-              </template>
-            `,
-            },
-          });
-          expect(wrapper.text()).toContain(`Hello ${slotContent}`);
-        });
-      });
 
       it.each`
         desc                 | slot           | content        | isChatAvailable | shouldRenderSlotContent
@@ -159,6 +172,89 @@ describe('AiGenieChat', () => {
     });
   });
 
+  describe('chat', () => {
+    it('does not render prompt input by default', () => {
+      createComponent({ propsData: { messages } });
+      expect(findChatInput().exists()).toBe(false);
+    });
+
+    it('renders prompt input if `isChatAvailable` prop is `true`', () => {
+      createComponent({ propsData: { messages, isChatAvailable: true } });
+      expect(findChatInput().exists()).toBe(true);
+    });
+
+    it('renders the legal disclaimer if `isChatAvailable` prop is `true', () => {
+      createComponent({ propsData: { messages, isChatAvailable: true } });
+      expect(findLegalDisclaimer().exists()).toBe(true);
+    });
+
+    describe('reset', () => {
+      const clickSubmit = () =>
+        findPromptForm().vm.$emit('submit', {
+          preventDefault: jest.fn(),
+          stopPropagation: jest.fn(),
+        });
+
+      it('emits the event with the reset prompt', () => {
+        createComponent({
+          propsData: { messages, isChatAvailable: true },
+          data: { prompt: GENIE_CHAT_RESET_MESSAGE },
+        });
+        clickSubmit();
+
+        expect(wrapper.emitted('send-chat-prompt')).toEqual([[GENIE_CHAT_RESET_MESSAGE]]);
+        expect(findChatConversations().length).toEqual(1);
+      });
+
+      it('reset does nothing when chat is loading', () => {
+        createComponent({
+          propsData: { messages, isChatAvailable: true, isLoading: true },
+          data: { prompt: GENIE_CHAT_RESET_MESSAGE },
+        });
+        clickSubmit();
+
+        expect(wrapper.emitted('send-chat-prompt')).toBeUndefined();
+        expect(findChatConversations().length).toEqual(1);
+      });
+
+      it('reset does nothing when there are no messages', () => {
+        createComponent({
+          propsData: { messages: [], isChatAvailable: true },
+          data: { prompt: GENIE_CHAT_RESET_MESSAGE },
+        });
+        clickSubmit();
+
+        expect(wrapper.emitted('send-chat-prompt')).toBeUndefined();
+        expect(findChatConversations().length).toEqual(0);
+      });
+
+      it('reset does nothing when last message was a reset message', () => {
+        const existingMessages = [
+          ...messages,
+          {
+            role: GENIE_CHAT_MODEL_ROLES.user,
+            content: GENIE_CHAT_RESET_MESSAGE,
+          },
+        ];
+        createComponent({
+          propsData: {
+            isLoading: false,
+            messages: existingMessages,
+            isChatAvailable: true,
+          },
+          data: { prompt: GENIE_CHAT_RESET_MESSAGE },
+        });
+        clickSubmit();
+
+        expect(wrapper.emitted('send-chat-prompt')).toBeUndefined();
+
+        expect(findChatConversations().length).toEqual(2);
+        expect(findChatConversations().at(0).props('messages')).toEqual(messages);
+        expect(findChatConversations().at(1).props('messages')).toEqual([]);
+      });
+    });
+  });
+
   describe('interaction', () => {
     it('is hidden after the header button is clicked', async () => {
       findCloseButton().vm.$emit('click');
@@ -179,6 +275,20 @@ describe('AiGenieChat', () => {
       expect(findChatComponent().exists()).toBe(true);
     });
 
+    it('resets the prompt when new messages are added', async () => {
+      const prompt = 'foo';
+      createComponent({ propsData: { isChatAvailable: true }, data: { prompt } });
+      expect(findChatInput().props('value')).toBe(prompt);
+      // setProps is justified here because we are testing the component's
+      // reactive behavior which consistutes an exception
+      // See https://docs.gitlab.com/ee/development/fe_guide/style/vue.html#setting-component-state
+      wrapper.setProps({
+        messages,
+      });
+      await waitForPromises();
+      expect(findChatInput().props('value')).toBe('');
+    });
+
     it('renders custom loader when isLoading', () => {
       createComponent({ propsData: { isLoading: true } });
       expect(findCustomLoader().exists()).toBe(true);
@@ -188,25 +298,6 @@ describe('AiGenieChat', () => {
       const errorMessage = 'Something went Wrong';
       createComponent({ propsData: { error: errorMessage } });
       expect(findError().text()).toBe(errorMessage);
-    });
-
-    it('renders messages when messages are passed', () => {
-      createComponent({ propsData: { messages } });
-      expect(findChatMessages().at(0).text()).toBe(promptStr);
-    });
-
-    it('converts content of the message from Markdown into HTML', () => {
-      createComponent({
-        propsData: {
-          messages: [
-            {
-              role: GENIE_CHAT_MODEL_ROLES.user,
-              content: '**foo**',
-            },
-          ],
-        },
-      });
-      expect(findChatMessages().at(0).element.innerHTML).toContain('<strong>foo</strong>');
     });
 
     it('hides the chat on button click and emits an event', () => {
@@ -220,23 +311,6 @@ describe('AiGenieChat', () => {
     it('does not render the empty state when there are messages available', () => {
       createComponent({ propsData: { messages } });
       expect(findEmptyState().exists()).toBe(false);
-    });
-
-    describe('chat', () => {
-      it('does not render prompt input by default', () => {
-        createComponent({ propsData: { messages } });
-        expect(findChatInput().exists()).toBe(false);
-      });
-
-      it('renders prompt input if `isChatAvailable` prop is `true`', () => {
-        createComponent({ propsData: { messages, isChatAvailable: true } });
-        expect(findChatInput().exists()).toBe(true);
-      });
-
-      it('renders the legal disclaimer if `isChatAvailable` prop is `true', () => {
-        createComponent({ propsData: { messages, isChatAvailable: true } });
-        expect(findLegalDisclaimer().exists()).toBe(true);
-      });
     });
 
     describe('scrolling', () => {

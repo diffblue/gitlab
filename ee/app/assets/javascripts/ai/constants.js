@@ -28,6 +28,7 @@ export const i18n = {
   GENIE_CHAT_LEGAL_DISCLAIMER: s__(
     "AI|May provide inappropriate responses not representative of GitLab's views. Do not input personal data.",
   ),
+  GENIE_CHAT_NEW_CHAT: s__('AI|New chat'),
 };
 export const TOO_LONG_ERROR_TYPE = 'too-long';
 export const AI_GENIE_DEBOUNCE = 300;
@@ -56,3 +57,4 @@ export const FEEDBACK_OPTIONS = [
 ];
 
 export const EXPLAIN_CODE_TRACKING_EVENT_NAME = 'explain_code_blob_viewer';
+export const GENIE_CHAT_RESET_MESSAGE = '/reset';
