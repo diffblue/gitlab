@@ -18,7 +18,9 @@ options:
     - p_ci_templates_security_dast_on_demand_api_scan
 performance_indicator_type: []
 distribution:
+- ce
 - ee
 tier:
-#- premium
+- free
+- premium
 - ultimate
