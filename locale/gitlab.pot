@@ -2442,9 +2442,6 @@ msgstr ""
 msgid "AccessTokens|Created"
 msgstr ""
 
-msgid "AccessTokens|Enter the name of your application, and we'll return a unique %{type}."
-msgstr ""
-
 msgid "AccessTokens|Feed token"
 msgstr ""
 
