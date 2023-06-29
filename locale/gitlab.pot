@@ -31252,6 +31252,9 @@ msgstr ""
 msgid "Notify|Committed by"
 msgstr ""
 
+msgid "Notify|Could not find the following %{column} values in %{project}%{parent_groups_clause}: %{error_lines}"
+msgstr ""
+
 msgid "Notify|Don't want to receive updates from GitLab administrators?"
 msgstr ""
 
@@ -31367,6 +31370,9 @@ msgid "Notify|Pipeline has been fixed and #%{pipeline_id} has passed!"
 msgstr ""
 
 msgid "Notify|Please check that your service provider supports email subaddressing and that you have set up email forwarding correctly."
+msgstr ""
+
+msgid "Notify|Please fix the errors above and try the CSV import again."
 msgstr ""
 
 msgid "Notify|Please fix the lines with errors and try the CSV import again."
