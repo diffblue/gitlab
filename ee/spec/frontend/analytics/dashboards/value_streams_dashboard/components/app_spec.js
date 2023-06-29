@@ -7,7 +7,7 @@ import {
   DASHBOARD_DOCS_LINK,
 } from 'ee/analytics/dashboards/constants';
 import * as api from 'ee/analytics/dashboards/api';
-import Component from 'ee/analytics/dashboards/components/app.vue';
+import Component from 'ee/analytics/dashboards/value_streams_dashboard/components/app.vue';
 import DoraVisualization from 'ee/analytics/dashboards/components/dora_visualization.vue';
 
 describe('Executive dashboard app', () => {
