@@ -10,6 +10,12 @@ RSpec.describe Elastic::DataMigrationService, :elastic, :clean_gitlab_redis_shar
       expect(subject.migrations.count).to eq(subject.migrations.map(&:name).uniq.count)
     end
 
+    it 'all migration versions follow the same format', :aggregate_failures do
+      subject.migrations.each do |migration|
+        expect(migration.version.to_s.length).to eq(14), "#{migration.name} version format is incorrect"
+      end
+    end
+
     context 'migration_files stubbed' do
       let(:migration_files) { %w(ee/elastic/migrate/20201105180000_example_migration.rb ee/elastic/migrate/20201201130000_example_migration.rb) }
 
