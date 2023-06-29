@@ -27,7 +27,7 @@ RSpec.describe 'Groups > Members > Manage groups', :js, :saas, feature_category:
       group_to_add.add_owner(user)
 
       visit group_group_members_path(group)
-      add_group(group_to_add.name, 'Maintainer')
+      invite_group(group_to_add.name, role: 'Maintainer')
 
       expect(page).to have_content('Invited group allowed email domains must contain a subset of the'\
         ' allowed email domains of the root ancestor group')
@@ -40,7 +40,7 @@ RSpec.describe 'Groups > Members > Manage groups', :js, :saas, feature_category:
       group_to_add.add_owner(user)
 
       visit group_group_members_path(group)
-      add_group(group_to_add.name, role)
+      invite_group(group_to_add.name, role: role)
 
       expect(page).not_to have_button 'Continue'
 
@@ -219,25 +219,13 @@ RSpec.describe 'Groups > Members > Manage groups', :js, :saas, feature_category:
     it_behaves_like "doesn't trigger an overage modal when adding a group with a given role", 'Reporter'
   end
 
-  def add_group(name, role, expires_at: nil)
-    click_on 'Invite a group'
-
-    click_on 'Select a group'
-    wait_for_requests
-    click_button name
-    choose_options(role, expires_at)
-
-    submit_invites
-    wait_for_requests
-  end
-
   def add_group_with_one_extra_user(role = 'Developer')
     group.add_owner(user)
     group_to_add.add_owner(user)
     group_to_add.add_developer(user2)
 
     visit group_group_members_path(group)
-    add_group(group_to_add.name, role)
+    invite_group(group_to_add.name, role: role)
 
     expect(page).to have_content("Your subscription includes 1 seat. If you continue, the #{group.name} group will"\
       " have 2 seats in use and will be billed for the overage. Learn more.")

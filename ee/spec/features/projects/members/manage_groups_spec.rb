@@ -14,7 +14,7 @@ RSpec.describe 'Projects > Members > Manage groups', feature_category: :groups_a
 
       role = 'Maintainer'
       visit project_project_members_path(project)
-      add_group(group_to_add.name, role)
+      invite_group(group_to_add.name, role: role)
 
       page.refresh
 
@@ -34,7 +34,7 @@ RSpec.describe 'Projects > Members > Manage groups', feature_category: :groups_a
       sign_in(user)
 
       visit project_project_members_path(project)
-      add_group(group_to_add.name, 'Maintainer')
+      invite_group(group_to_add.name, role: 'Maintainer')
 
       error_msg = 'Invited group allowed email domains must contain a subset of the allowed email domains'\
       ' of the root ancestor group'
@@ -115,17 +115,5 @@ RSpec.describe 'Projects > Members > Manage groups', feature_category: :groups_a
 
       it_behaves_like 'restricted membership by email domain'
     end
-  end
-
-  def add_group(name, role, expires_at: nil)
-    click_on 'Invite a group'
-
-    click_on 'Select a group'
-    wait_for_requests
-    click_button name
-    choose_options(role, expires_at)
-
-    submit_invites
-    wait_for_requests
   end
 end
