@@ -31,6 +31,7 @@ module Elastic
         indexes :author_id, type: :integer
         indexes :confidential, type: :boolean
         indexes :hidden, type: :boolean
+        indexes :archived, type: :boolean
         indexes :assignee_id, type: :integer
 
         indexes :visibility_level, type: :integer

@@ -51,6 +51,10 @@ module Elastic
           unless options[:current_user]&.can_admin_all_resources?
             query_hash = context.name(:hidden) { hidden_filter(query_hash) }
           end
+
+          if Feature.enabled?(:search_issues_hide_archived_projects) && ::Elastic::DataMigrationService.migration_has_finished?(:backfill_archived_on_issues)
+            query_hash = context.name(:archived) { archived_filter(query_hash) } unless options[:include_archived]
+          end
         end
 
         return apply_aggregation(query_hash) if options[:aggregation]
@@ -158,6 +162,11 @@ module Elastic
 
       def hidden_filter(query_hash)
         query_hash[:query][:bool][:filter] << { term: { hidden: { _name: context.name(:non_hidden), value: false } } }
+        query_hash
+      end
+
+      def archived_filter(query_hash)
+        query_hash[:query][:bool][:filter] << { term: { archived: { _name: context.name(:non_archived), value: false } } }
         query_hash
       end
 

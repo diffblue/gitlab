@@ -112,7 +112,29 @@ RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feat
         it 'filters the labels in the query' do
           result.response
 
-          assert_named_queries('issue:match:search_terms', 'issue:filter:label_ids')
+          assert_named_queries('issue:match:search_terms', 'issue:filter:label_ids', 'issue:archived:non_archived')
+        end
+
+        context 'when search_issues_hide_archived_projects is disabled' do
+          before do
+            stub_feature_flags(search_issues_hide_archived_projects: false)
+          end
+
+          it 'does not have a filter for archived' do
+            result.response
+
+            assert_named_queries('issue:match:search_terms', 'issue:filter:label_ids')
+          end
+        end
+      end
+
+      context 'when include_archived is set' do
+        let(:options) { { include_archived: true } }
+
+        it 'does not have a filter for archived' do
+          result.response
+
+          assert_named_queries('issue:match:search_terms')
         end
       end
     end

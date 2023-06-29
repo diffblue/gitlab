@@ -132,14 +132,27 @@ RSpec.describe Issue, :elastic, feature_category: :global_search do
               'assignee_id' => [assignee.id],
               'issues_access_level' => ProjectFeature::ENABLED,
               'visibility_level' => Gitlab::VisibilityLevel::INTERNAL,
-              'hashed_root_namespace_id' => issue.project.namespace.hashed_root_namespace_id
+              'hashed_root_namespace_id' => issue.project.namespace.hashed_root_namespace_id,
+              'hidden' => issue.hidden?,
+              'archived' => issue.project.archived?
             })
     end
 
     it 'returns json with all needed elements' do
-      set_elasticsearch_migration_to :add_hashed_root_namespace_id_to_issues, including: true
-      expected_hash['hidden'] = issue.hidden?
       expect(issue.__elasticsearch__.as_indexed_json).to eq(expected_hash)
+    end
+
+    it 'contains the expected mappings' do
+      issue_proxy = Elastic::Latest::ApplicationClassProxy.new(described_class, use_separate_indices: true)
+      expected_keys = issue_proxy.mappings.to_hash[:properties].keys.map(&:to_s)
+
+      keys = issue.__elasticsearch__.as_indexed_json.keys
+      expect(keys).to match_array(expected_keys)
+    end
+
+    it 'does not include archived when migration has not finished' do
+      set_elasticsearch_migration_to :add_archived_to_issues, including: false
+      expect(issue.__elasticsearch__.as_indexed_json).not_to include('archived')
     end
 
     it 'does not have an N+1' do

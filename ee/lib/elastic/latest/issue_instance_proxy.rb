@@ -32,6 +32,10 @@ module Elastic
           data['hashed_root_namespace_id'] = target.project.namespace.hashed_root_namespace_id
         end
 
+        if ::Elastic::DataMigrationService.migration_has_finished?(:add_archived_to_issues)
+          data['archived'] = target.project.archived?
+        end
+
         data.merge(generic_attributes)
       end
 

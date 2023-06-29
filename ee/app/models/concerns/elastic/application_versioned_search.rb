@@ -115,7 +115,9 @@ module Elastic
         # Sidekiq to avoid errors occuring when the job is picked up.
         raise "Invalid association to index. \"#{association_name}\" is either not a collection or not an association. Hint: You must declare the has_many before declaring elastic_index_dependant_association." unless reflect_on_association(association_name)&.collection?
 
-        elastic_index_dependants << { association_name: association_name, on_change: on_change, depends_on_finished_migration: depends_on_finished_migration }.compact
+        Array.wrap(on_change).each do |change|
+          elastic_index_dependants << { association_name: association_name, on_change: change, depends_on_finished_migration: depends_on_finished_migration }.compact
+        end
       end
 
       def elastic_index_dependants
