@@ -8,11 +8,12 @@ RSpec.configure do |config|
       next
     end
 
-    example.run
+    with_net_connect_allowed do
+      example.run
+    end
   end
 
   config.before(:each, :real_ai_request) do
-    WebMock.allow_net_connect!
     allow(Gitlab::CurrentSettings.current_application_settings).to receive(:anthropic_api_key)
       .at_least(:once).and_return(ENV['ANTHROPIC_API_KEY'])
   end
