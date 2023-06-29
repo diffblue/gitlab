@@ -47,11 +47,19 @@ Code Suggestions may produce [low-quality or incomplete suggestions](#model-accu
 
 The best results from Code Suggestions are expected [for languages the Google Vertex AI Codey APIs](https://cloud.google.com/vertex-ai/docs/generative-ai/code/code-models-overview#supported_coding_languages) directly support:
 
+- C++
+- C#
 - Go
 - Google SQL
 - Java
 - JavaScript
+- Kotlin
+- PHP
 - Python
+- Ruby
+- Rust
+- Scala
+- Swift
 - TypeScript
 
  Supported [code infrastructure interfaces](https://cloud.google.com/vertex-ai/docs/generative-ai/code/code-models-overview#supported_code_infrastructure_interfaces) include:
