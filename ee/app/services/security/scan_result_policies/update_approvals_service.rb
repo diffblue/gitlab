@@ -13,24 +13,28 @@ module Security
       end
 
       def execute
-        return if Feature.disabled?(:security_policy_approval_notification, pipeline.project) && scan_removed?
-
         approval_rules = merge_request.approval_rules.scan_finding
         return if approval_rules.empty?
 
-        violated_rules, unviolated_rules = approval_rules.partition do |approval_rule|
-          approval_rule = approval_rule.source_rule if approval_rule.source_rule
+        violated_rules, unviolated_rules = partition_rules(approval_rules)
 
-          violates_approval_rule?(approval_rule)
-        end
-
-        ApprovalMergeRequestRule.remove_required_approved(unviolated_rules) if unviolated_rules.any? && !scan_removed?
-        generate_policy_bot_comment(violated_rules.any? || scan_removed?)
+        ApprovalMergeRequestRule.remove_required_approved(unviolated_rules) if unviolated_rules.any?
+        generate_policy_bot_comment(violated_rules.any?)
       end
 
       private
 
       delegate :project, to: :pipeline
+
+      def partition_rules(approval_rules)
+        approval_rules.partition do |approval_rule|
+          approval_rule = approval_rule.source_rule if approval_rule.source_rule
+
+          next true if scan_removed?(approval_rule)
+
+          violates_approval_rule?(approval_rule)
+        end
+      end
 
       def violates_approval_rule?(approval_rule)
         target_pipeline_uuids = target_pipeline_findings_uuids(approval_rule)
@@ -41,14 +45,28 @@ module Security
         false
       end
 
-      def scan_removed?
-        if multi_pipeline_scan_result_policies_enabled?
-          return (security_scan_types(related_target_pipeline_ids) - security_scan_types(related_pipeline_ids)).any?
-        end
+      def scan_removed?(approval_rule)
+        scan_types_diff = target_pipeline_security_scan_types - pipeline_security_scan_types
+        scanners = approval_rule.scanners
 
-        (Array.wrap(target_pipeline&.security_scan_types) - pipeline.security_scan_types).any?
+        return scan_types_diff.any? if scanners.empty?
+
+        (scan_types_diff & scanners).any?
       end
-      strong_memoize_attr :scan_removed?
+
+      def pipeline_security_scan_types
+        return security_scan_types(related_pipeline_ids) if multi_pipeline_scan_result_policies_enabled?
+
+        pipeline.security_scan_types
+      end
+      strong_memoize_attr :pipeline_security_scan_types
+
+      def target_pipeline_security_scan_types
+        return security_scan_types(related_target_pipeline_ids) if multi_pipeline_scan_result_policies_enabled?
+
+        target_pipeline&.security_scan_types || []
+      end
+      strong_memoize_attr :target_pipeline_security_scan_types
 
       def generate_policy_bot_comment(violated_policy)
         return if Feature.disabled?(:security_policy_approval_notification, pipeline.project)
