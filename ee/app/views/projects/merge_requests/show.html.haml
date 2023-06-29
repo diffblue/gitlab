@@ -1,5 +1,8 @@
 = render_ce "projects/merge_requests/show"
 
+- if ::Llm::MergeRequests::SummarizeDiffService.enabled?(group: @merge_request.project.root_ancestor, user: current_user)
+  #js-summary-notes{ data: { project_path: @project.full_path, iid: @merge_request.iid, empty_state_svg: image_path('illustrations/empty-state/empty-activity-md.svg') } }
+
 = javascript_tag do
   :plain
     // Append static, server-generated data not included in merge request entity (EE-Only)

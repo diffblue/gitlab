@@ -12,6 +12,8 @@ describe('UserFeedback', () => {
   const createComponent = (props = {}) => {
     wrapper = shallowMountExtended(UserFeedback, {
       propsData: {
+        eventName: EXPLAIN_CODE_TRACKING_EVENT_NAME,
+        promptLocation,
         ...props,
       },
     });
@@ -21,15 +23,20 @@ describe('UserFeedback', () => {
   const firstButton = () => wrapper.findAllComponents(GlButton).at(0);
 
   beforeEach(() => {
-    createComponent({ eventName: EXPLAIN_CODE_TRACKING_EVENT_NAME, promptLocation });
     jest.spyOn(Tracking, 'event');
   });
 
   it('renders buttons based on provideed options', () => {
+    createComponent();
+
     expect(findButtons()).toHaveLength(FEEDBACK_OPTIONS.length);
   });
 
   describe('button', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
     it('has correct text', () => {
       expect(firstButton().text()).toBe(FEEDBACK_OPTIONS[0].title);
     });
@@ -40,6 +47,10 @@ describe('UserFeedback', () => {
   });
 
   describe('tracking', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
     it('fires tracking event  when component is destroyed if button was clicked', () => {
       firstButton().vm.$emit('click');
 
@@ -69,6 +80,30 @@ describe('UserFeedback', () => {
       expect(findButtons()).toHaveLength(1);
       expect(firstButton().attributes('disabled')).toBeDefined();
       expect(firstButton().text()).toBe(FEEDBACK_OPTIONS[selectedButtonIndex].title);
+    });
+  });
+
+  describe('icon only', () => {
+    it('does not render button with text', () => {
+      createComponent({
+        eventName: EXPLAIN_CODE_TRACKING_EVENT_NAME,
+        promptLocation,
+        iconOnly: true,
+      });
+
+      expect(firstButton().classes()).toContain('btn-icon');
+      expect(firstButton().text()).not.toBe(FEEDBACK_OPTIONS[0].title);
+    });
+
+    it('renders text after click', async () => {
+      createComponent({ iconOnly: true });
+
+      findButtons().at(0).vm.$emit('click');
+
+      await nextTick();
+
+      expect(firstButton().classes()).not.toContain('btn-icon');
+      expect(firstButton().text()).toBe(FEEDBACK_OPTIONS[0].title);
     });
   });
 });
