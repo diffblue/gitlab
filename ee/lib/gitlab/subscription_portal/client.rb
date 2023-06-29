@@ -43,20 +43,22 @@ module Gitlab
           when Net::HTTPSuccess
             { success: true, data: parsed_response }
           when Net::HTTPUnprocessableEntity
-            log_error(http_response)
-            { success: false, data: parsed_response.slice('errors', 'error_attribute_map') }
+            errors = parsed_response.slice('errors', 'error_attribute_map')
+            log_error(http_response, errors)
+            { success: false, data: errors }
           else
-            log_error(http_response)
-            { success: false, data: { errors: "HTTP status code: #{http_response.code}" } }
+            errors = "HTTP status code: #{http_response.code}"
+            log_error(http_response, errors)
+            { success: false, data: { errors: errors } }
           end
         end
 
-        def log_error(response)
+        def log_error(response, errors)
           Gitlab::ErrorTracking.log_exception(
             ResponseError.new('Unsuccessful response code'),
             {
               status: response.code,
-              message: response.message,
+              message: errors,
               body: response.body
             }
           )
