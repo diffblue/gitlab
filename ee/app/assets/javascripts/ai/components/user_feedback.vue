@@ -20,6 +20,21 @@ export default {
       required: false,
       default: '',
     },
+    size: {
+      type: String,
+      required: false,
+      default: 'medium',
+    },
+    category: {
+      type: String,
+      required: false,
+      default: 'primary',
+    },
+    iconOnly: {
+      type: Boolean,
+      required: false,
+      defualt: false,
+    },
   },
   data() {
     return {
@@ -31,6 +46,11 @@ export default {
       return this.feedbackValue
         ? FEEDBACK_OPTIONS.find((option) => option.value === this.feedbackValue)
         : null;
+    },
+    feedbackOptions() {
+      if (!this.feedbackValue) return FEEDBACK_OPTIONS;
+
+      return FEEDBACK_OPTIONS.filter(({ value }) => value === this.feedbackValue);
     },
   },
   methods: {
@@ -50,27 +70,22 @@ export default {
 </script>
 
 <template>
-  <div class="gl-display-flex gl-mt-6 gl-pb-5">
-    <template v-if="!feedbackValue">
-      <gl-button
-        v-for="option in $options.feedbackOptions"
-        :key="option.value"
-        class="gl-mr-2"
-        variant="default"
-        button-text-classes="gl-xs-display-none"
-        :icon="option.icon"
-        @click="trackFeedback(option.value)"
-      >
-        {{ option.title }}
-      </gl-button>
-    </template>
+  <div class="gl-display-flex" :class="{ 'gl-mt-6 gl-pb-5': size === 'medium' }">
     <gl-button
-      v-if="savedFeedbackOption"
-      disabled
+      v-for="option in feedbackOptions"
+      :key="`${option.value}-${feedbackValue}`"
+      class="gl-mr-2"
+      :class="{ 'btn-icon': feedbackValue === '' && iconOnly }"
       variant="default"
-      :icon="savedFeedbackOption.icon"
+      :category="category"
+      button-text-classes="gl-xs-display-none"
+      :size="size"
+      :icon="option.icon"
+      :aria-label="option.title"
+      :disabled="option.value === feedbackValue"
+      @click="trackFeedback(option.value)"
     >
-      {{ savedFeedbackOption.title }}
+      <template v-if="feedbackValue !== '' || !iconOnly">{{ option.title }}</template>
     </gl-button>
   </div>
 </template>

@@ -1,0 +1,19 @@
+query summaryNotes($projectPath: ID!, $iid: String!, $after: String!) {
+  project(fullPath: $projectPath) {
+    id
+    mergeRequest(iid: $iid) {
+      id
+      diffLlmSummaries(after: $after) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        nodes {
+          mergeRequestDiffId
+          content
+          createdAt
+        }
+      }
+    }
+  }
+}
