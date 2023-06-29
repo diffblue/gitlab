@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require File.expand_path('ee/elastic/migrate/202305195000123_reindex_wikis_to_fix_permissions_and_traversal_ids.rb')
+require File.expand_path('ee/elastic/migrate/20230519500012_reindex_wikis_to_fix_permissions_and_traversal_ids.rb')
 
 RSpec.describe ReindexWikisToFixPermissionsAndTraversalIds, :elastic_clean, :sidekiq_inline, feature_category: :global_search do
-  let(:migration) { described_class.new(202305195000123) }
+  let(:migration) { described_class.new(20230519500012) }
   let(:helper) { Gitlab::Elastic::Helper.new }
   let(:client) { ::Gitlab::Search::Client.new }
   let_it_be(:project) { create(:project, :wiki_repo) }
