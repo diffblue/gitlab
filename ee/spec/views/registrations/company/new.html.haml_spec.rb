@@ -3,6 +3,12 @@
 require 'spec_helper'
 
 RSpec.describe 'registrations/company/new', feature_category: :onboarding do
+  let(:user) { build_stubbed(:user) }
+
+  before do
+    allow(view).to receive(:current_user).and_return(user)
+  end
+
   describe 'Google Tag Manager' do
     let!(:gtm_id) { 'GTM-WWKMTWS' }
     let!(:google_url) { 'www.googletagmanager.com' }
@@ -11,7 +17,6 @@ RSpec.describe 'registrations/company/new', feature_category: :onboarding do
 
     before do
       stub_devise
-      allow(Gitlab).to receive(:com?).and_return(true)
       stub_config(extra: { google_tag_manager_id: gtm_id, google_tag_manager_nonce_id: gtm_id })
       allow(view).to receive(:google_tag_manager_enabled?).and_return(gtm_enabled)
 

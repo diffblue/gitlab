@@ -33,8 +33,6 @@ module GitlabSubscriptions
     def user_values(user)
       {
         uid: user.id,
-        first_name: user.first_name,
-        last_name: user.last_name,
         work_email: user.email,
         setup_for_company: user.setup_for_company,
         newsletter_segment: user.email_opted_in

@@ -20,8 +20,7 @@ RSpec.describe 'Trial lead submission, group and trial creation', :saas_trial, :
       click_button 'Start your free trial'
 
       # required field check
-      message = page.find_field('new_group_name').native.attribute('validationMessage')
-      expect(message).to match(/Please fill [a-z]+ this field./)
+      expect(page).to have_native_text_validation_message('new_group_name')
 
       # namespace invalid check
       fill_in_trial_form_for_new_group(name: '_invalid group name_')

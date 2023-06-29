@@ -5,13 +5,17 @@ import { parseBoolean } from '~/lib/utils/common_utils';
 
 export default () => {
   const el = document.querySelector('#js-registrations-company-form');
-  const { submitPath, automaticTrial } = el.dataset;
+  const { submitPath, firstName, lastName, automaticTrial } = el.dataset;
   const trial = Boolean(new URLSearchParams(window.location.search).get('trial'));
 
   return new Vue({
     el,
     apolloProvider,
     provide: {
+      user: {
+        firstName,
+        lastName,
+      },
       submitPath,
     },
     render(createElement) {

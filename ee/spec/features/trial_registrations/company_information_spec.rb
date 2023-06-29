@@ -1,35 +1,49 @@
 # frozen_string_literal: true
+
 require 'spec_helper'
 
-RSpec.describe 'Company Information', :js, feature_category: :experimentation_adoption do
+RSpec.describe 'Company Information', :js, :saas, feature_category: :experimentation_adoption do
+  include SaasRegistrationHelpers
+
   let_it_be(:user) { create(:user) }
-  let_it_be(:fields) { ['Company Name', 'Number of employees', 'Country', 'Telephone number (optional)', 'Website (optional)', 'GitLab Ultimate trial (optional)'] }
+  let_it_be(:fields) do
+    [
+      'First Name',
+      'Last Name',
+      'Company Name',
+      'Number of employees',
+      'Country',
+      'Telephone number (optional)',
+      'Website (optional)',
+      'GitLab Ultimate trial (optional)'
+    ]
+  end
 
   before do
-    allow(Gitlab).to receive(:com?).and_return(true).at_least(:once)
     sign_in(user)
     visit new_users_sign_up_company_path
-
-    expect(page).to have_content('About your company')
   end
 
   it 'shows the expected fields' do
     fields.each { |field| expect(page).to have_content(field) }
   end
 
-  context 'send company information to create lead' do
+  context 'with company information to create lead concerns' do
     using RSpec::Parameterized::TableSyntax
 
+    let(:extra_params) { {} }
     let(:params) do
       {
-        company_name: 'GitLab',
+        first_name: user.first_name,
+        last_name: user.last_name,
+        company_name: 'Test Company',
         company_size: '1-99',
-        phone_number: '+1 23 456-78-90',
+        phone_number: '+1234567890',
         country: 'US',
-        state: 'CA',
-        website_url: 'gitlab.com',
+        state: 'FL',
+        website_url: 'https://gitlab.com',
         trial_onboarding_flow: 'false'
-      }
+      }.merge(extra_params)
     end
 
     where(:service_response, :current_path, :page_content) do
@@ -38,13 +52,11 @@ RSpec.describe 'Company Information', :js, feature_category: :experimentation_ad
     end
 
     with_them do
-      it 'redirects to correct path' do
-        fill_in 'company_name', with: 'GitLab'
-        select '1 - 99', from: 'company_size'
-        select 'United States of America', from: 'country'
-        select 'California', from: 'state'
-        fill_in 'website_url', with: 'gitlab.com'
-        fill_in 'phone_number', with: '+1 23 456-78-90'
+      it 'verifies existing name fields filled and redirects to correct path' do
+        expect(page.find_field('first_name').value).to eq user.first_name
+        expect(page.find_field('last_name').value).to eq user.last_name
+
+        fill_company_form_fields
 
         expect_next_instance_of(
           GitlabSubscriptions::CreateTrialOrLeadService,
@@ -58,6 +70,37 @@ RSpec.describe 'Company Information', :js, feature_category: :experimentation_ad
 
         expect(page).to have_current_path(current_path, ignore_query: true)
         expect(page).to have_content(page_content)
+      end
+    end
+
+    context 'when first and last name are entered by the user' do
+      let(:extra_params) { { first_name: 'Foo', last_name: 'Bar' } }
+
+      it 'ensures the required fields for name are entered' do
+        fill_in 'first_name', with: ''
+        fill_in 'last_name', with: ''
+
+        click_button 'Continue'
+
+        expect(page).to have_native_text_validation_message('first_name')
+        expect(page).to have_native_text_validation_message('last_name')
+
+        fill_in 'first_name', with: 'Foo'
+        fill_in 'last_name', with: 'Bar'
+        fill_company_form_fields
+
+        expect_next_instance_of(
+          GitlabSubscriptions::CreateTrialOrLeadService,
+          user: user,
+          params: ActionController::Parameters.new(params).permit!
+        ) do |service|
+          expect(service).to receive(:execute).and_return(ServiceResponse.success)
+        end
+
+        click_button 'Continue'
+
+        expect(page).to have_current_path(new_users_sign_up_group_path, ignore_query: true)
+        expect(page).to have_content('Create or import your first project')
       end
     end
   end
