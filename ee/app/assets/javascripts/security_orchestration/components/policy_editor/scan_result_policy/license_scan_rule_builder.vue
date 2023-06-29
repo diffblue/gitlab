@@ -95,6 +95,7 @@ export default {
             class="gl-display-inline! gl-vertical-align-middle"
             :item-type-name="$options.i18n.licenseStatuses"
             :items="$options.licenseStatuses"
+            @error="$emit('error', $event)"
           />
         </status-filter>
 

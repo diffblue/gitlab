@@ -72,6 +72,7 @@ export default {
                 <policy-rule-branch-selection
                   :init-rule="ruleWithSelectedBranchesOnly"
                   @changed="setSelectedBranches"
+                  @error="$emit('error', $event)"
                 />
               </template>
 

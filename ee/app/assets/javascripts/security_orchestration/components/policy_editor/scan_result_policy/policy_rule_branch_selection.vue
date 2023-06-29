@@ -31,6 +31,7 @@ export default {
   },
   data() {
     return {
+      showProtectedBranchesError: false,
       selected: !this.initRule.branches?.join()
         ? ALL_PROTECTED_BRANCHES.value
         : SPECIFIC_BRANCHES.value,
@@ -81,6 +82,10 @@ export default {
     triggerChanged(value) {
       this.$emit('changed', { ...this.initRule, ...value });
     },
+    handleError({ hasErrored, error }) {
+      this.showProtectedBranchesError = hasErrored;
+      this.$emit('error', error);
+    },
   },
   BRANCHES_OPTIONS,
 };
@@ -103,9 +108,11 @@ export default {
         v-if="showInput"
         v-model="branchesToAdd"
         class="gl-max-w-26"
+        :has-error="showProtectedBranchesError"
         :selected="branchesToAdd"
         :select-all-empty="true"
         :project-id="namespaceId"
+        @error="handleError"
       />
     </template>
     <template v-else>

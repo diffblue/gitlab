@@ -182,5 +182,21 @@ describe('PolicyRuleBranchSelection', () => {
         );
       });
     });
+
+    describe('error handling', () => {
+      it('should emit error when protected branch dropdown fails', async () => {
+        factory();
+        await findProtectedBranchesSelector().vm.$emit('select', 'SPECIFIC_BRANCHES');
+
+        const error = new Error('failed-request');
+        findProjectLevelProtectedBranchesDropdown().vm.$emit('error', {
+          hasError: true,
+          error,
+        });
+
+        expect(wrapper.emitted('error')).toHaveLength(1);
+        expect(wrapper.emitted('error')).toEqual([[error]]);
+      });
+    });
   });
 });
