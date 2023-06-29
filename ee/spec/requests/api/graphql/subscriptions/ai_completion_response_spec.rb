@@ -11,7 +11,8 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :not_own
   let_it_be(:resource) { create(:work_item, :task, project: project) }
 
   let(:current_user) { nil }
-  let(:subscribe) { get_subscription(resource, current_user) }
+  let(:requested_user) { current_user }
+  let(:subscribe) { get_subscription(resource, requested_user, current_user) }
   let(:ai_completion_response) { graphql_dig_at(graphql_data(response[:result]), :ai_completion_response) }
   let(:request_id) { 'uuid' }
 
@@ -41,6 +42,15 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :not_own
     end
   end
 
+  context 'when unauthorized user requests an authorized one' do
+    let(:current_user) { nil }
+    let(:requested_user) { guest }
+
+    it 'does not receive any data' do
+      expect(response).to be_nil
+    end
+  end
+
   context 'when user is unauthorized' do
     let(:current_user) { create(:user) }
 
@@ -59,9 +69,9 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :not_own
     end
   end
 
-  def get_subscription(resource, current_user)
+  def get_subscription(resource, requested_user, current_user)
     mock_channel = Graphql::Subscriptions::ActionCable::MockActionCable.get_mock_channel
-    query = ai_completion_subscription_query(current_user, resource)
+    query = ai_completion_subscription_query(requested_user, resource)
 
     GitlabSchema.execute(query, context: { current_user: current_user, channel: mock_channel })
 

@@ -22,7 +22,7 @@ module Subscriptions
     end
 
     def authorized?(user_id:, resource_id:)
-      unauthorized! if user_id != current_user.to_global_id
+      unauthorized! if current_user.nil? || user_id != current_user.to_global_id
 
       resource = force(GitlabSchema.find_by_gid(resource_id))
 
