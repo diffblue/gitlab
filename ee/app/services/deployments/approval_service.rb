@@ -57,7 +57,6 @@ module Deployments
     # rubocop:disable Style/GuardClause
     def validate(deployment, status)
       return _('Unrecognized approval status.') unless Deployments::Approval.statuses.include?(status)
-      return _('This deployment is not waiting for approvals.') unless deployment.blocked?
       return _('This environment is not protected.') unless deployment.environment.protected?
 
       if deployment.user == current_user && status == 'approved' &&
@@ -68,6 +67,8 @@ module Deployments
       unless deployment.environment.needs_approval?
         return _('Deployment approvals is not configured for this environment.')
       end
+
+      return _('This deployment is not waiting for approvals.') unless deployment.waiting_for_approval?
 
       unless current_user&.can?(:approve_deployment, deployment)
         return _("You don't have permission to approve this deployment. Contact the project or group owner for help.")

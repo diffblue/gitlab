@@ -308,8 +308,12 @@ RSpec.describe Deployments::ApprovalService, feature_category: :continuous_deliv
         include_examples 'error', message: "You don't have permission to approve this deployment. Contact the project or group owner for help."
       end
 
-      context 'when deployment is not blocked' do
+      context 'when deployment is not waiting for approvals' do
         let(:deployment) { create(:deployment, project: project, environment: environment, deployable: ci_build) }
+
+        before do
+          allow(deployment).to receive(:waiting_for_approval?).and_return(false)
+        end
 
         include_examples 'error', message: 'This deployment is not waiting for approvals.'
       end

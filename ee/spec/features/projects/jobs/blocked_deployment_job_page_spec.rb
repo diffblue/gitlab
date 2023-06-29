@@ -8,6 +8,8 @@ RSpec.describe 'Blocked deployment job page', :js, feature_category: :continuous
   let(:build) { create(:ci_build, :manual, environment: 'production', project: project) }
 
   before do
+    stub_licensed_features(protected_environments: true)
+
     environment = create(:environment, name: 'production', project: project)
     create(:protected_environment, project: project, name: 'production', required_approval_count: 1)
     create(:deployment, :blocked, project: project, environment: environment, deployable: build)
