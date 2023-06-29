@@ -2,19 +2,19 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::SubscriptionPortal::Clients::Rest do
+RSpec.describe Gitlab::SubscriptionPortal::Clients::Rest, feature_category: :billing_and_payments do
   let(:client) { Gitlab::SubscriptionPortal::Client }
   let(:message) { nil }
   let(:http_method) { :post }
   let(:response) { nil }
   let(:parsed_response) { nil }
   let(:gitlab_http_response) do
-    double(
+    instance_double(
+      HTTParty::Response,
       code: response.code,
       response: response,
       body: {},
-      parsed_response: parsed_response,
-      message: message
+      parsed_response: parsed_response
     )
   end
 
@@ -54,7 +54,7 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Rest do
 
       expect(Gitlab::ErrorTracking).to have_received(:log_exception).with(
         instance_of(::Gitlab::SubscriptionPortal::Client::ResponseError),
-        { status: '422', message: message, body: {} }
+        { status: response.code, message: parsed_response, body: {} }
       )
     end
 
@@ -79,7 +79,7 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Rest do
 
       expect(Gitlab::ErrorTracking).to have_received(:log_exception).with(
         instance_of(::Gitlab::SubscriptionPortal::Client::ResponseError),
-        { status: '500', message: message, body: {} }
+        { status: response.code, message: "HTTP status code: #{response.code}", body: {} }
       )
     end
   end
