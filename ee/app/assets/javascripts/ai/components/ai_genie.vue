@@ -155,7 +155,7 @@ export default {
     requestCodeExplanation() {
       this.messages = [];
       this.codeExplanationError = '';
-      this.selectedText = window.getSelection().toString().replace(linesWithDigitsOnly, '').trim();
+      this.selectedText = window.getSelection().toString().replace(linesWithDigitsOnly, '');
 
       this.setHighlightedLines();
 
