@@ -70,78 +70,29 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
     end
 
     describe '#ai_feature_enabled?' do
-      let_it_be_with_reload(:namespace) { create(:group) }
-      let_it_be_with_reload(:namespace_2) { create(:group) }
+      subject { described_class.ai_feature_enabled?(user) }
 
-      before do
-        allow(namespace.namespace_settings).to receive(:ai_settings_allowed?).and_return(true)
-        allow(namespace_2.namespace_settings).to receive(:ai_settings_allowed?).and_return(true)
+      context 'when not on gitlab.com' do
+        it { is_expected.to be_truthy }
       end
 
-      it 'is true' do
-        expect(described_class.ai_feature_enabled?(user)).to be_truthy
-      end
+      context 'when on gitlab.com', :saas do
+        it { is_expected.to be_falsey }
 
-      context 'on GitLab.com', :saas do
-        it 'is false' do
-          expect(described_class.ai_feature_enabled?(user)).to be_falsey
-        end
-
-        context 'with a paid namespace' do
-          using RSpec::Parameterized::TableSyntax
-
-          where(:third_party_ai_features_enabled, :experiment_features_enabled, :result) do
-            false | false | false
-            false | true | false
-            true | false | false
-            true | true | true
-          end
-
-          with_them do
-            before do
-              allow(user).to receive(:paid_namespaces)
-                .with(plans: ::EE::User::AI_SUPPORTED_PLANS).and_return([namespace])
-              namespace.namespace_settings.update!(third_party_ai_features_enabled: third_party_ai_features_enabled)
-              namespace.namespace_settings.update!(experiment_features_enabled: experiment_features_enabled)
-            end
-
-            it 'is correct' do
-              expect(described_class.ai_feature_enabled?(user)).to eq(result)
-            end
-          end
-        end
-
-        context 'with multiple paid namespaces' do
+        context 'when user has a group with ai feature enabled' do
           before do
-            allow(user).to receive(:paid_namespaces)
-              .with(plans: ::EE::User::AI_SUPPORTED_PLANS).and_return([namespace, namespace_2])
+            allow(user).to receive(:any_group_with_ai_available?).and_return(true)
           end
 
-          context 'when one namespace has both settings enabled' do
-            before do
-              namespace.namespace_settings.update!(third_party_ai_features_enabled: false)
-              namespace.namespace_settings.update!(experiment_features_enabled: false)
-              namespace_2.namespace_settings.update!(third_party_ai_features_enabled: true)
-              namespace_2.namespace_settings.update!(experiment_features_enabled: true)
-            end
+          it { is_expected.to be_truthy }
+        end
 
-            it 'is true' do
-              expect(described_class.ai_feature_enabled?(user)).to be_truthy
-            end
+        context 'when user has no group with ai feature enabled' do
+          before do
+            allow(user).to receive(:any_group_with_ai_available?).and_return(false)
           end
 
-          context 'when one namespace does not have both settings enabled' do
-            before do
-              namespace.namespace_settings.update!(third_party_ai_features_enabled: false)
-              namespace.namespace_settings.update!(experiment_features_enabled: true)
-              namespace_2.namespace_settings.update!(third_party_ai_features_enabled: true)
-              namespace_2.namespace_settings.update!(experiment_features_enabled: false)
-            end
-
-            it 'is false' do
-              expect(described_class.ai_feature_enabled?(user)).to be_falsey
-            end
-          end
+          it { is_expected.to be_falsey }
         end
       end
     end
@@ -236,6 +187,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
           before do
             allow(completion_response).to receive(:parsed_response).and_return(completion_response)
             allow(::Gitlab::Llm::OpenAi::Client).to receive(:new).and_return(openai_client)
+            allow(user).to receive(:any_group_with_ai_available?).and_return(true)
           end
 
           context 'when the question is not provided' do

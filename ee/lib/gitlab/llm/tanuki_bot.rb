@@ -33,9 +33,7 @@ module Gitlab
       def self.ai_feature_enabled?(user)
         return true unless ::Gitlab.com?
 
-        user.paid_namespaces(plans: ::EE::User::AI_SUPPORTED_PLANS).any? do |namespace|
-          namespace.experiment_features_enabled && namespace.third_party_ai_features_enabled
-        end
+        user.any_group_with_ai_available?
       end
 
       def initialize(current_user:, question:, logger: nil)

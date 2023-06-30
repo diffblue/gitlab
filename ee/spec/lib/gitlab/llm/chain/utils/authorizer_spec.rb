@@ -8,30 +8,14 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :shared 
   let(:user) { instance_double(User) }
 
   shared_examples 'user authorization' do
-    let(:namespace1) { instance_double(Namespaces::UserNamespace) }
-    let(:namespace2) { instance_double(Group) }
-
-    it 'returns true if user has paid namespaces with third party AI features enabled' do
-      expect(user).to receive(:paid_namespaces).with(plans: ::EE::User::AI_SUPPORTED_PLANS)
-        .and_return([namespace1, namespace2])
-      expect(namespace1).to receive(:third_party_ai_features_enabled).and_return(false)
-      expect(namespace2).to receive(:third_party_ai_features_enabled).and_return(true)
-      expect(namespace2).to receive(:experiment_features_enabled).and_return(true)
+    it 'returns true when user has groups with ai available' do
+      expect(user).to receive(:any_group_with_ai_available?).and_return(true)
 
       expect(subject).to be(true)
     end
 
-    it 'returns false if user has no paid namespaces' do
-      expect(user).to receive(:paid_namespaces).with(plans: ::EE::User::AI_SUPPORTED_PLANS).and_return([])
-
-      expect(subject).to be(false)
-    end
-
-    it 'returns false if user has paid namespaces but no third party AI features enabled' do
-      expect(user).to receive(:paid_namespaces).with(plans: ::EE::User::AI_SUPPORTED_PLANS)
-        .and_return([namespace1, namespace2])
-      expect(namespace1).to receive(:third_party_ai_features_enabled).and_return(false)
-      expect(namespace2).to receive(:third_party_ai_features_enabled).and_return(false)
+    it 'returns true when user has no groups with ai available' do
+      expect(user).to receive(:any_group_with_ai_available?).and_return(false)
 
       expect(subject).to be(false)
     end
