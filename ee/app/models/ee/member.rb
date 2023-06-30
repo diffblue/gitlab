@@ -42,7 +42,12 @@ module EE
       end
 
       scope :with_elevated_guests, -> do
-        from_union([non_guests, elevated_guests])
+        return non_guests unless ::Feature.enabled?(:elevated_guests)
+
+        non_guests.or(
+          where(access_level: ::Gitlab::Access::GUEST)
+          .merge(MemberRole.elevating)
+        ).left_outer_joins(:member_role)
       end
 
       before_create :set_membership_activation
