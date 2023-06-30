@@ -262,7 +262,7 @@ RSpec.describe Groups::HooksController, feature_category: :webhooks do
               .and_return(group_testing_hook: { threshold: 1, interval: 1.minute })
           end
 
-          it 'prevents making test requests' do
+          it 'prevents making test requests', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/413270' do
             expect_next_instance_of(TestHooks::ProjectService) do |service|
               expect(service).to receive(:execute).and_return(success_response)
             end
