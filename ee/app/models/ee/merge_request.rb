@@ -368,11 +368,11 @@ module EE
           .find_by(ref: target_branch)
     end
 
-    def latest_completed_target_branch_pipeline_for_scan_result_policy
-      @latest_completed_pipeline ||= project
+    def latest_finished_target_branch_pipeline_for_scan_result_policy
+      @latest_finished_pipeline ||= project
           .all_pipelines
           .ci_and_security_orchestration_sources
-          .complete
+          .finished
           .order(id: :desc)
           .find_by(ref: target_branch)
     end
