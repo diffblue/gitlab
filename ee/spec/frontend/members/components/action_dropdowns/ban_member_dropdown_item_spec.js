@@ -54,7 +54,7 @@ describe('BanMemberDropdownItem', () => {
   });
 
   it('submits the form when clicked', () => {
-    const submitSpy = jest.spyOn(wrapper.vm.$refs.banForm, 'submit');
+    const submitSpy = jest.spyOn(findForm().element, 'submit');
     wrapper.findComponent(GlDisclosureDropdownItem).vm.$emit('action');
     expect(submitSpy).toHaveBeenCalled();
   });
