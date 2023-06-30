@@ -12931,7 +12931,8 @@ ALTER SEQUENCE bulk_imports_id_seq OWNED BY bulk_imports.id;
 CREATE TABLE catalog_resources (
     id bigint NOT NULL,
     project_id bigint NOT NULL,
-    created_at timestamp with time zone NOT NULL
+    created_at timestamp with time zone NOT NULL,
+    state smallint DEFAULT 0 NOT NULL
 );
 
 CREATE SEQUENCE catalog_resources_id_seq
