@@ -8,10 +8,10 @@ module EE
         include ::Gitlab::QuickActions::Dsl
 
         included do
-          desc { _('Change assignee(s)') }
-          explanation { _('Change assignee(s).') }
+          desc { _('Change assignees') }
+          explanation { _('Change assignees.') }
           execution_message do |ids|
-            _('Changed assignee(s).')
+            _('Changed assignees.')
           end
           params '@user1 @user2'
           types Issue, MergeRequest

@@ -34,7 +34,7 @@ describe('EE ~/users_select/index with multiple assignees', () => {
     describe('when users are selected', () => {
       const selectedUsers = [getUsersFixtureAt(2), getUsersFixtureAt(4)];
       const expectation = createAssignedExpectation({
-        header: 'Assignee(s)',
+        header: 'Assignees',
         assigned: selectedUsers,
       });
 
@@ -63,7 +63,7 @@ describe('EE ~/users_select/index with multiple assignees', () => {
 
   describe('with preselected user and opened', () => {
     const expectation = createAssignedExpectation({
-      header: 'Assignee(s)',
+      header: 'Assignees',
       assigned: [getUsersFixtureAt(0)],
     });
 

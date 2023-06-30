@@ -8,9 +8,9 @@ module EE
         include ::Gitlab::QuickActions::Dsl
 
         included do
-          desc { _('Change reviewer(s)') }
-          explanation { _('Change reviewer(s).') }
-          execution_message { _('Changed reviewer(s).') }
+          desc { _('Change reviewers') }
+          explanation { _('Change reviewers.') }
+          execution_message { _('Changed reviewers.') }
           params '@user1 @user2'
           types MergeRequest
           condition do
