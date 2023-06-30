@@ -125,9 +125,9 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
 
     let_it_be_with_reload(:group) { create(:group_with_plan, :public, plan: :ultimate_plan) }
     let_it_be(:project) { create(:project, group: group) }
+    let(:resource) { user }
 
     let(:executor) do
-      resource = user
       ai_request = ::Gitlab::Llm::Chain::Requests::Anthropic.new(user)
       context = ::Gitlab::Llm::Chain::GitlabContext.new(
         current_user: user,
@@ -153,6 +153,15 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       )
     end
 
+    shared_examples_for 'successful prompt processing' do
+      it 'answers query using expected tools', :aggregate_failures do
+        answer = executor.execute
+
+        expect(executor.prompt).to match_llm_tools(tools)
+        expect(answer.content).to match_llm_answer(answer_match)
+      end
+    end
+
     context 'with predefined issue' do
       let_it_be(:label) { create(:label, project: project, title: 'ai-enablement') }
       let_it_be(:milestone) { create(:milestone, project: project, title: 'milestone1', due_date: 3.days.from_now) }
@@ -165,7 +174,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       # rubocop: disable Layout/LineLength
       where(:input_template, :tools, :answer_match) do
         'Can you list all labels on %{issue_identifier} issue?'                       | ['IssueIdentifier', 'Resource Reader'] | /ai-enablement/
-        'How old is %<issue_identifier>s issue?'                                      | ['IssueIdentifier', 'Resource Reader'] | /2 days/
+        'How many days ago was %<issue_identifier>s issue created?'                   | ['IssueIdentifier', 'Resource Reader'] | /2 days/
         'For which milestone is %<issue_identifier>s issue? And how long until then?' | ['IssueIdentifier', 'Resource Reader'] | /milestone1.*3 days/
       end
       # rubocop: enable Layout/LineLength
@@ -173,11 +182,60 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       with_them do
         let(:input) { format(input_template, issue_identifier: issue.to_reference(full: true)) }
 
-        it 'answers query using expected tools', :aggregate_failures do
-          answer = executor.execute
+        it_behaves_like 'successful prompt processing'
+      end
 
-          expect(executor.prompt).to match_llm_tools(tools)
-          expect(answer.content).to match_llm_answer(answer_match)
+      context 'with chat history' do
+        let_it_be(:issue2) do
+          create(
+            :issue,
+            project: project,
+            title: 'AI chat - send websocket subscription message also for user messages',
+            description: 'To make sure that new messages are propagated to all chat windows ' \
+                         '(e.g. if user has chat window open in multiple windows) we should send subscription ' \
+                         'message for user messages too (currently we send messages only for AI responses)'
+          )
+        end
+
+        let(:history) do
+          [
+            { role: 'user', content: "What is issue #{issue.to_reference(full: true)} about?" },
+            { role: 'assistant', content: "The summary of issue is:\n\n## Provider Comparison\n" \
+                                          "- Difficulty in evaluating which provider is better \n" \
+                                          "- Both providers have pros and cons" }
+          ]
+        end
+
+        before do
+          uuid = SecureRandom.uuid
+
+          history.each do |message|
+            Gitlab::Llm::Cache.new(user).add({ request_id: uuid, role: message[:role], content: message[:content] })
+          end
+        end
+
+        # rubocop: disable Layout/LineLength
+        where(:input_template, :tools, :answer_match) do
+          # evaluation of questions which involve processing of other resources is not reliable yet
+          # because both IssueIdentifider and JsonReader tools assume we work with single resource:
+          # IssueIdentifider overrides context.resource
+          # JsonReader takes resource from context
+          # So JsonReader twice with different action input
+          # 'Is it duplicate of issue %<issue_identifier2>s issue?' | ['IssueIdentifier', 'Resource Reader'] | /no/i
+          'Can you provide more details about that issue?' | ['IssueIdentifier', 'Resource Reader'] | /(reliability|providers)/
+          # Translation would have to be explicitly allowed in protmp rules first
+          # 'Can you translate your last answer to German?' | [] | /Anbieter/ # Anbieter == provider
+          'Can you reword your answer?' | [] | /provider/i
+        end
+        # rubocop: enable Layout/LineLength
+
+        with_them do
+          let(:input) do
+            format(input_template, issue_identifier: issue.to_reference(full: true),
+              issue_identifier2: issue2.to_reference(full: true))
+          end
+
+          it_behaves_like 'successful prompt processing'
         end
       end
     end

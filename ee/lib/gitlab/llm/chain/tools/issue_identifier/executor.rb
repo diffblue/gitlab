@@ -87,11 +87,6 @@ module Gitlab
             def initialize(context:, options:)
               super
               @retries = 0
-
-              # This tool seems to perform just fine just with the information from the question.
-              # So we can ignore zero-shot agent suggestions, and only use tool's own suggestions, in cases when it
-              # needs to retry for any reason.
-              options[:suggestions] = +""
             end
 
             def perform

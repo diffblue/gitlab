@@ -20,7 +20,7 @@ end
 
 RSpec::Matchers.define :match_llm_answer do |answer_regexp|
   match do |answer|
-    answer.match(answer_regexp)
+    answer&.match(answer_regexp)
   end
 
   failure_message do |answer|
