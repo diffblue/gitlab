@@ -15,7 +15,7 @@ RSpec.describe CredentialsInventoryMailer do
     it { is_expected.to have_subject 'Your Personal Access Token was revoked' }
     it { is_expected.to have_body_text 'The following Personal Access Token was revoked by an administrator, Revoker' }
     it { is_expected.to have_body_text token.name }
-    it { is_expected.to have_body_text "Created on #{token.created_at.to_date.to_s(:medium)}" }
+    it { is_expected.to have_body_text "Created on #{token.created_at.to_date.to_fs(:medium)}" }
     it { is_expected.to have_body_text 'Scopes: api, sudo' }
     it { is_expected.to be_delivered_to [token.user.notification_email_or_default] }
     it { is_expected.to have_body_text 'Last used 21 days ago' }
@@ -39,7 +39,7 @@ RSpec.describe CredentialsInventoryMailer do
     it { is_expected.to have_body_text 'The following SSH key was deleted by an administrator, Revoker' }
     it { is_expected.to be_delivered_to [ssh_key.user.notification_email_or_default] }
     it { is_expected.to have_body_text ssh_key.title }
-    it { is_expected.to have_body_text "Created on #{ssh_key.created_at.to_date.to_s(:medium)}" }
+    it { is_expected.to have_body_text "Created on #{ssh_key.created_at.to_date.to_fs(:medium)}" }
     it { is_expected.to have_body_text 'Last used 21 days ago' }
   end
 end
