@@ -25,13 +25,10 @@ module Types
           alpha: { milestone: '16.1' }
 
         field :versions, Types::ReleaseType.connection_type, null: true,
-          description: 'Versions of the catalog resource.',
+          description: 'Versions of the catalog resource. This field can only be ' \
+                       'resolved for one catalog resource in any single request.',
           resolver: Resolvers::Ci::Catalog::VersionsResolver,
-          deprecated: {
-            reason: 'Causes performance degradation',
-            replacement: 'latest_version',
-            milestone: '16.1'
-          }
+          alpha: { milestone: '16.2' }
 
         field :latest_version, Types::ReleaseType, null: true, description: 'Latest version of the catalog resource.',
           alpha: { milestone: '16.1' }

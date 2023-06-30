@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 
+# In this context, a `version` is equivalent to a `release`
 RSpec.describe Resolvers::Ci::Catalog::VersionsResolver, feature_category: :pipeline_composition do
   include GraphqlHelpers
 
@@ -11,15 +12,15 @@ RSpec.describe Resolvers::Ci::Catalog::VersionsResolver, feature_category: :pipe
 
   let_it_be(:project) { create(:project, :private) }
   # rubocop: disable Layout/LineLength
-  let_it_be(:release_v1) { create(:release, project: project, tag: 'v1.0.0', released_at: yesterday, created_at: tomorrow) }
-  let_it_be(:release_v2) { create(:release, project: project, tag: 'v2.0.0', released_at: today,     created_at: yesterday) }
-  let_it_be(:release_v3) { create(:release, project: project, tag: 'v3.0.0', released_at: tomorrow,  created_at: today) }
+  let_it_be(:version1) { create(:release, project: project, tag: 'v1.0.0', released_at: yesterday, created_at: tomorrow) }
+  let_it_be(:version2) { create(:release, project: project, tag: 'v2.0.0', released_at: today,     created_at: yesterday) }
+  let_it_be(:version3) { create(:release, project: project, tag: 'v3.0.0', released_at: tomorrow,  created_at: today) }
   # rubocop: enable Layout/LineLength
   let_it_be(:developer) { create(:user) }
   let_it_be(:public_user) { create(:user) }
 
   let(:args) { { sort: :released_at_desc } }
-  let(:all_releases) { [release_v1, release_v2, release_v3] }
+  let(:all_releases) { [version1, version2, version3] }
 
   before do
     project.add_developer(developer)
@@ -55,10 +56,11 @@ RSpec.describe Resolvers::Ci::Catalog::VersionsResolver, feature_category: :pipe
 
   private
 
-  def resolve_releases
-    batch_sync do
-      context = { current_user: current_user }
-      resolve(described_class, obj: project, args: args, ctx: context, arg_style: :internal)
-    end
+  def resolve_versions
+    context = { current_user: current_user }
+    resolve(described_class, obj: project, args: args, ctx: context, arg_style: :internal)
   end
+
+  # Required for shared examples
+  alias_method :resolve_releases, :resolve_versions
 end
