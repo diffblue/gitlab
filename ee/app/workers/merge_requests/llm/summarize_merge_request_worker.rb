@@ -84,3 +84,5 @@ module MergeRequests
     end
   end
 end
+
+MergeRequests::Llm::SummarizeMergeRequestWorker.prepend_mod
