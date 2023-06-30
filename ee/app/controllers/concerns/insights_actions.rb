@@ -27,7 +27,7 @@ module InsightsActions
     respond_to do |format|
       format.html
       format.json do
-        render json: config_data
+        render json: filtered_config
       end
     end
   end
@@ -56,6 +56,14 @@ module InsightsActions
 
   def config_data
     insights_entity.insights_config
+  end
+
+  def filtered_config
+    Gitlab::Insights::ConfigurationFilter.new(
+      config: config_data,
+      user: current_user,
+      insights_entity: insights_entity
+    ).execute
   end
 
   def render_insights_chart_error(exception)

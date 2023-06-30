@@ -21,9 +21,23 @@ RSpec.describe Projects::InsightsController, feature_category: :value_stream_man
   end
 
   before do
-    stub_licensed_features(insights: true)
+    stub_licensed_features(insights: true, dora4_analytics: true)
 
     login_as(user)
+  end
+
+  describe 'GET #show' do
+    it_behaves_like 'contribution analytics charts configuration' do
+      let_it_be(:insights_entity) { project }
+
+      def run_request
+        get namespace_project_insights_path(
+          namespace_id: group,
+          project_id: project,
+          format: :json
+        )
+      end
+    end
   end
 
   describe 'POST #query' do
