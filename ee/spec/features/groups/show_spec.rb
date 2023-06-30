@@ -18,7 +18,7 @@ RSpec.describe 'Group show page', :js, feature_category: :groups_and_projects do
       visit path
     end
 
-    it 'renders the tier badge and popover when clicked', time_travel_to: 14.days.from_now do
+    it 'renders the tier badge and popover when clicked' do
       expect(tier_badge_element).to be_present
 
       tier_badge_element.click
