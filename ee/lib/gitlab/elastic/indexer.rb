@@ -176,10 +176,9 @@ module Gitlab
                      %W[--blob-type=wiki_blob --skip-commits --wiki-access-level=#{container.wiki_access_level}]
                    else
                      %W[--repository-access-level=#{container.repository_access_level}].tap do |c|
-                       migration_name = :add_hashed_root_namespace_id_to_commits
-                       migration_done = ::Elastic::DataMigrationService.migration_has_finished?(migration_name)
-
+                       migration_done = migration_finished?(:add_hashed_root_namespace_id_to_commits)
                        c << "--hashed-root-namespace-id=#{project.namespace.hashed_root_namespace_id}" if migration_done
+                       c << '--schema-version-commits=true' if migration_finished?(:add_schema_version_to_commits)
                      end
                    end
 
@@ -243,7 +242,7 @@ module Gitlab
           index_name_commits: ::Elastic::Latest::CommitConfig.index_name
         )
 
-        if ::Elastic::DataMigrationService.migration_has_finished?(:migrate_wikis_to_separate_index)
+        if migration_finished?(:migrate_wikis_to_separate_index)
           config[:index_name_wikis] = ::Elastic::Latest::WikiConfig.index_name
         end
 
@@ -304,6 +303,10 @@ module Gitlab
 
       def logger
         @logger ||= ::Gitlab::Elasticsearch::Logger.build
+      end
+
+      def migration_finished?(name)
+        ::Elastic::DataMigrationService.migration_has_finished?(name)
       end
     end
   end
