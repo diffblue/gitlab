@@ -12749,12 +12749,11 @@ Represents the total number of issues and their weights for a particular day.
 
 ##### `CiCatalogResource.versions`
 
-Versions of the catalog resource.
+Versions of the catalog resource. This field can only be resolved for one catalog resource in any single request.
 
 WARNING:
-**Deprecated** in 16.1.
-Causes performance degradation.
-Use: `latest_version`.
+**Introduced** in 16.2.
+This feature is an Experiment. It can be changed or removed at any time.
 
 Returns [`ReleaseConnection`](#releaseconnection).
 

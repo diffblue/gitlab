@@ -58,7 +58,7 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
     end
 
     context 'when the current user has permission to read the namespace catalog' do
-      before do
+      before_all do
         namespace.add_developer(user)
       end
 
@@ -122,12 +122,13 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
   end
 
   describe 'versions' do
-    before do
-      stub_licensed_features(ci_namespace_catalog: true)
+    before_all do
       namespace.add_developer(user)
     end
 
-    let(:params) { '' }
+    before do
+      stub_licensed_features(ci_namespace_catalog: true)
+    end
 
     let(:query) do
       <<~GQL
@@ -135,7 +136,7 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
           ciCatalogResources(projectPath: "#{project1.full_path}") {
             nodes {
               id
-              versions#{params} {
+              versions {
                 nodes {
                   id
                   tagName
@@ -153,128 +154,74 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
       GQL
     end
 
-    context 'when the resource has versions' do
-      let_it_be(:resource1_author) { create(:user, name: 'resource1_author') }
-      let_it_be(:resource2_author) { create(:user, name: 'resource2_author') }
+    context 'when there is a single resource visible to the current user in the namespace' do
+      context 'when the resource has versions' do
+        let_it_be(:author) { create(:user, name: 'author') }
 
-      let_it_be(:resource1_version1) do
-        create(:release, project: project1, released_at: '2023-01-01T00:00:00Z', author: resource1_author)
-      end
-
-      let_it_be(:resource1_version2) do
-        create(:release, project: project1, released_at: '2023-02-01T00:00:00Z', author: resource1_author)
-      end
-
-      let_it_be(:resource2_version1) do
-        create(:release, project: project2, released_at: '2023-03-01T00:00:00Z', author: resource2_author)
-      end
-
-      let_it_be(:resource2_version2) do
-        create(:release, project: project2, released_at: '2023-04-01T00:00:00Z', author: resource2_author)
-      end
-
-      it 'returns the resource with the versions data' do
-        post_query
-
-        expect(graphql_data_at(:ciCatalogResources, :nodes)).to contain_exactly(
-          a_graphql_entity_for(resource1)
-        )
-
-        expect(graphql_data_at(:ciCatalogResources, :nodes, 0, :versions, :nodes)).to contain_exactly(
-          a_graphql_entity_for(
-            resource1_version1,
-            tagName: resource1_version1.tag,
-            releasedAt: resource1_version1.released_at,
-            author: a_graphql_entity_for(resource1_author, :name)
-          ),
-          a_graphql_entity_for(
-            resource1_version2,
-            tagName: resource1_version2.tag,
-            releasedAt: resource1_version2.released_at,
-            author: a_graphql_entity_for(resource1_author, :name)
-          )
-        )
-      end
-
-      it 'returns the versions by released_at in descending order by default' do
-        post_query
-
-        version_ids = graphql_data_at(:ciCatalogResources, :nodes, 0, :versions, :nodes).pluck('id')
-
-        expect(version_ids).to eq([resource1_version2.to_global_id.to_s, resource1_version1.to_global_id.to_s])
-      end
-
-      context 'when sort parameter RELEASED_AT_ASC is provided' do
-        let(:params) { '(sort: RELEASED_AT_ASC)' }
-
-        it 'returns the versions by released_at in ascending order' do
-          post_query
-
-          version_ids = graphql_data_at(:ciCatalogResources, :nodes, 0, :versions, :nodes).pluck('id')
-
-          expect(version_ids).to eq([resource1_version1.to_global_id.to_s, resource1_version2.to_global_id.to_s])
+        let_it_be(:version1) do
+          create(:release, project: project1, released_at: '2023-01-01T00:00:00Z', author: author)
         end
-      end
 
-      context 'when there are two resources visible to the current user in the namespace' do
-        it 'returns both resources with the versions data' do
-          resource2 = create(:catalog_resource, project: project2)
+        let_it_be(:version2) do
+          create(:release, project: project1, released_at: '2023-02-01T00:00:00Z', author: author)
+        end
 
+        it 'returns the resource with the versions data' do
           post_query
 
           expect(graphql_data_at(:ciCatalogResources, :nodes)).to contain_exactly(
-            a_graphql_entity_for(resource1),
-            a_graphql_entity_for(resource2)
+            a_graphql_entity_for(resource1)
           )
 
-          expect([
-            graphql_data_at(:ciCatalogResources, :nodes, 0, :versions, :nodes),
-            graphql_data_at(:ciCatalogResources, :nodes, 1, :versions, :nodes)
-          ].flatten).to contain_exactly(
-            a_graphql_entity_for(resource1_version1, author: a_graphql_entity_for(resource1_author)),
-            a_graphql_entity_for(resource1_version2, author: a_graphql_entity_for(resource1_author)),
-            a_graphql_entity_for(resource2_version1, author: a_graphql_entity_for(resource2_author)),
-            a_graphql_entity_for(resource2_version2, author: a_graphql_entity_for(resource2_author))
+          expect(graphql_data_at(:ciCatalogResources, :nodes, 0, :versions, :nodes)).to contain_exactly(
+            a_graphql_entity_for(
+              version1,
+              tagName: version1.tag,
+              releasedAt: version1.released_at,
+              author: a_graphql_entity_for(author, :name)
+            ),
+            a_graphql_entity_for(
+              version2,
+              tagName: version2.tag,
+              releasedAt: version2.released_at,
+              author: a_graphql_entity_for(author, :name)
+            )
           )
         end
+      end
 
-        it_behaves_like 'avoids N+1 queries'
+      context 'when the resource does not have a version' do
+        it 'returns versions as an empty array' do
+          post_query
 
-        context 'when obtaining the latest version of the resource' do
-          let(:params) { '(first: 1)' }
-
-          it 'returns the latest versions of both resources' do
-            create(:catalog_resource, project: project2)
-
-            post_query
-
-            expect([
-              graphql_data_at(:ciCatalogResources, :nodes, 0, :versions, :nodes),
-              graphql_data_at(:ciCatalogResources, :nodes, 1, :versions, :nodes)
-            ].flatten).to contain_exactly(
-              a_graphql_entity_for(resource1_version2, author: a_graphql_entity_for(resource1_author)),
-              a_graphql_entity_for(resource2_version2, author: a_graphql_entity_for(resource2_author))
-            )
-          end
+          expect(graphql_data_at(:ciCatalogResources, :nodes)).to contain_exactly(
+            a_graphql_entity_for(resource1, versions: { 'nodes' => [] })
+          )
         end
       end
     end
 
-    context 'when the resource does not have a version' do
-      it 'returns versions as an empty array' do
+    context 'when there are multiple resources visible to the current user in the namespace' do
+      it 'limits the request to 1 resource at a time' do
+        create(:catalog_resource, project: project2)
+
         post_query
 
-        expect(graphql_data_at(:ciCatalogResources, :nodes)).to contain_exactly(
-          a_graphql_entity_for(resource1, versions: { 'nodes' => [] })
-        )
+        expect_graphql_errors_to_include \
+          [/"versions" field can be requested only for 1 CiCatalogResource\(s\) at a time./]
       end
+
+      it_behaves_like 'avoids N+1 queries'
     end
   end
 
   describe 'latestVersion' do
+    before_all do
+      namespace.add_developer(user)
+    end
+
     before do
       stub_licensed_features(ci_namespace_catalog: true)
-      namespace.add_developer(user)
     end
 
     let(:query) do
@@ -303,11 +250,15 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
       let_it_be(:author1) { create(:user, name: 'author1') }
       let_it_be(:author2) { create(:user, name: 'author2') }
 
-      # Latest versions of the projects
-      let_it_be(:version1) { create(:release, project: project1, released_at: '2023-02-01T00:00:00Z', author: author1) }
-      let_it_be(:version2) { create(:release, project: project2, released_at: '2023-02-01T00:00:00Z', author: author2) }
+      let_it_be(:latest_version1) do
+        create(:release, project: project1, released_at: '2023-02-01T00:00:00Z', author: author1)
+      end
 
-      before(:all) do
+      let_it_be(:latest_version2) do
+        create(:release, project: project2, released_at: '2023-02-01T00:00:00Z', author: author2)
+      end
+
+      before_all do
         # Previous versions of the projects
         create(:release, project: project1, released_at: '2023-01-01T00:00:00Z', author: author1)
         create(:release, project: project2, released_at: '2023-01-01T00:00:00Z', author: author2)
@@ -320,9 +271,9 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
           a_graphql_entity_for(
             resource1,
             latestVersion: a_graphql_entity_for(
-              version1,
-              tagName: version1.tag,
-              releasedAt: version1.released_at,
+              latest_version1,
+              tagName: latest_version1.tag,
+              releasedAt: latest_version1.released_at,
               author: a_graphql_entity_for(author1, :name)
             )
           )
@@ -356,18 +307,18 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
             a_graphql_entity_for(
               resource1,
               latestVersion: a_graphql_entity_for(
-                version1,
-                tagName: version1.tag,
-                releasedAt: version1.released_at,
+                latest_version1,
+                tagName: latest_version1.tag,
+                releasedAt: latest_version1.released_at,
                 author: a_graphql_entity_for(author1, :name)
               )
             ),
             a_graphql_entity_for(
               resource2,
               latestVersion: a_graphql_entity_for(
-                version2,
-                tagName: version2.tag,
-                releasedAt: version2.released_at,
+                latest_version2,
+                tagName: latest_version2.tag,
+                releasedAt: latest_version2.released_at,
                 author: a_graphql_entity_for(author2, :name)
               )
             )
@@ -390,9 +341,12 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
   end
 
   describe 'rootNamespace' do
+    before_all do
+      namespace.add_developer(user)
+    end
+
     before do
       stub_licensed_features(ci_namespace_catalog: true)
-      namespace.add_developer(user)
     end
 
     let(:query) do
