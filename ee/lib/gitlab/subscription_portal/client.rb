@@ -45,7 +45,7 @@ module Gitlab
           when Net::HTTPUnprocessableEntity
             errors = parsed_response.slice('errors', 'error_attribute_map')
             log_error(http_response, errors)
-            { success: false, data: errors }
+            { success: false, data: errors.symbolize_keys }
           else
             errors = "HTTP status code: #{http_response.code}"
             log_error(http_response, errors)

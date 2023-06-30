@@ -63,8 +63,8 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Rest, feature_category: :bil
       allow(Gitlab::HTTP).to receive(http_method).and_return(gitlab_http_response)
 
       expect(subject[:success]).to eq(false)
-      expect(subject[:data]['errors']).to eq(message)
-      expect(subject[:data]['error_attribute_map']).to eq(error_attribute_map)
+      expect(subject[:data][:errors]).to eq(message)
+      expect(subject[:data][:error_attribute_map]).to eq(error_attribute_map)
     end
   end
 
