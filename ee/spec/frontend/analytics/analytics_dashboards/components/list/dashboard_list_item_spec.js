@@ -1,13 +1,16 @@
 import { GlAvatar, GlIcon, GlLabel } from '@gitlab/ui';
 import DashboardListItem from 'ee/analytics/analytics_dashboards/components/list/dashboard_list_item.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import jsonList from 'ee/analytics/analytics_dashboards/gl_dashboards/analytics_dashboards.json';
 import { I18N_BUILT_IN_DASHBOARD_LABEL } from 'ee/analytics/analytics_dashboards/constants';
+import { TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE } from '../../mock_data';
 
 jest.mock('ee/analytics/analytics_dashboards/api/dashboards_api');
 
-const USER_DEFINED_DASHBOARD = { ...jsonList.productAnalytics[0], userDefined: true };
-const BUILT_IN_DASHBOARD = { ...jsonList.productAnalytics[0], userDefined: false };
+const {
+  nodes,
+} = TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE.data.project.productAnalyticsDashboards;
+const USER_DEFINED_DASHBOARD = nodes.find((dashboard) => dashboard.userDefined);
+const BUILT_IN_DASHBOARD = nodes.find((dashboard) => !dashboard.userDefined);
 
 describe('DashboardsListItem', () => {
   let wrapper;

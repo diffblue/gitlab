@@ -33,7 +33,6 @@ RSpec.shared_examples 'product analytics dashboards' do
   let_it_be(:query_response_with_data) { fixture_file('cube_js/query_with_data.json', dir: 'ee') }
 
   let(:cube_api_url) { "https://cube.example.com/cubejs-api/v1/load" }
-  let(:is_jitsu) { project_settings.has_key?(:jitsu_key) }
 
   shared_examples 'does not render the product analytics list item' do
     before do
@@ -329,13 +328,6 @@ RSpec.shared_examples 'product analytics dashboards' do
 
     def stub_cube_proxy_success
       query_object = Gitlab::Json.parse(query_response_with_data)
-
-      # rubocop:disable RSpec/AvoidConditionalStatements
-      if is_jitsu
-        query_object['results'][0]['data'][0]['TrackedEvents.pageViewsCount'] =
-          query_object['results'][0]['data'][0].delete('SnowplowTrackedEvents.pageViewsCount')
-      end
-      # rubocop:enable RSpec/AvoidConditionalStatements
 
       stub_request(:post, cube_api_url)
         .to_return(status: 200, body: query_object.to_json, headers: {})

@@ -26,26 +26,6 @@
         %fieldset
           = render partial: 'product_analytics/configurator_settings', locals: { f: settings }
           .form-group
-            = settings.label :jitsu_host, s_('ProjectSettings|Jitsu host'), class: 'label-light'
-            = settings.url_field :jitsu_host, class: 'form-control gl-form-input', placeholder: 'https://jitsu.gitlab.com'
-            .form-text.text-muted
-              = s_('ProjectSettings|The host of your Jitsu instance.')
-          .form-group
-            = settings.label :jitsu_project_xid, s_('ProjectSettings|Jitsu project ID'), class: 'label-light'
-            = settings.text_field :jitsu_project_xid, class: 'form-control gl-form-input'
-            .form-text.text-muted
-              = s_('ProjectSettings|The ID of the project in Jitsu. The project contains all analytics instances.')
-          .form-group
-            = settings.label :jitsu_administrator_email, s_('ProjectSettings|Jitsu administrator email'), class: 'label-light'
-            = settings.email_field :jitsu_administrator_email, class: 'form-control gl-form-input', placeholder: 'jitsu.admin@gitlab.com', autocomplete: 'off'
-            .form-text.text-muted
-              = s_('ProjectSettings|Used to generate short-lived API access tokens.')
-          .form-group
-            = settings.label :jitsu_administrator_password, s_('ProjectSettings|Jitsu administrator password'), class: 'label-light'
-            = settings.password_field :jitsu_administrator_password, value: '', class: 'form-control gl-form-input', autocomplete: 'off'
-            .form-text.text-muted
-              = s_('ProjectSettings|Used to generate short-lived API access tokens.')
-          .form-group
             = settings.label :product_analytics_data_collector_host, s_('ProjectSettings|Collector host'), class: 'label-light'
             = settings.url_field :product_analytics_data_collector_host, class: 'form-control gl-form-input', placeholder: 'https://collector.gitlab.com'
             .form-text.text-muted
@@ -54,7 +34,7 @@
             = settings.label :product_analytics_clickhouse_connection_string, s_('ProjectSettings|Clickhouse URL'), class: 'label-light'
             = settings.url_field :product_analytics_clickhouse_connection_string, class: 'form-control gl-form-input', placeholder: 'https://user:pass@clickhouse.gitlab.com:8123'
             .form-text.text-muted
-              = s_('ProjectSettings|Used to connect Jitsu to the Clickhouse instance.')
+              = s_('ProjectSettings|Used to connect Snowplow to the Clickhouse instance.')
           .form-group
             = settings.label :cube_api_base_url, s_('ProjectSettings|Cube API URL'), class: 'label-light'
             = settings.url_field :cube_api_base_url, class: 'form-control gl-form-input', placeholder: 'https://cube.gitlab.com'

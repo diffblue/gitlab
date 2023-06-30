@@ -4,9 +4,6 @@ import { helpPagePath } from '~/helpers/help_page_helper';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { createAlert } from '~/alert';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { isValidConfigFileName, configFileNameToID } from 'ee/analytics/analytics_dashboards/utils';
-import { getCustomDashboards } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
-import LIST_OF_FEATURE_DASHBOARDS from '../gl_dashboards/analytics_dashboards.json';
 import {
   PRODUCT_ANALYTICS_FEATURE_DASHBOARDS,
   I18N_DASHBOARD_LIST_TITLE,
@@ -61,7 +58,6 @@ export default {
       featureDashboards: [],
       userDashboards: [],
       showCreateButtons: this.glFeatures.combinedAnalyticsDashboardsEditor,
-      jitsuEnabled: !this.glFeatures.productAnalyticsSnowplowSupport,
     };
   },
   computed: {
@@ -78,13 +74,6 @@ export default {
     unavailableFeatures() {
       return this.features.filter(this.featureDisabled).filter(this.featureRequiresOnboarding);
     },
-  },
-  // TODO: Remove once we've swapped over to Snowplow entirely
-  // https://gitlab.com/gitlab-org/gitlab/-/issues/403418
-  async created() {
-    if (this.customDashboardsProject && this.jitsuEnabled) {
-      this.loadCustomDashboards();
-    }
   },
   apollo: {
     userDashboards: {
@@ -116,7 +105,7 @@ export default {
       // TODO: Remove when backend returns dashboards only for onboarded features
       // https://gitlab.com/gitlab-org/gitlab/-/issues/411608
       skip() {
-        return this.jitsuEnabled || this.featureRequiresOnboarding([FEATURE_PRODUCT_ANALYTICS]);
+        return this.featureRequiresOnboarding([FEATURE_PRODUCT_ANALYTICS]);
       },
       error(err) {
         this.onError(err);
@@ -143,20 +132,8 @@ export default {
         }/edit#js-analytics-dashboards-settings`,
       );
     },
-    async loadCustomDashboards() {
-      const customFiles = await getCustomDashboards(this.customDashboardsProject);
-
-      this.userDashboards = customFiles
-        .filter(({ file_name }) => isValidConfigFileName(file_name))
-        .map(({ file_name }) => configFileNameToID(file_name))
-        .map((id) => ({ slug: id, title: id }));
-    },
     onboardingComplete(feature) {
       this.requiresOnboarding = this.requiresOnboarding.filter((f) => f !== feature);
-
-      if (feature === FEATURE_PRODUCT_ANALYTICS && this.jitsuEnabled) {
-        this.featureDashboards.push(...LIST_OF_FEATURE_DASHBOARDS[feature]);
-      }
     },
     onError(error, captureError = true, message = '') {
       createAlert({

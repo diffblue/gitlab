@@ -69,10 +69,6 @@ export async function saveProductAnalyticsVisualization(
   return service.commit(projectInfo.fullPath, payload);
 }
 
-export async function getCustomDashboards(projectInfo) {
-  return getFileListFromCustomDashboardProject(CUSTOM_DASHBOARDS_PATH, projectInfo);
-}
-
 export async function getCustomDashboard(dashboardId, projectInfo) {
   return getFileFromCustomDashboardProject(CUSTOM_DASHBOARDS_PATH, dashboardId, projectInfo);
 }
