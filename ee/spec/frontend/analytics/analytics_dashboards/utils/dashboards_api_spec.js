@@ -5,7 +5,6 @@ import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import service from '~/ide/services/';
 
 import {
-  getCustomDashboards,
   getCustomDashboard,
   saveCustomDashboard,
   getProductAnalyticsVisualizationList,
@@ -44,26 +43,6 @@ describe('AnalyticsDashboard', () => {
   });
 
   describe('dashboard functions', () => {
-    it.each`
-      scenario                                            | response                       | expected
-      ${'returns all dashboards for array responses'}     | ${TEST_CUSTOM_DASHBOARDS_LIST} | ${TEST_CUSTOM_DASHBOARDS_LIST}
-      ${'returns an empty array for non-array responses'} | ${'Not an array'}              | ${[]}
-    `('$scenario', async ({ response, expected }) => {
-      const expectedUrl = `${dummyUrlRoot}/${
-        TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath
-      }/-/refs/main/logs_tree/${encodeURIComponent(CUSTOM_DASHBOARDS_PATH.replace(/^\//, ''))}`;
-
-      mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, response);
-      jest.spyOn(axios, 'get');
-
-      const result = await getCustomDashboards(TEST_CUSTOM_DASHBOARDS_PROJECT);
-
-      expect(result).toStrictEqual(expected);
-      expect(axios.get).toHaveBeenCalledWith(expectedUrl, {
-        params: { cb: dummyRandom, format: 'json', offset: 0 },
-      });
-    });
-
     it('get a single dashboard', async () => {
       const expectedUrl = `${dummyUrlRoot}/${
         TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath

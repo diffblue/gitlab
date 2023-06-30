@@ -38,6 +38,10 @@ describe('ProductAnalyticsSetupView', () => {
   };
 
   describe('when mounted', () => {
+    beforeEach(() => {
+      createWrapper();
+    });
+
     it.each`
       key                    | index
       ${TEST_COLLECTOR_HOST} | ${0}
@@ -48,31 +52,18 @@ describe('ProductAnalyticsSetupView', () => {
       expect(findKeyInputAt(index).props('value')).toBe(key);
     });
 
-    it.each([true, false])(
-      'renders the expected instructions when productAnalyticsSnowplowSupport feature flag is %s',
-      ({ productAnalyticsSnowplowSupport }) => {
-        createWrapper(
-          {},
-          {
-            glFeatures: {
-              productAnalyticsSnowplowSupport,
-            },
-          },
-        );
-        const installInstructionsWithKeys = wrapper.vm.replaceKeys(INSTALL_NPM_PACKAGE);
-        const importInstructionsWithKeys = wrapper.vm.replaceKeys(IMPORT_NPM_PACKAGE);
-        const initInstructionsWithKeys = wrapper.vm.replaceKeys(INIT_TRACKING);
-        const htmlInstructionsWithKeys = wrapper.vm.replaceKeys(HTML_SCRIPT_SETUP);
+    it('renders the expected instructions', () => {
+      const initInstructionsWithKeys = wrapper.vm.replaceKeys(INIT_TRACKING);
+      const htmlInstructionsWithKeys = wrapper.vm.replaceKeys(HTML_SCRIPT_SETUP);
 
-        const npmInstructions = findNpmInstructions().text();
-        const htmlInstructions = findHtmlInstructions().text();
+      const npmInstructions = findNpmInstructions().text();
+      const htmlInstructions = findHtmlInstructions().text();
 
-        expect(npmInstructions).toContain(installInstructionsWithKeys);
-        expect(npmInstructions).toContain(importInstructionsWithKeys);
-        expect(npmInstructions).toContain(initInstructionsWithKeys);
-        expect(htmlInstructions).toContain(htmlInstructionsWithKeys);
-      },
-    );
+      expect(npmInstructions).toContain(INSTALL_NPM_PACKAGE);
+      expect(npmInstructions).toContain(IMPORT_NPM_PACKAGE);
+      expect(npmInstructions).toContain(initInstructionsWithKeys);
+      expect(htmlInstructions).toContain(htmlInstructionsWithKeys);
+    });
 
     describe('static text', () => {
       beforeEach(() => {

@@ -112,22 +112,10 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
 
         expect(rendered).to have_css '#js-product-analytics-settings'
         expect(rendered).to have_field s_('AdminSettings|Product analytics configurator connection string')
-        expect(rendered).to have_field s_('AdminSettings|Jitsu host')
-        expect(rendered).to have_field s_('AdminSettings|Jitsu project ID')
-        expect(rendered).to have_field s_('AdminSettings|Jitsu administrator email')
-        expect(rendered).to have_field s_('AdminSettings|Jitsu administrator password')
         expect(rendered).to have_field s_('AdminSettings|Collector host')
         expect(rendered).to have_field s_('AdminSettings|Clickhouse URL')
         expect(rendered).to have_field s_('AdminSettings|Cube API URL')
         expect(rendered).to have_field s_('AdminSettings|Cube API key')
-      end
-
-      it 'masks Jitsu administrator password' do
-        stub_application_setting(jitsu_administrator_password: 'foo')
-
-        render
-
-        expect(rendered).to have_field s_('AdminSettings|Jitsu administrator password'), with: ApplicationSetting::MASK_PASSWORD
       end
     end
 

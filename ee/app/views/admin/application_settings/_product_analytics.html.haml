@@ -19,26 +19,6 @@
           = f.gitlab_ui_checkbox_component :product_analytics_enabled, s_('AdminSettings|Enable product analytics')
         = render partial: 'product_analytics_configurator_settings', locals: { f: f }
         .form-group
-          = f.label :jitsu_host, s_('AdminSettings|Jitsu host'), class: 'label-light'
-          = f.url_field :jitsu_host, class: 'form-control gl-form-input', placeholder: 'https://jitsu.gitlab.com'
-          .form-text.text-muted
-            = s_('AdminSettings|The host of your Jitsu instance.')
-        .form-group
-          = f.label :jitsu_project_xid, s_('AdminSettings|Jitsu project ID'), class: 'label-light'
-          = f.text_field :jitsu_project_xid, class: 'form-control gl-form-input'
-          .form-text.text-muted
-            = s_('AdminSettings|The ID of the project in Jitsu. The project contains all analytics instances.')
-        .form-group
-          = f.label :jitsu_administrator_email, s_('AdminSettings|Jitsu administrator email'), class: 'label-light'
-          = f.email_field :jitsu_administrator_email, class: 'form-control gl-form-input', placeholder: 'jitsu.admin@gitlab.com', autocomplete: 'off'
-          .form-text.text-muted
-            = s_('AdminSettings|Used to generate short-lived API access tokens.')
-        .form-group
-          = f.label :jitsu_administrator_password, s_('AdminSettings|Jitsu administrator password'), class: 'label-light'
-          = f.password_field :jitsu_administrator_password, value: (@application_setting.jitsu_administrator_password.present? ? ApplicationSetting::MASK_PASSWORD : ''), class: 'form-control gl-form-input', autocomplete: 'off'
-          .form-text.text-muted
-            = s_('AdminSettings|Used to generate short-lived API access tokens.')
-        .form-group
           = f.label :product_analytics_data_collector_host, s_('AdminSettings|Collector host'), class: 'label-light'
           = f.url_field :product_analytics_data_collector_host, class: 'form-control gl-form-input', placeholder: 'https://collector.gitlab.com'
           .form-text.text-muted
@@ -47,7 +27,7 @@
           = f.label :product_analytics_clickhouse_connection_string, s_('AdminSettings|Clickhouse URL'), class: 'label-light'
           = f.url_field :product_analytics_clickhouse_connection_string, class: 'form-control gl-form-input', placeholder: 'https://user:pass@clickhouse.gitlab.com:8123'
           .form-text.text-muted
-            = s_('AdminSettings|Used to connect Jitsu to the Clickhouse instance.')
+            = s_('AdminSettings|Used to connect Snowplow to the Clickhouse instance.')
         .form-group
           = f.label :cube_api_base_url, s_('AdminSettings|Cube API URL'), class: 'label-light'
           = f.url_field :cube_api_base_url, class: 'form-control gl-form-input', placeholder: 'https://cube.gitlab.com'

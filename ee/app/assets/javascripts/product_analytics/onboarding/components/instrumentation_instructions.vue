@@ -1,7 +1,6 @@
 <script>
 import { GlLink, GlSprintf } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 import {
   INSTALL_NPM_PACKAGE,
@@ -19,7 +18,6 @@ export default {
     GlSprintf,
     AnalyticsClipboardInput,
   },
-  mixins: [glFeatureFlagsMixin()],
   inject: {
     collectorHost: {
       type: String,
@@ -38,8 +36,8 @@ export default {
   computed: {
     instructions() {
       return {
-        install: this.replaceKeys(INSTALL_NPM_PACKAGE),
-        import: this.replaceKeys(IMPORT_NPM_PACKAGE),
+        install: INSTALL_NPM_PACKAGE,
+        import: IMPORT_NPM_PACKAGE,
         init: this.replaceKeys(INIT_TRACKING),
         htmlSetup: this.replaceKeys(HTML_SCRIPT_SETUP),
       };
@@ -48,21 +46,9 @@ export default {
   methods: {
     replaceKeys(template) {
       const hostKey = '$host';
-      const appIdValuePlaceholder = '$applicationId';
-      const appIdPropertyNamePlaceholder = '$appIdProperty';
-      const appIdPropertyName = this.glFeatures.productAnalyticsSnowplowSupport
-        ? 'appId'
-        : 'applicationId';
-      const packageVersionPlaceholder = '$version';
+      const appIdKey = '$appId';
 
-      // 0.0.5 is the last version supported by Jitsu. Everything after that is Snowplow.
-      const packageVersion = this.glFeatures.productAnalyticsSnowplowSupport ? '' : '@0.0.5';
-
-      return template
-        .replace(hostKey, this.collectorHost)
-        .replace(appIdValuePlaceholder, this.trackingKey)
-        .replace(appIdPropertyNamePlaceholder, appIdPropertyName)
-        .replaceAll(packageVersionPlaceholder, packageVersion);
+      return template.replace(hostKey, this.collectorHost).replace(appIdKey, this.trackingKey);
     },
   },
   i18n: {

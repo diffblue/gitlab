@@ -9,25 +9,19 @@ import {
   I18N_DASHBOARD_LIST_DESCRIPTION,
   I18N_DASHBOARD_LIST_LEARN_MORE,
 } from 'ee/analytics/analytics_dashboards/constants';
-import jsonList from 'ee/analytics/analytics_dashboards/gl_dashboards/analytics_dashboards.json';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { createAlert } from '~/alert';
 import getAllProductAnalyticsDashboardsQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_all_product_analytics_dashboards.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import { getCustomDashboards } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
   TEST_COLLECTOR_HOST,
   TEST_TRACKING_KEY,
   TEST_CUSTOM_DASHBOARDS_PROJECT,
-  TEST_CUSTOM_DASHBOARDS_LIST,
   TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE,
 } from '../mock_data';
 
 jest.mock('~/alert');
-jest.mock('ee/analytics/analytics_dashboards/api/dashboards_api', () => ({
-  getCustomDashboards: jest.fn(),
-}));
 
 Vue.use(VueApollo);
 
@@ -42,8 +36,6 @@ describe('DashboardsList', () => {
   const findNewDashboardButton = () => wrapper.findByTestId('new-dashboard-button');
   const findVisualizationDesignerButton = () =>
     wrapper.findByTestId('visualization-designer-button');
-
-  const NUMBER_OF_CUSTOM_DASHBOARDS = 1;
 
   const $router = {
     push: jest.fn(),
@@ -74,19 +66,13 @@ describe('DashboardsList', () => {
     });
   };
 
-  beforeEach(() => {
-    getCustomDashboards.mockImplementation(() => TEST_CUSTOM_DASHBOARDS_LIST);
-  });
-
   afterEach(() => {
     mockAnalyticsDashboardsHandler.mockReset();
   });
 
   describe('by default', () => {
     beforeEach(() => {
-      createWrapper({
-        glFeatures: { productAnalyticsSnowplowSupport: false },
-      });
+      createWrapper();
     });
 
     it('should render the page title', () => {
@@ -112,133 +98,71 @@ describe('DashboardsList', () => {
       );
     });
 
-    it('renders a list item for each custom dashboard', () => {
-      expect(findListItems()).toHaveLength(NUMBER_OF_CUSTOM_DASHBOARDS);
-
-      expect(findListItems().at(0).props('dashboard')).toMatchObject({
-        slug: 'new_dashboard',
-        title: 'new_dashboard',
-      });
-    });
-
-    it('does not render any feature dashboards', () => {
-      expect(findListItems()).toHaveLength(1);
+    it('does not render any feature or custom dashboards', () => {
+      expect(findListItems()).toHaveLength(0);
     });
   });
 
   describe('when the product analytics feature is enabled', () => {
     const FEATURE = 'productAnalytics';
 
-    describe('with snowplow disabled', () => {
+    beforeEach(() => {
+      mockAnalyticsDashboardsHandler = jest
+        .fn()
+        .mockResolvedValue(TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE);
+
+      createWrapper({
+        features: [FEATURE],
+      });
+    });
+
+    it('renders the feature component', () => {
+      expect(findProductAnalyticsOnboarding().exists()).toBe(true);
+    });
+
+    // TODO: Update when backend returns dashboards only for onboarded features
+    // https://gitlab.com/gitlab-org/gitlab/-/issues/411608
+    it('does not render any dashboards', () => {
+      expect(findListItems()).toHaveLength(0);
+    });
+
+    describe('and the feature has been set up', () => {
       beforeEach(() => {
-        createWrapper({
-          features: [FEATURE],
-          glFeatures: { productAnalyticsSnowplowSupport: false },
-        });
+        findProductAnalyticsOnboarding().vm.$emit('complete');
+
+        return waitForPromises();
       });
 
-      it('renders the feature component', () => {
-        expect(findProductAnalyticsOnboarding().exists()).toBe(true);
+      it('does not render the feature component', () => {
+        expect(findProductAnalyticsOnboarding().exists()).toBe(false);
       });
 
-      it('does not render any feature dashboards', () => {
-        expect(findListItems()).toHaveLength(1);
-      });
+      it('renders a list item for each custom and feature dashboard', () => {
+        const expectedDashboards =
+          TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE.data?.project?.productAnalyticsDashboards
+            ?.nodes;
 
-      describe('and the feature has been set up', () => {
-        beforeEach(() => {
-          return findProductAnalyticsOnboarding().vm.$emit('complete');
-        });
+        expect(findListItems()).toHaveLength(expectedDashboards.length);
 
-        it('does not render the feature component', () => {
-          expect(findProductAnalyticsOnboarding().exists()).toBe(false);
-        });
-
-        it('renders a list item for each feature dashboard after any custom dashboards', () => {
-          jsonList[FEATURE].forEach((dashboard, idx) => {
-            expect(findListItems().at(idx).props('dashboard')).toEqual(dashboard);
-          });
-        });
-      });
-
-      describe('and the feature component throws an error', () => {
-        const message = 'some error';
-        const error = new Error(message);
-
-        beforeEach(() => {
-          return findProductAnalyticsOnboarding().vm.$emit('error', error, true, message);
-        });
-
-        it('creates an alert for the error', () => {
-          expect(createAlert).toHaveBeenCalledWith({
-            captureError: true,
-            message,
-            error,
-          });
+        expectedDashboards.forEach((dashboard, idx) => {
+          expect(findListItems().at(idx).props('dashboard')).toEqual(dashboard);
         });
       });
     });
 
-    describe('with snowplow enabled', () => {
+    describe('and the feature component throws an error', () => {
+      const message = 'some error';
+      const error = new Error(message);
+
       beforeEach(() => {
-        mockAnalyticsDashboardsHandler = jest
-          .fn()
-          .mockResolvedValue(TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE);
-
-        createWrapper({
-          features: [FEATURE],
-          glFeatures: { productAnalyticsSnowplowSupport: true },
-        });
+        return findProductAnalyticsOnboarding().vm.$emit('error', error, true, message);
       });
 
-      it('renders the feature component', () => {
-        expect(findProductAnalyticsOnboarding().exists()).toBe(true);
-      });
-
-      // TODO: Update when backend returns dashboards only for onboarded features
-      // https://gitlab.com/gitlab-org/gitlab/-/issues/411608
-      it('does not render any dashboards', () => {
-        expect(findListItems()).toHaveLength(0);
-      });
-
-      describe('and the feature has been set up', () => {
-        beforeEach(() => {
-          findProductAnalyticsOnboarding().vm.$emit('complete');
-
-          return waitForPromises();
-        });
-
-        it('does not render the feature component', () => {
-          expect(findProductAnalyticsOnboarding().exists()).toBe(false);
-        });
-
-        it('renders a list item for each custom and feature dashboard', () => {
-          const expectedDashboards =
-            TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE.data?.project?.productAnalyticsDashboards
-              ?.nodes;
-
-          expect(findListItems()).toHaveLength(expectedDashboards.length);
-
-          expectedDashboards.forEach((dashboard, idx) => {
-            expect(findListItems().at(idx).props('dashboard')).toEqual(dashboard);
-          });
-        });
-      });
-
-      describe('and the feature component throws an error', () => {
-        const message = 'some error';
-        const error = new Error(message);
-
-        beforeEach(() => {
-          return findProductAnalyticsOnboarding().vm.$emit('error', error, true, message);
-        });
-
-        it('creates an alert for the error', () => {
-          expect(createAlert).toHaveBeenCalledWith({
-            captureError: true,
-            message,
-            error,
-          });
+      it('creates an alert for the error', () => {
+        expect(createAlert).toHaveBeenCalledWith({
+          captureError: true,
+          message,
+          error,
         });
       });
     });

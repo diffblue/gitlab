@@ -27,7 +27,7 @@ RSpec.describe 'Analytics Dashboard', :js, feature_category: :product_analytics 
 
   context 'with the combined dashboards feature flag disabled' do
     before do
-      stub_feature_flags(combined_analytics_dashboards: false, product_analytics_snowplow_support: false)
+      stub_feature_flags(combined_analytics_dashboards: false)
     end
 
     it_behaves_like 'renders not found'
@@ -35,7 +35,7 @@ RSpec.describe 'Analytics Dashboard', :js, feature_category: :product_analytics 
 
   context 'with the combined dashboards feature flag enabled' do
     before do
-      stub_feature_flags(combined_analytics_dashboards: true, product_analytics_snowplow_support: false)
+      stub_feature_flags(combined_analytics_dashboards: true)
     end
 
     context 'with the licensed feature disabled' do
@@ -71,46 +71,14 @@ RSpec.describe 'Analytics Dashboard', :js, feature_category: :product_analytics 
         end
 
         it_behaves_like 'product analytics dashboards' do
-          let(:project_settings) { { jitsu_key: 123 } }
+          let(:project_settings) { { product_analytics_instrumentation_key: 456 } }
           let(:application_settings) do
             {
-              jitsu_host: 'https://jitsu.example.com',
-              jitsu_project_xid: '123',
-              jitsu_administrator_email: 'test@example.com',
-              jitsu_administrator_password: 'password',
+              product_analytics_configurator_connection_string: 'https://configurator.example.com',
               product_analytics_data_collector_host: 'https://collector.example.com',
-              product_analytics_clickhouse_connection_string: 'clickhouse://localhost:9000',
               cube_api_base_url: 'https://cube.example.com',
               cube_api_key: '123'
             }
-          end
-        end
-
-        context 'with snowplow enabled' do
-          before do
-            stub_feature_flags(combined_analytics_dashboards: true, product_analytics_snowplow_support: true)
-          end
-
-          context 'when loading the default page' do
-            before do
-              visit_page
-            end
-
-            it 'renders the dashboards list' do
-              expect(page).to have_content('Analytics dashboards')
-            end
-          end
-
-          it_behaves_like 'product analytics dashboards' do
-            let(:project_settings) { { product_analytics_instrumentation_key: 456 } }
-            let(:application_settings) do
-              {
-                product_analytics_configurator_connection_string: 'https://configurator.example.com',
-                product_analytics_data_collector_host: 'https://collector.example.com',
-                cube_api_base_url: 'https://cube.example.com',
-                cube_api_key: '123'
-              }
-            end
           end
         end
       end
