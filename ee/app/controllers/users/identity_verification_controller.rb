@@ -5,12 +5,14 @@ module Users
     include AcceptsPendingInvitations
     include ActionView::Helpers::DateHelper
     include Arkose::ContentSecurityPolicy
+    include IdentityVerificationHelper
 
     EVENT_CATEGORIES = %i[email phone credit_card error].freeze
 
     skip_before_action :authenticate_user!
     before_action :require_verification_user!
     before_action :require_unverified_user!, except: :success
+    before_action :redirect_banned_user, only: [:show]
     before_action :require_arkose_verification!, except: [:arkose_labs_challenge, :verify_arkose_labs_session]
 
     feature_category :system_access
@@ -134,6 +136,13 @@ module Users
 
     def require_unverified_user!
       redirect_to success_identity_verification_path if @user.identity_verified?
+    end
+
+    def redirect_banned_user
+      return unless @user.banned?
+
+      session.delete(:verification_user_id)
+      redirect_to new_user_session_path, alert: user_banned_error_message
     end
 
     def require_arkose_verification!

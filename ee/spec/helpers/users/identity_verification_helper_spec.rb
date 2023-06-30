@@ -2,7 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Users::IdentityVerificationHelper do
+RSpec.describe Users::IdentityVerificationHelper, feature_category: :system_access do
+  using RSpec::Parameterized::TableSyntax
+
   let_it_be_with_reload(:user) { create(:user) }
 
   describe '#identity_verification_data' do
@@ -65,6 +67,25 @@ RSpec.describe Users::IdentityVerificationHelper do
         },
         successful_verification_path: success_identity_verification_path
       }
+    end
+  end
+
+  describe '#user_banned_error_message' do
+    subject(:user_banned_error_message) { helper.user_banned_error_message }
+
+    where(:dot_com, :error_message) do
+      true  | "Your account has been blocked. Contact https://support.gitlab.com for assistance."
+      false | "Your account has been blocked. Contact your GitLab administrator for assistance."
+    end
+
+    with_them do
+      before do
+        allow(Gitlab).to receive(:com?).and_return(dot_com)
+      end
+
+      it 'returns the correct account banned error message' do
+        expect(user_banned_error_message).to eq(error_message)
+      end
     end
   end
 end

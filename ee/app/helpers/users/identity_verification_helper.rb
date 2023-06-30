@@ -19,6 +19,17 @@ module Users
       }
     end
 
+    def user_banned_error_message
+      if ::Gitlab.com?
+        format(
+          _("Your account has been blocked. Contact %{support} for assistance."),
+          support: EE::CUSTOMER_SUPPORT_URL
+        )
+      else
+        _("Your account has been blocked. Contact your GitLab administrator for assistance.")
+      end
+    end
+
     private
 
     def email_verification_data(user)

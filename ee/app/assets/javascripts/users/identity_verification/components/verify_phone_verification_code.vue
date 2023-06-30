@@ -6,6 +6,7 @@ import { createAlert, VARIANT_SUCCESS } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 
 import { validateVerificationCode } from '../validations';
+import { UNKNOWN_TELESIGN_ERROR } from '../constants';
 
 export default {
   name: 'VerifyPhoneVerificationCode',
@@ -107,7 +108,7 @@ export default {
       });
     },
     handleError(error) {
-      if (error.response?.data?.reason === 'unknown_telesign_error') {
+      if (error.response?.data?.reason === UNKNOWN_TELESIGN_ERROR) {
         this.$emit('verified');
         return;
       }
