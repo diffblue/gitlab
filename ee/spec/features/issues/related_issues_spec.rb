@@ -18,6 +18,7 @@ RSpec.describe 'Related issues', :js, feature_category: :team_planning do
     it 'shows a modal to confirm closing the issue' do
       # Workaround for modal not showing when issue is first added
       stub_feature_flags(moved_mr_sidebar: false)
+      stub_feature_flags(move_close_into_dropdown: false)
       visit project_issue_path(project, issue_a)
 
       wait_for_requests
