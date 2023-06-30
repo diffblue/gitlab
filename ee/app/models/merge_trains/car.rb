@@ -24,7 +24,7 @@ module MergeTrains
         ::Ci::CancelPipelineService.new( # rubocop: disable CodeReuse/ServiceClass
           pipeline: merge_train.pipeline,
           current_user: nil).force_execute
-        merge_train.cleanup_ref
+        merge_train.cleanup_ref(async: false)
       end
     end
 
@@ -168,8 +168,14 @@ module MergeTrains
       self.class.first_car(target_project_id, target_branch) == self
     end
 
-    def cleanup_ref
-      merge_request.cleanup_refs(only: :train)
+    def cleanup_ref(async: true)
+      if async
+        merge_request.schedule_cleanup_refs(only: :train)
+      else
+        # Synchronous removal might result in Gitaly deadlock
+        # Ref.: https://gitlab.com/gitlab-org/gitaly/-/issues/5369
+        merge_request.cleanup_refs(only: :train)
+      end
     end
 
     def active?

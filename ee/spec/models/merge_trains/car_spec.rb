@@ -606,14 +606,26 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
   end
 
   describe '#cleanup_ref' do
-    subject { train_car.cleanup_ref }
-
     let(:train_car) { create(:merge_train_car) }
 
-    it 'executes cleanup_refs for merge request' do
-      expect(train_car.merge_request).to receive(:cleanup_refs).with(only: :train)
+    context 'when running async' do
+      subject { train_car.cleanup_ref }
 
-      subject
+      it 'schedules cleanup_refs for merge request' do
+        expect(train_car.merge_request).to receive(:schedule_cleanup_refs).with(only: :train)
+
+        subject
+      end
+    end
+
+    context 'when running immediately' do
+      subject { train_car.cleanup_ref(async: false) }
+
+      it 'executes cleanup_refs for merge request' do
+        expect(train_car.merge_request).to receive(:cleanup_refs).with(only: :train)
+
+        subject
+      end
     end
   end
 

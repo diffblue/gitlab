@@ -86,7 +86,7 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
 
     shared_examples_for 'merges the merge request' do
       specify do
-        expect(merge_request).to receive(:cleanup_refs).with(only: :train)
+        expect(merge_request).to receive(:schedule_cleanup_refs).with(only: :train)
         expect(merge_request.merge_train_car).to receive(:start_merge!).and_call_original
         expect(merge_request.merge_train_car).to receive(:finish_merge!).and_call_original
         expect_next_instance_of(MergeRequests::MergeService, project: project, current_user: maintainer, params: instance_of(HashWithIndifferentAccess)) do |service|
