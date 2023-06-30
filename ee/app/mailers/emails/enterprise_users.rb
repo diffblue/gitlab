@@ -2,7 +2,7 @@
 
 module Emails
   module EnterpriseUsers
-    def enterprise_user_account_created_email(user_id)
+    def user_associated_with_enterprise_group_email(user_id)
       @user = User.find_by_id(user_id)
       return unless @user
       return unless @user.user_detail.enterprise_group
