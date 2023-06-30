@@ -1,7 +1,6 @@
-import { GlDropdown } from '@gitlab/ui';
+import { GlCollapsibleListbox } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
-import FilterItem from 'ee/security_dashboard/components/shared/filters/filter_item.vue';
 import ToolWithVendorFilter, {
   VENDOR_GITLAB,
   REPORT_TYPES,
@@ -9,7 +8,6 @@ import ToolWithVendorFilter, {
 } from 'ee/security_dashboard/components/shared/filters/tool_with_vendor_filter.vue';
 import QuerystringSync from 'ee/security_dashboard/components/shared/filters/querystring_sync.vue';
 import { ALL_ID } from 'ee/security_dashboard/components/shared/filters/constants';
-import DropdownButtonText from 'ee/security_dashboard/components/shared/filters/dropdown_button_text.vue';
 import { REPORT_TYPE_PRESETS } from 'ee/security_dashboard/components/shared/vulnerability_report/constants';
 
 const GITLAB_SCANNERS = [
@@ -48,32 +46,47 @@ describe('Tool With Vendor Filter component', () => {
   };
 
   const findQuerystringSync = () => wrapper.findComponent(QuerystringSync);
-  const findDropdownHeader = (vendor) => wrapper.findByTestId(`${vendor}:header`);
-  const findDropdownDivider = (vendor) => wrapper.findByTestId(`${vendor}:divider`);
-  const findDropdownItems = () => wrapper.findAllComponents(FilterItem);
-  const findDropdownItem = (vendor, id) => wrapper.findByTestId(`${vendor}.${id}`);
+  const findListBox = () => wrapper.findComponent(GlCollapsibleListbox);
+
+  const findDropdownHeader = (vendor) => {
+    const items = findListBox().props('items');
+
+    const isHeader = (item) => item.options && item.text === vendor;
+
+    return items.find(isHeader);
+  };
 
   const clickDropdownItem = async (vendor, id) => {
     if (vendor && id) {
-      findDropdownItem(vendor, id).trigger('click');
-      await nextTick();
+      findListBox().vm.$emit('select', [`${vendor}.${id}`]);
     } else {
-      await findDropdownHeader(vendor).trigger('click');
+      findListBox().vm.$emit('select', [ALL_ID]);
     }
+
+    await nextTick();
   };
 
-  const clickAllItem = () => wrapper.findByTestId(ALL_ID).trigger('click');
+  const clickAllItem = async () => {
+    await clickDropdownItem();
+  };
 
   const expectSelectedItems = (ids) => {
-    const checkedItems = findDropdownItems()
-      .wrappers.filter((item) => item.props('isChecked'))
-      .map((item) => item.attributes('data-testid'));
-
-    expect(checkedItems.sort()).toEqual(ids.sort());
+    expect(findListBox().props('selected')).toMatchObject(ids);
   };
 
   const expectFilterChanged = (expected) => {
     expect(wrapper.emitted('filter-changed')[0][0]).toEqual(expected);
+  };
+
+  const findDropdownItem = (vendor, id) => {
+    let items = findListBox().props('items');
+
+    // In this case we have multiple vendors
+    if (items[0]?.textSrOnly) {
+      items = items.flatMap((item) => item.options);
+    }
+
+    return items.find((item) => item.value === `${vendor}.${id}`);
   };
 
   describe('default', () => {
@@ -92,8 +105,9 @@ describe('Tool With Vendor Filter component', () => {
       it('receives empty array when All Statuses option is clicked', async () => {
         // Click on another item first so that we can verify clicking on the ALL item changes it.
         await clickDropdownItem(VENDOR_GITLAB, 'SAST');
-        wrapper.findByTestId(ALL_ID).vm.$emit('click');
-        await nextTick();
+
+        // Now click ALL
+        await clickDropdownItem();
 
         expect(findQuerystringSync().props('value')).toEqual([]);
       });
@@ -117,16 +131,7 @@ describe('Tool With Vendor Filter component', () => {
       });
 
       it('shows the dropdown with correct header text', () => {
-        expect(wrapper.findComponent(GlDropdown).props('headerText')).toBe(
-          ToolWithVendorFilter.i18n.label,
-        );
-      });
-
-      it('shows the DropdownButtonText component with the correct props', () => {
-        expect(wrapper.findComponent(DropdownButtonText).props()).toMatchObject({
-          items: [ToolWithVendorFilter.i18n.allItemsText],
-          name: ToolWithVendorFilter.i18n.label,
-        });
+        expect(findListBox().props('headerText')).toBe(ToolWithVendorFilter.i18n.label);
       });
     });
   });
@@ -136,12 +141,12 @@ describe('Tool With Vendor Filter component', () => {
       const ids = Object.keys(REPORT_TYPES);
       createWrapper({ scanners: GITLAB_SCANNERS });
 
-      expect(findDropdownItems()).toHaveLength(ids.length + 1);
-      expect(findDropdownHeader(VENDOR_GITLAB).exists()).toBe(false);
-      expect(findDropdownDivider(VENDOR_GITLAB).exists()).toBe(false);
+      const items = findListBox().props('items');
+      expect(items).toHaveLength(ids.length + 1);
+      expect(items[0]).toEqual({ value: ALL_ID, text: ToolWithVendorFilter.i18n.allItemsText });
 
-      ids.forEach((id) => {
-        expect(findDropdownItem(VENDOR_GITLAB, id).exists()).toBe(true);
+      ids.forEach((id, index) => {
+        expect(items[index + 1]).toMatchObject({ value: `GitLab.${id}` });
       });
     });
 
@@ -154,7 +159,7 @@ describe('Tool With Vendor Filter component', () => {
 
       createWrapper({ scanners });
 
-      expect(findDropdownItem(VENDOR_GITLAB, CLUSTER_IMAGE_SCANNING).exists()).toBe(false);
+      expect(findDropdownItem()).toBeUndefined();
     });
 
     describe('filter-changed event', () => {
@@ -187,11 +192,13 @@ describe('Tool With Vendor Filter component', () => {
     `('shows the dropdown items for vendor $vendor', ({ vendor, ids }) => {
       createWrapper();
 
-      expect(findDropdownHeader(vendor).exists()).toBe(true);
-      expect(findDropdownDivider(vendor).exists()).toBe(true);
+      expect(findDropdownHeader(vendor)).toMatchObject({ text: vendor });
 
       ids.forEach((id) => {
-        expect(findDropdownItem(vendor, id).exists()).toBe(true);
+        expect(findDropdownItem(vendor, id)).toEqual({
+          text: wrapper.vm.getReportName(id),
+          value: `${vendor}.${id}`,
+        });
       });
     });
 
@@ -199,38 +206,7 @@ describe('Tool With Vendor Filter component', () => {
       createWrapper({ scanners: EMPTY_VENDOR_SCANNERS });
 
       EMPTY_VENDOR_SCANNERS.forEach(({ vendor }) => {
-        expect(findDropdownHeader(vendor).exists()).toBe(false);
-        expect(findDropdownDivider(vendor).exists()).toBe(false);
-      });
-    });
-
-    describe('vendor header click', () => {
-      it('selects all items for a vendor when the vendor header is clicked', async () => {
-        createWrapper();
-
-        await clickDropdownItem(VENDOR_GITLAB);
-
-        expectSelectedItems(Object.keys(REPORT_TYPES).map((id) => `${VENDOR_GITLAB}.${id}`));
-      });
-
-      it('selects all items for a vendor when the vendor header is clicked and some items are selected', async () => {
-        createWrapper();
-        await clickDropdownItem(VENDOR_GITLAB, 'DAST');
-        await clickDropdownItem(VENDOR_GITLAB);
-
-        expectSelectedItems(Object.keys(REPORT_TYPES).map((id) => `${VENDOR_GITLAB}.${id}`));
-      });
-
-      it('deselects all items for a vendor when the vendor header is clicked and all items are selected', async () => {
-        createWrapper();
-        // Click the header to select all items.
-        await clickDropdownItem(VENDOR_GITLAB);
-        // Sanity check to verify that all items were selected.
-        expectSelectedItems(Object.keys(REPORT_TYPES).map((id) => `${VENDOR_GITLAB}.${id}`));
-        // Click the header again to deselect all items.
-        await clickDropdownItem(VENDOR_GITLAB);
-
-        expectSelectedItems([ALL_ID]);
+        expect(findDropdownHeader(vendor)).toBeUndefined();
       });
     });
 
