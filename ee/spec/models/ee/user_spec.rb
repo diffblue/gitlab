@@ -2832,4 +2832,75 @@ RSpec.describe User, feature_category: :system_access do
       end
     end
   end
+
+  describe '#any_group_with_ai_available?', :saas, :use_clean_rails_redis_caching do
+    using RSpec::Parameterized::TableSyntax
+
+    let_it_be(:user) { create(:user) }
+    let_it_be_with_reload(:ultimate_group) { create(:group_with_plan, plan: :ultimate_plan) }
+    let_it_be_with_reload(:bronze_group) { create(:group_with_plan, plan: :bronze_plan) }
+    let_it_be_with_reload(:free_group) { create(:group_with_plan, plan: :free_plan) }
+    let_it_be_with_reload(:group_without_plan) { create(:group) }
+    let_it_be_with_reload(:trial_group) { create(:group_with_plan, plan: :ultimate_plan, trial_ends_on: 1.day.from_now) }
+    let_it_be_with_reload(:ultimate_sub_group) { create(:group, parent: ultimate_group) }
+    let_it_be_with_reload(:bronze_sub_group) { create(:group, parent: bronze_group) }
+
+    subject(:group_with_ai_enabled) { user.any_group_with_ai_available? }
+
+    where(:group, :result) do
+      ref(:bronze_group)       | false
+      ref(:free_group)         | false
+      ref(:group_without_plan) | false
+      ref(:ultimate_group)     | true
+      ref(:trial_group)        | true
+    end
+
+    with_them do
+      context 'when member of the root group' do
+        before do
+          group.add_guest(user)
+        end
+
+        context 'when ai features are enabled' do
+          include_context 'with ai features enabled for group'
+
+          it { is_expected.to eq(result) }
+
+          it 'caches the result' do
+            group_with_ai_enabled
+
+            expect(Rails.cache.fetch(['users', user.id, 'group_with_ai_enabled'])).to eq(result)
+          end
+        end
+
+        context 'when ai features are not enabled' do
+          it { is_expected.to eq(false) }
+        end
+      end
+    end
+
+    context 'when member of a sub-group only' do
+      include_context 'with ai features enabled for group'
+
+      context 'with eligable group' do
+        let(:group) { ultimate_group }
+
+        before do
+          ultimate_sub_group.add_guest(user)
+        end
+
+        it { is_expected.to eq(true) }
+      end
+
+      context 'with not eligable group' do
+        let(:group) { bronze_group }
+
+        before do
+          bronze_sub_group.add_guest(user)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+    end
+  end
 end

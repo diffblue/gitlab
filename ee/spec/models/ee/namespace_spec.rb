@@ -419,6 +419,49 @@ RSpec.describe Namespace do
         end
       end
     end
+
+    describe '.namespace_settings_with_ai_enabled', :saas do
+      subject { described_class.namespace_settings_with_ai_enabled }
+
+      let_it_be_with_reload(:namespace) { create(:namespace, :with_namespace_settings) }
+      let(:third_party_ai_features_enabled) { true }
+      let(:experiment_features_enabled) { true }
+
+      before do
+        allow(namespace.namespace_settings).to receive(:ai_settings_allowed?).and_return(true)
+        namespace.namespace_settings.update!(
+          third_party_ai_features_enabled: third_party_ai_features_enabled,
+          experiment_features_enabled: experiment_features_enabled
+        )
+      end
+
+      context 'when all settings are enabled' do
+        it { is_expected.to contain_exactly(namespace) }
+      end
+
+      context 'when third party features are disabled' do
+        let(:third_party_ai_features_enabled) { false }
+
+        it { is_expected.to be_empty }
+      end
+
+      context 'when experimental features are disabled' do
+        let(:experiment_features_enabled) { false }
+
+        it { is_expected.to be_empty }
+      end
+    end
+
+    describe '.with_ai_supported_plan', :saas do
+      subject { described_class.with_ai_supported_plan }
+
+      let_it_be(:premium_namespace) { create(:namespace_with_plan, plan: :premium_plan) }
+      let_it_be(:ultimate_namespace) { create(:namespace_with_plan, plan: :ultimate_plan) }
+      let_it_be(:ultimate_trial_namespace) { create(:namespace_with_plan, plan: :ultimate_trial_plan) }
+      let_it_be(:opensource_namespace) { create(:namespace_with_plan, plan: :opensource_plan) }
+
+      it { is_expected.to contain_exactly(ultimate_namespace, ultimate_trial_namespace, opensource_namespace) }
+    end
   end
 
   context 'validation' do

@@ -33,9 +33,7 @@ module Gitlab
           end
 
           def self.user_authorized?(user:)
-            user.paid_namespaces(plans: ::EE::User::AI_SUPPORTED_PLANS).any? do |namespace|
-              namespace.third_party_ai_features_enabled && namespace.experiment_features_enabled
-            end
+            user.any_group_with_ai_available?
           end
         end
       end

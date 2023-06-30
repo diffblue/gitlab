@@ -16,7 +16,7 @@ module EE
     DEFAULT_GROUP_VIEW = 'details'
     ELASTICSEARCH_TRACKED_FIELDS = %w[id username email public_email name admin state organization
                                       timezone external otp_required_for_login].freeze
-    AI_SUPPORTED_PLANS = GitlabSubscriptions::Features.saas_plans_with_feature(:ai_tanuki_bot).freeze
+    GROUP_WITH_AI_ENABLED_CACHE_PERIOD = 1.hour
 
     prepended do
       include UsageStatistics
@@ -578,6 +578,12 @@ module EE
 
     def code_suggestions_disabled_by_group?
       groups.roots.joins(:namespace_settings).where(namespace_settings: { code_suggestions: false }).any?
+    end
+
+    def any_group_with_ai_available?
+      Rails.cache.fetch(['users', id, 'group_with_ai_enabled'], expires_in: GROUP_WITH_AI_ENABLED_CACHE_PERIOD) do
+        groups.roots.namespace_settings_with_ai_enabled.with_ai_supported_plan.any?
+      end
     end
 
     protected

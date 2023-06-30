@@ -84,6 +84,20 @@ module EE
         where("EXISTS (?)", matcher)
       end
 
+      scope :namespace_settings_with_ai_enabled, -> do
+        joins(:namespace_settings)
+          .where(namespace_settings: { third_party_ai_features_enabled: true, experiment_features_enabled: true })
+      end
+
+      scope :with_ai_supported_plan, -> do
+        plan_names = GitlabSubscriptions::Features.saas_plans_with_feature(:ai_tanuki_bot)
+
+        left_joins(gitlab_subscription: :hosted_plan)
+          .where(
+            plans: { name: plan_names }
+          )
+      end
+
       delegate :eligible_additional_purchased_storage_size, :additional_purchased_storage_size=,
         :additional_purchased_storage_ends_on, :additional_purchased_storage_ends_on=,
         :temporary_storage_increase_ends_on, :temporary_storage_increase_ends_on=,

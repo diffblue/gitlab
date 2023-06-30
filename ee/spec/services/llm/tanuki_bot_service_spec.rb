@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Llm::TanukiBotService, feature_category: :global_search do
+RSpec.describe Llm::TanukiBotService, :saas, feature_category: :global_search do
   let_it_be(:user) { create(:user) }
 
   let_it_be(:options) { { question: 'A question' } }
@@ -14,6 +14,10 @@ RSpec.describe Llm::TanukiBotService, feature_category: :global_search do
   end
 
   describe '#perform' do
+    before do
+      allow(user).to receive(:any_group_with_ai_available?).and_return(true)
+    end
+
     it_behaves_like 'completion worker sync and async' do
       let(:resource) { user }
       let(:action_name) { :tanuki_bot }
