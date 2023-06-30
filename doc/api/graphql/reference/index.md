@@ -12907,6 +12907,7 @@ CI/CD variables for a group.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="cigroupvariabledescription"></a>`description` | [`String`](#string) | Description of the variable. |
 | <a id="cigroupvariableenvironmentscope"></a>`environmentScope` | [`String`](#string) | Scope defining the environments that can use the variable. |
 | <a id="cigroupvariableid"></a>`id` | [`ID!`](#id) | ID of the variable. |
 | <a id="cigroupvariablekey"></a>`key` | [`String`](#string) | Name of the variable. |
@@ -13090,6 +13091,7 @@ CI/CD variables for a project.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="ciprojectvariabledescription"></a>`description` | [`String`](#string) | Description of the variable. |
 | <a id="ciprojectvariableenvironmentscope"></a>`environmentScope` | [`String`](#string) | Scope defining the environments that can use the variable. |
 | <a id="ciprojectvariableid"></a>`id` | [`ID!`](#id) | ID of the variable. |
 | <a id="ciprojectvariablekey"></a>`key` | [`String`](#string) | Name of the variable. |
