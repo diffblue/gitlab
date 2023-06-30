@@ -12641,13 +12641,34 @@ msgstr ""
 msgid "ContributionEvent|Approved merge request %{targetLink} in %{resourceParentLink}."
 msgstr ""
 
+msgid "ContributionEvent|Deleted branch %{refLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Deleted tag %{refLink} in %{resourceParentLink}."
+msgstr ""
+
 msgid "ContributionEvent|Joined project %{resourceParentLink}."
 msgstr ""
 
 msgid "ContributionEvent|Left project %{resourceParentLink}."
 msgstr ""
 
+msgid "ContributionEvent|Pushed a new branch %{refLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Pushed a new tag %{refLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Pushed to branch %{refLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Pushed to tag %{refLink} in %{resourceParentLink}."
+msgstr ""
+
 msgid "ContributionEvent|Removed due to membership expiration from %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|…and %{count} more commits. %{linkStart}Compare%{linkEnd}."
 msgstr ""
 
 msgid "Contributions for %{calendar_date}"
