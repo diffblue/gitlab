@@ -10,6 +10,7 @@ module Security
     enum age_interval: { day: 0, week: 1, month: 2, year: 3 }
 
     belongs_to :security_orchestration_policy_configuration, class_name: 'Security::OrchestrationPolicyConfiguration'
+    belongs_to :project, optional: true
     has_many :software_license_policies
 
     validates :match_on_inclusion, inclusion: { in: [true, false], message: 'must be a boolean value' }
