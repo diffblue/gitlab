@@ -105,9 +105,7 @@ module Gitlab
               Utils::Prompt.as_system(
                 <<~PROMPT
                 Answer the question as accurate as you can.
-
                 Start with identifying the resource first.
-
                 You have access to the following tools:
                 %<tools_definitions>s
                 Consider every tool before making decision.
@@ -115,6 +113,7 @@ module Gitlab
                 Ensure that your answer is accurate and doesn’t contain any information not directly supported
                 by the information retrieved using provided tools.
                 Use the following format:
+
                 Question: the input question you must answer
                 Thought: you should always think about what to do
                 Action: the action to take, should be one from this list: %<tool_names>s
@@ -125,6 +124,7 @@ module Gitlab
 
                 Thought: I know the final answer.
                 Final Answer: the final answer to the original input question.
+
                 REMEMBER to ALWAYS start a line with "Final Answer:" to give me the final answer.
 
                 Begin!
