@@ -1,0 +1,114 @@
+# Requests for events in the tests in qa/qa/specs/features/ee/api/10_govern/instance_audit_event_streaming_spec.rb
+- request:
+    path: /logs
+    method: POST
+    body:
+      details.add: user
+      details.author_class: User
+      details.target_type: User
+      entity_type: User
+      event_type: user_created
+      target_type: User
+    headers:
+      Content-Type: application/x-www-form-urlencoded
+      X-Gitlab-Audit-Event-Type: user_created
+  response:
+    status: 200
+- request:
+    path: /logs
+    method: POST
+    body:
+      details.add: group
+      details.target_type: Group
+      entity_type: Group
+      event_type: audit_operation
+      target_type: Group
+    headers:
+      Content-Type: application/x-www-form-urlencoded
+      X-Gitlab-Audit-Event-Type: audit_operation
+  response:
+    status: 200
+- request:
+    path: /logs
+    method: POST
+    body:
+      details.author_class: User
+      details.author_name: Administrator
+      details.custom_message: Added project
+      details.target_type: Project
+      entity_type: Project
+      event_type: project_created
+      target_type: Project
+    headers:
+      Content-Type: application/x-www-form-urlencoded
+      X-Gitlab-Audit-Event-Type: project_created
+  response:
+    status: 200
+- request:
+    path: /logs
+    method: POST
+    body:
+      details.custom_message.action: git-upload-pack
+      details.custom_message.protocol: ssh
+      details.target_type: Project
+      entity_type: Project
+      event_type: repository_git_operation
+      target_type: Project
+    headers:
+      Content-Type: application/x-www-form-urlencoded
+      X-Gitlab-Audit-Event-Type: repository_git_operation
+  response:
+    status: 200
+
+# Additional requests made while setting up tests
+- request:
+    path: /logs
+    method: POST
+    body:
+      details.custom_message.action: git-receive-pack
+      details.custom_message.protocol: web
+      details.target_type: Project
+      entity_type: Project
+      event_type: repository_git_operation
+      target_type: Project
+    headers:
+      Content-Type: application/x-www-form-urlencoded
+      X-Gitlab-Audit-Event-Type: repository_git_operation
+  response:
+    status: 200
+- request:
+    path: /logs
+    method: POST
+    body:
+      details.allow_force_push: false
+      details.code_owner_approval_required: false
+      details.custom_message: >-
+        Added protected branch with [allowed to push: ["Maintainers"], allowed
+        to merge: ["Maintainers"], allow force push: false, code owner approval
+        required: false]
+      'details.merge_access_levels[0]': Maintainers
+      'details.push_access_levels[0]': Maintainers
+      details.target_details: main
+      details.target_type: ProtectedBranch
+      entity_type: Project
+      event_type: protected_branch_created
+      target_details: main
+      target_type: ProtectedBranch
+    headers:
+      Content-Type: application/x-www-form-urlencoded
+      X-Gitlab-Audit-Event-Type: protected_branch_created
+  response:
+    status: 200
+- request:
+    path: /logs
+    method: POST
+    body:
+      details.custom_message: Removed SSH key
+      details.target_type: Key
+      event_type: remove_ssh_key
+      target_type: Key
+    headers:
+      Content-Type: application/x-www-form-urlencoded
+      X-Gitlab-Audit-Event-Type: remove_ssh_key
+  response:
+    status: 200
