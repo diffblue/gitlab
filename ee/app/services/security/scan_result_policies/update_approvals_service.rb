@@ -79,7 +79,7 @@ module Security
       end
 
       def target_pipeline
-        merge_request.latest_completed_target_branch_pipeline_for_scan_result_policy
+        merge_request.latest_finished_target_branch_pipeline_for_scan_result_policy
       end
       strong_memoize_attr :target_pipeline
 

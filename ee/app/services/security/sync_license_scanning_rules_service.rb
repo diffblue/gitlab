@@ -121,7 +121,7 @@ module Security
     end
 
     def target_branch_report(merge_request)
-      target_pipeline = merge_request.latest_completed_target_branch_pipeline_for_scan_result_policy
+      target_pipeline = merge_request.latest_finished_target_branch_pipeline_for_scan_result_policy
       ::Gitlab::LicenseScanning.scanner_for_pipeline(project, target_pipeline).report
     end
 
