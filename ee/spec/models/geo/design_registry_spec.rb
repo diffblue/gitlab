@@ -6,7 +6,7 @@ RSpec.describe Geo::DesignRegistry, :geo, feature_category: :geo_replication do
   include ::EE::GeoHelpers
   using RSpec::Parameterized::TableSyntax
 
-  it_behaves_like 'a BulkInsertSafe model', Geo::DesignRegistry do
+  it_behaves_like 'a BulkInsertSafe model', described_class do
     let(:valid_items_for_bulk_insertion) do
       build_list(:geo_design_registry, 10, created_at: Time.zone.now) do |registry|
         registry.project = create(:project)

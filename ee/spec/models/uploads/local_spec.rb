@@ -47,7 +47,7 @@ RSpec.describe Uploads::Local, :geo do
           uploader_class: "FileUploader"
         }]
 
-        expect(::DeleteStoredFilesWorker).to receive(:perform_async).with(Uploads::Local, ['absolute_path'])
+        expect(::DeleteStoredFilesWorker).to receive(:perform_async).with(described_class, ['absolute_path'])
         expect(::Geo::UploadReplicator).to receive(:bulk_create_delete_events_async).with(keys_to_delete)
 
         data_store.delete_keys_async(keys_to_delete)

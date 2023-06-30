@@ -211,7 +211,7 @@ RSpec.describe Note, :elastic, :clean_gitlab_redis_shared_state, feature_categor
 
       options = { project_ids: [issue.project.id] }
 
-      expect(Note.elastic_search('term', options: options).total_count).to eq(0)
+      expect(described_class.elastic_search('term', options: options).total_count).to eq(0)
     end
 
     it "finds note when user is authorized to see it", :sidekiq_might_not_need_inline do
@@ -226,7 +226,7 @@ RSpec.describe Note, :elastic, :clean_gitlab_redis_shared_state, feature_categor
 
       options = { project_ids: [issue.project.id], current_user: user }
 
-      expect(Note.elastic_search('term', options: options).total_count).to eq(1)
+      expect(described_class.elastic_search('term', options: options).total_count).to eq(1)
     end
 
     shared_examples 'notes finder' do |user_type, no_of_notes|
@@ -241,7 +241,7 @@ RSpec.describe Note, :elastic, :clean_gitlab_redis_shared_state, feature_categor
 
         options = { project_ids: [issue.project.id], current_user: superuser }
 
-        expect(Note.elastic_search('term', options: options).total_count).to eq(no_of_notes)
+        expect(described_class.elastic_search('term', options: options).total_count).to eq(no_of_notes)
       end
     end
 
@@ -267,7 +267,7 @@ RSpec.describe Note, :elastic, :clean_gitlab_redis_shared_state, feature_categor
 
       options = { project_ids: [issue.project.id], current_user: member }
 
-      expect(Note.elastic_search('term', options: options).total_count).to eq(1)
+      expect(described_class.elastic_search('term', options: options).total_count).to eq(1)
     end
 
     it "does not return notes with matching content for project members with guest role" do
@@ -284,7 +284,7 @@ RSpec.describe Note, :elastic, :clean_gitlab_redis_shared_state, feature_categor
 
       options = { project_ids: [issue.project.id], current_user: member }
 
-      expect(Note.elastic_search('term', options: options).total_count).to eq(0)
+      expect(described_class.elastic_search('term', options: options).total_count).to eq(0)
     end
   end
 

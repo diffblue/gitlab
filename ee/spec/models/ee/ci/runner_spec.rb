@@ -119,7 +119,7 @@ RSpec.describe Ci::Runner, feature_category: :continuous_integration do
   end
 
   describe '.any_shared_runners_with_enabled_cost_factor' do
-    subject(:runners) { Ci::Runner.any_shared_runners_with_enabled_cost_factor?(project) }
+    subject(:runners) { described_class.any_shared_runners_with_enabled_cost_factor?(project) }
 
     let_it_be(:namespace) { create(:group) }
 

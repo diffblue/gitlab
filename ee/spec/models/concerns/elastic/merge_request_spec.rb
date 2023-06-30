@@ -35,7 +35,7 @@ RSpec.describe MergeRequest, :elastic, feature_category: :global_search do
     options = { project_ids: [project.id] }
 
     expect(described_class.elastic_search('term1 | term2 | term3', options: options).total_count).to eq(2)
-    expect(described_class.elastic_search(MergeRequest.last.to_reference, options: options).total_count).to eq(1)
+    expect(described_class.elastic_search(described_class.last.to_reference, options: options).total_count).to eq(1)
     expect(described_class.elastic_search('term3', options: options).total_count).to eq(0)
     expect(described_class.elastic_search('term3', options: { project_ids: :any, public_and_internal_projects: true }).total_count).to eq(1)
   end

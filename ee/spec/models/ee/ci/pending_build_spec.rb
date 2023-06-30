@@ -33,7 +33,7 @@ RSpec.describe Ci::PendingBuild, feature_category: :continuous_integration do
   describe '.upsert_from_build!' do
     shared_examples 'ci minutes not available' do
       it 'sets minutes_exceeded to true' do
-        expect { described_class.upsert_from_build!(build) }.to change(Ci::PendingBuild, :count).by(1)
+        expect { described_class.upsert_from_build!(build) }.to change(described_class, :count).by(1)
 
         expect(described_class.last.minutes_exceeded).to be_truthy
       end
@@ -41,7 +41,7 @@ RSpec.describe Ci::PendingBuild, feature_category: :continuous_integration do
 
     shared_examples 'ci minutes available' do
       it 'sets minutes_exceeded to false' do
-        expect { described_class.upsert_from_build!(build) }.to change(Ci::PendingBuild, :count).by(1)
+        expect { described_class.upsert_from_build!(build) }.to change(described_class, :count).by(1)
 
         expect(described_class.last.minutes_exceeded).to be_falsey
       end

@@ -187,7 +187,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
         subject(:new_license) { build(:license, cloud: true, data: new_gl_license.export) }
 
         before do
-          allow(License).to receive(:current).and_return(current_license)
+          allow(described_class).to receive(:current).and_return(current_license)
         end
 
         context 'when the new license is a cloud license' do
@@ -220,7 +220,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
 
         context 'when there is no current license' do
           before do
-            allow(License).to receive(:current).and_return(nil)
+            allow(described_class).to receive(:current).and_return(nil)
           end
 
           it 'validates for true-ups' do
@@ -431,7 +431,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
 
         before do
           create_list(:user, billable_users_count)
-          create_historical_data(License.current.expires_at, prior_active_user_count)
+          create_historical_data(described_class.current.expires_at, prior_active_user_count)
         end
 
         context 'with previous user count' do
@@ -456,7 +456,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
         before do
           create_list(:user, billable_users_count)
 
-          allow(License).to receive(:current).and_return(nil)
+          allow(described_class).to receive(:current).and_return(nil)
         end
 
         context 'when new license has an expiration date' do
@@ -558,7 +558,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
       end
 
       before do
-        License.current # Set cache up front
+        described_class.current # Set cache up front
       end
 
       context 'when a license is created' do
@@ -575,7 +575,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
         it 'expires the current_license cached value' do
           expect(current_license_cached_value).to be_present
 
-          License.last.update!(updated_at: Time.current)
+          described_class.last.update!(updated_at: Time.current)
 
           expect(current_license_cached_value).to be_nil
         end
@@ -585,7 +585,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
         it 'expires the current_license cached value' do
           expect(current_license_cached_value).to be_present
 
-          License.last.destroy!
+          described_class.last.destroy!
 
           expect(current_license_cached_value).to be_nil
         end
@@ -758,7 +758,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
 
     describe ".block_changes?" do
       before do
-        allow(License).to receive(:current).and_return(license)
+        allow(described_class).to receive(:current).and_return(license)
       end
 
       context "when there is no current license" do
@@ -806,31 +806,31 @@ RSpec.describe License, feature_category: :sm_provisioning do
       context 'when license trial' do
         before do
           allow(license).to receive(:trial?).and_return(true)
-          allow(License).to receive(:current).and_return(license)
+          allow(described_class).to receive(:current).and_return(license)
         end
 
         it 'does not yield block' do
-          expect { |b| License.with_valid_license(&b) }.not_to yield_control
+          expect { |b| described_class.with_valid_license(&b) }.not_to yield_control
         end
       end
 
       context 'when license nil' do
         before do
-          allow(License).to receive(:current).and_return(nil)
+          allow(described_class).to receive(:current).and_return(nil)
         end
 
         it 'does not yield block' do
-          expect { |b| License.with_valid_license(&b) }.not_to yield_control
+          expect { |b| described_class.with_valid_license(&b) }.not_to yield_control
         end
       end
 
       context 'when license is valid' do
         before do
-          allow(License).to receive(:current).and_return(license)
+          allow(described_class).to receive(:current).and_return(license)
         end
 
         it 'yields block' do
-          expect { |b| License.with_valid_license(&b) }.to yield_with_args(license)
+          expect { |b| described_class.with_valid_license(&b) }.to yield_with_args(license)
         end
       end
     end
@@ -841,7 +841,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
       let(:license_key) { 'test-key' }
 
       before do
-        allow(License).to receive(:current).and_return(current_license)
+        allow(described_class).to receive(:current).and_return(current_license)
       end
 
       context 'when current license is not set' do
@@ -1455,7 +1455,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
       undecryptable_license = create(:license)
       allow(undecryptable_license).to receive(:license).and_return(nil)
 
-      allow(License).to receive(:all).and_return([undecryptable_license])
+      allow(described_class).to receive(:all).and_return([undecryptable_license])
 
       expect(described_class.history.map(&:id)).to be_empty
     end
@@ -1691,7 +1691,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
 
       context 'when the license is not the current license' do
         before do
-          allow(License).to receive(:current).and_return(create(:license))
+          allow(described_class).to receive(:current).and_return(create(:license))
         end
 
         it { is_expected.to be false }
@@ -1699,7 +1699,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
 
       context 'when there is no current license' do
         before do
-          allow(License).to receive(:current).and_return(nil)
+          allow(described_class).to receive(:current).and_return(nil)
         end
 
         it { is_expected.to be false }

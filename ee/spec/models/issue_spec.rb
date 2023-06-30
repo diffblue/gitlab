@@ -109,13 +109,13 @@ RSpec.describe Issue, feature_category: :team_planning do
           # there should be no way to update a requirement to issue type, doing this to test the scope
           issue4.save!(validate: false)
 
-          requirement_issues = Issue.for_requirement_iids(iids)
+          requirement_issues = described_class.for_requirement_iids(iids)
 
           expect(requirement_issues).to match_array([requirement1.requirement_issue, requirement3.requirement_issue])
         end
 
         it 'uses work_item_type_id to filter requirements' do
-          expect { Issue.for_requirement_iids(iids).to_a }.to make_queries_matching(
+          expect { described_class.for_requirement_iids(iids).to_a }.to make_queries_matching(
             /"work_item_types"\."base_type" = #{WorkItems::Type.base_types[:requirement]}/
           )
         end
@@ -129,15 +129,15 @@ RSpec.describe Issue, feature_category: :team_planning do
       let_it_be(:confidential_issue) { create(:issue, :published, :confidential, project: project) }
       let_it_be(:nonpublished_issue) { create(:issue, project: project) }
 
-      it { expect(Issue.on_status_page.count).to eq(1) }
-      it { expect(Issue.on_status_page.first).to eq(published_issue) }
+      it { expect(described_class.on_status_page.count).to eq(1) }
+      it { expect(described_class.on_status_page.first).to eq(published_issue) }
 
       context 'with status page disabled' do
         before do
           status_page_setting.update!(enabled: false)
         end
 
-        it { expect(Issue.on_status_page.count).to eq(0) }
+        it { expect(described_class.on_status_page.count).to eq(0) }
       end
     end
 
@@ -458,7 +458,7 @@ RSpec.describe Issue, feature_category: :team_planning do
 
   describe '.simple_sorts' do
     it 'includes weight with other base keys' do
-      expect(Issue.simple_sorts.keys).to match_array(
+      expect(described_class.simple_sorts.keys).to match_array(
         %w(closest_future_date closest_future_date_asc created_asc
            created_at_asc created_at_desc created_date created_desc due_date
            due_date_asc due_date_desc id_asc id_desc relative_position
@@ -642,7 +642,7 @@ RSpec.describe Issue, feature_category: :team_planning do
 
     describe '.relative_positioning_query_base' do
       it 'includes cross project issues in the same group' do
-        siblings = Issue.relative_positioning_query_base(issue)
+        siblings = described_class.relative_positioning_query_base(issue)
 
         expect(siblings).to include(issue1)
       end

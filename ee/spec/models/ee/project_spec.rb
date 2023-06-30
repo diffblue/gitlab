@@ -1384,7 +1384,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     let(:group) { nil }
 
     context 'when project has no group' do
-      let(:project) { Project.new }
+      let(:project) { described_class.new }
 
       it 'is false' do
         expect(project).not_to be_membership_locked
@@ -4255,13 +4255,13 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
   describe 'deprecated requirements_enabled attribute' do
     it 'delegates the attribute to project feature' do
-      project = Project.new(requirements_enabled: false)
+      project = described_class.new(requirements_enabled: false)
 
       expect(project.project_feature.requirements_access_level).to eq(ProjectFeature::DISABLED)
     end
 
     it 'sets the default value' do
-      project = Project.new
+      project = described_class.new
 
       expect(project.project_feature.requirements_access_level).to eq(ProjectFeature::ENABLED)
     end

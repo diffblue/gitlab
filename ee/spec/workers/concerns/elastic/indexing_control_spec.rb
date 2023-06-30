@@ -54,7 +54,7 @@ RSpec.describe Elastic::IndexingControl, feature_category: :global_search do
 
     describe '.resume_processing!' do
       before do
-        expect(Elastic::IndexingControl).to receive(:non_cached_pause_indexing?).and_return(false)
+        expect(described_class).to receive(:non_cached_pause_indexing?).and_return(false)
       end
 
       it 'triggers job processing if there are jobs' do
@@ -74,7 +74,7 @@ RSpec.describe Elastic::IndexingControl, feature_category: :global_search do
 
     context 'with elasticsearch indexing paused' do
       before do
-        expect(Elastic::IndexingControl).to receive(:non_cached_pause_indexing?).and_return(true)
+        expect(described_class).to receive(:non_cached_pause_indexing?).and_return(true)
       end
 
       it 'adds jobs to the waiting queue' do
@@ -98,7 +98,7 @@ RSpec.describe Elastic::IndexingControl, feature_category: :global_search do
 
     context 'with elasticsearch indexing unpaused' do
       before do
-        expect(Elastic::IndexingControl).to receive(:non_cached_pause_indexing?).and_return(false)
+        expect(described_class).to receive(:non_cached_pause_indexing?).and_return(false)
       end
 
       it 'performs the job' do

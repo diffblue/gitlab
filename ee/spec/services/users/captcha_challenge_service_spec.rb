@@ -9,7 +9,7 @@ RSpec.describe Users::CaptchaChallengeService, feature_category: :system_access 
     let(:should_challenge?) { true }
     let(:result) { { result: should_challenge? } }
 
-    subject { Users::CaptchaChallengeService.new(user).execute }
+    subject { described_class.new(user).execute }
 
     context 'when feature flag arkose_labs_login_challenge is disabled' do
       let(:should_challenge?) { false }
@@ -27,7 +27,7 @@ RSpec.describe Users::CaptchaChallengeService, feature_category: :system_access 
       end
 
       context 'when the user does not exist' do
-        subject { Users::CaptchaChallengeService.new(nil).execute }
+        subject { described_class.new(nil).execute }
 
         it { is_expected.to eq(result) }
       end

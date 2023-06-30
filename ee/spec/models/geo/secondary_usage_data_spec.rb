@@ -44,7 +44,7 @@ RSpec.describe Geo::SecondaryUsageData, :geo, type: :model, feature_category: :g
   end
 
   describe '#update_metrics!' do
-    let(:new_data) { double(Geo::SecondaryUsageData) }
+    let(:new_data) { double(described_class) }
 
     before do
       allow_next_instance_of(described_class) do |instance|

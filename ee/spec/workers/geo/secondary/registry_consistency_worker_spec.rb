@@ -49,7 +49,7 @@ RSpec.describe Geo::Secondary::RegistryConsistencyWorker, :geo, feature_category
       end
 
       it 'RegistryConsistencyWorker gets reenqueued' do
-        expect(Geo::Secondary::RegistryConsistencyWorker).to receive(:perform_async)
+        expect(described_class).to receive(:perform_async)
 
         subject.perform
       end
@@ -69,7 +69,7 @@ RSpec.describe Geo::Secondary::RegistryConsistencyWorker, :geo, feature_category
       end
 
       it 'RegistryConsistencyWorker does not get reenqueued (we will wait until next cronjob)' do
-        expect(Geo::Secondary::RegistryConsistencyWorker).not_to receive(:perform_async)
+        expect(described_class).not_to receive(:perform_async)
 
         subject.perform
       end

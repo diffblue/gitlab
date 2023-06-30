@@ -44,13 +44,13 @@ RSpec.describe ResourceWeightEvent, feature_category: :team_planning, type: :mod
     let_it_be(:event3) { create(:resource_weight_event, issue: issue1) }
 
     it 'returns the expected records for an issue with events' do
-      events = ResourceWeightEvent.by_issue(issue1)
+      events = described_class.by_issue(issue1)
 
       expect(events).to contain_exactly(event1, event3)
     end
 
     it 'returns the expected records for an issue with no events' do
-      events = ResourceWeightEvent.by_issue(issue3)
+      events = described_class.by_issue(issue3)
 
       expect(events).to be_empty
     end
@@ -66,13 +66,13 @@ RSpec.describe ResourceWeightEvent, feature_category: :team_planning, type: :mod
     let!(:event3) { create(:resource_weight_event, issue: issue2, created_at: created_at3) }
 
     it 'returns the expected events' do
-      events = ResourceWeightEvent.created_after(created_at3)
+      events = described_class.created_after(created_at3)
 
       expect(events).to contain_exactly(event1, event2)
     end
 
     it 'returns no events if time is after last record time' do
-      events = ResourceWeightEvent.created_after(1.minute.ago)
+      events = described_class.created_after(1.minute.ago)
 
       expect(events).to be_empty
     end

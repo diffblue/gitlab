@@ -212,7 +212,7 @@ RSpec.describe DastSiteProfile, :dynamic_analysis,
 
     describe '.with_name' do
       it 'returns the dast_site_profiles with given name' do
-        result = DastSiteProfile.with_name(subject.name)
+        result = described_class.with_name(subject.name)
         expect(result).to eq([subject])
       end
     end
