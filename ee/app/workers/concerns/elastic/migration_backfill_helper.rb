@@ -6,20 +6,35 @@ module Elastic
 
     def migrate
       if completed?
-        log "Skipping adding #{field_names} field to #{index_name} documents migration since it is already applied"
+        log "Skipping migration since it is already applied", field_names: field_names, index_name: index_name
+
         return
       end
 
-      log "Adding #{field_names} field to #{index_name} documents for batch of #{query_batch_size} documents"
+      log "Start backfilling fields", field_names: field_names, index_name: index_name, batch_size: query_batch_size
 
       document_references = process_batch!
 
-      log "Adding #{field_names} field to #{index_name} documents is completed for batch of #{document_references.size} documents"
+      log "Backfilling batch has been processed", field_names: field_names, index_name: index_name, documents_count: document_references.size
     rescue StandardError => e
       log_raise "migrate failed with error: #{e.class}:#{e.message}"
     end
 
     def completed?
+      doc_count = remaining_documents_count
+
+      log "Checking the number of documents without fields", field_names: field_names, remaining_count: doc_count
+
+      doc_count == 0
+    end
+
+    private
+
+    def index_name
+      raise NotImplementedError
+    end
+
+    def remaining_documents_count
       helper.refresh_index(index_name: index_name)
 
       query = {
@@ -32,17 +47,11 @@ module Elastic
       }
 
       results = client.search(index: index_name, body: query)
-      doc_count = results.dig('aggregations', 'documents', 'doc_count')
+      count = results.dig('aggregations', 'documents', 'doc_count')
 
-      log "Checking if there are documents without #{field_names} field: #{doc_count} documents left"
+      set_migration_state(remaining_count: count)
 
-      doc_count == 0
-    end
-
-    private
-
-    def index_name
-      raise NotImplementedError
+      count
     end
 
     def field_names
