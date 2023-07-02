@@ -1,7 +1,8 @@
 import { s__ } from '~/locale';
+import { DOCS_URL } from 'jh_else_ce/lib/utils/url_utility';
 
 export const FEATURE_NAME = 'verification_reminder';
-export const DOCS_LINK = 'https://docs.gitlab.com/runner/install/';
+export const DOCS_LINK = `${DOCS_URL}/runner/install/`;
 export const EVENT_LABEL = 'verification_reminder';
 export const MOUNTED_EVENT = 'shown';
 export const DISMISS_EVENT = 'dismissed';

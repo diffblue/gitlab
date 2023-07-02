@@ -1,4 +1,5 @@
 import { s__ } from '~/locale';
+import { DOCS_URL } from 'jh_else_ce/lib/utils/url_utility';
 
 // Filtered search parameter names
 // - Used for URL params names
@@ -24,7 +25,7 @@ export const I18N_UPGRADE_STATUS_RECOMMENDED_TOOLTIP = s__(
 
 // Runner install help page is external from this repo, must be
 // hardcoded because is located at https://gitlab.com/gitlab-org/gitlab-runner
-const RUNNER_HELP_PATH = 'https://docs.gitlab.com/runner';
+const RUNNER_HELP_PATH = `${DOCS_URL}/runner`;
 
 export const RUNNER_INSTALL_HELP_PATH = `${RUNNER_HELP_PATH}/install/`;
 

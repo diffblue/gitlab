@@ -1,4 +1,5 @@
 import { s__ } from '~/locale';
+import { PROMO_URL } from 'jh_else_ce/lib/utils/url_utility';
 
 export const TAX_RATE = 0;
 export const NEW_GROUP = 'new_group';
@@ -30,4 +31,4 @@ export const PROMO_CODE_OFFER_TEXT = s__(
   'Checkout|Pricing reflective of %{linkStart}limited-time offer%{linkEnd}.',
 );
 
-export const PROMO_CODE_TERMS_LINK = 'https://about.gitlab.com/pricing/terms/';
+export const PROMO_CODE_TERMS_LINK = `${PROMO_URL}/pricing/terms/`;
