@@ -21,7 +21,7 @@ RSpec.describe 'Project', :js, feature_category: :groups_and_projects do
 
       visit project_new_blob_path(project, 'master', file_name: 'LICENSE')
 
-      select_template('license', 'custom')
+      select_template('custom')
 
       wait_for_requests
 
@@ -34,7 +34,7 @@ RSpec.describe 'Project', :js, feature_category: :groups_and_projects do
 
       visit project_new_blob_path(project, 'master', file_name: 'LICENSE')
 
-      select_template('license', 'custom')
+      select_template('custom')
 
       wait_for_requests
 
@@ -42,8 +42,8 @@ RSpec.describe 'Project', :js, feature_category: :groups_and_projects do
     end
   end
 
-  def select_template(type, name)
-    find(".js-#{type}-selector").click
-    find('.dropdown-content li', text: name).click
+  def select_template(name)
+    click_button 'Apply a template'
+    find('.gl-new-dropdown-contents li', text: name).click
   end
 end
