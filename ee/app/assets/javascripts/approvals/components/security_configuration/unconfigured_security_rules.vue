@@ -28,7 +28,7 @@ export default {
         {
           name: COVERAGE_CHECK_NAME,
           description: s__(
-            'SecurityApprovals|Requires approval for decreases in test coverage. %{linkStart}Learn more.%{linkEnd}',
+            'SecurityApprovals|Requires approval for decreases in test coverage. %{linkStart}Learn more%{linkEnd}.',
           ),
           docsPath: this.coverageCheckHelpPagePath,
         },
