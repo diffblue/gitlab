@@ -71,7 +71,7 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
       end
 
       where(:dot_com, :error_message) do
-        true  | "Your account has been blocked. Contact https://support.gitlab.com for assistance."
+        true  | "Your account has been blocked. Contact #{EE::CUSTOMER_SUPPORT_URL} for assistance."
         false | "Your account has been blocked. Contact your GitLab administrator for assistance."
       end
 
