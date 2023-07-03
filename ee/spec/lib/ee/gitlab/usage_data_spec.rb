@@ -14,14 +14,12 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
   describe '.data' do
     let_it_be(:group) { create(:group) }
 
-    # rubocop:disable RSpec/FactoryBot/CreateList
     # using Array.new to create a different creator User for each of the projects
     let_it_be(:projects) do
       Array.new(3) do
         create(:project, :repository, group: group, creator: create(:user, group_view: :security_dashboard))
       end
     end
-    # rubocop:enable RSpec/FactoryBot/CreateList
 
     let_it_be(:board) { create(:board, project: projects[0]) }
 
