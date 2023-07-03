@@ -38,7 +38,7 @@ module Gitlab
             template = ai_prompt_class.new(merge_request)
             client_class = ::Gitlab::Llm::VertexAi::Client
             client_class.new(user)
-              .chat(content: template.to_prompt, **template.options(client_class))
+              .text(content: template.to_prompt, **template.options(client_class))
           end
 
           def vertex_ai?(merge_request)

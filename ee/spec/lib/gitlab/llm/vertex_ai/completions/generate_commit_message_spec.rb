@@ -28,10 +28,10 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::GenerateCommitMessage, featur
       end
     end
 
-    context 'when the chat client returns an unsuccessful response' do
+    context 'when the text model returns an unsuccessful response' do
       before do
         allow_next_instance_of(Gitlab::Llm::VertexAi::Client) do |client|
-          allow(client).to receive(:chat).and_return(
+          allow(client).to receive(:text).and_return(
             { error: 'Error' }.to_json
           )
         end
@@ -50,7 +50,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::GenerateCommitMessage, featur
       end
     end
 
-    context 'when the chat client returns a successful response' do
+    context 'when the text model returns a successful response' do
       let(:example_answer) { "AI generated commit message" }
 
       let(:example_response) do
@@ -71,15 +71,15 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::GenerateCommitMessage, featur
             }
           ],
           "deployedModelId" => "1",
-          "model" => "projects/1/locations/us-central1/models/codechat-bison-001",
-          "modelDisplayName" => "codechat-bison-001",
+          "model" => "projects/1/locations/us-central1/models/text-bison",
+          "modelDisplayName" => "text-bison",
           "modelVersionId" => "1"
         }
       end
 
       before do
         allow_next_instance_of(Gitlab::Llm::VertexAi::Client) do |client|
-          allow(client).to receive(:chat).and_return(example_response.to_json)
+          allow(client).to receive(:text).and_return(example_response.to_json)
         end
       end
 
@@ -99,7 +99,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::GenerateCommitMessage, featur
 
         before do
           allow_next_instance_of(Gitlab::Llm::VertexAi::Client) do |client|
-            allow(client).to receive(:chat).and_raise(error)
+            allow(client).to receive(:text).and_raise(error)
           end
           allow(Gitlab::ErrorTracking).to receive(:track_exception)
         end
