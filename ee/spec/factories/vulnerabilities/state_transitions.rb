@@ -14,5 +14,9 @@ FactoryBot.define do
     trait :to_dismissed do
       to_state { ::Enums::Vulnerability.vulnerability_states[:dismissed] }
     end
+
+    trait :used_in_tests do
+      dismissal_reason { "used_in_tests" }
+    end
   end
 end

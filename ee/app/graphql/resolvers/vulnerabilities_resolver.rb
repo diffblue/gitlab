@@ -72,7 +72,7 @@ module Resolvers
     end
 
     def unconditional_includes
-      [{ vulnerability: [:findings] }]
+      [{ vulnerability: [:findings, :vulnerability_read] }]
     end
 
     def preloads
