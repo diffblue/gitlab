@@ -280,8 +280,24 @@ module EE
       total_repository_size_excess > additional_purchased_storage_size.megabytes
     end
 
+    def actual_repository_size_limit
+      repository_size_limit || ::Gitlab::CurrentSettings.repository_size_limit
+    end
+
+    ##
+    # Returns the actual storage size limit for the namespace
+    # If the namespace is in Project enforcement, we return the repository_size_limit setting
+    # And if the namespace is in Namespace enforcement we return
+    # whatever enforceable storage is configured for the namespace
+    #
+    # This only return the storage limit included in the plan, to add the purchased storage to the
+    # limit please use root_storage_size.limit
     def actual_size_limit
-      ::Gitlab::CurrentSettings.repository_size_limit
+      return actual_repository_size_limit unless ::Namespaces::Storage::Enforcement.enforce_limit?(root_ancestor)
+
+      # Both limits are returned in bytes, but the Namespace enforcement limits are stored in megabytes,
+      # so we need to call `megabytes` here
+      ::Namespaces::Storage::Enforcement.enforceable_storage_limit(root_ancestor).megabytes
     end
 
     def sync_membership_lock_with_parent
@@ -614,7 +630,7 @@ module EE
     def projects_for_repository_size_excess
       projects_with_limits = ::Project.without_unlimited_repository_size_limit
 
-      if actual_size_limit.to_i > 0
+      if actual_repository_size_limit.to_i > 0
         # When the instance or namespace level limit is set, we need to include those without project level limits
         projects_with_limits = projects_with_limits.or(::Project.without_repository_size_limit)
       end
@@ -625,7 +641,7 @@ module EE
     end
 
     def repository_size_limit_arel
-      instance_size_limit = actual_size_limit.to_i
+      instance_size_limit = actual_repository_size_limit.to_i
 
       if instance_size_limit > 0
         self.class.arel_table.coalesce(

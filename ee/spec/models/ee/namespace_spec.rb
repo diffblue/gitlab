@@ -1220,7 +1220,7 @@ RSpec.describe Namespace do
     end
   end
 
-  describe '#total_repository_size_excess' do
+  describe '#total_repository_size_excess', feature_category: :consumables_cost_management do
     let_it_be(:namespace) { create(:namespace) }
 
     before do
@@ -1234,7 +1234,7 @@ RSpec.describe Namespace do
 
       context 'when namespace-level repository_size_limit is not set' do
         it 'returns the total excess size of projects with repositories that exceed the size limit' do
-          allow(namespace).to receive(:actual_size_limit).and_return(nil)
+          allow(namespace).to receive(:actual_repository_size_limit).and_return(nil)
 
           expect(namespace.total_repository_size_excess).to eq(400)
         end
@@ -1242,7 +1242,7 @@ RSpec.describe Namespace do
 
       context 'when namespace-level repository_size_limit is 0 (unlimited)' do
         it 'returns the total excess size of projects with repositories that exceed the size limit' do
-          allow(namespace).to receive(:actual_size_limit).and_return(0)
+          allow(namespace).to receive(:actual_repository_size_limit).and_return(0)
 
           expect(namespace.total_repository_size_excess).to eq(400)
         end
@@ -1250,7 +1250,7 @@ RSpec.describe Namespace do
 
       context 'when namespace-level repository_size_limit is a positive number' do
         it 'returns the total excess size of projects with repositories that exceed the size limit' do
-          allow(namespace).to receive(:actual_size_limit).and_return(150)
+          allow(namespace).to receive(:actual_repository_size_limit).and_return(150)
 
           expect(namespace.total_repository_size_excess).to eq(560)
         end
@@ -1263,7 +1263,7 @@ RSpec.describe Namespace do
         create_project(repository_size: 150, lfs_objects_size: 0, repository_size_limit: 0)
         create_project(repository_size: 200, lfs_objects_size: 100, repository_size_limit: 0)
 
-        allow(namespace).to receive(:actual_size_limit).and_return(150)
+        allow(namespace).to receive(:actual_repository_size_limit).and_return(150)
       end
 
       it 'returns zero regardless of the namespace or instance-level repository_size_limit' do
@@ -1272,7 +1272,7 @@ RSpec.describe Namespace do
     end
   end
 
-  describe '#repository_size_excess_project_count' do
+  describe '#repository_size_excess_project_count', feature_category: :consumables_cost_management do
     let_it_be(:namespace) { create(:namespace) }
 
     before do
@@ -1286,7 +1286,7 @@ RSpec.describe Namespace do
 
       context 'when namespace-level repository_size_limit is not set' do
         before do
-          allow(namespace).to receive(:actual_size_limit).and_return(nil)
+          allow(namespace).to receive(:actual_repository_size_limit).and_return(nil)
         end
 
         it 'returns the count of projects with repositories that exceed the size limit' do
@@ -1296,7 +1296,7 @@ RSpec.describe Namespace do
 
       context 'when namespace-level repository_size_limit is 0 (unlimited)' do
         before do
-          allow(namespace).to receive(:actual_size_limit).and_return(0)
+          allow(namespace).to receive(:actual_repository_size_limit).and_return(0)
         end
 
         it 'returns the count of projects with repositories that exceed the size limit' do
@@ -1306,7 +1306,7 @@ RSpec.describe Namespace do
 
       context 'when namespace-level repository_size_limit is a positive number' do
         before do
-          allow(namespace).to receive(:actual_size_limit).and_return(150)
+          allow(namespace).to receive(:actual_repository_size_limit).and_return(150)
         end
 
         it 'returns the count of projects with repositories that exceed the size limit' do
@@ -1321,7 +1321,7 @@ RSpec.describe Namespace do
         create_project(repository_size: 150, lfs_objects_size: 0, repository_size_limit: 0)
         create_project(repository_size: 200, lfs_objects_size: 100, repository_size_limit: 0)
 
-        allow(namespace).to receive(:actual_size_limit).and_return(150)
+        allow(namespace).to receive(:actual_repository_size_limit).and_return(150)
       end
 
       it 'returns zero regardless of the namespace or instance-level repository_size_limit' do
@@ -1330,7 +1330,7 @@ RSpec.describe Namespace do
     end
   end
 
-  describe '#total_repository_size' do
+  describe '#total_repository_size', feature_category: :consumables_cost_management do
     let(:namespace) { create(:namespace) }
 
     before do
@@ -1344,14 +1344,14 @@ RSpec.describe Namespace do
     end
   end
 
-  describe '#additional_purchased_storage_size' do
+  describe '#additional_purchased_storage_size', feature_category: :consumables_cost_management do
     it 'calls namespace_limit#eligible_additional_purchased_storage_size' do
       expect(namespace.namespace_limit).to receive(:eligible_additional_purchased_storage_size)
       namespace.additional_purchased_storage_size
     end
   end
 
-  describe '#contains_locked_projects?' do
+  describe '#contains_locked_projects?', feature_category: :consumables_cost_management do
     using RSpec::Parameterized::TableSyntax
 
     let_it_be(:namespace) { create(:namespace) }
@@ -1377,15 +1377,61 @@ RSpec.describe Namespace do
     end
   end
 
-  describe '#actual_size_limit' do
+  describe '#actual_repository_size_limit', feature_category: :consumables_cost_management do
+    let(:repository_size_limit) { 1000 }
     let(:namespace) { build(:namespace) }
 
     before do
-      allow_any_instance_of(ApplicationSetting).to receive(:repository_size_limit).and_return(50)
+      stub_ee_application_setting(repository_size_limit: repository_size_limit)
     end
 
-    it 'returns the correct size limit' do
-      expect(namespace.actual_size_limit).to eq(50)
+    context 'when repository_size_limit is set on the namespace' do
+      it 'returns the local repository_size_limit' do
+        namespace.update_attribute(:repository_size_limit, 75)
+
+        expect(namespace.actual_repository_size_limit).to eq(75)
+      end
+    end
+
+    context 'when repository_size_limit is not set on the namespace' do
+      it 'returns the global repository_size_limit' do
+        expect(namespace.actual_repository_size_limit).to eq(repository_size_limit)
+      end
+    end
+  end
+
+  describe '#actual_size_limit', feature_category: :consumables_cost_management do
+    context 'when in repository enforcement' do
+      let(:namespace) { build(:namespace) }
+      let(:repository_size_limit) { 1000 }
+
+      before do
+        stub_ee_application_setting(repository_size_limit: repository_size_limit)
+      end
+
+      it 'returns the value set globally' do
+        expect(namespace.actual_size_limit).to eq(repository_size_limit)
+      end
+
+      it 'returns the value set locally' do
+        namespace.update_attribute(:repository_size_limit, 75)
+
+        expect(namespace.actual_size_limit).to eq(75)
+      end
+    end
+
+    context 'when in namespace enforcement' do
+      let(:namespace) { build(:namespace) }
+      let(:enforceable_storage_limit) { 500 }
+
+      before do
+        enforce_namespace_storage_limit(namespace)
+        namespace.actual_plan.actual_limits.update!(enforcement_limit: enforceable_storage_limit)
+      end
+
+      it 'returns the plan limit' do
+        expect(namespace.actual_size_limit).to eq(enforceable_storage_limit.megabytes)
+      end
     end
   end
 

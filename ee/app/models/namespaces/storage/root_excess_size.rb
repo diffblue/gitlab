@@ -34,6 +34,7 @@ module Namespaces
       end
 
       def limit
+        # https://docs.gitlab.com/ee/user/usage_quotas#project-storage-limit
         root_namespace.additional_purchased_storage_size.megabytes
       end
       strong_memoize_attr :limit

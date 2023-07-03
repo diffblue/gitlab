@@ -63,7 +63,7 @@ module Namespaces
       end
 
       def callout_feature_name
-        "#{enforcement_type}_storage_limit_banner_#{alert_level}_threshold"
+        "#{root_storage_size.enforcement_type}_alert_#{alert_level}_threshold"
       end
 
       def purchase_link
@@ -135,15 +135,6 @@ module Namespaces
         return false unless ::Gitlab::CurrentSettings.automatic_purchased_storage_allocation?
 
         Ability.allowed?(user, :owner_access, root_namespace)
-      end
-
-      def enforcement_type
-        @enforcement_type ||=
-          if ::Namespaces::Storage::Enforcement.enforce_limit?(root_namespace)
-            :namespace
-          else
-            :repository
-          end
       end
 
       def free_tier_alert_title

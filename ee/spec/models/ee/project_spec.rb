@@ -2843,21 +2843,21 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     end
   end
 
-  describe '#actual_size_limit' do
+  describe '#actual_repository_size_limit' do
     context 'when repository_size_limit is set on the project' do
       it 'returns the repository_size_limit' do
         project = build(:project, repository_size_limit: 10)
 
-        expect(project.actual_size_limit).to eq(10)
+        expect(project.actual_repository_size_limit).to eq(10)
       end
     end
 
     context 'when repository_size_limit is not set on the project' do
-      it 'returns the actual_size_limit of the namespace' do
+      it 'returns the actual_repository_size_limit of the namespace' do
         group = build(:group, repository_size_limit: 20)
         project = build(:project, namespace: group, repository_size_limit: nil)
 
-        expect(project.actual_size_limit).to eq(20)
+        expect(project.actual_repository_size_limit).to eq(20)
       end
     end
   end
@@ -2878,7 +2878,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
     describe '#limit' do
       it 'returns the value set in the namespace when available' do
-        allow(project.namespace).to receive(:actual_size_limit).and_return(100)
+        allow(project.namespace).to receive(:actual_repository_size_limit).and_return(100)
 
         expect(checker.limit).to eq(100)
       end
@@ -2985,7 +2985,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
     with_them do
       before do
-        allow(project).to receive(:actual_size_limit).and_return(size_limit)
+        allow(project).to receive(:actual_repository_size_limit).and_return(size_limit)
         allow(statistics).to receive(:total_repository_size).and_return(total_repository_size)
       end
 

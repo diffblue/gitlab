@@ -14,7 +14,8 @@ module EE
         field :total_repository_size_excess,
               GraphQL::Types::Float,
               null: true,
-              description: 'Total excess repository size of all projects in the root namespace in bytes.'
+              description: 'Total excess repository size of all projects in the root namespace in bytes. ' \
+                           'This only applies to namespaces under Project limit enforcement.'
 
         field :total_repository_size,
               GraphQL::Types::Float,
@@ -24,24 +25,33 @@ module EE
         field :contains_locked_projects,
               GraphQL::Types::Boolean,
               null: false,
-              description: 'Includes at least one project where the repository size exceeds the limit.',
+              description: 'Includes at least one project where the repository size exceeds the limit. ' \
+                           'This only applies to namespaces under Project limit enforcement.',
               method: :contains_locked_projects?
 
         field :repository_size_excess_project_count,
               GraphQL::Types::Int,
               null: false,
-              description: 'Number of projects in the root namespace where the repository size exceeds the limit.'
+              description: 'Number of projects in the root namespace where the repository size exceeds the limit. ' \
+                           'This only applies to namespaces under Project limit enforcement.'
 
         field :actual_repository_size_limit,
               GraphQL::Types::Float,
               null: true,
-              description: 'Size limit for repositories in the namespace in bytes.',
-              method: :actual_size_limit
+              description: 'Size limit for repositories in the namespace in bytes. ' \
+                           'This limit only applies to namespaces under Project limit enforcement.'
+
+        field :actual_size_limit,
+              GraphQL::Types::Float,
+              null: true,
+              description: 'Actual storage size limit for the namespace in bytes. ' \
+                           'This limit is agnostic of enforcement type.'
 
         field :storage_size_limit,
               GraphQL::Types::Float,
               null: true,
-              description: 'Total storage limit of the root namespace in bytes.'
+              description: 'Storage limit included in the root namespace plan in bytes. ' \
+                           'This limit only applies to namespaces under Namespace limit enforcement.'
 
         field :is_temporary_storage_increase_enabled,
               GraphQL::Types::Boolean,
@@ -79,7 +89,7 @@ module EE
         end
 
         def storage_size_limit
-          object.root_storage_size.limit
+          object.root_ancestor.actual_plan.actual_limits.storage_size_limit.megabytes
         end
       end
     end

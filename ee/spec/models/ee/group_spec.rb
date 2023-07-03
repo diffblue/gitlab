@@ -756,24 +756,6 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     end
   end
 
-  describe '#actual_size_limit' do
-    let(:group) { build(:group) }
-
-    before do
-      allow(::Gitlab::CurrentSettings).to receive(:repository_size_limit).and_return(50)
-    end
-
-    it 'returns the value set globally' do
-      expect(group.actual_size_limit).to eq(50)
-    end
-
-    it 'returns the value set locally' do
-      group.update_attribute(:repository_size_limit, 75)
-
-      expect(group.actual_size_limit).to eq(75)
-    end
-  end
-
   describe '#repository_size_limit column' do
     it 'support values up to 8 exabytes' do
       group = create(:group)
@@ -1668,8 +1650,6 @@ RSpec.describe Group, feature_category: :groups_and_projects do
   end
 
   describe '#exclude_guests?', :saas do
-    using RSpec::Parameterized::TableSyntax
-
     let_it_be(:group, refind: true) { create(:group) }
 
     where(:actual_plan_name, :requested_plan_name, :result) do
@@ -2670,8 +2650,6 @@ RSpec.describe Group, feature_category: :groups_and_projects do
   end
 
   describe '#usage_quotas_enabled?', feature_category: :consumables_cost_management do
-    using RSpec::Parameterized::TableSyntax
-
     where(:feature_available, :feature_enabled, :root_group, :result) do
       false | true  | true  | true
       true  | true  | true  | true
