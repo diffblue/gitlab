@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['Namespace'] do
+RSpec.describe GitlabSchema.types['Namespace'], feature_category: :groups_and_projects do
   it 'has specific fields' do
     expected_fields = %w[
       additional_purchased_storage_size
@@ -11,6 +11,7 @@ RSpec.describe GitlabSchema.types['Namespace'] do
       contains_locked_projects
       repository_size_excess_project_count
       actual_repository_size_limit
+      actual_size_limit
       storage_size_limit
       is_temporary_storage_increase_enabled
       temporary_storage_increase_ends_on

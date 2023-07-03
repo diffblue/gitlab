@@ -445,12 +445,6 @@ module EE
       feature_available?(:group_scoped_ci_variables)
     end
 
-    def actual_size_limit
-      return ::Gitlab::CurrentSettings.repository_size_limit if repository_size_limit.nil?
-
-      repository_size_limit
-    end
-
     def first_non_empty_project
       projects.detect { |project| !project.empty_repo? }
     end

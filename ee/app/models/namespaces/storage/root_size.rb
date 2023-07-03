@@ -34,6 +34,7 @@ module Namespaces
       end
 
       def limit
+        # https://docs.gitlab.com/ee/user/usage_quotas#namespace-storage-limit
         @limit ||= Rails.cache.fetch(limit_cache_key, expires_in: EXPIRATION_TIME) do
           enforceable_storage_limit.megabytes +
             root_namespace.additional_purchased_storage_size.megabytes

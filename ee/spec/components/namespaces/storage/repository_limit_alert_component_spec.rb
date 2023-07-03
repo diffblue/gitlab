@@ -64,7 +64,7 @@ RSpec.describe Namespaces::Storage::RepositoryLimitAlertComponent, :saas, type: 
 
       it 'renders the correct callout data' do
         render_inline(component)
-        expect(page).to have_css("[data-feature-id='repository_storage_limit_banner_error_threshold']")
+        expect(page).to have_css("[data-feature-id='project_repository_limit_alert_error_threshold']")
         expect(page).to have_css("[data-dismiss-endpoint='#{group_callouts_path}']")
         expect(page).to have_css("[data-group-id='#{group.root_ancestor.id}']")
       end

@@ -749,9 +749,9 @@ module EE
       ::Gitlab::UrlSanitizer.new(bare_url, credentials: { user: import_data&.user }).full_url
     end
 
-    def actual_size_limit
-      strong_memoize(:actual_size_limit) do
-        repository_size_limit || namespace.actual_size_limit
+    def actual_repository_size_limit
+      strong_memoize(:actual_repository_size_limit) do
+        repository_size_limit || namespace.actual_repository_size_limit
       end
     end
 
@@ -764,7 +764,7 @@ module EE
         else
           ::Gitlab::RepositorySizeChecker.new(
             current_size_proc: -> { statistics.total_repository_size },
-            limit: actual_size_limit,
+            limit: actual_repository_size_limit,
             namespace: namespace,
             enabled: repo_size_limit_feature_available?
           )
@@ -773,9 +773,9 @@ module EE
     end
 
     def repository_size_excess
-      return 0 unless actual_size_limit.to_i > 0
+      return 0 unless actual_repository_size_limit.to_i > 0
 
-      [statistics.total_repository_size - actual_size_limit, 0].max
+      [statistics.total_repository_size - actual_repository_size_limit, 0].max
     end
 
     def username_only_import_url=(value)

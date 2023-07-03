@@ -2,7 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::ProjectsFinder do
+RSpec.describe Namespaces::ProjectsFinder, feature_category: :groups_and_projects do
+  using RSpec::Parameterized::TableSyntax
+  include NamespaceStorageHelpers
+
   let_it_be(:current_user) { create(:user) }
   let_it_be(:namespace) { create(:group, :public) }
   let_it_be(:subgroup) { create(:group, parent: namespace) }
@@ -172,7 +175,7 @@ RSpec.describe Namespaces::ProjectsFinder do
       end
     end
 
-    context 'has_vulnerabilities' do
+    context 'when it has_vulnerabilities' do
       before do
         project_1.project_setting.update!(has_vulnerabilities: true)
       end
@@ -196,47 +199,59 @@ RSpec.describe Namespaces::ProjectsFinder do
       let(:sort) { nil }
       let(:params) { { sort: sort, include_subgroups: true } }
 
-      context 'by excess repo storage size, descending' do
-        let(:sort) { :excess_repo_storage_size_desc }
+      where(enforcement_type: [:project_repository_limit, :namespace_storage_limit])
 
+      with_them do
         before do
-          project_1.statistics.update!(repository_size: 10, lfs_objects_size: 2)
-          project_2.statistics.update!(repository_size: 12, lfs_objects_size: 3)
-          project_3.statistics.update!(repository_size: 11, lfs_objects_size: 0)
-          stub_ee_application_setting(repository_size_limit: 20)
+          if enforcement_type == :project_repository_limit
+            stub_ee_application_setting(repository_size_limit: 20)
+          else
+            enforce_namespace_storage_limit(namespace)
+            namespace.actual_plan.actual_limits.update!(enforcement_limit: 20)
+          end
         end
 
-        it { is_expected.to eq([project_2, project_1, project_3]) }
-      end
+        context 'as excess repo storage size, descending' do
+          let(:sort) { :excess_repo_storage_size_desc }
 
-      context 'by storage size' do
-        before do
-          project_1.statistics.update!(repository_size: 10, packages_size: 0)
-          project_2.statistics.update!(repository_size: 12, packages_size: 2)
-          project_3.statistics.update!(repository_size: 11, packages_size: 1)
+          before do
+            project_1.statistics.update!(repository_size: 10, lfs_objects_size: 2)
+            project_2.statistics.update!(repository_size: 12, lfs_objects_size: 3)
+            project_3.statistics.update!(repository_size: 11, lfs_objects_size: 0)
+          end
+
+          it { is_expected.to eq([project_2, project_1, project_3]) }
         end
 
-        context 'ascending' do
-          let(:sort) { :storage_size_asc }
+        context 'as storage size' do
+          before do
+            project_1.statistics.update!(repository_size: 10, packages_size: 0)
+            project_2.statistics.update!(repository_size: 12, packages_size: 2)
+            project_3.statistics.update!(repository_size: 11, packages_size: 1)
+          end
 
-          it { is_expected.to eq([project_1, project_3, project_2]) }
+          context 'in ascending order' do
+            let(:sort) { :storage_size_asc }
+
+            it { is_expected.to eq([project_1, project_3, project_2]) }
+          end
+
+          context 'in descending order' do
+            let(:sort) { :storage_size_desc }
+
+            it { is_expected.to eq([project_2, project_3, project_1]) }
+          end
         end
 
-        context 'descending' do
-          let(:sort) { :storage_size_desc }
-
-          it { is_expected.to eq([project_2, project_3, project_1]) }
-        end
-      end
-
-      context 'when sorting option is not defined' do
-        it 'returns all projects' do
-          expect(projects).to match_array [project_1, project_2, project_3]
+        context 'when sorting option is not defined' do
+          it 'returns all projects' do
+            expect(projects).to match_array [project_1, project_2, project_3]
+          end
         end
       end
     end
 
-    context 'has_code_coverage' do
+    describe 'has_code_coverage' do
       context 'when has_code_coverage is provided' do
         let(:params) { { has_code_coverage: true } }
 
