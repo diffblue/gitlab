@@ -66,10 +66,10 @@ feature_category: :system_access do
   shared_examples 'it requires oauth users to go through ArkoseLabs challenge' do
     let(:user) { create(:omniauth_user, :unconfirmed) }
     let(:arkose_labs_oauth_signup_challenge) { true }
-    let(:is_qa_request) { false }
+    let(:is_arkose_enabled) { true }
 
     before do
-      allow(Gitlab::Qa).to receive(:request?).and_return(is_qa_request)
+      allow(::Arkose::Settings).to receive(:enabled?).and_return(is_arkose_enabled)
       stub_feature_flags(arkose_labs_oauth_signup_challenge: arkose_labs_oauth_signup_challenge)
       stub_session(verification_user_id: user.id)
 
@@ -92,8 +92,8 @@ feature_category: :system_access do
       it { is_expected.not_to redirect_to(arkose_labs_challenge_identity_verification_path) }
     end
 
-    context 'when request is for QA' do
-      let(:is_qa_request) { true }
+    context 'when arkose is disabled' do
+      let(:is_arkose_enabled) { false }
 
       it { is_expected.not_to redirect_to(arkose_labs_challenge_identity_verification_path) }
     end

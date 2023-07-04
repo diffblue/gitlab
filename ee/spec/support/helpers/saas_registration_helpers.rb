@@ -93,6 +93,7 @@ module SaasRegistrationHelpers
   def user_signs_up_with_sso(params = {}, provider: 'google_oauth2', name: 'Registering User')
     mock_auth_hash(provider, 'external_uid', user_email, name: name)
     stub_omniauth_setting(block_auto_created_users: false)
+    allow(::Arkose::Settings).to receive(:enabled?).and_return(true)
 
     if block_given?
       yield
