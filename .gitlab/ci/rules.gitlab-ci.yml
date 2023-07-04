@@ -2104,6 +2104,17 @@
     - <<: *if-merge-request
       changes: *static-analysis-patterns
 
+.static-analysis:rules:trigger-depsaster:
+  rules:
+    - if: $ENABLE_DEPSASTER != 'true'
+      when: never
+    - <<: *if-fork-merge-request
+      when: never
+    - <<: *if-not-ee
+      when: never
+    - <<: *if-merge-request
+      changes: ["**/Gemfile.checksum"]
+
 .semgrep-appsec-custom-rules:rules:
   rules:
     - <<: *if-not-ee
