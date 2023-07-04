@@ -7,7 +7,6 @@ module Groups
 
       before_action :check_feature_availability
       before_action :authorize_admin_group!
-      before_action :check_operation_feature_flag, except: [:index]
       before_action :set_domain, except: [:index, :new, :create]
       before_action :sso_enforcement_redirect, only: [:index, :new]
 
@@ -103,10 +102,6 @@ module Groups
 
       def check_feature_availability
         render_404 unless group.domain_verification_available?
-      end
-
-      def check_operation_feature_flag
-        render_404 unless Feature.enabled?(:domain_verification_operation, @group)
       end
 
       def domain_presenter
