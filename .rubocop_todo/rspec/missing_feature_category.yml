@@ -3747,7 +3747,6 @@ RSpec/MissingFeatureCategory:
     - 'spec/lib/gitlab/graphql/batch_key_spec.rb'
     - 'spec/lib/gitlab/graphql/calls_gitaly/field_extension_spec.rb'
     - 'spec/lib/gitlab/graphql/copy_field_description_spec.rb'
-    - 'spec/lib/gitlab/graphql/generic_tracing_spec.rb'
     - 'spec/lib/gitlab/graphql/known_operations_spec.rb'
     - 'spec/lib/gitlab/graphql/lazy_spec.rb'
     - 'spec/lib/gitlab/graphql/limit/field_call_count_spec.rb'
