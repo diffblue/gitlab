@@ -3050,7 +3050,6 @@ RSpec/MissingFeatureCategory:
     - 'spec/lib/gitlab/ci/ansi2json/parser_spec.rb'
     - 'spec/lib/gitlab/ci/ansi2json/result_spec.rb'
     - 'spec/lib/gitlab/ci/ansi2json/style_spec.rb'
-    - 'spec/lib/gitlab/ci/artifact_file_reader_spec.rb'
     - 'spec/lib/gitlab/ci/artifacts/logger_spec.rb'
     - 'spec/lib/gitlab/ci/artifacts/metrics_spec.rb'
     - 'spec/lib/gitlab/ci/badge/coverage/metadata_spec.rb'
