@@ -47,7 +47,15 @@ RSpec.describe MergeTrains::CheckStatusService, feature_category: :merge_trains 
         let!(:merge_commit_sha_1) { Digest::SHA1.hexdigest 'test' }
 
         it 'does not outdate the merge train pipeline' do
-          expect(MergeTrains::Car).to receive(:sha_exists_in_history?).and_return(true).and_call_original
+          expect_next_instance_of(MergeTrains::Train) do |train|
+            expect(train)
+              .to receive(:sha_exists_in_history?)
+              .and_return(true)
+              .and_call_original
+
+            expect(train).not_to receive(:first_car)
+          end
+
           expect_any_instance_of(MergeTrains::Car).not_to receive(:outdate_pipeline)
 
           subject
@@ -56,10 +64,21 @@ RSpec.describe MergeTrains::CheckStatusService, feature_category: :merge_trains 
 
       context 'when new revision is not included in merge train history' do
         let!(:merge_commit_sha_1) { Digest::SHA1.hexdigest 'other' }
+        let(:car_double) { instance_double(MergeTrains::Car) }
 
         it 'outdates the merge train pipeline' do
-          expect(MergeTrains::Car).to receive(:sha_exists_in_history?).and_return(false).and_call_original
-          expect_any_instance_of(MergeTrains::Car).to receive(:outdate_pipeline)
+          expect_next_instance_of(MergeTrains::Train) do |train|
+            expect(train)
+              .to receive(:sha_exists_in_history?)
+              .and_return(false)
+              .and_call_original
+
+            expect(train)
+              .to receive(:first_car)
+              .and_return(car_double)
+          end
+
+          expect(car_double).to receive(:outdate_pipeline)
 
           subject
         end
@@ -68,7 +87,12 @@ RSpec.describe MergeTrains::CheckStatusService, feature_category: :merge_trains 
 
     context 'when there are no merge requests on train' do
       it 'does not raise error' do
-        expect(MergeTrains::Car).to receive(:sha_exists_in_history?).and_return(false).and_call_original
+        expect_next_instance_of(MergeTrains::Train) do |train|
+          expect(train)
+            .to receive(:sha_exists_in_history?)
+            .and_return(false)
+            .and_call_original
+        end
 
         expect { subject }.not_to raise_error
       end
@@ -79,8 +103,8 @@ RSpec.describe MergeTrains::CheckStatusService, feature_category: :merge_trains 
         project.update!(merge_pipelines_enabled: false)
       end
 
-      it 'does not check history' do
-        expect(MergeTrains::Car).not_to receive(:sha_exists_in_history?)
+      it 'returns immediately without loading any Trains to check the history of' do
+        expect(MergeTrains::Train).not_to receive(:new)
 
         subject
       end

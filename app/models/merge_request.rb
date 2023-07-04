@@ -1545,6 +1545,10 @@ class MergeRequest < ApplicationRecord
     %r{\Arefs/#{Repository::REF_MERGE_REQUEST}/\d+/train\z}o.match?(ref)
   end
 
+  def train
+    MergeTrains::Train.new(target_project.id, target_branch)
+  end
+
   def in_locked_state
     lock_mr
     yield

@@ -86,20 +86,9 @@ module MergeTrains
     end
 
     class << self
-      def all_active_mrs_in_train(target_project_id, target_branch)
-        MergeRequest.joins(:merge_train_car).merge(
-          all_cars(target_project_id, target_branch)
-        )
-      end
-
-      def all_cars(target_project_id, target_branch, limit: nil)
-        active.for_target(target_project_id, target_branch).by_id.limit(limit)
-      end
-
-      def first_car(target_project_id, target_branch)
-        all_cars(target_project_id, target_branch).first
-      end
-
+      # get the first car in every train for a project
+      # could be a class method on train since it has to do with many trains.
+      # rename: MergeTrains::Train.all_first_cars(project)
       def first_cars_in_trains(project)
         active.where(target_project: project)
               .select('DISTINCT ON (target_branch) *')
@@ -113,7 +102,7 @@ module MergeTrains
       end
 
       def total_count_in_train(merge_request)
-        all_active_mrs_in_train(merge_request.target_project_id, merge_request.target_branch).count
+        merge_request.train.car_count
       end
 
       private
@@ -125,11 +114,11 @@ module MergeTrains
     end
 
     def all_next
-      self.class.all_cars(target_project_id, target_branch).where('merge_trains.id > ?', id)
+      train.all_cars.where('merge_trains.id > ?', id)
     end
 
     def all_prev
-      self.class.all_cars(target_project_id, target_branch).where('merge_trains.id < ?', id)
+      train.all_cars.where('merge_trains.id < ?', id)
     end
 
     def next
@@ -165,7 +154,7 @@ module MergeTrains
     end
 
     def first_car?
-      self.class.first_car(target_project_id, target_branch) == self
+      train.first_car == self
     end
 
     def cleanup_ref
@@ -178,6 +167,10 @@ module MergeTrains
 
     def refresh_async
       MergeTrains::RefreshWorker.perform_async(target_project_id, target_branch)
+    end
+
+    def train
+      Train.new(target_project.id, target_branch)
     end
 
     private
