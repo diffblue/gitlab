@@ -100,7 +100,8 @@ describe('StreamDestinationEditor', () => {
   const findAlertErrors = () => wrapper.findAllByTestId('alert-errors');
   const findDestinationForm = () => wrapper.findComponent(GlForm);
   const findHeadersTable = () => wrapper.findComponent(GlTableLite);
-  const findMaximumHeadersText = () => wrapper.findByTestId('maximum-headers').text();
+  const findNoHeaderCreatedText = () => wrapper.findByTestId('no-header-created');
+  const findMaximumHeadersText = () => wrapper.findByTestId('maximum-headers');
   const findAddHeaderBtn = () => wrapper.findByTestId('add-header-row-button');
   const findAddStreamBtn = () => wrapper.findByTestId('stream-destination-add-button');
   const findCancelStreamBtn = () => wrapper.findByTestId('stream-destination-cancel-button');
@@ -174,8 +175,17 @@ describe('StreamDestinationEditor', () => {
           createComponent({ mountFn: mountExtended });
         });
 
-        it('should render the table', () => {
+        it('should render no headers created message', () => {
+          expect(findNoHeaderCreatedText().text()).toBe(
+            ADD_STREAM_EDITOR_I18N.NO_HEADER_CREATED_TEXT,
+          );
+        });
+
+        it('should render empty table row when adding new header', async () => {
+          await findAddHeaderBtn().trigger('click');
+
           expect(findHeadersRows()).toHaveLength(1);
+          expect(findNoHeaderCreatedText().exists()).toBe(false);
 
           expect(findHeadersHeaderCell(0).text()).toBe('');
           expect(findHeadersHeaderCell(1).text()).toBe('');
@@ -272,6 +282,7 @@ describe('StreamDestinationEditor', () => {
         });
 
         findDestinationUrl().vm.$emit('input', 'https://example.test');
+        await findAddHeaderBtn().trigger('click');
         await setHeadersRowData(0, { name: 'row header', value: 'row value' });
         await findAddHeaderBtn().trigger('click');
         await setHeadersRowData(1, { name: 'row header 1', value: 'row value 1' });
@@ -300,6 +311,7 @@ describe('StreamDestinationEditor', () => {
         });
 
         findDestinationUrl().vm.$emit('input', 'https://example.test');
+        await findAddHeaderBtn().trigger('click');
         await setHeadersRowData(0, { name: 'row header', value: 'row value' });
         await findAddHeaderBtn().trigger('click');
         await setHeadersRowData(1, { name: '', value: '' });
@@ -339,6 +351,7 @@ describe('StreamDestinationEditor', () => {
         });
 
         findDestinationUrl().vm.$emit('input', 'https://example.test');
+        await findAddHeaderBtn().trigger('click');
         await setHeadersRowData(0, { name: 'row header', value: 'row value' });
         await findAddHeaderBtn().trigger('click');
         await setHeadersRowData(1, { name: 'row header 1', value: 'row value 1' });
@@ -373,6 +386,7 @@ describe('StreamDestinationEditor', () => {
         });
 
         findDestinationUrl().vm.$emit('input', 'https://example.test');
+        await findAddHeaderBtn().trigger('click');
         await setHeadersRowData(0, { name: 'row header', value: 'row value' });
         await findAddHeaderBtn().trigger('click');
         await setHeadersRowData(1, { name: 'row header 1', value: 'row value 1' });
@@ -405,9 +419,11 @@ describe('StreamDestinationEditor', () => {
       });
 
       it('should add a new blank row if the add row button is clicked', async () => {
+        expect(findHeadersRows()).toHaveLength(0);
+
         await findAddHeaderBtn().trigger('click');
 
-        expect(findHeadersRows()).toHaveLength(2);
+        expect(findHeadersRows()).toHaveLength(1);
       });
 
       it.each`
@@ -419,6 +435,7 @@ describe('StreamDestinationEditor', () => {
         'should enable the add button only when both the name and value are filled',
         async ({ name, value, disabled }) => {
           await findDestinationUrl().setValue('https://example.test');
+          await findAddHeaderBtn().trigger('click');
           await setHeadersRowData(0, { name, value });
 
           expect(findAddStreamBtn().props('disabled')).toBe(disabled);
@@ -426,6 +443,7 @@ describe('StreamDestinationEditor', () => {
       );
 
       it('should delete a row when the delete button is clicked', async () => {
+        await findAddHeaderBtn().trigger('click');
         await setHeadersRowData(0, { name: 'row header', value: 'row value' });
         await findAddHeaderBtn().trigger('click');
         await setHeadersRowData(1, { name: 'row header 2', value: 'row value 2' });
@@ -442,26 +460,17 @@ describe('StreamDestinationEditor', () => {
         expect(findHeaderValueInput(1).element.value).toBe('');
       });
 
-      it('should add a blank row if the only row is deleted', async () => {
-        await setHeadersRowData(0, { name: 'row header', value: '' });
-
-        expect(findHeadersRows()).toHaveLength(1);
-
-        await findHeaderDeleteBtn(0).trigger('click');
-
-        expect(findHeadersRows()).toHaveLength(1);
-        expect(findHeaderNameInput(0).element.value).toBe('');
-        expect(findHeaderValueInput(0).element.value).toBe('');
-      });
-
-      it('should show the maximum number of rows message when the maximum is reached', async () => {
-        // Max headers === 3 and one row already exists
+      it('should show the maximum number of rows message only when the maximum is reached', async () => {
         await findAddHeaderBtn().trigger('click');
+        await findAddHeaderBtn().trigger('click');
+
+        expect(findMaximumHeadersText().exists()).toBe(false);
+
         await findAddHeaderBtn().trigger('click');
 
         expect(findHeadersRows()).toHaveLength(maxHeaders);
         expect(findAddHeaderBtn().exists()).toBe(false);
-        expect(findMaximumHeadersText()).toMatchInterpolatedText(
+        expect(findMaximumHeadersText().text()).toMatchInterpolatedText(
           sprintf(ADD_STREAM_EDITOR_I18N.MAXIMUM_HEADERS_TEXT, { number: maxHeaders }),
         );
       });
@@ -528,6 +537,7 @@ describe('StreamDestinationEditor', () => {
           findDestinationUrl().vm.$emit('input', 'https://example.test');
           await setHeadersRowData(0, { name: updated.key, value: updated.newValue });
           await findHeaderDeleteBtn(1).trigger('click');
+          await findAddHeaderBtn().trigger('click');
           await setHeadersRowData(1, { name: added.key, value: added.value });
           findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
 
@@ -807,6 +817,39 @@ describe('StreamDestinationEditor', () => {
           expect(findDeleteBtn().exists()).toBe(false);
         });
       });
+
+      describe('HTTP headers', () => {
+        beforeEach(() => {
+          createComponent({ mountFn: mountExtended });
+        });
+
+        it('should render no headers created message', () => {
+          expect(findNoHeaderCreatedText().text()).toBe(
+            ADD_STREAM_EDITOR_I18N.NO_HEADER_CREATED_TEXT,
+          );
+        });
+
+        it('should render empty table row when adding new header', async () => {
+          await findAddHeaderBtn().trigger('click');
+
+          expect(findHeadersRows()).toHaveLength(1);
+          expect(findNoHeaderCreatedText().exists()).toBe(false);
+
+          expect(findHeadersHeaderCell(0).text()).toBe('');
+          expect(findHeadersHeaderCell(1).text()).toBe('');
+          expect(findHeadersHeaderCell(2).text()).toBe('');
+          expect(findHeadersHeaderCell(3).text()).toBe('');
+
+          expect(findHeaderNameInput(0).attributes('placeholder')).toBe(
+            ADD_STREAM_EDITOR_I18N.HEADER_INPUT_PLACEHOLDER,
+          );
+          expect(findHeaderValueInput(0).attributes('placeholder')).toBe(
+            ADD_STREAM_EDITOR_I18N.VALUE_INPUT_PLACEHOLDER,
+          );
+          expect(findHeaderCheckbox(0).find('input').attributes('disabled')).toBeDefined();
+          expect(findHeaderDeleteBtn(0).exists()).toBe(true);
+        });
+      });
     });
 
     describe('add destination event', () => {
@@ -888,6 +931,7 @@ describe('StreamDestinationEditor', () => {
         });
 
         findDestinationUrl().vm.$emit('input', 'https://example.test');
+        await findAddHeaderBtn().trigger('click');
         await setHeadersRowData(0, { name: 'row header', value: 'row value' });
         await findAddHeaderBtn().trigger('click');
         await setHeadersRowData(1, { name: 'row header 1', value: 'row value 1' });
@@ -916,6 +960,7 @@ describe('StreamDestinationEditor', () => {
         });
 
         findDestinationUrl().vm.$emit('input', 'https://example.test');
+        await findAddHeaderBtn().trigger('click');
         await setHeadersRowData(0, { name: 'row header', value: 'row value' });
         await findAddHeaderBtn().trigger('click');
         await setHeadersRowData(1, { name: '', value: '' });
@@ -958,6 +1003,7 @@ describe('StreamDestinationEditor', () => {
         });
 
         findDestinationUrl().vm.$emit('input', 'https://example.test');
+        await findAddHeaderBtn().trigger('click');
         await setHeadersRowData(0, { name: 'row header', value: 'row value' });
         await findAddHeaderBtn().trigger('click');
         await setHeadersRowData(1, { name: 'row header 1', value: 'row value 1' });
@@ -995,6 +1041,7 @@ describe('StreamDestinationEditor', () => {
         });
 
         findDestinationUrl().vm.$emit('input', 'https://example.test');
+        await findAddHeaderBtn().trigger('click');
         await setHeadersRowData(0, { name: 'row header', value: 'row value' });
         await findAddHeaderBtn().trigger('click');
         await setHeadersRowData(1, { name: 'row header 1', value: 'row value 1' });
@@ -1027,9 +1074,11 @@ describe('StreamDestinationEditor', () => {
       });
 
       it('should add a new blank row if the add row button is clicked', async () => {
+        expect(findHeadersRows()).toHaveLength(0);
+
         await findAddHeaderBtn().trigger('click');
 
-        expect(findHeadersRows()).toHaveLength(2);
+        expect(findHeadersRows()).toHaveLength(1);
       });
 
       it.each`
@@ -1041,6 +1090,7 @@ describe('StreamDestinationEditor', () => {
         'should enable the add button only when both the name and value are filled',
         async ({ name, value, disabled }) => {
           await findDestinationUrl().setValue('https://example.test');
+          await findAddHeaderBtn().trigger('click');
           await setHeadersRowData(0, { name, value });
 
           expect(findAddStreamBtn().props('disabled')).toBe(disabled);
@@ -1048,6 +1098,7 @@ describe('StreamDestinationEditor', () => {
       );
 
       it('should delete a row when the delete button is clicked', async () => {
+        await findAddHeaderBtn().trigger('click');
         await setHeadersRowData(0, { name: 'row header', value: 'row value' });
         await findAddHeaderBtn().trigger('click');
         await setHeadersRowData(1, { name: 'row header 2', value: 'row value 2' });
@@ -1064,26 +1115,17 @@ describe('StreamDestinationEditor', () => {
         expect(findHeaderValueInput(1).element.value).toBe('');
       });
 
-      it('should add a blank row if the only row is deleted', async () => {
-        await setHeadersRowData(0, { name: 'row header', value: '' });
-
-        expect(findHeadersRows()).toHaveLength(1);
-
-        await findHeaderDeleteBtn(0).trigger('click');
-
-        expect(findHeadersRows()).toHaveLength(1);
-        expect(findHeaderNameInput(0).element.value).toBe('');
-        expect(findHeaderValueInput(0).element.value).toBe('');
-      });
-
-      it('should show the maximum number of rows message when the maximum is reached', async () => {
-        // Max headers === 3 and one row already exists
+      it('should show the maximum number of rows message only when the maximum is reached', async () => {
         await findAddHeaderBtn().trigger('click');
+        await findAddHeaderBtn().trigger('click');
+
+        expect(findMaximumHeadersText().exists()).toBe(false);
+
         await findAddHeaderBtn().trigger('click');
 
         expect(findHeadersRows()).toHaveLength(maxHeaders);
         expect(findAddHeaderBtn().exists()).toBe(false);
-        expect(findMaximumHeadersText()).toMatchInterpolatedText(
+        expect(findMaximumHeadersText().text()).toMatchInterpolatedText(
           sprintf(ADD_STREAM_EDITOR_I18N.MAXIMUM_HEADERS_TEXT, { number: maxHeaders }),
         );
       });
@@ -1143,6 +1185,7 @@ describe('StreamDestinationEditor', () => {
           findDestinationUrl().vm.$emit('input', 'https://example.test');
           await setHeadersRowData(0, { name: updated.key, value: updated.newValue });
           await findHeaderDeleteBtn(1).trigger('click');
+          await findAddHeaderBtn().trigger('click');
           await setHeadersRowData(1, { name: added.key, value: added.value });
           findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
 

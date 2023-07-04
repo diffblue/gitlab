@@ -50,8 +50,8 @@ import StreamDeleteModal from './stream_delete_modal.vue';
 const { CREATING_ERROR, UPDATING_ERROR } = AUDIT_STREAMS_NETWORK_ERRORS;
 
 const thClasses = `gl-p-0! gl-border-0!`;
-const tdClasses = `gl-p-3! gl-border-0!`;
-const finalTdClasses = `gl-float-right gl-p-3! gl-pr-0! gl-border-0!`;
+const tdClasses = `gl-p-3! gl-pl-0! gl-border-0!`;
+const finalTdClasses = `gl-w-2 gl-py-3! gl-px-0! gl-border-0!`;
 
 export default {
   components: {
@@ -92,6 +92,9 @@ export default {
     };
   },
   computed: {
+    hasNoHeaders() {
+      return this.headers.length === 0;
+    },
     hasReachedMaxHeaders() {
       return this.headers.length >= this.maxHeaders;
     },
@@ -166,14 +169,8 @@ export default {
   mounted() {
     const existingHeaders = mapItemHeadersToFormData(this.item);
 
-    if (existingHeaders.length < this.maxHeaders) {
-      existingHeaders.push(createBlankHeader());
-    }
-
     this.headers = existingHeaders;
-
     this.destinationUrl = this.item.destinationUrl;
-
     this.filters = this.item.eventTypeFilters || [];
   },
   methods: {
@@ -377,7 +374,7 @@ export default {
         ),
       );
     },
-    findHeadersToAdd(existingHeaders, changedHeaders) {
+    findHeadersToAdd(changedHeaders) {
       return changedHeaders.filter((header) => header.id === null && this.isHeaderFilled(header));
     },
     async removeDestinationFilters(destinationId, filters) {
@@ -496,7 +493,7 @@ export default {
           errors.push(...(await this.updateDestinationHeaders(headersToUpdate)));
         }
 
-        const headersToAdd = this.findHeadersToAdd(existingHeaders, changedHeaders);
+        const headersToAdd = this.findHeadersToAdd(changedHeaders);
 
         errors.push(...(await this.addDestinationHeaders(this.item.id, headersToAdd)));
 
@@ -542,10 +539,8 @@ export default {
     headerNameExists(value) {
       return this.headers.some((header) => header.name === value);
     },
-    addBlankHeader(headerProps = {}) {
-      if (!this.hasReachedMaxHeaders) {
-        this.headers.push({ ...createBlankHeader(), ...headerProps });
-      }
+    addBlankHeader() {
+      this.headers.push(createBlankHeader());
     },
     handleHeaderNameInput(index, name) {
       const header = this.headers[index];
@@ -573,12 +568,6 @@ export default {
     },
     removeHeader(index) {
       this.headers.splice(index, 1);
-      const headersCount = this.headers.length;
-
-      // Add a new blank row if headers is now empty
-      if (headersCount === 0) {
-        this.addBlankHeader({ deletionDisabled: true });
-      }
     },
     updateEventTypeFilters(newFilters) {
       this.filters = newFilters;
@@ -728,18 +717,20 @@ export default {
               />
             </gl-form-input-group>
           </template>
-          <template #cell(actions)="{ index, item: { deletionDisabled } }">
+          <template #cell(actions)="{ index }">
             <gl-button
               v-gl-tooltip
               :aria-label="$options.i18n.REMOVE_BUTTON_LABEL"
               :title="$options.i18n.REMOVE_BUTTON_TOOLTIP"
               category="tertiary"
               icon="remove"
-              :disabled="deletionDisabled"
               @click="removeHeader(index)"
             />
           </template>
         </gl-table-lite>
+        <p v-if="hasNoHeaders" class="gl-mb-5 gl-text-gray-500" data-testid="no-header-created">
+          {{ $options.i18n.NO_HEADER_CREATED_TEXT }}
+        </p>
         <p
           v-if="hasReachedMaxHeaders"
           class="gl-mt-5 gl-mb-0 gl-text-gray-500"
@@ -755,12 +746,11 @@ export default {
           v-else
           :loading="loading"
           :name="$options.i18n.ADD_HEADER_ROW_BUTTON_NAME"
-          class="gl-mx-3"
           variant="confirm"
           category="secondary"
           size="small"
           data-testid="add-header-row-button"
-          @click="addBlankHeader()"
+          @click="addBlankHeader"
         >
           {{ $options.i18n.ADD_HEADER_ROW_BUTTON_TEXT }}
         </gl-button>

@@ -104,6 +104,7 @@ export const ADD_STREAM_EDITOR_I18N = {
   VALUE_INPUT_PLACEHOLDER: s__('AuditStreams|ex: 1000'),
   ADD_HEADER_ROW_BUTTON_TEXT: s__('AuditStreams|Add header'),
   ADD_HEADER_ROW_BUTTON_NAME: s__('AuditStreams|Add another custom header'),
+  NO_HEADER_CREATED_TEXT: s__('AuditStreams|No header created yet.'),
   MAXIMUM_HEADERS_TEXT: s__('AuditStreams|Maximum of %{number} HTTP headers has been reached.'),
   REMOVE_BUTTON_LABEL: s__('AuditStreams|Remove custom header'),
   REMOVE_BUTTON_TOOLTIP: __('Remove'),
@@ -154,6 +155,5 @@ export const createBlankHeader = () => ({
   value: '',
   active: true,
   disabled: false,
-  deletionDisabled: false,
   validationErrors: { name: '' },
 });
