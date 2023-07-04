@@ -16,6 +16,10 @@ module QA
       name: 'ff_external_audit_events',
       scope: :global,
       rollout_issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/393772'
+    },
+    quarantine: {
+      type: :flaky,
+      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/416821'
     }
   ) do
     describe 'Instance audit event streaming' do
