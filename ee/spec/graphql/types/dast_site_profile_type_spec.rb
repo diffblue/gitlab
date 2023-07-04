@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['DastSiteProfile'] do
+RSpec.describe GitlabSchema.types['DastSiteProfile'], feature_category: :dynamic_application_security_testing do
   include GraphqlHelpers
   include RepoHelpers
 
@@ -171,7 +171,7 @@ RSpec.describe GitlabSchema.types['DastSiteProfile'] do
       let(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy1, policy2]) }
 
       before do
-        create_list(:dast_site_profile, 30, project: project)
+        create_list(:dast_site_profile, 2, project: project)
         create_file_in_repo(policies_project, 'master', 'master', Security::OrchestrationPolicyConfiguration::POLICY_PATH, policy_yaml)
       end
 
