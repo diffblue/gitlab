@@ -19,6 +19,14 @@ module QA
             element :vsa_path_navigation
           end
 
+          view "app/assets/javascripts/analytics/shared/components/value_stream_metrics.vue" do
+            element :vsa_metrics
+          end
+
+          view "ee/app/assets/javascripts/analytics/cycle_analytics/components/duration_chart.vue" do
+            element :vsa_duration_chart
+          end
+
           # Create new value stream from default template
           #
           # @param [String] name
@@ -47,6 +55,32 @@ module QA
             end
 
             create_value_stream
+          end
+
+          # VSA page has stages
+          #
+          # @param [Array<String>] stage_names
+          # @return [Boolean]
+          def has_stages?(stage_names)
+            within_element(:vsa_path_navigation) do
+              stage_names.all? { |stage_name| find_button(stage_name, wait: 5) }
+            end
+          end
+
+          # VSA page has lifecycle metrics container
+          #
+          # @param [Integer] wait
+          # @return [Boolean]
+          def has_lifecycle_metrics?(wait: 0)
+            has_element?(:vsa_metrics, wait: wait)
+          end
+
+          # VSA page has duration overview chart
+          #
+          # @param [Integer] wait
+          # @return [Boolean]
+          def has_overview_chart?(wait: 0)
+            has_element?(:vsa_duration_overview_chart, wait: wait)
           end
 
           private
