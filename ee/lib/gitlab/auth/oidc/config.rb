@@ -26,6 +26,10 @@ module Gitlab
           options.dig('args', 'client_options', 'gitlab', 'admin_groups') || []
         end
 
+        def auditor_groups
+          options.dig('args', 'client_options', 'gitlab', 'auditor_groups') || []
+        end
+
         def external_groups
           options.dig('args', 'client_options', 'gitlab', 'external_groups') || []
         end

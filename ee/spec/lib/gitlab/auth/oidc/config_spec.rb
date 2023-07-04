@@ -74,6 +74,23 @@ RSpec.describe Gitlab::Auth::Oidc::Config, feature_category: :system_access do
     end
   end
 
+  describe '#auditor_groups' do
+    context 'when config is defined' do
+      let(:config_value) { 'SeeNoEvil' }
+      let(:gitlab_attributes) { { 'auditor_groups' => config_value } }
+
+      it 'returns the value' do
+        expect(config.auditor_groups).to eq(config_value)
+      end
+    end
+
+    context 'when config is not defined' do
+      it 'returns empty array' do
+        expect(config.auditor_groups).to eq([])
+      end
+    end
+  end
+
   describe '#external_groups' do
     context 'when config is defined' do
       let(:config_value) { 'Cats' }

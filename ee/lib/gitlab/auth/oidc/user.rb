@@ -23,6 +23,7 @@ module Gitlab
 
           if user
             user.admin = user_in_admin_group? if admin_groups_enabled?
+            user.auditor = user_in_auditor_group? if auditor_groups_enabled?
             user.external = user_in_external_group? if external_groups_enabled?
           end
 
@@ -46,6 +47,10 @@ module Gitlab
           oidc_config.admin_groups.any?
         end
 
+        def auditor_groups_enabled?
+          oidc_config.auditor_groups.any?
+        end
+
         def external_groups_enabled?
           oidc_config.external_groups.any?
         end
@@ -60,6 +65,13 @@ module Gitlab
 
           admin_groups = oidc_config.admin_groups
           (auth_hash.groups & admin_groups).any?
+        end
+
+        def user_in_auditor_group?
+          return false if user_in_external_group?
+
+          auditor_groups = oidc_config.auditor_groups
+          (auth_hash.groups & auditor_groups).any?
         end
 
         def user_in_external_group?
