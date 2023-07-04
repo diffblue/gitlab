@@ -960,6 +960,12 @@ entry.
 - [Migrate custom CSS to utility classes](gitlab-org/gitlab@a67999317bec111d523c763fc865665d4ded0aaf) ([merge request](gitlab-org/gitlab!120745)) **GitLab Enterprise Edition**
 - [Remove the vsa_group_and_project_parity FF](gitlab-org/gitlab@d090818bdedb0e220928d8e456cf36c8bce81f42) ([merge request](gitlab-org/gitlab!120727)) **GitLab Enterprise Edition**
 
+## 16.0.7 (2023-07-04)
+
+### Security (1 change)
+
+- [Add authorization to the subscriptions group controller](gitlab-org/security/gitlab@07fa510bd2a18c0c0c35503f2fd9dd421d2b4049) ([merge request](gitlab-org/security/gitlab!3380))
+
 ## 16.0.6 (2023-06-28)
 
 ### Security (12 changes)
