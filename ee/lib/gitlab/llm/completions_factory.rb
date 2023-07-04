@@ -17,6 +17,10 @@ module Gitlab
           prompt_class: ::Gitlab::Llm::OpenAi::Templates::SummarizeReview
         },
         explain_code: {
+          service_class: ::Gitlab::Llm::VertexAi::Completions::ExplainCode,
+          prompt_class: ::Gitlab::Llm::VertexAi::Templates::ExplainCode
+        },
+        explain_code_open_ai: {
           service_class: ::Gitlab::Llm::OpenAi::Completions::ExplainCode,
           prompt_class: ::Gitlab::Llm::OpenAi::Templates::ExplainCode
         },
