@@ -138,20 +138,11 @@ module EE
               operations_dashboard_usage)
           end
         end
-
-        # Omitted because no user, creator or author associated: `auto_devops_disabled`, `auto_devops_enabled`
-        # Omitted because not in use anymore: `gcp_clusters`, `gcp_clusters_disabled`, `gcp_clusters_enabled`
-        # rubocop:disable CodeReuse/ActiveRecord
-        override :usage_activity_by_stage_configure
-        def usage_activity_by_stage_configure(time_period)
-          super.merge({
-            projects_slack_notifications_active: distinct_count(::Project.with_slack_integration.where(time_period), :creator_id),
-            projects_slack_slash_active: distinct_count(::Project.with_slack_slash_commands_integration.where(time_period), :creator_id)
-          })
-        end
+        # rubocop: enable Metrics/AbcSize
 
         # Omitted because no user, creator or author associated: `lfs_objects`, `pool_repositories`, `web_hooks`
         override :usage_activity_by_stage_create
+        # rubocop:disable CodeReuse/ActiveRecord
         def usage_activity_by_stage_create(time_period)
           super.merge({
             projects_enforcing_code_owner_approval: distinct_count(::Project.requiring_code_owner_approval.where(time_period), :creator_id),
@@ -178,8 +169,10 @@ module EE
             total_number_of_locked_files: count(::LfsFileLock.where(time_period))
           }, approval_rules_counts)
         end
+        # rubocop:enable CodeReuse/ActiveRecord
 
         override :usage_activity_by_stage_enablement
+        # rubocop:disable CodeReuse/ActiveRecord
         def usage_activity_by_stage_enablement(time_period)
           return super unless ::Gitlab::Geo.enabled?
 
@@ -212,9 +205,11 @@ module EE
                     # rubocop: enable UsageData/LargeTable
                   })
         end
+        # rubocop:enable CodeReuse/ActiveRecord
 
         # Omitted because no user, creator or author associated: `campaigns_imported_from_github`, `ldap_group_links`
         override :usage_activity_by_stage_manage
+        # rubocop:disable CodeReuse/ActiveRecord
         def usage_activity_by_stage_manage(time_period)
           time_frame = metric_time_period(time_period)
           super.merge({
@@ -232,7 +227,9 @@ module EE
             groups_with_event_streaming_destinations: add_metric('CountGroupsWithEventStreamingDestinationsMetric', time_frame: time_frame)
           })
         end
+        # rubocop:enable CodeReuse/ActiveRecord
 
+        # rubocop:disable CodeReuse/ActiveRecord
         override :usage_activity_by_stage_monitor
         def usage_activity_by_stage_monitor(time_period)
           data = super.merge({
@@ -246,10 +243,12 @@ module EE
 
           data
         end
+        # rubocop:enable CodeReuse/ActiveRecord
 
         # Omitted because no user, creator or author associated: `boards`, `labels`, `milestones`, `uploads`
         # Omitted because too expensive: `epics_deepest_relationship_level`
         override :usage_activity_by_stage_plan
+        # rubocop:disable CodeReuse/ActiveRecord
         def usage_activity_by_stage_plan(time_period)
           super.merge({
             assignee_lists: distinct_count(::List.assignee.where(time_period), :user_id),
@@ -258,9 +257,11 @@ module EE
             milestone_lists: distinct_count(::List.milestone.where(time_period), :user_id)
           })
         end
+        # rubocop:enable CodeReuse/ActiveRecord
 
         # Omitted because no user, creator or author associated: `environments`, `feature_flags`, `in_review_folder`, `pages_domains`
         override :usage_activity_by_stage_release
+        # rubocop:disable CodeReuse/ActiveRecord
         def usage_activity_by_stage_release(time_period)
           time_frame = metric_time_period(time_period)
           super.merge({
@@ -268,14 +269,17 @@ module EE
             releases_with_group_milestones: add_metric('CountUsersAssociatingGroupMilestonesToReleasesMetric', time_frame: time_frame)
           })
         end
+        # rubocop:enable CodeReuse/ActiveRecord
 
         # Omitted because no user, creator or author associated: `ci_runners`
+        # rubocop:disable CodeReuse/ActiveRecord
         override :usage_activity_by_stage_verify
         def usage_activity_by_stage_verify(time_period)
           super.merge({
             projects_reporting_ci_cd_back_to_github: distinct_count(::Project.with_github_integration_pipeline_events.where(time_period), :creator_id)
           })
         end
+        # rubocop:enable CodeReuse/ActiveRecord
 
         private
 
@@ -292,6 +296,7 @@ module EE
           ::Gitlab::Auth::Ldap::Config.available_servers
         end
 
+        # rubocop:disable CodeReuse/ActiveRecord
         def merge_requests_with_overridden_project_rules(time_period = nil)
           sql =
             <<~SQL
@@ -327,6 +332,7 @@ module EE
             finish: maximum_id(::ApprovalMergeRequestRule, :merge_request_id)
           )
         end
+        # rubocop:enable CodeReuse/ActiveRecord
 
         # rubocop:disable CodeReuse/ActiveRecord
         def projects_with_sectional_code_owner_rules(time_period)
