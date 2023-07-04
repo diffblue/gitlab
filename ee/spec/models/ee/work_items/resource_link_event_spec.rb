@@ -3,6 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe ::WorkItems::ResourceLinkEvent, feature_category: :team_planning do
+  describe 'associations' do
+    it { is_expected.to belong_to(:user) }
+  end
+
   describe 'scopes' do
     describe '.aliased_for_timebox_report', :freeze_time do
       let!(:event) { create(:resource_link_event, issue: issue, child_work_item: work_item) }

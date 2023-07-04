@@ -11,6 +11,7 @@ module EE
       def migrate_records
         # these should always be ghosted
         migrate_resource_iteration_events
+        migrate_resource_link_events
 
         return super if hard_delete
 
@@ -46,6 +47,10 @@ module EE
 
       def migrate_resource_iteration_events
         batched_migrate(ResourceIterationEvent, :user_id)
+      end
+
+      def migrate_resource_link_events
+        batched_migrate(::WorkItems::ResourceLinkEvent, :user_id)
       end
 
       def log_audit_event(user)
