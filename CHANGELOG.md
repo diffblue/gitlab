@@ -1818,6 +1818,12 @@ entry.
 - [Add index to group_group_links table](gitlab-org/gitlab@9a3f2c1a90b54074e61d0abf07101ce664198e81) ([merge request](gitlab-org/gitlab!117386))
 - [Validate the projects.creator_id foregin key synchronously](gitlab-org/gitlab@ed9351984a16f20506babf6eab6706b917904ed1) ([merge request](gitlab-org/gitlab!117147))
 
+## 15.11.11 (2023-07-04)
+
+### Security (1 change)
+
+- [Add authorization to the subscriptions group controller](gitlab-org/security/gitlab@a6cb78e56a0e6b08ee7bbabd1687fb43a9f8703b) ([merge request](gitlab-org/security/gitlab!3381))
+
 ## 15.11.10 (2023-06-28)
 
 ### Security (10 changes)
