@@ -10,6 +10,7 @@ RSpec.describe Gitlab::Auth::Oidc::User, feature_category: :system_access do
   let(:oidc_groups_attribute) { 'groups' }
   let(:oidc_required_groups) { [] }
   let(:oidc_admin_groups) { [] }
+  let(:oidc_auditor_groups) { [] }
   let(:oidc_external_groups) { [] }
 
   let(:info_hash) do
@@ -35,6 +36,7 @@ RSpec.describe Gitlab::Auth::Oidc::User, feature_category: :system_access do
       allow(config).to receive_messages({ groups_attribute: oidc_groups_attribute,
                                           required_groups: oidc_required_groups,
                                           admin_groups: oidc_admin_groups,
+                                          auditor_groups: oidc_auditor_groups,
                                           external_groups: oidc_external_groups })
     end
   end
@@ -127,6 +129,63 @@ RSpec.describe Gitlab::Auth::Oidc::User, feature_category: :system_access do
       end
     end
 
+    context 'for auditor groups' do
+      context 'when not defined' do
+        it 'does not set user as auditor' do
+          oidc_user.save # rubocop:disable Rails/SaveBang
+
+          expect(gl_user).to be_valid
+          expect(gl_user).not_to be_auditor
+        end
+
+        it 'does not demote existing auditor user' do
+          stub_omniauth_setting(auto_link_user: true)
+          create(:user, email: 'john@example.com', auditor: true)
+          oidc_user.save # rubocop:disable Rails/SaveBang
+
+          expect(gl_user).to be_valid
+          expect(gl_user).to be_auditor
+        end
+      end
+
+      context 'when defined' do
+        let(:oidc_auditor_groups) { ['SeeNoEvil'] }
+
+        context 'when user has correct auditor groups membership' do
+          let(:user_groups) { oidc_auditor_groups }
+
+          it 'promotes to auditor' do
+            oidc_user.save # rubocop:disable Rails/SaveBang
+
+            expect(gl_user).to be_valid
+            expect(gl_user).to be_auditor
+          end
+        end
+
+        context 'when user is missing auditor groups membership' do
+          it 'does not promote to auditor' do
+            oidc_user.save # rubocop:disable Rails/SaveBang
+
+            expect(gl_user).to be_valid
+            expect(gl_user).not_to be_auditor
+          end
+        end
+
+        context 'when user has auditor and external groups membership' do
+          let(:oidc_external_groups) { ['Cats'] }
+          let(:user_groups) { oidc_auditor_groups | oidc_external_groups }
+
+          it 'does not promote to auditor' do
+            oidc_user.save # rubocop:disable Rails/SaveBang
+
+            expect(gl_user).to be_valid
+            expect(gl_user).not_to be_auditor
+            expect(gl_user).to be_external
+          end
+        end
+      end
+    end
+
     context 'for external groups' do
       context 'when not defined' do
         it 'does not set user as external' do
@@ -152,7 +211,7 @@ RSpec.describe Gitlab::Auth::Oidc::User, feature_category: :system_access do
         context 'when user has correct external groups membership' do
           let(:user_groups) { oidc_external_groups }
 
-          it 'promotes to admin' do
+          it 'promotes to external' do
             oidc_user.save # rubocop:disable Rails/SaveBang
 
             expect(gl_user).to be_valid
@@ -161,7 +220,7 @@ RSpec.describe Gitlab::Auth::Oidc::User, feature_category: :system_access do
         end
 
         context 'when user is missing external groups membership' do
-          it 'does not promote to admin' do
+          it 'does not promote to external' do
             oidc_user.save # rubocop:disable Rails/SaveBang
 
             expect(gl_user).to be_valid
