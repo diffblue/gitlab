@@ -6603,6 +6603,9 @@ msgstr ""
 msgid "AuditStreams|Maximum of %{number} HTTP headers has been reached."
 msgstr ""
 
+msgid "AuditStreams|No header created yet."
+msgstr ""
+
 msgid "AuditStreams|Remove custom header"
 msgstr ""
 
