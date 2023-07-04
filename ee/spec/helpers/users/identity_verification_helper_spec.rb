@@ -74,7 +74,7 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :system_acce
     subject(:user_banned_error_message) { helper.user_banned_error_message }
 
     where(:dot_com, :error_message) do
-      true  | "Your account has been blocked. Contact https://support.gitlab.com for assistance."
+      true  | "Your account has been blocked. Contact #{EE::CUSTOMER_SUPPORT_URL} for assistance."
       false | "Your account has been blocked. Contact your GitLab administrator for assistance."
     end
 

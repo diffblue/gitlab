@@ -210,27 +210,6 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
     end
   end
 
-  describe 'usage_activity_by_stage_configure' do
-    it 'includes accurate usage_activity_by_stage data' do
-      for_defined_days_back do
-        user = create(:user)
-        project = create(:project, creator: user)
-        create(:integrations_slack, project: project)
-        create(:slack_slash_commands_integration, project: project)
-        create(:prometheus_integration, project: project)
-      end
-
-      expect(described_class.usage_activity_by_stage_configure({})).to include(
-        projects_slack_notifications_active: 2,
-        projects_slack_slash_active: 2
-      )
-      expect(described_class.usage_activity_by_stage_configure(described_class.monthly_time_range_db_params)).to include(
-        projects_slack_notifications_active: 1,
-        projects_slack_slash_active: 1
-      )
-    end
-  end
-
   describe 'usage_activity_by_stage_create' do
     it 'includes accurate usage_activity_by_stage data', :aggregate_failures do
       for_defined_days_back do

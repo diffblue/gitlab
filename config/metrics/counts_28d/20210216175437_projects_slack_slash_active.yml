@@ -11,6 +11,7 @@ status: active
 time_frame: 28d
 data_source: database
 distribution:
+- ce
 - ee
 tier:
 - free

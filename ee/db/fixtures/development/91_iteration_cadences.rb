@@ -15,7 +15,7 @@ Gitlab::Seeder.quiet do
       random_number = rand(5)
       cadence_params = {
         title: FFaker::Lorem.sentence(6),
-        start_date: FFaker::Time.between(1.day.from_now, 2.weeks.from_now),
+        start_date: rand(1..14).days.from_now,
         duration_in_weeks: random_number == 5 ? nil : random_number,
         iterations_in_advance: random_number == 5 ? nil : random_number,
         active: rand(2),
