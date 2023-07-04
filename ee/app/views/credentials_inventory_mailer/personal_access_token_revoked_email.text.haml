@@ -2,7 +2,7 @@
 
 = @token.name
 
-= _("Created on %{created_at}") % { created_at: @token.created_at.to_date.to_s(:medium) }
+= _("Created on %{created_at}") % { created_at: @token.created_at.to_date.to_fs(:medium) }
 
 - if @token.last_used_at
   = _("Last used %{last_used_at} ago") % { last_used_at: time_ago_in_words(@token.last_used_at) }

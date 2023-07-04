@@ -139,7 +139,7 @@ class EpicPresenter < Gitlab::View::Presenter::Delegated
         title: epic.title,
         url: url_builder.epic_path(epic),
         state: epic.state,
-        human_readable_end_date: epic.end_date&.to_s(:medium),
+        human_readable_end_date: epic.end_date&.to_fs(:medium),
         human_readable_timestamp: remaining_days_in_words(epic.end_date, epic.start_date)
       }
     end

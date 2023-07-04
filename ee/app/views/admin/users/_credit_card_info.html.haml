@@ -16,7 +16,7 @@
         - else
           %span.light= _('Validated at:')
           %strong
-            = credit_card_validation.credit_card_validated_at.to_s(:medium)
+            = credit_card_validation.credit_card_validated_at.to_fs(:medium)
 
       - if credit_card_validation&.holder_name
         %li
