@@ -119,18 +119,6 @@ RSpec.describe Issue, feature_category: :team_planning do
             /"work_item_types"\."base_type" = #{WorkItems::Type.base_types[:requirement]}/
           )
         end
-
-        context 'when issue_type_uses_work_item_types_table feature flag is disabled' do
-          before do
-            stub_feature_flags(issue_type_uses_work_item_types_table: false)
-          end
-
-          it 'uses the issue_type column to filter requirements' do
-            expect { Issue.for_requirement_iids(iids).to_a }.to make_queries_matching(
-              /"issues"\."issue_type" = #{WorkItems::Type.base_types[:requirement]}/
-            )
-          end
-        end
       end
     end
 
