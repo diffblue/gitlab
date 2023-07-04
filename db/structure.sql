@@ -32339,8 +32339,6 @@ CREATE INDEX index_pm_package_version_licenses_on_pm_package_version_id ON pm_pa
 
 CREATE INDEX index_pm_package_versions_on_pm_package_id ON pm_package_versions USING btree (pm_package_id);
 
-CREATE UNIQUE INDEX index_pool_repositories_on_disk_path ON pool_repositories USING btree (disk_path);
-
 CREATE INDEX index_pool_repositories_on_shard_id ON pool_repositories USING btree (shard_id);
 
 CREATE UNIQUE INDEX index_pool_repositories_on_source_project_id_and_shard_id ON pool_repositories USING btree (source_project_id, shard_id);
@@ -33694,6 +33692,8 @@ CREATE UNIQUE INDEX unique_merge_request_metrics_by_merge_request_id ON merge_re
 CREATE UNIQUE INDEX unique_organizations_on_path ON organizations USING btree (path);
 
 CREATE UNIQUE INDEX unique_packages_project_id_and_name_and_version_when_debian ON packages_packages USING btree (project_id, name, version) WHERE ((package_type = 9) AND (status <> 4));
+
+CREATE UNIQUE INDEX unique_pool_repositories_on_disk_path_and_shard_id ON pool_repositories USING btree (disk_path, shard_id);
 
 CREATE UNIQUE INDEX unique_postgres_async_fk_validations_name_and_table_name ON postgres_async_foreign_key_validations USING btree (name, table_name);
 
