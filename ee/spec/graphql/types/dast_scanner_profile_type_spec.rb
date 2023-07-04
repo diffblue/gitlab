@@ -91,7 +91,7 @@ RSpec.describe GitlabSchema.types['DastScannerProfile'], :dynamic_analysis,
       let(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy1, policy2]) }
 
       before do
-        create_list(:dast_scanner_profile, 30, project: project)
+        create_list(:dast_scanner_profile, 2, project: project)
         create_file_in_repo(policies_project, 'master', 'master', Security::OrchestrationPolicyConfiguration::POLICY_PATH, policy_yaml)
       end
 

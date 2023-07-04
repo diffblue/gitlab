@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'On-demand DAST scans (GraphQL fixtures)' do
+RSpec.describe 'On-demand DAST scans (GraphQL fixtures)', feature_category: :dynamic_application_security_testing do
   describe GraphQL::Query, type: :request do
     include ApiHelpers
     include GraphqlHelpers
@@ -52,7 +52,7 @@ RSpec.describe 'On-demand DAST scans (GraphQL fixtures)' do
         let_it_be(:pipelines) do
           create_list(
             :ci_pipeline,
-            30,
+            3,
             :success,
             source: :ondemand_dast_scan,
             sha: project.commit.id,
@@ -67,11 +67,11 @@ RSpec.describe 'On-demand DAST scans (GraphQL fixtures)' do
 
           post_graphql(query, current_user: current_user, variables: {
             fullPath: project.full_path,
-            first: 20
+            first: 2
           })
 
           expect_graphql_errors_to_be_empty
-          expect(graphql_data_at(:project, :pipelines, :nodes)).to have_attributes(size: 20)
+          expect(graphql_data_at(:project, :pipelines, :nodes)).to have_attributes(size: 2)
         end
       end
 
@@ -81,7 +81,7 @@ RSpec.describe 'On-demand DAST scans (GraphQL fixtures)' do
 
           post_graphql(query, current_user: current_user, variables: {
             fullPath: project.full_path,
-            first: 20
+            first: 2
           })
 
           expect_graphql_errors_to_be_empty
