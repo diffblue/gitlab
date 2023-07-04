@@ -207,7 +207,7 @@ RSpec.describe Namespaces::ProjectsFinder, feature_category: :groups_and_project
             stub_ee_application_setting(repository_size_limit: 20)
           else
             enforce_namespace_storage_limit(namespace)
-            namespace.actual_plan.actual_limits.update!(enforcement_limit: 20)
+            set_enforcement_limit(namespace, megabytes: 20)
           end
         end
 

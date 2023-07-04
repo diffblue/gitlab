@@ -1426,7 +1426,7 @@ RSpec.describe Namespace do
 
       before do
         enforce_namespace_storage_limit(namespace)
-        namespace.actual_plan.actual_limits.update!(enforcement_limit: enforceable_storage_limit)
+        set_enforcement_limit(namespace, megabytes: enforceable_storage_limit)
       end
 
       it 'returns the plan limit' do
