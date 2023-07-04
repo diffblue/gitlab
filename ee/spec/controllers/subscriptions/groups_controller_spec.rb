@@ -14,9 +14,18 @@ RSpec.describe Subscriptions::GroupsController, feature_category: :purchase do
       it { is_expected.to redirect_to(new_user_session_path) }
     end
 
+    context 'with an authenticated user who is not an owner' do
+      before do
+        sign_in(user)
+      end
+
+      it { is_expected.to have_gitlab_http_status(:not_found) }
+    end
+
     context 'with an authenticated user' do
       before do
         sign_in(user)
+        group.add_owner(user)
       end
 
       it { is_expected.to have_gitlab_http_status(:ok) }
@@ -26,7 +35,7 @@ RSpec.describe Subscriptions::GroupsController, feature_category: :purchase do
   describe 'PUT #update' do
     subject { post :update, params: { id: group.to_param, group: params } }
 
-    let(:params) { { name: 'New name', path: 'new-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE } }
+    let(:params) { { name: 'New name', path: 'new-path' } }
 
     context 'with an unauthenticated user' do
       it { is_expected.to have_gitlab_http_status(:redirect) }
@@ -38,8 +47,7 @@ RSpec.describe Subscriptions::GroupsController, feature_category: :purchase do
         sign_in(user)
       end
 
-      it { is_expected.to have_gitlab_http_status(:ok) }
-      it { is_expected.to render_template(:edit) }
+      it { is_expected.to have_gitlab_http_status(:not_found) }
 
       it 'does not update the name' do
         expect { subject }.not_to change { group.reload.name }
@@ -47,6 +55,8 @@ RSpec.describe Subscriptions::GroupsController, feature_category: :purchase do
     end
 
     context 'with an authenticated user' do
+      let(:params) { { name: 'New name', path: 'new-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE } }
+
       before do
         sign_in(user)
         group.add_owner(user)
