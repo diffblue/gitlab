@@ -25,7 +25,7 @@ module Elastic
     end
 
     def should_index_group_wiki?
-      Feature.enabled?(:maintain_group_wiki_index, self) && use_elasticsearch? && ::Wiki.use_separate_indices?
+      use_elasticsearch? && ::Wiki.use_separate_indices?
     end
   end
 end

@@ -48,7 +48,7 @@ module EE
           ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(project) if project.maintaining_elasticsearch?
         end
 
-        return unless ::Wiki.use_separate_indices? && ::Feature.enabled?(:maintain_group_wiki_index, group)
+        return unless ::Wiki.use_separate_indices?
 
         group.self_and_descendants.find_each.with_index do |grp, idx|
           interval = idx % ElasticWikiIndexerWorker::MAX_JOBS_PER_HOUR
