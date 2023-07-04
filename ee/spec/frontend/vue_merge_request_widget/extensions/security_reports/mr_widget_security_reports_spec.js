@@ -175,6 +175,16 @@ describe('MR Widget Security Reports', () => {
     });
   });
 
+  describe('with no enabled reports', () => {
+    beforeEach(() => {
+      createComponent({ propsData: { mr: { isPipelineActive: false, enabledReports: {} } } });
+    });
+
+    it('should not mount the widget component', () => {
+      expect(findWidget().exists()).toBe(false);
+    });
+  });
+
   describe('with empty MR data', () => {
     beforeEach(() => {
       createComponent();

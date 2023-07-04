@@ -15,25 +15,9 @@ export default {
 
   extends: CEWidgetApp,
 
-  securityReportTypes: [
-    'dast',
-    'sast',
-    'dependencyScanning',
-    'containerScanning',
-    'coverageFuzzing',
-    'apiFuzzing',
-    'secretDetection',
-  ],
-
   computed: {
     securityReportsWidget() {
-      const { enabledReports } = this.mr;
-
-      return enabledReports &&
-        this.mr.canReadVulnerabilities &&
-        this.$options.securityReportTypes.some((reportType) => enabledReports[reportType])
-        ? 'MrSecurityWidgetEE'
-        : 'MrSecurityWidgetCE';
+      return this.mr.canReadVulnerabilities ? 'MrSecurityWidgetEE' : 'MrSecurityWidgetCE';
     },
 
     widgets() {
