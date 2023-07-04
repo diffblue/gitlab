@@ -20,8 +20,6 @@ module EE
 
     override :create
     def create
-      ensure_correct_params!
-
       unless verify_arkose_labs_token
         flash[:alert] = _('Complete verification to sign up.')
         render action: 'new'
@@ -143,9 +141,8 @@ module EE
 
     override :arkose_labs_enabled?
     def arkose_labs_enabled?
-      return false if ::Gitlab::Qa.request?(request.user_agent)
-
-      ::Arkose::Settings.enabled_for_signup?
+      ::Feature.enabled?(:arkose_labs_signup_challenge) &&
+        ::Arkose::Settings.enabled?(user: resource, user_agent: request.user_agent)
     end
 
     def allow_account_deletion?

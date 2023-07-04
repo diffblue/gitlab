@@ -33,6 +33,8 @@ class TrialRegistrationsController < RegistrationsController
   end
 
   def sign_up_params
+    ensure_correct_params!
+
     if params[:user]
       params.require(:user).permit(*sign_up_params_attributes)
     else

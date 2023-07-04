@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Arkose::Settings do
+RSpec.describe Arkose::Settings, feature_category: :instance_resiliency do
   using RSpec::Parameterized::TableSyntax
 
   describe '.arkose_public_api_key' do
@@ -65,23 +65,27 @@ RSpec.describe Arkose::Settings do
     it { is_expected.to eq "#{setting_value}-api.arkoselabs.com" }
   end
 
-  describe '.enabled_for_signup?' do
-    subject { described_class.enabled_for_signup? }
+  describe '.enabled?' do
+    let_it_be(:user) { create(:user) }
 
-    where(:flag_enabled, :private_key, :public_key, :namespace, :result) do
-      false | 'private' | 'public' | 'namespace' | false
-      true  | nil       | 'public' | 'namespace' | false
-      true  | 'private' | nil      | 'namespace' | false
-      true  | 'private' | 'public' | nil         | false
-      true  | 'private' | 'public' | 'namespace' | true
+    subject { described_class.enabled?(user: user, user_agent: 'user_agent') }
+
+    where(:private_key, :public_key, :namespace, :qa_request, :group_saml_user, :result) do
+      nil       | 'public' | 'namespace' | false | false | false
+      'private' | nil      | 'namespace' | false | false | false
+      'private' | 'public' | nil         | false | false | false
+      'private' | 'public' | 'namespace' | true  | false | false
+      'private' | 'public' | 'namespace' | false | true  | false
+      'private' | 'public' | 'namespace' | false | false | true
     end
 
     with_them do
       before do
-        stub_feature_flags(arkose_labs_signup_challenge: flag_enabled)
         allow(described_class).to receive(:arkose_private_api_key).and_return(private_key)
         allow(described_class).to receive(:arkose_public_api_key).and_return(public_key)
         stub_application_setting(arkose_labs_namespace: namespace)
+        allow(::Gitlab::Qa).to receive(:request?).with('user_agent').and_return(qa_request)
+        create(:group_saml_identity, user: user) if group_saml_user
       end
 
       it { is_expected.to eq result }

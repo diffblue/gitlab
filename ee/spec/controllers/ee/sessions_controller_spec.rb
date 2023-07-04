@@ -6,11 +6,10 @@ RSpec.describe SessionsController, :geo, feature_category: :system_access do
   include DeviseHelpers
   include EE::GeoHelpers
 
-  let(:arkose_labs_public_api_key) { 'foo' }
-
   before do
     set_devise_mapping(context: @request)
-    stub_application_setting(arkose_labs_public_api_key: arkose_labs_public_api_key)
+    stub_application_setting(arkose_labs_public_api_key: 'foo')
+    stub_application_setting(arkose_labs_private_api_key: 'bar')
   end
 
   describe '#new' do
@@ -194,6 +193,24 @@ RSpec.describe SessionsController, :geo, feature_category: :system_access do
         context 'when request is for QA' do
           before do
             allow(Gitlab::Qa).to receive(:request?).and_return(true)
+          end
+
+          it 'skips token verification' do
+            expect(Arkose::TokenVerificationService).not_to receive(:new)
+
+            post(:create, params: params, session: {})
+          end
+
+          it 'logs in the user' do
+            post(:create, params: params, session: {})
+
+            expect(subject.current_user).to eq user
+          end
+        end
+
+        context 'when the user is a group SAML user' do
+          before do
+            create(:group_saml_identity, user: user)
           end
 
           it 'skips token verification' do

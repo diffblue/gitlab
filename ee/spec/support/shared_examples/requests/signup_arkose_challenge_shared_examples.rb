@@ -11,7 +11,8 @@ RSpec.shared_examples 'creates a user with ArkoseLabs risk band on signup reques
   let(:service_response) { ServiceResponse.success(payload: { response: verify_response }) }
 
   before do
-    allow(::Arkose::Settings).to receive(:enabled_for_signup?).and_return(true)
+    stub_feature_flags(arkose_labs_signup_challenge: true)
+    allow(::Arkose::Settings).to receive(:enabled?).and_return(true)
     allow_next_instance_of(Arkose::TokenVerificationService) do |instance|
       allow(instance).to receive(:execute).and_return(service_response)
     end
@@ -79,9 +80,19 @@ RSpec.shared_examples 'creates a user with ArkoseLabs risk band on signup reques
     end
   end
 
+  context 'when the feature flag is disabled' do
+    before do
+      stub_feature_flags(arkose_labs_signup_challenge: false)
+    end
+
+    it_behaves_like 'creates the user'
+
+    it_behaves_like 'skips verification and data recording'
+  end
+
   context 'when feature is disabled' do
     before do
-      allow(::Arkose::Settings).to receive(:enabled_for_signup?).and_return(false)
+      allow(::Arkose::Settings).to receive(:enabled?).and_return(false)
     end
 
     it_behaves_like 'creates the user'
@@ -118,15 +129,5 @@ RSpec.shared_examples 'creates a user with ArkoseLabs risk band on signup reques
     it_behaves_like 'renders new action with an alert flash'
 
     it_behaves_like 'skips verification and data recording'
-  end
-
-  context 'when request is for QA' do
-    before do
-      allow(Gitlab::Qa).to receive(:request?).and_return(true)
-    end
-
-    it_behaves_like 'skips verification and data recording'
-
-    it_behaves_like 'creates the user'
   end
 end

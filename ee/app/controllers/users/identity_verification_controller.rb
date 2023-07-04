@@ -147,7 +147,7 @@ module Users
 
     def require_arkose_verification!
       return unless Feature.enabled?(:arkose_labs_oauth_signup_challenge)
-      return if ::Gitlab::Qa.request?(request.user_agent)
+      return unless ::Arkose::Settings.enabled?(user: @user, user_agent: request.user_agent)
       return unless @user.identities.any?
       return unless @user.arkose_risk_band.blank?
 
