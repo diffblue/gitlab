@@ -19,19 +19,6 @@ module EE
 
       scope :with_approvals, -> { preload(approvals: [:user]) }
 
-      state_machine :status do
-        after_transition created: :blocked do |deployment, transition|
-          deployment.run_after_commit do
-            next unless deployment.allow_pipeline_trigger_approve_deployment
-
-            # Try to approve deployment automatically.
-            # Even if the approval cannot be completed due to some conditions (such as
-            # insufficient permissions), there are no other side effects.
-            ::Deployments::ApprovalWorker.perform_async(deployment.id, user_id: deployment.user_id, status: 'approved')
-          end
-        end
-      end
-
       Dora::Watchers.mount(self)
     end
 
