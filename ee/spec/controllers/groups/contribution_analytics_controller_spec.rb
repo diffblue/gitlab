@@ -130,7 +130,7 @@ RSpec.describe Groups::ContributionAnalyticsController, feature_category: :value
       expect(response).to have_gitlab_http_status(:ok)
 
       expect(assigns[:data_collector].users).to match_array([user, user2, user3])
-      expect(assigns[:data_collector].total_events_by_author_count.values.sum).to eq(6)
+      expect(assigns[:data_collector].totals[:total_events].values.sum).to eq(6)
     end
 
     it "returns member contributions JSON when format is JSON" do

@@ -7,6 +7,13 @@ RSpec.describe Gitlab::ContributionAnalytics::DataCollector, feature_category: :
   let_it_be(:project1) { create(:project, group: group) }
   let_it_be(:project2) { create(:project, group: group) }
 
+  describe 'delegated methods' do
+    subject { described_class.new(group: group) }
+
+    it { is_expected.to delegate_method(:totals).to(:data_formatter) }
+    it { is_expected.to delegate_method(:users).to(:data_formatter) }
+  end
+
   describe 'date range filters' do
     it 'filters the date range' do
       # before the range
@@ -46,31 +53,6 @@ RSpec.describe Gitlab::ContributionAnalytics::DataCollector, feature_category: :
         push: {},
         total_events: { user.id => 4 }
       })
-    end
-  end
-
-  describe '#push_by_author_count' do
-    let(:raw_counts) do
-      {
-        [1, nil, Event.actions[:pushed]] => 2,
-        [2, nil, Event.actions[:pushed]] => 2
-      }
-    end
-
-    let(:data_collector) { described_class.new(group: Group.new) }
-
-    before do
-      allow(data_collector).to receive(:raw_counts).and_return(raw_counts)
-    end
-
-    it 'calculates the correct count' do
-      expect(data_collector.push_by_author_count).to eq({ 1 => 2, 2 => 2 })
-    end
-
-    it 'handles empty result' do
-      allow(data_collector).to receive(:raw_counts).and_return({})
-
-      expect(data_collector.push_by_author_count).to eq({})
     end
   end
 end
