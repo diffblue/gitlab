@@ -227,9 +227,6 @@ export default {
         this.$el.scrollIntoView(false);
       }
     },
-    isActiveIssue(issue) {
-      return this.activeId === issue.id;
-    },
     handleDragOnStart() {
       document.body.classList.add('is-dragging');
     },

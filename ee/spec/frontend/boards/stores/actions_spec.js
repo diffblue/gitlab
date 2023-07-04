@@ -1072,8 +1072,8 @@ describe('addListNewEpic', () => {
     it('dispatches a correct set of mutations', () => {
       jest.spyOn(gqlClient, 'mutate').mockResolvedValue({
         data: {
-          createEpic: {
-            epic: mockEpic,
+          createIssuable: {
+            issuable: mockEpic,
             errors: [],
           },
         },

@@ -1,30 +1,43 @@
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
+import VueApollo from 'vue-apollo';
 
+import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import BoardNewEpic from 'ee/boards/components/board_new_epic.vue';
 import GroupSelect from 'ee/boards/components/group_select.vue';
+import epicBoardQuery from 'ee/boards/graphql/epic_board.query.graphql';
 import { mockList } from 'jest/boards/mock_data';
 
 import BoardNewItem from '~/boards/components/board_new_item.vue';
 import eventHub from '~/boards/eventhub';
 
+import { mockEpicBoardResponse } from '../mock_data';
+
 Vue.use(Vuex);
+Vue.use(VueApollo);
 
 const addListNewEpicSpy = jest.fn().mockResolvedValue();
 const mockActions = { addListNewEpic: addListNewEpicSpy };
 
-const createComponent = ({ actions = mockActions } = {}) =>
+const epicBoardQueryHandlerSuccess = jest.fn().mockResolvedValue(mockEpicBoardResponse);
+const mockApollo = createMockApollo([[epicBoardQuery, epicBoardQueryHandlerSuccess]]);
+
+const createComponent = ({ actions = mockActions, isApolloBoard = false } = {}) =>
   shallowMount(BoardNewEpic, {
+    apolloProvider: mockApollo,
     store: new Vuex.Store({
       actions,
     }),
     propsData: {
       list: mockList,
+      boardId: 'gid://gitlab/Board::EpicBoard/1',
     },
     provide: {
-      boardId: 1,
-      fullPath: 'group/project',
+      boardType: 'group',
+      fullPath: 'gitlab-org',
+      isApolloBoard,
     },
     stubs: {
       BoardNewItem,
@@ -75,7 +88,7 @@ describe('Epic boards new epic form', () => {
       epicInput: {
         title: 'Foo',
         labelIds: [],
-        groupPath: 'group/project',
+        groupPath: 'gitlab-org',
       },
     });
   });
@@ -86,5 +99,21 @@ describe('Epic boards new epic form', () => {
 
     await nextTick();
     expect(eventHub.$emit).toHaveBeenCalledWith(`toggle-epic-form-${mockList.id}`);
+  });
+
+  describe('Apollo boards', () => {
+    beforeEach(async () => {
+      wrapper = createComponent({ isApolloBoard: true });
+
+      await nextTick();
+    });
+
+    it('fetches board when creating epic and emits addNewEpic event', async () => {
+      await submitForm(wrapper);
+      await waitForPromises();
+
+      expect(epicBoardQueryHandlerSuccess).toHaveBeenCalled();
+      expect(wrapper.emitted('addNewEpic')[0][0]).toMatchObject({ title: 'Foo' });
+    });
   });
 });

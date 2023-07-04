@@ -1,15 +1,10 @@
-#import "ee/graphql_shared/fragments/epic.fragment.graphql"
-#import "~/graphql_shared/fragments/label.fragment.graphql"
+#import "./epic_detailed.fragment.graphql"
 
-mutation CreateEpic($input: CreateEpicInput!) {
-  createEpic(input: $input) {
-    epic {
-      ...EpicNode
-      labels {
-        nodes {
-          ...Label
-        }
-      }
+mutation CreateEpic($input: CreateEpicInput!, $withColor: Boolean = false) {
+  createIssuable: createEpic(input: $input) {
+    issuable: epic {
+      ...EpicDetailed
+      color @include(if: $withColor)
     }
     errors
   }
