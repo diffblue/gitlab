@@ -894,7 +894,7 @@ shell where the job executes. This includes the names and values of pre-defined 
 is typically referred to as `ARG_MAX`, and is shell and operating system dependent. This issue also occurs when the
 content of a single [File-type](#use-file-type-cicd-variables) variable exceeds `ARG_MAX`.
 
-See ["argument list too long" error with very large CI/CD variable](https://gitlab.com/gitlab-org/gitlab/-/issues/392406#note_1414219596)
+For more information, see [issue 392406](https://gitlab.com/gitlab-org/gitlab/-/issues/392406#note_1414219596).
 
 As a workaround you can either:
 
