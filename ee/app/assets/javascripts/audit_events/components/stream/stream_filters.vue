@@ -87,6 +87,7 @@ export default {
 
 <template>
   <gl-collapsible-listbox
+    id="audit-event-type-filter"
     :items="options"
     :selected="value"
     :toggle-text="toggleText"

@@ -133,10 +133,12 @@ export default {
     >
       {{ successMessage }}
     </gl-alert>
-    <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center gl-mb-6">
-      <label class="gl-m-0">
+    <div
+      class="gl-display-flex gl-justify-content-space-between gl-align-items-center gl-mb-6 gl-mt-3"
+    >
+      <h4 class="gl-m-0">
         {{ $options.i18n.streamsLabel(destinationsCount) }}
-      </label>
+      </h4>
       <gl-button variant="confirm" @click="setEditorVisibility(true)">
         {{ $options.i18n.ADD_STREAM }}
       </gl-button>
@@ -148,7 +150,7 @@ export default {
         @cancel="setEditorVisibility(false)"
       />
     </div>
-    <ul class="content-list">
+    <ul class="content-list gl-border-t gl-border-gray-50">
       <stream-item
         v-for="item in externalAuditEventDestinations"
         :key="item.id"

@@ -1,13 +1,6 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import {
-  GlAccordion,
-  GlAccordionItem,
-  GlButton,
-  GlFormCheckbox,
-  GlForm,
-  GlTableLite,
-} from '@gitlab/ui';
+import { GlButton, GlFormCheckbox, GlForm, GlTableLite } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { sprintf } from '~/locale';
 import { createAlert } from '~/alert';
@@ -117,8 +110,7 @@ describe('StreamDestinationEditor', () => {
   const findClipboardButton = () => wrapper.findComponent(ClipboardButton);
 
   const findFilteringHeader = () => wrapper.findByTestId('filtering-header');
-  const findAccordion = () => wrapper.findComponent(GlAccordion);
-  const findAllAccordionItems = () => wrapper.findAllComponents(GlAccordionItem);
+  const findEventTypeFilteringHeader = () => wrapper.findByTestId('event-type-filtering-header');
   const findFilters = () => wrapper.findComponent(StreamFilters);
 
   const findHeadersRows = () => findHeadersTable().find('tbody').findAll('tr');
@@ -690,14 +682,12 @@ describe('StreamDestinationEditor', () => {
 
         it('displays the correct text', () => {
           expect(findFilteringHeader().text()).toBe(ADD_STREAM_EDITOR_I18N.HEADER_FILTERING);
-          expect(findAllAccordionItems().at(0).props('title')).toBe(
-            ADD_STREAM_EDITOR_I18N.FILTER_BY_STREAM_EVENT,
+          expect(findEventTypeFilteringHeader().text()).toBe(
+            ADD_STREAM_EDITOR_I18N.FILTER_BY_AUDIT_EVENT_TYPE,
           );
         });
 
-        it('shows an accordion containing a list of event filters', () => {
-          expect(findAccordion().exists()).toBe(true);
-          expect(findAllAccordionItems()).toHaveLength(1);
+        it('passes selected audit event types to StreamFilters', () => {
           expect(findFilters().props()).toStrictEqual({
             value: mockExternalDestinations[1].eventTypeFilters,
           });
