@@ -6,25 +6,6 @@ RSpec.describe Deployment do
   it { is_expected.to have_many(:approvals) }
   it { is_expected.to delegate_method(:needs_approval?).to(:environment) }
 
-  describe 'state machine' do
-    context 'when deployment blocked' do
-      let(:deployment) { create(:deployment) }
-
-      before do
-        allow(deployment).to receive(:allow_pipeline_trigger_approve_deployment).and_return(true)
-      end
-
-      it 'schedules Deployments::ApprovalWorker', :freeze_time do
-        expect(::Deployments::ApprovalWorker).to receive(:perform_async).with(
-          deployment.id,
-          user_id: deployment.user_id,
-          status: 'approved'
-        )
-        deployment.block!
-      end
-    end
-  end
-
   describe '#pending_approval_count' do
     let_it_be(:project) { create(:project, :repository) }
 
