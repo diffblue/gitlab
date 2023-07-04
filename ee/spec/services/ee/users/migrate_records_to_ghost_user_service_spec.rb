@@ -61,6 +61,19 @@ RSpec.describe Users::MigrateRecordsToGhostUserService, feature_category: :user_
         end
       end
     end
+
+    context 'for resource_link_events' do
+      let(:always_ghost) { true }
+
+      include_examples 'migrating records to the ghost user', ::WorkItems::ResourceLinkEvent, [:user] do
+        let(:created_record) do
+          create(:resource_link_event,
+            issue: create(:issue),
+            child_work_item: create(:work_item),
+            user: user)
+        end
+      end
+    end
   end
 
   context 'on post-migrate cleanups' do
