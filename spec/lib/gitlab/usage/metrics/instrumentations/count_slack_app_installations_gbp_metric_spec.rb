@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountSlackAppInstallationsGbpMetric do
+RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountSlackAppInstallationsGbpMetric, feature_category: :integrations do
   let_it_be(:slack_integration) { create(:slack_integration) }
   let_it_be(:slack_integration_legacy) { create(:slack_integration, :legacy) }
 
