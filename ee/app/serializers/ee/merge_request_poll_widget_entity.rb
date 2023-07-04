@@ -11,7 +11,7 @@ module EE
       end
 
       expose :merge_trains_count, if: -> (merge_request) { merge_request.target_project.merge_trains_enabled? } do |merge_request|
-        MergeTrains::Car.total_count_in_train(merge_request)
+        MergeTrains::Train.new(merge_request.project_id, merge_request.target_branch).car_count
       end
 
       expose :merge_train_index, if: -> (merge_request) { merge_request.on_train? } do |merge_request|
