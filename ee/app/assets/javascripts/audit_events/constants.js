@@ -116,7 +116,7 @@ export const ADD_STREAM_EDITOR_I18N = {
   CANCEL_BUTTON_NAME: s__('AuditStreams|Cancel editing'),
   DELETE_BUTTON_TEXT: s__('AuditStreams|Delete destination'),
   HEADER_FILTERING: s__('AuditStreams|Event filtering (optional)'),
-  FILTER_BY_STREAM_EVENT: s__('AuditStreams|Filter by stream event'),
+  FILTER_BY_AUDIT_EVENT_TYPE: s__('AuditStreams|Filter by audit event type'),
 };
 
 export const AUDIT_STREAMS_EMPTY_STATE_I18N = {
