@@ -12,6 +12,13 @@ module EE
         end
         before_action(only: [:new, :show, :edit]) { push_licensed_feature(:runner_maintenance_note) }
       end
+
+      def dashboard
+        dashboard_available = ::Feature.enabled?(:runners_dashboard) &&
+          License.feature_available?(:runner_performance_insights)
+
+        render_404 unless dashboard_available
+      end
     end
   end
 end
