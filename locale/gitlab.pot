@@ -46284,6 +46284,9 @@ msgstr ""
 msgid "The snippet can be accessed without any authentication."
 msgstr ""
 
+msgid "The snippet can be accessed without any authentication. To embed snippets, a project must be public."
+msgstr ""
+
 msgid "The snippet is visible only to me."
 msgstr ""
 
