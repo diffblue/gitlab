@@ -46,6 +46,7 @@ fragment WorkItemWidgets on WorkItemWidget {
   ... on WorkItemWidgetProgress {
     type
     progress
+    updatedAt
   }
   ... on WorkItemWidgetHierarchy {
     type
