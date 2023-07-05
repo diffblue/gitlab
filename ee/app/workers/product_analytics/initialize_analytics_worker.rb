@@ -17,16 +17,6 @@ module ProductAnalytics
       ::ProductAnalytics::InitializeStackService.new(container: @project).unlock!
     end
 
-    def perform(project_id)
-      @project = Project.find_by_id(project_id)
-
-      return unless @project&.product_analytics_enabled?
-
-      settings = ProductAnalytics::Settings.for_project(@project)
-      return if settings.jitsu_host.nil? || settings.jitsu_project_xid.nil?
-
-      ProductAnalytics::JitsuAuthentication.new(jid, @project).create_clickhouse_destination!
-      ::ProductAnalytics::InitializeStackService.new(container: @project).unlock!
-    end
+    def perform(project_id); end
   end
 end

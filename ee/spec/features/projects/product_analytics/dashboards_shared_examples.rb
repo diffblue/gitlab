@@ -144,19 +144,25 @@ RSpec.shared_examples 'product analytics dashboards' do
             it 'renders the creating instance loading screen and then the setup page' do
               click_button s_('ProductAnalytics|Set up product analytics')
 
-              expect(page).to have_content(s_('ProductAnalytics|Creating your product analytics instance...'))
+              # rubocop:disable RSpec/AvoidConditionalStatements
+              if Feature.enabled?(:product_analytics_snowplow_support)
+                expect(page).to have_content(s_('ProductAnalytics|Creating your product analytics instance...'))
 
-              wait_for_requests
+                wait_for_requests
 
-              project.project_setting.update!(project_settings)
-              project.reload
+                project.project_setting.update!(project_settings)
+                project.reload
 
-              stub_cube_proxy_zero_count
-              ::ProductAnalytics::InitializeStackService.new(container: project).unlock!
+                stub_cube_proxy_zero_count
+                ::ProductAnalytics::InitializeStackService.new(container: project).unlock!
 
-              travel_to(1.minute.from_now) do
-                expect(page).to have_content(s_('ProductAnalytics|Instrument your application'))
+                travel_to(1.minute.from_now) do
+                  expect(page).to have_content(s_('ProductAnalytics|Instrument your application'))
+                end
+              else
+                expect(page).to have_content('Product analytics snowplow support feature flag is disabled')
               end
+              # rubocop:enable RSpec/AvoidConditionalStatements
             end
 
             context 'and a new instance is already being intialized' do

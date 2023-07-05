@@ -22,7 +22,6 @@ RSpec.describe 'Set project compliance framework', feature_category: :product_an
     context 'when product analytics is enabled' do
       before do
         stub_licensed_features(product_analytics: true)
-        stub_feature_flags(product_analytics_snowplow_support: false)
         stub_application_setting(product_analytics_enabled: true)
       end
 
@@ -33,8 +32,9 @@ RSpec.describe 'Set project compliance framework', feature_category: :product_an
 
         it_behaves_like 'a working GraphQL mutation'
 
-        it 'enqueues the InitializeAnalyticsWorker' do
-          expect(::ProductAnalytics::InitializeAnalyticsWorker).to receive(:perform_async).with(project.id).once
+        it 'enqueues the InitializeSnowplowProductAnalyticsWorker' do
+          expect(::ProductAnalytics::InitializeSnowplowProductAnalyticsWorker)
+            .to receive(:perform_async).with(project.id).once
 
           post_graphql_mutation(mutation, current_user: current_user)
         end
