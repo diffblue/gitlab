@@ -92,7 +92,7 @@ RSpec.describe ::Gitlab::PackageMetadata::Connector::Offline, feature_category: 
   end
 
   let(:sync_config) do
-    build(:pm_sync_config, :for_offline_storage, version_format: version_format, purl_type: purl_type)
+    build(:pm_sync_config, :for_offline_license_storage, version_format: version_format, purl_type: purl_type)
   end
 
   let(:file_prefix) { File.join(sync_config.base_uri, version_format, registry_id) }

@@ -5,11 +5,13 @@ require 'spec_helper'
 require 'csv'
 
 RSpec.describe PackageMetadata::DataObjectFabricator, feature_category: :software_composition_analysis do
-  subject(:produced) { described_class.new(data_file: data_file, sync_config: sync_config).to_a }
-
   describe 'enumerable' do
+    subject(:data_objects) { described_class.new(data_file: data_file, sync_config: sync_config).to_a }
+
     context 'when licenses' do
-      let(:sync_config) { build(:pm_sync_config, purl_type: 'maven', version_format: version_format) }
+      let(:sync_config) do
+        build(:pm_sync_config, data_type: 'licenses', purl_type: 'maven', version_format: version_format)
+      end
 
       context 'and data_file is csv' do
         let(:version_format) { 'v1' }
@@ -61,6 +63,27 @@ RSpec.describe PackageMetadata::DataObjectFabricator, feature_category: :softwar
           ])
         }
       end
+    end
+
+    context 'when advisories' do
+      let(:sync_config) { build(:pm_sync_config, data_type: 'advisories', purl_type: 'maven') }
+      let(:io) { File.open(Rails.root.join('ee/spec/fixtures/package_metadata/sync/advisories/v2/maven.ndjson')) }
+      let(:data_file) { Gitlab::PackageMetadata::Connector::NdjsonDataFile.new(io, 0, 0) }
+
+      subject(:data_objects) { described_class.new(data_file: data_file, sync_config: sync_config).to_a }
+
+      it {
+        is_expected.to match_array([have_attributes(advisory_xid: 'd4f176d6-0a07-46f4-9da5-22df92e5efa0',
+          source_xid: 'glad', title: "Incorrect Permission Assignment for Critical Resource",
+          description: "A missing permission check in Jenkins Google Kubernetes Engine Plugin allows attackers " \
+                       "with Overall/Read permission to obtain limited information about the scope of a credential " \
+                       "with an attacker-specified credentials ID.",
+          cvss_v2: "AV:N/AC:L/Au:S/C:P/I:N/A:N",
+          cvss_v3: "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:N/A:N",
+          published_date: "2019-10-16",
+          urls: ["https://nvd.nist.gov/vuln/detail/CVE-2019-10445",
+            "https://jenkins.io/security/advisory/2019-10-16/#SECURITY-1607"])])
+      }
     end
   end
 end

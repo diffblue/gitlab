@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe PackageMetadata::DataObject, feature_category: :software_composition_analysis do
   describe '.create' do
     let(:purl_type) { 'npm' }
+    let(:sync_config) { SyncConfiguration.new(:gcp, 'bucket', 'v1', purl_type) }
 
     subject(:object) { described_class.create(arr, purl_type) }
 

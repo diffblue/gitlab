@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::PackageMetadata::Connector::BaseConnector, feature_category: :software_composition_analysis do
-  let(:sync_config) { ::PackageMetadata::SyncConfiguration.new(:gcp, 'foo', version_format, :npm) }
+  let(:sync_config) { build(:pm_sync_config, version_format: version_format) }
   let(:connector) { described_class.new(sync_config) }
 
   describe '.data_file_class' do
