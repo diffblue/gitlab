@@ -108,7 +108,7 @@ RSpec.describe Nav::TopNavHelper, feature_category: :navigation do
       it 'has expected :secondary' do
         expected_secondary = ::Gitlab::Nav::TopNavMenuItem.build(
           data: {
-            qa_selector: 'menu_item_link',
+            testid: 'menu_item_link',
             qa_title: 'Go to primary site',
             **menu_data_tracking_attrs('go_to_primary_site')
           },
@@ -134,7 +134,7 @@ RSpec.describe Nav::TopNavHelper, feature_category: :navigation do
             track_action: 'click_dropdown',
             track_label: 'projects_dropdown',
             track_property: 'navigation_top',
-            qa_selector: 'projects_dropdown'
+            testid: 'projects_dropdown'
           },
           icon: 'project',
           id: 'project',
@@ -153,7 +153,7 @@ RSpec.describe Nav::TopNavHelper, feature_category: :navigation do
           expected_links_primary = [
             ::Gitlab::Nav::TopNavMenuItem.build(
               data: {
-                qa_selector: 'menu_item_link',
+                testid: 'menu_item_link',
                 qa_title: 'View all projects',
                 **menu_data_tracking_attrs('view_all_projects')
               },
