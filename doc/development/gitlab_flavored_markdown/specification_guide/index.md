@@ -297,9 +297,9 @@ The Markdown dialect used in the GitLab application has a dual requirement for r
 1. Rendering to static read-only HTML format, to be displayed in various
    places throughout the application.
 1. Rendering editable content in the
-   [Content Editor](https://about.gitlab.com/direction/plan/knowledge/content_editor/),
+   [rich text editor](https://about.gitlab.com/direction/plan/knowledge/content_editor/),
    a ["What You See Is What You Get" (WYSIWYG)](https://en.wikipedia.org/wiki/WYSIWYG)
-   editor. The Content Editor supports real-time instant switching between an editable
+   editor. The rich text editor supports real-time instant switching between an editable
    Markdown source and an editable WYSIWYG document.
 
 These requirements means that GitLab has two independent parser and renderer
@@ -312,14 +312,14 @@ implementations:
    GitHub's fork of the reference parser for CommonMark. `libcmark-gfm` is an extended
    version of the C reference implementation of [CommonMark](https://commonmark.org/)
 1. The frontend parser / renderer supports parsing and _WYSIWYG_ rendering for
-   the Content Editor. It is implemented in JavaScript. Parsing is based on the
+   the rich text editor. It is implemented in JavaScript. Parsing is based on the
    [Remark](https://github.com/remarkjs/remark) Markdown parser, which produces a
    MDAST Abstract Syntax Tree (MDAST). Rendering is the process of turning
    an MDAST into a [ProseMirror document](../../fe_guide/content_editor.md). Then,
    ProseMirror is used to render a ProseMirror document to WYSIWYG HTML. In this
    document, we refer to the process of turning Markdown into an MDAST as the
    _frontend / JavaScript parser_, and the entire process of rendering Markdown
-   to WYSIWYG HTML in ProseMirror as the _Content Editor_. Several
+   to WYSIWYG HTML in ProseMirror as the _rich text editor_. Several
    requirements drive the need for an independent frontend parser / renderer
    implementation, including:
    1. Lack of necessary support for accurate source mapping in the HTML renderer
@@ -356,7 +356,7 @@ used when running [Markdown snapshot testing](#markdown-snapshot-testing).
 
 #### WYSIWYG HTML
 
-**WYSIWYG HTML** is HTML produced by the frontend (JavaScript) Content Editor,
+**WYSIWYG HTML** is HTML produced by the frontend (JavaScript) rich text editor,
 which includes parsing and rendering logic. It is used to present an editable document
 in the ProseMirror WYSIWYG editor.
 
@@ -554,9 +554,9 @@ specification and testing infrastructure:
    1. The frontend (JavaScript) parser and renderer (which includes GitLab custom
       code and Remark) can convert Markdown to the expected ProseMirror JSON
       representing a ProseMirror document.
-   1. The **Content Editor** (which includes the frontend (JavaScript) parser and renderer,
+   1. The **rich text editor** (which includes the frontend (JavaScript) parser and renderer,
       and ProseMirror) can convert Markdown to the expected custom WYSIWYG HTML as rendered by ProseMirror.
-   1. The **Content Editor** can complete a round-trip test, which involves converting
+   1. The **rich text editor** can complete a round-trip test, which involves converting
       from Markdown, to MDAST, to ProseMirror Document, then back to Markdown. It ensures
       the resulting Markdown is exactly identical, with no differences.
 
@@ -1329,7 +1329,7 @@ Three types of entries exist, with different HTML for each:
 - **WYSIWYG**
   - The WYSIWYG (frontend, JavaScript-generated) HTML for each entry in
     `glfm_specification/output_example_snapshots/examples_index.yml`.
-  - It is generated (or updated) from the frontend Content Editor implementation via the
+  - It is generated (or updated) from the frontend rich text editor implementation via the
     `update-example-snapshots.rb` script. It can be manually updated for WYSIWYG
     examples with incomplete implementations.
 
