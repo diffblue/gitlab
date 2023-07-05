@@ -472,7 +472,7 @@ generating the HTML for footnote examples. Even though it is in the production c
 no effect unless it is explicitly set, therefore it is innocuous. It allows us to avoid
 the more-complex regex-based normalization described below.
 
-The current example of this is when normally random footnote IDs are overridden to be deterministic
+The current example of this is when footnote IDs that are usually random are overridden to be deterministic
 by setting `GITLAB_TEST_FOOTNOTE_ID`. It is set along with the fixtures setup in the
 [`spec/support/shared_contexts/glfm/example_snapshot_fixtures.rb`](https://gitlab.com/gitlab-org/gitlab/blob/master/spec/support/shared_contexts/glfm/example_snapshot_fixtures.rb)
 shared context.
@@ -734,10 +734,10 @@ Markdown snapshot testing RSpec and Jest `*_spec` files (from main app `spec` fo
 which are driven by `example_snapshot` YAML files.
 
 The actual RSpec and Jest test `*_spec` files (frontend and backend) live
-under the normal relevant locations under `spec`, matching the location of their
+under the usual relevant locations under `spec`, matching the location of their
 corresponding implementations. They can be run either:
 
-- As part of the normal pipelines.
+- As part of the standard pipelines.
 - From the command line or an IDE, just like any other file under `spec`.
 
 However, they are spread across four different locations:
@@ -1411,5 +1411,5 @@ This section describes how the scripts can be used to manage the GLFM specificat
 1. Visually inspect and confirm any resulting changes to the [example snapshot files](#output-example-snapshot-files).
 1. Run [`run-snapshot-tests.sh`](#run-snapshot-testssh-script) as a convenience script to run all relevant frontend (RSpec) and backend (Jest) tests which use the example snapshots.
    1. Any frontend or backend snapshot test may also be run individually.
-   1. All frontend and backend tests are also run as part of the continuous integration suite, as they normally are.
+   1. All frontend and backend tests are also run as part of the continuous integration suite, as they typically are.
 1. Commit any changes to the [input specification files](#input-specification-files), [output specification files](#output-specification-files), or [example snapshot files](#output-example-snapshot-files).
