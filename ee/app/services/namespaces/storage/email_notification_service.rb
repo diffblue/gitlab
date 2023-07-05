@@ -14,10 +14,10 @@ module Namespaces
         level = notification_level(root_storage_size)
         last_level = namespace.root_storage_statistics.notification_level.to_sym
 
-        if level != last_level
-          send_notification(level, namespace, root_storage_size)
-          update_notification_level(level, namespace)
-        end
+        return if level == last_level
+
+        send_notification(level, namespace, root_storage_size)
+        update_notification_level(level, namespace)
       end
 
       private
