@@ -5407,6 +5407,9 @@ msgstr ""
 msgid "Analytics|Visualization Type"
 msgstr ""
 
+msgid "Analytics|Visualization designer"
+msgstr ""
+
 msgid "Analytics|Visualization was saved successfully"
 msgstr ""
 
@@ -35006,6 +35009,9 @@ msgid "ProductAnalytics|On what do you want to get insights?"
 msgstr ""
 
 msgid "ProductAnalytics|Page Views"
+msgstr ""
+
+msgid "ProductAnalytics|Product analytics onboarding"
 msgstr ""
 
 msgid "ProductAnalytics|Repeat Visit Percentage"

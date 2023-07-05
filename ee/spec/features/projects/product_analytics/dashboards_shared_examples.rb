@@ -266,6 +266,26 @@ RSpec.shared_examples 'product analytics dashboards' do
 
             it_behaves_like 'renders the product analytics dashboards'
 
+            context 'when on a dashboards page' do
+              before do
+                visit project_analytics_dashboards_path(project, vueroute: :audience)
+              end
+
+              it 'has the dashboards page breadcrumb' do
+                page.within(find('[data-testid="breadcrumb-links"]')) do
+                  expect(page).to have_link(
+                    s_('Analytics|Analytics dashboards'),
+                    href: "#{project_analytics_dashboards_path(project)}/"
+                  )
+
+                  expect(page).to have_link(
+                    s_('ProductAnalytics|Audience'),
+                    href: "#"
+                  )
+                end
+              end
+            end
+
             context 'when combined_analytics_dashboards_editor is enabled' do
               before do
                 stub_feature_flags(combined_analytics_dashboards_editor: true)
