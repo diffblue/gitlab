@@ -84,11 +84,6 @@ module EE
       end
     end
 
-    def project_storage_limit_enforced?(namespace)
-      namespace.root_storage_size.enforce_limit? &&
-        namespace.root_storage_size.enforcement_type == :project_repository_limit
-    end
-
     def purchase_storage_url
       ::Gitlab::Routing.url_helpers.subscription_portal_more_storage_url
     end
