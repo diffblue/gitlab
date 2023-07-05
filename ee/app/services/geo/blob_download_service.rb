@@ -38,6 +38,14 @@ module Geo
           message = download_result.reason
           error = download_result.extra_details&.fetch(:error, nil)
 
+          if error
+            Gitlab::ErrorTracking.track_exception(
+              error,
+              replicable_name: @replicator.replicable_name,
+              model_record_id: @replicator.model_record_id
+            )
+          end
+
           registry.failed!(message: message, error: error, missing_on_primary: download_result.primary_missing_file)
         end
 
