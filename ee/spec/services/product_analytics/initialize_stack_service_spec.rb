@@ -83,7 +83,6 @@ RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_sha
       before do
         stub_feature_flags(product_analytics_snowplow_support: false)
         project.project_setting.update!(product_analytics_instrumentation_key: nil)
-        project.project_setting.update!(jitsu_key: nil)
       end
 
       it_behaves_like 'no ::ProductAnalytics::InitializeAnalyticsWorker job is enqueued'
@@ -100,20 +99,10 @@ RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_sha
           end
         end
 
-        it 'returns an error stating that initialization is already in progress' do
+        # it should not state that it's in progress, because it'll never succeed without snowplow support
+        it 'returns an error stating that feature flag is disabled' do
           expect(subject).to be_error
-          expect(subject.message).to eq('Product analytics initialization is already in progress')
-        end
-      end
-
-      context 'when initialization is already complete' do
-        before do
-          project.project_setting.update!(jitsu_key: '123')
-        end
-
-        it 'returns an error response' do
-          expect(subject).to be_error
-          expect(subject.message).to eq('Product analytics initialization is already complete')
+          expect(subject.message).to eq('Product analytics snowplow support feature flag is disabled')
         end
       end
     end
