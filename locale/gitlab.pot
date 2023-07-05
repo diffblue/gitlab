@@ -19824,6 +19824,9 @@ msgstr ""
 msgid "Generate project access tokens scoped to this project for your applications that need access to the GitLab API."
 msgstr ""
 
+msgid "Generate root cause analysis"
+msgstr ""
+
 msgid "Generate site and private keys at"
 msgstr ""
 
@@ -26237,6 +26240,9 @@ msgid "Jobs|No jobs to show"
 msgstr ""
 
 msgid "Jobs|Raw text search is not currently supported for the jobs filtered search feature. Please use the available search tokens."
+msgstr ""
+
+msgid "Jobs|Root cause analysis"
 msgstr ""
 
 msgid "Jobs|There was a problem fetching the failed jobs."
@@ -39377,6 +39383,12 @@ msgstr ""
 msgid "Rollout of free user limits within GitLab.com. Do not edit these values unless approval has been given via %{link_start}this issue%{link_end}."
 msgstr ""
 
+msgid "Root cause analysis"
+msgstr ""
+
+msgid "Root cause analysis is a feature that analyzes your logs to determine why a job may have failed and the potential ways to fix it. To generate this analysis, we may share information in your job logs with %{linkStart}Third-Party AI providers%{linkEnd}. Before initiating this analysis, please do not include in your logs any information that could impact the security or privacy of your account."
+msgstr ""
+
 msgid "Ruby"
 msgstr ""
 
@@ -51538,6 +51550,9 @@ msgid "What is listed here?"
 msgstr ""
 
 msgid "What is repository mirroring?"
+msgstr ""
+
+msgid "What is root cause analysis?"
 msgstr ""
 
 msgid "What is squashing?"

@@ -1,0 +1,9 @@
+query rootCauseAnalysisData($projectFullPath: ID!, $jobId: JobID!) {
+  project(fullPath: $projectFullPath) {
+    id
+    job(id: $jobId) {
+      id
+      aiFailureAnalysis
+    }
+  }
+}

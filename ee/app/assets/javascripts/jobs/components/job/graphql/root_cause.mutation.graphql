@@ -1,0 +1,7 @@
+mutation rootCause($jobId: AiModelID!) {
+  aiAction(input: { analyzeCiJobFailure: { resourceId: $jobId } }) {
+    clientMutationId
+    errors
+    requestId
+  }
+}
