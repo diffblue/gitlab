@@ -33,31 +33,35 @@ module EE
       end
 
       def push_warning
-        _("##### WARNING ##### You have used %{usage_percentage} of the storage quota for %{namespace_name} " \
-           "(%{current_size} of %{size_limit}). If %{namespace_name} exceeds the storage quota, " \
-           "all projects in the namespace will be locked and actions will be restricted. " \
-           "To manage storage, or purchase additional storage, see %{manage_storage_url}. " \
-           "To learn more about restricted actions, see %{restricted_actions_url}") % push_message_params
+        _(
+          "##### WARNING ##### You have used %{usage_percentage} of the storage quota for %{namespace_name} " \
+          "(%{current_size} of %{size_limit}). If %{namespace_name} exceeds the storage quota, " \
+          "all projects in the namespace will be locked and actions will be restricted. " \
+          "To manage storage, or purchase additional storage, see %{manage_storage_url}. " \
+          "To learn more about restricted actions, see %{restricted_actions_url}"
+        ) % push_message_params
       end
 
       def push_error(_change_size = 0)
-        _("##### ERROR ##### You have used %{usage_percentage} of the storage quota for %{namespace_name} " \
-           "(%{current_size} of %{size_limit}). %{namespace_name} is now read-only. " \
-           "Projects under this namespace are locked and actions will be restricted. " \
-           "To manage storage, or purchase additional storage, see %{manage_storage_url}. " \
-           "To learn more about restricted actions, see %{restricted_actions_url}") % push_message_params
+        _(
+          "##### ERROR ##### You have used %{usage_percentage} of the storage quota for %{namespace_name} " \
+          "(%{current_size} of %{size_limit}). %{namespace_name} is now read-only. " \
+          "Projects under this namespace are locked and actions will be restricted. " \
+          "To manage storage, or purchase additional storage, see %{manage_storage_url}. " \
+          "To learn more about restricted actions, see %{restricted_actions_url}"
+        ) % push_message_params
       end
 
       def new_changes_error
         "Your push to this repository has been rejected because it would exceed " \
-        "the namespace storage limit of #{formatted(limit)}. " \
-        "Reduce your namespace storage or purchase additional storage."
+          "the namespace storage limit of #{formatted(limit)}. " \
+          "Reduce your namespace storage or purchase additional storage."
       end
 
       def above_size_limit_message
         "The namespace storage size (#{formatted(current_size)}) exceeds the limit of #{formatted(limit)} " \
-        "by #{formatted(exceeded_size)}. You won't be able to push new code to this project. " \
-        "Please contact your GitLab administrator for more information."
+          "by #{formatted(exceeded_size)}. You won't be able to push new code to this project. " \
+          "Please contact your GitLab administrator for more information."
       end
 
       private
