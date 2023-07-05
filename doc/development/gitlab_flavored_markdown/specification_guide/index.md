@@ -124,7 +124,7 @@ to report this.
 
 #### Official specifications vs internal extensions
 
-Within GFM and GLFM respectively, both GitHub and GitLab have two "sets" of Markdown they support:
+GFM for GitHub and GLFM for GitLab have two "sets" of Markdown they support:
 
 - Official specification
 - Internal extensions
