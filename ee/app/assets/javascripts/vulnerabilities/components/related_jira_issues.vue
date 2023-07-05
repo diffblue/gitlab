@@ -170,7 +170,6 @@ export default {
           target="_blank"
           class="gl-ml-auto"
           data-testid="create-new-jira-issue-link"
-          data-qa-selector="create_new_jira_issue_button"
         >
           {{ $options.i18n.createNewIssueLinkText }}
         </gl-button>
@@ -209,7 +208,7 @@ export default {
               <gl-link
                 :href="issue.web_url"
                 target="_blank"
-                data-qa-selector="jira_issue_link"
+                data-testid="jira-issue-link"
                 :data-qa-issue-key="issue.references.relative"
                 class="gl-text-gray-900"
               >

@@ -77,11 +77,7 @@ module QA
 
       it(
         'creates an issue from vulnerability details', :reliable,
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347683',
-        quarantine: {
-          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/415346',
-          type: :stale
-        }
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347683'
       ) do
         Page::Project::Menu.perform(&:go_to_vulnerability_report)
 

@@ -211,7 +211,7 @@ export default {
 </script>
 
 <template>
-  <div data-qa-selector="vulnerability_header">
+  <div data-testid="vulnerability-header">
     <resolution-alert
       v-if="showResolutionAlert"
       :vulnerability-id="vulnerability.id"

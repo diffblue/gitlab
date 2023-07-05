@@ -121,7 +121,6 @@ export default {
       <gl-button
         v-if="!disableScanPolicyUpdate"
         data-testid="new-policy-button"
-        data-qa-selector="new_policy_button"
         variant="confirm"
         :href="newPolicyPath"
       >

@@ -30,7 +30,7 @@ export default {
     :title="$options.i18n.title"
     :dismissible="false"
     variant="warning"
-    data-qa-selector="false_positive_alert"
+    data-testid="false-positive-alert"
   >
     <gl-sprintf :message="$options.i18n.message">
       <template #link="{ content }">
