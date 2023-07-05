@@ -13,7 +13,7 @@ module Security
     feature_category :security_policy_management
 
     def perform
-      Security::OrchestrationPolicyRuleSchedule.with_configuration_and_project_or_namespace.with_owner.runnable_schedules.find_in_batches do |schedules|
+      Security::OrchestrationPolicyRuleSchedule.with_configuration_and_project_or_namespace.with_owner.with_security_policy_bots.runnable_schedules.find_in_batches do |schedules|
         schedules.each do |schedule|
           with_context(project: schedule.security_orchestration_policy_configuration.project, user: schedule.owner) do
             if schedule.security_orchestration_policy_configuration.project?
@@ -31,12 +31,13 @@ module Security
     def schedule_rules(schedule)
       schedule.schedule_next_run!
 
-      return if schedule.security_orchestration_policy_configuration.project.marked_for_deletion?
+      project = schedule.security_orchestration_policy_configuration.project
+      return if project.marked_for_deletion?
 
-      user = schedule.security_orchestration_policy_configuration.bot_user || schedule.owner
+      user = project.security_policy_bot || schedule.owner
 
       service_result = Security::SecurityOrchestrationPolicies::RuleScheduleService
-        .new(project: schedule.security_orchestration_policy_configuration.project, current_user: user)
+        .new(project: project, current_user: user)
         .execute(schedule)
 
       log_message(service_result.errors.join(". "), schedule, user) if service_result.error?

@@ -4362,4 +4362,26 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     let(:verifiable_model_record) { build(:project) }
     let(:unverifiable_model_record) { nil }
   end
+
+  describe '#security_policy_bot' do
+    let_it_be(:project) { create(:project) }
+
+    subject { project.security_policy_bot }
+
+    it { is_expected.to be_nil }
+
+    context "when there is a security_policy_bot" do
+      let_it_be(:security_policy_bot) { create(:user, :security_policy_bot) }
+
+      it { is_expected.to be_nil }
+
+      context "when the security_policy_bot is assigned to the project" do
+        before_all do
+          project.add_guest(security_policy_bot)
+        end
+
+        it { is_expected.to eq security_policy_bot }
+      end
+    end
+  end
 end

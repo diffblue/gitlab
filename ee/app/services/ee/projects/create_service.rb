@@ -4,6 +4,7 @@ module EE
   module Projects
     module CreateService
       extend ::Gitlab::Utils::Override
+      include ::Gitlab::Utils::StrongMemoize
 
       AUDIT_EVENT_TYPE = 'project_created'
       AUDIT_EVENT_MESSAGE = 'Added project'
@@ -76,7 +77,10 @@ module EE
         create_predefined_push_rule if ::Feature.disabled?(:inherited_push_rule_for_project, project)
         set_default_compliance_framework
 
-        sync_group_scan_result_policies if project.group
+        return unless project.group
+
+        sync_group_scan_result_policies
+        create_security_policy_project_bot
       end
 
       def create_security_policy_configuration_if_exists
@@ -97,12 +101,24 @@ module EE
       end
 
       def sync_group_scan_result_policies
-        configurations = project.group.all_security_orchestration_policy_configurations
+        configurations = group_security_orchestration_policy_configurations
 
         configurations.each do |configuration|
           ::Security::ProcessScanResultPolicyWorker.perform_async(project.id, configuration.id)
         end
       end
+
+      def create_security_policy_project_bot
+        return unless ::Feature.enabled?(:scan_execution_group_bot_users, project.group) &&
+          group_security_orchestration_policy_configurations.any?
+
+        ::Security::OrchestrationConfigurationCreateBotWorker.perform_async(project.id, current_user.id)
+      end
+
+      def group_security_orchestration_policy_configurations
+        project.group.all_security_orchestration_policy_configurations
+      end
+      strong_memoize_attr :group_security_orchestration_policy_configurations
 
       # rubocop: disable CodeReuse/ActiveRecord
       def create_predefined_push_rule

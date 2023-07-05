@@ -58,6 +58,34 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature
             expect(schedule.reload.next_run_at).to be > Time.zone.now
           end
 
+          context 'when there is a security_policy_bot in the project' do
+            let_it_be(:security_policy_bot) { create(:user, :security_policy_bot) }
+
+            before_all do
+              project_1.add_guest(security_policy_bot)
+            end
+
+            it 'executes the rule schedule service as the bot and falls back to schedule owner otherwise' do
+              expect_next_instance_of(
+                Security::SecurityOrchestrationPolicies::RuleScheduleService,
+                project: project_1,
+                current_user: security_policy_bot
+              ) do |service|
+                expect(service).to receive(:execute)
+              end
+
+              expect_next_instance_of(
+                Security::SecurityOrchestrationPolicies::RuleScheduleService,
+                project: project_2,
+                current_user: schedule.owner
+              ) do |service|
+                expect(service).to receive(:execute)
+              end
+
+              worker.perform(schedule_id)
+            end
+          end
+
           context 'with namespace including project marked for deletion' do
             let_it_be(:project_pending_deletion) { create(:project, namespace: namespace, marked_for_deletion_at: Time.zone.now) }
 

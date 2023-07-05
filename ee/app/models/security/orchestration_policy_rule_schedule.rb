@@ -24,6 +24,9 @@ module Security
 
     scope :runnable_schedules, -> { where("next_run_at < ?", Time.zone.now) }
     scope :with_owner, -> { includes(:owner) }
+    scope :with_security_policy_bots, -> do
+      includes(security_orchestration_policy_configuration: { project: :security_policy_bots })
+    end
     scope :with_configuration_and_project_or_namespace, -> do
       includes(
         security_orchestration_policy_configuration: [:project, :namespace, :security_policy_management_project]

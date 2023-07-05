@@ -10,7 +10,7 @@ RSpec.describe Security::Orchestration::CreateBotService, feature_category: :sec
 
   let_it_be(:current_user) { create(:user) }
 
-  subject(:execute_service) { described_class.new(security_orchestration_policy_configuration, current_user).execute }
+  subject(:execute_service) { described_class.new(project, current_user).execute }
 
   it 'raises an error', :aggregate_failures do
     expect { execute_service }.to raise_error(Gitlab::Access::AccessDeniedError)
@@ -21,15 +21,15 @@ RSpec.describe Security::Orchestration::CreateBotService, feature_category: :sec
       project.add_owner(current_user)
     end
 
-    it 'creates and assignes a bot user', :aggregate_failures do
+    it 'creates and assigns a bot user', :aggregate_failures do
       expect { execute_service }.to change { User.count }.by(1)
-      expect(security_orchestration_policy_configuration.reload.bot_user_id).not_to be_nil
+      expect(project.security_policy_bot).to be_present
     end
 
     it 'creates the bot with correct params', :aggregate_failures do
       execute_service
 
-      bot_user = security_orchestration_policy_configuration.reload.bot_user
+      bot_user = project.security_policy_bot
 
       expect(bot_user.name).to eq('GitLab Security Policy Bot')
       expect(bot_user.username).to start_with("gitlab_security_policy_project_#{project.id}_bot")
@@ -40,48 +40,33 @@ RSpec.describe Security::Orchestration::CreateBotService, feature_category: :sec
     it 'adds the bot user as a guest to the project', :aggregate_failures do
       expect { execute_service }.to change { project.members.count }.by(1)
 
-      bot_user = security_orchestration_policy_configuration.reload.bot_user
+      bot_user = project.security_policy_bot
 
       expect(project.members.find_by(user: bot_user).access_level).to eq(Gitlab::Access::GUEST)
     end
 
     context 'when a bot user is already assigned' do
-      let_it_be(:bot_user) { create(:user, user_type: :security_policy_bot) }
-      let_it_be(:security_orchestration_policy_configuration) do
-        create(:security_orchestration_policy_configuration, bot_user: bot_user)
+      let_it_be(:bot_user) { create(:user, :security_policy_bot) }
+
+      before do
+        project.add_guest(bot_user)
       end
 
-      it 'does not assigne a new bot user', :aggregate_failures do
-        execute_service
+      it 'does not assign a new bot user', :aggregate_failures do
+        expect { execute_service }.not_to change { User.count }
 
-        expect(security_orchestration_policy_configuration.reload.bot_user_id).to equal(bot_user.id)
+        expect(project.security_policy_bot.id).to equal(bot_user.id)
       end
     end
 
     context 'when a part of the creation fails' do
       before do
-        allow(security_orchestration_policy_configuration).to receive(:update!).and_raise(StandardError)
+        allow(project).to receive(:add_guest).and_raise(StandardError)
       end
 
       it 'reverts the previous actions' do
-        previous_members = project.members
-
-        expect { execute_service }.to raise_error(StandardError)
-
-        expect(project.reload.members).to eq(previous_members)
+        expect { execute_service }.to raise_error(StandardError).and(change { User.count }.by(0))
       end
-    end
-  end
-
-  context 'when security_orchestration_policy_configuration does not have a project' do
-    let!(:security_orchestration_policy_configuration) do
-      create(:security_orchestration_policy_configuration, :namespace)
-    end
-
-    it 'raises an error', :aggregate_failures do
-      expect do
-        execute_service
-      end.to raise_error(described_class::SecurityOrchestrationPolicyConfigurationHasNoProjectError)
     end
   end
 end

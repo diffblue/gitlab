@@ -3,21 +3,17 @@
 module Security
   module Orchestration
     class CreateBotService
-      SecurityOrchestrationPolicyConfigurationHasNoProjectError = Class.new(StandardError)
+      attr_reader :project, :current_user
 
-      attr_reader :configuration, :current_user
-
-      def initialize(security_orchestration_policy_configuration, current_user)
-        @configuration = security_orchestration_policy_configuration
+      def initialize(project, current_user)
+        @project = project
         @current_user = current_user
       end
 
       def execute
-        raise SecurityOrchestrationPolicyConfigurationHasNoProjectError unless configuration.project?
+        return if project.security_policy_bot.present?
 
-        return if configuration.bot_user.present?
-
-        raise Gitlab::Access::AccessDeniedError unless current_user.can?(:admin_project_member, configuration.project)
+        raise Gitlab::Access::AccessDeniedError unless current_user.can?(:admin_project_member, project)
 
         User.transaction do
           bot_user = ::Users::AuthorizedCreateService.new(
@@ -25,9 +21,7 @@ module Security
             bot_user_params
           ).execute
 
-          configuration.project.add_guest(bot_user, current_user: current_user)
-
-          configuration.update!(bot_user: bot_user)
+          project.add_guest(bot_user, current_user: current_user)
         end
       end
 
@@ -45,7 +39,7 @@ module Security
 
       def username_and_email_generator
         Gitlab::Utils::UsernameAndEmailGenerator.new(
-          username_prefix: "gitlab_security_policy_project_#{configuration.project_id}_bot",
+          username_prefix: "gitlab_security_policy_project_#{project.id}_bot",
           email_domain: "noreply.#{Gitlab.config.gitlab.host}"
         )
       end

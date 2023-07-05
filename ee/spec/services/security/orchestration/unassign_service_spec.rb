@@ -115,18 +115,17 @@ RSpec.describe Security::Orchestration::UnassignService, feature_category: :secu
       end
 
       context 'when project has a security_policy_bot' do
-        let_it_be(:security_policy_bot) { create(:user, user_type: :security_policy_bot) }
+        let_it_be(:security_policy_bot) { create(:user, :security_policy_bot) }
         let(:service) { described_class.new(container: container, current_user: current_user) }
 
         before do
           container.add_guest(security_policy_bot)
-          container.security_orchestration_policy_configuration.update!(bot_user: security_policy_bot)
         end
 
         it 'unassigns policy project and removes the bot', :aggregate_failures do
           expect(result).to be_success
           expect(container.security_orchestration_policy_configuration).to be_destroyed
-          expect(container.users.where(user_type: :security_policy_bot)).to be_empty
+          expect(container.security_policy_bot).to be_nil
         end
       end
 
@@ -134,8 +133,28 @@ RSpec.describe Security::Orchestration::UnassignService, feature_category: :secu
     end
 
     context 'for namespace' do
-      let_it_be(:container, reload: true) { create(:namespace, :with_security_orchestration_policy_configuration) }
-      let_it_be(:container_without_policy_project, reload: true) { create(:namespace) }
+      let_it_be(:container, reload: true) { create(:group, :with_security_orchestration_policy_configuration) }
+      let_it_be(:container_without_policy_project, reload: true) { create(:group) }
+
+      context 'when projects have a security_policy_bot' do
+        let_it_be(:namespace_projects) { create_list(:project, 2, group: container) }
+        let(:service) { described_class.new(container: container, current_user: current_user) }
+
+        before do
+          namespace_projects.each do |project|
+            bot_user = create(:user, :security_policy_bot)
+            project.add_guest(bot_user)
+          end
+        end
+
+        it 'unassigns policy project and removes the bot from all projects', :aggregate_failures do
+          expect(result).to be_success
+          expect(container.security_orchestration_policy_configuration).to be_destroyed
+          namespace_projects.each do |project|
+            expect(project.security_policy_bot).to be_nil
+          end
+        end
+      end
 
       it_behaves_like 'unassigns policy project'
     end

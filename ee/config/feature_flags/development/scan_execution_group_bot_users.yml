@@ -1,0 +1,8 @@
+---
+name: scan_execution_group_bot_users
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/125411
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/418021
+milestone: '16.2'
+type: development
+group: group::security policies
+default_enabled: false
