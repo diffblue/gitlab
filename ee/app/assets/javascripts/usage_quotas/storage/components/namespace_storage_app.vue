@@ -26,14 +26,7 @@ export default {
     ContainerRegistryUsage,
     SearchAndSortBar,
   },
-  inject: [
-    'namespaceId',
-    'namespacePath',
-    'helpLinks',
-    'defaultPerPage',
-    'storageLimitEnforced',
-    'userNamespace',
-  ],
+  inject: ['namespaceId', 'namespacePath', 'helpLinks', 'defaultPerPage', 'userNamespace'],
   apollo: {
     namespace: {
       query: NamespaceStorageQuery,
@@ -93,9 +86,7 @@ export default {
       }
 
       return {
-        totalRepositorySize: this.namespace.rootStorageStatistics?.storageSize,
-        actualRepositorySizeLimit: this.namespace.actualRepositorySizeLimit,
-        totalRepositorySizeExcess: this.namespace.totalRepositorySizeExcess,
+        totalStorageUsed: this.namespace.rootStorageStatistics?.storageSize,
         additionalPurchasedStorageSize: this.namespace.additionalPurchasedStorageSize,
       };
     },
@@ -167,11 +158,8 @@ export default {
     </gl-alert>
     <div v-if="storageStatistics">
       <storage-usage-statistics
-        :storage-limit-enforced="storageLimitEnforced"
         :additional-purchased-storage-size="storageStatistics.additionalPurchasedStorageSize"
-        :actual-repository-size-limit="storageStatistics.actualRepositorySizeLimit"
-        :total-repository-size="storageStatistics.totalRepositorySize"
-        :total-repository-size-excess="storageStatistics.totalRepositorySizeExcess"
+        :used-storage="storageStatistics.totalStorageUsed"
         :loading="isStorageUsageStatisticsLoading"
       />
     </div>

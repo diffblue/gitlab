@@ -277,14 +277,14 @@ RSpec.describe EE::NamespacesHelper, feature_category: :groups_and_projects do
 
     where(:enforcement_type, :expected_storage_included) do
       :project_repository_limit | ref(:repository_size_limit)
-      :namespace_repository_limit | lazy { enforceable_storage_limit * 1.megabyte }
+      :namespace_storage_limit | lazy { enforceable_storage_limit * 1.megabyte }
     end
 
     with_them do
       before do
         namespace.actual_plan.actual_limits.update!(enforcement_limit: enforceable_storage_limit)
         allow(Namespaces::Storage::Enforcement).to(
-          receive(:enforce_limit?).and_return(enforcement_type == :namespace_repository_limit)
+          receive(:enforce_limit?).and_return(enforcement_type == :namespace_storage_limit)
         )
         allow(namespace.root_storage_size).to receive(:enforcement_type).and_return(enforcement_type)
         allow(helper).to receive(:current_user).and_return(admin)
@@ -302,7 +302,7 @@ RSpec.describe EE::NamespacesHelper, feature_category: :groups_and_projects do
           namespace_plan_storage_included: expected_storage_included,
           purchase_storage_url: more_storage_url,
           buy_addon_target_attr: '_blank',
-          storage_limit_enforced: (enforcement_type == :namespace_repository_limit).to_s
+          enforcement_type: enforcement_type
         })
       end
     end
