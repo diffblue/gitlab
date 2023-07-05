@@ -1,10 +1,16 @@
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
+
 import { GlBadge, GlLink, GlLoadingIcon, GlSprintf, GlAlert } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
-import { nextTick } from 'vue';
 import TestCaseShowRoot from 'ee/test_case_show/components/test_case_show_root.vue';
 import TestCaseSidebar from 'ee/test_case_show/components/test_case_sidebar.vue';
+import projectTestCase from 'ee/test_case_show/queries/project_test_case.query.graphql';
+import projectTestCaseTaskList from 'ee/test_case_show/queries/test_case_tasklist.query.graphql';
 import { mockCurrentUserTodo } from 'jest/vue_shared/issuable/list/mock_data';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 
 import IssuableBody from '~/vue_shared/issuable/show/components/issuable_body.vue';
 import IssuableEditForm from '~/vue_shared/issuable/show/components/issuable_edit_form.vue';
@@ -13,56 +19,54 @@ import IssuableShow from '~/vue_shared/issuable/show/components/issuable_show_ro
 import IssuableEventHub from '~/vue_shared/issuable/show/event_hub';
 import IssuableSidebar from '~/vue_shared/issuable/sidebar/components/issuable_sidebar_root.vue';
 
-import { mockProvide, mockTestCase } from '../mock_data';
+import {
+  mockProvide,
+  mockTestCase,
+  mockTestCaseResponse,
+  mockTaskCompletionResponse,
+} from '../mock_data';
 
 jest.mock('~/vue_shared/issuable/show/event_hub');
 
-const createComponent = ({ testCase, testCaseQueryLoading = false } = {}) =>
-  shallowMount(TestCaseShowRoot, {
-    provide: {
-      ...mockProvide,
-    },
-    mocks: {
-      $apollo: {
-        queries: {
-          testCase: {
-            loading: testCaseQueryLoading,
-            refetch: jest.fn(),
-          },
-          taskCompletionStatus: {
-            refetch: jest.fn(),
-          },
-        },
-      },
-    },
-    stubs: {
-      GlSprintf,
-      IssuableShow,
-      IssuableHeader,
-      IssuableBody,
-      IssuableEditForm,
-      IssuableSidebar,
-    },
-    data() {
-      return {
-        testCaseLoading: testCaseQueryLoading,
-        testCase: testCaseQueryLoading
-          ? {}
-          : {
-              ...mockTestCase,
-              ...testCase,
-            },
-      };
-    },
-  });
+Vue.use(VueApollo);
 
 describe('TestCaseShowRoot', () => {
   let wrapper;
+  let mockApollo;
+  const taskCompletionMock = jest.fn();
 
+  const findBadge = () => wrapper.findComponent(GlBadge);
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findIssuableShow = () => wrapper.findComponent(IssuableShow);
   const findTestCaseSidebar = () => wrapper.findComponent(TestCaseSidebar);
 
-  beforeEach(() => {
-    wrapper = createComponent();
+  const createComponent = ({
+    testCaseHandler = jest.fn().mockResolvedValue(mockTestCaseResponse()),
+    taskCompletionHandler = taskCompletionMock.mockResolvedValue(mockTaskCompletionResponse),
+  } = {}) => {
+    mockApollo = createMockApollo([
+      [projectTestCase, testCaseHandler],
+      [projectTestCaseTaskList, taskCompletionHandler],
+    ]);
+
+    wrapper = shallowMount(TestCaseShowRoot, {
+      apolloProvider: mockApollo,
+      provide: {
+        ...mockProvide,
+      },
+      stubs: {
+        GlSprintf,
+        IssuableShow,
+        IssuableHeader,
+        IssuableBody,
+        IssuableEditForm,
+        IssuableSidebar,
+      },
+    });
+  };
+
+  afterEach(() => {
+    mockApollo = null;
   });
 
   describe('computed', () => {
@@ -74,16 +78,16 @@ describe('TestCaseShowRoot', () => {
       'when `testCase.state` is $state',
       ({ state, isTestCaseOpen, statusIcon, statusBadgeText, testCaseActionTitle }) => {
         beforeEach(async () => {
-          // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-          // eslint-disable-next-line no-restricted-syntax
-          wrapper.setData({
-            testCase: {
-              ...mockTestCase,
-              state,
-            },
+          createComponent({
+            testCaseHandler: jest.fn().mockResolvedValue(
+              mockTestCaseResponse({
+                ...mockTestCase,
+                state,
+              }),
+            ),
           });
 
-          await nextTick();
+          await waitForPromises();
         });
 
         it.each`
@@ -98,12 +102,6 @@ describe('TestCaseShowRoot', () => {
       },
     );
 
-    describe('todo', () => {
-      it('returns first todo object from `testCase.currentUserTodos.nodes` array', () => {
-        expect(wrapper.vm.todo).toBe(mockCurrentUserTodo);
-      });
-    });
-
     describe('selectedLabels', () => {
       it('returns `testCase.labels.nodes` array with GraphQL IDs converted to numeric IDs', () => {
         mockTestCase.labels.nodes.forEach((label, index) => {
@@ -114,6 +112,12 @@ describe('TestCaseShowRoot', () => {
   });
 
   describe('methods', () => {
+    beforeEach(async () => {
+      createComponent();
+
+      await waitForPromises();
+    });
+
     describe('handleTestCaseStateChange', () => {
       const updateTestCase = {
         ...mockTestCase,
@@ -223,12 +227,8 @@ describe('TestCaseShowRoot', () => {
     });
 
     describe('handleCancelClick', () => {
-      it('sets `editTestCaseFormVisible` prop to false and emits "close.form" even in IssuableEventHub', async () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          editTestCaseFormVisible: true,
-        });
+      it('sets `editTestCaseFormVisible` prop to false and emits "close.form" event in IssuableEventHub', async () => {
+        findIssuableShow().vm.$emit('edit-issuable');
 
         await nextTick();
 
@@ -254,131 +254,141 @@ describe('TestCaseShowRoot', () => {
   });
 
   describe('template', () => {
-    it('renders gl-loading-icon when testCaseLoading prop is true', async () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        testCaseLoading: true,
+    it('renders loading icon', () => {
+      createComponent();
+
+      expect(findLoadingIcon().exists()).toBe(true);
+      expect(findIssuableShow().exists()).toBe(false);
+    });
+
+    describe('when query is successful', () => {
+      beforeEach(async () => {
+        createComponent();
+
+        await waitForPromises();
       });
 
-      await nextTick();
+      it('renders IssuableShow', () => {
+        const {
+          canEditTestCase,
+          descriptionPreviewPath,
+          descriptionHelpPath,
+          updatePath,
+          lockVersion,
+        } = mockProvide;
+        const issuableShowEl = findIssuableShow();
 
-      expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
-    });
+        expect(findLoadingIcon().exists()).toBe(false);
+        expect(issuableShowEl.exists()).toBe(true);
+        expect(issuableShowEl.props()).toMatchObject({
+          descriptionPreviewPath,
+          descriptionHelpPath,
+          enableAutocomplete: true,
+          enableTaskList: true,
+          issuable: mockTestCase,
+          enableEdit: canEditTestCase,
+          taskCompletionStatus: {},
+          taskListUpdatePath: updatePath,
+          taskListLockVersion: lockVersion,
+        });
+      });
 
-    it('renders gl-alert when issuable-show component emits `task-list-update-failure` event', async () => {
-      await wrapper.findComponent(IssuableShow).vm.$emit('task-list-update-failure');
+      describe('when IssuableShow emits `edit-issuable`', () => {
+        beforeEach(() => {
+          findIssuableShow().vm.$emit('edit-issuable');
+        });
 
-      const alertEl = wrapper.findComponent(GlAlert);
+        it('renders edit-form-actions slot contents', () => {
+          expect(wrapper.find('[data-testid="save-test-case"]').exists()).toBe(true);
+          expect(wrapper.find('[data-testid="cancel-test-case-edit"]').exists()).toBe(true);
+        });
+      });
 
-      expect(alertEl.exists()).toBe(true);
-      expect(alertEl.text()).toBe(
-        'Someone edited this test case at the same time you did. The description has been updated and you will need to make your changes again.',
-      );
-    });
+      describe('when IssuableShow emits `task-list-update-failure`', () => {
+        beforeEach(() => {
+          findIssuableShow().vm.$emit('task-list-update-failure');
+        });
 
-    it('renders issuable-show when `testCaseLoading` prop is false', () => {
-      const { statusIcon, editTestCaseFormVisible } = wrapper.vm;
-      const {
-        canEditTestCase,
-        descriptionPreviewPath,
-        descriptionHelpPath,
-        updatePath,
-        lockVersion,
-      } = mockProvide;
-      const issuableShowEl = wrapper.findComponent(IssuableShow);
+        it('renders alert', () => {
+          const alert = wrapper.findComponent(GlAlert);
 
-      expect(issuableShowEl.exists()).toBe(true);
-      expect(issuableShowEl.props()).toMatchObject({
-        statusIcon,
-        descriptionPreviewPath,
-        descriptionHelpPath,
-        enableAutocomplete: true,
-        enableTaskList: true,
-        issuable: mockTestCase,
-        enableEdit: canEditTestCase,
-        editFormVisible: editTestCaseFormVisible,
-        taskCompletionStatus: {},
-        taskListUpdatePath: updatePath,
-        taskListLockVersion: lockVersion,
+          expect(alert.exists()).toBe(true);
+          expect(alert.text()).toBe(
+            'Someone edited this test case at the same time you did. The description has been updated and you will need to make your changes again.',
+          );
+        });
+      });
+
+      describe('when IssuableShow emits `task-list-update-success`', () => {
+        beforeEach(() => {
+          findIssuableShow().vm.$emit('task-list-update-success');
+        });
+
+        it('refetches taskCompletionStatus', () => {
+          expect(taskCompletionMock).toHaveBeenCalledTimes(2);
+        });
+      });
+
+      it('renders status-badge slot contents', () => {
+        expect(findBadge().text()).toContain('Open');
+      });
+
+      it('renders status-badge slot contents with updated test case URL when testCase.moved is true', async () => {
+        const movedTestCase = {
+          ...mockTestCase,
+          status: 'closed',
+          moved: true,
+          movedTo: {
+            id: 'gid://gitlab/Issue/2',
+            webUrl: 'http://0.0.0.0:3000/gitlab-org/gitlab-test/-/issues/30',
+          },
+        };
+
+        createComponent({
+          testCaseHandler: jest.fn().mockResolvedValue(mockTestCaseResponse(movedTestCase)),
+        });
+
+        await waitForPromises();
+
+        const statusEl = findBadge();
+
+        expect(statusEl.text()).toContain('Archived');
+        expect(statusEl.findComponent(GlLink).attributes('href')).toBe(
+          movedTestCase.movedTo.webUrl,
+        );
+      });
+
+      it('renders header-actions slot contents', () => {
+        expect(wrapper.find('[data-testid="actions-dropdown"]').exists()).toBe(true);
+        expect(wrapper.find('[data-testid="archive-test-case"]').exists()).toBe(true);
+        expect(wrapper.find('[data-testid="new-test-case"]').exists()).toBe(true);
+      });
+
+      it('renders test-case-sidebar', () => {
+        expect(findTestCaseSidebar().exists()).toBe(true);
+        expect(findTestCaseSidebar().props('todo')).toEqual(mockCurrentUserTodo);
+      });
+
+      it('updates `sidebarExpanded` prop on `sidebar-toggle` event', async () => {
+        const testCaseSidebar = findTestCaseSidebar();
+        expect(testCaseSidebar.props('sidebarExpanded')).toBe(true);
+
+        testCaseSidebar.vm.$emit('sidebar-toggle');
+        await nextTick();
+
+        expect(testCaseSidebar.props('sidebarExpanded')).toBe(false);
       });
     });
 
-    it('refetches taskCompletionStatus when issuable-show emits `task-list-update-success` event', async () => {
-      await wrapper.findComponent(IssuableShow).vm.$emit('task-list-update-success');
-
-      expect(wrapper.vm.$apollo.queries.taskCompletionStatus.refetch).toHaveBeenCalled();
-    });
-
-    it('does not render issuable-show when `testCaseLoading` prop is false and `testCaseLoadFailed` prop is true', async () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        testCaseLoading: false,
-        testCaseLoadFailed: true,
+    it('does not render IssuableShow when query fails', async () => {
+      createComponent({
+        testCaseHandler: jest.fn().mockRejectedValue({ error: 'hello' }),
       });
 
-      await nextTick();
+      await waitForPromises();
 
-      expect(wrapper.findComponent(IssuableShow).exists()).toBe(false);
-    });
-
-    it('renders status-badge slot contents', () => {
-      expect(wrapper.findComponent(GlBadge).text()).toContain('Open');
-    });
-
-    it('renders status-badge slot contents with updated test case URL when testCase.moved is true', () => {
-      const movedTestCase = {
-        ...mockTestCase,
-        status: 'closed',
-        moved: true,
-        movedTo: {
-          webUrl: 'http://0.0.0.0:3000/gitlab-org/gitlab-test/-/issues/30',
-        },
-      };
-
-      const wrapperMoved = createComponent({
-        testCase: movedTestCase,
-      });
-      const statusEl = wrapperMoved.findComponent(GlBadge);
-
-      expect(statusEl.text()).toContain('Archived');
-      expect(statusEl.findComponent(GlLink).attributes('href')).toBe(movedTestCase.movedTo.webUrl);
-
-      wrapperMoved.destroy();
-    });
-
-    it('renders header-actions slot contents', () => {
-      expect(wrapper.find('[data-testid="actions-dropdown"]').exists()).toBe(true);
-      expect(wrapper.find('[data-testid="archive-test-case"]').exists()).toBe(true);
-      expect(wrapper.find('[data-testid="new-test-case"]').exists()).toBe(true);
-    });
-
-    it('renders edit-form-actions slot contents', async () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        editTestCaseFormVisible: true,
-      });
-
-      await nextTick();
-
-      expect(wrapper.find('[data-testid="save-test-case"]').exists()).toBe(true);
-      expect(wrapper.find('[data-testid="cancel-test-case-edit"]').exists()).toBe(true);
-    });
-
-    it('renders test-case-sidebar', () => {
-      expect(findTestCaseSidebar().exists()).toBe(true);
-    });
-
-    it('updates `sidebarExpanded` prop on `sidebar-toggle` event', async () => {
-      const testCaseSidebar = findTestCaseSidebar();
-      expect(testCaseSidebar.props('sidebarExpanded')).toBe(true);
-
-      testCaseSidebar.vm.$emit('sidebar-toggle');
-      await nextTick();
-
-      expect(testCaseSidebar.props('sidebarExpanded')).toBe(false);
+      expect(findLoadingIcon().exists()).toBe(false);
+      expect(findIssuableShow().exists()).toBe(false);
     });
   });
 });
