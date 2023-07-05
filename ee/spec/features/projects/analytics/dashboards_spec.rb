@@ -68,6 +68,15 @@ RSpec.describe 'Analytics Dashboard', :js, feature_category: :product_analytics 
           it 'renders the dashboards list' do
             expect(page).to have_content('Analytics dashboards')
           end
+
+          it 'has the dashboards list breadcrumb' do
+            page.within(find('[data-testid="breadcrumb-links"]')) do
+              expect(page).to have_link(
+                s_('Analytics|Analytics dashboards'),
+                href: "#{project_analytics_dashboards_path(project)}/"
+              )
+            end
+          end
         end
 
         it_behaves_like 'product analytics dashboards' do

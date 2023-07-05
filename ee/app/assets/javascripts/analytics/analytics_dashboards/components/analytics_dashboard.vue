@@ -53,6 +53,9 @@ export default {
     dashboardEmptyStateIllustrationPath: {
       type: String,
     },
+    breadcrumbState: {
+      type: Object,
+    },
   },
   props: {
     isNewDashboard: {
@@ -108,6 +111,11 @@ export default {
       this.showEmptyState = true;
     }
   },
+  beforeDestroy() {
+    // Clear the breadcrumb name when we leave this component so it doesn't
+    // flash the wrong name when a user views a different dashboard
+    this.breadcrumbState.updateName('');
+  },
   apollo: {
     // TODO: Add retrieval of visualizations for Snowplow
     // https://gitlab.com/gitlab-org/gitlab/-/issues/414281
@@ -137,6 +145,9 @@ export default {
           panels,
           default: { ...dashboard, panels },
         };
+      },
+      result() {
+        this.breadcrumbState.updateName(this.dashboard?.title || '');
       },
       error(error) {
         // TODO: Show user friendly errors when request fails

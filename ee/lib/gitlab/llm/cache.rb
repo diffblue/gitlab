@@ -3,8 +3,14 @@
 module Gitlab
   module Llm
     class Cache
-      EXPIRE_TIME =  30.minutes
-      MAX_MESSAGES = 20
+      # Expiration time of user messages should not be more than 90 days.
+      # EXPIRE_TIME sets expiration time for the whole chat history stream (not
+      # for individual messages) - so the stream is deleted after 3 days since
+      # last message was added.  Because for each user's message there is also
+      # a response, it means that maximum theoretical time of oldest message in
+      # the stream is (MAX_MESSAGES / 2) * EXPIRE_TIME
+      EXPIRE_TIME =  3.days
+      MAX_MESSAGES = 50
       # AI provider-specific limits are applied to requests/responses. To not
       # rely only on third-party limits and assure that cache usage can't be
       # exhausted by users by sending huge texts/responses, we apply also
