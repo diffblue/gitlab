@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Resolvers::Ci::RunnerJobsResolver, feature_category: :runner_fleet do
+RSpec.describe Resolvers::Ci::RunnerJobCountResolver, feature_category: :runner_fleet do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project, :repository) }
@@ -17,21 +17,27 @@ RSpec.describe Resolvers::Ci::RunnerJobsResolver, feature_category: :runner_flee
   let_it_be(:irrelevant_build) { create(:ci_build, name: 'Irrelevant Build', pipeline: irrelevant_pipeline) }
 
   describe '#resolve' do
-    subject(:jobs) { resolve_jobs(args) }
+    subject(:job_count) { resolve_job_count(args) }
 
     let(:args) { {} }
 
     context 'with authorized user', :enable_admin_mode do
       let(:current_user) { create(:user, :admin) }
 
-      context 'with statuses argument' do
+      context 'with statuses argument filtering on successful builds' do
         let(:args) { { statuses: [Types::Ci::JobStatusEnum.coerce_isolated_input('SUCCESS')] } }
 
-        it { is_expected.to contain_exactly(build_one, build_two) }
+        it { is_expected.to eq 2 }
+      end
+
+      context 'with statuses argument filtering on failed builds' do
+        let(:args) { { statuses: [Types::Ci::JobStatusEnum.coerce_isolated_input('FAILED')] } }
+
+        it { is_expected.to eq 1 }
       end
 
       context 'without statuses argument' do
-        it { is_expected.to contain_exactly(build_one, build_two, build_three) }
+        it { is_expected.to eq 3 }
       end
     end
 
@@ -44,7 +50,7 @@ RSpec.describe Resolvers::Ci::RunnerJobsResolver, feature_category: :runner_flee
 
   private
 
-  def resolve_jobs(args = {}, context = { current_user: current_user })
-    resolve(described_class, obj: runner, args: args, ctx: context)
+  def resolve_job_count(args = {}, context = { current_user: current_user })
+    resolve(described_class, obj: runner, args: args, ctx: context)&.value
   end
 end
