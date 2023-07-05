@@ -66,40 +66,66 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
 
           it { is_expected.to eq(true) }
 
-          context 'when the namespace has never been above the limit before', :freeze_time do
-            it 'updates the first_enforced_at timestamp' do
-              expect { above_size_limit? }.to change { namespace_limit.first_enforced_at }
+          context 'when tracking the first enforcement for a namespace' do
+            context 'when the namespace has never been above the limit before', :freeze_time do
+              it 'updates the first_enforced_at timestamp' do
+                expect { above_size_limit? }.to change { namespace_limit.first_enforced_at }
 
-              namespace_limit.reload
+                namespace_limit.reload
 
-              expect(namespace_limit.first_enforced_at).to be_like_time(Time.current)
-            end
-
-            context 'when cache exists' do
-              before do
-                above_size_limit?
+                expect(namespace_limit.first_enforced_at).to be_like_time(Time.current)
               end
 
-              it 'does not update the database' do
-                namespace_limit.update!(first_enforced_at: nil)
+              context 'when cache exists' do
+                before do
+                  above_size_limit?
+                end
 
-                expect(namespace_limit).not_to receive(:update)
+                it 'does not update the database' do
+                  namespace_limit.update!(first_enforced_at: nil)
 
-                expect do
-                  expect(above_size_limit?).to be(true)
-                end.not_to change { namespace_limit.first_enforced_at }
+                  expect(namespace_limit).not_to receive(:update)
+
+                  expect do
+                    expect(above_size_limit?).to be(true)
+                  end.not_to change { namespace_limit.first_enforced_at }
+                end
+              end
+            end
+
+            context 'when the namespace has been above the limit before' do
+              before do
+                namespace_limit.update!(first_enforced_at: Time.current)
+              end
+
+              context 'with no cache' do
+                it 'does not update the timestamp' do
+                  expect { above_size_limit? }.not_to change { namespace_limit.first_enforced_at }
+                end
+              end
+
+              context 'when cache exists' do
+                before do
+                  above_size_limit?
+                end
+
+                it 'does not update the database' do
+                  namespace_limit.update!(first_enforced_at: nil)
+
+                  expect(namespace_limit).not_to receive(:update)
+
+                  expect do
+                    expect(above_size_limit?).to be(true)
+                  end.not_to change { namespace_limit.first_enforced_at }
+                end
               end
             end
           end
 
-          context 'when the namespace has been above the limit before' do
-            before do
-              namespace_limit.update!(first_enforced_at: Time.current)
-            end
-
+          context 'when tracking the last enforcement for a namespace' do
             context 'with no cache' do
-              it 'does not update the timestamp' do
-                expect { above_size_limit? }.not_to change { namespace_limit.first_enforced_at }
+              it 'updates the last_enforced_at timestamp' do
+                expect { above_size_limit? }.to change { namespace_limit.last_enforced_at }
               end
             end
 
@@ -109,13 +135,11 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
               end
 
               it 'does not update the database' do
-                namespace_limit.update!(first_enforced_at: nil)
-
                 expect(namespace_limit).not_to receive(:update)
 
                 expect do
                   expect(above_size_limit?).to be(true)
-                end.not_to change { namespace_limit.first_enforced_at }
+                end.not_to change { namespace_limit.last_enforced_at }
               end
             end
           end

@@ -2,7 +2,7 @@
 
 exports[`False positive alert component should render the alert message 1`] = `
 <gl-alert-stub
-  data-qa-selector="false_positive_alert"
+  data-testid="false-positive-alert"
   dismisslabel="Dismiss"
   primarybuttonlink=""
   primarybuttontext=""

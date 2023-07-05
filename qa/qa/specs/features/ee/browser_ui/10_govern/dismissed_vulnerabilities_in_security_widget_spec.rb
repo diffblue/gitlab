@@ -1,11 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Govern', :runner, product_group: :threat_insights,
-    quarantine: {
-      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/415495',
-      type: :flaky
-    } do
+  RSpec.describe 'Govern', :runner, product_group: :threat_insights do
     describe 'Dismissed vulnerabilities in MR security widget' do
       let(:secret_detection_report) { "gl-secret-detection-report.json" }
       let(:secret_detection_report_mr) { "gl-secret-detection-report-mr.json" }
@@ -78,13 +74,14 @@ module QA
         Page::Project::Menu.perform(&:go_to_vulnerability_report)
 
         EE::Page::Project::Secure::SecurityDashboard.perform do |security_dashboard|
+          security_dashboard.wait_for_vuln_report_to_load
           security_dashboard.select_all_vulnerabilities
           security_dashboard.change_state('dismissed', 'not_applicable')
         end
 
-        merge_request.visit!
+        merge_request.project.visit! # Hoping that the merge_request object will be fully fabricated before visit!
         wait_for_mr_pipeline_success
-        page.refresh # For security widget to load after the pipeline is finished
+        merge_request.visit!
 
         Page::MergeRequest::Show.perform do |merge_request|
           expect(merge_request).to have_vulnerability_report

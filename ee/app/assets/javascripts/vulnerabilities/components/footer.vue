@@ -193,7 +193,7 @@ export default {
 };
 </script>
 <template>
-  <div data-qa-selector="vulnerability_footer">
+  <div data-testid="vulnerability-footer">
     <solution-card
       v-if="solutionText"
       class="md gl-my-6"
