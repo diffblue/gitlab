@@ -36,8 +36,8 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountSecurityScansMetri
   end
 
   context 'with time_frame 28d' do
-    let(:start) { 30.days.ago.to_s(:db) }
-    let(:finish) { 2.days.ago.to_s(:db) }
+    let(:start) { 30.days.ago.to_fs(:db) }
+    let(:finish) { 2.days.ago.to_fs(:db) }
 
     it_behaves_like 'a correct secure type instrumented metric value', { time_frame: '28d', expected_value: 1 }
   end

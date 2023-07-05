@@ -99,8 +99,8 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountCiBuildsMetric do
   end
 
   context 'with time_frame 28d' do
-    let(:start) { 30.days.ago.to_s(:db) }
-    let(:finish) { 2.days.ago.to_s(:db) }
+    let(:start) { 30.days.ago.to_fs(:db) }
+    let(:finish) { 2.days.ago.to_fs(:db) }
     let(:expected_query) { "SELECT COUNT(\"#{builds_table_name}\".\"id\") FROM \"#{builds_table_name}\" WHERE \"#{builds_table_name}\".\"type\" = 'Ci::Build' AND \"#{builds_table_name}\".\"created_at\" BETWEEN '#{start}' AND '#{finish}' AND \"#{builds_table_name}\".\"name\" = '#{secure_type}'" }
 
     it_behaves_like 'a correct secure type instrumented metric value', { time_frame: '28d', expected_value: 1 }
