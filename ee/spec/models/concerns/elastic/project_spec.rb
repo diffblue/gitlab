@@ -207,39 +207,77 @@ RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state, feature_cate
   describe '.as_indexed_json' do
     let_it_be(:project) { create(:project) }
 
-    it 'returns json with all needed elements' do
-      expected_hash = project.attributes.extract!(
-        'id',
-        'name',
-        'path',
-        'description',
-        'namespace_id',
-        'created_at',
-        'archived',
-        'updated_at',
-        'visibility_level',
-        'last_activity_at'
-      ).merge({
-        'ci_catalog' => project.catalog_resource.present?,
-        'join_field' => project.es_type,
-        'type' => project.es_type,
-        'schema_version' => 2306,
-        'traversal_ids' => project.elastic_namespace_ancestry,
-        'name_with_namespace' => project.full_name,
-        'path_with_namespace' => project.full_path
-      })
+    context 'when the migrate_projects_to_separate_index migration has not finished' do
+      before do
+        set_elasticsearch_migration_to(:migrate_projects_to_separate_index, including: false)
+        ensure_elasticsearch_index!
+      end
 
-      expected_hash.merge!(
-        project.project_feature.attributes.extract!(
-          'issues_access_level',
-          'merge_requests_access_level',
-          'snippets_access_level',
-          'wiki_access_level',
-          'repository_access_level'
+      it 'returns json with all needed elements' do
+        expected_hash = project.attributes.extract!(
+          'id',
+          'name',
+          'path',
+          'description',
+          'namespace_id',
+          'created_at',
+          'archived',
+          'updated_at',
+          'visibility_level',
+          'last_activity_at'
+        ).merge({
+          'ci_catalog' => project.catalog_resource.present?,
+          'join_field' => project.es_type,
+          'type' => project.es_type,
+          'schema_version' => 2306,
+          'traversal_ids' => project.elastic_namespace_ancestry,
+          'name_with_namespace' => project.full_name,
+          'path_with_namespace' => project.full_path
+        })
+
+        expected_hash.merge!(
+          project.project_feature.attributes.extract!(
+            'issues_access_level',
+            'merge_requests_access_level',
+            'snippets_access_level',
+            'wiki_access_level',
+            'repository_access_level'
+          )
         )
-      )
 
-      expect(project.__elasticsearch__.as_indexed_json).to eq(expected_hash)
+        expect(project.__elasticsearch__.as_indexed_json).to eq(expected_hash)
+      end
+    end
+
+    context 'when the migrate_projects_to_separate_index migration has finished' do
+      before do
+        set_elasticsearch_migration_to(:migrate_projects_to_separate_index, including: true)
+        ensure_elasticsearch_index!
+      end
+
+      it 'returns json with all needed elements' do
+        expected_hash = project.attributes.extract!(
+          'id',
+          'name',
+          'path',
+          'description',
+          'namespace_id',
+          'created_at',
+          'archived',
+          'updated_at',
+          'visibility_level',
+          'last_activity_at'
+        ).merge({
+          'ci_catalog' => project.catalog_resource.present?,
+          'type' => project.es_type,
+          'schema_version' => 2306,
+          'traversal_ids' => project.elastic_namespace_ancestry,
+          'name_with_namespace' => project.full_name,
+          'path_with_namespace' => project.full_path
+        })
+
+        expect(project.__elasticsearch__.as_indexed_json).to eq(expected_hash)
+      end
     end
 
     context 'when the add_ci_catalog_to_project migration has not finished' do

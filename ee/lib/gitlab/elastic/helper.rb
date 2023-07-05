@@ -20,7 +20,8 @@ module Gitlab
         MergeRequest,
         Commit,
         User,
-        Wiki
+        Wiki,
+        Project
       ].freeze
 
       INDEXED_CLASSES = (ES_SEPARATE_CLASSES + [Repository]).freeze
@@ -42,7 +43,7 @@ module Gitlab
 
       class << self
         def create_proxy(version = nil)
-          Project.__elasticsearch__.version(version)
+          Repository.__elasticsearch__.version(version)
         end
 
         def default
