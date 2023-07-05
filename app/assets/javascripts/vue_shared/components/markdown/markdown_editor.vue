@@ -95,6 +95,11 @@ export default {
       required: false,
       default: false,
     },
+    codeSuggestionsConfig: {
+      type: Object,
+      required: false,
+      default: () => ({}),
+    },
   },
   data() {
     return {
@@ -235,6 +240,10 @@ export default {
       data-testid="markdown-field"
       :markdown-preview-path="renderMarkdownPath"
       :can-attach-file="!disableAttachments"
+      :can-suggest="codeSuggestionsConfig.canSuggest"
+      :line="codeSuggestionsConfig.line"
+      :lines="codeSuggestionsConfig.lines"
+      :show-suggest-popover="codeSuggestionsConfig.showPopover"
       :textarea-value="markdown"
       :uploads-path="uploadsPath"
       :enable-autocomplete="enableAutocomplete"
@@ -278,6 +287,7 @@ export default {
         :autocomplete-data-sources="autocompleteDataSources"
         :editable="!disabled"
         :disable-attachments="disableAttachments"
+        :code-suggestions-config="codeSuggestionsConfig"
         @initialized="setEditorAsAutofocused"
         @change="updateMarkdownFromContentEditor"
         @keydown="$emit('keydown', $event)"

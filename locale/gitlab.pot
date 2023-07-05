@@ -14675,6 +14675,12 @@ msgstr ""
 msgid "Decrease"
 msgstr ""
 
+msgid "Decrement suggestion line end"
+msgstr ""
+
+msgid "Decrement suggestion line start"
+msgstr ""
+
 msgid "Default - Never run"
 msgstr ""
 
@@ -19716,6 +19722,9 @@ msgstr ""
 msgid "From issue creation until deploy to production"
 msgstr ""
 
+msgid "From line %{line1} to %{line2}"
+msgstr ""
+
 msgid "From merge request merge until deploy to production"
 msgstr ""
 
@@ -24167,6 +24176,12 @@ msgid "Incomplete"
 msgstr ""
 
 msgid "Increase"
+msgstr ""
+
+msgid "Increment suggestion line end"
+msgstr ""
+
+msgid "Increment suggestion line start"
 msgstr ""
 
 msgid "Incubation|%{featureName} is in incubating phase"
