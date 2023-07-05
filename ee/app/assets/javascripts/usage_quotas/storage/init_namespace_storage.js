@@ -23,7 +23,7 @@ export default () => {
     namespacePlanStorageIncluded,
     purchaseStorageUrl,
     buyAddonTargetAttr,
-    storageLimitEnforced,
+    enforcementType,
   } = el.dataset;
 
   const apolloProvider = new VueApollo({
@@ -43,7 +43,7 @@ export default () => {
       namespacePlanStorageIncluded,
       purchaseStorageUrl,
       buyAddonTargetAttr,
-      storageLimitEnforced: parseBoolean(storageLimitEnforced),
+      enforcementType,
       helpLinks,
     },
     render(createElement) {

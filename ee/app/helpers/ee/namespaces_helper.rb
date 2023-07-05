@@ -72,7 +72,7 @@ module EE
         namespace_plan_storage_included: namespace_plan_storage_included(namespace),
         purchase_storage_url: buy_storage_path(namespace),
         buy_addon_target_attr: buy_addon_target_attr(namespace),
-        storage_limit_enforced: ::Namespaces::Storage::Enforcement.enforce_limit?(namespace).to_s
+        enforcement_type: namespace.root_storage_size.enforcement_type
       })
     end
 

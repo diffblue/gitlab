@@ -49104,6 +49104,9 @@ msgstr ""
 msgid "UsageQuota|Pipelines"
 msgstr ""
 
+msgid "UsageQuota|Project storage included in %{planName} subscription"
+msgstr ""
+
 msgid "UsageQuota|Recalculate repository usage"
 msgstr ""
 

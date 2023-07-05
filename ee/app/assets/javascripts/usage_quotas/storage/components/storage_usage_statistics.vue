@@ -8,7 +8,9 @@ import {
   BUY_STORAGE,
   STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE,
   STORAGE_STATISTICS_NAMESPACE_STORAGE_USED,
-  STORAGE_STATISTICS_PLAN_STORAGE,
+  STORAGE_INCLUDED_IN_PLAN_PROJECT_ENFORCEMENT,
+  STORAGE_INCLUDED_IN_PLAN_NAMESPACE_ENFORCEMENT,
+  PROJECT_ENFORCEMENT_TYPE,
   STORAGE_STATISTICS_PURCHASED_STORAGE,
   STORAGE_STATISTICS_TOTAL_STORAGE,
   NAMESPACE_STORAGE_OVERVIEW_SUBTITLE,
@@ -27,6 +29,7 @@ export default {
     'purchaseStorageUrl',
     'buyAddonTargetAttr',
     'namespacePlanName',
+    'enforcementType',
     'namespacePlanStorageIncluded',
   ],
   props: {
@@ -35,25 +38,10 @@ export default {
       required: false,
       default: null,
     },
-    actualRepositorySizeLimit: {
+    usedStorage: {
       type: Number,
       required: false,
       default: null,
-    },
-    totalRepositorySize: {
-      type: Number,
-      required: false,
-      default: null,
-    },
-    totalRepositorySizeExcess: {
-      type: Number,
-      required: false,
-      default: null,
-    },
-    storageLimitEnforced: {
-      type: Boolean,
-      required: false,
-      default: false,
     },
     loading: {
       type: Boolean,
@@ -72,29 +60,19 @@ export default {
     storageStatisticsTotalStorage: STORAGE_STATISTICS_TOTAL_STORAGE,
   },
   computed: {
-    usedStorageAmount() {
-      const {
-        additionalPurchasedStorageSize,
-        actualRepositorySizeLimit,
-        totalRepositorySize,
-      } = this;
-
-      if (additionalPurchasedStorageSize && totalRepositorySize > actualRepositorySizeLimit) {
-        return actualRepositorySizeLimit;
-      }
-      return totalRepositorySize;
-    },
     storageStatisticsPlanStorage() {
       if (!this.namespacePlanName) {
         return '';
       }
 
-      return sprintf(STORAGE_STATISTICS_PLAN_STORAGE, {
+      const title =
+        this.enforcementType === PROJECT_ENFORCEMENT_TYPE
+          ? STORAGE_INCLUDED_IN_PLAN_PROJECT_ENFORCEMENT
+          : STORAGE_INCLUDED_IN_PLAN_NAMESPACE_ENFORCEMENT;
+
+      return sprintf(title, {
         planName: this.namespacePlanName,
       });
-    },
-    repositorySizeLimit() {
-      return this.actualRepositorySizeLimit;
     },
     includedStorage() {
       const formatted = formatSizeAndSplit(this.namespacePlanStorageIncluded || 0);
@@ -107,11 +85,13 @@ export default {
       return `${formatted.value} ${formatted.unit}`;
     },
     totalStorage() {
-      const totalStorage =
+      return (
         Number(this.namespacePlanStorageIncluded || 0) +
-        Number(this.additionalPurchasedStorageSize || 0);
-      const formatted = formatSizeAndSplit(totalStorage);
-
+        Number(this.additionalPurchasedStorageSize || 0)
+      );
+    },
+    totalStorageFormatted() {
+      const formatted = formatSizeAndSplit(this.totalStorage);
       return `${formatted.value} ${formatted.unit}`;
     },
   },
@@ -135,9 +115,8 @@ export default {
     </div>
     <div class="gl-display-flex gl-sm-flex-direction-column gl-gap-5 gl-py-4">
       <storage-statistics-card
-        :used-storage="usedStorageAmount"
-        :total-storage="storageLimitEnforced ? repositorySizeLimit : null"
-        :show-progress-bar="storageLimitEnforced"
+        :used-storage="usedStorage"
+        :total-storage="totalStorage"
         :loading="loading"
         data-testid="namespace-usage-card"
         data-qa-selector="namespace_usage_total"
@@ -184,7 +163,7 @@ export default {
           <hr />
           <div class="gl-display-flex gl-justify-content-space-between" data-testid="total-storage">
             <div class="gl-w-80p">{{ $options.i18n.storageStatisticsTotalStorage }}</div>
-            <div>{{ totalStorage }}</div>
+            <div>{{ totalStorageFormatted }}</div>
           </div>
         </div>
       </gl-card>

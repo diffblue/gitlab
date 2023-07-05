@@ -336,7 +336,6 @@ describe('NamespaceStorageApp', () => {
       mockApollo = createMockApolloProvider();
 
       createComponent({
-        provide: { storageLimitEnforced: true },
         mockApollo,
       });
       await waitForPromises();
@@ -346,12 +345,8 @@ describe('NamespaceStorageApp', () => {
       expect(findStorageUsageStatistics().exists()).toBe(true);
     });
 
-    it('passes storageLimitEnforced prop correctly', () => {
-      expect(findStorageUsageStatistics().props('storageLimitEnforced')).toBe(true);
-    });
-
-    it('passes storageSize as totalRepositorySize', () => {
-      expect(findStorageUsageStatistics().props('totalRepositorySize')).toBe(
+    it('passes storageSize as usedStorage', () => {
+      expect(findStorageUsageStatistics().props('usedStorage')).toBe(
         mockedNamespaceStorageResponse.data.namespace.rootStorageStatistics.storageSize,
       );
     });
@@ -375,7 +370,6 @@ describe('NamespaceStorageApp', () => {
           }
 
           createComponent({
-            provide: { storageLimitEnforced: true },
             mockApollo,
           });
 

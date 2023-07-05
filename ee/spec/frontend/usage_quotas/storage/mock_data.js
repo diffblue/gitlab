@@ -15,7 +15,7 @@ export const defaultNamespaceProvideValues = {
   buyAddonTargetAttr: '_blank',
   namespacePlanName: 'Free',
   namespacePlanStorageIncluded: 1002321,
-  storageLimitEnforced: false,
+  enforcementType: 'project_repository_limit',
   helpLinks: projectHelpLinks,
 };
 
