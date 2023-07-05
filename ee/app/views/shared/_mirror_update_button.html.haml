@@ -9,8 +9,7 @@
         = sprite_icon('retry', css_class: 'spin gl-mr-3')
         = _('Updating…')
     - elsif can?(current_user, :admin_project, @project)
-      = link_to update_now_project_mirror_path(@project), method: :post, class: 'gl-button btn btn-default' do
-        = sprite_icon('retry', css_class: 'gl-mr-3')
+      = link_button_to update_now_project_mirror_path(@project), method: :post, icon: 'retry' do
         = _('Update Now')
     - else
       %span.btn.gl-button.btn-default.disabled
