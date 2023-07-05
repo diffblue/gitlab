@@ -14,7 +14,7 @@ module RemoteDevelopment
         # @param [Hash] labels
         # @param [Hash] annotations
         # @param [User] user
-        # @return [Hash]
+        # @return [Array<Hash>]
         def get_all(processed_devfile:, name:, namespace:, replicas:, domain_template:, labels:, annotations:, user:)
           workspace_resources_yaml = Devfile::Parser.get_all(
             processed_devfile,
@@ -46,8 +46,8 @@ module RemoteDevelopment
         #       move the logic of setting the security context in the `devfile_processor` as part of workspace creation.
         RUN_AS_USER = 5001
 
-        # @param [Hash] workspace_resources
-        # @return [Hash]
+        # @param [Array<Hash>] workspace_resources
+        # @return [Array<Hash>]
         def set_security_context(workspace_resources:)
           workspace_resources.each do |workspace_resource|
             next unless workspace_resource['kind'] == 'Deployment'
@@ -82,9 +82,9 @@ module RemoteDevelopment
           workspace_resources
         end
 
-        # @param [Hash] workspace_resources
+        # @param [Array<Hash>] workspace_resources
         # @param [User] user
-        # @return [Hash]
+        # @return [Array<Hash>]
         def set_git_configuration(workspace_resources:, user:)
           workspace_resources.each do |workspace_resource|
             next unless workspace_resource.fetch('kind') == 'Deployment'
@@ -109,6 +109,9 @@ module RemoteDevelopment
           workspace_resources
         end
 
+        # @param [Array<Hash>] workspace_resources
+        # @param [String] domain_template
+        # @return [Array<Hash>]
         def set_workspace_environment_variables(workspace_resources:, domain_template:)
           env_variables = [
             {

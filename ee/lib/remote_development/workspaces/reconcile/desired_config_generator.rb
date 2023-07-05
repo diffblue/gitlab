@@ -8,7 +8,7 @@ module RemoteDevelopment
         include States
 
         # @param [RemoteDevelopment::Workspaces::Workspace] workspace
-        # @return [Hash]
+        # @return [Array<Hash>]
         def generate_desired_config(workspace:)
           name = workspace.name
           namespace = workspace.namespace
@@ -83,7 +83,7 @@ module RemoteDevelopment
         # @param [String] owning_inventory
         # @param [String] domain_template
         # @param [String] workspace_id
-        # @return [Array<(Hash, Hash)]
+        # @return [Array<(Hash, Hash)>]
         def get_labels_and_annotations(agent_id:, owning_inventory:, domain_template:, workspace_id:)
           labels = {
             'agent.gitlab.com/id' => agent_id
