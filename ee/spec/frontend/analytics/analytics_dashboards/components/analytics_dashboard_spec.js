@@ -97,6 +97,8 @@ describe('AnalyticsDashboard', () => {
     mockAnalyticsDashboardsHandler.mockReset();
   });
 
+  const breadcrumbState = { updateName: jest.fn() };
+
   const createWrapper = ({
     props = {},
     data = {},
@@ -144,6 +146,7 @@ describe('AnalyticsDashboard', () => {
         dashboardEmptyStateIllustrationPath: TEST_EMPTY_DASHBOARD_SVG_PATH,
         projectFullPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
         glFeatures,
+        breadcrumbState,
       },
     });
   };
@@ -287,6 +290,8 @@ describe('AnalyticsDashboard', () => {
           showDateRangeFilter: true,
           syncUrlFilters: true,
         });
+
+        expect(breadcrumbState.updateName).toHaveBeenCalledWith('Audience');
       });
 
       it('does not fetch the available visualizations', async () => {
@@ -323,6 +328,8 @@ describe('AnalyticsDashboard', () => {
           slug: 'audience',
         });
 
+        expect(breadcrumbState.updateName).toHaveBeenCalledWith('Audience');
+
         expect(findDashboard().exists()).toBe(true);
       });
     });
@@ -341,6 +348,7 @@ describe('AnalyticsDashboard', () => {
       it('does not render the dashboard or loader', () => {
         expect(findDashboard().exists()).toBe(false);
         expect(findLoader().exists()).toBe(false);
+        expect(breadcrumbState.updateName).toHaveBeenCalledWith('');
       });
 
       it('renders the empty state', () => {
