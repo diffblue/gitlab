@@ -5,7 +5,7 @@ require 'spec_helper'
 # We don't want to interact with Elasticsearch in GitLab FOSS so we test
 # this in ee/ only. The code exists in FOSS and won't do anything.
 
-RSpec.describe ::Gitlab::Instrumentation::ElasticsearchTransport, :elastic, :request_store do
+RSpec.describe ::Gitlab::Instrumentation::ElasticsearchTransport, :elastic, :request_store, feature_category: :global_search do
   describe '.increment_request_count' do
     it 'increases the request count by 1' do
       expect { described_class.increment_request_count }.to change(described_class, :get_request_count).by(1)
@@ -51,7 +51,7 @@ RSpec.describe ::Gitlab::Instrumentation::ElasticsearchTransport, :elastic, :req
   end
 end
 
-RSpec.describe ::Gitlab::Instrumentation::ElasticsearchTransportInterceptor, :elastic, :request_store do
+RSpec.describe ::Gitlab::Instrumentation::ElasticsearchTransportInterceptor, :elastic, :request_store, feature_category: :global_search do
   let(:elasticsearch_url) { Gitlab::CurrentSettings.elasticsearch_url[0] }
 
   before do
@@ -69,7 +69,7 @@ RSpec.describe ::Gitlab::Instrumentation::ElasticsearchTransportInterceptor, :el
   it 'adds the labkit correlation id as X-Opaque-Id to all requests' do
     allow(Labkit::Correlation::CorrelationId).to receive(:current_or_new_id).and_return('new-correlation-id')
 
-    Project.__elasticsearch__.client
+    Repository.__elasticsearch__.client
       .perform_request(:get, '/')
 
     expect(a_request(:get, /#{elasticsearch_url}/)
@@ -79,7 +79,7 @@ RSpec.describe ::Gitlab::Instrumentation::ElasticsearchTransportInterceptor, :el
   it 'does not override the X-Opaque-Id if it is already present' do
     allow(Labkit::Correlation::CorrelationId).to receive(:current_or_new_id).and_return('new-correlation-id')
 
-    Project.__elasticsearch__.client
+    Repository.__elasticsearch__.client
       .perform_request(:get, '/', {}, nil, { 'X-Opaque-Id': 'original-opaque-id' })
 
     expect(a_request(:get, /#{elasticsearch_url}/)
@@ -90,7 +90,7 @@ RSpec.describe ::Gitlab::Instrumentation::ElasticsearchTransportInterceptor, :el
     it 'increments timeouts' do
       stub_request(:any, /#{elasticsearch_url}/).to_return(body: +'{"timed_out": true}', status: 200, headers: { 'Content-Type' => 'application/json' })
 
-      Project.__elasticsearch__.client.perform_request(:get, '/')
+      Repository.__elasticsearch__.client.perform_request(:get, '/')
 
       expect(::Gitlab::Instrumentation::ElasticsearchTransport.get_timed_out_count).to eq(1)
     end
@@ -100,7 +100,7 @@ RSpec.describe ::Gitlab::Instrumentation::ElasticsearchTransportInterceptor, :el
     it 'does not increment timeouts' do
       stub_request(:any, /#{elasticsearch_url}/).to_return(body: +'{"timed_out": false}', status: 200, headers: { 'Content-Type' => 'application/json' })
 
-      Project.__elasticsearch__.client.perform_request(:get, '/')
+      Repository.__elasticsearch__.client.perform_request(:get, '/')
 
       expect(::Gitlab::Instrumentation::ElasticsearchTransport.get_timed_out_count).to eq(0)
     end
@@ -110,7 +110,7 @@ RSpec.describe ::Gitlab::Instrumentation::ElasticsearchTransportInterceptor, :el
     it 'does not error' do
       stub_request(:any, /#{elasticsearch_url}/).to_return(body: +'', status: 200)
 
-      Project.__elasticsearch__.client.perform_request(:get, '/')
+      Repository.__elasticsearch__.client.perform_request(:get, '/')
     end
   end
 
@@ -118,7 +118,7 @@ RSpec.describe ::Gitlab::Instrumentation::ElasticsearchTransportInterceptor, :el
     it 'does not raise a different error in ensure' do
       stub_request(:any, /#{elasticsearch_url}/).to_return(body: +'', status: 500)
 
-      expect { Project.__elasticsearch__.client.perform_request(:get, '/') }
+      expect { Repository.__elasticsearch__.client.perform_request(:get, '/') }
         .to raise_error(::Elasticsearch::Transport::Transport::Errors::InternalServerError)
     end
   end

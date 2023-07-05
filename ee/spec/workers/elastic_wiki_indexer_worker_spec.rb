@@ -118,7 +118,7 @@ RSpec.describe ElasticWikiIndexerWorker, feature_category: :global_search do
       context 'when container can not be found' do
         it 'does not runs Gitlab::Elastic::Indexer and does not performs logging and metrics' do
           es_id = Gitlab::Elastic::Helper.build_es_id(es_type: project.class.es_type, target_id: 0)
-          expect(Gitlab::Elasticsearch::Logger).to receive(:build).and_return(logger_double.as_null_object)
+          expect(Gitlab::Elasticsearch::Logger).to receive(:build).and_return(logger_double.as_null_object).twice
           expect(logger_double).to receive(:warn).with(container_id: 0, container_type: project.class.name,
             message: 'Container record not found')
           expect(ElasticDeleteProjectWorker).to receive(:perform_async).with(0, es_id)

@@ -7,7 +7,8 @@ RSpec.describe BackfillProjectPermissionsInBlobsUsingPermutations, :elastic_clea
   let(:old_version_without_project_permissions) { 20230321202400 }
   let(:version) { 20230503064300 }
   let(:migration) { described_class.new(version) }
-  let(:client) { Project.__elasticsearch__.client }
+  let(:client) { migration.client }
+  let(:index_name) { Repository.__elasticsearch__.index_name }
   let(:permissions_matrix) { described_class::PERMISSIONS_MATRIX }
 
   let(:projects) do
@@ -246,10 +247,10 @@ RSpec.describe BackfillProjectPermissionsInBlobsUsingPermutations, :elastic_clea
     end
   end
 
-  describe '.completed?', :elastic, :sidekiq_inline do
+  describe '.completed?' do
     let(:project) { create(:project, :repository) }
 
-    context 'when there are blobs missing permissions', :elastic_clean do
+    context 'when there are blobs missing permissions' do
       before do
         project.repository.index_commits_and_blobs
         ensure_elasticsearch_index!
@@ -289,7 +290,7 @@ RSpec.describe BackfillProjectPermissionsInBlobsUsingPermutations, :elastic_clea
     before do
       allow(migration).to receive(:helper).and_return(helper)
       allow(helper).to receive(:task_status).with(task_id: task_id).and_return(task_status)
-      allow(helper).to receive(:target_name).and_return(Project.__elasticsearch__.index_name)
+      allow(helper).to receive(:target_name).and_return(index_name)
     end
 
     context 'when elastic task is completed with no failures' do
@@ -322,7 +323,7 @@ RSpec.describe BackfillProjectPermissionsInBlobsUsingPermutations, :elastic_clea
         allow(migration).to receive(:permutation_completed?).and_return(false)
         allow(migration).to receive(:task_id).and_return(task_id)
         allow(migration).to receive(:visibility_level).and_return(0)
-        allow(helper).to receive(:refresh_index).with(index_name: Project.__elasticsearch__.index_name).and_return(nil)
+        allow(helper).to receive(:refresh_index).with(index_name: index_name).and_return(nil)
         migration.set_migration_state(
           retry_attempt: 0,
           permutation_idx: 0,
@@ -390,8 +391,8 @@ RSpec.describe BackfillProjectPermissionsInBlobsUsingPermutations, :elastic_clea
   end
 
   def update_by_query(project, script)
-    Project.__elasticsearch__.client.update_by_query({
-      index: Project.__elasticsearch__.index_name,
+    Repository.__elasticsearch__.client.update_by_query({
+      index: index_name,
       wait_for_completion: true,
       refresh: true,
       body: {
@@ -409,8 +410,8 @@ RSpec.describe BackfillProjectPermissionsInBlobsUsingPermutations, :elastic_clea
   end
 
   def count_blobs(project)
-    Project.__elasticsearch__.client.count({
-      index: Project.__elasticsearch__.index_name,
+    Repository.__elasticsearch__.client.count({
+      index: index_name,
       body: {
         query: {
           bool: {
@@ -429,6 +430,6 @@ RSpec.describe BackfillProjectPermissionsInBlobsUsingPermutations, :elastic_clea
     50.times.each do |_attempt| # 5 second timeout duration
       migration.task_completed?(task_id: task_id) ? break : sleep(0.1)
     end
-    es_helper.refresh_index(index_name: Project.__elasticsearch__.index_name)
+    es_helper.refresh_index(index_name: index_name)
   end
 end

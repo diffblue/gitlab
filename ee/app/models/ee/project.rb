@@ -416,6 +416,11 @@ module EE
     class_methods do
       extend ::Gitlab::Utils::Override
 
+      override :use_separate_indices?
+      def use_separate_indices?
+        ::Elastic::DataMigrationService.migration_has_finished?(:migrate_projects_to_separate_index)
+      end
+
       # @param primary_key_in [Range, Project] arg to pass to primary_key_in scope
       # @return [ActiveRecord::Relation<Project>] everything that should be synced to this node, restricted by primary key
       def replicables_for_current_secondary(primary_key_in)

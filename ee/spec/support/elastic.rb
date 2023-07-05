@@ -9,11 +9,11 @@ module Elastic
     end
 
     def indices
-      @indices ||= curator.indices.map { |info| info['index'] } + [helper.migrations_index_name]
+      @indices  = curator.indices.map { |info| info['index'] } + [helper.migrations_index_name]
     end
 
     def curator
-      @curator ||= ::Gitlab::Search::IndexCurator.new(
+      @curator = ::Gitlab::Search::IndexCurator.new(
         ignore_patterns: [/migrations/], force: true, dry_run: false
       )
     end
