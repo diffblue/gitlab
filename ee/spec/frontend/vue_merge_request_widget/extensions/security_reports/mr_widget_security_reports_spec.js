@@ -1,5 +1,6 @@
 import { GlBadge } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
+import { createWrapper } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import MockAdapter from 'axios-mock-adapter';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -53,10 +54,10 @@ const DISMISSAL_RESPONSE = jest.fn().mockResolvedValue({
 describe('MR Widget Security Reports', () => {
   let wrapper;
   let mockAxios;
-  let emitSpy;
 
   const securityConfigurationPath = '/help/user/application_security/index.md';
   const sourceProjectFullPath = 'namespace/project';
+  const testModalId = 'modal-mrwidget-security-issue';
 
   const sastHelp = '/help/user/application_security/sast/index';
   const dastHelp = '/help/user/application_security/dast/index';
@@ -120,8 +121,6 @@ describe('MR Widget Security Reports', () => {
         MrWidgetRow,
       },
     });
-
-    emitSpy = jest.spyOn(wrapper.vm.$root, '$emit');
   };
 
   const createComponentAndExpandWidget = async ({
@@ -186,7 +185,7 @@ describe('MR Widget Security Reports', () => {
         widgetName: 'WidgetSecurityReports',
         errorText: 'Security reports failed loading results',
         loadingText: 'Loading',
-        fetchCollapsedData: wrapper.vm.fetchCollapsedData,
+        fetchCollapsedData: expect.any(Function),
         multiPolling: true,
       });
     });
@@ -711,14 +710,17 @@ describe('MR Widget Security Reports', () => {
           additionalHandlers: [[dismissFindingMutation, DISMISSAL_RESPONSE]],
         });
 
+        const rootWrapper = createWrapper(wrapper.vm.$root);
+
         expect(findDismissedBadge().exists()).toBe(false);
+        expect(rootWrapper.emitted(BV_HIDE_MODAL)).toBeUndefined();
 
         findModal().vm.$emit('dismissVulnerability');
 
         await waitForPromises();
 
         expect(toast).toHaveBeenCalledWith("Dismissed 'Password leak'");
-        expect(emitSpy).toHaveBeenCalledWith(BV_HIDE_MODAL, 'modal-mrwidget-security-issue');
+        expect(rootWrapper.emitted(BV_HIDE_MODAL)[0]).toContain(testModalId);
 
         // There should be a finding with the dismissed badge now
         expect(findDismissedBadge().text()).toBe('Dismissed');
@@ -785,13 +787,13 @@ describe('MR Widget Security Reports', () => {
           mockDataProps,
           additionalHandlers: [[dismissFindingMutation, DISMISSAL_RESPONSE]],
         });
-
+        const rootWrapper = createWrapper(wrapper.vm.$root);
         findModal().vm.$emit('addDismissalComment', 'Edited comment');
 
         await waitForPromises();
 
         expect(toast).toHaveBeenCalledWith("Comment added to 'Password leak'");
-        expect(emitSpy).toHaveBeenCalledWith(BV_HIDE_MODAL, 'modal-mrwidget-security-issue');
+        expect(rootWrapper.emitted(BV_HIDE_MODAL)[0]).toContain(testModalId);
       });
 
       it('edits the dismissal comment - success', async () => {
@@ -799,7 +801,7 @@ describe('MR Widget Security Reports', () => {
           mockDataProps,
           additionalHandlers: [[dismissFindingMutation, DISMISSAL_RESPONSE]],
         });
-
+        const rootWrapper = createWrapper(wrapper.vm.$root);
         await waitForPromises();
 
         findModal().vm.$emit('addDismissalComment', 'Edited comment');
@@ -807,7 +809,7 @@ describe('MR Widget Security Reports', () => {
         await waitForPromises();
 
         expect(toast).toHaveBeenCalledWith("Comment edited on 'Password leak'");
-        expect(emitSpy).toHaveBeenCalledWith(BV_HIDE_MODAL, 'modal-mrwidget-security-issue');
+        expect(rootWrapper.emitted(BV_HIDE_MODAL)[0]).toContain(testModalId);
       });
 
       it('adds the dismissal comment - error', async () => {
@@ -834,6 +836,7 @@ describe('MR Widget Security Reports', () => {
           mockDataProps,
           additionalHandlers: [[dismissFindingMutation, DISMISSAL_RESPONSE]],
         });
+        const rootWrapper = createWrapper(wrapper.vm.$root);
 
         expect(findModal().props('modal').isShowingDeleteButtons).toBe(false);
 
@@ -850,7 +853,7 @@ describe('MR Widget Security Reports', () => {
         await waitForPromises();
 
         expect(toast).toHaveBeenCalledWith("Comment deleted on 'Password leak'");
-        expect(emitSpy).toHaveBeenCalledWith(BV_HIDE_MODAL, 'modal-mrwidget-security-issue');
+        expect(rootWrapper.emitted(BV_HIDE_MODAL)[0]).toContain(testModalId);
       });
 
       it('deletes the dismissal comment - error', async () => {
@@ -924,12 +927,13 @@ describe('MR Widget Security Reports', () => {
             ],
           ],
         });
+        const rootWrapper = createWrapper(wrapper.vm.$root);
 
         findModal().vm.$emit('revertDismissVulnerability');
 
         await waitForPromises();
 
-        expect(emitSpy).toHaveBeenCalledWith(BV_HIDE_MODAL, 'modal-mrwidget-security-issue');
+        expect(rootWrapper.emitted(BV_HIDE_MODAL)[0]).toContain(testModalId);
 
         // The dismissal_feedback object should be set back to `null`.
         expect(findModal().props('modal').vulnerability.dismissal_feedback).toBe(null);

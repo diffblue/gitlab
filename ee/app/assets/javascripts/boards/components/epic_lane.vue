@@ -142,7 +142,7 @@ export default {
   watch: {
     'filterParams.epicId': {
       handler(epicId) {
-        if (!epicId || epicId === this.epic.id) {
+        if (!this.isApolloBoard && (!epicId || epicId === this.epic.id)) {
           this.fetchIssuesForEpic(this.epic.id);
         }
       },
@@ -150,7 +150,9 @@ export default {
     },
   },
   mounted() {
-    this.fetchIssuesForEpic(this.epic.id);
+    if (!this.isApolloBoard) {
+      this.fetchIssuesForEpic(this.epic.id);
+    }
   },
   methods: {
     ...mapActions(['updateBoardEpicUserPreferences', 'setError', 'fetchIssuesForEpic']),

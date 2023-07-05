@@ -85,16 +85,11 @@ export default {
             updateHistory({
               url: `${filterPath}${boardConfigPath}`,
             });
-
             const rawFilterParams = queryToObject(window.location.search, { gatherArrays: true });
 
             this.filterParams = {
               ...convertObjectPropsToCamelCase(rawFilterParams, {}),
             };
-          } else {
-            updateHistory({
-              url: `${this.boardBaseUrl}/${getIdFromGraphQLId(this.board.id)}${param}`,
-            });
           }
         }
         this.$refs.filteredSearch.updateTokens();
