@@ -322,7 +322,7 @@ module EE
         pipeline: {
           id: pipeline.id,
           path: pipeline_path(pipeline),
-          created_at: pipeline.created_at.to_s(:iso8601),
+          created_at: pipeline.created_at.to_fs(:iso8601),
           has_warnings: pipeline.has_security_report_ingestion_warnings?.to_s,
           has_errors: pipeline.has_security_report_ingestion_errors?.to_s,
           security_builds: {

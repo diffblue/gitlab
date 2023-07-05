@@ -39,7 +39,7 @@ class Groups::SeatUsageController < Groups::ApplicationController
   end
 
   def csv_filename
-    "seat-usage-export-#{Time.current.to_s(:number)}.csv"
+    "seat-usage-export-#{Time.current.to_fs(:number)}.csv"
   end
 
   def verify_top_level_group

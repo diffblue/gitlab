@@ -11,8 +11,8 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::ProtectedEnvironmentsRe
     create(:protected_environment, :staging, required_approval_count: 1, created_at: 3.days.ago)
   end
 
-  let(:start) { 30.days.ago.to_s(:db) }
-  let(:finish) { 2.days.ago.to_s(:db) }
+  let(:start) { 30.days.ago.to_fs(:db) }
+  let(:finish) { 2.days.ago.to_fs(:db) }
 
   let(:expected_value) { 1.5 }
   let(:expected_query) do
