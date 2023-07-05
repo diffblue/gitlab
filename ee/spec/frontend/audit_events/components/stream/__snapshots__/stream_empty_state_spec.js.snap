@@ -50,17 +50,106 @@ exports[`StreamEmptyState should render correctly 1`] = `
       <div
         class="gl-display-flex gl-flex-wrap gl-justify-content-center"
       >
-        <gl-button-stub
-          buttontextclasses=""
-          category="primary"
-          icon=""
-          size="medium"
-          variant="confirm"
+        <div
+          class="gl-new-dropdown gl-disclosure-dropdown"
+          data-testid="dropdown-toggle"
         >
-          
-      Add streaming destination
-    
-        </gl-button-stub>
+          <button
+            aria-controls="base-dropdown-14"
+            aria-labelledby="dropdown-toggle-btn-10"
+            class="btn btn-confirm btn-md gl-button gl-new-dropdown-toggle"
+            data-testid="base-dropdown-toggle"
+            id="dropdown-toggle-btn-10"
+            listeners="[object Object]"
+            type="button"
+          >
+            <!---->
+             
+            <!---->
+              
+            <span
+              class="gl-button-text"
+            >
+              <span
+                class="gl-new-dropdown-button-text"
+              >
+                
+        Add streaming destination
+      
+              </span>
+               
+              <svg
+                aria-hidden="true"
+                class="gl-button-icon gl-new-dropdown-chevron gl-icon s16"
+                data-testid="chevron-down-icon"
+                role="img"
+              >
+                <use
+                  href="file-mock#chevron-down"
+                />
+              </svg>
+            </span>
+          </button>
+           
+          <div
+            class="gl-new-dropdown-panel gl-w-31!"
+            data-testid="base-dropdown-menu"
+            id="base-dropdown-14"
+          >
+            <div
+              class="gl-new-dropdown-inner"
+            >
+                
+              <ul
+                aria-labelledby="dropdown-toggle-btn-10"
+                class="gl-new-dropdown-contents"
+                data-testid="disclosure-content"
+                id="disclosure-11"
+                tabindex="-1"
+              >
+                <li
+                  class="gl-new-dropdown-item"
+                  data-testid="disclosure-dropdown-item"
+                  tabindex="0"
+                >
+                  <button
+                    class="gl-new-dropdown-item-content"
+                    tabindex="-1"
+                    type="button"
+                  >
+                    <span
+                      class="gl-new-dropdown-item-text-wrapper"
+                    >
+                      
+          HTTP endpoint
+        
+                    </span>
+                  </button>
+                </li>
+                <li
+                  class="gl-new-dropdown-item"
+                  data-testid="disclosure-dropdown-item"
+                  tabindex="0"
+                >
+                  <button
+                    class="gl-new-dropdown-item-content"
+                    tabindex="-1"
+                    type="button"
+                  >
+                    <span
+                      class="gl-new-dropdown-item-text-wrapper"
+                    >
+                      
+          Google Cloud Logging
+        
+                    </span>
+                  </button>
+                </li>
+              </ul>
+               
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
