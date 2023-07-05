@@ -26,13 +26,13 @@ export default {
         this.testCaseLoading = false;
       },
       error(error) {
+        this.testCaseLoading = false;
         this.testCaseLoadFailed = true;
         createAlert({
           message: s__('TestCases|Something went wrong while fetching test case.'),
           captureError: true,
           error,
         });
-        throw error;
       },
     },
     taskCompletionStatus: {
@@ -52,7 +52,6 @@ export default {
           captureError: true,
           error,
         });
-        throw error;
       },
     },
   },
