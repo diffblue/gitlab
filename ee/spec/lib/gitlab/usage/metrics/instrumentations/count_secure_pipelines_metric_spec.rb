@@ -109,8 +109,8 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountSecurePipelinesMet
 
   ::Security::Scan.scan_types.except('cluster_image_scanning').each do |name, scan_type|
     context "with scan_type #{name}" do
-      let(:start) { 30.days.ago.to_s(:db) }
-      let(:finish) { 2.days.ago.to_s(:db) }
+      let(:start) { 30.days.ago.to_fs(:db) }
+      let(:finish) { 2.days.ago.to_fs(:db) }
       let(:expected_query) do
         %{SELECT COUNT(DISTINCT "security_scans"."pipeline_id") FROM "security_scans" WHERE "security_scans"."created_at" BETWEEN '#{start}' AND '#{finish}' AND "security_scans"."scan_type" = #{scan_type}} # rubocop:disable Layout/LineLength
       end

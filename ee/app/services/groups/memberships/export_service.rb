@@ -23,7 +23,7 @@ module Groups
         {
           'Username' => -> (member) { member&.user&.username },
           'Name' => -> (member) { member&.user&.name },
-          'Access granted' => -> (member) { member.created_at.to_s(:csv) },
+          'Access granted' => -> (member) { member.created_at.to_fs(:csv) },
           'Access expires' => -> (member) { member.expires_at },
           'Max role' => 'human_access',
           'Source' => -> (member) { member_source(member) }

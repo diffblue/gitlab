@@ -16,8 +16,8 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountDeploymentApproval
     let_it_be(:old_deployment_approval) { create(:deployment_approval, created_at: 30.days.ago) }
     let_it_be(:deployment_approvals) { create_list(:deployment_approval, 2, created_at: 2.days.ago) }
 
-    let(:start) { 30.days.ago.to_s(:db) }
-    let(:finish) { 2.days.ago.to_s(:db) }
+    let(:start) { 30.days.ago.to_fs(:db) }
+    let(:finish) { 2.days.ago.to_fs(:db) }
 
     let(:expected_value) { 2 }
     let(:expected_query) do

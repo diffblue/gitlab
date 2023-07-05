@@ -177,7 +177,7 @@ class Iteration < ApplicationRecord
   end
 
   def period
-    "#{start_date.to_s(:medium)} - #{due_date.to_s(:medium)}"
+    "#{start_date.to_fs(:medium)} - #{due_date.to_fs(:medium)}"
   end
 
   def display_text

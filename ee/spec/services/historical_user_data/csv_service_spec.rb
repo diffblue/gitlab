@@ -57,7 +57,7 @@ RSpec.describe HistoricalUserData::CsvService, feature_category: :user_managemen
       end
 
       it 'shows the license start date' do
-        expect(csv[2][1]).to eq(license_start_date.to_s(:csv))
+        expect(csv[2][1]).to eq(license_start_date.to_fs(:csv))
       end
     end
 
@@ -67,7 +67,7 @@ RSpec.describe HistoricalUserData::CsvService, feature_category: :user_managemen
       end
 
       it 'shows the license end date' do
-        expect(csv[3][1]).to eq(license_end_date.to_s(:csv))
+        expect(csv[3][1]).to eq(license_end_date.to_fs(:csv))
       end
     end
 
@@ -87,7 +87,7 @@ RSpec.describe HistoricalUserData::CsvService, feature_category: :user_managemen
       end
 
       it 'shows the CSV generation time' do
-        expect(csv[5][1]).to eq(datetime.utc.to_s(:csv))
+        expect(csv[5][1]).to eq(datetime.utc.to_fs(:csv))
       end
     end
   end
@@ -114,11 +114,11 @@ RSpec.describe HistoricalUserData::CsvService, feature_category: :user_managemen
 
     it 'includes proper values for each column type', :aggregate_failures do
       expect(csv[8]).to contain_exactly(
-        historical_datum.recorded_at.utc.to_s(:csv),
+        historical_datum.recorded_at.utc.to_fs(:csv),
         historical_datum.active_user_count.to_s
       )
       expect(csv[9]).to contain_exactly(
-        historical_datum2.recorded_at.utc.to_s(:csv),
+        historical_datum2.recorded_at.utc.to_fs(:csv),
         historical_datum2.active_user_count.to_s
       )
     end

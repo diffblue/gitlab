@@ -9,8 +9,8 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::ProtectedEnvironmentApp
   let_it_be(:rule_for_developer_within_timeframe) { create(:protected_environment_approval_rule, :developer_access, required_approvals: 1, created_at: 3.days.ago) }
   # rubocop:enable Layout/LineLength
 
-  let(:start) { 30.days.ago.to_s(:db) }
-  let(:finish) { 2.days.ago.to_s(:db) }
+  let(:start) { 30.days.ago.to_fs(:db) }
+  let(:finish) { 2.days.ago.to_fs(:db) }
 
   let(:expected_value) { 1.5 }
   let(:expected_query) do

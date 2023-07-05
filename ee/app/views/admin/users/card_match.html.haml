@@ -36,10 +36,10 @@
             %td
               = credit_card_validation.holder_name
             %td.gl-text-right
-              = validated_at.to_s(:medium)
+              = validated_at.to_fs(:medium)
               \/
               = validated_at.in_time_zone(stripe_time_zone).strftime(stripe_time_format)
-            %td.gl-text-right= user.created_at.to_s(:medium)
+            %td.gl-text-right= user.created_at.to_fs(:medium)
             %td.gl-text-right
               - if user.current_sign_in_ip
                 = user.current_sign_in_ip

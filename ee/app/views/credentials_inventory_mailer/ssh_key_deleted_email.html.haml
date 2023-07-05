@@ -5,7 +5,7 @@
   %li
     = @params[:title]
   %li
-    = _("Created on %{created_at}") % { created_at: @params[:created_at].to_date.to_s(:medium) }
+    = _("Created on %{created_at}") % { created_at: @params[:created_at].to_date.to_fs(:medium) }
   - if @params[:last_used_at]
     %li
       = _("Last used %{last_used_at} ago") % { last_used_at: time_ago_in_words(@params[:last_used_at]) }
