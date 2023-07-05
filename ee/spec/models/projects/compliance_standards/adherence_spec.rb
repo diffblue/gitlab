@@ -77,9 +77,10 @@ RSpec.describe Projects::ComplianceStandards::Adherence, type: :model, feature_c
         check_name: :prevent_approval_by_merge_request_author, standard: :gitlab)
     end
 
-    describe '.for_project' do
-      it 'returns the adherence records for the specified project' do
-        expect(described_class.for_project(project_1.id)).to contain_exactly(adherence_1)
+    describe '.for_projects' do
+      it 'returns the adherence records for the specified projects', :aggregate_failures do
+        expect(described_class.for_projects(project_1.id)).to contain_exactly(adherence_1)
+        expect(described_class.for_projects([project_1.id, project_2.id])).to contain_exactly(adherence_1, adherence_2)
       end
     end
 
@@ -93,6 +94,13 @@ RSpec.describe Projects::ComplianceStandards::Adherence, type: :model, feature_c
     describe '.for_standard' do
       it 'returns the adherence records for the specified standard' do
         expect(described_class.for_standard(:gitlab)).to contain_exactly(adherence_1, adherence_2)
+      end
+    end
+
+    describe '.for_group' do
+      it 'returns the adherence records for the specified group', :aggregate_failures do
+        expect(described_class.for_group(project_1.group.id)).to contain_exactly(adherence_1)
+        expect(described_class.for_group(project_2.group.id)).to contain_exactly(adherence_2)
       end
     end
   end
