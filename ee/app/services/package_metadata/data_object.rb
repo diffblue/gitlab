@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'csv'
-
 module PackageMetadata
   class DataObject
     EXPECTED_NUMBER_OF_FIELDS = 3

@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe PackageMetadata::CompressedPackageDataObject, feature_category: :software_composition_analysis do
-  describe '.parse' do
+  describe '.create' do
     let(:purl_type) { 'npm' }
 
     subject(:create) { described_class.create(hash, purl_type) }
