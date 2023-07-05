@@ -5428,6 +5428,9 @@ msgstr ""
 msgid "Anonymous"
 msgstr ""
 
+msgid "Anonymous user"
+msgstr ""
+
 msgid "Another issue tracker is already in use. Only one issue tracker service can be active at a time"
 msgstr ""
 
