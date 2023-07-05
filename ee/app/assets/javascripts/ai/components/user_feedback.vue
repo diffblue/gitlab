@@ -35,6 +35,11 @@ export default {
       required: false,
       defualt: false,
     },
+    eventExtraData: {
+      type: Object,
+      required: false,
+      default: () => ({}),
+    },
   },
   data() {
     return {
@@ -62,6 +67,7 @@ export default {
         property: value,
         extra: {
           prompt_location: this.promptLocation,
+          ...this.eventExtraData,
         },
       });
     },
