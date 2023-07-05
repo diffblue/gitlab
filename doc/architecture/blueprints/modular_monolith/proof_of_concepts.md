@@ -42,4 +42,3 @@ domains).
 ## Frontend assets aggregation PoC
 
 Frontend assets aggregation is a PoC for a possible separation of micro-frontends.
-
