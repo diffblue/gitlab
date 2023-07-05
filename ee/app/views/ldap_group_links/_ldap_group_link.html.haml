@@ -1,8 +1,7 @@
 %li
   .float-right
-    = link_to group_ldap_group_link_path(group, ldap_group_link), method: :delete, class: 'gl-button btn btn-danger btn-sm' do
-      = sprite_icon('unlink', size: 12, css_class: 'gl-m-0!')
-      %span= _('Remove')
+    = link_button_to group_ldap_group_link_path(group, ldap_group_link), method: :delete, variant: :danger, size: :small, icon: 'unlink' do
+      = _('Remove')
   %strong= ldap_group_link.cn ? "Group: #{ldap_group_link.cn}" : "Filter: #{truncate(ldap_group_link.filter, length: 70)}"
 
   - if ldap_group_link.config

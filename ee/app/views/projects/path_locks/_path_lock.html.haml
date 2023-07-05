@@ -6,7 +6,7 @@
 
     .controls
       - if can_unlock?(path_lock)
-        = link_to project_path_lock_path(@project, path_lock), class: 'btn gl-button btn-default js-remove-row', title: _("Unlock"), method: :delete, data: { confirm: _("Are you sure you want to unlock %{path_lock_path}?") % { path_lock_path: path_lock.path }, container: 'body', qa_selector: 'unlock_button' }, remote: true do
+        = link_button_to project_path_lock_path(@project, path_lock), class: 'js-remove-row', title: _("Unlock"), method: :delete, data: { confirm: _("Are you sure you want to unlock %{path_lock_path}?") % { path_lock_path: path_lock.path }, container: 'body', qa_selector: 'unlock_button' }, remote: true do
           = _('Unlock')
 
   = _("locked by %{path_lock_user_name} %{created_at}").html_safe % { path_lock_user_name: path_lock.user.name, created_at: time_ago_with_tooltip(path_lock.created_at) }
