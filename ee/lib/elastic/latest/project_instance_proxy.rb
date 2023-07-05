@@ -33,9 +33,6 @@ module Elastic
           data[attr.to_s] = safely_read_attribute_for_elasticsearch(attr)
         end
 
-        # Set it as a parent in our `project => child` JOIN field
-        data['join_field'] = es_type
-
         # ES6 is now single-type per index, so we implement our own typing
         data['type'] = 'project'
 
@@ -49,13 +46,17 @@ module Elastic
           data['ci_catalog'] = target.catalog_resource.present?
         end
 
-        TRACKED_FEATURE_SETTINGS.each do |feature|
-          data[feature] = if target.project_feature.present?
-                            target.project_feature.public_send(feature) # rubocop:disable GitlabSecurity/PublicSend
-                          else
-                            logger.warn(message: 'Project is missing ProjectFeature', id: target.id)
-                            ProjectFeature::PRIVATE
-                          end
+        unless ::Elastic::DataMigrationService.migration_has_finished?(:migrate_projects_to_separate_index)
+          # Set it as a parent in our `project => child` JOIN field
+          data['join_field'] = es_type
+          TRACKED_FEATURE_SETTINGS.each do |feature|
+            data[feature] = if target.project_feature.present?
+                              target.project_feature.public_send(feature) # rubocop:disable GitlabSecurity/PublicSend
+                            else
+                              logger.warn(message: 'Project is missing ProjectFeature', id: target.id)
+                              ProjectFeature::PRIVATE
+                            end
+          end
         end
 
         data

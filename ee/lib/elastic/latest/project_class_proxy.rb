@@ -4,6 +4,11 @@ module Elastic
   module Latest
     class ProjectClassProxy < ApplicationClassProxy
       def elastic_search(query, options: {})
+        if ::Elastic::DataMigrationService.migration_has_finished?(:migrate_projects_to_separate_index)
+          options[:project_id_field] = :id
+          options[:no_join_project] = true
+        end
+
         options[:in] = %w[name^10 name_with_namespace^2 path_with_namespace path^9 description]
 
         query_hash = basic_query_hash(options[:in], query, options)
@@ -40,7 +45,7 @@ module Elastic
 
           if options[:project_ids]
             filters << {
-              bool: project_ids_query(options[:current_user], options[:project_ids], options[:public_and_internal_projects])
+              bool: project_ids_query(options[:current_user], options[:project_ids], options[:public_and_internal_projects], no_join_project: options[:no_join_project], project_id_field: options[:project_id_field])
             }
           end
 
