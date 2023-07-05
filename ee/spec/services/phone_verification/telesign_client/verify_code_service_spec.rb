@@ -53,6 +53,7 @@ RSpec.describe PhoneVerification::TelesignClient::VerifyCodeService, feature_cat
             class: described_class.name,
             message: 'IdentityVerification::Phone',
             event: 'Verified a phone verification code with Telesign',
+            telesign_reference_id: telesign_reference_xid,
             telesign_response: telesign_response.json['status']['description'],
             telesign_status_code: telesign_response.status_code,
             username: user.username
