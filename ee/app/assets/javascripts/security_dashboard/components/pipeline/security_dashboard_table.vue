@@ -62,7 +62,7 @@ export default {
 </script>
 
 <template>
-  <div class="ci-table js-security-dashboard-table" data-qa-selector="security_report_content">
+  <div class="ci-table js-security-dashboard-table" data-testid="security-report-content">
     <gl-collapse :visible="isSelectingVulnerabilities" data-testid="selection-summary-collapse">
       <selection-summary />
     </gl-collapse>

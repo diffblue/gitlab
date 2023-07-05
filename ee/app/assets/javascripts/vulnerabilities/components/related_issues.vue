@@ -248,7 +248,7 @@ export default {
         <gl-button
           ref="createIssue"
           size="small"
-          data-qa-selector="create_issue_button"
+          data-testid="create-issue-button"
           :loading="isProcessingAction"
           @click="createIssue"
         >

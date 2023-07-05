@@ -300,7 +300,7 @@ export default {
 
     <gl-table
       ref="policiesTable"
-      data-qa-selector="policies_list"
+      data-testid="policies-list"
       :busy="isLoadingPolicies"
       :items="policies"
       :fields="fields"
