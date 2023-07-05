@@ -46652,6 +46652,9 @@ msgstr ""
 msgid "This commit is part of merge request %{link_to_merge_request}. Comments created here will be created in the context of that merge request."
 msgstr ""
 
+msgid "This commit was created in the GitLab UI, and signed with a GitLab-verified signature."
+msgstr ""
+
 msgid "This commit was signed with a %{strong_open}verified%{strong_close} signature and the committer email is verified to belong to the same user."
 msgstr ""
 

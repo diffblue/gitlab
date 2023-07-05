@@ -26738,6 +26738,7 @@ Verification status of a GPG or X.509 signature for a commit.
 | <a id="verificationstatusunverified"></a>`UNVERIFIED` | unverified verification status. |
 | <a id="verificationstatusunverified_key"></a>`UNVERIFIED_KEY` | unverified_key verification status. |
 | <a id="verificationstatusverified"></a>`VERIFIED` | verified verification status. |
+| <a id="verificationstatusverified_system"></a>`VERIFIED_SYSTEM` | verified_system verification status. |
 
 ### `VisibilityLevelsEnum`
 
