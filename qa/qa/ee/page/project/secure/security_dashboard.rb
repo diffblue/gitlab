@@ -51,8 +51,8 @@ module QA
             end
 
             def change_state(status, dismissal_reason = "not_applicable")
-              click_element(:status_listbox)
-              click_element(:"listbox-item-#{status}")
+              click_element(:status_listbox, wait: 10)
+              click_element(:"listbox-item-#{status}", wait: 10)
 
               if status.include?("dismissed")
                 click_element(:dismissal_reason_listbox)
