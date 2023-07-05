@@ -10,5 +10,9 @@ class MergeRequest::ReviewLlmSummary < ApplicationRecord
   validates :content, presence: true, length: { maximum: 2056 }
 
   enum provider: { open_ai: 0 }
+
+  def reviewer
+    review.author
+  end
 end
 # rubocop:enable Style/ClassAndModuleChildren

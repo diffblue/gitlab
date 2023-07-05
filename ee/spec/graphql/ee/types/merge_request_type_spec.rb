@@ -12,6 +12,7 @@ RSpec.describe GitlabSchema.types['MergeRequest'], feature_category: :code_revie
   it { expect(described_class).to have_graphql_field(:security_reports_up_to_date_on_target_branch, calls_gitaly?: true) }
   it { expect(described_class).to have_graphql_field(:suggested_reviewers) }
   it { expect(described_class).to have_graphql_field(:diff_llm_summaries) }
+  it { expect(described_class).to have_graphql_field(:merge_request_diffs) }
 
   describe '#merge_trains_count', feature_category: :merge_trains do
     let_it_be(:project) { create(:project, :public) }

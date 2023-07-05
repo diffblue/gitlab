@@ -47,7 +47,7 @@ RSpec.describe 'getting merge request information nested in a project', feature_
         suggested_reviewers: suggested_reviewers,
         accepted_reviewers: accepted_reviewers
       )
-      allow_any_instance_of(Project)  # rubocop:disable RSpec/AnyInstanceOf
+      allow_any_instance_of(Project) # rubocop:disable RSpec/AnyInstanceOf
         .to receive(:can_suggest_reviewers?).and_return(available)
     end
 
@@ -124,6 +124,142 @@ RSpec.describe 'getting merge request information nested in a project', feature_
         expect(merge_request_graphql_data).to eq({
           'diffLlmSummaries' => {
             'nodes' => []
+          }
+        })
+      end
+    end
+  end
+
+  describe 'mergeRequestDiffs' do
+    let(:mr_fields) do
+      <<-GQL
+      mergeRequestDiffs {
+        nodes {
+          diffLlmSummary {
+            mergeRequestDiffId
+            content
+            user {
+              id
+            }
+          }
+          reviewLlmSummaries {
+            nodes {
+              mergeRequestDiffId
+              content
+              user {
+                id
+              }
+              reviewer {
+                id
+              }
+            }
+          }
+        }
+      }
+      GQL
+    end
+
+    let_it_be(:merge_request) { create(:merge_request, :skip_diff_creation, source_project: project) }
+    let_it_be(:mr_diff_1) { create(:merge_request_diff, merge_request: merge_request) }
+    let_it_be(:mr_diff_2) { create(:merge_request_diff, merge_request: merge_request) }
+
+    context 'when there are diff and review summaries associated to MR diffs' do
+      let_it_be(:mr_diff_summary_1) { create(:merge_request_diff_llm_summary, merge_request_diff: mr_diff_1) }
+      let_it_be(:mr_diff_summary_2) { create(:merge_request_diff_llm_summary, merge_request_diff: mr_diff_2) }
+      let_it_be(:mr_review_summary_1) { create(:merge_request_review_llm_summary, merge_request_diff: mr_diff_1) }
+      let_it_be(:mr_review_summary_2) { create(:merge_request_review_llm_summary, merge_request_diff: mr_diff_2) }
+
+      it 'returns the diff and review summaries' do
+        post_graphql(query, current_user: current_user)
+
+        expect(merge_request_graphql_data).to eq({
+          'mergeRequestDiffs' => {
+            'nodes' => [
+              {
+                'diffLlmSummary' => {
+                  'mergeRequestDiffId' => mr_diff_2.id.to_s,
+                  'content' => mr_diff_summary_2.content,
+                  'user' => {
+                    'id' => mr_diff_summary_2.user.to_gid.to_s
+                  }
+                },
+                'reviewLlmSummaries' => {
+                  'nodes' => [
+                    {
+                      'mergeRequestDiffId' => mr_diff_2.id.to_s,
+                      'content' => mr_review_summary_2.content,
+                      'user' => {
+                        'id' => mr_review_summary_2.user.to_gid.to_s
+                      },
+                      'reviewer' => {
+                        'id' => mr_review_summary_2.reviewer.to_gid.to_s
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                'diffLlmSummary' => {
+                  'mergeRequestDiffId' => mr_diff_1.id.to_s,
+                  'content' => mr_diff_summary_1.content,
+                  'user' => {
+                    'id' => mr_diff_summary_1.user.to_gid.to_s
+                  }
+                },
+                'reviewLlmSummaries' => {
+                  'nodes' => [
+                    {
+                      'mergeRequestDiffId' => mr_diff_1.id.to_s,
+                      'content' => mr_review_summary_1.content,
+                      'user' => {
+                        'id' => mr_review_summary_1.user.to_gid.to_s
+                      },
+                      'reviewer' => {
+                        'id' => mr_review_summary_1.reviewer.to_gid.to_s
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        })
+      end
+
+      it 'avoids N+1 queries', :use_sql_query_cache do
+        post_graphql(query, current_user: current_user) # warm-up
+
+        control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+          post_graphql(query, current_user: current_user)
+        end
+
+        expect_graphql_errors_to_be_empty
+
+        mr_diff_3 = create(:merge_request_diff, merge_request: merge_request)
+        create(:merge_request_diff_llm_summary, merge_request_diff: mr_diff_3)
+        create(:merge_request_review_llm_summary, merge_request_diff: mr_diff_3)
+
+        expect { post_graphql(query, current_user: current_user) }.not_to exceed_all_query_limit(control)
+        expect_graphql_errors_to_be_empty
+      end
+    end
+
+    context 'when there are no diff and review summaries associated to MR diffs' do
+      it 'returns empty nodes' do
+        post_graphql(query, current_user: current_user)
+
+        expect(merge_request_graphql_data).to eq({
+          'mergeRequestDiffs' => {
+            'nodes' => [
+              {
+                'diffLlmSummary' => nil,
+                'reviewLlmSummaries' => { 'nodes' => [] }
+              },
+              {
+                'diffLlmSummary' => nil,
+                'reviewLlmSummaries' => { 'nodes' => [] }
+              }
+            ]
           }
         })
       end

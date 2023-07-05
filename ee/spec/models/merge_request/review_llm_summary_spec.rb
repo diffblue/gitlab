@@ -13,4 +13,10 @@ RSpec.describe ::MergeRequest::ReviewLlmSummary, feature_category: :code_review_
     it { is_expected.to validate_length_of(:content).is_at_most(2056) }
     it { is_expected.to validate_presence_of(:provider) }
   end
+
+  describe '#reviewer' do
+    it 'returns author of associated review' do
+      expect(merge_request_review_llm_summary.reviewer).to eq(merge_request_review_llm_summary.review.author)
+    end
+  end
 end
