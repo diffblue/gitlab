@@ -29365,6 +29365,9 @@ msgstr ""
 msgid "MlExperimentTracking|Model experiments"
 msgstr ""
 
+msgid "MlExperimentTracking|Model registry"
+msgstr ""
+
 msgid "MlExperimentTracking|Name"
 msgstr ""
 
@@ -29399,6 +29402,9 @@ msgid "Modal|Close"
 msgstr ""
 
 msgid "Model experiments"
+msgstr ""
+
+msgid "ModelRegistry|Model registry"
 msgstr ""
 
 msgid "Modified"
