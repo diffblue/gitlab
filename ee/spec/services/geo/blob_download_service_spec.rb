@@ -27,6 +27,29 @@ RSpec.describe Geo::BlobDownloadService, feature_category: :geo_replication do
       expect(::Gitlab::Geo::Replication::BlobDownloader).to receive(:new).and_return(downloader)
     end
 
+    context 'when exception is raised' do
+      let(:error) { StandardError.new('Error') }
+      let(:result) do
+        double(
+          :result,
+          success: false,
+          primary_missing_file:
+          false,
+          bytes_downloaded: 0,
+          reason: 'foo',
+          extra_details: { error: error })
+      end
+
+      it 'tracks exception' do
+        expect(Gitlab::ErrorTracking).to receive(:track_exception).with(
+          error,
+          { model_record_id: model_record.id, replicable_name: 'package_file' }
+        )
+
+        subject.execute
+      end
+    end
+
     context "when it can obtain the exclusive lease" do
       context "when the registry record does not exist" do
         context "when the downloader returns success" do
