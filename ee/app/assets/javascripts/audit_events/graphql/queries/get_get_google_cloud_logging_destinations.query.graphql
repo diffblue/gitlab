@@ -1,0 +1,14 @@
+query getGoogleCloudLoggingDestinations($fullPath: ID!) {
+  group(fullPath: $fullPath) {
+    id
+    googleCloudLoggingConfigurations {
+      nodes {
+        id
+        logIdName
+        privateKey
+        googleProjectIdName
+        clientEmail
+      }
+    }
+  }
+}

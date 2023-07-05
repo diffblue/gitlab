@@ -32,6 +32,7 @@ import {
   ADD_STREAM_EDITOR_I18N,
   AUDIT_STREAMS_NETWORK_ERRORS,
   createBlankHeader,
+  DESTINATION_TYPE_HTTP,
 } from '../../constants';
 import {
   addAuditEventsStreamingDestination,
@@ -568,6 +569,9 @@ export default {
     updateEventTypeFilters(newFilters) {
       this.filters = newFilters;
     },
+    formSubmission() {
+      return this.isEditing ? this.updateDestination() : this.addDestination();
+    },
   },
   i18n: { ...ADD_STREAM_EDITOR_I18N, CREATING_ERROR },
   fields: [
@@ -596,6 +600,7 @@ export default {
       tdClass: finalTdClasses,
     },
   ],
+  DESTINATION_TYPE_HTTP,
 };
 </script>
 
@@ -624,7 +629,7 @@ export default {
       {{ error }}
     </gl-alert>
 
-    <gl-form @submit.prevent="() => (isEditing ? updateDestination() : addDestination())">
+    <gl-form @submit.prevent="formSubmission">
       <gl-form-group
         :label="$options.i18n.DESTINATION_URL_LABEL"
         data-testid="destination-url-form-group"
@@ -799,6 +804,7 @@ export default {
     <stream-delete-modal
       v-if="isEditing"
       ref="deleteModal"
+      :type="$options.DESTINATION_TYPE_HTTP"
       :item="item"
       @deleting="onDeleting"
       @delete="onDelete"

@@ -1,0 +1,5 @@
+mutation deleteGcpLoggingDestination($id: AuditEventsGoogleCloudLoggingConfigurationID!) {
+  googleCloudLoggingConfigurationDestroy(input: { id: $id }) {
+    errors
+  }
+}

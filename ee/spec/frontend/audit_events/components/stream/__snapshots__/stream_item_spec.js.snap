@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`StreamItem Group StreamItem when an item has event filters renders a popover 1`] = `
+exports[`StreamItem Group http StreamItem when an item has event filters renders a popover 1`] = `
 <div
   class="gl-popover"
   data-testid="filter-popover"

@@ -41,6 +41,9 @@ export default () => [
   populateEvent('User 4', false, false),
 ];
 
+export const mockHttpType = 'http';
+export const mockGcpLoggingType = 'gcpLogging';
+
 export const mockExternalDestinationUrl = 'https://api.gitlab.com';
 export const mockExternalDestinationHeader = () => ({
   id: uniqueId('gid://gitlab/AuditEvents::Streaming::Header/'),
@@ -112,6 +115,24 @@ export const mockInstanceExternalDestinations = [
   },
 ];
 
+export const mockGcpLoggingDestination = {
+  __typename: 'GoogleCloudLoggingConfigurationType',
+  id: 'gid://gitlab/AuditEvents::GoogleCloudLoggingConfiguration/1',
+  clientEmail: 'my-email@my-google-project.iam.gservice.account.com',
+  googleProjectIdName: 'my-google-project',
+  logIdName: 'audit-events',
+  privateKey: 'PRIVATE_KEY',
+};
+
+export const mockNewGcpLoggingDestination = {
+  __typename: 'GoogleCloudLoggingConfigurationType',
+  id: 'gid://gitlab/AuditEvents::GoogleCloudLoggingConfiguration/1',
+  clientEmail: 'new-email@my-google-project.iam.gservice.account.com',
+  googleProjectIdName: 'new-google-project',
+  logIdName: 'audit-events',
+  privateKey: 'PRIVATE_KEY',
+};
+
 export const groupPath = 'test-group';
 
 export const instanceGroupPath = 'instance';
@@ -151,12 +172,48 @@ export const destinationCreateMutationPopulator = (errors = []) => {
 
   const errorData = {
     errors,
-    externalAuditEventDestination: null,
+    googleCloudLoggingConfiguration: null,
   };
 
   return {
     data: {
       externalAuditEventDestinationCreate: errors.length > 0 ? errorData : correctData,
+    },
+  };
+};
+
+export const gcpLoggingDestinationCreateMutationPopulator = (errors = []) => {
+  const correctData = {
+    errors,
+    googleCloudLoggingConfiguration: mockGcpLoggingDestination,
+  };
+
+  const errorData = {
+    errors,
+    googleCloudLoggingConfiguration: null,
+  };
+
+  return {
+    data: {
+      googleCloudLoggingConfigurationCreate: errors.length > 0 ? errorData : correctData,
+    },
+  };
+};
+
+export const gcpLoggingDestinationUpdateMutationPopulator = (errors = []) => {
+  const correctData = {
+    errors,
+    googleCloudLoggingConfiguration: mockGcpLoggingDestination,
+  };
+
+  const errorData = {
+    errors,
+    externalAuditEventDestination: null,
+  };
+
+  return {
+    data: {
+      googleCloudLoggingConfigurationUpdate: errors.length > 0 ? errorData : correctData,
     },
   };
 };
@@ -302,6 +359,14 @@ export const destinationInstanceCreateMutationPopulator = (errors = []) => {
 export const destinationInstanceDeleteMutationPopulator = (errors = []) => ({
   data: {
     instanceExternalAuditEventDestinationDestroy: {
+      errors,
+    },
+  },
+});
+
+export const destinationGcpLoggingDeleteMutationPopulator = (errors = []) => ({
+  data: {
+    googleCloudLoggingConfigurationDestroy: {
       errors,
     },
   },

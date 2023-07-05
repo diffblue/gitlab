@@ -231,7 +231,7 @@ describe('StreamDestinationEditor', () => {
         await waitForPromises();
 
         expect(findAlertErrors()).toHaveLength(1);
-        expect(findAlertErrors().at(0).text()).toBe(errorMsg);
+        expect(findAlertErrors().at(0).text()).toBe(AUDIT_STREAMS_NETWORK_ERRORS.CREATING_ERROR);
         expect(wrapper.emitted('error')).toBeDefined();
         expect(wrapper.emitted('added')).toBeUndefined();
       });
