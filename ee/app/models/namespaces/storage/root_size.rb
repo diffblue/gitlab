@@ -17,6 +17,7 @@ module Namespaces
         return false unless usage_ratio > 1
 
         update_first_enforcement_timestamp
+        update_last_enforcement_timestamp
 
         true
       end
@@ -134,6 +135,14 @@ module Namespaces
           next if namespace_limit.first_enforced_at.present?
 
           namespace_limit.update(first_enforced_at: Time.current)
+        end
+      end
+
+      def update_last_enforcement_timestamp
+        Rails.cache.fetch(['namespaces', root_namespace.id, 'last_enforcement_tracking'], expires_in: 1.day) do
+          namespace_limit = root_namespace.namespace_limit
+
+          namespace_limit.update(last_enforced_at: Time.current)
         end
       end
     end
