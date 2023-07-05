@@ -2,36 +2,12 @@
 
 module ProductAnalytics
   class InitializeStackService < BaseContainerService
+    include Gitlab::Utils::StrongMemoize
     def execute
-      unless Gitlab::CurrentSettings.product_analytics_enabled?
-        return ServiceResponse.error(message: 'Product analytics is disabled')
-      end
+      return feature_availability_error if feature_availability_error.present?
 
-      unless container.product_analytics_enabled?
-        return ServiceResponse.error(message: 'Product analytics is disabled for this project')
-      end
-
-      unless can?(current_user, :modify_product_analytics_settings, container)
-        return ServiceResponse.error(message: 'User is not authorized to initialize product analytics')
-      end
-
-      return ServiceResponse.error(message: 'Product analytics initialization is already in progress') if locked?
-
-      if ::Feature.enabled?(:product_analytics_snowplow_support, container)
-        if container.project_setting.product_analytics_instrumentation_key.present?
-          return ServiceResponse.error(message: 'Product analytics initialization is already complete')
-        end
-
-        lock!
-        ::ProductAnalytics::InitializeSnowplowProductAnalyticsWorker.perform_async(container.id)
-      else
-        if container.project_setting.jitsu_key.present?
-          return ServiceResponse.error(message: 'Product analytics initialization is already complete')
-        end
-
-        lock!
-        ::ProductAnalytics::InitializeAnalyticsWorker.perform_async(container.id)
-      end
+      lock!
+      ::ProductAnalytics::InitializeSnowplowProductAnalyticsWorker.perform_async(container.id)
 
       ServiceResponse.success(message: 'Product analytics initialization started')
     end
@@ -53,5 +29,34 @@ module ProductAnalytics
     def locked?
       !!Gitlab::Redis::SharedState.with { |redis| redis.get(redis_key) }
     end
+
+    def feature_availability_error
+      unless Gitlab::CurrentSettings.product_analytics_enabled?
+        return ServiceResponse.error(message: 'Product analytics is disabled')
+      end
+
+      unless container.product_analytics_enabled?
+        return ServiceResponse.error(message: 'Product analytics is disabled for this project')
+      end
+
+      unless can?(current_user, :modify_product_analytics_settings, container)
+        return ServiceResponse.error(message: 'User is not authorized to initialize product analytics')
+      end
+
+      return ServiceResponse.error(message: 'Product analytics initialization is already in progress') if locked?
+
+      if ::Feature.enabled?(:product_analytics_snowplow_support, container)
+        if container.project_setting.product_analytics_instrumentation_key.present?
+          ServiceResponse.error(message: 'Product analytics initialization is already complete')
+        end
+      else
+        if container.project_setting.jitsu_key.present?
+          return ServiceResponse.error(message: 'Product analytics initialization is already complete')
+        end
+
+        ServiceResponse.error(message: 'Product analytics snowplow support feature flag is disabled')
+      end
+    end
+    strong_memoize_attr :feature_availability_error
   end
 end
