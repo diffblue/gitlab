@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe MergeRequestApprovalSettings::UpdateService, feature_category: :code_review_workflow do
   let!(:group) { create(:group) }
-  let!(:project) { create(:project, merge_requests_author_approval: true) }
+  let_it_be_with_reload(:project) { create(:project, :in_group, merge_requests_author_approval: true) }
   let_it_be(:user) { create(:user) }
 
   let(:params) { { allow_author_approval: false } }
@@ -49,11 +49,49 @@ RSpec.describe MergeRequestApprovalSettings::UpdateService, feature_category: :c
         expect(response.payload.reload.merge_requests_author_approval).to be(false)
         expect(project.reload.merge_requests_author_approval).to be(false)
       end
+
+      context 'run_compliance_standard_checks' do
+        before do
+          stub_licensed_features(group_level_compliance_dashboard: true)
+        end
+
+        context 'when feature flag is enabled' do
+          before do
+            stub_feature_flags(compliance_adherence_report: true)
+          end
+
+          it 'invokes PreventApprovalByAuthorWorker', :sidekiq_inline, :aggregate_failures do
+            expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorWorker)
+              .to receive(:perform_async).with({ 'project_id' => project.id, 'user_id' => user.id }).and_call_original
+
+            response = subject.execute
+
+            expect(response).to be_success
+
+            project_adherence = project.reload.compliance_standards_adherence
+                                  .for_check_name(:prevent_approval_by_merge_request_author).first
+
+            expect(project_adherence.status).to eq("success")
+          end
+        end
+
+        context 'when feature flag is disabled' do
+          before do
+            stub_feature_flags(compliance_adherence_report: false)
+          end
+
+          it 'does not invoke PreventApprovalByAuthorWorker' do
+            expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorWorker)
+              .not_to receive(:perform_async).with({ 'project_id' => project.id, 'user_id' => user.id })
+          end
+        end
+      end
     end
   end
 
   describe 'execute with a Group as container' do
     let(:container) { group }
+    let(:project) { create(:project, group: group) }
 
     shared_examples 'call audit changes service' do
       it 'executes GroupMergeRequestApprovalSettingChangesAuditor' do
@@ -93,6 +131,38 @@ RSpec.describe MergeRequestApprovalSettings::UpdateService, feature_category: :c
 
         expect(response).to be_success
         expect(response.payload.allow_author_approval).to be(false)
+      end
+
+      context 'run_compliance_standard_checks' do
+        before do
+          stub_licensed_features(group_level_compliance_dashboard: true)
+        end
+
+        context 'when feature flag is enabled' do
+          before do
+            stub_feature_flags(compliance_adherence_report: true)
+          end
+
+          it 'invokes PreventApprovalByAuthorGroupWorker', :sidekiq_inline do
+            expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorGroupWorker)
+              .to receive(:perform_async).with({ 'group_id' => group.id, 'user_id' => user.id }).and_call_original
+
+            response = subject.execute
+
+            expect(response).to be_success
+          end
+        end
+
+        context 'when feature flag is disabled' do
+          before do
+            stub_feature_flags(compliance_adherence_report: false)
+          end
+
+          it 'does not invoke PreventApprovalByAuthorGroupWorker' do
+            expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorGroupWorker)
+              .not_to receive(:perform_async).with({ 'group_id' => group.id, 'user_id' => user.id })
+          end
+        end
       end
 
       it_behaves_like 'call audit changes service'

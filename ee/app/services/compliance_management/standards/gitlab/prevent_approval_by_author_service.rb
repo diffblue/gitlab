@@ -7,7 +7,9 @@ module ComplianceManagement
         CHECK_NAME = :prevent_approval_by_merge_request_author
 
         def execute
-          return project_not_found if project.blank?
+          return unavailable_for_user_namespace if project.namespace.user_namespace?
+
+          return feature_not_available unless feature_available?
 
           create_or_update_project_adherence
         end
@@ -15,21 +17,7 @@ module ComplianceManagement
         private
 
         def create_or_update_project_adherence
-          attributes = {
-            project_id: project.id,
-            namespace_id: project.namespace_id,
-            status: status(project.merge_requests_author_approval?),
-            check_name: CHECK_NAME,
-            standard: STANDARD
-          }
-
-          project_adherence = ::Projects::ComplianceStandards::Adherence
-                                .for_project(project)
-                                .for_check_name(CHECK_NAME)
-                                .for_standard(STANDARD)
-                                .first
-
-          project_adherence = ::Projects::ComplianceStandards::Adherence.new if project_adherence.blank?
+          project_adherence = find_or_initialize_adherence
 
           project_adherence.update!(attributes)
 
@@ -44,6 +32,28 @@ module ComplianceManagement
 
         def status(is_mr_author_allowed_to_merge)
           is_mr_author_allowed_to_merge ? :fail : :success
+        end
+
+        def feature_available?
+          project_group.licensed_feature_available?(:group_level_compliance_dashboard)
+        end
+
+        def find_or_initialize_adherence
+          ::Projects::ComplianceStandards::AdherenceFinder.new(
+            project_group,
+            current_user,
+            { project_ids: project.id, check_name: CHECK_NAME, standard: STANDARD, skip_authorization: true }
+          ).execute.first || ::Projects::ComplianceStandards::Adherence.new
+        end
+
+        def attributes
+          {
+            project_id: project.id,
+            namespace_id: project.namespace_id,
+            status: status(project.merge_requests_author_approval?),
+            check_name: CHECK_NAME,
+            standard: STANDARD
+          }
         end
       end
     end

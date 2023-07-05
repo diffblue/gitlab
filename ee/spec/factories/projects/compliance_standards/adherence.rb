@@ -8,6 +8,10 @@ FactoryBot.define do
     check_name { :prevent_approval_by_merge_request_author }
     standard { :gitlab }
 
+    trait :gitlab do
+      standard { :gitlab }
+    end
+
     trait :fail do
       status { :fail }
     end

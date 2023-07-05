@@ -17,7 +17,8 @@ module Projects
                                         message: "already has this check defined for this standard" }
       validate :namespace_is_group
 
-      scope :for_project, ->(project) { where(project: project) }
+      scope :for_group, ->(group) { where(namespace: group) }
+      scope :for_projects, ->(project_ids) { where(project: project_ids) }
       scope :for_check_name, ->(check_name) { where(check_name: check_name) }
       scope :for_standard, ->(standard) { where(standard: standard) }
 

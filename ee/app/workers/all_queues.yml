@@ -1182,6 +1182,24 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: compliance_management_standards_gitlab_prevent_approval_by_author
+  :worker_name: ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorWorker
+  :feature_category: :compliance_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: compliance_management_standards_gitlab_prevent_approval_by_author_group
+  :worker_name: ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorGroupWorker
+  :feature_category: :compliance_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: compliance_management_update_default_framework
   :worker_name: ComplianceManagement::UpdateDefaultFrameworkWorker
   :feature_category: :compliance_management
