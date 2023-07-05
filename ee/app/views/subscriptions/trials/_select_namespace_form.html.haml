@@ -28,8 +28,8 @@
               = radio_button_tag :trial_entity, :individual, params[:trial_entity]=='individual', required: true,
                 class: 'form-check-input', data: { qa_selector: 'trial_individual' }
               = label_tag :trial_entity_individual, _('Just me'), class: 'form-check-label'
-      = submit_tag _('Start your free trial'), class: 'gl-button btn btn-confirm gl-w-20 gl-xs-w-full',
-        data: { qa_selector: 'start_your_free_trial' }
+      = render Pajamas::ButtonComponent.new(type: :submit, variant: :confirm, button_options: {data: { qa_selector: 'start_your_free_trial' }}) do
+        = _('Start your free trial')
 
   .col-md-4.gl-mt-9
     = image_tag 'illustrations/saas-trial-illustration.svg', alt: '', class: 'd-none d-md-inline gl-w-full'
