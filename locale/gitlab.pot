@@ -11150,6 +11150,9 @@ msgstr ""
 msgid "CodeOwners|Code owners"
 msgstr ""
 
+msgid "CodeOwners|Code owners are users and groups that can approve specific file changes."
+msgstr ""
+
 msgid "CodeOwners|Hide all"
 msgstr ""
 
