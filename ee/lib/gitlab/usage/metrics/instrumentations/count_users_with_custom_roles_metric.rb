@@ -8,7 +8,7 @@ module Gitlab
           operation :distinct_count, column: :user_id
 
           relation do
-            Member.where.not(member_role: nil) # rubocop: disable CodeReuse/ActiveRecord
+            Member.where.not(member_role: nil)
           end
         end
       end

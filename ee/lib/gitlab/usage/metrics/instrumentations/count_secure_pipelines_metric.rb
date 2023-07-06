@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# rubocop: disable CodeReuse/ActiveRecord
-
 module Gitlab
   module Usage
     module Metrics
@@ -94,4 +92,3 @@ module Gitlab
     end
   end
 end
-# rubocop: enable CodeReuse/ActiveRecord

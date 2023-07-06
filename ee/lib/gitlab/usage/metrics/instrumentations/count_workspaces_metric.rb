@@ -7,7 +7,7 @@ module Gitlab
         class CountWorkspacesMetric < DatabaseMetric
           operation :count
 
-          relation { RemoteDevelopment::Workspace } # rubocop: disable CodeReuse/ActiveRecord
+          relation { RemoteDevelopment::Workspace }
         end
       end
     end
