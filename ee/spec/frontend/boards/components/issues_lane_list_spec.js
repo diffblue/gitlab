@@ -7,9 +7,12 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { DraggableItemTypes } from 'ee_else_ce/boards/constants';
 import listQuery from 'ee_else_ce/boards/graphql/board_lists_deferred.query.graphql';
 import IssuesLaneList from 'ee/boards/components/issues_lane_list.vue';
+import eventHub from '~/boards/eventhub';
 import BoardCard from '~/boards/components/board_card.vue';
+import BoardNewIssue from '~/boards/components/board_new_issue.vue';
 import { ListType } from '~/boards/constants';
 import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
+import issueCreateMutation from '~/boards/graphql/issue_create.mutation.graphql';
 import { createStore } from '~/boards/stores';
 import issueMoveListMutation from 'ee/boards/graphql/issue_move_list.mutation.graphql';
 import { mockList, boardListQueryResponse } from 'jest/boards/mock_data';
@@ -18,6 +21,7 @@ import {
   mockGroupIssuesResponse,
   mockLists,
   moveIssueMutationResponse,
+  createIssueMutationResponse,
 } from '../mock_data';
 
 Vue.use(VueApollo);
@@ -27,8 +31,13 @@ describe('IssuesLaneList', () => {
   let store;
   let mockApollo;
 
+  const findNewIssueForm = () => wrapper.findComponent(BoardNewIssue);
+
   const listIssuesQueryHandlerSuccess = jest.fn().mockResolvedValue(mockGroupIssuesResponse());
   const moveIssueMutationHandlerSuccess = jest.fn().mockResolvedValue(moveIssueMutationResponse);
+  const createIssueMutationHandlerSuccess = jest
+    .fn()
+    .mockResolvedValue(createIssueMutationResponse);
 
   const createComponent = ({
     listType = ListType.backlog,
@@ -53,6 +62,7 @@ describe('IssuesLaneList', () => {
     mockApollo = createMockApollo([
       [listsIssuesQuery, listIssuesQueryHandlerSuccess],
       [issueMoveListMutation, moveIssueMutationHandlerSuccess],
+      [issueCreateMutation, createIssueMutationHandlerSuccess],
     ]);
     const baseVariables = {
       fullPath: 'gitlab-org',
@@ -301,6 +311,28 @@ describe('IssuesLaneList', () => {
       await waitForPromises();
 
       expect(moveIssueMutationHandlerSuccess).toHaveBeenCalled();
+    });
+
+    it('creates issue in unassigned issues lane', async () => {
+      createComponent({
+        listProps: {
+          id: mockList.id,
+        },
+        isUnassignedIssuesLane: true,
+        isApolloBoard: true,
+        canAdminEpic: true,
+      });
+
+      await waitForPromises();
+
+      eventHub.$emit(`toggle-issue-form-${mockList.id}`);
+      await nextTick();
+      expect(findNewIssueForm().exists()).toBe(true);
+      findNewIssueForm().vm.$emit('addNewIssue', { title: 'Foo' });
+
+      await nextTick();
+
+      expect(createIssueMutationHandlerSuccess).toHaveBeenCalled();
     });
   });
 });

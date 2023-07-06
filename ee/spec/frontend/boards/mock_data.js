@@ -972,7 +972,7 @@ export const moveEpicMutationResponse = {
 export const createIssueMutationResponse = {
   data: {
     createIssuable: {
-      issuable: rawIssue,
+      issuable: { ...rawIssue, id: 'gid://gitlab/Issue/35' },
       errors: [],
       __typename: 'CreateIssuePayload',
     },
