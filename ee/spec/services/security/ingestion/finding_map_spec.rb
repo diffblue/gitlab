@@ -30,19 +30,6 @@ RSpec.describe Security::Ingestion::FindingMap, feature_category: :vulnerability
     end
   end
 
-  describe '#issue_feedback' do
-    let!(:feedback) do
-      create(:vulnerability_feedback,
-             :issue,
-             project: security_finding.scan.project,
-             finding_uuid: security_finding.uuid)
-    end
-
-    subject { finding_map.issue_feedback }
-
-    it { is_expected.to eq(feedback) }
-  end
-
   describe '#to_hash' do
     let(:expected_hash) do
       {
