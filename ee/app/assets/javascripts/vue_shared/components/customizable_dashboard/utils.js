@@ -64,7 +64,6 @@ export const isEmptyPanelData = (visualizationType, data) => {
 
 export const availableVisualizationsValidator = (obj) => {
   return Object.values(obj).every(
-    ({ loading, visualizationIds }) =>
-      typeof loading === 'boolean' && Array.isArray(visualizationIds),
+    ({ loading, visualizations }) => typeof loading === 'boolean' && Array.isArray(visualizations),
   );
 };

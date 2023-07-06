@@ -1,0 +1,13 @@
+query getAllProductAnalyticsVisualizations($projectPath: ID!) {
+  project(fullPath: $projectPath) {
+    id
+    productAnalyticsVisualizations {
+      nodes {
+        slug
+        type
+        data
+        options
+      }
+    }
+  }
+}
