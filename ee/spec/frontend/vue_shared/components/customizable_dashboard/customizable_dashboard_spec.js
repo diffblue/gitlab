@@ -1,3 +1,4 @@
+import { nextTick } from 'vue';
 import { GridStack } from 'gridstack';
 import * as Sentry from '@sentry/browser';
 import { RouterLinkStub } from '@vue/test-utils';
@@ -29,7 +30,13 @@ import {
   mockDateRangeFilterChangePayload,
 } from './mock_data';
 
-jest.mock('~/alert');
+const mockAlertDismiss = jest.fn();
+jest.mock('~/alert', () => ({
+  createAlert: jest.fn().mockImplementation(() => ({
+    dismiss: mockAlertDismiss,
+  })),
+}));
+
 jest.mock('gridstack', () => ({
   GridStack: {
     init: jest.fn(() => {
@@ -215,6 +222,22 @@ describe('CustomizableDashboard', () => {
       await waitForPromises();
 
       expect(wrapper.vm.grid.makeWidget).toHaveBeenCalledWith('#panel-3');
+    });
+  });
+
+  describe('beforeDestroy', () => {
+    beforeEach(() => {
+      createWrapper();
+    });
+
+    it('should dismiss the alert', async () => {
+      findPanels().at(0).vm.$emit('error', new Error());
+
+      wrapper.destroy();
+
+      await nextTick();
+
+      expect(mockAlertDismiss).toHaveBeenCalled();
     });
   });
 
