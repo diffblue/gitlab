@@ -23,6 +23,8 @@ PATH
   remote: gems/gitlab-schema-validation
   specs:
     gitlab-schema-validation (0.1.0)
+      diffy
+      pg_query
 
 PATH
   remote: gems/gitlab-utils
