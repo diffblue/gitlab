@@ -191,6 +191,18 @@ CREATE FUNCTION postgres_pg_stat_activity_autovacuum() RETURNS TABLE(query text,
     AND backend_type = 'autovacuum worker'
 $$;
 
+CREATE FUNCTION prevent_delete_of_default_organization() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF OLD.id = 1 THEN
+  RAISE EXCEPTION 'Deletion of the default Organization is not allowed.';
+END IF;
+RETURN OLD;
+
+END
+$$;
+
 CREATE FUNCTION set_has_external_issue_tracker() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -35229,6 +35241,8 @@ CREATE TRIGGER nullify_merge_request_metrics_build_data_on_update BEFORE UPDATE 
 CREATE TRIGGER organizations_loose_fk_trigger AFTER DELETE ON organizations REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
 
 CREATE TRIGGER p_ci_builds_loose_fk_trigger AFTER DELETE ON p_ci_builds REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
+
+CREATE TRIGGER prevent_delete_of_default_organization_before_destroy BEFORE DELETE ON organizations FOR EACH ROW EXECUTE FUNCTION prevent_delete_of_default_organization();
 
 CREATE TRIGGER projects_loose_fk_trigger AFTER DELETE ON projects REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
 
