@@ -2,6 +2,7 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import Draggable from 'vuedraggable';
 import { mapState, mapActions } from 'vuex';
+import { __ } from '~/locale';
 import BoardCard from '~/boards/components/board_card.vue';
 import BoardNewIssue from '~/boards/components/board_new_issue.vue';
 import eventHub from '~/boards/eventhub';
@@ -11,6 +12,7 @@ import {
   addItemToList,
   removeItemFromList,
   updateIssueCountAndWeight,
+  setError,
 } from '~/boards/graphql/cache_updates';
 import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 import { shouldCloneCard } from '~/boards/boards_util';
@@ -115,7 +117,6 @@ export default {
         boardId: this.boardId,
         isGroup: this.boardType === BoardType.group,
         isProject: this.boardType === BoardType.project,
-        // filters: { ...this.filterParams, epicWildcardId: EpicFilterType.none.toUpperCase() },
         filters: this.isUnassignedIssuesLane
           ? { ...this.filterParams, epicWildcardId: EpicFilterType.none.toUpperCase() }
           : { ...this.filterParams, epicId: this.epicId },
@@ -411,6 +412,50 @@ export default {
         cache,
       });
     },
+    async addListItem(input) {
+      this.toggleForm();
+      try {
+        await this.$apollo.mutate({
+          mutation: listIssuablesQueries.issue.createMutation,
+          variables: { input: { ...input, moveAfterId: this.issuesToUse[0]?.id } },
+          update: (cache, { data: { createIssuable } }) => {
+            const { issuable } = createIssuable;
+            addItemToList({
+              query: listsIssuesQuery,
+              variables: { ...this.baseVariables, id: this.list.id },
+              issuable,
+              newIndex: 0,
+              boardType: this.boardType,
+              issuableType: 'issue',
+              cache,
+            });
+
+            updateIssueCountAndWeight({
+              fromListId: null,
+              toListId: this.list.id,
+              filterParams: this.filterParams,
+              issuable,
+              shouldClone: true,
+              cache,
+            });
+          },
+          optimisticResponse: {
+            createIssuable: {
+              errors: [],
+              issuable: {
+                ...listIssuablesQueries.issue.optimisticResponse,
+                title: input.title,
+              },
+            },
+          },
+        });
+      } catch (error) {
+        setError({
+          message: __('An error occurred while creating the issue. Please try again.'),
+          error,
+        });
+      }
+    },
   },
 };
 </script>
@@ -421,7 +466,12 @@ export default {
     :class="{ 'is-collapsed gl-w-10': list.collapsed }"
   >
     <div class="board-inner gl-rounded-base gl-relative gl-w-full gl-bg-gray-50">
-      <board-new-issue v-if="showNewIssue" :list="list" />
+      <board-new-issue
+        v-if="showNewIssue"
+        :list="list"
+        :board-id="boardId"
+        @addNewIssue="addListItem"
+      />
       <component
         :is="treeRootWrapper"
         v-if="!list.collapsed"
