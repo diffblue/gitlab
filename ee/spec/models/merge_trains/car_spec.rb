@@ -170,40 +170,6 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
     end
   end
 
-  describe '.total_count_in_train' do
-    subject { described_class.total_count_in_train(merge_request) }
-
-    let!(:merge_request) { create_merge_request_on_train }
-
-    it 'returns the merge request' do
-      is_expected.to eq(1)
-    end
-
-    context 'when the other merge request is on the merge train' do
-      let!(:merge_request_2) { create_merge_request_on_train(source_branch: 'improve/awesome') }
-
-      it 'returns the merge request' do
-        is_expected.to eq(2)
-      end
-    end
-
-    context 'when the merge request has already been merged' do
-      let!(:merge_request) { create_merge_request_on_train(status: :merged) }
-
-      it 'returns zero' do
-        is_expected.to be(0)
-      end
-    end
-
-    context 'when the merge request is not on merge train' do
-      let(:merge_request) { create(:merge_request) }
-
-      it 'returns empty array' do
-        is_expected.to be(0)
-      end
-    end
-  end
-
   describe '#all_next' do
     subject { car.all_next }
 
