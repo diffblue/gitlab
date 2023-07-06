@@ -120,7 +120,7 @@ export default {
 };
 </script>
 <template>
-  <div>
+  <div data-testid="throughput-chart">
     <throughput-stats :stats="singleStatsValues" :is-loading="isLoading" />
     <h4 data-testid="chartTitle">{{ $options.strings.chartTitle }}</h4>
     <div class="gl-text-gray-500" data-testid="chartDescription">
