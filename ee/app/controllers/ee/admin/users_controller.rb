@@ -39,6 +39,13 @@ module EE
         log_audit_event
       end
 
+      override :unlock_user
+      def unlock_user
+        update_user do
+          user.unlock_access!(unlocked_by: current_user)
+        end
+      end
+
       def log_audit_event
         ::AuditEvents::UserImpersonationEventCreateWorker.perform_async(current_user.id, user.id, request.remote_ip, 'started', DateTime.current)
       end

@@ -1,0 +1,8 @@
+name: user_access_unlocked
+description: Event triggered when user access to the instance is unlocked
+introduced_by_issue: https://gitlab.com/gitlab-org/modelops/anti-abuse/team-tasks/-/issues/244
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/124973
+feature_category: 'system_access'
+milestone: '16.2'
+saved_to_database: true
+streamed: true
