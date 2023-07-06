@@ -37,6 +37,8 @@ module EE
       include VulnerabilityFlagHelpers
       include MirrorConfiguration
       include ProductAnalyticsHelpers
+      include ::Geo::ReplicableModel
+      include ::Geo::VerifiableModel
 
       before_update :update_legacy_open_source_license_available, if: -> { visibility_level_changed? }
 
@@ -44,6 +46,7 @@ module EE
       before_save :set_next_execution_timestamp_to_now, if: ->(project) { project.mirror? && project.mirror_changed? && project.import_state }
 
       after_create :create_security_setting, unless: :security_setting
+      after_save :save_verification_details
 
       belongs_to :mirror_user, class_name: 'User'
       belongs_to :deleting_user, foreign_key: 'marked_for_deletion_by_user_id', class_name: 'User'
@@ -139,6 +142,11 @@ module EE
       has_one :analytics_dashboards_pointer, class_name: 'Analytics::DashboardsPointer', foreign_key: :project_id
       accepts_nested_attributes_for :analytics_dashboards_pointer, allow_destroy: true
       has_one :analytics_dashboards_configuration_project, through: :analytics_dashboards_pointer, source: :target_project
+      has_one :project_state,
+        autosave: false,
+        inverse_of: :project,
+        foreign_key: :project_id,
+        class_name: 'Geo::ProjectState'
 
       has_many :compliance_standards_adherence, class_name: 'Projects::ComplianceStandards::Adherence'
 
@@ -282,6 +290,21 @@ module EE
 
       scope :any_compliance_framework, -> { joins(:compliance_framework_setting) }
 
+      scope :available_verifiables, -> { joins(:project_state) }
+
+      scope :checksummed, -> {
+        joins(:project_state).where.not(project_states: { verification_checksum: nil })
+      }
+
+      scope :not_checksummed, -> {
+        joins(:project_state).where(project_states: { verification_checksum: nil })
+      }
+
+      scope :with_verification_state, ->(state) {
+        joins(:project_state)
+          .where(project_states: { verification_state: verification_state_value(state) })
+      }
+
       delegate :shared_runners_seconds, to: :statistics, allow_nil: true
 
       delegate :ci_minutes_usage, to: :shared_runners_limit_namespace
@@ -307,6 +330,8 @@ module EE
         :product_analytics_instrumentation_key,
         to: :project_setting
 
+      delegate(*::Geo::VerificationState::VERIFICATION_METHODS, to: :project_state)
+
       validates :repository_size_limit,
         numericality: { only_integer: true, greater_than_or_equal_to: 0, allow_nil: true }
       validates :max_pages_size,
@@ -325,6 +350,12 @@ module EE
       accepts_nested_attributes_for :compliance_framework_setting, update_only: true, allow_destroy: true
 
       alias_attribute :fallback_approvals_required, :approvals_before_merge
+
+      with_replicator Geo::ProjectRepositoryReplicator
+
+      def verification_state_object
+        project_state
+      end
 
       def jira_issue_association_required_to_merge_enabled?
         strong_memoize(:jira_issue_association_required_to_merge_enabled) do
@@ -419,6 +450,11 @@ module EE
         ::Elastic::DataMigrationService.migration_has_finished?(:migrate_projects_to_separate_index)
       end
 
+      override :verification_state_table_class
+      def verification_state_table_class
+        ::Geo::ProjectState
+      end
+
       # @param primary_key_in [Range, Project] arg to pass to primary_key_in scope
       # @return [ActiveRecord::Relation<Project>] everything that should be synced to this node, restricted by primary key
       def replicables_for_current_secondary(primary_key_in)
@@ -459,6 +495,15 @@ module EE
       def project_features_defaults
         super.merge(requirements: true)
       end
+
+      override :verification_state_model_key
+      def verification_state_model_key
+        :project_id
+      end
+    end
+
+    def project_state
+      super || build_project_state
     end
 
     def can_store_security_reports?

@@ -14,24 +14,50 @@ RSpec.describe Projects::CleanupService do
   describe '#execute' do
     before do
       stub_current_geo_node(primary)
+
+      create(:geo_node, :secondary)
     end
 
-    it 'sends a Geo notification about the update on success' do
-      expect_next_instance_of(Geo::RepositoryUpdatedService) do |service|
-        expect(service).to receive(:execute)
+    context 'when geo_project_repository_replication is disabled' do
+      before do
+        stub_feature_flags(geo_project_repository_replication: false)
       end
 
-      service.execute
+      it 'sends a Geo notification about the update on success' do
+        expect_next_instance_of(Geo::RepositoryUpdatedService) do |service|
+          expect(service).to receive(:execute)
+        end
+
+        service.execute
+      end
+
+      it 'does not send a Geo notification if the update fails' do
+        object_map.remove!
+
+        expect(Geo::RepositoryUpdatedService).not_to receive(:new)
+
+        expect { service.execute }.to raise_error(/object map/)
+
+        expect(Geo::RepositoryUpdatedEvent.count).to eq(0)
+      end
     end
 
-    it 'does not send a Geo notification if the update fails' do
-      object_map.remove!
+    context 'when geo_project_repository_replication is enabled' do
+      it 'creates a new Geo event about the update on success' do
+        expect(Geo::RepositoryUpdatedService).not_to receive(:new)
 
-      expect(Geo::RepositoryUpdatedService).not_to receive(:new)
+        expect do
+          service.execute
+        end.to change { Geo::Event.where(replicable_name: 'project_repository').count }.by(1)
+      end
 
-      expect { service.execute }.to raise_error(/object map/)
+      it 'does not create a Geo event if the update fails' do
+        object_map.remove!
 
-      expect(Geo::RepositoryUpdatedEvent.count).to eq(0)
+        expect { service.execute }.to raise_error(/object map/)
+
+        expect(Geo::Event.where(replicable_name: 'project_repository').count).to eq(0)
+      end
     end
   end
 end

@@ -17,6 +17,10 @@ RSpec.describe Deployments::UpdateEnvironmentService, feature_category: :continu
   subject { described_class.new(deployment) }
 
   describe '#execute' do
+    before do
+      stub_feature_flags(geo_project_repository_replication: false)
+    end
+
     it 'triggers a Geo event about the new deployment ref' do
       expect_next_instance_of(Geo::RepositoryUpdatedService) do |service|
         expect(service).to receive(:execute)

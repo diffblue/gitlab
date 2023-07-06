@@ -31,20 +31,44 @@ RSpec.describe PostReceive, feature_category: :shared do
         expect_next(Git::BranchPushService).to receive(:execute).and_return(true)
       end
 
-      it 'calls Geo::RepositoryUpdatedService when running on a Geo primary site' do
-        stub_primary_node
+      context 'with geo_project_repository_replication feature flag disabled' do
+        before do
+          stub_feature_flags(geo_project_repository_replication: false)
+        end
 
-        expect(::Geo::RepositoryUpdatedService).to get_executed
+        it 'calls Geo::RepositoryUpdatedService when running on a Geo primary site' do
+          stub_primary_node
 
-        described_class.new.perform(gl_repository, key_id, base64_changes)
+          expect(::Geo::RepositoryUpdatedService).to get_executed
+
+          described_class.new.perform(gl_repository, key_id, base64_changes)
+        end
+
+        it 'does not call Geo::RepositoryUpdatedService when running on a Geo secondary site' do
+          stub_secondary_node
+
+          expect_next_instance_of(::Geo::RepositoryUpdatedService).never
+
+          described_class.new.perform(gl_repository, key_id, base64_changes)
+        end
       end
 
-      it 'does not call Geo::RepositoryUpdatedService when not running on a Geo primary site' do
-        stub_secondary_node
+      context 'with geo_project_repository_replication feature flag enabled' do
+        it "doesn't call Geo::RepositoryUpdatedService when running on a Geo primary site" do
+          stub_primary_node
 
-        expect_next_instance_of(::Geo::RepositoryUpdatedService).never
+          expect_next_instance_of(::Geo::RepositoryUpdatedService).never
 
-        described_class.new.perform(gl_repository, key_id, base64_changes)
+          described_class.new.perform(gl_repository, key_id, base64_changes)
+        end
+
+        it 'does not call Geo::RepositoryUpdatedService when running on a Geo secondary site' do
+          stub_secondary_node
+
+          expect_next_instance_of(::Geo::RepositoryUpdatedService).never
+
+          described_class.new.perform(gl_repository, key_id, base64_changes)
+        end
       end
     end
   end
