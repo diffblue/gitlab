@@ -7,7 +7,7 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
   include_context 'file upload requests helpers'
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group, name: 'test-group') }
+  let_it_be(:group) { create(:group, name: 'test-group').tap { |group| group.add_developer(user) } }
   let_it_be(:devfile_path) { '.devfile.yaml' }
 
   let_it_be(:project) do
@@ -26,7 +26,6 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
   before do
     stub_licensed_features(remote_development: true)
 
-    group.add_developer(user)
     allow(Gitlab::Kas).to receive(:verify_api_request).and_return(true)
 
     # rubocop:disable RSpec/AnyInstanceOf - It's NOT the next instance...
