@@ -3,7 +3,7 @@ import { GlIcon, GlLink, GlPopover } from '@gitlab/ui';
 import { joinPaths } from '~/lib/utils/url_utility';
 import { METRIC_TOOLTIPS } from '~/analytics/shared/constants';
 import { s__ } from '~/locale';
-import { TABLE_METRICS } from '../constants';
+import { TABLE_METRICS, CLICK_METRIC_DRILLDOWN_LINK_ACTION } from '../constants';
 
 export default {
   name: 'MetricTableCell',
@@ -45,6 +45,19 @@ export default {
     popoverTarget() {
       return `${this.requestPath}__${this.identifier}`.replace('/', '_');
     },
+    trackingProps() {
+      return {
+        'data-track-action': CLICK_METRIC_DRILLDOWN_LINK_ACTION,
+        'data-track-label': `${this.identifier}_drilldown`,
+      };
+    },
+    linkProps() {
+      return {
+        href: this.link,
+        'data-testid': 'metric_label',
+        ...this.trackingProps,
+      };
+    },
   },
   i18n: {
     docsLabel: s__('DORA4Metrics|Go to docs'),
@@ -53,7 +66,7 @@ export default {
 </script>
 <template>
   <div>
-    <gl-link :href="link" data-testid="metric_label">{{ metric.label }}</gl-link>
+    <gl-link v-bind="linkProps">{{ metric.label }}</gl-link>
     <gl-icon
       :id="popoverTarget"
       data-testid="info_icon"
