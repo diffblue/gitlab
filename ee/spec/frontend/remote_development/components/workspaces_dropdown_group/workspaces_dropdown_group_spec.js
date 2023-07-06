@@ -2,11 +2,16 @@ import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
 import { GlLoadingIcon, GlAlert } from '@gitlab/ui';
 import { logError } from '~/lib/logger';
+import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import WorkspacesDropdownGroup from 'ee/remote_development/components/workspaces_dropdown_group/workspaces_dropdown_group.vue';
+import WorkspacesDropdownGroup, {
+  i18n,
+} from 'ee/remote_development/components/workspaces_dropdown_group/workspaces_dropdown_group.vue';
 import WorkspaceDropdownItem from 'ee/remote_development/components/workspaces_dropdown_group/workspace_dropdown_item.vue';
+import GetProjectDetailsQuery from 'ee/remote_development/components/common/get_project_details_query.vue';
 import userWorkspacesListQuery from 'ee/remote_development/graphql/queries/user_workspaces_list.query.graphql';
 import {
   WORKSPACES_DROPDOWN_GROUP_PAGE_SIZE,
@@ -17,6 +22,7 @@ import {
   USER_WORKSPACES_QUERY_EMPTY_RESULT,
   USER_WORKSPACES_QUERY_RESULT,
   PROJECT_ID,
+  PROJECT_FULL_PATH,
 } from '../../mock_data';
 
 jest.mock('~/lib/logger');
@@ -28,6 +34,8 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
   let mockApollo;
   let userWorkspacesListQueryHandler;
   let updateWorkspaceMutationMock;
+  const newWorkspacePath = '/workspaces/create';
+
   const UpdateWorkspaceMutationStub = {
     render() {
       return this.$scopedSlots.default({ update: updateWorkspaceMutationMock });
@@ -44,8 +52,10 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
 
     wrapper = shallowMountExtended(WorkspacesDropdownGroup, {
       apolloProvider: mockApollo,
-      provide: {
+      propsData: {
         projectId: PROJECT_ID,
+        projectFullPath: PROJECT_FULL_PATH,
+        newWorkspacePath,
       },
       stubs: {
         UpdateWorkspaceMutation: UpdateWorkspaceMutationStub,
@@ -58,6 +68,10 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
   const findLoadingWorkspacesErrorMessage = () => wrapper.findComponent(GlAlert);
   const findUpdateWorkspaceErrorAlert = () => wrapper.findByTestId('update-workspace-error-alert');
   const findUpdateWorkspaceMutation = () => wrapper.findComponent(UpdateWorkspaceMutationStub);
+  const findGetProjectDetailsQuery = () => wrapper.findComponent(GetProjectDetailsQuery);
+  const findNewWorkspaceButton = () => wrapper.findByTestId('new-workspace-button');
+  const triggerProjectDetailsQueryResultEvent = ({ hasDevFile = false, clusterAgents = [] } = {}) =>
+    findGetProjectDetailsQuery().vm.$emit('result', { hasDevFile, clusterAgents });
 
   beforeEach(() => {
     buildMockApollo();
@@ -84,7 +98,7 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
           WORKSPACE_STATES.error,
           WORKSPACE_STATES.unknown,
         ],
-        projectIds: [PROJECT_ID],
+        projectIds: [convertToGraphQLId(TYPENAME_PROJECT, 1)],
       });
     });
 
@@ -101,7 +115,7 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
     });
   });
 
-  describe('when graphql query fails', () => {
+  describe('when user workspaces graphql query fails', () => {
     const error = new Error('Error message');
 
     beforeEach(async () => {
@@ -109,6 +123,7 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
       userWorkspacesListQueryHandler.mockRejectedValueOnce(error);
 
       createWrapper();
+      triggerProjectDetailsQueryResultEvent();
 
       await waitForPromises();
     });
@@ -140,6 +155,8 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
       userWorkspacesListQueryHandler.mockResolvedValueOnce(USER_WORKSPACES_QUERY_RESULT);
 
       createWrapper();
+      triggerProjectDetailsQueryResultEvent();
+
       await waitForPromises();
     });
 
@@ -180,6 +197,7 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
 
     beforeEach(async () => {
       createWrapper();
+      triggerProjectDetailsQueryResultEvent();
 
       findUpdateWorkspaceMutation().vm.$emit('updateFailed', { error });
 
@@ -209,6 +227,8 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
       userWorkspacesListQueryHandler.mockResolvedValueOnce(USER_WORKSPACES_QUERY_EMPTY_RESULT);
 
       createWrapper();
+      triggerProjectDetailsQueryResultEvent();
+
       await waitForPromises();
     });
 
@@ -222,6 +242,36 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
 
     it('does not display error message', () => {
       expect(findLoadingWorkspacesErrorMessage().exists()).toBe(false);
+    });
+  });
+
+  describe('new workspace button visibility', () => {
+    beforeEach(() => {
+      createWrapper();
+    });
+
+    it.each`
+      event       | payload
+      ${'result'} | ${{ hasDevFile: false, clusterAgents: [] }}
+      ${'result'} | ${{ hasDevFile: true, clusterAgents: [] }}
+      ${'result'} | ${{ hasDevFile: false, clusterAgents: [{}] }}
+      ${'error'}  | ${undefined}
+    `('when $event is emitted with $payload, visible = $visible', async ({ event, payload }) => {
+      findGetProjectDetailsQuery().vm.$emit(event, payload);
+
+      await waitForPromises();
+
+      expect(wrapper.text()).toContain(i18n.noWorkspacesSupportMessage);
+      expect(findNewWorkspaceButton().exists()).toBe(false);
+    });
+
+    it('displays new workspace button when project has devfile and associated cluster agents', async () => {
+      findGetProjectDetailsQuery().vm.$emit('result', { hasDevFile: true, clusterAgents: [{}] });
+
+      await waitForPromises();
+
+      expect(findNewWorkspaceButton().attributes().href).toBe(newWorkspacePath);
+      expect(wrapper.text()).not.toContain(i18n.noWorkspacesSupportMessage);
     });
   });
 });

@@ -15,8 +15,8 @@ import { s__, __ } from '~/locale';
 import { createAlert } from '~/alert';
 import { logError } from '~/lib/logger';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import GetProjectDetailsQuery from '../components/common/get_project_details_query.vue';
 import SearchProjectsListbox from '../components/create/search_projects_listbox.vue';
-import GetProjectDetailsQuery from '../components/create/get_project_details_query.vue';
 import workspaceCreateMutation from '../graphql/mutations/workspace_create.mutation.graphql';
 import { addWorkspace } from '../services/apollo_cache_mutators';
 import {
