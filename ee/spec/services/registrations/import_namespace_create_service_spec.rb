@@ -74,6 +74,7 @@ RSpec.describe Registrations::ImportNamespaceCreateService, :aggregate_failures,
         it 'does not track automatic_trial_registration assignment event when user is not setting up for company' do
           user.setup_for_company = false
 
+          allow(service).to receive(:experiment).and_call_original
           expect(service).not_to receive(:experiment).with(:automatic_trial_registration, actor: user)
 
           expect(service.execute).to be_success
@@ -158,6 +159,7 @@ RSpec.describe Registrations::ImportNamespaceCreateService, :aggregate_failures,
         it 'does not track experiment assignment event' do
           stub_experiments(automatic_trial_registration: true)
 
+          allow(service).to receive(:experiment).and_call_original
           expect(service).not_to receive(:experiment).with(:automatic_trial_registration, actor: user)
 
           expect(service.execute).to be_success

@@ -104,10 +104,20 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
         it 'does not track automatic_trial_registration assignment event when user is not setting up for company' do
           user.setup_for_company = false
 
+          allow(service).to receive(:experiment).and_call_original
           expect(service).not_to receive(:experiment).with(:automatic_trial_registration, actor: user)
 
           expect(service.execute).to be_success
         end
+      end
+
+      it 'tracks phone_verification_for_low_risk_users assignment event with group information', :experiment do
+        expect(experiment(:phone_verification_for_low_risk_users))
+          .to track(:assignment, namespace: an_instance_of(Group))
+          .on_next_instance
+          .with_context(user: user)
+
+        expect(execute).to be_success
       end
 
       it 'does not attempt to create a trial' do
@@ -251,6 +261,7 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
         it 'does not track experiment assignment event' do
           stub_experiments(automatic_trial_registration: true)
 
+          allow(service).to receive(:experiment).and_call_original
           expect(service).not_to receive(:experiment).with(:automatic_trial_registration, actor: user)
 
           expect(service.execute).to be_success
