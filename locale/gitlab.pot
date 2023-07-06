@@ -1280,9 +1280,6 @@ msgstr ""
 msgid "%{url} (optional)"
 msgstr ""
 
-msgid "%{userName} (cannot merge)"
-msgstr ""
-
 msgid "%{userName}'s avatar"
 msgstr ""
 
