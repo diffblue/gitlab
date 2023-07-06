@@ -50,6 +50,7 @@ RSpec.describe Gitlab::ApplicationContext do
       [:remote_ip]                  | [:remote_ip, :client_id]
       [:runner]                     | [:project, :root_namespace, :client_id, :subscription_plan]
       [:caller_id]                  | [:caller_id]
+      [:ai_resource]                | [:ai_resource]
       []                            | []
     end
 

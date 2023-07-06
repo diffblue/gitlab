@@ -6,8 +6,15 @@ module EE
       extend ::Gitlab::Utils::Override
       extend ActiveSupport::Concern
 
+      Attribute = Struct.new(:name, :type)
+
       EE_KNOWN_KEYS = [
-        :subscription_plan
+        :subscription_plan,
+        :ai_resource
+      ].freeze
+
+      EE_APPLICATION_ATTRIBUTES = [
+        Attribute.new(:ai_resource, ::GlobalID)
       ].freeze
 
       class_methods do
@@ -17,11 +24,18 @@ module EE
         def known_keys
           super + EE_KNOWN_KEYS
         end
+
+        override :application_attributes
+        def application_attributes
+          super + EE_APPLICATION_ATTRIBUTES
+        end
       end
 
       override :to_lazy_hash
       def to_lazy_hash
         super.tap do |hash|
+          assign_hash_if_value(hash, :ai_resource)
+
           hash[:subscription_plan] = -> { subcription_plan_name } if include_namespace?
         end
       end

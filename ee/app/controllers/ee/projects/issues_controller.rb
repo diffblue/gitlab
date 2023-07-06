@@ -21,9 +21,7 @@ module EE
         before_action only: :show do
           push_licensed_feature(:escalation_policies, project)
           push_force_frontend_feature_flag(:summarize_comments, can?(current_user, :summarize_notes, issue))
-          push_force_frontend_feature_flag(:generate_description_ai,
-            can?(current_user, :generate_description, issue))
-          @ai_resource_id = issue.to_global_id
+          push_force_frontend_feature_flag(:generate_description_ai, can?(current_user, :generate_description, issue))
         end
 
         before_action :redirect_if_test_case, only: [:show]

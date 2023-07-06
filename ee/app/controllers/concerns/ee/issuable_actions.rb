@@ -18,5 +18,10 @@ module EE
     def bulk_update_permitted_keys
       @permitted_keys ||= (super + EE_PERMITTED_KEYS).freeze
     end
+
+    override :set_application_context!
+    def set_application_context!
+      ::Gitlab::ApplicationContext.push(ai_resource: issuable.try(:to_global_id))
+    end
   end
 end
