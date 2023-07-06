@@ -42334,6 +42334,12 @@ msgstr ""
 msgid "ServicePing|Service ping is off"
 msgstr ""
 
+msgid "ServicePing|This can be changed at any time in %{link_start}your settings%{link_end}."
+msgstr ""
+
+msgid "ServicePing|To help improve GitLab, we would like to periodically %{link_start}collect usage information%{link_end}."
+msgstr ""
+
 msgid "ServicePing|To view instance-level analytics, ask an admin to turn on %{docLinkStart}service ping%{docLinkEnd}."
 msgstr ""
 
@@ -47740,9 +47746,6 @@ msgid "To get started, use the link below to confirm your account."
 msgstr ""
 
 msgid "To go to GitLab Pages, on the left sidebar, select %{pages_link}."
-msgstr ""
-
-msgid "To help improve GitLab, we would like to periodically %{docs_link}. This can be changed at any time in %{settings_link}."
 msgstr ""
 
 msgid "To import an SVN repository, check out %{svn_link}."
@@ -53988,9 +53991,6 @@ msgid_plural "closed issues"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "collect usage information"
-msgstr ""
-
 msgid "comment"
 msgstr ""
 
@@ -55556,9 +55556,6 @@ msgid "your GitLab instance"
 msgstr ""
 
 msgid "your group (%{group_name})"
-msgstr ""
-
-msgid "your settings"
 msgstr ""
 
 msgid "yyyy-mm-dd"
