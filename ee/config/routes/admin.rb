@@ -48,6 +48,9 @@ namespace :admin do
     get :geo, to: "geo/settings#show"
 
     resource :scim_oauth, only: [:create], controller: :scim_oauth, module: 'application_settings'
+
+    resources :roles_and_permissions, path: 'roles_and_permissions(/*vueroute)', action: :index,
+      module: 'application_settings'
   end
 
   namespace :geo do

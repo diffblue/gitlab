@@ -9,6 +9,7 @@ RSpec.describe Sidebars::Admin::Panel, feature_category: :navigation do
 
   before do
     stub_licensed_features(
+      custom_roles: true,
       admin_audit_log: true,
       custom_file_templates: true,
       elastic_search: true,
