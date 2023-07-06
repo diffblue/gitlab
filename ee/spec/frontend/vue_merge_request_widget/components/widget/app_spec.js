@@ -23,13 +23,10 @@ describe('MR Widget App', () => {
   };
 
   describe('MRSecurityWidget', () => {
-    it('mounts MrSecurityWidgetEE when user has necessary permissions and reports are enabled', async () => {
+    it('mounts MrSecurityWidgetEE when user has necessary permissions', async () => {
       createComponent({
         mr: {
           canReadVulnerabilities: true,
-          enabledReports: {
-            sast: true,
-          },
         },
       });
       await waitForPromises();
@@ -40,19 +37,6 @@ describe('MR Widget App', () => {
       createComponent({
         mr: {
           canReadVulnerabilities: false,
-          enabledReports: {
-            sast: true,
-          },
-        },
-      });
-      await waitForPromises();
-      expect(wrapper.findComponent(MrSecurityWidgetCE).exists()).toBe(true);
-    });
-
-    it('mounts MrSecurityWidgetCE when reports are not enabled', async () => {
-      createComponent({
-        mr: {
-          canReadVulnerabilities: true,
         },
       });
       await waitForPromises();
