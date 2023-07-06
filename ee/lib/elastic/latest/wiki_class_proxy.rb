@@ -9,8 +9,8 @@ module Elastic
         'wiki_blob'
       end
 
-      def elastic_search_as_wiki_page(*args)
-        elastic_search_as_found_blob(*args).map! do |blob|
+      def elastic_search_as_wiki_page(*args, **kwargs)
+        elastic_search_as_found_blob(*args, **kwargs).map! do |blob|
           Gitlab::Search::FoundWikiPage.new(blob)
         end
       end
