@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Plan' do
-    describe 'Merge Request Analytics', product_group: :optimize do
+    describe 'Merge Request Analytics', :requires_admin, product_group: :optimize do
       let(:label) { "mr-label" }
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:user_api_client) { Runtime::API::Client.new(user: user) }
