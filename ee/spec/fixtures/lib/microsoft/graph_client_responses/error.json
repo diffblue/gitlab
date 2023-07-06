@@ -1,0 +1,11 @@
+{
+  "error": {
+    "code": "Request_ResourceNotFound",
+    "message": "Resource 'abcd-1234' does not exist or one of its queried reference-property objects are not present.",
+    "innerError": {
+      "date": "2023-06-27T17:20:43",
+      "request-id": "03637ae2",
+      "client-request-id": "03637ae2"
+    }
+  }
+}
