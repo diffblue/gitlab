@@ -39252,6 +39252,9 @@ msgstr ""
 msgid "Role"
 msgstr ""
 
+msgid "Roles and Permissions"
+msgstr ""
+
 msgid "Rollback"
 msgstr ""
 

@@ -11,7 +11,8 @@ module EE
           def configure_menu_items
             return false unless super
 
-            insert_item_after(:general_settings, advanced_search_menu_item)
+            insert_item_after(:general_settings, roles_and_permissions_menu_item)
+            insert_item_after(:roles_and_permissions, advanced_search_menu_item)
             insert_item_after(:admin_reporting, templates_menu_item)
             insert_item_after(:admin_ci_cd, security_and_compliance_menu_item)
 
@@ -19,6 +20,19 @@ module EE
           end
 
           private
+
+          def roles_and_permissions_menu_item
+            unless ::Feature.enabled?(:custom_roles_ui_self_managed) && ::License.feature_available?(:custom_roles)
+              return ::Sidebars::NilMenuItem.new(item_id: :roles_and_permissions)
+            end
+
+            ::Sidebars::MenuItem.new(
+              title: _('Roles and Permissions'),
+              link: admin_application_settings_roles_and_permissions_path,
+              active_routes: { path: 'admin/application_settings/roles_and_permissions#index' },
+              item_id: :roles_and_permissions
+            )
+          end
 
           def advanced_search_menu_item
             unless ::License.feature_available?(:elastic_search)
