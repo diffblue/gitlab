@@ -15217,6 +15217,9 @@ msgstr ""
 msgid "Dependency list"
 msgstr ""
 
+msgid "DependencyProxy|%{docLinkStart}See the documentation%{docLinkEnd} for other ways to store Docker images in Dependency Proxy cache."
+msgstr ""
+
 msgid "DependencyProxy|All items in the cache are scheduled for removal."
 msgstr ""
 
@@ -15233,6 +15236,9 @@ msgid "DependencyProxy|Configure in settings"
 msgstr ""
 
 msgid "DependencyProxy|Contains %{count} blobs of images (%{size})"
+msgstr ""
+
+msgid "DependencyProxy|Copy example"
 msgstr ""
 
 msgid "DependencyProxy|Copy image path"
@@ -15259,6 +15265,9 @@ msgstr ""
 msgid "DependencyProxy|Image list"
 msgstr ""
 
+msgid "DependencyProxy|Pull image by digest example"
+msgstr ""
+
 msgid "DependencyProxy|Scheduled for deletion"
 msgstr ""
 
@@ -15266,6 +15275,9 @@ msgid "DependencyProxy|There are no images in the cache"
 msgstr ""
 
 msgid "DependencyProxy|To see the image prefix and what is in the cache, visit the %{linkStart}Dependency Proxy%{linkEnd}"
+msgstr ""
+
+msgid "DependencyProxy|To store docker images in Dependency Proxy cache, pull an image by tag in your %{codeStart}.gitlab-ci.yml%{codeEnd} file. In this example, the image is %{codeStart}alpine:latest%{codeEnd}"
 msgstr ""
 
 msgid "DependencyProxy|When enabled, images older than 90 days will be removed from the cache."
