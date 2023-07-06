@@ -62,7 +62,8 @@ module EE
         Geo::UploadRegistry => :upload,
         Geo::JobArtifactRegistry => :ci_job_artifact,
         Geo::CiSecureFileRegistry => :ci_secure_file,
-        Geo::ProjectWikiRepositoryRegistry => :project_wiki_repository
+        Geo::ProjectWikiRepositoryRegistry => :project_wiki_repository,
+        Geo::ProjectRepositoryRegistry => :project
       }.fetch(registry_class, default_factory_name)
     end
 

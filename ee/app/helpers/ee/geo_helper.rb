@@ -200,10 +200,12 @@ module EE
         }
       ]
 
-      replicable_types.reject! { |t| t[:name] == 'wiki' } if ::Geo::ProjectWikiRepositoryReplicator.enabled?
-      if ::Geo::DesignManagementRepositoryReplicator.enabled?
-        replicable_types.reject! { |t| t[:name] == 'design_repository' }
-      end
+      migrated_to_ssf = []
+      migrated_to_ssf << 'design_repository' if ::Geo::DesignManagementRepositoryReplicator.enabled?
+      migrated_to_ssf << 'repository' if ::Geo::ProjectRepositoryReplicator.enabled?
+      migrated_to_ssf << 'wiki' if ::Geo::ProjectWikiRepositoryReplicator.enabled?
+
+      replicable_types.reject! { |t| migrated_to_ssf.include?(t[:name]) }
 
       # Adds all the SSF Data Types automatically
       enabled_replicator_classes.each do |replicator_class|

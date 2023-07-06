@@ -203,6 +203,8 @@ module Gitlab
       end
 
       def print_repositories_status
+        return if ::Geo::ProjectRepositoryReplicator.enabled?
+
         print_counts_row(
           description: 'Repositories',
           failed: current_node_status.repositories_failed_count,
@@ -225,6 +227,8 @@ module Gitlab
       end
 
       def print_verified_repositories
+        return if ::Geo::ProjectRepositoryReplicator.enabled?
+
         if Gitlab::Geo.repository_verification_enabled?
           print_counts_row(
             description: 'Verified Repositories',

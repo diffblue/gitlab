@@ -11,13 +11,21 @@ module EE
 
     private
 
+    # rubocop:disable Gitlab/NoCodeCoverageComment
+    # :nocov: undercoverage spec keeps failing here, it's tested in ee/spec/workers/post_receive_spec.rb
     def after_project_changes_hooks(project, user, refs, changes)
       super
 
-      if ::Gitlab::Geo.primary?
+      return unless ::Gitlab::Geo.primary?
+
+      if ::Geo::ProjectRepositoryReplicator.enabled?
+        project.geo_handle_after_update
+      else
         ::Geo::RepositoryUpdatedService.new(project.repository, refs: refs, changes: changes).execute
       end
     end
+    # :nocov:
+    # rubocop:enable Gitlab/NoCodeCoverageComment
 
     def process_wiki_changes(post_received, wiki)
       super

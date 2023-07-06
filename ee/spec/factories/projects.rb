@@ -151,5 +151,17 @@ FactoryBot.modify do
     end
 
     trait(:allow_pipeline_trigger_approve_deployment) { allow_pipeline_trigger_approve_deployment { true } }
+
+    trait :verification_succeeded do
+      repository
+      verification_checksum { 'abc' }
+      verification_state { Project.verification_state_value(:verification_succeeded) }
+    end
+
+    trait :verification_failed do
+      repository
+      verification_failure { 'Could not calculate the checksum' }
+      verification_state { Project.verification_state_value(:verification_failed) }
+    end
   end
 end

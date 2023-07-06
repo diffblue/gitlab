@@ -102,6 +102,16 @@ RSpec.describe EE::GeoHelper, feature_category: :geo_replication do
       end
     end
 
+    context 'with geo_project_repository_replication feature flag disabled' do
+      before do
+        stub_feature_flags(geo_project_repository_replication: false)
+      end
+
+      it 'includes repositories legacy type' do
+        expect(names).to include('repositories')
+      end
+    end
+
     context 'with geo_project_wiki_repository_replication feature flag enabled' do
       before do
         stub_feature_flags(geo_project_wiki_repository_replication: true)
@@ -109,7 +119,7 @@ RSpec.describe EE::GeoHelper, feature_category: :geo_replication do
 
       it 'includes legacy types' do
         expected_names = %w(
-          repositories
+          project_repositories
           lfs_objects
           uploads
           job_artifacts
@@ -126,6 +136,16 @@ RSpec.describe EE::GeoHelper, feature_category: :geo_replication do
 
       it 'excludes design_repository legacy type' do
         expect(names).not_to include('design_repositories')
+      end
+    end
+
+    context 'with geo_project_repository_replication feature flag enabled' do
+      before do
+        stub_feature_flags(geo_project_repository_replication: true)
+      end
+
+      it 'excludes repository legacy type' do
+        expect(names).not_to include('repositories')
       end
     end
 

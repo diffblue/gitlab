@@ -880,6 +880,8 @@ RSpec.describe GeoNodeStatus, :geo, feature_category: :geo_replication do
 
   context 'Replicator stats' do
     before do
+      Project.delete_all
+
       stub_geo_setting(registry_replication: { enabled: true })
     end
 
@@ -923,6 +925,10 @@ RSpec.describe GeoNodeStatus, :geo, feature_category: :geo_replication do
             end
 
             context 'when there are no replicables' do
+              before do
+                Project.delete_all
+              end
+
               it 'returns 0' do
                 expect(subject.send(replicable_count_method)).to eq(0)
               end

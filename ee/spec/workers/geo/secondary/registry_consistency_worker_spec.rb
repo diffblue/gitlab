@@ -111,6 +111,7 @@ RSpec.describe Geo::Secondary::RegistryConsistencyWorker, :geo, feature_category
       expect(Geo::DependencyProxyBlobRegistry.where(dependency_proxy_blob: dependency_proxy_blob.id).count).to eq(0)
       expect(Geo::DependencyProxyManifestRegistry.where(dependency_proxy_manifest: dependency_proxy_manifest.id).count).to eq(0)
       expect(Geo::ProjectWikiRepositoryRegistry.where(project_wiki_repository: project_wiki_repository.id).count).to eq(0)
+      expect(Geo::ProjectRepositoryRegistry.where(project_id: project.id).count).to eq(0)
 
       subject.perform
 
@@ -130,6 +131,7 @@ RSpec.describe Geo::Secondary::RegistryConsistencyWorker, :geo, feature_category
       expect(Geo::DependencyProxyBlobRegistry.where(dependency_proxy_blob: dependency_proxy_blob.id).count).to eq(1)
       expect(Geo::DependencyProxyManifestRegistry.where(dependency_proxy_manifest: dependency_proxy_manifest.id).count).to eq(1)
       expect(Geo::ProjectWikiRepositoryRegistry.where(project_wiki_repository: project_wiki_repository.id).count).to eq(1)
+      expect(Geo::ProjectRepositoryRegistry.where(project_id: project.id).count).to eq(1)
     end
 
     context 'when the current Geo node is disabled or primary' do
