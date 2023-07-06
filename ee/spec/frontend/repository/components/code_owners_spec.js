@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import { GlCollapse, GlBadge } from '@gitlab/ui';
+import { GlCollapse, GlBadge, GlPopover, GlLink } from '@gitlab/ui';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import CodeOwners, {
@@ -54,6 +54,9 @@ describe('Code owners component', () => {
   const findLinkToDocs = () => wrapper.findByTestId('codeowners-docs-link');
   const findNoCodeownersText = () => wrapper.findByTestId('no-codeowners-text');
   const findBadge = () => wrapper.findComponent(GlBadge);
+  const findHelpPopoverTrigger = () => wrapper.findByTestId('help-popover-trigger');
+  const findHelpPopover = () => wrapper.findComponent(GlPopover);
+  const findHelpPopoverLink = () => findHelpPopover().findComponent(GlLink);
 
   beforeEach(() => createComponent());
 
@@ -61,21 +64,40 @@ describe('Code owners component', () => {
     it('renders a link to CODEOWNERS file', () => {
       expect(findLinkToFile().attributes('href')).toBe(codeOwnersPath);
     });
+
     it('renders a Badge with a Number of codeowners', () => {
       expect(findBadge().text()).toBe(`${codeOwnersMock.length}`);
     });
+
     it('renders a toggle button with correct text', () => {
       expect(findToggle().exists()).toBe(true);
       expect(findToggle().text()).toBe(i18n.showAll);
     });
+
     it('expands when you click on a toggle', async () => {
       await findToggle().vm.$emit('click');
       await nextTick();
       expect(findCollapse().attributes('visible')).toBe('true');
       expect(findToggle().text()).toBe(i18n.hideAll);
     });
+
     it('renders codeowners list', () => {
       expect(findCodeOwners().length).toBe(codeOwnersMock.length);
+    });
+
+    it('renders a popover trigger with question icon', () => {
+      expect(findHelpPopoverTrigger().props('icon')).toBe('question-o');
+      expect(findHelpPopoverTrigger().attributes('aria-label')).toBe(i18n.helpText);
+    });
+
+    it('renders a popover', () => {
+      expect(findHelpPopoverTrigger().attributes('id')).toBe(findHelpPopover().props('target'));
+      expect(findHelpPopover().props()).toMatchObject({
+        placement: 'top',
+        triggers: 'hover focus',
+      });
+      expect(findHelpPopoverLink().exists()).toBe(true);
+      expect(findHelpPopover().text()).toContain(i18n.helpText);
     });
   });
 
@@ -89,6 +111,14 @@ describe('Code owners component', () => {
     it('renders a link to docs page', () => {
       expect(findLinkToDocs().attributes('href')).toBe(codeOwnersHelpPath);
       expect(findLinkToDocs().attributes('target')).toBe('_blank');
+    });
+
+    it('does not render a popover trigger', () => {
+      expect(findHelpPopoverTrigger().exists()).toBe(false);
+    });
+
+    it('does not render a popover', () => {
+      expect(findHelpPopover().exists()).toBe(false);
     });
   });
 
