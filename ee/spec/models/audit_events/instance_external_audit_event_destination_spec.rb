@@ -9,12 +9,33 @@ RSpec.describe AuditEvents::InstanceExternalAuditEventDestination, feature_categ
     subject(:destination_without_verification_token) do
       create(:instance_external_audit_event_destination, verification_token: nil)
     end
+
+    let_it_be(:audit_operation) { 'audit_operation' }
+    let_it_be(:destination_with_filters_of_given_type) { create(:instance_external_audit_event_destination) }
+    let_it_be(:filter1) do
+      create(:audit_events_streaming_instance_event_type_filter,
+        instance_external_audit_event_destination: destination_with_filters_of_given_type,
+        audit_event_type: 'audit_operation')
+    end
+
+    let_it_be(:filter2) do
+      create(:audit_events_streaming_instance_event_type_filter,
+        instance_external_audit_event_destination: destination_with_filters_of_given_type,
+        audit_event_type: 'audit_operation1')
+    end
+
+    let_it_be(:destination_with_filters) { create(:instance_external_audit_event_destination) }
+    let!(:filter3) do
+      create(:audit_events_streaming_instance_event_type_filter,
+        instance_external_audit_event_destination: destination_with_filters)
+    end
   end
 
   it_behaves_like 'includes Limitable concern'
 
   describe 'Validations' do
     it { is_expected.to have_many(:headers).class_name('AuditEvents::Streaming::InstanceHeader') }
+    it { is_expected.to have_many(:event_type_filters).class_name('AuditEvents::Streaming::InstanceEventTypeFilter') }
 
     it 'can have 20 headers' do
       create_list(:instance_audit_events_streaming_header, 20, instance_external_audit_event_destination: subject)

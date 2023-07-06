@@ -17,15 +17,6 @@ module AuditEvents
     validates :name, uniqueness: { scope: :namespace_id }
     validates :destination_url, uniqueness: { scope: :namespace_id }, length: { maximum: 255 }
 
-    # TODO: Remove audit_operation.present? guard clause once we implement names for all the audit event types.
-    # Epic: https://gitlab.com/groups/gitlab-org/-/epics/8497
-    def allowed_to_stream?(audit_operation)
-      return true unless audit_operation.present?
-      return true unless event_type_filters.exists?
-
-      event_type_filters.audit_event_type_in(audit_operation).exists?
-    end
-
     private
 
     def root_level_group?
