@@ -1,5 +1,5 @@
 <script>
-import { GlLink, GlIcon, GlButton, GlLoadingIcon, GlTooltipDirective } from '@gitlab/ui';
+import { GlLink, GlIcon, GlButton, GlLoadingIcon, GlTooltipDirective, GlCard } from '@gitlab/ui';
 import { produce } from 'immer';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_ISSUE } from '~/graphql_shared/constants';
@@ -22,6 +22,7 @@ export default {
     AddIssuableResourceLinkForm,
     ResourceLinksList,
     GlLoadingIcon,
+    GlCard,
   },
   i18n: resourceLinksI18n,
   directives: {
@@ -82,6 +83,9 @@ export default {
     },
     toggleLabel() {
       return this.isOpen ? __('Collapse') : __('Expand');
+    },
+    shouldShowHelpText() {
+      return !this.hasResourceLinks && !this.isFetching && !this.isFormVisible;
     },
   },
   methods: {
@@ -213,78 +217,53 @@ export default {
 </script>
 
 <template>
-  <div id="resource-links" class="gl-mt-5">
-    <div class="card card-slim gl-overflow-hidden">
-      <div
-        :class="{ 'panel-empty-heading border-bottom-0': !isFormVisible, 'gl-border-b-1': !isOpen }"
-        class="card-header gl-display-flex gl-justify-content-space-between gl-bg-white gl-align-items-center gl-line-height-24 gl-pl-5 gl-pr-4 gl-py-4"
-      >
-        <h3
-          class="card-title h5 position-relative gl-my-0 gl-display-flex gl-align-items-center gl-line-height-24"
-        >
-          <gl-link
-            id="user-content-resource-links"
-            class="anchor position-absolute gl-text-decoration-none"
-            href="#resource-links"
-            aria-hidden="true"
-          />
-          <slot name="header-text">{{ $options.i18n.headerText }}</slot>
-          <gl-link
-            :href="helpPath"
-            target="_blank"
-            class="gl-display-flex gl-align-items-center gl-ml-2 gl-text-gray-500"
-            data-testid="help-link"
-            :aria-label="$options.i18n.helpText"
-          >
-            <gl-icon
-              v-gl-tooltip
-              name="question-o"
-              :size="14"
-              :title="$options.i18n.helpText"
-              class="gl-text-blue-500"
+  <div id="resource-links">
+    <gl-card
+      class="gl-new-card gl-overflow-hidden"
+      header-class="gl-new-card-header"
+      body-class="gl-new-card-body"
+      :aria-expanded="isOpen.toString()"
+    >
+      <template #header>
+        <div class="gl-new-card-title-wrapper">
+          <h3 class="gl-new-card-title">
+            <gl-link
+              id="user-content-resource-links"
+              class="anchor gl-absolute gl-text-decoration-none"
+              href="#resource-links"
+              aria-hidden="true"
             />
-          </gl-link>
-
-          <div class="gl-display-inline-flex">
-            <div class="gl-display-inline-flex gl-mx-3">
-              <span class="gl-display-inline-flex gl-align-items-center gl-text-gray-500">
-                <gl-icon name="link" class="gl-mr-2" />
-                {{ badgeLabel }}
-              </span>
-            </div>
+            <slot name="header-text">{{ $options.i18n.headerText }}</slot>
+          </h3>
+          <div class="gl-new-card-count js-related-issues-header-issue-count">
+            <gl-icon name="link" class="gl-mr-2" />
+            {{ badgeLabel }}
           </div>
-        </h3>
+        </div>
         <slot name="header-actions"></slot>
         <gl-button
           v-if="canAddResourceLinks"
           size="small"
           :aria-label="$options.i18n.addButtonText"
-          class="gl-ml-auto"
+          class="gl-ml-3"
           data-testid="add-resource-links"
           @click="toggleResourceLinkForm"
         >
           <slot name="add-button-text">{{ __('Add') }}</slot>
         </gl-button>
-        <div class="gl-pl-3 gl-ml-3 gl-border-l-1 gl-border-l-solid gl-border-l-gray-100">
+        <div class="gl-new-card-toggle">
           <gl-button
             category="tertiary"
             size="small"
             :icon="toggleIcon"
             :aria-label="toggleLabel"
-            :disabled="!hasResourceLinks"
             data-testid="toggle-links"
             @click="handleToggle"
           />
         </div>
-      </div>
-      <div
-        v-if="isOpen"
-        class="gl-bg-gray-10"
-        :class="{
-          'linked-issues-card-body': isFormVisible,
-        }"
-      >
-        <div v-show="isFormVisible" class="card-body bordered-box gl-bg-white gl-mt-4 gl-mx-4">
+      </template>
+      <div v-if="isOpen" class="linked-issues-card-body gl-new-card-content">
+        <div v-show="isFormVisible" class="gl-new-card-add-form">
           <add-issuable-resource-link-form
             ref="resourceLinkForm"
             :is-submitting="isSubmitting"
@@ -292,13 +271,16 @@ export default {
             @create-resource-link="onCreateResourceLink"
           />
         </div>
-        <div v-if="isFetching" class="gl-border-t-1 gl-border-t-solid gl-border-t-gray-100">
+        <div v-if="isFetching" class="gl-new-card-empty">
           <gl-loading-icon
             size="sm"
             :label="$options.i18n.fetchingLinkedResourcesText"
             class="gl-py-4"
           />
         </div>
+        <p v-if="shouldShowHelpText" class="gl-new-card-empty" data-testid="empty">
+          {{ $options.i18n.helpText }}
+        </p>
         <template v-if="hasResourceLinks">
           <resource-links-list
             :can-admin="canAddResourceLinks"
@@ -308,6 +290,6 @@ export default {
           />
         </template>
       </div>
-    </div>
+    </gl-card>
   </div>
 </template>

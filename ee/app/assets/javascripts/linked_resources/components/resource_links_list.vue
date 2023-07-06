@@ -27,14 +27,8 @@ export default {
 </script>
 
 <template>
-  <div
-    class="related-issues-token-body"
-    :class="{
-      'gl-border-t': !isFormVisible,
-    }"
-    data-testid="resource-link-list"
-  >
-    <ul class="related-items-list content-list gl-p-3!">
+  <div class="related-issues-token-body" data-testid="resource-link-list">
+    <ul class="related-items-list content-list">
       <li
         v-for="link in resourceLinks"
         :key="link.id"

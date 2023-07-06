@@ -71,7 +71,7 @@ export default {
     :class="{
       'gl-pr-2': canRemove,
     }"
-    class="item-body d-flex align-items-center gl-px-3"
+    class="item-body d-flex align-items-center gl-px-3 gl-mx-n2"
   >
     <div
       class="item-contents gl-display-flex gl-align-items-center gl-flex-wrap gl-flex-grow-1 flex-xl-nowrap gl-min-h-7"

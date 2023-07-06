@@ -2,7 +2,7 @@
 
 exports[`ResourceLinkItem template matches the snapshot 1`] = `
 <div
-  class="item-body d-flex align-items-center gl-px-3 gl-pr-2"
+  class="item-body d-flex align-items-center gl-px-3 gl-mx-n2 gl-pr-2"
 >
   <div
     class="item-contents gl-display-flex gl-align-items-center gl-flex-wrap gl-flex-grow-1 flex-xl-nowrap gl-min-h-7"
