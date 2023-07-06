@@ -3,7 +3,7 @@
 require 'rake_helper'
 
 RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_stdout,
-feature_category: :global_search do
+  feature_category: :global_search do
   before do
     Rake.application.rake_require 'tasks/gitlab/elastic'
   end
@@ -388,31 +388,134 @@ feature_category: :global_search do
     subject { run_rake_task('gitlab:elastic:projects_not_indexed') }
 
     let_it_be(:project) { create(:project, :repository) }
+    let_it_be(:project_no_repository) { create(:project) }
+    let_it_be(:project_empty_repository) { create(:project, :empty_repo) }
 
-    context 'no projects are indexed' do
-      it 'displays non-indexed projects' do
-        expected = <<~END
-          Project '#{project.full_path}' (ID: #{project.id}) isn't indexed.
-          1 out of 1 non-indexed projects shown.
-        END
+    context 'when on GitLab.com' do
+      it 'raises an error' do
+        allow(Gitlab).to receive(:com?).and_return(true)
 
-        expect { subject }.to output(expected).to_stdout
+        expect { subject }.to raise_error('This task cannot be run on GitLab.com')
       end
     end
 
-    context 'all projects are indexed' do
+    context 'when projects missing from index' do
+      it 'displays non-indexed projects' do
+        expected = <<~STD_OUT
+          Project '#{project.full_path}' (ID: #{project.id}) isn't indexed.
+          Project '#{project_no_repository.full_path}' (ID: #{project_no_repository.id}) isn't indexed.
+          Project '#{project_empty_repository.full_path}' (ID: #{project_empty_repository.id}) isn't indexed.
+          3 out of 3 non-indexed projects shown.
+        STD_OUT
+
+        expect { subject }.to output(expected).to_stdout
+      end
+
+      context 'when elasticsearch_limit_indexing? is enabled' do
+        before do
+          stub_ee_application_setting(elasticsearch_limit_indexing: true)
+        end
+
+        it 'only displays non-indexed projects that are setup for indexing' do
+          create(:elasticsearch_indexed_project, project: project_no_repository)
+
+          expected = <<~STD_OUT
+          Project '#{project_no_repository.full_path}' (ID: #{project_no_repository.id}) isn't indexed.
+          1 out of 1 non-indexed projects shown.
+          STD_OUT
+
+          expect { subject }.to output(expected).to_stdout
+        end
+      end
+    end
+
+    context 'when all projects are indexed' do
       before do
-        IndexStatus.create!(project: project, indexed_at: Time.current, last_commit: 'foo')
+        create(:index_status, project: project)
+        create(:index_status, project: project_no_repository)
+        create(:index_status, project: project_empty_repository)
       end
 
       it 'displays that all projects are indexed' do
         expect { subject }.to output(/All projects are currently indexed/).to_stdout
       end
+    end
+  end
 
-      it 'does not include projects without repositories' do
-        create(:project)
+  describe 'index_projects_status' do
+    subject { run_rake_task('gitlab:elastic:index_projects_status') }
 
-        expect { subject }.to output(/All projects are currently indexed/).to_stdout
+    let_it_be_with_reload(:project) { create(:project, :repository) }
+    let_it_be_with_reload(:project_no_repository) { create(:project) }
+    let_it_be_with_reload(:project_empty_repository) { create(:project, :empty_repo) }
+
+    context 'when on GitLab.com' do
+      it 'raises an error' do
+        allow(Gitlab).to receive(:com?).and_return(true)
+
+        expect { subject }.to raise_error('This task cannot be run on GitLab.com')
+      end
+    end
+
+    context 'when some projects missing from index' do
+      before do
+        create(:index_status, project: project)
+      end
+
+      it 'displays completion percentage' do
+        expected = <<~STD_OUT
+          Indexing is 33.33% complete (1/3 projects)
+        STD_OUT
+
+        expect { subject }.to output(expected).to_stdout
+      end
+
+      context 'when elasticsearch_limit_indexing? is enabled' do
+        before do
+          stub_ee_application_setting(elasticsearch_limit_indexing: true)
+        end
+
+        it 'only displays non-indexed projects that are setup for indexing' do
+          create(:elasticsearch_indexed_project, project: project_no_repository)
+
+          expected = <<~STD_OUT
+            Indexing is 0.00% complete (0/1 projects)
+          STD_OUT
+
+          expect { subject }.to output(expected).to_stdout
+        end
+      end
+    end
+
+    context 'when all projects are indexed' do
+      before do
+        create(:index_status, project: project)
+        create(:index_status, project: project_no_repository)
+        create(:index_status, project: project_empty_repository)
+      end
+
+      it 'displays that all projects are indexed' do
+        expected = <<~STD_OUT
+          Indexing is 100.00% complete (3/3 projects)
+        STD_OUT
+
+        expect { subject }.to output(expected).to_stdout
+      end
+
+      context 'when elasticsearch_limit_indexing? is enabled' do
+        before do
+          stub_ee_application_setting(elasticsearch_limit_indexing: true)
+        end
+
+        it 'only displays non-indexed projects that are setup for indexing' do
+          create(:elasticsearch_indexed_project, project: project_empty_repository)
+
+          expected = <<~STD_OUT
+            Indexing is 100.00% complete (1/1 projects)
+          STD_OUT
+
+          expect { subject }.to output(expected).to_stdout
+        end
       end
     end
   end
