@@ -58,4 +58,23 @@ RSpec.describe Admin::UsersController, :enable_admin_mode, feature_category: :us
       expect(assigns(:users).first.association(:elevated_members)).to be_loaded
     end
   end
+
+  describe 'PUT #unlock' do
+    before do
+      user.lock_access!
+    end
+
+    subject(:request) { put unlock_admin_user_path(user) }
+
+    it 'logs a user_access_unlock audit event with author set to the current user' do
+      expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+        hash_including(
+          name: 'user_access_unlocked',
+          author: admin
+        )
+      ).and_call_original
+
+      expect { request }.to change { user.reload.access_locked? }.from(true).to(false)
+    end
+  end
 end
