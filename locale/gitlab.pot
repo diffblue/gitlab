@@ -32228,6 +32228,12 @@ msgstr ""
 msgid "Organizations"
 msgstr ""
 
+msgid "Organization|Organization navigation"
+msgstr ""
+
+msgid "Organization|Organization overview"
+msgstr ""
+
 msgid "Orphaned member"
 msgstr ""
 
