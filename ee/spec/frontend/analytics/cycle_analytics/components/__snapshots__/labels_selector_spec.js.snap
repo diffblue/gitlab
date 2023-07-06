@@ -17,7 +17,7 @@ exports[`Value Stream Analytics LabelsSelector with no item selected will render
       violets
     </gl-dropdown-item-stub>
     <div class=\\"gl-text-center\\" style=\\"display: none;\\">
-      <gl-loading-icon-stub label=\\"Loading\\" size=\\"lg\\" color=\\"dark\\" inline=\\"true\\"></gl-loading-icon-stub>
+      <gl-loading-icon-stub label=\\"Loading\\" size=\\"lg\\" color=\\"dark\\" variant=\\"spinner\\" inline=\\"true\\"></gl-loading-icon-stub>
     </div>
     <div class=\\"gl-text-secondary\\" style=\\"display: none;\\">
       No matching labels
@@ -43,7 +43,7 @@ exports[`Value Stream Analytics LabelsSelector with selectedLabelNames set will 
       violets
     </gl-dropdown-item-stub>
     <div class=\\"gl-text-center\\" style=\\"display: none;\\">
-      <gl-loading-icon-stub label=\\"Loading\\" size=\\"lg\\" color=\\"dark\\" inline=\\"true\\"></gl-loading-icon-stub>
+      <gl-loading-icon-stub label=\\"Loading\\" size=\\"lg\\" color=\\"dark\\" variant=\\"spinner\\" inline=\\"true\\"></gl-loading-icon-stub>
     </div>
     <div class=\\"gl-text-secondary\\" style=\\"display: none;\\">
       No matching labels
