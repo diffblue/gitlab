@@ -184,6 +184,11 @@ msgid_plural "%d assigned issues"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%d author"
+msgid_plural "%d authors"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%d changed file"
 msgid_plural "%d changed files"
 msgstr[0] ""
