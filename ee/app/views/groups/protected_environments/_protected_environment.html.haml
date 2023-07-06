@@ -4,4 +4,5 @@
   %td
     = render partial: 'groups/protected_environments/update_deploy_access_level_dropdown', locals: { protected_environment: protected_environment, access_levels: protected_environment.deploy_access_levels }
   %td
-    = link_to s_('ProtectedEnvironment|Unprotect'), [@group, protected_environment], data: { confirm: s_('ProtectedEnvironment|%{environment_name} will be writable for developers. Are you sure?') % { environment_name: protected_environment.name } }, method: :delete, class: 'btn gl-button btn-danger'
+    = render Pajamas::ButtonComponent.new(href: [@group, protected_environment], method: :delete, variant: :danger, button_options: { data: { confirm: s_('ProtectedEnvironment|%{environment_name} will be writable for developers. Are you sure?') % { environment_name: protected_environment.name } } }) do
+      = s_('ProtectedEnvironment|Unprotect')
