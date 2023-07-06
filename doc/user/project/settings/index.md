@@ -43,6 +43,9 @@ To assign topics to a project:
 If you're an instance administrator, you can administer all project topics from the
 [Admin Area's Topics page](../../admin_area/index.md#administering-topics).
 
+NOTE:
+The assigned topics are visible only to users with access to the project, but everyone can see which topics exist on the GitLab instance. Do not include sensitive information in the name of a topic.
+
 ## Add a compliance framework to a project **(PREMIUM)**
 
 You can
