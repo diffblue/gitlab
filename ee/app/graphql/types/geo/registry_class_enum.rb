@@ -13,7 +13,8 @@ module Types
       ::Geo::Secondary::RegistryConsistencyWorker::REGISTRY_CLASSES.each do |registry_class|
         next unless registry_class.graphql_mutable?
 
-        value registry_class.to_s.gsub('Geo::', '').underscore.upcase,
+        # Disabling RuboCop: `graphql_enum_key` adheres to the uppercase rule of Graphql/EnumValues.
+        value registry_class.graphql_enum_key, # rubocop:disable Graphql/EnumValues
           value: registry_class.to_s,
           description: "#{registry_class} registry class"
       end

@@ -15,7 +15,7 @@ RSpec.describe Mutations::Geo::Registries::Update, feature_category: :geo_replic
 
   with_them do
     let(:registry) { create(registry_factory) }  # rubocop:disable Rails/SaveBang
-    let(:registry_class_argument) { registry_class.to_s.gsub('Geo::', '').underscore.upcase }
+    let(:registry_class_argument) { registry_class.graphql_enum_key }
     let(:registry_model_primary_key) { registry_class::MODEL_FOREIGN_KEY.to_s.camelize(:lower) }
     let(:registry_fragment_name) { registry_class_argument.downcase.camelize }
     let(:registry_global_id) { registry.to_global_id.to_s }
