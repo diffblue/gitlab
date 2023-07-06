@@ -4,6 +4,9 @@ import { nextTick } from 'vue';
 import DependenciesTable from 'ee/dependencies/components/dependencies_table.vue';
 import DependencyLicenseLinks from 'ee/dependencies/components/dependency_license_links.vue';
 import DependencyVulnerabilities from 'ee/dependencies/components/dependency_vulnerabilities.vue';
+import DependencyLocationCount from 'ee/dependencies/components/dependency_location_count.vue';
+import DependencyProjectCount from 'ee/dependencies/components/dependency_project_count.vue';
+import DependencyLocation from 'ee/dependencies/components/dependency_location.vue';
 import stubChildren from 'helpers/stub_children';
 import { makeDependency } from './utils';
 
@@ -17,7 +20,13 @@ describe('DependenciesTable component', () => {
   const createComponent = ({ propsData, provide } = {}) => {
     wrapper = mount(DependenciesTable, {
       propsData: { ...propsData },
-      stubs: { ...stubChildren(DependenciesTable), GlTable: false, DependencyLocation: false },
+      stubs: {
+        ...stubChildren(DependenciesTable),
+        GlTable: false,
+        DependencyLocation: false,
+        DependencyProjectCount: false,
+        DependencyLocationCount: false,
+      },
       provide: { ...basicAppProps, ...provide },
     });
   };
@@ -25,6 +34,9 @@ describe('DependenciesTable component', () => {
   const findTableRows = () => wrapper.findAll('tbody > tr');
   const findRowToggleButtons = () => wrapper.findAllComponents(GlButton);
   const findDependencyVulnerabilities = () => wrapper.findComponent(DependencyVulnerabilities);
+  const findDependencyLocation = () => wrapper.findComponent(DependencyLocation);
+  const findDependencyLocationCount = () => wrapper.findComponent(DependencyLocationCount);
+  const findDependencyProjectCount = () => wrapper.findComponent(DependencyProjectCount);
   const normalizeWhitespace = (string) => string.replace(/\s+/g, ' ');
 
   const expectDependencyRow = (rowWrapper, dependency) => {
@@ -42,6 +54,7 @@ describe('DependenciesTable component', () => {
 
     expect(packagerCell.text()).toBe(dependency.packager);
 
+    expect(findDependencyLocation().exists()).toBe(true);
     const locationLink = locationCell.findComponent(GlLink);
     expect(locationLink.attributes().href).toBe(dependency.location.blob_path);
     expect(locationLink.text()).toContain(dependency.location.path);
@@ -59,6 +72,33 @@ describe('DependenciesTable component', () => {
     } else {
       expect(isVulnerableCellText).toBe('');
     }
+
+    expect(findDependencyLocationCount().exists()).toBe(false);
+    expect(findDependencyProjectCount().exists()).toBe(false);
+  };
+
+  const expectGroupDependencyRow = (rowWrapper, dependency) => {
+    const [componentCell, packagerCell, locationCell, projectCell] = rowWrapper.findAll(
+      'td',
+    ).wrappers;
+
+    expect(normalizeWhitespace(componentCell.text())).toBe(
+      `${dependency.name} ${dependency.version}`,
+    );
+
+    expect(packagerCell.text()).toBe(dependency.packager);
+
+    const {
+      occurrence_count: occurrenceCount,
+      project_count: projectCount,
+      location: { path },
+      project: { name },
+    } = dependency;
+    const locationCellText = occurrenceCount > 1 ? occurrenceCount.toString() : path;
+    const projectCellText = projectCount > 1 ? projectCount.toString() : name;
+
+    expect(locationCell.text()).toContain(locationCellText);
+    expect(projectCell.text()).toContain(projectCellText);
   };
 
   describe('given the table is loading', () => {
@@ -224,6 +264,51 @@ describe('DependenciesTable component', () => {
           });
         });
       });
+    });
+  });
+
+  describe('with multiple dependencies sharing the same component_id', () => {
+    let dependencies;
+    beforeEach(() => {
+      dependencies = [
+        makeDependency({
+          component_id: 1,
+          occurrence_count: 2,
+          project: { full_path: 'full_path', name: 'name' },
+          project_count: 2,
+        }),
+        makeDependency({
+          component_id: 1,
+          occurrence_count: 2,
+          project: { full_path: 'full_path', name: 'name' },
+          project_count: 2,
+        }),
+        makeDependency({
+          component_id: 2,
+          occurrence_count: 1,
+          project: { full_path: 'full_path', name: 'name' },
+          project_count: 1,
+        }),
+      ];
+
+      createComponent({
+        propsData: {
+          dependencies,
+          isLoading: false,
+        },
+        provide: { namespaceType: 'group' },
+      });
+    });
+
+    it('displays the dependencies grouped by component_id', () => {
+      expect(findTableRows()).toHaveLength(2);
+    });
+
+    it('renders a row for each dependency', () => {
+      const rows = findTableRows();
+      // dependencies[1] not tested because it is duplicated
+      expectGroupDependencyRow(rows.at(0), dependencies[0]);
+      expectGroupDependencyRow(rows.at(1), dependencies[2]);
     });
   });
 });

@@ -15068,6 +15068,12 @@ msgid_plural "Dependencies|%d vulnerabilities detected"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "Dependencies|%{locationCount} locations"
+msgstr ""
+
+msgid "Dependencies|%{projectCount} projects"
+msgstr ""
+
 msgid "Dependencies|%{remainingLicensesCount} more"
 msgstr ""
 
