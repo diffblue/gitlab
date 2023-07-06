@@ -1,3 +1,4 @@
 - return unless ::Gitlab::Llm::TanukiBot.enabled_for?(user: current_user)
+- resource_id = Gitlab::ApplicationContext.current_context_attribute(:ai_resource).presence
 
-#js-tanuki-bot-chat-app{ data: { user_id: current_user.to_global_id, resource_id: @ai_resource_id } }
+#js-tanuki-bot-chat-app{ data: { user_id: current_user.to_global_id, resource_id: resource_id } }
