@@ -3,6 +3,8 @@
 RSpec.shared_context 'with remote development shared fixtures' do
   # noinspection RubyDeadCode
   # rubocop:disable Metrics/ParameterLists
+  # rubocop:disable Metrics/CyclomaticComplexity
+  # rubocop:disable Metrics/PerceivedComplexity
   def create_workspace_agent_info(
     workspace_id:,
     workspace_name:,
@@ -399,6 +401,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
     info
   end
   # rubocop:enable Metrics/ParameterLists
+  # rubocop:enable Metrics/CyclomaticComplexity
+  # rubocop:enable Metrics/PerceivedComplexity
 
   def create_workspace_rails_info(
     name:,

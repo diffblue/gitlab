@@ -7,8 +7,15 @@ RSpec.describe 'Updating a workspace', feature_category: :remote_development do
 
   let_it_be(:user) { create(:user) }
   let_it_be(:current_user) { user } # NOTE: Some graphql spec helper methods rely on current_user to be set
-  let_it_be(:project) { create(:project, :public, :in_group, :repository) }
-  let_it_be(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
+  let_it_be(:project) do
+    create(:project, :public, :in_group, :repository).tap { |project| project.add_developer(user) }
+  end
+
+  let_it_be(:agent) do
+    create(:ee_cluster_agent,
+      :with_remote_development_agent_config).tap { |agent| agent.project.add_developer(user) }
+  end
+
   let_it_be(:workspace, refind: true) do
     create(
       :workspace,
@@ -41,8 +48,6 @@ RSpec.describe 'Updating a workspace', feature_category: :remote_development do
 
   before do
     stub_licensed_features(remote_development: true)
-    agent.project.add_developer(user)
-    project.add_developer(user)
     allow_next_instance_of(
       ::RemoteDevelopment::Workspaces::UpdateService
     ) do |service_instance|

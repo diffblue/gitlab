@@ -6,14 +6,10 @@ RSpec.describe RemoteDevelopment::WorkspacePolicy, feature_category: :remote_dev
   let(:current_user) { create(:user) }
   let_it_be(:developer) { create(:user) }
   let_it_be(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
-  let_it_be(:project) { create(:project) }
+  let_it_be(:project) { create(:project).tap { |project| project.add_developer(developer) } }
   let(:workspace) { build(:workspace, project: project, agent: agent) }
 
   subject(:policy) { described_class.new(current_user, workspace) }
-
-  before do
-    project.add_developer(developer)
-  end
 
   describe 'update_workspace' do
     context 'when the workspace belongs to another user and the user does not have develop access' do
