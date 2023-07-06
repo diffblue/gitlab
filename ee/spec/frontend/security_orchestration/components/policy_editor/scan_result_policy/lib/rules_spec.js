@@ -6,6 +6,7 @@ import {
   invalidScanners,
   invalidVulnerabilitiesAllowed,
   invalidVulnerabilityStates,
+  invalidBranchType,
   VULNERABILITY_STATE_KEYS,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/rules';
 import {
@@ -128,5 +129,20 @@ describe('invalidVulnerabilityStates', () => {
     ${[{ vulnerability_states: [...previouslyExistingStates, 'invalid'] }]} | ${true}
   `('returns $expectedResult with $rules', ({ rules, expectedResult }) => {
     expect(invalidVulnerabilityStates(rules)).toStrictEqual(expectedResult);
+  });
+
+  describe('invalidBranchType', () => {
+    it.each`
+      rules                                                                                 | expectedResult
+      ${null}                                                                               | ${false}
+      ${[]}                                                                                 | ${false}
+      ${[{}]}                                                                               | ${false}
+      ${[{ branches: [] }]}                                                                 | ${false}
+      ${[{ branch_type: 'invalid' }]}                                                       | ${true}
+      ${[{ branch_type: 'protected' }, { branch_type: 'default' }]}                         | ${false}
+      ${[{ branch_type: 'protected' }, { branch_type: 'default' }, { branch_type: 'all' }]} | ${true}
+    `('returns $expectedResult with $rules', ({ rules, expectedResult }) => {
+      expect(invalidBranchType(rules)).toBe(expectedResult);
+    });
   });
 });

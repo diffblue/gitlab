@@ -3,7 +3,10 @@ import createPolicyProject from 'ee/security_orchestration/graphql/mutations/cre
 import createScanExecutionPolicy from 'ee/security_orchestration/graphql/mutations/create_scan_execution_policy.mutation.graphql';
 import { gqClient } from 'ee/security_orchestration/utils';
 import createMergeRequestMutation from '~/graphql_shared/mutations/create_merge_request.mutation.graphql';
+
 import {
+  BRANCHES_KEY,
+  BRANCH_TYPE_KEY,
   DEFAULT_MR_TITLE,
   PRIMARY_POLICY_KEYS,
   RULE_MODE_SCANNERS,
@@ -139,9 +142,21 @@ export const createHumanizedScanners = (scanners = []) =>
   scanners.map((scanner) => {
     return RULE_MODE_SCANNERS[scanner] || scanner;
   });
+
+/**
+ * Rule can not have both keys simultaneously
+ * @param rule
+ */
+export const hasConflictingKeys = (rule) => {
+  return BRANCH_TYPE_KEY in rule && BRANCHES_KEY in rule;
+};
+
 /**
  * Checks for parameters unsupported by the policy "Rule Mode"
  * @param {Object} policy policy converted from YAML
+ * @param {Array} primaryKeys list of primary policy keys
+ * @param {Array} rulesKeys list of allowed keys for policy rule
+ * @param {Array} actionsKeys list of allowed keys for policy rule
  * @returns {Boolean} whether the YAML is valid to be parsed into "Rule Mode"
  */
 export const isValidPolicy = ({
@@ -154,15 +169,12 @@ export const isValidPolicy = ({
     return !Object.keys(object).every((item) => allowedValues.includes(item));
   };
 
-  if (
+  return !(
     hasInvalidKey(policy, primaryKeys) ||
     policy.rules?.some((rule) => hasInvalidKey(rule, rulesKeys)) ||
+    policy.rules?.some(hasConflictingKeys) ||
     policy.actions?.some((action) => hasInvalidKey(action, actionsKeys))
-  ) {
-    return false;
-  }
-
-  return true;
+  );
 };
 
 /**

@@ -64,7 +64,6 @@ export const NO_RULE_MESSAGE = s__('SecurityOrchestration|No rules defined - pol
 export const INVALID_PROTECTED_BRANCHES = s__(
   'SecurityOrchestration|The following branches do not exist on this development project: %{branches}. Please review all protected branches to ensure the values are accurate before updating this policy.',
 );
-
 export const ADD_RULE_LABEL = s__('SecurityOrchestration|Add rule');
 export const RULES_LABEL = s__('SecurityOrchestration|Rules');
 
@@ -95,6 +94,21 @@ export const SPECIFIC_BRANCHES = {
   value: 'SPECIFIC_BRANCHES',
 };
 
+export const ALL_BRANCHES = {
+  text: __('All branches'),
+  value: 'all',
+};
+
+export const DEFAULT_BRANCHES = {
+  text: __('All default branches'),
+  value: 'default',
+};
+
+export const ALL_PROTECTED_BRANCHES = {
+  text: __('All protected branches'),
+  value: 'protected',
+};
+
 export const ANY_OPERATOR = 'ANY';
 
 export const MORE_THAN_OPERATOR = 'MORE_THAN';
@@ -103,3 +117,19 @@ export const NUMBER_RANGE_I18N_MAP = {
   [ANY_OPERATOR]: s__('ApprovalRule|Any'),
   [MORE_THAN_OPERATOR]: s__('ApprovalRule|More than'),
 };
+
+export const SCAN_RESULT_BRANCH_TYPE_OPTIONS = [
+  DEFAULT_BRANCHES,
+  ALL_PROTECTED_BRANCHES,
+  SPECIFIC_BRANCHES,
+];
+
+export const SCAN_EXECUTION_BRANCH_TYPE_OPTIONS = [
+  ALL_BRANCHES,
+  DEFAULT_BRANCHES,
+  ALL_PROTECTED_BRANCHES,
+  SPECIFIC_BRANCHES,
+];
+
+export const BRANCHES_KEY = 'branches';
+export const BRANCH_TYPE_KEY = 'branch_type';
