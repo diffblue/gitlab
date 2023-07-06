@@ -91,6 +91,11 @@ class Geo::BaseRegistry < Geo::TrackingBase
     true
   end
 
+  # Method to generate a GraphQL enum key based on registry class.
+  def self.graphql_enum_key
+    self.to_s.gsub('Geo::', '').underscore.upcase
+  end
+
   # Search for a list of records associated with registries,
   # based on the query given in `query`.
   #
