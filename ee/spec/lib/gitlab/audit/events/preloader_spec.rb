@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Audit::Events::Preloader do
+RSpec.describe Gitlab::Audit::Events::Preloader, feature_category: :audit_events do
   let_it_be(:audit_events) do
     [
       create(:audit_event, created_at: 2.days.ago),
@@ -31,7 +31,7 @@ RSpec.describe Gitlab::Audit::Events::Preloader do
       #
       expect do
         subject.map do |event|
-          [event.author_name, event.lazy_entity.name]
+          [event.author_name, event.entity.name]
         end
       end.not_to exceed_query_limit(3)
     end
@@ -59,7 +59,7 @@ RSpec.describe Gitlab::Audit::Events::Preloader do
       #    SELECT "users".* FROM "users" WHERE "users"."id" IN (2, 4) ORDER BY "users"."id" ASC LIMIT 1000
       expect do
         preloader.find_each do |event|
-          [event.author_name, event.lazy_entity.name]
+          [event.author_name, event.entity.name]
         end
       end.not_to exceed_query_limit(5)
     end

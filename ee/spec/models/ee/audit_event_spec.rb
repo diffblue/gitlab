@@ -292,6 +292,16 @@ RSpec.describe AuditEvent, type: :model, feature_category: :audit_events do
         expect(event.entity).to be_a(Gitlab::Audit::NullEntity)
       end
     end
+
+    context 'when entity is the instance' do
+      let_it_be(:instance_scope) { Gitlab::Audit::InstanceScope.new }
+
+      subject(:event) { described_class.new(entity_id: instance_scope.id, entity_type: instance_scope.class.name) }
+
+      it 'returns a InstanceScope object' do
+        expect(event.entity).to be_a(Gitlab::Audit::InstanceScope)
+      end
+    end
   end
 
   describe '#root_group_entity' do

@@ -36,8 +36,9 @@ class AuditEventPresenter < Gitlab::View::Presenter::Simple
   def object_url
     return if entity.is_a?(Gitlab::Audit::NullEntity)
 
-    url_for(entity)
+    return Gitlab::Routing.url_helpers.admin_root_url if entity.is_a?(Gitlab::Audit::InstanceScope)
 
+    url_for(entity)
   rescue NoMethodError
     ''
   end
@@ -57,6 +58,6 @@ class AuditEventPresenter < Gitlab::View::Presenter::Simple
   end
 
   def entity
-    @entity ||= audit_event.lazy_entity
+    @entity ||= audit_event.entity
   end
 end

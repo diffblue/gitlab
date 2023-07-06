@@ -37,7 +37,7 @@ module EE
           return true if ::License.feature_available?(:admin_audit_log)
           return true if ::License.feature_available?(:extended_audit_events)
 
-          scope.respond_to?(:feature_available?) && scope.licensed_feature_available?(:audit_events)
+          scope.respond_to?(:licensed_feature_available?) && scope.licensed_feature_available?(:audit_events)
         end
       end
     end

@@ -304,18 +304,22 @@ RSpec.describe Gitlab::Audit::Auditor do
           }
         end
 
-        it 'logs audit event to database', :aggregate_failures do
-          expect { audit! }.to change(AuditEvent, :count).by(1)
+        shared_examples 'logs event to database' do
+          it 'logs audit event to database', :aggregate_failures do
+            expect { audit! }.to change(AuditEvent, :count).by(1)
 
-          audit_event = AuditEvent.last
+            audit_event = AuditEvent.last
 
-          expect(audit_event.author_id).to eq(author.id)
-          expect(audit_event.entity_id).to eq(scope.id)
-          expect(audit_event.entity_type).to eq(scope.class.name)
-          expect(audit_event.details[:target_id]).to eq(target.id)
-          expect(audit_event.details[:target_type]).to eq(target.class.name)
-          expect(audit_event.details[:custom_message]).to eq('Project has been deleted')
+            expect(audit_event.author_id).to eq(author.id)
+            expect(audit_event.entity_id).to eq(scope.id)
+            expect(audit_event.entity_type).to eq(scope.class.name)
+            expect(audit_event.details[:target_id]).to eq(target.id)
+            expect(audit_event.details[:target_type]).to eq(target.class.name)
+            expect(audit_event.details[:custom_message]).to eq('Project has been deleted')
+          end
         end
+
+        it_behaves_like 'logs event to database'
 
         it 'does not bulk insert and uses save to insert' do
           expect(AuditEvent).not_to receive(:bulk_insert!)
@@ -358,6 +362,22 @@ RSpec.describe Gitlab::Audit::Auditor do
           end
 
           it_behaves_like 'only streamed'
+        end
+
+        context 'when the scope of event is instance' do
+          let(:scope) { Gitlab::Audit::InstanceScope.new }
+
+          let(:context) do
+            {
+              name: name,
+              author: author,
+              scope: scope,
+              target: target,
+              message: 'Project has been deleted'
+            }
+          end
+
+          it_behaves_like 'logs event to database'
         end
       end
 
