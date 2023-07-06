@@ -24,6 +24,21 @@ RSpec.describe 'Create an instance external audit event destination', feature_ca
     }
   end
 
+  shared_examples 'creates an audit event' do
+    it 'audits the creation' do
+      expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).with(
+        "create_instance_event_streaming_destination",
+        nil,
+        anything
+      )
+
+      expect { subject }
+        .to change { AuditEvent.count }.by(1)
+
+      expect(AuditEvent.last.details[:custom_message]).to eq("Create instance event streaming destination https://gitlab.com/example/testendpoint")
+    end
+  end
+
   shared_examples 'a mutation that does not create a destination' do
     subject { post_graphql_mutation(mutation, current_user: current_user) }
 
@@ -60,6 +75,8 @@ RSpec.describe 'Create an instance external audit event destination', feature_ca
           expect(mutation_response['instanceExternalAuditEventDestination']['id']).not_to be_empty
           expect(mutation_response['instanceExternalAuditEventDestination']['verificationToken']).not_to be_empty
         end
+
+        it_behaves_like 'creates an audit event'
 
         context 'when destination is invalid' do
           let(:mutation) { graphql_mutation(:instance_external_audit_event_destination_create, invalid_input) }

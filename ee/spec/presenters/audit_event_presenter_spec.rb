@@ -121,6 +121,18 @@ RSpec.describe AuditEventPresenter do
       expect(presenter.object_url).to be_blank
     end
 
+    context 'when object is of type instance scope' do
+      let_it_be(:audit_event) do
+        create(
+          :audit_event, :instance_event
+        )
+      end
+
+      it 'returns the instance admin root url' do
+        expect(presenter.object_url).to eq(Gitlab::Routing.url_helpers.admin_root_url)
+      end
+    end
+
     context 'when a project in a user namespace has been deleted' do
       let(:project) { build(:project, namespace: create(:user).namespace).destroy! }
       let(:audit_event) do
