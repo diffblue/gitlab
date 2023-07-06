@@ -2,7 +2,7 @@
 
 module Groups
   module EnterpriseUsers
-    class CreateService
+    class AssociateService
       def initialize(group:, user:)
         @group = group
         @user = user
@@ -18,9 +18,9 @@ module Groups
         end
 
         if @user.user_detail.update(enterprise_group_id: @group.id, enterprise_group_associated_at: Time.current)
-          Notify.enterprise_user_account_created_email(@user.id).deliver_later
+          Notify.user_associated_with_enterprise_group_email(@user.id).deliver_later
 
-          log_info(message: 'Marked the user as an enterprise user of the group')
+          log_info(message: 'Associated the user with the enterprise group')
 
           success
         else

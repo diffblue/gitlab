@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::EnterpriseUsers::CreateService, :saas, feature_category: :system_access do
+RSpec.describe Groups::EnterpriseUsers::AssociateService, :saas, feature_category: :system_access do
   let_it_be(:group) { create(:group) }
   let_it_be(:subgroup) { create(:group, parent: group) }
   let_it_be(:project1) { create(:project, group: group) }
@@ -56,10 +56,10 @@ RSpec.describe Groups::EnterpriseUsers::CreateService, :saas, feature_category: 
         expect(user.user_detail.enterprise_group_associated_at).to eq(Time.current)
       end
 
-      it 'enqueues enterprise_user_account_created_email email for later delivery to the user' do
+      it 'enqueues user_associated_with_enterprise_group_email email for later delivery to the user' do
         expect do
           service.execute
-        end.to have_enqueued_mail(Notify, :enterprise_user_account_created_email).with(user.id)
+        end.to have_enqueued_mail(Notify, :user_associated_with_enterprise_group_email).with(user.id)
       end
 
       it 'logs message with info level about marking the user as an enterprise user of the group' do
@@ -67,7 +67,7 @@ RSpec.describe Groups::EnterpriseUsers::CreateService, :saas, feature_category: 
           class: service.class.name,
           group_id: group.id,
           user_id: user.id,
-          message: 'Marked the user as an enterprise user of the group'
+          message: 'Associated the user with the enterprise group'
         )
 
         service.execute

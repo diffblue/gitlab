@@ -56,11 +56,11 @@ module EE
           ::Notify.provisioned_member_access_granted_email(member.id).message
         end
 
-        def enterprise_user_account_created_email
+        def user_associated_with_enterprise_group_email
           cleanup do
-            create_enterprise_user_account(user, group)
+            associate_user_with_enterprise_group(user, group)
 
-            ::Notify.enterprise_user_account_created_email(user.id).message
+            ::Notify.user_associated_with_enterprise_group_email(user.id).message
           end
         end
 
@@ -112,7 +112,7 @@ module EE
         @epic ||= project.group.epics.first
       end
 
-      def create_enterprise_user_account(user, group)
+      def associate_user_with_enterprise_group(user, group)
         user.user_detail.update!(enterprise_group_id: group.id, enterprise_group_associated_at: Time.current)
       end
     end

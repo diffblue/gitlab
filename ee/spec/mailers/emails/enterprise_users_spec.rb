@@ -7,8 +7,8 @@ RSpec.describe Emails::EnterpriseUsers, feature_category: :user_management do
 
   include_context 'gitlab email notification'
 
-  describe 'enterprise_user_account_created_email' do
-    subject { Notify.enterprise_user_account_created_email(user_id) }
+  describe 'user_associated_with_enterprise_group_email' do
+    subject { Notify.user_associated_with_enterprise_group_email(user_id) }
 
     let(:user_id) { user.id }
     let(:recepient) { user }
