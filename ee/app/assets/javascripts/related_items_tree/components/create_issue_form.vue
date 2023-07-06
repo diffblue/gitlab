@@ -284,24 +284,21 @@ export default {
       </div>
     </div>
 
-    <div class="row my-1">
-      <div class="col-sm flex-sm-grow-0 mb-2 mb-sm-0">
-        <gl-button
-          class="w-100"
-          variant="confirm"
-          category="primary"
-          data-testid="submit-button"
-          :disabled="isIssueCreationDisabled"
-          :loading="itemCreateInProgress || recentItemFetchInProgress"
-          @click="createIssue"
-          >{{ __('Create issue') }}</gl-button
-        >
-      </div>
-      <div class="col-sm flex-sm-grow-0 ml-auto">
-        <gl-button class="w-100" data-testId="cancel-btn" @click="cancel">{{
-          __('Cancel')
-        }}</gl-button>
-      </div>
+    <div>
+      <gl-button
+        variant="confirm"
+        category="primary"
+        size="small"
+        class="gl-mr-2"
+        data-testid="submit-button"
+        :disabled="isIssueCreationDisabled"
+        :loading="itemCreateInProgress || recentItemFetchInProgress"
+        @click="createIssue"
+        >{{ __('Create issue') }}</gl-button
+      >
+      <gl-button size="small" data-testId="cancel-btn" @click="cancel">{{
+        __('Cancel')
+      }}</gl-button>
     </div>
   </div>
 </template>

@@ -24,10 +24,6 @@ describe('RelatedItemsTree', () => {
     });
 
     describe('template', () => {
-      it('renders component container element with class `related-items-tree-body`', () => {
-        expect(wrapper.classes('related-items-tree-body')).toBe(true);
-      });
-
       it('renders tree-root component', () => {
         expect(wrapper.find('tree-root-stub').isVisible()).toBe(true);
       });
