@@ -5165,9 +5165,6 @@ msgstr ""
 msgid "An error occurred while updating labels."
 msgstr ""
 
-msgid "An error occurred while updating the comment"
-msgstr ""
-
 msgid "An error occurred while updating the configuration."
 msgstr ""
 

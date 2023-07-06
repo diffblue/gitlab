@@ -71,6 +71,9 @@ describe('Batch comments draft note component', () => {
         note: draft,
         noteText: 'a',
         resolveDiscussion: false,
+        callback: jest.fn(),
+        parentElement: wrapper.vm.$el,
+        errorCallback: jest.fn(),
       };
 
       note.vm.$emit('handleUpdateNote', formData);
