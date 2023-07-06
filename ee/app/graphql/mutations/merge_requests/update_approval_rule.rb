@@ -33,9 +33,9 @@ module Mutations
         description: 'IDs of users as approvers.'
 
       argument :remove_hidden_groups,
-        [GraphQL::Types::Boolean],
+        GraphQL::Types::Boolean,
         required: false,
-        default_value: [],
+        default_value: false,
         description: 'Whether hidden groups should be removed.'
 
       authorize :update_approvers
