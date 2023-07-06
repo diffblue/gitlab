@@ -1,8 +1,10 @@
 <script>
-import { GlAlert, GlDisclosureDropdownGroup, GlLoadingIcon } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { GlAlert, GlButton, GlDisclosureDropdownGroup, GlLoadingIcon } from '@gitlab/ui';
+import { s__, __ } from '~/locale';
 import { logError } from '~/lib/logger';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
 import userWorkspacesListQuery from '../../graphql/queries/user_workspaces_list.query.graphql';
 import {
   WORKSPACES_LIST_POLL_INTERVAL,
@@ -10,6 +12,7 @@ import {
   WORKSPACE_STATES,
 } from '../../constants';
 import UpdateWorkspaceMutation from '../common/update_workspace_mutation.vue';
+import GetProjectDetailsQuery from '../common/get_project_details_query.vue';
 import WorkspaceDropdownItem from './workspace_dropdown_item.vue';
 
 export const i18n = {
@@ -19,6 +22,7 @@ export const i18n = {
     'Workspaces|A workspace is a virtual sandbox environment for your code in GitLab. You can create a workspace for a public project.',
   ),
   loadingWorkspacesFailedMessage: s__('Workspaces|Could not load workspaces'),
+  noWorkspacesSupportMessage: __('To set up this feature, contact your administrator.'),
 };
 
 const workspacesHelpPath = helpPagePath('user/workspace/index.md');
@@ -26,12 +30,27 @@ const workspacesHelpPath = helpPagePath('user/workspace/index.md');
 export default {
   components: {
     GlAlert,
+    GlButton,
     GlDisclosureDropdownGroup,
     GlLoadingIcon,
     WorkspaceDropdownItem,
     UpdateWorkspaceMutation,
+    GetProjectDetailsQuery,
   },
-  inject: ['projectId'],
+  props: {
+    projectId: {
+      type: Number,
+      required: true,
+    },
+    projectFullPath: {
+      type: String,
+      required: true,
+    },
+    newWorkspacePath: {
+      type: String,
+      required: true,
+    },
+  },
   apollo: {
     workspaces: {
       query: userWorkspacesListQuery,
@@ -52,7 +71,7 @@ export default {
             WORKSPACE_STATES.error,
             WORKSPACE_STATES.unknown,
           ],
-          projectIds: [this.projectId],
+          projectIds: [convertToGraphQLId(TYPENAME_PROJECT, this.projectId)],
         };
       },
       update(data) {
@@ -71,6 +90,8 @@ export default {
       workspaces: [],
       loadingWorkspacesFailed: false,
       updateWorkspaceErrorMessage: null,
+      projectDetailsLoaded: false,
+      supportsWorkspaces: false,
     };
   },
   computed: {
@@ -78,7 +99,7 @@ export default {
       return this.workspaces.length > 0;
     },
     isLoading() {
-      return this.$apollo.queries.workspaces.loading;
+      return this.$apollo.queries.workspaces.loading || !this.projectDetailsLoaded;
     },
   },
   methods: {
@@ -87,6 +108,13 @@ export default {
     },
     hideUpdateFailedAlert() {
       this.updateWorkspaceErrorMessage = null;
+    },
+    onProjectDetailsResult({ hasDevFile, clusterAgents }) {
+      this.projectDetailsLoaded = true;
+      this.supportsWorkspaces = hasDevFile && clusterAgents.length > 0;
+    },
+    onProjectDetailsError() {
+      this.projectDetailsLoaded = true;
     },
   },
   i18n,
@@ -99,10 +127,15 @@ export default {
     @updateFailed="displayUpdateFailedAlert"
   >
     <template #default="{ update }">
-      <gl-disclosure-dropdown-group class="gl-max-w-48 gl-py-2">
+      <gl-disclosure-dropdown-group bordered border-position="bottom" class="gl-max-w-48 gl-py-2">
         <template #group-label>
-          <span class="gl-font-sm">{{ $options.i18n.workspacesGroupLabel }}</span>
+          <span class="gl-display-flex gl-font-sm">{{ $options.i18n.workspacesGroupLabel }}</span>
         </template>
+        <get-project-details-query
+          :project-full-path="projectFullPath"
+          @result="onProjectDetailsResult"
+          @error="onProjectDetailsError"
+        />
         <gl-loading-icon v-if="isLoading" />
         <template v-else>
           <gl-alert
@@ -130,8 +163,20 @@ export default {
               @updateWorkspace="update(workspace.id, $event)"
             />
           </template>
+
           <div v-else class="gl-px-4 gl-py-2 gl-font-sm" data-testid="no-workspaces-message">
             {{ $options.i18n.noWorkspacesMessage }}
+          </div>
+
+          <div class="gl-px-4 gl-py-3">
+            <gl-button
+              v-if="supportsWorkspaces"
+              :href="newWorkspacePath"
+              data-testid="new-workspace-button"
+              block
+              >{{ $options.i18n.newWorkspaceButton }}</gl-button
+            >
+            <span v-else class="gl-font-sm">{{ $options.i18n.noWorkspacesSupportMessage }}</span>
           </div>
         </template>
       </gl-disclosure-dropdown-group>

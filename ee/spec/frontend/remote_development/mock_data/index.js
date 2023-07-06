@@ -15,7 +15,8 @@ export const WORKSPACE = {
   createdAt: '2023-05-01T18:24:34Z',
 };
 
-export const PROJECT_ID = 'gid://gitlab/Project/2';
+export const PROJECT_ID = 1;
+export const PROJECT_FULL_PATH = 'gitlab-org/gitlab';
 
 export const WORKSPACE_QUERY_RESULT = {
   data: {

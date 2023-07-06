@@ -31,7 +31,7 @@ export default {
         logError(error);
       },
       async result(result) {
-        if (result.error) {
+        if (result.error || !result.data.project) {
           this.$emit('error');
           return;
         }

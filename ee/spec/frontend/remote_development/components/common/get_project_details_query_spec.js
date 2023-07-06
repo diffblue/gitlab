@@ -4,7 +4,7 @@ import { cloneDeep } from 'lodash';
 import { logError } from '~/lib/logger';
 import getProjectDetailsQuery from 'ee/remote_development/graphql/queries/get_project_details.query.graphql';
 import getGroupClusterAgentsQuery from 'ee/remote_development/graphql/queries/get_group_cluster_agents.query.graphql';
-import GetProjectDetailsQuery from 'ee/remote_development/components/create/get_project_details_query.vue';
+import GetProjectDetailsQuery from 'ee/remote_development/components/common/get_project_details_query.vue';
 import { DEFAULT_DEVFILE_PATH } from 'ee/remote_development/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -82,6 +82,23 @@ describe('remote_development/components/create/get_project_details_query', () =>
         groupPath: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.group.fullPath,
         rootRef: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.repository.rootRef,
         hasDevFile: false,
+      });
+    });
+
+    describe('when the project is null', () => {
+      beforeEach(() => {
+        const customMockData = cloneDeep(GET_PROJECT_DETAILS_QUERY_RESULT);
+
+        customMockData.data.project = null;
+
+        getProjectDetailsQueryHandler.mockReset();
+        getProjectDetailsQueryHandler.mockResolvedValueOnce(customMockData);
+      });
+
+      it('emits error event', async () => {
+        await buildWrapper();
+
+        expect(wrapper.emitted('error')).toEqual([[]]);
       });
     });
 
@@ -266,7 +283,7 @@ describe('remote_development/components/create/get_project_details_query', () =>
     it('emits error event', async () => {
       await buildWrapper();
 
-      expect(wrapper.emitted('error')).toHaveLength(1);
+      expect(wrapper.emitted('error')).toEqual([[]]);
     });
   });
 });

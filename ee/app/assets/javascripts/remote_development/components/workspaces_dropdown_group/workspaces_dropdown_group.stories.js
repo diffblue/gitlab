@@ -2,7 +2,6 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { GlDisclosureDropdown } from '@gitlab/ui';
 import { withGitLabAPIAccess } from 'storybook_addons/gitlab_api_access';
-import { convertToGraphQLId } from '~/graphql_shared/utils';
 import WorkspacesDropdownGroup from './workspaces_dropdown_group.vue';
 
 Vue.use(VueApollo);
@@ -16,17 +15,16 @@ export const WithAPIAccess = (args, { argTypes, createVueApollo }) => {
   return {
     components: { WorkspacesDropdownGroup, GlDisclosureDropdown },
     apolloProvider: createVueApollo(),
-    provide: {
-      projectId: convertToGraphQLId('Project', args.projectId),
-    },
     props: Object.keys(argTypes),
     template: `<gl-disclosure-dropdown fluid-width toggle-text="Edit">
-      <workspaces-dropdown-group />
+      <workspaces-dropdown-group :new-workspace-path="newWorkspacePath" :project-id="projectId" :project-full-path="projectFullPath" />
     </gl-disclosure-dropdown>`,
   };
 };
 
 WithAPIAccess.decorators = [withGitLabAPIAccess];
 WithAPIAccess.args = {
-  projectId: '',
+  projectId: 0,
+  projectFullPath: '',
+  newWorkspacePath: '/create',
 };
