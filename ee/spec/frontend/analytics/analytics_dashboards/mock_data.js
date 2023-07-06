@@ -145,6 +145,60 @@ export const getGraphQLDashboard = (options = {}, withPanels = true) => {
   return dashboard;
 };
 
+export const TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE = {
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/73',
+      productAnalyticsVisualizations: {
+        nodes: [
+          {
+            slug: 'another_one',
+            type: 'SingleStat',
+            data: {
+              type: 'cube_analytics',
+              query: {
+                measures: ['SnowplowTrackedEvents.count'],
+                filters: [
+                  {
+                    member: 'SnowplowTrackedEvents.event',
+                    operator: 'equals',
+                    values: ['click'],
+                  },
+                ],
+                limit: 100,
+                timezone: 'UTC',
+                dimensions: [],
+                timeDimensions: [],
+              },
+            },
+            options: {},
+            __typename: 'ProductAnalyticsDashboardVisualization',
+          },
+        ],
+      },
+    },
+  },
+};
+
+export const TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE = {
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/1',
+      productAnalyticsDashboards: {
+        nodes: [
+          getGraphQLDashboard({
+            slug: 'custom_dashboard',
+            title: 'Custom Dashboard',
+            userDefined: true,
+          }),
+        ],
+        __typename: 'ProductAnalyticsDashboardConnection',
+      },
+      __typename: 'Project',
+    },
+  },
+};
+
 export const TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE = {
   data: {
     project: {

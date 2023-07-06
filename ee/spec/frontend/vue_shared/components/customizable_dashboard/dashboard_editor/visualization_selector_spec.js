@@ -3,17 +3,20 @@ import VisualizationSelector from 'ee/vue_shared/components/customizable_dashboa
 import { humanize } from '~/lib/utils/text_utility';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
-import { builtinVisualizations } from 'ee/analytics/analytics_dashboards/gl_dashboards';
+import { TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE } from 'ee_jest/analytics/analytics_dashboards/mock_data';
 
 describe('VisualizationSelector', () => {
   let wrapper;
 
   const dataSource = 'foo';
 
+  const visualizations =
+    TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE.data.project.productAnalyticsVisualizations.nodes;
+
   const availableVisualizations = (options) => ({
     [dataSource]: {
       loading: false,
-      visualizationIds: Object.keys(builtinVisualizations),
+      visualizations,
       ...options,
     },
   });
@@ -81,14 +84,10 @@ describe('VisualizationSelector', () => {
     });
 
     it('renders a list item for each available id', () => {
-      const ids = Object.values(availableVisualizations())
-        .map(({ visualizationIds }) => visualizationIds)
-        .flat();
-
-      ids.forEach((id, index) => {
+      visualizations.forEach((visualization, index) => {
         const item = findListItems().at(index);
 
-        expect(item.text()).toBe(humanize(id));
+        expect(item.text()).toBe(humanize(visualization.slug));
         expect(item.findComponent(GlIcon).props().name).toBe('chart');
       });
     });
@@ -103,7 +102,7 @@ describe('VisualizationSelector', () => {
       await item.trigger(event);
 
       expect(wrapper.emitted('select')).toEqual([
-        [availableVisualizations()[dataSource].visualizationIds[0], 'yml'],
+        [availableVisualizations()[dataSource].visualizations[0]],
       ]);
     });
   });

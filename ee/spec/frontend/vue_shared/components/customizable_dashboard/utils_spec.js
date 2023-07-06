@@ -126,7 +126,7 @@ describe('availableVisualizationsValidator', () => {
 
   it('returns true when the options have the required keys', () => {
     const result = availableVisualizationsValidator({
-      foo: { loading: false, visualizationIds: [] },
+      foo: { loading: false, visualizations: [] },
     });
     expect(result).toBe(true);
   });
