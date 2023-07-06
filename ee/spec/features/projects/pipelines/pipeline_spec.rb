@@ -144,7 +144,7 @@ RSpec.describe 'Pipeline', :js, feature_category: :continuous_integration do
 
           within '[data-testid="pipeline-details-header"]' do
             expect(page).to have_selector('[data-testid="compute-credits"]')
-            expect(page).to have_selector('[data-testid="pipeline-time-ago"]')
+            expect(page).to have_selector('[data-testid="pipeline-finished-time-ago"]')
           end
         end
       end
@@ -155,7 +155,7 @@ RSpec.describe 'Pipeline', :js, feature_category: :continuous_integration do
 
           within '[data-testid="pipeline-details-header"]' do
             expect(page).not_to have_selector('[data-testid="compute-credits"]')
-            expect(page).not_to have_selector('[data-testid="pipeline-time-ago"]')
+            expect(page).not_to have_selector('[data-testid="pipeline-finished-time-ago"]')
           end
         end
       end
