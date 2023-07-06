@@ -32,6 +32,10 @@ RSpec.describe DependencyEntity do
         it 'includes license info and vulnerabilities' do
           is_expected.to eq(dependency.except(:package_manager, :iid))
         end
+
+        it 'does not include component_id' do
+          expect(subject.keys).not_to include(:component_id)
+        end
       end
 
       context 'with reporter' do
@@ -56,6 +60,10 @@ RSpec.describe DependencyEntity do
 
           expect(result.dig(:project, :full_path)).to eq(project.full_path)
           expect(result.dig(:project, :name)).to eq(project.name)
+        end
+
+        it 'includes component_id' do
+          expect(subject.keys).to include(:component_id)
         end
       end
     end
