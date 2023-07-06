@@ -7,11 +7,11 @@ RSpec.describe Llm::ExplainCodeService, :saas, feature_category: :source_code_ma
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, group: group) }
 
-  let_it_be(:options) do
+  let(:options) do
     {
       messages: [
-        { role: 'user', content: 'user content' },
-        { role: 'system', content: 'system content' }
+        { role: 'system', content: 'system content' },
+        { role: 'user', content: 'user content' }
       ]
     }
   end
@@ -34,6 +34,18 @@ RSpec.describe Llm::ExplainCodeService, :saas, feature_category: :source_code_ma
       let(:resource) { project }
       let(:action_name) { :explain_code }
       let(:content) { 'Explain code' }
+    end
+
+    context 'when explain_code_vertex_ai feature flag is disabled' do
+      before do
+        stub_feature_flags(explain_code_vertex_ai: false)
+      end
+
+      it_behaves_like 'completion worker sync and async' do
+        let(:resource) { project }
+        let(:action_name) { :explain_code_open_ai }
+        let(:content) { 'Explain code' }
+      end
     end
 
     context 'when explain_code_snippet feature flag is disabled' do
