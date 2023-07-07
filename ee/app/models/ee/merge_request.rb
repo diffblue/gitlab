@@ -413,6 +413,10 @@ module EE
         .order(created_at: :desc)
     end
 
+    def merge_train
+      MergeTrains::Train.new(target_project.id, target_branch)
+    end
+
     private
 
     def has_approved_license_check?

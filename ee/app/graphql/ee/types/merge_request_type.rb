@@ -67,7 +67,7 @@ module EE
       def merge_trains_count
         return unless object.target_project.merge_trains_enabled?
 
-        object.train.car_count
+        object.merge_train.car_count
       end
 
       def suggested_reviewers
