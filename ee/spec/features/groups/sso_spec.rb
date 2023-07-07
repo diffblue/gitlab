@@ -55,7 +55,7 @@ RSpec.describe 'Group SAML SSO', :js, :snowplow, feature_category: :system_acces
           click_button('Transfer ownership')
 
           expect(page).to have_content('This action can lead to data loss. To prevent accidental actions we ask you to confirm your intention.')
-          expect(page).to have_content("Please type #{user.username} to proceed or close this modal to cancel.")
+          expect(page).to have_content("Please type #{user.username} to proceed.")
 
           fill_in 'confirm_name_input', with: user.username
           click_button 'Confirm'
