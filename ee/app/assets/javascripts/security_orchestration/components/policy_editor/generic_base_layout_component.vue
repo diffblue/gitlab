@@ -51,7 +51,7 @@ export default {
       <slot name="content"></slot>
     </div>
 
-    <div v-if="showRemoveButton" class="gl-min-w-7 gl-ml-4">
+    <div v-if="showRemoveButton" class="gl-min-w-7">
       <gl-button
         icon="remove"
         category="tertiary"

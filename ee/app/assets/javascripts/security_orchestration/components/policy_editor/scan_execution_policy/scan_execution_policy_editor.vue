@@ -7,8 +7,6 @@ import {
   EDITOR_MODE_YAML,
   GRAPHQL_ERROR_MESSAGE,
   PARSING_ERROR_MESSAGE,
-  DAST_SCANNERS_PARSING_ERROR,
-  RUNNER_TAGS_PARSING_ERROR,
   SECURITY_POLICY_ACTIONS,
   ACTIONS_LABEL,
   ADD_ACTION_LABEL,
@@ -30,7 +28,7 @@ import {
   DEFAULT_SCANNER,
   ADD_CONDITION_LABEL,
   CONDITIONS_LABEL,
-  POLICY_ACTION_BUILDER_TAGS_ERROR_KEY,
+  ERROR_MESSAGE_MAP,
 } from './constants';
 
 export default {
@@ -45,8 +43,6 @@ export default {
     ADD_CONDITION_LABEL,
     CONDITIONS_LABEL,
     PARSING_ERROR_MESSAGE,
-    RUNNER_TAGS_PARSING_ERROR,
-    DAST_SCANNERS_PARSING_ERROR,
     createMergeRequest: __('Configure with a merge request'),
     notOwnerButtonText: __('Learn more'),
     notOwnerDescription: s__(
@@ -140,10 +136,7 @@ export default {
     },
     handleActionBuilderParsingError(key) {
       this.hasParsingError = true;
-      this.parsingError =
-        key === POLICY_ACTION_BUILDER_TAGS_ERROR_KEY
-          ? this.$options.i18n.RUNNER_TAGS_PARSING_ERROR
-          : this.$options.i18n.DAST_SCANNERS_PARSING_ERROR;
+      this.parsingError = ERROR_MESSAGE_MAP[key] || PARSING_ERROR_MESSAGE;
     },
     handleSetPolicyProperty(property, value) {
       this.policy[property] = value;

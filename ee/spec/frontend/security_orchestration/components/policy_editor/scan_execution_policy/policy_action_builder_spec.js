@@ -9,6 +9,8 @@ import projectRunnerTags from 'ee/vue_shared/components/runner_tags_dropdown/gra
 import groupRunnerTags from 'ee/vue_shared/components/runner_tags_dropdown/graphql/get_group_runner_tags.query.graphql';
 import GroupDastProfileSelector from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/group_dast_profile_selector.vue';
 import GenericBaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/generic_base_layout_component.vue';
+import CiVariablesSelectors from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/scan_filters/ci_variables_selectors.vue';
+import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_filter_selector.vue';
 import { buildScannerAction } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
@@ -17,13 +19,18 @@ import {
 } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/constants';
 import { createMockApolloProvider } from 'ee_jest/security_configuration/dast_profiles/graphql/create_mock_apollo_provider';
 import { RUNNER_TAG_LIST_MOCK } from 'ee_jest/vue_shared/components/runner_tags_dropdown/mocks/mocks';
+import {
+  CI_VARIABLE,
+  FILTERS,
+} from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/scan_filters/constants';
 
 describe('PolicyActionBuilder', () => {
   let wrapper;
   let requestHandlers;
   const namespacePath = 'gid://gitlab/Project/20';
   const namespaceType = NAMESPACE_TYPES.PROJECT;
-  const scannerKey = 'sast';
+  const NEW_SCANNER = 'sast';
+  const DEFAULT_ACTION = buildScannerAction({ scanner: 'dast' });
 
   const defaultHandlerValue = (type = 'project') =>
     jest.fn().mockResolvedValue({
@@ -47,7 +54,7 @@ describe('PolicyActionBuilder', () => {
 
   const factory = ({
     mountFn = mountExtended,
-    props = {},
+    propsData = {},
     stubs = {},
     handlers = defaultHandlerValue(),
     provide = {},
@@ -55,9 +62,9 @@ describe('PolicyActionBuilder', () => {
     wrapper = mountFn(PolicyActionBuilder, {
       apolloProvider: createApolloProvider(handlers),
       propsData: {
-        initAction: buildScannerAction({ scanner: 'dast' }),
+        initAction: DEFAULT_ACTION,
         actionIndex: 0,
-        ...props,
+        ...propsData,
       },
       provide: {
         namespacePath,
@@ -69,9 +76,11 @@ describe('PolicyActionBuilder', () => {
   };
 
   const findActionSeperator = () => wrapper.findByTestId('action-and-label');
+  const findCiVariablesSelectors = () => wrapper.findComponent(CiVariablesSelectors);
   const findGenericBaseLayoutComponent = () =>
     wrapper.findAllComponents(GenericBaseLayoutComponent).at(1);
   const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
+  const findScanFilterSelector = () => wrapper.findComponent(ScanFilterSelector);
   const findSprintf = () => wrapper.findComponent(GlSprintf);
   const findTagsList = () => wrapper.findComponent(RunnerTagsList);
   const findProjectDastSelector = () => wrapper.findComponent(ProjectDastProfileSelector);
@@ -102,17 +111,17 @@ describe('PolicyActionBuilder', () => {
     factory({ stubs: { GlCollapsibleListbox: true } });
     await nextTick();
 
-    findDropdown().vm.$emit('select', scannerKey);
+    findDropdown().vm.$emit('select', NEW_SCANNER);
     await nextTick();
 
     expect(findActionSeperator().exists()).toBe(false);
-    expect(findDropdown().props('selected')).toBe(scannerKey);
+    expect(findDropdown().props('selected')).toBe(NEW_SCANNER);
   });
 
   it('renders correctly the message with non-DAST scanner action', async () => {
     factory({
       mountFn: shallowMountExtended,
-      props: {
+      propsData: {
         initAction: buildScannerAction({ scanner: 'sast' }),
       },
       stubs: { GenericBaseLayoutComponent },
@@ -123,39 +132,49 @@ describe('PolicyActionBuilder', () => {
   });
 
   it('renders an additional action correctly', async () => {
-    factory({ props: { actionIndex: 1 } });
+    factory({ propsData: { actionIndex: 1 } });
     await nextTick();
 
     expect(findActionSeperator().exists()).toBe(true);
   });
 
   it('emits the "changed" event when an action scan type is changed', async () => {
-    factory();
+    factory({ propsData: { initAction: { ...DEFAULT_ACTION, tags: ['production'] } } });
     await nextTick();
 
     expect(wrapper.emitted('changed')).toBe(undefined);
 
-    findDropdown().vm.$emit('select', scannerKey);
+    findDropdown().vm.$emit('select', NEW_SCANNER);
     await nextTick();
 
     expect(wrapper.emitted('changed')).toStrictEqual([
-      [buildScannerAction({ scanner: scannerKey })],
+      [{ ...buildScannerAction({ scanner: NEW_SCANNER }), tags: ['production'] }],
+    ]);
+  });
+
+  it('removes the variables when a action scan type is changed', async () => {
+    factory({ propsData: { initAction: { ...DEFAULT_ACTION, variables: { key: 'value' } } } });
+    await nextTick();
+
+    findDropdown().vm.$emit('select', NEW_SCANNER);
+    await nextTick();
+
+    expect(wrapper.emitted('changed')).toStrictEqual([
+      [buildScannerAction({ scanner: NEW_SCANNER })],
     ]);
   });
 
   it('emits the "changed" event when action tags are changed', async () => {
-    factory();
+    factory({ propsData: { initAction: { ...DEFAULT_ACTION, tags: ['staging'] } } });
     await nextTick();
 
     expect(wrapper.emitted('changed')).toBe(undefined);
 
-    const branches = ['main', 'branch1', 'branch2'];
-    findTagsList().vm.$emit('input', branches);
+    const NEW_TAGS = ['main', 'release'];
+    findTagsList().vm.$emit('input', NEW_TAGS);
     await nextTick();
 
-    expect(wrapper.emitted('changed')).toStrictEqual([
-      [{ ...buildScannerAction({ scanner: 'dast' }), tags: branches }],
-    ]);
+    expect(wrapper.emitted('changed')).toStrictEqual([[{ ...DEFAULT_ACTION, tags: NEW_TAGS }]]);
   });
 
   it('emits the "removed" event when an action is changed', async () => {
@@ -168,6 +187,60 @@ describe('PolicyActionBuilder', () => {
     await nextTick();
 
     expect(wrapper.emitted('remove')).toStrictEqual([[]]);
+  });
+
+  describe('scan filters', () => {
+    it('initially hides ci variable filter', () => {
+      factory();
+      expect(findCiVariablesSelectors().exists()).toBe(false);
+    });
+
+    describe('ci variable filter', () => {
+      const VARIABLES = { key: 'new key', value: 'new value' };
+
+      beforeEach(() => {
+        factory({
+          propsData: {
+            initAction: {
+              ...DEFAULT_ACTION,
+              variables: { [VARIABLES.key]: VARIABLES.value },
+            },
+            variables: { test: 'test_value' },
+          },
+        });
+      });
+
+      it('emits "changed" with the updated variable when a variable is updated', () => {
+        const NEW_VARIABLES = { '': '' };
+        findCiVariablesSelectors().vm.$emit('input', { variables: NEW_VARIABLES });
+        expect(wrapper.emitted('changed')).toEqual([
+          [{ ...DEFAULT_ACTION, variables: NEW_VARIABLES }],
+        ]);
+      });
+
+      it('emits "error" with the correct error message when a variable error occurs', () => {
+        findCiVariablesSelectors().vm.$emit('remove');
+        expect(wrapper.emitted('parsing-error')).toEqual([['variables']]);
+      });
+    });
+
+    describe('scan filter selector', () => {
+      beforeEach(() => {
+        factory();
+      });
+
+      it('displays the scan filter selector', () => {
+        expect(findScanFilterSelector().props()).toMatchObject({
+          filters: FILTERS,
+          selected: { [CI_VARIABLE]: null },
+        });
+      });
+
+      it('displays the ci variable filter when the scan filter selector selects it', async () => {
+        await findScanFilterSelector().vm.$emit('select', CI_VARIABLE);
+        expect(findCiVariablesSelectors().exists()).toBe(true);
+      });
+    });
   });
 
   describe('parsing error', () => {
