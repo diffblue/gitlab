@@ -462,10 +462,30 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
       end
 
       context "when the checks are enabled" do
-        it "applies /summarize_diff" do
-          _, _, msg = service.execute(content, merge_request)
+        context 'when summarize_diff_vertex is enabled' do
+          before do
+            allow_next_instance_of(Gitlab::Llm::VertexAi::Client) do |llm_client|
+              allow(llm_client).to receive(:text)
+            end
+          end
 
-          expect(msg).to include("Request for summary queued")
+          it "applies /summarize_diff" do
+            _, _, msg = service.execute(content, merge_request)
+
+            expect(msg).to include("Request for summary queued")
+          end
+        end
+
+        context 'when summarize_diff_vertex is disabled' do
+          before do
+            stub_feature_flags(summarize_diff_vertex: false)
+          end
+
+          it "applies /summarize_diff" do
+            _, _, msg = service.execute(content, merge_request)
+
+            expect(msg).to include("Request for summary queued")
+          end
         end
       end
 

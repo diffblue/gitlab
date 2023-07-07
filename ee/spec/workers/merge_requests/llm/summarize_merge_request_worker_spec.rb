@@ -112,14 +112,36 @@ RSpec.describe MergeRequests::Llm::SummarizeMergeRequestWorker, feature_category
           diff_id: merge_request.merge_request_diff.id }]
     end
 
-    it 'creates a diff llm summary' do
-      expect { worker.perform(*params) }.to change { ::MergeRequest::DiffLlmSummary.count }.by(1)
+    context 'when summarize_diff_vertex is disabled' do
+      before do
+        stub_feature_flags(summarize_diff_vertex: false)
+      end
 
-      expect(::MergeRequest::DiffLlmSummary.last)
-        .to have_attributes(
-          merge_request_diff: merge_request.merge_request_diff,
-          content: message,
-          provider: 'open_ai')
+      it 'creates a diff llm summary' do
+        expect { worker.perform(*params) }.to change { ::MergeRequest::DiffLlmSummary.count }.by(1)
+
+        expect(::MergeRequest::DiffLlmSummary.last)
+          .to have_attributes(
+            merge_request_diff: merge_request.merge_request_diff,
+            content: message,
+            provider: 'open_ai')
+      end
+    end
+
+    context 'when summarize_diff_vertex is enabled' do
+      before do
+        stub_feature_flags(summarize_diff_vertex: true)
+      end
+
+      it 'creates a diff llm summary' do
+        expect { worker.perform(*params) }.to change { ::MergeRequest::DiffLlmSummary.count }.by(1)
+
+        expect(::MergeRequest::DiffLlmSummary.last)
+          .to have_attributes(
+            merge_request_diff: merge_request.merge_request_diff,
+            content: message,
+            provider: 'vertex_ai')
+      end
     end
 
     context 'when the diff does not exist' do

@@ -1,0 +1,8 @@
+---
+name: summarize_diff_vertex
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/124998
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/417132
+milestone: '16.2'
+type: development
+group: group::code review
+default_enabled: false
