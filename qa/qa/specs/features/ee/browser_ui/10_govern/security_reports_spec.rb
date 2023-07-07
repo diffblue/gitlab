@@ -78,7 +78,11 @@ module QA
       end
 
       it 'displays security reports in the project security dashboard',
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348037' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348037',
+        quarantine: {
+          type: :stale,
+          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/416731'
+        } do
         push_security_reports
         Page::Project::Menu.perform(&:click_project)
         Page::Project::Menu.perform(&:go_to_vulnerability_report)
@@ -140,7 +144,11 @@ module QA
       end
 
       it 'displays false positives for the vulnerabilities',
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/350412' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/350412',
+        quarantine: {
+          type: :stale,
+          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/416731'
+        } do
         push_security_reports
         Page::Project::Menu.perform(&:click_project)
         Support::Waiter.wait_until(sleep_interval: 3) do
