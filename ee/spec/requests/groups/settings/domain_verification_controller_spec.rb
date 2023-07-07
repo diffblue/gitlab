@@ -46,7 +46,6 @@ RSpec.describe Groups::Settings::DomainVerificationController, type: :request,
 
   before do
     stub_licensed_features(domain_verification: true)
-    stub_feature_flags(domain_verification_operation: true)
     group.add_member(user, access_level)
 
     sign_in(user)
@@ -56,19 +55,6 @@ RSpec.describe Groups::Settings::DomainVerificationController, type: :request,
     context "when domain_verification is unavailable" do
       before do
         stub_licensed_features(domain_verification: false)
-      end
-
-      it "renders 404" do
-        subject
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
-  end
-
-  shared_examples 'renders 404 when domain_verification_operation is unavailable' do
-    context "when domain domain_verification_operation is unavailable" do
-      before do
-        stub_feature_flags(domain_verification_operation: false)
       end
 
       it "renders 404" do
@@ -160,7 +146,6 @@ RSpec.describe Groups::Settings::DomainVerificationController, type: :request,
     end
 
     it_behaves_like 'renders 404 when domain_verification is unavailable'
-    it_behaves_like 'renders 404 when domain_verification_operation is unavailable'
   end
 
   describe 'POST /groups/:group_id/-/settings/domain_verification', :saas do
@@ -245,7 +230,6 @@ RSpec.describe Groups::Settings::DomainVerificationController, type: :request,
     subject { post group_settings_domain_verification_index_path(group), params: params }
 
     it_behaves_like 'renders 404 when domain_verification is unavailable'
-    it_behaves_like 'renders 404 when domain_verification_operation is unavailable'
   end
 
   describe 'GET /groups/:group_id/-/settings/domain_verification/:domain', :saas do
@@ -282,7 +266,6 @@ RSpec.describe Groups::Settings::DomainVerificationController, type: :request,
     subject { get group_settings_domain_verification_path(group, domain) }
 
     it_behaves_like 'renders 404 when domain_verification is unavailable'
-    it_behaves_like 'renders 404 when domain_verification_operation is unavailable'
   end
 
   describe 'PUT /groups/:group_id/-/settings/domain_verification/:domain', :saas do
@@ -381,7 +364,6 @@ RSpec.describe Groups::Settings::DomainVerificationController, type: :request,
     subject { put group_settings_domain_verification_path(group, domain_secure), params: {} }
 
     it_behaves_like 'renders 404 when domain_verification is unavailable'
-    it_behaves_like 'renders 404 when domain_verification_operation is unavailable'
   end
 
   describe 'DELETE /groups/:group_id/-/settings/domain_verification/:domain', :saas do
@@ -404,7 +386,6 @@ RSpec.describe Groups::Settings::DomainVerificationController, type: :request,
     end
 
     it_behaves_like 'renders 404 when domain_verification is unavailable'
-    it_behaves_like 'renders 404 when domain_verification_operation is unavailable'
   end
 
   describe "POST /groups/:group_id/-/settings/domain_verification/:domain/verify", :saas do
@@ -435,7 +416,6 @@ RSpec.describe Groups::Settings::DomainVerificationController, type: :request,
     end
 
     it_behaves_like 'renders 404 when domain_verification is unavailable'
-    it_behaves_like 'renders 404 when domain_verification_operation is unavailable'
   end
 
   describe "POST /groups/:group_id/-/settings/domain_verification/:domain/retry_auto_ssl", :saas do
@@ -453,7 +433,6 @@ RSpec.describe Groups::Settings::DomainVerificationController, type: :request,
     end
 
     it_behaves_like 'renders 404 when domain_verification is unavailable'
-    it_behaves_like 'renders 404 when domain_verification_operation is unavailable'
   end
 
   describe "DELETE /groups/:group_id/-/settings/domain_verification/:domain/clean_certificate", :saas do
@@ -470,6 +449,5 @@ RSpec.describe Groups::Settings::DomainVerificationController, type: :request,
     end
 
     it_behaves_like 'renders 404 when domain_verification is unavailable'
-    it_behaves_like 'renders 404 when domain_verification_operation is unavailable'
   end
 end

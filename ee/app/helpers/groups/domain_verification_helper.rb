@@ -2,10 +2,6 @@
 
 module Groups
   module DomainVerificationHelper
-    def can_add_group_domain?(group)
-      Feature.enabled?(:domain_verification_operation, group)
-    end
-
     def can_verify_group_domain?(domain)
       domain.persisted?
     end
