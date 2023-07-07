@@ -64,7 +64,7 @@ module QA
                 ::QA::Support::WaitForRequests.wait_for_requests # handle element loading text
                 usage_quota.namespace_usage_total.squish
               end
-                .to eventually_match(%r{\d+\.\d+ Ki?B Namespace storage used}i)
+                .to eventually_match(%r{\d+\.\d+ Ki?B.+Namespace storage used}i)
                       .within(max_attempts: 10, reload_page: page, sleep_interval: 1)
               expect(usage_quota.storage_purchased.squish).to match(%r{Total purchased storage \d+.\d Gi?B}i)
               expect(usage_quota.dependency_proxy_size).to match(%r{0 B}i)
