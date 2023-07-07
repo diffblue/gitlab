@@ -38,10 +38,10 @@ export default {
   },
   computed: {
     authorName() {
-      return this.latestVersion?.author.name;
+      return this.latestVersion.author.name;
     },
     authorProfileUrl() {
-      return this.latestVersion?.author.webUrl;
+      return this.latestVersion.author.webUrl;
     },
     entityId() {
       return getIdFromGraphQLId(this.resource.id);
