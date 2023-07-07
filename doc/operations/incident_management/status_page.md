@@ -19,8 +19,8 @@ Selecting an incident displays a detail page with more information about a parti
 ![Status Page detail](img/status_page_detail_v12_10.png)
 
 - Status on the incident, including when the incident was last updated.
-- The incident title, including any emojis.
-- The description of the incident, including emojis.
+- The incident title, including any emoji.
+- The description of the incident, including emoji.
 - Any file attachments provided in the incident description, or comments with a
   valid image extension. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/205166) in GitLab 13.1.
 - A chronological ordered list of updates to the incident.
