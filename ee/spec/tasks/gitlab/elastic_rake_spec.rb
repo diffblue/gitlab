@@ -166,6 +166,7 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
         expect(Rake::Task['gitlab:elastic:index_projects']).to receive(:invoke).ordered
         expect(Rake::Task['gitlab:elastic:index_snippets']).to receive(:invoke).ordered
         expect(Rake::Task['gitlab:elastic:index_users']).to receive(:invoke).ordered
+        expect(Rake::Task['gitlab:elastic:index_epics']).to receive(:invoke).ordered
 
         subject
       end
@@ -232,6 +233,37 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
         expect(Elastic::ProcessInitialBookkeepingService).to receive(:track!).with(*users).once
 
         run_rake_task 'gitlab:elastic:index_users'
+      end
+    end
+
+    describe 'index_epics' do
+      let_it_be(:epic) { create(:epic) }
+
+      it 'calls maintain_indexed_group_associations for groups' do
+        expect(Elastic::ProcessInitialBookkeepingService).to receive(:maintain_indexed_group_associations!)
+          .with(epic.group)
+
+        run_rake_task 'gitlab:elastic:index_epics'
+      end
+
+      context 'with limited indexing enabled' do
+        let_it_be(:group1) { create(:group) }
+        let_it_be(:group2) { create(:group) }
+        let_it_be(:group3) { create(:group) }
+
+        before do
+          create(:elasticsearch_indexed_namespace, namespace: group1)
+          create(:elasticsearch_indexed_namespace, namespace: group3)
+
+          stub_ee_application_setting(elasticsearch_limit_indexing: true)
+        end
+
+        it 'does not call maintain_indexed_group_associations for groups that should not be indexed' do
+          expect(Elastic::ProcessBookkeepingService).to receive(:maintain_indexed_group_associations!)
+            .with(group1, group3)
+
+          run_rake_task 'gitlab:elastic:index_epics'
+        end
       end
     end
 

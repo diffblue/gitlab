@@ -272,6 +272,41 @@ RSpec.describe Epic, feature_category: :portfolio_management do
     end
   end
 
+  describe 'callbacks' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:epic) { create(:epic, group: group) }
+    let_it_be(:child_epic) { create(:epic, group: group, parent: epic, start_date: Date.new(1998, 1, 1), end_date: Date.new(1999, 1, 1)) }
+    let_it_be(:another_epic) { create(:epic, group: group) }
+
+    context 'when epic indexing is enabled' do
+      before do
+        allow(described_class).to receive(:elasticsearch_available?).and_return(true)
+        stub_ee_application_setting(elasticsearch_indexing: true)
+        Epics::UpdateDatesService.new([epic, another_epic]).execute
+        epic.reload
+        another_epic.reload
+      end
+
+      it 'updates epics in Elasticsearch when the child epic start_date is updated' do
+        expect(epic.start_date_sourcing_epic).to eq(child_epic)
+
+        expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(epic).once
+        expect(::Elastic::ProcessBookkeepingService).not_to receive(:track!).with(another_epic)
+
+        child_epic.update!(start_date: child_epic.start_date - 2.days)
+      end
+
+      it 'updates epics in Elasticsearch when the child epic end_date is updated' do
+        expect(epic.due_date_sourcing_epic).to eq(child_epic)
+
+        expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(epic).once
+        expect(::Elastic::ProcessBookkeepingService).not_to receive(:track!).with(another_epic)
+
+        child_epic.update!(end_date: child_epic.end_date + 2.days)
+      end
+    end
+  end
+
   describe 'modules' do
     subject { described_class }
 

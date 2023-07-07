@@ -6,6 +6,7 @@ module EE
 
     prepended do
       include Elastic::ApplicationVersionedSearch
+      include Elastic::UpdateAssociatedEpicsOnDateChange
 
       has_many :boards
     end

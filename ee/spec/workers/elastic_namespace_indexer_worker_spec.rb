@@ -14,6 +14,7 @@ RSpec.describe ElasticNamespaceIndexerWorker, feature_category: :global_search d
     it 'returns true' do
       expect(Elastic::ProcessInitialBookkeepingService).not_to receive(:backfill_projects!)
       expect(ElasticWikiIndexerWorker).not_to receive(:perform_async)
+      expect(Elastic::ProcessBookkeepingService).not_to receive(:maintain_indexed_group_associations!)
 
       expect(subject.perform(1, "index")).to be_truthy
     end
@@ -36,7 +37,7 @@ RSpec.describe ElasticNamespaceIndexerWorker, feature_category: :global_search d
 
     describe 'indexing and deleting' do
       let_it_be(:namespace) { create :namespace }
-
+      let_it_be(:group) { create(:group) }
       let(:projects) { create_list :project, 3, namespace: namespace }
 
       it 'indexes all projects belonging to the namespace' do
@@ -45,9 +46,27 @@ RSpec.describe ElasticNamespaceIndexerWorker, feature_category: :global_search d
         subject.perform(namespace.id, :index)
       end
 
+      it 'calls Elastic::ProcessBookkeepingService.maintain_indexed_group_associations! for group namespaces' do
+        expect(Elastic::ProcessBookkeepingService).to receive(:maintain_indexed_group_associations!).with(*group).once
+
+        subject.perform(group.id, :index)
+      end
+
+      it 'does not call maintain_indexed_group_associations! for non-group namespaces' do
+        expect(Elastic::ProcessBookkeepingService).not_to receive(:maintain_indexed_group_associations!)
+
+        subject.perform(namespace.id, :index)
+      end
+
       it 'deletes all projects belonging to the namespace' do
         args = projects.map { |project| [project.id, project.es_id] }
         expect(ElasticDeleteProjectWorker).to receive(:bulk_perform_async).with(args)
+
+        subject.perform(namespace.id, :delete)
+      end
+
+      it 'does not enqueue Search::ElasticGroupAssociationDeletionWorker' do
+        expect(Search::ElasticGroupAssociationDeletionWorker).not_to receive(:perform_async)
 
         subject.perform(namespace.id, :delete)
       end
@@ -72,6 +91,46 @@ RSpec.describe ElasticNamespaceIndexerWorker, feature_category: :global_search d
           end
 
           subject.perform(group_namespace.id, :delete)
+        end
+
+        context 'when the namespace is a group' do
+          let_it_be(:parent_group) { create(:group) }
+          let_it_be(:group) { create(:group, parent: parent_group) }
+          let_it_be(:child_group) { create(:group, parent: group) }
+          let_it_be(:another_group) { create(:group) }
+
+          it 'enqueues GroupAssociationDeletionWorker for the group and its descendents but not for other groups' do
+            expect(Search::ElasticGroupAssociationDeletionWorker).to receive(:perform_in)
+              .with(elastic_group_association_deletion_worker_random_delay_range, group.id, parent_group.id)
+            expect(Search::ElasticGroupAssociationDeletionWorker).to receive(:perform_in)
+              .with(elastic_group_association_deletion_worker_random_delay_range, child_group.id, parent_group.id)
+
+            expect(Search::ElasticGroupAssociationDeletionWorker).not_to receive(:perform_in)
+              .with(anything, parent_group.id, parent_group.id)
+            expect(Search::ElasticGroupAssociationDeletionWorker).not_to receive(:perform_in)
+              .with(anything, another_group.id, parent_group.id)
+
+            subject.perform(group.id, :delete)
+          end
+
+          it 'enqueues Search::ElasticGroupAssociationDeletionWorker for group namespaces and its descendents' do
+            parent_group = create(:group)
+            group = create(:group, parent: parent_group)
+            child_group = create(:group, parent: group)
+            another_group = create(:group)
+
+            expect(Search::ElasticGroupAssociationDeletionWorker).to receive(:perform_in)
+              .with(elastic_group_association_deletion_worker_random_delay_range, child_group.id, parent_group.id).once
+            expect(Search::ElasticGroupAssociationDeletionWorker).to receive(:perform_in)
+              .with(elastic_group_association_deletion_worker_random_delay_range, group.id, parent_group.id).once
+
+            expect(Search::ElasticGroupAssociationDeletionWorker).not_to receive(:perform_in)
+              .with(anything, parent_group.id, anything)
+            expect(Search::ElasticGroupAssociationDeletionWorker).not_to receive(:perform_in)
+              .with(anything, another_group.id, anything)
+
+            subject.perform(group.id, :delete)
+          end
         end
       end
     end

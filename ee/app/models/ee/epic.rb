@@ -24,6 +24,7 @@ module EE
       include ::Exportable
       include Epics::MetadataCacheUpdate
       include Elastic::ApplicationVersionedSearch
+      include Elastic::UpdateAssociatedEpicsOnDateChange
 
       DEFAULT_COLOR = ::Gitlab::Color.of('#1068bf')
       MAX_HIERARCHY_DEPTH = 7

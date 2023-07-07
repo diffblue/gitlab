@@ -79,4 +79,8 @@ module ElasticsearchHelpers
   def elastic_delete_group_wiki_worker_random_delay_range
     a_value_between(0, Search::Wiki::ElasticDeleteGroupWikiWorker::MAX_JOBS_PER_HOUR.pred)
   end
+
+  def elastic_group_association_deletion_worker_random_delay_range
+    a_value_between(0, Search::ElasticGroupAssociationDeletionWorker::MAX_JOBS_PER_HOUR.pred)
+  end
 end
