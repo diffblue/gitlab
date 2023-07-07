@@ -12,15 +12,14 @@ module Subscriptions
     feature_category :purchase
     urgency :low
 
-    def edit
-    end
+    def edit; end
 
     def update
       if Groups::UpdateService.new(@group, current_user, group_params).execute
-        notice = if params[:new_user] == 'true'
-                   _('Welcome to GitLab, %{first_name}!' % { first_name: current_user.first_name })
+        notice = if ::Gitlab::Utils.to_boolean(params[:new_user])
+                   format(_('Welcome to GitLab, %{first_name}!'), first_name: current_user.first_name)
                  else
-                   _('Subscription successfully applied to "%{group_name}"' % { group_name: @group.name })
+                   format(_('Subscription successfully applied to "%{group_name}"'), group_name: @group.name)
                  end
 
         redirect_to group_path(@group), notice: notice
