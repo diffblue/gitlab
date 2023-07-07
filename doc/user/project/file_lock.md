@@ -147,7 +147,7 @@ permissions to the project:
 git lfs unlock --id=123 --force
 ```
 
-You can normally push files to GitLab whether they're locked or unlocked.
+You can push files to GitLab whether they're locked or unlocked.
 
 NOTE:
 Although multi-branch file locks can be created and managed through the Git LFS
