@@ -108,68 +108,6 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
     end
   end
 
-  describe '.sha_exists_in_history?' do
-    subject { described_class.sha_exists_in_history?(target_project_id, target_branch, target_sha, limit: limit) }
-
-    let(:target_project_id) { project.id }
-    let(:target_branch) { 'master' }
-    let(:target_sha) { '' }
-    let(:limit) { 20 }
-
-    context 'when there is a merge request on train' do
-      let!(:merge_request_1) { create_merge_request_on_train }
-      let(:merge_commit_sha_1) { OpenSSL::Digest.hexdigest('SHA256', 'test-1') }
-      let(:target_sha) { merge_commit_sha_1 }
-
-      context 'when the merge request has already been merging' do
-        let!(:merge_request_1) { create_merge_request_on_train(status: :merging) }
-
-        before do
-          merge_request_1.update_column(:in_progress_merge_commit_sha, merge_commit_sha_1)
-        end
-
-        it { is_expected.to eq(true) }
-      end
-
-      context 'when the merge request has already been merged' do
-        let!(:merge_request_1) { create_merge_request_on_train(status: :merged) }
-
-        before do
-          merge_request_1.update_column(:merge_commit_sha, merge_commit_sha_1)
-        end
-
-        it { is_expected.to eq(true) }
-      end
-
-      context 'when there is another merge request on train and it has been merged' do
-        let!(:merge_request_2) { create_merge_request_on_train(source_branch: 'improve/awesome', status: :merged) }
-        let(:merge_commit_sha_2) { OpenSSL::Digest.hexdigest('SHA256', 'test-2') }
-        let(:target_sha) { merge_commit_sha_2 }
-
-        before do
-          merge_request_2.update_column(:merge_commit_sha, merge_commit_sha_2)
-        end
-
-        it { is_expected.to eq(true) }
-
-        context 'when limit is 1' do
-          let(:limit) { 1 }
-          let(:target_sha) { merge_commit_sha_1 }
-
-          it { is_expected.to eq(false) }
-        end
-      end
-
-      context 'when the merge request has not been merged yet' do
-        it { is_expected.to eq(false) }
-      end
-    end
-
-    context 'when there are no merge requests on train' do
-      it { is_expected.to eq(false) }
-    end
-  end
-
   describe '#all_next' do
     subject { car.all_next }
 
