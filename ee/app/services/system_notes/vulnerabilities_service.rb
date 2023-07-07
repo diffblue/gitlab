@@ -13,16 +13,42 @@ module SystemNotes
       create_note(NoteSummary.new(noteable, project, author, body, action: "vulnerability_#{to_state}"))
     end
 
+    class << self
+      def formatted_note(from_state, to_state, dismissal_reason, comment)
+        format(
+          "%{from_state} vulnerability status to %{to_state}%{reason}%{comment}",
+          from_state: from_state,
+          to_state: to_state.to_s.titleize,
+          comment: formatted_comment(comment),
+          reason: formatted_reason(dismissal_reason, to_state)
+        )
+      end
+
+      private
+
+      def formatted_reason(dismissal_reason, to_state)
+        return if to_state.to_sym != :dismissed
+        return if dismissal_reason.blank?
+
+        ": #{dismissal_reason.titleize}"
+      end
+
+      def formatted_comment(comment)
+        return unless comment.present?
+
+        format(' and the following comment: "%{comment}"', comment: comment)
+      end
+    end
+
     private
 
     def state_change_body
       if state_transition.present?
-        format(
-          "%{from_status} vulnerability status to %{to_status}%{dismissal_reason}%{state_comment}",
-          from_status: from_status,
-          to_status: to_state.titleize,
-          dismissal_reason: dismissal_reason,
-          state_comment: state_comment
+        self.class.formatted_note(
+          from_status,
+          to_state,
+          state_transition.dismissal_reason,
+          state_transition.comment
         )
       else
         "changed vulnerability status to Detected"
@@ -35,18 +61,6 @@ module SystemNotes
 
     def to_state
       @to_state ||= state_transition&.to_state || 'detected'
-    end
-
-    def state_comment
-      return unless state_transition.comment.present?
-
-      format(' and the following comment: "%{comment}"', comment: state_transition.comment)
-    end
-
-    def dismissal_reason
-      return unless state_transition.to_state_dismissed? && state_transition.dismissal_reason.present?
-
-      ": #{state_transition.dismissal_reason.titleize}"
     end
 
     def state_transition
