@@ -696,10 +696,12 @@ module EE
     end
 
     override :audit_lock_access
-    def audit_lock_access
+    def audit_lock_access(reason: nil)
       return if access_locked?
 
-      reason = 'excessive failed login attempts' if attempts_exceeded?
+      if !reason && attempts_exceeded?
+        reason = 'excessive failed login attempts'
+      end
 
       ::Gitlab::Audit::Auditor.audit(
         name: 'user_access_locked',
