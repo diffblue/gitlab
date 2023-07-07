@@ -22,6 +22,7 @@ module PhoneVerification
           class: self.class.name,
           message: 'IdentityVerification::Phone',
           event: event,
+          telesign_reference_id: response['reference_id'],
           telesign_response: telesign_response,
           telesign_status_code: status_code,
           username: user&.username

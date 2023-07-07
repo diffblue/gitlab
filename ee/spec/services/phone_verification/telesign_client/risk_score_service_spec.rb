@@ -49,6 +49,7 @@ RSpec.describe PhoneVerification::TelesignClient::RiskScoreService, feature_cate
             class: described_class.name,
             message: 'IdentityVerification::Phone',
             event: 'Received a risk score for a phone number from Telesign',
+            telesign_reference_id: telesign_reference_xid,
             telesign_response: telesign_response.json['status']['description'],
             telesign_status_code: telesign_response.status_code,
             username: user.username
