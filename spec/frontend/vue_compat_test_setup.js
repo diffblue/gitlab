@@ -79,6 +79,34 @@ if (global.document) {
   VTU.config.global.renderStubDefaultSlot = true;
 
   const noop = () => {};
+  const invalidProperties = new Set();
+
+  const getDescriptor = (root, prop) => {
+    let obj = root;
+    while (obj != null) {
+      const desc = Object.getOwnPropertyDescriptor(obj, prop);
+      if (desc) {
+        return desc;
+      }
+      obj = Object.getPrototypeOf(obj);
+    }
+    return null;
+  };
+
+  const isPropertyValidOnDomNode = (prop) => {
+    if (invalidProperties.has(prop)) {
+      return false;
+    }
+
+    const domNode = document.createElement('anonymous-stub');
+    const descriptor = getDescriptor(domNode, prop);
+    if (descriptor && descriptor.get && !descriptor.set) {
+      invalidProperties.add(prop);
+      return false;
+    }
+
+    return true;
+  };
 
   VTU.config.plugins.createStubs = ({ name, component: rawComponent, registerStub }) => {
     const component = unwrapLegacyVueExtendComponent(rawComponent);
@@ -126,7 +154,11 @@ if (global.document) {
               .filter(Boolean)
           : renderSlotByName('default');
 
-        return Vue.h(`${hyphenatedName || 'anonymous'}-stub`, this.$props, slotContents);
+        const props = Object.fromEntries(
+          Object.entries(this.$props).filter(([prop]) => isPropertyValidOnDomNode(prop)),
+        );
+
+        return Vue.h(`${hyphenatedName || 'anonymous'}-stub`, props, slotContents);
       },
     });
 
