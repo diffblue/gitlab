@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::Namespace::RootStorageStatistics do
+RSpec.describe EE::Namespace::RootStorageStatistics, feature_category: :consumables_cost_management do
   describe '#recalculate!' do
     let(:root_storage_statistics) { create(:namespace_root_storage_statistics, namespace: namespace) }
 
@@ -13,12 +13,29 @@ RSpec.describe EE::Namespace::RootStorageStatistics do
       let_it_be(:group2) { create(:group, parent: root_group) }
       let_it_be(:project1) { create(:project, namespace: group1) }
       let_it_be(:project2) { create(:project, namespace: group2) }
-      let_it_be(:project_stat1) { create(:project_statistics, project: project1, with_data: true, size_multiplier: 100) }
-      let_it_be(:project_stat2) { create(:project_statistics, project: project2, with_data: true, size_multiplier: 100) }
-      let_it_be(:root_namespace_stat) { create(:namespace_statistics, namespace: root_group, storage_size: 100, wiki_size: 100) }
-      let_it_be(:group1_namespace_stat) { create(:namespace_statistics, namespace: group1, storage_size: 200, wiki_size: 200) }
-      let_it_be(:group2_namespace_stat) { create(:namespace_statistics, namespace: group2, storage_size: 300, wiki_size: 300) }
-      let_it_be(:subgroup1_namespace_stat) { create(:namespace_statistics, namespace: subgroup1, storage_size: 300, wiki_size: 100) }
+      let_it_be(:project_stat1) do
+        create(:project_statistics, project: project1, with_data: true, size_multiplier: 100)
+      end
+
+      let_it_be(:project_stat2) do
+        create(:project_statistics, project: project2, with_data: true, size_multiplier: 100)
+      end
+
+      let_it_be(:root_namespace_stat) do
+        create(:namespace_statistics, namespace: root_group, storage_size: 100, wiki_size: 100)
+      end
+
+      let_it_be(:group1_namespace_stat) do
+        create(:namespace_statistics, namespace: group1, storage_size: 200, wiki_size: 200)
+      end
+
+      let_it_be(:group2_namespace_stat) do
+        create(:namespace_statistics, namespace: group2, storage_size: 300, wiki_size: 300)
+      end
+
+      let_it_be(:subgroup1_namespace_stat) do
+        create(:namespace_statistics, namespace: subgroup1, storage_size: 300, wiki_size: 100)
+      end
 
       let(:namespace) { root_group }
 
@@ -31,8 +48,11 @@ RSpec.describe EE::Namespace::RootStorageStatistics do
 
         root_storage_statistics.reload
 
-        total_wiki_size = project_stat1.wiki_size + project_stat2.wiki_size + root_namespace_stat.wiki_size + group1_namespace_stat.wiki_size + group2_namespace_stat.wiki_size + subgroup1_namespace_stat.wiki_size
-        total_storage_size = project_stat1.storage_size + project_stat2.storage_size + root_namespace_stat.storage_size + group1_namespace_stat.storage_size + group2_namespace_stat.storage_size + subgroup1_namespace_stat.storage_size
+        total_wiki_size = project_stat1.wiki_size + project_stat2.wiki_size + root_namespace_stat.wiki_size +
+          group1_namespace_stat.wiki_size + group2_namespace_stat.wiki_size + subgroup1_namespace_stat.wiki_size
+        total_storage_size = project_stat1.storage_size + project_stat2.storage_size +
+          root_namespace_stat.storage_size + group1_namespace_stat.storage_size +
+          group2_namespace_stat.storage_size + subgroup1_namespace_stat.storage_size
 
         expect(root_storage_statistics.storage_size).to eq(total_storage_size)
         expect(root_storage_statistics.wiki_size).to eq(total_wiki_size)
