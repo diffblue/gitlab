@@ -150,7 +150,7 @@ RSpec.describe GroupsController, type: :request, feature_category: :groups_and_p
           expect { subject }
             .not_to change { group.reload.ip_restrictions.count }.from(0)
           expect(response).to have_gitlab_http_status(:ok)
-          expect(response.body).to include('Ip restrictions base IP subnet restriction only allowed for top-level groups')
+          expect(response.body).to include('Ip restrictions IP subnet restriction only allowed for top-level groups')
         end
       end
 
