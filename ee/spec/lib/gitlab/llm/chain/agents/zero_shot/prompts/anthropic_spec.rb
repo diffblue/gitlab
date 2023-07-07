@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic, feature_category: :shared do
   describe '.prompt' do
+    let(:prompt_version) { ::Gitlab::Llm::Chain::Agents::ZeroShot::Executor::PROMPT_TEMPLATE }
     let(:options) do
       {
         tools_definitions: "tool definitions",
@@ -23,7 +24,8 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic, feature
           Gitlab::Llm::CachedMessage.new(
             'request_id' => 'uuid1', 'role' => 'assistant', 'content' => 'response 2', 'timestamp' => Time.current.to_s
           )
-        ]
+        ],
+        prompt_version: prompt_version
       }
     end
 

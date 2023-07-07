@@ -9,6 +9,14 @@ module Gitlab
             NAME = "SummarizeComments"
             DESCRIPTION = "This tool is useful when you need to create a summary of all notes, " \
                           "comments or discussions on a given, identified resource."
+            EXAMPLE =
+              <<~PROMPT
+                  Question: Please summarize the http://gitlab.example/ai/test/-/issues/1 issue in the bullet points
+                  Picked tools: First: "IssueIdentifier" tool, second: "SummarizeComments" tool.
+                  Reason: There is issue identifier in the question, so you need to use "IssueIdentifier" tool.
+                  Once the issue is identified, you should use "SummarizeComments" tool to summarize the issue.
+                  For the final answer, please rewrite it into the bullet points.
+              PROMPT
 
             def perform
               return wrong_resource unless resource.is_a?(Noteable)

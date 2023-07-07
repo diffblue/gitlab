@@ -43,7 +43,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failu
   describe '#description' do
     it 'returns tool description' do
       expect(described_class::DESCRIPTION)
-        .to include('Useful tool when you need to get information or ask questions about specific ' \
+        .to include('Useful tool when you need to get information about specific ' \
                     'resource that was already identified. ' \
                     'Action Input for this tools always starts with: `data`')
     end
@@ -71,7 +71,10 @@ RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failu
         end
 
         describe 'processing answer' do
-          let(:ai_response) { issue.serialize_instance(user: context.current_user).to_json }
+          let(:ai_response) do
+            "Please use this information about this resource: #{issue
+              .serialize_instance(user: context.current_user).to_json}"
+          end
 
           it "returns a final answer even if the response doesn't contain a 'final answer' token" do
             expect_answer_with_content(ai_response)

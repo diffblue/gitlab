@@ -23,7 +23,7 @@ RSpec.describe Gitlab::Llm::Chain::Concerns::AiDependent, feature_category: :sha
 
         prompt = tool.prompt
 
-        expect(prompt).to include("You can identify an issue or fetch information about an issue.")
+        expect(prompt).to include("You can fetch information about a resource called: an issue.")
         expect(prompt).to include("Human:")
         expect(prompt).to include("Assistant:")
       end
@@ -41,7 +41,7 @@ RSpec.describe Gitlab::Llm::Chain::Concerns::AiDependent, feature_category: :sha
 
         prompt = tool.prompt
 
-        expect(prompt).to include("You can identify an issue or fetch information about an issue.")
+        expect(prompt).to include("You can fetch information about a resource called: an issue.")
         expect(prompt).not_to include("Human:")
         expect(prompt).not_to include("Assistant:")
       end
