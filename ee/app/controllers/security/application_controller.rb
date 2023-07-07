@@ -4,6 +4,10 @@ module Security
   class ApplicationController < ::ApplicationController
     include SecurityDashboardsPermissions
 
+    before_action do
+      push_frontend_feature_flag(:dismiss_multiple_vulnerabilities, @project)
+    end
+
     feature_category :vulnerability_management
     urgency :low
 
