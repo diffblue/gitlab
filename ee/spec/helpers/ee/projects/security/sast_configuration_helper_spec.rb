@@ -15,7 +15,6 @@ RSpec.describe Projects::Security::SastConfigurationHelper do
     it {
       is_expected.to eq({
         project_path: project_path,
-        sast_analyzers_documentation_path: analyzers_docs_path,
         sast_documentation_path: docs_path,
         security_configuration_path: project_security_configuration_path(project)
       })

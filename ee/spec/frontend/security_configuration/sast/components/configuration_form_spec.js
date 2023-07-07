@@ -1,10 +1,7 @@
-import { GlLink } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { shallowMount } from '@vue/test-utils';
 import { merge } from 'lodash';
 import DynamicFields from 'ee/security_configuration/components/dynamic_fields.vue';
-import ExpandableSection from 'ee/security_configuration/components/expandable_section.vue';
-import AnalyzerConfiguration from 'ee/security_configuration/sast/components/analyzer_configuration.vue';
 import ConfigurationForm from 'ee/security_configuration/sast/components/configuration_form.vue';
 import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import configureSastMutation from '~/security_configuration/graphql/configure_sast.mutation.graphql';
@@ -13,7 +10,6 @@ import { makeEntities, makeSastCiConfiguration } from '../../helpers';
 jest.mock('~/lib/utils/url_utility');
 
 const projectPath = 'group/project';
-const sastAnalyzersDocumentationPath = '/help/sast/analyzers';
 const securityConfigurationPath = '/security/configuration';
 const newMergeRequestPath = '/merge_request/new';
 
@@ -27,10 +23,7 @@ describe('ConfigurationForm component', () => {
   };
 
   const createComponent = ({ mutationResult, ...options } = {}) => {
-    sastCiConfiguration =
-      options?.analyzerEnabled === false
-        ? makeSastCiConfiguration(options?.analyzerEnabled)
-        : makeSastCiConfiguration();
+    sastCiConfiguration = makeSastCiConfiguration();
 
     wrapper = shallowMount(
       ConfigurationForm,
@@ -39,7 +32,6 @@ describe('ConfigurationForm component', () => {
           provide: {
             projectPath,
             securityConfigurationPath,
-            sastAnalyzersDocumentationPath,
           },
           propsData: {
             sastCiConfiguration,
@@ -69,9 +61,6 @@ describe('ConfigurationForm component', () => {
   const findErrorAlert = () => wrapper.find('[data-testid="analyzers-error-alert"]');
   const findCancelButton = () => wrapper.findComponent({ ref: 'cancelButton' });
   const findDynamicFieldsComponents = () => wrapper.findAllComponents(DynamicFields);
-  const findAnalyzerConfigurations = () => wrapper.findAllComponents(AnalyzerConfiguration);
-  const findAnalyzersSection = () => wrapper.find('[data-testid="analyzers-section"]');
-  const findAnalyzersSectionTip = () => wrapper.find('[data-testid="analyzers-section-tip"]');
 
   const expectPayloadForEntities = () => {
     const expectedPayload = {
@@ -92,19 +81,6 @@ describe('ConfigurationForm component', () => {
                 field: 'field1',
                 defaultValue: 'defaultValue1',
                 value: 'value1',
-              },
-            ],
-            analyzers: [
-              {
-                name: 'nameValue0',
-                enabled: true,
-                variables: [
-                  {
-                    field: 'field2',
-                    defaultValue: 'defaultValue2',
-                    value: 'value2',
-                  },
-                ],
               },
             ],
           },
@@ -153,77 +129,6 @@ describe('ConfigurationForm component', () => {
       it('updates the entities binding', () => {
         expect(dynamicFields.props('entities')).toBe(newEntities);
       });
-    });
-  });
-
-  describe('the analyzers section', () => {
-    beforeEach(() => {
-      createComponent({
-        stubs: {
-          ExpandableSection,
-        },
-      });
-    });
-
-    it('renders', () => {
-      const analyzersSection = findAnalyzersSection();
-      expect(analyzersSection.exists()).toBe(true);
-      expect(analyzersSection.text()).toContain(ConfigurationForm.i18n.analyzersHeading);
-      expect(analyzersSection.text()).toContain(ConfigurationForm.i18n.analyzersSubHeading);
-    });
-
-    it('has a link to the documentation', () => {
-      const link = findAnalyzersSection().findComponent(GlLink);
-      expect(link.exists()).toBe(true);
-      expect(link.attributes('href')).toBe(sastAnalyzersDocumentationPath);
-    });
-
-    it('renders each analyzer', () => {
-      const analyzerEntities = sastCiConfiguration.analyzers.nodes;
-      const analyzerComponents = findAnalyzerConfigurations();
-      analyzerEntities.forEach((entity, i) => {
-        expect(analyzerComponents.at(i).props()).toEqual({ entity });
-      });
-    });
-
-    it('always render the alert-tip', () => {
-      const analyzersSectionTip = findAnalyzersSectionTip();
-      expect(analyzersSectionTip.exists()).toBe(true);
-      expect(analyzersSectionTip.html()).toContain(ConfigurationForm.i18n.analyzersTipHeading);
-      expect(analyzersSectionTip.html()).toContain(ConfigurationForm.i18n.analyzersTipBody);
-    });
-
-    describe('when an AnalyzerConfiguration emits an input event', () => {
-      let analyzer;
-      let updatedEntity;
-
-      beforeEach(() => {
-        analyzer = findAnalyzerConfigurations().at(0);
-        updatedEntity = {
-          ...sastCiConfiguration.analyzers.nodes[0],
-          value: 'new value',
-        };
-        analyzer.vm.$emit('input', updatedEntity);
-      });
-
-      it('updates the entity binding', () => {
-        expect(analyzer.props('entity')).toBe(updatedEntity);
-      });
-    });
-  });
-
-  describe('on Load with disabled analyzers', () => {
-    beforeEach(() => {
-      createComponent({
-        analyzerEnabled: false,
-      });
-    });
-
-    it('renders alert-tip', () => {
-      const analyzersSectionTip = findAnalyzersSectionTip();
-      expect(analyzersSectionTip.exists()).toBe(true);
-      expect(analyzersSectionTip.html()).toContain(ConfigurationForm.i18n.analyzersTipHeading);
-      expect(analyzersSectionTip.html()).toContain(ConfigurationForm.i18n.analyzersTipBody);
     });
   });
 
