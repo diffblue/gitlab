@@ -899,7 +899,7 @@ module EE
     def use_zoekt?
       # Only use Zoekt for public repositories since legacy Zoekt indexer does not support permissions
       is_public_project = self.public? && self.repository_access_level > ::ProjectFeature::PRIVATE
-      return false unless is_public_project || ::Feature.enabled?(:use_new_zoekt_indexer)
+      return false unless is_public_project || (::Feature.enabled?(:use_new_zoekt_indexer) && ::Feature.enabled?(:zoekt_index_private_repositories))
 
       ::Zoekt::IndexedNamespace.enabled_for_project?(self)
     end
