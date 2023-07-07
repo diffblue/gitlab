@@ -33974,6 +33974,9 @@ msgstr ""
 msgid "Pipeline|Merged result pipeline"
 msgstr ""
 
+msgid "Pipeline|No failed jobs in this pipeline 🎉"
+msgstr ""
+
 msgid "Pipeline|Passed"
 msgstr ""
 
@@ -42809,7 +42812,7 @@ msgstr ""
 msgid "Show details"
 msgstr ""
 
-msgid "Show failed jobs"
+msgid "Show failed jobs (%{count})"
 msgstr ""
 
 msgid "Show file browser"
