@@ -61,4 +61,53 @@ RSpec.describe Admin::RunnersController, feature_category: :runner_fleet do
       get :edit, params: { id: runner }
     end
   end
+
+  describe '#dashboard' do
+    before do
+      stub_licensed_features(runner_performance_insights: runner_performance_insights)
+      stub_feature_flags(runners_dashboard: runners_dashboard)
+
+      get :dashboard
+    end
+
+    context 'when feature flag "runners_dashboard" is enabled' do
+      let(:runners_dashboard) { true }
+
+      context 'when licensed' do
+        let(:runner_performance_insights) { true }
+
+        it 'shows dashboard page' do
+          expect(response).to have_gitlab_http_status(:ok)
+        end
+      end
+
+      context 'when unlicensed' do
+        let(:runner_performance_insights) { false }
+
+        it 'returns a 404' do
+          expect(response).to have_gitlab_http_status(:not_found)
+        end
+      end
+    end
+
+    context 'when feature flag "runners_dashboard" is disabled' do
+      let(:runners_dashboard) { false }
+
+      context 'when licensed' do
+        let(:runner_performance_insights) { true }
+
+        it 'returns a 404' do
+          expect(response).to have_gitlab_http_status(:not_found)
+        end
+      end
+
+      context 'when unlicensed' do
+        let(:runner_performance_insights) { false }
+
+        it 'returns a 404' do
+          expect(response).to have_gitlab_http_status(:not_found)
+        end
+      end
+    end
+  end
 end

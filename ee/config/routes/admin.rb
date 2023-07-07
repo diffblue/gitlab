@@ -97,4 +97,10 @@ namespace :admin do
   end
 
   get 'namespace_limits', to: 'namespace_limits#index'
+
+  resources :runners, only: [] do
+    collection do
+      get :dashboard
+    end
+  end
 end
