@@ -59,6 +59,25 @@ RSpec.describe Admin::UsersController, :enable_admin_mode, feature_category: :us
     end
   end
 
+  describe 'PATCH #update' do
+    context 'when user is an enterprise user' do
+      let(:user) { create(:user, :enterprise_user) }
+
+      context "when new email is not owned by the user's enterprise group" do
+        let(:new_email) { 'new-email@example.com' }
+
+        # See https://gitlab.com/gitlab-org/gitlab/-/issues/412762
+        it 'allows change user email', :aggregate_failures do
+          expect { patch admin_user_path(user), params: { user: { email: new_email } } }
+            .to change { user.reload.email }.from(user.email).to(new_email)
+
+          expect(response).to redirect_to(admin_user_path(user))
+          expect(flash[:notice]).to eq('User was successfully updated.')
+        end
+      end
+    end
+  end
+
   describe 'PUT #unlock' do
     before do
       user.lock_access!

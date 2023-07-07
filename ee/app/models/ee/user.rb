@@ -35,6 +35,10 @@ module EE
       validate :auditor_requires_license_add_on, if: :auditor
       validate :cannot_be_admin_and_auditor
 
+      validate :enterprise_user_email_change, on: :update, if: ->(user) {
+        user.email_changed? && user.enterprise_user? && !user.skip_enterprise_user_email_change_restrictions? && ::Feature.enabled?(:enterprise_users_automatic_claim, user.user_detail.enterprise_group)
+      }
+
       after_create :perform_user_cap_check
       after_update :email_changed_hook, if: :saved_change_to_email?
 
@@ -626,6 +630,14 @@ module EE
       }
     end
 
+    def skip_enterprise_user_email_change_restrictions!
+      @skip_enterprise_user_email_change_restrictions = true # rubocop:disable Gitlab/ModuleWithInstanceVariables
+    end
+
+    def skip_enterprise_user_email_change_restrictions?
+      @skip_enterprise_user_email_change_restrictions
+    end
+
     protected
 
     override :password_required?
@@ -654,6 +666,12 @@ module EE
     end
 
     private
+
+    def enterprise_user_email_change
+      return if user_detail.enterprise_group.owner_of_email?(email)
+
+      errors.add(:email, _("must be owned by the user's enterprise group"))
+    end
 
     def gitlab_com_member?
       ::Gitlab::Com.gitlab_com_group_member?(self)

@@ -62,6 +62,13 @@ module EE
         end
       end
 
+      override :prepare_user_for_update
+      def prepare_user_for_update(user)
+        super
+
+        user.skip_enterprise_user_email_change_restrictions!
+      end
+
       def log_audit_event
         ::AuditEvents::UserImpersonationEventCreateWorker.perform_async(current_user.id, user.id, request.remote_ip, 'started', DateTime.current)
       end
