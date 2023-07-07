@@ -26,12 +26,10 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
     it { is_expected.to validate_uniqueness_of(:vulnerability_id) }
     it { is_expected.to validate_uniqueness_of(:uuid).case_insensitive }
 
-    it { is_expected.to allow_value(true).for(:has_issues) }
-    it { is_expected.to allow_value(false).for(:has_issues) }
+    it { is_expected.to allow_value(true, false).for(:has_issues) }
     it { is_expected.not_to allow_value(nil).for(:has_issues) }
 
-    it { is_expected.to allow_value(true).for(:resolved_on_default_branch) }
-    it { is_expected.to allow_value(false).for(:resolved_on_default_branch) }
+    it { is_expected.to allow_value(true, false).for(:resolved_on_default_branch) }
     it { is_expected.not_to allow_value(nil).for(:resolved_on_default_branch) }
   end
 
