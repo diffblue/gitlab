@@ -1,4 +1,5 @@
 <script>
+import { isEmpty } from 'lodash';
 import {
   GlCollapsibleListbox,
   GlFormGroup,
@@ -10,6 +11,9 @@ import { s__ } from '~/locale';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import GenericBaseLayoutComponent from '../generic_base_layout_component.vue';
 import { ACTION_AND_LABEL, RULE_MODE_SCANNERS } from '../constants';
+import ScanFilterSelector from '../scan_filter_selector.vue';
+import { CI_VARIABLE, FILTERS } from './scan_filters/constants';
+import CiVariablesSelectors from './scan_filters/ci_variables_selectors.vue';
 import {
   DAST_HUMANIZED_TEMPLATE,
   DEFAULT_SCANNER,
@@ -17,6 +21,7 @@ import {
   SCANNER_HUMANIZED_TEMPLATE,
   POLICY_ACTION_BUILDER_TAGS_ERROR_KEY,
   POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY,
+  POLICY_ACTION_BUILDER_VARIABLES_ERROR_KEY,
 } from './constants';
 import ProjectDastProfileSelector from './project_dast_profile_selector.vue';
 import GroupDastProfileSelector from './group_dast_profile_selector.vue';
@@ -25,18 +30,23 @@ import { buildScannerAction } from './lib';
 
 export default {
   ACTION_AND_LABEL,
+  CI_VARIABLE,
+  FILTERS,
   SCANNERS: RULE_MODE_SCANNERS,
   POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY,
   POLICY_ACTION_BUILDER_TAGS_ERROR_KEY,
+  POLICY_ACTION_BUILDER_VARIABLES_ERROR_KEY,
   components: {
     GlCollapsibleListbox,
     GlFormGroup,
     GlIcon,
     GlSprintf,
     GenericBaseLayoutComponent,
+    CiVariablesSelectors,
     RunnerTagsList,
     ProjectDastProfileSelector,
     GroupDastProfileSelector,
+    ScanFilterSelector,
   },
   directives: {
     GlTooltip,
@@ -55,6 +65,9 @@ export default {
   },
   data() {
     return {
+      filters: {
+        [CI_VARIABLE]: null,
+      },
       selectedScanner: this.initAction.scan || DEFAULT_SCANNER,
     };
   },
@@ -69,6 +82,14 @@ export default {
       return this.selectedScanner === SCANNER_DAST
         ? DAST_HUMANIZED_TEMPLATE
         : SCANNER_HUMANIZED_TEMPLATE;
+    },
+    ciVariables() {
+      return this.initAction.variables || {};
+    },
+    isCIVariableSelectorSelected() {
+      return (
+        this.isFilterSelected(this.$options.CI_VARIABLE) || Object.keys(this.ciVariables).length > 0
+      );
     },
     selectedScannerText() {
       return RULE_MODE_SCANNERS[this.selectedScanner];
@@ -95,23 +116,50 @@ export default {
     },
   },
   methods: {
+    isFilterSelected(filter) {
+      return Boolean(this.filters[filter]);
+    },
+    emitCiVariableFilterChanges() {
+      const updatedAction = { ...this.initAction };
+      delete updatedAction.variables;
+      this.$emit('changed', updatedAction);
+    },
+    removeCiFilter() {
+      const newFilters = { ...this.filters };
+      delete newFilters[CI_VARIABLE];
+      this.filters = newFilters;
+      this.emitCiVariableFilterChanges();
+    },
+    selectFilter(filter) {
+      this.$set(this.filters, filter, []);
+      if (filter === CI_VARIABLE) {
+        this.triggerChanged({ variables: { '': '' } });
+      }
+    },
     setSelectedScanner({
       scanner = this.selectedScanner,
       siteProfile = this.siteProfile,
       scannerProfile = this.scannerProfile,
     }) {
+      const updatedAction = buildScannerAction({
+        scanner,
+        siteProfile,
+        scannerProfile,
+      });
+
+      const { tags, variables } = this.initAction;
+      updatedAction.tags = [...tags];
       if (scanner !== this.selectedScanner) {
         this.selectedScanner = scanner;
+        this.filters = {};
+      } else if (!isEmpty(variables)) {
+        updatedAction.variables = { ...variables };
       }
 
-      this.$emit(
-        'changed',
-        buildScannerAction({
-          scanner,
-          siteProfile,
-          scannerProfile,
-        }),
-      );
+      this.$emit('changed', updatedAction);
+    },
+    triggerChanged(value) {
+      this.$emit('changed', { ...this.initAction, ...value });
     },
   },
   i18n: {
@@ -133,7 +181,7 @@ export default {
     >
       {{ $options.ACTION_AND_LABEL }}
     </div>
-    <generic-base-layout-component :show-remove-button="false">
+    <generic-base-layout-component class="gl-pb-0" :show-remove-button="false">
       <template #content>
         <generic-base-layout-component class="gl-w-full gl-bg-white" @remove="$emit('remove')">
           <template #content>
@@ -192,6 +240,26 @@ export default {
             </gl-sprintf>
           </template>
         </generic-base-layout-component>
+      </template>
+    </generic-base-layout-component>
+    <generic-base-layout-component class="gl-pt-3" :show-remove-button="false">
+      <template #content>
+        <ci-variables-selectors
+          v-if="isCIVariableSelectorSelected"
+          class="gl-bg-white"
+          :scan-type="initAction.scan"
+          :selected="initAction.variables"
+          @remove="removeCiFilter"
+          @input="triggerChanged"
+          @error="$emit('parsing-error', $options.POLICY_ACTION_BUILDER_VARIABLES_ERROR_KEY)"
+        />
+
+        <scan-filter-selector
+          class="gl-w-full gl-bg-white"
+          :filters="$options.FILTERS"
+          :selected="filters"
+          @select="selectFilter"
+        />
       </template>
     </generic-base-layout-component>
   </div>
