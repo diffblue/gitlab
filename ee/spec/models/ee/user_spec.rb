@@ -2808,7 +2808,7 @@ RSpec.describe User, feature_category: :system_access do
       expect { subject }.to change { AuditEvent.count }.by(1)
     end
 
-    context 'when reason for access lock is excessive failed login attempts' do
+    context 'when reason is known' do
       before do
         allow(user).to receive(:attempts_exceeded?).and_return(true)
       end
@@ -2819,6 +2819,18 @@ RSpec.describe User, feature_category: :system_access do
         )
 
         subject
+      end
+
+      context 'when reason is passed in as an option' do
+        subject { user.lock_access!(reason: 'specified reason') }
+
+        it 'logs a user_access_locked audit event with the correct message' do
+          expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+            hash_including(message: 'User access locked - specified reason')
+          )
+
+          subject
+        end
       end
     end
 
