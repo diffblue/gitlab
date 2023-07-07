@@ -1,13 +1,18 @@
 import { GlAvatar, GlAvatarLink, GlBadge, GlButton, GlSprintf } from '@gitlab/ui';
+import responseBodySinglePage from 'test_fixtures/graphql/ci/catalog/ci_catalog_resources_single_page.json';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CiResourcesListItem from 'ee/ci/catalog/components/list/ci_resources_list_item.vue';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-import { mockCatalogResourceItem } from '../../mock';
 
 describe('CiResourcesListItem', () => {
   let wrapper;
 
-  const resource = mockCatalogResourceItem;
+  const resource = responseBodySinglePage.data.ciCatalogResources.nodes[0];
+  const release = {
+    author: { name: 'author', webUrl: '/user/1' },
+    releasedAt: Date.now(),
+    tagName: '1.0.0',
+  };
   const defaultProps = {
     resource,
   };
@@ -67,11 +72,6 @@ describe('CiResourcesListItem', () => {
       expect(findResourceDescription().exists()).toBe(true);
     });
 
-    it('renders the user link', () => {
-      expect(findUserLink().exists()).toBe(true);
-      expect(findUserLink().attributes('href')).toBe(resource.latestVersion.author.webUrl);
-    });
-
     describe('release time', () => {
       describe('when there is no release data', () => {
         beforeEach(() => {
@@ -90,7 +90,12 @@ describe('CiResourcesListItem', () => {
 
       describe('when there is release data', () => {
         beforeEach(() => {
-          createComponent();
+          createComponent({ props: { resource: { ...resource, latestVersion: { ...release } } } });
+        });
+
+        it('renders the user link', () => {
+          expect(findUserLink().exists()).toBe(true);
+          expect(findUserLink().attributes('href')).toBe(release.author.webUrl);
         });
 
         it('renders the time since the resource was released', () => {
@@ -99,7 +104,7 @@ describe('CiResourcesListItem', () => {
 
         it('renders the version badge', () => {
           expect(findBadge().exists()).toBe(true);
-          expect(findBadge().text()).toBe('1.0.0');
+          expect(findBadge().text()).toBe(release.tagName);
         });
       });
     });

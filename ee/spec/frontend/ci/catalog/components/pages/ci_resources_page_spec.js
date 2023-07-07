@@ -1,10 +1,12 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 
-import { createAlert } from '~/alert';
+import responseBody from 'test_fixtures/graphql/ci/catalog/ci_catalog_resources.json';
+import emptyResponseBody from 'test_fixtures/graphql/ci/catalog/ci_catalog_resources_empty.json';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import { createAlert } from '~/alert';
 
 import CatalogHeader from 'ee/ci/catalog/components/list/catalog_header.vue';
 import ciResourcesPage from 'ee/ci/catalog/components/pages/ci_resources_page.vue';
@@ -14,12 +16,6 @@ import CatalogListSkeletonLoader from 'ee/ci/catalog/components/list/catalog_lis
 import EmptyState from 'ee/ci/catalog/components/list/empty_state.vue';
 import getCiCatalogResources from 'ee/ci/catalog/graphql/queries/get_ci_catalog_resources.query.graphql';
 import { cacheConfig } from 'ee/ci/catalog/graphql/settings';
-
-import {
-  generateEmptyCatalogResponse,
-  generateCatalogResponse,
-  generateCatalogResponsePage2,
-} from '../../mock';
 
 Vue.use(VueApollo);
 jest.mock('~/alert');
@@ -74,8 +70,7 @@ describe('CiResourcesPage', () => {
 
     describe('and there are no resources', () => {
       beforeEach(async () => {
-        const emptyNodesRes = generateEmptyCatalogResponse();
-        catalogResourcesResponse.mockResolvedValue(emptyNodesRes);
+        catalogResourcesResponse.mockResolvedValue(emptyResponseBody);
 
         await createComponent();
       });
@@ -87,11 +82,10 @@ describe('CiResourcesPage', () => {
     });
 
     describe('and there are resources', () => {
-      const res = generateCatalogResponse();
-      const { nodes, pageInfo, count } = res.data.ciCatalogResources;
+      const { nodes, pageInfo, count } = responseBody.data.ciCatalogResources;
 
       beforeEach(async () => {
-        catalogResourcesResponse.mockResolvedValue(res);
+        catalogResourcesResponse.mockResolvedValue(responseBody);
 
         await createComponent();
       });
@@ -114,51 +108,42 @@ describe('CiResourcesPage', () => {
 
   describe('pagination', () => {
     it.each`
-      eventName       | generateResponse                | generateResponse2
-      ${'onPrevPage'} | ${generateCatalogResponse}      | ${generateCatalogResponsePage2}
-      ${'onNextPage'} | ${generateCatalogResponsePage2} | ${generateCatalogResponse}
-    `(
-      'refetch query with new params when receiving $eventName',
-      async ({ eventName, generateResponse, generateResponse2 }) => {
-        const response1 = generateResponse();
+      eventName
+      ${'onPrevPage'}
+      ${'onNextPage'}
+    `('refetch query with new params when receiving $eventName', async ({ eventName }) => {
+      const { pageInfo } = responseBody.data.ciCatalogResources;
 
-        const { pageInfo } = response1.data.ciCatalogResources;
-        const response2 = generateResponse2();
+      catalogResourcesResponse.mockResolvedValue(responseBody);
+      await createComponent();
 
-        catalogResourcesResponse.mockResolvedValueOnce(response1);
-        catalogResourcesResponse.mockResolvedValue(response2);
+      expect(catalogResourcesResponse).toHaveBeenCalledTimes(1);
 
-        await createComponent();
+      await findCiResourcesList().vm.$emit(eventName);
 
-        expect(catalogResourcesResponse).toHaveBeenCalledTimes(1);
+      expect(catalogResourcesResponse).toHaveBeenCalledTimes(2);
 
-        await findCiResourcesList().vm.$emit(eventName);
-
-        expect(catalogResourcesResponse).toHaveBeenCalledTimes(2);
-
-        if (eventName === 'onNextPage') {
-          expect(catalogResourcesResponse.mock.calls[1][0]).toEqual({
-            after: pageInfo.endCursor,
-            first: 20,
-            fullPath: defaultProvide.projectFullPath,
-          });
-        } else {
-          expect(catalogResourcesResponse.mock.calls[1][0]).toEqual({
-            before: pageInfo.startCursor,
-            last: 20,
-            first: null,
-            fullPath: defaultProvide.projectFullPath,
-          });
-        }
-      },
-    );
+      if (eventName === 'onNextPage') {
+        expect(catalogResourcesResponse.mock.calls[1][0]).toEqual({
+          after: pageInfo.endCursor,
+          first: 20,
+          fullPath: defaultProvide.projectFullPath,
+        });
+      } else {
+        expect(catalogResourcesResponse.mock.calls[1][0]).toEqual({
+          before: pageInfo.startCursor,
+          last: 20,
+          first: null,
+          fullPath: defaultProvide.projectFullPath,
+        });
+      }
+    });
   });
 
   describe('pages count', () => {
     describe('when the fetchMore call suceeds', () => {
       beforeEach(async () => {
-        const res = generateCatalogResponse();
-        catalogResourcesResponse.mockResolvedValue(res);
+        catalogResourcesResponse.mockResolvedValue(responseBody);
 
         await createComponent();
       });
@@ -183,8 +168,7 @@ describe('CiResourcesPage', () => {
 
       describe('for next page', () => {
         beforeEach(async () => {
-          const res = generateCatalogResponse();
-          catalogResourcesResponse.mockResolvedValueOnce(res);
+          catalogResourcesResponse.mockResolvedValueOnce(responseBody);
           catalogResourcesResponse.mockRejectedValue({ message: errorMessage });
 
           await createComponent();
@@ -203,11 +187,10 @@ describe('CiResourcesPage', () => {
 
       describe('for previous page', () => {
         beforeEach(async () => {
-          const res = generateCatalogResponse();
           // Initial query
-          catalogResourcesResponse.mockResolvedValueOnce(res);
+          catalogResourcesResponse.mockResolvedValueOnce(responseBody);
           // When clicking on next
-          catalogResourcesResponse.mockResolvedValueOnce(res);
+          catalogResourcesResponse.mockResolvedValueOnce(responseBody);
           // when clicking on previous
           catalogResourcesResponse.mockRejectedValue({ message: errorMessage });
 
