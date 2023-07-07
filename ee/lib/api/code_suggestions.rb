@@ -18,6 +18,22 @@ module API
         current_user.can?(:access_code_suggestions) && access_code_suggestions_when_proxied_to_saas?
       end
 
+      def model_gateway_headers(headers)
+        token = headers["X-Gitlab-Oidc-Token"]
+
+        telemetry_headers = {
+          'X-GitLab-CS-Accepts' => headers['X-Gitlab-Cs-Accepts'],
+          'X-GitLab-CS-Requests' => headers['X-Gitlab-Cs-Requests'],
+          'X-GitLab-CS-Errors' => headers['X-Gitlab-Cs-Errors']
+        }.compact
+
+        {
+          'X-Gitlab-Authentication-Type' => 'oidc',
+          'Authorization' => "Bearer #{token}",
+          'Content-Type' => 'application/json'
+        }.merge(telemetry_headers)
+      end
+
       # In case the request was proxied from the self-managed instance,
       # we have an extra check on Gitlab.com if FF is enabled for self-managed admin.
       # The FF is used for gradual rollout for handpicked self-managed customers interested to use code suggestions.
@@ -62,6 +78,22 @@ module API
             token = Gitlab::CodeSuggestions::AccessToken.new(current_user, gitlab_realm: gitlab_realm)
             present token, with: Entities::CodeSuggestionsAccessToken
           end
+        end
+      end
+
+      resources :completions do
+        post do
+          not_found! unless ::Feature.enabled?(:code_suggestions_completion_api, current_user)
+
+          response = ::Gitlab::HTTP.post('https://codesuggestions.gitlab.com/v2/completions', {
+            body: params.except(:private_token).to_json,
+            headers: model_gateway_headers(headers),
+            open_timeout: 3,
+            read_timeout: 5,
+            write_timeout: 5
+          })
+          status response.code
+          response
         end
       end
     end

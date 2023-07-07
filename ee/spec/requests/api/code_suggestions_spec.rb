@@ -161,4 +161,122 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       end
     end
   end
+
+  describe 'POST /code_suggestions/completions' do
+    let(:access_code_suggestions) { true }
+    let(:headers) do
+      {
+        'X-Gitlab-Authentication-Type' => 'oidc',
+        'X-Gitlab-Oidc-Token' => "JWTTOKEN",
+        'Content-Type' => 'application/json'
+      }
+    end
+
+    let(:body) do
+      {
+        prompt_version: 1,
+        project_path: "gitlab-org/gitlab-shell",
+        project_id: 33191677,
+        current_file: {
+          file_name: "test.py",
+          content_above_cursor: "def is_even(n: int) ->",
+          content_below_cursor: ""
+        }
+      }
+    end
+
+    subject(:post_api) do
+      post api('/code_suggestions/completions', current_user), headers: headers, params: body.to_json
+    end
+
+    before do
+      allow(Ability).to receive(:allowed?).and_call_original
+      allow(Ability).to receive(:allowed?).with(current_user, :access_code_suggestions, :global)
+                                          .and_return(access_code_suggestions)
+      allow(Gitlab).to receive(:org_or_com?).and_return(true)
+    end
+
+    context 'when user is not logged in' do
+      let(:current_user) { nil }
+
+      include_examples 'an unauthorized response'
+    end
+
+    context 'when user does not have access to code suggestions' do
+      let(:access_code_suggestions) { false }
+
+      include_examples 'an unauthorized response'
+    end
+
+    context 'when user is logged in' do
+      let(:current_user) { create(:user) }
+
+      it 'proxies request to code suggestions service' do
+        expect(Gitlab::HTTP).to receive(:post).with(
+          "https://codesuggestions.gitlab.com/v2/completions",
+          {
+            body: body.to_json,
+            headers: {
+              'X-Gitlab-Authentication-Type' => 'oidc',
+              'Authorization' => 'Bearer JWTTOKEN',
+              'Content-Type' => 'application/json'
+            },
+            open_timeout: 3,
+            read_timeout: 5,
+            write_timeout: 5
+          }
+        )
+
+        post_api
+      end
+
+      context 'when feature flag is disabled' do
+        before do
+          stub_feature_flags(code_suggestions_completion_api: false)
+        end
+
+        include_examples 'a response', 'not found' do
+          let(:result) { :not_found }
+          let(:body) do
+            { "message" => "404 Not Found" }
+          end
+        end
+      end
+
+      context 'with telemetry headers' do
+        let(:headers) do
+          {
+            'X-Gitlab-Authentication-Type' => 'oidc',
+            'X-Gitlab-Oidc-Token' => "JWTTOKEN",
+            'Content-Type' => 'application/json',
+            'X-GitLab-CS-Accepts' => 'accepts',
+            'X-GitLab-CS-Requests' => "requests",
+            'X-GitLab-CS-Errors' => 'errors'
+          }
+        end
+
+        it 'proxies request to code suggestions service' do
+          expect(Gitlab::HTTP).to receive(:post).with(
+            "https://codesuggestions.gitlab.com/v2/completions",
+            {
+              body: body.to_json,
+              headers: {
+                'X-Gitlab-Authentication-Type' => 'oidc',
+                'Authorization' => 'Bearer JWTTOKEN',
+                'Content-Type' => 'application/json',
+                'X-GitLab-CS-Accepts' => 'accepts',
+                'X-GitLab-CS-Requests' => "requests",
+                'X-GitLab-CS-Errors' => 'errors'
+              },
+              open_timeout: 3,
+              read_timeout: 5,
+              write_timeout: 5
+            }
+          )
+
+          post_api
+        end
+      end
+    end
+  end
 end
