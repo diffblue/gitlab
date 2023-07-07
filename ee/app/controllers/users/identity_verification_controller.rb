@@ -37,7 +37,7 @@ module Users
 
     def resend_email_code
       if send_rate_limited?
-        render json: { status: :failure, message: send_rate_limited_error_message }
+        render json: { status: :failure, message: rate_limited_error_message(:email_verification_code_send) }
       else
         reset_confirmation_token
 
@@ -94,22 +94,19 @@ module Users
     def verify_credit_card
       return render_404 unless json_request? && @user.credit_card_validation.present?
 
-      reused = @user.credit_card_validation.used_by_banned_user?
-      rate_limited = check_for_reuse_rate_limited?
-
-      if reused || rate_limited
-        reason = reused ? :related_to_banned_user : :rate_limited
-        log_event(:credit_card, :failed_attempt, reason)
-
-        return render status: :bad_request, json: {
-          message: _('There was a problem with the credit card details you entered. Use a different credit card and ' \
-                     'try again.')
+      if @user.credit_card_validation.used_by_banned_user?
+        @user.ban
+        log_event(:credit_card, :failed_attempt, :related_to_banned_user)
+        render status: :bad_request, json: { message: user_banned_error_message, reason: :related_to_banned_user }
+      elsif check_for_reuse_rate_limited?
+        log_event(:credit_card, :failed_attempt, :rate_limited)
+        render status: :bad_request, json: {
+          message: rate_limited_error_message(:credit_card_verification_check_for_reuse)
         }
+      else
+        log_event(:credit_card, :success)
+        render json: {}
       end
-
-      log_event(:credit_card, :success)
-
-      render json: {}
     end
 
     private
@@ -209,13 +206,6 @@ module Users
 
     def send_rate_limited?
       ::Gitlab::ApplicationRateLimiter.throttled?(:email_verification_code_send, scope: @user)
-    end
-
-    def send_rate_limited_error_message
-      interval_in_seconds = ::Gitlab::ApplicationRateLimiter.rate_limits[:email_verification_code_send][:interval]
-      email_verification_code_send_interval = distance_of_time_in_words(interval_in_seconds)
-      format(s_("IdentityVerification|You've reached the maximum amount of resends. " \
-                'Wait %{interval} and try again.'), interval: email_verification_code_send_interval)
     end
 
     def check_for_reuse_rate_limited?

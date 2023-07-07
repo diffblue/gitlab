@@ -611,8 +611,8 @@ feature_category: :system_access do
           do_request
 
           expect(json_response).to include({
-            'message' => 'There was a problem with the credit card details you entered. Use a different credit card ' \
-                         'and try again.'
+            'message' => format(s_("IdentityVerification|You've reached the maximum amount of tries. " \
+                                   'Wait %{interval} and try again.'), { interval: 'about 1 hour' })
           })
           expect(response).to have_gitlab_http_status(:bad_request)
         end
@@ -621,14 +621,33 @@ feature_category: :system_access do
       context 'when the user\'s credit card has been used by a banned user' do
         let(:used_by_banned_user) { true }
 
-        it_behaves_like 'returns HTTP status 400 and a message'
         it_behaves_like 'logs and tracks the event', :credit_card, :failed_attempt, :related_to_banned_user
 
-        context 'when rate limited' do
-          let(:rate_limited) { true }
+        it 'bans the user' do
+          expect { do_request }.to change { user.reload.banned? }.from(false).to(true)
+        end
 
-          it_behaves_like 'returns HTTP status 400 and a message'
-          it_behaves_like 'logs and tracks the event', :credit_card, :failed_attempt, :related_to_banned_user
+        describe 'returned error message' do
+          where(:dot_com, :error_message) do
+            true  | "Your account has been blocked. Contact https://support.gitlab.com for assistance."
+            false | "Your account has been blocked. Contact your GitLab administrator for assistance."
+          end
+
+          with_them do
+            before do
+              allow(Gitlab).to receive(:com?).and_return(dot_com)
+            end
+
+            it 'returns HTTP status 400 and a message', :aggregate_failures do
+              do_request
+
+              expect(json_response).to include({
+                'message' => error_message,
+                'reason' => 'related_to_banned_user'
+              })
+              expect(response).to have_gitlab_http_status(:bad_request)
+            end
+          end
         end
       end
 

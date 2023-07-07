@@ -14,7 +14,10 @@ import CreditCardVerification, {
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import { createAlert } from '~/alert';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
-import { I18N_GENERIC_ERROR } from 'ee/users/identity_verification/constants';
+import {
+  I18N_GENERIC_ERROR,
+  RELATED_TO_BANNED_USER,
+} from 'ee/users/identity_verification/constants';
 
 jest.mock('~/alert');
 
@@ -108,7 +111,7 @@ describe('CreditCardVerification', () => {
       beforeEach(async () => {
         axiosMock
           .onGet(MOCK_VERIFY_CREDIT_CARD_PATH)
-          .reply(HTTP_STATUS_INTERNAL_SERVER_ERROR, { message });
+          .reply(HTTP_STATUS_INTERNAL_SERVER_ERROR, { message, reason: RELATED_TO_BANNED_USER });
 
         createComponent();
         findZuora().vm.$emit('success');
@@ -135,6 +138,10 @@ describe('CreditCardVerification', () => {
         expect(createAlert).toHaveBeenCalledWith({
           message,
         });
+      });
+
+      it('disables the submit button', () => {
+        expect(findSubmitButton().props('disabled')).toBe(true);
       });
 
       describe('when there is no returned message data', () => {

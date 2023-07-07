@@ -37,6 +37,20 @@ module Users
       ])
     end
 
+    def rate_limited_error_message(limit)
+      interval_in_seconds = ::Gitlab::ApplicationRateLimiter.rate_limits[limit][:interval]
+      interval = distance_of_time_in_words(interval_in_seconds)
+      message = if limit == :email_verification_code_send
+                  s_("IdentityVerification|You've reached the maximum amount of resends. " \
+                     'Wait %{interval} and try again.')
+                else
+                  s_("IdentityVerification|You've reached the maximum amount of tries. " \
+                     'Wait %{interval} and try again.')
+                end
+
+      format(message, interval: interval)
+    end
+
     private
 
     def email_verification_data(user)
