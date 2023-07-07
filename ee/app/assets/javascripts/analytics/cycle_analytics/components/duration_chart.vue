@@ -1,6 +1,6 @@
 <script>
 import { mapState, mapGetters } from 'vuex';
-import { dataVizBlue500 } from '@gitlab/ui/scss_to_js/scss_variables';
+import { DATA_VIZ_BLUE_500 } from '@gitlab/ui/dist/tokens/js/tokens';
 import { GlLineChart } from '@gitlab/ui/dist/charts';
 import { GlAlert, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import ChartTooltipText from 'ee/analytics/shared/components/chart_tooltip_text.vue';
@@ -68,7 +68,7 @@ export default {
           name: this.$options.i18n.yAxisTitle,
           data: this.durationChartPlottableData,
           lineStyle: {
-            color: dataVizBlue500,
+            color: DATA_VIZ_BLUE_500,
           },
         },
       ];

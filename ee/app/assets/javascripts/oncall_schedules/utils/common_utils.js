@@ -1,5 +1,4 @@
-import * as cssVariables from '@gitlab/ui/scss_to_js/scss_variables';
-import { startCase } from 'lodash';
+import * as designTokens from '@gitlab/ui/dist/tokens/js/tokens';
 import { darkModeEnabled } from '~/lib/utils/color_utils';
 import { newDateAsLocaleTime } from '~/lib/utils/datetime_utility';
 import {
@@ -36,7 +35,8 @@ export const isNameFieldValid = (nameField) => {
 export const getShiftStyles = ({ colorWeight, colorPalette }) => {
   const isDarkMode = darkModeEnabled();
   const modeColorWeight = isDarkMode ? LIGHT_TO_DARK_MODE_SHADE_MAPPING[colorWeight] : colorWeight;
-  const bgColor = `dataViz${startCase(colorPalette)}${modeColorWeight}`;
+  // eslint-disable-next-line @gitlab/require-i18n-strings
+  const bgColor = `DATA_VIZ_${colorPalette.toUpperCase()}_${modeColorWeight}`;
 
   let textClass = 'gl-text-white';
 
@@ -47,7 +47,7 @@ export const getShiftStyles = ({ colorWeight, colorPalette }) => {
 
   return {
     textClass,
-    backgroundStyle: { backgroundColor: cssVariables[bgColor] },
+    backgroundStyle: { backgroundColor: designTokens[bgColor] },
   };
 };
 

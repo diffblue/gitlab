@@ -1,4 +1,4 @@
-import { gray500 } from '@gitlab/ui/scss_to_js/scss_variables';
+import { GRAY_500 } from '@gitlab/ui/dist/tokens/js/tokens';
 
 export const LENGTH_ENUM = {
   hours: 'HOURS',
@@ -55,5 +55,5 @@ export const NON_ACTIVE_PARTICIPANT_STYLE = {
   colorWeight: '500',
   colorPalette: 'gray',
   textClass: 'gl-text-white',
-  backgroundStyle: { backgroundColor: gray500 },
+  backgroundStyle: { backgroundColor: GRAY_500 },
 };
