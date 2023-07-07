@@ -76,6 +76,26 @@ if (global.document) {
 
   Vue.configureCompat(compatConfig);
   installVTUCompat(VTU, fullCompatConfig, compatH);
+
+  jest.mock('vue', () => {
+    const actualVue = jest.requireActual('vue');
+    actualVue.configureCompat(compatConfig);
+    return actualVue;
+  });
+
+  jest.mock('portal-vue', () => ({
+    __esModule: true,
+    default: {
+      install: jest.fn(),
+    },
+    Portal: {},
+    PortalTarget: {},
+    MountingPortal: {
+      template: '<h1>MOUNTING-PORTAL</h1>',
+    },
+    Wormhole: {},
+  }));
+
   VTU.config.global.renderStubDefaultSlot = true;
 
   const noop = () => {};
