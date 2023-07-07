@@ -27,6 +27,7 @@ namespace :gitlab do
       Rake::Task["gitlab:elastic:index_projects"].invoke
       Rake::Task["gitlab:elastic:index_snippets"].invoke
       Rake::Task["gitlab:elastic:index_users"].invoke
+      Rake::Task["gitlab:elastic:index_epics"].invoke
     end
 
     desc 'GitLab | Elasticsearch | Enable Elasticsearch search'
@@ -103,6 +104,24 @@ namespace :gitlab do
       end
 
       logger.info("Indexing users... #{'done'.color(:green)}")
+    end
+
+    desc "GitLab | Elasticsearch | Index epics"
+    task index_epics: :environment do
+      logger = Logger.new($stdout)
+      logger.info("Indexing epics...")
+
+      groups = if ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
+                 ::Gitlab::CurrentSettings.elasticsearch_limited_namespaces.where(type: "Group")
+               else
+                 Group.all
+               end
+
+      groups.each_batch do |batch|
+        ::Elastic::ProcessInitialBookkeepingService.maintain_indexed_group_associations!(*batch)
+      end
+
+      logger.info("Indexing epics... #{'done'.color(:green)}")
     end
 
     desc "GitLab | Elasticsearch | Create empty indexes and assigns an alias for each"

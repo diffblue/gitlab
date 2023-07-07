@@ -20,6 +20,7 @@ class ElasticNamespaceIndexerWorker # rubocop:disable Scalability/IdempotentWork
     when /index/
       index_projects(namespace)
       index_group_wikis(namespace) if should_maintain_group_wiki_index?(namespace)
+      index_group_associations(namespace)
     when /delete/
       delete_from_index(namespace)
       delete_group_wikis(namespace) if should_maintain_group_wiki_index?(namespace)
@@ -41,10 +42,24 @@ class ElasticNamespaceIndexerWorker # rubocop:disable Scalability/IdempotentWork
     end
   end
 
+  def index_group_associations(namespace)
+    return unless namespace.group_namespace?
+
+    Elastic::ProcessBookkeepingService.maintain_indexed_group_associations!(namespace)
+  end
+
   def delete_from_index(namespace)
     namespace.all_projects.find_in_batches do |batch|
       args = batch.map { |project| [project.id, project.es_id] }
       ElasticDeleteProjectWorker.bulk_perform_async(args) # rubocop:disable Scalability/BulkPerformWithContext
+    end
+
+    return unless namespace.group_namespace?
+
+    ancestor_id = namespace.root_ancestor.id
+    namespace.self_and_descendants_ids.each.with_index do |namespace_id, idx|
+      interval = idx % Search::ElasticGroupAssociationDeletionWorker::MAX_JOBS_PER_HOUR
+      Search::ElasticGroupAssociationDeletionWorker.perform_in(interval, namespace_id, ancestor_id)
     end
   end
 

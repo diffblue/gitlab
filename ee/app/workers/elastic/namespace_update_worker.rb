@@ -12,6 +12,7 @@ module Elastic
 
       namespace = Namespace.find(id)
       update_users_through_membership(namespace)
+      update_epics(namespace) if namespace.group_namespace?
     end
 
     def update_users_through_membership(namespace)
@@ -29,6 +30,10 @@ module Elastic
         Elastic::ProcessBookkeepingService.track!(*batch_of_users)
       end
       # rubocop:enable CodeReuse/ActiveRecord
+    end
+
+    def update_epics(namespace)
+      Elastic::ProcessBookkeepingService.maintain_indexed_group_associations!(namespace)
     end
 
     def group_and_descendants_user_ids(namespace)

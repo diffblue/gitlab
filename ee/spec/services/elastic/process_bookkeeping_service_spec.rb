@@ -160,6 +160,54 @@ feature_category: :global_search do
     end
   end
 
+  describe '.maintain_indexed_group_associations' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:epic) { create(:epic, group: group) }
+
+    it 'does not call ElasticAssociationIndexerWorker' do
+      expect(ElasticAssociationIndexerWorker).not_to receive(:perform_async)
+
+      described_class.maintain_indexed_group_associations!(group)
+    end
+
+    context 'when Epic.elasticsearch_available? is true' do
+      before do
+        allow(Epic).to receive(:elasticsearch_available?).and_return(true)
+      end
+
+      it 'does not call ElasticAssociationIndexerWorker for projects' do
+        expect(ElasticAssociationIndexerWorker).not_to receive(:perform_async)
+
+        described_class.maintain_indexed_group_associations!(create(:project))
+      end
+
+      context 'if the group is use_elasticsearch?' do
+        before do
+          allow(group).to receive(:use_elasticsearch?).and_return(true)
+        end
+
+        it 'calls ElasticAssociationIndexerWorker' do
+          expect(ElasticAssociationIndexerWorker).to receive(:perform_async)
+            .with("Group", group.id, [:epics])
+
+          described_class.maintain_indexed_group_associations!(group)
+        end
+      end
+
+      context 'if the group is not use_elasticsearch?' do
+        before do
+          allow(group).to receive(:use_elasticsearch?).and_return(false)
+        end
+
+        it 'does not call ElasticAssociationIndexerWorker' do
+          expect(ElasticAssociationIndexerWorker).not_to receive(:perform_async)
+
+          described_class.maintain_indexed_group_associations!(group)
+        end
+      end
+    end
+  end
+
   describe '#execute' do
     context 'limit is less than refs count' do
       before do
