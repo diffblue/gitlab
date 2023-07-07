@@ -12,9 +12,17 @@ module Gitlab
             TextUtils = Gitlab::Llm::Chain::Utils::TextProcessing
 
             NAME = 'Resource Reader'
-            DESCRIPTION = 'Useful tool when you need to get information or ask questions about specific resource ' \
+            DESCRIPTION = 'Useful tool when you need to get information about specific resource ' \
                           'that was already identified. ' \
                           'Action Input for this tools always starts with: `data`'
+            EXAMPLE =
+              <<~PROMPT
+                Question: Who is an author of this issue
+                Picked tools: First: "IssueIdentifier" tool, second: "Resource Reader" tool.
+                Reason: You have access to the same resources as user who asks a question.
+                  Once the resource is identified, you should use "Resource Reader" tool to fetch relevant information
+                  about the resource. Based on this information you can present final answer.
+              PROMPT
 
             # anthropic token limit:
             # https://www.anthropic.com/index/100k-context-windows#:~:text=context%20window%20from%209K
@@ -63,7 +71,8 @@ module Gitlab
             attr_accessor :data, :retries
 
             def process_short_path(resource_json)
-              ::Gitlab::Llm::Chain::Answer.new(status: :ok, context: context, content: resource_json, tool: nil)
+              content = "Please use this information about this resource: #{resource_json}"
+              ::Gitlab::Llm::Chain::Answer.new(status: :ok, context: context, content: content, tool: nil)
             end
 
             def process_long_path

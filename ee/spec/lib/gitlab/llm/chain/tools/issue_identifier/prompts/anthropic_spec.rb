@@ -15,7 +15,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Prompts::Anthropic, f
       expect(prompt).to include('Assistant:')
       expect(prompt).to include('some suggestions')
       expect(prompt).to include('foo?')
-      expect(prompt).to include('You can identify an issue or fetch information about an issue.')
+      expect(prompt).to include('You can fetch information about a resource called: an issue.')
     end
   end
 end

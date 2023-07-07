@@ -15,6 +15,14 @@ module Gitlab
               epics, milestones, labels, CI/CD pipelines, git repositories, and more.
             DESC
 
+            EXAMPLE =
+              <<~PROMPT
+                Question: How do I set up a new project?
+                Picked tools: "GitlabDocumentation" tool.
+                Reason: Question is about inner working of GitLab. "GitlabDocumentation" tool is the right one for
+                the job.
+              PROMPT
+
             def perform
               # We can't reuse the injected client here but need to call TanukiBot as it uses the
               # embedding database and calls the OpenAI API internally.

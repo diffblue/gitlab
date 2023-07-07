@@ -9,10 +9,20 @@ module Gitlab
 
           NAME = 'Base Tool'
           DESCRIPTION = 'Base Tool description'
+          EXAMPLE = 'Example description'
+          EXAMPLE_INTRO = 'Here is an example of using this tool:'
 
           attr_reader :context, :options
 
           delegate :resource, :resource=, to: :context
+
+          def self.full_example
+            [EXAMPLE_INTRO, example].join("\n")
+          end
+
+          def self.example
+            self::EXAMPLE
+          end
 
           def initialize(context:, options:)
             @context = context

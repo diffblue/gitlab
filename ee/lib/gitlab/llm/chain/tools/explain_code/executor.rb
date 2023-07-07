@@ -11,6 +11,11 @@ module Gitlab
             NAME = 'ExplainCode'
             DESCRIPTION = 'Useful tool to explain code snippets and blocks.'
             RESOURCE_NAME = 'explain code answer'
+            EXAMPLE = "Question: How would you improve the " \
+                      "```def hello_world\nputs('Hello, world!\\n\');\nend``` code? " \
+                      'Picked tools: "ExplainCode" tool. ' \
+                      'Reason: The question has a code block that needs improvement. "ExplainCode" tool ' \
+                      'can process this question.'
             PROVIDER_PROMPT_CLASSES = {
               anthropic: ::Gitlab::Llm::Chain::Tools::ExplainCode::Prompts::Anthropic,
               vertex_ai: ::Gitlab::Llm::Chain::Tools::ExplainCode::Prompts::VertexAi

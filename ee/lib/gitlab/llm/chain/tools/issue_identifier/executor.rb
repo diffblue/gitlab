@@ -14,7 +14,20 @@ module Gitlab
             RESOURCE_NAME = 'issue'
             NAME = "IssueIdentifier"
             DESCRIPTION = 'Useful tool when you need to identify a specific issue. ' \
-                          'Do not use this tool if you have already identified the issue.'
+                          'Do not use this tool if you have already identified the issue.' \
+                          'In this context, word `issue` means core building block in GitLab that enable ' \
+                          'collaboration, discussions, planning and tracking of work.
+
+'
+            EXAMPLE =
+              <<~PROMPT
+                Question: Please identify the author of http://gitlab.example/ai/test/-/issues/1 issue
+                Picked tools: First: "IssueIdentifier" tool, second: "Resource Reader" tool.
+                Reason: You have access to the same resources as user who asks a question.
+                  There is issue identifier in the question, so you need to use "IssueIdentifier" tool.
+                  Once the issue is identified, you should use "Resource Reader" tool to fetch relevant information
+                  about the resource. Based on this information you can present final answer.
+              PROMPT
 
             PROVIDER_PROMPT_CLASSES = {
               anthropic: ::Gitlab::Llm::Chain::Tools::IssueIdentifier::Prompts::Anthropic,
@@ -30,7 +43,7 @@ module Gitlab
             PROMPT_TEMPLATE = [
               Utils::Prompt.as_system(
                 <<~PROMPT
-                You can identify an issue or fetch information about an issue.
+                You can fetch information about a resource called: an issue.
                 An issue can be referenced by url or numeric IDs preceded by symbol.
                 ResourceIdentifierType can only be one of [current, iid, url, reference]
                 ResourceIdentifier can be "current", number, url. If ResourceIdentifier is not a number or a url
