@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-FILENAME = "ee/lib/tasks/gitlab/llm/questions.csv"
+FILENAME = "ee/lib/tasks/gitlab/llm/questions.yml"
 
 namespace :gitlab do
   namespace :llm do
@@ -12,18 +12,19 @@ namespace :gitlab do
         # if run without quotes and argument, it will use predefined issue
         desc 'Synchronously run predefined AI questions'
         task :questions, [:issue] => [:environment] do |_t, args|
+          require 'yaml'
+
           args.with_defaults(issue: 'http://127.0.0.1:3001/jashkenas/Underscore/-/issues/41')
 
           zero_shot_prompt_action = "the action to take, should be one from this list"
           counter = 0.0
           correct_answers_counter = 0
-          ::CSV.read(FILENAME).each do |row|
-            next if row[0].blank?
 
+          YAML.load_file(FILENAME).values.flatten.each do |row|
             counter += 1
-            question = format(row[0], { issue_identifier: args.issue })
+            question = format(row['question'], { issue_identifier: args.issue })
             logger.info("question: #{question}")
-            logger.info("expected tool(s): #{row[1]}")
+            logger.info("expected tool(s): #{row['answer']}")
 
             agent = llm_agent({ content: question, sync: true })
             response = agent.execute
@@ -31,7 +32,7 @@ namespace :gitlab do
             actions = agent.prompt.scan(/Action: (?<action>.+?)(?=$)/)
             actions.reject! { |action| action.first.start_with?(zero_shot_prompt_action) }
 
-            correct_answers_counter += accuracy_check(actions, row[1], response.content)
+            correct_answers_counter += accuracy_check(actions, row['answer'], response.content)
 
             logger.info("tools used: #{actions}")
             logger.info("actual response: #{response.content}")
@@ -75,7 +76,6 @@ namespace :gitlab do
         return 0 if final_answer == Gitlab::Llm::Chain::Answer.default_final_message
 
         actions = actions.flatten
-        tools = tools.split(', ')
         final_rating = 0
 
         if actions == tools
