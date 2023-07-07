@@ -32,7 +32,7 @@ module Gitlab
             tool = tools.find { |tool_class| tool_class::Executor::NAME == action }
             executor = tool::Executor if tool
 
-            return final_answer(context: context, content: default_final_answer) unless tool
+            return default_final_answer(context: context) unless tool
           end
 
           logger.debug(message: "Answer", content: content)
@@ -60,9 +60,13 @@ module Gitlab
           )
         end
 
-        def self.default_final_answer
+        def self.default_final_answer(context:)
           logger.debug(message: "Default final answer")
 
+          final_answer(context: context, content: default_final_message)
+        end
+
+        def self.default_final_message
           s_("AI|I don't see how I can help. Please give better instructions!")
         end
 

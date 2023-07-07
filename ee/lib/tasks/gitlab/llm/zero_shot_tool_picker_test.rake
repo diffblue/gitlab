@@ -31,7 +31,7 @@ namespace :gitlab do
             actions = agent.prompt.scan(/Action: (?<action>.+?)(?=$)/)
             actions.reject! { |action| action.first.start_with?(zero_shot_prompt_action) }
 
-            correct_answers_counter += accuracy_check(actions, row[1])
+            correct_answers_counter += accuracy_check(actions, row[1], response.content)
 
             logger.info("tools used: #{actions}")
             logger.info("actual response: #{response.content}")
@@ -71,15 +71,17 @@ namespace :gitlab do
         )
       end
 
-      def accuracy_check(actions, answer)
+      def accuracy_check(actions, tools, final_answer)
+        return 0 if final_answer == Gitlab::Llm::Chain::Answer.default_final_message
+
         actions = actions.flatten
-        answer = answer.split(', ')
+        tools = tools.split(', ')
         final_rating = 0
 
-        if actions == answer
+        if actions == tools
           final_rating += 1
-        elsif actions.uniq == answer
-          final_rating += answer.size / actions.size
+        elsif actions.uniq == tools
+          final_rating += tools.size.to_f / actions.size
         end
 
         final_rating

@@ -48,7 +48,7 @@ RSpec.describe Gitlab::Llm::Chain::Answer, feature_category: :shared do
 
       it 'returns final answer with default response' do
         expect(answer.is_final?).to eq(true)
-        expect(answer.content).to eq(described_class.default_final_answer)
+        expect(answer.content).to eq(described_class.default_final_message)
       end
     end
   end
