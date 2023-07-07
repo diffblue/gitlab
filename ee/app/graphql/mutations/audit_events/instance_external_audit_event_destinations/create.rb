@@ -19,7 +19,7 @@ module Mutations
 
         def resolve(destination_url:)
           destination = ::AuditEvents::InstanceExternalAuditEventDestination.new(destination_url: destination_url)
-          destination.save
+          audit(destination, action: :create) if destination.save
 
           {
             instance_external_audit_event_destination: (destination if destination.persisted?),

@@ -23,6 +23,7 @@ module EE
       include EachBatch
       include ::Exportable
       include Epics::MetadataCacheUpdate
+      include Elastic::ApplicationVersionedSearch
 
       DEFAULT_COLOR = ::Gitlab::Color.of('#1068bf')
       MAX_HIERARCHY_DEPTH = 7
@@ -325,6 +326,17 @@ module EE
         fuzzy_search(query, [:title, :description])
       end
 
+      def elasticsearch_available?
+        return false unless ::Feature.enabled?(:elastic_index_epics)
+
+        ::Elastic::DataMigrationService.migration_has_finished?(:create_epic_index)
+      end
+
+      override :use_separate_indices?
+      def use_separate_indices?
+        true
+      end
+
       def ids_for_base_and_decendants(epic_ids)
         ::Gitlab::ObjectHierarchy.new(self.id_in(epic_ids)).base_and_descendants.pluck(:id)
       end
@@ -517,6 +529,12 @@ module EE
       return unless parent
 
       validate_parent_epic
+    end
+
+    def use_elasticsearch?
+      return false unless self.class.elasticsearch_available?
+
+      group.use_elasticsearch?
     end
 
     def issues_readable_by(current_user, preload: nil)

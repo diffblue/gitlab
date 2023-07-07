@@ -251,7 +251,7 @@ RSpec.describe SidebarsHelper, feature_category: :navigation do
           "data-track-label": id,
           "data-track-action": "click_link",
           "data-track-property": "nav_create_menu",
-          "data-qa-selector": 'create_menu_item',
+          "data-testid": 'create_menu_item',
           "data-qa-create-menu-item": id
         }
       }
@@ -280,7 +280,7 @@ RSpec.describe SidebarsHelper, feature_category: :navigation do
           "data-track-label": id,
           "data-track-action": "click_link",
           "data-track-property": "nav_create_menu",
-          "data-qa-selector": 'create_menu_item',
+          "data-testid": 'create_menu_item',
           "data-qa-create-menu-item": id
         }
       }
@@ -483,6 +483,7 @@ RSpec.describe SidebarsHelper, feature_category: :navigation do
     let(:user) { build(:user) }
     let(:group) { build(:group) }
     let(:project) { build(:project) }
+    let(:organization) { build(:organization) }
 
     before do
       allow(helper).to receive(:project_sidebar_context_data).and_return(
@@ -515,6 +516,12 @@ RSpec.describe SidebarsHelper, feature_category: :navigation do
 
     it 'returns Admin Panel for admin nav' do
       expect(helper.super_sidebar_nav_panel(nav: 'admin')).to be_a(Sidebars::Admin::Panel)
+    end
+
+    it 'returns Organization Panel for organization nav' do
+      expect(
+        helper.super_sidebar_nav_panel(nav: 'organization', organization: organization)
+      ).to be_a(Sidebars::Organizations::SuperSidebarPanel)
     end
 
     it 'returns "Your Work" Panel for your_work nav', :use_clean_rails_memory_store_caching do

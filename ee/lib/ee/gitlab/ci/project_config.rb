@@ -6,13 +6,13 @@ module EE
       module ProjectConfig
         extend ::Gitlab::Utils::Override
 
-        EE_SOURCES = [::Gitlab::Ci::ProjectConfig::Compliance].freeze
-
         private
 
         override :sources
         def sources
-          EE_SOURCES + super
+          # SecurityPolicyDefault should come last. It is only necessary if no other source is available.
+          [::Gitlab::Ci::ProjectConfig::Compliance].concat(super)
+                                                   .concat([::Gitlab::Ci::ProjectConfig::SecurityPolicyDefault])
         end
       end
     end

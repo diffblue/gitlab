@@ -33,6 +33,7 @@ import {
   NEW_DASHBOARD,
 } from '../constants';
 import getProductAnalyticsDashboardQuery from '../graphql/queries/get_product_analytics_dashboard.query.graphql';
+import getAvailableVisualizations from '../graphql/queries/get_all_product_analytics_visualizations.query.graphql';
 
 export default {
   name: 'AnalyticsDashboard',
@@ -53,6 +54,9 @@ export default {
     dashboardEmptyStateIllustrationPath: {
       type: String,
     },
+    breadcrumbState: {
+      type: Object,
+    },
   },
   props: {
     isNewDashboard: {
@@ -68,7 +72,7 @@ export default {
       availableVisualizations: {
         [I18N_PRODUCT_ANALYTICS_TITLE]: {
           loading: true,
-          visualizationIds: [],
+          visualizations: [],
         },
       },
       defaultFilters: this.isNewDashboard
@@ -81,12 +85,13 @@ export default {
     };
   },
   async created() {
-    let loadedDashboard;
-
     // Only allow new dashboards when the dashboards editor is enabled
     if (this.editingEnabled && this.isNewDashboard) {
-      loadedDashboard = this.createNewDashboard();
+      this.dashboard = this.createNewDashboard();
+      return;
     }
+
+    let loadedDashboard;
 
     // Only check Jitsu dashboards when Jitsu is enabled and this isn't a new
     // dashboard request
@@ -108,9 +113,12 @@ export default {
       this.showEmptyState = true;
     }
   },
+  beforeDestroy() {
+    // Clear the breadcrumb name when we leave this component so it doesn't
+    // flash the wrong name when a user views a different dashboard
+    this.breadcrumbState.updateName('');
+  },
   apollo: {
-    // TODO: Add retrieval of visualizations for Snowplow
-    // https://gitlab.com/gitlab-org/gitlab/-/issues/414281
     dashboard: {
       query: getProductAnalyticsDashboardQuery,
       variables() {
@@ -136,6 +144,40 @@ export default {
           ...dashboard,
           panels,
           default: { ...dashboard, panels },
+        };
+      },
+      result() {
+        this.breadcrumbState.updateName(this.dashboard?.title || '');
+      },
+      error(error) {
+        // TODO: Show user friendly errors when request fails
+        // https://gitlab.com/gitlab-org/gitlab/-/issues/395788
+        throw error;
+      },
+    },
+    availableVisualizations: {
+      query: getAvailableVisualizations,
+      variables() {
+        return {
+          projectPath: this.projectFullPath,
+        };
+      },
+      skip() {
+        return (
+          !this.editingEnabled ||
+          this.jitsuEnabled ||
+          !this.dashboard ||
+          !this.dashboard?.userDefined
+        );
+      },
+      update(data) {
+        const visualizations = data?.project?.productAnalyticsVisualizations?.nodes;
+        return {
+          ...this.availableVisualizations,
+          [I18N_PRODUCT_ANALYTICS_TITLE]: {
+            loading: false,
+            visualizations,
+          },
         };
       },
       error(error) {

@@ -126,6 +126,18 @@ RSpec.describe SystemNoteService, feature_category: :team_planning do
     end
   end
 
+  describe '.merge_when_checks_pass' do
+    it 'calls SystemNotes::MergeRequestsService' do
+      sha = double
+
+      expect_next_instance_of(SystemNotes::MergeRequestsService) do |service|
+        expect(service).to receive(:merge_when_checks_pass).with(sha)
+      end
+
+      described_class.merge_when_checks_pass(noteable, project, author, sha)
+    end
+  end
+
   describe '.abort_merge_train' do
     let(:message) { double }
 

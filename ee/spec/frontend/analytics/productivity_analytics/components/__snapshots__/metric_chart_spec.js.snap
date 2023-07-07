@@ -107,6 +107,7 @@ exports[`MetricChart component template when isLoading is true matches the snaps
     color="dark"
     label="Loading"
     size="lg"
+    variant="spinner"
   />
 </div>
 `;

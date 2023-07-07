@@ -9,11 +9,9 @@ module QA
             element :push_content
           end
 
-          # rubocop:disable Layout/LineLength
           view 'ee/app/assets/javascripts/analytics/contribution_analytics/components/merge_requests_chart.vue' do
             element :merge_request_content
           end
-          # rubocop:enable Layout/LineLength
 
           view 'ee/app/assets/javascripts/analytics/contribution_analytics/components/issues_chart.vue' do
             element :issue_content

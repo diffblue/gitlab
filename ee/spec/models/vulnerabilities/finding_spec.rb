@@ -426,24 +426,7 @@ RSpec.describe Vulnerabilities::Finding, feature_category: :vulnerability_manage
         let_it_be(:persisted_remediation) { create(:vulnerabilities_remediation, findings: [finding]) }
         let_it_be(:remediation_hash) { { 'summary' => persisted_remediation.summary, 'diff' => persisted_remediation.diff } }
 
-        before do
-          stub_feature_flags(enable_vulnerability_remediations_from_records: true)
-        end
-
         it { is_expected.to eq([remediation_hash]) }
-
-        context 'when reading from the remediation record is diabled' do
-          let(:raw_remediation) { { summary: 'foo', diff: 'bar' }.stringify_keys }
-
-          before do
-            stub_feature_flags(enable_vulnerability_remediations_from_records: false)
-
-            raw_metadata = { remediations: [raw_remediation] }.to_json
-            finding.update!({ raw_metadata: raw_metadata })
-          end
-
-          it { is_expected.to match_array([raw_remediation]) }
-        end
       end
 
       context 'when the finding does not have associated remediation records' do

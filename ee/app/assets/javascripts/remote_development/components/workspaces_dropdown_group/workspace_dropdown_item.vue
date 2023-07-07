@@ -28,9 +28,11 @@ export default {
 <template>
   <gl-disclosure-dropdown-item :item="dropdownItem">
     <template #list-item>
-      <div class="gl-display-flex gl-align-items-center">
-        <workspace-state-indicator class="gl-mr-3" :workspace-state="workspace.actualState" />
-        <span class="gl-mr-4 gl-text-truncate">{{ workspace.name }}</span>
+      <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
+        <span>
+          <workspace-state-indicator class="gl-mr-3" :workspace-state="workspace.actualState" />
+          <span class="gl-mr-4 gl-text-truncate">{{ workspace.name }}</span>
+        </span>
         <workspace-actions
           :actual-state="workspace.actualState"
           :desired-state="workspace.desiredState"

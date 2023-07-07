@@ -463,6 +463,64 @@ feature_category: :global_search do
           expect { described_class.new.execute }.not_to exceed_all_query_limit(control)
         end
       end
+
+      it 'does not have N+1 queries for epics' do
+        epics = create_list(:epic, 2, :use_fixed_dates)
+
+        described_class.track!(*epics)
+
+        control = ActiveRecord::QueryRecorder.new(skip_cached: false) { described_class.new.execute }
+
+        epics += create_list(:epic, 3, :use_fixed_dates)
+
+        described_class.track!(*epics)
+
+        expect { described_class.new.execute }.not_to exceed_all_query_limit(control)
+      end
+
+      it 'does not have N+1 queries for epics with inherited dates' do
+        child_epic = create(:epic, :use_fixed_dates)
+        milestone = create(:milestone, :with_dates)
+
+        epics = create_list(:epic, 2)
+        epics.each do |epic|
+          epic.start_date_sourcing_epic = child_epic
+          epic.due_date_sourcing_milestone = milestone
+          epic.save!
+        end
+
+        described_class.track!(*epics)
+
+        control = ActiveRecord::QueryRecorder.new(skip_cached: false) { described_class.new.execute }
+
+        epics += create_list(:epic, 3)
+        epics.each do |epic|
+          epic.start_date_sourcing_epic = child_epic
+          epic.due_date_sourcing_milestone = milestone
+          epic.save!
+        end
+
+        described_class.track!(*epics)
+
+        expect { described_class.new.execute }.not_to exceed_all_query_limit(control)
+      end
+
+      it 'does not have N+1 queries for epics in a group with multiple parents' do
+        parent_group = create(:group)
+        group = create(:group, parent: parent_group)
+
+        epics = create_list(:epic, 2, group: group)
+
+        described_class.track!(*epics)
+
+        control = ActiveRecord::QueryRecorder.new(skip_cached: false) { described_class.new.execute }
+
+        epics += create_list(:epic, 3, group: group)
+
+        described_class.track!(*epics)
+
+        expect { described_class.new.execute }.not_to exceed_all_query_limit(control)
+      end
     end
 
     def expect_processing(*refs, failures: [])

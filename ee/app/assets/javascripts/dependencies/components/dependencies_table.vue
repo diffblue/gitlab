@@ -8,11 +8,13 @@ import {
   GlPopover,
   GlLink,
 } from '@gitlab/ui';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, uniqBy } from 'lodash';
 import { s__ } from '~/locale';
 import { NAMESPACE_PROJECT } from '../constants';
 import DependencyLicenseLinks from './dependency_license_links.vue';
 import DependencyLocation from './dependency_location.vue';
+import DependencyLocationCount from './dependency_location_count.vue';
+import DependencyProjectCount from './dependency_project_count.vue';
 import DependencyVulnerabilities from './dependency_vulnerabilities.vue';
 
 const tdClass = (defaultClasses = []) => (value, key, item) => {
@@ -39,6 +41,8 @@ export default {
     DependencyLicenseLinks,
     DependencyVulnerabilities,
     DependencyLocation,
+    DependencyLocationCount,
+    DependencyProjectCount,
     GlBadge,
     GlIcon,
     GlButton,
@@ -58,11 +62,6 @@ export default {
       required: true,
     },
   },
-  data() {
-    return {
-      localDependencies: this.transformDependenciesForUI(this.dependencies),
-    };
-  },
   computed: {
     anyDependencyHasVulnerabilities() {
       return this.localDependencies.some(({ vulnerabilities }) => vulnerabilities?.length > 0);
@@ -73,10 +72,10 @@ export default {
     isProjectNamespace() {
       return this.namespaceType === NAMESPACE_PROJECT;
     },
-  },
-  watch: {
-    dependencies(dependencies) {
-      this.localDependencies = this.transformDependenciesForUI(dependencies);
+    localDependencies() {
+      return this.isProjectNamespace
+        ? this.transformDependenciesForUI(this.dependencies)
+        : this.uniqueBasedOnComponentId(this.dependencies);
     },
   },
   methods: {
@@ -91,6 +90,12 @@ export default {
         ...cloneDeep(dep),
         vulnerabilities: vulnerabilities ? cloneDeep(vulnerabilities) : [],
       }));
+    },
+    uniqueBasedOnComponentId(dependencies) {
+      return uniqBy(dependencies, 'component_id');
+    },
+    displayLocation(item) {
+      return this.isProjectNamespace || item.occurrence_count < 2;
     },
   },
   projectFields: [
@@ -162,11 +167,20 @@ export default {
     </template>
 
     <template #cell(location)="{ item }">
-      <dependency-location :location="item.location" />
+      <dependency-location v-if="displayLocation(item)" :location="item.location" />
+      <dependency-location-count v-else :location-count="item.occurrence_count" />
     </template>
 
     <template #cell(license)="{ item }">
       <dependency-license-links :licenses="item.licenses" :title="item.name" />
+    </template>
+
+    <template #cell(projects)="{ item }">
+      <dependency-project-count
+        v-if="!isProjectNamespace"
+        :project="item.project"
+        :project-count="item.project_count"
+      />
     </template>
 
     <template #cell(isVulnerable)="{ item, toggleDetails }">

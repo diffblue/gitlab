@@ -19,10 +19,22 @@ RSpec.describe Admin::ProjectsController, :geo, feature_category: :groups_and_pr
 
     render_views
 
-    it 'includes Geo Status widget partial' do
-      expect(subject).to have_gitlab_http_status(:ok)
-      expect(subject.body).to match(project.name)
-      expect(subject).to render_template(partial: 'admin/projects/_geo_status_widget')
+    context 'when geo_project_repository_replication FF is disabled' do
+      it 'includes Geo Status widget partial' do
+        stub_feature_flags(geo_project_repository_replication: false)
+
+        expect(subject).to have_gitlab_http_status(:ok)
+        expect(subject.body).to match(project.name)
+        expect(subject).to render_template(partial: 'admin/projects/_geo_status_widget')
+      end
+    end
+
+    context 'when geo_project_repository_replication FF is enabled' do
+      it 'hides Geo Status widget partial' do
+        expect(subject).to have_gitlab_http_status(:ok)
+
+        expect(subject.body).not_to match('Geo Status')
+      end
     end
 
     context 'when Geo is enabled and is a secondary node' do
@@ -31,6 +43,8 @@ RSpec.describe Admin::ProjectsController, :geo, feature_category: :groups_and_pr
       end
 
       it 'renders Geo Status widget' do
+        stub_feature_flags(geo_project_repository_replication: false)
+
         expect(subject.body).to match('Geo Status')
       end
 

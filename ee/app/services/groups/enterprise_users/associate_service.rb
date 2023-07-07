@@ -1,0 +1,81 @@
+# frozen_string_literal: true
+
+module Groups
+  module EnterpriseUsers
+    class AssociateService
+      def initialize(group:, user:)
+        @group = group
+        @user = user
+      end
+
+      def execute
+        if @user.enterprise_user_of_group?(@group)
+          return error(s_('EnterpriseUsers|The user is already an enterprise user of the group'))
+        end
+
+        unless user_matches_the_enterprise_user_definition_for_the_group?
+          return error(s_('EnterpriseUsers|The user does not match the "Enterprise User" definition for the group'))
+        end
+
+        if @user.user_detail.update(enterprise_group_id: @group.id, enterprise_group_associated_at: Time.current)
+          Notify.user_associated_with_enterprise_group_email(@user.id).deliver_later
+
+          log_info(message: 'Associated the user with the enterprise group')
+
+          success
+        else
+          error(s_('EnterpriseUsers|The user detail cannot be updated'), reason: :user_detail_cannot_be_updated)
+        end
+      end
+
+      private
+
+      def error(message, reason: nil)
+        ServiceResponse.error(message: message, payload: response_payload, reason: reason)
+      end
+
+      def success
+        ServiceResponse.success(payload: response_payload)
+      end
+
+      def response_payload
+        { group: @group, user: @user }
+      end
+
+      def log_info(message:)
+        Gitlab::AppLogger.info(
+          class: self.class.name,
+          group_id: @group.id,
+          user_id: @user.id,
+          message: message
+        )
+      end
+
+      def user_was_created_2021_02_01_or_later?
+        @user.created_at >= Date.new(2021, 2, 1)
+      end
+
+      def user_has_saml_or_scim_identity_tied_to_group?
+        @group.saml_provider&.identities&.for_user(@user)&.exists? || @group.scim_identities.for_user(@user).exists?
+      end
+
+      def user_provisioned_by_group?
+        @user.user_detail.provisioned_by_group_id == @group.id
+      end
+
+      def user_group_member_and_group_subscription_was_purchased_or_renewed_2021_02_01_or_later?
+        @group.member?(@user) &&
+          (@group.paid? && @group.gitlab_subscription.start_date >= Date.new(2021, 2, 1))
+      end
+
+      # The "Enterprise User" definition: https://about.gitlab.com/handbook/support/workflows/gitlab-com_overview.html#enterprise-users
+      def user_matches_the_enterprise_user_definition_for_the_group?
+        @group.owner_of_email?(@user.email) && (
+          user_was_created_2021_02_01_or_later? ||
+          user_has_saml_or_scim_identity_tied_to_group? ||
+          user_provisioned_by_group? ||
+          user_group_member_and_group_subscription_was_purchased_or_renewed_2021_02_01_or_later?)
+      end
+    end
+  end
+end

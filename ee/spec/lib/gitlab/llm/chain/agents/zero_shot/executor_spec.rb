@@ -51,7 +51,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         answer = agent.execute
 
         expect(answer.is_final?).to eq(true)
-        expect(answer.content).to include(Gitlab::Llm::Chain::Answer.default_final_answer)
+        expect(answer.content).to include(Gitlab::Llm::Chain::Answer.default_final_message)
       end
     end
 

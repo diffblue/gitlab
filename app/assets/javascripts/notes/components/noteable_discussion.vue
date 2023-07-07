@@ -15,7 +15,7 @@ import { containsSensitiveToken, confirmSensitiveAction } from '~/lib/utils/secr
 import eventHub from '../event_hub';
 import noteable from '../mixins/noteable';
 import resolvable from '../mixins/resolvable';
-import { getErrorMessages } from '../utils';
+import { createNoteErrorMessages } from '../utils';
 import DiffDiscussionHeader from './diff_discussion_header.vue';
 import DiffWithNote from './diff_with_note.vue';
 import DiscussionActions from './discussion_actions.vue';
@@ -89,6 +89,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters('diffs', ['getDiffFileByHash']),
     ...mapGetters([
       'convertedDisscussionIds',
       'getNoteableData',
@@ -96,6 +97,10 @@ export default {
       'showJumpToNextDiscussion',
       'getUserData',
     ]),
+    diffFile() {
+      if (!this.discussion.diff_file) return null;
+      return this.getDiffFileByHash(this.discussion.diff_file.file_hash);
+    },
     currentUser() {
       return this.getUserData;
     },
@@ -270,7 +275,7 @@ export default {
         });
     },
     handleSaveError({ response }) {
-      const errorMessage = getErrorMessages(response.data, response.status)[0];
+      const errorMessage = createNoteErrorMessages(response.data, response.status)[0];
 
       createAlert({
         message: errorMessage,
@@ -348,6 +353,7 @@ export default {
                     v-if="isReplying"
                     ref="noteForm"
                     :discussion="discussion"
+                    :diff-file="diffFile"
                     :line="diffLine"
                     :save-button-title="saveButtonTitle"
                     :autosave-key="autosaveKey"

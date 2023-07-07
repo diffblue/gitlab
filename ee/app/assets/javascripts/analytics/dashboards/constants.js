@@ -113,3 +113,5 @@ export const YAML_CONFIG_PATH = '.gitlab/analytics/dashboards/value_streams/valu
 export const YAML_CONFIG_LOAD_ERROR = s__(
   'DORA4Metrics|Failed to load YAML config from Project: %{fullPath}',
 );
+
+export const CLICK_METRIC_DRILLDOWN_LINK_ACTION = 'click_link';

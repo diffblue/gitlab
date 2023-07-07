@@ -18,7 +18,6 @@ module Security
         IngestFindingSignatures
         IngestFindingEvidence
         IngestVulnerabilityFlags
-        IngestIssueLinks
         IngestVulnerabilityStatistics
         IngestRemediations
         HooksExecution

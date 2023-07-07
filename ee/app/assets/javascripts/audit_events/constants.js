@@ -73,6 +73,8 @@ export const AUDIT_EVENTS_TAB_TITLES = {
 export const streamsLabel = (count) =>
   n__('AuditStreams|%d destination', 'AuditStreams|%d destinations', count);
 export const ADD_STREAM = s__('AuditStreams|Add streaming destination');
+export const ADD_HTTP = s__('AuditStreams|HTTP endpoint');
+export const ADD_GCP_LOGGING = s__('AuditStreams|Google Cloud Logging');
 export const ADD_STREAM_MESSAGE = s__('AuditStreams|Stream added successfully');
 export const UPDATE_STREAM_MESSAGE = s__('AuditStreams|Stream updated successfully');
 export const DELETE_STREAM_MESSAGE = s__('AuditStreams|Stream deleted successfully');
@@ -117,6 +119,15 @@ export const ADD_STREAM_EDITOR_I18N = {
   DELETE_BUTTON_TEXT: s__('AuditStreams|Delete destination'),
   HEADER_FILTERING: s__('AuditStreams|Event filtering (optional)'),
   FILTER_BY_AUDIT_EVENT_TYPE: s__('AuditStreams|Filter by audit event type'),
+  GCP_LOGGING_DESTINATION_PROJECT_ID_LABEL: s__('AuditStreams|Project ID'),
+  GCP_LOGGING_DESTINATION_PROJECT_ID_PLACEHOLDER: s__('AuditStreams|my-google-project'),
+  GCP_LOGGING_DESTINATION_CLIENT_EMAIL_LABEL: s__('AuditStreams|Client Email'),
+  GCP_LOGGING_DESTINATION_CLIENT_EMAIL_PLACEHOLDER: s__(
+    'AuditStreams|my-email@my-google-project.iam.gservice.account.com',
+  ),
+  GCP_LOGGING_DESTINATION_LOG_ID_LABEL: s__('AuditStreams|Log ID'),
+  GCP_LOGGING_DESTINATION_LOG_ID_PLACEHOLDER: s__('AuditStreams|audit-events'),
+  GCP_LOGGING_DESTINATION_PASSWORD_LABEL: s__('AuditStreams|Private key'),
 };
 
 export const AUDIT_STREAMS_EMPTY_STATE_I18N = {
@@ -157,3 +168,6 @@ export const createBlankHeader = () => ({
   disabled: false,
   validationErrors: { name: '' },
 });
+
+export const DESTINATION_TYPE_HTTP = 'http';
+export const DESTINATION_TYPE_GCP_LOGGING = 'gcpLogging';

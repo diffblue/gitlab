@@ -1,5 +1,6 @@
 <script>
-import { GlIcon, GlLink, GlButton, GlCollapse, GlBadge } from '@gitlab/ui';
+import { uniqueId } from 'lodash';
+import { GlIcon, GlLink, GlButton, GlCollapse, GlBadge, GlPopover } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import { helpPagePath } from '~/helpers/help_page_helper';
@@ -13,6 +14,9 @@ export const i18n = {
   noCodeOwnersText: s__(
     'CodeOwners|Assign users and groups as approvers for specific file changes.',
   ),
+  helpText: s__(
+    'CodeOwners|Code owners are users and groups that can approve specific file changes.',
+  ),
   learnMore: s__('CodeOwners|Learn more.'),
   showAll: s__('CodeOwners|Show all'),
   hideAll: s__('CodeOwners|Hide all'),
@@ -23,12 +27,14 @@ export const codeOwnersHelpPath = helpPagePath('user/project/codeowners/index.md
 export default {
   i18n,
   codeOwnersHelpPath,
+  helpPopoverId: uniqueId('help-popover-'),
   components: {
     GlIcon,
     GlLink,
     GlButton,
     GlBadge,
     GlCollapse,
+    GlPopover,
   },
   apollo: {
     project: {
@@ -128,10 +134,10 @@ export default {
 <template>
   <div
     v-if="filePath"
-    class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-justify-content-space-between gl-align-items-flex-start"
+    class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-justify-content-space-between gl-align-items-center"
   >
     <div class="gl-display-flex gl-flex-wrap">
-      <div class="gl-mr-2 gl-mb-2">
+      <div class="gl-mr-2">
         <gl-icon name="users" data-testid="users-icon" />
         <component
           :is="hasCodeOwners ? 'gl-link' : 'span'"
@@ -152,9 +158,9 @@ export default {
       </div>
 
       <template v-if="hasCodeOwners && !isLoading">
-        <gl-badge class="gl-mx-2 gl-mb-2" size="sm">{{ codeOwnersTotal }}</gl-badge>
+        <gl-badge class="gl-mx-2" size="sm">{{ codeOwnersTotal }}</gl-badge>
         <gl-button
-          class="gl-mb-2 gl-w-12"
+          class="gl-w-12"
           variant="link"
           data-testid="collapse-toggle"
           @click="toggleCodeOwners"
@@ -187,11 +193,33 @@ export default {
         </gl-collapse>
       </template>
     </div>
+
+    <gl-button
+      v-if="hasCodeOwners"
+      :id="$options.helpPopoverId"
+      :aria-label="$options.i18n.helpText"
+      class="gl-ml-auto"
+      category="tertiary"
+      icon="question-o"
+      data-testid="help-popover-trigger"
+    />
+    <gl-popover
+      v-if="hasCodeOwners"
+      :target="$options.helpPopoverId"
+      placement="top"
+      triggers="hover focus"
+    >
+      {{ $options.i18n.helpText }}
+      <gl-link :href="$options.codeOwnersHelpPath" class="font-size-inherit">
+        {{ $options.i18n.learnMore }}
+      </gl-link>
+    </gl-popover>
+
     <gl-button
       v-if="canViewBranchRules"
       size="small"
       :href="branchRulesPath"
-      class="gl-ml-4"
+      class="gl-ml-2"
       data-testid="branch-rules-link"
     >
       {{ $options.i18n.manageBranchRules }}

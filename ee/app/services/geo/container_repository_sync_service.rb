@@ -54,6 +54,14 @@ module Geo
     def fail_registry_sync!(message, error)
       log_error(message, error)
 
+      Gitlab::ErrorTracking.track_exception(error,
+        {
+          container_repository_name: container_repository.name,
+          project_path: container_repository.project.full_path,
+          project_id: container_repository.project_id
+        }
+      )
+
       registry.failed!(message: message, error: error)
     end
 

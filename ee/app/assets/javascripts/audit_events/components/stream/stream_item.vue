@@ -9,8 +9,13 @@ import {
   GlButton,
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
-import { STREAM_ITEMS_I18N } from '../../constants';
+import {
+  STREAM_ITEMS_I18N,
+  DESTINATION_TYPE_HTTP,
+  DESTINATION_TYPE_GCP_LOGGING,
+} from '../../constants';
 import StreamDestinationEditor from './stream_destination_editor.vue';
+import StreamGcpLoggingDestinationEditor from './stream_gcp_logging_destination_editor.vue';
 
 export default {
   components: {
@@ -22,6 +27,7 @@ export default {
     GlButton,
     GlIcon,
     StreamDestinationEditor,
+    StreamGcpLoggingDestinationEditor,
   },
   directives: {
     GlTooltip,
@@ -30,6 +36,10 @@ export default {
   props: {
     item: {
       type: Object,
+      required: true,
+    },
+    type: {
+      type: String,
       required: true,
     },
   },
@@ -44,6 +54,15 @@ export default {
     },
     isInstance() {
       return this.groupPath === 'instance';
+    },
+    destinationTitle() {
+      switch (this.type) {
+        case DESTINATION_TYPE_GCP_LOGGING:
+          return this.item.googleProjectIdName;
+        case DESTINATION_TYPE_HTTP:
+        default:
+          return this.item.destinationUrl;
+      }
     },
   },
   methods: {
@@ -66,7 +85,9 @@ export default {
         : queryData.group.externalAuditEventDestinationCreate;
     },
   },
-  i18n: STREAM_ITEMS_I18N,
+  i18n: { ...STREAM_ITEMS_I18N },
+  DESTINATION_TYPE_HTTP,
+  DESTINATION_TYPE_GCP_LOGGING,
 };
 </script>
 
@@ -84,7 +105,7 @@ export default {
           name="chevron-right"
           class="gl-transition-medium"
           :class="{ 'gl-rotate-90': isEditing }"
-        /><span class="gl-font-lg gl-ml-2">{{ item.destinationUrl }}</span>
+        /><span class="gl-font-lg gl-ml-2">{{ destinationTitle }}</span>
       </gl-button>
 
       <template v-if="isItemFiltered">
@@ -111,7 +132,16 @@ export default {
     </div>
     <gl-collapse :visible="isEditing">
       <stream-destination-editor
-        v-if="isEditing"
+        v-if="isEditing && type == $options.DESTINATION_TYPE_HTTP"
+        :item="item"
+        class="gl-pr-0 gl-pl-6 gl-pb-5"
+        @updated="onUpdated"
+        @deleted="onDelete"
+        @error="onEditorError"
+        @cancel="toggleEditMode"
+      />
+      <stream-gcp-logging-destination-editor
+        v-else-if="isEditing && type == $options.DESTINATION_TYPE_GCP_LOGGING"
         :item="item"
         class="gl-pr-0 gl-pl-6 gl-pb-5"
         @updated="onUpdated"

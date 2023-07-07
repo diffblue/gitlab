@@ -5,7 +5,9 @@ namespace :gitlab do
     desc "GitLab | Elasticsearch | Index everything at once"
     task index: :environment do
       if Gitlab::CurrentSettings.elasticsearch_pause_indexing
-        puts "WARNING: `elasticsearch_pause_indexing` is enabled. Disable this setting by running `rake gitlab:elastic:resume_indexing` to complete indexing.".color(:yellow)
+        puts "WARNING: `elasticsearch_pause_indexing` is enabled. " \
+             "Disable this setting by running `rake gitlab:elastic:resume_indexing` " \
+             "to complete indexing.".color(:yellow)
       end
 
       Rake::Task["gitlab:elastic:recreate_index"].invoke
@@ -72,11 +74,13 @@ namespace :gitlab do
 
     desc "GitLab | ElasticSearch | Check project indexing status"
     task index_projects_status: :environment do
-      indexed = IndexStatus.count
-      projects = Project.count
+      raise 'This task cannot be run on GitLab.com' if Gitlab.com?
+
+      projects = elastic_enabled_projects.size
+      indexed = IndexStatus.for_project(elastic_enabled_projects).size
       percent = (indexed / projects.to_f) * 100.0
 
-      puts "Indexing is %.2f%% complete (%d/%d projects)" % [percent, indexed, projects]
+      puts format("Indexing is %.2f%% complete (%d/%d projects)", percent, indexed, projects)
     end
 
     desc "GitLab | Elasticsearch | Index all snippets"
@@ -86,7 +90,7 @@ namespace :gitlab do
 
       Snippet.es_import
 
-      logger.info("Indexing snippets... " + "done".color(:green))
+      logger.info("Indexing snippets... #{'done'.color(:green)}")
     end
 
     desc "GitLab | Elasticsearch | Index all users"
@@ -98,11 +102,11 @@ namespace :gitlab do
         ::Elastic::ProcessInitialBookkeepingService.track!(*users)
       end
 
-      logger.info("Indexing users... " + "done".color(:green))
+      logger.info("Indexing users... #{'done'.color(:green)}")
     end
 
     desc "GitLab | Elasticsearch | Create empty indexes and assigns an alias for each"
-    task create_empty_index: [:environment] do |t, args|
+    task create_empty_index: [:environment] do |_t, _args|
       with_alias = ENV["SKIP_ALIAS"].nil?
       options = {}
 
@@ -128,7 +132,7 @@ namespace :gitlab do
     end
 
     desc "GitLab | Elasticsearch | Delete all indexes"
-    task delete_index: [:environment] do |t, args|
+    task delete_index: [:environment] do |_t, _args|
       helper = Gitlab::Elastic::Helper.default
 
       if helper.delete_index
@@ -154,7 +158,7 @@ namespace :gitlab do
     end
 
     desc "GitLab | Elasticsearch | Recreate indexes"
-    task recreate_index: [:environment] do |t, args|
+    task recreate_index: [:environment] do |_t, args|
       Rake::Task["gitlab:elastic:delete_index"].invoke(*args)
       Rake::Task["gitlab:elastic:create_empty_index"].invoke(*args)
     end
@@ -172,12 +176,12 @@ namespace :gitlab do
 
     desc "GitLab | Elasticsearch | Display which projects are not indexed"
     task projects_not_indexed: :environment do
+      raise 'This task cannot be run on GitLab.com' if Gitlab.com?
+
       not_indexed = []
 
-      Project.where.not(id: IndexStatus.select(:project_id).distinct).each_batch do |batch|
+      elastic_enabled_projects.id_not_in(IndexStatus.select(:project_id).distinct).each_batch do |batch|
         batch.each do |project|
-          next if !project.repository_exists? || project.empty_repo?
-
           not_indexed << project
         end
       end
@@ -218,11 +222,14 @@ namespace :gitlab do
       total_size_human = number_to_human_size(total_size, delimiter: ',', precision: 1, significant: false)
 
       estimated_cluster_size = total_size * 0.5
-      estimated_cluster_size_human = number_to_human_size(estimated_cluster_size, delimiter: ',', precision: 1, significant: false)
+      estimated_cluster_size_human = number_to_human_size(estimated_cluster_size, delimiter: ',', precision: 1,
+        significant: false)
 
       puts "This GitLab instance repository size is #{total_size_human}."
-      puts "By our estimates for such repository size, your cluster size should be at least #{estimated_cluster_size_human}.".color(:green)
-      puts 'Please note that it is possible to index only selected namespaces/projects by using Elasticsearch indexing restrictions.'
+      puts "By our estimates for such repository size, " \
+           "your cluster size should be at least #{estimated_cluster_size_human}.".color(:green)
+      puts "Please note that it is possible to index only selected namespaces/projects by using " \
+           "Elasticsearch indexing restrictions."
     end
 
     desc "GitLab | Elasticsearch | Pause indexing"
@@ -256,13 +263,13 @@ namespace :gitlab do
 
       puts ""
       puts "Advanced Search".color(:yellow)
-      puts "Server version:\t\t\t#{helper.server_info[:version] || "unknown".color(:red)}"
-      puts "Server distribution:\t\t#{helper.server_info[:distribution] || "unknown".color(:red)}"
-      puts "Indexing enabled:\t\t#{setting.elasticsearch_indexing? ? "yes".color(:green) : "no"}"
-      puts "Search enabled:\t\t\t#{setting.elasticsearch_search? ? "yes".color(:green) : "no"}"
-      puts "Requeue Indexing workers:\t#{setting.elasticsearch_requeue_workers? ? "yes".color(:green) : "no"}"
-      puts "Pause indexing:\t\t\t#{setting.elasticsearch_pause_indexing? ? "yes".color(:yellow) : "no"}"
-      puts "Indexing restrictions enabled:\t#{setting.elasticsearch_limit_indexing? ? "yes".color(:yellow) : "no"}"
+      puts "Server version:\t\t\t#{helper.server_info[:version] || 'unknown'.color(:red)}"
+      puts "Server distribution:\t\t#{helper.server_info[:distribution] || 'unknown'.color(:red)}"
+      puts "Indexing enabled:\t\t#{setting.elasticsearch_indexing? ? 'yes'.color(:green) : 'no'}"
+      puts "Search enabled:\t\t\t#{setting.elasticsearch_search? ? 'yes'.color(:green) : 'no'}"
+      puts "Requeue Indexing workers:\t#{setting.elasticsearch_requeue_workers? ? 'yes'.color(:green) : 'no'}"
+      puts "Pause indexing:\t\t\t#{setting.elasticsearch_pause_indexing? ? 'yes'.color(:yellow) : 'no'}"
+      puts "Indexing restrictions enabled:\t#{setting.elasticsearch_limit_indexing? ? 'yes'.color(:yellow) : 'no'}"
       puts "File size limit:\t\t#{setting.elasticsearch_indexed_file_size_limit_kb} KiB"
       puts "Indexing number of shards:\t#{Elastic::ProcessBookkeepingService.active_number_of_shards}"
 
@@ -289,10 +296,10 @@ namespace :gitlab do
           puts ""
           puts "Current Migration".color(:yellow)
           puts "Name:\t\t\t#{current_migration.name}"
-          puts "Started:\t\t#{current_migration.started? ? "yes".color(:green) : "no"}"
-          puts "Halted:\t\t\t#{current_migration.halted? ? "yes".color(:red) : "no".color(:green)}"
-          puts "Failed:\t\t\t#{current_migration.failed? ? "yes".color(:red) : "no".color(:green)}"
-          puts "Obsolete:\t\t#{current_migration.obsolete? ? "yes".color(:red) : "no".color(:green)}"
+          puts "Started:\t\t#{current_migration.started? ? 'yes'.color(:green) : 'no'}"
+          puts "Halted:\t\t\t#{current_migration.halted? ? 'yes'.color(:red) : 'no'.color(:green)}"
+          puts "Failed:\t\t\t#{current_migration.failed? ? 'yes'.color(:red) : 'no'.color(:green)}"
+          puts "Obsolete:\t\t#{current_migration.obsolete? ? 'yes'.color(:red) : 'no'.color(:green)}"
           puts "Current state:\t\t#{current_state.to_json}" if current_state.present?
         end
       end
@@ -320,13 +327,13 @@ namespace :gitlab do
       end
     end
 
-    def check_handler(&blk)
+    def check_handler
       yield
     rescue StandardError => e
       puts "An exception occurred during the retrieval of the data: #{e.class}: #{e.message}".color(:red)
     end
 
-    def project_id_batches(&blk)
+    def project_id_batches
       relation = Project.all
 
       if ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
@@ -342,6 +349,12 @@ namespace :gitlab do
       end
 
       count
+    end
+
+    def elastic_enabled_projects
+      return Project.all unless ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
+
+      ::Gitlab::CurrentSettings.elasticsearch_limited_projects
     end
 
     def trigger_cluster_reindexing

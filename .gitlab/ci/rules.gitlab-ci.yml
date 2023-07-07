@@ -193,10 +193,13 @@
   - "lib/gitlab/setup_helper.rb"
 
 .workhorse-patterns: &workhorse-patterns
+  - ".gitlab/ci/workhorse.gitlab-ci.yml"
   - "GITLAB_WORKHORSE_VERSION"
   - "workhorse/**/*"
-  - ".gitlab/ci/workhorse.gitlab-ci.yml"
+  - "scripts/gitaly-test-build"
+  - "scripts/gitaly-test-spawn"
   - "spec/support/gitlab-git-test.git/**/*"
+  - "spec/support/helpers/gitaly_setup.rb"
 
 .yaml-lint-patterns: &yaml-lint-patterns
   - "**/*.{yml,yaml}{,.*}"
@@ -308,9 +311,6 @@
 
 .lib-gitlab-patterns: &lib-gitlab-patterns
   - "{,ee/,jh/}lib/{,ee/,jh/}gitlab/**/*"
-
-.startup-css-patterns: &startup-css-patterns
-  - "{,ee/,jh/}app/assets/stylesheets/startup/**/*"
 
 # Backend patterns + .ci-patterns
 .backend-patterns: &backend-patterns
@@ -1142,16 +1142,28 @@
     - <<: *if-merge-request-targeting-stable-branch
       changes: *setup-test-env-patterns
     - <<: *if-merge-request-labels-run-review-app
-    - <<: *if-merge-request-labels-run-all-e2e
     - <<: *if-auto-deploy-branches
     - <<: *if-ruby2-branch
-    - <<: *if-default-branch-schedule-nightly
     - <<: *if-default-refs
       changes: *ci-build-images-patterns
     - <<: *if-default-refs
       changes: *code-qa-patterns
     - <<: *if-default-refs
       changes: *workhorse-patterns
+    # Rules to support .qa:rules:package-and-test
+    - <<: *if-default-branch-schedule-nightly
+    - <<: *if-merge-request
+      changes: *dependency-patterns
+    - <<: *if-merge-request-labels-run-all-e2e
+    - <<: *if-dot-com-gitlab-org-and-security-merge-request-manual-ff-package-and-e2e
+      changes: *feature-flag-development-config-patterns
+    - <<: *if-merge-request
+      changes: *feature-flag-development-config-patterns
+    - <<: *if-merge-request
+      changes: *nodejs-patterns
+    - <<: *if-merge-request
+      changes: *ci-qa-patterns
+    - <<: *if-force-ci
 
 .frontend:rules:compile-production-assets-as-if-foss:
   rules:
@@ -1179,8 +1191,6 @@
     - <<: *if-default-refs
       changes: *code-backstage-qa-patterns
     - <<: *if-default-refs
-      changes: *startup-css-patterns
-    - <<: *if-default-refs
       changes: *workhorse-patterns
 
 .frontend:rules:default-frontend-jobs:
@@ -1201,8 +1211,6 @@
       changes: *code-backstage-patterns
     - <<: *if-merge-request-labels-as-if-foss
     - <<: *if-merge-request-labels-run-all-rspec
-    - <<: *if-merge-request
-      changes: *startup-css-patterns
     - <<: *if-merge-request
       changes: *frontend-patterns-for-as-if-foss
 
@@ -2132,107 +2140,6 @@
       when: never
     - <<: *if-merge-request
       changes: *code-backstage-qa-patterns
-
-########################
-# GitLab monorepo gems #
-########################
-
-.gems:rules:activerecord-gitlab:
-  rules:
-    - <<: *if-merge-request
-      changes: ["gems/activerecord-gitlab/**/*"]
-
-.gems:rules:gitlab-rspec:
-  rules:
-    - <<: *if-merge-request
-      changes: ["gems/gitlab-rspec/**/*"]
-
-.gems:rules:gitlab-utils:
-  rules:
-    - <<: *if-merge-request
-      changes: ["gems/gitlab-utils/**/*"]
-
-#######################
-# Vendored gems rules #
-#######################
-
-.vendor:rules:mail-smtp_pool:
-  rules:
-    - <<: *if-merge-request
-      changes: ["vendor/gems/mail-smtp_pool/**/*"]
-    - <<: *if-merge-request-labels-run-all-rspec
-
-.vendor:rules:attr_encrypted:
-  rules:
-    - <<: *if-merge-request
-      changes: ["vendor/gems/attr_encrypted/**/*"]
-    - <<: *if-merge-request-labels-run-all-rspec
-
-.vendor:rules:microsoft_graph_mailer:
-  rules:
-    - <<: *if-merge-request
-      changes: ["vendor/gems/microsoft_graph_mailer/**/*"]
-    - <<: *if-merge-request-labels-run-all-rspec
-
-.vendor:rules:ipynbdiff:
-  rules:
-    - <<: *if-merge-request
-      changes: ["vendor/gems/ipynbdiff/**/*"]
-    - <<: *if-merge-request-labels-run-all-rspec
-
-.vendor:rules:omniauth-azure-oauth2:
-  rules:
-    - <<: *if-merge-request
-      changes: ["vendor/gems/omniauth-azure-oauth2/**/*"]
-    - <<: *if-merge-request-labels-run-all-rspec
-
-.vendor:rules:omniauth_crowd:
-  rules:
-    - <<: *if-merge-request
-      changes: ["vendor/gems/omniauth_crowd/**/*"]
-    - <<: *if-merge-request-labels-run-all-rspec
-
-.vendor:rules:omniauth-gitlab:
-  rules:
-    - <<: *if-merge-request
-      changes: ["vendor/gems/omniauth-gitlab/**/*"]
-    - <<: *if-merge-request-labels-run-all-rspec
-
-.vendor:rules:omniauth-salesforce:
-  rules:
-    - <<: *if-merge-request
-      changes: ["vendor/gems/omniauth-salesforce/**/*"]
-    - <<: *if-merge-request-labels-run-all-rspec
-
-.vendor:rules:devise-pbkdf2-encryptable:
-  rules:
-    - <<: *if-merge-request
-      changes: ["vendor/gems/devise-pbkdf2-encryptable/**/*"]
-    - <<: *if-merge-request-labels-run-all-rspec
-
-.vendor:rules:gitlab_active_record:
-  rules:
-    - <<: *if-merge-request
-      changes: ["vendor/gems/gitlab_active_record/**/*"]
-    - <<: *if-merge-request-labels-run-all-rspec
-
-.vendor:rules:bundler-checksum:
-  rules:
-    - <<: *if-merge-request
-      changes: ["vendor/gems/bundler-checksum/**/*"]
-    - <<: *if-merge-request-labels-run-all-rspec
-
-.vendor:rules:cloud_profiler_agent:
-  rules:
-    - <<: *if-merge-request
-      changes: ["vendor/gems/cloud_profiler_agent/**/*"]
-    - <<: *if-merge-request-labels-run-all-rspec
-
-.vendor:rules:sidekiq-reliable-fetch:
-  rules:
-    - <<: *if-merge-request
-      changes: ["vendor/gems/sidekiq-reliable-fetch/**/*"]
-    - <<: *if-merge-request-labels-run-all-rspec
 
 ##################
 # Releases rules #

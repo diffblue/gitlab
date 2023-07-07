@@ -19,11 +19,10 @@ module EE
         belongs_to :user
         belongs_to :group
 
-        protected_type = module_parent.model_name.singular
-        validates :group_id, uniqueness: { scope: protected_type, allow_nil: true }
-        validates :user_id, uniqueness: { scope: protected_type, allow_nil: true }
-        validates :access_level, uniqueness: { scope: protected_type, if: :role?,
-                                               conditions: -> { where(user_id: nil, group_id: nil) } }
+        with_options uniqueness: { scope: "#{module_parent.model_name.singular}_id", allow_nil: true } do
+          validates :group_id
+          validates :user_id
+        end
         validates :group, :user, absence: true,
           unless: -> { importing? || protected_refs_for_users_required_and_available }
 
@@ -34,6 +33,12 @@ module EE
         scope :by_group, ->(group) { where(group_id: group) }
         scope :for_user, -> { where.not(user_id: nil) }
         scope :for_group, -> { where.not(group_id: nil) }
+      end
+    end
+
+    class_methods do
+      def non_role_types
+        super.concat(%i[user group])
       end
     end
 

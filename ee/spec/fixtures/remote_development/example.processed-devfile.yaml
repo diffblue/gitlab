@@ -17,12 +17,18 @@ components:
           value: "/projects/.gl-editor"
         - name: EDITOR_PORT
           value: "60001"
+        - name: SSH_PORT
+          value: "60022"
       endpoints:
         - name: editor-server
           targetPort: 60001
           exposure: public
           secure: true
           protocol: https
+        - name: ssh-server
+          targetPort: 60022
+          exposure: internal
+          secure: true
       dedicatedPod: false
       mountSources: true
   - name: gl-workspace-data
@@ -39,6 +45,8 @@ components:
           value: "/projects/.gl-editor"
         - name: EDITOR_PORT
           value: "60001"
+        - name: SSH_PORT
+          value: "60022"
       memoryLimit: 128Mi
       memoryRequest: 32Mi
       cpuLimit: 500m

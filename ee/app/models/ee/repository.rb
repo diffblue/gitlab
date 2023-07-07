@@ -86,7 +86,11 @@ module EE
     def log_geo_updated_event
       return unless ::Gitlab::Geo.primary?
 
-      ::Geo::RepositoryUpdatedService.new(self).execute
+      if project && ::Geo::ProjectRepositoryReplicator.enabled?
+        project.geo_handle_after_update
+      else
+        ::Geo::RepositoryUpdatedService.new(self).execute
+      end
     end
 
     # This method requires a fully qualified ref to ensure the correct file is

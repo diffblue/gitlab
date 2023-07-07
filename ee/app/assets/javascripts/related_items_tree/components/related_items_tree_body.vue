@@ -15,7 +15,7 @@ export default {
 </script>
 
 <template>
-  <div class="related-items-tree-body sortable-container gl-bg-gray-10">
+  <div class="gl-new-card-body gl-py-0 gl-mx-n1 gl-mb-n2">
     <tree-root :parent-item="parentItem" :children="children" />
   </div>
 </template>

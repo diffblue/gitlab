@@ -3,19 +3,17 @@
 module ComplianceManagement
   module Standards
     module Gitlab
-      class BaseService
-        attr_reader :project
-
+      class BaseService < BaseProjectService
         STANDARD = :gitlab
-
-        def initialize(project_id)
-          @project = Project.find_by_id(project_id)
-        end
 
         private
 
-        def project_not_found
-          ServiceResponse.error(message: "Project not found")
+        def feature_not_available
+          ServiceResponse.error(message: "Compliance standards adherence feature not available")
+        end
+
+        def unavailable_for_user_namespace
+          ServiceResponse.error(message: "Compliance standards adherence is not available for user namespace")
         end
       end
     end

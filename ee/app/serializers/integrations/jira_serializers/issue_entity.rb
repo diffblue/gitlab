@@ -46,7 +46,7 @@ module Integrations
       end
 
       expose :author do |jira_issue|
-        jira_user(jira_issue.fields['reporter'])
+        jira_issue.fields['reporter'] ? jira_user(jira_issue.fields['reporter']) : anonymous_user
       end
 
       expose :assignees do |jira_issue|
@@ -104,6 +104,15 @@ module Integrations
         else
           project.jira_integration.web_url('secure/ViewProfile.jspa', name: user['name'])
         end
+      end
+
+      def anonymous_user
+        {
+          id: nil,
+          name: _('Anonymous user'),
+          web_url: project.jira_integration.web_url,
+          avatar_url: nil
+        }
       end
 
       def project

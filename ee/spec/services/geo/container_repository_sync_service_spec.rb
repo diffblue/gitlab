@@ -62,6 +62,24 @@ RSpec.describe Geo::ContainerRepositorySyncService, :geo, feature_category: :geo
       expect(registry.reload.failed?).to be_truthy
     end
 
+    it 'tracks exception' do
+      error = StandardError.new('Sync Error')
+
+      allow_any_instance_of(Geo::ContainerRepositorySync)
+        .to receive(:execute).and_raise(error)
+
+      expect(Gitlab::ErrorTracking).to receive(:track_exception).with(
+        error,
+        {
+          container_repository_name: container_repository.name,
+          project_path: container_repository.project.full_path,
+          project_id: container_repository.project_id
+        }
+      )
+
+      described_class.new(registry.container_repository).execute
+    end
+
     it 'finishes registry record if there was no exception' do
       expect_any_instance_of(Geo::ContainerRepositorySync)
         .to receive(:execute)

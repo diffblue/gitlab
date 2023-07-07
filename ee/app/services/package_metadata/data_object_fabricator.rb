@@ -25,7 +25,15 @@ module PackageMetadata
     end
 
     def data_object_class
-      sync_config.v2? ? CompressedPackageDataObject : DataObject
+      return AdvisoryDataObject if sync_config.advisories?
+
+      license_data_object_class
+    end
+
+    def license_data_object_class
+      return CompressedPackageDataObject if sync_config.v2?
+
+      DataObject
     end
   end
 end

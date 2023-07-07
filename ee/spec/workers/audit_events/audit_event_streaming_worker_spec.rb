@@ -342,6 +342,30 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
         include_context 'audit event stream'
       end
     end
+
+    context 'when the entity is InstanceScope' do
+      let_it_be(:event) { create(:audit_event, :instance_event) }
+
+      subject { worker.perform('audit_operation', nil, event.to_json) }
+
+      context 'when the gitlab instance has an external destination' do
+        let_it_be(:destination) { create(:instance_external_audit_event_destination) }
+
+        it 'receives HTTP call at destination' do
+          expect(Gitlab::HTTP).to receive(:post).with(destination.destination_url, anything).once
+
+          subject
+        end
+      end
+
+      context 'when the gitlab instance does not have any external destination' do
+        let_it_be(:event) { create(:audit_event, :instance_event) }
+
+        subject { worker.perform('audit_operation', nil, event.to_json) }
+
+        it_behaves_like 'no HTTP calls are made'
+      end
+    end
   end
 
   context 'when connecting to redis fails' do

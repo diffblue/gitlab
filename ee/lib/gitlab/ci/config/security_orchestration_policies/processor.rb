@@ -38,7 +38,7 @@ module Gitlab
             :ref
 
           def valid_security_orchestration_policy_configurations
-            @valid_security_orchestration_policy_configurations ||= project.all_security_orchestration_policy_configurations
+            @valid_security_orchestration_policy_configurations ||= ::Gitlab::Security::Orchestration::ProjectPolicyConfigurations.new(@project).all
           end
 
           def prepare_on_demand_scans_template

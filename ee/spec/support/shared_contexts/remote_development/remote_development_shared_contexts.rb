@@ -3,6 +3,8 @@
 RSpec.shared_context 'with remote development shared fixtures' do
   # noinspection RubyDeadCode
   # rubocop:disable Metrics/ParameterLists
+  # rubocop:disable Metrics/CyclomaticComplexity
+  # rubocop:disable Metrics/PerceivedComplexity
   def create_workspace_agent_info(
     workspace_id:,
     workspace_name:,
@@ -291,6 +293,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
                 value: "/projects/.gl-editor"
               - name: EDITOR_PORT
                 value: "60001"
+              - name: SSH_PORT
+                value: "60022"
               - name: PROJECTS_ROOT
                 value: "/projects"
               - name: PROJECT_SOURCE
@@ -303,6 +307,9 @@ RSpec.shared_context 'with remote development shared fixtures' do
               ports:
               - containerPort: 60001
                 name: editor-server
+                protocol: TCP
+              - containerPort: 60022
+                name: ssh-server
                 protocol: TCP
               resources: {}
               volumeMounts:
@@ -358,6 +365,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
                 value: "/projects/.gl-editor"
               - name: EDITOR_PORT
                 value: "60001"
+              - name: SSH_PORT
+                value: "60022"
               - name: PROJECTS_ROOT
                 value: "/projects"
               - name: PROJECT_SOURCE
@@ -399,6 +408,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
     info
   end
   # rubocop:enable Metrics/ParameterLists
+  # rubocop:enable Metrics/CyclomaticComplexity
+  # rubocop:enable Metrics/PerceivedComplexity
 
   def create_workspace_rails_info(
     name:,
@@ -488,6 +499,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
                 value: "/projects/.gl-editor"
               - name: EDITOR_PORT
                 value: "60001"
+              - name: SSH_PORT
+                value: "60022"
               - name: PROJECTS_ROOT
                 value: "/projects"
               - name: PROJECT_SOURCE
@@ -500,6 +513,9 @@ RSpec.shared_context 'with remote development shared fixtures' do
               ports:
               - containerPort: 60001
                 name: editor-server
+                protocol: TCP
+              - containerPort: 60022
+                name: ssh-server
                 protocol: TCP
               resources: {}
               volumeMounts:
@@ -555,6 +571,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
                 value: "/projects/.gl-editor"
               - name: EDITOR_PORT
                 value: "60001"
+              - name: SSH_PORT
+                value: "60022"
               - name: PROJECTS_ROOT
                 value: "/projects"
               - name: PROJECT_SOURCE
@@ -607,6 +625,9 @@ RSpec.shared_context 'with remote development shared fixtures' do
         - name: editor-server
           port: 60001
           targetPort: 60001
+        - name: ssh-server
+          port: 60022
+          targetPort: 60022
         selector:
           agent.gitlab.com/id: \'#{agent_id}\'
       status:

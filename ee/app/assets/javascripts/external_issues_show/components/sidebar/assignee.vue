@@ -49,7 +49,6 @@ export default {
       <assignee-title
         :number-of-assignees="numberOfAssignees"
         :editable="false"
-        :show-toggle="false"
         :changing="false"
       />
       <gl-avatar-link

@@ -118,6 +118,47 @@ RSpec.describe AuditEvents::Strategies::InstanceExternalDestinationStrategy, fea
             subject
           end
         end
+
+        context 'when no event type filter is present' do
+          it 'makes one HTTP call' do
+            expect(Gitlab::HTTP).to receive(:post).once
+
+            subject
+          end
+        end
+
+        context 'when no streaming event type filter for the given event type is present' do
+          before do
+            create(
+              :audit_events_streaming_instance_event_type_filter,
+              instance_external_audit_event_destination: destination,
+              audit_event_type: 'some_audit_operation'
+            )
+          end
+
+          include_examples 'does not stream anywhere'
+        end
+
+        context 'when audit_operation streaming event type filter is present' do
+          before do
+            create(
+              :audit_events_streaming_instance_event_type_filter,
+              instance_external_audit_event_destination: destination,
+              audit_event_type: event_type
+            )
+            create(
+              :audit_events_streaming_instance_event_type_filter,
+              instance_external_audit_event_destination: destination,
+              audit_event_type: 'some_audit_operation'
+            )
+          end
+
+          it 'makes one HTTP call' do
+            expect(Gitlab::HTTP).to receive(:post).once
+
+            subject
+          end
+        end
       end
     end
 

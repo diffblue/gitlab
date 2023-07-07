@@ -21,7 +21,13 @@ module EE
     attr_accessor :root_group_entity_id
 
     def entity
-      strong_memoize(:entity) { lazy_entity }
+      strong_memoize(:entity) do
+        if entity_type == ::Gitlab::Audit::InstanceScope.name
+          ::Gitlab::Audit::InstanceScope.new
+        else
+          lazy_entity
+        end
+      end
     end
 
     def root_group_entity
@@ -57,16 +63,6 @@ module EE
       super&.to_s || details[:ip_address]
     end
 
-    def lazy_entity
-      BatchLoader.for(entity_id)
-        .batch(
-          key: entity_type, default_value: ::Gitlab::Audit::NullEntity.new
-        ) do |ids, loader, args|
-          model = Object.const_get(args[:key], false)
-          model.where(id: ids).find_each { |record| loader.call(record.id, record) }
-        end
-    end
-
     def stream_to_external_destinations(use_json: false, event_name: 'audit_operation')
       return unless can_stream_to_external_destination?(event_name)
 
@@ -79,6 +75,16 @@ module EE
     end
 
     private
+
+    def lazy_entity
+      BatchLoader.for(entity_id)
+                 .batch(
+                   key: entity_type, default_value: ::Gitlab::Audit::NullEntity.new
+                 ) do |ids, loader, args|
+        model = Object.const_get(args[:key], false)
+        model.where(id: ids).find_each { |record| loader.call(record.id, record) }
+      end
+    end
 
     def can_stream_to_external_destination?(event_name)
       return false if entity.nil?

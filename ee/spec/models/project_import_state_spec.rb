@@ -69,6 +69,7 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
         context 'with geo_project_wiki_repository_replication feature flag disabled' do
           before do
             stub_feature_flags(geo_project_wiki_repository_replication: false)
+            stub_feature_flags(geo_project_repository_replication: false)
           end
 
           it 'calls Geo::RepositoryUpdatedService when running on a Geo primary node', :aggregate_failures do
@@ -93,6 +94,7 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
         context 'with geo_project_wiki_repository_replication feature flag enabled' do
           before do
             stub_feature_flags(geo_project_wiki_repository_replication: true)
+            stub_feature_flags(geo_project_repository_replication: false)
           end
 
           context 'when on a Geo primary site' do
@@ -135,6 +137,7 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
         context 'with geo_design_management_repository_replication feature flag disabled' do
           before do
             stub_feature_flags(geo_design_management_repository_replication: false)
+            stub_feature_flags(geo_project_repository_replication: false)
           end
 
           it 'calls Geo::RepositoryUpdatedService when running on a Geo primary node', :aggregate_failures do
@@ -159,6 +162,7 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
         context 'with geo_design_management_repository_replication feature flag enabled' do
           before do
             stub_feature_flags(geo_design_management_repository_replication: true)
+            stub_feature_flags(geo_project_repository_replication: false)
           end
 
           context 'when on a Geo primary site' do
@@ -172,6 +176,58 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
 
               import_state.finish
             end
+          end
+        end
+
+        context 'with geo_project_repository_replication feature flag disabled' do
+          before do
+            stub_feature_flags(geo_project_wiki_repository_replication: true)
+            stub_feature_flags(geo_project_repository_replication: false)
+          end
+
+          it 'calls Geo::RepositoryUpdatedService when running on a Geo primary node', :aggregate_failures do
+            stub_primary_node
+
+            expect(repository_updated_service).to receive(:execute).once
+
+            import_state.finish
+          end
+
+          it 'does not call Geo::RepositoryUpdatedService when not running on a Geo primary node', :aggregate_failures do
+            stub_secondary_node
+
+            expect(repository_updated_service).not_to receive(:execute)
+
+            import_state.finish
+          end
+        end
+
+        context 'with geo_project_repository_replication feature flag enabled' do
+          let_it_be(:import_state) { create(:import_state, :started, project: project) }
+
+          before do
+            stub_feature_flags(geo_project_repository_replication: true)
+          end
+
+          it 'calls Geo event code, not legacy Geo::RepositoryUpdatedService, when running on a Geo primary node', :aggregate_failures do
+            stub_primary_node
+
+            # Makes Gitlab::Geo.secondary_nodes.any? return true
+            allow(::Gitlab::Geo).to receive(:secondary_nodes).and_return([''])
+
+            expect(repository_updated_service).not_to receive(:execute)
+
+            expect do
+              import_state.finish
+            end.to change { ::Geo::Event.where(replicable_name: :project_repository).count }.by(1)
+          end
+
+          it 'does not call Geo::RepositoryUpdatedService when not running on a Geo primary node', :aggregate_failures do
+            stub_secondary_node
+
+            expect(repository_updated_service).not_to receive(:execute)
+
+            import_state.finish
           end
         end
       end

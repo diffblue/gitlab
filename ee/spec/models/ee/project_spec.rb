@@ -2362,6 +2362,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
         before do
           stub_feature_flags(geo_project_wiki_repository_replication: false)
+          stub_feature_flags(geo_project_repository_replication: false)
         end
 
         it 'calls Geo::RepositoryUpdatedService when running on a Geo primary node', :aggregate_failures do
@@ -2388,6 +2389,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
         before do
           stub_feature_flags(geo_project_wiki_repository_replication: true)
+          stub_feature_flags(geo_project_repository_replication: false)
         end
 
         it 'does not call Geo::RepositoryUpdatedService for wikis when running on a Geo primary node', :aggregate_failures do
@@ -2414,6 +2416,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
         before do
           stub_feature_flags(geo_design_management_repository_replication: false)
+          stub_feature_flags(geo_project_repository_replication: false)
         end
 
         it 'calls Geo::RepositoryUpdatedService when running on a Geo primary node', :aggregate_failures do
@@ -2440,6 +2443,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
         before do
           stub_feature_flags(geo_design_management_repository_replication: true)
+          stub_feature_flags(geo_project_repository_replication: false)
         end
 
         it 'does not call Geo::RepositoryUpdatedService for wikis when running on a Geo primary node', :aggregate_failures do
@@ -2456,6 +2460,55 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
           expect(repository_updated_service).not_to receive(:execute)
           expect(design_updated_service).not_to receive(:execute)
+
+          project.after_import
+        end
+      end
+
+      context 'with geo_project_repository_replication feature flag disabled' do
+        let_it_be(:import_state) { create(:import_state, :started, project: project) }
+
+        before do
+          stub_feature_flags(geo_project_wiki_repository_replication: true)
+          stub_feature_flags(geo_project_repository_replication: false)
+        end
+
+        it 'calls Geo::RepositoryUpdatedService when running on a Geo primary node', :aggregate_failures do
+          stub_primary_node
+
+          expect(repository_updated_service).to receive(:execute).once
+
+          project.after_import
+        end
+
+        it 'does not call Geo::RepositoryUpdatedService when not running on a Geo primary node', :aggregate_failures do
+          stub_secondary_node
+
+          expect(repository_updated_service).not_to receive(:execute)
+
+          project.after_import
+        end
+      end
+
+      context 'with geo_project_repository_replication feature flag enabled' do
+        let_it_be(:import_state) { create(:import_state, :started, project: project) }
+
+        before do
+          stub_feature_flags(geo_project_repository_replication: true)
+        end
+
+        it 'does not call Geo::RepositoryUpdatedService when running on a Geo primary node', :aggregate_failures do
+          stub_primary_node
+
+          expect(repository_updated_service).not_to receive(:execute)
+
+          project.after_import
+        end
+
+        it 'does not call Geo::RepositoryUpdatedService when not running on a Geo primary node', :aggregate_failures do
+          stub_secondary_node
+
+          expect(repository_updated_service).not_to receive(:execute)
 
           project.after_import
         end
@@ -4256,5 +4309,28 @@ RSpec.describe Project, feature_category: :groups_and_projects do
         project.update_attribute :visibility_level, new_visibility_level
       end
     end
+  end
+
+  describe '.replicables_for_current_secondary' do
+    before do
+      node = create(:geo_node, :secondary)
+
+      stub_current_geo_node(node)
+    end
+
+    it 'returns projects' do
+      project = create(:project)
+      project2 = create(:project)
+
+      projects = described_class.replicables_for_current_secondary(project.id..project2.id)
+
+      expect(projects).to include(project)
+      expect(projects).to include(project2)
+    end
+  end
+
+  include_examples 'a replicable model with a separate table for verification state' do
+    let(:verifiable_model_record) { build(:project) }
+    let(:unverifiable_model_record) { nil }
   end
 end

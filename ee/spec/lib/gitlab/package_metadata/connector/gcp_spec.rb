@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::PackageMetadata::Connector::Gcp, feature_category: :software_composition_analysis do
-  let(:sync_config) { build(:pm_sync_config, :for_gcp_storage, version_format: version_format, purl_type: purl_type) }
+  let(:sync_config) { build(:pm_sync_config, version_format: version_format, purl_type: purl_type) }
   let(:connector) { described_class.new(sync_config) }
   let(:storage) { instance_double(Google::Cloud::Storage::Project) }
   let(:bucket) { instance_double(Google::Cloud::Storage::Bucket, files: file_list) }

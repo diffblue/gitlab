@@ -4,15 +4,21 @@ export const FEATURE_PRODUCT_ANALYTICS = 'productAnalytics';
 
 export const PRODUCT_ANALYTICS_FEATURE_DASHBOARDS = ['audience', 'behavior'];
 
+export const I18N_NEW_DASHBOARD_BREADCRUMB = s__('Analytics|New dashboard');
+
 export const I18N_BUILT_IN_DASHBOARD_LABEL = s__('Analytics|By GitLab');
 
 export const I18N_DASHBOARD_LIST_TITLE = s__('Analytics|Analytics dashboards');
+export const I18N_DASHBOARD_LIST_TITLE_BREADCRUMB = s__('Analytics|Analytics dashboards');
 export const I18N_DASHBOARD_LIST_DESCRIPTION = s__(
   'Analytics|Dashboards are created by editing the projects dashboard files.',
 );
 export const I18N_DASHBOARD_LIST_LEARN_MORE = __('Learn more.');
 export const I18N_DASHBOARD_LIST_NEW_DASHBOARD = s__('Analytics|New dashboard');
 export const I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER = s__('Analytics|Visualization Designer');
+export const I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER_BREADCRUMB = s__(
+  'Analytics|Visualization designer',
+);
 export const I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER_CUBEJS_ERROR = s__(
   'Analytics|An error occurred while loading data',
 );
@@ -181,6 +187,7 @@ export const ANALYTICS_FIELDS = [
 export const NEW_DASHBOARD = () => ({
   title: s__('Analytics|New dashboard'),
   panels: [],
+  userDefined: true,
 });
 
 export const I18N_PRODUCT_ANALYTICS_TITLE = __('Product analytics');

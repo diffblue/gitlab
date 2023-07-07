@@ -1,4 +1,4 @@
-- if Gitlab::Geo.secondary? && @project.project_registry
+- if Gitlab::Geo.secondary? && @project.project_registry && Feature.disabled?(:geo_project_repository_replication)
   .card
     .card-header
       = s_('Geo|Geo Status')

@@ -60,7 +60,7 @@ module Gitlab
                 options[:agent_scratchpad] << "Observation: #{tool_answer.content}\n"
               end
 
-              Answer.final_answer(context: context, content: Answer.default_final_answer)
+              Answer.default_final_answer(context: context)
             end
 
             private

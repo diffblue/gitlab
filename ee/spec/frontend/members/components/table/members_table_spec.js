@@ -105,10 +105,15 @@ describe('MemberList', () => {
 
           expect(
             findTableCellByMemberId('Actions', memberNoPermissions.id).classes(),
-          ).toStrictEqual(['col-actions', 'gl-display-none!', 'gl-lg-display-table-cell!']);
+          ).toStrictEqual([
+            'col-actions',
+            'gl-display-none!',
+            'gl-lg-display-table-cell!',
+            'gl-vertical-align-middle!',
+          ]);
           expect(
             findTableCellByMemberId('Actions', memberWithPermission.id).classes(),
-          ).toStrictEqual(['col-actions']);
+          ).toStrictEqual(['col-actions', 'gl-vertical-align-middle!']);
         });
       });
 

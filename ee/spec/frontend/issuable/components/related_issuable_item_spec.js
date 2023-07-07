@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import IssueWeight from 'ee_component/boards/components/issue_card_weight.vue';
 import { TEST_HOST } from 'helpers/test_constants';
 import {
@@ -10,7 +10,7 @@ import RelatedIssuableItem from '~/issuable/components/related_issuable_item.vue
 describe('RelatedIssuableItem', () => {
   let wrapper;
 
-  function mountComponent({ mountMethod = mount, stubs = {}, props = {}, slots = {} } = {}) {
+  function mountComponent({ mountMethod = shallowMount, stubs = {}, props = {}, slots = {} } = {}) {
     wrapper = mountMethod(RelatedIssuableItem, {
       propsData: props,
       provide: {

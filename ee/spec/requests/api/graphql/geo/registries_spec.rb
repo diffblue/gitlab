@@ -100,4 +100,11 @@ RSpec.describe 'Gets registries', feature_category: :geo_replication do
     registry_factory: :geo_design_management_repository_registry,
     registry_foreign_key_field_name: 'designManagementRepositoryId'
   }
+
+  it_behaves_like 'gets registries for', {
+    field_name: 'projectRepositoryRegistries',
+    registry_class_name: 'ProjectRepositoryRegistry',
+    registry_factory: :geo_project_repository_registry,
+    registry_foreign_key_field_name: 'projectId'
+  }
 end

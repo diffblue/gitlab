@@ -19,6 +19,7 @@ module Gitlab
         Note,
         MergeRequest,
         Commit,
+        Epic,
         User,
         Wiki,
         Project

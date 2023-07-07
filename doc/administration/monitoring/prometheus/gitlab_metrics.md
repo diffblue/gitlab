@@ -206,7 +206,7 @@ configuration option in `gitlab.yml`. These metrics are served from the
 | `sidekiq_jobs_dead_total`                      | Counter   | 13.7 | Sidekiq dead jobs (jobs that have run out of retries)                                               | `queue`, `boundary`, `external_dependencies`, `feature_category`, `urgency` |
 | `sidekiq_redis_requests_total`                 | Counter   | 13.1 | Redis requests during a Sidekiq job execution                                                       | `queue`, `boundary`, `external_dependencies`, `feature_category`, `job_status`, `urgency` |
 | `sidekiq_elasticsearch_requests_total`         | Counter   | 13.1 | Elasticsearch requests during a Sidekiq job execution                                                       | `queue`, `boundary`, `external_dependencies`, `feature_category`, `job_status`, `urgency` |
-| `sidekiq_jobs_deferred_total`                  | Counter   | 16.1 | Number of jobs being deferred (either via `run_sidekiq_jobs` feature flag or DB health status indicator)                        | `worker`                                                                                   |
+| `sidekiq_jobs_skipped_total`                   | Counter   | 16.2 | Number of jobs being skipped (dropped or deferred) when `drop_sidekiq_jobs` feature flag is enabled or `run_sidekiq_jobs` feature flag is disabled                          | `worker`, `action`                                                                                   |
 | `sidekiq_running_jobs`                         | Gauge     | 12.2 | Number of Sidekiq jobs running                                                                      | `queue`, `boundary`, `external_dependencies`, `feature_category`, `urgency` |
 | `sidekiq_concurrency`                          | Gauge     | 12.5 | Maximum number of Sidekiq jobs                                                                      |                                                                   |
 | `sidekiq_mem_total_bytes`                      | Gauge     | 15.3 | Number of bytes allocated for both objects consuming an object slot and objects that required a malloc'|                                                                   |
@@ -371,6 +371,17 @@ configuration option in `gitlab.yml`. These metrics are served from the
 | `geo_project_wiki_repositories_verification_total` | Gauge | 15.10 | Number of Project Wiki Repositories to attempt to verify on secondary | `url` |
 | `geo_project_wiki_repositories_verified` | Gauge | 15.10 | Number of Project Wiki Repositories successfully verified on secondary | `url` |
 | `geo_project_wiki_repositories_verification_failed` | Gauge | 15.10 | Number of Project Wiki Repositories that failed verification on secondary | `url` |
+| `geo_project_repositories` | Gauge | 16.2 | Number of Project Repositories on primary | `url` |
+| `geo_project_repositories_checksum_total` | Gauge | 16.2 | Number of Project Repositories to checksum on primary | `url` |
+| `geo_project_repositories_checksummed` | Gauge | 16.2 | Number of Project Repositories that successfully calculated the checksum on primary | `url` |
+| `geo_project_repositories_checksum_failed` | Gauge | 16.2 | Number of Project Repositories that failed to calculate the checksum on primary | `url` |
+| `geo_project_repositories_synced` | Gauge | 16.2 | Number of syncable Project Repositories synced on secondary | `url` |
+| `geo_project_repositories_failed` | Gauge | 16.2 | Number of syncable Project Repositories failed to sync on secondary | `url` |
+| `geo_project_repositories_registry` | Gauge | 16.2 |  Number of Project Repositories in the registry | `url` |
+| `geo_project_repositories_verification_total` | Gauge | 16.2 | Number of Project Repositories to attempt to verify on secondary | `url` |
+| `geo_project_repositories_verified` | Gauge | 16.2 | Number of Project Repositories successfully verified on secondary | `url` |
+| `geo_project_repositories_verification_failed` | Gauge | 16.2 | Number of Project Repositories that failed verification on secondary | `url` |
+
 | `gitlab_memwd_violations_total`                      | Counter | 15.9    | Total number of times a Sidekiq process violated a memory threshold                                                                                        | |
 | `gitlab_memwd_violations_handled_total`              | Counter | 15.9    | Total number of times Sidekiq process memory violations were handled                                                                                       | |
 | `sidekiq_watchdog_running_jobs_total`                | Counter | 15.9    | Current running jobs when RSS limit was reached                                                                                                            | `worker_class`                                                                                          |

@@ -97,6 +97,10 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
             context 'with sorting params' do
               let(:user) { developer }
 
+              it 'does not include occurrence_id within dependencies' do
+                expect(json_response["dependencies"].any? { |dep| dep["occurrence_id"].present? }).to be false
+              end
+
               context 'when sorted by packager' do
                 let(:params) do
                   {

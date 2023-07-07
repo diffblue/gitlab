@@ -1,14 +1,14 @@
 inherit_from:
-  - ../../.rubocop.yml
+  - ../config/rubocop.yml
 
-CodeReuse/ActiveRecord:
-  Enabled: false
-
-AllCops:
-  TargetRubyVersion: 3.0
-
-Naming/FileName:
+RSpec/InstanceVariable:
   Exclude:
     - spec/**/*.rb
-    - lib/gitlab/rspec.rb
-    - lib/gitlab/rspec/all.rb
+
+Gitlab/ChangeTimezone:
+  Exclude:
+    - spec/gitlab/rspec/time_travel_spec.rb
+
+# FIXME
+Gitlab/RSpec/AvoidSetup:
+  Enabled: false

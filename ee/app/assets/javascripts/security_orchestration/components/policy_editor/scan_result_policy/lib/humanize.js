@@ -13,6 +13,7 @@ import { groupSelectedVulnerabilityStates } from './vulnerability_states';
  * Create a human-readable list of strings, adding the necessary punctuation and conjunctions
  * @param {Array} items strings representing items to compose the final sentence
  * @param {String} singular string to be used for single items
+ * @param {Boolean} hasTextBeforeItems
  * @param {String} plural string to be used for multiple items
  * @returns {String}
  */
@@ -52,7 +53,7 @@ const humanizeItems = ({ items, singular, plural, hasTextBeforeItems = false }) 
  * @param {Array} branches
  * @returns {String}
  */
-const humanizeBranches = (branches) => {
+const humanizeBranches = (branches = []) => {
   const hasNoBranch = branches.length === 0;
 
   if (hasNoBranch) {

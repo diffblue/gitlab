@@ -6,15 +6,19 @@ import VueApollo from 'vue-apollo';
 import StreamDeleteModal from 'ee/audit_events/components/stream/stream_delete_modal.vue';
 import deleteExternalDestination from 'ee/audit_events/graphql/mutations/delete_external_destination.mutation.graphql';
 import deleteInstanceExternalDestination from 'ee/audit_events/graphql/mutations/delete_instance_external_destination.mutation.graphql';
+import googleCloudLoggingConfigurationDestroy from 'ee/audit_events/graphql/mutations/delete_gcp_logging_destination.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
   groupPath,
   destinationDeleteMutationPopulator,
   mockExternalDestinations,
+  mockHttpType,
+  mockGcpLoggingType,
   instanceGroupPath,
   destinationInstanceDeleteMutationPopulator,
   mockInstanceExternalDestinations,
+  destinationGcpLoggingDeleteMutationPopulator,
 } from '../../mock_data';
 
 Vue.use(VueApollo);
@@ -27,6 +31,9 @@ describe('StreamDeleteModal', () => {
   const deleteInstanceSuccess = jest
     .fn()
     .mockResolvedValue(destinationInstanceDeleteMutationPopulator());
+  const deleteGcpLoggingSuccess = jest
+    .fn()
+    .mockResolvedValue(destinationGcpLoggingDeleteMutationPopulator());
   const deleteError = jest
     .fn()
     .mockResolvedValue(destinationDeleteMutationPopulator(['Random Error message']));
@@ -36,6 +43,7 @@ describe('StreamDeleteModal', () => {
 
   let groupPathProvide = groupPath;
   let itemProvide = mockExternalDestinations[0];
+  let typeProvide = mockHttpType;
   let deleteExternalDestinationProvide = deleteExternalDestination;
 
   const findModal = () => wrapper.findComponent(GlModal);
@@ -48,6 +56,7 @@ describe('StreamDeleteModal', () => {
       apolloProvider: mockApollo,
       propsData: {
         item: itemProvide,
+        type: typeProvide,
       },
       provide: {
         groupPath: groupPathProvide,
@@ -79,7 +88,7 @@ describe('StreamDeleteModal', () => {
     });
   });
 
-  describe('Group clickDeleteDestination', () => {
+  describe('Group HTTP clickDeleteDestination', () => {
     it('emits "deleting" event when busy deleting', () => {
       createComponent();
       clickDeleteFramework();
@@ -127,10 +136,64 @@ describe('StreamDeleteModal', () => {
     });
   });
 
+  describe('Group GCP Logging clickDeleteDestination', () => {
+    beforeEach(() => {
+      typeProvide = mockGcpLoggingType;
+      deleteExternalDestinationProvide = googleCloudLoggingConfigurationDestroy;
+    });
+
+    it('emits "deleting" event when busy deleting', () => {
+      createComponent();
+      clickDeleteFramework();
+
+      expect(wrapper.emitted('deleting')).toHaveLength(1);
+    });
+
+    it('calls the delete mutation with the destination ID', async () => {
+      createComponent(deleteGcpLoggingSuccess);
+      clickDeleteFramework();
+
+      await waitForPromises();
+
+      expect(deleteGcpLoggingSuccess).toHaveBeenCalledWith({
+        id: mockExternalDestinations[0].id,
+        isInstance: false,
+      });
+    });
+
+    it('emits "delete" event when the destination is successfully deleted', async () => {
+      createComponent(deleteGcpLoggingSuccess);
+      clickDeleteFramework();
+
+      await waitForPromises();
+
+      expect(wrapper.emitted('delete')).toHaveLength(1);
+    });
+
+    it('emits "error" event when there is a network error', async () => {
+      createComponent(deleteNetworkError);
+      clickDeleteFramework();
+
+      await waitForPromises();
+
+      expect(wrapper.emitted('error')).toHaveLength(1);
+    });
+
+    it('emits "error" event when there is a graphql error', async () => {
+      createComponent(deleteError);
+      clickDeleteFramework();
+
+      await waitForPromises();
+
+      expect(wrapper.emitted('error')).toHaveLength(1);
+    });
+  });
+
   describe('Instance clickDeleteDestination', () => {
     beforeEach(() => {
       groupPathProvide = instanceGroupPath;
       itemProvide = instanceDestination;
+      typeProvide = instanceGroupPath;
       deleteExternalDestinationProvide = deleteInstanceExternalDestination;
     });
 

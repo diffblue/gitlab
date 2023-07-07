@@ -24,7 +24,7 @@ export default {
 };
 </script>
 <template>
-  <div class="gl-my-7 gl-display-flex">
+  <div class="gl-my-7 gl-display-flex" data-testid="throughput-stats">
     <div v-for="stat in stats" :key="stat.title">
       <gl-skeleton-loader v-if="isLoading" :height="$options.loaderHeight" />
       <gl-single-stat

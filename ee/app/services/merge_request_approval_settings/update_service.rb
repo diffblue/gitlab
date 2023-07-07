@@ -12,6 +12,7 @@ module MergeRequestApprovalSettings
 
         if setting.save
           log_audit_event(setting)
+          run_compliance_standards_checks
           ServiceResponse.success(payload: setting)
         else
           ServiceResponse.error(message: setting.errors.messages)
@@ -42,6 +43,7 @@ module MergeRequestApprovalSettings
         result = ::Projects::UpdateService.new(container, current_user, resolved_params).execute
 
         if result[:status] == :success
+          run_compliance_standards_checks
           ServiceResponse.success(payload: container)
         else
           ServiceResponse.error(message: container.errors.messages)
@@ -57,6 +59,22 @@ module MergeRequestApprovalSettings
 
     def log_audit_event(setting)
       Audit::GroupMergeRequestApprovalSettingChangesAuditor.new(current_user, setting, params).execute
+    end
+
+    def run_compliance_standards_checks
+      return unless params.include?(:allow_author_approval)
+
+      if group_container?
+        return unless Feature.enabled?(:compliance_adherence_report, container)
+
+        ::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorGroupWorker
+          .perform_async({ 'group_id' => container.id, 'user_id' => current_user&.id })
+      else
+        return unless Feature.enabled?(:compliance_adherence_report, container.root_ancestor)
+
+        ::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorWorker
+          .perform_async({ 'project_id' => container.id, 'user_id' => current_user&.id })
+      end
     end
   end
 end

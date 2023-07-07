@@ -14,20 +14,19 @@ module Llm
       def execute
         return unless self.class.enabled?(user: user,
           group: diff.merge_request.project.root_ancestor) && user.can?(:generate_diff_summary,
-            diff.merge_request) && llm_client
+            diff.merge_request)
 
-        response = llm_client.chat(content: summary_message, moderated: true)
-
-        return unless response.respond_to?(:parsed_response)
-        return unless response.parsed_response.fetch("choices", nil)
-
-        response.parsed_response["choices"].first.dig("message", "content")
+        response_modifier.new(response).response_body.presence
       end
 
       def self.enabled?(user:, group:)
         Feature.enabled?(:openai_experimentation, user) &&
           Gitlab::Llm::StageCheck.available?(group, :summarize_diff) &&
           ::License.feature_available?(:summarize_mr_changes)
+      end
+
+      def self.vertex_ai?(project)
+        Feature.enabled?(:summarize_diff_vertex, project)
       end
 
       private
@@ -61,8 +60,20 @@ module Llm
         diffs.map { |diff| diff.sub(GIT_DIFF_PREFIX_REGEX, "") }.join
       end
 
-      def llm_client
-        @_llm_client ||= Gitlab::Llm::OpenAi::Client.new(user)
+      def response_modifier
+        if self.class.vertex_ai?(diff.merge_request.project)
+          ::Gitlab::Llm::VertexAi::ResponseModifiers::Predictions
+        else
+          ::Gitlab::Llm::OpenAi::ResponseModifiers::Chat
+        end
+      end
+
+      def response
+        if self.class.vertex_ai?(diff.merge_request.project)
+          Gitlab::Llm::VertexAi::Client.new(user).text(content: summary_message)
+        else
+          Gitlab::Llm::OpenAi::Client.new(user).chat(content: summary_message, moderated: true)
+        end
       end
     end
   end

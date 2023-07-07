@@ -490,11 +490,6 @@ Cop/InjectEnterpriseEditionModule:
 Style/ReturnNil:
   Enabled: true
 
-# It isn't always safe to replace `=~` with `.match?`, especially when there are
-# nil values on the left hand side
-Performance/RegexpMatch:
-  Enabled: false
-
 Cop/ActiveRecordAssociationReload:
   Enabled: true
   Exclude:
@@ -983,11 +978,6 @@ Cop/SidekiqApiUsage:
     - 'lib/gitlab/sidekiq_queue.rb'
     - 'config/initializers/sidekiq.rb'
     - 'config/initializers/forbid_sidekiq_in_transactions.rb'
-
-Rake/Require:
-  Include:
-    - '{,ee/,jh/}lib/**/*.rake'
-    - 'qa/tasks/**/*.rake'
 
 Cop/FeatureFlagUsage:
   Include:

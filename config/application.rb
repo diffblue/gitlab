@@ -30,7 +30,6 @@ module Gitlab
 
     # Rails 7.0
     config.action_controller.raise_on_open_redirects = false
-    config.action_controller.wrap_parameters_by_default = false
     config.action_dispatch.return_only_request_media_type_on_content_type = true
     config.action_mailer.smtp_timeout = nil # New default is 5
     config.action_view.button_to_generates_button_tag = nil # New default is true

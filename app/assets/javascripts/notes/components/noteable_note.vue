@@ -17,8 +17,7 @@ import { containsSensitiveToken, confirmSensitiveAction } from '~/lib/utils/secr
 import eventHub from '../event_hub';
 import noteable from '../mixins/noteable';
 import resolvable from '../mixins/resolvable';
-import { renderMarkdown } from '../utils';
-import { UPDATE_COMMENT_FORM } from '../i18n';
+import { renderMarkdown, updateNoteErrorMessage } from '../utils';
 import {
   getStartLineNumber,
   getEndLineNumber,
@@ -114,7 +113,6 @@ export default {
       isResolving: false,
       commentLineStart: {},
       resolveAsThread: true,
-      oldContent: this.note.note_html,
     };
   },
   computed: {
@@ -295,7 +293,7 @@ export default {
     updateSuccess() {
       this.isEditing = false;
       this.isRequesting = false;
-      this.oldContent = this.note.note_html;
+      this.oldContent = null;
       renderGFM(this.$refs.noteBody.$el);
       this.$emit('updateSuccess');
     },
@@ -317,7 +315,9 @@ export default {
         noteText,
         resolveDiscussion,
         position,
+        flashContainer: this.$el,
         callback: () => this.updateSuccess(),
+        errorCallback: () => callback(),
       });
 
       if (this.isDraft) return;
@@ -343,6 +343,7 @@ export default {
       // https://gitlab.com/gitlab-org/gitlab/-/issues/298827
       if (!isEmpty(position)) data.note.note.position = JSON.stringify(position);
       this.isRequesting = true;
+      this.oldContent = this.note.note_html;
       // eslint-disable-next-line vue/no-mutating-props
       this.note.note_html = renderMarkdown(noteText);
 
@@ -369,14 +370,8 @@ export default {
         });
     },
     handleUpdateError(e) {
-      const serverErrorMessage = e?.response?.data?.errors;
-
-      const alertMessage = serverErrorMessage
-        ? sprintf(UPDATE_COMMENT_FORM.error, { reason: serverErrorMessage.toLowerCase() }, false)
-        : UPDATE_COMMENT_FORM.defaultError;
-
       createAlert({
-        message: alertMessage,
+        message: updateNoteErrorMessage(e),
         parent: this.$el,
       });
     },

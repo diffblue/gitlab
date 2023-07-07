@@ -25,6 +25,18 @@ module Mutations
 
           destination
         end
+
+        def audit(destination, action:)
+          audit_context = {
+            name: "#{action}_instance_event_streaming_destination",
+            author: current_user,
+            scope: Gitlab::Audit::InstanceScope.new,
+            target: destination,
+            message: "#{action.capitalize} instance event streaming destination #{destination.destination_url}"
+          }
+
+          ::Gitlab::Audit::Auditor.audit(audit_context)
+        end
       end
     end
   end

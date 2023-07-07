@@ -22,11 +22,11 @@ export default {
     onAddClicked() {
       this.$emit('create');
     },
-    selectVisualization(id, source) {
-      this.$emit('select', id, source);
+    selectVisualization(visualization) {
+      this.$emit('select', visualization);
     },
-    getVisualizationTitle(id) {
-      return humanize(id);
+    getVisualizationTitle(slug) {
+      return humanize(slug);
     },
   },
   i18n: {
@@ -45,16 +45,16 @@ export default {
         <gl-loading-icon v-if="dataSource.loading" size="md" class="gl-mb-4" />
         <ul v-else class="gl-p-0 gl-list-style-none gl-mb-2">
           <li
-            v-for="(id, index) in dataSource.visualizationIds"
+            v-for="(visualization, index) in dataSource.visualizations"
             :key="index"
             class="gl-display-flex gl-mb-3 gl-cursor-pointer gl-link gl-reset-color gl-hover-text-blue-600"
             tabindex="0"
-            @click="selectVisualization(id, 'yml')"
-            @keydown.enter="selectVisualization(id, 'yml')"
+            @click="selectVisualization(visualization)"
+            @keydown.enter="selectVisualization(visualization)"
           >
             <gl-icon :size="24" class="flex-shrink-0 gl-mr-2" name="chart" />
             <span class="gl-align-items-center">
-              {{ getVisualizationTitle(id) }}
+              {{ getVisualizationTitle(visualization.slug) }}
             </span>
           </li>
         </ul>

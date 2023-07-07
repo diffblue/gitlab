@@ -29,7 +29,7 @@ class DependencyEntity < Grape::Entity
   expose :vulnerabilities, using: VulnerabilityEntity, if: ->(_) { can_read_vulnerabilities? }
   expose :licenses, using: LicenseEntity, if: ->(_) { can_read_licenses? }
   expose :project, using: ProjectEntity, if: ->(_) { !has_project? }
-  expose :project_count, :occurrence_count, if: ->(_) { !has_project? }
+  expose :project_count, :occurrence_count, :component_id, if: ->(_) { !has_project? }
 
   private
 

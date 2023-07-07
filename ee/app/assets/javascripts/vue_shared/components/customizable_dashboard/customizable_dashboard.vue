@@ -84,6 +84,7 @@ export default {
       showCode: false,
       filters: this.defaultFilters,
       editingEnabled: this.glFeatures.combinedAnalyticsDashboardsEditor,
+      alert: null,
     };
   },
   computed: {
@@ -151,6 +152,8 @@ export default {
       el.classList.add('container-limited');
       el.classList.remove('not-container-limited');
     });
+
+    this.alert?.dismiss();
   },
   methods: {
     initGridStack() {
@@ -260,7 +263,7 @@ export default {
       }
     },
     handlePanelError(panelTitle, error) {
-      createAlert({
+      this.alert = createAlert({
         message: sprintf(
           s__('ProductAnalytics|An error occured while loading the %{panelTitle} panel.'),
           { panelTitle },

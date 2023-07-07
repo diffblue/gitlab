@@ -8,7 +8,7 @@ module Gitlab
           audit_events.tap do |audit_events|
             audit_events.each do |audit_event|
               audit_event.lazy_author
-              audit_event.lazy_entity
+              audit_event.entity
             end
           end
         end
@@ -21,7 +21,7 @@ module Gitlab
           @audit_events.each_batch(column: :created_at) do |relation|
             relation.each do |audit_event|
               audit_event.lazy_author
-              audit_event.lazy_entity
+              audit_event.entity
             end
 
             relation.each do |audit_event|

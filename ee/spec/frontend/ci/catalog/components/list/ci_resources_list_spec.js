@@ -1,21 +1,17 @@
 import { GlKeysetPagination } from '@gitlab/ui';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
+import responseBody from 'test_fixtures/graphql/ci/catalog/ci_catalog_resources.json';
+import responseBodySinglePage from 'test_fixtures/graphql/ci/catalog/ci_catalog_resources_single_page.json';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CiResourcesList from 'ee/ci/catalog/components/list/ci_resources_list.vue';
 import CiResourcesListItem from 'ee/ci/catalog/components/list/ci_resources_list_item.vue';
 import { ciCatalogResourcesItemsCount } from 'ee/ci/catalog/graphql/settings';
-import {
-  generateCatalogResponseWithOnlyOnePage,
-  generateCatalogResponse,
-  generateCatalogResponsePage2,
-  generateCatalogResponseLastPage,
-} from '../../mock';
 
 describe('CiResourcesList', () => {
   let wrapper;
 
   const createComponent = ({ props = {} } = {}) => {
-    const { nodes, pageInfo, count } = generateCatalogResponse().data.ciCatalogResources;
+    const { nodes, pageInfo, count } = responseBody.data.ciCatalogResources;
 
     const defaultProps = {
       currentPage: 1,
@@ -41,8 +37,7 @@ describe('CiResourcesList', () => {
   const findNextBtn = () => wrapper.findByTestId('nextButton');
 
   describe('contains only one page', () => {
-    const response = generateCatalogResponseWithOnlyOnePage();
-    const { nodes, pageInfo, count } = response.data.ciCatalogResources;
+    const { nodes, pageInfo, count } = responseBodySinglePage.data.ciCatalogResources;
 
     beforeEach(async () => {
       await createComponent({
@@ -51,7 +46,7 @@ describe('CiResourcesList', () => {
     });
 
     it('shows the right number of items', () => {
-      expect(findResourcesListItems()).toHaveLength(5);
+      expect(findResourcesListItems()).toHaveLength(nodes.length);
     });
 
     it('hides the keyset control for previous page', () => {
@@ -68,26 +63,26 @@ describe('CiResourcesList', () => {
   });
 
   describe.each`
-    generateResponse                   | previousPageState | nextPageState | pageText    | expectedTotal                   | currentPage
-    ${generateCatalogResponse}         | ${'disabled'}     | ${'enabled'}  | ${'1 of 2'} | ${ciCatalogResourcesItemsCount} | ${1}
-    ${generateCatalogResponsePage2}    | ${'enabled'}      | ${'enabled'}  | ${'2 of 4'} | ${ciCatalogResourcesItemsCount} | ${2}
-    ${generateCatalogResponseLastPage} | ${'enabled'}      | ${'disabled'} | ${'2 of 2'} | ${ciCatalogResourcesItemsCount} | ${2}
+    hasPreviousPage | hasNextPage | pageText    | expectedTotal                   | currentPage
+    ${false}        | ${true}     | ${'1 of 3'} | ${ciCatalogResourcesItemsCount} | ${1}
+    ${true}         | ${true}     | ${'2 of 3'} | ${ciCatalogResourcesItemsCount} | ${2}
+    ${true}         | ${false}    | ${'3 of 3'} | ${ciCatalogResourcesItemsCount} | ${3}
   `(
     'when on page $pageText',
-    ({
-      currentPage,
-      expectedTotal,
-      pageText,
-      previousPageState,
-      nextPageState,
-      generateResponse,
-    }) => {
-      const response = generateResponse();
-      const { nodes, pageInfo, count } = response.data.ciCatalogResources;
+    ({ currentPage, expectedTotal, pageText, hasPreviousPage, hasNextPage }) => {
+      const { nodes, pageInfo, count } = responseBody.data.ciCatalogResources;
+
+      const previousPageState = hasPreviousPage ? 'enabled' : 'disabled';
+      const nextPageState = hasNextPage ? 'enabled' : 'disabled';
 
       beforeEach(async () => {
         await createComponent({
-          props: { currentPage, resources: nodes, pageInfo, totalCount: count },
+          props: {
+            currentPage,
+            resources: nodes,
+            pageInfo: { ...pageInfo, hasPreviousPage, hasNextPage },
+            totalCount: count,
+          },
         });
       });
 

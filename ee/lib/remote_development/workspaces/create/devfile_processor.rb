@@ -49,6 +49,7 @@ module RemoteDevelopment
         # @return [Hash]
         def add_editor(flattened_devfile:, editor:, volume_reference:, volume_mount_dir:)
           editor_port = 60001
+          ssh_port = 60022
           # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409775 - choose image based on which editor is passed.
           image_name = 'registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector'
           image_tag = '1'
@@ -66,6 +67,10 @@ module RemoteDevelopment
                   {
                     'name' => 'EDITOR_PORT',
                     'value' => editor_port.to_s
+                  },
+                  {
+                    'name' => 'SSH_PORT',
+                    'value' => ssh_port.to_s
                   }
                 ],
                 'memoryLimit' => '128Mi',
@@ -101,6 +106,10 @@ module RemoteDevelopment
               {
                 'name' => 'EDITOR_PORT',
                 'value' => editor_port.to_s
+              },
+              {
+                'name' => 'SSH_PORT',
+                'value' => ssh_port.to_s
               }
             ]
 
@@ -113,6 +122,12 @@ module RemoteDevelopment
                 'exposure' => 'public',
                 'secure' => true,
                 'protocol' => 'https'
+              },
+              {
+                'name' => 'ssh-server',
+                'targetPort' => ssh_port,
+                'exposure' => 'internal',
+                'secure' => true
               }
             )
 

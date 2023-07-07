@@ -66,6 +66,12 @@ module Types
             resolver: ::Resolvers::Geo::PipelineArtifactRegistriesResolver,
             description: 'Find pipeline artifact registries on this Geo node.'
       field :primary, GraphQL::Types::Boolean, null: true, description: 'Indicates whether this Geo node is the primary.'
+      field :project_repository_registries, ::Types::Geo::ProjectRepositoryRegistryType.connection_type,
+            null: true,
+            resolver: ::Resolvers::Geo::ProjectRepositoryRegistriesResolver,
+            description: 'Find Project registries on this Geo node. ' \
+                         'Ignored if `geo_project_repository_replication` feature flag is disabled.',
+            alpha: { milestone: '16.2' }
       field :project_wiki_repository_registries, ::Types::Geo::ProjectWikiRepositoryRegistryType.connection_type,
             null: true,
             resolver: ::Resolvers::Geo::ProjectWikiRepositoryRegistriesResolver,

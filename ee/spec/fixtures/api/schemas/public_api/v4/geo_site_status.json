@@ -239,6 +239,18 @@
     "uploads_verification_failed_count",
     "uploads_synced_in_percentage",
     "uploads_verified_in_percentage",
+    "project_repositories_count",
+    "project_repositories_checksum_total_count",
+    "project_repositories_checksummed_count",
+    "project_repositories_checksum_failed_count",
+    "project_repositories_synced_count",
+    "project_repositories_failed_count",
+    "project_repositories_registry_count",
+    "project_repositories_verification_total_count",
+    "project_repositories_verified_count",
+    "project_repositories_verification_failed_count",
+    "project_repositories_synced_in_percentage",
+    "project_repositories_verified_in_percentage",
     "git_fetch_event_count_weekly",
     "git_push_event_count_weekly",
     "proxy_remote_requests_event_count_weekly",
@@ -1387,6 +1399,69 @@
       ]
     },
     "pipeline_artifacts_verified_in_percentage": {
+      "type": "string"
+    },
+    "project_repositories_count": {
+      "type": "integer"
+    },
+    "project_repositories_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "project_repositories_synced_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "project_repositories_synced_in_percentage": {
+      "type": "string"
+    },
+    "project_repositories_checksum_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "project_repositories_checksummed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "project_repositories_checksum_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "project_repositories_registry_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "project_repositories_verification_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "project_repositories_verified_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "project_repositories_verification_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "project_repositories_verified_in_percentage": {
       "type": "string"
     },
     "repositories_verified_count": {

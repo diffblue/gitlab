@@ -2,10 +2,10 @@
 import { GlModal, GlSprintf } from '@gitlab/ui';
 
 import { __, s__ } from '~/locale';
-import externalDestinationsQuery from '../../graphql/queries/get_external_destinations.query.graphql';
-import instanceExternalDestinationsQuery from '../../graphql/queries/get_instance_external_destinations.query.graphql';
 import deleteExternalDestination from '../../graphql/mutations/delete_external_destination.mutation.graphql';
 import deleteInstanceExternalDestination from '../../graphql/mutations/delete_instance_external_destination.mutation.graphql';
+import googleCloudLoggingConfigurationDestroy from '../../graphql/mutations/delete_gcp_logging_destination.mutation.graphql';
+import { DESTINATION_TYPE_HTTP, DESTINATION_TYPE_GCP_LOGGING } from '../../constants';
 
 export default {
   components: {
@@ -18,19 +18,46 @@ export default {
       type: Object,
       required: true,
     },
+    type: {
+      type: String,
+      required: true,
+    },
   },
   computed: {
     isInstance() {
       return this.groupPath === 'instance';
     },
-    destinationQuery() {
-      return this.isInstance ? instanceExternalDestinationsQuery : externalDestinationsQuery;
-    },
     destinationDestroyMutation() {
-      return this.isInstance ? deleteInstanceExternalDestination : deleteExternalDestination;
+      switch (this.type) {
+        case DESTINATION_TYPE_GCP_LOGGING:
+          return googleCloudLoggingConfigurationDestroy;
+        case DESTINATION_TYPE_HTTP:
+        default:
+          return this.isInstance ? deleteInstanceExternalDestination : deleteExternalDestination;
+      }
+    },
+    destinationTitle() {
+      switch (this.type) {
+        case DESTINATION_TYPE_GCP_LOGGING:
+          return this.item.googleProjectIdName;
+        case DESTINATION_TYPE_HTTP:
+        default:
+          return this.item.destinationUrl;
+      }
     },
   },
   methods: {
+    destinationErrors(data) {
+      switch (this.type) {
+        case DESTINATION_TYPE_GCP_LOGGING:
+          return data.googleCloudLoggingConfigurationDestroy.errors;
+        case DESTINATION_TYPE_HTTP:
+        default:
+          return this.isInstance
+            ? data.instanceExternalAuditEventDestinationDestroy.errors
+            : data.externalAuditEventDestinationDestroy.errors;
+      }
+    },
     async deleteDestination() {
       this.reportDeleting();
 
@@ -46,14 +73,12 @@ export default {
           },
         });
 
-        const errors = this.isInstance
-          ? data.instanceExternalAuditEventDestinationDestroy.errors
-          : data.externalAuditEventDestinationDestroy.errors;
+        const errors = this.destinationErrors(data);
 
         if (errors.length > 0) {
           this.reportError(new Error(errors[0]));
         } else {
-          this.reportSuccess(this.id);
+          this.$emit('delete');
         }
       } catch (error) {
         this.reportError(error);
@@ -64,9 +89,6 @@ export default {
     },
     reportError(error) {
       this.$emit('error', error);
-    },
-    reportSuccess(id) {
-      this.$emit('delete', id);
     },
     show() {
       this.$refs.modal.show();
@@ -100,7 +122,7 @@ export default {
   >
     <gl-sprintf :message="$options.i18n.message">
       <template #destination>
-        <strong>{{ item.destinationUrl }}</strong>
+        <strong>{{ destinationTitle }}</strong>
       </template>
     </gl-sprintf>
   </gl-modal>

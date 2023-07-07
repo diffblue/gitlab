@@ -1,6 +1,7 @@
 import { GlPopover, GlLink } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import MetricTableCell from 'ee/analytics/dashboards/components/metric_table_cell.vue';
+import { CLICK_METRIC_DRILLDOWN_LINK_ACTION } from 'ee/analytics/dashboards/constants';
 
 describe('Metric table cell', () => {
   let wrapper;
@@ -59,5 +60,14 @@ describe('Metric table cell', () => {
       '/help/user/analytics/dora_metrics#deployment-frequency',
     );
     expect(findPopoverLink().text()).toBe(MetricTableCell.i18n.docsLabel);
+  });
+
+  it('adds tracking data attributes to drilldown link', () => {
+    createWrapper();
+
+    expect(findMetricLabel().attributes('data-track-action')).toBe(
+      CLICK_METRIC_DRILLDOWN_LINK_ACTION,
+    );
+    expect(findMetricLabel().attributes('data-track-label')).toBe(`${identifier}_drilldown`);
   });
 });

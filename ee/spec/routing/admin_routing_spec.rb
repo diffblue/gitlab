@@ -103,4 +103,10 @@ RSpec.describe 'EE-specific admin routing' do
       expect(patch('/admin/application_settings/advanced_search')).to route_to('admin/application_settings#advanced_search')
     end
   end
+
+  describe Admin::ApplicationSettings::RolesAndPermissionsController, 'routing' do
+    it 'routes to the new member role' do
+      expect(get('/admin/application_settings/roles_and_permissions/new')).to route_to('admin/application_settings/roles_and_permissions#index', vueroute: 'new')
+    end
+  end
 end

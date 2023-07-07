@@ -15,14 +15,6 @@ export const PARSING_ERROR_MESSAGE = s__(
   'SecurityOrchestration|Rule mode is unavailable for this policy. In some cases, we cannot parse the YAML file back into the rules editor.',
 );
 
-export const RUNNER_TAGS_PARSING_ERROR = s__(
-  'SecurityOrchestration|Non-existing tags have been detected in the policy yaml. As a result, rule mode has been disabled. To enable rule mode, remove those non-existing tags from the policy yaml.',
-);
-
-export const DAST_SCANNERS_PARSING_ERROR = s__(
-  'SecurityOrchestration|Non-existing DAST profiles have been detected in the policy yaml. As a result, rule mode has been disabled. To enable rule mode, remove those non-existing profiles from the policy yaml.',
-);
-
 export const EDITOR_MODES = [
   { value: EDITOR_MODE_RULE, text: s__('SecurityOrchestration|Rule mode') },
   { value: EDITOR_MODE_YAML, text: s__('SecurityOrchestration|.yaml mode') },
@@ -64,7 +56,6 @@ export const NO_RULE_MESSAGE = s__('SecurityOrchestration|No rules defined - pol
 export const INVALID_PROTECTED_BRANCHES = s__(
   'SecurityOrchestration|The following branches do not exist on this development project: %{branches}. Please review all protected branches to ensure the values are accurate before updating this policy.',
 );
-
 export const ADD_RULE_LABEL = s__('SecurityOrchestration|Add rule');
 export const RULES_LABEL = s__('SecurityOrchestration|Rules');
 
@@ -95,6 +86,21 @@ export const SPECIFIC_BRANCHES = {
   value: 'SPECIFIC_BRANCHES',
 };
 
+export const ALL_BRANCHES = {
+  text: __('All branches'),
+  value: 'all',
+};
+
+export const DEFAULT_BRANCHES = {
+  text: __('All default branches'),
+  value: 'default',
+};
+
+export const ALL_PROTECTED_BRANCHES = {
+  text: __('All protected branches'),
+  value: 'protected',
+};
+
 export const ANY_OPERATOR = 'ANY';
 
 export const MORE_THAN_OPERATOR = 'MORE_THAN';
@@ -103,3 +109,19 @@ export const NUMBER_RANGE_I18N_MAP = {
   [ANY_OPERATOR]: s__('ApprovalRule|Any'),
   [MORE_THAN_OPERATOR]: s__('ApprovalRule|More than'),
 };
+
+export const SCAN_RESULT_BRANCH_TYPE_OPTIONS = [
+  DEFAULT_BRANCHES,
+  ALL_PROTECTED_BRANCHES,
+  SPECIFIC_BRANCHES,
+];
+
+export const SCAN_EXECUTION_BRANCH_TYPE_OPTIONS = [
+  ALL_BRANCHES,
+  DEFAULT_BRANCHES,
+  ALL_PROTECTED_BRANCHES,
+  SPECIFIC_BRANCHES,
+];
+
+export const BRANCHES_KEY = 'branches';
+export const BRANCH_TYPE_KEY = 'branch_type';

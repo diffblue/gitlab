@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Integrations::JiraSerializers::IssueEntity do
+RSpec.describe Integrations::JiraSerializers::IssueEntity, feature_category: :integrations do
   include JiraIntegrationHelpers
 
   let_it_be(:project) { create(:project) }
@@ -154,6 +154,16 @@ RSpec.describe Integrations::JiraSerializers::IssueEntity do
 
     it 'returns an empty array' do
       expect(subject).to include(labels: [])
+    end
+  end
+
+  context 'without reporter' do
+    let(:reporter) { nil }
+
+    it 'includes an anonymous user' do
+      expect(subject[:author]).to match(
+        a_hash_including(id: nil, name: _('Anonymous user'), web_url: 'http://jira.com', avatar_url: nil)
+      )
     end
   end
 end

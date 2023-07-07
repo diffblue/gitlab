@@ -2808,7 +2808,7 @@ RSpec.describe User, feature_category: :system_access do
       expect { subject }.to change { AuditEvent.count }.by(1)
     end
 
-    context 'when reason for access lock is excessive failed login attempts' do
+    context 'when reason is known' do
       before do
         allow(user).to receive(:attempts_exceeded?).and_return(true)
       end
@@ -2819,6 +2819,18 @@ RSpec.describe User, feature_category: :system_access do
         )
 
         subject
+      end
+
+      context 'when reason is passed in as an option' do
+        subject { user.lock_access!(reason: 'specified reason') }
+
+        it 'logs a user_access_locked audit event with the correct message' do
+          expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+            hash_including(message: 'User access locked - specified reason')
+          )
+
+          subject
+        end
       end
     end
 
@@ -2900,6 +2912,54 @@ RSpec.describe User, feature_category: :system_access do
         end
 
         it { is_expected.to eq(false) }
+      end
+    end
+  end
+
+  describe '#unlock_access!' do
+    let_it_be_with_reload(:user) { create(:user) }
+
+    subject { user.unlock_access! }
+
+    before do
+      stub_licensed_features(admin_audit_log: true)
+
+      user.lock_access!
+    end
+
+    shared_examples 'logs a user_access_unlocked audit event with the correct author' do
+      it 'logs a user_access_unlocked audit event with the correct author' do
+        expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+          hash_including(
+            name: 'user_access_unlocked',
+            author: expected_author,
+            scope: user,
+            target: user,
+            message: 'User access unlocked'
+          )
+        ).and_call_original
+
+        expect { subject }.to change { AuditEvent.count }.by(1)
+      end
+    end
+
+    it_behaves_like 'logs a user_access_unlocked audit event with the correct author' do
+      let(:expected_author) { user }
+    end
+
+    context 'when unlocked_by is specified' do
+      it_behaves_like 'logs a user_access_unlocked audit event with the correct author' do
+        let_it_be(:expected_author) { create(:user) }
+
+        subject { user.unlock_access!(unlocked_by: expected_author) }
+      end
+    end
+
+    context 'when user access is not locked' do
+      let_it_be(:active_user) { create(:user) }
+
+      it 'does not log an audit event' do
+        expect { active_user.unlock_access! }.not_to change { AuditEvent.count }
       end
     end
   end

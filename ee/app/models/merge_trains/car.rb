@@ -101,10 +101,6 @@ module MergeTrains
                     .exists?
       end
 
-      def total_count_in_train(merge_request)
-        merge_request.train.car_count
-      end
-
       private
 
       def complete_merge_trains(target_project_id, target_branch, limit:)

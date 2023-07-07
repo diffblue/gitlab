@@ -88,7 +88,7 @@ export default {
   <component
     :is="treeRootWrapper"
     v-bind="treeRootOptions"
-    class="list-unstyled related-items-list tree-root gl-p-0 gl-px-4"
+    class="list-unstyled related-items-list tree-root"
     :move="onMove"
     @start="handleDragOnStart"
     @end="handleDragOnEnd"

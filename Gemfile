@@ -249,7 +249,7 @@ gem 'rainbow', '~> 3.0'
 gem 'ruby-progressbar', '~> 1.10'
 
 # Linear-time regex library for untrusted regular expressions
-gem 're2', '~> 1.6.0'
+gem 're2', '~> 1.7.0'
 
 # Misc
 
@@ -326,6 +326,7 @@ gem 'sassc-rails', '~> 2.1.0'
 gem 'autoprefixer-rails', '10.2.5.1'
 gem 'terser', '1.0.2'
 
+gem 'click_house-client', path: 'gems/click_house-client', require: 'click_house/client'
 gem 'addressable', '~> 2.8'
 gem 'tanuki_emoji', '~> 0.6'
 gem 'gon', '~> 6.4.0'
@@ -346,6 +347,8 @@ gem 'sentry-sidekiq', '~> 5.8.0'
 # PostgreSQL query parsing
 #
 gem 'pg_query', '~> 4.2.1'
+
+gem 'gitlab-schema-validation', path: 'gems/gitlab-schema-validation'
 
 gem 'premailer-rails', '~> 1.10.3'
 
@@ -528,9 +531,9 @@ gem 'gitaly', '~> 16.2.0-rc2'
 # KAS GRPC protocol definitions
 gem 'kas-grpc', '~> 0.2.0'
 
-gem 'grpc', '~> 1.42.0'
+gem 'grpc', '~> 1.55.0'
 
-gem 'google-protobuf', '~> 3.23', '>= 3.23.3'
+gem 'google-protobuf', '~> 3.23', '>= 3.23.4'
 
 gem 'toml-rb', '~> 2.2.0'
 
@@ -590,7 +593,7 @@ gem 'ipaddress', '~> 0.8.3'
 
 gem 'parslet', '~> 1.8'
 
-gem 'ipynbdiff', path: 'vendor/gems/ipynbdiff'
+gem 'ipynbdiff', path: 'gems/ipynbdiff', require: 'ipynb_diff'
 
 gem 'ed25519', '~> 1.3.0'
 

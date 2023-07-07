@@ -3,6 +3,11 @@ import Api from 'ee/api';
 import { REPORT_TYPES_DEFAULT } from 'ee/security_dashboard/store/constants';
 import { isPositiveInteger } from '~/lib/utils/number_utils';
 import {
+  ALL_PROTECTED_BRANCHES,
+  DEFAULT_BRANCHES,
+  BRANCH_TYPE_KEY,
+} from 'ee/security_orchestration/components/policy_editor/constants';
+import {
   APPROVAL_VULNERABILITY_STATES,
   NEWLY_DETECTED,
   PREVIOUSLY_EXISTING,
@@ -120,4 +125,16 @@ export const getInvalidBranches = async ({ branches, projectId }) => {
   }
 
   return invalidBranches;
+};
+
+/**
+ * @param rules
+ * @returns {Boolean}
+ */
+export const invalidBranchType = (rules) => {
+  if (!rules) return false;
+
+  const validOptions = [ALL_PROTECTED_BRANCHES.value, DEFAULT_BRANCHES.value];
+
+  return rules?.some((rule) => BRANCH_TYPE_KEY in rule && !validOptions.includes(rule.branch_type));
 };

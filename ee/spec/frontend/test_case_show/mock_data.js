@@ -1,14 +1,51 @@
-import { mockIssuable, mockCurrentUserTodo } from 'jest/vue_shared/issuable/list/mock_data';
+import {
+  mockAuthor,
+  mockIssuable,
+  mockCurrentUserTodo,
+} from 'jest/vue_shared/issuable/list/mock_data';
+
+// Remove attributes that are not used for test cases
+const {
+  assignees,
+  iid,
+  taskCompletionStatus,
+  userDiscussionsCount,
+  ...mockIssuableAttributes
+} = mockIssuable;
 
 export const mockTestCase = {
-  ...mockIssuable,
-  moved: false,
+  ...mockIssuableAttributes,
+  __typename: 'Issue',
+  type: 'TEST_CASE',
+  id: 'gid://gitlab/Issue/1',
   currentUserTodos: {
     nodes: [mockCurrentUserTodo],
   },
-  taskCompletionStatus: {
-    completedCount: 0,
-    count: 5,
+  moved: false,
+  movedTo: null,
+  updatedBy: mockAuthor,
+};
+
+export const mockTestCaseResponse = (testCase = mockTestCase) => {
+  return {
+    data: {
+      project: {
+        __typename: 'Project',
+        id: 'gid://gitlab/Project/1',
+        name: 'Gitlab Org',
+        issue: testCase,
+      },
+    },
+  };
+};
+
+export const mockTaskCompletionResponse = {
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/1',
+      name: 'Gitlab Org',
+      issue: { ...mockTestCase, taskCompletionStatus: null },
+    },
   },
 };
 

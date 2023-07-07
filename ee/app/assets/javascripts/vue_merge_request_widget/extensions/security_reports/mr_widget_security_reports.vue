@@ -246,16 +246,11 @@ export default {
         },
       ];
     },
-  },
-  methods: {
-    handleIsLoading(value) {
-      this.isLoading = value;
-    },
 
-    fetchCollapsedData() {
+    endpoints() {
       // TODO: check if gl.mrWidgetData can be safely removed after we migrate to the
       // widget extension.
-      const endpoints = [
+      return [
         [this.mr.sastComparisonPathV2, 'SAST'],
         [this.mr.dastComparisonPathV2, 'DAST'],
         [this.mr.secretDetectionComparisonPathV2, 'SECRET_DETECTION'],
@@ -267,7 +262,18 @@ export default {
         const enabledReportsKeyName = convertToCamelCase(reportType.toLowerCase());
         return Boolean(endpoint) && this.mr.enabledReports[enabledReportsKeyName];
       });
+    },
 
+    shouldRenderMrWidget() {
+      return !this.mr.isPipelineActive && this.endpoints.length > 0;
+    },
+  },
+  methods: {
+    handleIsLoading(value) {
+      this.isLoading = value;
+    },
+
+    fetchCollapsedData() {
       // The backend returns the cached finding objects. Let's remove them as they may cause
       // bugs. Instead, fetch the non-cached data when the finding modal is opened.
       const getFindingWithoutFeedback = (finding) => ({
@@ -277,7 +283,7 @@ export default {
         issue_feedback: undefined,
       });
 
-      return endpoints.map(([path, reportType]) => () => {
+      return this.endpoints.map(([path, reportType]) => () => {
         const props = {
           reportType,
           reportTypeDescription: reportTypes[reportType],
@@ -593,7 +599,7 @@ export default {
 
 <template>
   <mr-widget
-    v-if="!mr.isPipelineActive"
+    v-if="shouldRenderMrWidget"
     v-model="vulnerabilities"
     :error-text="$options.i18n.error"
     :fetch-collapsed-data="fetchCollapsedData"

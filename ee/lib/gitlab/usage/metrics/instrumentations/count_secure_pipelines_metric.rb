@@ -80,8 +80,8 @@ module Gitlab
           def outer_relation
             ::Security::Scan
               .from("generate_series(
-                                '#{time_constraints.values[0].first.to_time.to_s(:db)}'::timestamp,
-                                '#{time_constraints.values[0].last.to_time.to_s(:db)}'::timestamp,
+                                '#{time_constraints.values[0].first.to_time.to_fs(:db)}'::timestamp,
+                                '#{time_constraints.values[0].last.to_time.to_fs(:db)}'::timestamp,
                                 '1 day'::interval) date_range_source")
           end
 

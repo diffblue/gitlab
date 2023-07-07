@@ -3158,8 +3158,7 @@ CI/CD variables [are supported](../variables/where_variables_can_be_used.md#gitl
 To create a release when a new tag is added to the project:
 
 - Use the `$CI_COMMIT_TAG` CI/CD variable as the `tag_name`.
-- Use [`rules:if`](#rulesif) or [`only: tags`](#onlyrefs--exceptrefs) to configure
-  the job to run only for new tags.
+- Use [`rules:if`](#rulesif) to configure the job to run only for new tags.
 
 ```yaml
 job:
@@ -3171,7 +3170,7 @@ job:
     - if: $CI_COMMIT_TAG
 ```
 
-To create a release and a new tag at the same time, your [`rules`](#rules) or [`only`](#only--except)
+To create a release and a new tag at the same time, your [`rules`](#rules)
 should **not** configure the job to run only for new tags. A semantic versioning example:
 
 ```yaml
@@ -3740,7 +3739,8 @@ If the rule matches, then the job is a manual job with `allow_failure: true`.
 
 #### `rules:needs`
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/31581) in GitLab 16.0 [with a flag](../../user/feature_flags.md) named `introduce_rules_with_needs`. Disabled by default.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/31581) in GitLab 16.0 [with a flag](../../user/feature_flags.md) named `introduce_rules_with_needs`. Disabled by default.
+> - [Generally available](https://gitlab.com/gitlab-org/gitlab/-/issues/408871) in GitLab 16.2. Feature flag `introduce_rules_with_needs` removed.
 
 Use `needs` in rules to update a job's [`needs`](#needs) for specific conditions. When a condition matches a rule, the job's `needs` configuration is completely replaced with the `needs` in the rule.
 
@@ -4790,6 +4790,6 @@ important to describe those, too. Think of things that may go wrong and include 
 This is important to minimize requests for support, and to avoid doc comments with
 questions that you know someone might ask.
 
-Each scenario can be a third-level heading, e.g. `### Getting error message X`.
+Each scenario can be a third-level heading, for example, `### Getting error message X`.
 If you have none to add when creating a doc, leave this section in place
 but commented out to help encourage others to add to it in the future. -->

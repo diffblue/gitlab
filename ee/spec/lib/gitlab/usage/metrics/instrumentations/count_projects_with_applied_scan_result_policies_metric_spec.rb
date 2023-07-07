@@ -25,8 +25,8 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountProjectsWithApplie
 
   it_behaves_like 'a correct instrumented metric value and query', { time_frame: '28d', data_source: 'database' } do
     let(:expected_value) { 1 }
-    let(:start) { 30.days.ago.to_s(:db) }
-    let(:finish) { 2.days.ago.to_s(:db) }
+    let(:start) { 30.days.ago.to_fs(:db) }
+    let(:finish) { 2.days.ago.to_fs(:db) }
     let(:expected_query) do
       "SELECT COUNT(DISTINCT \"approval_project_rules\".\"project_id\") FROM \"approval_project_rules\" " \
         "WHERE \"approval_project_rules\".\"report_type\" = 4 " \

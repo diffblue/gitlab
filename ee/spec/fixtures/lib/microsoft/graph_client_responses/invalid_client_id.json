@@ -1,0 +1,11 @@
+{
+  "error": "unauthorized_client",
+  "error_description": "AADSTS700016: Application with identifier 'invalid_client_id' was not found in the directory",
+  "error_codes": [
+    700016
+  ],
+  "timestamp": "2023-06-27 21:21:06Z",
+  "trace_id": "da4f65a5",
+  "correlation_id": "521c8871",
+  "error_uri": "https://login.microsoftonline.com/error?code=700016"
+}

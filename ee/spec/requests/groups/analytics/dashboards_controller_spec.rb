@@ -40,11 +40,37 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
         sign_in(user)
       end
 
-      it 'redirects to value stream dashboards' do
-        request
+      context 'when the license is not available' do
+        before do
+          stub_licensed_features(group_level_analytics_dashboard: false)
+        end
 
-        expect(response)
-          .to redirect_to(value_streams_dashboard_group_analytics_dashboards_path(group))
+        it_behaves_like 'forbidden response'
+      end
+
+      context 'when the license is available' do
+        before do
+          stub_licensed_features(group_level_analytics_dashboard: true)
+        end
+
+        it 'succeeds' do
+          request
+
+          expect(response).to be_successful
+        end
+
+        context 'when group_analytics_dashboards is disabled' do
+          before do
+            stub_feature_flags(group_analytics_dashboards: false)
+          end
+
+          it 'redirects to value stream dashboards' do
+            request
+
+            expect(response)
+              .to redirect_to(value_streams_dashboard_group_analytics_dashboards_path(group))
+          end
+        end
       end
     end
   end

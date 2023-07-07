@@ -8,7 +8,7 @@ module PackageMetadata
     LICENSES_DATA_TYPE = :licenses
 
     def self.execute(signal)
-      SyncConfiguration.all_by_enabled_purl_type.each do |sync_config|
+      SyncConfiguration.all_configs_for_licenses.each do |sync_config|
         if signal.stop?
           break Gitlab::AppJsonLogger.debug(class: name,
             message: "Stop signal received before starting #{sync_config.purl_type} sync")

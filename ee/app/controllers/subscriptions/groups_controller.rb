@@ -7,6 +7,7 @@ module Subscriptions
     layout 'checkout'
 
     before_action :find_group
+    before_action :authorize_admin_group!
 
     feature_category :purchase
     urgency :low
@@ -33,6 +34,10 @@ module Subscriptions
 
     def find_group
       @group ||= find_routable!(Group, params[:id], request.fullpath)
+    end
+
+    def authorize_admin_group!
+      access_denied! unless can?(current_user, :admin_group, @group)
     end
 
     def group_params

@@ -10,6 +10,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
   let(:ref) { 'refs/heads/master' }
   let(:source) { 'pipeline' }
   let(:scan_policy_stage) { 'test' }
+  let(:policies) { {} }
 
   let_it_be(:namespace) { create(:group) }
   let_it_be(:namespace_policies_repository) { create(:project, :repository) }
@@ -158,6 +159,8 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
   end
 
   context 'when feature is licensed' do
+    let(:policies) { { available: true, policies: [policy] } }
+
     before do
       stub_licensed_features(security_orchestration_policies: true)
     end

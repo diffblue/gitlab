@@ -11,6 +11,7 @@ import { createAlert } from '~/alert';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import getProductAnalyticsDashboardQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_product_analytics_dashboard.query.graphql';
+import getAvailableVisualizations from 'ee/analytics/analytics_dashboards/graphql/queries/get_all_product_analytics_visualizations.query.graphql';
 import AnalyticsDashboard from 'ee/analytics/analytics_dashboards/components/analytics_dashboard.vue';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
 import { dashboard } from 'ee_jest/vue_shared/components/customizable_dashboard/mock_data';
@@ -44,6 +45,8 @@ import {
   TEST_ROUTER_BACK_HREF,
   TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE,
   TEST_DASHBOARD_GRAPHQL_404_RESPONSE,
+  TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE,
+  TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE,
 } from '../mock_data';
 
 jest.mock('~/alert');
@@ -86,6 +89,14 @@ describe('AnalyticsDashboard', () => {
   };
 
   let mockAnalyticsDashboardsHandler = jest.fn();
+  let mockAvailableVisualizationsHandler = jest.fn();
+
+  const mockDashboardResponse = (response) => {
+    mockAnalyticsDashboardsHandler = jest.fn().mockResolvedValue(response);
+  };
+  const mockAvailableVisualizationsResponse = (response) => {
+    mockAvailableVisualizationsHandler = jest.fn().mockResolvedValue(response);
+  };
 
   beforeEach(() => {
     getCustomDashboard.mockImplementation(() => TEST_CUSTOM_DASHBOARD());
@@ -94,8 +105,11 @@ describe('AnalyticsDashboard', () => {
   });
 
   afterEach(() => {
-    mockAnalyticsDashboardsHandler.mockReset();
+    mockAnalyticsDashboardsHandler = jest.fn();
+    mockAvailableVisualizationsHandler = jest.fn();
   });
+
+  const breadcrumbState = { updateName: jest.fn() };
 
   const createWrapper = ({
     props = {},
@@ -124,6 +138,7 @@ describe('AnalyticsDashboard', () => {
 
     const mockApollo = createMockApollo([
       [getProductAnalyticsDashboardQuery, mockAnalyticsDashboardsHandler],
+      [getAvailableVisualizations, mockAvailableVisualizationsHandler],
     ]);
 
     wrapper = shallowMountExtended(AnalyticsDashboard, {
@@ -144,6 +159,7 @@ describe('AnalyticsDashboard', () => {
         dashboardEmptyStateIllustrationPath: TEST_EMPTY_DASHBOARD_SVG_PATH,
         projectFullPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
         glFeatures,
+        breadcrumbState,
       },
     });
   };
@@ -263,9 +279,7 @@ describe('AnalyticsDashboard', () => {
   describe('with snowplow enabled', () => {
     describe('when mounted', () => {
       beforeEach(() => {
-        mockAnalyticsDashboardsHandler = jest
-          .fn()
-          .mockResolvedValue(TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
+        mockDashboardResponse(TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
       });
 
       it('should render with mock dashboard with filter properties', async () => {
@@ -287,14 +301,8 @@ describe('AnalyticsDashboard', () => {
           showDateRangeFilter: true,
           syncUrlFilters: true,
         });
-      });
 
-      it('does not fetch the available visualizations', async () => {
-        createWrapper({ glFeatures: { productAnalyticsSnowplowSupport: true } });
-
-        await waitForPromises();
-
-        expect(findDashboard().props().availableVisualizations).toMatchObject({});
+        expect(breadcrumbState.updateName).toHaveBeenCalledWith('Audience');
       });
 
       it('should render the loading icon while fetching data', async () => {
@@ -323,15 +331,15 @@ describe('AnalyticsDashboard', () => {
           slug: 'audience',
         });
 
+        expect(breadcrumbState.updateName).toHaveBeenCalledWith('Audience');
+
         expect(findDashboard().exists()).toBe(true);
       });
     });
 
     describe('when a custom dashboard cannot be found', () => {
       beforeEach(() => {
-        mockAnalyticsDashboardsHandler = jest
-          .fn()
-          .mockResolvedValue(TEST_DASHBOARD_GRAPHQL_404_RESPONSE);
+        mockDashboardResponse(TEST_DASHBOARD_GRAPHQL_404_RESPONSE);
 
         createWrapper({ glFeatures: { productAnalyticsSnowplowSupport: true } });
 
@@ -341,6 +349,7 @@ describe('AnalyticsDashboard', () => {
       it('does not render the dashboard or loader', () => {
         expect(findDashboard().exists()).toBe(false);
         expect(findLoader().exists()).toBe(false);
+        expect(breadcrumbState.updateName).toHaveBeenCalledWith('');
       });
 
       it('renders the empty state', () => {
@@ -351,6 +360,67 @@ describe('AnalyticsDashboard', () => {
           primaryButtonText: I18N_DASHBOARD_NOT_FOUND_ACTION,
           primaryButtonLink: TEST_ROUTER_BACK_HREF,
         });
+      });
+    });
+
+    describe('available visualizations', () => {
+      const setupDashboard = (dashboardResponse, slug = '') => {
+        mockDashboardResponse(dashboardResponse);
+        mockAvailableVisualizationsResponse(TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE);
+
+        createWrapper({
+          glFeatures: {
+            productAnalyticsSnowplowSupport: true,
+            combinedAnalyticsDashboardsEditor: true,
+          },
+          routeSlug:
+            slug || dashboardResponse.data.project.productAnalyticsDashboards.nodes[0]?.slug,
+        });
+
+        return waitForPromises();
+      };
+
+      it('fetches the available visualizations when a custom dashboard is loaded', async () => {
+        await setupDashboard(TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
+
+        expect(mockAvailableVisualizationsHandler).toHaveBeenCalledWith({
+          projectPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
+        });
+
+        const visualizations =
+          TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE.data.project.productAnalyticsVisualizations
+            .nodes;
+
+        expect(findDashboard().props().availableVisualizations).toMatchObject({
+          [I18N_PRODUCT_ANALYTICS_TITLE]: {
+            loading: false,
+            visualizations,
+          },
+        });
+      });
+
+      it('fetches the available visualizations from the backend when a dashboard is new', async () => {
+        await setupDashboard(TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE, NEW_DASHBOARD);
+
+        expect(mockAvailableVisualizationsHandler).toHaveBeenCalledWith({
+          projectPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
+        });
+
+        expect(getProductAnalyticsVisualizationList).not.toHaveBeenCalled();
+      });
+
+      it('does not fetch the available visualizations when a builtin dashboard is loaded it', async () => {
+        await setupDashboard(TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
+
+        expect(mockAvailableVisualizationsHandler).not.toHaveBeenCalled();
+        expect(findDashboard().props().availableVisualizations).toMatchObject({});
+      });
+
+      it('does not fetch the available visualizations when a dashboard was not loaded', async () => {
+        await setupDashboard(TEST_DASHBOARD_GRAPHQL_404_RESPONSE);
+
+        expect(mockAvailableVisualizationsHandler).not.toHaveBeenCalled();
+        expect(findDashboard().exists()).toBe(false);
       });
     });
   });
@@ -461,11 +531,11 @@ describe('AnalyticsDashboard', () => {
     describe('when a dashboard is new', () => {
       beforeEach(() => {
         createWrapper({ props: { isNewDashboard: true } });
+
+        return waitForPromises();
       });
 
-      it('renders the empty state', async () => {
-        await waitForPromises();
-
+      it('renders the empty state', () => {
         expect(findEmptyState().props()).toMatchObject({
           svgPath: TEST_EMPTY_DASHBOARD_SVG_PATH,
           title: I18N_DASHBOARD_NOT_FOUND_TITLE,
@@ -473,6 +543,10 @@ describe('AnalyticsDashboard', () => {
           primaryButtonText: I18N_DASHBOARD_NOT_FOUND_ACTION,
           primaryButtonLink: TEST_ROUTER_BACK_HREF,
         });
+      });
+
+      it('does not fetch the list of available visualizations', () => {
+        expect(mockAvailableVisualizationsHandler).not.toHaveBeenCalled();
       });
     });
   });

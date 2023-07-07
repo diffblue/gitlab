@@ -61,6 +61,7 @@ export default {
       <gl-collapsible-listbox
         v-gl-tooltip.right.viewport
         :disabled="disabled"
+        fluid-width
         :header-text="$options.i18n.headerText"
         :items="filters"
         :toggle-text="$options.i18n.buttonText"
@@ -71,7 +72,11 @@ export default {
       >
         <template #list-item="{ item }">
           <div class="gl-display-flex">
-            <span :id="item.value" :class="{ 'gl-text-gray-500': filterSelected(item.value) }">
+            <span
+              :id="item.value"
+              class="gl-pr-3"
+              :class="{ 'gl-text-gray-500': filterSelected(item.value) }"
+            >
               {{ item.text }}
             </span>
             <gl-badge

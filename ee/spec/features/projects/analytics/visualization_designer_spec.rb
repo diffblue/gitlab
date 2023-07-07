@@ -24,8 +24,7 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
       sign_in(user)
       stub_feature_flags(
         combined_analytics_dashboards: true,
-        product_analytics_dashboards: true,
-        product_analytics_snowplow_support: false
+        product_analytics_dashboards: true
       )
       stub_licensed_features(combined_project_analytics_dashboards: true, product_analytics: true)
 
@@ -45,6 +44,17 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
 
       stub_request(:get, cube_meta_api_url)
         .to_return(status: 200, body: meta_response_with_data, headers: {})
+    end
+
+    it 'has the visualization designer breadcrumb' do
+      visit_page
+
+      page.within(find('[data-testid="breadcrumb-links"]')) do
+        expect(page).to have_link(
+          s_('Analytics|Visualization designer'),
+          href: "#"
+        )
+      end
     end
 
     context 'with valid data' do

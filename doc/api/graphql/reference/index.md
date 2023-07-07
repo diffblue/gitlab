@@ -1045,6 +1045,7 @@ Input type: `AdminSidekiqQueuesDeleteJobsInput`
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="mutationadminsidekiqqueuesdeletejobsairesource"></a>`aiResource` | [`String`](#string) | Delete jobs matching ai_resource in the context metadata. |
 | <a id="mutationadminsidekiqqueuesdeletejobsartifactsize"></a>`artifactSize` | [`String`](#string) | Delete jobs matching artifact_size in the context metadata. |
 | <a id="mutationadminsidekiqqueuesdeletejobsartifactusedcdn"></a>`artifactUsedCdn` | [`String`](#string) | Delete jobs matching artifact_used_cdn in the context metadata. |
 | <a id="mutationadminsidekiqqueuesdeletejobsartifactsdependenciescount"></a>`artifactsDependenciesCount` | [`String`](#string) | Delete jobs matching artifacts_dependencies_count in the context metadata. |
@@ -3183,6 +3184,7 @@ Input type: `EnvironmentCreateInput`
 | <a id="mutationenvironmentcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationenvironmentcreateclusteragentid"></a>`clusterAgentId` | [`ClustersAgentID`](#clustersagentid) | Cluster agent of the environment. |
 | <a id="mutationenvironmentcreateexternalurl"></a>`externalUrl` | [`String`](#string) | External URL of the environment. |
+| <a id="mutationenvironmentcreatekubernetesnamespace"></a>`kubernetesNamespace` | [`String`](#string) | Kubernetes namespace of the environment. |
 | <a id="mutationenvironmentcreatename"></a>`name` | [`String!`](#string) | Name of the environment. |
 | <a id="mutationenvironmentcreateprojectpath"></a>`projectPath` | [`ID!`](#id) | Full path of the project. |
 | <a id="mutationenvironmentcreatetier"></a>`tier` | [`DeploymentTier`](#deploymenttier) | Tier of the environment. |
@@ -3251,6 +3253,7 @@ Input type: `EnvironmentUpdateInput`
 | <a id="mutationenvironmentupdateclusteragentid"></a>`clusterAgentId` | [`ClustersAgentID`](#clustersagentid) | Cluster agent of the environment. |
 | <a id="mutationenvironmentupdateexternalurl"></a>`externalUrl` | [`String`](#string) | External URL of the environment. |
 | <a id="mutationenvironmentupdateid"></a>`id` | [`EnvironmentID!`](#environmentid) | Global ID of the environment to update. |
+| <a id="mutationenvironmentupdatekubernetesnamespace"></a>`kubernetesNamespace` | [`String`](#string) | Kubernetes namespace of the environment. |
 | <a id="mutationenvironmentupdatetier"></a>`tier` | [`DeploymentTier`](#deploymenttier) | Tier of the environment. |
 
 #### Fields
@@ -9934,6 +9937,29 @@ The connection type for [`MergeRequest`](#mergerequest).
 | <a id="mergerequestconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
 | <a id="mergerequestconnectiontotaltimetomerge"></a>`totalTimeToMerge` | [`Float`](#float) | Total sum of time to merge, in seconds, for the collection of merge requests. |
 
+#### `MergeRequestDiffConnection`
+
+The connection type for [`MergeRequestDiff`](#mergerequestdiff).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mergerequestdiffconnectionedges"></a>`edges` | [`[MergeRequestDiffEdge]`](#mergerequestdiffedge) | A list of edges. |
+| <a id="mergerequestdiffconnectionnodes"></a>`nodes` | [`[MergeRequestDiff]`](#mergerequestdiff) | A list of nodes. |
+| <a id="mergerequestdiffconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `MergeRequestDiffEdge`
+
+The edge type for [`MergeRequestDiff`](#mergerequestdiff).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mergerequestdiffedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="mergerequestdiffedgenode"></a>`node` | [`MergeRequestDiff`](#mergerequestdiff) | The item at the end of the edge. |
+
 #### `MergeRequestDiffLlmSummaryConnection`
 
 The connection type for [`MergeRequestDiffLlmSummary`](#mergerequestdiffllmsummary).
@@ -10014,6 +10040,29 @@ The edge type for [`MergeRequestParticipant`](#mergerequestparticipant).
 | <a id="mergerequestparticipantedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="mergerequestparticipantedgenode"></a>`node` | [`MergeRequestParticipant`](#mergerequestparticipant) | The item at the end of the edge. |
 
+#### `MergeRequestReviewLlmSummaryConnection`
+
+The connection type for [`MergeRequestReviewLlmSummary`](#mergerequestreviewllmsummary).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mergerequestreviewllmsummaryconnectionedges"></a>`edges` | [`[MergeRequestReviewLlmSummaryEdge]`](#mergerequestreviewllmsummaryedge) | A list of edges. |
+| <a id="mergerequestreviewllmsummaryconnectionnodes"></a>`nodes` | [`[MergeRequestReviewLlmSummary]`](#mergerequestreviewllmsummary) | A list of nodes. |
+| <a id="mergerequestreviewllmsummaryconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `MergeRequestReviewLlmSummaryEdge`
+
+The edge type for [`MergeRequestReviewLlmSummary`](#mergerequestreviewllmsummary).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mergerequestreviewllmsummaryedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="mergerequestreviewllmsummaryedgenode"></a>`node` | [`MergeRequestReviewLlmSummary`](#mergerequestreviewllmsummary) | The item at the end of the edge. |
+
 #### `MergeRequestReviewerConnection`
 
 The connection type for [`MergeRequestReviewer`](#mergerequestreviewer).
@@ -10036,29 +10085,6 @@ The edge type for [`MergeRequestReviewer`](#mergerequestreviewer).
 | ---- | ---- | ----------- |
 | <a id="mergerequestrevieweredgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="mergerequestrevieweredgenode"></a>`node` | [`MergeRequestReviewer`](#mergerequestreviewer) | The item at the end of the edge. |
-
-#### `MetricsDashboardAnnotationConnection`
-
-The connection type for [`MetricsDashboardAnnotation`](#metricsdashboardannotation).
-
-##### Fields
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="metricsdashboardannotationconnectionedges"></a>`edges` | [`[MetricsDashboardAnnotationEdge]`](#metricsdashboardannotationedge) | A list of edges. |
-| <a id="metricsdashboardannotationconnectionnodes"></a>`nodes` | [`[MetricsDashboardAnnotation]`](#metricsdashboardannotation) | A list of nodes. |
-| <a id="metricsdashboardannotationconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
-
-#### `MetricsDashboardAnnotationEdge`
-
-The edge type for [`MetricsDashboardAnnotation`](#metricsdashboardannotation).
-
-##### Fields
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="metricsdashboardannotationedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
-| <a id="metricsdashboardannotationedgenode"></a>`node` | [`MetricsDashboardAnnotation`](#metricsdashboardannotation) | The item at the end of the edge. |
 
 #### `MilestoneConnection`
 
@@ -10639,6 +10665,29 @@ The edge type for [`ProjectMember`](#projectmember).
 | ---- | ---- | ----------- |
 | <a id="projectmemberedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="projectmemberedgenode"></a>`node` | [`ProjectMember`](#projectmember) | The item at the end of the edge. |
+
+#### `ProjectRepositoryRegistryConnection`
+
+The connection type for [`ProjectRepositoryRegistry`](#projectrepositoryregistry).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projectrepositoryregistryconnectionedges"></a>`edges` | [`[ProjectRepositoryRegistryEdge]`](#projectrepositoryregistryedge) | A list of edges. |
+| <a id="projectrepositoryregistryconnectionnodes"></a>`nodes` | [`[ProjectRepositoryRegistry]`](#projectrepositoryregistry) | A list of nodes. |
+| <a id="projectrepositoryregistryconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `ProjectRepositoryRegistryEdge`
+
+The edge type for [`ProjectRepositoryRegistry`](#projectrepositoryregistry).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projectrepositoryregistryedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="projectrepositoryregistryedgenode"></a>`node` | [`ProjectRepositoryRegistry`](#projectrepositoryregistry) | The item at the end of the edge. |
 
 #### `ProjectWikiRepositoryRegistryConnection`
 
@@ -13137,7 +13186,6 @@ CI/CD variables for a project.
 | <a id="cirunnergroups"></a>`groups` | [`GroupConnection`](#groupconnection) | Groups the runner is associated with. For group runners only. (see [Connections](#connections)) |
 | <a id="cirunnerid"></a>`id` | [`CiRunnerID!`](#cirunnerid) | ID of the runner. |
 | <a id="cirunneripaddress"></a>`ipAddress` **{warning-solid}** | [`String`](#string) | **Deprecated** in 16.2. Use field in `manager` object instead. |
-| <a id="cirunnerjobcount"></a>`jobCount` | [`Int`](#int) | Number of jobs processed by the runner (limited to 1000, plus one to indicate that more items exist). |
 | <a id="cirunnerjobexecutionstatus"></a>`jobExecutionStatus` **{warning-solid}** | [`CiRunnerJobExecutionStatus`](#cirunnerjobexecutionstatus) | **Introduced** in 15.7. This feature is an Experiment. It can be changed or removed at any time. Job execution status of the runner. |
 | <a id="cirunnerlocked"></a>`locked` | [`Boolean`](#boolean) | Indicates the runner is locked. |
 | <a id="cirunnermaintenancenote"></a>`maintenanceNote` | [`String`](#string) | Runner's maintenance notes. |
@@ -13162,6 +13210,18 @@ CI/CD variables for a project.
 | <a id="cirunnerversion"></a>`version` **{warning-solid}** | [`String`](#string) | **Deprecated** in 16.2. Use field in `manager` object instead. |
 
 #### Fields with arguments
+
+##### `CiRunner.jobCount`
+
+Number of jobs processed by the runner (limited to 1000, plus one to indicate that more items exist).
+
+Returns [`Int`](#int).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="cirunnerjobcountstatuses"></a>`statuses` **{warning-solid}** | [`[CiJobStatus!]`](#cijobstatus) | **Introduced** in 16.2. This feature is an Experiment. It can be changed or removed at any time. Filter jobs by status. |
 
 ##### `CiRunner.jobs`
 
@@ -14738,6 +14798,7 @@ Describes where code is deployed for a project.
 | <a id="environmentenvironmenttype"></a>`environmentType` | [`String`](#string) | Folder name of the environment. |
 | <a id="environmentexternalurl"></a>`externalUrl` | [`String`](#string) | External URL of the environment. |
 | <a id="environmentid"></a>`id` | [`ID!`](#id) | ID of the environment. |
+| <a id="environmentkubernetesnamespace"></a>`kubernetesNamespace` | [`String`](#string) | Kubernetes namespace of the environment. |
 | <a id="environmentlatestopenedmostseverealert"></a>`latestOpenedMostSevereAlert` | [`AlertManagementAlert`](#alertmanagementalert) | Most severe open alert for the environment. If multiple alerts have equal severity, the most recent is returned. |
 | <a id="environmentname"></a>`name` | [`String!`](#string) | Human-readable name of the environment. |
 | <a id="environmentpath"></a>`path` | [`String!`](#string) | Path to the environment. |
@@ -14778,22 +14839,6 @@ Returns [`Deployment`](#deployment).
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="environmentlastdeploymentstatus"></a>`status` | [`DeploymentStatus!`](#deploymentstatus) | Status of the Deployment. |
-
-##### `Environment.metricsDashboard`
-
-Metrics dashboard schema for the environment.
-
-WARNING:
-**Deprecated** in 16.0.
-Returns no data. Underlying feature was removed in 16.0.
-
-Returns [`MetricsDashboard`](#metricsdashboard).
-
-###### Arguments
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="environmentmetricsdashboardpath"></a>`path` | [`String!`](#string) | Path to a file which defines a metrics dashboard eg: `"config/prometheus/common_metrics.yml"`. |
 
 ### `EnvironmentPermissions`
 
@@ -15661,6 +15706,29 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="geonodepipelineartifactregistrieskeyword"></a>`keyword` | [`String`](#string) | Filters registries by their attributes using a keyword. |
 | <a id="geonodepipelineartifactregistriesreplicationstate"></a>`replicationState` | [`ReplicationStateEnum`](#replicationstateenum) | Filters registries by their replication state. |
 | <a id="geonodepipelineartifactregistriesverificationstate"></a>`verificationState` | [`VerificationStateEnum`](#verificationstateenum) | Filters registries by their verification state. |
+
+##### `GeoNode.projectRepositoryRegistries`
+
+Find Project registries on this Geo node. Ignored if `geo_project_repository_replication` feature flag is disabled.
+
+WARNING:
+**Introduced** in 16.2.
+This feature is an Experiment. It can be changed or removed at any time.
+
+Returns [`ProjectRepositoryRegistryConnection`](#projectrepositoryregistryconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="geonodeprojectrepositoryregistriesids"></a>`ids` | [`[ID!]`](#id) | Filters registries by their ID. |
+| <a id="geonodeprojectrepositoryregistrieskeyword"></a>`keyword` | [`String`](#string) | Filters registries by their attributes using a keyword. |
+| <a id="geonodeprojectrepositoryregistriesreplicationstate"></a>`replicationState` | [`ReplicationStateEnum`](#replicationstateenum) | Filters registries by their replication state. |
+| <a id="geonodeprojectrepositoryregistriesverificationstate"></a>`verificationState` | [`VerificationStateEnum`](#verificationstateenum) | Filters registries by their verification state. |
 
 ##### `GeoNode.projectWikiRepositoryRegistries`
 
@@ -17575,6 +17643,7 @@ Defines which user roles, users, or groups can merge into a protected branch.
 | <a id="mergerequestmergecommitsha"></a>`mergeCommitSha` | [`String`](#string) | SHA of the merge request commit (set once merged). |
 | <a id="mergerequestmergeerror"></a>`mergeError` | [`String`](#string) | Error message due to a merge error. |
 | <a id="mergerequestmergeongoing"></a>`mergeOngoing` | [`Boolean!`](#boolean) | Indicates if a merge is currently occurring. |
+| <a id="mergerequestmergerequestdiffs"></a>`mergeRequestDiffs` **{warning-solid}** | [`MergeRequestDiffConnection`](#mergerequestdiffconnection) | **Introduced** in 16.2. This feature is an Experiment. It can be changed or removed at any time. Diff versions of a merge request. |
 | <a id="mergerequestmergestatus"></a>`mergeStatus` **{warning-solid}** | [`String`](#string) | **Deprecated** in 14.0. This was renamed. Use: [`MergeRequest.mergeStatusEnum`](#mergerequestmergestatusenum). |
 | <a id="mergerequestmergestatusenum"></a>`mergeStatusEnum` | [`MergeStatus`](#mergestatus) | Merge status of the merge request. |
 | <a id="mergerequestmergetrainscount"></a>`mergeTrainsCount` | [`Int`](#int) | Number of merge requests in the merge train. |
@@ -18267,6 +18336,19 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="mergerequestauthorworkspacesincludeactualstates"></a>`includeActualStates` | [`[String!]`](#string) | Includes all workspaces that match any of the actual states. |
 | <a id="mergerequestauthorworkspacesprojectids"></a>`projectIds` | [`[ProjectID!]`](#projectid) | Filter workspaces by project id. |
 
+### `MergeRequestDiff`
+
+A diff version of a merge request.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mergerequestdiffcreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp of when the diff was created. |
+| <a id="mergerequestdiffdiffllmsummary"></a>`diffLlmSummary` | [`MergeRequestDiffLlmSummary`](#mergerequestdiffllmsummary) | Diff summary generated by AI. |
+| <a id="mergerequestdiffreviewllmsummaries"></a>`reviewLlmSummaries` | [`MergeRequestReviewLlmSummaryConnection`](#mergerequestreviewllmsummaryconnection) | Review summaries generated by AI. (see [Connections](#connections)) |
+| <a id="mergerequestdiffupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp of when the diff was updated. |
+
 ### `MergeRequestDiffLlmSummary`
 
 A diff summary generated by AI.
@@ -18595,6 +18677,22 @@ Check permissions for the current user on a merge request.
 | <a id="mergerequestpermissionsrevertoncurrentmergerequest"></a>`revertOnCurrentMergeRequest` | [`Boolean!`](#boolean) | Indicates the user can perform `revert_on_current_merge_request` on this resource. |
 | <a id="mergerequestpermissionsupdatemergerequest"></a>`updateMergeRequest` | [`Boolean!`](#boolean) | Indicates the user can perform `update_merge_request` on this resource. |
 
+### `MergeRequestReviewLlmSummary`
+
+A review summary generated by AI.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mergerequestreviewllmsummarycontent"></a>`content` | [`String!`](#string) | Content of the review summary. |
+| <a id="mergerequestreviewllmsummarycreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp of when the review summary was created. |
+| <a id="mergerequestreviewllmsummarymergerequestdiffid"></a>`mergeRequestDiffId` | [`ID!`](#id) | ID of the Merge Request diff associated with the review summary. |
+| <a id="mergerequestreviewllmsummaryprovider"></a>`provider` | [`String!`](#string) | AI provider that generated the summary. |
+| <a id="mergerequestreviewllmsummaryreviewer"></a>`reviewer` | [`UserCore`](#usercore) | User who authored the review associated with the review summary. |
+| <a id="mergerequestreviewllmsummaryupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp of when the review summary was updated. |
+| <a id="mergerequestreviewllmsummaryuser"></a>`user` | [`UserCore`](#usercore) | User associated with the review summary. |
+
 ### `MergeRequestReviewer`
 
 A user assigned to a merge request as a reviewer.
@@ -18894,34 +18992,6 @@ Represents a metric image upload.
 | <a id="metricimageid"></a>`id` | [`ID!`](#id) | ID of the metric upload. |
 | <a id="metricimageiid"></a>`iid` | [`ID!`](#id) | Internal ID of the metric upload. |
 | <a id="metricimageurl"></a>`url` | [`String!`](#string) | URL of the metric source. |
-
-### `MetricsDashboard`
-
-#### Fields
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="metricsdashboardpath"></a>`path` | [`String`](#string) | Path to a file with the dashboard definition. |
-| <a id="metricsdashboardschemavalidationwarnings"></a>`schemaValidationWarnings` | [`[String!]`](#string) | Dashboard schema validation warnings. |
-
-#### Fields with arguments
-
-##### `MetricsDashboard.annotations`
-
-Annotations added to the dashboard.
-
-Returns [`MetricsDashboardAnnotationConnection`](#metricsdashboardannotationconnection).
-
-This field returns a [connection](#connections). It accepts the
-four standard [pagination arguments](#connection-pagination-arguments):
-`before: String`, `after: String`, `first: Int`, `last: Int`.
-
-###### Arguments
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="metricsdashboardannotationsfrom"></a>`from` | [`Time!`](#time) | Timestamp marking date and time from which annotations need to be fetched. |
-| <a id="metricsdashboardannotationsto"></a>`to` | [`Time`](#time) | Timestamp marking date and time to which annotations need to be fetched. |
 
 ### `MetricsDashboardAnnotation`
 
@@ -19602,7 +19672,7 @@ Represents a file or directory in the project repository that has been locked.
 | <a id="pipelinecommitpath"></a>`commitPath` | [`String`](#string) | Path to the commit that triggered the pipeline. |
 | <a id="pipelinecommittedat"></a>`committedAt` | [`Time`](#time) | Timestamp of the pipeline's commit. |
 | <a id="pipelinecomplete"></a>`complete` | [`Boolean!`](#boolean) | Indicates if a pipeline is complete. |
-| <a id="pipelineconfigsource"></a>`configSource` | [`PipelineConfigSourceEnum`](#pipelineconfigsourceenum) | Configuration source of the pipeline (UNKNOWN_SOURCE, REPOSITORY_SOURCE, AUTO_DEVOPS_SOURCE, WEBIDE_SOURCE, REMOTE_SOURCE, EXTERNAL_PROJECT_SOURCE, BRIDGE_SOURCE, PARAMETER_SOURCE, COMPLIANCE_SOURCE). |
+| <a id="pipelineconfigsource"></a>`configSource` | [`PipelineConfigSourceEnum`](#pipelineconfigsourceenum) | Configuration source of the pipeline (UNKNOWN_SOURCE, REPOSITORY_SOURCE, AUTO_DEVOPS_SOURCE, WEBIDE_SOURCE, REMOTE_SOURCE, EXTERNAL_PROJECT_SOURCE, BRIDGE_SOURCE, PARAMETER_SOURCE, COMPLIANCE_SOURCE, SECURITY_POLICIES_DEFAULT_SOURCE). |
 | <a id="pipelinecoverage"></a>`coverage` | [`Float`](#float) | Coverage percentage. |
 | <a id="pipelinecreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp of the pipeline's creation. |
 | <a id="pipelinedastprofile"></a>`dastProfile` | [`DastProfile`](#dastprofile) | DAST profile associated with the pipeline. |
@@ -21517,6 +21587,25 @@ Returns [`UserMergeRequestInteraction`](#usermergerequestinteraction).
 | <a id="projectpermissionsupdatepages"></a>`updatePages` | [`Boolean!`](#boolean) | Indicates the user can perform `update_pages` on this resource. |
 | <a id="projectpermissionsupdatewiki"></a>`updateWiki` | [`Boolean!`](#boolean) | Indicates the user can perform `update_wiki` on this resource. |
 | <a id="projectpermissionsuploadfile"></a>`uploadFile` | [`Boolean!`](#boolean) | Indicates the user can perform `upload_file` on this resource. |
+
+### `ProjectRepositoryRegistry`
+
+Represents the Geo replication and verification state of a project repository.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projectrepositoryregistrycreatedat"></a>`createdAt` | [`Time`](#time) | Timestamp when the ProjectRepositoryRegistry was created. |
+| <a id="projectrepositoryregistryid"></a>`id` | [`ID!`](#id) | ID of the ProjectRepositoryRegistry. |
+| <a id="projectrepositoryregistrylastsyncfailure"></a>`lastSyncFailure` | [`String`](#string) | Error message during sync of the ProjectRepositoryRegistry. |
+| <a id="projectrepositoryregistrylastsyncedat"></a>`lastSyncedAt` | [`Time`](#time) | Timestamp of the most recent successful sync of the ProjectRepositoryRegistry. |
+| <a id="projectrepositoryregistryprojectid"></a>`projectId` | [`ID!`](#id) | ID of the Project. |
+| <a id="projectrepositoryregistryretryat"></a>`retryAt` | [`Time`](#time) | Timestamp after which the ProjectRepositoryRegistry is resynced. |
+| <a id="projectrepositoryregistryretrycount"></a>`retryCount` | [`Int`](#int) | Number of consecutive failed sync attempts of the ProjectRepositoryRegistry. |
+| <a id="projectrepositoryregistrystate"></a>`state` | [`RegistryState`](#registrystate) | Sync state of the ProjectRepositoryRegistry. |
+| <a id="projectrepositoryregistryverificationretryat"></a>`verificationRetryAt` | [`Time`](#time) | Timestamp after which the ProjectRepositoryRegistry is reverified. |
+| <a id="projectrepositoryregistryverifiedat"></a>`verifiedAt` | [`Time`](#time) | Timestamp of the most recent successful verification of the ProjectRepositoryRegistry. |
 
 ### `ProjectSecurityPolicySource`
 
@@ -25474,6 +25563,7 @@ Geo registry class.
 | <a id="georegistryclasspackage_file_registry"></a>`PACKAGE_FILE_REGISTRY` | Geo::PackageFileRegistry registry class. |
 | <a id="georegistryclasspages_deployment_registry"></a>`PAGES_DEPLOYMENT_REGISTRY` | Geo::PagesDeploymentRegistry registry class. |
 | <a id="georegistryclasspipeline_artifact_registry"></a>`PIPELINE_ARTIFACT_REGISTRY` | Geo::PipelineArtifactRegistry registry class. |
+| <a id="georegistryclassproject_repository_registry"></a>`PROJECT_REPOSITORY_REGISTRY` | Geo::ProjectRepositoryRegistry registry class. |
 | <a id="georegistryclassproject_wiki_repository_registry"></a>`PROJECT_WIKI_REPOSITORY_REGISTRY` | Geo::ProjectWikiRepositoryRegistry registry class. |
 | <a id="georegistryclasssnippet_repository_registry"></a>`SNIPPET_REPOSITORY_REGISTRY` | Geo::SnippetRepositoryRegistry registry class. |
 | <a id="georegistryclassterraform_state_version_registry"></a>`TERRAFORM_STATE_VERSION_REGISTRY` | Geo::TerraformStateVersionRegistry registry class. |
@@ -26175,6 +26265,7 @@ Values for sorting package.
 | <a id="pipelineconfigsourceenumparameter_source"></a>`PARAMETER_SOURCE` | Parameter source. |
 | <a id="pipelineconfigsourceenumremote_source"></a>`REMOTE_SOURCE` | Remote source. |
 | <a id="pipelineconfigsourceenumrepository_source"></a>`REPOSITORY_SOURCE` | Repository source. |
+| <a id="pipelineconfigsourceenumsecurity_policies_default_source"></a>`SECURITY_POLICIES_DEFAULT_SOURCE` | Security policies default source. |
 | <a id="pipelineconfigsourceenumunknown_source"></a>`UNKNOWN_SOURCE` | Unknown source. |
 | <a id="pipelineconfigsourceenumwebide_source"></a>`WEBIDE_SOURCE` | Webide source. |
 
@@ -26718,6 +26809,7 @@ Verification status of a GPG or X.509 signature for a commit.
 | <a id="verificationstatusunverified"></a>`UNVERIFIED` | unverified verification status. |
 | <a id="verificationstatusunverified_key"></a>`UNVERIFIED_KEY` | unverified_key verification status. |
 | <a id="verificationstatusverified"></a>`VERIFIED` | verified verification status. |
+| <a id="verificationstatusverified_system"></a>`VERIFIED_SYSTEM` | verified_system verification status. |
 
 ### `VisibilityLevelsEnum`
 
@@ -27088,6 +27180,12 @@ An example `CiPipelineID` is: `"gid://gitlab/Ci::Pipeline/1"`.
 A `CiPipelineScheduleID` is a global ID. It is encoded as a string.
 
 An example `CiPipelineScheduleID` is: `"gid://gitlab/Ci::PipelineSchedule/1"`.
+
+### `CiPipelineScheduleVariableID`
+
+A `CiPipelineScheduleVariableID` is a global ID. It is encoded as a string.
+
+An example `CiPipelineScheduleVariableID` is: `"gid://gitlab/Ci::PipelineScheduleVariable/1"`.
 
 ### `CiRunnerID`
 
@@ -28940,6 +29038,8 @@ Attributes for the pipeline schedule variable.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="pipelineschedulevariableinputdestroy"></a>`destroy` | [`Boolean`](#boolean) | Boolean option to destroy the variable. |
+| <a id="pipelineschedulevariableinputid"></a>`id` | [`CiPipelineScheduleVariableID`](#cipipelineschedulevariableid) | ID of the variable to mutate. |
 | <a id="pipelineschedulevariableinputkey"></a>`key` | [`String!`](#string) | Name of the variable. |
 | <a id="pipelineschedulevariableinputvalue"></a>`value` | [`String!`](#string) | Value of the variable. |
 | <a id="pipelineschedulevariableinputvariabletype"></a>`variableType` | [`CiVariableType!`](#civariabletype) | Type of the variable. |

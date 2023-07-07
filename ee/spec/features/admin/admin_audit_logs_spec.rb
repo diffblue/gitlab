@@ -103,6 +103,29 @@ RSpec.describe 'Admin::AuditLogs', :js, feature_category: :audit_events do
       end
     end
 
+    describe 'instance events' do
+      let(:destination) { create(:instance_external_audit_event_destination) }
+
+      before do
+        audit_context = {
+          name: "create_instance_event_streaming_destination",
+          author: admin,
+          scope: Gitlab::Audit::InstanceScope.new,
+          target: destination,
+          message: "Create instance event streaming destination #{destination.destination_url}"
+        }
+
+        ::Gitlab::Audit::Auditor.audit(audit_context)
+
+        visit admin_audit_logs_path
+      end
+
+      it 'has instance audit event' do
+        expect(page).to have_content('gitlab_instance')
+        expect(page).to have_content('Create instance event streaming destination')
+      end
+    end
+
     describe 'filter by date' do
       let_it_be(:audit_event_1) { create(:user_audit_event, created_at: 5.days.ago) }
       let_it_be(:audit_event_2) { create(:user_audit_event, created_at: 3.days.ago) }

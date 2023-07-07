@@ -1,4 +1,4 @@
-import { shallowMount } from '@vue/test-utils';
+import { shallowMount, createWrapper } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
@@ -17,6 +17,7 @@ import {
   HTTP_STATUS_NOT_FOUND,
   HTTP_STATUS_UNAUTHORIZED,
 } from '~/lib/utils/http_status';
+import waitForPromises from 'helpers/wait_for_promises';
 
 Vue.use(Vuex);
 
@@ -110,7 +111,8 @@ describe('Security Dashboard component', () => {
         Object.assign(store.state.vulnerabilities, {
           modal: { vulnerability: { uuid: findingUuid } },
         });
-        wrapper.vm.$root.$emit(BV_SHOW_MODAL, VULNERABILITY_MODAL_ID);
+        const rootWrapper = createWrapper(wrapper.vm.$root);
+        rootWrapper.vm.$emit(BV_SHOW_MODAL, VULNERABILITY_MODAL_ID);
         await nextTick();
       };
 
@@ -190,12 +192,26 @@ describe('Security Dashboard component', () => {
           );
         },
       );
-    });
 
-    it('emits a hide modal event when modal does not have an error and hideModal is called', () => {
-      const rootEmit = jest.spyOn(wrapper.vm.$root, '$emit');
-      wrapper.vm.hideModal();
-      expect(rootEmit).toHaveBeenCalledWith(BV_HIDE_MODAL, VULNERABILITY_MODAL_ID);
+      it.each`
+        emittedModalEvent               | eventPayload
+        ${'dismissVulnerability'}       | ${'bar'}
+        ${'addDismissalComment'}        | ${'foo'}
+        ${'deleteDismissalComment'}     | ${undefined}
+        ${'revertDismissVulnerability'} | ${undefined}
+      `(
+        'emits a hide modal event when modal does not have an error and "$emittedModalEvent" is called',
+        async ({ emittedModalEvent, eventPayload }) => {
+          const rootWrapper = createWrapper(wrapper.vm.$root);
+
+          expect(rootWrapper.emitted(BV_HIDE_MODAL)).toBeUndefined();
+          jest.spyOn(store, 'dispatch').mockImplementation(() => Promise.resolve());
+          wrapper.findComponent(IssueModal).vm.$emit(emittedModalEvent, eventPayload);
+          await waitForPromises();
+
+          expect(rootWrapper.emitted(BV_HIDE_MODAL)[0]).toContain(VULNERABILITY_MODAL_ID);
+        },
+      );
     });
   });
 
@@ -237,9 +253,10 @@ describe('Security Dashboard component', () => {
     });
 
     it('does not emit a hide modal event when modal has error', () => {
-      const rootEmit = jest.spyOn(wrapper.vm.$root, '$emit');
-      wrapper.vm.hideModal();
-      expect(rootEmit).not.toHaveBeenCalled();
+      const rootWrapper = createWrapper(wrapper.vm.$root);
+
+      expect(wrapper.findComponent(IssueModal).exists()).toBe(false);
+      expect(rootWrapper.emitted(BV_HIDE_MODAL)).toBeUndefined();
     });
 
     it.each([HTTP_STATUS_UNAUTHORIZED, HTTP_STATUS_FORBIDDEN])(

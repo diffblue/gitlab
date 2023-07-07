@@ -742,6 +742,7 @@ export const mockTokens = (
     type: TOKEN_TYPE_ASSIGNEE,
     operators: OPERATORS_IS_NOT,
     token: UserToken,
+    dataType: 'user',
     unique: true,
     fetchUsers,
     preloadedUsers: [],
@@ -753,6 +754,7 @@ export const mockTokens = (
     operators: OPERATORS_IS_NOT,
     symbol: '@',
     token: UserToken,
+    dataType: 'user',
     unique: true,
     fetchUsers,
     preloadedUsers: [],
@@ -970,7 +972,7 @@ export const moveEpicMutationResponse = {
 export const createIssueMutationResponse = {
   data: {
     createIssuable: {
-      issuable: rawIssue,
+      issuable: { ...rawIssue, id: 'gid://gitlab/Issue/35' },
       errors: [],
       __typename: 'CreateIssuePayload',
     },

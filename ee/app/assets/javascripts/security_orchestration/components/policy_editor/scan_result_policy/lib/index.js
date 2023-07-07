@@ -8,6 +8,7 @@ export {
   invalidScanners,
   invalidVulnerabilitiesAllowed,
   invalidVulnerabilityStates,
+  invalidBranchType,
   SCAN_FINDING,
   LICENSE_FINDING,
 } from './rules';

@@ -238,40 +238,6 @@ RSpec.describe GroupsHelper do
     end
   end
 
-  describe '#project_storage_limit_enforced?' do
-    subject(:project_storage_limit_enforced?) { helper.project_storage_limit_enforced?(group) }
-
-    context 'when project-level storage limits are enabled' do
-      before do
-        allow(::Namespaces::Storage::Enforcement).to receive(:enforce_limit?).with(group).and_return(false)
-      end
-
-      context 'when the project limit is enforced' do
-        before do
-          stub_ee_application_setting(automatic_purchased_storage_allocation: true)
-        end
-
-        it { is_expected.to be true }
-      end
-
-      context 'when project limit is not enforced' do
-        before do
-          stub_ee_application_setting(automatic_purchased_storage_allocation: false)
-        end
-
-        it { is_expected.to be false }
-      end
-    end
-
-    context 'when namespace-level storage limits are enabled' do
-      before do
-        allow(::Namespaces::Storage::Enforcement).to receive(:enforce_limit?).with(group).and_return(true)
-      end
-
-      it { is_expected.to be false }
-    end
-  end
-
   describe '#group_seats_usage_quota_app_data' do
     subject(:group_seats_usage_quota_app_data) { helper.group_seats_usage_quota_app_data(group) }
 

@@ -107,7 +107,7 @@ RSpec.describe GitlabSubscriptions::RefreshSeatsWorker, :saas, feature_category:
           namespace: create(:namespace, :with_namespace_settings),
           seats: 11,
           max_seats_used: 11,
-          last_seat_refresh_at: 1.hour.ago.to_s(:db)
+          last_seat_refresh_at: 1.hour.ago.to_fs(:db)
         )
       end
 

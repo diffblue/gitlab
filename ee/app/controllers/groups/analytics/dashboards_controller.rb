@@ -12,6 +12,7 @@ module Groups
         destinations: %i[redis_hll snowplow]
 
       before_action { authorize_view_by_action!(:read_group_analytics_dashboards) }
+      before_action :redirect_to_value_streams_dashboard, only: :index
       before_action do
         push_frontend_feature_flag(:vsd_graphql_dora_and_flow_metrics, @group)
       end
@@ -19,12 +20,6 @@ module Groups
       layout 'group'
 
       MAX_ALLOWED_PATHS = 4
-
-      def index
-        # Value streams dashboard has been moved into another action,
-        # this is a temporary redirect to keep current bookmarks healthy.
-        redirect_to(value_streams_dashboard_group_analytics_dashboards_path(@group, query: params[:query]))
-      end
 
       def value_streams_dashboard
         @pointer_project = find_pointer_project
@@ -66,6 +61,14 @@ module Groups
 
       def tracking_project_source
         nil
+      end
+
+      def redirect_to_value_streams_dashboard
+        return if Feature.enabled?(:group_analytics_dashboards)
+
+        # Value streams dashboard has been moved into another action,
+        # this is a temporary redirect to keep current bookmarks healthy.
+        redirect_to(value_streams_dashboard_group_analytics_dashboards_path(@group, query: params[:query]))
       end
     end
   end

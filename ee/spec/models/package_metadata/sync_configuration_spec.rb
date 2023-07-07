@@ -8,187 +8,121 @@ RSpec.describe PackageMetadata::SyncConfiguration, feature_category: :software_c
     stub_feature_flags(compressed_package_metadata_synchronization: false)
   end
 
-  describe '.all_by_enabled_purl_type' do
-    subject(:configurations) { described_class.all_by_enabled_purl_type }
+  describe 'configs based on enabled purl types' do
+    using RSpec::Parameterized::TableSyntax
 
-    context 'with all purl types allowed to sync' do
+    let(:all_purl_types) { Enums::PackageMetadata.purl_types.values }
+
+    shared_examples_for 'it returns all enabled sync configs' do
+      let(:purl_type_map) { Enums::PackageMetadata::PURL_TYPES.invert }
       before do
-        # stub application setting with all available at the moment package metadata types
-        stub_application_setting(package_metadata_purl_types: Enums::PackageMetadata.purl_types.values)
+        stub_application_setting(package_metadata_purl_types: enabled_purl_types)
       end
 
-      context 'when only feature flag package_metadata_synchronization is set' do
-        before do
-          stub_feature_flags(package_metadata_synchronization: true)
-          stub_feature_flags(compressed_package_metadata_synchronization: false)
+      specify do
+        expected = []
+        expected_version_formats.each do |version_format|
+          expected += enabled_purl_types.map do |purl_type|
+            have_attributes(data_type: expected_data_type, storage_type: :gcp, base_uri: expected_bucket,
+              version_format: version_format, purl_type: purl_type_map[purl_type])
+          end
         end
 
-        it 'returns a configuration instance for each known purl type' do
-          expect(configurations).to match_array([
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v1', purl_type: 'composer'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v1', purl_type: 'conan'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v1', purl_type: 'gem'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v1', purl_type: 'golang'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v1', purl_type: 'maven'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v1', purl_type: 'npm'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v1', purl_type: 'nuget'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v1', purl_type: 'pypi'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v1', purl_type: 'apk'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v1', purl_type: 'rpm'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v1', purl_type: 'deb'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v1', purl_type: 'cbl_mariner')
-          ])
-        end
-      end
-
-      context 'when only feature flag compressed_package_metadata_synchronization is set' do
-        before do
-          stub_feature_flags(package_metadata_synchronization: false)
-          stub_feature_flags(compressed_package_metadata_synchronization: true)
-        end
-
-        it 'returns a configuration instance for each known purl type' do
-          expect(configurations).to match_array([
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v2', purl_type: 'composer'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v2', purl_type: 'conan'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v2', purl_type: 'gem'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v2', purl_type: 'golang'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v2', purl_type: 'maven'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v2', purl_type: 'npm'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v2', purl_type: 'nuget'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v2', purl_type: 'pypi'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v2', purl_type: 'apk'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v2', purl_type: 'rpm'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v2', purl_type: 'deb'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v2', purl_type: 'cbl_mariner')
-          ])
-        end
-      end
-
-      context 'when both feature flags are set' do
-        before do
-          stub_feature_flags(package_metadata_synchronization: true)
-          stub_feature_flags(compressed_package_metadata_synchronization: true)
-        end
-
-        it 'returns a configuration instance for each known purl type' do
-          expect(configurations).to match_array([
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v2', purl_type: 'composer'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v2', purl_type: 'conan'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v2', purl_type: 'gem'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v2', purl_type: 'golang'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v2', purl_type: 'maven'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v2', purl_type: 'npm'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v2', purl_type: 'nuget'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v2', purl_type: 'pypi'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v2', purl_type: 'apk'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v2', purl_type: 'rpm'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v2', purl_type: 'deb'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v2', purl_type: 'cbl_mariner'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v1', purl_type: 'composer'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v1', purl_type: 'conan'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v1', purl_type: 'gem'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v1', purl_type: 'golang'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v1', purl_type: 'maven'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v1', purl_type: 'npm'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v1', purl_type: 'nuget'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v1', purl_type: 'pypi'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v1', purl_type: 'apk'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v1', purl_type: 'rpm'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v1', purl_type: 'deb'),
-            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-              version_format: 'v1', purl_type: 'cbl_mariner')
-          ])
-        end
+        expect(configurations.size).to eq(expected_num_configs)
+        expect(configurations).to match_array(expected)
       end
     end
 
-    context 'with some purl types allowed to sync' do
-      before do
-        stub_application_setting(package_metadata_purl_types: [1, 5])
+    context 'when syncing licenses' do
+      let(:expected_data_type) { 'licenses' }
+      let(:expected_bucket) { described_class::STORAGE_LOCATIONS.dig(:licenses, :gcp) }
+
+      subject(:configurations) { described_class.all_configs_for_licenses }
+
+      where(:sync_v1, :sync_v2, :expected_version_formats, :enabled_purl_types, :expected_num_configs) do
+        true  | false | ['v1']        | ref(:all_purl_types)  | 12
+        false | true  | ['v2']        | ref(:all_purl_types)  | 12
+        true  | true  | %w[v1 v2]     | ref(:all_purl_types)  | 24
+        false | false | []            | ref(:all_purl_types)  | 0
+        true  | false | ['v1']        | [1, 5]                | 2
+        false | true  | ['v2']        | [1, 5]                | 2
+        true  | true  | %w[v1 v2]     | [1, 5]                | 4
+        false | false | []            | [1, 5]                | 0
+        true  | false | ['v1']        | []                    | 0
+        false | true  | ['v2']        | []                    | 0
+        true  | true  | %w[v1 v2]     | []                    | 0
+        false | false | []            | []                    | 0
       end
 
-      it 'returns a configuration instance only for selected types' do
-        expect(configurations).to match_array([
-          have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-            version_format: 'v1', purl_type: 'composer'),
-          have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-            version_format: 'v1', purl_type: 'maven')
-        ])
+      with_them do
+        before do
+          stub_feature_flags(package_metadata_synchronization: sync_v1)
+          stub_feature_flags(compressed_package_metadata_synchronization: sync_v2)
+        end
+
+        it_behaves_like 'it returns all enabled sync configs'
       end
     end
 
-    context 'with none purl types allowed to sync' do
-      it 'returns an empty array' do
-        expect(configurations).to be_empty
+    context 'when syncing advisories' do
+      let(:expected_data_type) { 'advisories' }
+      let(:expected_bucket) { described_class::STORAGE_LOCATIONS.dig(:advisories, :gcp) }
+      let(:expected_version_formats) { ['v2'] }
+
+      subject(:configurations) { described_class.all_configs_for_advisories }
+
+      where(:enabled_purl_types, :expected_num_configs) do
+        ref(:all_purl_types)  | 12
+        [1, 5]                | 2
+        []                    | 0
+      end
+
+      with_them do
+        it_behaves_like 'it returns all enabled sync configs'
       end
     end
   end
 
-  describe '.get_storage_type' do
-    subject(:storage_type) { described_class.get_storage_type }
+  describe '.get_storage_type_and_base_uri_for' do
+    subject(:get_storage_and_base_uri_for) { described_class.get_storage_and_base_uri_for(data_type) }
 
     before do
-      allow(File).to receive(:exist?).with(described_class.archive_path).and_return(file_exists)
+      allow(File).to receive(:exist?).with(described_class::STORAGE_LOCATIONS.dig(:advisories, :offline))
+        .and_return(file_exists)
+      allow(File).to receive(:exist?).with(described_class::STORAGE_LOCATIONS.dig(:licenses, :offline))
+        .and_return(file_exists)
     end
 
     context 'when offline path exists' do
       let(:file_exists) { true }
 
-      it { is_expected.to eq(:offline) }
+      context 'and the data_type is advisories' do
+        let(:data_type) { 'advisories' }
+
+        it { is_expected.to match_array([:offline, described_class::STORAGE_LOCATIONS.dig(:advisories, :offline)]) }
+      end
+
+      context 'and the data_type is licenses' do
+        let(:data_type) { 'licenses' }
+
+        it { is_expected.to match_array([:offline, described_class::STORAGE_LOCATIONS.dig(:licenses, :offline)]) }
+      end
     end
 
-    context 'when no offline path' do
+    context 'when offline path does not exist' do
       let(:file_exists) { false }
 
-      it { is_expected.to eq(:gcp) }
+      context 'and the data_type is advisories' do
+        let(:data_type) { 'advisories' }
+
+        it { is_expected.to match_array([:gcp, described_class::STORAGE_LOCATIONS.dig(:advisories, :gcp)]) }
+      end
+
+      context 'and the data_type is licenses' do
+        let(:data_type) { 'licenses' }
+
+        it { is_expected.to match_array([:gcp, described_class::STORAGE_LOCATIONS.dig(:licenses, :gcp)]) }
+      end
     end
   end
 

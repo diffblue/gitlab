@@ -696,19 +696,37 @@ module EE
     end
 
     override :audit_lock_access
-    def audit_lock_access
-      unless access_locked?
-        reason = nil
-        reason = 'excessive failed login attempts' if attempts_exceeded?
+    def audit_lock_access(reason: nil)
+      return if access_locked?
 
-        ::Gitlab::Audit::Auditor.audit(
-          name: 'user_access_locked',
-          author: ::User.admin_bot,
-          scope: self,
-          target: self,
-          message: ['User access locked', reason].compact.join(' - ')
-        )
+      if !reason && attempts_exceeded?
+        reason = 'excessive failed login attempts'
       end
+
+      ::Gitlab::Audit::Auditor.audit(
+        name: 'user_access_locked',
+        author: ::User.admin_bot,
+        scope: self,
+        target: self,
+        message: ['User access locked', reason].compact.join(' - ')
+      )
+    end
+
+    override :audit_unlock_access
+    def audit_unlock_access(author: self)
+      # We can't use access_locked? because it checks if locked_at <
+      # User.unlock_in.ago. If we use access_locked? and the lock is already
+      # expired the call to unlock_access! when a user tries to login will not
+      # log an audit event as expected
+      return unless locked_at.present?
+
+      ::Gitlab::Audit::Auditor.audit(
+        name: 'user_access_unlocked',
+        author: author,
+        scope: self,
+        target: self,
+        message: 'User access unlocked'
+      )
     end
   end
 end

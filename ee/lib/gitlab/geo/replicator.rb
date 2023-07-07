@@ -96,7 +96,7 @@ module Gitlab
 
       # @return [String] GraphQL mutation registry class used by registry_class_enum.rb. E.g. "PACKAGE_FILE_REGISTRY"
       def self.graphql_mutation_registry_class
-        "#{self.replicable_name}_registry".upcase
+        self.registry_class.graphql_enum_key
       end
 
       # Return the registry related to the replicable resource
