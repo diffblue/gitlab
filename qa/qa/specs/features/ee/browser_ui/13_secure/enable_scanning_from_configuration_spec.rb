@@ -17,10 +17,6 @@ module QA
         ]
       end
 
-      let(:test_data_checkbox_exclude_array) do
-        %w[kubesec nodejs-scan phpcs-security-audit]
-      end
-
       let(:test_stage_name) do
         'test_all_the_things'
       end
@@ -100,7 +96,6 @@ module QA
             expect(current_page).to have_content("#{field_type}: '#{field_value}'")
           end
           expect(current_page).to have_content("stage: #{test_stage_name}")
-          expect(current_page).to have_content("SAST_EXCLUDED_ANALYZERS: #{test_data_checkbox_exclude_array.join(', ')}")
         end
 
         it(
@@ -123,9 +118,6 @@ module QA
             end
             test_data_int_fields_array.each do |test_data_int_array|
               config_form.fill_dynamic_field(test_data_int_array.first, test_data_int_array[1])
-            end
-            test_data_checkbox_exclude_array.each do |test_data_checkbox|
-              config_form.unselect_dynamic_checkbox(test_data_checkbox)
             end
             config_form.fill_dynamic_field('stage', test_stage_name)
 

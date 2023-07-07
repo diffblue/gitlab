@@ -16,12 +16,7 @@ export default function init() {
     defaultClient: createDefaultClient(),
   });
 
-  const {
-    securityConfigurationPath,
-    projectPath,
-    sastAnalyzersDocumentationPath,
-    sastDocumentationPath,
-  } = el.dataset;
+  const { securityConfigurationPath, projectPath, sastDocumentationPath } = el.dataset;
 
   return new Vue({
     el,
@@ -29,7 +24,6 @@ export default function init() {
     provide: {
       securityConfigurationPath,
       projectPath,
-      sastAnalyzersDocumentationPath,
       sastDocumentationPath,
     },
     render(createElement) {

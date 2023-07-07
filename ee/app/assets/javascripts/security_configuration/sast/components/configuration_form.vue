@@ -1,34 +1,20 @@
 <script>
-import { GlAlert, GlButton, GlIcon, GlLink, GlSprintf } from '@gitlab/ui';
+import { GlAlert, GlButton } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { cloneDeep } from 'lodash';
 import DynamicFields from 'ee/security_configuration/components/dynamic_fields.vue';
-import ExpandableSection from 'ee/security_configuration/components/expandable_section.vue';
 import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import { __, s__ } from '~/locale';
 import configureSastMutation from '~/security_configuration/graphql/configure_sast.mutation.graphql';
-import AnalyzerConfiguration from './analyzer_configuration.vue';
-import {
-  toSastCiConfigurationEntityInput,
-  toSastCiConfigurationAnalyzerEntityInput,
-} from './utils';
+import { toSastCiConfigurationEntityInput } from './utils';
 
 export default {
   components: {
-    AnalyzerConfiguration,
     DynamicFields,
-    ExpandableSection,
     GlAlert,
     GlButton,
-    GlIcon,
-    GlLink,
-    GlSprintf,
   },
   inject: {
-    sastAnalyzersDocumentationPath: {
-      from: 'sastAnalyzersDocumentationPath',
-      default: '',
-    },
     securityConfigurationPath: {
       from: 'securityConfigurationPath',
       default: '',
@@ -49,15 +35,9 @@ export default {
     return {
       globalConfiguration: cloneDeep(this.sastCiConfiguration.global.nodes),
       pipelineConfiguration: cloneDeep(this.sastCiConfiguration.pipeline.nodes),
-      analyzersConfiguration: cloneDeep(this.sastCiConfiguration.analyzers.nodes),
       hasSubmissionError: false,
       isSubmitting: false,
     };
-  },
-  computed: {
-    shouldRenderAnalyzersSection() {
-      return this.analyzersConfiguration.length > 0;
-    },
   },
   methods: {
     onSubmit() {
@@ -94,16 +74,7 @@ export default {
       return {
         global: this.globalConfiguration.map(toSastCiConfigurationEntityInput),
         pipeline: this.pipelineConfiguration.map(toSastCiConfigurationEntityInput),
-        analyzers: this.analyzersConfiguration.map(toSastCiConfigurationAnalyzerEntityInput),
       };
-    },
-    onAnalyzerChange(name, updatedAnalyzer) {
-      const index = this.analyzersConfiguration.findIndex((analyzer) => analyzer.name === name);
-      if (index === -1) {
-        return;
-      }
-
-      this.analyzersConfiguration.splice(index, 1, updatedAnalyzer);
     },
   },
   i18n: {
@@ -112,17 +83,6 @@ export default {
     ),
     submitButton: s__('SecurityConfiguration|Create merge request'),
     cancelButton: __('Cancel'),
-    help: __('Help'),
-    analyzersHeading: s__('SecurityConfiguration|SAST Analyzers'),
-    analyzersSubHeading: s__(
-      `SecurityConfiguration|By default, all analyzers are applied in order to
-      cover all languages across your project, and only run if the language is
-      detected in the merge request.`,
-    ),
-    analyzersTipHeading: __('We recommend leaving all SAST analyzers enabled'),
-    analyzersTipBody: __(
-      'Keeping all SAST analyzers enabled future-proofs the project in case new languages are added later on. Determining which analyzers apply is a process that consumes minimal resources and adds minimal time to the pipeline. Leaving all SAST analyzers enabled ensures maximum coverage.',
-    ),
   },
 };
 </script>
@@ -131,47 +91,7 @@ export default {
   <form @submit.prevent="onSubmit">
     <dynamic-fields v-model="globalConfiguration" class="gl-m-0" />
     <dynamic-fields v-model="pipelineConfiguration" class="gl-m-0" />
-
-    <expandable-section
-      v-if="shouldRenderAnalyzersSection"
-      class="gl-mb-5"
-      data-testid="analyzers-section"
-      data-qa-selector="analyzer_settings_content"
-    >
-      <gl-alert
-        class="gl-mb-5"
-        data-testid="analyzers-section-tip"
-        :title="$options.i18n.analyzersTipHeading"
-        variant="tip"
-        :dismissible="false"
-      >
-        <gl-sprintf :message="$options.i18n.analyzersTipBody" />
-      </gl-alert>
-      <template #heading>
-        {{ $options.i18n.analyzersHeading }}
-        <gl-link
-          target="_blank"
-          :href="sastAnalyzersDocumentationPath"
-          :aria-label="$options.i18n.help"
-        >
-          <gl-icon name="question-o" />
-        </gl-link>
-      </template>
-
-      <template #sub-heading>
-        {{ $options.i18n.analyzersSubHeading }}
-      </template>
-
-      <analyzer-configuration
-        v-for="analyzer in analyzersConfiguration"
-        :key="analyzer.name"
-        :entity="analyzer"
-        @input="onAnalyzerChange(analyzer.name, $event)"
-      />
-    </expandable-section>
-
-    <hr v-else />
-
+    <hr class="gl-mt-3" />
     <gl-alert
       v-if="hasSubmissionError"
       data-testid="analyzers-error-alert"
