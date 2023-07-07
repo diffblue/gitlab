@@ -53,8 +53,7 @@ RSpec.describe NamespaceSetting do
             allow(subject).to receive(:ai_settings_allowed?).and_return(true)
           end
 
-          it { is_expected.to allow_value(false).for(attr) }
-          it { is_expected.to allow_value(true).for(attr) }
+          it { is_expected.to allow_value(true, false).for(attr) }
           it { is_expected.not_to allow_value(nil).for(attr) }
 
           context 'when AI settings are not allowed' do
@@ -80,8 +79,7 @@ RSpec.describe NamespaceSetting do
             allow(subject).to receive(:ai_assist_ui_enabled?).and_return(true)
           end
 
-          it { is_expected.to allow_value(false).for(:third_party_ai_features_enabled) }
-          it { is_expected.to allow_value(true).for(:third_party_ai_features_enabled) }
+          it { is_expected.to allow_value(true, false).for(:third_party_ai_features_enabled) }
           it { is_expected.not_to allow_value(nil).for(:third_party_ai_features_enabled) }
         end
       end

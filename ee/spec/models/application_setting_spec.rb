@@ -92,8 +92,7 @@ RSpec.describe ApplicationSetting do
       it { is_expected.to allow_value('a' * 255).for(:elasticsearch_username) }
       it { is_expected.not_to allow_value('a' * 256).for(:elasticsearch_username) }
 
-      it { is_expected.to allow_value(true).for(:security_policy_global_group_approvers_enabled) }
-      it { is_expected.to allow_value(false).for(:security_policy_global_group_approvers_enabled) }
+      it { is_expected.to allow_value(true, false).for(:security_policy_global_group_approvers_enabled) }
       it { is_expected.not_to allow_value(nil).for(:security_policy_global_group_approvers_enabled) }
     end
 
@@ -151,13 +150,11 @@ RSpec.describe ApplicationSetting do
       it { is_expected.to validate_numericality_of(:dashboard_limit).only_integer.is_greater_than_or_equal_to(0) }
       it { is_expected.to validate_numericality_of(:dashboard_notification_limit).only_integer.is_greater_than_or_equal_to(0) }
       it { is_expected.to validate_numericality_of(:dashboard_enforcement_limit).only_integer.is_greater_than_or_equal_to(0) }
-      it { is_expected.to allow_value(true).for(:dashboard_limit_enabled) }
-      it { is_expected.to allow_value(false).for(:dashboard_limit_enabled) }
+      it { is_expected.to allow_value(true, false).for(:dashboard_limit_enabled) }
       it { is_expected.not_to allow_value(nil).for(:dashboard_limit_enabled) }
     end
 
-    it { is_expected.to allow_value(true).for(:allow_account_deletion) }
-    it { is_expected.to allow_value(false).for(:allow_account_deletion) }
+    it { is_expected.to allow_value(true, false).for(:allow_account_deletion) }
     it { is_expected.not_to allow_value(nil).for(:allow_account_deletion) }
 
     describe 'when additional email text is enabled', feature_category: :user_profile do
@@ -1238,8 +1235,7 @@ RSpec.describe ApplicationSetting do
         expect(setting.lock_delayed_project_removal).to be false
       end
 
-      it { is_expected.to allow_value(false).for(:delayed_project_removal) }
-      it { is_expected.to allow_value(true).for(:delayed_project_removal) }
+      it { is_expected.to allow_value(true, false).for(:delayed_project_removal) }
     end
   end
 
