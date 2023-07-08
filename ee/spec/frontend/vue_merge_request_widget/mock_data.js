@@ -12,6 +12,7 @@ export default {
     secret_detection: false,
   },
   discover_project_security_path: '/discover_project_security',
+  merge_immediately_docs_path: '/merge_immediately_docs',
   container_scanning_comparison_path: '/container_scanning_comparison_path',
   dependency_scanning_comparison_path: '/dependency_scanning_comparison_path',
   dast_comparison_path: '/dast_comparison_path',
