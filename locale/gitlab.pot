@@ -21326,10 +21326,10 @@ msgstr ""
 msgid "Gitaly|Address"
 msgstr ""
 
-msgid "Gitea Host URL"
+msgid "Gitea host URL"
 msgstr ""
 
-msgid "Gitea Import"
+msgid "Gitea import"
 msgstr ""
 
 msgid "GithubImporter|%{noteable_type} comment %{note_id}"
@@ -23718,9 +23718,6 @@ msgstr[1] ""
 msgid "Import CSV"
 msgstr ""
 
-msgid "Import Projects from Gitea"
-msgstr ""
-
 msgid "Import an exported GitLab project"
 msgstr ""
 
@@ -23776,6 +23773,9 @@ msgid "Import projects from FogBugz"
 msgstr ""
 
 msgid "Import projects from GitLab.com"
+msgstr ""
+
+msgid "Import projects from Gitea"
 msgstr ""
 
 msgid "Import repositories from Bitbucket Server"
@@ -27966,9 +27966,6 @@ msgstr ""
 msgid "List"
 msgstr ""
 
-msgid "List Your Gitea Repositories"
-msgstr ""
-
 msgid "List available repositories"
 msgstr ""
 
@@ -27997,6 +27994,9 @@ msgid "List view"
 msgstr ""
 
 msgid "List your Bitbucket Server repositories"
+msgstr ""
+
+msgid "List your Gitea repositories"
 msgstr ""
 
 msgid "Load more"
@@ -33674,6 +33674,9 @@ msgid "Personal Access Token"
 msgstr ""
 
 msgid "Personal Access Token prefix"
+msgstr ""
+
+msgid "Personal access token"
 msgstr ""
 
 msgid "Personal project creation is not allowed. Please contact your administrator with questions"
@@ -48609,7 +48612,7 @@ msgstr ""
 msgid "To get started, click the link below to confirm your account."
 msgstr ""
 
-msgid "To get started, please enter your Gitea Host URL and a %{link_to_personal_token}."
+msgid "To get started, please enter your Gitea host URL and a %{link_to_personal_token}."
 msgstr ""
 
 msgid "To get started, use the link below to confirm your account."
