@@ -23,10 +23,17 @@ jest.mock('~/lib/utils/url_utility', () => ({
 
 describe('GeoSiteForm', () => {
   let wrapper;
+  let store;
+
+  const createStore = () => {
+    store = initStore(MOCK_SITES_PATH);
+    jest.spyOn(store, 'dispatch').mockImplementation();
+  };
 
   const createComponent = (props = {}) => {
+    createStore();
     wrapper = shallowMount(GeoSiteForm, {
-      store: initStore(MOCK_SITES_PATH),
+      store,
       propsData: {
         site: MOCK_SITE,
         selectiveSyncTypes: MOCK_SELECTIVE_SYNC_TYPES,
@@ -69,7 +76,7 @@ describe('GeoSiteForm', () => {
       describe('with errors on form', () => {
         beforeEach(() => {
           createComponent();
-          wrapper.vm.$store.state.formErrors.name = 'Test Error';
+          store.state.formErrors.name = 'Test Error';
         });
 
         it('disables button', () => {
@@ -91,12 +98,11 @@ describe('GeoSiteForm', () => {
     describe('saveGeoSite', () => {
       beforeEach(() => {
         createComponent();
-        wrapper.vm.saveGeoSite = jest.fn();
       });
 
       it('calls saveGeoSite when save is clicked', () => {
         findGeoSiteSaveButton().vm.$emit('click');
-        expect(wrapper.vm.saveGeoSite).toHaveBeenCalledWith(MOCK_SITE);
+        expect(store.dispatch).toHaveBeenCalledWith('saveGeoSite', MOCK_SITE);
       });
     });
 
@@ -117,9 +123,18 @@ describe('GeoSiteForm', () => {
       });
 
       it('should add value to siteData', () => {
-        expect(wrapper.vm.siteData.selectiveSyncShards).toEqual([]);
-        wrapper.vm.addSyncOption({ key: 'selectiveSyncShards', value: MOCK_SYNC_SHARDS[0].value });
-        expect(wrapper.vm.siteData.selectiveSyncShards).toEqual([MOCK_SYNC_SHARDS[0].value]);
+        expect(findGeoSiteFormSelectiveSyncField().props('siteData').selectiveSyncShards).toEqual(
+          [],
+        );
+
+        findGeoSiteFormSelectiveSyncField().vm.$emit('addSyncOption', {
+          key: 'selectiveSyncShards',
+          value: MOCK_SYNC_SHARDS[0].value,
+        });
+
+        expect(findGeoSiteFormSelectiveSyncField().props('siteData').selectiveSyncShards).toEqual([
+          MOCK_SYNC_SHARDS[0].value,
+        ]);
       });
     });
 
@@ -129,9 +144,17 @@ describe('GeoSiteForm', () => {
       });
 
       it('should remove value from siteData', () => {
-        expect(wrapper.vm.siteData.selectiveSyncShards).toEqual([MOCK_SYNC_SHARDS[0].value]);
-        wrapper.vm.removeSyncOption({ key: 'selectiveSyncShards', index: 0 });
-        expect(wrapper.vm.siteData.selectiveSyncShards).toEqual([]);
+        expect(findGeoSiteFormSelectiveSyncField().props('siteData').selectiveSyncShards).toEqual([
+          MOCK_SYNC_SHARDS[0].value,
+        ]);
+        findGeoSiteFormSelectiveSyncField().vm.$emit('removeSyncOption', {
+          key: 'selectiveSyncShards',
+          index: 0,
+        });
+
+        expect(findGeoSiteFormSelectiveSyncField().props('siteData').selectiveSyncShards).toEqual(
+          [],
+        );
       });
     });
   });
@@ -143,7 +166,9 @@ describe('GeoSiteForm', () => {
       });
 
       it('sets siteData to the correct site', () => {
-        expect(wrapper.vm.siteData.id).toBe(wrapper.vm.site.id);
+        expect(findGeoSiteFormCoreField().props('siteData').id).toBe(MOCK_SITE.id);
+        expect(findGeoSiteFormSelectiveSyncField().props('siteData').id).toBe(MOCK_SITE.id);
+        expect(findGeoSiteFormCapacitiesField().props('siteData').id).toBe(MOCK_SITE.id);
       });
     });
 
@@ -153,8 +178,9 @@ describe('GeoSiteForm', () => {
       });
 
       it('sets siteData to the default site data', () => {
-        expect(wrapper.vm.siteData).not.toBeNull();
-        expect(wrapper.vm.siteData.id).not.toBe(MOCK_SITE.id);
+        expect(findGeoSiteFormCoreField().props('siteData').id).not.toBe(MOCK_SITE.id);
+        expect(findGeoSiteFormSelectiveSyncField().props('siteData').id).not.toBe(MOCK_SITE.id);
+        expect(findGeoSiteFormCapacitiesField().props('siteData').id).not.toBe(MOCK_SITE.id);
       });
     });
   });
