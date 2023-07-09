@@ -3,7 +3,6 @@
 module Mutations
   module RemoteDevelopment
     module Workspaces
-      # noinspection RubyMismatchedArgumentType
       class Create < BaseMutation
         graphql_name 'WorkspaceCreate'
 

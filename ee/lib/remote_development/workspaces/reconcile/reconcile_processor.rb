@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
-# noinspection RubyResolve
 module RemoteDevelopment
   module Workspaces
     module Reconcile
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
+      # rubocop:disable Layout/LineLength
+      # noinspection RubyInstanceMethodNamingConvention,RubyLocalVariableNamingConvention,RubyParameterNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
+      # rubocop:enable Layout/LineLength
       class ReconcileProcessor
         include UpdateType
 
@@ -105,7 +108,6 @@ module RemoteDevelopment
           # Update the responded_to_agent_at at this point, after we have already done all the calculations
           # related to state. Do it outside of the loop so it will be a single query, and also so that they
           # will all have the same timestamp.
-          # noinspection RailsParamDefResolve
           workspaces_to_return_in_rails_infos_query.touch_all(:responded_to_agent_at)
 
           payload = { workspace_rails_infos: workspace_rails_infos }

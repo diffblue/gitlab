@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# noinspection RubyClassModuleNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
 module EE
   module Types
     module UserInterface

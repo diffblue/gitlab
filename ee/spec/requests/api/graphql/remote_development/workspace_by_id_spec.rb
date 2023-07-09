@@ -28,7 +28,6 @@ RSpec.describe 'Query.workspace(id: RemoteDevelopmentWorkspaceID!)', feature_cat
 
     it_behaves_like 'a working graphql query'
 
-    # noinspection RubyResolve
     it { expect(subject['name']).to eq(workspace.name) }
 
     context 'when the user is not authorized' do

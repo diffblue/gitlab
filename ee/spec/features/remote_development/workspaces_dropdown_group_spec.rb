@@ -82,6 +82,7 @@ RSpec.describe 'Remote Development workspaces dropdown group', :api, :js, featur
       it 'allows navigating to the new workspace page' do
         click_link 'New workspace'
 
+        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         expect(page).to have_current_path("#{new_remote_development_workspace_path}?project=#{project.full_path}")
         expect(page).to have_css('button', text: project.name_with_namespace)
       end
@@ -104,6 +105,7 @@ RSpec.describe 'Remote Development workspaces dropdown group', :api, :js, featur
         expect(page).to have_button('Stopping', disabled: true)
       end
 
+      # noinspection RubyInstanceMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
       def expect_workspace_state_indicator(state)
         expect(page).to have_selector("svg[data-testid='workspace-state-indicator'][title='#{state}']")
       end
@@ -117,6 +119,7 @@ RSpec.describe 'Remote Development workspaces dropdown group', :api, :js, featur
   end
 
   describe 'when viewing blob page' do
+    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
     let(:subject) { project_blob_path(project, "#{project.default_branch}/#{devfile_path}") }
 
     it_behaves_like 'views and manages workspaces in workspaces dropdown group'

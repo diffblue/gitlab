@@ -139,11 +139,12 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, '
   # rubocop:enable Layout/LineLength, Style/TrailingCommaInArrayLiteral
 
   with_them do
+    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31544
+    # noinspection RubyInstanceMethodNamingConvention,RubyLocalVariableNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
     it 'behaves as expected' do
-      # noinspection RubyResolve
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31544
       expected_db_expectations_length =
         (initial_db_state ? 1 : 0) + (user_desired_state_update ? 1 : 0) + agent_actual_state_updates.length
-      # noinspection RubyResolve
       expect(db_expectations.length).to eq(expected_db_expectations_length)
 
       workspace = nil
@@ -151,7 +152,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, '
       initial_resource_version = '1'
 
       # Handle initial db state, if necessary
-      # noinspection RubyResolve
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31544
       if initial_db_state
         workspace = create(
           :workspace,
@@ -167,10 +168,10 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, '
       end
 
       # handle user desired state update, if necessary
-      # noinspection RubyResolve
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31544
       if user_desired_state_update
         if workspace
-          # noinspection RubyResolve
+          # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31544
           workspace.update!(desired_state: user_desired_state_update.to_s.camelize)
         else
           workspace = create(:workspace, :unprovisioned)
@@ -185,7 +186,8 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, '
       raise 'Must have workspace by now, either from initial_db_state or user_desired_state_update' unless workspace
 
       # Handle agent updates
-      # noinspection RubyResolve
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31544
+      # noinspection RubyLocalVariableNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
       agent_actual_state_updates.each_with_index do |actual_state_update_fixture_args, response_expectations_index|
         update_type = RemoteDevelopment::Workspaces::Reconcile::UpdateType::PARTIAL
         deployment_resource_version_from_agent ||= initial_resource_version

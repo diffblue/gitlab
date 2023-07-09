@@ -38,39 +38,39 @@ RSpec.describe RemoteDevelopment::WorkspacesFinder, feature_category: :remote_de
         # However, doing so results in a dangerbot warning that is difficult to suppress
         # Unfortunatly there isn't an exact-order array matcher that doesn't result in a dangerbot warning.
         expect(workspaces.length).to eq(2)
-        # noinspection RubyResolve
+        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
         expect(workspaces.first).to eq(workspace_b)
-        # noinspection RubyResolve
+        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
         expect(workspaces.last).to eq(workspace_a)
       end
     end
 
     context 'with id in params' do
-      # noinspection RubyResolve
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
       let(:params) { { ids: [workspace_a.id] } }
 
       it "returns only current user's workspaces matching the specified IDs" do
-        # noinspection RubyResolve
+        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
         expect(subject).to contain_exactly(workspace_a)
       end
     end
 
     context 'with project_ids in params' do
-      # noinspection RubyResolve
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
       let(:params) { { project_ids: [project_a.id] } }
 
       it "returns only current user's workspaces matching the specified project IDs" do
-        # noinspection RubyResolve
+        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
         expect(subject).to contain_exactly(workspace_a)
       end
     end
 
     context 'with include_actual_states in params' do
-      # noinspection RubyResolve
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
       let(:params) { { include_actual_states: [::RemoteDevelopment::Workspaces::States::RUNNING] } }
 
       it "returns only current user's workspaces not matching the specified actual_states" do
-        # noinspection RubyResolve
+        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
         expect(subject).to contain_exactly(workspace_a)
       end
     end
@@ -78,7 +78,7 @@ RSpec.describe RemoteDevelopment::WorkspacesFinder, feature_category: :remote_de
     context 'without current user' do
       subject { described_class.new(nil, params).execute }
 
-      # noinspection RubyResolve
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
       let(:params) { { ids: [workspace_a.id] } }
 
       it 'returns none' do

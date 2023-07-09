@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 module RemoteDevelopment
-  # noinspection RailsParamDefResolve,RubyResolve
+  # noinspection RailsParamDefResolve, RubyResolve - likely due to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31540
+  # noinspection RubyConstantNamingConvention,RubyInstanceMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
   class Workspace < ApplicationRecord
     include Sortable
     include RemoteDevelopment::Workspaces::States
@@ -37,7 +38,7 @@ module RemoteDevelopment
     validates :max_hours_before_termination, numericality: { less_than_or_equal_to: MAX_HOURS_BEFORE_TERMINATION_LIMIT }
 
     scope :with_desired_state_updated_more_recently_than_last_response_to_agent, -> do
-      # noinspection SqlResolve
+      # noinspection SqlResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       where('desired_state_updated_at >= responded_to_agent_at').or(where(responded_to_agent_at: nil))
     end
 

@@ -46,7 +46,7 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
 
         # NAVIGATE TO WORKSPACES PAGE
 
-        # noinspection RubyResolve
+        # noinspection RubyResolve - likely related to this, but for routes: https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         visit remote_development_workspaces_path
         wait_for_requests
 
@@ -274,10 +274,12 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
         expect(info.fetch(:config_to_apply)).to be_nil
       end
 
+      # noinspection RubyInstanceMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
       def expect_workspace_state_indicator(state)
         expect(page).to have_selector("svg[data-testid='workspace-state-indicator'][title='#{state}']")
       end
 
+      # noinspection RubyParameterNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
       def simulate_agentk_reconcile_post(workspace_agent_infos:)
         post_params = {
           update_type: 'partial',

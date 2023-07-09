@@ -49,7 +49,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::DevfileParser, feature_
         user: user
       )
 
-      # noinspection RubyResolve
       expect(workspace_resources).to eq(expected_workspace_resources)
     end
   end

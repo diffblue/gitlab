@@ -3,6 +3,7 @@
 module RemoteDevelopment
   module Workspaces
     module Create
+      # noinspection RubyConstantNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
       class PreFlattenDevfileValidator
         include Messages
 

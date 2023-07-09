@@ -46,7 +46,7 @@ RSpec.describe 'Creating a workspace', feature_category: :remote_development do
 
   let_it_be(:created_workspace, refind: true) { create(:workspace, user: user) }
 
-  # noinspection RubyResolve
+  # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
   let(:stub_service_payload) { { workspace: created_workspace } }
   let(:stub_service_response) do
     ServiceResponse.success(payload: stub_service_payload)
@@ -74,7 +74,7 @@ RSpec.describe 'Creating a workspace', feature_category: :remote_development do
 
     expect_graphql_errors_to_be_empty
 
-    # noinspection RubyResolve
+    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
     expect(mutation_response.fetch('workspace')['name']).to eq(created_workspace['name'])
   end
 

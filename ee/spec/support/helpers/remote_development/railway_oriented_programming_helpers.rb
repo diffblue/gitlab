@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module RemoteDevelopment
+  # noinspection RubyClassModuleNamingConvention, RubyInstanceMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
+  # noinspection RubyInstanceMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
   module RailwayOrientedProgrammingHelpers
     # NOTE: Depends upon `initial_value` being defined in the including spec
     def stub_methods_to_return_ok_result(*methods)

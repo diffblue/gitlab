@@ -29,8 +29,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::VolumeComponentInjector, f
   it "injects the workspace volume component" do
     components = subject.dig(:processed_devfile, "components")
     volume_component = components.find { |component| component.fetch("name") == component_name }
-    expected_processed_devfile_components = expected_processed_devfile.fetch("components")
-    expected_volume_component = expected_processed_devfile_components.find do |component|
+    expected_components = expected_processed_devfile.fetch("components")
+    expected_volume_component = expected_components.find do |component|
       component.fetch("name") == component_name
     end
     expect(volume_component).to eq(expected_volume_component)
