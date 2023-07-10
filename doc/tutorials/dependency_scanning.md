@@ -116,7 +116,7 @@ medium severity vulnerabilities and confirm only the high severity vulnerability
 
 To triage the vulnerabilities:
 
-1. Go to **Security and Compliance > Vulnerability report**.
+1. Go to **Secure > Vulnerability report**.
 1. Select each of the medium severity vulnerabilities by selecting the checkbox in each row.
 1. From the **Set status** dropdown list select **Dismiss**. From the **Dismissal reason** dropdown
    list select **Used in tests**, add the comment "Used in tests", then select **Change status**.
@@ -166,7 +166,7 @@ To fix the vulnerability:
    Wait for the merge request pipeline to complete.
 1. Refresh the page, then select **Merge**.
 1. Wait for the pipeline to complete successfully.
-1. Go to **Security and Compliance > Vulnerability report**.
+1. Go to **Secure > Vulnerability report**.
 1. Select the **High** vulnerability's description.
 
    A banner confirms that the vulnerability has been resolved in the `main` branch. You would
@@ -174,7 +174,7 @@ To fix the vulnerability:
    `yarn.lock` file. For this tutorial, you can skip the verification step.
 
 1. In the **Status** dropdown list, select **Resolve**, then select **Change status**.
-1. Go to **Security and Compliance > Vulnerability report**.
+1. Go to **Secure > Vulnerability report**.
 
    You should now see _no_ vulnerabilities listed in the vulnerability report.
 
