@@ -267,6 +267,30 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
           end
         end
       end
+
+      context 'zoekt indexing enabled for this project' do
+        before do
+          expect(project).to receive(:use_zoekt?).and_return(true)
+        end
+
+        it 'schedules a full index of the repository' do
+          expect(Zoekt::IndexerWorker).to receive(:perform_async).with(import_state.project_id)
+
+          import_state.finish
+        end
+      end
+
+      context 'zoekt indexing disabled for this project' do
+        before do
+          expect(project).to receive(:use_zoekt?).and_return(false)
+        end
+
+        it 'does not index the repository' do
+          expect(Zoekt::IndexerWorker).not_to receive(:perform_async)
+
+          import_state.finish
+        end
+      end
     end
   end
 

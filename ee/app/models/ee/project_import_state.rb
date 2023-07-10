@@ -77,6 +77,12 @@ module EE
               ElasticCommitIndexerWorker.perform_async(state.project_id)
             end
           end
+
+          if state.project.use_zoekt?
+            state.run_after_commit do
+              Zoekt::IndexerWorker.perform_async(state.project_id)
+            end
+          end
         end
 
         after_transition [:finished, :failed] => [:scheduled, :started] do |state, _|
