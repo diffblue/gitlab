@@ -161,7 +161,7 @@ To fix the vulnerability:
    ```
 
 1. Switch to the GitLab browser tab.
-1. Go to **Merge requests**, then select **Create merge request**.
+1. Go to **Code > Merge requests**, then select **Create merge request**.
 1. On the **New merge request** page, scroll to the bottom and select **Create merge request**.
    Wait for the merge request pipeline to complete.
 1. Refresh the page, then select **Merge**.
@@ -224,7 +224,7 @@ To add a new vulnerability:
    ```
 
 1. Switch to the GitLab browser tab.
-1. Go to **Merge requests**, then select **Create merge request**.
+1. Go to **Code > Merge requests**, then select **Create merge request**.
 1. On the **New merge request** page, scroll to the bottom and select **Create merge request**.
 
 Wait for the merge request pipeline to complete, then refresh the page. The merge

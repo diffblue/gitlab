@@ -246,7 +246,7 @@ section, along with statistics about the issues in the milestones.
 
 ![A Release with one associated milestone](img/release_with_milestone_v12_9.png)
 
-Releases are also visible on the **Issues > Milestones** page, and when you select a milestone
+Releases are also visible on the **Plan > Milestones** page, and when you select a milestone
 on this page.
 
 Here is an example of milestones with no releases, one release, and two releases.
@@ -266,7 +266,7 @@ You can be notified by email when a new release is created for your project.
 
 To subscribe to notifications for releases:
 
-1. On the left sidebar, select **Project information**.
+1. On the left sidebar, select **Project overview**.
 1. Select **Notification setting** (the bell icon).
 1. In the list, select **Custom**.
 1. Select the **New release** checkbox.
@@ -302,8 +302,8 @@ deploy_to_production:
 To set a deploy freeze window in the UI, complete these steps:
 
 1. Sign in to GitLab as a user with the Maintainer role.
-1. On the left sidebar, select **Project information**.
-1. In the left navigation menu, go to **Settings > CI/CD**.
+1. On the left sidebar, at the top, select **Search GitLab** (**{search}**) to find your project.
+1. On the left sidebar, select **Settings > CI/CD**.
 1. Scroll to **Deploy freezes**.
 1. Select **Expand** to see the deploy freeze table.
 1. Select **Add deploy freeze** to open the deploy freeze modal.
