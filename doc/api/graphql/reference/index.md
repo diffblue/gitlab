@@ -20065,7 +20065,6 @@ Represents a product analytics dashboard visualization.
 | <a id="projectid"></a>`id` | [`ID!`](#id) | ID of the project. |
 | <a id="projectimportstatus"></a>`importStatus` | [`String`](#string) | Status of import background job of the project. |
 | <a id="projectincidentmanagementtimelineeventtags"></a>`incidentManagementTimelineEventTags` | [`[TimelineEventTagType!]`](#timelineeventtagtype) | Timeline event tags for the project. |
-| <a id="projectinheritedcivariables"></a>`inheritedCiVariables` | [`InheritedCiVariableConnection`](#inheritedcivariableconnection) | List of CI/CD variables the project inherited from its parent group and ancestors. (see [Connections](#connections)) |
 | <a id="projectiscatalogresource"></a>`isCatalogResource` **{warning-solid}** | [`Boolean`](#boolean) | **Introduced** in 15.11. This feature is an Experiment. It can be changed or removed at any time. Indicates if a project is a catalog resource. |
 | <a id="projectissuesenabled"></a>`issuesEnabled` | [`Boolean`](#boolean) | Indicates if Issues are enabled for the current user. |
 | <a id="projectjiraimportstatus"></a>`jiraImportStatus` | [`String`](#string) | Status of Jira import background job of the project. |
@@ -20620,6 +20619,22 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="projectincidentmanagementtimelineeventsincidentid"></a>`incidentId` | [`IssueID!`](#issueid) | ID of the incident. |
+
+##### `Project.inheritedCiVariables`
+
+List of CI/CD variables the project inherited from its parent group and ancestors.
+
+Returns [`InheritedCiVariableConnection`](#inheritedcivariableconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projectinheritedcivariablessort"></a>`sort` | [`CiGroupVariablesSort`](#cigroupvariablessort) | Sort variables by the criteria. |
 
 ##### `Project.issue`
 
@@ -24870,6 +24885,17 @@ Deploy freeze period status.
 | ----- | ----------- |
 | <a id="cifreezeperiodstatusactive"></a>`ACTIVE` | Freeze period is active. |
 | <a id="cifreezeperiodstatusinactive"></a>`INACTIVE` | Freeze period is inactive. |
+
+### `CiGroupVariablesSort`
+
+Values for sorting inherited variables.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="cigroupvariablessortcreated_asc"></a>`CREATED_ASC` | Created at ascending order. |
+| <a id="cigroupvariablessortcreated_desc"></a>`CREATED_DESC` | Created at descending order. |
+| <a id="cigroupvariablessortkey_asc"></a>`KEY_ASC` | Key by ascending order. |
+| <a id="cigroupvariablessortkey_desc"></a>`KEY_DESC` | Key by descending order. |
 
 ### `CiJobKind`
 
