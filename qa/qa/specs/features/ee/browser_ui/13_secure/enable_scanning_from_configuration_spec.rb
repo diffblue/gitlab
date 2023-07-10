@@ -12,8 +12,7 @@ module QA
 
       let(:test_data_int_fields_array) do
         [
-          %w[SEARCH_MAX_DEPTH 42],
-          %w[SAST_BRAKEMAN_LEVEL 43]
+          %w[SEARCH_MAX_DEPTH 42]
         ]
       end
 
@@ -111,7 +110,6 @@ module QA
             expect(config_form).to have_no_security_configuration_history_link
 
             config_form.click_sast_enable_button
-            config_form.click_expand_button
 
             test_data_sast_string_fields_array.each do |test_data_string_array|
               config_form.fill_dynamic_field(test_data_string_array.first, test_data_string_array[1])
