@@ -33,6 +33,7 @@ class SyncSeatLinkRequestWorker
 
       save_future_subscriptions(response)
       update_reconciliation!(response)
+      update_code_suggestions_tokens(response)
     else
       raise RequestError, request_error_message(response)
     end
@@ -92,5 +93,17 @@ class SyncSeatLinkRequestWorker
     Gitlab::CurrentSettings.current_application_settings.update!(future_subscriptions: future_subscriptions)
   rescue StandardError => err
     Gitlab::ErrorTracking.track_and_raise_for_dev_exception(err)
+  end
+
+  def update_code_suggestions_tokens(response)
+    return unless ::Feature.enabled?(:code_suggestions_tokens_from_customers_dot)
+
+    code_suggestions = response.dig('service_tokens', 'code_suggestions')
+    return unless code_suggestions.present?
+
+    token = code_suggestions['token']
+    expires_at = code_suggestions['expires_at']
+
+    Ai::ServiceAccessTokensStorageService.new(token, expires_at, :code_suggestions).execute
   end
 end

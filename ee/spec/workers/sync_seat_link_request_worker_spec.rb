@@ -10,9 +10,17 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker, feature_category: :sm_p
 
     let(:subscription_portal_url) { ::Gitlab::Routing.url_helpers.subscription_portal_url }
     let(:seat_link_url) { [subscription_portal_url, '/api/v1/seat_links'].join }
+    let(:body) { { success: true }.to_json }
+
+    before do
+      stub_request(:post, seat_link_url).to_return(
+        status: 200,
+        body: body,
+        headers: { content_type: 'application/json' }
+      )
+    end
 
     it 'makes an HTTP POST request with passed params' do
-      stub_request(:post, seat_link_url).to_return(status: 200)
       allow(Gitlab::CurrentSettings).to receive(:uuid).and_return('one-two-three')
 
       sync_seat_link
@@ -34,14 +42,6 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker, feature_category: :sm_p
     context 'when response contains a license' do
       let(:license_key) { build(:gitlab_license, :cloud).export }
       let(:body) { { success: true, license: license_key }.to_json }
-
-      before do
-        stub_request(:post, seat_link_url).to_return(
-          status: 200,
-          body: body,
-          headers: { content_type: 'application/json' }
-        )
-      end
 
       shared_examples 'successful license creation' do
         it 'persists the new license' do
@@ -129,14 +129,6 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker, feature_category: :sm_p
       let(:body) { { success: true, next_reconciliation_date: today.to_s, display_alert_from: (today - 7.days).to_s }.to_json }
       let(:today) { Date.current }
 
-      before do
-        stub_request(:post, seat_link_url).to_return(
-          status: 200,
-          body: body,
-          headers: { content_type: 'application/json' }
-        )
-      end
-
       it 'saves the reconciliation dates' do
         sync_seat_link
         upcoming_reconciliation = GitlabSubscriptions::UpcomingReconciliation.next
@@ -163,14 +155,6 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker, feature_category: :sm_p
       let(:future_subscriptions) { [{ 'foo' => 'bar' }] }
       let(:body) { { success: true, future_subscriptions: future_subscriptions }.to_json }
       let(:today) { Date.current }
-
-      before do
-        stub_request(:post, seat_link_url).to_return(
-          status: 200,
-          body: body,
-          headers: { content_type: 'application/json' }
-        )
-      end
 
       context 'when future subscription information is present in the response' do
         context 'and no future subscriptions are saved in the current settings' do
@@ -229,14 +213,6 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker, feature_category: :sm_p
         }.to_json
       end
 
-      before do
-        stub_request(:post, seat_link_url).to_return(
-          status: 200,
-          body: body,
-          headers: { content_type: 'application/json' }
-        )
-      end
-
       it 'destroys the existing upcoming reconciliation record for the instance' do
         create(:upcoming_reconciliation, :self_managed)
 
@@ -247,6 +223,55 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker, feature_category: :sm_p
 
       it 'does not change anything when there is no existing record' do
         expect { sync_seat_link }.not_to change(GitlabSubscriptions::UpcomingReconciliation, :count)
+      end
+    end
+
+    context 'with service access tokens', :freeze_time do
+      let(:expires_at) { (Time.current + 2.days).to_i }
+      let(:license_key) { build(:gitlab_license, :cloud).export }
+
+      context 'with code_suggestions_tokens_from_customers_dot FF enabled' do
+        let(:body) { { success: true, license: license_key, service_tokens: { code_suggestions: { token: 'token1', expires_at: expires_at } } }.to_json }
+
+        it 'calls Ai::ServiceAccessTokensStorageService' do
+          expect_next_instance_of(Ai::ServiceAccessTokensStorageService, 'token1', expires_at, :code_suggestions) do |instance|
+            expect(instance).to receive(:execute)
+          end
+
+          sync_seat_link
+        end
+
+        context 'when the request is not successful' do
+          let(:body) { { success: false, error: "Bad Request" }.to_json }
+
+          before do
+            stub_request(:post, seat_link_url)
+              .to_return(status: 400, body: body)
+          end
+
+          it 'does not call Ai::ServiceAccessTokensStorageService' do
+            expect(Ai::ServiceAccessTokensStorageService).not_to receive(:new)
+
+            expect { sync_seat_link }.to raise_error(
+              described_class::RequestError,
+              'Seat Link request failed! Code:400 Body:{"success":false,"error":"Bad Request"}'
+            )
+          end
+        end
+      end
+
+      context 'with code_suggestions_tokens_from_customers_dot FF disabled' do
+        let(:body) { { success: true, license: license_key, service_tokens: { code_suggestions: { token: 'token1', expires_at: expires_at.to_i } } }.to_json }
+
+        before do
+          stub_feature_flags(code_suggestions_tokens_from_customers_dot: false)
+        end
+
+        it 'does not call Ai::ServiceAccessTokensStorageService' do
+          expect(Ai::ServiceAccessTokensStorageService).not_to receive(:new)
+
+          sync_seat_link
+        end
       end
     end
 
