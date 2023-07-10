@@ -85,4 +85,69 @@ RSpec.describe ::EE::API::Entities::UserWithAdmin do
       end
     end
   end
+
+  context 'enterprise_group_id' do
+    context 'when group_saml is available' do
+      before do
+        stub_licensed_features(group_saml: true)
+      end
+
+      it 'returns nil when user is not associated with an enterprise group' do
+        expect(subject[:enterprise_group_id]).to be nil
+      end
+
+      context 'when user is associated with an enterprise group' do
+        let(:group) { create(:group) }
+        let!(:user_detail) { create(:user_detail, user: user, enterprise_group_id: group.id) }
+
+        it 'returns the id of the enterprise group' do
+          expect(subject[:enterprise_group_id]).to eq(group.id)
+        end
+      end
+    end
+
+    context 'when group_saml is not available' do
+      before do
+        stub_licensed_features(group_saml: false)
+      end
+
+      it 'does not have the enterprise_group_id param' do
+        expect(subject[:enterprise_group_id]).to be nil
+      end
+    end
+  end
+
+  context 'enterprise_group_associated_at' do
+    context 'when group_saml is available' do
+      before do
+        stub_licensed_features(group_saml: true)
+      end
+
+      it 'returns nil when user is not associated with an enterprise group' do
+        expect(subject[:enterprise_group_associated_at]).to be nil
+      end
+
+      context 'when user is associated with an enterprise group' do
+        let(:group) { create(:group) }
+        let(:associated_at) { Time.current }
+        let!(:user_detail) do
+          create(:user_detail, user: user, enterprise_group_id: group.id, enterprise_group_associated_at: associated_at)
+        end
+
+        it 'returns the time when the user was associated with the enterprise group' do
+          expect(subject[:enterprise_group_associated_at]).to eq(associated_at)
+        end
+      end
+    end
+
+    context 'when group_saml is not available' do
+      before do
+        stub_licensed_features(group_saml: false)
+      end
+
+      it 'does not have the enterprise_group_associated_at param' do
+        expect(subject[:enterprise_group_associated_at]).to be nil
+      end
+    end
+  end
 end
