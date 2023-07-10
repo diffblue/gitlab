@@ -39,9 +39,9 @@ describe('AddonPurchaseDetails', () => {
       propsData: {
         productLabel: 'Compute pack',
         quantity: 0,
-        packsFormula: 'x %{packQuantity} units of compute per pack = %{strong}',
-        quantityText: '%{quantity} units of compute',
-        totalPurchase: 'Total units of compute: %{quantity}',
+        packsFormula: 'x %{packQuantity} compute minutes per pack = %{strong}',
+        quantityText: '%{quantity} compute minutes',
+        totalPurchase: 'Total compute minutes: %{quantity}',
         ...props,
       },
     });

@@ -8,6 +8,6 @@
 
 - if minutes_usage_presenter.display_shared_runners_data?
   %li
-    %span.light= _('Additional units of compute:')
+    %span.light= _('Additional compute minutes:')
     %strong
       = ci_minutes_report(minutes_usage_presenter.purchased_minutes_report)

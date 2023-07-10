@@ -30,7 +30,7 @@ describe('MinutesUsageCharts', () => {
   const findSharedRunnerByProject = () => wrapper.findByTestId('shared-runner-by-project');
   const findYearDropdown = () => wrapper.findByTestId('minutes-usage-year-dropdown');
 
-  it('does not render NoMinutesAlert if there are units of compute', () => {
+  it('does not render NoMinutesAlert if there are compute minutes', () => {
     expect(findNoMinutesAlert().exists()).toBe(false);
   });
 
@@ -38,7 +38,7 @@ describe('MinutesUsageCharts', () => {
     expect(findYearDropdown().exists()).toBe(true);
   });
 
-  describe('with no units of compute', () => {
+  describe('with no compute minutes', () => {
     beforeEach(() => {
       const props = {
         ...defaultProps,

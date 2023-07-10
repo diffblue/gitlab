@@ -29,12 +29,12 @@ RSpec.describe 'Admin Groups', feature_category: :continuous_integration do
           expect(page).to have_content('Compute quota: 300 / 400')
         end
 
-        it 'renders additional units of compute' do
+        it 'renders additional compute minutes' do
           group.update!(extra_shared_runners_minutes_limit: 100)
 
           visit admin_group_path(group)
 
-          expect(page).to have_content('Additional units of compute:')
+          expect(page).to have_content('Additional compute minutes:')
         end
       end
 
@@ -45,12 +45,12 @@ RSpec.describe 'Admin Groups', feature_category: :continuous_integration do
           expect(page).not_to have_content('Compute quota: 300 / 400')
         end
 
-        it 'does not render additional units of compute' do
+        it 'does not render additional compute minutes' do
           group.update!(extra_shared_runners_minutes_limit: 100)
 
           visit admin_group_path(group)
 
-          expect(page).not_to have_content('Additional units of compute:')
+          expect(page).not_to have_content('Additional compute minutes:')
         end
       end
     end

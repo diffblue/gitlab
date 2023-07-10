@@ -108,7 +108,7 @@ module Billing
               "title": s_("BillingPlans|10GB transfer per month")
             },
             {
-              "title": s_("BillingPlans|400 units of compute per month")
+              "title": s_("BillingPlans|400 compute minutes per month")
             },
             {
               "title": s_("BillingPlans|5 users per namespace")
@@ -141,7 +141,7 @@ module Billing
               "title": s_("BillingPlans|Self-managed reliability")
             },
             {
-              "title": s_("BillingPlans|10,000 units of compute per month")
+              "title": s_("BillingPlans|10,000 compute minutes per month")
             },
             {
               "title": s_("BillingPlans|Support")
@@ -175,7 +175,7 @@ module Billing
               "title": s_("BillingPlans|Free guest users")
             },
             {
-              "title": s_("BillingPlans|50,000 units of compute per month")
+              "title": s_("BillingPlans|50,000 compute minutes per month")
             },
             {
               "title": s_("BillingPlans|Support")

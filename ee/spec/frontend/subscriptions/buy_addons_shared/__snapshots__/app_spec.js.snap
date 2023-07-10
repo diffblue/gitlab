@@ -1,33 +1,33 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Buy Addons Shared App CI Minutes labels does not show labels if input is invalid 1`] = `
-"Compute packs are only used after you've used your subscription's monthly quota. The additional units of compute will roll over month to month and are valid for one year.
+"Compute packs are only used after you've used your subscription's monthly quota. The additional compute minutes will roll over month to month and are valid for one year.
      
       Compute pack
       
-            x 1,000 units of compute per pack
+            x 1,000 compute minutes per pack
             
               -1 compute packs
-             Total units of compute: -1,000    Gitlab Org's units of compute 
+             Total compute minutes: -1,000    Gitlab Org's compute minutes 
         -
        
       CI minutes pack
        
       -
      
-        $10 per pack of 1,000 units of compute
+        $10 per pack of 1,000 compute minutes
         Subtotal 
         -
         – Total 
       -
      
-      Gitlab Org's units of compute
+      Gitlab Org's compute minutes
      
       CI minutes pack
        
       -
      
-        $10 per pack of 1,000 units of compute
+        $10 per pack of 1,000 compute minutes
         Subtotal 
         -
         – Total 
@@ -35,33 +35,33 @@ exports[`Buy Addons Shared App CI Minutes labels does not show labels if input i
 `;
 
 exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 1 pack 1`] = `
-"Compute packs are only used after you've used your subscription's monthly quota. The additional units of compute will roll over month to month and are valid for one year.
+"Compute packs are only used after you've used your subscription's monthly quota. The additional compute minutes will roll over month to month and are valid for one year.
      
       Compute pack
       
-            x 1,000 units of compute per pack =
-            1,000 units of compute
+            x 1,000 compute minutes per pack =
+            1,000 compute minutes
               1 compute pack
-             Total units of compute: 1,000    Gitlab Org's units of compute 
+             Total compute minutes: 1,000    Gitlab Org's compute minutes 
         $10
        
       CI minutes pack
       (x1) 
       $10
      
-        $10 per pack of 1,000 units of compute
+        $10 per pack of 1,000 compute minutes
         Subtotal 
         $10
         – Total 
       $10
      
-      Gitlab Org's units of compute
+      Gitlab Org's compute minutes
      
       CI minutes pack
       (x1) 
       $10
      
-        $10 per pack of 1,000 units of compute
+        $10 per pack of 1,000 compute minutes
         Subtotal 
         $10
         – Total 
@@ -69,33 +69,33 @@ exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 1 pa
 `;
 
 exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 2 packs 1`] = `
-"Compute packs are only used after you've used your subscription's monthly quota. The additional units of compute will roll over month to month and are valid for one year.
+"Compute packs are only used after you've used your subscription's monthly quota. The additional compute minutes will roll over month to month and are valid for one year.
      
       Compute pack
       
-            x 1,000 units of compute per pack =
-            2,000 units of compute
+            x 1,000 compute minutes per pack =
+            2,000 compute minutes
               2 compute packs
-             Total units of compute: 2,000    Gitlab Org's units of compute 
+             Total compute minutes: 2,000    Gitlab Org's compute minutes 
         $20
        
       CI minutes pack
       (x2) 
       $20
      
-        $10 per pack of 1,000 units of compute
+        $10 per pack of 1,000 compute minutes
         Subtotal 
         $20
         – Total 
       $20
      
-      Gitlab Org's units of compute
+      Gitlab Org's compute minutes
      
       CI minutes pack
       (x2) 
       $20
      
-        $10 per pack of 1,000 units of compute
+        $10 per pack of 1,000 compute minutes
         Subtotal 
         $20
         – Total 

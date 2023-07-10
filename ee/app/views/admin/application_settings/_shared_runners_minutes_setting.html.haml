@@ -2,5 +2,5 @@
   = form.label :shared_runners_minutes, _('Compute quota'), class: 'label-bold'
   = form.number_field :shared_runners_minutes, class: 'form-control gl-form-input'
   .form-text.text-muted
-    = _('The maximum units of compute that jobs in a namespace can use on shared runners each month. 0 for unlimited.')
+    = _('The maximum compute minutes that jobs in a namespace can use on shared runners each month. 0 for unlimited.')
     = link_to _('What is a compute quota?'), help_page_path('ci/pipelines/cicd_minutes'), target: '_blank', rel: 'noopener noreferrer'

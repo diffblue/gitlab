@@ -6,7 +6,7 @@ export const USAGE_BY_PROJECT = s__('UsageQuota|Compute usage by project');
 export const X_AXIS_MONTH_LABEL = __('Month');
 export const X_AXIS_PROJECT_LABEL = __('Projects');
 export const Y_AXIS_SHARED_RUNNER_LABEL = __('Duration (min)');
-export const Y_AXIS_PROJECT_LABEL = __('Units of compute');
+export const Y_AXIS_PROJECT_LABEL = __('Compute minutes');
 export const NO_CI_MINUTES_MSG = s__('UsageQuota|No compute usage data available.');
 export const CI_CD_MINUTES_USAGE = s__('UsageQuota|Compute usage');
 export const SHARED_RUNNER_USAGE = s__('UsageQuota|Shared runner duration');
@@ -61,9 +61,9 @@ export const PROJECTS_NO_SHARED_RUNNERS = s__(
   'UsageQuota|This namespace has no projects which used shared runners in the current period',
 );
 export const PROJECTS_TABLE_OMITS_MESSAGE = s__(
-  'UsageQuota|This table omits projects that used 0 units of compute or 0 shared runners duration',
+  'UsageQuota|This table omits projects that used 0 compute minutes or 0 shared runners duration',
 );
-export const LABEL_BUY_ADDITIONAL_MINUTES = s__('UsageQuota|Buy additional units of compute');
+export const LABEL_BUY_ADDITIONAL_MINUTES = s__('UsageQuota|Buy additional compute minutes');
 export const LABEL_CI_MINUTES_DISABLED = s__(
   'UsageQuota|%{linkStart}Shared runners%{linkEnd} are disabled, so there are no limits set on pipeline usage',
 );

@@ -7,7 +7,7 @@ export const IFRAME_MINIMUM_HEIGHT = 350;
 const i18n = Object.freeze({
   title: s__('Billings|Validate user account'),
   description: s__(`
-Billings|To use free units of compute on shared runners, you'll need to validate your account with a credit card. This is required to discourage and reduce abuse on GitLab infrastructure.
+Billings|To use free compute minutes on shared runners, you'll need to validate your account with a credit card. This is required to discourage and reduce abuse on GitLab infrastructure.
 %{strongStart}GitLab will not charge your card, it will only be used for validation.%{strongEnd}`),
 });
 

@@ -24,7 +24,7 @@ export const STORAGE_PER_PACK = 10;
 
 // CI Minutes addon data translations
 export const I18N_CI_MINUTES_PRODUCT_LABEL = s__('Checkout|Compute pack');
-export const I18N_CI_MINUTES_PRODUCT_UNIT = s__('Checkout|units of compute');
+export const I18N_CI_MINUTES_PRODUCT_UNIT = s__('Checkout|compute minutes');
 
 // Storage addon translations
 export const I18N_STORAGE_PRODUCT_LABEL = s__('Checkout|Storage packs');
@@ -59,16 +59,16 @@ export const I18N_API_ERROR = s__(
 // Addon label translations
 export const I18N_CI_1000_MINUTES_PLAN = {
   alertText: s__(
-    "Checkout|Compute packs are only used after you've used your subscription's monthly quota. The additional units of compute will roll over month to month and are valid for one year.",
+    "Checkout|Compute packs are only used after you've used your subscription's monthly quota. The additional compute minutes will roll over month to month and are valid for one year.",
   ),
   formula: I18N_DETAILS_FORMULA,
   formulaWithAlert: I18N_DETAILS_FORMULA_WITH_ALERT,
-  formulaTotal: s__('Checkout|%{quantity} units of compute'),
-  pricePerUnit: s__('Checkout|$%{selectedPlanPrice} per pack of 1,000 units of compute'),
+  formulaTotal: s__('Checkout|%{quantity} compute minutes'),
+  pricePerUnit: s__('Checkout|$%{selectedPlanPrice} per pack of 1,000 compute minutes'),
   summaryTitle: (quantity) =>
     n__('Checkout|%d compute pack', 'Checkout|%d compute packs', quantity),
-  summaryTotal: s__('Checkout|Total units of compute: %{quantity}'),
-  title: s__("Checkout|%{name}'s units of compute"),
+  summaryTotal: s__('Checkout|Total compute minutes: %{quantity}'),
+  title: s__("Checkout|%{name}'s compute minutes"),
 };
 
 export const I18N_STORAGE_PLAN = {

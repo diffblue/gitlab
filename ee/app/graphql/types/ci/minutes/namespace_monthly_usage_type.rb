@@ -22,7 +22,7 @@ module Types
               ::GraphQL::Types::Int,
               null: true,
               method: :amount_used,
-              description: 'Total number of units of compute used by all projects in the namespace.'
+              description: 'Total number of compute minutes used by all projects in the namespace.'
 
         field :projects,
               ::Types::Ci::Minutes::ProjectMonthlyUsageType.connection_type,
