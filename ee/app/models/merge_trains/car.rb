@@ -94,19 +94,6 @@ module MergeTrains
               .select('DISTINCT ON (target_branch) *')
               .order(:target_branch, :id)
       end
-
-      def sha_exists_in_history?(target_project_id, target_branch, newrev, limit: 20)
-        MergeRequest.where(id: complete_merge_trains(target_project_id, target_branch, limit: limit))
-                    .where('merge_commit_sha = ? OR in_progress_merge_commit_sha = ?', newrev, newrev)
-                    .exists?
-      end
-
-      private
-
-      def complete_merge_trains(target_project_id, target_branch, limit:)
-        for_target(target_project_id, target_branch)
-          .complete.order(id: :desc).select(:merge_request_id).limit(limit)
-      end
     end
 
     def all_next
