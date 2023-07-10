@@ -695,7 +695,7 @@ Instead of:
 
 ## I
 
-Do not use first-person singular. Use **you** or rewrite the phrase instead. ([Vale](../testing.md#vale) rule: [`FirstPerson.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/FirstPerson.yml))
+Do not use first-person singular. Use **you** or rewrite the phrase instead.
 
 ## i.e.
 
