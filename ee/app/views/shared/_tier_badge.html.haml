@@ -1,10 +1,11 @@
 - if !source.root_ancestor.paid?
   - content = 'overview-free-tier-highlight'
-  - if source.is_a?(Group)
-    - link_upgrade_path = group_billings_path(source.root_ancestor, source: content)
+  - link_upgrade_path = group_billings_path(source.root_ancestor, source: content)
+  - if source_type == 'Group'
+    - namespace_to_track = source
   - else
-    - link_upgrade_path = source.personal? ? profile_billings_path(source: content) : group_billings_path(source.root_ancestor, source: content)
-  - experiment(:tier_badge, actor: current_user) do |e|
+    - namespace_to_track = source.namespace
+  - experiment(:tier_badge, actor: current_user, namespace: namespace_to_track) do |e|
     - e.candidate do
       .js-tier-badge-trigger{ data: { primary_cta_link: new_trial_path(namespace_id: source.root_ancestor.id),
         secondary_cta_link: link_upgrade_path, source_type: source_type } }
