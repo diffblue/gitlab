@@ -80,6 +80,7 @@ export const jobs = [
     path: 'testing',
     status: {
       icon: 'status_success',
+      group: 'success',
       text: 'passed',
     },
     stage: 'test',

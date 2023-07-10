@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import ProjectPipeline from 'ee/vue_shared/dashboards/components/project_pipeline.vue';
 import { mockPipelineData } from 'ee_jest/vue_shared/dashboards/mock_data';
 
@@ -6,7 +6,7 @@ describe('project pipeline component', () => {
   let wrapper;
 
   const mountComponent = (propsData = {}) =>
-    mount(ProjectPipeline, {
+    mountExtended(ProjectPipeline, {
       propsData,
     });
 
@@ -17,7 +17,7 @@ describe('project pipeline component', () => {
         hasPipelineFailed: false,
       });
 
-      expect(wrapper.find('.js-ci-status-icon-success').exists()).toBe(true);
+      expect(wrapper.findByTestId('status_success-icon').exists()).toBe(true);
     });
 
     it('should render failed badge', () => {
@@ -26,7 +26,7 @@ describe('project pipeline component', () => {
         hasPipelineFailed: true,
       });
 
-      expect(wrapper.find('.js-ci-status-icon-failed').exists()).toBe(true);
+      expect(wrapper.findByTestId('status_failed-icon').exists()).toBe(true);
     });
 
     it('should render running badge', () => {
@@ -35,7 +35,7 @@ describe('project pipeline component', () => {
         hasPipelineFailed: false,
       });
 
-      expect(wrapper.find('.js-ci-status-icon-running').exists()).toBe(true);
+      expect(wrapper.findByTestId('status_running-icon').exists()).toBe(true);
     });
   });
 
@@ -48,9 +48,9 @@ describe('project pipeline component', () => {
         hasPipelineFailed: false,
       });
 
-      expect(wrapper.find('.js-upstream-pipeline-status.js-ci-status-icon-success').exists()).toBe(
-        true,
-      );
+      expect(
+        wrapper.find('.js-upstream-pipeline-status [data-testid="status_success-icon"]').exists(),
+      ).toBe(true);
     });
   });
 
@@ -64,7 +64,7 @@ describe('project pipeline component', () => {
       });
 
       expect(
-        wrapper.find('.js-downstream-pipeline-status.js-ci-status-icon-success').exists(),
+        wrapper.find('.js-downstream-pipeline-status [data-testid="status_success-icon"]').exists(),
       ).toBe(true);
     });
 
@@ -76,9 +76,9 @@ describe('project pipeline component', () => {
         hasPipelineFailed: false,
       });
 
-      expect(wrapper.find('.js-downstream-pipeline-status.js-ci-status-icon-failed').exists()).toBe(
-        true,
-      );
+      expect(
+        wrapper.find('.js-downstream-pipeline-status [data-testid="status_failed-icon"]').exists(),
+      ).toBe(true);
     });
 
     it('should render downstream running badge', () => {
@@ -90,7 +90,7 @@ describe('project pipeline component', () => {
       });
 
       expect(
-        wrapper.find('.js-downstream-pipeline-status.js-ci-status-icon-running').exists(),
+        wrapper.find('.js-downstream-pipeline-status [data-testid="status_running-icon"]').exists(),
       ).toBe(true);
     });
 
