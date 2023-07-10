@@ -213,7 +213,7 @@ Otherwise, the deployed app isn't externally available outside of the cluster.
 GitLab creates a new pipeline, which begins to build, test, and deploy the app.
 
 After the pipeline has finished, your app runs in EKS, and is available
-to users. Select **CI/CD > Environments**.
+to users. Select **Operate > Environments**.
 
 ![Deployed Environment](img/environment.png)
 

@@ -104,7 +104,7 @@ scanned for vulnerabilities.
 
    Use the content shown in the [Yarn lockfile](#yarn-lock-file-content) section.
 
-1. Go to **CI/CD > Pipelines** and confirm that the latest pipeline completed successfully.
+1. Go to **Build > Pipelines** and confirm that the latest pipeline completed successfully.
 
 In the pipeline, dependency scanning runs and the vulnerabilities are detected automatically.
 

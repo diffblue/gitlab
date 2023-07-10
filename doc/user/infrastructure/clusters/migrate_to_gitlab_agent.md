@@ -85,7 +85,7 @@ In your Auto DevOps project, you can use the GitLab agent to connect with your K
      KUBE_NAMESPACE: "demo-agent"
    ```
 
-1. To test your pipeline, on the left sidebar, select **CI/CD > Pipelines** and then **Run pipeline**.
+1. To test your pipeline, on the left sidebar, select **Build > Pipelines** and then **Run pipeline**.
 
 For an example, [view this project](https://gitlab.com/gitlab-examples/ops/gitops-demo/hello-world-service).
 

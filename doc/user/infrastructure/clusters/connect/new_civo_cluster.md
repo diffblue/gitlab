@@ -91,7 +91,7 @@ Refer to the [Civo Terraform provider](https://registry.terraform.io/providers/c
 
 After configuring your project, manually trigger the provisioning of your cluster. In GitLab:
 
-1. On the left sidebar, go to **CI/CD > Pipelines**.
+1. On the left sidebar, go to **Build > Pipelines**.
 1. Next to **Play** (**{play}**), select the dropdown list icon (**{chevron-lg-down}**).
 1. Select **Deploy** to manually trigger the deployment job.
 
@@ -131,7 +131,7 @@ To remove all resources:
      needs: []
    ```
 
-1. On the left sidebar, select **CI/CD > Pipelines** and select the most recent pipeline.
+1. On the left sidebar, select **Build > Pipelines** and select the most recent pipeline.
 1. For the `destroy` job, select **Play** (**{play}**).
 
 ## Civo support
