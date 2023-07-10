@@ -458,9 +458,9 @@ Instead of:
 
 Do not use **e-mail** with a hyphen. When plural, use **emails** or **email messages**. ([Vale](../testing.md#vale) rule: [`SubstitutionSuggestions.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/SubstitutionSuggestions.yml))
 
-## emojis
+## emoji
 
-Use **emojis** to refer to the plural form of **emoji**.
+Use **emoji** to refer to the plural form of **emoji**.
 
 ## enable
 
