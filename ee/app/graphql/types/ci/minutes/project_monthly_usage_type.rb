@@ -12,7 +12,7 @@ module Types
               ::GraphQL::Types::Int,
               null: true,
               method: :amount_used,
-              description: 'Number of units of compute used by the project in the month.'
+              description: 'Number of compute minutes used by the project in the month.'
 
         field :shared_runners_duration,
               ::GraphQL::Types::Int,

@@ -28,7 +28,7 @@ module Ci
       # since this will lazily create an entry if it doesn't exist.
       # For example, on the 1st of each month, when we update the usage for a namespace,
       # we will automatically generate new records and reset usage for the current month.
-      # This also recalculates any additional units of compute based on the previous month usage.
+      # This also recalculates any additional compute minutes based on the previous month usage.
       def self.find_or_create_current(namespace_id:)
         current_usage = unsafe_find_current(namespace_id)
         return current_usage if current_usage
@@ -36,7 +36,7 @@ module Ci
         current_month.for_namespace(namespace_id).new.tap do |new_usage|
           # TODO: Remove in https://gitlab.com/gitlab-org/gitlab/-/issues/350617
           # Avoid cross-database modifications in transaction since
-          # recalculation of purchased units of compute touches `namespaces` table.
+          # recalculation of purchased compute minutes touches `namespaces` table.
           new_usage.run_after_commit do
             Namespace.find_by_id(namespace_id).try do |namespace|
               Ci::Minutes::Quota.new(namespace).recalculate_remaining_purchased_minutes!
@@ -84,10 +84,10 @@ module Ci
         usage_notified?(Notification::PERCENTAGES.fetch(:exceeded))
       end
 
-      # Notification_level is set to 100 (meaning 100% remaining units of compute) by default.
+      # Notification_level is set to 100 (meaning 100% remaining compute minutes) by default.
       # It is reduced to 30 when the quota available drops below 30%
       # It is reduced to 5 when the quota available drops below 5%
-      # It is reduced to 0 when the there are no more units of compute available.
+      # It is reduced to 0 when the there are no more compute minutes available.
       #
       # Legacy tracking of compute usage (in `namespaces` table) uses 2 attributes instead.
       # We are condensing both into `notification_level` in the new monthly tracking.

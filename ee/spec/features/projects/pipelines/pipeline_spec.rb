@@ -139,22 +139,22 @@ RSpec.describe 'Pipeline', :js, feature_category: :continuous_integration do
       end
 
       context 'pipeline has finished' do
-        it 'shows pipeline compute credits and time ago' do
+        it 'shows pipeline compute minutes and time ago' do
           visit project_pipeline_path(project, finished_pipeline)
 
           within '[data-testid="pipeline-details-header"]' do
-            expect(page).to have_selector('[data-testid="compute-credits"]')
+            expect(page).to have_selector('[data-testid="compute-minutes"]')
             expect(page).to have_selector('[data-testid="pipeline-finished-time-ago"]')
           end
         end
       end
 
       context 'pipeline has not finished' do
-        it 'does not show pipeline compute credits and time ago' do
+        it 'does not show pipeline compute minutes and time ago' do
           subject
 
           within '[data-testid="pipeline-details-header"]' do
-            expect(page).not_to have_selector('[data-testid="compute-credits"]')
+            expect(page).not_to have_selector('[data-testid="compute-minutes"]')
             expect(page).not_to have_selector('[data-testid="pipeline-finished-time-ago"]')
           end
         end

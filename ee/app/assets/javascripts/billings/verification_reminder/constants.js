@@ -20,7 +20,7 @@ export const I18N = {
   successAlert: {
     title: s__('VerificationReminder|Your account has been validated'),
     message: s__(
-      'VerificationReminder|You’ll now be able to take advantage of free units of compute on shared runners.',
+      'VerificationReminder|You’ll now be able to take advantage of free compute minutes on shared runners.',
     ),
   },
 };

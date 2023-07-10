@@ -13155,7 +13155,7 @@ CI/CD variables given to a manual job.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="ciminutesnamespacemonthlyusageminutes"></a>`minutes` | [`Int`](#int) | Total number of units of compute used by all projects in the namespace. |
+| <a id="ciminutesnamespacemonthlyusageminutes"></a>`minutes` | [`Int`](#int) | Total number of compute minutes used by all projects in the namespace. |
 | <a id="ciminutesnamespacemonthlyusagemonth"></a>`month` | [`String`](#string) | Month related to the usage data. |
 | <a id="ciminutesnamespacemonthlyusagemonthiso8601"></a>`monthIso8601` | [`ISO8601Date`](#iso8601date) | Month related to the usage data in ISO 8601 date format. |
 | <a id="ciminutesnamespacemonthlyusageprojects"></a>`projects` | [`CiMinutesProjectMonthlyUsageConnection`](#ciminutesprojectmonthlyusageconnection) | Compute usage data for projects in the namespace. (see [Connections](#connections)) |
@@ -13167,7 +13167,7 @@ CI/CD variables given to a manual job.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="ciminutesprojectmonthlyusageminutes"></a>`minutes` | [`Int`](#int) | Number of units of compute used by the project in the month. |
+| <a id="ciminutesprojectmonthlyusageminutes"></a>`minutes` | [`Int`](#int) | Number of compute minutes used by the project in the month. |
 | <a id="ciminutesprojectmonthlyusagename"></a>`name` **{warning-solid}** | [`String`](#string) | **Deprecated** in 15.6. Use `project.name`. |
 | <a id="ciminutesprojectmonthlyusageproject"></a>`project` | [`Project`](#project) | Project having the recorded usage. |
 | <a id="ciminutesprojectmonthlyusagesharedrunnersduration"></a>`sharedRunnersDuration` | [`Int`](#int) | Total duration (in seconds) of shared runners use by the project for the month. |

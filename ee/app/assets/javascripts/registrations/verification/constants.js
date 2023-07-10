@@ -1,9 +1,9 @@
 import { s__ } from '~/locale';
 
 export const I18N = {
-  title: s__('RegistrationVerification|Enable free units of compute'),
+  title: s__('RegistrationVerification|Enable free compute minutes'),
   description: s__(
-    "RegistrationVerification|To keep GitLab spam and abuse free we ask that you verify your identity with a valid payment method, such as a debit or credit card. Until then, you can't use free units of compute to build your application.",
+    "RegistrationVerification|To keep GitLab spam and abuse free we ask that you verify your identity with a valid payment method, such as a debit or credit card. Until then, you can't use free compute minutes to build your application.",
   ),
   disclaimer: s__(
     'RegistrationVerification|GitLab will not charge your card, it will only be used for validation.',

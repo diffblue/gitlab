@@ -1,1 +1,1 @@
-= s_("in %{duration}, using %{compute_credits} compute credits, and was queued for %{queued_duration}").html_safe % { duration: duration, compute_credits: pipeline.total_ci_minutes_consumed, queued_duration: queued_duration }
+= s_("in %{duration}, using %{compute_minutes} compute minutes, and was queued for %{queued_duration}").html_safe % { duration: duration, compute_minutes: pipeline.total_ci_minutes_consumed, queued_duration: queued_duration }

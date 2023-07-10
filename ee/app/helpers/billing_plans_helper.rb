@@ -271,7 +271,7 @@ module BillingPlansHelper
         { title: s_('BillingPlans|All stages of the DevOps lifecycle') },
         { title: s_('BillingPlans|Bring your own CI runners') },
         { title: s_('BillingPlans|Bring your own production environment') },
-        { title: s_('BillingPlans|400 units of compute') }
+        { title: s_('BillingPlans|400 compute minutes') }
       ],
       premium: [
         { title: s_('BillingPlans|All the benefits of Free +'), highlight: true },
@@ -279,7 +279,7 @@ module BillingPlansHelper
         { title: s_('BillingPlans|Multiple approval rules') },
         { title: s_('BillingPlans|Multi-region support') },
         { title: s_('BillingPlans|Priority support') },
-        { title: s_('BillingPlans|10000 units of compute') }
+        { title: s_('BillingPlans|10000 compute minutes') }
       ],
       ultimate: [
         { title: s_('BillingPlans|All the benefits of Premium +'), highlight: true },
@@ -288,7 +288,7 @@ module BillingPlansHelper
         { title: s_('BillingPlans|Executive level insights') },
         { title: s_('BillingPlans|Compliance automation') },
         { title: s_('BillingPlans|Free guest users') },
-        { title: s_('BillingPlans|50000 units of compute') }
+        { title: s_('BillingPlans|50000 compute minutes') }
       ]
     })
   end

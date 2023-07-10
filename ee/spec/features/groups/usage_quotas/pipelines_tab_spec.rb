@@ -80,8 +80,8 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
     context 'when it is not GitLab.com' do
       let(:gitlab_dot_com) { false }
 
-      it "does not show 'Buy additional units of compute' button" do
-        expect(page).not_to have_content('Buy additional units of compute')
+      it "does not show 'Buy additional compute minutes' button" do
+        expect(page).not_to have_content('Buy additional compute minutes')
       end
     end
 
@@ -96,7 +96,7 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
         expect(page).not_to have_content(other_project.full_name)
       end
 
-      link = page.find('a', text: 'Buy additional units of compute')
+      link = page.find('a', text: 'Buy additional compute minutes')
 
       expect(link['data-track-action']).to eq('click_buy_ci_minutes')
       expect(link['data-track-label']).to eq(group.actual_plan_name)
@@ -111,7 +111,7 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
         visit_usage_quotas_page
       end
 
-      it 'does not show projects with 0 units of compute used' do
+      it 'does not show projects with 0 compute minutes used' do
         page.within('[data-testid="pipelines-quota-tab-project-table"]') do
           expect(page).to have_content(project.full_name)
           expect(page).not_to have_content(other_project.full_name)
@@ -135,16 +135,16 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
     end
   end
 
-  describe 'Purchase additional units of compute' do
+  describe 'Purchase additional compute minutes' do
     include_context 'when user is allowed to see usage quotas'
 
     it 'points to GitLab compute purchase flow' do
       visit_usage_quotas_page
 
-      expect(page).to have_link('Buy additional units of compute', href: buy_minutes_subscriptions_link(group))
+      expect(page).to have_link('Buy additional compute minutes', href: buy_minutes_subscriptions_link(group))
     end
 
-    context 'when successfully purchasing units of compute' do
+    context 'when successfully purchasing compute minutes' do
       let(:group) { create(:group, :with_ci_minutes) }
       let!(:project) do
         create(:project, :with_ci_minutes, amount_used: 200, namespace: group, shared_runners_enabled: true)

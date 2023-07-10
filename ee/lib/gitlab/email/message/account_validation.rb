@@ -19,11 +19,11 @@ module Gitlab
         end
 
         def title
-          s_("AccountValidation|Looks like you'll need to validate your account to use free units of compute")
+          s_("AccountValidation|Looks like you'll need to validate your account to use free compute minutes")
         end
 
         def body_line1
-          s_("AccountValidation|In order to use free units of compute on shared runners, you'll need to validate your account using one of our verification options. If you prefer not to, you can run pipelines by bringing your own runners and disabling shared runners for your project.")
+          s_("AccountValidation|In order to use free compute minutes on shared runners, you'll need to validate your account using one of our verification options. If you prefer not to, you can run pipelines by bringing your own runners and disabling shared runners for your project.")
         end
 
         def body_line2

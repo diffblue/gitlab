@@ -26,7 +26,7 @@ module EE
 
       def js_pipeline_details_header_data(project, pipeline)
         super.merge(
-          compute_credits: pipeline.total_ci_minutes_consumed
+          compute_minutes: pipeline.total_ci_minutes_consumed
         )
       end
 
