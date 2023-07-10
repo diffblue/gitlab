@@ -38,7 +38,7 @@ When you create a release, or after, you can:
 
 To view a list of releases:
 
-- On the left sidebar, select **Deployments > Releases**, or
+- On the left sidebar, select **Deploy > Releases**, or
 
 - On the project's overview page, if at least one release exists, select the number of releases.
 
@@ -194,7 +194,7 @@ Prerequisites:
 
 In the UI:
 
-1. On the left sidebar, select **Deployments > Releases**.
+1. On the left sidebar, select **Deploy > Releases**.
 1. In the upper-right corner of the release you want to modify, select **Edit this release** (the pencil icon).
 1. On the **Edit Release** page, change the release's details.
 1. Select **Save changes**.
@@ -236,12 +236,12 @@ the [Releases API](../../../api/releases/index.md#create-a-release).
 
 In the user interface, to associate milestones to a release:
 
-1. On the left sidebar, select **Deployments > Releases**.
+1. On the left sidebar, select **Deploy > Releases**.
 1. In the upper-right corner of the release you want to modify, select **Edit this release** (the pencil icon).
 1. From the **Milestones** list, select each milestone you want to associate. You can select multiple milestones.
 1. Select **Save changes**.
 
-On the **Deployments > Releases** page, the **Milestone** is listed in the top
+On the **Deploy > Releases** page, the **Milestone** is listed in the top
 section, along with statistics about the issues in the milestones.
 
 ![A Release with one associated milestone](img/release_with_milestone_v12_9.png)
