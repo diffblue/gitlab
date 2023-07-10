@@ -19,6 +19,7 @@ namespace :gitlab do
           zero_shot_prompt_action = "the action to take, should be one from this list"
           counter = 0.0
           correct_answers_counter = 0
+          default_answers_counter = 0
 
           YAML.load_file(FILENAME).values.flatten.each do |row|
             counter += 1
@@ -33,10 +34,12 @@ namespace :gitlab do
             actions.reject! { |action| action.first.start_with?(zero_shot_prompt_action) }
 
             correct_answers_counter += accuracy_check(actions, row['answer'], response.content)
+            default_answers_counter += default_answer_check(response.content) ? 1 : 0
 
             logger.info("tools used: #{actions}")
             logger.info("actual response: #{response.content}")
             logger.info("current accuracy rate #{(correct_answers_counter / counter) * 100}%")
+            logger.info("current default answer counter #{default_answers_counter}")
             logger.info("\n\n")
           end
         end
@@ -73,7 +76,7 @@ namespace :gitlab do
       end
 
       def accuracy_check(actions, tools, final_answer)
-        return 0 if final_answer == Gitlab::Llm::Chain::Answer.default_final_message
+        return 0 if default_answer_check(final_answer)
 
         actions = actions.flatten
         final_rating = 0
@@ -85,6 +88,10 @@ namespace :gitlab do
         end
 
         final_rating
+      end
+
+      def default_answer_check(final_answer)
+        final_answer == Gitlab::Llm::Chain::Answer.default_final_message
       end
     end
   end

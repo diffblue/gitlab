@@ -268,5 +268,15 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         end
       end
     end
+
+    context 'when asked general questions' do
+      let(:input) { format('What is your name?') }
+
+      it 'answers question about a name', :aggregate_failures do
+        answer = executor.execute
+
+        expect(answer.content).to match_llm_answer('GitLab Duo Chat')
+      end
+    end
   end
 end

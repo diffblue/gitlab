@@ -8,12 +8,13 @@ module Gitlab
           class Executor < Tool
             NAME = 'GitlabDocumentation'
             RESOURCE_NAME = 'documentation answer'
-            DESCRIPTION = <<-DESC
-              This tool is useful when you need to answer questions about GitLab,
-              like how to perform certain actions or how to use certain features.
-              Questions can be about GitLab's projects, groups, issues, merge requests,
-              epics, milestones, labels, CI/CD pipelines, git repositories, and more.
-            DESC
+            DESCRIPTION =
+              <<-PROMPT
+                This tool is useful when you need to answer questions about GitLab,
+                like how to perform certain actions or how to use certain features.
+                Questions can be about GitLab's projects, groups, issues, merge requests,
+                epics, milestones, labels, CI/CD pipelines, git repositories, and more.
+              PROMPT
 
             EXAMPLE =
               <<~PROMPT
