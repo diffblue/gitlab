@@ -76,6 +76,7 @@ export default {
 <template>
   <li
     class="gl-display-flex gl-display-flex-wrap gl-border-b-1 gl-border-gray-100 gl-border-b-solid gl-text-gray-500 gl-py-3"
+    data-testid="catalog-resource-item"
   >
     <gl-avatar-link :href="resource.webPath">
       <gl-avatar
@@ -89,7 +90,12 @@ export default {
     </gl-avatar-link>
     <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-1">
       <div class="gl-display-flex gl-flex-wrap gl-gap-2 gl-mb-2">
-        <gl-button variant="link" :href="resource.webPath" class="gl-text-gray-900! gl-mr-1">
+        <gl-button
+          variant="link"
+          :href="resource.webPath"
+          class="gl-text-gray-900! gl-mr-1"
+          data-testid="ci-resource-link"
+        >
           {{ resourcePath }} <b> {{ resource.name }}</b>
         </gl-button>
         <div class="gl-display-flex gl-flex-grow-1 gl-md-justify-content-space-between">
