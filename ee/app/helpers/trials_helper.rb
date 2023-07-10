@@ -94,11 +94,7 @@ module TrialsHelper
   end
 
   def trial_eligible_namespaces
-    # TODO: Not sure this helps any as relation is lazy loaded
-    # see https://gitlab.com/gitlab-org/gitlab/-/issues/393969
-    strong_memoize(:trial_eligible_namespaces) do
-      current_user.manageable_namespaces_eligible_for_trial
-    end
+    current_user.manageable_namespaces_eligible_for_trial
   end
 
   def any_trial_eligible_namespaces?
