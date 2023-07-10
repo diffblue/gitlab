@@ -68,7 +68,7 @@ In this file, you define:
 
 To create a `.gitlab-ci.yml` file:
 
-1. On the left sidebar, select **Repository > Files**.
+1. On the left sidebar, select **Code > Repository**.
 1. Above the file list, select the branch you want to commit to.
    If you're not sure, leave `master` or `main`.
    Then select the plus icon (**{plus}**) and **New file**:
