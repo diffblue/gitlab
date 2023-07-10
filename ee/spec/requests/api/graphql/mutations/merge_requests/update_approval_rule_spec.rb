@@ -52,4 +52,20 @@ RSpec.describe 'Updating an approval_rule', feature_category: :source_code_manag
       expect(rule.users).to match_array(users + extra_users)
     end
   end
+
+  context 'with remove_hidden_groups' do
+    let(:private_accessible_group) { create(:group, :private) }
+    let(:private_inaccessible_group) { create(:group, :private) }
+    let(:input) { { group_ids: [private_accessible_group.id.to_s], remove_hidden_groups: true } }
+
+    it 'removes inaccessible groups' do
+      rule.groups = [private_accessible_group, private_inaccessible_group]
+      private_accessible_group.add_guest(current_user)
+
+      post_graphql_mutation(mutation(input), current_user: current_user)
+
+      expect(response).to have_gitlab_http_status(:success)
+      expect(rule.reload.groups).to match_array([private_accessible_group])
+    end
+  end
 end
