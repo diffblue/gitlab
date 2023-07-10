@@ -19,16 +19,19 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder, feature_category: :vulne
     let_it_be(:build_dast) { create(:ci_build, :success, name: 'dast_job', pipeline: pipeline, project: project) }
     let_it_be(:build_ds) { create(:ci_build, :success, name: 'ds_job', pipeline: pipeline, project: project) }
     let_it_be(:build_sast) { create(:ci_build, :success, name: 'sast_job', pipeline: pipeline, project: project) }
+    let_it_be(:build_secret_detection) { create(:ci_build, :success, name: 'secret_detection_job', pipeline: pipeline, project: project) }
 
     let_it_be(:artifact_cs) { create(:ee_ci_job_artifact, :container_scanning, job: build_cs, project: project) }
     let_it_be(:artifact_dast) { create(:ee_ci_job_artifact, :dast_multiple_sites, job: build_dast, project: project) }
     let_it_be(:artifact_ds) { create(:ee_ci_job_artifact, :dependency_scanning, job: build_ds, project: project) }
 
     let!(:artifact_sast) { create(:ee_ci_job_artifact, :sast, job: build_sast, project: project) }
+    let!(:artifact_secret_detection) { create(:ee_ci_job_artifact, :secret_detection, job: build_secret_detection, project: project) }
 
     let(:cs_count) { read_fixture(artifact_cs)['vulnerabilities'].count }
     let(:ds_count) { read_fixture(artifact_ds)['vulnerabilities'].count }
     let(:sast_count) { read_fixture(artifact_sast)['vulnerabilities'].count }
+    let(:secret_detection_count) { read_fixture(artifact_secret_detection)['vulnerabilities'].count }
     let(:dast_count) do
       read_fixture(artifact_dast)['site'].sum do |site|
         site['alerts'].sum do |alert|
@@ -38,7 +41,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder, feature_category: :vulne
     end
 
     before do
-      stub_licensed_features(sast: true, dependency_scanning: true, container_scanning: true, dast: true, sast_fp_reduction: true)
+      stub_licensed_features(sast: true, dependency_scanning: true, container_scanning: true, dast: true, sast_fp_reduction: true, secret_detection: true)
       # Stub out deduplication, if not done the expectations will vary based on the fixtures (which may/may not have duplicates)
       disable_deduplication
     end
@@ -46,8 +49,10 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder, feature_category: :vulne
     subject(:finder_response) { described_class.new(pipeline: pipeline, params: params).execute }
 
     context 'findings' do
+      let(:secret_detection_commit_shas) { read_fixture(artifact_secret_detection)['vulnerabilities'].map { |v| v['location']['commit']['sha'] } }
+
       it 'assigns commit sha to findings' do
-        expect(subject.findings.map(&:sha).uniq).to eq([pipeline.sha])
+        expect(subject.findings.map(&:sha).uniq).to eq([pipeline.sha] + secret_detection_commit_shas)
       end
 
       it 'assigns the found_by_pipeline to findings' do
@@ -169,6 +174,24 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder, feature_category: :vulne
 
             expect(subject.findings).to all(have_attributes(vulnerability_flags: be_empty))
           end
+        end
+      end
+
+      context 'when secret detection' do
+        let(:params) { { report_type: %w[secret_detection] } }
+        let(:secret_detection_report) { pipeline.security_reports.reports['secret_detection'] }
+        let(:secret_detection_report_fingerprints) { secret_detection_report.findings.map(&:location).map(&:fingerprint) }
+        let(:secret_detection_report_uuids) { secret_detection_report.findings.map(&:uuid) }
+        let(:secret_detection_report_shas) { secret_detection_report.findings.map { |f| f.original_data['location']['commit']['sha'] } }
+
+        it 'includes only secret_detection' do
+          expect(subject.findings.map(&:location_fingerprint)).to match_array(secret_detection_report_fingerprints)
+          expect(subject.findings.map(&:uuid)).to match_array(secret_detection_report_uuids)
+          expect(subject.findings.count).to eq(secret_detection_count)
+        end
+
+        it 'uses the commit SHA from the report when available' do
+          expect(subject.findings.map(&:sha)).to match_array(secret_detection_report_shas)
         end
       end
 
@@ -353,7 +376,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder, feature_category: :vulne
         subject { described_class.new(pipeline: pipeline).execute }
 
         it 'returns all vulnerabilities with all scanners available' do
-          expect(subject.findings.map(&:scanner).map(&:external_id).uniq).to match_array %w[find_sec_bugs gemnasium-maven trivy zaproxy]
+          expect(subject.findings.map(&:scanner).map(&:external_id).uniq).to match_array %w[find_sec_bugs gemnasium-maven secret_detection trivy zaproxy]
         end
 
         context 'when matching scanners do not exist for the findings' do
@@ -402,7 +425,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder, feature_category: :vulne
 
       context 'when the state parameter is not given' do
         it 'returns all findings' do
-          expect(finding_uuids.length).to eq(41)
+          expect(finding_uuids.length).to eq(42)
         end
       end
 
@@ -433,7 +456,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder, feature_category: :vulne
           let(:state) { 'detected' }
 
           it 'returns all detected findings' do
-            expect(finding_uuids.length).to eq(41)
+            expect(finding_uuids.length).to eq(42)
           end
         end
 
@@ -535,7 +558,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder, feature_category: :vulne
       subject { described_class.new(pipeline: pipeline).execute }
 
       it 'returns all report_types' do
-        expect(subject.findings.count).to eq(cs_count + dast_count + ds_count + sast_count)
+        expect(subject.findings.count).to eq(cs_count + dast_count + ds_count + sast_count + secret_detection_count)
       end
     end
 
