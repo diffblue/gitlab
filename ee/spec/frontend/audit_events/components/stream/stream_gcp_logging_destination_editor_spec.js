@@ -65,9 +65,9 @@ describe('StreamDestinationEditor', () => {
   const findLogIdFormGroup = () =>
     wrapper.findByTestId('gcp-logging-destination-log-id-form-group');
   const findLogId = () => wrapper.findByTestId('gcp-logging-destination-log-id');
-  const findPasswordFormGroup = () =>
-    wrapper.findByTestId('gcp-logging-destination-password-form-group');
-  const findPassword = () => wrapper.findByTestId('gcp-logging-destination-password');
+  const findPrivateKeyFormGroup = () =>
+    wrapper.findByTestId('gcp-logging-destination-private-key-form-group');
+  const findPrivateKey = () => wrapper.findByTestId('gcp-logging-destination-private-key');
 
   afterEach(() => {
     createAlert.mockClear();
@@ -107,9 +107,9 @@ describe('StreamDestinationEditor', () => {
         );
       });
 
-      it('should render the destination Password input', () => {
-        expect(findPasswordFormGroup().exists()).toBe(true);
-        expect(findPassword().exists()).toBe(true);
+      it('should render the destination Private key input', () => {
+        expect(findPrivateKeyFormGroup().exists()).toBe(true);
+        expect(findPrivateKey().exists()).toBe(true);
       });
 
       it('does not render the delete button', () => {
@@ -128,7 +128,7 @@ describe('StreamDestinationEditor', () => {
         await findProjectId().vm.$emit('input', mockGcpLoggingDestination.googleProjectIdName);
         await findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestination.clientEmail);
         await findLogId().vm.$emit('input', mockGcpLoggingDestination.logIdName);
-        await findPassword().vm.$emit('input', mockGcpLoggingDestination.privateKey);
+        await findPrivateKey().vm.$emit('input', mockGcpLoggingDestination.privateKey);
         await findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -151,7 +151,7 @@ describe('StreamDestinationEditor', () => {
         findProjectId().vm.$emit('input', mockGcpLoggingDestination.googleProjectIdName);
         findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestination.clientEmail);
         findLogId().vm.$emit('input', mockGcpLoggingDestination.logIdName);
-        findPassword().vm.$emit('input', mockGcpLoggingDestination.privateKey);
+        findPrivateKey().vm.$emit('input', mockGcpLoggingDestination.privateKey);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -173,7 +173,7 @@ describe('StreamDestinationEditor', () => {
         findProjectId().vm.$emit('input', mockGcpLoggingDestination.googleProjectIdName);
         findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestination.clientEmail);
         findLogId().vm.$emit('input', mockGcpLoggingDestination.logIdName);
-        findPassword().vm.$emit('input', mockGcpLoggingDestination.privateKey);
+        findPrivateKey().vm.$emit('input', mockGcpLoggingDestination.privateKey);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -210,8 +210,8 @@ describe('StreamDestinationEditor', () => {
           expect(findClientEmailUrl().element.value).toBe(mockGcpLoggingDestination.clientEmail);
           expect(findLogId().exists()).toBe(true);
           expect(findLogId().element.value).toBe(mockGcpLoggingDestination.logIdName);
-          expect(findPassword().exists()).toBe(true);
-          expect(findPassword().element.value).toBe(mockGcpLoggingDestination.privateKey);
+          expect(findPrivateKey().exists()).toBe(true);
+          expect(findPrivateKey().element.value).toBe(mockGcpLoggingDestination.privateKey);
         });
 
         it('the delete button', () => {
@@ -233,7 +233,7 @@ describe('StreamDestinationEditor', () => {
         findProjectId().vm.$emit('input', mockNewGcpLoggingDestination.googleProjectIdName);
         findClientEmailUrl().vm.$emit('input', mockNewGcpLoggingDestination.clientEmail);
         findLogId().vm.$emit('input', mockNewGcpLoggingDestination.logIdName);
-        findPassword().vm.$emit('input', mockNewGcpLoggingDestination.privateKey);
+        findPrivateKey().vm.$emit('input', mockNewGcpLoggingDestination.privateKey);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -257,7 +257,7 @@ describe('StreamDestinationEditor', () => {
         findProjectId().vm.$emit('input', mockGcpLoggingDestination.googleProjectIdName);
         findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestination.clientEmail);
         findLogId().vm.$emit('input', mockGcpLoggingDestination.logIdName);
-        findPassword().vm.$emit('input', mockGcpLoggingDestination.privateKey);
+        findPrivateKey().vm.$emit('input', mockGcpLoggingDestination.privateKey);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -280,7 +280,7 @@ describe('StreamDestinationEditor', () => {
         findProjectId().vm.$emit('input', mockGcpLoggingDestination.googleProjectIdName);
         findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestination.clientEmail);
         findLogId().vm.$emit('input', mockGcpLoggingDestination.logIdName);
-        findPassword().vm.$emit('input', mockGcpLoggingDestination.privateKey);
+        findPrivateKey().vm.$emit('input', mockGcpLoggingDestination.privateKey);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -320,6 +320,24 @@ describe('StreamDestinationEditor', () => {
           error: errorMsg,
         });
       });
+    });
+
+    it('passes actual newlines when these are used in the private key input', async () => {
+      const mutationMock = jest
+        .fn()
+        .mockResolvedValue(gcpLoggingDestinationCreateMutationPopulator());
+      createComponent({
+        apolloHandlers: [[googleCloudLoggingConfigurationCreate, mutationMock]],
+      });
+
+      await findPrivateKey().setValue('\\ntest\\n');
+      await findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+
+      expect(mutationMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          privateKey: '\ntest\n',
+        }),
+      );
     });
   });
 });

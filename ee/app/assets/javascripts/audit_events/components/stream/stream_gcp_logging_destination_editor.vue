@@ -1,5 +1,5 @@
 <script>
-import { GlAlert, GlButton, GlForm, GlFormGroup, GlFormInput } from '@gitlab/ui';
+import { GlAlert, GlButton, GlForm, GlFormGroup, GlFormInput, GlFormTextarea } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
 import * as Sentry from '@sentry/browser';
 import { GlTooltipDirective as GlTooltip } from '@gitlab/ui/dist/directives/tooltip';
@@ -23,6 +23,7 @@ export default {
     GlForm,
     GlFormGroup,
     GlFormInput,
+    GlFormTextarea,
     StreamDeleteModal,
   },
   directives: {
@@ -185,6 +186,9 @@ export default {
     formSubmission() {
       return this.isEditing ? this.updateDestination() : this.addDestination();
     },
+    privateKeyFormatter(value) {
+      return value.replaceAll('\\n', '\n');
+    },
   },
   i18n: ADD_STREAM_EDITOR_I18N,
   DESTINATION_TYPE_GCP_LOGGING,
@@ -249,12 +253,14 @@ export default {
       </gl-form-group>
       <gl-form-group
         :label="$options.i18n.GCP_LOGGING_DESTINATION_PASSWORD_LABEL"
-        data-testid="gcp-logging-destination-password-form-group"
+        data-testid="gcp-logging-destination-private-key-form-group"
       >
-        <gl-form-input
+        <gl-form-textarea
           v-model="privateKey"
-          type="password"
-          data-testid="gcp-logging-destination-password"
+          rows="16"
+          :formatter="privateKeyFormatter"
+          class="gl-h-auto!"
+          data-testid="gcp-logging-destination-private-key"
         />
       </gl-form-group>
 
