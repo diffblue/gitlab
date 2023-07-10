@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe IssuableMetricImage do
+RSpec.describe IssuableMetricImage, feature_category: :metrics do
   subject { build(:issuable_metric_image) }
 
   describe 'associations' do
