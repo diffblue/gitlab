@@ -77,6 +77,7 @@ describe('EE IssuesListApp component', () => {
     rssPath: 'rss/path',
     showNewIssueLink: true,
     signInPath: 'sign/in/path',
+    groupId: '',
   };
 
   const defaultQueryResponse = cloneDeep(getIssuesQueryResponse);
