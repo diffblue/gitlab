@@ -61,5 +61,35 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::Validate::Abilities, feature_categor
         expect(step.break?).to eq true
       end
     end
+
+    context 'when user is security policy bot' do
+      let_it_be(:bot_user) { create(:user, :security_policy_bot) }
+      let(:command) do
+        Gitlab::Ci::Pipeline::Chain::Command
+          .new(project: project, current_user: bot_user, origin_ref: ref)
+      end
+
+      before do
+        create(:protected_branch, project: project, name: ref)
+      end
+
+      it 'adds an error about insufficient permissions' do
+        step.perform!
+
+        expect(pipeline.errors.to_a)
+          .to include(/Insufficient permissions/)
+      end
+
+      context 'when user is a guest in the project' do
+        before do
+          project.add_guest(bot_user)
+          step.perform!
+        end
+
+        it 'does not produce errors' do
+          expect(pipeline.errors).to be_empty
+        end
+      end
+    end
   end
 end
