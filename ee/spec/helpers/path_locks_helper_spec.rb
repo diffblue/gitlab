@@ -23,11 +23,11 @@ RSpec.describe PathLocksHelper do
 
   describe '#text_label_for_lock' do
     it "return correct string for non-nested locks" do
-      expect(text_label_for_lock(path_lock, 'app')).to eq('Locked by John')
+      expect(text_label_for_lock(path_lock, 'app')).to eq("Locked by #{user.username}")
     end
 
     it "return correct string for nested locks" do
-      expect(text_label_for_lock(path_lock, 'app/models')).to eq('John has a lock on "app"')
+      expect(text_label_for_lock(path_lock, 'app/models')).to eq("#{user.username} has a lock on \"app\"")
     end
   end
 end
