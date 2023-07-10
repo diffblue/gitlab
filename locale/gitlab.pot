@@ -50813,6 +50813,9 @@ msgstr ""
 msgid "Vulnerability|Comments"
 msgstr ""
 
+msgid "Vulnerability|Could not load prompt."
+msgstr ""
+
 msgid "Vulnerability|Crash address"
 msgstr ""
 
@@ -50865,6 +50868,9 @@ msgid "Vulnerability|File:"
 msgstr ""
 
 msgid "Vulnerability|GitLab Security Report"
+msgstr ""
+
+msgid "Vulnerability|Hide prompt"
 msgstr ""
 
 msgid "Vulnerability|Identifier"
@@ -50940,6 +50946,9 @@ msgid "Vulnerability|Severity"
 msgstr ""
 
 msgid "Vulnerability|Severity:"
+msgstr ""
+
+msgid "Vulnerability|Show prompt"
 msgstr ""
 
 msgid "Vulnerability|Status"
