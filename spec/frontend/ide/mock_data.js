@@ -13,6 +13,7 @@ export const projectData = {
       can_push: true,
       commit: {
         id: '123',
+        short_id: 'abc123de',
       },
     },
   },
