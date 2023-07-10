@@ -14,7 +14,7 @@ RSpec.describe Gitlab::TreeSummary do
   describe '#summarize (entries)' do
     it 'includes path locks in entries' do
       is_expected.to contain_exactly(
-        a_hash_including(file_name: 'a.txt', lock_label: "Locked by #{path_lock.user.name}")
+        a_hash_including(file_name: 'a.txt', lock_label: "Locked by #{path_lock.user.username}")
       )
     end
   end
