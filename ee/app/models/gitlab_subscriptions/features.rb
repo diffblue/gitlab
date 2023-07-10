@@ -142,6 +142,7 @@ module GitlabSubscriptions
       multiple_approval_rules
       multiple_group_issue_boards
       object_storage
+      microsoft_group_sync
       operations_dashboard
       package_forwarding
       pages_size_limit
