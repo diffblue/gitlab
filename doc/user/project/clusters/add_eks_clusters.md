@@ -54,7 +54,7 @@ To create new a EKS cluster for your project, group, or instance, through
 cluster certificates:
 
 1. Go to your:
-   - Project's **Infrastructure > Kubernetes clusters** page, for a project-level cluster.
+   - Project's **Operate > Kubernetes clusters** page, for a project-level cluster.
    - Group's **Kubernetes** page, for a group-level cluster.
    - **Main menu > Admin > Kubernetes**, for an instance-level cluster.
 1. Select **Integrate with a cluster certificate**.

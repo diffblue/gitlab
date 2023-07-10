@@ -52,7 +52,7 @@ This project provides you with:
 
 To create a GitLab agent for Kubernetes:
 
-1. On the left sidebar, select **Infrastructure > Kubernetes clusters**.
+1. On the left sidebar, select **Operate > Kubernetes clusters**.
 1. Select **Connect a cluster (agent)**.
 1. From the **Select an agent** dropdown list, select `civo-agent` and select **Register an agent**.
 1. GitLab generates a registration token for the agent. Securely store this secret token, as you will need it later.
@@ -98,13 +98,13 @@ After configuring your project, manually trigger the provisioning of your cluste
 When the pipeline finishes successfully, you can see your new cluster:
 
 - In Civo dashboard: on your Kubernetes tab.
-- In GitLab: from your project's sidebar, select **Infrastructure > Kubernetes clusters**.
+- In GitLab: from your project's sidebar, select **Operate > Kubernetes clusters**.
 
 ## Use your cluster
 
 After you provision the cluster, it is connected to GitLab and is ready for deployments. To check the connection:
 
-1. On the left sidebar, select **Infrastructure > Kubernetes clusters**.
+1. On the left sidebar, select **Operate > Kubernetes clusters**.
 1. In the list, view the **Connection status** column.
 
 For more information about the capabilities of the connection, see [the GitLab agent for Kubernetes documentation](../index.md).
