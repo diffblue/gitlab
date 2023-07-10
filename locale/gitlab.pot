@@ -33980,6 +33980,9 @@ msgstr ""
 msgid "Pipeline|No failed jobs in this pipeline 🎉"
 msgstr ""
 
+msgid "Pipeline|Only the first 100 jobs per stage are displayed"
+msgstr ""
+
 msgid "Pipeline|Passed"
 msgstr ""
 
@@ -34062,6 +34065,9 @@ msgid "Pipeline|This pipeline ran on the contents of this merge request's source
 msgstr ""
 
 msgid "Pipeline|To run a merge request pipeline, the jobs in the CI/CD configuration file %{linkStart}must be configured%{linkEnd} to run in merge request pipelines."
+msgstr ""
+
+msgid "Pipeline|To see the remaining jobs, go to the %{boldStart}Jobs%{boldEnd} tab."
 msgstr ""
 
 msgid "Pipeline|Trigger author"
