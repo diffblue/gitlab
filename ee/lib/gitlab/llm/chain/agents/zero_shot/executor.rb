@@ -12,7 +12,7 @@ module Gitlab
             attr_reader :tools, :user_input, :context
             attr_accessor :iterations
 
-            AGENT_NAME = 'GitLab Chat'
+            AGENT_NAME = 'GitLab Duo Chat'
             MAX_ITERATIONS = 10
 
             PROVIDER_PROMPT_CLASSES = {
@@ -155,9 +155,10 @@ module Gitlab
                 %<tools_definitions>s
                 Consider every tool before making decision.
                 Identifying resource mustn't be the last step.
-                Ensure that your answer is accurate and doesn’t contain any information not directly supported
+                Ensure that your answer is accurate and contain only information directly supported
                 by the information retrieved using provided tools.
-                Use the following format:
+
+                You must always use the following format:
                 Question: the input question you must answer
                 Thought: you should always think about what to do
                 Action: the action to take, should be one from this list: %<tool_names>s
@@ -168,8 +169,11 @@ module Gitlab
 
                 Thought: I know the final answer.
                 Final Answer: the final answer to the original input question.
-                REMEMBER to ALWAYS start a line with "Final Answer:" to give me the final answer.
 
+                Avoid using phrases "Here is" or "Here are" to give the final answer, use "Final Answer:" instead.
+                Return the final answer as soon as you recognize it.
+
+                REMEMBER to ALWAYS start a line with "Final Answer:" to give me the final answer.
                 Begin!
               PROMPT
               ),
