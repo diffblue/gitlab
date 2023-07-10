@@ -17,6 +17,7 @@ module Vulnerabilities
     FINDINGS_PER_PAGE = 20
     MAX_NUMBER_OF_IDENTIFIERS = 20
     REPORT_TYPES_WITH_LOCATION_IMAGE = %w[container_scanning cluster_image_scanning].freeze
+    SECRET_DETECTION_DEFAULT_COMMIT_SHA = "0000000"
 
     paginates_per FINDINGS_PER_PAGE
 
@@ -134,7 +135,22 @@ module Vulnerabilities
 
     # sha can be sourced from a joined pipeline or set from the report
     def sha
-      self[:sha] || @sha
+      # Some analysers (like Secret Detection) that produce security findings may perform scans across Git history and
+      # attach specific commit information to the finding. When this is the case, we _must_ use the commit SHA specified
+      # in the security report to compute the blob URL, otherwise the URL will link to the incorrect revision of the file.
+      #
+      # We also need to ensure we _don't_ use the commit SHA from the report if it's the default placeholder value,
+      # which is defined in the `secrets` analyzer:
+      # https://gitlab.com/gitlab-org/security-products/analyzers/secrets/-/blob/7e1e03209495a209308f3e9e96c5a4a0d32e1d55/secret.go#L13-13
+      commit_sha = location.dig("commit", "sha")
+      # rubocop:disable Style/IfUnlessModifier
+      if !commit_sha || commit_sha == SECRET_DETECTION_DEFAULT_COMMIT_SHA
+        # Two layers of fallbacks.
+        commit_sha = @sha || pipeline_branch
+      end
+      # rubocop:enable Style/IfUnlessModifier
+
+      commit_sha
     end
 
     def state
@@ -341,7 +357,10 @@ module Vulnerabilities
 
     def eql?(other)
       return false unless other.is_a?(self.class)
-      return false unless other.report_type == report_type && other.primary_identifier_fingerprint == primary_identifier_fingerprint
+
+      unless other.report_type == report_type && other.primary_identifier_fingerprint == primary_identifier_fingerprint
+        return false
+      end
 
       if project.licensed_feature_available?(:vulnerability_finding_signatures)
         matches_signatures(other.signatures, other.uuid)
