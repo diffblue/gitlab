@@ -9,6 +9,7 @@ RSpec.describe 'Epic index', feature_category: :global_search do
   let_it_be_with_refind(:group) { create(:group, parent: parent_group) }
   let_it_be_with_refind(:epic) { create(:epic, group: group) }
   let_it_be(:member) { create(:group_member, :owner, group: group, user: user) }
+  let_it_be(:another_member) { create(:group_member, :owner, group: another_group, user: user) }
   let(:epic_index) { Epic.__elasticsearch__.index_name }
   let(:helper) { Gitlab::Elastic::Helper.default }
   let(:client) { helper.client }
@@ -159,7 +160,7 @@ RSpec.describe 'Epic index', feature_category: :global_search do
     end
 
     context 'when the parent of the group is changed', :sidekiq_inline do
-      it 'tracks the epic via Elastic::NamespaceUpdateWorker' do
+      it 'tracks the epic via Elastic::NamespaceUpdateWorker if the new parent has indexing enabled' do
         expect(Elastic::NamespaceUpdateWorker).to receive(:perform_async).with(group.id).and_call_original
         expect(ElasticAssociationIndexerWorker).to receive(:perform_async)
           .with(anything, group.id, [:epics])
@@ -178,7 +179,7 @@ RSpec.describe 'Epic index', feature_category: :global_search do
           .and_call_original
 
         expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(epic).once
-        Groups::TransferService.new(group, user).execute(nil)
+        Groups::TransferService.new(group, user).execute(another_group)
       end
     end
   end
