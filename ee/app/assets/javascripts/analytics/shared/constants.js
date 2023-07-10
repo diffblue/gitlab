@@ -1,4 +1,4 @@
-import { dataVizBlue500, gray300 } from '@gitlab/ui/scss_to_js/scss_variables';
+import { DATA_VIZ_BLUE_500, GRAY_300 } from '@gitlab/ui/dist/tokens/js/tokens';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 
 export const scatterChartLineProps = {
@@ -18,10 +18,10 @@ export const BASE_SERIES_DATA_OPTIONS = {
   showAllSymbol: true,
   symbolSize: 8,
   lineStyle: {
-    color: dataVizBlue500,
+    color: DATA_VIZ_BLUE_500,
   },
   itemStyle: {
-    color: dataVizBlue500,
+    color: DATA_VIZ_BLUE_500,
   },
 };
 
@@ -36,10 +36,10 @@ export const BASE_NULL_SERIES_OPTIONS = {
   showSymbol: false,
   lineStyle: {
     type: 'dashed',
-    color: gray300,
+    color: GRAY_300,
   },
   itemStyle: {
-    color: gray300,
+    color: GRAY_300,
   },
 };
 

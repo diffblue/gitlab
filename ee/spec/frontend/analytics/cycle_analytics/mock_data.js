@@ -1,4 +1,4 @@
-import { dataVizBlue500, dataVizOrange600 } from '@gitlab/ui/scss_to_js/scss_variables';
+import { DATA_VIZ_BLUE_500, DATA_VIZ_ORANGE_600 } from '@gitlab/ui/dist/tokens/js/tokens';
 import { uniq } from 'lodash';
 import valueStreamAnalyticsStages from 'test_fixtures/analytics/value_stream_analytics/stages.json';
 import valueStreamAnalyticsSummary from 'test_fixtures/analytics/metrics/value_stream_analytics/summary.json';
@@ -341,7 +341,7 @@ export const durationDataSeries = {
   name: DURATION_CHART_Y_AXIS_TITLE,
   itemStyle: { color: '#617ae2' },
   lineStyle: {
-    color: dataVizBlue500,
+    color: DATA_VIZ_BLUE_500,
   },
   showSymbol: true,
 };
@@ -391,7 +391,7 @@ export const durationOverviewChartOptionsData = durationOverviewChartPlottableDa
 
 export const durationOverviewDataSeries = durationOverviewChartPlottableData.map(
   (stageDetails, idx) => {
-    const colors = [dataVizBlue500, dataVizOrange600];
+    const colors = [DATA_VIZ_BLUE_500, DATA_VIZ_ORANGE_600];
 
     return {
       ...stageDetails,
