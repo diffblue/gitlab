@@ -160,11 +160,7 @@ module Types
 
     def merge_request
       BatchLoader::GraphQL.for(object.uuid).batch do |uuids, loader|
-        if Feature.enabled?(:load_merge_request_via_links, object.project)
-          merge_request_via_links(uuids, loader)
-        else
-          merge_request_via_feedback(uuids, loader)
-        end
+        merge_request_via_links(uuids, loader)
       end
     end
 
@@ -238,14 +234,6 @@ module Types
             loader.call(finding.uuid, link.merge_request)
           end
         end
-    end
-
-    def merge_request_via_feedback(uuids, loader)
-      ::Vulnerabilities::Feedback
-        .by_finding_uuid(uuids)
-        .with_feedback_type('merge_request')
-        .with_merge_request
-        .each { |feedback| loader.call(feedback.finding_uuid, feedback.merge_request) }
     end
   end
 end

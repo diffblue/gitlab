@@ -52,24 +52,6 @@ RSpec.describe 'PipelineSecurityReportFinding', feature_category: :vulnerability
           graphql_data_at(:project, :pipeline, :security_report_finding, :merge_request)
         ).to match(a_graphql_entity_for(id: merge_request.to_global_id.to_s))
       end
-
-      context 'when the feature flag is disabled' do
-        let_it_be(:feedback) do
-          create(:vulnerability_feedback, :merge_request, project: project, finding_uuid: vulnerability_finding.uuid)
-        end
-
-        before do
-          stub_feature_flags(load_merge_request_via_links: false)
-        end
-
-        it 'returns the merge request using the Vulnerability::Feedback association' do
-          subject
-
-          expect(
-            graphql_data_at(:project, :pipeline, :security_report_finding, :merge_request)
-          ).to match(a_graphql_entity_for(id: feedback.merge_request.to_global_id.to_s))
-        end
-      end
     end
   end
 end

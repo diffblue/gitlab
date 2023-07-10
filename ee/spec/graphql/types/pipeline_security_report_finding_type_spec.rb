@@ -288,74 +288,68 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
       )
     end
 
-    context 'when `load_merge_request_via_links` is enabled' do
-      before do
-        stub_feature_flags(load_merge_request_via_links: true)
-      end
+    context 'when a merge request link exists' do
+      let!(:initial_query) do
+        # Warm up table schema and other data (e.g. SAML providers, license)
+        run_with_clean_state(sast_query, context: { current_user: user })
 
-      context 'when a merge request link exists' do
-        let!(:initial_query) do
-          # Warm up table schema and other data (e.g. SAML providers, license)
+        ActiveRecord::QueryRecorder.new do
           run_with_clean_state(sast_query, context: { current_user: user })
-
-          ActiveRecord::QueryRecorder.new do
-            run_with_clean_state(sast_query, context: { current_user: user })
-          end
-        end
-
-        let_it_be(:vulnerabilities) { create_list(:vulnerability, sast_findings.count, project: project) }
-        let_it_be(:merge_requests) do
-          create_list(:merge_request, sast_findings.count, :unique_branches, source_project: project)
-        end
-
-        let_it_be(:merge_request_links) do
-          merge_requests.zip(vulnerabilities).map do |(merge_request, vulnerability)|
-            create(:vulnerabilities_merge_request_link, vulnerability: vulnerability, merge_request: merge_request)
-          end
-        end
-
-        let_it_be(:vulnerability_findings) do
-          vulnerabilities.each_with_index.map do |vulnerability, index|
-            create(
-              :vulnerabilities_finding,
-              project: project,
-              vulnerability: vulnerability,
-              uuid: sast_findings[index].uuid
-            )
-          end
-        end
-
-        it 'returns the linked merged requests' do
-          ids = graphql_dig_at(subject, :data, :project, :pipeline, :security_report_findings, :nodes)
-            .filter_map { |node| graphql_dig_at(node, :merge_request, :id) }
-
-          expect(ids).to match_array(merge_requests.map { |mr| mr.to_global_id.to_s })
-        end
-
-        it 'prevents N+1' do
-          expect do
-            run_with_clean_state(sast_query, context: { current_user: user })
-          end.not_to exceed_query_limit(initial_query).with_threshold(1)
         end
       end
 
-      context 'when a merge request link does not exist' do
-        let_it_be(:vulnerability) { create(:vulnerability, project: project) }
-        let_it_be(:vulnerability_finding) do
+      let_it_be(:vulnerabilities) { create_list(:vulnerability, sast_findings.count, project: project) }
+      let_it_be(:merge_requests) do
+        create_list(:merge_request, sast_findings.count, :unique_branches, source_project: project)
+      end
+
+      let_it_be(:merge_request_links) do
+        merge_requests.zip(vulnerabilities).map do |(merge_request, vulnerability)|
+          create(:vulnerabilities_merge_request_link, vulnerability: vulnerability, merge_request: merge_request)
+        end
+      end
+
+      let_it_be(:vulnerability_findings) do
+        vulnerabilities.each_with_index.map do |vulnerability, index|
           create(
             :vulnerabilities_finding,
             project: project,
             vulnerability: vulnerability,
-            uuid: sast_findings.first.uuid
+            uuid: sast_findings[index].uuid
           )
         end
+      end
 
-        it 'does not return a merge request' do
-          nodes = graphql_dig_at(subject, :data, :project, :pipeline, :security_report_findings, :nodes)
+      it 'returns the linked merged requests' do
+        ids = graphql_dig_at(subject, :data, :project, :pipeline, :security_report_findings, :nodes)
+          .filter_map { |node| graphql_dig_at(node, :merge_request, :id) }
 
-          expect(nodes.length).to eq(sast_findings.length)
-          expect(nodes.filter_map { |node| graphql_dig_at(node, :merge_request) }).to be_empty
-        end
+        expect(ids).to match_array(merge_requests.map { |mr| mr.to_global_id.to_s })
+      end
+
+      it 'prevents N+1' do
+        expect do
+          run_with_clean_state(sast_query, context: { current_user: user })
+        end.not_to exceed_query_limit(initial_query).with_threshold(1)
+      end
+    end
+
+    context 'when a merge request link does not exist' do
+      let_it_be(:vulnerability) { create(:vulnerability, project: project) }
+      let_it_be(:vulnerability_finding) do
+        create(
+          :vulnerabilities_finding,
+          project: project,
+          vulnerability: vulnerability,
+          uuid: sast_findings.first.uuid
+        )
+      end
+
+      it 'does not return a merge request' do
+        nodes = graphql_dig_at(subject, :data, :project, :pipeline, :security_report_findings, :nodes)
+
+        expect(nodes.length).to eq(sast_findings.length)
+        expect(nodes.filter_map { |node| graphql_dig_at(node, :merge_request) }).to be_empty
       end
     end
 
@@ -370,102 +364,6 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
 
       it 'returns no merge requests' do
         expect(get_findings_from_response(subject).first['mergeRequest']).to be_nil
-      end
-    end
-
-    context 'when the security finding has a related vulnerability finding' do
-      let_it_be(:vulnerability_finding) do
-        create(:vulnerabilities_finding, project: project, uuid: sast_findings.first.uuid)
-      end
-
-      let_it_be(:mr_feedback) do
-        create(:vulnerability_feedback, :merge_request, project: project, finding_uuid: vulnerability_finding.uuid)
-      end
-
-      let(:mr_description) { get_findings_from_response(subject).first['mergeRequest']['description'] }
-
-      it 'returns the merge request for the security findings' do
-        stub_feature_flags(load_merge_request_via_links: false)
-
-        expect(mr_description).to eq(mr_feedback.merge_request.description)
-      end
-    end
-
-    context 'when multiple findings are detected' do
-      let(:query_for_test) do
-        %(
-          uuid
-          mergeRequest {
-            targetBranch
-          }
-        )
-      end
-
-      let_it_be(:existing_feedback) do
-        create(
-          :vulnerability_feedback,
-          :merge_request,
-          project: project,
-          finding: create(:vulnerabilities_finding, project: project, uuid: sast_findings.first.uuid),
-          merge_request: create(
-            :merge_request,
-            :unique_author,
-            source_project: project,
-            target_branch: "example-#{sast_findings.first.id}"
-          )
-        )
-      end
-
-      let!(:initial_query) do
-        stub_feature_flags(load_merge_request_via_links: false)
-        # Warm up table schema and other data (e.g. SAML providers, license)
-        run_with_clean_state(sast_query, context: { current_user: user })
-
-        ActiveRecord::QueryRecorder.new do
-          run_with_clean_state(sast_query, context: { current_user: user })
-        end
-      end
-
-      before do
-        sast_findings[1..].each do |sast_finding|
-          create(
-            :vulnerability_feedback,
-            :merge_request,
-            project: project,
-            finding: create(:vulnerabilities_finding, project: project, uuid: sast_finding.uuid),
-            merge_request: create(
-              :merge_request,
-              :unique_author,
-              source_project: project,
-              target_branch: "example-#{sast_finding.id}"
-            )
-          )
-        end
-      end
-
-      subject(:results) { run_with_clean_state(sast_query, context: { current_user: user }) }
-
-      it 'avoids N+1 queries' do
-        expect { results }.not_to exceed_query_limit(initial_query)
-      end
-
-      it 'loads the minimum amount of data' do
-        query = ActiveRecord::QueryRecorder.new { results }
-        expect(query.occurrences_starting_with("SELECT \"merge_requests\"").values.sum).to eq(1)
-      end
-
-      it 'loads each merge request' do
-        branches = results
-          .dig('data', 'project', 'pipeline', 'securityReportFindings', 'nodes')
-          .map { |node| node.dig('mergeRequest', 'targetBranch') }
-        expect(branches).to match_array(sast_findings.map { |x| "example-#{x.id}" })
-      end
-
-      it 'loads each finding id' do
-        finding_ids = results
-          .dig('data', 'project', 'pipeline', 'securityReportFindings', 'nodes')
-          .pluck('uuid')
-        expect(finding_ids).to match_array(sast_findings.map(&:uuid))
       end
     end
   end
