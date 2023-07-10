@@ -8,7 +8,8 @@ RSpec.describe Llm::ExecuteMethodService, feature_category: :no_category do # ru
 
   let(:method) { :summarize_comments }
   let(:resource) { nil }
-  let(:options) { { request_id: 'uuid' } }
+  let(:params) { {} }
+  let(:options) { { request_id: 'uuid' }.merge(params) }
 
   subject { described_class.new(user, resource, method, options).execute }
 
@@ -16,10 +17,11 @@ RSpec.describe Llm::ExecuteMethodService, feature_category: :no_category do # ru
     using RSpec::Parameterized::TableSyntax
 
     context 'with a valid method' do
-      where(:method, :resource, :service_class) do
-        :summarize_comments | issue | Llm::GenerateSummaryService
-        :explain_code | build_stubbed(:project) | Llm::ExplainCodeService
-        :explain_vulnerability | build_stubbed(:vulnerability, :with_findings) | Llm::ExplainVulnerabilityService
+      where(:method, :resource, :service_class, :params) do
+        :summarize_comments | issue | Llm::GenerateSummaryService | {}
+        :explain_code | build_stubbed(:project) | Llm::ExplainCodeService | {}
+        :explain_vulnerability | build_stubbed(:vulnerability,
+          :with_findings) | Llm::ExplainVulnerabilityService | { include_source_code: true }
       end
 
       with_them do

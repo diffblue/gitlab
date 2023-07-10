@@ -154,5 +154,24 @@ RSpec.describe Mutations::Ai::Action, feature_category: :not_owned do # rubocop:
 
       it_behaves_like 'an AI action'
     end
+
+    context 'when explain_vulnerability input is set' do
+      before do
+        allow(Ability)
+            .to receive(:allowed?)
+            .and_call_original
+
+        allow(Ability)
+            .to receive(:allowed?)
+            .with(user, :explain_vulnerability, user)
+            .and_return(true)
+      end
+
+      let(:input) { { explain_vulnerability: { resource_id: resource_id, include_source_code: true } } }
+      let(:expected_method) { :explain_vulnerability }
+      let(:expected_options) { { include_source_code: true } }
+
+      it_behaves_like 'an AI action'
+    end
   end
 end
