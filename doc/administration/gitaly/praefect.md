@@ -1487,7 +1487,7 @@ repository storage redundancy.
 
 For a replication factor:
 
-- Of `1`: NFS, Gitaly, and Gitaly Cluster have roughly the same storage requirements.
+- Of `1`: Gitaly and Gitaly Cluster have roughly the same storage requirements.
 - More than `1`: The amount of required storage is `used space * replication factor`. `used space`
   should include any planned future growth.
 
