@@ -25,11 +25,9 @@ module EE
           @banned_page_url = admin_users_url(filter: 'banned')
         end
 
-        ::Gitlab::I18n.with_locale(alerted_user.preferred_language) do
-          email_with_layout(
-            to: alerted_user.notification_email_or_default,
-            subject: subject(_("We've detected unusual activity")))
-        end
+        email_with_layout(
+          to: alerted_user.notification_email_or_default,
+          subject: subject(_("We've detected unusual activity")))
       end
     end
   end
