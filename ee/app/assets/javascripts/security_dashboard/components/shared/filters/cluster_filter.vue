@@ -75,13 +75,12 @@ export default {
     },
   },
   methods: {
-    handleSelect(selected) {
+    updateSelected(selected) {
       if (selected?.at(-1) === ALL_ID) {
         this.selected = [];
-        return;
+      } else {
+        this.selected = selected.filter((value) => value !== ALL_ID);
       }
-
-      this.selected = selected.filter((value) => value !== ALL_ID);
     },
   },
   i18n: {
@@ -105,7 +104,7 @@ export default {
       :loading="isLoading"
       multiple
       block
-      @select="handleSelect"
+      @select="updateSelected"
     />
   </div>
 </template>
