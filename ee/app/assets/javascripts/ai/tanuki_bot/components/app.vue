@@ -16,7 +16,7 @@ import { SOURCE_TYPES, TANUKI_BOT_TRACKING_EVENT_NAME } from '../constants';
 export default {
   name: 'TanukiBotChatApp',
   i18n: {
-    gitlabChat: s__('TanukiBot|GitLab Chat'),
+    gitlabChat: s__('TanukiBot|GitLab Duo Chat'),
     giveFeedback: s__('TanukiBot|Give feedback'),
     source: __('Source'),
     experiment: __('Experiment'),

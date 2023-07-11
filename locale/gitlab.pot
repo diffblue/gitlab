@@ -45255,7 +45255,7 @@ msgstr ""
 msgid "TanukiBot|For example, %{linkStart}what is a fork%{linkEnd}?"
 msgstr ""
 
-msgid "TanukiBot|GitLab Chat"
+msgid "TanukiBot|GitLab Duo Chat"
 msgstr ""
 
 msgid "TanukiBot|Give feedback"
@@ -45266,7 +45266,7 @@ msgid_plural "TanukiBot|Sources"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "TanukiBot|There was an error communicating with GitLab Chat. Please try again later."
+msgid "TanukiBot|There was an error communicating with GitLab Duo Chat. Please try again later."
 msgstr ""
 
 msgid "TanukiBot|What is a fork?"

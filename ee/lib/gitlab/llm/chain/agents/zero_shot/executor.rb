@@ -12,7 +12,7 @@ module Gitlab
             attr_reader :tools, :user_input, :context
             attr_accessor :iterations
 
-            AGENT_NAME = 'GitLab Chat'
+            AGENT_NAME = 'GitLab Duo Chat'
             MAX_ITERATIONS = 10
 
             PROVIDER_PROMPT_CLASSES = {

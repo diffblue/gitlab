@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'GitLab Chat', :js, feature_category: :global_search do
+RSpec.describe 'GitLab Duo Chat', :js, feature_category: :global_search do
   let_it_be(:user) { create(:user) }
 
   before do
@@ -22,7 +22,7 @@ RSpec.describe 'GitLab Chat', :js, feature_category: :global_search do
         wait_for_requests
 
         page.within '[data-testid="chat-component"]' do
-          expect(page).to have_text('GitLab Chat')
+          expect(page).to have_text('GitLab Duo Chat')
         end
       end
     end
