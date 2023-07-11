@@ -255,4 +255,25 @@ RSpec.describe Elastic::MigrationRecord, :elastic_clean, feature_category: :glob
       it { is_expected.to be_nil }
     end
   end
+
+  describe '#load_completed_from_index' do
+    subject(:load_completed_from_index) { record.load_completed_from_index }
+
+    context 'when completed is missing from the indexed document' do
+      before do
+        allow(record).to receive(:load_from_index).and_return({ '_source' => {} })
+      end
+
+      it { is_expected.to be_nil }
+    end
+
+    context 'when completed exists in the indexed document' do
+      before do
+        allow(record).to receive(:load_from_index).and_return({ '_source' => { 'completed' => true } })
+        allow(record).to receive(:completed?).and_return(false)
+      end
+
+      it { is_expected.to eq(true) }
+    end
+  end
 end
