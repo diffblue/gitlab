@@ -612,7 +612,7 @@ module EE
 
       rule { security_policy_bot }.policy do
         enable :create_pipeline
-        enable :push_code
+        enable :create_bot_pipeline
         enable :build_download_code
       end
 

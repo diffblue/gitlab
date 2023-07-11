@@ -20,6 +20,13 @@ module EE
 
                 super
               end
+
+              private
+
+              override :allowed_to_run_pipeline?
+              def allowed_to_run_pipeline?
+                super || can?(current_user, :create_bot_pipeline, project)
+              end
             end
           end
         end
