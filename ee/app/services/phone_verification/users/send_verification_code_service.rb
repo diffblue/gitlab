@@ -5,6 +5,7 @@ module PhoneVerification
     class SendVerificationCodeService
       include ActionView::Helpers::DateHelper
       include ::Users::IdentityVerificationHelper
+      include Gitlab::Utils::StrongMemoize
 
       TELESIGN_ERROR = :unknown_telesign_error
 
@@ -19,12 +20,13 @@ module PhoneVerification
       def execute
         return error_in_params unless valid?
 
-        if related_to_banned_user?
+        if related_to_banned_user? && Feature.enabled?(:identity_verification_auto_ban)
           user.ban
           return error_banned_user
         end
 
         return error_rate_limited if rate_limited?
+        return error_high_risk_number if related_to_banned_user?
 
         risk_result = ::PhoneVerification::TelesignClient::RiskScoreService.new(
           phone_number: phone_number,
@@ -70,6 +72,7 @@ module PhoneVerification
           params[:international_dial_code], params[:phone_number]
         )
       end
+      strong_memoize_attr :related_to_banned_user?
 
       def error_in_params
         ServiceResponse.error(
@@ -97,6 +100,16 @@ module PhoneVerification
       def error_banned_user
         ServiceResponse.error(
           message: user_banned_error_message,
+          reason: :related_to_banned_user
+        )
+      end
+
+      def error_high_risk_number
+        ServiceResponse.error(
+          message: s_(
+            'PhoneVerification|There was a problem with the phone number you entered. '\
+            'Enter a different phone number and try again.'
+          ),
           reason: :related_to_banned_user
         )
       end

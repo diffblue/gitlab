@@ -319,15 +319,28 @@ feature_category: :system_access do
     end
 
     context 'when sending the code is unsuccessful' do
-      let_it_be(:service_response) { ServiceResponse.error(message: 'message', reason: 'reason') }
+      let_it_be(:service_response) { ServiceResponse.error(message: 'message', reason: :related_to_banned_user) }
 
-      it_behaves_like 'logs and tracks the event', :phone, :failed_attempt, :reason
+      it_behaves_like 'logs and tracks the event', :phone, :failed_attempt, :related_to_banned_user
 
       it 'responds with error message', :aggregate_failures do
         do_request
 
         expect(response).to have_gitlab_http_status(:bad_request)
         expect(response.body).to eq({ message: service_response.message, reason: service_response.reason }.to_json)
+      end
+
+      context 'when the `identity_verification_auto_ban` feature flag is disabled' do
+        before do
+          stub_feature_flags(identity_verification_auto_ban: false)
+        end
+
+        it 'responds without a reason' do
+          do_request
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+          expect(response.body).to eq({ message: service_response.message }.to_json)
+        end
       end
     end
   end
@@ -647,6 +660,25 @@ feature_category: :system_access do
               })
               expect(response).to have_gitlab_http_status(:bad_request)
             end
+          end
+        end
+
+        context 'when the `identity_verification_auto_ban` feature flag is disabled' do
+          before do
+            stub_feature_flags(identity_verification_auto_ban: false)
+          end
+
+          it 'does not ban the user' do
+            expect { do_request }.not_to change { user.reload.banned? }
+          end
+
+          it 'returns HTTP status 400 and a message', :aggregate_failures do
+            do_request
+
+            expect(json_response).to eq(
+              'message' => s_('IdentityVerification|There was a problem with the credit card details you entered. ' \
+                              'Use a different credit card and try again.'))
+            expect(response).to have_gitlab_http_status(:bad_request)
           end
         end
       end
