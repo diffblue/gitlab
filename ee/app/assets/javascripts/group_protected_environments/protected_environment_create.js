@@ -33,7 +33,7 @@ export default class ProtectedEnvironmentCreate {
       },
     );
 
-    accessDropdown.$on('select', (selected) => {
+    accessDropdown?.$on('select', (selected) => {
       this.selected = selected;
       this.onSelect();
     });
