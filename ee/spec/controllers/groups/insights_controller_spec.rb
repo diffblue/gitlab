@@ -27,7 +27,7 @@ RSpec.describe Groups::InsightsController, feature_category: :value_stream_manag
   end
 
   before do
-    stub_licensed_features(insights: true)
+    stub_licensed_features(insights: true, dora4_analytics: true)
     sign_in(user)
     parent_group.add_developer(user)
     nested_group.add_developer(user)

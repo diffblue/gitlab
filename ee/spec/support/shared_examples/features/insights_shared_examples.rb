@@ -14,7 +14,7 @@ RSpec.shared_examples 'Insights page' do
 
     context 'with correct license' do
       before do
-        stub_licensed_features(insights: true)
+        stub_licensed_features(insights: true, dora4_analytics: true)
       end
 
       it 'has correct title' do
