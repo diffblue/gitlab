@@ -1,4 +1,4 @@
-import { shallowMount } from '@vue/test-utils';
+import { shallowMount, createWrapper } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import GeoSiteActions from 'ee/geo_sites/components/header/geo_site_actions.vue';
@@ -60,9 +60,10 @@ describe('GeoSiteActions', () => {
 
   describe('events', () => {
     describe('remove', () => {
+      let rootWrapper;
       beforeEach(() => {
         createComponent();
-        jest.spyOn(wrapper.vm.$root, '$emit');
+        rootWrapper = createWrapper(wrapper.vm.$root);
       });
 
       it('preps site for removal and opens model after promise returns on desktop', async () => {
@@ -73,14 +74,10 @@ describe('GeoSiteActions', () => {
           MOCK_PRIMARY_SITE.id,
         );
 
-        expect(wrapper.vm.$root.$emit).not.toHaveBeenCalledWith(
-          BV_SHOW_MODAL,
-          REMOVE_SITE_MODAL_ID,
-        );
-
+        expect(rootWrapper.emitted(BV_SHOW_MODAL)).toBeUndefined();
         await waitForPromises();
 
-        expect(wrapper.vm.$root.$emit).toHaveBeenCalledWith(BV_SHOW_MODAL, REMOVE_SITE_MODAL_ID);
+        expect(rootWrapper.emitted(BV_SHOW_MODAL)[0]).toContain(REMOVE_SITE_MODAL_ID);
       });
 
       it('preps site for removal and opens model after promise returns on mobile', async () => {
@@ -91,14 +88,11 @@ describe('GeoSiteActions', () => {
           MOCK_PRIMARY_SITE.id,
         );
 
-        expect(wrapper.vm.$root.$emit).not.toHaveBeenCalledWith(
-          BV_SHOW_MODAL,
-          REMOVE_SITE_MODAL_ID,
-        );
+        expect(rootWrapper.emitted(BV_SHOW_MODAL)).toBeUndefined();
 
         await waitForPromises();
 
-        expect(wrapper.vm.$root.$emit).toHaveBeenCalledWith(BV_SHOW_MODAL, REMOVE_SITE_MODAL_ID);
+        expect(rootWrapper.emitted(BV_SHOW_MODAL)[0]).toContain(REMOVE_SITE_MODAL_ID);
       });
     });
   });
