@@ -50,11 +50,6 @@ describe('CiVariablesSelectors', () => {
         expect(findAllCiVariableSelectors()).toHaveLength(1);
       });
 
-      it('emits "error" when there is an error', () => {
-        findCiVariableSelector().vm.$emit('error');
-        expect(wrapper.emitted('error')).toEqual([[]]);
-      });
-
       it('emits "input" with the updated variable when a variable is updated', () => {
         findCiVariableSelector().vm.$emit('input', [VARIABLES.key, VARIABLES.value]);
         expect(wrapper.emitted('input')).toEqual([

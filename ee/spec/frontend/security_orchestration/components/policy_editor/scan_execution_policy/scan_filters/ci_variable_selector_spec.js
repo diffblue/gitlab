@@ -1,4 +1,4 @@
-import { GlCollapsibleListbox, GlFormInput } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlDropdownItem } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CiVariableSelector from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/scan_filters/ci_variable_selector.vue';
 import GenericBaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/generic_base_layout_component.vue';
@@ -7,6 +7,7 @@ describe('CiVariableSelector', () => {
   let wrapper;
 
   const VARIABLE_EXAMPLE = 'DAST_PATHS_FILE';
+  const CUSTOM_VARIABLE_EXAMPLE = 'CUSTOM_VARIABLE';
   const PREVIOUSLY_SELECTED_VARIABLE_EXAMPLE = 'DAST_ADVERTISE_SCAN';
   const VALUE = 'Test value';
 
@@ -23,13 +24,15 @@ describe('CiVariableSelector', () => {
         ...DEFAULT_PROPS,
         ...propsData,
       },
-      stubs: { GenericBaseLayoutComponent },
+      stubs: { GenericBaseLayoutComponent, GlCollapsibleListbox },
     });
   };
 
   const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
-  const findFormInput = () => wrapper.findComponent(GlFormInput);
+  const findValueInput = () => wrapper.findByTestId('value-input');
+  const findCustomVariableInput = () => wrapper.findByTestId('custom-variable-input');
   const findGenericBaseLayoutComponent = () => wrapper.findComponent(GenericBaseLayoutComponent);
+  const findCreateCustomVariableOption = () => wrapper.findComponent(GlDropdownItem);
 
   describe('empty variable', () => {
     beforeEach(() => {
@@ -38,7 +41,7 @@ describe('CiVariableSelector', () => {
 
     describe('dropdown', () => {
       it('displays the dropdown with the correct props based on scan type', () => {
-        expect(findDropdown().props('toggleText')).toBe('Select a variable');
+        expect(findDropdown().props('toggleText')).toBe('Select or Create a Key');
         expect(findDropdown().props('items')).toContainEqual({
           text: VARIABLE_EXAMPLE,
           value: VARIABLE_EXAMPLE,
@@ -63,15 +66,21 @@ describe('CiVariableSelector', () => {
         findDropdown().vm.$emit('select', VARIABLE_EXAMPLE);
         expect(wrapper.emitted('input')).toEqual([[[VARIABLE_EXAMPLE, '']]]);
       });
+
+      it('allows for user to create a custom variable', async () => {
+        await findCreateCustomVariableOption().vm.$emit('click');
+        expect(findDropdown().exists()).toBe(false);
+        expect(findCustomVariableInput().exists()).toBe(true);
+      });
     });
 
     describe('value input', () => {
       it('displays the form input with the correct props', () => {
-        expect(findFormInput().attributes('value')).toBe('');
+        expect(findValueInput().attributes('value')).toBe('');
       });
 
       it('updates the value when the input is changed', () => {
-        findFormInput().vm.$emit('input', VALUE);
+        findValueInput().vm.$emit('input', VALUE);
         expect(wrapper.emitted('input')).toEqual([[['', VALUE]]]);
       });
     });
@@ -80,9 +89,13 @@ describe('CiVariableSelector', () => {
       findGenericBaseLayoutComponent().vm.$emit('remove');
       expect(wrapper.emitted('remove')).toEqual([['']]);
     });
+
+    it('does not display the custom variable input', () => {
+      expect(findCustomVariableInput().exists()).toBe(false);
+    });
   });
 
-  describe('valid variable', () => {
+  describe('standard variable', () => {
     beforeEach(() => {
       createComponent({ propsData: { variable: VARIABLE_EXAMPLE, value: VALUE } });
     });
@@ -96,15 +109,31 @@ describe('CiVariableSelector', () => {
     });
 
     it('displays the form input with the correct props', () => {
-      expect(findFormInput().attributes('value')).toBe(VALUE);
+      expect(findValueInput().attributes('value')).toBe(VALUE);
+    });
+
+    it('does not display the custom variable input', () => {
+      expect(findCustomVariableInput().exists()).toBe(false);
     });
   });
 
-  describe('invalid variable', () => {
-    it('emits "error" when a variable does not exist in the list', () => {
-      const INVALID_VARIABLE = 'Test Variable';
-      createComponent({ propsData: { variable: INVALID_VARIABLE, value: VALUE } });
-      expect(wrapper.emitted('error')).toEqual([[]]);
+  describe('custom variable', () => {
+    beforeEach(() => {
+      createComponent({ propsData: { variable: CUSTOM_VARIABLE_EXAMPLE, value: VALUE } });
+    });
+
+    it('displays the custom variable input', () => {
+      expect(findCustomVariableInput().exists()).toBe(true);
+    });
+
+    it('does not display the dropdown', () => {
+      expect(findDropdown().exists()).toBe(false);
+    });
+
+    it('emits "input" when the user types in a variable', () => {
+      const NEW_CUSTOM_VARIABLE = 'test';
+      findCustomVariableInput().vm.$emit('input', NEW_CUSTOM_VARIABLE);
+      expect(wrapper.emitted('input')).toEqual([[[NEW_CUSTOM_VARIABLE, VALUE]]]);
     });
   });
 });

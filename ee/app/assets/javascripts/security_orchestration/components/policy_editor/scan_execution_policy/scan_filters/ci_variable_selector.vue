@@ -1,5 +1,5 @@
 <script>
-import { GlCollapsibleListbox, GlFormInput } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlDropdownDivider, GlDropdownItem, GlFormInput } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import GenericBaseLayoutComponent from '../../generic_base_layout_component.vue';
 import { RULE_MODE_SCANNERS } from '../../constants';
@@ -7,11 +7,15 @@ import { OPTIONS } from './ci_variable_constants';
 
 export default {
   i18n: {
+    createKeyLabel: s__('ScanExecutionPolicy|Use a custom key'),
     keyLabel: s__('ScanExecutionPolicy|Key'),
+    selectLabel: s__('ScanExecutionPolicy|Select or Create a Key'),
     valueLabel: s__('ScanExecutionPolicy|Value'),
   },
   components: {
     GlCollapsibleListbox,
+    GlDropdownDivider,
+    GlDropdownItem,
     GlFormInput,
     GenericBaseLayoutComponent,
   },
@@ -34,7 +38,16 @@ export default {
     },
   },
   data() {
+    let customVariable = '';
+    let isCustomVariable = false;
+    if (this.variable && !OPTIONS[RULE_MODE_SCANNERS[this.scanType]].includes(this.variable)) {
+      customVariable = this.variable;
+      isCustomVariable = true;
+    }
+
     return {
+      customVariable,
+      isCustomVariable,
       searchTerm: '',
     };
   },
@@ -52,19 +65,22 @@ export default {
       return OPTIONS[RULE_MODE_SCANNERS[this.scanType]]?.map((s) => ({ text: s, value: s })) || [];
     },
     toggleText() {
-      return this.variable || s__('ScanExecutionPolicy|Select a variable');
+      return this.variable || this.$options.i18n.selectLabel;
     },
-  },
-  created() {
-    if (this.variable && !OPTIONS[RULE_MODE_SCANNERS[this.scanType]].includes(this.variable)) {
-      this.$emit('error');
-    }
   },
   methods: {
     handleSearch(value) {
       this.searchTerm = value;
     },
-    selectVariable(variable) {
+    handleFooterClick() {
+      this.isCustomVariable = true;
+      this.selectVariable('');
+    },
+    selectVariable(variable, isCustomVariable = false) {
+      if (isCustomVariable) {
+        this.customVariable = variable;
+        this.isCustomVariable = isCustomVariable;
+      }
       this.$emit('input', [variable, this.value]);
     },
     removeVariable() {
@@ -89,6 +105,7 @@ export default {
           {{ $options.i18n.keyLabel }}
         </label>
         <gl-collapsible-listbox
+          v-if="!isCustomVariable"
           fluid-width
           searchable
           toggle-class="gl-display-grid"
@@ -97,6 +114,19 @@ export default {
           :toggle-text="toggleText"
           @search="handleSearch"
           @select="selectVariable"
+        >
+          <template #footer>
+            <gl-dropdown-divider />
+            <gl-dropdown-item class="gl-list-style-none" @click="handleFooterClick">
+              {{ $options.i18n.createKeyLabel }}
+            </gl-dropdown-item>
+          </template>
+        </gl-collapsible-listbox>
+        <gl-form-input
+          v-else
+          data-testid="custom-variable-input"
+          :value="variable"
+          @input="selectVariable($event, true)"
         />
       </div>
     </template>
@@ -105,7 +135,7 @@ export default {
         <label class="gl-mb-0 gl-mr-3" :title="$options.i18n.valueLabel">
           {{ $options.i18n.valueLabel }}
         </label>
-        <gl-form-input :value="value" @input="updateValue" />
+        <gl-form-input :value="value" data-testid="value-input" @input="updateValue" />
       </div>
     </template>
   </generic-base-layout-component>
