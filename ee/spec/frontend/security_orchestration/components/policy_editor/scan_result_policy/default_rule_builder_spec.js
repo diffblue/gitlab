@@ -10,15 +10,21 @@ import {
   SCAN_FINDING,
   LICENSE_FINDING,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+import { SCAN_RESULT_BRANCH_TYPE_OPTIONS } from 'ee/security_orchestration/components/policy_editor/constants';
 
 describe('DefaultRuleBuilder', () => {
   let wrapper;
 
-  const createComponent = ({ props = {} } = {}) => {
+  const createComponent = ({ props = {}, provide = {} } = {}) => {
     wrapper = shallowMount(DefaultRuleBuilder, {
       propsData: {
         initRule: getDefaultRule(),
         ...props,
+      },
+      provide: {
+        namespaceType: NAMESPACE_TYPES.GROUP,
+        ...provide,
       },
       stubs: {
         BaseLayoutComponent,
@@ -41,6 +47,21 @@ describe('DefaultRuleBuilder', () => {
     expect(findPolicyRuleBranchSelection().exists()).toBe(true);
   });
 
+  it.each([NAMESPACE_TYPES.GROUP, NAMESPACE_TYPES.PROJECT])(
+    'has specific default branch type list based on namespace type',
+    (namespaceType) => {
+      createComponent({
+        provide: {
+          namespaceType,
+        },
+      });
+
+      expect(findPolicyRuleBranchSelection().props('branchTypes')).toEqual(
+        SCAN_RESULT_BRANCH_TYPE_OPTIONS(namespaceType),
+      );
+    },
+  );
+
   it('selects type without branches', () => {
     findScanTypeSelect().vm.$emit('select', LICENSE_FINDING);
 
@@ -57,8 +78,33 @@ describe('DefaultRuleBuilder', () => {
     expect(wrapper.emitted('set-scan-type')).toEqual([
       [
         {
-          ...getDefaultRule(SCAN_FINDING),
+          type: SCAN_FINDING,
+          scanners: [],
+          vulnerabilities_allowed: 0,
+          severity_levels: [],
+          vulnerability_states: [],
           branches: ['main'],
+        },
+      ],
+    ]);
+  });
+
+  it('selects branch type and scan type', () => {
+    findPolicyRuleBranchSelection().vm.$emit('set-branch-type', 'protected');
+
+    expect(wrapper.emitted('set-scan-type')).toBeUndefined();
+
+    findScanTypeSelect().vm.$emit('select', SCAN_FINDING);
+
+    expect(wrapper.emitted('set-scan-type')).toEqual([
+      [
+        {
+          type: SCAN_FINDING,
+          scanners: [],
+          vulnerabilities_allowed: 0,
+          severity_levels: [],
+          vulnerability_states: [],
+          branch_type: 'protected',
         },
       ],
     ]);

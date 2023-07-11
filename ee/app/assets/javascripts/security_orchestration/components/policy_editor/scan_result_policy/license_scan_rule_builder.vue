@@ -4,6 +4,7 @@ import { s__ } from '~/locale';
 import PolicyRuleBranchSelection from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_branch_selection.vue';
 import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_rule_multi_select.vue';
 import ScanFilterSelector from '../scan_filter_selector.vue';
+import { SCAN_RESULT_BRANCH_TYPE_OPTIONS } from '../constants';
 import ScanTypeSelect from './base_layout/scan_type_select.vue';
 import StatusFilter from './scan_filters/status_filter.vue';
 import LicenseFilter from './scan_filters/license_filter.vue';
@@ -24,6 +25,7 @@ export default {
     ScanTypeSelect,
     StatusFilter,
   },
+  inject: ['namespaceType'],
   props: {
     initRule: {
       type: Object,
@@ -33,7 +35,7 @@ export default {
   i18n: {
     licenseStatuses: s__('ScanResultPolicy|license status'),
     licenseScanResultRuleCopy: s__(
-      'ScanResultPolicy|When %{scanType} in an open merge request targeting the %{branches} and the licenses match all of the following criteria:',
+      'ScanResultPolicy|When %{scanType} in an open merge request targeting %{branches} and the licenses match all of the following criteria:',
     ),
     tooltipFilterDisabledTitle: s__(
       'ScanResultPolicy|License scanning allows only one criteria: Status',
@@ -41,6 +43,9 @@ export default {
   },
   licenseStatuses: LICENSE_STATES,
   computed: {
+    branchTypes() {
+      return SCAN_RESULT_BRANCH_TYPE_OPTIONS(this.namespaceType);
+    },
     licenseStatuses: {
       get() {
         return this.initRule.license_states;
@@ -57,6 +62,9 @@ export default {
     setScanType(value) {
       const rule = getDefaultRule(value);
       this.$emit('set-scan-type', rule);
+    },
+    setBranchType(value) {
+      this.$emit('changed', value);
     },
   },
 };
@@ -79,7 +87,12 @@ export default {
               </template>
 
               <template #branches>
-                <policy-rule-branch-selection :init-rule="initRule" @changed="triggerChanged" />
+                <policy-rule-branch-selection
+                  :init-rule="initRule"
+                  :branch-types="branchTypes"
+                  @changed="triggerChanged"
+                  @set-branch-type="setBranchType"
+                />
               </template>
             </gl-sprintf>
           </template>

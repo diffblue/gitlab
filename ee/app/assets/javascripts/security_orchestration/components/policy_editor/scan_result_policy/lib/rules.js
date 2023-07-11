@@ -4,7 +4,7 @@ import { REPORT_TYPES_DEFAULT } from 'ee/security_dashboard/store/constants';
 import { isPositiveInteger } from '~/lib/utils/number_utils';
 import {
   ALL_PROTECTED_BRANCHES,
-  DEFAULT_BRANCHES,
+  GROUP_DEFAULT_BRANCHES,
   BRANCH_TYPE_KEY,
 } from 'ee/security_orchestration/components/policy_editor/constants';
 import {
@@ -36,19 +36,19 @@ export const LICENSE_STATES = {
 */
 export const securityScanBuildRule = () => ({
   type: SCAN_FINDING,
-  branches: [],
   scanners: [],
   vulnerabilities_allowed: 0,
   severity_levels: [],
   vulnerability_states: [],
+  branch_type: ALL_PROTECTED_BRANCHES.value,
 });
 
 export const licenseScanBuildRule = () => ({
   type: LICENSE_FINDING,
-  branches: [],
   match_on_inclusion: true,
   license_types: [],
   license_states: [],
+  branch_type: ALL_PROTECTED_BRANCHES.value,
 });
 
 /*
@@ -128,13 +128,14 @@ export const getInvalidBranches = async ({ branches, projectId }) => {
 };
 
 /**
- * @param rules
+ * Check if any rule has invalid branch type
+ * @param rules list of rules with either branches or branch_type property
  * @returns {Boolean}
  */
 export const invalidBranchType = (rules) => {
   if (!rules) return false;
 
-  const validOptions = [ALL_PROTECTED_BRANCHES.value, DEFAULT_BRANCHES.value];
+  const validOptions = [ALL_PROTECTED_BRANCHES.value, GROUP_DEFAULT_BRANCHES.value];
 
   return rules?.some((rule) => BRANCH_TYPE_KEY in rule && !validOptions.includes(rule.branch_type));
 };

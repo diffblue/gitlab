@@ -4,8 +4,17 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import PolicyRuleBranchSelection from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_branch_selection.vue';
 import ProtectedBranchesDropdown from 'ee/security_orchestration/components/protected_branches_dropdown.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import { ALL_PROTECTED_BRANCHES } from 'ee/vue_shared/components/branches_selector/constants';
-import { SPECIFIC_BRANCHES } from 'ee/security_orchestration/components/policy_editor/constants';
+import {
+  ALL_PROTECTED_BRANCHES,
+  GROUP_DEFAULT_BRANCHES,
+  SCAN_EXECUTION_BRANCH_TYPE_OPTIONS,
+  SCAN_RESULT_BRANCH_TYPE_OPTIONS,
+  SPECIFIC_BRANCHES,
+} from 'ee/security_orchestration/components/policy_editor/constants';
+import {
+  SCAN_FINDING,
+  LICENSE_FINDING,
+} from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib';
 
 describe('PolicyRuleBranchSelection', () => {
   let wrapper;
@@ -16,7 +25,21 @@ describe('PolicyRuleBranchSelection', () => {
     branches: [],
   };
 
-  const UPDATED_RULE = {
+  const RULE_WITH_BRANCH_TYPE = {
+    branch_type: 'default',
+  };
+
+  const UPDATED_SCAN_FINDING_RULE = {
+    type: SCAN_FINDING,
+    branches: [PROTECTED_BRANCHES_MOCK[0].name],
+  };
+
+  const UPDATED_LICENSE_FINDING_RULE = {
+    type: LICENSE_FINDING,
+    branches: [PROTECTED_BRANCHES_MOCK[0].name],
+  };
+
+  const RULE_WITHOUT_TYPE = {
     branches: [PROTECTED_BRANCHES_MOCK[0].name],
   };
 
@@ -62,7 +85,7 @@ describe('PolicyRuleBranchSelection', () => {
       });
 
       it('does render branches label when a branch is selected', async () => {
-        factory({ initRule: UPDATED_RULE });
+        factory({ initRule: UPDATED_SCAN_FINDING_RULE });
         await nextTick();
         expect(findBranchesLabel().exists()).toBe(true);
       });
@@ -93,7 +116,7 @@ describe('PolicyRuleBranchSelection', () => {
         ]);
 
         expect(wrapper.emitted('changed')).toEqual([
-          [expect.objectContaining({ branches: UPDATED_RULE.branches })],
+          [expect.objectContaining({ branches: UPDATED_SCAN_FINDING_RULE.branches })],
         ]);
       });
 
@@ -121,9 +144,12 @@ describe('PolicyRuleBranchSelection', () => {
 
     describe('specific branches default state', () => {
       it.each`
-        initRule        | expectedResult
-        ${DEFAULT_RULE} | ${ALL_PROTECTED_BRANCHES.value}
-        ${UPDATED_RULE} | ${SPECIFIC_BRANCHES.value}
+        initRule                        | expectedResult
+        ${DEFAULT_RULE}                 | ${ALL_PROTECTED_BRANCHES.value}
+        ${RULE_WITH_BRANCH_TYPE}        | ${GROUP_DEFAULT_BRANCHES.value}
+        ${UPDATED_SCAN_FINDING_RULE}    | ${SPECIFIC_BRANCHES.value}
+        ${UPDATED_LICENSE_FINDING_RULE} | ${SPECIFIC_BRANCHES.value}
+        ${RULE_WITHOUT_TYPE}            | ${ALL_PROTECTED_BRANCHES.value}
       `(
         'should select branch selector based on selected branches for a group',
         ({ initRule, expectedResult }) => {
@@ -176,10 +202,56 @@ describe('PolicyRuleBranchSelection', () => {
 
       it('updates the branches appropriately when "All Protected Branches" is selected', async () => {
         const groupLevelProtectedBranchesSelector = findProtectedBranchesSelector();
-        await groupLevelProtectedBranchesSelector.vm.$emit('select', ALL_PROTECTED_BRANCHES.value);
+        await groupLevelProtectedBranchesSelector.vm.$emit('select', ALL_PROTECTED_BRANCHES.text);
         expect(groupLevelProtectedBranchesSelector.props('selected')).toBe(
-          ALL_PROTECTED_BRANCHES.name,
+          ALL_PROTECTED_BRANCHES.text,
         );
+      });
+    });
+
+    describe('options', () => {
+      it.each`
+        branchTypes
+        ${SCAN_EXECUTION_BRANCH_TYPE_OPTIONS()}
+        ${SCAN_RESULT_BRANCH_TYPE_OPTIONS()}
+      `('should accept different branch type options', ({ branchTypes }) => {
+        factory({
+          branchTypes,
+        });
+
+        expect(findProtectedBranchesSelector().props('items')).toEqual(branchTypes);
+      });
+    });
+
+    describe('branch type selection', () => {
+      it('should emit rule with branches for specific branches', () => {
+        factory();
+
+        expect(findProtectedBranchesSelector().props('selected')).toBe(
+          ALL_PROTECTED_BRANCHES.value,
+        );
+
+        findProtectedBranchesSelector().vm.$emit('select', SPECIFIC_BRANCHES.value);
+
+        expect(wrapper.emitted('set-branch-type')).toEqual([
+          [expect.objectContaining({ branches: [] })],
+        ]);
+        expect(wrapper.emitted('set-branch-type')).not.toEqual([
+          [expect.objectContaining({ branch_type: '' })],
+        ]);
+      });
+
+      it.each`
+        initRule                     | expectedResult
+        ${DEFAULT_RULE}              | ${'protected'}
+        ${RULE_WITH_BRANCH_TYPE}     | ${'default'}
+        ${UPDATED_SCAN_FINDING_RULE} | ${'SPECIFIC_BRANCHES'}
+      `('can display previously saved branch types', ({ initRule, expectedResult }) => {
+        factory({
+          initRule,
+        });
+
+        expect(findProtectedBranchesSelector().props('selected')).toBe(expectedResult);
       });
     });
 

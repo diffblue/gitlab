@@ -2,6 +2,7 @@
 import { GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import ScanFilterSelector from '../scan_filter_selector.vue';
+import { SCAN_RESULT_BRANCH_TYPE_OPTIONS } from '../constants';
 import { getDefaultRule } from './lib';
 import BaseLayoutComponent from './base_layout/base_layout_component.vue';
 import PolicyRuleBranchSelection from './policy_rule_branch_selection.vue';
@@ -22,6 +23,7 @@ export default {
     ScanTypeSelect,
     ScanFilterSelector,
   },
+  inject: ['namespaceType'],
   props: {
     initRule: {
       type: Object,
@@ -31,19 +33,35 @@ export default {
   data() {
     return {
       selectedBranches: [],
+      selectedBranchType: null,
     };
   },
   computed: {
     ruleWithSelectedBranchesOnly() {
       return { branches: this.selectedBranches };
     },
+    branchTypes() {
+      return SCAN_RESULT_BRANCH_TYPE_OPTIONS(this.namespaceType);
+    },
   },
   methods: {
     selectScanType(type) {
       const rule = getDefaultRule(type);
-      rule.branches = this.selectedBranches;
+
+      if (this.selectedBranches.length > 0) {
+        rule.branches = this.selectedBranches;
+        delete rule.branch_type;
+      }
+
+      if (this.selectedBranchType) {
+        rule.branch_type = this.selectedBranchType;
+        delete rule.branches;
+      }
 
       this.$emit('set-scan-type', rule);
+    },
+    setBranchType({ branch_type: branchType }) {
+      this.selectedBranchType = branchType;
     },
     setSelectedBranches({ branches }) {
       this.selectedBranches = branches;
@@ -71,7 +89,9 @@ export default {
               <template #branches>
                 <policy-rule-branch-selection
                   :init-rule="ruleWithSelectedBranchesOnly"
+                  :branch-types="branchTypes"
                   @changed="setSelectedBranches"
+                  @set-branch-type="setBranchType"
                   @error="$emit('error', $event)"
                 />
               </template>
