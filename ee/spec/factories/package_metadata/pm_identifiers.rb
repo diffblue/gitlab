@@ -4,8 +4,15 @@ FactoryBot.define do
   factory :pm_identifier, class: Hash do
     trait :cve do
       type { 'cve' }
-      name { 'CVE-2023-27797' }
+      sequence(:name) { |n| "CVE-#{Date.today.year}-#{n.to_s.rjust(5, '0')}" }
       url { "https://nvd.nist.gov/vuln/detail/#{name}" }
+      value { name }
+    end
+
+    trait :cwe do
+      type { 'cwe' }
+      sequence(:name) { |n| "CWE-#{100 + n}" }
+      sequence(:url) { |n| "https://cwe.mitre.org/data/definitions/#{100 + n}.html" }
       value { name }
     end
 
