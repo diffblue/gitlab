@@ -17,7 +17,7 @@ module API
         end
 
         expose :completed, documentation: { type: 'boolean', example: true } do |migration|
-          migration.completed?
+          migration.load_completed_from_index
         end
 
         expose :obsolete, documentation: { type: 'boolean', example: false } do |migration|

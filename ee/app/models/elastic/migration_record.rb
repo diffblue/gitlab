@@ -24,7 +24,7 @@ module Elastic
     end
 
     def save_state!(state)
-      completed = load_from_index&.dig('_source', 'completed')
+      completed = load_completed_from_index
 
       client.index index: index_name, refresh: true, type: '_doc', id: version, body: { completed: completed, state: load_state.merge(state) }
     end
@@ -93,6 +93,10 @@ module Elastic
       return unless completed_at
 
       DateTime.parse(completed_at)
+    end
+
+    def load_completed_from_index
+      load_from_index&.dig('_source', 'completed')
     end
 
     def method_missing(method, *args, &block)
