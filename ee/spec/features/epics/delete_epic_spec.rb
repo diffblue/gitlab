@@ -15,10 +15,14 @@ RSpec.describe 'Delete Epic', :js, feature_category: :portfolio_management do
   end
 
   context 'when user who is not a group member displays the epic' do
-    it 'does not show the Delete button' do
+    before do
       visit group_epic_path(group, epic)
+      wait_for_requests
+      click_button _('Epic actions')
+    end
 
-      expect(page).not_to have_css('[data-testid="delete-epic-button"]')
+    it 'does not show the `Delete epic` button' do
+      expect(page).not_to have_button _('Delete epic')
     end
   end
 
@@ -27,15 +31,12 @@ RSpec.describe 'Delete Epic', :js, feature_category: :portfolio_management do
       group.add_owner(user)
       visit group_epic_path(group, epic)
       wait_for_requests
-      find('[data-testid="desktop-dropdown"]').click
+      click_button _('Epic actions')
     end
 
     it 'deletes the issue and redirect to epic list' do
-      click_on 'Delete epic'
-      wait_for_requests
-
-      find('.js-modal-action-primary').click
-      wait_for_requests
+      click_button _('Delete epic') # Click button in dropdown menu
+      click_button _('Delete epic') # Click button in confirmation modal
 
       expect(find('.issuable-list')).not_to have_content(epic.title)
       expect(find('.issuable-list')).to have_content(epic2.title)

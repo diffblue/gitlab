@@ -1,329 +1,93 @@
-import { GlIcon, GlButton } from '@gitlab/ui';
+import { GlBadge, GlButton, GlIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-
-import Vue, { nextTick } from 'vue';
-import VueApollo from 'vue-apollo';
 import EpicHeader from 'ee/epic/components/epic_header.vue';
-import { STATUS_CLOSED, STATUS_OPEN } from '~/issues/constants';
-import DeleteIssueModal from '~/issues/show/components/delete_issue_modal.vue';
+import EpicHeaderActions from 'ee/epic/components/epic_header_actions.vue';
 import createStore from 'ee/epic/store';
-import waitForPromises from 'helpers/wait_for_promises';
+import { STATUS_CLOSED, STATUS_OPEN } from '~/issues/constants';
+import ConfidentialityBadge from '~/vue_shared/components/confidentiality_badge.vue';
 import TimeagoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import UserAvatarLink from '~/vue_shared/components/user_avatar/user_avatar_link.vue';
-import issuesEventHub from '~/issues/show/event_hub';
+import { mockEpicMeta, mockEpicData } from '../mock_data';
 
-import createMockApollo from 'helpers/mock_apollo_helper';
-import epicReferenceQuery from '~/sidebar/queries/epic_reference.query.graphql';
-import { mockEpicMeta, mockEpicData, mockEpicReferenceData } from '../mock_data';
-
-jest.mock('~/issues/show/event_hub', () => ({ $emit: jest.fn() }));
-
-describe('EpicHeaderComponent', () => {
+describe('EpicHeader component', () => {
   let wrapper;
-  let store;
 
-  const epicReferenceSuccessHandler = jest.fn().mockResolvedValue(mockEpicReferenceData);
-
-  Vue.use(VueApollo);
-
-  const createComponent = ({
-    isMoveSidebarEnabled = false,
-    isLoggedIn = true,
-    epicData = mockEpicData,
-  } = {}) => {
-    store = createStore();
+  const createComponent = (state = {}) => {
+    const store = createStore();
     store.dispatch('setEpicMeta', mockEpicMeta);
-    store.dispatch('setEpicData', epicData);
+    store.dispatch('setEpicData', { ...mockEpicData, ...state });
 
-    const handlers = [[epicReferenceQuery, epicReferenceSuccessHandler]];
-
-    if (isLoggedIn) {
-      window.gon.current_user_id = 1;
-    }
-
-    wrapper = shallowMount(EpicHeader, {
-      apolloProvider: createMockApollo(handlers),
-      store,
-      provide: {
-        fullPath: 'mock-path',
-        iid: 'mock-iid',
-        glFeatures: {
-          movedMrSidebar: isMoveSidebarEnabled,
-        },
-      },
-      stubs: {
-        GlButton,
-      },
-    });
+    wrapper = shallowMount(EpicHeader, { store });
   };
 
-  const modalId = 'delete-modal-id';
+  const findConfidentialityBadge = () => wrapper.findComponent(ConfidentialityBadge);
+  const findEpicHeaderActions = () => wrapper.findComponent(EpicHeaderActions);
+  const findStatusBadge = () => wrapper.findComponent(GlBadge);
+  const findStatusBadgeIcon = () => wrapper.findComponent(GlIcon);
+  const findTimeagoTooltip = () => wrapper.findComponent(TimeagoTooltip);
+  const findToggleSidebarButton = () => wrapper.findComponent(GlButton);
+  const findUserAvatarLink = () => wrapper.findComponent(UserAvatarLink);
 
-  const findModal = () => wrapper.findComponent(DeleteIssueModal);
-  const findStatusBox = () => wrapper.find('[data-testid="status-box"]');
-  const findStatusIcon = () => wrapper.find('[data-testid="status-icon"]');
-  const findStatusText = () => wrapper.find('[data-testid="status-text"]');
-  const findConfidentialIcon = () => wrapper.find('[data-testid="confidential-icon"]');
-  const findAuthorDetails = () => wrapper.find('[data-testid="author-details"]');
-  const findActionButtons = () => wrapper.find('[data-testid="action-buttons"]');
-  const findToggleStatusButton = () => wrapper.find('[data-testid="toggle-status-button"]');
-  const findEditButton = () => wrapper.find('[data-testid="edit-button"]');
-  const findNewEpicButton = () => wrapper.find('[data-testid="new-epic-button"]');
-  const findDeleteEpicButton = () => wrapper.find('[data-testid="delete-epic-button"]');
-  const findSidebarToggle = () => wrapper.find('[data-testid="sidebar-toggle"]');
-  const findNotificationWidget = () => wrapper.find(`[data-testid="notification-toggle"]`);
-  const findCopyRefenceDropdownItem = () => wrapper.find(`[data-testid="copy-reference"]`);
-  const findDesktopDropdown = () => wrapper.find('[data-testid="desktop-dropdown"]');
-  const findMobileDropdown = () => wrapper.find('[data-testid="mobile-dropdown"]');
-
-  describe('computed', () => {
-    describe('statusIcon', () => {
-      it('returns string `issue-open-m` when `isEpicOpen` is true', () => {
-        createComponent();
-        store.state.state = STATUS_OPEN;
-
-        expect(findStatusIcon().props('name')).toBe('epic');
-      });
-
-      it('returns string `mobile-issue-close` when `isEpicOpen` is false', async () => {
-        createComponent();
-        store.state.state = STATUS_CLOSED;
-
-        await nextTick();
-        expect(findStatusIcon().props('name')).toBe('epic-closed');
-      });
-    });
-
-    describe('statusText', () => {
-      it('returns string `Open` when `isEpicOpen` is true', () => {
-        createComponent();
-        store.state.state = STATUS_OPEN;
-
-        expect(findStatusText().text()).toBe('Open');
-      });
-
-      it('returns string `Closed` when `isEpicOpen` is false', async () => {
-        createComponent();
-        store.state.state = STATUS_CLOSED;
-
-        await nextTick();
-        expect(findStatusText().text()).toBe('Closed');
-      });
-    });
-
-    describe('actionButtonClass', () => {
-      it('returns `btn-close` when `isEpicOpen` is true', () => {
-        createComponent();
-        store.state.state = STATUS_OPEN;
-
-        expect(findToggleStatusButton().classes()).toContain('btn-close');
-      });
-
-      it('returns `btn-open` when `isEpicOpen` is false', async () => {
-        createComponent();
-        store.state.state = STATUS_CLOSED;
-
-        await nextTick();
-        expect(findToggleStatusButton().classes()).toContain('btn-open');
-      });
-    });
-
-    describe('actionButtonText', () => {
-      it('returns string `Close epic` when `isEpicOpen` is true', () => {
-        createComponent();
-        store.state.state = STATUS_OPEN;
-
-        expect(findToggleStatusButton().text()).toBe('Close epic');
-      });
-
-      it('returns string `Reopen epic` when `isEpicOpen` is false', async () => {
-        createComponent();
-        store.state.state = STATUS_CLOSED;
-
-        await nextTick();
-        expect(findToggleStatusButton().text()).toBe('Reopen epic');
-      });
-    });
-  });
-
-  describe('template', () => {
-    it('renders component container element with class `detail-page-header`', () => {
-      createComponent();
-      expect(wrapper.classes()).toContain('detail-page-header');
-      expect(wrapper.find('.detail-page-header-body').exists()).toBe(true);
-    });
-
-    it('renders epic status icon and text elements', () => {
-      createComponent();
-      const statusBox = findStatusBox();
-
-      expect(statusBox.exists()).toBe(true);
-      expect(statusBox.findComponent(GlIcon).props('name')).toBe('epic');
-      expect(statusBox.find('span').text()).toBe('Open');
-    });
-
-    it('renders confidential icon when `confidential` prop is true', async () => {
-      createComponent();
-      store.state.confidential = true;
-
-      await nextTick();
-      const confidentialIcon = findConfidentialIcon();
-
-      expect(confidentialIcon.exists()).toBe(true);
-      expect(confidentialIcon.props()).toMatchObject({
-        workspaceType: 'project',
-        issuableType: 'issue',
-      });
-    });
-
-    it('renders epic author details element', () => {
-      createComponent();
-      const epicDetails = findAuthorDetails();
-
-      expect(epicDetails.exists()).toBe(true);
-      expect(epicDetails.findComponent(TimeagoTooltip).exists()).toBe(true);
-      expect(epicDetails.findComponent(UserAvatarLink).exists()).toBe(true);
-    });
-
-    it('renders action buttons element', () => {
-      createComponent();
-      const actionButtons = findActionButtons();
-      const toggleStatusButton = findToggleStatusButton();
-
-      expect(actionButtons.exists()).toBe(true);
-      expect(toggleStatusButton.exists()).toBe(true);
-      expect(toggleStatusButton.text()).toBe('Close epic');
-    });
-
-    it('renders toggle sidebar button element', () => {
-      createComponent();
-      const toggleButton = findSidebarToggle();
-
-      expect(toggleButton.exists()).toBe(true);
-      expect(toggleButton.attributes('aria-label')).toBe('Toggle sidebar');
-      expect(toggleButton.classes()).toEqual(
-        expect.arrayContaining(['gl-display-block', 'd-sm-none', 'gutter-toggle']),
-      );
-    });
-
-    it('does not render new epic button if user cannot create it', async () => {
-      createComponent();
-      store.state.canCreate = false;
-
-      await nextTick();
-      expect(findNewEpicButton().exists()).toBe(false);
-    });
-
-    it('renders new epic button if user can create it', async () => {
-      createComponent();
-      store.state.canCreate = true;
-
-      await nextTick();
-      expect(findNewEpicButton().exists()).toBe(true);
-    });
-
-    it('does not render delete epic button if user cannot create it', async () => {
-      createComponent();
-      store.state.canDestroy = false;
-
-      await nextTick();
-      expect(findDeleteEpicButton().exists()).toBe(false);
-    });
-
-    it('renders delete epic button if user can create it', async () => {
-      createComponent();
-      store.state.canDestroy = true;
-
-      await nextTick();
-      expect(findDeleteEpicButton().exists()).toBe(true);
-    });
-
-    describe('delete issue modal', () => {
-      it('renders', () => {
-        createComponent();
-        expect(findModal().props()).toEqual({
-          issuePath: '',
-          issueType: 'epic',
-          modalId,
-          title: 'Delete epic',
-        });
-      });
-    });
-  });
-
-  describe('edit button', () => {
-    it('shows the edit button', () => {
-      createComponent();
-      expect(findEditButton().exists()).toBe(true);
-    });
-
-    it('should trigger "open.form" event when clicked', async () => {
-      createComponent();
-      expect(issuesEventHub.$emit).not.toHaveBeenCalled();
-      await findEditButton().trigger('click');
-      expect(issuesEventHub.$emit).toHaveBeenCalledWith('open.form');
-    });
-  });
-
-  describe('moved_mr_sidebar flag FF', () => {
-    describe('when the flag is off', () => {
+  describe('status badge', () => {
+    describe('when epic is open', () => {
       beforeEach(() => {
-        createComponent({ isMoveSidebarEnabled: false });
+        createComponent({ state: STATUS_OPEN });
       });
 
-      it('does not render Notification toggle', () => {
-        expect(findNotificationWidget().exists()).toBe(false);
+      it('renders `Open` text', () => {
+        expect(findStatusBadge().text()).toBe('Open');
       });
 
-      it('does not render the copy reference toggle', () => {
-        expect(findCopyRefenceDropdownItem().exists()).toBe(false);
+      it('renders correct icon', () => {
+        expect(findStatusBadgeIcon().props('name')).toBe('epic');
       });
     });
 
-    describe('when the flag is on', () => {
+    describe('when epic is closed', () => {
       beforeEach(() => {
-        createComponent({ isMoveSidebarEnabled: true });
+        createComponent({ state: STATUS_CLOSED });
       });
 
-      it('renders the Notification toggle', () => {
-        expect(findNotificationWidget().exists()).toBe(true);
+      it('renders `Closed` text', () => {
+        expect(findStatusBadge().text()).toBe('Closed');
       });
 
-      it('renders the copy reference toggle', () => {
-        expect(findCopyRefenceDropdownItem().exists()).toBe(true);
+      it('renders correct icon', () => {
+        expect(findStatusBadgeIcon().props('name')).toBe('epic-closed');
       });
     });
   });
 
-  describe('when logged out', () => {
-    describe.each`
-      movedMrSidebarEnabled | headerActionsVisible
-      ${true}               | ${true}
-      ${false}              | ${false}
-    `(
-      `with movedMrSidebarEnabled flag is "$movedMrSidebarEnabled"`,
-      ({ movedMrSidebarEnabled, headerActionsVisible }) => {
-        beforeEach(async () => {
-          createComponent({
-            isLoggedIn: false,
-            isMoveSidebarEnabled: movedMrSidebarEnabled,
-            epicData: {
-              ...mockEpicData,
-              canCreate: false,
-              canDestroy: false,
-              canUpdate: false,
-            },
-          });
-          await waitForPromises();
-        });
+  it('renders correct badge when epic is confidential', () => {
+    createComponent({ confidential: true });
 
-        it(`${headerActionsVisible ? 'shows' : 'hides'} headers actions`, () => {
-          expect(findDesktopDropdown().exists()).toBe(headerActionsVisible);
-          expect(findMobileDropdown().exists()).toBe(headerActionsVisible);
-          expect(findCopyRefenceDropdownItem().exists()).toBe(headerActionsVisible);
-          expect(findNotificationWidget().exists()).toBe(false);
-        });
-      },
-    );
+    expect(findConfidentialityBadge().props()).toMatchObject({
+      workspaceType: 'group',
+      issuableType: 'epic',
+    });
+  });
+
+  it('renders timeago tooltip', () => {
+    createComponent();
+
+    expect(findTimeagoTooltip().exists()).toBe(true);
+  });
+
+  it('renders user avatar link', () => {
+    createComponent();
+
+    expect(findUserAvatarLink().exists()).toBe(true);
+  });
+
+  it('renders toggle sidebar button', () => {
+    createComponent();
+
+    expect(findToggleSidebarButton().attributes('aria-label')).toBe('Toggle sidebar');
+  });
+
+  it('renders actions dropdown', () => {
+    createComponent();
+
+    expect(findEpicHeaderActions().exists()).toBe(true);
   });
 });

@@ -9,7 +9,7 @@ module QA
             include QA::Page::Component::Issuable::Common
             include QA::Page::Component::Note
 
-            view 'ee/app/assets/javascripts/epic/components/epic_header.vue' do
+            view 'ee/app/assets/javascripts/epic/components/epic_header_actions.vue' do
               element :close_reopen_epic_button
             end
 
