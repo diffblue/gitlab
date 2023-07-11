@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Audit::GroupPushRulesChangesAuditor do
+RSpec.describe Audit::GroupPushRulesChangesAuditor, feature_category: :source_code_management do
   let_it_be(:group) { create(:group) }
   let_it_be(:current_user) { create(:user) }
 
@@ -21,16 +21,16 @@ RSpec.describe Audit::GroupPushRulesChangesAuditor do
 
     # rubocop:disable Layout/LineLength
     where(:key, :old_value, :new_value, :event_name) do
-      :commit_committer_check        | false      | true                | 'audit_operation'
-      :commit_committer_check        | true       | false               | 'audit_operation'
-      :reject_unsigned_commits       | false      | true                | 'audit_operation'
-      :reject_unsigned_commits       | true       | false               | 'audit_operation'
-      :deny_delete_tag               | false      | true                | 'audit_operation'
-      :deny_delete_tag               | true       | false               | 'audit_operation'
-      :member_check                  | false      | true                | 'audit_operation'
-      :member_check                  | true       | false               | 'audit_operation'
-      :prevent_secrets               | false      | true                | 'audit_operation'
-      :prevent_secrets               | true       | false               | 'audit_operation'
+      :commit_committer_check        | false      | true                | 'group_push_rules_commit_committer_check_updated'
+      :commit_committer_check        | true       | false               | 'group_push_rules_commit_committer_check_updated'
+      :reject_unsigned_commits       | false      | true                | 'group_push_rules_reject_unsigned_commits_updated'
+      :reject_unsigned_commits       | true       | false               | 'group_push_rules_reject_unsigned_commits_updated'
+      :deny_delete_tag               | false      | true                | 'group_push_rules_reject_deny_delete_tag_updated'
+      :deny_delete_tag               | true       | false               | 'group_push_rules_reject_deny_delete_tag_updated'
+      :member_check                  | false      | true                | 'group_push_rules_reject_member_check_updated'
+      :member_check                  | true       | false               | 'group_push_rules_reject_member_check_updated'
+      :prevent_secrets               | false      | true                | 'group_push_rules_prevent_secrets_updated'
+      :prevent_secrets               | true       | false               | 'group_push_rules_prevent_secrets_updated'
       :branch_name_regex             | nil        | "\\Asecurity-.*\\z" | 'group_push_rules_branch_name_regex_updated'
       :branch_name_regex             | ".*\\w{2}" | "\\Asecurity-.*\\z" | 'group_push_rules_branch_name_regex_updated'
       :commit_message_regex          | nil        | "\\Asecurity-.*\\z" | 'group_push_rules_commit_message_regex_updated'
@@ -71,6 +71,13 @@ RSpec.describe Audit::GroupPushRulesChangesAuditor do
           .with(event_name, anything, anything)
         subject.execute
       end
+    end
+  end
+
+  context 'for EVENT_TYPE_PER_ATTR' do
+    it 'defines audit event types for all the audit log allowlist attributes for group push rule changes' do
+      expect(PushRule::AUDIT_LOG_ALLOWLIST.keys - Audit::GroupPushRulesChangesAuditor::EVENT_TYPE_PER_ATTR.keys)
+        .to be_empty
     end
   end
 end
