@@ -5608,7 +5608,7 @@ msgstr ""
 msgid "ApplicationSettings|Email restrictions for sign-ups"
 msgstr ""
 
-msgid "ApplicationSettings|Enable Slack application"
+msgid "ApplicationSettings|Enable GitLab for Slack app"
 msgstr ""
 
 msgid "ApplicationSettings|Enable domain denylist for sign-ups"
@@ -5675,9 +5675,6 @@ msgid "ApplicationSettings|Text shown after a user signs up. Markdown enabled."
 msgstr ""
 
 msgid "ApplicationSettings|This feature is only available on GitLab.com"
-msgstr ""
-
-msgid "ApplicationSettings|This option is only available on GitLab.com"
 msgstr ""
 
 msgid "ApplicationSettings|Upload denylist file"
@@ -43177,12 +43174,6 @@ msgstr ""
 msgid "Skype:"
 msgstr ""
 
-msgid "Slack application"
-msgstr ""
-
-msgid "Slack integration allows you to interact with GitLab via slash commands in a chat window."
-msgstr ""
-
 msgid "Slack logo"
 msgstr ""
 
@@ -43195,6 +43186,12 @@ msgstr ""
 msgid "Slack notifications will be deprecated"
 msgstr ""
 
+msgid "SlackIntegration|- *Notifications:* Get notifications to your team's Slack channel about events happening inside your GitLab projects."
+msgstr ""
+
+msgid "SlackIntegration|- *Slash commands:* Quickly open, access, or close issues from Slack using the `%{slash_command}` command. Streamline your GitLab deployments with ChatOps."
+msgstr ""
+
 msgid "SlackIntegration|Are you sure you want to remove this project from the GitLab for Slack app?"
 msgstr ""
 
@@ -43204,7 +43201,22 @@ msgstr ""
 msgid "SlackIntegration|Client secret"
 msgstr ""
 
+msgid "SlackIntegration|Configure your GitLab for Slack app."
+msgstr ""
+
+msgid "SlackIntegration|Copy the %{link_start}settings%{link_end} from %{strong_open}%{settings_heading}%{strong_close} in your GitLab for Slack app."
+msgstr ""
+
+msgid "SlackIntegration|Create Slack app"
+msgstr ""
+
 msgid "SlackIntegration|Create and read issue data and comments."
+msgstr ""
+
+msgid "SlackIntegration|Download latest manifest file"
+msgstr ""
+
+msgid "SlackIntegration|Generated for %{host} by GitLab %{version}."
 msgstr ""
 
 msgid "SlackIntegration|GitLab for Slack"
@@ -43213,7 +43225,13 @@ msgstr ""
 msgid "SlackIntegration|GitLab for Slack was successfully installed."
 msgstr ""
 
+msgid "SlackIntegration|GitLab slash commands"
+msgstr ""
+
 msgid "SlackIntegration|Install GitLab for Slack app"
+msgstr ""
+
+msgid "SlackIntegration|Interact with GitLab without leaving your Slack workspace!"
 msgstr ""
 
 msgid "SlackIntegration|Perform deployments."
@@ -43243,6 +43261,12 @@ msgstr ""
 msgid "SlackIntegration|Signing secret"
 msgstr ""
 
+msgid "SlackIntegration|Step 1: Create your GitLab for Slack app"
+msgstr ""
+
+msgid "SlackIntegration|Step 2: Configure the app settings"
+msgstr ""
+
 msgid "SlackIntegration|Team name"
 msgstr ""
 
@@ -43258,7 +43282,22 @@ msgstr ""
 msgid "SlackIntegration|Update to the latest version to receive notifications from GitLab."
 msgstr ""
 
+msgid "SlackIntegration|Update your Slack app"
+msgstr ""
+
+msgid "SlackIntegration|Used for authenticating API requests from the GitLab for Slack app."
+msgstr ""
+
+msgid "SlackIntegration|Used for authenticating OAuth requests from the GitLab for Slack app."
+msgstr ""
+
+msgid "SlackIntegration|Used only for authenticating slash commands from the GitLab for Slack app. This method of authentication is deprecated by Slack."
+msgstr ""
+
 msgid "SlackIntegration|Verification token"
+msgstr ""
+
+msgid "SlackIntegration|When GitLab releases new features for the GitLab for Slack app, you might have to manually update your copy to use the new features."
 msgstr ""
 
 msgid "SlackIntegration|You can now close this window and go to your Slack workspace."
@@ -43270,7 +43309,13 @@ msgstr ""
 msgid "SlackIntegration|You may need to reinstall the GitLab for Slack app when we %{linkStart}make updates or change permissions%{linkEnd}."
 msgstr ""
 
+msgid "SlackIntegration|You must do this step only once."
+msgstr ""
+
 msgid "SlackIntegration|cannot have more than %{limit} channels"
+msgstr ""
+
+msgid "SlackIntegration|your-project-name-or-alias command"
 msgstr ""
 
 msgid "SlackModal|Are you sure you want to change the project?"
