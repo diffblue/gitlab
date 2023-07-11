@@ -24,7 +24,6 @@ class DashboardOperationsProjectEntity < Grape::Entity
   end
 
   expose :alert_count, if: -> (*) { !upgrade_required }
-  expose :last_alert, using: PrometheusAlertEntity, if: -> (*) { !upgrade_required && last_alert? }
 
   private
 
@@ -53,10 +52,6 @@ class DashboardOperationsProjectEntity < Grape::Entity
 
   def last_deployment
     dashboard_project.last_deployment
-  end
-
-  def last_alert?
-    dashboard_project.last_alert
   end
 
   def current_user

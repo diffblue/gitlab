@@ -33,7 +33,6 @@ RSpec.describe Dashboard::Operations::ListService, feature_category: :continuous
       it 'has no information' do
         expect(dashboard_project.last_deployment).to be_nil
         expect(dashboard_project.alert_count).to eq(0)
-        expect(dashboard_project.last_alert).to be_nil
       end
     end
 
@@ -41,7 +40,7 @@ RSpec.describe Dashboard::Operations::ListService, feature_category: :continuous
       it 'ensures a fixed amount of queries' do
         queries = ActiveRecord::QueryRecorder.new { subject }.count
 
-        expect(queries).to eq(7)
+        expect(queries).to eq(5)
       end
     end
 
@@ -97,19 +96,15 @@ RSpec.describe Dashboard::Operations::ListService, feature_category: :continuous
             [
               create(:alert_management_alert, prometheus_alert: alert_prd1, environment: production, project: project),
               create(:alert_management_alert, prometheus_alert: alert_prd2, environment: production, project: project),
-              last_firing_event,
               create(:alert_management_alert, prometheus_alert: alert_stg, environment: staging, project: project),
               create(:alert_management_alert, :resolved, prometheus_alert: alert_prd2, environment: production, project: project)
             ]
           end
 
-          let(:last_firing_event) { create(:alert_management_alert, prometheus_alert: alert_prd1, environment: production, project: project) }
-
           it_behaves_like 'avoiding N+1 queries'
 
           it 'provides information about alerts' do
-            expect(dashboard_project.alert_count).to eq(3)
-            expect(dashboard_project.last_alert).to eq(last_firing_event.prometheus_alert)
+            expect(dashboard_project.alert_count).to eq(2)
           end
 
           context 'with more projects' do
