@@ -19,12 +19,12 @@ module MergeTrains
 
     alias_attribute :project, :target_project
 
-    after_destroy do |merge_train|
+    after_destroy do |car|
       run_after_commit do
         ::Ci::CancelPipelineService.new( # rubocop: disable CodeReuse/ServiceClass
-          pipeline: merge_train.pipeline,
+          pipeline: car.pipeline,
           current_user: nil).force_execute
-        merge_train.cleanup_ref(async: false)
+        car.cleanup_ref(async: false)
       end
     end
 
@@ -45,26 +45,26 @@ module MergeTrains
         transition merging: :merged
       end
 
-      before_transition on: :refresh_pipeline do |merge_train, transition|
+      before_transition on: :refresh_pipeline do |car, transition|
         pipeline_id = transition.args.first
-        merge_train.pipeline_id = pipeline_id
+        car.pipeline_id = pipeline_id
       end
 
-      before_transition any => :merged do |merge_train|
+      before_transition any => :merged do |car|
         merged_at = Time.zone.now
-        merge_train.merged_at = merged_at
-        merge_train.duration = merged_at - merge_train.created_at
+        car.merged_at = merged_at
+        car.duration = merged_at - car.created_at
       end
 
-      after_transition fresh: :stale do |merge_train|
-        merge_train.run_after_commit do
-          merge_train.refresh_async
+      after_transition fresh: :stale do |car|
+        car.run_after_commit do
+          car.refresh_async
         end
       end
 
-      after_transition merging: :merged do |merge_train|
-        merge_train.run_after_commit do
-          merge_train.cleanup_ref
+      after_transition merging: :merged do |car|
+        car.run_after_commit do
+          car.cleanup_ref
         end
       end
 
@@ -90,11 +90,15 @@ module MergeTrains
     end
 
     def all_next
-      train.all_cars.where('merge_trains.id > ?', id)
+      train.all_cars.where(
+        MergeTrains::Car.arel_table[:id].gt(id)
+      )
     end
 
     def all_prev
-      train.all_cars.where('merge_trains.id < ?', id)
+      train.all_cars.where(
+        MergeTrains::Car.arel_table[:id].lt(id)
+      )
     end
 
     def next
