@@ -38,7 +38,7 @@ describe('ProductAnalyticsOnboardingView', () => {
   const createWrapper = (listeners = {}) => {
     wrapper = shallowMountExtended(ProductAnalyticsOnboardingView, {
       provide: {
-        projectFullPath: TEST_PROJECT_FULL_PATH,
+        namespaceFullPath: TEST_PROJECT_FULL_PATH,
         chartEmptyStateIllustrationPath: TEST_HOST,
         collectorHost: TEST_COLLECTOR_HOST,
         trackingKey: TEST_TRACKING_KEY,

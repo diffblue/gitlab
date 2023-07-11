@@ -12,7 +12,7 @@ export default {
     GlLoadingIcon,
   },
   inject: {
-    projectFullPath: {
+    namespaceFullPath: {
       type: String,
     },
     chartEmptyStateIllustrationPath: {
@@ -55,7 +55,7 @@ export default {
         const { data } = await this.$apollo.mutate({
           mutation: initializeProductAnalyticsMutation,
           variables: {
-            projectPath: this.projectFullPath,
+            projectPath: this.namespaceFullPath,
           },
           context: {
             isSingleRequest: true,

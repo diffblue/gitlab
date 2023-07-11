@@ -16,11 +16,6 @@ export default {
     OnboardingState,
     AnalyticsFeatureListItem,
   },
-  inject: {
-    projectFullPath: {
-      type: String,
-    },
-  },
   data() {
     return {
       state: '',

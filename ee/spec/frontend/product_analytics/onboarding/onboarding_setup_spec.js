@@ -45,7 +45,7 @@ describe('ProductAnalyticsSetupView', () => {
         ...props,
       },
       provide: {
-        projectFullPath: TEST_PROJECT_FULL_PATH,
+        namespaceFullPath: TEST_PROJECT_FULL_PATH,
         collectorHost: TEST_COLLECTOR_HOST,
         trackingKey: TEST_TRACKING_KEY,
         ...provide,

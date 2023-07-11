@@ -22,7 +22,7 @@ describe('OnboardingListItem', () => {
   const createWrapper = (state) => {
     wrapper = shallowMountExtended(OnboardingListItem, {
       provide: {
-        projectFullPath: TEST_PROJECT_FULL_PATH,
+        namespaceFullPath: TEST_PROJECT_FULL_PATH,
       },
     });
 

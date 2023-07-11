@@ -5,9 +5,11 @@ require 'spec_helper'
 RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_analytics do
   using RSpec::Parameterized::TableSyntax
 
-  let_it_be(:project) { create(:project) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
+  let_it_be(:group) { create(:group) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
+  let_it_be(:project) { create(:project, group: group) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
   let_it_be(:user) { build_stubbed(:user) }
   let_it_be(:pointer) { create(:analytics_dashboards_pointer, :project_based, project: project) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
+  let_it_be(:group_pointer) { create(:analytics_dashboards_pointer, namespace: group, target_project: project) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
 
   let(:jitsu_key) { '1234567890' }
 
@@ -27,70 +29,114 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
   end
 
   describe '#analytics_dashboards_list_app_data' do
-    where(
-      :product_analytics_enabled_setting,
-      :feature_flag_enabled,
-      :licensed_feature_enabled,
-      :user_has_permission,
-      :enabled
-    ) do
-      true  | true | true | true | true
-      false | true | true | true | false
-      true  | false | true | true | false
-      true  | true | false | true | false
-      true  | true | true | false | false
-    end
-
-    with_them do
-      before do
-        project.project_setting.update!(jitsu_key: jitsu_key)
-
-        stub_application_setting(product_analytics_enabled: product_analytics_enabled_setting)
-
-        stub_feature_flags(product_analytics_dashboards: feature_flag_enabled,
-          product_analytics_snowplow_support: false)
-        stub_licensed_features(product_analytics: licensed_feature_enabled)
-
-        allow(helper).to receive(:can?).with(user, :read_product_analytics, project).and_return(user_has_permission)
+    context 'for project' do
+      where(
+        :product_analytics_enabled_setting,
+        :feature_flag_enabled,
+        :licensed_feature_enabled,
+        :user_has_permission,
+        :enabled
+      ) do
+        true  | true | true | true | true
+        false | true | true | true | false
+        true  | false | true | true | false
+        true  | true | false | true | false
+        true  | true | true | false | false
       end
 
-      subject(:data) { helper.analytics_dashboards_list_app_data(project) }
+      with_them do
+        before do
+          project.project_setting.update!(jitsu_key: jitsu_key)
 
-      def expected_data
+          stub_application_setting(product_analytics_enabled: product_analytics_enabled_setting)
+
+          stub_feature_flags(product_analytics_dashboards: feature_flag_enabled,
+            product_analytics_snowplow_support: false)
+          stub_licensed_features(product_analytics: licensed_feature_enabled)
+
+          allow(helper).to receive(:can?).with(user, :read_product_analytics, project).and_return(user_has_permission)
+        end
+
+        subject(:data) { helper.analytics_dashboards_list_app_data(project) }
+
+        def expected_data
+          {
+            namespace_id: project.id,
+            dashboard_project: {
+              id: pointer.target_project.id,
+              full_path: pointer.target_project.full_path,
+              name: pointer.target_project.name
+            }.to_json,
+            tracking_key: user_has_permission ? jitsu_key : nil,
+            collector_host: user_has_permission ? 'https://new-collector.example.com' : nil,
+            chart_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
+            dashboard_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
+            namespace_full_path: project.full_path,
+            features: (enabled ? [:product_analytics] : []).to_json,
+            router_base: '/-/analytics/dashboards'
+          }
+        end
+
+        context 'without snowplow' do
+          before do
+            stub_feature_flags(product_analytics_snowplow_support: false)
+          end
+
+          it 'returns the expected data' do
+            expect(data).to eq(expected_data)
+          end
+        end
+
+        context 'with snowplow' do
+          before do
+            stub_application_setting(product_analytics_configurator_connection_string: 'http://localhost:3000')
+          end
+
+          it 'returns the expected data' do
+            expect(data).to eq(expected_data)
+          end
+        end
+      end
+    end
+
+    context 'for group' do
+      subject(:data) { helper.analytics_dashboards_list_app_data(group) }
+
+      def expected_data(collector_host)
         {
-          project_id: project.id,
+          namespace_id: group.id,
           dashboard_project: {
-            id: pointer.target_project.id,
-            full_path: pointer.target_project.full_path,
-            name: pointer.target_project.name
+            id: group_pointer.target_project.id,
+            full_path: group_pointer.target_project.full_path,
+            name: group_pointer.target_project.name
           }.to_json,
-          tracking_key: user_has_permission ? jitsu_key : nil,
-          collector_host: user_has_permission ? 'https://new-collector.example.com' : nil,
+          tracking_key: nil,
+          collector_host: collector_host ? 'https://new-collector.example.com' : nil,
           chart_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
           dashboard_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
-          project_full_path: project.full_path,
-          features: (enabled ? [:product_analytics] : []).to_json,
-          router_base: '/-/analytics/dashboards'
+          namespace_full_path: group.full_path,
+          features: [].to_json,
+          router_base: "/groups/#{group.full_path}/-/analytics/dashboards"
         }
       end
 
-      context 'without snowplow' do
+      context 'when user does not have permission' do
         before do
-          stub_feature_flags(product_analytics_snowplow_support: false)
+          allow(helper).to receive(:can?).with(user, :read_product_analytics, group).and_return(false)
         end
 
         it 'returns the expected data' do
-          expect(data).to eq(expected_data)
+          expect(data).to eq(expected_data(false))
         end
       end
 
-      context 'with snowplow' do
+      context 'when user has permission' do
         before do
-          stub_application_setting(product_analytics_configurator_connection_string: 'http://localhost:3000')
+          allow(helper).to receive(:can?).with(user, :read_product_analytics, group).and_return(true)
         end
 
         it 'returns the expected data' do
-          expect(data).to eq(expected_data)
+          expect(data).to eq(expected_data(true))
         end
       end
     end

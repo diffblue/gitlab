@@ -60,7 +60,7 @@ describe('DashboardsList', () => {
         collectorHost: TEST_COLLECTOR_HOST,
         trackingKey: TEST_TRACKING_KEY,
         customDashboardsProject: TEST_CUSTOM_DASHBOARDS_PROJECT,
-        projectFullPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
+        namespaceFullPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
         ...provided,
       },
     });

@@ -20,7 +20,7 @@ export default {
     trackingKey: {
       type: String,
     },
-    projectFullPath: {
+    namespaceFullPath: {
       type: String,
     },
   },
@@ -56,7 +56,7 @@ export default {
       query: getProjectTrackingKeyQuery,
       variables() {
         return {
-          projectPath: this.projectFullPath,
+          projectPath: this.namespaceFullPath,
         };
       },
       update(data) {
