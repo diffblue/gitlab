@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'spec_helper'
+
 RSpec.describe Gitlab::Llm::OpenAi::ResponseModifiers::Completions, feature_category: :no_category do # rubocop: disable RSpec/InvalidFeatureCategory
   let(:ai_response) { { choices: [{ text: 'hello' }] }.to_json }
 

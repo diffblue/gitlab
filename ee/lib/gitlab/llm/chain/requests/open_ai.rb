@@ -4,30 +4,30 @@ module Gitlab
   module Llm
     module Chain
       module Requests
-        class Anthropic
+        class OpenAi
           attr_reader :ai_client
 
           TEMPERATURE = 0.2
-          STOP_WORDS = ["\n\nHuman", "Observation:"].freeze
-          PROMPT_SIZE = 30_000
+          MAX_TOKENS = 4096
 
           def initialize(user)
-            @ai_client = ::Gitlab::Llm::Anthropic::Client.new(user)
+            @ai_client = ::Gitlab::Llm::OpenAi::Client.new(user)
           end
 
           def request(prompt)
-            ai_client.complete(
+            ai_client.completions(
               prompt: prompt[:prompt],
               **default_options.merge(prompt.fetch(:options, {}))
-            )&.dig("completion").to_s.strip
+            )&.dig("choices", 0, "text").to_s.strip
           end
 
           private
 
           def default_options
             {
-              temperature: TEMPERATURE,
-              stop_sequences: STOP_WORDS
+              moderated: false,
+              max_tokens: MAX_TOKENS,
+              temperature: TEMPERATURE
             }
           end
         end

@@ -62,7 +62,29 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :no_category do # 
         it_behaves_like "ensures user membership"
         it_behaves_like 'completion worker sync and async' do
           let(:action_name) { :summarize_comments }
-          let(:options) { {} }
+          let(:options) { { ai_provider: :vertex_ai } }
+          let(:content) { 'Summarize comments' }
+
+          subject { described_class.new(current_user, resource, options) }
+        end
+      end
+    end
+
+    context 'for a work item' do
+      let_it_be(:resource) { create(:work_item, project: project) }
+
+      it_behaves_like "issuable without notes"
+
+      context 'with notes' do
+        before do
+          create_pair(:note_on_work_item, project: resource.project, noteable: resource)
+        end
+
+        it_behaves_like "ensures feature flags and license"
+        it_behaves_like "ensures user membership"
+        it_behaves_like 'completion worker sync and async' do
+          let(:action_name) { :summarize_comments }
+          let(:options) { { ai_provider: :vertex_ai } }
           let(:content) { 'Summarize comments' }
 
           subject { described_class.new(current_user, resource, options) }
@@ -84,7 +106,7 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :no_category do # 
         it_behaves_like "ensures user membership"
         it_behaves_like 'completion worker sync and async' do
           let(:action_name) { :summarize_comments }
-          let(:options) { {} }
+          let(:options) { { ai_provider: :vertex_ai } }
           let(:content) { 'Summarize comments' }
 
           subject { described_class.new(current_user, resource, options) }

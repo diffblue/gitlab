@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Gitlab::Llm::Chain::Tools::ExplainCode::Prompts::Anthropic, feature_category: :shared do
   describe '.prompt' do
     it 'returns prompt' do
-      prompt = described_class.prompt({ input: 'foo' })
+      prompt = described_class.prompt({ input: 'foo' })[:prompt]
 
       expect(prompt).to include('Human:')
       expect(prompt).to include('Assistant:')

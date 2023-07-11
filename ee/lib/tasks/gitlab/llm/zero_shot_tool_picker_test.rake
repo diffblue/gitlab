@@ -30,7 +30,7 @@ namespace :gitlab do
             agent = llm_agent({ content: question, sync: true })
             response = agent.execute
 
-            actions = agent.prompt.scan(/Action: (?<action>.+?)(?=$)/)
+            actions = agent.prompt[:prompt].scan(/Action: (?<action>.+?)(?=$)/)
             actions.reject! { |action| action.first.start_with?(zero_shot_prompt_action) }
 
             correct_answers_counter += accuracy_check(actions, row['answer'], response.content)

@@ -11,7 +11,11 @@ module Gitlab
                 base_prompt = Utils::Prompt.no_role_text(
                   ::Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor::PROMPT_TEMPLATE, options
                 )
-                "\n\nHuman: #{base_prompt}\n\nAssistant:"
+
+                {
+                  prompt: "\n\nHuman: #{base_prompt}\n\nAssistant:",
+                  options: {}
+                }
               end
             end
           end

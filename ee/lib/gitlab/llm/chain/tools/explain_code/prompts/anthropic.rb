@@ -7,11 +7,14 @@ module Gitlab
         module ExplainCode
           module Prompts
             class Anthropic
-              def self.prompt(options)
+              def self.prompt(variables)
                 base_prompt = Utils::Prompt.no_role_text(
-                  ::Gitlab::Llm::Chain::Tools::ExplainCode::Executor::PROMPT_TEMPLATE, options
+                  ::Gitlab::Llm::Chain::Tools::ExplainCode::Executor::PROMPT_TEMPLATE, variables
                 )
-                "\n\nHuman: #{base_prompt}\n\nAssistant:"
+                {
+                  prompt: "\n\nHuman: #{base_prompt}\n\nAssistant:",
+                  options: {}
+                }
               end
             end
           end

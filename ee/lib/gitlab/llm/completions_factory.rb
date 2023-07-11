@@ -9,8 +9,8 @@ module Gitlab
           prompt_class: ::Gitlab::Llm::Templates::ExplainVulnerability
         },
         summarize_comments: {
-          service_class: ::Gitlab::Llm::OpenAi::Completions::SummarizeAllOpenNotes,
-          prompt_class: ::Gitlab::Llm::OpenAi::Templates::SummarizeAllOpenNotes
+          service_class: ::Gitlab::Llm::Completions::SummarizeAllOpenNotes,
+          prompt_class: nil
         },
         summarize_review: {
           service_class: ::Gitlab::Llm::OpenAi::Completions::SummarizeReview,
