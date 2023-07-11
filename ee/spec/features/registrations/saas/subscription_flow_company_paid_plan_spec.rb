@@ -15,6 +15,7 @@ RSpec.describe 'Subscription flow for user picking company for paid plan', :js, 
       sign_up_method.call
 
       expect_to_see_subscription_welcome_form
+      expect_not_to_send_iterable_request
 
       fills_in_welcome_form
       click_on 'Continue'

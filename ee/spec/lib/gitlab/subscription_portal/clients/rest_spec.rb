@@ -112,6 +112,17 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Rest, feature_category: :bil
     it_behaves_like 'when http call raises an exception'
   end
 
+  describe '#generate_iterable' do
+    subject do
+      client.generate_iterable({})
+    end
+
+    it_behaves_like 'when response is successful'
+    it_behaves_like 'when response code is 422'
+    it_behaves_like 'when response code is 500'
+    it_behaves_like 'when http call raises an exception'
+  end
+
   describe '#create_subscription' do
     subject do
       client.create_subscription({}, 'customer@mail.com', 'token')

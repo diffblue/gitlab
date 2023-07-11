@@ -58,9 +58,40 @@ module EE
         pass_through
       end
 
-      override :finish_onboarding_on_welcome_page
-      def finish_onboarding_on_welcome_page
-        finish_onboarding(current_user)
+      def iterable_params
+        iterable = {
+          provider: 'gitlab',
+          work_email: current_user.email,
+          uid: current_user.id,
+          comment: params[:jobs_to_be_done_other]
+        }
+
+        if params[:user]
+          iterable[:setup_for_company] = params[:user][:setup_for_company]
+          iterable[:role] = params[:user][:role]
+          iterable[:jtbd] = params[:user][:registration_objective]
+        end
+
+        iterable
+      end
+
+      def free_personal_registration_or_invite?
+        return false if helpers.trial_selected? # skip trial
+        return true if helpers.user_has_memberships? # invited
+        # skip company page because it already sends request to CustomersDot
+        return false if redirect_to_company_form?
+
+        # regular registration on .com
+        complete_signup_onboarding?
+      end
+
+      override :successful_update_hooks
+      def successful_update_hooks
+        finish_onboarding(current_user) unless complete_signup_onboarding?
+
+        return unless free_personal_registration_or_invite?
+
+        Onboarding::CreateIterableTriggerWorker.perform_async(iterable_params.to_h)
       end
 
       override :signup_onboarding_path

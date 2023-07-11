@@ -1578,6 +1578,15 @@
   :weight: 2
   :idempotent: false
   :tags: []
+- :name: onboarding_create_iterable_trigger
+  :worker_name: Onboarding::CreateIterableTriggerWorker
+  :feature_category: :onboarding
+  :has_external_dependencies: true
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: product_analytics_initialize_analytics
   :worker_name: ProductAnalytics::InitializeAnalyticsWorker
   :feature_category: :product_analytics
