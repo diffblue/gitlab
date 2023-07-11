@@ -27,11 +27,12 @@ RSpec.describe 'Signup', feature_category: :system_access do
     let_it_be(:admin) { create(:user, :admin) }
 
     before do
+      stub_application_setting(require_admin_approval_after_user_signup: false)
       stub_application_setting_enum('email_confirmation_setting', 'off')
-      stub_application_setting(new_user_signups_cap: 2)
-    end
+      stub_application_setting(new_user_signups_cap: 3)
 
-    def fill_in_sign_up_form
+      visit new_user_registration_path
+
       fill_in 'new_user_username', with: 'bang'
       fill_in 'new_user_email', with: 'bigbang@example.com'
       fill_in 'new_user_first_name', with: 'Big'
@@ -40,44 +41,35 @@ RSpec.describe 'Signup', feature_category: :system_access do
     end
 
     context 'when the cap has not been reached' do
-      it 'sends a welcome email to the user and a notification email to the admin', :sidekiq_inline do
-        visit new_user_registration_path
-
-        fill_in_sign_up_form
-
+      before do
         perform_enqueued_jobs do
           click_button 'Register'
         end
+      end
 
-        email_to_user = ActionMailer::Base.deliveries.find { |m| m.to == ['bigbang@example.com'] }
-        expect(email_to_user.subject).to have_content('Welcome to GitLab!')
-        expect(email_to_user.text_part.body).to have_content('Your GitLab account request has been approved!')
+      it 'does not send an approval email to the user', :sidekiq_inline do
+        approval_email = ActionMailer::Base.deliveries.find { |m| m.subject == 'Welcome to GitLab!' }
+        expect(approval_email).to eq(nil)
+      end
 
-        email_to_admin = ActionMailer::Base.deliveries.find { |m| m.to == [admin.email] }
-        expect(email_to_admin.subject).to have_content('GitLab Account Request')
-        expect(email_to_admin.text_part.body).to have_content('Big Bang has asked for a GitLab account')
+      it 'does not send a notification email to the admin', :sidekiq_inline do
+        password_reset_email = ActionMailer::Base.deliveries.find do |m|
+          m.subject == 'Important information about usage on your GitLab instance'
+        end
 
-        expect(ActionMailer::Base.deliveries.count).to eq(2)
+        expect(password_reset_email).to eq(nil)
       end
     end
 
     context 'when the cap has been reached' do
       before do
-        create(:user)
+        create_list(:user, 2)
       end
 
-      it 'sends notification emails to the admin', :sidekiq_inline do
-        visit new_user_registration_path
-
-        fill_in_sign_up_form
-
+      it 'sends notification email to the admin', :sidekiq_inline do
         perform_enqueued_jobs do
           click_button 'Register'
         end
-
-        signup_notification_email = ActionMailer::Base.deliveries.find { |m| m.subject == 'GitLab Account Request' }
-        expect(signup_notification_email.to).to eq([admin.email])
-        expect(signup_notification_email.text_part.body).to have_content('Big Bang has asked for a GitLab account')
 
         cap_reached_notification_email = ActionMailer::Base.deliveries.find do |m|
           m.subject == 'Important information about usage on your GitLab instance'
@@ -87,7 +79,7 @@ RSpec.describe 'Signup', feature_category: :system_access do
           'Your GitLab instance has reached the maximum allowed user cap'
         )
 
-        expect(ActionMailer::Base.deliveries.count).to eq(2)
+        expect(ActionMailer::Base.deliveries.count).to eq(1)
       end
     end
   end

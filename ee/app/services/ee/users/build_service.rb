@@ -125,7 +125,7 @@ module EE
       end
 
       def set_pending_approval_state
-        return unless ::Gitlab::CurrentSettings.should_apply_user_signup_cap?
+        return unless ::User.user_cap_reached?
         return unless user.human?
 
         user.state = ::User::BLOCKED_PENDING_APPROVAL_STATE

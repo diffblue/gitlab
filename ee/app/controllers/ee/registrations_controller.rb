@@ -61,7 +61,7 @@ module EE
 
     override :set_blocked_pending_approval?
     def set_blocked_pending_approval?
-      super || ::Gitlab::CurrentSettings.should_apply_user_signup_cap?
+      super || ::User.user_cap_reached?
     end
 
     override :identity_verification_enabled?

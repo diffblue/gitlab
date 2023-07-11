@@ -34,14 +34,14 @@ RSpec.shared_examples 'finding user when user cap is set' do
         end
 
         context 'when the query behind .user_cap_reached? times out' do
-          it 'does not activate the user' do
-            allow(::User).to receive(:user_cap_reached?).and_raise(ActiveRecord::QueryAborted)
+          it 'tracks query timeout exception' do
+            expect(::User).to receive(:user_cap_reached?).once.and_call_original
+            expect(::User).to receive(:user_cap_reached?).once.and_raise(ActiveRecord::QueryAborted)
 
             expect(::Gitlab::ErrorTracking).to receive(:track_exception).with(
               instance_of(ActiveRecord::QueryAborted),
               user_email: o_auth_user.gl_user.email
             )
-            expect(o_auth_user.find_user).to be_blocked
 
             o_auth_user.save # rubocop:disable Rails/SaveBang
           end

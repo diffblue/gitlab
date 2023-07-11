@@ -518,10 +518,6 @@ module EE
       write_attribute(:compliance_frameworks, cleaned)
     end
 
-    def should_apply_user_signup_cap?
-      ::Gitlab::CurrentSettings.new_user_signups_cap.present?
-    end
-
     override :personal_access_tokens_disabled?
     def personal_access_tokens_disabled?
       License.feature_available?(:disable_personal_access_tokens) &&

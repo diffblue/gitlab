@@ -113,7 +113,7 @@ RSpec.describe 'Admin::Users', feature_category: :user_profile do
       end
 
       context 'when the cap has not been reached' do
-        it 'sends an approval email and a password reset email to the user', :sidekiq_inline do
+        before do
           visit new_admin_user_path
 
           fill_in_new_user_form
@@ -121,16 +121,28 @@ RSpec.describe 'Admin::Users', feature_category: :user_profile do
           perform_enqueued_jobs do
             click_button 'Create user'
           end
+        end
 
-          welcome_email = ActionMailer::Base.deliveries.find { |m| m.subject == 'Welcome to GitLab!' }
+        it 'sends only a welcome email to the user', :sidekiq_inline do
+          welcome_email = ActionMailer::Base.deliveries.last
           expect(welcome_email.to).to eq(['bigbang@mail.com'])
-          expect(welcome_email.text_part.body).to have_content('Your GitLab account request has been approved!')
+          expect(welcome_email.subject).to eq('Account was created for you')
+          expect(welcome_email.text_part.body).to have_content('Click here to set your password')
 
-          password_reset_email = ActionMailer::Base.deliveries.find { |m| m.subject == 'Account was created for you' }
-          expect(password_reset_email.to).to eq(['bigbang@mail.com'])
-          expect(password_reset_email.text_part.body).to have_content('Click here to set your password')
+          expect(ActionMailer::Base.deliveries.count).to eq(1)
+        end
 
-          expect(ActionMailer::Base.deliveries.count).to eq(2)
+        it 'does not send an approval email to the user', :sidekiq_inline do
+          approval_email = ActionMailer::Base.deliveries.find { |m| m.subject == 'Welcome to GitLab!' }
+          expect(approval_email).to eq(nil)
+        end
+
+        it 'does not send a notification email to the admin', :sidekiq_inline do
+          password_reset_email = ActionMailer::Base.deliveries.find do |m|
+            m.subject == 'Important information about usage on your GitLab instance'
+          end
+
+          expect(password_reset_email).to eq(nil)
         end
       end
 
@@ -139,7 +151,7 @@ RSpec.describe 'Admin::Users', feature_category: :user_profile do
           user
         end
 
-        it 'sends a notification email to the admin', :sidekiq_inline do
+        it 'sends only a notification email to the admin', :sidekiq_inline do
           visit new_admin_user_path
 
           fill_in_new_user_form

@@ -1154,26 +1154,6 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe '#should_apply_user_signup_cap?', feature_category: :onboarding do
-    subject { setting.should_apply_user_signup_cap? }
-
-    before do
-      allow(Gitlab::CurrentSettings).to receive(:new_user_signups_cap).and_return(new_user_signups_cap)
-    end
-
-    context 'when new_user_signups_cap setting is nil' do
-      let(:new_user_signups_cap) { nil }
-
-      it { is_expected.to be false }
-    end
-
-    context 'when new_user_signups_cap setting is set to any number' do
-      let(:new_user_signups_cap) { 10 }
-
-      it { is_expected.to be true }
-    end
-  end
-
   describe 'maintenance mode setting', feature_category: :geo_replication do
     it 'defaults to false' do
       expect(subject.maintenance_mode).to be false
