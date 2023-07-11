@@ -1,6 +1,5 @@
 /* eslint-disable import/export */
 import { invert } from 'lodash';
-import { s__ } from '~/locale';
 
 import {
   reportTypeToSecurityReportTypeEnum as reportTypeToSecurityReportTypeEnumCE,
@@ -49,47 +48,3 @@ export const reportTypeToSecurityReportTypeEnum = {
  * A mapping from SecurityReportTypeEnum values to security scan report types.
  */
 export const securityReportTypeEnumToReportType = invert(reportTypeToSecurityReportTypeEnum);
-
-/**
- * Values for Security Scanner Info PopOvers including help Page Path Links
- */
-export const sastPopover = {
-  title: s__(
-    'ciReport|Static Application Security Testing (SAST) detects potential vulnerabilities in your source code.',
-  ),
-  copy: s__('ciReport|%{linkStartTag}Learn more about SAST %{linkEndTag}'),
-};
-
-export const containerScanningPopover = {
-  title: s__('ciReport|Container Scanning detects known vulnerabilities in your container images.'),
-  copy: s__('ciReport|%{linkStartTag}Learn more about Container Scanning %{linkEndTag}'),
-};
-
-export const dastPopover = {
-  title: s__(
-    'ciReport|Dynamic Application Security Testing (DAST) detects vulnerabilities in your web application.',
-  ),
-  copy: s__('ciReport|%{linkStartTag}Learn more about DAST %{linkEndTag}'),
-};
-
-export const dependencyScanningPopover = {
-  title: s__(
-    "ciReport|Dependency Scanning detects known vulnerabilities in your project's dependencies.",
-  ),
-  copy: s__('ciReport|%{linkStartTag}Learn more about Dependency Scanning %{linkEndTag}'),
-};
-
-export const secretDetectionPopover = {
-  title: s__('ciReport|Secret Detection detects leaked credentials in your source code.'),
-  copy: s__('ciReport|%{linkStartTag}Learn more about Secret Detection %{linkEndTag}'),
-};
-
-export const coverageFuzzingPopover = {
-  title: s__('ciReport|Coverage Fuzzing'),
-  copy: s__('ciReport|%{linkStartTag}Learn more about Coverage Fuzzing %{linkEndTag}'),
-};
-
-export const apiFuzzingPopover = {
-  title: s__('ciReport|API Fuzzing'),
-  copy: s__('ciReport|%{linkStartTag}Learn more about API Fuzzing%{linkEndTag}'),
-};

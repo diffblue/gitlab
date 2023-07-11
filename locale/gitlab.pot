@@ -114,11 +114,6 @@ msgid_plural "%d Modules"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "%d Other"
-msgid_plural "%d Others"
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "%d Package"
 msgid_plural "%d Packages"
 msgstr[0] ""
@@ -672,9 +667,6 @@ msgstr ""
 msgid "%{count} total weight"
 msgstr ""
 
-msgid "%{criticalStart}%{critical} Critical%{criticalEnd} %{highStart}%{high} High%{highEnd} and %{otherStart}%{otherMessage}%{otherEnd}"
-msgstr ""
-
 msgid "%{dashboard_path} could not be found."
 msgstr ""
 
@@ -1034,15 +1026,6 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "%{remaining_approvals} left"
-msgstr ""
-
-msgid "%{reportType} %{status}"
-msgstr ""
-
-msgid "%{reportType} detected %{totalStart}%{total}%{totalEnd} potential %{vulnMessage}"
-msgstr ""
-
-msgid "%{reportType} detected no new vulnerabilities."
 msgstr ""
 
 msgid "%{requireStart}Require%{requireEnd} %{approvalsRequired} %{approvalStart}approval%{approvalEnd} from:"
@@ -40984,12 +40967,6 @@ msgstr ""
 msgid "Security dashboard"
 msgstr ""
 
-msgid "Security report is out of date. Please update your branch with the latest changes from the target branch (%{targetBranchName})"
-msgstr ""
-
-msgid "Security report is out of date. Run %{newPipelineLinkStart}a new pipeline%{newPipelineLinkEnd} for the target branch (%{targetBranchName})"
-msgstr ""
-
 msgid "SecurityApprovals|A merge request approval is required when test coverage declines."
 msgstr ""
 
@@ -41823,9 +41800,6 @@ msgstr ""
 msgid "SecurityReports|More info"
 msgstr ""
 
-msgid "SecurityReports|New vulnerabilities are vulnerabilities that the security scan detects in the merge request that are different to existing vulnerabilities in the default branch."
-msgstr ""
-
 msgid "SecurityReports|No longer detected"
 msgstr ""
 
@@ -41878,12 +41852,6 @@ msgid "SecurityReports|Security dashboard"
 msgstr ""
 
 msgid "SecurityReports|Security reports can only be accessed by authorized users."
-msgstr ""
-
-msgid "SecurityReports|Security reports help page link"
-msgstr ""
-
-msgid "SecurityReports|Security scan results"
 msgstr ""
 
 msgid "SecurityReports|Security scans have run"
@@ -41983,12 +41951,6 @@ msgid "SecurityReports|Unable to add %{invalidProjectsMessage}: %{errorMessage}"
 msgstr ""
 
 msgid "SecurityReports|Undo dismiss"
-msgstr ""
-
-msgid "SecurityReports|Upgrade to interact, track and shift left with vulnerability management features in the UI."
-msgstr ""
-
-msgid "SecurityReports|Upgrade to manage vulnerabilities"
 msgstr ""
 
 msgid "SecurityReports|Vulnerability report"
@@ -53708,27 +53670,6 @@ msgstr ""
 msgid "ciReport|%{improvedNum} improved"
 msgstr ""
 
-msgid "ciReport|%{linkStartTag}Learn more about API Fuzzing%{linkEndTag}"
-msgstr ""
-
-msgid "ciReport|%{linkStartTag}Learn more about Container Scanning %{linkEndTag}"
-msgstr ""
-
-msgid "ciReport|%{linkStartTag}Learn more about Coverage Fuzzing %{linkEndTag}"
-msgstr ""
-
-msgid "ciReport|%{linkStartTag}Learn more about DAST %{linkEndTag}"
-msgstr ""
-
-msgid "ciReport|%{linkStartTag}Learn more about Dependency Scanning %{linkEndTag}"
-msgstr ""
-
-msgid "ciReport|%{linkStartTag}Learn more about SAST %{linkEndTag}"
-msgstr ""
-
-msgid "ciReport|%{linkStartTag}Learn more about Secret Detection %{linkEndTag}"
-msgstr ""
-
 msgid "ciReport|%{linkStartTag}Learn more about codequality reports %{linkEndTag}"
 msgstr ""
 
@@ -53736,12 +53677,6 @@ msgid "ciReport|%{prefix} %{strong_start}%{score}%{strong_end} %{delta} %{deltaP
 msgstr ""
 
 msgid "ciReport|%{remainingPackagesCount} more"
-msgstr ""
-
-msgid "ciReport|%{reportType} is loading"
-msgstr ""
-
-msgid "ciReport|%{reportType}: Loading resulted in an error"
 msgstr ""
 
 msgid "ciReport|%{sameNum} same"
@@ -53760,9 +53695,6 @@ msgid "ciReport|%{scanner} detected no new potential vulnerabilities"
 msgstr ""
 
 msgid "ciReport|%{scanner}: Loading resulted in an error"
-msgstr ""
-
-msgid "ciReport|: Loading resulted in an error"
 msgstr ""
 
 msgid "ciReport|API Fuzzing"
@@ -53834,16 +53766,10 @@ msgstr ""
 msgid "ciReport|Container Scanning"
 msgstr ""
 
-msgid "ciReport|Container Scanning detects known vulnerabilities in your container images."
-msgstr ""
-
 msgid "ciReport|Container scanning"
 msgstr ""
 
 msgid "ciReport|Container scanning detects known vulnerabilities in your docker images."
-msgstr ""
-
-msgid "ciReport|Could not dismiss vulnerability because the associated pipeline no longer exists. Refresh the page and try again."
 msgstr ""
 
 msgid "ciReport|Coverage Fuzzing"
@@ -53865,9 +53791,6 @@ msgid "ciReport|DAST"
 msgstr ""
 
 msgid "ciReport|Dependency Scanning"
-msgstr ""
-
-msgid "ciReport|Dependency Scanning detects known vulnerabilities in your project's dependencies."
 msgstr ""
 
 msgid "ciReport|Dependency scanning"
@@ -53892,9 +53815,6 @@ msgid "ciReport|Download the patch to apply it manually"
 msgstr ""
 
 msgid "ciReport|Dynamic Application Security Testing (DAST)"
-msgstr ""
-
-msgid "ciReport|Dynamic Application Security Testing (DAST) detects vulnerabilities in your web application."
 msgstr ""
 
 msgid "ciReport|Failed to load %{reportName} report"
@@ -53959,9 +53879,6 @@ msgstr ""
 msgid "ciReport|Manually added"
 msgstr ""
 
-msgid "ciReport|New"
-msgstr ""
-
 msgid "ciReport|New vulnerabilities are vulnerabilities that the security scan detects in the merge request that are different to existing vulnerabilities in the default branch."
 msgstr ""
 
@@ -53986,9 +53903,6 @@ msgstr ""
 msgid "ciReport|Secret Detection"
 msgstr ""
 
-msgid "ciReport|Secret Detection detects leaked credentials in your source code."
-msgstr ""
-
 msgid "ciReport|Secret detection"
 msgstr ""
 
@@ -53999,9 +53913,6 @@ msgid "ciReport|Security scan results"
 msgstr ""
 
 msgid "ciReport|Security scanning"
-msgstr ""
-
-msgid "ciReport|Security scanning failed loading any results"
 msgstr ""
 
 msgid "ciReport|Security scanning is loading"
@@ -54017,9 +53928,6 @@ msgid "ciReport|Something went wrong while fetching the finding. Please try agai
 msgstr ""
 
 msgid "ciReport|Static Application Security Testing (SAST)"
-msgstr ""
-
-msgid "ciReport|Static Application Security Testing (SAST) detects potential vulnerabilities in your source code."
 msgstr ""
 
 msgid "ciReport|TTFB P90"
@@ -54061,12 +53969,6 @@ msgid "ciReport|View full report"
 msgstr ""
 
 msgid "ciReport|in"
-msgstr ""
-
-msgid "ciReport|is loading"
-msgstr ""
-
-msgid "ciReport|is loading, errors when loading results"
 msgstr ""
 
 msgid "closed"

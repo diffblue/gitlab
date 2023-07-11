@@ -11,10 +11,6 @@ export default {
     SplitButton,
   },
   props: {
-    modal: {
-      type: Object,
-      required: true,
-    },
     isDismissed: {
       type: Boolean,
       required: false,

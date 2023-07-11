@@ -26,7 +26,6 @@ import licenseComplianceExtension from 'ee/vue_merge_request_widget/extensions/l
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { TEST_HOST } from 'helpers/test_constants';
 import waitForPromises from 'helpers/wait_for_promises';
-import { securityReportMergeRequestDownloadPathsQueryResponse } from 'jest/vue_shared/security_reports/mock_data';
 
 import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
@@ -36,7 +35,6 @@ import { SUCCESS } from '~/vue_merge_request_widget/components/deployment/consta
 // Force Jest to transpile and cache
 // eslint-disable-next-line no-unused-vars
 import _Deployment from '~/vue_merge_request_widget/components/deployment/deployment.vue';
-import securityReportMergeRequestDownloadPathsQuery from '~/vue_shared/security_reports/graphql/queries/security_report_merge_request_download_paths.query.graphql';
 
 import getStateQuery from '~/vue_merge_request_widget/queries/get_state.query.graphql';
 import getStateSubscription from '~/vue_merge_request_widget/queries/get_state.subscription.graphql';
@@ -45,7 +43,6 @@ import readyToMergeQuery from 'ee_else_ce/vue_merge_request_widget/queries/state
 import mergeQuery from '~/vue_merge_request_widget/queries/states/new_ready_to_merge.query.graphql';
 import approvalsQuery from 'ee_else_ce/vue_merge_request_widget/components/approvals/queries/approvals.query.graphql';
 import approvedBySubscription from 'ee_else_ce/vue_merge_request_widget/components/approvals/queries/approvals.subscription.graphql';
-import securityReportSummaryQuery from 'ee/vue_shared/security_reports/graphql/mr_security_report_summary.graphql';
 
 import mockData from './mock_data';
 
@@ -65,11 +62,6 @@ describe('ee merge request widget options', () => {
       [approvalsQuery, jest.fn().mockResolvedValue(approvedByCurrentUser)],
       [getStateQuery, jest.fn().mockResolvedValue(getStateQueryResponse)],
       [readyToMergeQuery, jest.fn().mockResolvedValue(readyToMergeResponse)],
-      [
-        securityReportMergeRequestDownloadPathsQuery,
-        jest.fn().mockResolvedValue({ data: securityReportMergeRequestDownloadPathsQueryResponse }),
-      ],
-      [securityReportSummaryQuery, jest.fn().mockResolvedValue({ data: { project: null } })],
       [
         mergeQuery,
         jest.fn().mockResolvedValue({
