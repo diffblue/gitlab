@@ -1,10 +1,15 @@
 # frozen_string_literal: true
 
 module Auditable
+  extend ActiveSupport::Concern
+  include AfterCommitQueue
+
   def push_audit_event(event)
     return unless ::Gitlab::Audit::EventQueue.active?
 
-    ::Gitlab::Audit::EventQueue.push(event)
+    run_after_commit do
+      ::Gitlab::Audit::EventQueue.push(event)
+    end
   end
 
   def audit_details

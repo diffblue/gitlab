@@ -441,7 +441,8 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
     let_it_be(:new_user) { create(:user, name: 'Spiderman') }
     let_it_be(:new_group) { create(:group, name: 'Avengers') }
 
-    let_it_be(:rule, reload: true) { create(:approval_project_rule, name: 'Vulnerability', users: [user], groups: [group]) }
+    # using let_it_be_with_reload doesn't clear AfterCommitQueue properly and makes the tests order-dependent
+    let!(:rule) { create(:approval_project_rule, name: 'Vulnerability', users: [user], groups: [group]) }
 
     describe '#track_creation_event tracks count after create' do
       let_it_be(:approval_project_rule) { build(:approval_project_rule) }
@@ -459,29 +460,49 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
     describe '#audit_add users after :add' do
       let(:action!) { rule.update!(users: [user, new_user]) }
       let(:message) { 'Added User Spiderman to approval group on Vulnerability rule' }
+      let(:invalid_action) do
+        rule.update(users: [user, new_user], # rubocop:disable Rails/SaveBang
+          approvals_required: ApprovalRuleLike::APPROVALS_REQUIRED_MAX + 1)
+      end
 
       it_behaves_like 'audit event queue'
+      it_behaves_like 'invalid record creates no audit event'
     end
 
     describe '#audit_remove users after :remove' do
       let(:action!) { rule.update!(users: []) }
       let(:message) { 'Removed User Batman from approval group on Vulnerability rule' }
+      let(:invalid_action) do
+        rule.update(users: [], # rubocop:disable Rails/SaveBang
+          approvals_required: ApprovalRuleLike::APPROVALS_REQUIRED_MAX + 1)
+      end
 
       it_behaves_like 'audit event queue'
+      it_behaves_like 'invalid record creates no audit event'
     end
 
     describe '#audit_add groups after :add' do
       let(:action!) { rule.update!(groups: [group, new_group]) }
       let(:message) { 'Added Group Avengers to approval group on Vulnerability rule' }
+      let(:invalid_action) do
+        rule.update(groups: [group, new_group], # rubocop:disable Rails/SaveBang
+          approvals_required: ApprovalRuleLike::APPROVALS_REQUIRED_MAX + 1)
+      end
 
       it_behaves_like 'audit event queue'
+      it_behaves_like 'invalid record creates no audit event'
     end
 
     describe '#audit_remove groups after :remove' do
       let(:action!) { rule.update!(groups: []) }
       let(:message) { 'Removed Group Justice League from approval group on Vulnerability rule' }
+      let(:invalid_action) do
+        rule.update(groups: [], # rubocop:disable Rails/SaveBang
+          approvals_required: ApprovalRuleLike::APPROVALS_REQUIRED_MAX + 1)
+      end
 
       it_behaves_like 'audit event queue'
+      it_behaves_like 'invalid record creates no audit event'
     end
 
     describe "#audit_creation after approval rule is created" do
