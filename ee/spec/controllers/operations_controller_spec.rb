@@ -118,7 +118,6 @@ RSpec.describe OperationsController, feature_category: :release_orchestration do
             .to eq(remove_operations_project_path(project_id: project.id))
           expect(expected_project['last_deployment']['id']).to eq(deployment.id)
           expect(expected_project['alert_count']).to eq(open_alerts.size)
-          expect(expected_project['last_alert']['id']).to eq(last_firing_alert.id)
         end
 
         it "returns as many projects as are in the user's dashboard" do

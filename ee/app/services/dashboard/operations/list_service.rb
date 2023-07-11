@@ -3,7 +3,7 @@
 module Dashboard
   module Operations
     class ListService
-      DashboardProject = Struct.new(:project, :last_deployment, :alert_count, :last_alert)
+      DashboardProject = Struct.new(:project, :last_deployment, :alert_count)
 
       def initialize(user)
         @user = user
@@ -13,9 +13,9 @@ module Dashboard
         projects = load_projects(user)
         environments = load_environments(projects, 'production')
         last_deployments = load_last_deployments(environments)
-        event_counts, last_firing_events = load_last_firing_events(environments)
+        event_counts = load_last_firing_events(environments)
 
-        collect_data(projects, last_deployments, event_counts, last_firing_events)
+        collect_data(projects, last_deployments, event_counts)
       end
 
       private
@@ -57,19 +57,15 @@ module Dashboard
           .open
           .for_environment(environments.values)
 
-        event_counts = events.counts_by_project_id # 1 query
-        last_firing_events = events.last_prometheus_alert_by_project_id.index_by(&:project_id) # 3 queries
-
-        [event_counts, last_firing_events]
+        events.counts_by_project_id # 1 query
       end
 
-      def collect_data(projects, last_deployments, event_counts, last_firing_events)
+      def collect_data(projects, last_deployments, event_counts)
         projects.map do |project|
           last_deployment = last_deployments[project.id]
           alert_count = event_counts[project.id] || 0
-          last_alert = last_firing_events[project.id]&.prometheus_alert
 
-          DashboardProject.new(project, last_deployment, alert_count, last_alert)
+          DashboardProject.new(project, last_deployment, alert_count)
         end
       end
     end
