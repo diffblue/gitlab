@@ -3,7 +3,6 @@ import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
 import RelatedFeatureFlags from 'ee/issues/components/related_feature_flags.vue';
 import { TEST_HOST } from 'helpers/test_constants';
-import { trimText } from 'helpers/text_helper';
 import { mountExtended, extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
@@ -99,8 +98,10 @@ describe('ee/issues/components/related_feature_flags.vue', () => {
       });
 
       it('displays the number of referenced feature flags', () => {
-        const header = wrapper.findByRole('heading', `Related feature flags ${MOCK_DATA.length}`);
-        expect(trimText(header.text())).toBe(`Related feature flags ${MOCK_DATA.length}`);
+        const featureFlagNumber = wrapper.findByTestId('feature-flag-number');
+
+        // eslint-disable-next-line radix
+        expect(parseInt(featureFlagNumber.text())).toEqual(MOCK_DATA.length);
       });
 
       it.each(MOCK_DATA.map((data, index) => [data.name, data, index]))(

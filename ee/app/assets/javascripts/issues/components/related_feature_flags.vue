@@ -76,26 +76,28 @@ export default {
   <gl-card
     v-if="shouldShowRelatedFeatureFlags"
     id="related-feature-flags"
-    class="gl-overflow-hidden gl-mt-5 gl-mb-0 gl-bg-gray-10"
-    header-class="card-header gl-line-height-24 gl-pl-5 gl-pr-4 gl-py-4 gl-bg-white"
-    body-class="gl-p-0 gl-mx-5"
+    class="gl-new-card gl-overflow-hidden"
+    header-class="gl-new-card-header"
+    body-class="gl-new-card-body gl-mx-3"
   >
     <template #header>
-      <h3
-        class="card-title h5 gl-my-0 gl-relative gl-display-flex gl-align-items-center gl-flex-grow-1 gl-line-height-24"
-      >
-        <gl-link
-          id="user-content-related-feature-flags"
-          class="anchor gl-text-decoration-none gl-absolute gl-mr-2"
-          href="#related-feature-flags"
-          aria-hidden="true"
-        />
-        {{ $options.i18n.title }}
-        <gl-icon class="gl-text-gray-500 gl-ml-3 gl-mr-2" name="feature-flag" />
-        <span class="gl-text-gray-500">{{ numberOfFeatureFlags }}</span>
-      </h3>
+      <div class="gl-new-card-title-wrapper">
+        <h3 class="gl-new-card-title">
+          <gl-link
+            id="user-content-related-feature-flags"
+            class="anchor gl-text-decoration-none gl-absolute gl-mr-2"
+            href="#related-feature-flags"
+            aria-hidden="true"
+          />
+          {{ $options.i18n.title }}
+        </h3>
+        <div data-testid="feature-flag-number" class="gl-new-card-count">
+          <gl-icon class="gl-mr-2" name="feature-flag" />
+          <span>{{ numberOfFeatureFlags }}</span>
+        </div>
+      </div>
     </template>
-    <gl-loading-icon v-if="loading" size="sm" class="gl-my-3" />
+    <gl-loading-icon v-if="loading" size="sm" class="gl-my-4" />
     <ul v-else class="content-list related-items-list">
       <li
         v-for="flag in featureFlags"
