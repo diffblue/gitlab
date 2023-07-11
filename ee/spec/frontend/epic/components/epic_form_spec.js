@@ -11,6 +11,7 @@ import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_widget
 import ColorSelectDropdown from '~/vue_shared/components/color_select_dropdown/color_select_root.vue';
 import { CLEAR_AUTOSAVE_ENTRY_EVENT } from '~/vue_shared/constants';
 import markdownEditorEventHub from '~/vue_shared/components/markdown/eventhub';
+import { mockTracking } from 'helpers/tracking_helper';
 
 jest.mock('~/lib/utils/url_utility', () => ({
   visitUrl: jest.fn(),
@@ -23,6 +24,7 @@ const TEST_FAILED = { data: { createEpic: { errors: ['mutation failed'] } } };
 
 describe('ee/epic/components/epic_form.vue', () => {
   let wrapper;
+  let trackingSpy;
 
   const createWrapper = ({ mutationResult = TEST_NEW_EPIC } = {}) => {
     wrapper = shallowMount(EpicForm, {
@@ -57,6 +59,10 @@ describe('ee/epic/components/epic_form.vue', () => {
   const findDueDateReset = () => wrapper.find('[data-testid="clear-due-date"]');
   const findSaveButton = () => wrapper.find('[data-testid="save-epic"]');
   const findCancelButton = () => wrapper.find('[data-testid="cancel-epic"]');
+
+  beforeEach(() => {
+    trackingSpy = mockTracking(undefined, null, jest.spyOn);
+  });
 
   describe('when mounted', () => {
     beforeEach(() => {
@@ -170,6 +176,18 @@ describe('ee/epic/components/epic_form.vue', () => {
 
       return savePromise.then(() => {
         expect(findSaveButton().props('loading')).toBe(loading);
+      });
+    });
+
+    it('tracks event on submit', () => {
+      createWrapper();
+
+      findForm().vm.$emit('submit', { preventDefault: () => {} });
+
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'editor_type_used', {
+        context: 'Epic',
+        editorType: 'editor_type_plain_text_editor',
+        label: 'editor_tracking',
       });
     });
 
