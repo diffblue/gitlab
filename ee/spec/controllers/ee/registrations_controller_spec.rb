@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe RegistrationsController, feature_category: :system_access do
-  describe '#create' do
+  describe '#create', :clean_gitlab_redis_rate_limiting do
     let_it_be(:base_user_params) { build_stubbed(:user).slice(:first_name, :last_name, :username, :password) }
     let_it_be(:new_user_email) { 'new@user.com' }
     let_it_be(:user_params) { { user: base_user_params.merge(email: new_user_email) } }
@@ -59,52 +59,64 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
         stub_application_setting(require_admin_approval_after_user_signup: true)
       end
 
-      it_behaves_like 'blocked user by default'
-    end
+      context 'when user signup cap is set' do
+        before do
+          stub_application_setting(new_user_signups_cap: 3)
+        end
 
-    context 'when require admin approval setting is disabled' do
-      before do
-        stub_application_setting(require_admin_approval_after_user_signup: false)
+        it_behaves_like 'blocked user by default'
       end
 
-      it_behaves_like 'active user by default'
-
-      context 'when user signup cap feature is enabled' do
+      context 'when user signup cap is not set' do
         before do
-          stub_application_setting(new_user_signups_cap: true)
+          stub_application_setting(new_user_signups_cap: nil)
         end
 
         it_behaves_like 'blocked user by default'
       end
     end
 
-    context 'when user signup cap is set' do
-      before do
-        stub_application_setting(new_user_signups_cap: 1)
-      end
-
-      it_behaves_like 'blocked user by default'
-    end
-
-    context 'when user signup cap is not set' do
-      before do
-        stub_application_setting(new_user_signups_cap: nil)
-      end
-
-      context 'when require admin approval setting is disabled' do
+    shared_examples 'user cap handling without admin approval' do
+      context 'when user signup cap is set' do
         before do
-          stub_application_setting(require_admin_approval_after_user_signup: false)
+          stub_application_setting(new_user_signups_cap: 3)
+        end
+
+        context 'when user signup cap would be exceeded by new user signup' do
+          let!(:users) { create_list(:user, 3) }
+
+          it_behaves_like 'blocked user by default'
+        end
+
+        context 'when user signup cap would not be exceeded by new user signup' do
+          let!(:users) { create_list(:user, 1) }
+
+          it_behaves_like 'active user by default'
+        end
+      end
+
+      context 'when user signup cap is not set' do
+        before do
+          stub_application_setting(new_user_signups_cap: nil)
         end
 
         it_behaves_like 'active user by default'
       end
+    end
 
-      context 'when require admin approval setting is enabled' do
+    context 'when require admin approval setting is disabled' do
+      it_behaves_like 'user cap handling without admin approval' do
         before do
-          stub_application_setting(require_admin_approval_after_user_signup: true)
+          stub_application_setting(require_admin_approval_after_user_signup: false)
         end
+      end
+    end
 
-        it_behaves_like 'blocked user by default'
+    context 'when require admin approval setting is nil' do
+      it_behaves_like 'user cap handling without admin approval' do
+        before do
+          stub_application_setting(require_admin_approval_after_user_signup: nil)
+        end
       end
     end
 

@@ -205,7 +205,7 @@ module EE
       end
 
       def user_cap_reached?
-        return false unless user_cap_max
+        return false unless user_cap_max.present?
 
         billable.limit(user_cap_max + 1).count >= user_cap_max
       end
@@ -682,7 +682,7 @@ module EE
     end
 
     def perform_user_cap_check
-      return unless ::Gitlab::CurrentSettings.should_apply_user_signup_cap?
+      return unless self.class.user_cap_reached?
       return if active?
 
       run_after_commit do

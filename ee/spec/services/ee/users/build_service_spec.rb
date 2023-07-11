@@ -127,10 +127,26 @@ RSpec.describe Users::BuildService, feature_category: :user_management do
         end
 
         context 'when user signup cap is set' do
-          it 'sets the user state to blocked_pending_approval' do
-            user = service.execute
+          let(:new_user_signups_cap) { 3 }
 
-            expect(user).to be_blocked_pending_approval
+          context 'when user signup cap would be exceeded by new user signup' do
+            let!(:users) { create_list(:user, 2) }
+
+            it 'sets the user state to blocked_pending_approval' do
+              user = service.execute
+
+              expect(user).to be_blocked_pending_approval
+            end
+          end
+
+          context 'when user signup cap would not be exceeded by new user signup' do
+            let!(:users) { create_list(:user, 1) }
+
+            it 'does not set the user state to blocked_pending_approval' do
+              user = service.execute
+
+              expect(user).to be_active
+            end
           end
         end
 

@@ -166,7 +166,7 @@ RSpec.describe User, feature_category: :system_access do
       end
 
       context 'when user cap is not set' do
-        it 'does not call SetUserStatusBasedOnUserCapSettingWorker' do
+        it 'does not enqueue SetUserStatusBasedOnUserCapSettingWorker' do
           expect(SetUserStatusBasedOnUserCapSettingWorker).not_to receive(:perform_async)
 
           create(:user, state: 'blocked_pending_approval')
@@ -174,19 +174,33 @@ RSpec.describe User, feature_category: :system_access do
       end
 
       context 'when user cap is set' do
-        let(:new_user_signups_cap) { 10 }
+        let(:new_user_signups_cap) { 3 }
 
-        it 'enqueues SetUserStatusBasedOnUserCapSettingWorker' do
-          expect(SetUserStatusBasedOnUserCapSettingWorker).to receive(:perform_async).once
+        context 'when user signup cap has been reached' do
+          let!(:users) { create_list(:user, 3) }
 
-          create(:user, state: 'blocked_pending_approval')
+          it 'enqueues SetUserStatusBasedOnUserCapSettingWorker' do
+            expect(SetUserStatusBasedOnUserCapSettingWorker).to receive(:perform_async).once
+
+            create(:user, state: 'blocked_pending_approval')
+          end
+
+          context 'when the user is already active' do
+            it 'does not enqueue SetUserStatusBasedOnUserCapSettingWorker' do
+              expect(SetUserStatusBasedOnUserCapSettingWorker).not_to receive(:perform_async)
+
+              create(:user, state: 'active')
+            end
+          end
         end
 
-        context 'when the user is already active' do
+        context 'when user signup cap has not been reached' do
+          let!(:users) { create_list(:user, 2) }
+
           it 'does not enqueue SetUserStatusBasedOnUserCapSettingWorker' do
             expect(SetUserStatusBasedOnUserCapSettingWorker).not_to receive(:perform_async)
 
-            create(:user, state: 'active')
+            create(:user, state: 'blocked_pending_approval')
           end
         end
       end
@@ -2101,7 +2115,7 @@ RSpec.describe User, feature_category: :system_access do
     with_them do
       before do
         allow(described_class).to receive_message_chain(:billable, :limit).and_return(Array.new(billable_count, instance_double('User')))
-        allow(described_class).to receive(:user_cap_max).and_return(user_cap_max)
+        allow(Gitlab::CurrentSettings).to receive(:new_user_signups_cap).and_return(user_cap_max)
       end
 
       it { is_expected.to eq(result) }
