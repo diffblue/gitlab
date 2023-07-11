@@ -65,6 +65,20 @@ FactoryBot.define do
       end
     end
 
+    trait :indirect_with_invalid_ancestor do
+      iid { 42 }
+      location do
+        {
+          blob_path: '/some_project/path/package_file.lock',
+          path: 'package_file.lock',
+          ancestors: [
+            { iid: 9000 }
+          ],
+          top_level: false
+        }
+      end
+    end
+
     trait :direct do
       iid { 24 }
       location do

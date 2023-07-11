@@ -72,7 +72,7 @@ module Gitlab
                   next ancestor unless ancestor.fetch(:iid, false)
 
                   dependencies_by_iid[ancestor[:iid]]
-                end
+                end.compact!
               end
             end
           end
