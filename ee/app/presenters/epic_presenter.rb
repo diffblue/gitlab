@@ -62,6 +62,7 @@ class EpicPresenter < Gitlab::View::Presenter::Delegated
       created: epic.created_at,
       author: epic_author(author_icon),
       ancestors: epic_ancestors(epic.ancestors.inc_group),
+      reference: epic.to_reference(full: true),
       todo_exists: epic_pending_todo.present?,
       todo_path: group_todos_path(group),
       lock_version: epic.lock_version,

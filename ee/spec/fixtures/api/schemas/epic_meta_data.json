@@ -9,6 +9,7 @@
     "todo_exists",
     "todo_path",
     "lock_version",
+    "reference",
     "state",
     "namespace",
     "labels_path",
@@ -95,6 +96,9 @@
         "integer",
         "null"
       ]
+    },
+    "reference": {
+      "type": "string"
     },
     "state": {
       "type": "string"

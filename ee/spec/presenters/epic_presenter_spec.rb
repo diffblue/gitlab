@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EpicPresenter do
+RSpec.describe EpicPresenter, feature_category: :portfolio_management do
   include UsersHelper
   include Gitlab::Routing.url_helpers
 

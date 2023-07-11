@@ -32,7 +32,6 @@ export default () => ({
   initialDescriptionHtml: '',
   initialDescriptionText: '',
   lockVersion: 0,
-
   startDateSourcingMilestoneTitle: '',
   startDateSourcingMilestoneDates: {
     startDate: '',
@@ -53,6 +52,7 @@ export default () => ({
   dueDate: '',
   labels: [],
   participants: [],
+  reference: '',
   subscribed: false,
   confidential: false,
 
@@ -62,7 +62,6 @@ export default () => ({
 
   // UI status flags
   epicStatusChangeInProgress: false,
-  epicDeleteInProgress: false,
   epicStartDateSaveInProgress: false,
   epicDueDateSaveInProgress: false,
   epicLabelsSelectInProgress: false,
