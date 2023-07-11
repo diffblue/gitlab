@@ -22,7 +22,7 @@ export const SOURCE_TYPES = {
 };
 
 export const ERROR_MESSAGE = s__(
-  'TanukiBot|There was an error communicating with GitLab Chat. Please try again later.',
+  'TanukiBot|There was an error communicating with GitLab Duo Chat. Please try again later.',
 );
 
 export const TANUKI_BOT_TRACKING_EVENT_NAME = 'ask_gitlab_chat';

@@ -28,7 +28,7 @@ import {
 Vue.use(Vuex);
 Vue.use(VueApollo);
 
-describe('GitLab Chat', () => {
+describe('GitLab Duo Chat', () => {
   let wrapper;
 
   const actionSpies = {
