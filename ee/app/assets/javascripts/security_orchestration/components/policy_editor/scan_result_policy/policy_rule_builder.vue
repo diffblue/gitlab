@@ -1,5 +1,5 @@
 <script>
-import { GlAlert } from '@gitlab/ui';
+import { GlAlert, GlSprintf } from '@gitlab/ui';
 import { SCAN_FINDING, LICENSE_FINDING } from './lib';
 import SecurityScanRuleBuilder from './security_scan_rule_builder.vue';
 import LicenseScanRuleBuilder from './license_scan_rule_builder.vue';
@@ -8,6 +8,7 @@ import DefaultRuleBuilder from './default_rule_builder.vue';
 export default {
   components: {
     GlAlert,
+    GlSprintf,
     DefaultRuleBuilder,
     SecurityScanRuleBuilder,
     LicenseScanRuleBuilder,
@@ -75,7 +76,11 @@ export default {
 <template>
   <div>
     <gl-alert v-if="error" :dismissible="false" class="gl-mb-3" variant="danger">
-      {{ error.message }}
+      <gl-sprintf :message="error">
+        <template #bold="{ content }">
+          <span class="font-weight-bold">{{ content }}</span>
+        </template>
+      </gl-sprintf>
     </gl-alert>
 
     <default-rule-builder
