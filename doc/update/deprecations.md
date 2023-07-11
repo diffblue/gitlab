@@ -322,6 +322,22 @@ Use `dependencyProxyTotalSizeBytes` instead, introduced in GitLab 16.1.
 
 <div class="deprecation breaking-change" data-milestone="17.0">
 
+### GraphQL field `registrySizeEstimated` has been deprecated
+
+<div class="deprecation-notes">
+- Announced in: GitLab <span class="milestone">16.2</span>
+- This is a [breaking change](https://docs.gitlab.com/ee/update/terminology.html#breaking-change).
+- To discuss this change or learn more, see the [deprecation issue](https://gitlab.com/gitlab-org/gitlab/-/issues/416509).
+</div>
+
+For clarity, the GraphQL field `registrySizeEstimated` was renamed to `containerRegistrySizeIsEstimated`, to match its counterpart.
+`registrySizeEstimated` was deprecated in GitLab 16.2 and will be removed in GitLab 17.0.
+Use `containerRegistrySizeIsEstimated` introduced in GitLab 16.2 instead.
+
+</div>
+
+<div class="deprecation breaking-change" data-milestone="17.0">
+
 ### GraphQL type, `RunnerMembershipFilter` renamed to `CiRunnerMembershipFilter`
 
 <div class="deprecation-notes">
