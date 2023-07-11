@@ -7870,9 +7870,6 @@ msgstr ""
 msgid "Boards|Failed to fetch blocking %{issuableType}s"
 msgstr ""
 
-msgid "Boards|List actions"
-msgstr ""
-
 msgid "Boards|Move card"
 msgstr ""
 

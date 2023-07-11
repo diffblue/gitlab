@@ -23,8 +23,6 @@ RSpec.describe 'create epic in board', :js, feature_category: :portfolio_managem
 
     it 'creates new epic and opens sidebar', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/394693' do
       page.within(first('.board')) do
-        dropdown = first("[data-testid='header-list-actions']")
-        dropdown.click
         click_button 'Create new epic'
       end
 

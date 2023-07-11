@@ -384,7 +384,6 @@ RSpec.describe 'Issue Boards', :js, feature_category: :team_planning do
       expect(page).to have_selector('[data-testid="issue-boards-sidebar"]')
 
       page.within(find('.board:nth-child(2)')) do
-        find("[data-testid='header-list-actions']").click
         find_button('Edit list settings').click
       end
 
@@ -394,7 +393,6 @@ RSpec.describe 'Issue Boards', :js, feature_category: :team_planning do
 
     it 'closes settings sidebar when opening card sidebar' do
       page.within(find('.board:nth-child(2)')) do
-        find("[data-testid='header-list-actions']").click
         find_button('Edit list settings').click
       end
 
