@@ -35,13 +35,13 @@ module ProductAnalytics
         update_instrumentation_key(Gitlab::Json.parse(response.body)['app_id'])
         track_success
       else
-        Gitlab::ErrorTracking.track_and_raise_for_dev_exception(
+        Gitlab::ErrorTracking.track_and_raise_exception(
           RuntimeError.new(response.body),
           project_id: @project.id
         )
       end
     rescue => e # rubocop:disable Style/RescueStandardError
-      Gitlab::ErrorTracking.track_and_raise_for_dev_exception(e, project_id: @project.id)
+      Gitlab::ErrorTracking.track_and_raise_exception(e, project_id: @project.id)
     end
 
     private

@@ -72,6 +72,7 @@ RSpec.describe ProductAnalytics::InitializeSnowplowProductAnalyticsWorker, featu
     end
 
     it 'raises a RuntimeError' do
+      expect(Gitlab::ErrorTracking).to receive(:track_and_raise_exception).twice.and_call_original
       expect { subject }.to raise_error(RuntimeError)
     end
   end
