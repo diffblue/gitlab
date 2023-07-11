@@ -17,7 +17,6 @@ module QA
         end
 
         let(:vsa_name) { "test-vsa" }
-        let(:user_api_client) { Runtime::API::Client.new(user: user) }
 
         let!(:user) do
           Resource::User.fabricate_via_api! do |resource|
@@ -34,7 +33,7 @@ module QA
 
         let(:project) do
           Resource::Project.fabricate_via_api! do |resource|
-            resource.api_client = user_api_client
+            resource.api_client = admin_api_client
             resource.group = group
           end
         end
