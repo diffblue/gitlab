@@ -10,8 +10,8 @@ import RelatedIssuableItem from '~/issuable/components/related_issuable_item.vue
 describe('RelatedIssuableItem', () => {
   let wrapper;
 
-  function mountComponent({ mountMethod = shallowMount, stubs = {}, props = {}, slots = {} } = {}) {
-    wrapper = mountMethod(RelatedIssuableItem, {
+  function mountComponent({ stubs = {}, props = {}, slots = {} } = {}) {
+    wrapper = shallowMount(RelatedIssuableItem, {
       propsData: props,
       provide: {
         reportAbusePath: '/report/abuse/path',
