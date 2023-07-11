@@ -119,8 +119,8 @@ RSpec.describe Repository, :elastic, feature_category: :global_search do
     project = create :project, :repository
     index!(project)
 
-    search_and_check!(Repository, '-foo', type: 'blob')
-    search_and_check!(Repository, '-foo', type: 'commit')
+    search_and_check!(described_class, '-foo', type: 'blob')
+    search_and_check!(described_class, '-foo', type: 'commit')
     search_and_check!(project.repository, '-foo', type: 'blob')
     search_and_check!(project.repository, '-foo', type: 'commit')
   end
@@ -128,7 +128,7 @@ RSpec.describe Repository, :elastic, feature_category: :global_search do
   describe 'class method find_commits_by_message_with_elastic', :sidekiq_might_not_need_inline do
     let(:project) { create :project, :repository }
     let(:project1) { create :project, :repository }
-    let(:results) { Repository.find_commits_by_message_with_elastic('initial') }
+    let(:results) { described_class.find_commits_by_message_with_elastic('initial') }
 
     before do
       project.repository.index_commits_and_blobs

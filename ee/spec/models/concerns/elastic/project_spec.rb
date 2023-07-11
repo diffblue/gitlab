@@ -155,7 +155,7 @@ RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state, feature_cate
         response = described_class.elastic_search('*')
 
         expect(response.total_count).to eq(1)
-        expect(response.results.first['_source']['type']).to eq(Project.es_type)
+        expect(response.results.first['_source']['type']).to eq(described_class.es_type)
       end
     end
   end

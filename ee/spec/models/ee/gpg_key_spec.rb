@@ -8,7 +8,7 @@ RSpec.describe GpgKey do
   let_it_be(:user) { gpg_key.user }
 
   describe '.for_user' do
-    subject { GpgKey.for_user(user) }
+    subject { described_class.for_user(user) }
 
     it { is_expected.to contain_exactly(gpg_key) }
   end

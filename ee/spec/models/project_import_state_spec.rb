@@ -651,7 +651,7 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
     let!(:jitter) { 2.seconds }
 
     before do
-      allow_any_instance_of(ProjectImportState).to receive(:rand).and_return(jitter)
+      allow_any_instance_of(described_class).to receive(:rand).and_return(jitter)
     end
 
     context 'when base delay is lower than mirror_max_delay' do

@@ -10,7 +10,7 @@ RSpec.describe Geo::ProjectRegistry, :geo, feature_category: :geo_replication do
 
   subject { registry }
 
-  it_behaves_like 'a BulkInsertSafe model', Geo::ProjectRegistry do
+  it_behaves_like 'a BulkInsertSafe model', described_class do
     let(:valid_items_for_bulk_insertion) do
       build_list(:geo_project_registry, 10, created_at: Time.zone.now) do |registry|
         registry.project = create(:project)

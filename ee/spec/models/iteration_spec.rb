@@ -112,7 +112,7 @@ RSpec.describe Iteration, feature_category: :team_planning do
 
     shared_examples_for 'filter_by_state' do
       it 'filters by the given state' do
-        expect(described_class.filter_by_state(Iteration.all, state)).to match(expected_iterations)
+        expect(described_class.filter_by_state(described_class.all, state)).to match(expected_iterations)
       end
     end
 
@@ -154,7 +154,7 @@ RSpec.describe Iteration, feature_category: :team_planning do
     context 'filtering by nonexistent filter' do
       it 'returns no results' do
         expect do
-          described_class.filter_by_state(Iteration.all, 'unknown')
+          described_class.filter_by_state(described_class.all, 'unknown')
         end.to raise_error(ArgumentError, "Unknown state filter: unknown")
       end
     end

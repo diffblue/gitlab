@@ -8,7 +8,7 @@ RSpec.describe Users::RejectService, feature_category: :user_management do
   describe '#execute', :enable_admin_mode do
     let_it_be_with_reload(:user) { create(:user, :blocked_pending_approval) }
 
-    subject(:reject_user) { Users::RejectService.new(current_user).execute(user) }
+    subject(:reject_user) { described_class.new(current_user).execute(user) }
 
     context 'audit events' do
       context 'when licensed' do

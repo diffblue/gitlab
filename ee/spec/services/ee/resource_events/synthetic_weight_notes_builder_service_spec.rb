@@ -13,7 +13,7 @@ RSpec.describe EE::ResourceEvents::SyntheticWeightNotesBuilderService, feature_c
     let_it_be(:event3) { create(:resource_weight_event, issue: issue) }
 
     it 'returns the expected synthetic notes' do
-      notes = EE::ResourceEvents::SyntheticWeightNotesBuilderService.new(issue, user).execute
+      notes = described_class.new(issue, user).execute
 
       expect(notes.size).to eq(3)
     end

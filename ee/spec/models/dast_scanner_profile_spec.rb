@@ -22,14 +22,14 @@ RSpec.describe DastScannerProfile, :dynamic_analysis, feature_category: :dynamic
   describe 'scopes' do
     describe '.project_id_in' do
       it 'returns the dast_scanner_profiles for given projects' do
-        result = DastScannerProfile.project_id_in([subject.project.id])
+        result = described_class.project_id_in([subject.project.id])
         expect(result).to eq([subject])
       end
     end
 
     describe '.with_name' do
       it 'returns the dast_scanner_profiles with given name' do
-        result = DastScannerProfile.with_name(subject.name)
+        result = described_class.with_name(subject.name)
         expect(result).to eq([subject])
       end
     end

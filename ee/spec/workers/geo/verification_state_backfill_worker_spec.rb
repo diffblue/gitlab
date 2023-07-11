@@ -41,7 +41,7 @@ RSpec.describe Geo::VerificationStateBackfillWorker, :geo, feature_category: :ge
         end
 
         it 'worker gets reenqueued' do
-          expect(Geo::VerificationStateBackfillWorker).to receive(:perform_async)
+          expect(described_class).to receive(:perform_async)
 
           subject.perform(job_args)
         end
@@ -55,7 +55,7 @@ RSpec.describe Geo::VerificationStateBackfillWorker, :geo, feature_category: :ge
         end
 
         it 'worker does not get reenqueued (we will wait until next cronjob)' do
-          expect(Geo::VerificationStateBackfillWorker).not_to receive(:perform_async)
+          expect(described_class).not_to receive(:perform_async)
 
           subject.perform(job_args)
         end

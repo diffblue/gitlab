@@ -186,7 +186,7 @@ RSpec.describe Ci::JobArtifact, feature_category: :geo_replication do
     context 'when the `file_types` parameter is provided' do
       let!(:sast_artifact) { create(:ee_ci_job_artifact, :sast) }
 
-      subject { Ci::JobArtifact.security_reports(file_types: file_types) }
+      subject { described_class.security_reports(file_types: file_types) }
 
       context 'when the provided file_types is array' do
         let(:file_types) { %w(secret_detection) }
@@ -211,7 +211,7 @@ RSpec.describe Ci::JobArtifact, feature_category: :geo_replication do
     end
 
     context 'when the file_types parameter is not provided' do
-      subject { Ci::JobArtifact.security_reports }
+      subject { described_class.security_reports }
 
       context 'when there is a security report' do
         let!(:sast_artifact) { create(:ee_ci_job_artifact, :sast) }
@@ -231,7 +231,7 @@ RSpec.describe Ci::JobArtifact, feature_category: :geo_replication do
   describe '.associated_file_types_for' do
     using RSpec::Parameterized::TableSyntax
 
-    subject { Ci::JobArtifact.associated_file_types_for(file_type) }
+    subject { described_class.associated_file_types_for(file_type) }
 
     where(:file_type, :result) do
       'license_scanning'    | %w(license_scanning)

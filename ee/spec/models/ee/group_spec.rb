@@ -396,14 +396,14 @@ RSpec.describe Group, feature_category: :groups_and_projects do
           let(:groups) { [] }
 
           it 'does not use filter optimization' do
-            expect(Group).not_to receive(:filter_groups_user_can)
+            expect(described_class).not_to receive(:filter_groups_user_can)
 
             expect(subject).to be_empty
           end
         end
 
         it 'uses filter optmization to return groups with access' do
-          expect(Group).not_to receive(:filter_groups_user_can)
+          expect(described_class).not_to receive(:filter_groups_user_can)
 
           expect(subject).to match_array(expected_groups)
         end
@@ -414,7 +414,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
           end
 
           it 'does not use filter optimization' do
-            expect(Group).not_to receive(:filter_groups_user_can)
+            expect(described_class).not_to receive(:filter_groups_user_can)
             expect(subject).to match_array(expected_groups)
           end
         end
@@ -423,7 +423,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
           let(:params) { { same_root: false } }
 
           it 'does not use filter optimization' do
-            expect(Group).not_to receive(:filter_groups_user_can)
+            expect(described_class).not_to receive(:filter_groups_user_can)
 
             expect(subject).to match_array(expected_groups)
           end

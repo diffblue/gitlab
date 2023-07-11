@@ -15,7 +15,7 @@ RSpec.describe ReleaseHighlight, :clean_gitlab_redis_cache, feature_category: :r
   end
 
   after do
-    ReleaseHighlight.instance_variable_set(:@file_paths, nil)
+    described_class.instance_variable_set(:@file_paths, nil)
   end
 
   describe '.load_items' do

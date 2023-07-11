@@ -102,7 +102,7 @@ RSpec.describe EpicIssue, feature_category: :portfolio_management do
         level = [nested, *leaves, right]
 
         expect do
-          EpicIssue.move_nulls_to_end(level)
+          described_class.move_nulls_to_end(level)
         end.not_to change { right.reset.relative_position }
 
         moved.each(&:reset)

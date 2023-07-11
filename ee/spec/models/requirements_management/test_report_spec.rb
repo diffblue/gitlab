@@ -99,7 +99,7 @@ RSpec.describe RequirementsManagement::TestReport, feature_category: :requiremen
           it 'creates test report with expected status for each open requirement' do
             expect { subject }.to change { RequirementsManagement::TestReport.count }.by(2)
 
-            reports = RequirementsManagement::TestReport.where(build: build)
+            reports = described_class.where(build: build)
 
             requirement_type_id = WorkItems::Type.requirement.first.id
             expect(reports).to match_array(
@@ -127,7 +127,7 @@ RSpec.describe RequirementsManagement::TestReport, feature_category: :requiremen
             it 'creates test report with expected status for each open requirement' do
               expect { subject }.to change { RequirementsManagement::TestReport.count }.by(2)
 
-              reports = RequirementsManagement::TestReport.where(build: build)
+              reports = described_class.where(build: build)
 
               requirement_type_id = WorkItems::Type.requirement.first.id
               expect(reports).to match_array(
@@ -168,7 +168,7 @@ RSpec.describe RequirementsManagement::TestReport, feature_category: :requiremen
 
             expect { subject }.to change { RequirementsManagement::TestReport.count }.by(2)
 
-            reports = RequirementsManagement::TestReport.where(build: build)
+            reports = described_class.where(build: build)
 
             requirement_type_id = WorkItems::Type.requirement.first.id
             expect(reports).to match_array(

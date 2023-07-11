@@ -41,7 +41,7 @@ RSpec.describe IssuableMetricImage, feature_category: :metrics do
   end
 
   describe '.available_for?' do
-    subject { IssuableMetricImage.available_for?(issue.project) }
+    subject { described_class.available_for?(issue.project) }
 
     before do
       stub_licensed_features(incident_metric_upload: true)

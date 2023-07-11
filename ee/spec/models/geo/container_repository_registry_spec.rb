@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Geo::ContainerRepositoryRegistry, :geo, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
-  it_behaves_like 'a BulkInsertSafe model', Geo::ContainerRepositoryRegistry do
+  it_behaves_like 'a BulkInsertSafe model', described_class do
     let(:valid_items_for_bulk_insertion) { build_list(:geo_container_repository_registry, 10, :with_repository_id, created_at: Time.zone.now) }
     let(:invalid_items_for_bulk_insertion) { [] } # class does not have any validations defined
   end
@@ -195,13 +195,13 @@ RSpec.describe Geo::ContainerRepositoryRegistry, :geo, feature_category: :geo_re
     it 'returns true when registry replication is enabled' do
       stub_geo_setting(registry_replication: { enabled: true })
 
-      expect(Geo::ContainerRepositoryRegistry.replication_enabled?).to be_truthy
+      expect(described_class.replication_enabled?).to be_truthy
     end
 
     it 'returns false when registry replication is disabled' do
       stub_geo_setting(registry_replication: { enabled: false })
 
-      expect(Geo::ContainerRepositoryRegistry.replication_enabled?).to be_falsey
+      expect(described_class.replication_enabled?).to be_falsey
     end
   end
 

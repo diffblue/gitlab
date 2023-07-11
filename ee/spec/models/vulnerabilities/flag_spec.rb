@@ -19,7 +19,7 @@ RSpec.describe Vulnerabilities::Flag, feature_category: :vulnerability_managemen
 
   describe '#initialize' do
     it 'creates a valid flag with flag_type attribute' do
-      flag = described_class.new(flag_type: Vulnerabilities::Flag.flag_types[:false_positive], origin: 'post analyzer X', description: 'static string to sink', finding: build(:vulnerabilities_finding))
+      flag = described_class.new(flag_type: described_class.flag_types[:false_positive], origin: 'post analyzer X', description: 'static string to sink', finding: build(:vulnerabilities_finding))
       expect(flag).to be_valid
     end
   end

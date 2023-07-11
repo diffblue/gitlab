@@ -127,7 +127,7 @@ RSpec.describe Epic, feature_category: :portfolio_management do
     end
 
     describe 'from_id' do
-      let_it_be(:max_id) { Epic.maximum(:id) }
+      let_it_be(:max_id) { described_class.maximum(:id) }
       let_it_be(:epic1) { create(:epic, id: max_id + 1) }
       let_it_be(:epic2) { create(:epic, id: max_id + 2) }
       let_it_be(:epic3) { create(:epic, id: max_id + 3) }

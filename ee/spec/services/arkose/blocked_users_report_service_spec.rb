@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Arkose::BlockedUsersReportService do
-  let(:service) { Arkose::BlockedUsersReportService.new }
+  let(:service) { described_class.new }
   subject { service.execute }
 
   let(:arkose_labs_public_api_key) { 'foo' }
