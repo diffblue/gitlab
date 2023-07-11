@@ -1,8 +1,0 @@
----
-name: delete_scan_result_policies_by_project_id
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/119763
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/415912
-milestone: '16.2'
-type: development
-group: group::security policies
-default_enabled: false
