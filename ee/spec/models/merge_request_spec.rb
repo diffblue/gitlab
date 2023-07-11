@@ -1618,4 +1618,12 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
       expect(merge_request.diff_llm_summaries).to eq([mr_diff_summary_3, mr_diff_summary_1])
     end
   end
+
+  describe '#merge_train' do
+    subject { merge_request.merge_train }
+
+    it 'returns a MergeTrains::Train object' do
+      expect(subject).to be_a(MergeTrains::Train)
+    end
+  end
 end
