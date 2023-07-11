@@ -42,6 +42,14 @@ RSpec.describe MergeTrains::CarsFinder, feature_category: :merge_trains do
       end
     end
 
+    context 'when user is nil' do
+      let(:user) { nil }
+
+      it 'returns an empty list' do
+        is_expected.to be_empty
+      end
+    end
+
     context 'when user is a guest' do
       let(:user) { guest }
 
