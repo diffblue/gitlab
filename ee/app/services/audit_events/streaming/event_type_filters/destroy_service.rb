@@ -9,7 +9,7 @@ module AuditEvents
 
           if errors.blank?
             destination.event_type_filters.audit_event_type_in(event_type_filters).delete_all
-            log_audit_event
+            log_audit_event(name: 'event_type_filters_deleted', message: 'Deleted audit event type filter(s)')
             ServiceResponse.success
           else
             ServiceResponse.error(message: errors)
@@ -29,18 +29,6 @@ module AuditEvents
         def error_message(missing_filters)
           format(_("Couldn't find event type filters where audit event type(s): %{missing_filters}"),
                  missing_filters: missing_filters.join(', '))
-        end
-
-        def log_audit_event
-          audit_context = {
-            name: 'event_type_filters_deleted',
-            author: current_user,
-            scope: destination.group,
-            target: destination,
-            message: "Deleted audit event type filter(s): #{event_type_filters.to_sentence}"
-          }
-
-          ::Gitlab::Audit::Auditor.audit(audit_context)
         end
       end
     end
