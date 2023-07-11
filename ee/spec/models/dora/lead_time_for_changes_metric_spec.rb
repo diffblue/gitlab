@@ -61,7 +61,7 @@ RSpec.describe Dora::LeadTimeForChangesMetric do
           create :dora_configuration, project: project, branches_for_lead_time_for_changes: %w[main staging]
         end
 
-        it 'returns median of time between merge and deployment for MRs with target branch from configuration whitelist' do
+        it 'returns median of time between merge and deployment for MRs with target branch from configuration allowlist' do
           expect(query_result).to eql 3.days.to_f
         end
       end
