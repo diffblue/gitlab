@@ -1,7 +1,6 @@
-import { GlIntersectionObserver, GlLoadingIcon, GlDropdown, GlSearchBoxByType } from '@gitlab/ui';
-import Vue, { nextTick } from 'vue';
+import { GlLoadingIcon, GlCollapsibleListbox } from '@gitlab/ui';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import FilterItem from 'ee/security_dashboard/components/shared/filters/filter_item.vue';
 import ProjectFilter from 'ee/security_dashboard/components/shared/filters/project_filter.vue';
 import groupProjectsQuery from 'ee/security_dashboard/graphql/queries/group_projects.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -10,11 +9,10 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { ALL_ID } from 'ee/security_dashboard/components/shared/filters/constants';
 import QuerystringSync from 'ee/security_dashboard/components/shared/filters/querystring_sync.vue';
-import DropdownButtonText from 'ee/security_dashboard/components/shared/filters/dropdown_button_text.vue';
 
 Vue.use(VueApollo);
 
-const projects = [
+const mockProjects = [
   { id: '1', name: 'Project 1' },
   { id: '2', name: 'Project 2' },
 ];
@@ -25,7 +23,7 @@ const groupFullPath = 'group';
 const cacheConfig = {
   typePolicies: { Query: { fields: { group: { merge: true } } } },
 };
-const getProjectsRequestHandler = ({ hasNextPage = true } = {}) =>
+const getProjectsRequestHandler = ({ projects = mockProjects, hasNextPage = true } = {}) =>
   jest.fn().mockResolvedValue({
     data: {
       group: {
@@ -63,41 +61,30 @@ describe('Project Filter component', () => {
   };
 
   const findQuerystringSync = () => wrapper.findComponent(QuerystringSync);
-  const findDropdown = () => wrapper.findComponent(GlDropdown);
-  const findSearchBox = () => wrapper.findComponent(GlSearchBoxByType);
-  const findIntersectionObserver = () => wrapper.findComponent(GlIntersectionObserver);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
-  const isLoadingIconVisible = () => !findLoadingIcon().classes('gl-visibility-hidden');
-  const findDropdownItem = (id) => wrapper.findByTestId(id);
-  const findDropdownItems = () => wrapper.findAllComponents(FilterItem);
+  const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
+  const findListboxItem = (value) => wrapper.findByTestId(`listbox-item-${value}`);
+  const findMaxProjectsText = () => wrapper.findByTestId('max-projects-message');
 
-  const clickDropdownItem = async (id) => {
-    findDropdownItem(id).vm.$emit('click');
-    await nextTick();
+  const clickListboxItem = async (value) => {
+    await findListboxItem(value).trigger('click');
   };
 
-  const expectSelectedItems = (ids) => {
-    const checkedItems = findDropdownItems()
-      .wrappers.filter((item) => item.props('isChecked'))
-      .map((item) => item.attributes('data-testid'));
-
-    expect(checkedItems).toEqual(ids);
+  const expectSelectedItems = (values) => {
+    expect(findListbox().props('selected')).toEqual(values);
   };
 
-  // Create wrapper, open dropdown, and wait for dropdown to render.
-  const createWrapperAndOpenDropdown = async (options) => {
+  const createWrapperAndOpenListbox = async (options) => {
     createWrapper(options);
-    findDropdown().vm.$emit('show');
-    await nextTick();
+    await findListbox().vm.$emit('shown');
   };
 
-  // Create wrapper, open dropdown, wait for it to render, and wait for projects query to complete.
   const createWrapperAndWaitForQuery = async (options) => {
-    await createWrapperAndOpenDropdown(options);
+    await createWrapperAndOpenListbox(options);
     await waitForPromises();
   };
 
-  describe('before dropdown is opened', () => {
+  describe('before listbox is opened', () => {
     it('does not run the projects query', () => {
       createWrapper();
 
@@ -105,9 +92,9 @@ describe('Project Filter component', () => {
     });
   });
 
-  describe('when dropdown is opened', () => {
+  describe('when listbox is opened', () => {
     it('runs the projects query', async () => {
-      await createWrapperAndOpenDropdown();
+      await createWrapperAndOpenListbox();
 
       expect(defaultProjectsRequestHandler).toHaveBeenCalledTimes(1);
       expect(defaultProjectsRequestHandler).toHaveBeenCalledWith(
@@ -116,20 +103,20 @@ describe('Project Filter component', () => {
     });
 
     it('shows the loading icon while the query is running', async () => {
-      await createWrapperAndOpenDropdown();
+      await createWrapperAndOpenListbox();
 
-      expect(isLoadingIconVisible()).toBe(true);
+      expect(findLoadingIcon().exists()).toBe(true);
     });
 
     it('hides the loading icon when the query is done', async () => {
       await createWrapperAndWaitForQuery();
 
-      expect(isLoadingIconVisible()).toBe(false);
+      expect(findLoadingIcon().exists()).toBe(false);
     });
 
     it('does not render the loading icon when there is no next page', async () => {
       const projectsRequestHandler = getProjectsRequestHandler({ hasNextPage: false });
-      await createWrapperAndOpenDropdown({ projectsRequestHandler });
+      await createWrapperAndOpenListbox({ projectsRequestHandler });
 
       expect(findLoadingIcon().exists()).toBe(true);
 
@@ -153,18 +140,17 @@ describe('Project Filter component', () => {
       });
 
       it('receives empty array when All Projects option is clicked', async () => {
-        await clickDropdownItem(ALL_ID);
+        await clickListboxItem(ALL_ID);
 
         expect(findQuerystringSync().props('value')).toEqual([]);
       });
 
       it.each`
-        emitted                             | expected
-        ${[projects[0].id, projects[1].id]} | ${[projects[0].id, projects[1].id]}
-        ${[]}                               | ${[ALL_ID]}
+        emitted                                     | expected
+        ${[mockProjects[0].id, mockProjects[1].id]} | ${[mockProjects[0].id, mockProjects[1].id]}
+        ${[]}                                       | ${[ALL_ID]}
       `('restores selected items - $emitted', async ({ emitted, expected }) => {
-        findQuerystringSync().vm.$emit('input', emitted);
-        await nextTick();
+        await findQuerystringSync().vm.$emit('input', emitted);
 
         expectSelectedItems(expected);
       });
@@ -177,7 +163,7 @@ describe('Project Filter component', () => {
       `(
         'selects dropdown options $expected when querystring values are $querystringValues',
         async ({ querystringValues, expected }) => {
-          await createWrapperAndOpenDropdown();
+          await createWrapperAndOpenListbox();
           findQuerystringSync().vm.$emit('input', querystringValues);
           await waitForPromises();
 
@@ -191,91 +177,104 @@ describe('Project Filter component', () => {
         expect(wrapper.find('label').text()).toBe(i18n.label);
       });
 
-      it('shows the dropdown with correct header text', () => {
-        expect(wrapper.findComponent(GlDropdown).props('headerText')).toBe(i18n.label);
+      it('passes default props', () => {
+        expect(findListbox().props()).toMatchObject({
+          headerText: i18n.label,
+          searchPlaceholder: i18n.searchPlaceholder,
+          noResultsText: i18n.noMatchingResults,
+          toggleText: i18n.allItemsText,
+          block: true,
+          multiple: true,
+          searchable: true,
+          infiniteScroll: true,
+          loading: false,
+          selected: [ALL_ID],
+        });
       });
 
-      it('shows the DropdownButtonText component with the correct props', () => {
-        expect(wrapper.findComponent(DropdownButtonText).props()).toEqual({
-          items: [i18n.allItemsText],
-          name: i18n.label,
-        });
+      it('passes default items', () => {
+        expect(findListbox().props('items')).toEqual([
+          { value: ALL_ID, text: i18n.allItemsText },
+          { value: '1', text: 'Project 1' },
+          { value: '2', text: 'Project 2' },
+        ]);
       });
     });
 
-    describe('dropdown items', () => {
-      it.each(projects)('shows all dropdown items with correct text', ({ id, name }) => {
-        expect(findDropdownItems()).toHaveLength(projects.length + 1);
+    describe('toggle text', () => {
+      it('shows "Project 1" when project 1 is selected', async () => {
+        await clickListboxItem(mockProjects[0].id);
 
-        expect(findDropdownItem(ALL_ID).text()).toBe(i18n.allItemsText);
-        expect(findDropdownItem(id).text()).toBe(name);
+        expect(findListbox().props('toggleText')).toBe(mockProjects[0].name);
       });
 
-      it.each(projects)('allows multiple items to be selected', async ({ id }) => {
+      it('shows "Project 1 +1 more" when both projects are selected', async () => {
+        await clickListboxItem(mockProjects[0].id);
+        await clickListboxItem(mockProjects[1].id);
+
+        expect(findListbox().props('toggleText')).toBe(`${mockProjects[0].name} +1 more`);
+      });
+    });
+
+    describe('listbox items', () => {
+      it('allows multiple items to be selected', async () => {
         const ids = [];
-        // Deselect everything to begin with.
-        clickDropdownItem(ALL_ID);
 
-        await clickDropdownItem(id);
-        ids.push(id);
+        for await (const { id } of mockProjects) {
+          await clickListboxItem(id);
+          ids.push(id);
 
-        expectSelectedItems(ids);
+          expectSelectedItems(ids);
+        }
       });
 
-      it.each(projects)('toggles the item selection when clicked on', async ({ id }) => {
-        // Deselect everything to begin with.
-        clickDropdownItem(ALL_ID);
-
-        await clickDropdownItem(id);
+      it.each(mockProjects)('toggles the item selection when clicked on', async ({ id }) => {
+        await clickListboxItem(id);
 
         expectSelectedItems([id]);
 
-        await clickDropdownItem(id);
+        await clickListboxItem(id);
 
-        expectSelectedItems([ALL_ID]);
-      });
-
-      it('selects All items when created', () => {
         expectSelectedItems([ALL_ID]);
       });
 
       it('selects ALL item and deselects everything else when it is clicked', async () => {
-        await clickDropdownItem(ALL_ID);
-        await clickDropdownItem(ALL_ID); // Click again to verify that it doesn't toggle.
+        await clickListboxItem(ALL_ID);
+        await clickListboxItem(ALL_ID); // Click again to verify that it doesn't toggle.
 
         expectSelectedItems([ALL_ID]);
       });
 
-      it('deselects the ALL item when another item is clicked', async () => {
-        await clickDropdownItem(ALL_ID);
-        await clickDropdownItem(projects[0].id);
+      it('puts selected projects on top, followed by All projects, followed by unselected projects', async () => {
+        const secondProjectId = mockProjects[1].id;
+        await clickListboxItem(secondProjectId);
 
-        expectSelectedItems([projects[0].id]);
+        expect(findListbox().props('items')[0].value).toEqual(secondProjectId);
+        expect(findListbox().props('items')[1].value).toEqual(ALL_ID);
+        expect(findListbox().props('items')[2].value).toEqual(mockProjects[0].id);
       });
     });
 
     describe('filter-changed event', () => {
-      it.each(projects)(
-        'emits filter-changed event when selected item is changed',
-        async ({ id }) => {
-          const ids = [];
-          // Deselect everything to begin with.
-          await clickDropdownItem(ALL_ID);
+      it('emits filter-changed event when selected item is changed', async () => {
+        const ids = [];
+        // Deselect everything to begin with.
+        await clickListboxItem(ALL_ID);
 
-          expect(wrapper.emitted('filter-changed')[0][0].projectId).toEqual([]);
+        expect(wrapper.emitted('filter-changed')).toEqual([[{ projectId: [] }]]);
 
-          await clickDropdownItem(id);
+        for await (const { id } of mockProjects) {
+          await clickListboxItem(id);
           ids.push(id);
 
-          expect(wrapper.emitted('filter-changed')[ids.length][0].projectId).toEqual(ids);
-        },
-      );
+          expect(wrapper.emitted('filter-changed')[ids.length]).toEqual([{ projectId: ids }]);
+        }
+      });
 
       it('emits the raw querystring IDs before the valid IDs are fetched', async () => {
         createWrapper();
         const querystringIds = ['1', '2', '999'];
-        findQuerystringSync().vm.$emit('input', querystringIds);
-        await nextTick();
+        await findQuerystringSync().vm.$emit('input', querystringIds);
 
         expect(wrapper.emitted('filter-changed')[0][0].projectId).toEqual(querystringIds);
       });
@@ -288,7 +287,7 @@ describe('Project Filter component', () => {
           findQuerystringSync().vm.$emit('input', querystringIds);
           await waitForPromises();
 
-          expect(wrapper.emitted('filter-changed')[1][0].projectId).toBe(querystringIds);
+          expect(wrapper.emitted('filter-changed')[1]).toEqual([{ projectId: querystringIds }]);
         });
 
         it('emits an empty array if there are no valid IDs', async () => {
@@ -296,67 +295,156 @@ describe('Project Filter component', () => {
           findQuerystringSync().vm.$emit('input', querystringIds);
           await waitForPromises();
 
-          expect(wrapper.emitted('filter-changed')[1][0].projectId).toEqual([]);
+          expect(wrapper.emitted('filter-changed')[1]).toEqual([{ projectId: [] }]);
         });
       });
     });
   });
 
-  describe('all projects dropdown item', () => {
+  describe('all projects listbox item', () => {
     it.each`
       phrase             | searchTerm | isShown
       ${'shows'}         | ${''}      | ${true}
       ${'does not show'} | ${'abc'}   | ${false}
     `(
-      '$phrase the All projects dropdown item when search term is "$searchTerm"',
+      '$phrase the All projects listbox item when search term is "$searchTerm"',
       async ({ searchTerm, isShown }) => {
-        await createWrapperAndOpenDropdown();
-        findSearchBox().vm.$emit('input', searchTerm);
-        await nextTick();
+        await createWrapperAndOpenListbox();
+        await findListbox().vm.$emit('search', searchTerm);
 
-        expect(findDropdownItem(ALL_ID).exists()).toBe(isShown);
+        expect(findListboxItem(ALL_ID).exists()).toBe(isShown);
       },
     );
   });
 
   describe('searching', () => {
-    it('clears the dropdown list when the search term is changed and new results are loading', async () => {
+    beforeEach(async () => {
       await createWrapperAndWaitForQuery();
+    });
 
-      expect(findDropdownItems()).toHaveLength(projects.length + 1);
+    it('clears the listbox when the search term is changed and new results are loading', async () => {
+      expect(findListbox().props('items')).toHaveLength(mockProjects.length + 1);
 
-      findSearchBox().vm.$emit('input', 'abc');
-      await nextTick();
+      await findListbox().vm.$emit('search', 'abc');
 
-      expect(findDropdownItems()).toHaveLength(0);
-      expect(isLoadingIconVisible()).toBe(true);
+      expect(findListbox().props('items')).toHaveLength(0);
+      expect(findLoadingIcon().exists()).toBe(true);
+    });
+
+    it('does not show the All projects item', async () => {
+      await findListbox().vm.$emit('search', 'abc');
+
+      expect(findListboxItem(ALL_ID).exists()).toBe(false);
+    });
+
+    it('shows the more characters message when fewer than 3 characters entered', async () => {
+      await findListbox().vm.$emit('search', 'ab');
+
+      expect(findListbox().props('noResultsText')).toBe(i18n.enterMoreCharactersToSearch);
+    });
+
+    it('passes the no results message when 3 or more characters are entered', async () => {
+      await findListbox().vm.$emit('search', 'abc');
+
+      expect(findListbox().props('noResultsText')).toBe(i18n.noMatchingResults);
+    });
+
+    it('does not show selected projects on top', async () => {
+      const secondProjectId = mockProjects[1].id;
+
+      await clickListboxItem(secondProjectId);
+      await findListbox().vm.$emit('search', 'Project');
+      await waitForPromises();
+
+      expect(findListbox().props('items')[0].value).toBe(mockProjects[0].id);
+      expect(findListbox().props('items')[1].value).toBe(mockProjects[1].id);
+    });
+  });
+
+  describe('max projects', () => {
+    // mock response with >100 projects so we can test the max projects selected value (=100)
+    const SELECTED_PROJECTS_MAX_COUNT = 100;
+    const maxCountIds = [...Array(SELECTED_PROJECTS_MAX_COUNT).keys()];
+    const mockManyProjects = maxCountIds.map((id) => ({
+      id,
+      name: `Project ${i18n}`,
+    }));
+
+    beforeEach(async () => {
+      const projectsRequestHandler = getProjectsRequestHandler({
+        hasNextPage: false,
+        projects: mockManyProjects,
+      });
+      await createWrapperAndWaitForQuery({ projectsRequestHandler });
+    });
+
+    it('does not show max projects message when fewer than 100 projects are selected', () => {
+      expect(findMaxProjectsText().exists()).toBe(false);
+    });
+
+    describe('when 100 or more projects are selected', () => {
+      beforeEach(async () => {
+        await findListbox().vm.$emit('select', maxCountIds);
+      });
+
+      it('shows max projects message', () => {
+        expect(findMaxProjectsText().exists()).toBe(true);
+      });
+
+      it('disables search', () => {
+        expect(findListbox().props('searchable')).toBe(false);
+      });
+
+      it('does not show unselected projects or All projects item', () => {
+        expect(findListbox().props('items')).toHaveLength(SELECTED_PROJECTS_MAX_COUNT);
+      });
+    });
+  });
+
+  describe('highlighting', () => {
+    beforeEach(async () => {
+      await createWrapperAndWaitForQuery();
+    });
+
+    it('highlights the searchTerm in the items', async () => {
+      await findListbox().vm.$emit('search', 'ject 1');
+      await waitForPromises();
+
+      expect(findListboxItem(mockProjects[0].id).find('div').html()).toEqual(
+        '<div>Pro<b>ject</b> <b>1</b></div>',
+      );
+    });
+
+    it('does not highlight when not searching', () => {
+      expect(findListboxItem(mockProjects[0].id).find('div').html()).toEqual(
+        '<div>Project 1</div>',
+      );
     });
   });
 
   describe('infinite scrolling', () => {
-    it('does not show the intersection observer when there is no next page', async () => {
+    it('does not show infinite scrolling when there is no next page', async () => {
       const projectsRequestHandler = getProjectsRequestHandler({ hasNextPage: false });
       await createWrapperAndWaitForQuery({ projectsRequestHandler });
 
-      expect(findIntersectionObserver().exists()).toBe(false);
+      expect(findListbox().props('infiniteScroll')).toBe(false);
       expect(findLoadingIcon().exists()).toBe(false);
     });
 
-    it('shows the intersection observer when there is a next page and the projects query is not running', async () => {
+    it('shows the infinite scrolling when there is a next page and the projects query is not running', async () => {
       await createWrapperAndWaitForQuery();
 
-      expect(findIntersectionObserver().exists()).toBe(true);
-      expect(isLoadingIconVisible()).toBe(false);
+      expect(findListbox().props('infiniteScroll')).toBe(true);
+      expect(findLoadingIcon().exists()).toBe(false);
     });
 
-    it('shows the loading icon and fetches the next page when the intersection observer appears', async () => {
+    it('shows the loading icon and fetches the next page when the bottom is reached', async () => {
       await createWrapperAndWaitForQuery();
-      findIntersectionObserver().vm.$emit('appear');
-      await nextTick();
+      await findListbox().vm.$emit('bottom-reached');
 
-      expect(findDropdownItems()).toHaveLength(projects.length + 1);
-      expect(findIntersectionObserver().exists()).toBe(false);
-      expect(isLoadingIconVisible()).toBe(true);
+      expect(findListbox().props('items')).toHaveLength(mockProjects.length + 1);
+      expect(findListbox().props('infiniteScroll')).toBe(false);
+      expect(findLoadingIcon().exists()).toBe(true);
       expect(requestHandler).toHaveBeenCalledTimes(2);
       expect(defaultProjectsRequestHandler).toHaveBeenCalledTimes(2);
     });

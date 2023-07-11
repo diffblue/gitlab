@@ -1,22 +1,16 @@
 <script>
-import {
-  GlDropdownText,
-  GlLoadingIcon,
-  GlIntersectionObserver,
-  GlDropdown,
-  GlSearchBoxByType,
-} from '@gitlab/ui';
-import { escapeRegExp, xor } from 'lodash';
+import { GlCollapsibleListbox, GlLoadingIcon } from '@gitlab/ui';
+import { escapeRegExp, debounce } from 'lodash';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
 import { createAlert } from '~/alert';
+import { getSelectedOptionsText } from '~/lib/utils/listbox_helpers';
+import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { convertToGraphQLIds, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __, s__ } from '~/locale';
-import groupProjectsQuery from '../../../graphql/queries/group_projects.query.graphql';
-import instanceProjectsQuery from '../../../graphql/queries/instance_projects.query.graphql';
-import FilterItem from './filter_item.vue';
+import groupProjectsQuery from 'ee/security_dashboard/graphql/queries/group_projects.query.graphql';
+import instanceProjectsQuery from 'ee/security_dashboard/graphql/queries/instance_projects.query.graphql';
 import QuerystringSync from './querystring_sync.vue';
-import DropdownButtonText from './dropdown_button_text.vue';
 import { ALL_ID } from './constants';
 
 const SEARCH_TERM_MINIMUM_LENGTH = 3;
@@ -31,18 +25,13 @@ const QUERIES = {
 // Convert the project IDs from "gid://gitlab/Project/1" to "1". It needs to be a string because
 // the IDs saved on the querystring are restored as strings.
 const mapProjects = (projects) =>
-  projects.map(({ id, name }) => ({ id: getIdFromGraphQLId(id).toString(), name }));
+  projects.map(({ id, name }) => ({ value: getIdFromGraphQLId(id).toString(), text: name }));
 
 export default {
   components: {
-    FilterItem,
+    GlCollapsibleListbox,
     GlLoadingIcon,
-    GlDropdownText,
-    GlIntersectionObserver,
-    GlDropdown,
     QuerystringSync,
-    DropdownButtonText,
-    GlSearchBoxByType,
   },
   directives: { SafeHtml },
   inject: ['groupFullPath', 'dashboardType'],
@@ -55,13 +44,40 @@ export default {
     hasDropdownBeenOpened: false,
   }),
   computed: {
-    selectableProjects() {
-      // When searching, clicking an item should select in place (item stays where it's at in the
-      // list), so we return all the projects. When not searching, clicking an item should move it
-      // to the top of the list, so we return only the unselected projects.
-      return this.isSearching
-        ? this.projects
-        : this.projects.filter(({ id }) => !this.selected.includes(id));
+    // IDs of projects that actually exist.
+    validIds() {
+      return this.selected.filter((value) => Boolean(this.projectNames[value]));
+    },
+    selectedProjects() {
+      return this.validIds.map((value) => ({ value, text: this.projectNames[value] }));
+    },
+    unselectedProjects() {
+      return this.projects.filter(({ value }) => !this.selected.includes(value));
+    },
+    items() {
+      if (this.isMaxProjectsSelected) {
+        return this.selectedProjects;
+      }
+
+      if (this.searchTerm) {
+        return this.projects;
+      }
+
+      return [
+        ...this.selectedProjects,
+        { text: this.$options.i18n.allItemsText, value: ALL_ID },
+        ...this.unselectedProjects,
+      ];
+    },
+    selectedValues() {
+      return this.validIds.length ? this.validIds : [ALL_ID];
+    },
+    toggleText() {
+      return getSelectedOptionsText({
+        options: this.selectedProjects,
+        selected: this.selectedValues,
+        placeholder: this.$options.i18n.allItemsText,
+      });
     },
     isLoadingProjects() {
       return this.$apollo.queries.projects.loading;
@@ -70,34 +86,25 @@ export default {
       return this.$apollo.queries.projectsById.loading;
     },
     isSearchTooShort() {
-      return this.isSearching && this.searchTerm.length < SEARCH_TERM_MINIMUM_LENGTH;
-    },
-    isSearching() {
-      return this.searchTerm.length > 0;
-    },
-    showSelectedProjectsSection() {
-      return Boolean(this.selected.length) && !this.isSearching;
+      return this.searchTerm && this.searchTerm.length < SEARCH_TERM_MINIMUM_LENGTH;
     },
     isMaxProjectsSelected() {
       return this.selected.length >= SELECTED_PROJECTS_MAX_COUNT;
     },
-    hasNoResults() {
-      return !this.isLoadingProjects && this.projects.length <= 0;
-    },
     // Project IDs that we didn't fetch the project data for.
     unfetchedIds() {
-      return this.selected.filter((id) => !Object.hasOwn(this.projectNames, id));
+      return this.selected.filter((value) => !Object.hasOwn(this.projectNames, value));
     },
-    shouldShowIntersectionObserver() {
+    hasInfiniteScroll() {
       return this.pageInfo.hasNextPage && !this.isLoadingProjects;
     },
-    selectedProjectNames() {
-      const projects = this.validIds.map((id) => this.projectNames[id]);
-      return projects.length ? projects : [this.$options.i18n.allItemsText];
-    },
-    // IDs of projects that actually exist.
-    validIds() {
-      return this.selected.filter((id) => Boolean(this.projectNames[id]));
+    noResultsText() {
+      const { noMatchingResults, enterMoreCharactersToSearch } = this.$options.i18n;
+      if (this.isSearchTooShort) {
+        return enterMoreCharactersToSearch;
+      }
+
+      return noMatchingResults;
     },
   },
   apollo: {
@@ -181,14 +188,11 @@ export default {
   methods: {
     async setDropdownOpened() {
       this.hasDropdownBeenOpened = true;
-      // Wait one tick for the dropdown to open, then focus on the search box.
-      await this.$nextTick();
-      this.$refs.searchBox.focusInput();
     },
     highlightSearchTerm(name) {
       // Don't use the regex if there's no search term, otherwise it will wrap every character with
       // <b>, i.e. '<b>1</b><b>2</b><b>3</b>'.
-      if (!this.isSearching) {
+      if (!this.searchTerm) {
         return name;
       }
       // If the search term is "sec rep", split it into "sec|rep" so that a project with the name
@@ -198,25 +202,30 @@ export default {
       return name.replace(regex, '<b>$1</b>');
     },
     saveProjectNames(projects) {
-      projects.forEach(({ id, name }) => this.$set(this.projectNames, id, name));
+      projects.forEach(({ value, text }) => this.$set(this.projectNames, value, text));
     },
     fetchNextPage() {
       this.$apollo.queries.projects.fetchMore({ variables: { after: this.pageInfo.endCursor } });
     },
-    deselectAll() {
-      this.selected = [];
-    },
-    toggleSelected(id) {
-      this.selected = xor(this.validIds, [id]);
+    onSearch: debounce(function debouncedSearch(searchTerm) {
+      this.searchTerm = searchTerm;
+    }, DEFAULT_DEBOUNCE_AND_THROTTLE_MS),
+    updateSelected(selected) {
+      if (selected.at(-1) === ALL_ID) {
+        this.selected = [];
+      } else {
+        this.selected = selected.filter((value) => value !== ALL_ID);
+      }
     },
   },
   i18n: {
-    label: s__('SecurityReports|Project'),
-    allItemsText: s__('SecurityReports|All projects'),
-    enterMoreCharactersToSearch: __('Enter at least three characters to search'),
-    maxProjectsSelected: s__('SecurityReports|Maximum selected projects limit reached'),
+    searchPlaceholder: __('Search'),
     noMatchingResults: __('No matching results'),
     loadingError: __('An error occurred while retrieving projects.'),
+    enterMoreCharactersToSearch: __('Enter at least three characters to search'),
+    label: s__('SecurityReports|Project'),
+    allItemsText: s__('SecurityReports|All projects'),
+    maxProjectsSelected: s__('SecurityReports|Maximum selected projects limit reached'),
   },
   ALL_ID,
 };
@@ -226,76 +235,34 @@ export default {
   <div>
     <querystring-sync v-model="selected" querystring-key="projectId" />
     <label class="gl-mb-2">{{ $options.i18n.label }}</label>
-    <gl-dropdown
+    <gl-collapsible-listbox
+      :items="items"
+      :selected="selectedValues"
+      :toggle-text="toggleText"
       :header-text="$options.i18n.label"
       :loading="isLoadingProjectsById"
+      :search-placeholder="$options.i18n.searchPlaceholder"
+      :no-results-text="noResultsText"
+      :infinite-scroll="hasInfiniteScroll"
+      :searchable="!isMaxProjectsSelected"
       block
-      toggle-class="gl-mb-0"
-      @show="setDropdownOpened"
+      multiple
+      @shown="setDropdownOpened"
+      @bottom-reached="fetchNextPage"
+      @search="onSearch"
+      @select="updateSelected"
     >
-      <template #button-text>
-        <dropdown-button-text :items="selectedProjectNames" :name="$options.i18n.label" />
+      <template #list-item="{ item }">
+        <div v-safe-html="highlightSearchTerm(item.text)"></div>
       </template>
-
-      <template #header>
-        <gl-search-box-by-type
-          ref="searchBox"
-          v-model="searchTerm"
-          :placeholder="__('Search')"
-          autocomplete="off"
-        />
+      <template v-if="isMaxProjectsSelected" #footer>
+        <div class="gl-pl-7 gl-pr-5 gl-py-3 gl-text-gray-600" data-testid="max-projects-message">
+          {{ $options.i18n.maxProjectsSelected }}
+        </div>
       </template>
-
-      <template #highlighted-items>
-        <template v-if="showSelectedProjectsSection">
-          <filter-item
-            v-for="id in validIds"
-            :key="id"
-            is-checked
-            :text="projectNames[id]"
-            :data-testid="id"
-            @click="toggleSelected(id)"
-          />
-        </template>
+      <template v-else-if="isLoadingProjects" #footer>
+        <gl-loading-icon class="gl-p-3 gl-mx-auto" />
       </template>
-
-      <gl-dropdown-text v-if="isMaxProjectsSelected">
-        {{ $options.i18n.maxProjectsSelected }}
-      </gl-dropdown-text>
-      <gl-dropdown-text v-else-if="isSearchTooShort">
-        {{ $options.i18n.enterMoreCharactersToSearch }}
-      </gl-dropdown-text>
-      <gl-dropdown-text v-else-if="hasNoResults">
-        {{ $options.i18n.noMatchingResults }}
-      </gl-dropdown-text>
-
-      <template v-else>
-        <filter-item
-          v-if="!isSearching"
-          :is-checked="!validIds.length"
-          :text="$options.i18n.allItemsText"
-          :data-testid="$options.ALL_ID"
-          @click="deselectAll"
-        />
-
-        <filter-item
-          v-for="{ id, name } in selectableProjects"
-          :key="id"
-          :is-checked="validIds.includes(id)"
-          :text="name"
-          :data-testid="id"
-          @click="toggleSelected(id)"
-        >
-          <div v-safe-html="highlightSearchTerm(name)"></div>
-        </filter-item>
-
-        <gl-intersection-observer v-if="shouldShowIntersectionObserver" @appear="fetchNextPage" />
-        <gl-loading-icon
-          v-if="pageInfo.hasNextPage"
-          :class="{ 'gl-visibility-hidden': !isLoadingProjects }"
-          class="gl-my-2"
-        />
-      </template>
-    </gl-dropdown>
+    </gl-collapsible-listbox>
   </div>
 </template>

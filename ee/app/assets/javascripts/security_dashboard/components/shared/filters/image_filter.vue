@@ -84,9 +84,9 @@ export default {
     updateSelected(selected) {
       if (selected?.at(-1) === ALL_ID) {
         this.selected = [];
-        return;
+      } else {
+        this.selected = selected.filter((value) => value !== ALL_ID);
       }
-      this.selected = selected.filter((value) => value !== ALL_ID);
     },
   },
   i18n: {
