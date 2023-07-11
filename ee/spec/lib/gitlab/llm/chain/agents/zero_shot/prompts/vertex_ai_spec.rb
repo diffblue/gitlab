@@ -12,7 +12,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::VertexAi, feature_
         agent_scratchpad: "some observation",
         prompt_version: ::Gitlab::Llm::Chain::Agents::ZeroShot::Executor::PROMPT_TEMPLATE
       }
-      prompt = described_class.prompt(options)
+      prompt = described_class.prompt(options)[:prompt]
       prompt_text = "Answer the question as accurate as you can.\nStart with identifying the resource first."
 
       expect(prompt).to include('foo?')

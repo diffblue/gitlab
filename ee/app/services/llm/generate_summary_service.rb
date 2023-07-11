@@ -2,12 +2,12 @@
 
 module Llm
   class GenerateSummaryService < BaseService
-    SUPPORTED_ISSUABLE_TYPES = %w[issue epic].freeze
+    SUPPORTED_ISSUABLE_TYPES = %w[issue work_item epic].freeze
 
     private
 
     def perform
-      worker_perform(user, resource, :summarize_comments, options)
+      worker_perform(user, resource, :summarize_comments, options.merge(ai_provider: :vertex_ai))
     end
 
     def valid?

@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Gitlab::Llm::Chain::Tools::ExplainCode::Prompts::VertexAi, feature_category: :shared do
   describe '.prompt' do
     it 'returns prompt' do
-      prompt = described_class.prompt({ input: 'foo' })
+      prompt = described_class.prompt({ input: 'foo' })[:prompt]
 
       expect(prompt).to include('foo')
       expect(prompt).to include(

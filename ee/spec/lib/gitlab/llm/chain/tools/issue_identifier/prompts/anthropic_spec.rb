@@ -9,7 +9,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Prompts::Anthropic, f
         suggestions: "some suggestions",
         input: 'foo?'
       }
-      prompt = described_class.prompt(options)
+      prompt = described_class.prompt(options)[:prompt]
 
       expect(prompt).to include('Human:')
       expect(prompt).to include('Assistant:')

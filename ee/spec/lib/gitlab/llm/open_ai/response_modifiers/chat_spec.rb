@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'spec_helper'
+
 RSpec.describe Gitlab::Llm::OpenAi::ResponseModifiers::Chat, feature_category: :no_category do # rubocop: disable RSpec/InvalidFeatureCategory
   let(:ai_response) { { choices: [{ message: { content: 'hello' } }] }.to_json }
 

@@ -31,7 +31,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic, feature
 
     let(:prompt_text) { "Answer the question as accurate as you can.\nStart with identifying the resource first." }
 
-    subject { described_class.prompt(options) }
+    subject { described_class.prompt(options)[:prompt] }
 
     it 'returns prompt' do
       expect(subject).to include('Human:')
@@ -50,7 +50,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic, feature
 
     context 'when conversation history does not fit prompt limit' do
       before do
-        default_size = described_class.prompt(options.merge(conversation: [])).size
+        default_size = described_class.prompt(options.merge(conversation: []))[:prompt].size
 
         stub_const("::Gitlab::Llm::Chain::Requests::Anthropic::PROMPT_SIZE", default_size + 40)
       end

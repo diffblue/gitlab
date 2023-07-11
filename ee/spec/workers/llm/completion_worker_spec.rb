@@ -25,7 +25,7 @@ RSpec.describe Llm::CompletionWorker, feature_category: :team_planning do
 
     shared_examples 'performs successfully' do
       it 'calls Gitlab::Llm::CompletionsFactory' do
-        completion = instance_double(Gitlab::Llm::OpenAi::Completions::SummarizeAllOpenNotes)
+        completion = instance_double(Gitlab::Llm::Completions::SummarizeAllOpenNotes)
 
         expect(Gitlab::Llm::CompletionsFactory)
           .to receive(:completion)

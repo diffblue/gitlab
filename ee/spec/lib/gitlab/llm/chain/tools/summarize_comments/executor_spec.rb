@@ -41,7 +41,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_c
           container: project,
           resource: issue1,
           current_user: user,
-          ai_request: double
+          ai_request: ::Gitlab::Llm::Chain::Requests::Anthropic.new(user)
         )
       end
 
@@ -66,7 +66,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_c
             it 'responds with error' do
               expect(tool).not_to receive(:request)
 
-              response = "Issue #1: AI features are not enabled or resource is not permitted to be sent."
+              response = "I am sorry, I am unable to find the Issue you are looking for."
               expect(tool.execute.content).to eq(response)
             end
           end
@@ -87,17 +87,9 @@ RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_c
           end
 
           it 'responds with summary' do
-            expect(tool).not_to receive(:request)
-            expect_next_instance_of(
-              ::Llm::GenerateSummaryService,
-              user,
-              issue1,
-              { sync: true, internal_request: true }
-            ) do |service|
-              expect(service).to receive(:execute).and_call_original
-            end
+            expect(tool).to receive(:request).and_return("some response")
 
-            response = "I know the summary of the notes, comments, discussions for the"
+            response = "Here is the summary for Issue #1 comments:"
             expect(tool.execute.content).to include(response)
           end
         end
@@ -110,14 +102,14 @@ RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_c
           container: project,
           resource: project,
           current_user: user,
-          ai_request: double
+          ai_request: ::Gitlab::Llm::Chain::Requests::Anthropic.new(user)
         )
       end
 
       it 'responds with error' do
         expect(tool).not_to receive(:request)
 
-        response = "I am sorry, I cannot proceed with this resource, it is Project."
+        response = "I am sorry, I am unable to find the Project you are looking for."
         expect(tool.execute.content).to eq(response)
       end
     end

@@ -14,14 +14,18 @@ module Gitlab
           end
 
           def request(prompt)
-            params = ::Gitlab::Llm::VertexAi::Configuration.default_payload_parameters.merge(
+            ai_client.text(
+              content: prompt[:prompt],
+              parameters: { **default_options.merge(prompt.fetch(:options, {})) }
+            )&.dig("predictions", 0, "content").to_s.strip
+          end
+
+          private
+
+          def default_options
+            ::Gitlab::Llm::VertexAi::Configuration.default_payload_parameters.merge(
               temperature: TEMPERATURE
             )
-
-            ai_client.text(
-              content: prompt,
-              parameters: { **params }
-            )&.dig("predictions", 0, "content").to_s.strip
           end
         end
       end

@@ -9,7 +9,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Prompts::VertexAi, fe
         suggestions: "some suggestions",
         input: 'foo?'
       }
-      prompt = described_class.prompt(options)
+      prompt = described_class.prompt(options)[:prompt]
 
       expect(prompt).to include('some suggestions')
       expect(prompt).to include('foo?')

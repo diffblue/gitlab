@@ -187,7 +187,10 @@ module Gitlab
 
             # This method should not be memoized because the options change each iteration, e.g options[:suggestions]
             def base_prompt
-              Utils::Prompt.no_role_text(PROMPT_TEMPLATE, options)
+              {
+                prompt: Utils::Prompt.no_role_text(PROMPT_TEMPLATE, options),
+                options: {}
+              }
             end
 
             def already_used_answer

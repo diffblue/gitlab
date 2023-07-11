@@ -13,7 +13,7 @@ module Gitlab
                   options
                 )
 
-                "#{Utils::Prompt.default_system_prompt}\n\n#{base_prompt}"
+                { prompt: "#{Utils::Prompt.default_system_prompt}\n\n#{base_prompt}", options: {} }
               end
             end
           end
