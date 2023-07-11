@@ -228,12 +228,29 @@ p.feature_available?(:jira_dev_panel_integration)
 
 #### Add a license through the console
 
+##### Using a `key` variable
+
 ```ruby
 key = "<key>"
 license = License.new(data: key)
 license.save
 License.current # check to make sure it applied
 ```
+
+##### Using a license file
+
+```ruby
+license_file = File.open("/tmp/Gitlab.license")
+
+key = license_file.read.gsub("\r\n", "\n").gsub(/\n+$/, '') + "\n"
+
+license = License.new(data: key)
+license.save
+License.current # check to make sure it applied
+```
+
+These snippets can be saved to a file and executed [using the Rails Runner](operations/rails_console.md#using-the-rails-runner) so the
+license can be applied via shell automation scripts.
 
 This is needed for example in a known edge-case with
 [expired license and multiple LDAP servers](../administration/auth/ldap/ldap-troubleshooting.md#expired-license-causes-errors-with-multiple-ldap-servers).
