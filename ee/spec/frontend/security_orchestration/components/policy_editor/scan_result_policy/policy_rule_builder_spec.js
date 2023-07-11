@@ -1,4 +1,4 @@
-import { GlAlert } from '@gitlab/ui';
+import { GlAlert, GlSprintf } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import DefaultRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/default_rule_builder.vue';
 import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_builder.vue';
@@ -44,6 +44,9 @@ describe('PolicyRuleBuilder', () => {
         namespaceId: '1',
         namespaceType: NAMESPACE_TYPES.PROJECT,
         ...provide,
+      },
+      stubs: {
+        GlSprintf,
       },
     });
   };
@@ -135,14 +138,14 @@ describe('PolicyRuleBuilder', () => {
         },
       });
 
-      const error = new Error('test error message');
+      const error = 'test error message';
 
       expect(findAlert().exists()).toBe(false);
 
       await findComponent().vm.$emit('error', error);
 
       expect(findAlert().exists()).toBe(true);
-      expect(findAlert().text()).toBe(error.message);
+      expect(findAlert().text()).toBe(error);
     });
   });
 });

@@ -99,6 +99,8 @@ describe('ProtectedBranchesDropdown', () => {
         expect(findAllListboxItems()).toHaveLength(MOCKED_LISTBOX_ITEMS.length);
 
         expect(wrapper.emitted('error')).toEqual([[{ hasErrored: false }]]);
+        expect(findListBox().props('variant')).toEqual('default');
+        expect(findListBox().props('category')).toEqual('primary');
       });
 
       it('should select all branches in multiple mode', async () => {
@@ -195,27 +197,34 @@ describe('ProtectedBranchesDropdown', () => {
       expect(sentrySpy).toHaveBeenCalledWith(new Error('Request failed with status code 400'));
     });
 
-    it('should have error class when hasError', async () => {
-      createComponent({
-        propsData: {
-          hasError: true,
-        },
-      });
-
-      await openDropdown();
-
-      expect(wrapper.emitted('error')).toEqual([
-        [
-          {
-            error: new Error('Request failed with status code 400'),
-            hasErrored: true,
+    it.each`
+      errorMessage              | expectedError
+      ${undefined}              | ${'Could not retrieve the list of protected branches. Use the YAML editor mode, or refresh this page later. To view the list of protected branches, go to %{boldStart}Settings - Branches%{boldEnd} and expand %{boldStart}Protected branches%{boldEnd}.'}
+      ${'custom error message'} | ${'custom error message'}
+    `(
+      'should have error class when hasError and accept custom error message',
+      async ({ errorMessage, expectedError }) => {
+        createComponent({
+          propsData: {
+            hasError: true,
+            errorMessage,
           },
-        ],
-      ]);
+        });
 
-      expect(findListBox().props('toggleClass')).toEqual({
-        'gl-inset-border-1-red-500!': true,
-      });
-    });
+        await openDropdown();
+
+        expect(wrapper.emitted('error')).toEqual([
+          [
+            {
+              error: expectedError,
+              hasErrored: true,
+            },
+          ],
+        ]);
+
+        expect(findListBox().props('variant')).toEqual('danger');
+        expect(findListBox().props('category')).toEqual('secondary');
+      },
+    );
   });
 });

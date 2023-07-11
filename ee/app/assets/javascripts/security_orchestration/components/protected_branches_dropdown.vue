@@ -9,6 +9,9 @@ import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 export default {
   name: 'ProtectedBranchesDropdown',
   i18n: {
+    errorMessage: __(
+      'Could not retrieve the list of protected branches. Use the YAML editor mode, or refresh this page later. To view the list of protected branches, go to %{boldStart}Settings - Branches%{boldEnd} and expand %{boldStart}Protected branches%{boldEnd}.',
+    ),
     headerTextMultiple: __('Select protected branches'),
     headerTextSingle: __('Choose protected branch'),
     selectAllLabel: __('Select all'),
@@ -37,6 +40,11 @@ export default {
       required: false,
       default: () => [],
     },
+    errorMessage: {
+      type: String,
+      required: false,
+      default: null,
+    },
     hasError: {
       type: Boolean,
       required: false,
@@ -52,6 +60,9 @@ export default {
     };
   },
   computed: {
+    customErrorMessage() {
+      return this.errorMessage || this.$options.i18n.errorMessage;
+    },
     listBoxItems() {
       return this.branches.map(({ name }) => ({ text: name, value: name }));
     },
@@ -80,6 +91,12 @@ export default {
 
       return fallbackText;
     },
+    category() {
+      return this.hasError ? 'secondary' : 'primary';
+    },
+    variant() {
+      return this.hasError ? 'danger' : 'default';
+    },
   },
   created() {
     this.handleSearch = debounce(this.fetchBranches, DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
@@ -92,7 +109,7 @@ export default {
         this.branches = await Api.projectProtectedBranches(this.projectId, term);
         this.$emit('error', { hasErrored: false });
       } catch (error) {
-        this.$emit('error', { hasErrored: true, error });
+        this.$emit('error', { hasErrored: true, error: this.customErrorMessage });
         this.branches = [];
         Sentry.captureException(error);
       } finally {
@@ -121,7 +138,8 @@ export default {
     :reset-button-label="$options.i18n.resetLabel"
     :show-select-all-button-label="$options.i18n.selectAllLabel"
     :toggle-text="toggleText"
-    :toggle-class="{ 'gl-inset-border-1-red-500!': hasError }"
+    :category="category"
+    :variant="variant"
     :selected="selected"
     searchable
     @shown.once="fetchBranches"
