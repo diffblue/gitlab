@@ -200,7 +200,7 @@ module EE
       end
 
       def waiting_for_deployment_approval?
-        manual? && deployment_job? && deployment&.blocked?
+        manual? && deployment_job? && deployment&.waiting_for_approval?
       end
 
       # For AiAction

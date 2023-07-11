@@ -738,9 +738,10 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
 
   describe 'when the build is waiting for deployment approval' do
     let(:build) { create(:ci_build, :manual, environment: 'production', pipeline: pipeline) }
+    let!(:deployment) { create(:deployment, :blocked, deployable: build) }
 
     before do
-      create(:deployment, :blocked, deployable: build)
+      allow(deployment).to receive(:waiting_for_approval?) { true }
     end
 
     it 'does not allow the build to be enqueued' do
@@ -752,8 +753,10 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
     context 'when build is waiting for deployment approval' do
       subject { build_stubbed(:ci_build, :manual, environment: 'production', pipeline: pipeline) }
 
+      let!(:deployment) { create(:deployment, :blocked, deployable: subject) }
+
       before do
-        create(:deployment, :blocked, deployable: subject)
+        allow(deployment).to receive(:waiting_for_approval?) { true }
       end
 
       it { is_expected.not_to be_playable }

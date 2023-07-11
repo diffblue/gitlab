@@ -13,13 +13,14 @@ RSpec.describe Gitlab::Ci::Status::Build::WaitingForApproval, feature_category: 
     subject { described_class.matches?(build, user) }
 
     let(:build) { create(:ci_build, :manual, environment: 'production', project: project) }
-
-    before do
-      create(:deployment, deployment_status, deployable: build, project: project)
-    end
+    let!(:deployment) { create(:deployment, deployment_status, deployable: build, project: project) }
 
     context 'when build is waiting for approval' do
       let(:deployment_status) { :blocked }
+
+      before do
+        allow(deployment).to receive(:waiting_for_approval?).and_return(true)
+      end
 
       it 'is a correct match' do
         expect(subject).to be_truthy
