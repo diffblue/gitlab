@@ -30,6 +30,13 @@ module Users
       end
     end
 
+    def has_medium_or_high_risk_band?(user)
+      user.arkose_risk_band.in?([
+        Arkose::VerifyResponse::RISK_BAND_HIGH.downcase,
+        Arkose::VerifyResponse::RISK_BAND_MEDIUM.downcase
+      ])
+    end
+
     private
 
     def email_verification_data(user)

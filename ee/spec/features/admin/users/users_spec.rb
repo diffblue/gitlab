@@ -90,7 +90,7 @@ RSpec.describe 'Admin::Users', feature_category: :user_profile do
 
         it 'allows the admin to update the custom attribute' do
           visit path_to_visit
-          select(Arkose::VerifyResponse::RISK_BAND_LOW, from: UserCustomAttribute::ARKOSE_RISK_BAND)
+          select(Arkose::VerifyResponse::RISK_BAND_LOW, from: UserCustomAttribute::ARKOSE_RISK_BAND.humanize)
           click_button submit_button_selector
 
           expect(page).to have_content(_('User was successfully updated.'))
