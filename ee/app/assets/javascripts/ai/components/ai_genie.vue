@@ -8,7 +8,6 @@ import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
 import CodeBlockHighlighted from '~/vue_shared/components/code_block_highlighted.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import UserFeedback from 'ee/ai/components/user_feedback.vue';
-import { renderMarkdown } from '~/notes/utils';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import {
   i18n,
@@ -60,19 +59,17 @@ export default {
           };
         },
         result({ data }) {
-          const errors = data.aiCompletionResponse?.errors;
-          if (errors && errors.length) {
+          // When we first subscribe, we will receive a null aiCompletionResponse. We do nothing in this case.
+          const { errors = [], responseBody } = data.aiCompletionResponse || {};
+
+          if (errors.length) {
             this.isLoading = false;
             this.codeExplanationError = this.$options.i18n.REQUEST_ERROR;
-            return;
-          }
-
-          const explanation = data.aiCompletionResponse?.responseBody;
-          if (explanation) {
+          } else if (responseBody) {
             this.isLoading = false;
             this.messages.push({
               role: GENIE_CHAT_MODEL_ROLES.assistant,
-              content: renderMarkdown(explanation),
+              content: responseBody,
             });
           }
         },
@@ -98,7 +95,7 @@ export default {
   },
   computed: {
     shouldShowChat() {
-      return this.isLoading || this.messages.length || this.codeExplanationError;
+      return this.isLoading || Boolean(this.messages.length) || Boolean(this.codeExplanationError);
     },
     rootStyle() {
       if (!this.top) return null;

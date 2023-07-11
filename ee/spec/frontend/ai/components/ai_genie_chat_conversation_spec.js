@@ -1,21 +1,25 @@
 import AiGenieChatConversation from 'ee/ai/components/ai_genie_chat_conversation.vue';
+import AiGenieChatMessage from 'ee/ai/components/ai_genie_chat_message.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { GENIE_CHAT_MODEL_ROLES } from 'ee/ai/constants';
+import waitForPromises from 'helpers/wait_for_promises';
+import { getMarkdown } from '~/rest_api';
+import { MOCK_USER_MESSAGE, MOCK_TANUKI_MESSAGE } from '../tanuki_bot/mock_data';
+
+jest.mock('~/rest_api');
 
 describe('AiGenieChat', () => {
   let wrapper;
 
-  const promptStr = 'foo';
-  const messages = [
-    {
-      role: GENIE_CHAT_MODEL_ROLES.user,
-      content: promptStr,
-    },
-  ];
+  const messages = [MOCK_USER_MESSAGE];
 
-  const findChatMessages = () => wrapper.findAll('.ai-genie-chat-message');
+  const findChatMessages = () => wrapper.findAllComponents(AiGenieChatMessage);
   const findDelimiter = () => wrapper.findByTestId('conversation-delimiter');
-  const createComponent = ({ propsData = {}, data = {}, scopedSlots = {}, slots = {} } = {}) => {
+  const createComponent = async ({
+    propsData = {},
+    data = {},
+    scopedSlots = {},
+    slots = {},
+  } = {}) => {
     wrapper = shallowMountExtended(AiGenieChatConversation, {
       propsData,
       data() {
@@ -25,37 +29,43 @@ describe('AiGenieChat', () => {
       },
       scopedSlots,
       slots,
+      stubs: {
+        AiGenieChatMessage,
+      },
     });
+    await waitForPromises();
   };
 
+  beforeEach(() => {
+    getMarkdown.mockImplementation(({ text }) => Promise.resolve({ data: { html: text } }));
+  });
+
   describe('rendering', () => {
-    it('renders messages when messages are passed', () => {
-      createComponent({ propsData: { messages } });
-      expect(findChatMessages().at(0).text()).toBe(messages[0].content);
+    const errorStr = 'Error bar';
+
+    it('renders messages when messages are passed', async () => {
+      await createComponent({ propsData: { messages } });
+      expect(findChatMessages().at(0).text()).toBe(MOCK_USER_MESSAGE.content);
     });
 
-    it('renders delimiter when showDelimiter = true', () => {
-      createComponent({ propsData: { messages, showDelimiter: true } });
+    it('renders delimiter when showDelimiter = true', async () => {
+      await createComponent({ propsData: { messages, showDelimiter: true } });
       expect(findDelimiter().exists()).toBe(true);
     });
 
-    it('does not render delimiter when showDelimiter = false', () => {
-      createComponent({ propsData: { messages, showDelimiter: false } });
+    it('does not render delimiter when showDelimiter = false', async () => {
+      await createComponent({ propsData: { messages, showDelimiter: false } });
       expect(findDelimiter().exists()).toBe(false);
     });
 
-    it('converts content of the message from Markdown into HTML', () => {
-      createComponent({
-        propsData: {
-          messages: [
-            {
-              role: GENIE_CHAT_MODEL_ROLES.user,
-              content: '**foo**',
-            },
-          ],
-        },
-      });
-      expect(findChatMessages().at(0).element.innerHTML).toContain('<strong>foo</strong>');
+    it.each`
+      desc                                                   | msgs                                                           | expected
+      ${'content when errors is not available'}              | ${[MOCK_USER_MESSAGE]}                                         | ${MOCK_USER_MESSAGE.content}
+      ${'error when contnet is not available'}               | ${[{ ...MOCK_USER_MESSAGE, content: '', errors: [errorStr] }]} | ${errorStr}
+      ${'content when both content and error are available'} | ${[{ ...MOCK_USER_MESSAGE, errors: [errorStr] }]}              | ${MOCK_USER_MESSAGE.content}
+    `('requests markdown for $desc', async ({ msgs, expected }) => {
+      await createComponent({ propsData: { messages: msgs } });
+      expect(findChatMessages().at(0).text()).toBe(expected);
     });
   });
 
@@ -71,10 +81,7 @@ describe('AiGenieChat', () => {
           createComponent({
             propsData: {
               messages: [
-                {
-                  role: GENIE_CHAT_MODEL_ROLES.user,
-                  content: 'User foo',
-                },
+                MOCK_USER_MESSAGE,
                 {
                   role,
                   content: 'Assistent bar',
@@ -91,21 +98,16 @@ describe('AiGenieChat', () => {
       it('sends correct `message` in the `slotProps` for the components users to consume', () => {
         createComponent({
           propsData: {
-            messages: [
-              {
-                role: GENIE_CHAT_MODEL_ROLES.assistant,
-                content: slotContent,
-              },
-            ],
+            messages: [MOCK_TANUKI_MESSAGE],
           },
           scopedSlots: {
             feedback: `<template #feedback="slotProps">
-              Hello {{ slotProps.message.content }}
+              Hello {{ slotProps.message.content }} Bye
               </template>
             `,
           },
         });
-        expect(wrapper.text()).toContain(`Hello ${slotContent}`);
+        expect(wrapper.text()).toContain(`Hello ${MOCK_TANUKI_MESSAGE.content} Bye`);
       });
     });
   });

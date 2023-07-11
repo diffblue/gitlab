@@ -227,7 +227,6 @@ export default {
             v-for="(conversation, index) in conversations"
             :key="`conversation-${index}`"
             :messages="conversation"
-            :is-loading="isLoading"
             :show-delimiter="index > 0"
             class="gl-display-flex gl-flex-direction-column gl-justify-content-end"
           >

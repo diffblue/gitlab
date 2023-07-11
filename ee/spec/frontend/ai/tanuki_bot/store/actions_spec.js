@@ -62,6 +62,23 @@ describe('TanukiBot Store Actions', () => {
       );
     });
 
+    it('does correctly parse messages content if it is a JSON object', () => {
+      const contentObject = {
+        content: MOCK_TANUKI_MESSAGE.content,
+        source: 'foo-bar',
+      };
+      const stringifiedContent = JSON.stringify(contentObject);
+      return testAction({
+        action: actions.receiveTanukiBotMessage,
+        payload: GENERATE_MOCK_TANUKI_RES(stringifiedContent).data,
+        state,
+        expectedMutations: [
+          { type: types.SET_LOADING, payload: false },
+          { type: types.ADD_TANUKI_MESSAGE, payload: contentObject },
+        ],
+      });
+    });
+
     describe('with error', () => {
       it(`should dispatch the correct actions`, () => {
         return testAction({
@@ -75,7 +92,7 @@ describe('TanukiBot Store Actions', () => {
   });
 
   describe('receiveMutationResponse', () => {
-    it('on success it should dispatch the correct mutations', () => {
+    it('on success it should commit the correct mutation', () => {
       return testAction({
         action: actions.receiveMutationResponse,
         payload: { data: { aiAction: { errors: [] } }, message: GENIE_CHAT_RESET_MESSAGE },
@@ -84,7 +101,7 @@ describe('TanukiBot Store Actions', () => {
       });
     });
 
-    it('on error it should dispatch the correct mutations', () => {
+    it('on error it should dispatch the error action', () => {
       return testAction({
         action: actions.receiveMutationResponse,
         payload: {
@@ -92,10 +109,7 @@ describe('TanukiBot Store Actions', () => {
           message: GENIE_CHAT_RESET_MESSAGE,
         },
         state,
-        expectedMutations: [
-          { type: types.SET_LOADING, payload: false },
-          { type: types.ADD_ERROR_MESSAGE },
-        ],
+        expectedActions: [{ type: 'tanukiBotMessageError' }],
       });
     });
   });
@@ -114,16 +128,19 @@ describe('TanukiBot Store Actions', () => {
   });
 
   describe('setMessages', () => {
-    it('should dispatch the correct mutations', () => {
+    it('should dispatch the correct actions', () => {
       return testAction({
         action: actions.setMessages,
         payload: [MOCK_USER_MESSAGE, MOCK_TANUKI_MESSAGE],
         state,
-        expectedMutations: [
-          { type: types.SET_LOADING, payload: false },
-          { type: types.ADD_USER_MESSAGE, payload: MOCK_USER_MESSAGE.content },
-          { type: types.ADD_TANUKI_MESSAGE, payload: MOCK_TANUKI_MESSAGE },
+        expectedActions: [
+          { type: 'sendUserMessage', payload: MOCK_USER_MESSAGE.content },
+          {
+            type: 'receiveTanukiBotMessage',
+            payload: { aiCompletionResponse: { responseBody: MOCK_TANUKI_MESSAGE.content } },
+          },
         ],
+        expectedMutations: [{ type: types.SET_LOADING, payload: false }],
       });
     });
     it('does not set loading to false if the last messages is from a user', () => {
@@ -131,36 +148,16 @@ describe('TanukiBot Store Actions', () => {
         action: actions.setMessages,
         payload: [MOCK_TANUKI_MESSAGE, MOCK_USER_MESSAGE],
         state,
-        expectedMutations: [
-          { type: types.ADD_TANUKI_MESSAGE, payload: MOCK_TANUKI_MESSAGE },
-          { type: types.ADD_USER_MESSAGE, payload: MOCK_USER_MESSAGE.content },
-        ],
-      });
-    });
-    it('does correctly parse messages content if it is a JSON object', () => {
-      const contentObject = {
-        content: MOCK_TANUKI_MESSAGE.content,
-        source: 'foo-bar',
-      };
-      const stringifiedContent = JSON.stringify(contentObject);
-      return testAction({
-        action: actions.setMessages,
-        payload: [
-          MOCK_USER_MESSAGE,
+        expectedActions: [
           {
-            ...MOCK_TANUKI_MESSAGE,
-            content: stringifiedContent,
+            type: 'receiveTanukiBotMessage',
+            payload: { aiCompletionResponse: { responseBody: MOCK_TANUKI_MESSAGE.content } },
           },
-        ],
-        state,
-        expectedMutations: [
-          { type: types.SET_LOADING, payload: false },
-          { type: types.ADD_USER_MESSAGE, payload: MOCK_USER_MESSAGE.content },
-          { type: types.ADD_TANUKI_MESSAGE, payload: contentObject },
+          { type: 'sendUserMessage', payload: MOCK_USER_MESSAGE.content },
         ],
       });
     });
-    it('if messge has an error, it correctly commits the ADD_ERROR_MESSAGE nmutation', () => {
+    it('if messge has an error, it correctly dispatches the tanukiBotMessageError action', () => {
       return testAction({
         action: actions.setMessages,
         payload: [
@@ -174,11 +171,7 @@ describe('TanukiBot Store Actions', () => {
           },
         ],
         state,
-        expectedMutations: [
-          { type: types.SET_LOADING, payload: false },
-          { type: types.ADD_ERROR_MESSAGE },
-          { type: types.ADD_ERROR_MESSAGE },
-        ],
+        expectedActions: [{ type: 'tanukiBotMessageError' }, { type: 'tanukiBotMessageError' }],
       });
     });
   });

@@ -28,10 +28,15 @@
 .ai-genie-chat-message {
   max-width: 90%;
 
-  pre,
   code {
-    @include gl-font-sm;
     @include gl-bg-gray-100;
+  }
+
+  pre code {
+    @include gl-font-sm;
+    @include gl-line-height-1;
+    @include gl-bg-transparent;
+    white-space: inherit;
   }
 
   p:last-of-type {
