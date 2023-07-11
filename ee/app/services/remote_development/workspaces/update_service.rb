@@ -3,23 +3,15 @@
 module RemoteDevelopment
   module Workspaces
     class UpdateService
+      include ServiceResponseFactory
       attr_reader :current_user
 
       # NOTE: This constructor intentionally does not follow all of the conventions from
       #       https://docs.gitlab.com/ee/development/reusing_abstractions.html#service-classes
-      #       suggesting that the dependencies be passed via the constructor. This is because
-      #       the RemoteDevelopment feature architecture follows a more pure-functional style,
-      #       by avoiding instance variables and instance state and preferring to pass data
-      #       directly in method calls rather than via constructor. We also don't use any of the
-      #       provided superclasses like BaseContainerService or its descendants, because all of the
-      #       domain logic is isolated and decoupled to the architectural tier below this,
-      #       i.e. in the `*Processor` classes, and therefore these superclasses provide nothing
-      #       of use. However, we do still conform to the convention of passing the current_user
-      #       in the constructor, since this convention is related to security, and worth following
-      #       the existing patterns and principle of least surprise.
+      #       suggesting that the dependencies be passed via the constructor.
       #
-      #       See https://gitlab.com/gitlab-org/remote-development/gitlab-remote-development-docs/-/blob/main/doc/remote-development-feature-architectural-standards.md
-      #       for more discussion on this topic.
+      #       See "Stateless Service layer classes" in ee/lib/remote_development/README.md for more details.
+
       # @param [User] current_user
       # @return [void]
       def initialize(current_user:)
@@ -30,22 +22,12 @@ module RemoteDevelopment
       # @param [Hash] params
       # @return [ServiceResponse]
       def execute(workspace:, params:)
-        return ServiceResponse.error(message: 'Unauthorized', reason: :unauthorized) unless authorized?(workspace)
+        response_hash = Update::Main.main(workspace: workspace, current_user: current_user, params: params)
 
-        payload, error = RemoteDevelopment::Workspaces::Update::UpdateProcessor.new.process(
-          workspace: workspace,
-          params: params
-        )
+        # Type-check payload using rightward assignment
+        response_hash[:payload] => { workspace: Workspace } if response_hash[:payload]
 
-        return ServiceResponse.error(message: error.message, reason: error.reason) if error
-
-        ServiceResponse.success(payload: payload)
-      end
-
-      # @param [RemoteDevelopment::Workspace] workspace
-      # @return [TrueClass, FalseClass]
-      def authorized?(workspace)
-        current_user&.can?(:update_workspace, workspace)
+        create_service_response(response_hash)
       end
     end
   end

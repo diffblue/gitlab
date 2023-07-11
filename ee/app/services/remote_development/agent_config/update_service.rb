@@ -3,6 +3,12 @@
 module RemoteDevelopment
   module AgentConfig
     class UpdateService
+      # NOTE: This constructor intentionally does not follow all of the conventions from
+      #       https://docs.gitlab.com/ee/development/reusing_abstractions.html#service-classes
+      #       suggesting that the dependencies be passed via the constructor.
+      #
+      #       See "Stateless Service layer classes" in ee/lib/remote_development/README.md for more details.
+
       # @param [Clusters::Agent] agent
       # @param [Hash] config
       # @return [Hash, FalseClass]
