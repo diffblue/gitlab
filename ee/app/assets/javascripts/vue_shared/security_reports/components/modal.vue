@@ -268,7 +268,6 @@ export default {
       <modal-footer
         v-else
         ref="footer"
-        :modal="modal"
         :vulnerability="vulnerability"
         :disabled="modal.isShowingDeleteButtons"
         :can-create-issue="canCreateIssueForThisVulnerability"

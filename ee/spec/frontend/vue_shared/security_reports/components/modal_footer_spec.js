@@ -4,7 +4,6 @@ import { nextTick } from 'vue';
 import DismissButton from 'ee/vue_shared/security_reports/components/dismiss_button.vue';
 import component from 'ee/vue_shared/security_reports/components/modal_footer.vue';
 import SplitButton from 'ee/vue_shared/security_reports/components/split_button.vue';
-import createState from 'ee/vue_shared/security_reports/store/state';
 
 describe('Security Reports modal footer', () => {
   let wrapper;
@@ -26,7 +25,6 @@ describe('Security Reports modal footer', () => {
   describe('can only create issue', () => {
     beforeEach(() => {
       const propsData = {
-        modal: createState().modal,
         canCreateIssue: true,
       };
       mountComponent(propsData);
@@ -54,7 +52,6 @@ describe('Security Reports modal footer', () => {
 
     beforeEach(() => {
       const propsData = {
-        modal: createState().modal,
         canCreateIssue: true,
         vulnerability: {
           create_jira_issue_url: url,
@@ -84,7 +81,6 @@ describe('Security Reports modal footer', () => {
   describe('can only create merge request', () => {
     beforeEach(() => {
       const propsData = {
-        modal: createState().modal,
         canCreateMergeRequest: true,
       };
       mountComponent(propsData);
@@ -106,7 +102,6 @@ describe('Security Reports modal footer', () => {
   describe('can download download patch', () => {
     beforeEach(() => {
       const propsData = {
-        modal: createState().modal,
         canDownloadPatch: true,
       };
       mountComponent(propsData);
@@ -128,7 +123,6 @@ describe('Security Reports modal footer', () => {
   describe('can create merge request and issue', () => {
     beforeEach(() => {
       const propsData = {
-        modal: createState().modal,
         canCreateIssue: true,
         canCreateMergeRequest: true,
       };
@@ -147,7 +141,6 @@ describe('Security Reports modal footer', () => {
   describe('can create merge request, issue, and download patch', () => {
     beforeEach(() => {
       const propsData = {
-        modal: createState().modal,
         canCreateIssue: true,
         canCreateMergeRequest: true,
         canDownloadPatch: true,
@@ -167,7 +160,6 @@ describe('Security Reports modal footer', () => {
   describe('with dismissable vulnerability', () => {
     beforeEach(() => {
       const propsData = {
-        modal: createState().modal,
         canDismissVulnerability: true,
       };
       mountComponent(propsData);

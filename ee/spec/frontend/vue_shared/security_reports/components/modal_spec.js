@@ -8,7 +8,6 @@ import ModalFooter from 'ee/vue_shared/security_reports/components/modal_footer.
 import SolutionCard from 'ee/vue_shared/security_reports/components/solution_card_vuex.vue';
 import DismissalNote from 'ee/vue_shared/security_reports/components/dismissal_note.vue';
 import DismissalCommentBoxToggle from 'ee/vue_shared/security_reports/components/dismissal_comment_box_toggle.vue';
-import createState from 'ee/vue_shared/security_reports/store/state';
 
 const transition = {
   comment: 'abc',
@@ -19,9 +18,9 @@ const transition = {
 
 describe('Security Reports modal', () => {
   let wrapper;
-  let modal;
+  let vulnerability;
 
-  const mountComponent = (propsData, mountFn = shallowMount) => {
+  const mountComponent = (propsData = {}, mountFn = shallowMount) => {
     wrapper = mountFn(Modal, {
       attrs: {
         static: true,
@@ -31,63 +30,59 @@ describe('Security Reports modal', () => {
         isCreatingIssue: false,
         isDismissingVulnerability: false,
         isCreatingMergeRequest: false,
+        modal: { vulnerability },
         ...propsData,
       },
       stubs: { GlModal },
     });
-    modal = wrapper.findComponent(GlModal);
   };
 
+  const findModal = () => wrapper.findComponent(GlModal);
   const findModalFooter = () => wrapper.findComponent(ModalFooter);
   const findIssueNote = () => wrapper.findComponent(IssueNote);
   const findDismissalNote = () => wrapper.findComponent(DismissalNote);
   const findDismissalCommentBoxToggle = () => wrapper.findComponent(DismissalCommentBoxToggle);
+  const findSolutionCard = () => wrapper.findComponent(SolutionCard);
+
+  beforeEach(() => {
+    vulnerability = {};
+  });
 
   describe('modal', () => {
     const findAlert = () => wrapper.findComponent(GlAlert);
     const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
 
     it('renders a large modal', () => {
-      mountComponent({ modal: createState().modal }, mount);
-      expect(modal.props('size')).toBe('lg');
+      mountComponent({}, mount);
+      expect(findModal().props('size')).toBe('lg');
     });
 
     it.each([true, false])(
       'shows/hides loading icon when isLoadingAdditionalInfo prop is %s',
       (isLoadingAdditionalInfo) => {
-        mountComponent({ modal: createState().modal, isLoadingAdditionalInfo }, shallowMount);
+        mountComponent({ isLoadingAdditionalInfo }, shallowMount);
         expect(findLoadingIcon().exists()).toBe(isLoadingAdditionalInfo);
       },
     );
 
     it('does not render the error message the modal has no error', () => {
-      mountComponent({ modal: createState().modal });
+      mountComponent();
       expect(findAlert().exists()).toBe(false);
     });
 
     it('renders an error message when the modal has an error', () => {
-      const { modal: modalData } = createState();
-      modalData.error = 'Something went wront';
-      mountComponent({ modal: modalData });
+      const modal = { vulnerability, error: 'Something went wrong' };
+      mountComponent({ modal });
       expect(findAlert().props('variant')).toBe('danger');
-      expect(findAlert().text()).toBe(modalData.error);
+      expect(findAlert().text()).toBe(modal.error);
     });
   });
 
   describe('with permissions', () => {
     describe('with dismissed issue', () => {
-      let propsData;
-
-      beforeEach(() => {
-        propsData = {
-          modal: createState().modal,
-          canDismissVulnerability: true,
-        };
-      });
-
       it('renders dismissal note', () => {
-        propsData.modal.vulnerability.state_transitions = [transition];
-        mountComponent(propsData);
+        vulnerability.state_transitions = [transition];
+        mountComponent();
 
         expect(findDismissalNote().props('feedback')).toMatchObject({
           comment_details: { comment: transition.comment },
@@ -98,18 +93,9 @@ describe('Security Reports modal', () => {
     });
 
     describe('with about to be dismissed finding', () => {
-      let propsData;
-
-      beforeEach(() => {
-        propsData = {
-          modal: createState().modal,
-          canDismissVulnerability: true,
-        };
-      });
-
       it('renders dismissal note', () => {
-        propsData.modal.vulnerability.state_transitions = [transition];
-        mountComponent(propsData);
+        vulnerability.state_transitions = [transition];
+        mountComponent();
 
         expect(findDismissalNote().props('feedback')).toMatchObject({
           comment_details: { comment: transition.comment },
@@ -120,67 +106,45 @@ describe('Security Reports modal', () => {
     });
 
     describe('with not dismissed issue', () => {
-      beforeEach(() => {
-        const propsData = {
-          modal: createState().modal,
-          canDismissVulnerability: true,
-        };
-        mountComponent(propsData, mount);
-      });
+      it('allows the vulnerability to be dismissed', async () => {
+        mountComponent({ canDismissVulnerability: true }, mount);
+        await nextTick();
 
-      it('allows the vulnerability to be dismissed', () => {
-        expect(wrapper.findComponent({ ref: 'footer' }).props('canDismissVulnerability')).toBe(
-          true,
-        );
+        expect(findModalFooter().props('canDismissVulnerability')).toBe(true);
       });
     });
 
     describe('with auto remediation available', () => {
-      let modalData;
-
-      beforeEach(() => {
-        modalData = createState().modal;
-        modalData.vulnerability.remediations = [{}];
-      });
-
       it('can create merge request when there is no existing merge request', () => {
-        mountComponent({ modal: modalData });
+        vulnerability.remediations = [{}];
+        mountComponent();
 
         expect(findModalFooter().props('canCreateMergeRequest')).toBe(true);
       });
 
       it(`can't create merge request when there is an existing merge request`, () => {
-        modalData.vulnerability.merge_request_links = [{}];
-        mountComponent({ modal: modalData });
+        vulnerability.merge_request_links = [{}];
+        mountComponent();
 
         expect(findModalFooter().props('canCreateMergeRequest')).toBe(false);
       });
     });
 
     describe('data', () => {
-      beforeEach(() => {
+      it('renders title', async () => {
         const propsData = {
-          modal: createState().modal,
+          modal: { vulnerability, title: 'Arbitrary file existence disclosure in Action Pack' },
         };
-        propsData.modal.title = 'Arbitrary file existence disclosure in Action Pack';
         mountComponent(propsData, mount);
-      });
+        await nextTick();
 
-      it('renders title', () => {
-        expect(modal.text()).toContain('Arbitrary file existence disclosure in Action Pack');
+        expect(findModal().text()).toContain(propsData.modal.title);
       });
     });
 
     describe('with a resolved issue', () => {
       beforeEach(() => {
-        const propsData = {
-          modal: createState().modal,
-          canCreateIssue: true,
-          canDismissVulnerability: true,
-        };
-        propsData.modal.vulnerability.remediations = [{ diff: '123' }];
-        propsData.modal.isResolved = true;
-        mountComponent(propsData, mount);
+        mountComponent({ modal: { vulnerability, isResolved: true } }, mount);
       });
 
       it('disallows any actions in the footer', () => {
@@ -195,15 +159,11 @@ describe('Security Reports modal', () => {
   });
 
   describe('without permissions', () => {
-    beforeEach(() => {
-      const propsData = {
-        modal: createState().modal,
-      };
-      mountComponent(propsData, mount);
-    });
+    it('disallows any actions in the footer', async () => {
+      mountComponent({}, mount);
+      await nextTick();
 
-    it('disallows any actions in the footer', () => {
-      expect(wrapper.findComponent({ ref: 'footer' }).props()).toMatchObject({
+      expect(findModalFooter().props()).toMatchObject({
         canCreateIssue: false,
         canCreateMergeRequest: false,
         canDownloadPatch: false,
@@ -213,22 +173,20 @@ describe('Security Reports modal', () => {
   });
 
   describe('issue note', () => {
-    const modalData = createState().modal;
-    modalData.vulnerability.project = {};
-
     it('shows issue note with expected props', () => {
-      modalData.vulnerability.issue_links = [
+      vulnerability.project = {};
+      vulnerability.issue_links = [
         {
           link_type: 'created',
           issue_iid: 1,
           issue_url: 'url',
         },
       ];
-      mountComponent({ modal: modalData });
+      mountComponent();
 
       expect(findIssueNote().props()).toMatchObject({
-        feedback: modalData.vulnerability.issue_links[0],
-        project: modalData.vulnerability.project,
+        feedback: vulnerability.issue_links[0],
+        project: vulnerability.project,
       });
     });
 
@@ -238,8 +196,8 @@ describe('Security Reports modal', () => {
       ${[{ link_type: 'created' }]}                                 | ${false}
       ${[{ link_type: 'created', issue_iid: 1, issue_url: 'url' }]} | ${true}
     `('shows issue note? $isShown when issue is $issue', ({ issue, isShown }) => {
-      modalData.vulnerability.issue_links = issue;
-      mountComponent({ modal: modalData });
+      vulnerability.issue_links = issue;
+      mountComponent();
 
       expect(findIssueNote().exists()).toBe(isShown);
     });
@@ -256,7 +214,7 @@ describe('Security Reports modal', () => {
     `(
       'shows the merge request note? $isShown when mergeRequestLinks is $mergeRequestLinks',
       ({ mergeRequestLinks, isShown }) => {
-        const modalData = createState().modal;
+        const modalData = { vulnerability: {} };
         modalData.vulnerability.merge_request_links = mergeRequestLinks;
         mountComponent({ modal: modalData });
 
@@ -267,9 +225,7 @@ describe('Security Reports modal', () => {
 
   describe('with a resolved issue', () => {
     beforeEach(() => {
-      const propsData = {
-        modal: createState().modal,
-      };
+      const propsData = { modal: { vulnerability: {} } };
       propsData.modal.isResolved = true;
       mountComponent(propsData, mount);
     });
@@ -290,9 +246,7 @@ describe('Security Reports modal', () => {
     const fileValue = '/some/file.path';
 
     beforeEach(() => {
-      const propsData = {
-        modal: createState().modal,
-      };
+      const propsData = { modal: { vulnerability: {} } };
       propsData.modal.vulnerability.blob_path = blobPath;
       propsData.modal.vulnerability.location = {
         file: fileValue,
@@ -312,33 +266,28 @@ describe('Security Reports modal', () => {
 
   describe('Solution Card', () => {
     it('is rendered if the vulnerability has a solution', async () => {
-      const propsData = {
-        modal: createState().modal,
-      };
-
+      const propsData = { modal: { vulnerability: {} } };
       const solution = 'Upgrade to XYZ';
       propsData.modal.vulnerability.solution = solution;
       mountComponent(propsData, mount);
       await nextTick();
 
-      const solutionCard = modal.findComponent(SolutionCard);
+      const solutionCard = findSolutionCard();
 
       expect(solutionCard.exists()).toBe(true);
       expect(solutionCard.text()).toContain(solution);
-      expect(modal.find('hr').exists()).toBe(false);
+      expect(wrapper.find('hr').exists()).toBe(false);
     });
 
     it('is rendered if the vulnerability has a remediation', async () => {
-      const propsData = {
-        modal: createState().modal,
-      };
+      const propsData = { modal: { vulnerability: {} } };
       const summary = 'Upgrade to 123';
       const diff = 'foo';
       propsData.modal.vulnerability.remediations = [{ summary, diff }];
       mountComponent(propsData, mount);
       await nextTick();
 
-      const solutionCard = wrapper.findComponent(SolutionCard);
+      const solutionCard = findSolutionCard();
 
       expect(solutionCard.exists()).toBe(true);
       expect(solutionCard.text()).toContain(summary);
@@ -347,9 +296,7 @@ describe('Security Reports modal', () => {
     });
 
     it('is rendered if the vulnerability has neither a remediation nor a solution', async () => {
-      const propsData = {
-        modal: createState().modal,
-      };
+      const propsData = {};
       mountComponent(propsData, mount);
       await nextTick();
 
@@ -373,7 +320,7 @@ describe('Security Reports modal', () => {
     beforeEach(() => {
       propsData = {
         modal: {
-          ...createState().modal,
+          vulnerability: {},
           isCommentingOnDismissal: true,
         },
       };
