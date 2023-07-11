@@ -586,6 +586,27 @@ module SaasRegistrationHelpers
       expect(page).to have_content('_company_lead_fail_')
     end
   end
+
+  def expect_to_send_iterable_request
+    allow_next_instance_of(Onboarding::CreateIterableTriggerService) do |instance|
+      allow(instance).to receive(:execute).and_return(ServiceResponse.success)
+    end
+
+    expect(Onboarding::CreateIterableTriggerWorker).to receive(:perform_async).with(
+      hash_including(
+        provider: 'gitlab',
+        work_email: user.email,
+        uid: user.id,
+        comment: 'My reason',
+        role: 'software_developer',
+        jtbd: 'other'
+      )
+    ).and_call_original
+  end
+
+  def expect_not_to_send_iterable_request
+    expect(Onboarding::CreateIterableTriggerWorker).not_to receive(:perform_async)
+  end
 end
 
 SaasRegistrationHelpers.prepend_mod

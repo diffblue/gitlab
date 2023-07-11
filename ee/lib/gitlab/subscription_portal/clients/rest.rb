@@ -18,6 +18,10 @@ module Gitlab
             http_post("trials/create_hand_raise_lead", admin_headers, params)
           end
 
+          def generate_iterable(params)
+            http_post("trials/create_iterable", admin_headers, params)
+          end
+
           def create_customer(params)
             http_post("api/customers", admin_headers, params)
           end

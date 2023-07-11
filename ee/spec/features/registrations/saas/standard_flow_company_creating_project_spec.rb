@@ -16,6 +16,7 @@ RSpec.describe 'Standard flow for user picking company and creating a project', 
         sign_up_method.call(glm_params)
 
         ensure_onboarding { expect_to_see_welcome_form }
+        expect_not_to_send_iterable_request
 
         fills_in_welcome_form
         click_on 'Continue'
