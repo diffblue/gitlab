@@ -5,6 +5,7 @@ import { __, s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
+  BRANCHES_KEY,
   EDITOR_MODE_YAML,
   EDITOR_MODE_RULE,
   SECURITY_POLICY_ACTIONS,
@@ -33,6 +34,7 @@ import {
   invalidVulnerabilitiesAllowed,
   invalidVulnerabilityStates,
   humanizeInvalidBranchesError,
+  invalidBranchType,
 } from './lib';
 
 export default {
@@ -127,6 +129,12 @@ export default {
     isActiveRuleMode() {
       return this.mode === EDITOR_MODE_RULE && !this.hasParsingError;
     },
+    allBranches() {
+      return this.policy.rules.flatMap((rule) => rule.branches);
+    },
+    rulesHaveBranches() {
+      return this.policy.rules.some(this.ruleHasBranchesProperty);
+    },
   },
   watch: {
     invalidBranches(branches) {
@@ -138,6 +146,9 @@ export default {
     },
   },
   methods: {
+    ruleHasBranchesProperty(rule) {
+      return BRANCHES_KEY in rule;
+    },
     updateAction(actionIndex, values) {
       this.policy.actions.splice(actionIndex, 1, values);
       this.$set(this.errors, 'action', []);
@@ -243,9 +254,13 @@ export default {
       if (this.isActiveRuleMode) {
         this.hasParsingError = this.invalidForRuleMode();
 
-        if (!this.hasEmptyRules && this.namespaceType === NAMESPACE_TYPES.PROJECT) {
+        if (
+          !this.hasEmptyRules &&
+          this.namespaceType === NAMESPACE_TYPES.PROJECT &&
+          this.rulesHaveBranches
+        ) {
           this.invalidBranches = await getInvalidBranches({
-            branches: this.allBranches(),
+            branches: this.allBranches,
             projectId: this.namespaceId,
           });
         }
@@ -261,11 +276,9 @@ export default {
         invalidApprovers ||
         invalidScanners(this.policy.rules) ||
         invalidVulnerabilitiesAllowed(this.policy.rules) ||
-        invalidVulnerabilityStates(this.policy.rules)
+        invalidVulnerabilityStates(this.policy.rules) ||
+        invalidBranchType(this.policy.rules)
       );
-    },
-    allBranches() {
-      return this.policy.rules.flatMap((rule) => rule.branches);
     },
   },
 };

@@ -7,6 +7,7 @@ import {
   CONTAINER_SCANNING_NAME,
   SAST_IAC_SHORT_NAME,
 } from '~/security_configuration/components/constants';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 
 export const EDITOR_MODE_RULE = 'rule';
 export const EDITOR_MODE_YAML = 'yaml';
@@ -82,22 +83,27 @@ export const PRIMARY_POLICY_KEYS = ['type', 'name', 'description', 'enabled', 'r
 
 export const SPECIFIC_BRANCHES = {
   id: 'SPECIFIC_BRANCHES',
-  text: __('Specific protected branches'),
+  text: __('specific protected branches'),
   value: 'SPECIFIC_BRANCHES',
 };
 
 export const ALL_BRANCHES = {
-  text: __('All branches'),
+  text: __('all branches'),
   value: 'all',
 };
 
-export const DEFAULT_BRANCHES = {
-  text: __('All default branches'),
+export const GROUP_DEFAULT_BRANCHES = {
+  text: __('all default branches'),
+  value: 'default',
+};
+
+export const PROJECT_DEFAULT_BRANCH = {
+  text: __('default branch'),
   value: 'default',
 };
 
 export const ALL_PROTECTED_BRANCHES = {
-  text: __('All protected branches'),
+  text: __('all protected branches'),
   value: 'protected',
 };
 
@@ -110,15 +116,15 @@ export const NUMBER_RANGE_I18N_MAP = {
   [MORE_THAN_OPERATOR]: s__('ApprovalRule|More than'),
 };
 
-export const SCAN_RESULT_BRANCH_TYPE_OPTIONS = [
-  DEFAULT_BRANCHES,
+export const SCAN_RESULT_BRANCH_TYPE_OPTIONS = (nameSpaceType = NAMESPACE_TYPES.GROUP) => [
+  nameSpaceType === NAMESPACE_TYPES.GROUP ? GROUP_DEFAULT_BRANCHES : PROJECT_DEFAULT_BRANCH,
   ALL_PROTECTED_BRANCHES,
   SPECIFIC_BRANCHES,
 ];
 
-export const SCAN_EXECUTION_BRANCH_TYPE_OPTIONS = [
+export const SCAN_EXECUTION_BRANCH_TYPE_OPTIONS = (nameSpaceType = NAMESPACE_TYPES.GROUP) => [
   ALL_BRANCHES,
-  DEFAULT_BRANCHES,
+  nameSpaceType === NAMESPACE_TYPES.GROUP ? GROUP_DEFAULT_BRANCHES : PROJECT_DEFAULT_BRANCH,
   ALL_PROTECTED_BRANCHES,
   SPECIFIC_BRANCHES,
 ];

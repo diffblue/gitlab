@@ -12,6 +12,7 @@ import {
   licenseScanBuildRule,
   SCAN_FINDING,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/rules';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 
 describe('LicenseScanRuleBuilder', () => {
   let wrapper;
@@ -30,6 +31,9 @@ describe('LicenseScanRuleBuilder', () => {
     wrapper = shallowMountExtended(LicenseScanRuleBuilder, {
       propsData: {
         initRule: licenseScanBuildRule(),
+      },
+      provide: {
+        namespaceType: NAMESPACE_TYPES.GROUP,
       },
       stubs: {
         BaseLayoutComponent,

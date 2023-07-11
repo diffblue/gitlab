@@ -3,7 +3,7 @@ import { GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { REPORT_TYPES_DEFAULT, SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import PolicyRuleMultiSelect from '../../policy_rule_multi_select.vue';
-import { ANY_OPERATOR, MORE_THAN_OPERATOR } from '../constants';
+import { ANY_OPERATOR, MORE_THAN_OPERATOR, SCAN_RESULT_BRANCH_TYPE_OPTIONS } from '../constants';
 import { enforceIntValue } from '../utils';
 import ScanFilterSelector from '../scan_filter_selector.vue';
 import { getDefaultRule, groupSelectedVulnerabilityStates } from './lib';
@@ -41,6 +41,7 @@ export default {
     StatusFilters,
     NumberRangeSelect,
   },
+  inject: ['namespaceType'],
   props: {
     initRule: {
       type: Object,
@@ -69,6 +70,9 @@ export default {
     },
     vulnerabilityStates() {
       return this.initRule.vulnerability_states;
+    },
+    branchTypes() {
+      return SCAN_RESULT_BRANCH_TYPE_OPTIONS(this.namespaceType);
     },
     scannersToAdd: {
       get() {
@@ -106,6 +110,9 @@ export default {
   methods: {
     triggerChanged(value) {
       this.$emit('changed', { ...this.initRule, ...value });
+    },
+    setBranchType(value) {
+      this.$emit('changed', value);
     },
     isFilterSelected(filter) {
       return Boolean(this.filters[filter]);
@@ -203,7 +210,9 @@ export default {
               <template #branches>
                 <policy-rule-branch-selection
                   :init-rule="initRule"
+                  :branch-types="branchTypes"
                   @changed="triggerChanged($event)"
+                  @set-branch-type="setBranchType"
                 />
               </template>
 
