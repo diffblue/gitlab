@@ -1,0 +1,11 @@
+mutation vulnerabilitiesDismiss(
+  $ids: [VulnerabilityID!]!
+  $comment: String
+  $dismissalReason: VulnerabilityDismissalReason
+) {
+  vulnerabilitiesDismiss(
+    input: { vulnerabilityIds: $ids, comment: $comment, dismissalReason: $dismissalReason }
+  ) {
+    errors
+  }
+}
