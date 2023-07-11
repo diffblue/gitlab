@@ -59,21 +59,14 @@ module EE
       end
 
       def iterable_params
-        iterable = {
+        {
           provider: 'gitlab',
           work_email: current_user.email,
           uid: current_user.id,
           comment: params[:jobs_to_be_done_other],
+          jtbd: update_params[:registration_objective],
           product_interaction: iterable_product_interaction
-        }
-
-        if params[:user]
-          iterable[:setup_for_company] = params[:user][:setup_for_company]
-          iterable[:role] = params[:user][:role]
-          iterable[:jtbd] = params[:user][:registration_objective]
-        end
-
-        iterable
+        }.merge(update_params.slice(:setup_for_company, :role).to_h.symbolize_keys)
       end
 
       def iterable_product_interaction
@@ -100,7 +93,7 @@ module EE
 
         return unless free_personal_registration_or_invite?
 
-        Onboarding::CreateIterableTriggerWorker.perform_async(iterable_params.to_h)
+        Onboarding::CreateIterableTriggerWorker.perform_async(iterable_params)
       end
 
       override :signup_onboarding_path
