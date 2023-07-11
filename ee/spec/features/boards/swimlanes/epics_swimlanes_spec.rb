@@ -110,13 +110,10 @@ RSpec.describe 'epics swimlanes', :js, feature_category: :team_planning do
   end
 
   context 'add issue to swimlanes list' do
-    let(:dropdown) { first("[data-testid='header-list-actions']") }
-
     before do
       wait_for_all_requests
 
       load_unassigned_issues
-      dropdown.click
     end
 
     it 'displays new issue button' do

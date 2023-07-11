@@ -83,8 +83,6 @@ RSpec.describe 'Issue Boards new issue', :js, feature_category: :team_planning d
 
   def create_issue_in_board_list(list_index)
     page.within(all('.board')[list_index]) do
-      dropdown = first("[data-testid='header-list-actions']")
-      dropdown.click
       click_button 'Create new issue'
     end
 

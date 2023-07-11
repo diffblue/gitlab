@@ -1,4 +1,4 @@
-import { GlDisclosureDropdown, GlDisclosureDropdownItem } from '@gitlab/ui';
+import { GlButtonGroup } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
@@ -117,18 +117,17 @@ describe('Board List Header Component', () => {
         ...injectedProps,
       },
       stubs: {
-        GlDisclosureDropdown,
-        GlDisclosureDropdownItem,
+        GlButtonGroup,
       },
     });
   };
 
   const newEpicText = 'Create new epic';
   const listSettingsText = 'Edit list settings';
-  const newEpicBtnTestId = 'newEpicBtn';
-  const listSettingsTestId = 'settingsBtn';
+  const newEpicBtnTestId = 'new-epic-btn';
+  const listSettingsTestId = 'settings-btn';
 
-  const findDropdown = () => wrapper.findComponent(GlDisclosureDropdown);
+  const findButtonGroup = () => wrapper.findComponent(GlButtonGroup);
   const findNewEpicButton = () => wrapper.findByTestId(newEpicBtnTestId);
   const findSettingsButton = () => wrapper.findByTestId(listSettingsTestId);
   const findCaret = () => wrapper.findByTestId('board-title-caret');
@@ -144,7 +143,7 @@ describe('Board List Header Component', () => {
     });
 
     it('renders Create new epic button', () => {
-      expect(findDropdown().exists()).toBe(true);
+      expect(findButtonGroup().exists()).toBe(true);
 
       expect(findNewEpicButton().exists()).toBe(true);
 
@@ -155,14 +154,14 @@ describe('Board List Header Component', () => {
       });
     });
 
-    it('does not render dropdown and New epic button when canCreateEpic is false', () => {
+    it('does not render button group and New epic button when canCreateEpic is false', () => {
       createComponent({
         canCreateEpic: false,
         isEpicBoard: true,
         issuableType: 'epic',
       });
 
-      expect(findDropdown().exists()).toBe(false);
+      expect(findButtonGroup().exists()).toBe(false);
     });
 
     it('emits `toggle-epic-form` event on Sidebar eventHub when clicked', () => {
@@ -196,11 +195,11 @@ describe('Board List Header Component', () => {
       expect(findSettingsButton().exists()).toBe(false);
     });
 
-    it('does not render dropdown for List Type `closed`', () => {
+    it('does not render button group for List Type `closed`', () => {
       const listType = ListType.closed;
       createComponent({ listType });
 
-      expect(findDropdown().exists()).toBe(false);
+      expect(findButtonGroup().exists()).toBe(false);
     });
 
     describe('emits sidebar.closeAll event on openSidebarSettings', () => {

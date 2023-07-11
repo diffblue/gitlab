@@ -215,8 +215,6 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
         expect(page).to have_content(label.name)
 
         page.within(find('.board:nth-child(2)')) do
-          dropdown = first("[data-testid='header-list-actions']")
-          dropdown.click
           click_button 'Edit list settings'
         end
 
@@ -294,8 +292,6 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
 
     it 'does not show Remove list in list settings sidebar' do
       page.within(find('.board:nth-child(2)')) do
-        dropdown = first("[data-testid='header-list-actions']")
-        dropdown.click
         click_button 'Edit list settings'
       end
 
