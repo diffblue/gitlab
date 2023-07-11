@@ -6,19 +6,18 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import AiGenie from 'ee/ai/components/ai_genie.vue';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
 import AiGenieChatConversation from 'ee/ai/components/ai_genie_chat_conversation.vue';
+import AiGenieChatMessage from 'ee/ai/components/ai_genie_chat_message.vue';
 import CodeBlockHighlighted from '~/vue_shared/components/code_block_highlighted.vue';
 import UserFeedback from 'ee/ai/components/user_feedback.vue';
 import { generateExplainCodePrompt, generateChatPrompt } from 'ee/ai/utils';
 import { i18n, GENIE_CHAT_MODEL_ROLES, EXPLAIN_CODE_TRACKING_EVENT_NAME } from 'ee/ai/constants';
-import { renderMarkdown } from '~/notes/utils';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import explainCodeMutation from 'ee/ai/graphql/explain_code.mutation.graphql';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import LineHighlighter from '~/blob/line_highlighter';
+import { getMarkdown } from '~/rest_api';
 import { MOCK_USER_MESSAGE, MOCK_TANUKI_MESSAGE } from '../tanuki_bot/mock_data';
-
-const aiResponseFormatted = 'Formatted AI response';
 
 const lineHighlighter = new LineHighlighter();
 jest.mock('~/blob/line_highlighter', () =>
@@ -31,9 +30,7 @@ jest.mock('ee/ai/utils', () => ({
   generateExplainCodePrompt: jest.fn(),
   generateChatPrompt: jest.fn(),
 }));
-jest.mock('~/notes/utils', () => ({
-  renderMarkdown: jest.fn().mockReturnValue(aiResponseFormatted),
-}));
+jest.mock('~/rest_api');
 
 Vue.use(VueApollo);
 
@@ -79,6 +76,7 @@ describe('AiGenie', () => {
       stubs: {
         AiGenieChat,
         AiGenieChatConversation,
+        AiGenieChatMessage,
       },
       apolloProvider,
     });
@@ -145,6 +143,7 @@ describe('AiGenie', () => {
     setHTMLFixture(
       `<div id="${containerId}" style="height:1000px; width: 800px"><span class="line" id="${LINE_ID}"><p lang=${language} id="first-paragraph">Foo</p></span></div>`,
     );
+    getMarkdown.mockImplementation(({ text }) => Promise.resolve({ data: { html: text } }));
   });
 
   afterEach(() => {
@@ -298,7 +297,6 @@ describe('AiGenie', () => {
       await waitForPromises();
       await nextTick();
       expect(subscriptionHandlerMock).toHaveBeenCalledWith({ resourceId, userId });
-      expect(renderMarkdown).toHaveBeenCalledWith(aiResponse);
       const filteredMessages = messages.slice(2);
       expect(findGenieChat().props('messages')).toEqual(filteredMessages);
     });

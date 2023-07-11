@@ -5,6 +5,7 @@ import VueApollo from 'vue-apollo';
 import TanukiBotChatApp from 'ee/ai/tanuki_bot/components/app.vue';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
 import AiGenieChatConversation from 'ee/ai/components/ai_genie_chat_conversation.vue';
+import AiGenieChatMessage from 'ee/ai/components/ai_genie_chat_message.vue';
 import UserFeedback from 'ee/ai/components/user_feedback.vue';
 import { i18n } from 'ee/ai/constants';
 import { TANUKI_BOT_TRACKING_EVENT_NAME } from 'ee/ai/tanuki_bot/constants';
@@ -14,6 +15,7 @@ import tanukiBotMutation from 'ee/ai/graphql/tanuki_bot.mutation.graphql';
 import getAiMessages from 'ee/ai/graphql/get_ai_messages.query.graphql';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import { getMarkdown } from '~/rest_api';
 import { helpCenterState } from '~/super_sidebar/constants';
 import {
   MOCK_USER_MESSAGE,
@@ -27,6 +29,8 @@ import {
 
 Vue.use(Vuex);
 Vue.use(VueApollo);
+
+jest.mock('~/rest_api');
 
 describe('GitLab Duo Chat', () => {
   let wrapper;
@@ -70,6 +74,7 @@ describe('GitLab Duo Chat', () => {
         AiGenieChat,
         GlSprintf,
         AiGenieChatConversation,
+        AiGenieChatMessage,
       },
       provide: {
         glFeatures,
@@ -82,6 +87,10 @@ describe('GitLab Duo Chat', () => {
   const findGenieChat = () => wrapper.findComponent(AiGenieChat);
   const findGeneratedByAI = () => wrapper.findByText(i18n.GENIE_CHAT_LEGAL_GENERATED_BY_AI);
   const findAllUserFeedback = () => wrapper.findAllComponents(UserFeedback);
+
+  beforeEach(() => {
+    getMarkdown.mockImplementation(({ text }) => Promise.resolve({ data: { html: text } }));
+  });
 
   describe('rendering', () => {
     beforeEach(() => {

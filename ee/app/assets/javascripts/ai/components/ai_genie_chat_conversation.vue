@@ -1,23 +1,17 @@
 <script>
-import { renderMarkdown } from '~/notes/utils';
-import SafeHtml from '~/vue_shared/directives/safe_html';
-import { GENIE_CHAT_MODEL_ROLES, i18n } from '../constants';
+import AiGenieChatMessage from 'ee/ai/components/ai_genie_chat_message.vue';
+import { i18n } from '../constants';
 
 export default {
   name: 'AiGenieChatConversation',
-  directives: {
-    SafeHtml,
+  components: {
+    AiGenieChatMessage,
   },
   props: {
     messages: {
       type: Array,
       required: false,
       default: () => [],
-    },
-    isLoading: {
-      type: Boolean,
-      required: false,
-      default: false,
     },
     showDelimiter: {
       type: Boolean,
@@ -29,28 +23,19 @@ export default {
     isLastMessage(index) {
       return index === this.messages.length - 1;
     },
-    isAssistantMessage(message) {
-      return message.role.toLowerCase() === GENIE_CHAT_MODEL_ROLES.assistant;
-    },
-    isUserMessage(message) {
-      return message.role.toLowerCase() === GENIE_CHAT_MODEL_ROLES.user;
-    },
-    getMessageContent(message) {
-      return renderMarkdown(message.content || message.errors[0]);
-    },
     getPromptLocation(index) {
+      // TODO: do we really need this? And if yes, can it be converted to play with is-last-message?
       return index ? 'after_content' : 'before_content';
     },
-    renderMarkdown,
   },
   i18n,
 };
 </script>
 <template>
-  <div class="gl-my-5">
+  <div>
     <template v-if="showDelimiter">
       <div
-        class="gl-display-flex gl-align-items-center gl-text-gray-500 gl-gap-4 gl-mb-5 gl-mt-n5"
+        class="gl-my-5 gl-display-flex gl-align-items-center gl-text-gray-500 gl-gap-4 gl-mb-5 gl-mt-n5"
         data-testid="conversation-delimiter"
       >
         <hr class="gl-my-5 gl-flex-grow-1" />
@@ -58,27 +43,16 @@ export default {
         <hr class="gl-my-5 gl-flex-grow-1" />
       </div>
     </template>
-
-    <div
-      v-for="(message, index) in messages"
-      :key="`${message.role}-${index}`"
-      :ref="isLastMessage(index) ? 'lastMessage' : undefined"
-      class="gl-py-3 gl-px-4 gl-mb-4 gl-rounded-lg gl-line-height-20 ai-genie-chat-message"
-      :class="{
-        'gl-ml-auto gl-bg-blue-100 gl-text-blue-900 gl-rounded-bottom-right-none': isUserMessage(
-          message,
-        ),
-        'gl-rounded-bottom-left-none gl-text-gray-900 gl-bg-gray-50': isAssistantMessage(message),
-        'gl-mb-0!': isLastMessage(index) && !isLoading,
-      }"
+    <ai-genie-chat-message
+      v-for="(msg, index) in messages"
+      :key="`${msg.role}-${index}`"
+      :message="msg"
+      :prompt-location="getPromptLocation(index)"
+      :is-last-message="isLastMessage(index)"
     >
-      <div v-safe-html="getMessageContent(message)"></div>
-      <slot
-        v-if="isAssistantMessage(message)"
-        name="feedback"
-        :prompt-location="getPromptLocation(index)"
-        :message="message"
-      ></slot>
-    </div>
+      <template #feedback="{ message, promptLocation }">
+        <slot name="feedback" :prompt-location="promptLocation" :message="message"></slot>
+      </template>
+    </ai-genie-chat-message>
   </div>
 </template>
