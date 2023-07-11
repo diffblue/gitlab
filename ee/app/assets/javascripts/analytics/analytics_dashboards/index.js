@@ -1,7 +1,11 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
-import { convertObjectPropsToCamelCase, convertArrayToCamelCase } from '~/lib/utils/common_utils';
+import {
+  convertObjectPropsToCamelCase,
+  convertArrayToCamelCase,
+  parseBoolean,
+} from '~/lib/utils/common_utils';
 import DashboardsApp from './dashboards_app.vue';
 import createRouter from './router';
 import AnalyticsDashboardsBreadcrumbs from './components/analytics_dashboards_breadcrumbs.vue';
@@ -51,6 +55,7 @@ export default () => {
     trackingKey,
     namespaceId,
     namespaceFullPath,
+    isProject,
     collectorHost,
     chartEmptyStateIllustrationPath,
     dashboardEmptyStateIllustrationPath,
@@ -106,6 +111,7 @@ export default () => {
       trackingKey,
       namespaceFullPath,
       namespaceId,
+      isProject: parseBoolean(isProject),
       collectorHost,
       chartEmptyStateIllustrationPath,
       dashboardEmptyStateIllustrationPath,

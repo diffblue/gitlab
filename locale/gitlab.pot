@@ -5260,6 +5260,9 @@ msgstr ""
 msgid "Analytics|Dashboard was saved successfully"
 msgstr ""
 
+msgid "Analytics|Dashboards are created by editing the groups dashboard files."
+msgstr ""
+
 msgid "Analytics|Dashboards are created by editing the projects dashboard files."
 msgstr ""
 

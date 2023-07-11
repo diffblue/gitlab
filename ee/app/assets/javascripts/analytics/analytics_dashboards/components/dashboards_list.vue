@@ -1,13 +1,14 @@
 <script>
 import { GlLink, GlAlert, GlButton } from '@gitlab/ui';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import { visitUrl } from '~/lib/utils/url_utility';
+import { visitUrl, joinPaths } from '~/lib/utils/url_utility';
 import { createAlert } from '~/alert';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
   PRODUCT_ANALYTICS_FEATURE_DASHBOARDS,
   I18N_DASHBOARD_LIST_TITLE,
-  I18N_DASHBOARD_LIST_DESCRIPTION,
+  I18N_DASHBOARD_LIST_PROJECT_DESCRIPTION,
+  I18N_DASHBOARD_LIST_GROUP_DESCRIPTION,
   I18N_DASHBOARD_LIST_LEARN_MORE,
   I18N_DASHBOARD_LIST_NEW_DASHBOARD,
   I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER,
@@ -34,6 +35,9 @@ export default {
   },
   mixins: [glFeatureFlagsMixin()],
   inject: {
+    isProject: {
+      type: Boolean,
+    },
     customDashboardsProject: {
       type: Object,
       default: null,
@@ -126,11 +130,15 @@ export default {
       return this.$router.push(dashboardId);
     },
     redirectToProjectPointerConfig() {
-      visitUrl(
-        `${gon.relative_url_root || ''}/${
-          this.namespaceFullPath
-        }/edit#js-analytics-dashboards-settings`,
+      const url = joinPaths(
+        gon.relative_url_root || '/',
+        this.isProject ? '' : 'groups',
+        this.namespaceFullPath,
+        this.isProject ? '' : '-',
+        'edit',
       );
+
+      visitUrl(`${url}#js-analytics-dashboards-settings`);
     },
     onboardingComplete(feature) {
       this.requiresOnboarding = this.requiresOnboarding.filter((f) => f !== feature);
@@ -144,7 +152,8 @@ export default {
     },
   },
   I18N_DASHBOARD_LIST_TITLE,
-  I18N_DASHBOARD_LIST_DESCRIPTION,
+  I18N_DASHBOARD_LIST_PROJECT_DESCRIPTION,
+  I18N_DASHBOARD_LIST_GROUP_DESCRIPTION,
   I18N_DASHBOARD_LIST_LEARN_MORE,
   I18N_DASHBOARD_LIST_NEW_DASHBOARD,
   I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER,
@@ -163,7 +172,11 @@ export default {
       <div>
         <h2 class="gl-mt-0" data-testid="title">{{ $options.I18N_DASHBOARD_LIST_TITLE }}</h2>
         <p data-testid="description">
-          {{ $options.I18N_DASHBOARD_LIST_DESCRIPTION }}
+          {{
+            isProject
+              ? $options.I18N_DASHBOARD_LIST_PROJECT_DESCRIPTION
+              : $options.I18N_DASHBOARD_LIST_GROUP_DESCRIPTION
+          }}
           <gl-link data-testid="help-link" :href="$options.helpPageUrl">{{
             $options.I18N_DASHBOARD_LIST_LEARN_MORE
           }}</gl-link>

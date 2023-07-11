@@ -1,16 +1,19 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import { GlAlert } from '@gitlab/ui';
 import ProductAnalyticsOnboarding from 'ee/product_analytics/onboarding/components/onboarding_list_item.vue';
 import DashboardsList from 'ee/analytics/analytics_dashboards/components/dashboards_list.vue';
 import DashboardListItem from 'ee/analytics/analytics_dashboards/components/list/dashboard_list_item.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import {
   I18N_DASHBOARD_LIST_TITLE,
-  I18N_DASHBOARD_LIST_DESCRIPTION,
+  I18N_DASHBOARD_LIST_PROJECT_DESCRIPTION,
+  I18N_DASHBOARD_LIST_GROUP_DESCRIPTION,
   I18N_DASHBOARD_LIST_LEARN_MORE,
 } from 'ee/analytics/analytics_dashboards/constants';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { createAlert } from '~/alert';
+import { visitUrl } from '~/lib/utils/url_utility';
 import getAllProductAnalyticsDashboardsQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_all_product_analytics_dashboards.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -22,6 +25,11 @@ import {
 } from '../mock_data';
 
 jest.mock('~/alert');
+
+jest.mock('~/lib/utils/url_utility', () => ({
+  ...jest.requireActual('~/lib/utils/url_utility'),
+  visitUrl: jest.fn(),
+}));
 
 Vue.use(VueApollo);
 
@@ -36,6 +44,9 @@ describe('DashboardsList', () => {
   const findNewDashboardButton = () => wrapper.findByTestId('new-dashboard-button');
   const findVisualizationDesignerButton = () =>
     wrapper.findByTestId('visualization-designer-button');
+  const findConfigureAlert = () => wrapper.findComponent(GlAlert);
+
+  const clickConfigureButton = () => findConfigureAlert().vm.$emit('primaryAction');
 
   const $router = {
     push: jest.fn(),
@@ -57,6 +68,7 @@ describe('DashboardsList', () => {
         $router,
       },
       provide: {
+        isProject: true,
         collectorHost: TEST_COLLECTOR_HOST,
         trackingKey: TEST_TRACKING_KEY,
         customDashboardsProject: TEST_CUSTOM_DASHBOARDS_PROJECT,
@@ -79,10 +91,6 @@ describe('DashboardsList', () => {
       expect(findPageTitle().text()).toBe(I18N_DASHBOARD_LIST_TITLE);
     });
 
-    it('should render the page description', () => {
-      expect(findPageDescription().text()).toContain(I18N_DASHBOARD_LIST_DESCRIPTION);
-    });
-
     it('does not render the visualization designer button', () => {
       expect(findVisualizationDesignerButton().exists()).toBe(false);
     });
@@ -100,6 +108,44 @@ describe('DashboardsList', () => {
 
     it('does not render any feature or custom dashboards', () => {
       expect(findListItems()).toHaveLength(0);
+    });
+  });
+
+  describe('for projects', () => {
+    beforeEach(() => {
+      createWrapper();
+    });
+
+    it('should render the page description', () => {
+      expect(findPageDescription().text()).toContain(I18N_DASHBOARD_LIST_PROJECT_DESCRIPTION);
+    });
+  });
+
+  describe('for groups', () => {
+    beforeEach(() => {
+      createWrapper({ isProject: false });
+    });
+
+    it('should render the page description', () => {
+      expect(findPageDescription().text()).toContain(I18N_DASHBOARD_LIST_GROUP_DESCRIPTION);
+    });
+  });
+
+  describe.each`
+    isProject | relativeUrlRoot | url
+    ${true}   | ${'/'}          | ${'/test/test-dashboards/edit#js-analytics-dashboards-settings'}
+    ${true}   | ${'/path'}      | ${'/path/test/test-dashboards/edit#js-analytics-dashboards-settings'}
+    ${false}  | ${'/'}          | ${'/groups/test/test-dashboards/-/edit#js-analytics-dashboards-settings'}
+    ${false}  | ${'/path'}      | ${'/path/groups/test/test-dashboards/-/edit#js-analytics-dashboards-settings'}
+  `('configure dashboard project button', ({ isProject, relativeUrlRoot, url }) => {
+    beforeEach(() => {
+      gon.relative_url_root = relativeUrlRoot;
+      createWrapper({ isProject, customDashboardsProject: null });
+    });
+
+    it('redirects to the settings page', () => {
+      clickConfigureButton();
+      expect(visitUrl).toHaveBeenCalledWith(url);
     });
   });
 
