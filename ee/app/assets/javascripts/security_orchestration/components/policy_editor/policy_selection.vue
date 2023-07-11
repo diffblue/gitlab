@@ -1,6 +1,6 @@
 <script>
-import shieldCheckIllustration from '@gitlab/svgs/dist/illustrations/secure-sm.svg?raw';
-import magnifyingGlassIllustration from '@gitlab/svgs/dist/illustrations/search-sm.svg?raw';
+import shieldCheckIllustrationUrl from '@gitlab/svgs/dist/illustrations/secure-sm.svg?url';
+import magnifyingGlassIllustrationUrl from '@gitlab/svgs/dist/illustrations/search-sm.svg?url';
 import { GlCard, GlButton } from '@gitlab/ui';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SafeHtml from '~/vue_shared/directives/safe_html';
@@ -46,14 +46,14 @@ export default {
           title: i18n.scanResultPolicyTitle,
           description: i18n.scanResultPolicyDesc,
           example: i18n.scanResultPolicyExample,
-          svg: shieldCheckIllustration,
+          imageSrc: shieldCheckIllustrationUrl,
         },
         {
           urlParameter: POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter,
           title: i18n.scanExecutionPolicyTitle,
           description: i18n.scanExecutionPolicyDesc,
           example: i18n.scanExecutionPolicyExample,
-          svg: magnifyingGlassIllustration,
+          imageSrc: magnifyingGlassIllustrationUrl,
         },
       ];
     },
@@ -79,7 +79,7 @@ export default {
         body-class="gl-p-6 gl-display-flex gl-flex-grow-1"
       >
         <div class="gl-mr-6 gl-text-white">
-          <div v-safe-html:[$options.safeHtmlConfig]="option.svg"></div>
+          <img aria-hidden="true" :src="option.imageSrc" />
         </div>
         <div class="gl-display-flex gl-flex-direction-column">
           <h4 class="gl-mt-0">{{ option.title }}</h4>
