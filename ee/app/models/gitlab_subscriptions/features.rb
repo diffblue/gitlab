@@ -103,6 +103,7 @@ module GitlabSubscriptions
       default_branch_protection_restriction_in_groups
       default_project_deletion_protection
       delete_unconfirmed_users
+      dependency_proxy_for_packages
       disable_name_update_for_users
       disable_personal_access_tokens
       domain_verification

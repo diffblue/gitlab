@@ -31,6 +31,8 @@ module DependencyProxy
         length: { maximum: 255 }
 
       validates_with AnyFieldValidator, fields: %w[maven_external_registry_url]
+
+      scope :enabled, -> { where(enabled: true) }
     end
   end
 end

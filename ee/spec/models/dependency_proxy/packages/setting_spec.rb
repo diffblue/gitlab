@@ -71,4 +71,13 @@ RSpec.describe DependencyProxy::Packages::Setting, type: :model, feature_categor
       end
     end
   end
+
+  describe '.enabled' do
+    let_it_be(:enabled_setting) { create(:dependency_proxy_packages_setting) }
+    let_it_be(:disabled_setting) { create(:dependency_proxy_packages_setting, :disabled) }
+
+    subject { described_class.enabled }
+
+    it { is_expected.to contain_exactly(enabled_setting) }
+  end
 end
