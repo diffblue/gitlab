@@ -70,6 +70,7 @@ describe('ResourceLinksBlock', () => {
   const findLinkTextInput = () => wrapper.findByTestId('link-text-input');
   const findLinkValueInput = () => wrapper.findByTestId('link-value-input');
   const findSubmitButton = () => wrapper.findByTestId('add-button');
+  const findEmptyMessage = () => wrapper.findByTestId('empty');
 
   const clickFirstDeleteButton = async () => {
     findAllResourceLinks().at(0).vm.$emit('removeRequest', mockResourceLinks[0].id);
@@ -180,6 +181,7 @@ describe('ResourceLinksBlock', () => {
       await waitForPromises();
 
       expect(findResourceLinksList().exists()).toBe(false);
+      expect(findEmptyMessage().exists()).toBe(true);
     });
   });
 
@@ -227,6 +229,7 @@ describe('ResourceLinksBlock', () => {
       expect(findResourceLinksList().exists()).toBe(true);
       expect(wrapper.vm.badgeLabel).toBe(3);
       expect(findResourceLinksList().props('resourceLinks')).toHaveLength(3);
+      expect(findEmptyMessage().exists()).toBe(false);
     });
   });
 
