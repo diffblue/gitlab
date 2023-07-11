@@ -17548,6 +17548,9 @@ msgstr ""
 msgid "Environments|Job"
 msgstr ""
 
+msgid "Environments|Kubernetes namespace (optional)"
+msgstr ""
+
 msgid "Environments|Learn more about stopping environments"
 msgstr ""
 
@@ -17594,6 +17597,9 @@ msgid "Environments|Search by environment name"
 msgstr ""
 
 msgid "Environments|Select agent"
+msgstr ""
+
+msgid "Environments|Select namespace"
 msgstr ""
 
 msgid "Environments|Select which environments to clean up.     Protected environments are excluded. Learn more about cleaning up environments."
@@ -17650,6 +17656,9 @@ msgstr ""
 msgid "Environment|Cluster IP"
 msgstr ""
 
+msgid "Environment|Cluster agent not found."
+msgstr ""
+
 msgid "Environment|CronJobs"
 msgstr ""
 
@@ -17669,6 +17678,9 @@ msgid "Environment|External IP"
 msgstr ""
 
 msgid "Environment|Failed"
+msgstr ""
+
+msgid "Environment|Forbidden to access the cluster agent from this environment."
 msgstr ""
 
 msgid "Environment|Healthy"
@@ -17705,6 +17717,12 @@ msgid "Environment|Succeeded"
 msgstr ""
 
 msgid "Environment|Summary"
+msgstr ""
+
+msgid "Environment|There was an error connecting to the cluster agent."
+msgstr ""
+
+msgid "Environment|Unauthorized to access the cluster agent from this environment. Check your authentication and try again."
 msgstr ""
 
 msgid "Environment|Unhealthy"
