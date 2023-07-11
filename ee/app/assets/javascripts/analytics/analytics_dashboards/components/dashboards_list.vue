@@ -38,7 +38,7 @@ export default {
       type: Object,
       default: null,
     },
-    projectFullPath: {
+    namespaceFullPath: {
       type: String,
     },
     collectorHost: {
@@ -82,7 +82,7 @@ export default {
       query: getAllProductAnalyticsDashboardsQuery,
       variables() {
         return {
-          projectPath: this.projectFullPath,
+          projectPath: this.namespaceFullPath,
         };
       },
       update(data) {
@@ -128,7 +128,7 @@ export default {
     redirectToProjectPointerConfig() {
       visitUrl(
         `${gon.relative_url_root || ''}/${
-          this.projectFullPath
+          this.namespaceFullPath
         }/edit#js-analytics-dashboards-settings`,
       );
     },

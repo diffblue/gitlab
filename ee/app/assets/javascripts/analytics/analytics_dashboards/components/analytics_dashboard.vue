@@ -48,7 +48,7 @@ export default {
       type: Object,
       default: null,
     },
-    projectFullPath: {
+    namespaceFullPath: {
       type: String,
     },
     dashboardEmptyStateIllustrationPath: {
@@ -123,7 +123,7 @@ export default {
       query: getProductAnalyticsDashboardQuery,
       variables() {
         return {
-          projectPath: this.projectFullPath,
+          projectPath: this.namespaceFullPath,
           slug: this.$route?.params.slug,
         };
       },
@@ -159,7 +159,7 @@ export default {
       query: getAvailableVisualizations,
       variables() {
         return {
-          projectPath: this.projectFullPath,
+          projectPath: this.namespaceFullPath,
         };
       },
       skip() {

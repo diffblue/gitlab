@@ -19,7 +19,7 @@ export default {
     SingleStat: () =>
       import('ee/analytics/analytics_dashboards/components/visualizations/single_stat.vue'),
   },
-  inject: ['projectId'],
+  inject: ['namespaceId'],
   props: {
     visualization: {
       type: Object,
@@ -63,7 +63,7 @@ export default {
   },
   methods: {
     async fetchData() {
-      const { projectId, queryOverrides, filters } = this;
+      const { queryOverrides, filters } = this;
       const { type: dataType, query } = this.visualization.data;
       this.loading = true;
       this.error = null;
@@ -71,7 +71,7 @@ export default {
       try {
         const { fetch } = await dataSources[dataType]();
         this.data = await fetch({
-          projectId,
+          projectId: this.namespaceId,
           query,
           queryOverrides,
           visualizationType: this.visualization.type,

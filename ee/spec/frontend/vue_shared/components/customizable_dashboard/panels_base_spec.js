@@ -21,7 +21,7 @@ describe('PanelsBase', () => {
 
   const createWrapper = (props = {}) => {
     wrapper = shallowMountExtended(PanelsBase, {
-      provide: { projectId: '1' },
+      provide: { namespaceId: '1' },
       propsData: {
         title: panelConfig.title,
         visualization: panelConfig.visualization,

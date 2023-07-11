@@ -37,7 +37,7 @@ describe('OnboardingEmptyState', () => {
       },
       provide: {
         chartEmptyStateIllustrationPath: TEST_HOST,
-        projectFullPath: TEST_PROJECT_FULL_PATH,
+        namespaceFullPath: TEST_PROJECT_FULL_PATH,
       },
     });
   };

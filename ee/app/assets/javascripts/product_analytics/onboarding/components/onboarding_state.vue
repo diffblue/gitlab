@@ -12,7 +12,7 @@ import {
 export default {
   name: 'ProductAnalyticsOnboardingState',
   inject: {
-    projectFullPath: {
+    namespaceFullPath: {
       type: String,
     },
   },
@@ -55,7 +55,7 @@ export default {
       query: getProductAnalyticsState,
       variables() {
         return {
-          projectPath: this.projectFullPath,
+          projectPath: this.namespaceFullPath,
         };
       },
       pollInterval() {

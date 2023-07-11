@@ -157,7 +157,7 @@ describe('AnalyticsDashboard', () => {
       provide: {
         customDashboardsProject: TEST_CUSTOM_DASHBOARDS_PROJECT,
         dashboardEmptyStateIllustrationPath: TEST_EMPTY_DASHBOARD_SVG_PATH,
-        projectFullPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
+        namespaceFullPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
         glFeatures,
         breadcrumbState,
       },

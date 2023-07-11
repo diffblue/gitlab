@@ -31,7 +31,7 @@ describe('OnboardingState', () => {
     wrapper = shallowMountExtended(OnboardingState, {
       apolloProvider: createMockApollo([[getProductAnalyticsState, apolloMock]]),
       provide: {
-        projectFullPath: TEST_PROJECT_FULL_PATH,
+        namespaceFullPath: TEST_PROJECT_FULL_PATH,
       },
       propsData: {
         state: '',
