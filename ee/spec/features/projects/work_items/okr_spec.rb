@@ -104,6 +104,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
     it_behaves_like 'work items health status'
     it_behaves_like 'work items comments', :objective
     it_behaves_like 'work items description'
+    it_behaves_like 'work items todos'
     it_behaves_like 'work items award emoji'
 
     context 'in hierarchy' do
@@ -297,6 +298,21 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
     it_behaves_like 'work items health status'
     it_behaves_like 'work items comments', :key_result
     it_behaves_like 'work items description'
+  end
+
+  context 'for guest users' do
+    before do
+      project.add_guest(user)
+
+      sign_in(user)
+
+      stub_licensed_features(okrs: true, issuable_health_status: true)
+      stub_feature_flags(work_items: true, okrs_mvc: true)
+
+      visit project_work_items_path(project, work_items_path: objective.iid)
+    end
+
+    it_behaves_like 'work items todos'
   end
 
   def create_okr(type, title)
