@@ -22,7 +22,7 @@ RSpec.shared_examples 'a blob replicator' do
   end
 
   it_behaves_like 'a replicator' do
-    let_it_be(:event_name) { 'created' }
+    let_it_be(:event_name) { ::Geo::BlobReplicatorStrategy::EVENT_CREATED }
   end
 
   # This could be included in each model's spec, but including it here is DRYer.
@@ -39,7 +39,7 @@ RSpec.shared_examples 'a blob replicator' do
       end.to change { ::Geo::Event.count }.by(1)
 
       expect(::Geo::Event.last.attributes).to include(
-        "replicable_name" => replicator.replicable_name, "event_name" => "created", "payload" => { "model_record_id" => replicator.model_record.id })
+        "replicable_name" => replicator.replicable_name, "event_name" => ::Geo::BlobReplicatorStrategy::EVENT_CREATED, "payload" => { "model_record_id" => replicator.model_record.id })
     end
 
     it 'calls #after_verifiable_update' do
@@ -77,7 +77,7 @@ RSpec.shared_examples 'a blob replicator' do
 
       expect(::Geo::Event.last.attributes).to include(
         "replicable_name" => replicator.replicable_name,
-        "event_name" => "deleted",
+        "event_name" => ::Geo::BlobReplicatorStrategy::EVENT_DELETED,
         "payload" => {
           "model_record_id" => replicator.model_record.id,
           "uploader_class" => replicator.carrierwave_uploader.class.to_s,

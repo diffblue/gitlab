@@ -7,9 +7,12 @@ module Geo
     include ::Geo::VerifiableReplicator
     include Gitlab::Geo::LogHelpers
 
+    EVENT_CREATED = 'created'
+    EVENT_DELETED = 'deleted'
+
     included do
-      event :created
-      event :deleted
+      event EVENT_CREATED
+      event EVENT_DELETED
     end
 
     class_methods do
@@ -42,7 +45,7 @@ module Geo
 
           {
             replicable_name: replicable_name,
-            event_name: 'deleted',
+            event_name: EVENT_DELETED,
             payload: {
               model_record_id: record[:model_record_id],
               blob_path: record[:blob_path],
@@ -62,7 +65,7 @@ module Geo
       return false unless Gitlab::Geo.primary?
       return unless self.class.enabled?
 
-      publish(:created, **created_params)
+      publish(EVENT_CREATED, **created_params)
 
       after_verifiable_update
     end
@@ -94,7 +97,7 @@ module Geo
     end
 
     def enqueue_sync
-      Geo::EventWorker.perform_async(replicable_name, 'created', { model_record_id: model_record.id })
+      Geo::EventWorker.perform_async(replicable_name, EVENT_CREATED, { model_record_id: model_record.id })
     end
 
     # Called by Gitlab::Geo::Replicator#consume
