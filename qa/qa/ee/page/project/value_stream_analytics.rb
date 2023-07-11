@@ -3,7 +3,7 @@
 module QA
   module EE
     module Page
-      module Group
+      module Project
         class ValueStreamAnalytics < QA::Page::Base
           include Page::ValueStreamAnalytics
         end
