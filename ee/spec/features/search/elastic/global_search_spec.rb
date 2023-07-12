@@ -94,21 +94,27 @@ RSpec.describe 'Global elastic search', :elastic, :js, :sidekiq_inline, :disable
   end
 
   describe 'I search through the wiki blobs' do
-    before do
-      project.wiki.create_page('test.md', '# term')
-      project.wiki.index_wiki_blobs
+    include WikiHelpers
+    let_it_be(:group_wiki) { create(:group_wiki) }
 
+    before do
+      stub_group_wikis(true)
+      group_wiki.container.add_maintainer(user)
+      [group_wiki, project.wiki].each do |wiki|
+        wiki.create_page('test.md', '# term')
+        wiki.index_wiki_blobs
+      end
       ensure_elasticsearch_index!
     end
 
-    it "finds wiki pages" do
+    it 'finds wiki pages from groups and projects' do
       visit dashboard_projects_path
 
       submit_search('term')
       select_search_scope('Wiki')
 
-      expect(page).to have_selector('.search-result-row .description', text: 'term')
-      expect(page).to have_link('test')
+      expect(page).to have_selector('.search-result-row .description', text: 'term').twice
+      expect(page).to have_link('test').twice
     end
   end
 
@@ -118,7 +124,7 @@ RSpec.describe 'Global elastic search', :elastic, :js, :sidekiq_inline, :disable
       ensure_elasticsearch_index!
     end
 
-    it "finds commits" do
+    it 'finds commits' do
       visit dashboard_projects_path
 
       submit_search('add')

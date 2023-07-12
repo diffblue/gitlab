@@ -177,12 +177,21 @@ module Gitlab
       alias_method :limited_merge_requests_count, :merge_requests_count
       alias_method :limited_milestones_count, :milestones_count
 
-      def self.parse_search_result(result, project)
+      def self.parse_search_result(result, container)
         ref = extract_ref_from_result(result['_source'])
         path = extract_path_from_result(result['_source'])
         basename = File.join(File.dirname(path), File.basename(path, '.*'))
         content = extract_content_from_result(result['_source'])
-        project_id = result['_source']['project_id'].to_i
+        group_id = result['_source']['group_id']&.to_i
+        if group_level_result?(result['_source'])
+          group = container
+          group_level_blob = true
+        else
+          project = container
+          group = container.group
+          project_id = result['_source']['project_id'].to_i
+        end
+
         total_lines = content.lines.size
 
         highlight_content = get_highlight_content(result)
@@ -216,15 +225,20 @@ module Gitlab
         highlight_line = highlight_found ? found_line_number + 1 : nil
 
         ::Gitlab::Search::FoundBlob.new(
-          path: path,
-          basename: basename,
-          ref: ref,
-          matched_lines_count: matched_lines_count,
-          startline: from + 1,
-          highlight_line: highlight_line,
-          data: data.join,
-          project: project,
-          project_id: project_id
+          {
+            path: path,
+            basename: basename,
+            ref: ref,
+            matched_lines_count: matched_lines_count,
+            startline: from + 1,
+            highlight_line: highlight_line,
+            data: data.join,
+            project: project,
+            project_id: project_id,
+            group: group,
+            group_id: group_id,
+            group_level_blob: group_level_blob
+          }.compact
         )
       end
 
@@ -422,6 +436,10 @@ module Gitlab
 
       def self.extract_content_from_result(source)
         use_separate_wiki_index?(source['type']) ? source['content'] : source['blob']['content']
+      end
+
+      def self.group_level_result?(source)
+        source['project_id'].blank?
       end
 
       def self.get_highlight_content(result)
