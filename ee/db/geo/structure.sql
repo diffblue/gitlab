@@ -163,29 +163,6 @@ CREATE SEQUENCE design_management_repository_registry_id_seq
 
 ALTER SEQUENCE design_management_repository_registry_id_seq OWNED BY design_management_repository_registry.id;
 
-CREATE TABLE design_registry (
-    id integer NOT NULL,
-    project_id integer NOT NULL,
-    state character varying(20),
-    retry_count integer DEFAULT 0,
-    last_sync_failure character varying,
-    force_to_redownload boolean,
-    missing_on_primary boolean,
-    retry_at timestamp without time zone,
-    last_synced_at timestamp without time zone,
-    created_at timestamp without time zone NOT NULL
-);
-
-CREATE SEQUENCE design_registry_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER SEQUENCE design_registry_id_seq OWNED BY design_registry.id;
-
 CREATE TABLE event_log_states (
     event_id bigint NOT NULL,
     created_at timestamp without time zone NOT NULL
@@ -656,8 +633,6 @@ ALTER TABLE ONLY dependency_proxy_manifest_registry ALTER COLUMN id SET DEFAULT 
 
 ALTER TABLE ONLY design_management_repository_registry ALTER COLUMN id SET DEFAULT nextval('design_management_repository_registry_id_seq'::regclass);
 
-ALTER TABLE ONLY design_registry ALTER COLUMN id SET DEFAULT nextval('design_registry_id_seq'::regclass);
-
 ALTER TABLE ONLY event_log_states ALTER COLUMN event_id SET DEFAULT nextval('event_log_states_event_id_seq'::regclass);
 
 ALTER TABLE ONLY file_registry ALTER COLUMN id SET DEFAULT nextval('file_registry_id_seq'::regclass);
@@ -708,9 +683,6 @@ ALTER TABLE ONLY dependency_proxy_manifest_registry
 
 ALTER TABLE ONLY design_management_repository_registry
     ADD CONSTRAINT design_management_repository_registry_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY design_registry
-    ADD CONSTRAINT design_registry_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY event_log_states
     ADD CONSTRAINT event_log_states_pkey PRIMARY KEY (event_id);
@@ -851,12 +823,6 @@ CREATE INDEX index_dependency_proxy_manifest_registry_on_state ON dependency_pro
 CREATE INDEX index_design_management_repository_registry_on_retry_at ON design_management_repository_registry USING btree (retry_at);
 
 CREATE INDEX index_design_management_repository_registry_on_state ON design_management_repository_registry USING btree (state);
-
-CREATE UNIQUE INDEX index_design_registry_on_project_id ON design_registry USING btree (project_id);
-
-CREATE INDEX index_design_registry_on_retry_at ON design_registry USING btree (retry_at);
-
-CREATE INDEX index_design_registry_on_state ON design_registry USING btree (state);
 
 CREATE UNIQUE INDEX index_design_repo_registry_on_design_repo_id ON design_management_repository_registry USING btree (design_management_repository_id);
 
