@@ -4,7 +4,7 @@ import service from '~/ide/services/';
 import { s__, sprintf } from '~/locale';
 
 export const DASHBOARD_BRANCH = 'main';
-export const CUSTOM_DASHBOARDS_PATH = '.gitlab/dashboards/';
+export const CUSTOM_DASHBOARDS_PATH = '.gitlab/analytics/dashboards/';
 export const PRODUCT_ANALYTICS_VISUALIZATIONS_PATH = '.gitlab/analytics/dashboards/visualizations/';
 
 export const CONFIGURATION_FILE_TYPE = '.yaml';
@@ -74,23 +74,23 @@ export async function getCustomDashboard(dashboardId, projectInfo) {
 }
 
 export async function saveCustomDashboard({
-  dashboardId,
-  dashboardObject,
+  dashboardSlug,
+  dashboardConfig,
   projectInfo,
   isNewFile = false,
 }) {
   const action = isNewFile ? CREATE_FILE_ACTION : UPDATE_FILE_ACTION;
   const commitText = isNewFile
-    ? s__('Analytics|Create dashboard %{dashboardId}')
-    : s__('Analytics|Updating dashboard %{dashboardId}');
+    ? s__('Analytics|Create dashboard %{dashboardSlug}')
+    : s__('Analytics|Updating dashboard %{dashboardSlug}');
   const payload = {
     branch: 'main',
-    commit_message: sprintf(commitText, { dashboardId }),
+    commit_message: sprintf(commitText, { dashboardSlug }),
     actions: [
       {
         action,
-        file_path: `${CUSTOM_DASHBOARDS_PATH}${dashboardId}${CONFIGURATION_FILE_TYPE}`,
-        content: stringify(dashboardObject, null),
+        file_path: `${CUSTOM_DASHBOARDS_PATH}${dashboardSlug}/${dashboardSlug}${CONFIGURATION_FILE_TYPE}`,
+        content: stringify(dashboardConfig, null),
         encoding: 'text',
       },
     ],

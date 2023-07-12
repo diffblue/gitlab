@@ -1,7 +1,14 @@
 import isEmpty from 'lodash/isEmpty';
+import productAnalyticsDashboardFragment from 'ee/analytics/analytics_dashboards/graphql/fragments/product_analytics_dashboard.fragment.graphql';
+import {
+  TYPENAME_PRODUCT_ANALYTICS_DASHBOARD,
+  TYPENAME_PRODUCT_ANALYTICS_DASHBOARD_CONNECTION,
+} from 'ee/analytics/analytics_dashboards/graphql/constants';
 import { queryToObject } from '~/lib/utils/url_utility';
 import { formatDate, parsePikadayDate } from '~/lib/utils/datetime_utility';
 import { ISO_SHORT_FORMAT } from '~/vue_shared/constants';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
 import {
   convertObjectPropsToCamelCase,
   convertObjectPropsToSnakeCase,
@@ -66,4 +73,75 @@ export const availableVisualizationsValidator = (obj) => {
   return Object.values(obj).every(
     ({ loading, visualizations }) => typeof loading === 'boolean' && Array.isArray(visualizations),
   );
+};
+
+/**
+ * Maps a full hydrated dashboard (including GraphQL __typenames, and full visualization definitions) into a slimmed down version that complies with the dashboard schema definition
+ */
+export const getDashboardConfig = (hydratedDashboard) => {
+  const { __typename: dashboardTypename, userDefined, slug, ...dashboardRest } = hydratedDashboard;
+  return {
+    ...dashboardRest,
+    panels: hydratedDashboard.panels.map((panel) => {
+      const { __typename: panelTypename, ...panelRest } = panel;
+      return {
+        ...panelRest,
+        visualization: panel.visualization.slug,
+      };
+    }),
+  };
+};
+
+const updateDashboardDetailsApolloCache = (apolloClient, projectRef, dashboardRef, dashboard) => {
+  // Adds/updates a dashboard detail in cache from getProductAnalyticsDashboard:{slug}
+
+  apolloClient.writeFragment({
+    id: dashboardRef,
+    fragment: productAnalyticsDashboardFragment,
+    data: {
+      project: { id: projectRef },
+      ...dashboard,
+      panels: {
+        __typename: TYPENAME_PRODUCT_ANALYTICS_DASHBOARD_CONNECTION,
+        nodes: dashboard.panels.map((panel) => ({
+          ...panel,
+        })),
+      },
+    },
+  });
+};
+
+const updateDashboardsListApolloCache = (apolloClient, projectRef, dashboardRef) => {
+  // Links a newly created dashboard to the project in cache from getAllProductAnalyticsDashboards
+
+  apolloClient.cache.modify({
+    id: projectRef,
+    fields: {
+      productAnalyticsDashboards(existing) {
+        // eslint-disable-next-line no-underscore-dangle
+        if (existing.nodes.find((existingDashboard) => existingDashboard.__ref === dashboardRef)) {
+          return existing;
+        }
+
+        return {
+          ...existing,
+          nodes: [...existing.nodes, { __ref: dashboardRef }],
+        };
+      },
+    },
+  });
+};
+
+export const updateApolloCache = (apolloClient, projectId, dashboardSlug, dashboard) => {
+  const projectRef = apolloClient.cache.identify({
+    __typename: TYPENAME_PROJECT,
+    id: convertToGraphQLId(TYPENAME_PROJECT, projectId),
+  });
+  const dashboardRef = apolloClient.cache.identify({
+    __typename: TYPENAME_PRODUCT_ANALYTICS_DASHBOARD,
+    slug: dashboardSlug,
+  });
+
+  updateDashboardDetailsApolloCache(apolloClient, projectRef, dashboardRef, dashboard);
+  updateDashboardsListApolloCache(apolloClient, projectRef, dashboardRef);
 };

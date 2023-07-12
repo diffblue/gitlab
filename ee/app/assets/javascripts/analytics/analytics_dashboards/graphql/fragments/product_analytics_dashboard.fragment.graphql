@@ -1,0 +1,19 @@
+fragment ProductAnalyticsDashboardFragment on ProductAnalyticsDashboard {
+  slug
+  title
+  description
+  userDefined
+  panels {
+    nodes {
+      title
+      gridAttributes
+      queryOverrides
+      visualization {
+        slug
+        type
+        options
+        data
+      }
+    }
+  }
+}
