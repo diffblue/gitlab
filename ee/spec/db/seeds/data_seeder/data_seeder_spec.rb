@@ -243,7 +243,7 @@ module Gitlab
                   ---
                   name: Invalid Attributes
                   issues:
-                    - invalid: true
+                    - mileston: true
                 YAML
               end
             end
@@ -406,7 +406,7 @@ module Gitlab
                 {
                   name: 'Invalid Attributes',
                   issues: [
-                    { invalid: true }
+                    { mileston: true }
                   ]
                 }.to_json
               end
