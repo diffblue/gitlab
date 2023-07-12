@@ -2,11 +2,18 @@ import { nextTick } from 'vue';
 import { GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import BaseRuleComponent from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/base_rule_component.vue';
+import BranchTypeSelector from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/branch_type_selector.vue';
 import {
   SCAN_EXECUTION_SCHEDULE_RULE,
   SCAN_EXECUTION_PIPELINE_RULE,
   SCAN_EXECUTION_RULES_PIPELINE_KEY,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/constants';
+import {
+  ALL_BRANCHES,
+  GROUP_DEFAULT_BRANCHES,
+  ALL_PROTECTED_BRANCHES,
+  SPECIFIC_BRANCHES,
+} from 'ee/security_orchestration/components/policy_editor/constants';
 
 describe('BaseRuleComponent', () => {
   let wrapper;
@@ -29,11 +36,11 @@ describe('BaseRuleComponent', () => {
 
   const findDeleteButton = () => wrapper.findByTestId('remove-rule');
   const findRuleTypeDropDown = () => wrapper.findComponent(GlCollapsibleListbox);
-  const findBranchesInputField = () => wrapper.findByTestId('rule-branches');
   const findBranchesLabel = () => wrapper.findByTestId('rule-branches-label');
+  const findBranchTypeSelector = () => wrapper.findComponent(BranchTypeSelector);
 
   const selectBranches = async (branches) => {
-    findBranchesInputField().vm.$emit('input', branches);
+    findBranchTypeSelector().vm.$emit('input', branches);
     await nextTick();
   };
 
@@ -48,7 +55,7 @@ describe('BaseRuleComponent', () => {
 
     it('renders pipeline rule component by default', () => {
       expect(findRuleTypeDropDown().props('selected')).toBe(SCAN_EXECUTION_RULES_PIPELINE_KEY);
-      expect(findBranchesInputField().attributes('value')).toBe('');
+      expect(findBranchTypeSelector().props('branchesToAdd')).toBe('');
     });
 
     it('selects pipeline rule', async () => {
@@ -60,14 +67,14 @@ describe('BaseRuleComponent', () => {
     });
 
     it('selects list of branches', async () => {
-      const branches = 'main,branch1,branch2';
+      const branches = ['main,branch1,branch2'];
 
       await selectBranches(branches);
       const [eventPayload] = wrapper.emitted().changed;
 
       expect(eventPayload[0]).toEqual({
         type: SCAN_EXECUTION_SCHEDULE_RULE,
-        branches: branches.split(','),
+        branches,
       });
     });
 
@@ -78,19 +85,19 @@ describe('BaseRuleComponent', () => {
     `('renders branches input', ({ isBranchScope, expectedResult }) => {
       createComponent({ isBranchScope });
 
-      expect(findBranchesInputField().exists()).toBe(expectedResult);
+      expect(findBranchTypeSelector().exists()).toBe(expectedResult);
     });
 
     it('emits array of branches and correct type', async () => {
-      await selectBranches('main, branch');
+      await selectBranches(['main', 'branch']);
 
-      expect(wrapper.emitted()).toEqual({
-        changed: [[{ branches: ['main', 'branch'], type: SCAN_EXECUTION_SCHEDULE_RULE }]],
-      });
+      expect(wrapper.emitted('changed')).toEqual([
+        [{ branches: ['main', 'branch'], type: SCAN_EXECUTION_SCHEDULE_RULE }],
+      ]);
     });
 
     it('trims branch names from white spaces', async () => {
-      await selectBranches('main , branch  ,    branch2    ');
+      await selectBranches(['main', 'branch', 'branch2']);
 
       expect(wrapper.emitted()).toEqual({
         changed: [
@@ -141,6 +148,57 @@ describe('BaseRuleComponent', () => {
       });
       await nextTick();
       expect(findBranchesLabel().text()).toBe('branch');
+    });
+  });
+
+  describe('branch types', () => {
+    const BRANCH_TYPE_VALUES = [
+      ALL_BRANCHES.value,
+      ALL_PROTECTED_BRANCHES.value,
+      GROUP_DEFAULT_BRANCHES.value,
+    ];
+
+    it.each(BRANCH_TYPE_VALUES)('should select branch type', (branchType) => {
+      createComponent();
+
+      findBranchTypeSelector().vm.$emit('set-branch-type', branchType);
+
+      expect(wrapper.emitted('changed')).toEqual([
+        [
+          {
+            type: SCAN_EXECUTION_SCHEDULE_RULE,
+            branch_type: branchType,
+          },
+        ],
+      ]);
+    });
+
+    it.each`
+      type                            | emittedValue
+      ${SCAN_EXECUTION_PIPELINE_RULE} | ${['*']}
+      ${SCAN_EXECUTION_SCHEDULE_RULE} | ${[]}
+    `('should select branches for specific branch type', ({ type, emittedValue }) => {
+      createComponent({
+        initRule: {
+          type,
+          branch_type: ALL_PROTECTED_BRANCHES.value,
+        },
+      });
+
+      expect(findBranchTypeSelector().props('selectedBranchType')).toBe(
+        ALL_PROTECTED_BRANCHES.value,
+      );
+
+      findBranchTypeSelector().vm.$emit('set-branch-type', SPECIFIC_BRANCHES.value);
+
+      expect(wrapper.emitted('changed')).toEqual([
+        [
+          {
+            type,
+            branches: emittedValue,
+          },
+        ],
+      ]);
     });
   });
 });

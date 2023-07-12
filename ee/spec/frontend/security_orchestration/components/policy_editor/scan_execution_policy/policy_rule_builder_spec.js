@@ -10,6 +10,7 @@ import {
   SCAN_EXECUTION_SCHEDULE_RULE,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/constants';
 import { CRON_DEFAULT_TIME } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 
 describe('PolicyRuleBuilder', () => {
   let wrapper;
@@ -26,6 +27,7 @@ describe('PolicyRuleBuilder', () => {
         ...propsData,
       },
       provide: {
+        namespaceType: NAMESPACE_TYPES.GROUP,
         ...provide,
       },
     });

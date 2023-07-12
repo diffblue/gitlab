@@ -1,7 +1,11 @@
 <script>
-import { GlButton, GlFormInput, GlSprintf, GlCollapsibleListbox } from '@gitlab/ui';
+import { GlButton, GlSprintf, GlCollapsibleListbox } from '@gitlab/ui';
 import { s__, n__ } from '~/locale';
-import { slugifyToArray } from '../utils';
+import {
+  ALL_PROTECTED_BRANCHES,
+  SPECIFIC_BRANCHES,
+} from 'ee/security_orchestration/components/policy_editor/constants';
+import BranchTypeSelector from './branch_type_selector.vue';
 import { SCAN_EXECUTION_RULES_LABELS, SCAN_EXECUTION_RULES_PIPELINE_KEY } from './constants';
 
 export default {
@@ -17,9 +21,9 @@ export default {
   },
   name: 'BaseRuleComponent',
   components: {
+    BranchTypeSelector,
     GlButton,
     GlCollapsibleListbox,
-    GlFormInput,
     GlSprintf,
   },
   props: {
@@ -39,9 +43,20 @@ export default {
     },
   },
   data() {
+    let selectedBranchType = ALL_PROTECTED_BRANCHES.value;
+
+    if (this.initRule.branch_type) {
+      selectedBranchType = this.initRule.branch_type;
+    }
+
+    if (this.initRule.branches) {
+      selectedBranchType = SPECIFIC_BRANCHES.value;
+    }
+
     return {
       selectedRule: this.defaultSelectedRule[this.selectedKey],
       selectedKey: this.defaultSelectedRule,
+      selectedBranchType,
     };
   },
   computed: {
@@ -60,16 +75,10 @@ export default {
         text,
       }));
     },
-    branchesToAdd: {
-      get() {
-        return (this.initRule.branches?.length || 0) === 0
-          ? ''
-          : this.initRule.branches?.filter((element) => element?.trim()).join(',');
-      },
-      set(values) {
-        const branches = slugifyToArray(values, ',');
-        this.$emit('changed', { ...this.initRule, branches });
-      },
+    branchesToAdd() {
+      return (this.initRule.branches?.length || 0) === 0
+        ? ''
+        : this.initRule.branches?.filter((element) => element?.trim()).join(',');
     },
     message() {
       return this.initRule.type === SCAN_EXECUTION_RULES_PIPELINE_KEY
@@ -82,6 +91,44 @@ export default {
       this.selectedRule = this.$options.SCAN_EXECUTION_RULES_LABELS[key];
       this.selectedKey = key;
       this.$emit('select-rule', key);
+    },
+    handleBranchesToAddChange(branches) {
+      /**
+       * Either branch of branch_type property
+       * is simultaneously allowed on rule object
+       * Based on value we remove one and
+       * set another and vice versa
+       */
+      const updatedRule = { ...this.initRule };
+      delete updatedRule.branch_type;
+
+      this.$emit('changed', { ...updatedRule, branches });
+    },
+    handleBranchTypeSelect(branchType) {
+      this.selectedBranchType = branchType;
+
+      if (branchType === SPECIFIC_BRANCHES.value) {
+        /**
+         * Pipeline rule and Schedule rule have different default values
+         * Pipeline rule supports wildcard for branches
+         */
+        const branches = this.initRule.type === SCAN_EXECUTION_RULES_PIPELINE_KEY ? ['*'] : [];
+
+        this.handleBranchesToAddChange(branches);
+
+        return;
+      }
+
+      /**
+       * Either branch of branch_type property
+       * is simultaneously allowed on rule object
+       * Based on value we remove one and
+       * set another and vice versa
+       */
+      const updatedRule = { ...this.initRule };
+      delete updatedRule.branches;
+
+      this.$emit('changed', { ...updatedRule, branch_type: branchType });
     },
   },
 };
@@ -114,12 +161,11 @@ export default {
 
           <template #branches>
             <template v-if="isBranchScope">
-              <gl-form-input
-                v-model="branchesToAdd"
-                class="gl-mr-3 gl-max-w-34"
-                size="lg"
-                :placeholder="$options.i18n.selectedBranchesPlaceholder"
-                data-testid="rule-branches"
+              <branch-type-selector
+                :branches-to-add="branchesToAdd"
+                :selected-branch-type="selectedBranchType"
+                @input="handleBranchesToAddChange"
+                @set-branch-type="handleBranchTypeSelect"
               />
               <span data-testid="rule-branches-label"> {{ branchesLabel }} </span>
             </template>

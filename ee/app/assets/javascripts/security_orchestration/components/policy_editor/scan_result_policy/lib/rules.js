@@ -4,8 +4,8 @@ import { REPORT_TYPES_DEFAULT } from 'ee/security_dashboard/store/constants';
 import { isPositiveInteger } from '~/lib/utils/number_utils';
 import {
   ALL_PROTECTED_BRANCHES,
-  GROUP_DEFAULT_BRANCHES,
   BRANCH_TYPE_KEY,
+  VALID_SCAN_RESULT_BRANCH_TYPE_OPTIONS,
 } from 'ee/security_orchestration/components/policy_editor/constants';
 import {
   APPROVAL_VULNERABILITY_STATES,
@@ -135,7 +135,8 @@ export const getInvalidBranches = async ({ branches, projectId }) => {
 export const invalidBranchType = (rules) => {
   if (!rules) return false;
 
-  const validOptions = [ALL_PROTECTED_BRANCHES.value, GROUP_DEFAULT_BRANCHES.value];
-
-  return rules?.some((rule) => BRANCH_TYPE_KEY in rule && !validOptions.includes(rule.branch_type));
+  return rules.some(
+    (rule) =>
+      BRANCH_TYPE_KEY in rule && !VALID_SCAN_RESULT_BRANCH_TYPE_OPTIONS.includes(rule.branch_type),
+  );
 };
