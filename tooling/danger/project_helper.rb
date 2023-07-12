@@ -70,6 +70,7 @@ module Tooling
         %r{\A((ee|jh)/)?app/assets/} => :frontend,
         %r{\A((ee|jh)/)?app/views/.*\.svg} => :frontend,
         %r{\A((ee|jh)/)?app/views/} => [:frontend, :backend],
+        %r{\A((ee|jh)/)?app/components/} => [:frontend, :backend],
         %r{\A((ee|jh)/)?public/} => :frontend,
         %r{\A((ee|jh)/)?spec/(javascripts|frontend|frontend_integration)/} => :frontend,
         %r{\A((ee|jh)/)?spec/contracts/consumer} => :frontend,
