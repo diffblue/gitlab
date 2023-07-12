@@ -49,6 +49,7 @@ RSpec.describe Groups::HooksController, feature_category: :webhooks do
           subgroup_events: true,
           confidential_note_events: true,
           feature_flag_events: true,
+          emoji_events: true,
           # editable attributes
           enable_ssl_verification: true,
           token: 'TEST TOKEN',

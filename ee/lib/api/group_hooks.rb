@@ -33,6 +33,7 @@ module API
         optional :deployment_events, type: Boolean, desc: "Trigger hook on deployment events"
         optional :releases_events, type: Boolean, desc: "Trigger hook on release events"
         optional :subgroup_events, type: Boolean, desc: "Trigger hook on subgroup events"
+        optional :emoji_events, type: Boolean, desc: "Trigger hook on emoji events"
         optional :enable_ssl_verification, type: Boolean, desc: "Do SSL verification when triggering the hook"
         optional :token, type: String, desc: "Secret token to validate received payloads; this will not be returned in the response"
         use :url_variables
