@@ -23,12 +23,9 @@ import {
 } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/url_sync.vue';
 import VisualizationSelector from 'ee/vue_shared/components/customizable_dashboard/dashboard_editor/visualization_selector.vue';
-import {
-  dashboard,
-  dashboardWithNewPanel,
-  builtinDashboard,
-  mockDateRangeFilterChangePayload,
-} from './mock_data';
+import { NEW_DASHBOARD } from 'ee/analytics/analytics_dashboards/constants';
+import { TEST_VISUALIZATION } from 'ee_jest/analytics/analytics_dashboards/mock_data';
+import { dashboard, builtinDashboard, mockDateRangeFilterChangePayload } from './mock_data';
 
 const mockAlertDismiss = jest.fn();
 jest.mock('~/alert', () => ({
@@ -70,7 +67,6 @@ describe('CustomizableDashboard', () => {
     routeParams = {},
   ) => {
     const loadDashboard = { ...loadedDashboard };
-    loadDashboard.default = { ...loadDashboard };
 
     wrapper = shallowMountExtended(CustomizableDashboard, {
       propsData: {
@@ -215,14 +211,6 @@ describe('CustomizableDashboard', () => {
     it('does not sync filters with the URL', () => {
       expect(findUrlSync().exists()).toBe(false);
     });
-
-    it('makes a new grid widget when a new panel is added', async () => {
-      wrapper.setProps({ initialDashboard: dashboardWithNewPanel });
-
-      await waitForPromises();
-
-      expect(wrapper.vm.grid.makeWidget).toHaveBeenCalledWith('#panel-3');
-    });
   });
 
   describe('beforeDestroy', () => {
@@ -359,13 +347,19 @@ describe('CustomizableDashboard', () => {
         });
       });
 
-      it('emits "add-panel" when a visualization is selected', async () => {
-        await findVisualizationSelector().vm.$emit('select', 'foo', 'yml');
+      it('add a new panel when a visualization is selected', async () => {
+        expect(findPanels()).toHaveLength(2);
 
-        expect(wrapper.emitted('add-panel')).toEqual([['foo', 'yml']]);
+        const visualization = TEST_VISUALIZATION();
+        await findVisualizationSelector().vm.$emit('select', visualization);
+        await nextTick();
+
+        const updatedPanels = findPanels();
+        expect(updatedPanels).toHaveLength(3);
+        expect(updatedPanels.at(-1).props('visualization')).toMatchObject(visualization);
       });
 
-      it('routes to the designer when a "create" event is recieved', async () => {
+      it('routes to the designer when a "create" event is received', async () => {
         await findVisualizationSelector().vm.$emit('create');
 
         expect($router.push).toHaveBeenCalledWith({
@@ -439,7 +433,12 @@ describe('CustomizableDashboard', () => {
     beforeEach(() => {
       loadCSSFile.mockResolvedValue();
 
-      createWrapper({ isNewDashboard: true });
+      createWrapper(
+        {
+          isNewDashboard: true,
+        },
+        NEW_DASHBOARD(),
+      );
     });
 
     it('does not render the cancel button', () => {
@@ -469,6 +468,18 @@ describe('CustomizableDashboard', () => {
           dashboard: NEW_DASHBOARD_SLUG,
         },
       });
+    });
+
+    it('generates a slug for the dashboard when saving', async () => {
+      const title = 'New Title';
+      const expectedSlug = 'new_title';
+      await findDashboardTB().vm.$emit('input', title);
+
+      await findForm().vm.$emit('submit', new Event('submit'));
+
+      expect(wrapper.emitted('save')).toMatchObject([
+        [expectedSlug, { title, panels: [], userDefined: true }],
+      ]);
     });
   });
 

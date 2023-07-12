@@ -5,6 +5,8 @@ import {
   getDateRangeOption,
   isEmptyPanelData,
   availableVisualizationsValidator,
+  getDashboardConfig,
+  updateApolloCache,
 } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import { parsePikadayDate } from '~/lib/utils/datetime_utility';
 import {
@@ -12,7 +14,13 @@ import {
   DATE_RANGE_OPTIONS,
   DEFAULT_SELECTED_OPTION_INDEX,
 } from 'ee/vue_shared/components/customizable_dashboard/filters/constants';
-import { mockDateRangeFilterChangePayload } from './mock_data';
+import productAnalyticsDashboardFragment from 'ee/analytics/analytics_dashboards/graphql/fragments/product_analytics_dashboard.fragment.graphql';
+
+import { createMockClient } from 'helpers/mock_apollo_helper';
+import { TYPENAME_PRODUCT_ANALYTICS_DASHBOARD } from 'ee/analytics/analytics_dashboards/graphql/constants';
+import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { mockDateRangeFilterChangePayload, dashboard } from './mock_data';
 
 const option = DATE_RANGE_OPTIONS[0];
 
@@ -136,5 +144,125 @@ describe('availableVisualizationsValidator', () => {
       foo: { loading: false, bar: [] },
     });
     expect(result).toBe(false);
+  });
+});
+
+describe('getDashboardConfig', () => {
+  it('maps dashboard to expected value', () => {
+    const result = getDashboardConfig(dashboard);
+
+    expect(result).toMatchObject({
+      id: 'analytics_overview',
+      panels: [
+        {
+          gridAttributes: {
+            height: 3,
+            width: 3,
+          },
+          id: 1,
+          queryOverrides: null,
+          title: 'Test A',
+          visualization: 'cube_line_chart',
+        },
+        {
+          gridAttributes: {
+            height: 4,
+            width: 2,
+          },
+          id: 2,
+          queryOverrides: {
+            limit: 200,
+          },
+          title: 'Test B',
+          visualization: 'cube_line_chart',
+        },
+      ],
+      title: 'Analytics Overview',
+    });
+  });
+
+  ['userDefined', 'slug'].forEach((omitted) => {
+    it(`omits "${omitted}" dashboard property`, () => {
+      const result = getDashboardConfig(dashboard);
+
+      expect(result[omitted]).not.toBeDefined();
+    });
+  });
+});
+
+describe('updateApolloCache', () => {
+  let apolloClient;
+  let mockWriteFragment;
+  const projectId = '1';
+  const dashboardSlug = 'analytics_overview';
+  const dashboardRef = `${TYPENAME_PRODUCT_ANALYTICS_DASHBOARD}:{"slug":"${dashboardSlug}" }`;
+  const projectRef = `${TYPENAME_PROJECT}:${convertToGraphQLId(TYPENAME_PROJECT, projectId)}`;
+
+  beforeEach(() => {
+    apolloClient = createMockClient(
+      [],
+      {},
+      {
+        dataIdFromObject: jest.fn(({ slug }) => (slug ? dashboardRef : projectRef)),
+      },
+    );
+
+    mockWriteFragment = jest.fn();
+    apolloClient.writeFragment = mockWriteFragment;
+  });
+
+  it('adds a new dashboard fragment to the cache', () => {
+    updateApolloCache(apolloClient, projectId, dashboardSlug, dashboard);
+
+    expect(mockWriteFragment).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: dashboardRef,
+        fragment: productAnalyticsDashboardFragment,
+        data: expect.objectContaining({
+          slug: dashboardSlug,
+          title: dashboard.title,
+          panels: expect.objectContaining({
+            nodes: expect.arrayContaining([
+              expect.objectContaining({
+                id: 1,
+                visualization: expect.objectContaining({
+                  type: 'LineChart',
+                  slug: 'cube_line_chart',
+                  title: 'Cube line chart',
+                }),
+              }),
+              expect.objectContaining({
+                id: 2,
+                visualization: expect.objectContaining({
+                  type: 'LineChart',
+                  slug: 'cube_line_chart',
+                  title: 'Cube line chart',
+                }),
+              }),
+            ]),
+          }),
+        }),
+      }),
+    );
+  });
+
+  it('links new dashboard to project', () => {
+    apolloClient.cache.modify = jest.fn();
+
+    updateApolloCache(apolloClient, projectId, dashboardSlug, dashboard);
+
+    expect(apolloClient.cache.modify).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: projectRef,
+      }),
+    );
+
+    const modifyCallback =
+      apolloClient.cache.modify.mock.calls[0][0].fields.productAnalyticsDashboards;
+
+    const modifiedData = modifyCallback({ nodes: [{ __ref: 'some/existing/dashboardRef' }] });
+    expect(modifiedData).toEqual({
+      nodes: [{ __ref: 'some/existing/dashboardRef' }, { __ref: dashboardRef }],
+    });
   });
 });

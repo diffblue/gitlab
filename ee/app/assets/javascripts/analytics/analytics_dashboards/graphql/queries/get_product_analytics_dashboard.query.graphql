@@ -1,24 +1,11 @@
+#import "../fragments/product_analytics_dashboard.fragment.graphql"
+
 query getProductAnalyticsDashboard($projectPath: ID!, $slug: String) {
   project(fullPath: $projectPath) {
     id
     productAnalyticsDashboards(slug: $slug) {
       nodes {
-        slug
-        title
-        description
-        userDefined
-        panels {
-          nodes {
-            title
-            gridAttributes
-            queryOverrides
-            visualization {
-              type
-              options
-              data
-            }
-          }
-        }
+        ...ProductAnalyticsDashboardFragment
       }
     }
   }

@@ -1,6 +1,7 @@
 <script>
 import { GridStack } from 'gridstack';
 import * as Sentry from '@sentry/browser';
+import cloneDeep from 'lodash/cloneDeep';
 import { GlButton, GlFormInput, GlForm } from '@gitlab/ui';
 import { loadCSSFile } from '~/lib/utils/css_utils';
 import { slugify } from '~/lib/utils/text_utility';
@@ -8,6 +9,10 @@ import { createAlert } from '~/alert';
 import { s__, sprintf } from '~/locale';
 import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/url_sync.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import {
+  createNewVisualizationPanel,
+  getNextPanelId,
+} from 'ee/analytics/analytics_dashboards/utils';
 import PanelsBase from './panels_base.vue';
 import {
   GRIDSTACK_MARGIN,
@@ -18,7 +23,7 @@ import {
   NEW_DASHBOARD_SLUG,
 } from './constants';
 import VisualizationSelector from './dashboard_editor/visualization_selector.vue';
-import { filtersToQueryParams } from './utils';
+import { filtersToQueryParams, getDashboardConfig } from './utils';
 
 export default {
   name: 'CustomizableDashboard',
@@ -76,7 +81,7 @@ export default {
   },
   data() {
     return {
-      dashboard: { ...this.initialDashboard },
+      dashboard: cloneDeep(this.initialDashboard),
       grid: undefined,
       cssLoaded: false,
       mounted: true,
@@ -97,6 +102,9 @@ export default {
     queryParams() {
       return filtersToQueryParams(this.filters);
     },
+    dashboardConfig() {
+      return getDashboardConfig(this.dashboard);
+    },
   },
   watch: {
     cssLoaded() {
@@ -104,14 +112,6 @@ export default {
     },
     mounted() {
       this.initGridStack();
-    },
-    'initialDashboard.panels': {
-      async handler(panels) {
-        const newPanel = panels[panels.length - 1];
-        // Wait for the panels to render
-        await this.$nextTick();
-        this.registerNewGridPanel(newPanel.id);
-      },
     },
     isNewDashboard(isNew) {
       this.editing = isNew;
@@ -197,8 +197,15 @@ export default {
 
       return gridAttributes[attribute];
     },
-    async addNewPanel(visualizationId, source) {
-      this.$emit('add-panel', visualizationId, source);
+    async addNewPanel(visualization) {
+      const panelId = getNextPanelId(this.dashboard.panels);
+      const panel = createNewVisualizationPanel(panelId, visualization);
+
+      this.dashboard.panels.push(panel);
+
+      // Wait for the panels to render
+      await this.$nextTick();
+      this.registerNewGridPanel(panelId);
     },
     convertToGridAttributes(gridStackProperties) {
       return {
@@ -221,20 +228,12 @@ export default {
     async saveEdit(submitEvent) {
       submitEvent.preventDefault();
 
-      if (!this.dashboard.id) {
-        this.dashboard.id = slugify(this.dashboard.title, '_');
-      }
-
       if (this.isNewDashboard) {
         this.showCode = false;
       }
 
-      // Copying over to our original dashboard object
-      // as the main one was hydrated during load with other file
-      this.dashboard.default.id = this.dashboard.id;
-      this.dashboard.default.title = this.dashboard.title;
-
-      this.$emit('save', this.dashboard.id, this.dashboard.default);
+      const dashboardSlug = this.dashboard.slug || slugify(this.dashboard.title, '_');
+      this.$emit('save', dashboardSlug, this.dashboard);
     },
     cancelEdit() {
       this.editing = false;
@@ -254,12 +253,6 @@ export default {
       const updatedPanel = this.dashboard.panels.find((element) => element.id === Number(item.id));
       if (updatedPanel) {
         updatedPanel.gridAttributes = this.convertToGridAttributes(item);
-      }
-      const selectedDefaultPanel = this.dashboard.default.panels.find(
-        (element) => element.id === Number(item.id),
-      );
-      if (selectedDefaultPanel) {
-        selectedDefaultPanel.gridAttributes = this.convertToGridAttributes(item);
       }
     },
     handlePanelError(panelTitle, error) {
@@ -314,7 +307,7 @@ export default {
         >
       </gl-form>
       <gl-button
-        v-if="editingEnabled && !editing && !dashboard.builtin"
+        v-if="editingEnabled && !editing && dashboard.userDefined"
         icon="pencil"
         class="gl-mr-2"
         data-testid="dashboard-edit-btn"
@@ -322,7 +315,7 @@ export default {
         >{{ s__('Analytics|Edit') }}</gl-button
       >
       <gl-button
-        v-if="editing || dashboard.builtin"
+        v-if="editing || !dashboard.userDefined"
         :selected="showCode"
         icon="code"
         class="gl-mr-2"
@@ -400,7 +393,7 @@ export default {
           <div v-if="showCode" class="gl-m-4">
             <pre
               class="code highlight gl-display-flex"
-            ><code data-testid="dashboard-code">{{ dashboard.default }}</code></pre>
+            ><code data-testid="dashboard-code">{{ dashboardConfig }}</code></pre>
           </div>
         </div>
         <div

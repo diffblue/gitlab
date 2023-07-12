@@ -1,36 +1,35 @@
 <script>
-import { GlLoadingIcon, GlEmptyState } from '@gitlab/ui';
+import { GlEmptyState, GlLoadingIcon } from '@gitlab/ui';
 import { createAlert } from '~/alert';
 import {
+  HTTP_STATUS_BAD_REQUEST,
   HTTP_STATUS_CREATED,
   HTTP_STATUS_NOT_FOUND,
-  HTTP_STATUS_BAD_REQUEST,
 } from '~/lib/utils/http_status';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
-import { buildDefaultDashboardFilters } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import {
-  isValidConfigFileName,
-  configFileNameToID,
-  getNextPanelId,
-  createNewVisualizationPanel,
-} from 'ee/analytics/analytics_dashboards/utils';
+  buildDefaultDashboardFilters,
+  getDashboardConfig,
+  updateApolloCache,
+} from 'ee/vue_shared/components/customizable_dashboard/utils';
+import { configFileNameToID, isValidConfigFileName } from 'ee/analytics/analytics_dashboards/utils';
 import {
   getCustomDashboard,
-  getProductAnalyticsVisualizationList,
   getProductAnalyticsVisualization,
+  getProductAnalyticsVisualizationList,
   saveCustomDashboard,
 } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { builtinDashboards, builtinVisualizations } from '../gl_dashboards';
 import {
-  VISUALIZATION_TYPE_FILE,
-  I18N_DASHBOARD_NOT_FOUND_TITLE,
-  I18N_DASHBOARD_NOT_FOUND_DESCRIPTION,
-  I18N_DASHBOARD_NOT_FOUND_ACTION,
-  I18N_DASHBOARD_SAVED_SUCCESSFULLY,
   I18N_DASHBOARD_ERROR_WHILE_SAVING,
+  I18N_DASHBOARD_NOT_FOUND_ACTION,
+  I18N_DASHBOARD_NOT_FOUND_DESCRIPTION,
+  I18N_DASHBOARD_NOT_FOUND_TITLE,
+  I18N_DASHBOARD_SAVED_SUCCESSFULLY,
   I18N_PRODUCT_ANALYTICS_TITLE,
   NEW_DASHBOARD,
+  VISUALIZATION_TYPE_FILE,
 } from '../constants';
 import getProductAnalyticsDashboardQuery from '../graphql/queries/get_product_analytics_dashboard.query.graphql';
 import getAvailableVisualizations from '../graphql/queries/get_all_product_analytics_visualizations.query.graphql';
@@ -51,6 +50,9 @@ export default {
     projectFullPath: {
       type: String,
     },
+    projectId: {
+      type: String,
+    },
     dashboardEmptyStateIllustrationPath: {
       type: String,
     },
@@ -67,7 +69,7 @@ export default {
   },
   data() {
     return {
-      dashboard: null,
+      initialDashboard: null,
       showEmptyState: false,
       availableVisualizations: {
         [I18N_PRODUCT_ANALYTICS_TITLE]: {
@@ -87,7 +89,7 @@ export default {
   async created() {
     // Only allow new dashboards when the dashboards editor is enabled
     if (this.editingEnabled && this.isNewDashboard) {
-      this.dashboard = this.createNewDashboard();
+      this.initialDashboard = this.createNewDashboard();
       return;
     }
 
@@ -107,7 +109,7 @@ export default {
     // Otherwise, show the empty state if Jitsu is enabled and we couldn't find it
     // Or we couldn't prep the new dashboard because the dashboard editor is disabled
     if (loadedDashboard) {
-      this.dashboard = await this.importDashboardDependencies(loadedDashboard);
+      this.initialDashboard = await this.importDashboardDependencies(loadedDashboard);
       await this.loadAvailableVisualizations();
     } else if (this.jitsuEnabled || this.isNewDashboard) {
       this.showEmptyState = true;
@@ -119,7 +121,7 @@ export default {
     this.breadcrumbState.updateName('');
   },
   apollo: {
-    dashboard: {
+    initialDashboard: {
       query: getProductAnalyticsDashboardQuery,
       variables() {
         return {
@@ -138,16 +140,18 @@ export default {
           return null;
         }
 
-        const panels = dashboard.panels?.nodes || [];
+        const panels = (dashboard.panels?.nodes || []).map((panel, index) => ({
+          ...panel,
+          id: index + 1,
+        }));
 
         return {
           ...dashboard,
           panels,
-          default: { ...dashboard, panels },
         };
       },
       result() {
-        this.breadcrumbState.updateName(this.dashboard?.title || '');
+        this.breadcrumbState.updateName(this.initialDashboard?.title || '');
       },
       error(error) {
         // TODO: Show user friendly errors when request fails
@@ -166,8 +170,8 @@ export default {
         return (
           !this.editingEnabled ||
           this.jitsuEnabled ||
-          !this.dashboard ||
-          !this.dashboard?.userDefined
+          !this.initialDashboard ||
+          !this.initialDashboard?.userDefined
         );
       },
       update(data) {
@@ -189,7 +193,7 @@ export default {
   },
   methods: {
     createNewDashboard() {
-      return { ...NEW_DASHBOARD(), default: { ...NEW_DASHBOARD() } };
+      return NEW_DASHBOARD();
     },
     async loadBuiltInDashboard() {
       const builtInDashboard = await builtinDashboards[this.$route.params.slug]();
@@ -258,32 +262,21 @@ export default {
           ? await Promise.all(
               dashboard.panels.map(async (panel) => ({
                 ...panel,
-                visualization: await this.importVisualization(
-                  panel.visualization,
-                  panel.visualizationType,
-                ),
+                visualization: {
+                  slug: panel.visualization,
+                  ...(await this.importVisualization(panel.visualization, panel.visualizationType)),
+                },
               })),
             )
           : [],
       };
     },
-    async addNewPanel(visualizationId, source) {
-      const panelId = getNextPanelId(this.dashboard.panels);
-
-      const panel = createNewVisualizationPanel(panelId, visualizationId, source);
-
-      this.dashboard.default.panels.push({ ...panel });
-      this.dashboard.panels.push({
-        ...panel,
-        visualization: await this.importVisualization(panel.visualization, panel.visualizationType),
-      });
-    },
-    async saveDashboard(dashboardId, dashboardObject) {
+    async saveDashboard(dashboardSlug, dashboard) {
       try {
         this.isSaving = true;
         const saveResult = await saveCustomDashboard({
-          dashboardId,
-          dashboardObject,
+          dashboardSlug,
+          dashboardConfig: getDashboardConfig(dashboard),
           projectInfo: this.customDashboardsProject,
           isNewFile: this.isNewDashboard,
         });
@@ -291,11 +284,14 @@ export default {
         if (saveResult?.status === HTTP_STATUS_CREATED) {
           this.$toast.show(I18N_DASHBOARD_SAVED_SUCCESSFULLY);
 
+          const client = this.$apollo.getClient();
+          updateApolloCache(client, this.projectId, dashboardSlug, dashboard);
+
           if (this.isNewDashboard) {
             // We redirect now to the new route
             this.$router.push({
               name: 'dashboard-detail',
-              params: { id: dashboardId },
+              params: { slug: dashboardSlug },
             });
           }
         } else {
@@ -331,8 +327,8 @@ export default {
 <template>
   <div>
     <customizable-dashboard
-      v-if="dashboard"
-      :initial-dashboard="dashboard"
+      v-if="initialDashboard"
+      :initial-dashboard="initialDashboard"
       :get-visualization="importVisualization"
       :available-visualizations="availableVisualizations"
       :default-filters="defaultFilters"
@@ -342,7 +338,6 @@ export default {
       :is-new-dashboard="isNewDashboard"
       show-date-range-filter
       @save="saveDashboard"
-      @add-panel="addNewPanel"
     />
     <gl-empty-state
       v-else-if="showEmptyState"

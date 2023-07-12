@@ -69,11 +69,11 @@ describe('AnalyticsDashboard', () => {
       ${true}   | ${CREATE_FILE_ACTION}
       ${false}  | ${UPDATE_FILE_ACTION}
     `('$action(s) a dashboard when isNewFile is "$isNewFile"', async ({ isNewFile, action }) => {
-      const dashboardId = 'abc';
+      const dashboardSlug = 'abc';
 
       await saveCustomDashboard({
-        dashboardId,
-        dashboardObject: { id: 'test' },
+        dashboardSlug,
+        dashboardConfig: { id: 'test' },
         projectInfo: TEST_CUSTOM_DASHBOARDS_PROJECT,
         isNewFile,
       });
@@ -84,7 +84,7 @@ describe('AnalyticsDashboard', () => {
         actions: [
           {
             action,
-            file_path: `${CUSTOM_DASHBOARDS_PATH}${dashboardId}${CONFIGURATION_FILE_TYPE}`,
+            file_path: `${CUSTOM_DASHBOARDS_PATH}${dashboardSlug}/${dashboardSlug}${CONFIGURATION_FILE_TYPE}`,
             previous_path: undefined,
             content: 'id: test\n',
             encoding: 'text',

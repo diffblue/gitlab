@@ -28,6 +28,7 @@ export const TEST_CUSTOM_DASHBOARDS_LIST = [
 export const TEST_VISUALIZATION = () => ({
   version: 1,
   type: 'LineChart',
+  slug: 'test_visualization',
   data: {
     type: 'cube_analytics',
     query: {
@@ -105,6 +106,7 @@ export const getGraphQLDashboard = (options = {}, withPanels = true) => {
               limit: 200,
             },
             visualization: {
+              slug: 'line_chart',
               type: 'LineChart',
               options: {
                 xAxis: {

@@ -2,6 +2,8 @@ import { __ } from '~/locale';
 
 const cubeLineChart = {
   type: 'LineChart',
+  slug: 'cube_line_chart',
+  title: 'Cube line chart',
   data: {
     type: 'cube_analytics',
     query: {
@@ -26,6 +28,7 @@ export const dashboard = {
   id: 'analytics_overview',
   slug: 'analytics_overview',
   title: 'Analytics Overview',
+  userDefined: true,
   panels: [
     {
       id: 1,
@@ -48,25 +51,10 @@ export const dashboard = {
 
 export const builtinDashboard = {
   title: 'Analytics Overview',
-  builtin: true,
   panels: [
     {
       id: 1,
       title: __('Test A'),
-      gridAttributes: { width: 3, height: 3 },
-      visualization: cubeLineChart,
-      queryOverrides: {},
-    },
-  ],
-};
-
-export const dashboardWithNewPanel = {
-  ...dashboard,
-  panels: [
-    ...dashboard.panels,
-    {
-      id: 3,
-      title: __('Test C'),
       gridAttributes: { width: 3, height: 3 },
       visualization: cubeLineChart,
       queryOverrides: {},

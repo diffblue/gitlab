@@ -1,5 +1,5 @@
 import * as utils from 'ee/analytics/analytics_dashboards/utils';
-import { humanize } from '~/lib/utils/text_utility';
+import { TEST_VISUALIZATION } from 'ee_jest/analytics/analytics_dashboards/mock_data';
 
 describe('Analytics dashboard utils', () => {
   describe('#isValidConfigFileName', () => {
@@ -47,11 +47,11 @@ describe('Analytics dashboard utils', () => {
 
   describe('#createNewVisualizationPanel', () => {
     it('returns the expected object', () => {
-      expect(utils.createNewVisualizationPanel(1, 'foo', 'yml')).toMatchObject({
+      const visualization = TEST_VISUALIZATION();
+      expect(utils.createNewVisualizationPanel(1, visualization)).toMatchObject({
         id: 1,
-        visualization: 'foo',
-        visualizationType: 'yml',
-        title: humanize('foo'),
+        visualization,
+        title: 'Test visualization',
         gridAttributes: {
           width: 4,
           height: 3,

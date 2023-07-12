@@ -1,3 +1,4 @@
+import cloneDeep from 'lodash/cloneDeep';
 import { humanize } from '~/lib/utils/text_utility';
 
 export const isValidConfigFileName = (fileName) =>
@@ -21,14 +22,14 @@ export const getNextPanelId = (panels) => {
   return currentId + 1;
 };
 
-export const createNewVisualizationPanel = (panelId, visualizationId, source) => ({
+export const createNewVisualizationPanel = (panelId, visualization) => ({
   id: panelId,
-  visualization: visualizationId,
-  visualizationType: source,
-  title: humanize(visualizationId),
+  title: humanize(visualization.slug),
   gridAttributes: {
     width: 4,
     height: 3,
   },
+  queryOverrides: {},
   options: {},
+  visualization: cloneDeep(visualization),
 });
