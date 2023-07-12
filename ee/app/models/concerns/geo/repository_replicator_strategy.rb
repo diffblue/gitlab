@@ -7,10 +7,14 @@ module Geo
     include ::Geo::VerifiableReplicator
     include Gitlab::Geo::LogHelpers
 
+    EVENT_CREATED = 'created'
+    EVENT_UPDATED = 'updated'
+    EVENT_DELETED = 'deleted'
+
     included do
-      event :created
-      event :updated
-      event :deleted
+      event EVENT_CREATED
+      event EVENT_UPDATED
+      event EVENT_DELETED
     end
 
     class_methods do
@@ -88,7 +92,7 @@ module Geo
     end
 
     def reschedule_sync
-      Geo::EventWorker.perform_async(replicable_name, 'updated', { 'model_record_id' => model_record.id })
+      Geo::EventWorker.perform_async(replicable_name, EVENT_UPDATED, { 'model_record_id' => model_record.id })
     end
 
     # Called by Geo::FrameworkHousekeepingService#execute

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Include these shared examples in specs of Replicators that include
-# BlobReplicatorStrategy.
+# RepositoryReplicatorStrategy.
 #
 # Required let variables:
 #
@@ -24,7 +24,7 @@ RSpec.shared_examples 'a repository replicator' do
   end
 
   it_behaves_like 'a replicator' do
-    let_it_be(:event_name) { 'updated' }
+    let_it_be(:event_name) { ::Geo::RepositoryReplicatorStrategy::EVENT_UPDATED }
   end
 
   # This could be included in each model's spec, but including it here is DRYer.
@@ -39,7 +39,7 @@ RSpec.shared_examples 'a repository replicator' do
       end.to change { ::Geo::Event.count }.by(1)
 
       expect(::Geo::Event.last.attributes).to include(
-        "replicable_name" => replicator.replicable_name, "event_name" => "updated", "payload" => { "model_record_id" => replicator.model_record.id })
+        "replicable_name" => replicator.replicable_name, "event_name" => ::Geo::RepositoryReplicatorStrategy::EVENT_UPDATED, "payload" => { "model_record_id" => replicator.model_record.id })
     end
 
     context 'when replication feature flag is disabled' do
@@ -62,7 +62,7 @@ RSpec.shared_examples 'a repository replicator' do
       end.to change { ::Geo::Event.count }.by(1)
 
       expect(::Geo::Event.last.attributes).to include(
-        "replicable_name" => replicator.replicable_name, "event_name" => "deleted")
+        "replicable_name" => replicator.replicable_name, "event_name" => ::Geo::RepositoryReplicatorStrategy::EVENT_DELETED)
       expect(::Geo::Event.last.payload).to include({ "model_record_id" => replicator.model_record.id })
     end
 
@@ -94,7 +94,7 @@ RSpec.shared_examples 'a repository replicator' do
           .to receive(:new).with(replicator)
                 .and_return(sync_service)
 
-        replicator.consume(:updated)
+        replicator.consume(::Geo::RepositoryReplicatorStrategy::EVENT_UPDATED)
       end
     end
 
@@ -105,7 +105,7 @@ RSpec.shared_examples 'a repository replicator' do
         expect(::Geo::FrameworkRepositorySyncService)
           .not_to receive(:new)
 
-        replicator.consume(:updated)
+        replicator.consume(::Geo::RepositoryReplicatorStrategy::EVENT_UPDATED)
       end
     end
 
@@ -117,7 +117,7 @@ RSpec.shared_examples 'a repository replicator' do
         allow(replicator).to receive(:sync_repository)
 
         expect do
-          replicator.consume(:updated)
+          replicator.consume(::Geo::RepositoryReplicatorStrategy::EVENT_UPDATED)
         end.to change { replicator.registry.reload.pending? }.from(false).to(true)
       end
     end
@@ -135,7 +135,7 @@ RSpec.shared_examples 'a repository replicator' do
         .to receive(:new).with(replicator, {})
               .and_return(sync_service)
 
-      replicator.consume(:deleted)
+      replicator.consume(::Geo::RepositoryReplicatorStrategy::EVENT_DELETED)
     end
   end
 
