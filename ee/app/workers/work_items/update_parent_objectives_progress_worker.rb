@@ -37,6 +37,7 @@ module WorkItems
 
       parent_progress.save!
       ::SystemNoteService.change_progress_note(parent, User.automation_bot)
+      ::GraphqlTriggers.work_item_updated(parent)
     end
   end
 end
