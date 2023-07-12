@@ -65,21 +65,25 @@ RSpec.describe 'Group elastic search', :js, :elastic, :sidekiq_inline, :disable_
   end
 
   describe 'wiki search' do
+    include WikiHelpers
     let(:wiki) { ProjectWiki.new(project, user) }
+    let(:group_wiki) { create(:group_wiki, group: group) }
 
     before do
-      wiki.create_page('test.md', '# term')
-      wiki.index_wiki_blobs
-
+      stub_group_wikis(true)
+      [group_wiki, wiki].each do |w|
+        w.create_page('test.md', '# term')
+        w.index_wiki_blobs
+      end
       ensure_elasticsearch_index!
     end
 
-    it 'finds wiki pages' do
+    it 'finds Project and Group wiki pages' do
       submit_search('term')
       select_search_scope('Wiki')
 
-      expect(page).to have_selector('.search-result-row .description', text: 'term')
-      expect(page).to have_link('test')
+      expect(page).to have_selector('.search-result-row .description', text: 'term').twice
+      expect(page).to have_link('test').twice
     end
   end
 

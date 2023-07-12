@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::Latest::Routing do
+RSpec.describe Elastic::Latest::Routing, feature_category: :global_search do
   let(:proxified_class) { Issue }
   let(:included_class) { Elastic::Latest::ApplicationClassProxy }
   let(:project_ids) { [1, 2, 3] }

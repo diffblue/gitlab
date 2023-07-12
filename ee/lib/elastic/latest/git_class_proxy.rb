@@ -38,8 +38,8 @@ module Elastic
         options = options.merge(highlight: true)
 
         elastic_search_and_wrap(query, type: es_type, page: page, per: per, options: options,
-          preload_method: preload_method) do |result, project|
-          ::Gitlab::Elastic::SearchResults.parse_search_result(result, project)
+          preload_method: preload_method) do |result, container|
+          ::Gitlab::Elastic::SearchResults.parse_search_result(result, container)
         end
       end
 
@@ -187,23 +187,25 @@ module Elastic
       end
 
       def yield_each_search_result(response, type, preload_method)
-        # Avoid one SELECT per result by loading all projects into a hash
+        group_ids = group_ids_from_wiki_response(type, response)
+        group_containers = Group.with_route.id_in(group_ids).includes(:deletion_schedule) # rubocop: disable CodeReuse/ActiveRecord
         project_ids = response.map { |result| project_id_for_commit_or_blob(result, type) }.uniq
-        projects = Project.with_route.id_in(project_ids)
-        projects = projects.public_send(preload_method) if preload_method # rubocop:disable GitlabSecurity/PublicSend
-        projects = projects.index_by(&:id)
+        # Avoid one SELECT per result by loading all projects into a hash
+        project_containers = Project.with_route.id_in(project_ids)
+        project_containers = project_containers.public_send(preload_method) if preload_method # rubocop:disable GitlabSecurity/PublicSend
+        containers = project_containers + group_containers
+        containers = containers.index_by { |container| "#{container.class.name.downcase}_#{container.id}" }
         total_count = response.total_count
 
         items = response.map do |result|
-          project_id = project_id_for_commit_or_blob(result, type)
-          project = projects[project_id]
+          container = get_container_from_containers_hash(type, result, containers)
 
-          if project.nil? || project.pending_delete?
+          if container.nil? || container.pending_delete?
             total_count -= 1
             next
           end
 
-          yield(result, project)
+          yield(result, container)
         end
 
         # Remove results for deleted projects
@@ -212,9 +214,35 @@ module Elastic
         [items, total_count]
       end
 
+      def group_ids_from_wiki_response(type, response)
+        return unless type.eql?('wiki_blob') && use_separate_wiki_index?
+
+        response.map { |result| group_id_for_wiki_blob(result) }
+      end
+
+      def get_container_from_containers_hash(type, result, containers)
+        if group_level_wiki_result?(result)
+          group_id = group_id_for_wiki_blob(result)
+          containers["group_#{group_id}"]
+        else
+          project_id = project_id_for_commit_or_blob(result, type)
+          containers["project_#{project_id}"]
+        end
+      end
+
+      def group_level_wiki_result?(result)
+        return false unless use_separate_wiki_index?
+
+        result['_source']['type'].eql?('wiki_blob') && result['_source']['rid'].match(/wiki_group_\d+/)
+      end
+
       # Indexed commit does not include project_id
       def project_id_for_commit_or_blob(result, type)
         (result.dig('_source', 'project_id') || result.dig('_source', type, 'rid') || result.dig('_source', 'rid')).to_i
+      end
+
+      def group_id_for_wiki_blob(result)
+        result.dig('_source', 'group_id')
       end
 
       def apply_simple_query_string(name:, fields:, query:, bool_expr:, count_only:)

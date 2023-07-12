@@ -431,4 +431,13 @@ RSpec.describe SearchHelper, feature_category: :global_search do
       expect(search_service.show_elasticsearch_tabs?).to eq(true)
     end
   end
+
+  describe '#wiki_blob_link' do
+    let_it_be(:group) { create(:group, :wiki_repo) }
+    let(:wiki_blob) do
+      Gitlab::Search::FoundBlob.new({ path: 'test', basename: 'test', ref: 'master', data: 'foo', startline: 2, group: group, group_id: group.id, group_level_blob: true })
+    end
+
+    it { expect(wiki_blob_link(wiki_blob)).to eq("/groups/#{group.path}/-/wikis/#{wiki_blob.path}") }
+  end
 end

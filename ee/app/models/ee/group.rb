@@ -832,6 +832,12 @@ module EE
       actual_limits.exceeded?(:project_access_token_limit, active_project_tokens_of_root_ancestor)
     end
 
+    def pending_delete?
+      return false unless deletion_schedule
+
+      deletion_schedule.marked_for_deletion_on.future?
+    end
+
     private
 
     def active_project_tokens_of_root_ancestor

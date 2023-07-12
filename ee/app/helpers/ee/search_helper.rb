@@ -158,6 +158,13 @@ module EE
       end
     end
 
+    override :wiki_blob_link
+    def wiki_blob_link(wiki_blob)
+      return group_wiki_path(wiki_blob.group, wiki_blob.basename) if wiki_blob.group_level_blob
+
+      super
+    end
+
     private
 
     def recent_epics_autocomplete(term)

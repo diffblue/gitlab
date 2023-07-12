@@ -132,12 +132,12 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
   end
 
   describe 'parse_search_result' do
-    let(:project) { double(:project) }
+    let_it_be(:project) { create(:project) }
     let(:content) { "foo\nbar\nbaz\n" }
     let(:path) { 'path/file.ext' }
     let(:source) do
       {
-        'project_id' => 1,
+        'project_id' => project.id,
         'blob' => {
           'commit_sha' => 'sha',
           'content' => content,
@@ -274,6 +274,30 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
             basename: '/group/project/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab'
           )
         end
+      end
+    end
+
+    context 'when blob is a group level result' do
+      before do
+        set_elasticsearch_migration_to(:migrate_wikis_to_separate_index, including: true)
+      end
+
+      let_it_be(:group) { create(:group) }
+      let_it_be(:source) do
+        {
+          'type' => 'wiki_blob',
+          'group_id' => group.id,
+          'commit_sha' => 'sha',
+          'content' => 'Test',
+          'path' => 'home.md'
+        }
+      end
+
+      it 'returns an instance of Gitlab::Search::FoundBlob with group_level_blob as true' do
+        parsed = described_class.parse_search_result({ '_source' => source }, group)
+
+        expect(parsed).to be_kind_of(::Gitlab::Search::FoundBlob)
+        expect(parsed).to have_attributes(group: group, project: nil, group_level_blob: true)
       end
     end
   end
@@ -1137,6 +1161,31 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
         let(:limit_project_ids) { [] }
 
         it { is_expected.to be_empty }
+      end
+    end
+
+    context 'for group wiki' do
+      let_it_be(:sub_group) { create(:group, :nested) }
+      let_it_be(:sub_group_wiki) { create(:group_wiki, group: sub_group) }
+      let_it_be(:parent_group) { sub_group.parent }
+      let_it_be(:parent_group_wiki) { create(:group_wiki, group: parent_group) }
+      let_it_be(:group_project) { create(:project, :public, :in_group) }
+      let_it_be(:group_project_wiki) { create(:project_wiki, project: group_project, user: user) }
+
+      before do
+        set_elasticsearch_migration_to(:migrate_wikis_to_separate_index, including: true)
+        [parent_group_wiki, sub_group_wiki, group_project_wiki].each do |wiki|
+          wiki.create_page('index_page', 'term')
+          wiki.index_wiki_blobs
+        end
+        ElasticWikiIndexerWorker.new.perform(project_1.id, project_1.class.name, force: true)
+        ensure_elasticsearch_index!
+      end
+
+      it 'includes all the wikis from groups, subgroups, projects and projects within the group' do
+        expect(results.wiki_blobs_count).to eq 4
+        wiki_containers = wiki_blobs.filter_map { |blob| blob.group_level_blob ? blob.group : blob.project }.uniq
+        expect(wiki_containers).to contain_exactly(parent_group, sub_group, group_project, project_1)
       end
     end
   end
