@@ -1,5 +1,5 @@
 mutation fillInMergeRequestTemplate(
-  $sourceProjectGqlId: ID
+  $sourceProjectId: ID
   $targetProjectGqlId: AiModelID!
   $source: String!
   $target: String!
@@ -10,7 +10,7 @@ mutation fillInMergeRequestTemplate(
     input: {
       fillInMergeRequestTemplate: {
         resourceId: $targetProjectGqlId
-        sourceProjectId: $sourceProjectGqlId
+        sourceProjectId: $sourceProjectId
         sourceBranch: $source
         targetBranch: $target
         title: $mrTitle
