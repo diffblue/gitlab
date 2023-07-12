@@ -208,4 +208,60 @@ RSpec.describe Ci::Runner, feature_category: :continuous_integration do
       it { is_expected.to be_truthy }
     end
   end
+
+  describe '.order_most_active_desc' do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:runners) { create_list(:ci_runner, 5) }
+
+    before_all do
+      runners.map.with_index do |runner, idx|
+        create_list(:ci_build, 10 - idx, runner: runner, project: project).each do |build|
+          create(:ci_running_build, runner: build.runner, build: build, project: project)
+        end
+      end
+    end
+
+    it 'returns runners sorted by running builds' do
+      expect(described_class.order_most_active_desc.pluck(:id)).to eq(runners.pluck(:id))
+    end
+
+    it 'limits the number of running builds counted and sorts by id desc' do
+      stub_const("EE::Ci::Runner::MOST_ACTIVE_RUNNERS_BUILDS_LIMIT", 8)
+
+      runner_ids = runners.pluck(:id)
+
+      expected_runner_ids = runner_ids[0..2].reverse + runner_ids[3..5]
+
+      expect(described_class.order_most_active_desc.pluck(:id)).to eq(expected_runner_ids)
+    end
+  end
+
+  describe '.order_by' do
+    subject(:order_by) do
+      described_class.order_by(sort_key)
+    end
+
+    context 'when sort_key is most_active_desc' do
+      let_it_be(:project) { create(:project) }
+      let_it_be(:runners) { create_list(:ci_runner, 3) }
+
+      let(:sort_key) { 'most_active_desc' }
+
+      context 'with no running builds' do
+        it { is_expected.to be_empty }
+      end
+
+      context 'with running builds' do
+        before_all do
+          runners.each_with_index do |runner, running_build_count|
+            create_list(:ci_running_build, running_build_count, runner: runner, project: project)
+          end
+        end
+
+        it 'contains the runners in the correct order' do
+          is_expected.to eq([runners[2], runners[1]])
+        end
+      end
+    end
+  end
 end
