@@ -136,6 +136,7 @@ describe('invalidVulnerabilityStates', () => {
       rules                                                                                 | expectedResult
       ${null}                                                                               | ${false}
       ${[]}                                                                                 | ${false}
+      ${''}                                                                                 | ${false}
       ${[{}]}                                                                               | ${false}
       ${[{ branches: [] }]}                                                                 | ${false}
       ${[{ branch_type: 'invalid' }]}                                                       | ${true}

@@ -1,6 +1,25 @@
 import { safeLoad } from 'js-yaml';
 import { isValidPolicy, hasInvalidCron } from '../../utils';
-import { RULE_MODE_SCANNERS } from '../../constants';
+import {
+  BRANCH_TYPE_KEY,
+  RULE_MODE_SCANNERS,
+  VALID_SCAN_EXECUTION_BRANCH_TYPE_OPTIONS,
+} from '../../constants';
+
+/**
+ * Check if any rule has invalid branch type
+ * @param rules list of rules with either branches or branch_type property
+ * @returns {Boolean}
+ */
+const invalidBranchType = (rules) => {
+  if (!rules) return false;
+
+  return rules.some(
+    (rule) =>
+      BRANCH_TYPE_KEY in rule &&
+      !VALID_SCAN_EXECUTION_BRANCH_TYPE_OPTIONS.includes(rule.branch_type),
+  );
+};
 
 /**
  * Checks if rule mode supports the inputted scanner
@@ -35,11 +54,12 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
        * schema. These values should not be retrieved from the backend schema because
        * the UI for new attributes may not be available.
        */
-      const rulesKeys = ['type', 'agents', 'branches', 'cadence', 'timezone'];
+      const rulesKeys = ['type', 'agents', 'branches', 'branch_type', 'cadence', 'timezone'];
       const actionsKeys = ['scan', 'site_profile', 'scanner_profile', 'variables', 'tags'];
 
       return isValidPolicy({ policy, rulesKeys, actionsKeys }) &&
         !hasInvalidCron(policy) &&
+        !invalidBranchType(policy.rules) &&
         hasRuleModeSupportedScanners(policy)
         ? policy
         : { error: true };
