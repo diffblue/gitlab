@@ -7,6 +7,7 @@ module Namespaces
       EXPIRATION_TIME = 10.minutes
       LIMIT_CACHE_NAME = 'root_storage_size_limit'
       COST_FACTOR_FOR_FORKS = 1.0
+      COST_FACTOR = 1.0
 
       def initialize(root_namespace)
         @root_namespace = root_namespace.root_ancestor # just in case the true root isn't passed
