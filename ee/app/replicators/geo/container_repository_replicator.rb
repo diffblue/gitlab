@@ -89,7 +89,7 @@ module Geo
     end
 
     def enqueue_sync
-      Geo::EventWorker.perform_async(replicable_name, 'updated', { model_record_id: model_record.id })
+      Geo::EventWorker.perform_async(replicable_name, 'updated', { 'model_record_id' => model_record.id })
     end
 
     # Returns a checksum of the tag list

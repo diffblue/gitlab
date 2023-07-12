@@ -88,7 +88,7 @@ module Geo
     end
 
     def reschedule_sync
-      Geo::EventWorker.perform_async(replicable_name, 'updated', { model_record_id: model_record.id })
+      Geo::EventWorker.perform_async(replicable_name, 'updated', { 'model_record_id' => model_record.id })
     end
 
     # Called by Geo::FrameworkHousekeepingService#execute

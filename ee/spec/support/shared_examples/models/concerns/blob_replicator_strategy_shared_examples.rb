@@ -39,7 +39,12 @@ RSpec.shared_examples 'a blob replicator' do
       end.to change { ::Geo::Event.count }.by(1)
 
       expect(::Geo::Event.last.attributes).to include(
-        "replicable_name" => replicator.replicable_name, "event_name" => ::Geo::BlobReplicatorStrategy::EVENT_CREATED, "payload" => { "model_record_id" => replicator.model_record.id })
+        "replicable_name" => replicator.replicable_name,
+        "event_name" => ::Geo::BlobReplicatorStrategy::EVENT_CREATED,
+        "payload" => {
+          "model_record_id" => replicator.model_record.id
+        }
+      )
     end
 
     it 'calls #after_verifiable_update' do

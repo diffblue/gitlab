@@ -65,13 +65,13 @@ RSpec.shared_examples 'a framework registry sync worker' do |registry_factory, s
 
       expect(::Geo::EventWorker)
         .to receive(:perform_async)
-        .with(registry_1.replicator.replicable_name, :created, { model_record_id: registry_1.model_record_id })
+        .with(registry_1.replicator.replicable_name, 'created', { 'model_record_id' => registry_1.model_record_id })
         .once
         .and_return('123')
 
       expect(::Geo::EventWorker)
         .to receive(:perform_async)
-        .with(registry_2.replicator.replicable_name, :created, { model_record_id: registry_2.model_record_id })
+        .with(registry_2.replicator.replicable_name, 'created', { 'model_record_id' => registry_2.model_record_id })
         .once
         .and_return('456')
 
@@ -90,7 +90,7 @@ RSpec.shared_examples 'a framework registry sync worker' do |registry_factory, s
 
       expect(Geo::EventWorker)
         .to receive(:perform_async)
-        .with(registry_1.replicator.replicable_name, :created, { model_record_id: registry_1.model_record_id })
+        .with(registry_1.replicator.replicable_name, 'created', { 'model_record_id' => registry_1.model_record_id })
         .once do
           Thread.new do
             # Rails will invalidate the query cache if the update happens in the same thread
@@ -102,7 +102,7 @@ RSpec.shared_examples 'a framework registry sync worker' do |registry_factory, s
 
       expect(Geo::EventWorker)
         .to receive(:perform_async)
-        .with(registry_2.replicator.replicable_name, :created, { model_record_id: registry_2.model_record_id })
+        .with(registry_2.replicator.replicable_name, 'created', { 'model_record_id' => registry_2.model_record_id })
         .once
 
       subject.perform

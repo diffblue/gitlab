@@ -97,7 +97,7 @@ module Geo
     end
 
     def enqueue_sync
-      Geo::EventWorker.perform_async(replicable_name, EVENT_CREATED, { model_record_id: model_record.id })
+      Geo::EventWorker.perform_async(replicable_name, EVENT_CREATED, { 'model_record_id' => model_record.id })
     end
 
     # Called by Gitlab::Geo::Replicator#consume

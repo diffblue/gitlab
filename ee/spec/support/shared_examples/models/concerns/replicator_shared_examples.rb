@@ -139,7 +139,7 @@ RSpec.shared_examples 'a replicator' do
       expect(Geo::EventWorker).to receive(:perform_async).with(
         replicator.replicable_name,
         event_name,
-        { model_record_id: model_record.id }
+        { 'model_record_id' => model_record.id }
       )
 
       replicator.enqueue_sync
