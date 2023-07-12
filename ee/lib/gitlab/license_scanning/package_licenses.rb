@@ -30,8 +30,10 @@ module Gitlab
       # data from the pm_licenses table
       def compressed_fetch
         use_replica_if_available do
-          # build caches for faster lookups of licenses and component_version data
-          build_component_versions_cache
+          init_all_records_to_unknown_licenses do |component|
+            # build cache for faster lookups of licenses and component_version data
+            build_component_versions_cache(component)
+          end
 
           # For each batch of components, we execute two queries:
           #
@@ -52,7 +54,6 @@ module Gitlab
             end
           end
 
-          add_records_with_unknown_licenses
           all_records.values
         end
       end
@@ -61,6 +62,8 @@ module Gitlab
       # and pm_licenses tables
       def uncompressed_fetch
         use_replica_if_available do
+          init_all_records_to_unknown_licenses
+
           # For each batch of components, we execute two queries:
           #
           # 1. retrieve the package ids and versions for the components by using a CTE with purl_type and name
@@ -73,7 +76,6 @@ module Gitlab
             add_records_with_known_licenses(records_with_licenses_for_batch)
           end
 
-          add_records_with_unknown_licenses
           all_records.values
         end
       end
@@ -86,14 +88,27 @@ module Gitlab
         "#{name}/#{purl_type}"
       end
 
+      # set the default license of all components to an unknown license.
+      # If a license is eventually found for the component, we'll overwrite
+      # the unknown entry with the valid license.
+      # Initializing all records with an unknown license allows us to ensure
+      # that the packages and licenses we return from the fetch method are the
+      # same order as the components that were initially passed to the fetch
+      # method. This allows callers to make assumptions about the ordering of
+      # the data, which can simplify their code.
+      def init_all_records_to_unknown_licenses
+        components.each do |component|
+          add_record_with_unknown_license(component)
+          yield component if block_given?
+        end
+      end
+
       # we fetch package details from the pm_packages table which only contains the
       # purl_type and name. We need a way to know which versions were requested for
       # each purl_type and name, so we use a hash to store this data for faster lookups.
-      def build_component_versions_cache
-        components.each do |component|
-          component_versions[component_versions_key(name: component.name, purl_type: component.purl_type)] <<
-            component.version
-        end
+      def build_component_versions_cache(component)
+        component_versions[component_versions_key(name: component.name, purl_type: component.purl_type)] <<
+          component.version
       end
 
       # there's only about 500 licenses in the pm_licenses table, and the data doesn't change often, so we use
@@ -142,18 +157,12 @@ module Gitlab
         end
       end
 
-      # Check to see if a license exists for each component. Record 'unknown' license for
-      # components that do not have a license.
-      def add_records_with_unknown_licenses
-        components.each do |component|
-          key = component_key(name: component.name, version: component.version, purl_type: component.purl_type)
-          next if all_records[key]
+      def add_record_with_unknown_license(component)
+        key = component_key(name: component.name, version: component.version, purl_type: component.purl_type)
 
-          # record unknown license if the license data for the component wasn't found in the db
-          all_records[key] = Hashie::Mash.new(
-            purl_type: component.purl_type, name: component.name, version: component.version,
-            licenses: [{ spdx_identifier: UNKNOWN_LICENSE, name: UNKNOWN_LICENSE }])
-        end
+        all_records[key] = Hashie::Mash.new(
+          purl_type: component.purl_type, name: component.name, version: component.version,
+          licenses: [{ spdx_identifier: UNKNOWN_LICENSE, name: UNKNOWN_LICENSE }])
       end
 
       # Takes an array of components containing purl_type, name, and version fields and returns an array
