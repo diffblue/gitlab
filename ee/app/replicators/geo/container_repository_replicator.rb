@@ -8,9 +8,13 @@ module Geo
     extend ::Gitlab::Utils::Override
     extend ActiveSupport::Concern
 
-    event :created
-    event :updated
-    event :deleted
+    EVENT_CREATED = 'created'
+    EVENT_UPDATED = 'updated'
+    EVENT_DELETED = 'deleted'
+
+    event EVENT_CREATED
+    event EVENT_UPDATED
+    event EVENT_DELETED
 
     class << self
       extend ::Gitlab::Utils::Override
@@ -89,7 +93,7 @@ module Geo
     end
 
     def enqueue_sync
-      Geo::EventWorker.perform_async(replicable_name, 'updated', { 'model_record_id' => model_record.id })
+      Geo::EventWorker.perform_async(replicable_name, EVENT_UPDATED, { 'model_record_id' => model_record.id })
     end
 
     # Returns a checksum of the tag list
