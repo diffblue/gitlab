@@ -12,4 +12,4 @@
       = _('Even if you reach the number of seats in your subscription, you can continue to add users, and GitLab will bill you for the overage.')
       = link_to _('Learn more.'), help_page_path('subscriptions/quarterly_reconciliation'), target: '_blank', rel: 'noopener noreferrer'
     - c.with_actions do
-      = link_to _('View seat usage'), usage_quotas_path(namespace, anchor: 'seats-quota-tab'), class: 'btn gl-alert-action btn-confirm btn-md gl-button'
+      = link_button_to _('View seat usage'), usage_quotas_path(namespace, anchor: 'seats-quota-tab'), class: 'gl-alert-action', variant: :confirm

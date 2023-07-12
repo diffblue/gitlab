@@ -23,7 +23,7 @@
             = link_to _('Read more'), help_page_url('user/group/epics/index'), class: 'btn-link', target: '_blank', rel: 'noopener noreferrer'
           .gl-flex-wrap
             = render 'shared/promotions/promotion_link_project', short_form: true, location: :epics
-            = link_to s_("Promotions|Don't show me this again"), '#', class: 'gl-button btn js-close js-close-callout gl-mt-2'
+            = link_button_to s_("Promotions|Don't show me this again"), '#', class: 'js-close js-close-callout gl-mt-2'
 
     .hide-collapsed
       = s_('Promotions|This feature is locked.')

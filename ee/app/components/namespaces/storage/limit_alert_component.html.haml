@@ -17,6 +17,6 @@
     - if purchase_link || usage_quotas_link
       = c.with_actions do
         - if purchase_link
-          = link_to(_('Purchase more storage'), purchase_link, class: "btn gl-alert-action btn-md gl-button btn-confirm")
+          = link_button_to _('Purchase more storage'), purchase_link, class: 'gl-alert-action', variant: :confirm
         - if usage_quotas_link
-          = link_to(_('View usage details'), usage_quotas_link, class: "btn gl-alert-action btn-md gl-button btn-default")
+          = link_button_to _('View usage details'), usage_quotas_link, class: 'gl-alert-action'

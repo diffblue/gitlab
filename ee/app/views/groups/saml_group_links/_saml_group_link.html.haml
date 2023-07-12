@@ -1,9 +1,8 @@
 %li
   .float-right
-    = link_to group_saml_group_link_path(group, saml_group_link), method: :delete, class: 'btn gl-button btn-danger btn-md', 'aria-label': _('Remove link'),
-      data: { confirm: s_('GroupSAML|Are you sure you want to remove the SAML group link?'), 'confirm-btn-variant': 'danger' } do
-      = sprite_icon('unlink', size: 12, css_class: 'gl-m-1!')
-      %span= _('Remove')
+    = link_button_to group_saml_group_link_path(group, saml_group_link), method: :delete, 'aria-label': _('Remove link'),
+      data: { confirm: s_('GroupSAML|Are you sure you want to remove the SAML group link?'), 'confirm-btn-variant': 'danger' }, variant: :danger, icon: 'unlink' do
+      = _('Remove')
   %strong= s_('GroupSAML|SAML Group Name: %{saml_group_name}') % { saml_group_name: saml_group_link.saml_group_name }
 
   .light
