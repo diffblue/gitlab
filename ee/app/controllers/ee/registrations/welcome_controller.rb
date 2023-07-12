@@ -63,7 +63,8 @@ module EE
           provider: 'gitlab',
           work_email: current_user.email,
           uid: current_user.id,
-          comment: params[:jobs_to_be_done_other]
+          comment: params[:jobs_to_be_done_other],
+          product_interaction: iterable_product_interaction
         }
 
         if params[:user]
@@ -73,6 +74,14 @@ module EE
         end
 
         iterable
+      end
+
+      def iterable_product_interaction
+        if helpers.user_has_memberships?
+          'Invited User'
+        else
+          'Personal SaaS Registration'
+        end
       end
 
       def free_personal_registration_or_invite?
