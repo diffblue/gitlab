@@ -299,6 +299,7 @@ and [Helm Chart deployments](https://docs.gitlab.com/charts/). They come with ap
 - Geo: Since the migration of project designs to SSF, [missing design repositories are being incorrectly flagged as failing verification](https://gitlab.com/gitlab-org/gitlab/-/issues/414279). This is not a result of an actual replication/verification failure but an invalid internal state for these missing repositories inside Geo and results in errors in the logs and the verification progress reporting a failed state for these design repositories. You could be impacted by this issue even if you have not imported projects.
   - Impacted versions: GitLab versions 16.1.x.
   - Versions containing fix: GitLab 16.2.0 and later.
+- For self-compiled installations: You must remove any settings related to Puma worker killer from the `puma.rb` configuration file, since those have been [removed](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/118645). For more information, see the [`puma.rb.example`](https://gitlab.com/gitlab-org/gitlab/-/blob/16-0-stable-ee/config/puma.rb.example) file.
 
 ### 16.0.0
 
