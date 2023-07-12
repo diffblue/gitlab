@@ -12,7 +12,8 @@ class Geo::ContainerRepositoryRegistry < Geo::BaseRegistry
   belongs_to :container_repository
 
   ### Remove it after data migration
-  # See https://gitlab.com/gitlab-org/gitlab/-/issues/371667
+  # Issue: https://gitlab.com/gitlab-org/gitlab/-/issues/371667
+  #
   # rubocop:disable Gitlab/NoCodeCoverageComment
   # :nocov: undercoverage spec keeps failing here but this method is covered with tests
   def state
@@ -38,19 +39,31 @@ class Geo::ContainerRepositoryRegistry < Geo::BaseRegistry
     extend ::Gitlab::Utils::Override
 
     ### Remove it after data migration
+    # Issue: https://gitlab.com/gitlab-org/gitlab/-/issues/371667
+    #
+    def without_state(state)
+      value = set_state(state)
+
+      where.not(state: value)
+    end
+
     def with_state(state)
-      value = case state.to_sym
-              when :pending
-                %w[0 pending]
-              when :started
-                %w[1 started]
-              when :synced
-                %w[2 synced]
-              when :failed
-                %w[3 failed]
-              end
+      value = set_state(state)
 
       where(state: value)
+    end
+
+    def set_state(state)
+      case state.to_sym
+      when :pending
+        %w[0 pending]
+      when :started
+        %w[1 started]
+      when :synced
+        %w[2 synced]
+      when :failed
+        %w[3 failed]
+      end
     end
     ### Remove it after data migration
 

@@ -26,6 +26,16 @@ RSpec.shared_examples 'a Geo framework registry' do
         expect(described_class.sync_timed_out).to eq [record]
       end
     end
+
+    describe 'not_pending' do
+      let(:registry1) { create(registry_class_factory, :started) }
+      let(:registry2) { create(registry_class_factory, :failed) }
+      let(:registry3) { create(registry_class_factory) } # rubocop:disable Rails/SaveBang
+
+      it 'returns registries that are not pending' do
+        expect(described_class.not_pending).to match_array([registry1, registry2])
+      end
+    end
   end
 
   context 'finders' do
@@ -87,6 +97,23 @@ RSpec.shared_examples 'a Geo framework registry' do
 
       expect(record1.reload.state).to eq described_class::STATE_VALUES[:failed]
       expect(record2.reload.state).to eq described_class::STATE_VALUES[:started]
+    end
+  end
+
+  describe 'bulk_mark_pending_one_batch!' do
+    it 'marks registries as never attempted to sync' do
+      record1 = create(registry_class_factory, :started, last_synced_at: 9.hours.ago)
+      record2 = create(registry_class_factory, :synced, last_synced_at: 1.hour.ago)
+      record3 = create(registry_class_factory, :failed, last_synced_at: Time.current)
+
+      described_class.bulk_mark_pending_one_batch!
+
+      expect(record1.reload.state).to eq described_class::STATE_VALUES[:pending]
+      expect(record1.reload.last_synced_at).to be_nil
+      expect(record2.reload.state).to eq described_class::STATE_VALUES[:pending]
+      expect(record2.reload.last_synced_at).to be_nil
+      expect(record3.reload.state).to eq described_class::STATE_VALUES[:pending]
+      expect(record3.reload.last_synced_at).to be_nil
     end
   end
 
