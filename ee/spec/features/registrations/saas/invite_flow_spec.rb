@@ -10,7 +10,7 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, feat
     registers_from_invite(user: new_user, group: group)
 
     ensure_onboarding { expect_to_see_welcome_form_without_join_project_question }
-    expect_to_send_iterable_request
+    expect_to_send_iterable_request(invite: true)
 
     fill_in_welcome_form
     click_on 'Get started!'
@@ -34,7 +34,7 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, feat
     registers_from_invite(user: new_user, group: group)
 
     ensure_onboarding { expect_to_see_welcome_form_without_join_project_question }
-    expect_to_send_iterable_request
+    expect_to_send_iterable_request(invite: true)
 
     fill_in_welcome_form
     click_on 'Get started!'
@@ -51,7 +51,7 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, feat
     registers_from_invite(user: new_user, group: group, tasks_to_be_done: [:ci, :code])
 
     ensure_onboarding { expect_to_see_welcome_form_without_join_project_question }
-    expect_to_send_iterable_request
+    expect_to_send_iterable_request(invite: true)
 
     fill_in_welcome_form
     click_on 'Get started!'

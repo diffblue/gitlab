@@ -587,10 +587,16 @@ module SaasRegistrationHelpers
     end
   end
 
-  def expect_to_send_iterable_request
+  def expect_to_send_iterable_request(invite: false)
     allow_next_instance_of(Onboarding::CreateIterableTriggerService) do |instance|
       allow(instance).to receive(:execute).and_return(ServiceResponse.success)
     end
+
+    product_interaction = if invite
+                            'Invited User'
+                          else
+                            'Personal SaaS Registration'
+                          end
 
     expect(Onboarding::CreateIterableTriggerWorker).to receive(:perform_async).with(
       hash_including(
@@ -599,7 +605,8 @@ module SaasRegistrationHelpers
         uid: user.id,
         comment: 'My reason',
         role: 'software_developer',
-        jtbd: 'other'
+        jtbd: 'other',
+        product_interaction: product_interaction
       )
     ).and_call_original
   end
