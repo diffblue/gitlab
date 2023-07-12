@@ -19,6 +19,7 @@ FactoryBot.define do
       wiki_page_events { true }
       releases_events { true }
       subgroup_events { true }
+      emoji_events { true }
     end
   end
 end
