@@ -21850,6 +21850,9 @@ msgstr ""
 msgid "GroupSaml|Your SCIM token"
 msgstr ""
 
+msgid "GroupSelect|An error occurred fetching the groups. Please refresh the page to try again."
+msgstr ""
+
 msgid "GroupSelect|No matching results"
 msgstr ""
 

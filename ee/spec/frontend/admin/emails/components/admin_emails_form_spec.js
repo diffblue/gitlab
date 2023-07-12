@@ -45,10 +45,12 @@ describe('AdminEmailsForm', () => {
   };
 
   const mockSuccessfulApiRequests = () => {
-    RestApi.getGroups = jest.fn().mockResolvedValueOnce([
-      { id: 1, full_name: 'Group Foo' },
-      { id: 2, full_name: 'Group Bar' },
-    ]);
+    RestApi.getGroups = jest.fn().mockResolvedValueOnce({
+      data: [
+        { id: 1, full_name: 'Group Foo' },
+        { id: 2, full_name: 'Group Bar' },
+      ],
+    });
     RestApi.getProjects = jest.fn().mockResolvedValueOnce({
       data: [
         { id: 1, name_with_namespace: 'Project Foo' },
@@ -136,7 +138,7 @@ describe('AdminEmailsForm', () => {
 
         RestApi.getGroups = jest
           .fn()
-          .mockResolvedValueOnce([{ id: 3, full_name: 'Searched Group Foo' }]);
+          .mockResolvedValueOnce({ data: [{ id: 3, full_name: 'Searched Group Foo' }] });
         RestApi.getProjects = jest.fn().mockResolvedValueOnce({
           data: [{ id: 3, name_with_namespace: 'Searched Project Foo' }],
         });
@@ -166,7 +168,7 @@ describe('AdminEmailsForm', () => {
 
           await showGlListbox();
 
-          RestApi.getGroups = jest.fn().mockResolvedValueOnce([]);
+          RestApi.getGroups = jest.fn().mockResolvedValueOnce({ data: [] });
           RestApi.getProjects = jest.fn().mockResolvedValueOnce({
             data: [],
           });
