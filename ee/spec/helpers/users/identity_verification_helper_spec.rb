@@ -64,6 +64,26 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
       end
     end
 
+    describe '#rate_limited_error_message' do
+      subject(:message) { helper.rate_limited_error_message(limit) }
+
+      let(:limit) { :credit_card_verification_check_for_reuse }
+
+      it 'returns a generic error message' do
+        expect(message).to eq(format(s_("IdentityVerification|You've reached the maximum amount of tries. " \
+                                        'Wait %{interval} and try again.'), { interval: 'about 1 hour' }))
+      end
+
+      context 'when the limit is for email_verification_code_send' do
+        let(:limit) { :email_verification_code_send }
+
+        it 'returns a specific message' do
+          expect(message).to eq(format(s_("IdentityVerification|You've reached the maximum amount of resends. " \
+                                          'Wait %{interval} and try again.'), { interval: 'about 1 hour' }))
+        end
+      end
+    end
+
     private
 
     def expected_data

@@ -32,6 +32,6 @@ export const I18N_GENERIC_ERROR = s__(
 
 export const REDIRECT_TIMEOUT = 1500;
 
-// reasons for errors when sending an SMS for phone verification
+// reasons for errors
 export const UNKNOWN_TELESIGN_ERROR = 'unknown_telesign_error';
 export const RELATED_TO_BANNED_USER = 'related_to_banned_user';

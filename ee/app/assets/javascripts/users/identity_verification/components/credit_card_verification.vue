@@ -5,7 +5,7 @@ import axios from '~/lib/utils/axios_utils';
 import { s__ } from '~/locale';
 import Tracking from '~/tracking';
 import Zuora from 'ee/billings/components/zuora_simple.vue';
-import { I18N_GENERIC_ERROR } from '../constants';
+import { I18N_GENERIC_ERROR, RELATED_TO_BANNED_USER } from '../constants';
 
 export const EVENT_CATEGORY = 'IdentityVerification::CreditCard';
 export const EVENT_FAILED = 'failed_attempt';
@@ -28,6 +28,7 @@ export default {
       isFormLoading: true,
       isCheckingForReuse: false,
       errorMessage: undefined,
+      isRelatedToBannedUser: false,
     };
   },
   computed: {
@@ -43,6 +44,7 @@ export default {
     handleCheckForReuseError(error) {
       if (error.response.data?.message) {
         this.errorMessage = error.response.data.message;
+        this.isRelatedToBannedUser = error.response.data?.reason === RELATED_TO_BANNED_USER;
       } else {
         createAlert({
           message: I18N_GENERIC_ERROR,
@@ -121,7 +123,7 @@ export default {
       class="gl-mt-6"
       variant="confirm"
       type="submit"
-      :disabled="isFormLoading || hasLoadError"
+      :disabled="isFormLoading || hasLoadError || isRelatedToBannedUser"
       @click="submit"
     >
       {{ $options.i18n.formSubmit }}
