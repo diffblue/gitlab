@@ -1,6 +1,7 @@
 query getProjectDetails($projectFullPath: ID!, $devFilePath: String!) {
   project(fullPath: $projectFullPath) {
     id
+    nameWithNamespace
     group {
       id
       fullPath

@@ -71,7 +71,7 @@ describe('remote_development/components/create/get_project_details_query', () =>
     it('emits result event with fetched cluster agents, project id, project group, and root files', async () => {
       await buildWrapper();
 
-      expect(wrapper.emitted('result')[0][0]).toMatchObject({
+      expect(wrapper.emitted('result')[0][0]).toEqual({
         clusterAgents: GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT.data.group.clusterAgents.nodes.map(
           ({ id, name, project }) => ({
             text: `${project.nameWithNamespace} / ${name}`,
@@ -81,6 +81,8 @@ describe('remote_development/components/create/get_project_details_query', () =>
         id: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.id,
         groupPath: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.group.fullPath,
         rootRef: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.repository.rootRef,
+        nameWithNamespace: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.nameWithNamespace,
+        fullPath: projectFullPathFixture,
         hasDevFile: false,
       });
     });
@@ -192,12 +194,14 @@ describe('remote_development/components/create/get_project_details_query', () =>
     });
 
     it('emits result event with the project data', () => {
-      expect(wrapper.emitted('result')[0][0]).toMatchObject({
+      expect(wrapper.emitted('result')[0][0]).toEqual({
         clusterAgents: [],
         id: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.id,
         groupPath: null,
         hasDevFile: false,
         rootRef: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.repository.rootRef,
+        nameWithNamespace: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.nameWithNamespace,
+        fullPath: projectFullPathFixture,
       });
     });
   });
@@ -224,6 +228,8 @@ describe('remote_development/components/create/get_project_details_query', () =>
 
   describe('when the project full path changes from group to not group', () => {
     it('emits empty clusters', async () => {
+      const projectFullPath = 'new/path';
+
       await buildWrapper();
 
       expect(getGroupClusterAgentsQueryHandler).toHaveBeenCalledTimes(1);
@@ -234,7 +240,7 @@ describe('remote_development/components/create/get_project_details_query', () =>
 
       // assert that we've only emitted once
       expect(wrapper.emitted('result')).toHaveLength(1);
-      await wrapper.setProps({ projectFullPath: 'new/path' });
+      await wrapper.setProps({ projectFullPath });
 
       await waitForPromises();
 
@@ -247,6 +253,8 @@ describe('remote_development/components/create/get_project_details_query', () =>
           hasDevFile: false,
           id: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.id,
           rootRef: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.repository.rootRef,
+          fullPath: projectFullPath,
+          nameWithNamespace: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.nameWithNamespace,
         },
       ]);
     });

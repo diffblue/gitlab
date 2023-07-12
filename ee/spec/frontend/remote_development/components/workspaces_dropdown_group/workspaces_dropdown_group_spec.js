@@ -304,7 +304,9 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
 
       await waitForPromises();
 
-      expect(findNewWorkspaceButton().attributes().href).toBe(newWorkspacePath);
+      expect(findNewWorkspaceButton().attributes().href).toBe(
+        `${newWorkspacePath}?project=${encodeURIComponent(PROJECT_FULL_PATH)}`,
+      );
       expect(wrapper.text()).not.toContain(i18n.noWorkspacesSupportMessage);
     });
   });

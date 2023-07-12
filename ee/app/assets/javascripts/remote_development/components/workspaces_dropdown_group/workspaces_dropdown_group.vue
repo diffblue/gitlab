@@ -106,6 +106,9 @@ export default {
     isWorkspacesDropdownGroupAvailable() {
       return this.glFeatures.remoteDevelopment && this.glFeatures.remoteDevelopmentFeatureFlag;
     },
+    newWorkspacePathWithProjectId() {
+      return `${this.newWorkspacePath}?project=${encodeURIComponent(this.projectFullPath)}`;
+    },
   },
   methods: {
     displayUpdateFailedAlert({ error }) {
@@ -192,7 +195,7 @@ export default {
           >
             <gl-button
               v-if="supportsWorkspaces"
-              :href="newWorkspacePath"
+              :href="newWorkspacePathWithProjectId"
               data-testid="new-workspace-button"
               block
               >{{ $options.i18n.newWorkspaceButton }}</gl-button

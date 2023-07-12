@@ -46,6 +46,7 @@ describe('remote_development/pages/create.vue', () => {
   });
   const mockRouter = {
     push: jest.fn(),
+    currentRoute: {},
   };
   let wrapper;
   let workspaceCreateMutationHandler;
@@ -122,6 +123,8 @@ describe('remote_development/pages/create.vue', () => {
     groupPath = GET_PROJECT_DETAILS_QUERY_RESULT.data.project.group.fullPath,
     id = GET_PROJECT_DETAILS_QUERY_RESULT.data.project.id,
     rootRef = rootRefFixture,
+    nameWithNamespace,
+    fullPath,
   }) =>
     findGetProjectDetailsQuery().vm.$emit('result', {
       clusterAgents,
@@ -129,6 +132,8 @@ describe('remote_development/pages/create.vue', () => {
       groupPath,
       rootRef,
       id,
+      nameWithNamespace,
+      fullPath,
     });
   const selectProject = (project = selectedProjectFixture) =>
     findSearchProjectsListbox().vm.$emit('input', project);
@@ -420,6 +425,34 @@ describe('remote_development/pages/create.vue', () => {
 
     it('displays a beta badge', () => {
       expect(wrapper.findComponent(GlBadge).props().variant).toBe('info');
+    });
+  });
+
+  describe('when selecting a project via URL', () => {
+    const projectQueryParam = 'project';
+
+    beforeEach(() => {
+      mockRouter.currentRoute.query = { project: projectQueryParam };
+      createWrapper();
+    });
+
+    it('fetches project details for the project specified in the URL', () => {
+      expect(findGetProjectDetailsQuery().props().projectFullPath).toBe(projectQueryParam);
+    });
+  });
+
+  describe('when receiving project details without a selected project', () => {
+    it('populates the selected project with the data provided by the project details', async () => {
+      const nameWithNamespace = 'project - new-project';
+      const fullPath = 'project/new-project';
+
+      createWrapper();
+
+      emitGetProjectDetailsQueryResult({ nameWithNamespace, fullPath });
+
+      await nextTick();
+
+      expect(findSearchProjectsListbox().props().value).toEqual({ nameWithNamespace, fullPath });
     });
   });
 });

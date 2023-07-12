@@ -108,18 +108,23 @@ export default {
       return this.selectedProject && this.selectedAgent && this.hasDevFile;
     },
     selectedProjectFullPath() {
-      return this.selectedProject?.fullPath;
-    },
-  },
-  watch: {
-    selectedProject() {
-      this.clusterAgents = [];
-      this.selectedAgent = null;
-      this.projectDetailsLoaded = false;
+      return this.selectedProject?.fullPath || this.$router.currentRoute.query?.project;
     },
   },
   methods: {
-    onProjectDetailsResult({ hasDevFile, clusterAgents, id, rootRef }) {
+    onProjectDetailsResult({
+      fullPath,
+      nameWithNamespace,
+      hasDevFile,
+      clusterAgents,
+      id,
+      rootRef,
+    }) {
+      // This scenario happens when the selected project is specified in the URL as a query param
+      if (!this.selectedProject) {
+        this.setSelectedProject({ fullPath, nameWithNamespace });
+      }
+
       this.projectDetailsLoaded = true;
       this.hasDevFile = hasDevFile;
       this.clusterAgents = clusterAgents;
@@ -128,6 +133,19 @@ export default {
     },
     onProjectDetailsError() {
       createAlert({ message: i18n.fetchProjectDetailsFailedMessage });
+      this.resetProjectDetails();
+    },
+    onSelectProjectFromListbox(selectedProject) {
+      this.setSelectedProject(selectedProject);
+      this.resetProjectDetails();
+    },
+    setSelectedProject(selectedProject) {
+      this.selectedProject = selectedProject;
+    },
+    resetProjectDetails() {
+      this.clusterAgents = [];
+      this.selectedAgent = null;
+      this.projectDetailsLoaded = false;
     },
     async createWorkspace() {
       try {
@@ -204,9 +222,10 @@ export default {
         label-for="workspace-devfile-project-id"
       >
         <search-projects-listbox
-          v-model="selectedProject"
+          :value="selectedProject"
           :visibility="$options.PROJECT_VISIBILITY.public"
           data-qa-selector="workspace_devfile_project_id_field"
+          @input="onSelectProjectFromListbox"
         />
         <gl-alert
           v-if="displayClusterAgentsAlert"

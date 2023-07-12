@@ -82,7 +82,8 @@ RSpec.describe 'Remote Development workspaces dropdown group', :api, :js, featur
       it 'allows navigating to the new workspace page' do
         click_link 'New workspace'
 
-        expect(page).to have_current_path(new_remote_development_workspace_path)
+        expect(page).to have_current_path("#{new_remote_development_workspace_path}?project=#{project.full_path}")
+        expect(page).to have_css('button', text: project.name_with_namespace)
       end
 
       it 'allows managing a user workspace' do
