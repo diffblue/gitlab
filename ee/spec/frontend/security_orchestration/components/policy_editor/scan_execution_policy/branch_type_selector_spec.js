@@ -2,22 +2,14 @@ import { GlCollapsibleListbox, GlFormInput } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import BranchTypeSelector from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/branch_type_selector.vue';
 import {
-  ALL_BRANCHES,
-  GROUP_DEFAULT_BRANCHES,
-  ALL_PROTECTED_BRANCHES,
   SPECIFIC_BRANCHES,
   SCAN_EXECUTION_BRANCH_TYPE_OPTIONS,
+  VALID_SCAN_EXECUTION_BRANCH_TYPE_OPTIONS,
 } from 'ee/security_orchestration/components/policy_editor/constants';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 
 describe('BranchTypeSelector', () => {
   let wrapper;
-
-  const BRANCH_TYPE_VALUES = [
-    ALL_BRANCHES.value,
-    ALL_PROTECTED_BRANCHES.value,
-    GROUP_DEFAULT_BRANCHES.value,
-  ];
 
   const createComponent = ({ propsData = {}, provide = {} } = {}) => {
     wrapper = shallowMountExtended(BranchTypeSelector, {
@@ -52,24 +44,30 @@ describe('BranchTypeSelector', () => {
     },
   );
 
-  it.each(BRANCH_TYPE_VALUES)('should render different branch types', (selectedBranchType) => {
-    createComponent({
-      propsData: {
-        selectedBranchType,
-      },
-    });
+  it.each(VALID_SCAN_EXECUTION_BRANCH_TYPE_OPTIONS)(
+    'should render different branch types',
+    (selectedBranchType) => {
+      createComponent({
+        propsData: {
+          selectedBranchType,
+        },
+      });
 
-    expect(findBranchTypeListbox().props('selected')).toBe(selectedBranchType);
-    expect(findBranchesInput().exists()).toBe(false);
-  });
+      expect(findBranchTypeListbox().props('selected')).toBe(selectedBranchType);
+      expect(findBranchesInput().exists()).toBe(false);
+    },
+  );
 
-  it.each(BRANCH_TYPE_VALUES)('should change branch type', (selectedBranchType) => {
-    createComponent();
+  it.each(VALID_SCAN_EXECUTION_BRANCH_TYPE_OPTIONS)(
+    'should change branch type',
+    (selectedBranchType) => {
+      createComponent();
 
-    findBranchTypeListbox().vm.$emit('select', selectedBranchType);
+      findBranchTypeListbox().vm.$emit('select', selectedBranchType);
 
-    expect(wrapper.emitted('set-branch-type')).toEqual([[selectedBranchType]]);
-  });
+      expect(wrapper.emitted('set-branch-type')).toEqual([[selectedBranchType]]);
+    },
+  );
 
   it('should change branches', () => {
     createComponent();

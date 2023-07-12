@@ -11,7 +11,7 @@ import {
  * @param rules list of rules with either branches or branch_type property
  * @returns {Boolean}
  */
-const invalidBranchType = (rules) => {
+const hasInvalidBranchType = (rules) => {
   if (!rules) return false;
 
   return rules.some(
@@ -59,7 +59,7 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
 
       return isValidPolicy({ policy, rulesKeys, actionsKeys }) &&
         !hasInvalidCron(policy) &&
-        !invalidBranchType(policy.rules) &&
+        !hasInvalidBranchType(policy.rules) &&
         hasRuleModeSupportedScanners(policy)
         ? policy
         : { error: true };

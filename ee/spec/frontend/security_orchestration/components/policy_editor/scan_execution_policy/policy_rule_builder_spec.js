@@ -1,6 +1,5 @@
 import { nextTick } from 'vue';
-import mockTimezones from 'test_fixtures/timezones/full.json';
-import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/policy_rule_builder.vue';
 import BaseRuleComponent from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/base_rule_component.vue';
 import ScheduleRuleComponent from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/schedule_rule_component.vue';
@@ -10,7 +9,6 @@ import {
   SCAN_EXECUTION_SCHEDULE_RULE,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/constants';
 import { CRON_DEFAULT_TIME } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib';
-import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 
 describe('PolicyRuleBuilder', () => {
   let wrapper;
@@ -20,15 +18,11 @@ describe('PolicyRuleBuilder', () => {
     branches: [],
   };
 
-  const createComponent = ({ propsData = {}, provide = {} } = {}) => {
-    wrapper = mountExtended(PolicyRuleBuilder, {
+  const createComponent = ({ propsData = {} } = {}) => {
+    wrapper = shallowMountExtended(PolicyRuleBuilder, {
       propsData: {
         initRule,
         ...propsData,
-      },
-      provide: {
-        namespaceType: NAMESPACE_TYPES.GROUP,
-        ...provide,
       },
     });
   };
@@ -73,9 +67,6 @@ describe('PolicyRuleBuilder', () => {
           branches: [],
           cadence: CRON_DEFAULT_TIME,
         },
-      },
-      provide: {
-        timezones: mockTimezones,
       },
     });
 
