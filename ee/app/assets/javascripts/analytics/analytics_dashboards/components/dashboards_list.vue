@@ -58,6 +58,7 @@ export default {
       featureDashboards: [],
       userDashboards: [],
       showCreateButtons: this.glFeatures.combinedAnalyticsDashboardsEditor,
+      alert: null,
     };
   },
   computed: {
@@ -112,6 +113,9 @@ export default {
       },
     },
   },
+  beforeDestroy() {
+    this.alert?.dismiss();
+  },
   methods: {
     featureEnabled([feature]) {
       return this.features.includes(feature);
@@ -136,7 +140,7 @@ export default {
       this.requiresOnboarding = this.requiresOnboarding.filter((f) => f !== feature);
     },
     onError(error, captureError = true, message = '') {
-      createAlert({
+      this.alert = createAlert({
         message: message || error.message,
         captureError,
         error,

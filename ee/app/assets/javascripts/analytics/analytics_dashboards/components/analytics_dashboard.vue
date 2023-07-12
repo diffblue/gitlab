@@ -50,7 +50,7 @@ export default {
     namespaceFullPath: {
       type: String,
     },
-    projectId: {
+    namespaceId: {
       type: String,
     },
     dashboardEmptyStateIllustrationPath: {
@@ -84,6 +84,7 @@ export default {
       backUrl: this.$router.resolve('/').href,
       editingEnabled: this.glFeatures.combinedAnalyticsDashboardsEditor,
       jitsuEnabled: !this.glFeatures.productAnalyticsSnowplowSupport,
+      alert: null,
     };
   },
   async created() {
@@ -116,6 +117,8 @@ export default {
     }
   },
   beforeDestroy() {
+    this.alert?.dismiss();
+
     // Clear the breadcrumb name when we leave this component so it doesn't
     // flash the wrong name when a user views a different dashboard
     this.breadcrumbState.updateName('');
@@ -282,10 +285,12 @@ export default {
         });
 
         if (saveResult?.status === HTTP_STATUS_CREATED) {
+          this.alert?.dismiss();
+
           this.$toast.show(I18N_DASHBOARD_SAVED_SUCCESSFULLY);
 
           const client = this.$apollo.getClient();
-          updateApolloCache(client, this.projectId, dashboardSlug, dashboard);
+          updateApolloCache(client, this.namespaceId, dashboardSlug, dashboard);
 
           if (this.isNewDashboard) {
             // We redirect now to the new route
@@ -301,11 +306,11 @@ export default {
         if (error.response?.status === HTTP_STATUS_BAD_REQUEST) {
           // We can assume bad request errors are a result of user error.
           // We don't need to capture these errors and can render the message to the user.
-          createAlert({
+          this.alert = createAlert({
             message: error.response?.data?.message || I18N_DASHBOARD_ERROR_WHILE_SAVING,
           });
         } else {
-          createAlert({
+          this.alert = createAlert({
             message: I18N_DASHBOARD_ERROR_WHILE_SAVING,
             error,
             captureError: true,
