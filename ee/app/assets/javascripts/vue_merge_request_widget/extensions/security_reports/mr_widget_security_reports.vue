@@ -25,7 +25,7 @@ import {
   getCreatedIssueForVulnerability,
   getDismissalTransitionForVulnerability,
 } from 'ee/vue_shared/security_reports/components/helpers';
-import SummaryText from './summary_text.vue';
+import SummaryText, { MAX_NEW_VULNERABILITIES } from './summary_text.vue';
 import SummaryHighlights from './summary_highlights.vue';
 import SecurityTrainingPromoWidget from './security_training_promo_widget.vue';
 import { i18n, popovers, reportTypes } from './i18n';
@@ -58,6 +58,7 @@ export default {
       isCreatingIssue: false,
       isDismissingFinding: false,
       isCreatingMergeRequest: false,
+      hasAtLeastOneReportWithMaxNewVulnerabilities: false,
       modalData: null,
       vulnerabilities: {
         collapsed: null,
@@ -298,6 +299,14 @@ export default {
           .then(({ data, headers = {}, status }) => {
             const added = data.added?.map?.(getFindingWithoutFeedback) || [];
             const fixed = data.fixed?.map?.(getFindingWithoutFeedback) || [];
+
+            // If a single report has 25 findings, it means it potentially has more than 25 findings.
+            // Therefore, we display the UI hint in the top-level summary.
+            // If there are no reports with 25 findings, but the total sum of all reports is still 25 or more,
+            // we won't display the UI hint.
+            if (added.length === MAX_NEW_VULNERABILITIES) {
+              this.hasAtLeastOneReportWithMaxNewVulnerabilities = true;
+            }
 
             return {
               headers,
@@ -613,7 +622,11 @@ export default {
     @is-loading="handleIsLoading"
   >
     <template #summary>
-      <summary-text :total-new-vulnerabilities="totalNewVulnerabilities" :is-loading="isLoading" />
+      <summary-text
+        :total-new-vulnerabilities="totalNewVulnerabilities"
+        :is-loading="isLoading"
+        :show-at-least-hint="hasAtLeastOneReportWithMaxNewVulnerabilities"
+      />
       <summary-highlights
         v-if="!isLoading && totalNewVulnerabilities > 0"
         :highlights="highlights"
@@ -666,6 +679,7 @@ export default {
               :scanner="report.reportTypeDescription"
               :data-testid="`${report.reportType}-report-header`"
               :data-qa-selector="report.qaSelector"
+              show-at-least-hint
             />
             <summary-highlights
               v-if="report.numberOfNewFindings > 0"
