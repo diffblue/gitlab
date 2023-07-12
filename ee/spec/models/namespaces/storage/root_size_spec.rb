@@ -206,149 +206,17 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
     end
 
     context 'with fork storage sizes' do
+      let(:create_statistics) do
+        create(:namespace_root_storage_statistics, namespace: namespace, storage_size: 1000,
+          public_forks_storage_size: 100)
+      end
+
       before do
         stub_const("#{described_class}::COST_FACTOR_FOR_FORKS", 0.05)
       end
 
-      context 'with a free plan' do
-        let!(:subscription) { create(:gitlab_subscription, namespace: namespace, hosted_plan: free_plan) }
-
-        let_it_be(:free_plan) { create(:free_plan) }
-
-        context 'with public forks' do
-          let(:create_statistics) do
-            create(:namespace_root_storage_statistics, namespace: namespace, storage_size: 1000,
-              public_forks_storage_size: 100)
-          end
-
-          it 'returns the size with the cost factor for forks applied' do
-            expect(model.current_size).to eq(905)
-          end
-        end
-
-        context 'with internal forks' do
-          let(:create_statistics) do
-            create(:namespace_root_storage_statistics, namespace: namespace, storage_size: 1000,
-              internal_forks_storage_size: 200)
-          end
-
-          it 'returns the size with the cost factor for forks applied' do
-            expect(model.current_size).to eq(810)
-          end
-        end
-
-        context 'with private forks' do
-          let(:create_statistics) do
-            create(:namespace_root_storage_statistics, namespace: namespace, storage_size: 1000,
-              private_forks_storage_size: 400)
-          end
-
-          it 'does not apply a cost factor' do
-            expect(model.current_size).to eq(1000)
-          end
-        end
-
-        context 'with public, internal, and private forks' do
-          let(:create_statistics) do
-            create(:namespace_root_storage_statistics, namespace: namespace, storage_size: 1000,
-              public_forks_storage_size: 100, internal_forks_storage_size: 200, private_forks_storage_size: 400)
-          end
-
-          it 'applies the cost factor for both public and internal forks' do
-            expect(model.current_size).to eq(715)
-          end
-        end
-      end
-
-      context 'with a paid plan' do
-        context 'with public forks' do
-          let(:create_statistics) do
-            create(:namespace_root_storage_statistics, namespace: namespace, storage_size: 1000,
-              public_forks_storage_size: 100)
-          end
-
-          it 'returns the size with the cost factor for forks applied' do
-            expect(model.current_size).to eq(905)
-          end
-        end
-
-        context 'with internal forks' do
-          let(:create_statistics) do
-            create(:namespace_root_storage_statistics, namespace: namespace, storage_size: 1000,
-              internal_forks_storage_size: 200)
-          end
-
-          it 'returns the size with the cost factor for forks applied' do
-            expect(model.current_size).to eq(810)
-          end
-        end
-
-        context 'with private forks' do
-          let(:create_statistics) do
-            create(:namespace_root_storage_statistics, namespace: namespace, storage_size: 1000,
-              private_forks_storage_size: 400)
-          end
-
-          it 'returns the size with the cost factor for forks applied' do
-            expect(model.current_size).to eq(620)
-          end
-        end
-
-        context 'with public, internal, and private forks' do
-          let(:create_statistics) do
-            create(:namespace_root_storage_statistics, namespace: namespace, storage_size: 1000,
-              public_forks_storage_size: 100, internal_forks_storage_size: 200, private_forks_storage_size: 400)
-          end
-
-          it 'applies the cost factor for public, internal, and private forks' do
-            expect(model.current_size).to eq(335)
-          end
-        end
-      end
-
-      context 'when the fork cost factor is 1' do
-        before do
-          stub_const("#{described_class}::COST_FACTOR_FOR_FORKS", 1.0)
-        end
-
-        let(:create_statistics) do
-          create(:namespace_root_storage_statistics, namespace: namespace, storage_size: 1000,
-            public_forks_storage_size: 100, internal_forks_storage_size: 200, private_forks_storage_size: 300)
-        end
-
-        it 'considers forks to take up their full actual disk storage' do
-          expect(model.current_size).to eq(1000)
-        end
-      end
-
-      context 'when the fork cost factor is 0' do
-        before do
-          stub_const("#{described_class}::COST_FACTOR_FOR_FORKS", 0)
-        end
-
-        let(:create_statistics) do
-          create(:namespace_root_storage_statistics, namespace: namespace, storage_size: 1000,
-            public_forks_storage_size: 100, internal_forks_storage_size: 200, private_forks_storage_size: 300)
-        end
-
-        it 'considers forks to take up no storage at all' do
-          expect(model.current_size).to eq(400)
-        end
-      end
-
-      context 'when the cost factor would result in a fractional storage_size' do
-        before do
-          stub_const("#{described_class}::COST_FACTOR_FOR_FORKS", 0.1)
-        end
-
-        let(:create_statistics) do
-          create(:namespace_root_storage_statistics, namespace: namespace, storage_size: 1000,
-            public_forks_storage_size: 502)
-        end
-
-        it 'rounds to the nearest integer' do
-          expect(model.current_size).to eq(548)
-        end
+      it 'returns the cost factored storage size' do
+        expect(model.current_size).to eq(905)
       end
     end
   end

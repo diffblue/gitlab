@@ -92,4 +92,115 @@ RSpec.describe EE::Namespace::RootStorageStatistics, feature_category: :consumab
       end
     end
   end
+
+  describe '#cost_factored_storage_size', :saas do
+    let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+
+    context 'with a cost factor for forks' do
+      before do
+        stub_const("::Namespaces::Storage::RootSize::COST_FACTOR_FOR_FORKS", 0.05)
+      end
+
+      context 'with a free plan' do
+        let_it_be(:group) { create(:group_with_plan, plan: :free_plan) }
+
+        it 'includes public forks storage in the cost factor reduction' do
+          statistics = create(:namespace_root_storage_statistics, namespace: group, storage_size: 1000,
+            public_forks_storage_size: 100)
+
+          expect(statistics.cost_factored_storage_size).to eq(905)
+        end
+
+        it 'includes internal forks storage in the cost factor reduction' do
+          statistics = create(:namespace_root_storage_statistics, namespace: group, storage_size: 1000,
+            internal_forks_storage_size: 200)
+
+          expect(statistics.cost_factored_storage_size).to eq(810)
+        end
+
+        it 'does not include private forks storage in the cost factor reduction' do
+          statistics = create(:namespace_root_storage_statistics, namespace: group, storage_size: 1000,
+            private_forks_storage_size: 400)
+
+          expect(statistics.cost_factored_storage_size).to eq(1000)
+        end
+
+        it 'applies the cost factor for both public and internal forks excluding private forks' do
+          statistics = create(:namespace_root_storage_statistics, namespace: group, storage_size: 1000,
+            public_forks_storage_size: 100, internal_forks_storage_size: 200, private_forks_storage_size: 400)
+
+          expect(statistics.cost_factored_storage_size).to eq(715)
+        end
+      end
+
+      context 'with a paid plan' do
+        it 'includes public forks storage in the cost factor reduction' do
+          statistics = create(:namespace_root_storage_statistics, namespace: group, storage_size: 1000,
+            public_forks_storage_size: 100)
+
+          expect(statistics.cost_factored_storage_size).to eq(905)
+        end
+
+        it 'includes internal forks storage in the cost factor reduction' do
+          statistics = create(:namespace_root_storage_statistics, namespace: group, storage_size: 1000,
+            internal_forks_storage_size: 200)
+
+          expect(statistics.cost_factored_storage_size).to eq(810)
+        end
+
+        it 'includes private forks storage in the cost factor reduction' do
+          statistics = create(:namespace_root_storage_statistics, namespace: group, storage_size: 1000,
+            private_forks_storage_size: 400)
+
+          expect(statistics.cost_factored_storage_size).to eq(620)
+        end
+
+        it 'applies the cost factor for public, internal, and private forks' do
+          statistics = create(:namespace_root_storage_statistics, namespace: group, storage_size: 1000,
+            public_forks_storage_size: 100, internal_forks_storage_size: 200, private_forks_storage_size: 400)
+
+          expect(statistics.cost_factored_storage_size).to eq(335)
+        end
+      end
+    end
+
+    context 'with a fork cost factor of 1' do
+      before do
+        stub_const("::Namespaces::Storage::RootSize::COST_FACTOR_FOR_FORKS", 1.0)
+      end
+
+      it 'considers forks to take up their full actual disk storage' do
+        statistics = create(:namespace_root_storage_statistics, namespace: group, storage_size: 1000,
+          public_forks_storage_size: 100, internal_forks_storage_size: 200, private_forks_storage_size: 300)
+
+        expect(statistics.cost_factored_storage_size).to eq(1000)
+      end
+    end
+
+    context 'with a fork cost factor of 0' do
+      before do
+        stub_const("::Namespaces::Storage::RootSize::COST_FACTOR_FOR_FORKS", 0)
+      end
+
+      it 'considers forks to take up no storage at all' do
+        statistics = create(:namespace_root_storage_statistics, namespace: group, storage_size: 1000,
+          public_forks_storage_size: 100, internal_forks_storage_size: 200, private_forks_storage_size: 300)
+
+        expect(statistics.cost_factored_storage_size).to eq(400)
+      end
+    end
+
+    context 'when the cost factor would result in a fractional storage_size' do
+      before do
+        stub_const("::Namespaces::Storage::RootSize::COST_FACTOR_FOR_FORKS", 0.1)
+      end
+
+      it 'rounds to the nearest integer' do
+        statistics = create(:namespace_root_storage_statistics, namespace: group, storage_size: 1000,
+          public_forks_storage_size: 502)
+
+        expect(statistics.cost_factored_storage_size).to eq(548)
+      end
+    end
+  end
 end
