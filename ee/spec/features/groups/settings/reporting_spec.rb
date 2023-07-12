@@ -69,7 +69,7 @@ RSpec.describe 'Group reporting settings', :js, feature_category: :groups_and_pr
     expect(page).to have_field(limit_label, with: new_limit)
     expect(page).to have_field(interval_label, with: new_interval)
     expect(page).to have_content(user.name)
-    expect(page).to have_selector('[data-testid="auto-ban-users-toggle"] > .gl-toggle.is-checked')
+    expect(page).to have_selector('[data-testid="auto-ban-users-toggle"] .gl-toggle.is-checked')
 
     group.reload
 
