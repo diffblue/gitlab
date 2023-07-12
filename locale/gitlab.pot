@@ -1920,6 +1920,12 @@ msgstr ""
 msgid "AI|Code Explanation"
 msgstr ""
 
+msgid "AI|Creates issue description based on a short prompt"
+msgstr ""
+
+msgid "AI|Description is required"
+msgstr ""
+
 msgid "AI|Enabling these features is your acceptance of the %{link_start}GitLab Testing Agreement%{link_end}."
 msgstr ""
 
@@ -1936,6 +1942,9 @@ msgid "AI|Features that use third-party AI services require transmission of data
 msgstr ""
 
 msgid "AI|For example: Organizations should be able to forecast into the future by using value stream analytics charts. This feature would help them understand how their metrics are trending."
+msgstr ""
+
+msgid "AI|Generate issue description"
 msgstr ""
 
 msgid "AI|Helpful"

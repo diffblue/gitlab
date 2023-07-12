@@ -1,6 +1,7 @@
 import { __ } from '~/locale';
 import { TYPENAME_USER, TYPENAME_PROJECT } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { generateDescriptionAction } from 'ee/ai/editor_actions/generate_description';
 import aiFillDescriptionMutation from 'ee/ai/graphql/fill_mr_description.mutation.graphql';
 import { mountMarkdownEditor as mountCEMarkdownEditor } from '~/vue_shared/components/markdown/mount_markdown_editor';
 
@@ -39,6 +40,10 @@ export function mountMarkdownEditor() {
         };
       },
     });
+  }
+
+  if (window.gon?.features?.generateDescriptionAi) {
+    provideEEAiActions.push(generateDescriptionAction());
   }
 
   return mountCEMarkdownEditor({

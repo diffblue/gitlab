@@ -8,8 +8,7 @@ module Llm
     override :valid
     def valid?
       super &&
-        SUPPORTED_ISSUABLE_TYPES.include?(resource.to_ability_name) &&
-        Feature.enabled?(:generate_description_ai, resource.resource_parent) &&
+        Feature.enabled?(:generate_description_ai, resource) &&
         Ability.allowed?(user, :generate_description, resource)
     end
 

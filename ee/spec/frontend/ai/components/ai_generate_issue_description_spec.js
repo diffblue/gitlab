@@ -1,14 +1,13 @@
-import { GlButton, GlModal } from '@gitlab/ui';
+import { GlModal } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { createMockSubscription } from 'mock-apollo-client';
 import '~/lib/utils/autosave';
-import { BV_HIDE_TOOLTIP } from '~/lib/utils/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import aiActionMutation from 'ee/graphql_shared/mutations/ai_action.mutation.graphql';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
-import ConvertDescriptionModal from 'ee/issues/show/components/convert_description_modal.vue';
+import ConvertDescriptionModal from 'ee/ai/components/ai_generate_issue_description.vue';
 import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import waitForPromises from 'helpers/wait_for_promises';
 
@@ -24,16 +23,13 @@ describe('Convert description', () => {
   const userId = 123;
   const resourceId = 'gid://gitlab/Issue/1';
   const content = 'My issue descirption';
-  const LONGER_THAN_MAX_REQUEST_TIMEOUT = 1000 * 21; // 21 seconds
+  const LONGER_THAN_MAX_REQUEST_TIMEOUT = 1000 * 31;
 
   const findModal = () => wrapper.findComponent(GlModal);
-  const openModal = () => wrapper.findComponent(GlButton).vm.$emit('click');
   const clickSubmit = () => findModal().vm.$emit('primary', mockEvent);
   const findError = () => wrapper.find('[data-testid="convert-description-modal-error"]');
 
   function openModalAndEnterDescription() {
-    openModal();
-
     wrapper.find('textarea').setValue(content);
 
     clickSubmit();
@@ -71,20 +67,13 @@ describe('Convert description', () => {
 
   describe('successful mutation', () => {
     const descriptionTemplateName = 'Bug template';
-    let bsTooltipHide;
 
     beforeEach(async () => {
       createWrapper({ descriptionTemplateName });
 
-      bsTooltipHide = jest.fn();
-      wrapper.vm.$root.$on(BV_HIDE_TOOLTIP, bsTooltipHide);
       aiActionMutationHandler.mockResolvedValue({ data: { aiAction: { errors: [] } } });
 
       await openModalAndEnterDescription();
-    });
-
-    it('closes tooltip', () => {
-      expect(bsTooltipHide).toHaveBeenCalled();
     });
 
     it('calls the aiActionMutation', () => {
@@ -126,19 +115,16 @@ describe('Convert description', () => {
     it('shows error on error response', async () => {
       await waitForPromises();
 
-      expect(findError().text()).toBe('Error: GraphQL Error');
+      expect(findError().text()).toBe('GraphQL Error');
     });
   });
 
   describe('subscription response', () => {
     const descriptionTemplateName = 'Bug template';
-    let bsTooltipHide;
 
     it('emits contentGenerated event', async () => {
       createWrapper({ descriptionTemplateName });
 
-      bsTooltipHide = jest.fn();
-      wrapper.vm.$root.$on(BV_HIDE_TOOLTIP, bsTooltipHide);
       aiActionMutationHandler.mockResolvedValue({ data: { aiAction: { errors: [] } } });
 
       await openModalAndEnterDescription();

@@ -1,6 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
 import formComponent from '~/issues/show/components/form.vue';
-import ConvertDescriptionModal from 'ee/issues/show/components/convert_description_modal.vue';
 
 describe('Form', () => {
   let wrapper;
@@ -34,15 +33,9 @@ describe('Form', () => {
     });
   };
 
-  it('renders ConvertDescriptionModal', () => {
+  it('renders', () => {
     createComponent();
 
-    expect(wrapper.findComponent(ConvertDescriptionModal).exists()).toBe(true);
-  });
-
-  it('does not render ConvertDescriptionModal without an issueId', () => {
-    createComponent({ issueId: null });
-
-    expect(wrapper.findComponent(ConvertDescriptionModal).exists()).toBe(false);
+    expect(wrapper.find('form').exists()).toBe(true);
   });
 });
