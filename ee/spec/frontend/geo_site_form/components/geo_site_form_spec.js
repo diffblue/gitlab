@@ -21,19 +21,27 @@ jest.mock('~/lib/utils/url_utility', () => ({
   visitUrl: jest.fn().mockName('visitUrlMock'),
 }));
 
+const saveGeoSiteSpy = jest.fn();
+
+const { state } = initStore(MOCK_SITES_PATH);
+const fakeStore = ({ getters }) =>
+  new Vuex.Store({
+    state,
+    getters: {
+      formHasError: () => false,
+      ...getters,
+    },
+    actions: {
+      saveGeoSite: saveGeoSiteSpy,
+    },
+  });
+
 describe('GeoSiteForm', () => {
   let wrapper;
-  let store;
 
-  const createStore = () => {
-    store = initStore(MOCK_SITES_PATH);
-    jest.spyOn(store, 'dispatch').mockImplementation();
-  };
-
-  const createComponent = (props = {}) => {
-    createStore();
+  const createComponent = (props = {}, store = {}) => {
     wrapper = shallowMount(GeoSiteForm, {
-      store,
+      store: fakeStore(store),
       propsData: {
         site: MOCK_SITE,
         selectiveSyncTypes: MOCK_SELECTIVE_SYNC_TYPES,
@@ -74,12 +82,13 @@ describe('GeoSiteForm', () => {
 
     describe('Save Button', () => {
       describe('with errors on form', () => {
-        beforeEach(() => {
-          createComponent();
-          store.state.formErrors.name = 'Test Error';
-        });
-
         it('disables button', () => {
+          createComponent(undefined, {
+            getters: {
+              formHasError: () => true,
+            },
+          });
+
           expect(findGeoSiteSaveButton().attributes('disabled')).toBeDefined();
         });
       });
@@ -102,7 +111,7 @@ describe('GeoSiteForm', () => {
 
       it('calls saveGeoSite when save is clicked', () => {
         findGeoSiteSaveButton().vm.$emit('click');
-        expect(store.dispatch).toHaveBeenCalledWith('saveGeoSite', MOCK_SITE);
+        expect(saveGeoSiteSpy).toHaveBeenCalledWith(expect.anything(), MOCK_SITE);
       });
     });
 
