@@ -72,6 +72,38 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
           )
         end
 
+        context 'and components to fetch contains entries that do not have licenses' do
+          let_it_be(:components_to_fetch) do
+            [
+              Hashie::Mash.new({ name: "beego", purl_type: "golang", version: "v1.10.0" }),
+              Hashie::Mash.new({ name: "package1-without-license", purl_type: "npm", version: "1.2.1" }),
+              Hashie::Mash.new({ name: "camelcase", purl_type: "npm", version: "4.1.0" }),
+              Hashie::Mash.new({ name: "package2-without-license", purl_type: "npm", version: "2.1.0" }),
+              Hashie::Mash.new({ name: "cliui", purl_type: "golang", version: "2.1.0" }),
+              Hashie::Mash.new({ name: "package3-without-license", purl_type: "golang", version: "2.1.0" })
+            ]
+          end
+
+          it 'returns elements in the same order as the components to fetch' do
+            expect(fetch).to match([
+              have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0",
+                              licenses: contain_exactly(
+                                { name: "Open LDAP Public License v2.1", spdx_identifier: "OLDAP-2.1" },
+                                { name: "Open LDAP Public License v2.2", spdx_identifier: "OLDAP-2.2" })),
+              have_attributes(name: "package1-without-license", purl_type: "npm", version: "1.2.1",
+                licenses: [{ "name" => "unknown", "spdx_identifier" => "unknown" }]),
+              have_attributes(name: "camelcase", purl_type: "npm", version: "4.1.0",
+                licenses: [{ "name" => "Open LDAP Public License v2.2", "spdx_identifier" => "OLDAP-2.2" }]),
+              have_attributes(name: "package2-without-license", purl_type: "npm", version: "2.1.0",
+                licenses: [{ "name" => "unknown", "spdx_identifier" => "unknown" }]),
+              have_attributes(name: "cliui", purl_type: "golang", version: "2.1.0",
+                licenses: [{ "name" => "Open LDAP Public License v2.6", "spdx_identifier" => "OLDAP-2.6" }]),
+              have_attributes(name: "package3-without-license", purl_type: "golang", version: "2.1.0",
+                licenses: [{ "name" => "unknown", "spdx_identifier" => "unknown" }])
+            ])
+          end
+        end
+
         context 'and we change the batch size' do
           before do
             stub_const("Gitlab::LicenseScanning::PackageLicenses::BATCH_SIZE", 1)
@@ -134,6 +166,7 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
           it 'returns all the items that matched the fetched components' do
             fetch = described_class.new(project: project,
               components: components_to_fetch + additional_components_to_fetch).fetch
+
             expect(fetch).to contain_exactly(
               have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0",
                               licenses: contain_exactly(
@@ -346,6 +379,38 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
           )
         end
 
+        context 'and components to fetch contains entries that do not have licenses' do
+          let_it_be(:components_to_fetch) do
+            [
+              Hashie::Mash.new({ name: "beego", purl_type: "golang", version: "v1.10.0" }),
+              Hashie::Mash.new({ name: "package1-without-license", purl_type: "npm", version: "1.2.1" }),
+              Hashie::Mash.new({ name: "camelcase", purl_type: "npm", version: "4.1.0" }),
+              Hashie::Mash.new({ name: "package2-without-license", purl_type: "npm", version: "2.1.0" }),
+              Hashie::Mash.new({ name: "cliui", purl_type: "golang", version: "2.1.0" }),
+              Hashie::Mash.new({ name: "package3-without-license", purl_type: "golang", version: "2.1.0" })
+            ]
+          end
+
+          it 'returns elements in the same order as the components to fetch' do
+            expect(fetch).to match([
+              have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0",
+                              licenses: contain_exactly(
+                                { name: "Open LDAP Public License v2.1", spdx_identifier: "OLDAP-2.1" },
+                                { name: "Open LDAP Public License v2.2", spdx_identifier: "OLDAP-2.2" })),
+              have_attributes(name: "package1-without-license", purl_type: "npm", version: "1.2.1",
+                licenses: [{ "name" => "unknown", "spdx_identifier" => "unknown" }]),
+              have_attributes(name: "camelcase", purl_type: "npm", version: "4.1.0",
+                licenses: [{ "name" => "Open LDAP Public License v2.2", "spdx_identifier" => "OLDAP-2.2" }]),
+              have_attributes(name: "package2-without-license", purl_type: "npm", version: "2.1.0",
+                licenses: [{ "name" => "unknown", "spdx_identifier" => "unknown" }]),
+              have_attributes(name: "cliui", purl_type: "golang", version: "2.1.0",
+                licenses: [{ "name" => "Open LDAP Public License v2.6", "spdx_identifier" => "OLDAP-2.6" }]),
+              have_attributes(name: "package3-without-license", purl_type: "golang", version: "2.1.0",
+                licenses: [{ "name" => "unknown", "spdx_identifier" => "unknown" }])
+            ])
+          end
+        end
+
         context 'and we change the batch size' do
           before do
             stub_const("Gitlab::LicenseScanning::PackageLicenses::BATCH_SIZE", 1)
@@ -405,6 +470,7 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
           it 'returns all the items that matched the fetched components' do
             fetch = described_class.new(project: project,
               components: components_to_fetch + additional_components_to_fetch).fetch
+
             expect(fetch).to contain_exactly(
               have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0",
                               licenses: contain_exactly(
