@@ -18,6 +18,7 @@ RSpec.describe Gitlab::GitAccessProject do
     before do
       project.add_developer(user)
       repository.delete_branch('2-mb-file')
+      repository.delete_branch('wip')
 
       project.update_attribute(:repository_size_limit, repository_size_limit)
       project.statistics.update!(repository_size: repository_size)
