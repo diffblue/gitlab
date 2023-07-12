@@ -88,7 +88,10 @@ export default {
       });
 
       try {
-        const [{ data: projects }, groups] = await Promise.all([projectsFetch, groupsFetch]);
+        const [{ data: projects }, { data: groups }] = await Promise.all([
+          projectsFetch,
+          groupsFetch,
+        ]);
 
         const all = {
           text: __('All groups and projects'),
