@@ -4,13 +4,13 @@ require 'spec_helper'
 
 RSpec.describe API::Ml::AiAssist, feature_category: :code_suggestions do
   let(:current_user) { nil }
-  let(:api_feature_flag) { true }
+  let(:ai_assist_api_feature_flag_enabled) { true }
   let(:access_code_suggestions) { true }
   let(:third_party_ai_features_enabled) { false }
   let(:allowed_group) do
-    create(:group_with_plan, plan: nil).tap do |record|
-      record.add_owner(current_user)
-      record.update_attribute(:third_party_ai_features_enabled, third_party_ai_features_enabled)
+    create(:group_with_plan, plan: nil).tap do |group|
+      group.add_owner(current_user)
+      group.update_attribute(:third_party_ai_features_enabled, third_party_ai_features_enabled)
     end
   end
 
@@ -47,7 +47,7 @@ RSpec.describe API::Ml::AiAssist, feature_category: :code_suggestions do
     using RSpec::Parameterized::TableSyntax
 
     before do
-      stub_feature_flags(ai_assist_api: api_feature_flag)
+      stub_feature_flags(ai_assist_api: ai_assist_api_feature_flag_enabled)
       allow(Ability).to receive(:allowed?).and_call_original
       allow(Ability).to receive(:allowed?).with(an_instance_of(User), :access_code_suggestions, :global)
         .and_return(access_code_suggestions)
@@ -65,7 +65,7 @@ RSpec.describe API::Ml::AiAssist, feature_category: :code_suggestions do
       let(:current_user) { create(:user) }
 
       context 'when API feature flag is disabled' do
-        let(:api_feature_flag) { false }
+        let(:ai_assist_api_feature_flag_enabled) { false }
 
         include_examples 'a response', :not_found, "message" => "404 Not Found"
       end
