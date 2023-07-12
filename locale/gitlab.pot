@@ -12638,6 +12638,9 @@ msgstr ""
 msgid "ContributionAnalytics|Total Contributions"
 msgstr ""
 
+msgid "ContributionEvent|Accepted merge request %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
 msgid "ContributionEvent|Approved merge request %{targetLink} in %{resourceParentLink}."
 msgstr ""
 
