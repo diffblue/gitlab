@@ -2,12 +2,12 @@
 import { GlCard, GlLink, GlSprintf } from '@gitlab/ui';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { s__, n__, __ } from '~/locale';
+import { PROMO_URL } from 'jh_else_ce/lib/utils/url_utility';
 
 export const billableUsersURL = helpPagePath('subscriptions/self_managed/index', {
   anchor: 'billable-users',
 });
-export const trueUpURL =
-  'https://about.gitlab.com/pricing/licensing-faq/#what-does-users-over-license-mean';
+export const trueUpURL = `${PROMO_URL}/pricing/licensing-faq/#what-does-users-over-license-mean`;
 
 export const usersInSubscriptionUnlimited = __('Unlimited');
 

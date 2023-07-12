@@ -2,6 +2,7 @@
 import { GlAlert, GlLink, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import { PROMO_URL, DOCS_URL_IN_EE_DIR } from 'jh_else_ce/lib/utils/url_utility';
 import {
   CONNECTIVITY_ERROR,
   howToActivateSubscription,
@@ -62,7 +63,7 @@ export const i18n = Object.freeze({
 });
 
 export const links = Object.freeze({
-  purchaseSubscriptionLink: 'https://about.gitlab.com/pricing/',
+  purchaseSubscriptionLink: `${PROMO_URL}/pricing/`,
   supportLink,
   licenseSupportLink:
     'https://support.gitlab.com/hc/en-us/requests/new?ticket_form_id=360000071293',
@@ -70,10 +71,9 @@ export const links = Object.freeze({
   troubleshootingHelpLink: helpPagePath('/user/admin_area/license.html', {
     anchor: 'cannot-activate-instance-due-to-connectivity-error',
   }),
-  addSeats: 'https://docs.gitlab.com/ee/subscriptions/self_managed/#add-seats-to-a-subscription',
-  deactivateUser:
-    'https://docs.gitlab.com/ee/user/admin_area/moderate_users.html#deactivate-a-user',
-  blockUser: 'https://docs.gitlab.com/ee/user/admin_area/moderate_users.html#block-a-user',
+  addSeats: `${DOCS_URL_IN_EE_DIR}/subscriptions/self_managed/#add-seats-to-a-subscription`,
+  deactivateUser: `${DOCS_URL_IN_EE_DIR}/user/admin_area/moderate_users.html#deactivate-a-user`,
+  blockUser: `${DOCS_URL_IN_EE_DIR}/user/admin_area/moderate_users.html#block-a-user`,
 });
 
 export default {

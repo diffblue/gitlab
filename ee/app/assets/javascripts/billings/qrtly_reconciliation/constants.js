@@ -1,5 +1,6 @@
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { s__, __ } from '~/locale';
+import { PROMO_URL } from 'jh_else_ce/lib/utils/url_utility';
 
 const qrtlyReconciliationHelpPageUrl = helpPagePath('subscriptions/quarterly_reconciliation');
 
@@ -22,7 +23,7 @@ Otherwise, you will receive an invoice. For more information about the timing of
     },
     secondary: {
       text: __('Contact support'),
-      link: 'https://about.gitlab.com/support/#contact-support',
+      link: `${PROMO_URL}/support/#contact-support`,
     },
   },
 };

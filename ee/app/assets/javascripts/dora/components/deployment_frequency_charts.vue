@@ -14,6 +14,7 @@ import { nDaysAfter } from '~/lib/utils/datetime_utility';
 import { SUMMARY_METRICS_REQUEST } from '~/analytics/cycle_analytics/constants';
 import CiCdAnalyticsCharts from '~/vue_shared/components/ci_cd_analytics/ci_cd_analytics_charts.vue';
 import glFeaturesFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { PROMO_URL } from 'jh_else_ce/lib/utils/url_utility';
 import DoraChartHeader from './dora_chart_header.vue';
 import {
   allChartDefinitions,
@@ -34,7 +35,7 @@ const VISIBLE_METRICS = ['deploys', 'deployment-frequency', 'deployment_frequenc
 const filterFn = (data) =>
   data.filter((d) => VISIBLE_METRICS.includes(d.identifier)).map(({ links, ...rest }) => rest);
 
-const TESTING_TERMS_URL = 'https://about.gitlab.com/handbook/legal/testing-agreement/';
+const TESTING_TERMS_URL = `${PROMO_URL}/handbook/legal/testing-agreement/`;
 
 export default {
   name: 'DeploymentFrequencyCharts',

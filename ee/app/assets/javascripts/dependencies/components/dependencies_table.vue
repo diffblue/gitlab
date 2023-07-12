@@ -10,6 +10,7 @@ import {
 } from '@gitlab/ui';
 import { cloneDeep, uniqBy } from 'lodash';
 import { s__ } from '~/locale';
+import { DOCS_URL_IN_EE_DIR } from 'jh_else_ce/lib/utils/url_utility';
 import { NAMESPACE_PROJECT } from '../constants';
 import DependencyLicenseLinks from './dependency_license_links.vue';
 import DependencyLocation from './dependency_location.vue';
@@ -108,8 +109,7 @@ export default {
     { key: 'projects', label: s__('Dependencies|Projects'), tdClass: tdClass() },
   ],
   DEPENDENCIES_PER_PAGE: 20,
-  DEPENDENCY_PATH_LINK:
-    'https://docs.gitlab.com/ee/user/application_security/dependency_list/#dependency-paths',
+  DEPENDENCY_PATH_LINK: `${DOCS_URL_IN_EE_DIR}/user/application_security/dependency_list/#dependency-paths`,
   i18n: {
     tooltipText: s__(
       'Dependencies|The component dependency path is based on the lock file. There may be several paths. In these cases, the longest path is displayed.',
