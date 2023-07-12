@@ -73,19 +73,5 @@ RSpec.describe Mutations::Ci::JobTokenScope::AddProject, feature_category: :cont
         end
       end
     end
-
-    context 'when user adds target project to the outbound job token scope' do
-      let(:mutation_args) do
-        { project_path: project.full_path,
-          target_project_path: target_project_path,
-          direction: :outbound }
-      end
-
-      it 'does not log an audit event' do
-        expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
-
-        subject
-      end
-    end
   end
 end
