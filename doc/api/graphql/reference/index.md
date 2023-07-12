@@ -21704,6 +21704,7 @@ Represents the source of a security policy belonging to a project.
 | <a id="projectstatisticsbuildartifactssize"></a>`buildArtifactsSize` | [`Float!`](#float) | Build artifacts size of the project in bytes. |
 | <a id="projectstatisticscommitcount"></a>`commitCount` | [`Float!`](#float) | Commit count of the project. |
 | <a id="projectstatisticscontainerregistrysize"></a>`containerRegistrySize` | [`Float`](#float) | Container Registry size of the project in bytes. |
+| <a id="projectstatisticscostfactoredstoragesize"></a>`costFactoredStorageSize` **{warning-solid}** | [`Float!`](#float) | **Introduced** in 16.2. This feature is an Experiment. It can be changed or removed at any time. Storage size in bytes with any applicable cost factor for forks applied. This will equal storage_size if there is no applicable cost factor. |
 | <a id="projectstatisticslfsobjectssize"></a>`lfsObjectsSize` | [`Float!`](#float) | Large File Storage (LFS) object size of the project in bytes. |
 | <a id="projectstatisticspackagessize"></a>`packagesSize` | [`Float!`](#float) | Packages size of the project in bytes. |
 | <a id="projectstatisticspipelineartifactssize"></a>`pipelineArtifactsSize` | [`Float`](#float) | CI Pipeline artifacts size in bytes. |
