@@ -12644,6 +12644,9 @@ msgstr ""
 msgid "ContributionEvent|Left project %{resourceParentLink}."
 msgstr ""
 
+msgid "ContributionEvent|Made a private contribution."
+msgstr ""
+
 msgid "ContributionEvent|Pushed a new branch %{refLink} in %{resourceParentLink}."
 msgstr ""
 
