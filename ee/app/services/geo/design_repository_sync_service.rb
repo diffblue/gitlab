@@ -76,11 +76,5 @@ module Geo
     def download_time_in_seconds
       (Time.current.to_f - registry.last_synced_at.to_f).round(3)
     end
-
-    def redownload?
-      return false if Feature.enabled?(:geo_deprecate_redownload)
-
-      registry.should_be_redownloaded?
-    end
   end
 end

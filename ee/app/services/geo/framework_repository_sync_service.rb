@@ -17,7 +17,6 @@ module Geo
 
     LEASE_TIMEOUT    = 8.hours
     LEASE_KEY_PREFIX = 'geo_sync_ssf_service'
-    RETRIES_BEFORE_REDOWNLOAD = 10
 
     def initialize(replicator)
       @replicator = replicator
@@ -44,8 +43,7 @@ module Geo
       fetch_repository
       mark_sync_as_successful
     rescue Gitlab::Git::Repository::NoRepository => e
-      log_info('Marking the repository for a forced re-download')
-      fail_registry_sync!('Invalid repository', e, force_to_redownload: true)
+      fail_registry_sync!('Invalid repository', e)
 
       log_info('Expiring caches')
       repository.after_create
@@ -86,16 +84,11 @@ module Geo
 
     def fetch_repository
       log_info("Trying to fetch #{replicable_name}")
-      clean_up_temporary_repository
 
-      if should_be_redownloaded?
-        redownload_repository
-        @new_repository = true
-      elsif repository.exists?
+      if repository.exists?
         fetch_geo_mirror
       elsif Feature.enabled?('geo_use_clone_on_first_sync')
         clone_geo_mirror
-
         @new_repository = true
       else
         ensure_repository
@@ -107,30 +100,6 @@ module Geo
       end
 
       update_root_ref
-    end
-
-    def redownload_repository
-      log_info("Redownloading #{replicable_name}")
-
-      if fetch_snapshot_into_temp_repo
-        set_temp_repository_as_main
-
-        return
-      end
-
-      log_info("Attempting to fetch repository via git")
-
-      if Feature.enabled?('geo_use_clone_on_first_sync')
-        clone_geo_mirror(target_repository: temp_repo)
-        temp_repo.create_repository unless temp_repo.exists?
-      else
-        temp_repo.create_repository
-        fetch_geo_mirror(target_repository: temp_repo)
-      end
-
-      set_temp_repository_as_main
-    ensure
-      clean_up_temporary_repository
     end
 
     def current_node
@@ -152,31 +121,10 @@ module Geo
       target_repository.clone_as_mirror(replicator.remote_url, http_authorization_header: replicator.jwt_authentication_header)
     end
 
-    # Use snapshotting for redownloads *only* when enabled.
-    #
-    # If writes happen to the repository while snapshotting, it may be
-    # returned in an inconsistent state. However, a subsequent git fetch
-    # will be enqueued by the log cursor, which should resolve any problems
-    # it is possible to fix.
-    def fetch_snapshot_into_temp_repo
-      return unless replicator.snapshot_enabled?
-
-      log_info("Attempting to fetch repository via snapshot")
-
-      temp_repo.create_from_snapshot(
-        replicator.snapshot_url,
-        ::Gitlab::Geo::RepoSyncRequest.new(scope: ::Gitlab::Geo::API_SCOPE).authorization
-      )
-    rescue StandardError => err
-      log_error('Snapshot attempt failed', err)
-      false
-    end
-
     def mark_sync_as_successful(missing_on_primary: false)
       log_info("Marking #{replicable_name} sync as successful")
 
       registry = replicator.registry
-      registry.force_to_redownload = false
       registry.missing_on_primary = missing_on_primary
       persisted = registry.synced!
 
@@ -192,70 +140,15 @@ module Geo
       registry.start!
     end
 
-    def fail_registry_sync!(message, error, force_to_redownload: false)
+    def fail_registry_sync!(message, error)
       log_error(message, error)
 
       registry = replicator.registry
-      registry.force_to_redownload = force_to_redownload
       registry.failed!(message: message, error: error)
     end
 
     def download_time_in_seconds
       (Time.current.to_f - registry.last_synced_at.to_f).round(3)
-    end
-
-    def disk_path_temp
-      # We use "@" as it's not allowed to use it in a group or project name
-      @disk_path_temp ||= "@geo-temporary/#{repository.disk_path}"
-    end
-
-    def deleted_disk_path_temp
-      @deleted_path ||= "@failed-geo-sync/#{repository.disk_path}"
-    end
-
-    def temp_repo
-      @temp_repo ||= ::Repository.new(repository.full_path, repository.container, shard: repository.shard, disk_path: disk_path_temp, repo_type: repository.repo_type)
-    end
-
-    def clean_up_temporary_repository
-      exists = gitlab_shell.repository_exists?(repository_storage, disk_path_temp + '.git')
-
-      if exists && !gitlab_shell.remove_repository(repository_storage, disk_path_temp)
-        raise Gitlab::Shell::Error, "Temporary #{replicable_name} can not be removed"
-      end
-    end
-
-    def set_temp_repository_as_main
-      log_info(
-        "Setting newly downloaded repository as main",
-        storage_shard: repository_storage,
-        temp_path: disk_path_temp,
-        deleted_disk_path_temp: deleted_disk_path_temp,
-        disk_path: repository.disk_path
-      )
-
-      # Remove the deleted path in case it exists, but it may not be there
-      gitlab_shell.remove_repository(repository_storage, deleted_disk_path_temp)
-
-      # Make sure we have the most current state of exists?
-      repository.expire_exists_cache
-
-      # Move the current canonical repository to the deleted path for reference
-      if repository.exists?
-        unless gitlab_shell.mv_repository(repository_storage, repository.disk_path, deleted_disk_path_temp)
-          raise Gitlab::Shell::Error, 'Can not move original repository out of the way'
-        end
-      end
-
-      # Move the temporary repository to the canonical path
-      unless gitlab_shell.mv_repository(repository_storage, disk_path_temp, repository.disk_path)
-        raise Gitlab::Shell::Error, 'Can not move temporary repository to canonical location'
-      end
-
-      # Purge the original repository
-      unless gitlab_shell.remove_repository(repository_storage, deleted_disk_path_temp)
-        raise Gitlab::Shell::Error, 'Can not remove outdated main repository'
-      end
     end
 
     def repository_storage
@@ -289,15 +182,6 @@ module Geo
       end
     rescue Repositories::HousekeepingService::LeaseTaken
       # best-effort
-    end
-
-    def should_be_redownloaded?
-      return false if Feature.enabled?(:geo_deprecate_redownload)
-      return true if registry.force_to_redownload
-
-      retries = registry.retry_count
-
-      retries.present? && retries > RETRIES_BEFORE_REDOWNLOAD && retries.odd?
     end
 
     def set_reschedule_sync

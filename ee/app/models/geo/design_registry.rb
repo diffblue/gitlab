@@ -6,8 +6,6 @@ class Geo::DesignRegistry < Geo::BaseRegistry
   MODEL_CLASS = ::Project
   MODEL_FOREIGN_KEY = :project_id
 
-  RETRIES_BEFORE_REDOWNLOAD = 10
-
   belongs_to :project
 
   scope :dirty, -> { with_state(:pending).where.not(last_synced_at: nil) }
@@ -109,8 +107,7 @@ class Geo::DesignRegistry < Geo::BaseRegistry
       missing_on_primary: missing_on_primary,
       retry_count: 0,
       last_sync_failure: nil,
-      retry_at: nil,
-      force_to_redownload: false
+      retry_at: nil
     )
 
     mark_synced_atomically
@@ -126,11 +123,5 @@ class Geo::DesignRegistry < Geo::BaseRegistry
                    .update_all(state: 'synced')
 
     num_rows > 0
-  end
-
-  def should_be_redownloaded?
-    return true if force_to_redownload
-
-    retry_count.present? && retry_count > RETRIES_BEFORE_REDOWNLOAD && retry_count.odd?
   end
 end

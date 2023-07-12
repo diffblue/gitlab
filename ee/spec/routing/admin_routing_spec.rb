@@ -20,10 +20,6 @@ RSpec.describe 'EE-specific admin routing' do
     it 'routes post /:id/resync to #resync' do
       expect(post("/admin/geo/replication/projects/#{project_registry.id}/resync")).to route_to('admin/geo/projects#resync', id: project_registry.to_param)
     end
-
-    it 'routes post /:id/force_redownload to #force_redownload' do
-      expect(post("/admin/geo/replication/projects/#{project_registry.id}/force_redownload")).to route_to('admin/geo/projects#force_redownload', id: project_registry.to_param)
-    end
   end
 
   describe Admin::Geo::DesignsController, 'routing' do

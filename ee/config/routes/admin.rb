@@ -74,7 +74,6 @@ namespace :admin do
         member do
           post :reverify
           post :resync
-          post :force_redownload
         end
 
         collection do

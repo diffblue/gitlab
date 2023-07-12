@@ -22,7 +22,5 @@ RSpec.shared_examples 'allowlisted /admin/geo requests' do
     it_behaves_like 'allowlisted request', :post, '/admin/geo/replication/projects/reverify_all'
 
     it_behaves_like 'allowlisted request', :post, '/admin/geo/replication/projects/resync_all'
-
-    it_behaves_like 'allowlisted request', :post, '/admin/geo/replication/projects/1/force_redownload'
   end
 end

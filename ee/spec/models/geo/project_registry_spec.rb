@@ -618,7 +618,6 @@ RSpec.describe Geo::ProjectRegistry, :geo, feature_category: :geo_replication do
         subject.update!(
           repository_retry_at: 1.day.from_now,
           repository_retry_count: 1,
-          force_to_redownload_repository: true,
           last_repository_sync_failure: 'foo',
           repository_verification_checksum_sha: 'abc123',
           repository_checksum_mismatch: true,
@@ -640,7 +639,6 @@ RSpec.describe Geo::ProjectRegistry, :geo, feature_category: :geo_replication do
           resync_repository: false,
           repository_retry_count: nil,
           repository_retry_at: nil,
-          force_to_redownload_repository: false,
           last_repository_sync_failure: nil,
           repository_missing_on_primary: false
         )
@@ -685,7 +683,6 @@ RSpec.describe Geo::ProjectRegistry, :geo, feature_category: :geo_replication do
           expect(subject.reload).to have_attributes(
             repository_retry_count: nil,
             repository_retry_at: nil,
-            force_to_redownload_repository: false,
             last_repository_sync_failure: nil,
             repository_missing_on_primary: false
           )
@@ -713,7 +710,6 @@ RSpec.describe Geo::ProjectRegistry, :geo, feature_category: :geo_replication do
         subject.update!(
           wiki_retry_at: 1.day.from_now,
           wiki_retry_count: 1,
-          force_to_redownload_wiki: true,
           last_wiki_sync_failure: 'foo',
           wiki_verification_checksum_sha: 'abc123',
           wiki_checksum_mismatch: true,
@@ -735,7 +731,6 @@ RSpec.describe Geo::ProjectRegistry, :geo, feature_category: :geo_replication do
           resync_wiki: false,
           wiki_retry_count: nil,
           wiki_retry_at: nil,
-          force_to_redownload_wiki: false,
           last_wiki_sync_failure: nil,
           wiki_missing_on_primary: false
         )
@@ -780,7 +775,6 @@ RSpec.describe Geo::ProjectRegistry, :geo, feature_category: :geo_replication do
           expect(subject.reload).to have_attributes(
             wiki_retry_count: nil,
             wiki_retry_at: nil,
-            force_to_redownload_wiki: false,
             last_wiki_sync_failure: nil,
             wiki_missing_on_primary: false
           )
@@ -856,12 +850,6 @@ RSpec.describe Geo::ProjectRegistry, :geo, feature_category: :geo_replication do
         subject.fail_sync!(type, message, error)
 
         expect(subject.reload.repository_retry_count).to eq(1)
-      end
-
-      it 'optionally updates other attributes' do
-        subject.fail_sync!(type, message, error, { force_to_redownload_repository: true })
-
-        expect(subject.reload.force_to_redownload_repository).to be true
       end
 
       context 'when repository_retry_count is 0' do
@@ -942,12 +930,6 @@ RSpec.describe Geo::ProjectRegistry, :geo, feature_category: :geo_replication do
         expect(subject.reload.wiki_retry_count).to eq(1)
       end
 
-      it 'optionally updates other attributes' do
-        subject.fail_sync!(type, message, error, { force_to_redownload_wiki: true })
-
-        expect(subject.reload.force_to_redownload_wiki).to be true
-      end
-
       context 'when wiki_retry_count is 0' do
         before do
           subject.update!(wiki_retry_count: 0)
@@ -1024,7 +1006,6 @@ RSpec.describe Geo::ProjectRegistry, :geo, feature_category: :geo_replication do
           resync_repository: true,
           repository_retry_count: nil,
           repository_retry_at: nil,
-          force_to_redownload_repository: nil,
           last_repository_sync_failure: nil,
           repository_missing_on_primary: nil,
           resync_repository_was_scheduled_at: be_within(1.minute).of(Time.current)
@@ -1064,7 +1045,6 @@ RSpec.describe Geo::ProjectRegistry, :geo, feature_category: :geo_replication do
           resync_wiki: true,
           wiki_retry_count: nil,
           wiki_retry_at: nil,
-          force_to_redownload_wiki: nil,
           last_wiki_sync_failure: nil,
           wiki_missing_on_primary: nil,
           resync_wiki_was_scheduled_at: be_within(1.minute).of(Time.current)
@@ -1212,52 +1192,6 @@ RSpec.describe Geo::ProjectRegistry, :geo, feature_category: :geo_replication do
     end
   end
 
-  describe '#flag_repository_for_redownload!' do
-    it 'modified record to a redownload state' do
-      registry = create(:geo_project_registry, :repository_verified)
-      registry.flag_repository_for_redownload!
-
-      expect(registry).to have_attributes(
-        resync_repository: true,
-        force_to_redownload_repository: true
-      )
-    end
-  end
-
-  describe '#candidate_for_redownload?' do
-    context 'when feature flag geo_deprecate_redownload is enabled' do
-      it 'returns false when repository_retry_count is 1 or less' do
-        registry = create(:geo_project_registry, :sync_failed)
-
-        expect(registry.candidate_for_redownload?).to be_falsey
-      end
-
-      it 'returns false when repository_retry_count is > 1' do
-        registry = create(:geo_project_registry, :sync_failed, repository_retry_count: 2)
-
-        expect(registry.candidate_for_redownload?).to be_falsey
-      end
-    end
-
-    context 'when feature flag geo_deprecate_redownload is disabled' do
-      before do
-        stub_feature_flags(geo_deprecate_redownload: false)
-      end
-
-      it 'returns false when repository_retry_count is 1 or less' do
-        registry = create(:geo_project_registry, :sync_failed)
-
-        expect(registry.candidate_for_redownload?).to be_falsey
-      end
-
-      it 'returns true when repository_retry_count is > 1' do
-        registry = create(:geo_project_registry, :sync_failed, repository_retry_count: 2)
-
-        expect(registry.candidate_for_redownload?).to be_truthy
-      end
-    end
-  end
-
   describe '#synchronization_state' do
     it 'returns :never when no attempt to sync has ever been done' do
       registry = create(:geo_project_registry)
@@ -1298,70 +1232,6 @@ RSpec.describe Geo::ProjectRegistry, :geo, feature_category: :geo_replication do
         registry = create(:geo_project_registry, last_repository_successful_sync_at: Time.current)
 
         expect(registry.repository_has_successfully_synced?).to be_truthy
-      end
-    end
-  end
-
-  describe 'should_be_redownloaded?' do
-    context 'when type is invalid' do
-      it 'raises ArgumentError' do
-        registry = build(:geo_project_registry)
-
-        expect do
-          registry.should_be_redownloaded?(:invalid_type)
-        end.to raise_error(ArgumentError)
-      end
-    end
-
-    context 'when type is repository' do
-      where(:force_to_redownload_repository, :repository_retry_count, :expected) do
-        false | nil | false
-        false | 0   | false
-        false | 1   | false
-        false | 10  | false
-        false | 11  | true
-        false | 12  | false
-        false | 13  | true
-        false | 14  | false
-        false | 101 | true
-        false | 102 | false
-        true  | nil | true
-        true  | 0   | true
-        true  | 11  | true
-      end
-
-      with_them do
-        it "returns the expected boolean" do
-          registry = build(:geo_project_registry, repository_retry_count: repository_retry_count, force_to_redownload_repository: force_to_redownload_repository)
-
-          expect(registry.should_be_redownloaded?(:repository)).to eq(expected)
-        end
-      end
-    end
-
-    context 'when type is wiki' do
-      where(:force_to_redownload_wiki, :wiki_retry_count, :expected) do
-        false | nil | false
-        false | 0   | false
-        false | 1   | false
-        false | 10  | false
-        false | 11  | true
-        false | 12  | false
-        false | 13  | true
-        false | 14  | false
-        false | 101 | true
-        false | 102 | false
-        true  | nil | true
-        true  | 0   | true
-        true  | 11  | true
-      end
-
-      with_them do
-        it "returns the expected boolean" do
-          registry = build(:geo_project_registry, wiki_retry_count: wiki_retry_count, force_to_redownload_wiki: force_to_redownload_wiki)
-
-          expect(registry.should_be_redownloaded?(:wiki)).to eq(expected)
-        end
       end
     end
   end

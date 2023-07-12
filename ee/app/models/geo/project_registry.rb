@@ -10,7 +10,6 @@ class Geo::ProjectRegistry < Geo::BaseRegistry
   MODEL_FOREIGN_KEY = :project_id
 
   REGISTRY_TYPES = %i{repository wiki}.freeze
-  RETRIES_BEFORE_REDOWNLOAD = 10
 
   sha_attribute :repository_verification_checksum_sha
   sha_attribute :repository_verification_checksum_mismatched
@@ -313,7 +312,6 @@ class Geo::ProjectRegistry < Geo::BaseRegistry
       "last_#{type}_successful_sync_at" => Time.current,
       "#{type}_retry_count" => nil,
       "#{type}_retry_at" => nil,
-      "force_to_redownload_#{type}" => false,
       "last_#{type}_sync_failure" => nil,
       "#{type}_missing_on_primary" => missing_on_primary,
 
@@ -458,19 +456,6 @@ class Geo::ProjectRegistry < Geo::BaseRegistry
     Gitlab::Redis::SharedState.with { |redis| redis.set(fetches_since_gc_redis_key, value) }
   end
 
-  # Check if we should re-download *type*
-  #
-  # @param [String] type must be one of the values in TYPES
-  # @see REGISTRY_TYPES
-  def should_be_redownloaded?(type)
-    ensure_valid_type!(type)
-    return true if public_send("force_to_redownload_#{type}") # rubocop:disable GitlabSecurity/PublicSend
-
-    retries = retry_count(type)
-
-    retries > RETRIES_BEFORE_REDOWNLOAD && retries.odd?
-  end
-
   def verification_retry_count(type)
     public_send("#{type}_verification_retry_count").to_i # rubocop:disable GitlabSecurity/PublicSend
   end
@@ -487,25 +472,6 @@ class Geo::ProjectRegistry < Geo::BaseRegistry
   # This operation happens only in the database and the resync will be triggered after by the cron job
   def flag_repository_for_resync!
     repository_updated!(:repository, Time.current)
-  end
-
-  # Flag the repository to perform a full re-download
-  #
-  # This operation happens only in the database and the forced re-download will be triggered after by the cron job
-  def flag_repository_for_redownload!
-    self.update(resync_repository: true, force_to_redownload_repository: true)
-  end
-
-  # A registry becomes candidate for re-download after first failed retries
-  #
-  # This is used by the Admin > Geo Nodes > Projects UI interface to choose
-  # when to display the re-download button
-  #
-  # @return [Boolean] whether the registry is candidate for a re-download
-  def candidate_for_redownload?
-    return false if Feature.enabled?(:geo_deprecate_redownload)
-
-    self.repository_retry_count && self.repository_retry_count > 1
   end
 
   # Returns a synchronization state based on existing attribute values

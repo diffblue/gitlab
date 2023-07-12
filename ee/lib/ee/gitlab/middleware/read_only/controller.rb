@@ -12,7 +12,7 @@ module EE
           }.freeze
 
           ALLOWLISTED_GEO_ROUTES_TRACKING_DB = {
-            'admin/geo/projects' => %w{destroy resync reverify force_redownload resync_all reverify_all},
+            'admin/geo/projects' => %w{destroy resync reverify resync_all reverify_all},
             'admin/geo/uploads' => %w{destroy}
           }.freeze
 

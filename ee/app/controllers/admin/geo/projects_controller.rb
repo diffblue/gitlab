@@ -55,13 +55,6 @@ class Admin::Geo::ProjectsController < Admin::Geo::ApplicationController
     redirect_back_or_default(default: admin_geo_projects_path)
   end
 
-  def force_redownload
-    @registry.flag_repository_for_redownload!
-
-    flash[:toast] = s_('Geo|%{name} is scheduled for forced re-download') % { name: @registry.project.full_name }
-    redirect_back_or_default(default: admin_geo_projects_path)
-  end
-
   def reverify_all
     Geo::Batch::ProjectRegistrySchedulerWorker.perform_async(:reverify_repositories) # rubocop:disable CodeReuse/Worker
 
