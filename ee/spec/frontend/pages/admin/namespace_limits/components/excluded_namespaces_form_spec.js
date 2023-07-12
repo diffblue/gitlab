@@ -37,7 +37,7 @@ describe('ExcludedNamespacesForm', () => {
   const submitForm = () => wrapper.find('form').trigger('submit');
   const fillAndSubmitForm = () => {
     findReasonInput().vm.$emit('input', mockReason);
-    findEntitySelect().vm.$emit('input', mockNamespaceId);
+    findEntitySelect().vm.$emit('input', { value: mockNamespaceId });
 
     submitForm();
 

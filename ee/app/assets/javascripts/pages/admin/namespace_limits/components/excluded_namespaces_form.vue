@@ -99,8 +99,8 @@ export default {
       }
       return { items: groups, totalPages };
     },
-    handleEntitySelectInput(input) {
-      this.excludedId = input;
+    handleEntitySelectInput({ value }) {
+      this.excludedId = value;
     },
   },
 };
