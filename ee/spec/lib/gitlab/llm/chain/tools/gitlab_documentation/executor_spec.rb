@@ -4,7 +4,13 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Chain::Tools::GitlabDocumentation::Executor, :saas, feature_category: :shared do
   describe '#execute' do
-    let(:response) { { "choices" => [{ "text" => "In your User settings. ATTRS: CNT-IDX-123" }] }.to_json }
+    let(:response) do
+      instance_double(
+        'Net::HTTPResponse',
+        body: { 'completion' => 'In your User settings. ATTRS: CNT-IDX-123' }.to_json
+      )
+    end
+
     let(:options) { { input: "how to reset the password?" } }
     let(:context) do
       Gitlab::Llm::Chain::GitlabContext.new(

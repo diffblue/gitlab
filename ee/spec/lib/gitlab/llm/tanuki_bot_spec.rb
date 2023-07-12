@@ -12,10 +12,11 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
     let(:logger) { instance_double('Logger') }
     let(:instance) { described_class.new(current_user: user, question: question, logger: logger) }
     let(:openai_client) { ::Gitlab::Llm::OpenAi::Client.new(user) }
+    let(:anthropic_client) { ::Gitlab::Llm::Anthropic::Client.new(user) }
     let(:embedding) { Array.new(1536, 0.5) }
     let(:embedding_response) { { "data" => [{ "embedding" => embedding }] } }
     let(:attrs) { embeddings.map(&:id).map { |x| "CNT-IDX-#{x}" }.join(", ") }
-    let(:completion_response) { { "choices" => [{ "text" => "#{answer} ATTRS: #{attrs}" }] } }
+    let(:completion_response) { { "completion" => "#{answer} ATTRS: #{attrs}" } }
     let(:status_code) { 200 }
     let(:success) { true }
 
@@ -168,14 +169,14 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
           context 'when #ai_feature_enabled is true' do
             before do
               allow(::Gitlab::Llm::OpenAi::Client).to receive(:new).and_return(openai_client)
+              allow(::Gitlab::Llm::Anthropic::Client).to receive(:new).and_return(anthropic_client)
               allow(described_class).to receive(:ai_feature_enabled?).and_return(true)
             end
 
-            it 'executes calls through to open ai' do
+            it 'executes calls through to anthropic' do
               embeddings
 
-              expect(openai_client).to receive(:completions)
-                .with(hash_including(moderated: false))
+              expect(anthropic_client).to receive(:complete)
                 .exactly(3).times
                 .and_return(completion_response)
               expect(openai_client).to receive(:embeddings)
@@ -213,6 +214,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
           before do
             allow(completion_response).to receive(:parsed_response).and_return(completion_response)
             allow(::Gitlab::Llm::OpenAi::Client).to receive(:new).and_return(openai_client)
+            allow(::Gitlab::Llm::Anthropic::Client).to receive(:new).and_return(anthropic_client)
             allow(user).to receive(:any_group_with_ai_available?).and_return(true)
           end
 
@@ -248,8 +250,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
 
               describe 'getting matching documents' do
                 before do
-                  allow(openai_client).to receive(:completions)
-                    .with(hash_including(moderated: false))
+                  allow(anthropic_client).to receive(:complete)
                     .and_return(completion_response)
                 end
 
@@ -279,8 +280,8 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
                   let(:final_completion_response) { { error: { message: 'something went wrong' } } }
 
                   before do
-                    allow(openai_client).to receive(:completions)
-                      .with(hash_including(prompt: /create a final answer/, moderated: false))
+                    allow(anthropic_client).to receive(:complete)
+                      .with(hash_including(prompt: /create a final answer/))
                       .and_return(final_completion_response)
                     allow(final_completion_response).to receive(:code).and_return(500)
                     allow(final_completion_response).to receive(:success?).and_return(false)
@@ -304,11 +305,11 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
                 end
 
                 it 'calls the completions API once for each document and once for summarizing' do
-                  expect(openai_client).to receive(:completions)
+                  expect(anthropic_client).to receive(:complete)
                     .with(hash_including(prompt: /see if any of the text is relevant to answer the question/))
                     .and_return(completion_response).twice
 
-                  expect(openai_client).to receive(:completions)
+                  expect(anthropic_client).to receive(:complete)
                     .with(hash_including(prompt: /create a final answer/))
                     .and_return(completion_response).once
 

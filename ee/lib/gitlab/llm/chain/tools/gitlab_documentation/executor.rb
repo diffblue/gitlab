@@ -32,7 +32,7 @@ module Gitlab
                 current_user: context.current_user,
                 question: options[:input]
               ).execute
-              content = Gitlab::Llm::OpenAi::ResponseModifiers::TanukiBot.new(response).response_body
+              content = Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot.new(response.body).response_body
 
               Gitlab::Llm::Chain::Answer.final_answer(context: context, content: content)
             end

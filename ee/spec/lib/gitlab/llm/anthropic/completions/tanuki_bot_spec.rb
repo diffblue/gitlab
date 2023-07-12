@@ -2,13 +2,13 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::OpenAi::Completions::TanukiBot, feature_category: :global_search do
+RSpec.describe Gitlab::Llm::Anthropic::Completions::TanukiBot, feature_category: :global_search do
   let_it_be(:user) { create(:user) }
 
   let(:question) { 'A question' }
   let(:options) { { question: question } }
   let(:params) { { request_id: 'uuid' } }
-  let(:template_class) { ::Gitlab::Llm::OpenAi::Templates::TanukiBot }
+  let(:template_class) { ::Gitlab::Llm::Anthropic::Templates::TanukiBot }
 
   let(:ai_response) do
     {
@@ -38,7 +38,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::TanukiBot, feature_category: :g
       response_service = double
       params = [user, user, response_modifier, { options: { request_id: 'uuid' } }]
 
-      expect(Gitlab::Llm::OpenAi::ResponseModifiers::TanukiBot).to receive(:new).with(ai_response).and_return(
+      expect(Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot).to receive(:new).with(ai_response).and_return(
         response_modifier
       )
 

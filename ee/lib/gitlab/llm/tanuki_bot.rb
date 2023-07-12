@@ -5,13 +5,6 @@ module Gitlab
     class TanukiBot
       include ::Gitlab::Loggable
 
-      DEFAULT_OPTIONS = {
-        max_tokens: 256,
-        top_p: 1,
-        n: 1,
-        best_of: 1,
-        temperature: 0
-      }.freeze
       REQUEST_TIMEOUT = 30
       CONTENT_ID_FIELD = 'ATTRS'
       CONTENT_ID_REGEX = /CNT-IDX-(?<id>\d+)/
@@ -63,20 +56,25 @@ module Gitlab
 
       attr_reader :current_user, :question, :logger, :correlation_id
 
+      def openai_client
+        @openai_client ||= ::Gitlab::Llm::OpenAi::Client.new(current_user, request_timeout: REQUEST_TIMEOUT)
+      end
+
       def client
-        @client ||= ::Gitlab::Llm::OpenAi::Client.new(current_user, request_timeout: REQUEST_TIMEOUT)
+        @client ||= ::Gitlab::Llm::Anthropic::Client.new(current_user)
       end
 
       def build_initial_prompts(search_documents)
         search_documents.to_h do |doc|
-          prompt = Gitlab::Llm::OpenAi::Templates::TanukiBot.initial_prompt(question: question, content: doc[:content])
+          prompt = Gitlab::Llm::Anthropic::Templates::TanukiBot
+            .initial_prompt(question: question, content: doc[:content])
 
           [doc, prompt[:prompt]]
         end
       end
 
       def send_initial_prompt(doc:, prompt:)
-        result = client.completions(prompt: prompt, moderated: false, **DEFAULT_OPTIONS)
+        result = client.complete(prompt: prompt)
 
         info(
           document_id: doc[:id],
@@ -88,7 +86,7 @@ module Gitlab
 
         raise result.dig('error', 'message') || "Initial prompt request failed with '#{result}'" unless result.success?
 
-        doc.merge(extracted_text: result['choices'].first['text'])
+        doc.merge(extracted_text: result['completion'].to_s.strip)
       end
 
       def sequential_competion(search_documents)
@@ -118,12 +116,11 @@ module Gitlab
                       sequential_competion(search_documents)
                     end
 
-        final_prompt = Gitlab::Llm::OpenAi::Templates::TanukiBot.final_prompt(question: question, documents: documents)
+        final_prompt = Gitlab::Llm::Anthropic::Templates::TanukiBot
+          .final_prompt(question: question, documents: documents)
 
-        final_prompt_result = client.completions(
-          prompt: final_prompt[:prompt],
-          moderated: false,
-          **final_prompt[:options]
+        final_prompt_result = client.complete(
+          prompt: final_prompt[:prompt]
         )
 
         unless final_prompt_result.success?
@@ -141,7 +138,7 @@ module Gitlab
       end
 
       def query_search_documents
-        embeddings_result = client.embeddings(input: question, moderated: true)
+        embeddings_result = openai_client.embeddings(input: question, moderated: true)
         question_embedding = embeddings_result['data'].first['embedding']
 
         ::Embedding::TanukiBotMvc.current.neighbor_for(
