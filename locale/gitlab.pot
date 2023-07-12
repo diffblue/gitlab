@@ -13965,6 +13965,9 @@ msgstr ""
 msgid "DORA4Metrics|Accept testing terms of use?"
 msgstr ""
 
+msgid "DORA4Metrics|All labels"
+msgstr ""
+
 msgid "DORA4Metrics|Average (last %{days}d)"
 msgstr ""
 
@@ -14014,6 +14017,9 @@ msgid "DORA4Metrics|Failed to load charts"
 msgstr ""
 
 msgid "DORA4Metrics|Failed to load comparison chart for Namespace: %{fullPath}"
+msgstr ""
+
+msgid "DORA4Metrics|Filtered by"
 msgstr ""
 
 msgid "DORA4Metrics|Forecast"

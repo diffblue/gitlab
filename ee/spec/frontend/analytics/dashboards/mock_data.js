@@ -628,3 +628,59 @@ export const mockEmptyFlowMetricsResponse = {
   cycle_time: null,
   lead_time: null,
 };
+
+export const MOCK_LABELS = [
+  { id: 1, title: 'one', color: '#FFFFFF' },
+  { id: 2, title: 'two', color: '#000000' },
+  { id: 3, title: 'three', color: '#0F0F0F' },
+];
+
+export const filterLabelsGroupQuery = `query ($fullPath: ID!) {
+  namespace: group(fullPath: $fullPath) {
+    id
+    label_0: labels(
+      searchTerm: "zero"
+      includeAncestorGroups: true
+      includeDescendantGroups: true
+    ) {
+      nodes {
+        id
+        title
+        color
+      }
+    }
+    label_1: labels(
+      searchTerm: "one"
+      includeAncestorGroups: true
+      includeDescendantGroups: true
+    ) {
+      nodes {
+        id
+        title
+        color
+      }
+    }
+  }
+}
+`;
+
+export const filterLabelsProjectQuery = `query ($fullPath: ID!) {
+  namespace: project(fullPath: $fullPath) {
+    id
+    label_0: labels(searchTerm: "zero", includeAncestorGroups: true) {
+      nodes {
+        id
+        title
+        color
+      }
+    }
+    label_1: labels(searchTerm: "one", includeAncestorGroups: true) {
+      nodes {
+        id
+        title
+        color
+      }
+    }
+  }
+}
+`;
