@@ -2,7 +2,7 @@
 
 module Gitlab
   module Llm
-    module OpenAi
+    module Anthropic
       module ResponseModifiers
         class TanukiBot < Gitlab::Llm::BaseResponseModifier
           include Gitlab::Utils::StrongMemoize
@@ -12,14 +12,14 @@ module Gitlab
           NO_ANSWER_REGEX = /i do.*n.+know/i
 
           def response_body
-            text = ai_response&.dig(:choices, 0, :text).to_s.strip
+            text = ai_response&.dig(:completion).to_s.strip
 
             return unless text.present?
 
             output = text.split("#{CONTENT_ID_FIELD}:")
             msg = output[0].strip
 
-            sources = if msg =~ NO_ANSWER_REGEX
+            sources = if msg.match(NO_ANSWER_REGEX)
                         []
                       else
                         ids = output[1].scan(CONTENT_ID_REGEX).flatten.map(&:to_i)
