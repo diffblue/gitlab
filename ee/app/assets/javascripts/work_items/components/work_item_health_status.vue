@@ -136,11 +136,11 @@ export default {
     v-if="hasIssuableHealthStatusFeature"
     class="work-item-dropdown"
     :label="$options.i18n.HEALTH_STATUS"
-    label-class="gl-pb-0! gl-mt-3 gl-overflow-wrap-break gl-display-flex gl-align-items-center"
+    label-class="gl-pb-0! gl-mt-3 gl-overflow-wrap-break gl-display-flex gl-align-items-center work-item-field-label"
     label-cols="3"
     label-cols-lg="2"
   >
-    <div v-if="!canUpdate" class="gl-ml-4 gl-mt-3">
+    <div v-if="!canUpdate" class="gl-ml-4 gl-mt-3 work-item-field-value">
       <gl-badge v-if="healthStatus" :variant="healthStatusVariant">
         {{ healthStatusText }}
       </gl-badge>
@@ -152,7 +152,7 @@ export default {
       v-else
       :disabled="!canUpdate"
       :text="healthStatusText"
-      class="gl-mt-3"
+      class="gl-mt-3 work-item-field-value"
       data-testid="work-item-health-status-dropdown"
       :toggle-class="dropdownToggleClasses"
       @shown="onDropdownShown"
@@ -163,9 +163,11 @@ export default {
         <gl-badge v-if="healthStatus" :variant="healthStatusVariant">
           {{ healthStatusText }}
         </gl-badge>
-        <span v-else class="gl-text-secondary gl-display-inline-block gl-py-2">{{
-          healthStatusText
-        }}</span>
+        <span
+          v-else
+          class="gl-text-secondary gl-display-inline-block gl-py-2 work-item-field-value"
+          >{{ healthStatusText }}</span
+        >
       </template>
       <gl-dropdown-item
         is-check-item

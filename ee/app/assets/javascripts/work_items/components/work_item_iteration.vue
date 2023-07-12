@@ -221,25 +221,28 @@ export default {
 <template>
   <gl-form-group
     v-if="hasIterationsFeature"
-    class="work-item-dropdown"
+    class="work-item-dropdown gl-flex-nowrap"
+    label-for="iteration-value"
     :label="$options.i18n.ITERATION"
-    label-class="gl-pb-0! gl-overflow-wrap-break gl-mt-3"
+    label-class="gl-pb-0! gl-overflow-wrap-break gl-mt-3 work-item-field-label"
     label-cols="3"
     label-cols-lg="2"
   >
     <span
       v-if="!canUpdate"
-      class="gl-text-secondary gl-ml-4 gl-mt-3 gl-display-inline-block gl-line-height-normal"
+      class="gl-text-secondary gl-ml-4 gl-mt-3 gl-display-inline-block gl-line-height-normal work-item-field-value"
       data-testid="disabled-text"
     >
       {{ dropdownText }}
     </span>
     <gl-dropdown
       v-else
+      id="iteration-value"
       :toggle-class="dropdownClasses"
       :text="dropdownText"
       :loading="updateInProgress"
       :disabled="!canUpdate"
+      class="work-item-field-value"
       @shown="onDropdownShown"
       @hide="onDropdownHide"
     >
