@@ -1,6 +1,6 @@
 - wiki_syntax_link_url = 'https://github.com/google/re2/wiki/Syntax'
 - wiki_syntax_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: wiki_syntax_link_url }
-- if Feature.enabled?(:mirror_only_branches_match_regex, @project) && @project.licensed_feature_available?(:repository_mirrors)
+- if @project.licensed_feature_available?(:repository_mirrors)
   .form-group.gl-mt-5
     = label_tag do
       = _('Mirror branches')

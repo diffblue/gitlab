@@ -37,23 +37,6 @@ RSpec.describe API::RemoteMirrors, feature_category: :source_code_management do
           expect(json_response['mirror_branch_regex']).to eq('test')
         end
       end
-
-      context 'when feature flag is disabled' do
-        let(:params) { { url: 'https://foo:bar@test.com', mirror_branch_regex: 'test' } }
-
-        before do
-          stub_feature_flags(mirror_only_branches_match_regex: false)
-        end
-
-        it 'succeeds' do
-          subject
-
-          expect(response).to have_gitlab_http_status(:success)
-          expect(response).to match_response_schema('remote_mirror')
-          mirror = RemoteMirror.find(json_response['id'])
-          expect(mirror.mirror_branch_regex).to be_nil
-        end
-      end
     end
   end
 
@@ -140,24 +123,6 @@ RSpec.describe API::RemoteMirrors, feature_category: :source_code_management do
         expect(response).to have_gitlab_http_status(:success)
         expect(json_response['only_protected_branches']).to be_falsey
         expect(json_response['mirror_branch_regex']).to be_nil
-      end
-    end
-
-    context 'when feature flag is disabled' do
-      let(:params) { { mirror_branch_regex: 'text1' } }
-
-      before do
-        mirror.update!(only_protected_branches: false, mirror_branch_regex: 'text2')
-        stub_feature_flags(mirror_only_branches_match_regex: false)
-      end
-
-      it 'removes mirror_branch_regex' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:success)
-        expect(response).to match_response_schema('remote_mirror')
-        mirror = RemoteMirror.find(json_response['id'])
-        expect(mirror.mirror_branch_regex).to be_nil
       end
     end
   end

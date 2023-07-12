@@ -156,17 +156,8 @@ module EE
       end
 
       def mirror_branch_setting
-        if mirror_branch_regex_enabled? && params[:mirror_branch_regex].present?
-          params[:only_mirror_protected_branches] = false
-        end
-
-        params.delete(:mirror_branch_regex) unless mirror_branch_regex_enabled?
-
+        params[:only_mirror_protected_branches] = false if params[:mirror_branch_regex].present?
         params[:mirror_branch_regex] = nil if params[:only_mirror_protected_branches]
-      end
-
-      def mirror_branch_regex_enabled?
-        ::Feature.enabled?(:mirror_only_branches_match_regex, project)
       end
 
       def compliance_framework_setting

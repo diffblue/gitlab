@@ -51,7 +51,7 @@ module EE
       def mirror_params_attributes
         if can?(current_user, :admin_mirror, project)
           attributes = super
-          attributes[0][:remote_mirrors_attributes].push(:mirror_branch_regex) if mirror_branch_regex_enabled?
+          attributes[0][:remote_mirrors_attributes].push(:mirror_branch_regex)
           attributes + mirror_params_attributes_ee
         else
           super
@@ -107,15 +107,8 @@ module EE
       def format_remote_mirrors_attributes(params)
         return unless params.is_a?(ActionController::Parameters)
 
-        if mirror_branch_regex_enabled? && params[:mirror_branch_regex].present?
-          params[:only_protected_branches] = false
-        end
-
+        params[:only_protected_branches] = false if params[:mirror_branch_regex].present?
         params[:mirror_branch_regex] = nil if params[:only_protected_branches].present?
-      end
-
-      def mirror_branch_regex_enabled?
-        ::Feature.enabled?(:mirror_only_branches_match_regex, project)
       end
     end
   end

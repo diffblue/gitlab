@@ -6,7 +6,7 @@ module EE
 
     override :mirrors_form_data_attributes
     def mirrors_form_data_attributes
-      super.merge(mirror_only_branches_match_regex_enabled: ::Feature.enabled?(:mirror_only_branches_match_regex, @project) && @project.licensed_feature_available?(:repository_mirrors))
+      super.merge(mirror_only_branches_match_regex_enabled: @project.licensed_feature_available?(:repository_mirrors))
     end
 
     def render_mirror_failed_message(raw_message:)

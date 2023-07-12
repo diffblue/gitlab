@@ -7,9 +7,7 @@ module EE
         extend ActiveSupport::Concern
 
         prepended do
-          expose :mirror_branch_regex, if: proc { |mirror|
-                                             ::Feature.enabled?(:mirror_only_branches_match_regex, mirror.project)
-                                           }
+          expose :mirror_branch_regex
         end
       end
     end

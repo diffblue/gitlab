@@ -195,13 +195,7 @@ module Projects
     end
 
     def skip_mismatched_branch?(name)
-      mirror_branch_regex_enabled? &&
-        project.mirror_branch_regex.present? &&
-        !branch_regex.match?(name)
-    end
-
-    def mirror_branch_regex_enabled?
-      ::Feature.enabled?(:mirror_only_branches_match_regex, project)
+      project.mirror_branch_regex.present? && !branch_regex.match?(name)
     end
 
     def branch_regex

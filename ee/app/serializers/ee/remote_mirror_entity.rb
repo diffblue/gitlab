@@ -7,9 +7,7 @@ module EE
     prepended do
       expose :only_protected_branches
 
-      expose :mirror_branch_regex, if: proc { |mirror|
-                                         ::Feature.enabled?(:mirror_only_branches_match_regex, mirror.project)
-                                       }
+      expose :mirror_branch_regex
     end
   end
 end

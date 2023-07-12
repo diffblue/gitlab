@@ -73,15 +73,5 @@ RSpec.describe ProjectMirrorEntity, feature_category: :source_code_management do
         )
       end
     end
-
-    context 'when mirror_only_branches_match_regex is disabled' do
-      before do
-        stub_feature_flags(mirror_only_branches_match_regex: false)
-      end
-
-      it 'exclude mirror_branch_regex' do
-        expect(subject).not_to include(:mirror_branch_regex)
-      end
-    end
   end
 end
