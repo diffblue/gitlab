@@ -1,3 +1,11 @@
+# We need to ignore exclusions defined in parent RuboCop configuration
+# (AllCops/Exclude: 'gems/**/*') if RuboCop cop is run within `gems/...`.
+# See https://gitlab.com/gitlab-org/gitlab/-/issues/417281
+<%
+  relative_path = ENV['PWD'].delete_prefix(File.expand_path('../..')) 
+  RuboCop::ConfigLoader.ignore_parent_exclusion = relative_path.start_with?('/gems/')
+%>
+---
 inherit_gem:
   gitlab-styles:
     - rubocop-default.yml
@@ -16,6 +24,7 @@ AllCops:
   # Target the current Ruby version. For example, "3.0" or "3.1".
   TargetRubyVersion: <%= RUBY_VERSION[/^\d+\.\d+/, 0] %>
   SuggestExtensions: false
+  NewCops: disable
 
 # This cop doesn't make sense in the context of gems
 CodeReuse/ActiveRecord:
