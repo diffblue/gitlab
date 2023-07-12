@@ -2,6 +2,8 @@
 import { GlSprintf } from '@gitlab/ui';
 import { i18n } from './i18n';
 
+export const MAX_NEW_VULNERABILITIES = 25;
+
 export default {
   components: {
     GlSprintf,
@@ -27,6 +29,18 @@ export default {
       required: false,
       default: false,
     },
+    showAtLeastHint: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+  },
+  computed: {
+    newVulnerabilitiesMessage() {
+      return this.totalNewVulnerabilities >= MAX_NEW_VULNERABILITIES && this.showAtLeastHint
+        ? i18n.newVulnerabilitiesAtLeast
+        : i18n.newVulnerabilities;
+    },
   },
 };
 </script>
@@ -40,8 +54,11 @@ export default {
     <gl-sprintf v-else-if="!totalNewVulnerabilities" :message="$options.i18n.noNewVulnerabilities">
       <template #scanner>{{ scanner || $options.i18n.securityScanning }}</template>
     </gl-sprintf>
-    <gl-sprintf v-else :message="$options.i18n.newVulnerabilities">
+    <gl-sprintf v-else :message="newVulnerabilitiesMessage">
       <template #scanner>{{ scanner || $options.i18n.securityScanning }}</template>
+      <template #atleast="{ content }"
+        ><strong>{{ content }}</strong></template
+      >
       <template #number
         ><strong>{{ totalNewVulnerabilities }}</strong></template
       >

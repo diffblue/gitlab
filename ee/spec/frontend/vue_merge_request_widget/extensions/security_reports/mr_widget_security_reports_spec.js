@@ -151,6 +151,7 @@ describe('MR Widget Security Reports', () => {
   const findWidget = () => wrapper.findComponent(Widget);
   const findWidgetRow = (reportType) => wrapper.findByTestId(`report-${reportType}`);
   const findSummaryText = () => wrapper.findComponent(SummaryText);
+  const findReportSummaryText = (at) => wrapper.findAllComponents(SummaryText).at(at);
   const findSummaryHighlights = () => wrapper.findComponent(SummaryHighlights);
   const findDismissedBadge = () => wrapper.findComponent(GlBadge);
   const findModal = () => wrapper.findComponent(FindingModal);
@@ -414,6 +415,68 @@ describe('MR Widget Security Reports', () => {
 
       expect(wrapper.findByTestId('new-findings-title').text()).toBe('New');
       expect(wrapper.findByTestId('fixed-findings-title').exists()).toBe(false);
+    });
+
+    it('tells summary-text to display a ui hint when there are 25 findings in a single report', async () => {
+      await createComponentAndExpandWidget({
+        mockDataFn: mockWithData,
+        mockDataProps: {
+          findings: {
+            sast: {
+              added: [...Array(25)].map((i) => ({
+                uuid: `${i}4abc`,
+                severity: 'high',
+                name: 'SQL vulnerability',
+              })),
+            },
+            dast: {
+              added: [...Array(10)].map((i) => ({
+                uuid: `${i}3abc`,
+                severity: 'critical',
+                name: 'Dast vulnerability',
+              })),
+            },
+          },
+        },
+      });
+
+      // header
+      expect(findSummaryText().props('showAtLeastHint')).toBe(true);
+      // sast and dast reports. These are always true because individual reports
+      // will not return more than 25 records.
+      expect(findReportSummaryText(1).props('showAtLeastHint')).toBe(true);
+      expect(findReportSummaryText(2).props('showAtLeastHint')).toBe(true);
+    });
+
+    it('tells summary-text NOT to display a ui hint when there are less 25 findings', async () => {
+      await createComponentAndExpandWidget({
+        mockDataFn: mockWithData,
+        mockDataProps: {
+          findings: {
+            sast: {
+              added: [...Array(24)].map((i) => ({
+                uuid: `${i}4abc`,
+                severity: 'high',
+                name: 'SQL vulnerability',
+              })),
+            },
+            dast: {
+              added: [...Array(10)].map((i) => ({
+                uuid: `${i}3abc`,
+                severity: 'critical',
+                name: 'Dast vulnerability',
+              })),
+            },
+          },
+        },
+      });
+
+      // header
+      expect(findSummaryText().props('showAtLeastHint')).toBe(false);
+      // sast and dast reports. These are always true because individual reports
+      // will not return more than 25 records.
+      expect(findReportSummaryText(1).props('showAtLeastHint')).toBe(true);
+      expect(findReportSummaryText(2).props('showAtLeastHint')).toBe(true);
     });
   });
 

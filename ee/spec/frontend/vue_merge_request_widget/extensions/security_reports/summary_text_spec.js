@@ -38,6 +38,22 @@ describe('MR Widget Security Reports - Summary Text', () => {
     );
   });
 
+  it('should provide a ui hint when there are 25 new vulnerabilities and showAtLeastHint is true', async () => {
+    createComponent({ propsData: { totalNewVulnerabilities: 25, showAtLeastHint: true } });
+    await nextTick();
+    expect(wrapper.html()).toBe(
+      '<div>Security scanning detected <strong>at least</strong> <strong>25</strong> new potential vulnerabilities</div>',
+    );
+  });
+
+  it('should not provide a ui hint when there are 25 new vulnerabilities but showAtLeastHint is false', async () => {
+    createComponent({ propsData: { totalNewVulnerabilities: 25, showAtLeastHint: false } });
+    await nextTick();
+    expect(wrapper.html()).toBe(
+      '<div>Security scanning detected <strong>25</strong> new potential vulnerabilities</div>',
+    );
+  });
+
   it('should display an error message when error property is true', () => {
     createComponent({ propsData: { error: true, scanner: 'Container Scanning' } });
     expect(wrapper.findByText('Container Scanning: Loading resulted in an error').exists()).toBe(
