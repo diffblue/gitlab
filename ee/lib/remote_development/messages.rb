@@ -9,8 +9,14 @@ module RemoteDevelopment
     # Errors - message name should describe the reason for the error
     #---------------------------------------------------------------
 
+    # License error
+    LicenseCheckFailed = Class.new(Message)
+
     # Auth errors
     Unauthorized = Class.new(Message)
+
+    # AgentConfig errors
+    AgentConfigUpdateFailed = Class.new(Message)
 
     # Workspace errors
     WorkspaceUpdateFailed = Class.new(Message)
@@ -18,6 +24,12 @@ module RemoteDevelopment
     #---------------------------------------------------------
     # Domain Events - message name should describe the outcome
     #---------------------------------------------------------
+
+    # AgentConfig domain events
+    AgentConfigUpdateSkippedBecauseNoConfigFileEntryFound = Class.new(Message)
+    AgentConfigUpdateSuccessful = Class.new(Message)
+
+    # Workspace domain events
     WorkspaceUpdateSuccessful = Class.new(Message)
   end
 end

@@ -5,49 +5,35 @@ require 'spec_helper'
 RSpec.describe RemoteDevelopment::AgentConfig::UpdateService, feature_category: :remote_development do
   let(:agent) { instance_double(Clusters::Agent) }
   let(:config) { instance_double(Hash) }
+  let(:agent_config) { instance_double(RemoteDevelopment::RemoteDevelopmentAgentConfig) }
   let(:licensed) { true }
 
-  subject do
+  subject(:service_response) do
     described_class.new.execute(agent: agent, config: config)
   end
 
   before do
-    allow(License).to receive(:feature_available?).with(:remote_development) { licensed }
+    allow(RemoteDevelopment::AgentConfig::Main)
+      .to receive(:main).with(agent: agent, config: config).and_return(response_hash)
   end
 
-  context 'when update is successful' do
-    let(:payload) { instance_double(Hash) }
+  context 'when success' do
+    let(:response_hash) { { status: :success, payload: { remote_development_agent_config: agent_config } } }
 
-    it 'returns the payload' do
-      allow_next_instance_of(RemoteDevelopment::AgentConfig::UpdateProcessor) do |processor|
-        expect(processor).to receive(:process).with(agent: agent, config: config).and_return([payload, nil])
-      end
-      expect(subject).to eq(payload)
+    it 'returns a success ServiceResponse' do
+      expect(service_response).to be_success
+      expect(service_response.payload.fetch(:remote_development_agent_config)).to eq(agent_config)
     end
   end
 
-  context 'when update fails' do
-    let(:message) { 'error message' }
-    let(:reason) { :bad_request }
-    let(:error) { RemoteDevelopment::Error.new(message: message, reason: reason) }
+  context 'when error' do
+    let(:response_hash) { { status: :error, message: 'error', reason: :bad_request } }
 
-    it 'returns false' do
-      allow_next_instance_of(RemoteDevelopment::AgentConfig::UpdateProcessor) do |processor|
-        expect(processor).to receive(:process).with(agent: agent, config: config).and_return([nil, error])
-      end
-      expect(subject).to be false
-    end
-  end
-
-  context 'when unlicensed' do
-    let(:licensed) { false }
-
-    it 'returns false' do
-      allow_next_instance_of(RemoteDevelopment::AgentConfig::UpdateProcessor) do |processor|
-        expect(processor).not_to receive(:process)
-      end
-
-      expect(subject).to be false
+    it 'returns an error success ServiceResponse' do
+      expect(service_response).to be_error
+      service_response => { message:, reason: }
+      expect(message).to eq('error')
+      expect(reason).to eq(:bad_request)
     end
   end
 end

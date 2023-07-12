@@ -3,6 +3,8 @@
 module RemoteDevelopment
   module AgentConfig
     class UpdateService
+      include ServiceResponseFactory
+
       # NOTE: This constructor intentionally does not follow all of the conventions from
       #       https://docs.gitlab.com/ee/development/reusing_abstractions.html#service-classes
       #       suggesting that the dependencies be passed via the constructor.
@@ -11,22 +13,13 @@ module RemoteDevelopment
 
       # @param [Clusters::Agent] agent
       # @param [Hash] config
-      # @return [Hash, FalseClass]
+      # @return [ServiceResponse]
       def execute(agent:, config:)
-        # NOTE: We rely on the authentication from the internal kubernetes endpoint and kas so we don't do any
-        #       additional authorization checks here.
-        #       See https://gitlab.com/gitlab-org/gitlab/-/issues/409038
-
-        if License.feature_available?(:remote_development)
-          payload, error = RemoteDevelopment::AgentConfig::UpdateProcessor.new.process(agent: agent, config: config)
-        else
-          error = "'remote_development' licensed feature is not available"
-        end
-
         # TODO: https://gitlab.com/groups/gitlab-org/-/epics/10461
         #       The other existing service called from the `internal/kubernetes/agent_configuration` API endpoint
         #       (::Clusters::Agents::RefreshAuthorizationService) does not use ServiceResponse, it just returns a
-        #       boolean value. So we do the same (return the payload, which is truthy) for consistency.
+        #       boolean value. So we do the same (return the ServiceResponse, which is truthy) for consistency,
+        #       even though the return value is ignored, and not even checked for errors.
         #       The `internal/kubernetes/agent_configuration` endpoint explictly returns
         #       `no_content!` regardless of the return value, so it wouldn't matter what we returned anyway.
         #       We _don't_ want to change this behavior for now or return an exception in the case of failure,
@@ -36,20 +29,13 @@ module RemoteDevelopment
         #       part of https://gitlab.com/gitlab-org/gitlab/-/issues/402718 or another error handling issue.
         #
         #       Note that we have abstracted this logic to our domain-layer tier in `lib/remote_development`,
-        #       with our standard `[payload, RemoteDevelopment::Error]` tuple return value,
+        #       and still attempt to return an appropriate ServiceResponse object, even though it is ignored,
         #       so that abstracts us somewhat from whatever we decide to do with this error handling at the Service
         #       layer.
-        #
-        #       Also note that currently, this will always be expected to fail if `enabled: false` is specified, because
-        #       for the initial release, we are enforcing that all config attributes (including `enabled`) are
-        #       immutable, and thus enabled must be set to true upon creation.
+        response_hash = Main.main(agent: agent, config: config)
 
-        return false if error
-
-        # NOTE: This noinspection will be removed soon with a refactoring to the UpdateProcessor return type.
-        #       For now it is just to get a clean RubyMine "Inspect Code" run for the Remote Development feature.
-        # noinspection RubyScope
-        payload
+        # TODO: https://gitlab.com/groups/gitlab-org/-/epics/10461 - Add at least some logging here.
+        create_service_response(response_hash)
       end
     end
   end
