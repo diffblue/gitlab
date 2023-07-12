@@ -250,6 +250,13 @@ module EE
           ::Gitlab::Llm::StageCheck.available?(subject, :fill_in_merge_request_template)
       end
 
+      with_scope :subject
+      condition(:generate_description_enabled) do
+        ::Feature.enabled?(:generate_description_ai, subject) &&
+          subject.group&.licensed_feature_available?(:generate_description) &&
+          ::Gitlab::Llm::StageCheck.available?(subject, :generate_description)
+      end
+
       rule { visual_review_bot }.policy do
         prevent :read_note
         enable :create_note
@@ -619,6 +626,10 @@ module EE
       rule do
         ai_features_enabled & fill_in_merge_request_template_enabled & can?(:create_merge_request_in)
       end.enable :fill_in_merge_request_template
+
+      rule do
+        ai_features_enabled & generate_description_enabled & can?(:create_issue)
+      end.enable :generate_description
     end
 
     override :lookup_access_level!

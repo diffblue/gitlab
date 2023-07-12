@@ -96,8 +96,10 @@ export default {
   },
   methods: {
     insertResponse(response) {
-      const event = this.method ? EVENTS[this.method] : 'input';
-      this.$emit(event, response);
+      if (response) {
+        const event = this.method ? EVENTS[this.method] : 'input';
+        this.$emit(event, response);
+      }
     },
     beforeAction(item) {
       if (this.loading) {

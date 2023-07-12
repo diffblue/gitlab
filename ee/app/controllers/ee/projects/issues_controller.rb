@@ -15,6 +15,8 @@ module EE
 
         before_action :disable_query_limiting_ee, only: [:update]
         before_action only: [:new, :create] do
+          push_force_frontend_feature_flag(:generate_description_ai,
+            can?(current_user, :generate_description, project))
           populate_vulnerability_id
         end
 
