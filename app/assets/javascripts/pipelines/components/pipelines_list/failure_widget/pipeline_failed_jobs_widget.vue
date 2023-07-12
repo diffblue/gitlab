@@ -77,6 +77,9 @@ export default {
     iconName() {
       return this.isExpanded ? 'chevron-down' : 'chevron-right';
     },
+    popoverId() {
+      return `popover-${this.pipelineIid}`;
+    },
   },
   watch: {
     isPipelineActive(flag) {
@@ -130,8 +133,8 @@ export default {
     <gl-button variant="link" @click="toggleWidget">
       <gl-icon :name="iconName" />
       {{ failedJobsCountText }}
-      <gl-icon id="target" name="information-o" />
-      <gl-popover target="target" placement="top">
+      <gl-icon :id="popoverId" name="information-o" />
+      <gl-popover :target="popoverId" placement="top">
         <template #title> {{ $options.i18n.additionalInfoTitle }} </template>
         <slot>
           <gl-sprintf :message="$options.i18n.additionalInfoPopover">
