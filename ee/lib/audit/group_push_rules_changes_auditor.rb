@@ -13,7 +13,13 @@ module Audit
       author_email_regex: 'group_push_rules_author_email_regex_updated',
       commit_message_negative_regex: 'group_push_rules_commit_message_negative_regex_updated',
       commit_message_regex: 'group_push_rules_commit_message_regex_updated',
-      branch_name_regex: 'group_push_rules_branch_name_regex_updated'
+      branch_name_regex: 'group_push_rules_branch_name_regex_updated',
+      commit_committer_check: 'group_push_rules_commit_committer_check_updated',
+      reject_unsigned_commits: 'group_push_rules_reject_unsigned_commits_updated',
+      reject_non_dco_commits: 'group_push_rules_reject_non_dco_commits_updated',
+      deny_delete_tag: 'group_push_rules_reject_deny_delete_tag_updated',
+      member_check: 'group_push_rules_reject_member_check_updated',
+      prevent_secrets: 'group_push_rules_prevent_secrets_updated'
     }.freeze
 
     def execute
