@@ -80,6 +80,7 @@ RSpec.describe Tooling::Danger::ProjectHelper do
       '.rubocop.yml'               | [:backend]
       '.rubocop_todo.yml'          | [:backend]
       '.rubocop_todo/cop/name.yml' | [:backend]
+      'gems/foo/.rubocop.yml'      | [:backend]
       'spec/foo'                   | [:backend]
       'spec/foo/bar'               | [:backend]
 
@@ -136,6 +137,8 @@ RSpec.describe Tooling::Danger::ProjectHelper do
       'tooling/bin/find_foss_tests'                           | [:tooling]
       '.codeclimate.yml'                                      | [:tooling]
       '.gitlab/CODEOWNERS'                                    | [:tooling]
+      'gems/gem.gitlab-ci.yml'                                | [:tooling]
+      'gems/config/rubocop.yml'                               | [:tooling]
 
       'lib/gitlab/ci/templates/Security/SAST.gitlab-ci.yml'   | [:ci_template]
       'lib/gitlab/ci/templates/dotNET-Core.yml'               | [:ci_template]
