@@ -145,7 +145,7 @@ export default {
       class="gl-align-items-center"
       :label="__('Progress')"
       label-for="progress-widget-input"
-      label-class="gl-pb-0! gl-overflow-wrap-break"
+      label-class="gl-pb-0! gl-overflow-wrap-break work-item-field-label"
       label-cols="3"
       label-cols-lg="2"
     >
@@ -158,7 +158,7 @@ export default {
         :min="$options.minValue"
         :max="$options.maxValue"
         data-testid="work-item-progress-input"
-        class="gl-hover-border-gray-200! gl-border-solid! gl-border-white!"
+        class="gl-hover-border-gray-200! gl-border-solid! gl-border-white! work-item-field-value"
         :class="{ 'hide-spinners gl-shadow-none!': !isEditing }"
         :placeholder="placeholder"
         :readonly="!canUpdate"

@@ -148,7 +148,7 @@ export default {
       class="gl-align-items-center"
       :label="__('Weight')"
       :label-for="$options.inputId"
-      label-class="gl-pb-0! gl-overflow-wrap-break"
+      label-class="gl-pb-0! gl-overflow-wrap-break work-item-field-label"
       label-cols="3"
       label-cols-lg="2"
     >
@@ -161,6 +161,7 @@ export default {
         size="sm"
         :type="type"
         :value="weight"
+        class="work-item-field-value"
         @blur="updateWeight"
         @focus="handleFocus"
         @keydown="handleKeydown"
