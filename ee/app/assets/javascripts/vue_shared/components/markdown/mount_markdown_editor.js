@@ -1,12 +1,8 @@
 import { __ } from '~/locale';
-import { TYPENAME_USER } from '~/graphql_shared/constants';
+import { TYPENAME_USER, TYPENAME_PROJECT } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import aiFillDescriptionMutation from 'ee/ai/graphql/fill_mr_description.mutation.graphql';
-import {
-  mountMarkdownEditor as mountCEMarkdownEditor,
-  MR_SOURCE_BRANCH,
-  MR_TARGET_BRANCH,
-} from '~/vue_shared/components/markdown/mount_markdown_editor';
+import { mountMarkdownEditor as mountCEMarkdownEditor } from '~/vue_shared/components/markdown/mount_markdown_editor';
 
 export function mountMarkdownEditor() {
   const provideEEAiActions = [];
@@ -17,29 +13,16 @@ export function mountMarkdownEditor() {
       description: __('Replace current template with filled in placeholders'),
       method: 'replace',
       subscriptionVariables() {
-        const projectGqlId = convertToGraphQLId(
-          /* eslint-disable-next-line @gitlab/require-i18n-strings */
-          'Project',
-          document.getElementById('merge_request_source_project_id').value,
-        );
+        const mrMetadata = document.getElementById('js-merge-request-metadata');
         return {
           userId: convertToGraphQLId(TYPENAME_USER, gon.current_user_id),
-          resourceId: projectGqlId,
+          resourceId: convertToGraphQLId(TYPENAME_PROJECT, mrMetadata.dataset.targetProjectId),
         };
       },
       apolloMutation() {
-        /* eslint-disable @gitlab/require-i18n-strings */
-        const projectGqlId = convertToGraphQLId(
-          'Project',
-          document.getElementById('merge_request_source_project_id').value,
-        );
-        const targetProjectGqlId = convertToGraphQLId(
-          'Project',
-          document.getElementById('merge_request_target_project_id').value,
-        );
-        /* eslint-enable @gitlab/require-i18n-strings */
-        const sourceBranch = document.querySelector(`[name="${MR_SOURCE_BRANCH}"]`).value;
-        const targetBranch = document.querySelector(`[name="${MR_TARGET_BRANCH}"]`).value;
+        const mrMetadata = document.getElementById('js-merge-request-metadata');
+        const { sourceProjectId, sourceBranch, targetProjectId, targetBranch } = mrMetadata.dataset;
+        const targetProjectGqlId = convertToGraphQLId(TYPENAME_PROJECT, targetProjectId);
         const mrTitle = document.getElementById('merge_request_title').value;
         const mrDescription = document.getElementById('merge_request_description').value;
 
@@ -50,7 +33,7 @@ export function mountMarkdownEditor() {
             target: targetBranch,
             templateContent: mrDescription,
             mrTitle,
-            projectGqlId,
+            sourceProjectId,
             targetProjectGqlId,
           },
         };
