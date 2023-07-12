@@ -48,18 +48,6 @@ RSpec.describe Projects::MirrorsController, feature_category: :source_code_manag
         expect(response).to redirect_to(project_settings_repository_path(project, anchor: 'js-push-remote-settings'))
         expect(flash[:alert]).to match(/Remote mirrors mirror branch regex not valid RE2 syntax: trailing/)
       end
-
-      context 'when `mirror_only_branches_match_regex` FF is disabled' do
-        before do
-          stub_feature_flags(mirror_only_branches_match_regex: false)
-        end
-
-        it 'ignores mirror_branch_regex parameter' do
-          expect do
-            do_put(project, remote_mirrors_attributes: { '0' => { enabled: 1, url: url, mirror_branch_regex: 'test' } })
-          end.not_to change { RemoteMirror.where(mirror_branch_regex: 'test').count }
-        end
-      end
     end
 
     context 'when the current project has a remote mirror' do
@@ -289,19 +277,6 @@ RSpec.describe Projects::MirrorsController, feature_category: :source_code_manag
         do_put(project, mirror_branch_regex: '\\')
         expect(response).to redirect_to(project_settings_repository_path(project, anchor: 'js-push-remote-settings'))
         expect(flash[:alert]).to match(/Project setting mirror branch regex not valid RE2 syntax: trailing/)
-      end
-
-      context 'when `mirror_only_branches_match_regex` FF is disabled' do
-        before do
-          stub_feature_flags(mirror_only_branches_match_regex: false)
-        end
-
-        it 'ignores mirror_branch_regex parameter' do
-          do_put(project, { mirror_branch_regex: 'test' } )
-          project.reload
-          expect(project.only_mirror_protected_branches).to be_falsey
-          expect(project.mirror_branch_regex).to be_nil
-        end
       end
     end
   end

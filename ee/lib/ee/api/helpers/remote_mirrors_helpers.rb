@@ -15,9 +15,7 @@ module EE
         end
 
         override :verify_mirror_branches_setting
-        def verify_mirror_branches_setting(attrs, project)
-          attrs[:mirror_branch_regex] = nil unless ::Feature.enabled?(:mirror_only_branches_match_regex, project)
-
+        def verify_mirror_branches_setting(attrs)
           if attrs[:only_protected_branches]
             attrs[:mirror_branch_regex] = nil
           elsif attrs[:mirror_branch_regex].present?

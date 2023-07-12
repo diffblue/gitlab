@@ -13,14 +13,4 @@ RSpec.describe RemoteMirrorEntity, feature_category: :source_code_management do
       :only_protected_branches, :mirror_branch_regex
     )
   end
-
-  context 'when mirror_only_branches_match_regex disabled' do
-    before do
-      stub_feature_flags(mirror_only_branches_match_regex: false)
-    end
-
-    it 'does not expose mirror_branch_regex' do
-      is_expected.not_to include(:mirror_branch_regex)
-    end
-  end
 end

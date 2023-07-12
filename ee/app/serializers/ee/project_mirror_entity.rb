@@ -33,7 +33,7 @@ module EE
         data
       end
 
-      expose :mirror_branch_regex, if: proc { |project| ::Feature.enabled?(:mirror_only_branches_match_regex, project) }
+      expose :mirror_branch_regex
     end
   end
 end

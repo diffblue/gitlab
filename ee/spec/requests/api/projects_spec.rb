@@ -1483,19 +1483,6 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
             mirror_branch_regex: 'text'
           )
         end
-
-        it 'does nothing when feature flag is disabled' do
-          stub_feature_flags(mirror_only_branches_match_regex: false)
-          expect_any_instance_of(EE::ProjectImportState).to receive(:force_import_job!).once
-
-          subject
-
-          expect(response).to have_gitlab_http_status(:ok)
-          expect(project.reload).to have_attributes(
-            only_mirror_protected_branches: true,
-            mirror_branch_regex: nil
-          )
-        end
       end
     end
 

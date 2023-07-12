@@ -82,13 +82,6 @@ module EE
             attrs.delete(:allow_pipeline_trigger_approve_deployment)
           end
         end
-
-        override :filter_attributes_under_feature_flag!
-        def filter_attributes_under_feature_flag!(attrs, project)
-          super
-
-          attrs.delete(:mirror_branch_regex) unless ::Feature.enabled?(:mirror_only_branches_match_regex, project)
-        end
       end
     end
   end

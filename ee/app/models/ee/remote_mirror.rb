@@ -20,8 +20,6 @@ module EE
     end
 
     def options_for_update
-      return super unless ::Feature.enabled?(:mirror_only_branches_match_regex, project)
-
       options = super
       options[:only_branches_matching] = branches_to_sync if mirror_branch_regex.present?
 
