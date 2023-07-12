@@ -11,7 +11,6 @@ RSpec.describe Geo::WikiSyncService, :geo, feature_category: :geo_replication do
   let_it_be(:project) { create(:project_empty_repo, :wiki_repo) }
 
   let(:repository) { project.wiki.repository }
-  let(:temp_repo) { subject.send(:temp_repo) }
   let(:lease_key) { "geo_sync_service:wiki:#{project.id}" }
   let(:lease_uuid) { 'uuid' }
   let(:url_to_repo) { "#{primary.url}#{project.full_path}.wiki.git" }
@@ -34,11 +33,6 @@ RSpec.describe Geo::WikiSyncService, :geo, feature_category: :geo_replication do
 
         allow(repository).to receive(:fetch_as_mirror).and_return(true)
         allow(repository).to receive(:clone_as_mirror).and_return(true)
-
-        # Simulates a successful clone, by making sure a repository is created
-        allow(temp_repo).to receive(:clone_as_mirror) do
-          temp_repo.create_repository
-        end
       end
 
       include_context 'lease handling'
@@ -151,10 +145,6 @@ RSpec.describe Geo::WikiSyncService, :geo, feature_category: :geo_replication do
       end
 
       context 'tracking database' do
-        context 'temporary repositories' do
-          include_examples 'cleans temporary repositories'
-        end
-
         it 'creates a new registry if does not exists' do
           expect { subject.execute }.to change(Geo::ProjectRegistry, :count).by(1)
         end
@@ -232,85 +222,12 @@ RSpec.describe Geo::WikiSyncService, :geo, feature_category: :geo_replication do
         context 'no Wiki repository' do
           let(:project) { create(:project, :repository) }
 
-          context 'when redownloading' do
-            it 'does not raise an error' do
-              stub_feature_flags(geo_deprecate_redownload: false)
+          it 'does not raise an error' do
+            create(:geo_project_registry, project: project)
 
-              create(:geo_project_registry, project: project, force_to_redownload_wiki: true)
-
-              allow(repository).to receive(:update_root_ref)
-              expect(repository).to receive(:expire_exists_cache).exactly(3).times.and_call_original
-              expect(subject).not_to receive(:fail_registry_sync!)
-
-              subject.execute
-            end
-          end
-
-          context 'when not redownloading' do
-            it 'does not raise an error' do
-              create(:geo_project_registry, project: project)
-
-              allow(repository).to receive(:update_root_ref)
-              expect(repository).to receive(:expire_exists_cache).twice.and_call_original
-              expect(subject).not_to receive(:fail_registry_sync!)
-
-              subject.execute
-            end
-          end
-        end
-      end
-
-      it_behaves_like 'sync retries use the snapshot RPC' do
-        let(:retry_count) { Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD }
-
-        def registry_with_retry_count(retries)
-          create(:geo_project_registry, project: project, repository_retry_count: retries, wiki_retry_count: retries)
-        end
-      end
-
-      context 'when the repository is redownloaded' do
-        context 'with geo_use_clone_on_first_sync flag disabled' do
-          before do
-            stub_feature_flags(geo_use_clone_on_first_sync: false)
-            allow(subject).to receive(:redownload?).and_return(true)
-          end
-
-          it 'creates a new repository and fetches with JWT credentials' do
-            expect(temp_repo).to receive(:create_repository)
-            expect(temp_repo).to receive(:fetch_as_mirror)
-                                   .with(url_to_repo, forced: true, http_authorization_header: anything)
-                                   .once
-            expect(subject).to receive(:set_temp_repository_as_main)
-
-            subject.execute
-          end
-
-          it 'cleans temporary repo after redownload' do
-            expect(subject).to receive(:fetch_geo_mirror).with(target_repository: temp_repo)
-            expect(subject).to receive(:clean_up_temporary_repository).twice.and_call_original
-
-            subject.execute
-          end
-        end
-
-        context 'with geo_use_clone_on_first_sync flag enabled' do
-          before do
-            stub_feature_flags(geo_use_clone_on_first_sync: true)
-            allow(subject).to receive(:redownload?).and_return(true)
-          end
-
-          it 'clones a new repository with JWT credentials' do
-            expect(temp_repo).to receive(:clone_as_mirror)
-                                   .with(url_to_repo, http_authorization_header: anything)
-                                   .once
-            expect(subject).to receive(:set_temp_repository_as_main)
-
-            subject.execute
-          end
-
-          it 'cleans temporary repo after redownload' do
-            expect(subject).to receive(:clone_geo_mirror).with(target_repository: temp_repo)
-            expect(subject).to receive(:clean_up_temporary_repository).twice.and_call_original
+            allow(repository).to receive(:update_root_ref)
+            expect(repository).to receive(:expire_exists_cache).twice.and_call_original
+            expect(subject).not_to receive(:fail_registry_sync!)
 
             subject.execute
           end

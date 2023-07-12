@@ -225,22 +225,4 @@ RSpec.describe Admin::Geo::ProjectsController, :geo, feature_category: :geo_repl
       end
     end
   end
-
-  describe '#force_redownload' do
-    subject { post :force_redownload, params: { id: synced_registry } }
-
-    it_behaves_like 'license required'
-
-    context 'with a valid license' do
-      before do
-        stub_licensed_features(geo: true)
-      end
-
-      it 'flags registry for re-download' do
-        expect(subject).to redirect_to(admin_geo_projects_path)
-        expect(flash[:toast]).to include('is scheduled for forced re-download')
-        expect(synced_registry.reload.should_be_redownloaded?('repository')).to be_truthy
-      end
-    end
-  end
 end

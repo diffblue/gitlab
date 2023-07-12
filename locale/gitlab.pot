@@ -19930,9 +19930,6 @@ msgstr ""
 msgid "Geo|%{label} should be between 1-999"
 msgstr ""
 
-msgid "Geo|%{name} is scheduled for forced re-download"
-msgstr ""
-
 msgid "Geo|%{name} is scheduled for re-sync"
 msgstr ""
 
@@ -20204,9 +20201,6 @@ msgid "Geo|Queued"
 msgstr ""
 
 msgid "Geo|Re-verification interval"
-msgstr ""
-
-msgid "Geo|Redownload"
 msgstr ""
 
 msgid "Geo|Remove"

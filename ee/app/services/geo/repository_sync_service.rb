@@ -11,8 +11,7 @@ module Geo
       fetch_repository
       mark_sync_as_successful
     rescue Gitlab::Git::Repository::NoRepository => e
-      log_info('Setting force_to_redownload flag')
-      fail_registry_sync!('Invalid repository', e, force_to_redownload_repository: true)
+      fail_registry_sync!('Invalid repository', e)
 
       log_info('Expiring caches')
       project.repository.after_create

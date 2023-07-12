@@ -8,9 +8,6 @@
           - else
             %strong.text-truncate.flex-fill
               = link_to project_registry.project.full_name, admin_namespace_project_path(project_registry.project.namespace, project_registry.project)
-            - if project_registry.candidate_for_redownload?
-              = link_button_to force_redownload_admin_geo_project_path(project_registry), method: :post, class: 'gl-mr-3', size: :small do
-                = s_('Geo|Redownload')
             = link_button_to resync_admin_geo_project_path(project_registry), method: :post, size: :small do
               = s_('Geo|Resync')
 
