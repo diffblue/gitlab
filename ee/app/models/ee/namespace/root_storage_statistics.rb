@@ -15,7 +15,22 @@ module EE
         end
       end
 
+      def cost_factored_storage_size
+        (storage_size - forks_size_reduction).round
+      end
+
       private
+
+      def forks_size_reduction
+        total = public_forks_storage_size + internal_forks_storage_size
+        total += private_forks_storage_size if namespace.paid?
+
+        total * inverted_cost_factor_for_forks
+      end
+
+      def inverted_cost_factor_for_forks
+        1 - ::Namespaces::Storage::RootSize::COST_FACTOR_FOR_FORKS
+      end
 
       override :from_namespace_statistics
       def from_namespace_statistics

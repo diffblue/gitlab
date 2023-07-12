@@ -84,6 +84,7 @@ RSpec.describe Namespaces::Storage::ProjectPreEnforcementAlertComponent, :saas, 
       storage = instance_double(
         Namespace::RootStorageStatistics,
         storage_size: 5.gigabytes,
+        cost_factored_storage_size: 5.gigabytes,
         public_forks_storage_size: 0,
         internal_forks_storage_size: 0
       )
