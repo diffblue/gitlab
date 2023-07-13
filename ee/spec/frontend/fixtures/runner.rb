@@ -48,5 +48,33 @@ RSpec.describe 'Runner EE (JavaScript fixtures)', feature_category: :runner_flee
         expect_graphql_errors_to_be_empty
       end
     end
+
+    describe 'most_active_runners.query.graphql', type: :request do
+      runner_jobs_query = 'performance/most_active_runners.graphql'
+      let_it_be(:query) do
+        get_graphql_query_as_string("#{query_path}#{runner_jobs_query}", ee: true)
+      end
+
+      let_it_be(:runner) { create(:ci_runner, :instance, description: 'Runner 1') }
+      let_it_be(:runner2) { create(:ci_runner, :instance, description: 'Runner 2') }
+
+      let(:build) { create(:ci_build, :running, runner: runner) }
+      let(:build2) { create(:ci_build, :running, runner: runner) }
+      let(:build3) { create(:ci_build, :running, runner: runner2) }
+
+      before do
+        create(:ci_running_build, build: build,  runner: runner)
+        create(:ci_running_build, build: build2, runner: runner)
+        create(:ci_running_build, build: build3, runner: runner2)
+
+        stub_licensed_features(runner_performance_insights: true)
+      end
+
+      it "#{fixtures_path}#{runner_jobs_query}.json" do
+        post_graphql(query, current_user: admin)
+
+        expect_graphql_errors_to_be_empty
+      end
+    end
   end
 end
