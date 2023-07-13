@@ -1,10 +1,6 @@
 import Vue from 'vue';
-import { initProtectedEnvironmentCreate } from 'ee/protected_environments/protected_environment_create';
-import {
-  initProtectedEnvironmentEditList,
-  initEditMultipleEnvironmentApprovalRules,
-} from 'ee/protected_environments/protected_environment_edit_list';
 import { initGroupProtectedEnvironmentList } from 'ee/protected_environments/group_protected_environment_list';
+import { initProtectedEnvironments } from 'ee/protected_environments/protected_environments';
 import LicenseManagement from 'ee/vue_shared/license_compliance/license_management.vue';
 import createStore from 'ee/vue_shared/license_compliance/store/index';
 import showToast from '~/vue_shared/plugins/global_toast';
@@ -33,7 +29,5 @@ if (el?.dataset?.apiUrl) {
 
 toasts.forEach((toast) => showToast(toast.dataset.message));
 
-initProtectedEnvironmentEditList();
 initGroupProtectedEnvironmentList();
-initProtectedEnvironmentCreate();
-initEditMultipleEnvironmentApprovalRules();
+initProtectedEnvironments();

@@ -69,6 +69,8 @@ export default {
     },
     unprotect() {
       this.$emit('unprotect', this.environmentToUnprotect);
+    },
+    clearEnvironment() {
       this.environmentToUnprotect = null;
     },
   },
@@ -91,6 +93,7 @@ export default {
       :visible="isUnprotectModalVisible"
       v-bind="$options.modalOptions"
       @primary="unprotect"
+      @hide="clearEnvironment"
     >
       {{ confirmUnprotectText }}
     </gl-modal>

@@ -1,6 +1,6 @@
 import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
-import { GlAlert, GlCollapsibleListbox, GlFormInput } from '@gitlab/ui';
+import { GlAlert, GlCollapsibleListbox, GlForm } from '@gitlab/ui';
 import { useMockLocationHelper } from 'helpers/mock_window_location_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -30,14 +30,8 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
     wrapper.findByTestId('create-environment').findComponent(GlCollapsibleListbox);
   const findAccessDropdown = () =>
     wrapper.findByTestId('create-deployer-dropdown').findComponent(AccessDropdown);
-  const findRequiredCountForApprover = (name) =>
-    wrapper
-      .findAllComponents(GlFormInput)
-      .wrappers.find((w) => w.attributes('name') === `approval-count-${name}`);
   const findAddApprovers = () => wrapper.findComponent(AddApprovers);
-  const findApproverDropdown = () => findAddApprovers().findComponent(AccessDropdown);
-  const findSubmitButton = () =>
-    wrapper.findByRole('button', { name: s__('ProtectedEnvironment|Protect') });
+  const findForm = () => wrapper.findComponent(GlForm);
 
   beforeEach(() => {
     window.gon = {
@@ -58,13 +52,11 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
     projectId = PROJECT_ID,
   } = {}) => {
     wrapper = mountExtended(CreateProtectedEnvironment, {
-      propsData: {
-        searchUnprotectedEnvironmentsUrl,
-        projectId,
-      },
       provide: {
         apiLink: API_LINK,
         docsLink: DOCS_LINK,
+        searchUnprotectedEnvironmentsUrl,
+        projectId,
         accessLevelsData: [
           {
             id: 40,
@@ -92,13 +84,13 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
       avatar_url: '/root.png',
       id: 1,
     });
-    findAccessDropdown().vm.$emit('hidden', deployAccessLevels);
+    findAccessDropdown().vm.$emit('select', deployAccessLevels);
     findEnvironmentsListbox().vm.$emit('select', name);
-    findApproverDropdown().vm.$emit('select', deployAccessLevels);
-    await waitForPromises();
-    findRequiredCountForApprover('root').vm.$emit('input', requiredApprovalCount);
-    await nextTick();
-    await findSubmitButton().vm.$emit('click');
+    findAddApprovers().vm.$emit(
+      'change',
+      deployAccessLevels.map((rule) => ({ ...rule, required_approvals: requiredApprovalCount })),
+    );
+    await findForm().trigger('submit');
   };
 
   describe('alert', () => {
@@ -187,17 +179,6 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
     });
   });
 
-  describe('on successful protected environment', () => {
-    it('should reload the page', async () => {
-      createComponent();
-      mockAxios.onPost().replyOnce(HTTP_STATUS_OK);
-      await submitForm();
-      await waitForPromises();
-
-      expect(window.location.reload).toHaveBeenCalled();
-    });
-  });
-
   describe('on failed protected environment', () => {
     it('should show an error message', async () => {
       mockAxios.onPost().replyOnce(HTTP_STATUS_BAD_REQUEST, {});
@@ -206,8 +187,6 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
       await waitForPromises();
 
       expect(findAlert().text()).toBe(__('Failed to protect the environment'));
-
-      expect(window.location.reload).not.toHaveBeenCalled();
     });
   });
 });

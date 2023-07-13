@@ -3,6 +3,7 @@ import {
   GlAlert,
   GlButton,
   GlCard,
+  GlForm,
   GlFormGroup,
   GlCollapse,
   GlCollapsibleListbox,
@@ -25,6 +26,7 @@ export default {
     GlButton,
     GlCard,
     GlCollapse,
+    GlForm,
     GlFormGroup,
     GlCollapsibleListbox,
     GlLink,
@@ -33,16 +35,12 @@ export default {
     AddApprovers,
   },
   mixins: [glFeatureFlagsMixin()],
-  inject: { accessLevelsData: { default: [] }, apiLink: {}, docsLink: {} },
-  props: {
-    searchUnprotectedEnvironmentsUrl: {
-      type: String,
-      required: true,
-    },
-    projectId: {
-      type: String,
-      required: true,
-    },
+  inject: {
+    accessLevelsData: { default: [] },
+    apiLink: {},
+    docsLink: {},
+    projectId: { default: '' },
+    searchUnprotectedEnvironmentsUrl: { default: '' },
   },
   data() {
     return {
@@ -55,6 +53,7 @@ export default {
       environmentsLoading: false,
       errorMessage: '',
       alertDismissed: false,
+      loading: false,
     };
   },
   computed: {
@@ -101,6 +100,7 @@ export default {
     },
     submitForm() {
       this.errorMessage = '';
+      this.loading = true;
 
       const protectedEnvironment = {
         name: this.environment,
@@ -109,11 +109,17 @@ export default {
       };
       Api.createProtectedEnvironment(this.projectId, protectedEnvironment)
         .then(() => {
-          window.location.reload();
+          this.$emit('reload');
+          this.deployers = [];
+          this.approvers = [];
+          this.environment = '';
         })
         .catch((error) => {
           Sentry.captureException(error);
           this.errorMessage = __('Failed to protect the environment');
+        })
+        .finally(() => {
+          this.loading = false;
         });
     },
   },
@@ -134,81 +140,90 @@ export default {
     ),
     buttonText: s__('ProtectedEnvironment|Protect'),
   },
-  APPROVAL_COUNT_OPTIONS: ['0', '1', '2', '3', '4', '5'].map((value) => ({ value, text: value })),
 };
 </script>
 <template>
-  <gl-card data-testid="new-protected-environment">
-    <template #header>
-      {{ $options.i18n.header }}
-    </template>
-    <template #default>
-      <gl-alert v-if="errorMessage" variant="danger" class="gl-mb-5" @dismiss="errorMessage = ''">
-        {{ errorMessage }}
-      </gl-alert>
-      <gl-alert
-        v-if="!alertDismissed"
-        :title="$options.i18n.unifiedRulesAlertHeader"
-        class="gl-mb-5"
-        @dismiss="alertDismissed = false"
-      >
-        <p>
-          <gl-sprintf :message="$options.i18n.unifiedRulesAlertText">
-            <template #apiLink="{ content }">
-              <gl-link :href="apiLink">{{ content }}</gl-link>
-            </template>
-            <template #docsLink="{ content }">
-              <gl-link :href="docsLink">{{ content }}</gl-link>
-            </template>
-          </gl-sprintf>
-        </p>
-      </gl-alert>
-      <gl-form-group
-        label-for="environment"
-        data-testid="create-environment"
-        :label="$options.i18n.environmentLabel"
-      >
-        <gl-collapsible-listbox
-          id="create-environment"
-          v-model="environment"
-          :toggle-text="environmentText"
-          :items="environments"
-          :searching="environmentsLoading"
-          searchable
-          @shown="fetchEnvironments"
-          @search="getProtectedEnvironments"
-        />
-      </gl-form-group>
-
-      <gl-collapse :visible="hasSelectedEnvironment">
-        <gl-form-group
-          data-testid="create-deployer-dropdown"
-          label-for="create-deployer-dropdown"
-          :label="$options.i18n.deployerLabel"
+  <gl-form @submit.prevent="submitForm">
+    <gl-card data-testid="new-protected-environment">
+      <template #header>
+        {{ $options.i18n.header }}
+      </template>
+      <template #default>
+        <gl-alert v-if="errorMessage" variant="danger" class="gl-mb-5" @dismiss="errorMessage = ''">
+          {{ errorMessage }}
+        </gl-alert>
+        <gl-alert
+          v-if="!alertDismissed"
+          :title="$options.i18n.unifiedRulesAlertHeader"
+          class="gl-mb-5"
+          @dismiss="alertDismissed = false"
         >
-          <template #label-description>
-            {{ $options.i18n.deployerHelp }}
-          </template>
-          <access-dropdown
-            id="create-deployer-dropdown"
-            :access-levels-data="accessLevelsData"
-            :access-level="$options.ACCESS_LEVELS.DEPLOY"
-            :disabled="disabled"
-            :preselected-items="deployers"
-            @hidden="updateDeployers"
+          <p>
+            <gl-sprintf :message="$options.i18n.unifiedRulesAlertText">
+              <template #apiLink="{ content }">
+                <gl-link :href="apiLink">{{ content }}</gl-link>
+              </template>
+              <template #docsLink="{ content }">
+                <gl-link :href="docsLink">{{ content }}</gl-link>
+              </template>
+            </gl-sprintf>
+          </p>
+        </gl-alert>
+        <gl-form-group
+          label-for="environment"
+          data-testid="create-environment"
+          :label="$options.i18n.environmentLabel"
+        >
+          <gl-collapsible-listbox
+            id="create-environment"
+            v-model="environment"
+            :toggle-text="environmentText"
+            :items="environments"
+            :searching="environmentsLoading"
+            searchable
+            @shown="fetchEnvironments"
+            @search="getProtectedEnvironments"
           />
         </gl-form-group>
-        <add-approvers
-          :project-id="projectId"
-          @change="updateApprovers"
-          @error="errorMessage = $event"
-        />
-      </gl-collapse>
-    </template>
-    <template #footer>
-      <gl-button category="primary" variant="confirm" :disabled="isFormInvalid" @click="submitForm">
-        {{ $options.i18n.buttonText }}
-      </gl-button>
-    </template>
-  </gl-card>
+
+        <gl-collapse :visible="hasSelectedEnvironment">
+          <gl-form-group
+            data-testid="create-deployer-dropdown"
+            label-for="create-deployer-dropdown"
+            :label="$options.i18n.deployerLabel"
+          >
+            <template #label-description>
+              {{ $options.i18n.deployerHelp }}
+            </template>
+            <access-dropdown
+              id="create-deployer-dropdown"
+              :access-levels-data="accessLevelsData"
+              :access-level="$options.ACCESS_LEVELS.DEPLOY"
+              :disabled="disabled"
+              :items="deployers"
+              @select="updateDeployers"
+            />
+          </gl-form-group>
+          <add-approvers
+            :project-id="projectId"
+            :approval-rules="approvers"
+            @change="updateApprovers"
+            @error="errorMessage = $event"
+          />
+        </gl-collapse>
+      </template>
+      <template #footer>
+        <gl-button
+          type="submit"
+          category="primary"
+          variant="confirm"
+          :loading="loading"
+          :disabled="isFormInvalid"
+          class="js-no-auto-disable"
+        >
+          {{ $options.i18n.buttonText }}
+        </gl-button>
+      </template>
+    </gl-card>
+  </gl-form>
 </template>
