@@ -68,29 +68,20 @@ export default {
       required: false,
       default: false,
     },
+    approvalRules: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
   },
   data() {
     return {
       approvers: [],
-      approverInfo: [],
+      approverInfo: this.approvalRules,
       uniqueId: uniqueId('deployment-approvers-'),
     };
   },
   computed: {
-    approvalRules() {
-      return this.approverInfo.map((info) => {
-        switch (info.type) {
-          case 'user':
-            return { user_id: info.id, required_approvals: info.approvals };
-          case 'group':
-            return { group_id: info.id, required_approvals: info.approvals };
-          case 'access':
-            return { access_level: info.accessLevel, required_approvals: info.approvals };
-          default:
-            return {};
-        }
-      });
-    },
     hasSelectedApprovers() {
       return Boolean(this.approvers.length);
     },
@@ -118,6 +109,8 @@ export default {
             });
           }),
         );
+
+        this.emitApprovalRules();
       } catch (e) {
         Sentry.captureException(e);
         this.$emit(
@@ -128,13 +121,20 @@ export default {
         );
       }
     },
-    approvalRules() {
-      this.$emit('change', this.approvalRules);
+    approvalRules(rules, oldRules) {
+      if (!rules.length && oldRules.length) {
+        this.approvers = rules;
+      }
     },
   },
   methods: {
     updateApprovers(permissions) {
       this.approvers = permissions;
+    },
+    updateApproverInfo(approver, approvals) {
+      const i = this.approverInfo.indexOf(approver);
+      this.$set(this.approverInfo, i, { ...approver, approvals });
+      this.emitApprovalRules();
     },
     removeApprover({ type, id }) {
       const key = ID_FOR_TYPE[type];
@@ -147,6 +147,21 @@ export default {
     },
     approvalsId(index) {
       return `${this.uniqueId}-${index}`;
+    },
+    emitApprovalRules() {
+      const rules = this.approverInfo.map((info) => {
+        switch (info.type) {
+          case 'user':
+            return { user_id: info.id, required_approvals: info.approvals };
+          case 'group':
+            return { group_id: info.id, required_approvals: info.approvals };
+          case 'access':
+            return { access_level: info.accessLevel, required_approvals: info.approvals };
+          default:
+            return {};
+        }
+      });
+      this.$emit('change', rules);
     },
   },
   i18n: {
@@ -213,11 +228,12 @@ export default {
           >
             <gl-form-input
               :id="approvalsId(index)"
-              v-model="approver.approvals"
+              :value="approver.approvals"
               :disabled="approver.inputDisabled"
               :state="isApprovalValid(approver.approvals)"
               :name="`approval-count-${approver.name}`"
               type="number"
+              @input="updateApproverInfo(approver, $event)"
             />
             <template #invalid-feedback>
               {{ $options.i18n.approvalsInvalid }}
