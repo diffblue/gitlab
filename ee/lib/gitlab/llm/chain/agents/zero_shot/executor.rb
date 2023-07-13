@@ -181,8 +181,7 @@ module Gitlab
               PROMPT
               ),
               Utils::Prompt.as_assistant("%<agent_scratchpad>s"),
-              Utils::Prompt.as_user("Question: %<user_input>s"),
-              Utils::Prompt.as_assistant("Thought: ")
+              Utils::Prompt.as_user("Question: %<user_input>s")
             ].freeze
           end
         end
