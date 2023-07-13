@@ -41,12 +41,12 @@ To install the GitLab for Slack app from project integration settings:
 To update the app in your Slack workspace to the latest version,
 you can also select **Reinstall GitLab for Slack app**.
 
-### From the Slack app directory **(FREE SAAS)**
+### From the Slack App Directory **(FREE SAAS)**
 
 On GitLab.com, you can also install the GitLab for Slack app from the
-[Slack app directory](https://slack-platform.slack.com/apps/A676ADMV5-gitlab).
+[Slack App Directory](https://slack-platform.slack.com/apps/A676ADMV5-gitlab).
 
-To install the GitLab for Slack app from the Slack app directory:
+To install the GitLab for Slack app from the Slack App Directory:
 
 1. Go to the [GitLab for Slack page](https://gitlab.com/-/profile/slack/edit).
 1. Select a GitLab project to link with your Slack workspace.
@@ -65,7 +65,7 @@ To update your GitLab for Slack app:
 
 The GitLab for Slack app is updated for all projects that use the integration.
 
-Alternatively, you can [configure a new Slack integration](https://about.gitlab.com/solutions/slack/).
+Alternatively, you can [configure the integration](https://about.gitlab.com/solutions/slack/) again.
 
 ## Slash commands
 
@@ -91,7 +91,7 @@ The following slash commands are available:
 | `/gitlab <project> issue comment <id>` <kbd>Shift</kbd>+<kbd>Enter</kbd> `<comment>` | Adds a new comment with the comment body `<comment>` to the issue with the ID `<id>`. |
 | `/gitlab <project> deploy <from> to <to>` | [Deploys](#the-deploy-slash-command) from the `<from>` environment to the `<to>` environment. |
 | `/gitlab <project> run <job name> <arguments>` | Executes the [ChatOps](../../../ci/chatops/index.md) job `<job name>` on the default branch. |
-| `/gitlab incident declare` | Opens a modal to [create a new incident from Slack](../../../operations/incident_management/slack.md) (Beta). |
+| `/gitlab incident declare` | Opens a dialog to [create a new incident from Slack](../../../operations/incident_management/slack.md) (Beta). |
 
 ### The `deploy` slash command
 
