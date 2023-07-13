@@ -92,6 +92,21 @@ actions:
 - scan: secret_detection
 `;
 
+export const mockCiVariablesWithTagsScanExecutionManifest = `---
+name: Enforce Secret Detection in every pipeline
+enabled: true
+rules:
+- type: pipeline
+  branches:
+  - main
+actions:
+- scan: secret_detection
+  tags:
+  - default
+  variables:
+    SECRET_DETECTION_HISTORIC_SCAN: 'true'
+`;
+
 export const mockInvalidYamlCadenceValue = `---
 name: Enforce DAST in every pipeline
 description: This policy enforces pipeline configuration to have a job with DAST scan

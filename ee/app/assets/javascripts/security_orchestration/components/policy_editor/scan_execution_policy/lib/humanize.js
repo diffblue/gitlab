@@ -1,6 +1,6 @@
 import cronstrue from 'cronstrue/i18n';
 import { getPreferredLocales, sprintf, n__, s__ } from '~/locale';
-import { NO_RULE_MESSAGE } from '../../constants';
+import { NO_RULE_MESSAGE, ACTIONS } from '../../constants';
 import { createHumanizedScanners } from '../../utils';
 
 /**
@@ -9,26 +9,42 @@ import { createHumanizedScanners } from '../../utils';
  * @param {Array} originalTags all tags associated with the scanner
  * @returns {String} human-readable list of tags
  */
-const humanizeRunnerTags = (scanner, originalTags) => {
-  const tags = originalTags ? [...originalTags] : [];
+const humanizeCriteria = (scanner, originalActions) => {
+  const tags = originalActions?.tags ? [...originalActions.tags] : [];
+  const variables = originalActions?.variables ? { ...originalActions.variables } : {};
 
-  if (tags?.length > 0) {
-    const textMessage = n__(
-      'SecurityOrchestration|Run %{scannerStart}%{scanner}%{scannerEnd} on runners with tag:',
-      'SecurityOrchestration|Run %{scannerStart}%{scanner}%{scannerEnd} on runners with the tags:',
-      tags.length,
-    );
+  const tagsMessage =
+    tags.length > 0
+      ? n__(
+          'SecurityOrchestration|On runners with tag:',
+          'SecurityOrchestration|On runners with the tags:',
+          tags.length,
+        )
+      : s__('SecurityOrchestration|Automatically selected runners');
 
-    return {
-      message: sprintf(textMessage, { scanner }),
+  const criteriaList = [
+    {
+      message: tagsMessage,
       tags,
-    };
+      action: ACTIONS.tags,
+    },
+  ];
+  if (Object.keys(variables).length) {
+    criteriaList.push({
+      message: s__('SecurityOrchestration|With the following customized CI variables:'),
+      variables: Object.entries(variables).map(([variable, value]) => ({ variable, value })),
+      action: ACTIONS.variables,
+    });
   }
 
   return {
-    message: sprintf(s__('SecurityOrchestration|Run %{scannerStart}%{scanner}%{scannerEnd}'), {
-      scanner,
-    }),
+    message: sprintf(
+      s__(
+        'SecurityOrchestration|Run %{scannerStart}%{scanner}%{scannerEnd} with the following options:',
+      ),
+      { scanner },
+    ),
+    criteriaList,
   };
 };
 
@@ -131,22 +147,21 @@ const HUMANIZE_RULES_METHODS = {
 export const humanizeActions = (actions) => {
   // de-duplicate scanners and merge tags (if any)
   const scanners = actions.reduce((acc, action) => {
-    if (action.tags) {
-      if (acc[action.scan]) {
-        acc[action.scan] = [...acc[action.scan], ...action.tags];
-      } else {
-        acc[action.scan] = action.tags;
-      }
-    } else if (!acc[action.scan]) {
-      acc[action.scan] = [];
+    if (!acc[action.scan]) {
+      acc[action.scan] = { tags: [], variables: [] };
     }
-
+    if (action.tags) {
+      acc[action.scan].tags = [...acc[action.scan].tags, ...action.tags];
+    }
+    if (action.variables) {
+      acc[action.scan].variables = { ...acc[action.scan].variables, ...action.variables };
+    }
     return acc;
   }, {});
 
-  const humanizedActions = Object.entries(scanners).map(([scanner, tags]) => {
+  const humanizedActions = Object.entries(scanners).map(([scanner, scannerActions]) => {
     const humanizedScanner = createHumanizedScanners([scanner])[0];
-    return humanizeRunnerTags(humanizedScanner, tags);
+    return humanizeCriteria(humanizedScanner, scannerActions);
   });
 
   return humanizedActions;

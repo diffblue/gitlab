@@ -6,6 +6,7 @@ import {
   mockProjectScanExecutionPolicy,
   mockNoActionsScanExecutionManifest,
   mockMultipleActionsScanExecutionManifest,
+  mockCiVariablesWithTagsScanExecutionManifest,
 } from '../../mocks/mock_scan_execution_policy_data';
 
 describe('ScanExecutionPolicy component', () => {
@@ -26,6 +27,7 @@ describe('ScanExecutionPolicy component', () => {
     ${'no action policy'}                   | ${{ policy: { ...mockProjectScanExecutionPolicy, yaml: mockNoActionsScanExecutionManifest } }}
     ${'multiple action policy'}             | ${{ policy: { ...mockProjectScanExecutionPolicy, yaml: mockMultipleActionsScanExecutionManifest } }}
     ${'policy with unsupported attributes'} | ${{ policy: mockUnsupportedAttributeScanExecutionPolicy }}
+    ${'policy with tags and CI variables'}  | ${{ policy: { ...mockProjectScanExecutionPolicy, yaml: mockCiVariablesWithTagsScanExecutionManifest } }}
   `('$title', ({ propsData }) => {
     beforeEach(() => {
       factory({ propsData });
