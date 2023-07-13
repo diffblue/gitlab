@@ -91,6 +91,7 @@ export const mockedNamespaceStorageResponse = {
             statistics: {
               commitCount: 1,
               storageSize: 125771,
+              costFactoredStorageSize: 125771,
               repositorySize: 20971,
               lfsObjectsSize: 0,
               containerRegistrySize: 0,
@@ -114,6 +115,7 @@ export const mockedNamespaceStorageResponse = {
             statistics: {
               commitCount: 1,
               storageSize: 125771,
+              costFactoredStorageSize: 125771,
               repositorySize: 20971,
               lfsObjectsSize: 0,
               containerRegistrySize: 0,
