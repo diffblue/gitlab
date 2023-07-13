@@ -18,6 +18,7 @@ module PackageMetadata
     validates :cvss_v2, 'vulnerabilities/cvss_vector': { allowed_versions: [2] }, if: -> { cvss_v2.present? }
     validates :cvss_v3, 'vulnerabilities/cvss_vector': { allowed_versions: [3.0, 3.1] }, if: -> { cvss_v3.present? }
     validates :identifiers, json_schema: { filename: 'pm_advisory_identifiers' }
+    validates :urls, length: { minimum: 0, maximum: 20 }
     validates_each :urls do |record, _, urls|
       urls.each do |url|
         record.errors.add(url, "size is greater than #{MAX_URL_SIZE}") if url.size > MAX_URL_SIZE

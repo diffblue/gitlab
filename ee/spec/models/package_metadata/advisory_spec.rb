@@ -18,32 +18,23 @@ RSpec.describe PackageMetadata::Advisory, type: :model, feature_category: :softw
     it { is_expected.to allow_value(nil).for(:cvss_v3) }
 
     describe 'length validation' do
-      where(:attribute, :max_length) do
-        :advisory_xid | 36
-        :title | 256
-        :description | 8192
+      where(:attribute, :value, :is_valid) do
+        :advisory_xid | ('a' * 36)            | true
+        :advisory_xid | ('a' * 37)            | false
+        :title        | ('a' * 256)           | true
+        :title        | ('a' * 257)           | false
+        :description  | ('a' * 8192)          | true
+        :description  | ('a' * 8193)          | false
+        :urls         | ['a' * 512]           | true
+        :urls         | ['a' * 513]           | false
+        :urls         | Array.new(20) { 'a' } | true
+        :urls         | Array.new(21) { 'a' } | false
       end
 
       with_them do
-        it { is_expected.to validate_length_of(attribute).is_at_most(max_length) }
-      end
-    end
+        subject(:advisory) { build(:pm_advisory, attribute => value).valid? }
 
-    describe 'url validation' do
-      subject { build(:pm_advisory, urls: urls) }
-
-      let(:urls) { [url] }
-
-      context 'when url does not exceed max length' do
-        let(:url) { 'a' * 512 }
-
-        it { is_expected.to be_valid }
-      end
-
-      context 'when url exceeds max length' do
-        let(:url) { 'a' * 513 }
-
-        it { is_expected.not_to be_valid }
+        it { is_expected.to eq(is_valid) }
       end
     end
 
