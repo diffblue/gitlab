@@ -889,6 +889,9 @@ msgstr ""
 msgid "%{linkStart} Learn more%{linkEnd}."
 msgstr ""
 
+msgid "%{linkStart}%{linkEnd} review summary"
+msgstr ""
+
 msgid "%{listToShow}, and %{awardsListLength} more"
 msgstr ""
 

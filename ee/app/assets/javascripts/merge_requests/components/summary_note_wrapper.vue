@@ -5,7 +5,7 @@
       <slot name="created"></slot>
     </header>
     <div class="gl-px-4 gl-mb-4"><slot name="content"></slot></div>
-    <footer class="gl--flex-center gl-border-t gl-p-4">
+    <footer class="gl--flex-center gl-border-t gl-px-4 gl-py-3">
       <slot name="feedback"></slot>
       <div class="gl-ml-auto"><slot name="feedback-link"></slot></div>
     </footer>

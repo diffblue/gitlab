@@ -15,16 +15,26 @@ Vue.use(VueApollo);
 let wrapper;
 let mockSummaryNotesQuery;
 
-function createComponent() {
+function createComponent(reviewSummaries = []) {
   mockSummaryNotesQuery = jest.fn().mockResolvedValue({
     data: {
       project: {
         id: '1',
         mergeRequest: {
           id: '1',
-          diffLlmSummaries: {
-            nodes: [{ mergeRequestDiffId: '1', content: 'AI summary', createdAt: 'created-at' }],
-            pageInfo: { hasNextPage: true, endCursor: 'end' },
+          mergeRequestDiffs: {
+            pageInfo: {
+              endCursor: 'end',
+              hasNextPage: true,
+            },
+            nodes: [
+              {
+                diffLlmSummary: { content: 'AI summary', createdAt: 'created-at' },
+                reviewLlmSummaries: {
+                  nodes: reviewSummaries,
+                },
+              },
+            ],
           },
         },
       },
@@ -52,7 +62,30 @@ describe('Merge request summary notes component', () => {
 
     expect(wrapper.findAllByTestId('summary-note').length).toBe(1);
     expect(wrapper.findAllByTestId('summary-note').at(0).props()).toEqual({
-      summary: { content: 'AI summary', createdAt: 'created-at', mergeRequestDiffId: '1' },
+      summary: { content: 'AI summary', createdAt: 'created-at', reviewLlmSummaries: [] },
+      type: 'diff_summary',
+    });
+  });
+
+  it('renders list of review summaries', async () => {
+    const reviews = [
+      {
+        content: 'review',
+        createdAt: 'created-at',
+        reviewer: { webUrl: 'https://gitlab.com' },
+      },
+    ];
+
+    summaryState.toggleOpen();
+
+    createComponent(reviews);
+
+    await waitForPromises();
+
+    expect(wrapper.findAllByTestId('summary-note').length).toBe(1);
+    expect(wrapper.findAllByTestId('summary-note').at(0).props()).toEqual({
+      summary: { content: 'AI summary', createdAt: 'created-at', reviewLlmSummaries: reviews },
+      type: 'diff_summary',
     });
   });
 
