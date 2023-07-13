@@ -30,4 +30,20 @@ RSpec.describe TreeHelper, feature_category: :source_code_management do
       )
     end
   end
+
+  describe '#web_ide_button_data' do
+    before do
+      allow(helper).to receive(:project_to_use).and_return(project)
+      allow(helper).to receive(:project_ci_pipeline_editor_path).and_return('')
+    end
+
+    it 'includes new_workspace_path  and project id properties' do
+      options = {}
+
+      expect(helper.web_ide_button_data(options)).to include(
+        new_workspace_path: new_remote_development_workspace_path,
+        project_id: project.id
+      )
+    end
+  end
 end

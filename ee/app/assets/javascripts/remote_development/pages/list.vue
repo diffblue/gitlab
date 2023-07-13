@@ -145,7 +145,7 @@ export default {
         }}</gl-link>
         <gl-button
           variant="confirm"
-          :to="$options.ROUTES.create"
+          :to="$options.ROUTES.new"
           data-qa-selector="list_new_workspace_button"
           >{{ $options.i18n.newWorkspaceButton }}</gl-button
         >

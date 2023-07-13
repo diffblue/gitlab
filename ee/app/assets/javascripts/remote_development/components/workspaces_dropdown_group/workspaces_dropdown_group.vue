@@ -5,6 +5,7 @@ import { logError } from '~/lib/logger';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import userWorkspacesListQuery from '../../graphql/queries/user_workspaces_list.query.graphql';
 import {
   WORKSPACES_LIST_POLL_INTERVAL,
@@ -37,6 +38,7 @@ export default {
     UpdateWorkspaceMutation,
     GetProjectDetailsQuery,
   },
+  mixins: [glFeatureFlagMixin()],
   props: {
     projectId: {
       type: Number,
@@ -101,6 +103,9 @@ export default {
     isLoading() {
       return this.$apollo.queries.workspaces.loading || !this.projectDetailsLoaded;
     },
+    isWorkspacesDropdownGroupAvailable() {
+      return this.glFeatures.remoteDevelopment && this.glFeatures.remoteDevelopmentFeatureFlag;
+    },
   },
   methods: {
     displayUpdateFailedAlert({ error }) {
@@ -123,13 +128,18 @@ export default {
 </script>
 <template>
   <update-workspace-mutation
+    v-if="isWorkspacesDropdownGroupAvailable"
     @updateSucceed="hideUpdateFailedAlert"
     @updateFailed="displayUpdateFailedAlert"
   >
     <template #default="{ update }">
-      <gl-disclosure-dropdown-group bordered border-position="bottom" class="gl-max-w-48 gl-py-2">
+      <gl-disclosure-dropdown-group
+        bordered
+        class="edit-dropdown-group-width gl-pt-2 gl-pb-4"
+        data-testid="workspaces-dropdown-group"
+      >
         <template #group-label>
-          <span class="gl-display-flex gl-font-sm">{{ $options.i18n.workspacesGroupLabel }}</span>
+          <span class="gl-display-flex gl-font-base">{{ $options.i18n.workspacesGroupLabel }}</span>
         </template>
         <get-project-details-query
           :project-full-path="projectFullPath"
@@ -163,12 +173,23 @@ export default {
               @updateWorkspace="update(workspace.id, $event)"
             />
           </template>
-
-          <div v-else class="gl-px-4 gl-py-2 gl-font-sm" data-testid="no-workspaces-message">
-            {{ $options.i18n.noWorkspacesMessage }}
+          <div
+            v-else
+            class="gl-px-4 gl-py-2 gl-font-base gl-text-left"
+            data-testid="no-workspaces-message"
+          >
+            <p class="gl-mb-0">
+              {{ $options.i18n.noWorkspacesMessage }}
+            </p>
+            <p v-if="!supportsWorkspaces" class="gl-mb-0 gl-mt-2">
+              {{ $options.i18n.noWorkspacesSupportMessage }}
+            </p>
           </div>
 
-          <div class="gl-px-4 gl-py-3">
+          <div
+            v-if="supportsWorkspaces"
+            class="gl-px-4 gl-py-3 gl-display-flex gl-justify-content-start"
+          >
             <gl-button
               v-if="supportsWorkspaces"
               :href="newWorkspacePath"
@@ -176,7 +197,6 @@ export default {
               block
               >{{ $options.i18n.newWorkspaceButton }}</gl-button
             >
-            <span v-else class="gl-font-sm">{{ $options.i18n.noWorkspacesSupportMessage }}</span>
           </div>
         </template>
       </gl-disclosure-dropdown-group>

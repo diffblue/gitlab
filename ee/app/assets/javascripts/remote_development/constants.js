@@ -28,7 +28,7 @@ export const DEFAULT_DESIRED_STATE = WORKSPACE_STATES.running;
 export const WORKSPACES_LIST_POLL_INTERVAL = 3000;
 export const ROUTES = {
   index: 'index',
-  create: 'create',
+  new: 'new',
 };
 
 export const FILL_CLASS_GREEN = 'gl-fill-green-500';

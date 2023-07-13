@@ -13,6 +13,7 @@ import blobInfoQuery from 'shared_queries/repository/blob_info.query.graphql';
 import projectInfoQuery from '~/repository/queries/project_info.query.graphql';
 import { isLoggedIn } from '~/lib/utils/common_utils';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import WebIdeLink from 'ee_else_ce/vue_shared/components/web_ide_link.vue';
 import {
   simpleViewerMock,
   projectMock,
@@ -112,6 +113,15 @@ describe('Blob content viewer component', () => {
 
   afterEach(() => {
     mockAxios.reset();
+  });
+
+  it('provides project id and project path to web ide link component', async () => {
+    await createComponent();
+
+    expect(wrapper.findComponent(WebIdeLink).props()).toMatchObject({
+      projectId: 1234,
+      projectPath: propsMock.projectPath,
+    });
   });
 
   describe('AI Genie component', () => {

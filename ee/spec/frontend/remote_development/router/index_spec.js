@@ -6,9 +6,10 @@ import App from 'ee/remote_development/pages/app.vue';
 import WorkspacesList from 'ee/remote_development/pages/list.vue';
 import createRouter from 'ee/remote_development/router/index';
 import CreateWorkspace from 'ee/remote_development/pages/create.vue';
+import userWorkspacesProjectsNamesQuery from 'ee/remote_development/graphql/queries/user_workspaces_projects_names.query.graphql';
+import { ROUTES } from 'ee/remote_development/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import userWorkspacesListQuery from 'ee/remote_development/graphql/queries/user_workspaces_list.query.graphql';
-import userWorkspacesProjectsNamesQuery from 'ee/remote_development/graphql/queries/user_workspaces_projects_names.query.graphql';
 import {
   USER_WORKSPACES_PROJECT_NAMES_QUERY_RESULT,
   USER_WORKSPACES_QUERY_EMPTY_RESULT,
@@ -24,14 +25,14 @@ describe('remote_development/router/index.js', () => {
   let wrapper;
 
   beforeEach(() => {
-    router = createRouter('/');
+    router = createRouter(ROUTES.index);
   });
 
   afterEach(() => {
     window.location.hash = '';
   });
 
-  const mountApp = async (route = '/') => {
+  const mountApp = async (route = ROUTES.index) => {
     await router.push(route);
 
     wrapper = mountExtended(App, {
@@ -76,10 +77,10 @@ describe('remote_development/router/index.js', () => {
 
   describe('create path', () => {
     beforeEach(async () => {
-      await mountApp('/create');
+      await mountApp(ROUTES.new);
     });
 
-    it('renders CreateWorkspace on route /create', () => {
+    it(`renders CreateWorkspace on route ${ROUTES.new}`, () => {
       expect(findCreateWorkspacePage().exists()).toBe(true);
     });
 
