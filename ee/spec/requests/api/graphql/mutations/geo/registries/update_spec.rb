@@ -78,30 +78,6 @@ RSpec.describe Mutations::Geo::Registries::Update, feature_category: :geo_replic
       it_behaves_like 'a mutation that returns a top-level access error'
     end
 
-    context 'when instance is read_only' do
-      let(:arguments) do
-        {
-          registry_class: registry_class_argument,
-          registry_id: registry_global_id,
-          action: 'RESYNC'
-        }
-      end
-
-      let(:mutation) { graphql_mutation(mutation_name, arguments) }
-
-      before do
-        stub_maintenance_mode_setting(true)
-      end
-
-      it 'returns an error' do
-        post_graphql_mutation(mutation, current_user: current_user)
-
-        expect(mutation_response).to be_nil
-        expect(fresh_response_data.dig("errors", 0, "message"))
-          .to eq("You cannot perform write operations on a read-only instance")
-      end
-    end
-
     shared_examples 'a valid registry update' do
       let(:arguments) { { registry_class: registry_class_argument, registry_id: registry_global_id, action: action } }
 
@@ -147,6 +123,16 @@ RSpec.describe Mutations::Geo::Registries::Update, feature_category: :geo_replic
       end
     end
 
+    context 'when maintenance mode is enabled' do
+      let(:action) { 'RESYNC' }
+
+      before do
+        stub_maintenance_mode_setting(true)
+      end
+
+      it_behaves_like 'a valid registry update'
+    end
+
     context 'when geo site is secondary' do
       let(:action) { 'RESYNC' }
 
@@ -154,10 +140,6 @@ RSpec.describe Mutations::Geo::Registries::Update, feature_category: :geo_replic
     end
 
     context 'when updating a single registry' do
-      before do
-        stub_current_geo_node(secondary)
-      end
-
       context 'with resync action' do
         let(:action) { 'RESYNC' }
 
