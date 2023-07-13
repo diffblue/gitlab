@@ -75,7 +75,6 @@ exports[`Environment matchs the snapshot 1`] = `
          
         <alerts-stub
           count="1"
-          lastalert="[object Object]"
         />
       </div>
        

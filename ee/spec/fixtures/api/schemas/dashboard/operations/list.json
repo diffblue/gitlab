@@ -1,6 +1,8 @@
 {
   "type": "object",
-  "required": ["projects"],
+  "required": [
+    "projects"
+  ],
   "properties": {
     "projects": {
       "type": "array",
@@ -23,26 +25,54 @@
         "alert_count"
       ],
       "properties": {
-        "id": { "type": "integer" },
-        "name": { "type": "string" },
-        "name_with_namespace": { "type": "string" },
-        "path": { "type": "string" },
-        "path_with_namespace": { "type": "string" },
-        "avatar_url": { "type": ["string", "null"] },
-        "remove_path": { "type": "string" },
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "name_with_namespace": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "path_with_namespace": {
+          "type": "string"
+        },
+        "avatar_url": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "remove_path": {
+          "type": "string"
+        },
         "last_deployment": {
           "$ref": "../../../../../../../spec/fixtures/api/schemas/deployment.json"
         },
-        "alert_count": { "type": "integer" },
-        "last_alert": { "$ref": "#/definitions/alert" }
+        "alert_count": {
+          "type": "integer"
+        }
       }
     },
     "alert": {
       "type": "object",
-      "required": ["id", "title", "query", "threshold", "operator"],
+      "required": [
+        "id",
+        "title",
+        "query",
+        "threshold",
+        "operator"
+      ],
       "properties": {
-        "id": { "type": "integer" },
-        "title": { "type": "string" }
+        "id": {
+          "type": "integer"
+        },
+        "title": {
+          "type": "string"
+        }
       }
     }
   },

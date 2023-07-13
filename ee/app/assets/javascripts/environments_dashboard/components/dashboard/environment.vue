@@ -169,11 +169,7 @@ export default {
             :time="finishedTime"
             :tooltip-text="$options.tooltips.timeAgo"
           />
-          <alerts
-            v-if="environment.alert_count > 0"
-            :count="environment.alert_count"
-            :last-alert="environment.last_alert"
-          />
+          <alerts v-if="environment.alert_count > 0" :count="environment.alert_count" />
         </div>
 
         <div v-if="lastPipeline" class="col-12">
