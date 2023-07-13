@@ -177,9 +177,6 @@ export default {
     showLocalFileReviews() {
       return Boolean(gon.current_user_id);
     },
-    codequalityDiffForFile() {
-      return this.codequalityDiff?.files?.[this.file.file_path] || [];
-    },
     isCollapsed() {
       if (collapsedType(this.file) !== DIFF_FILE_MANUAL_COLLAPSE) {
         return this.viewDiffsFileByFile ? false : this.file.viewer?.automaticallyCollapsed;
@@ -397,7 +394,6 @@ export default {
       :add-merge-request-buttons="true"
       :view-diffs-file-by-file="viewDiffsFileByFile"
       :show-local-file-reviews="showLocalFileReviews"
-      :codequality-diff="codequalityDiffForFile"
       class="js-file-title file-title gl-border-1 gl-border-solid gl-border-gray-100"
       :class="hasBodyClasses.header"
       @toggleFile="handleToggle({ viaUserInteraction: true })"

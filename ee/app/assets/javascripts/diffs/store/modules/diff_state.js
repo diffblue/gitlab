@@ -5,5 +5,7 @@ export default () => ({
 
   endpointCodequality: '',
   codequalityDiff: {},
+  endpointSast: '',
+  sastDiff: {},
   generateTestFilePath: '',
 });
