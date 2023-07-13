@@ -1,5 +1,5 @@
 import { GlLoadingIcon, GlEmptyState } from '@gitlab/ui';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import {
   HTTP_STATUS_CREATED,
@@ -47,7 +47,13 @@ import {
   TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE,
 } from '../mock_data';
 
-jest.mock('~/alert');
+const mockAlertDismiss = jest.fn();
+jest.mock('~/alert', () => ({
+  createAlert: jest.fn().mockImplementation(() => ({
+    dismiss: mockAlertDismiss,
+  })),
+}));
+
 jest.mock('ee/analytics/analytics_dashboards/api/dashboards_api', () => ({
   getProductAnalyticsVisualizationList: jest.fn(),
   getProductAnalyticsVisualization: jest.fn(),
@@ -66,7 +72,7 @@ Vue.use(VueApollo);
 
 describe('AnalyticsDashboard', () => {
   let wrapper;
-  const projectId = '1';
+  const namespaceId = '1';
 
   const findDashboard = () => wrapper.findComponent(CustomizableDashboard);
   const findLoader = () => wrapper.findComponent(GlLoadingIcon);
@@ -151,7 +157,7 @@ describe('AnalyticsDashboard', () => {
       stubs: ['router-link', 'router-view'],
       mocks,
       provide: {
-        projectId,
+        namespaceId,
         customDashboardsProject: TEST_CUSTOM_DASHBOARDS_PROJECT,
         dashboardEmptyStateIllustrationPath: TEST_EMPTY_DASHBOARD_SVG_PATH,
         namespaceFullPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
@@ -462,44 +468,60 @@ describe('AnalyticsDashboard', () => {
           isNewFile: false,
         });
 
-        await waitForPromises();
-
         expect(showToast).toHaveBeenCalledWith(I18N_DASHBOARD_SAVED_SUCCESSFULLY);
       });
 
-      it('custom dashboard with an error', async () => {
-        createWrapper({
-          routeSlug: 'custom_dashboard',
-          glFeatures: { combinedAnalyticsDashboardsEditor: true },
+      describe('dashboard errors', () => {
+        beforeEach(() => {
+          createWrapper({
+            routeSlug: 'custom_dashboard',
+            glFeatures: { combinedAnalyticsDashboardsEditor: true },
+          });
         });
 
-        await mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_FORBIDDEN }));
+        it('creates an alert when the response status is HTTP_STATUS_FORBIDDEN', async () => {
+          await mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_FORBIDDEN }));
 
-        await waitForPromises();
-        expect(createAlert).toHaveBeenCalledWith({
-          message: I18N_DASHBOARD_ERROR_WHILE_SAVING,
-          captureError: true,
-          error: new Error(`Bad save dashboard response. Status:${HTTP_STATUS_FORBIDDEN}`),
-        });
-      });
-
-      it('custom dashboard with an error thrown', async () => {
-        createWrapper({
-          routeSlug: 'custom_dashboard',
-          glFeatures: { combinedAnalyticsDashboardsEditor: true },
+          expect(createAlert).toHaveBeenCalledWith({
+            message: I18N_DASHBOARD_ERROR_WHILE_SAVING,
+            captureError: true,
+            error: new Error(`Bad save dashboard response. Status:${HTTP_STATUS_FORBIDDEN}`),
+          });
         });
 
-        const newError = new Error();
+        it('creates an alert when the fetch request throws an error', async () => {
+          const newError = new Error();
+          await mockSaveDashboardImplementation(() => {
+            throw newError;
+          });
 
-        mockSaveDashboardImplementation(() => {
-          throw newError;
+          expect(createAlert).toHaveBeenCalledWith({
+            error: newError,
+            message: I18N_DASHBOARD_ERROR_WHILE_SAVING,
+            captureError: true,
+          });
         });
 
-        await waitForPromises();
-        expect(createAlert).toHaveBeenCalledWith({
-          error: newError,
-          message: I18N_DASHBOARD_ERROR_WHILE_SAVING,
-          captureError: true,
+        it('clears the alert when the component is destroyed', async () => {
+          await mockSaveDashboardImplementation(() => {
+            throw new Error();
+          });
+
+          wrapper.destroy();
+
+          await nextTick();
+
+          expect(mockAlertDismiss).toHaveBeenCalled();
+        });
+
+        it('clears the alert when the dashboard saved succesfully', async () => {
+          await mockSaveDashboardImplementation(() => {
+            throw new Error();
+          });
+
+          await mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_CREATED }));
+
+          expect(mockAlertDismiss).toHaveBeenCalled();
         });
       });
 
@@ -535,7 +557,7 @@ describe('AnalyticsDashboard', () => {
         await mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_CREATED }));
         await waitForPromises();
 
-        expect(updateApolloCache).toHaveBeenCalledWith(expect.any(Object), projectId, slug, {
+        expect(updateApolloCache).toHaveBeenCalledWith(expect.any(Object), namespaceId, slug, {
           panels: [],
         });
       });

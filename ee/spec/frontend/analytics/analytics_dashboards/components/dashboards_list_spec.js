@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import ProductAnalyticsOnboarding from 'ee/product_analytics/onboarding/components/onboarding_list_item.vue';
 import DashboardsList from 'ee/analytics/analytics_dashboards/components/dashboards_list.vue';
@@ -21,7 +21,12 @@ import {
   TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE,
 } from '../mock_data';
 
-jest.mock('~/alert');
+const mockAlertDismiss = jest.fn();
+jest.mock('~/alert', () => ({
+  createAlert: jest.fn().mockImplementation(() => ({
+    dismiss: mockAlertDismiss,
+  })),
+}));
 
 Vue.use(VueApollo);
 
@@ -164,6 +169,14 @@ describe('DashboardsList', () => {
           message,
           error,
         });
+      });
+
+      it('dimisses the alert when the component is destroyed', async () => {
+        wrapper.destroy();
+
+        await nextTick();
+
+        expect(mockAlertDismiss).toHaveBeenCalled();
       });
     });
   });
