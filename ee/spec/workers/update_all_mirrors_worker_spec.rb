@@ -21,6 +21,13 @@ RSpec.describe UpdateAllMirrorsWorker, feature_category: :source_code_management
       worker.perform
     end
 
+    it 'does nothing if silent mode is enabled' do
+      allow(Gitlab::SilentMode).to receive(:enabled?).and_return(true)
+      expect(worker).not_to receive(:schedule_mirrors!)
+
+      worker.perform
+    end
+
     it 'does not execute if cannot get the lease' do
       stub_exclusive_lease_taken
 

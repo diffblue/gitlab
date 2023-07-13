@@ -15,6 +15,7 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
 
   def perform
     return if Gitlab::Database.read_only?
+    return if Gitlab::SilentMode.enabled?
 
     scheduled = 0
     with_lease do
