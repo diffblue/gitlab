@@ -1,8 +1,0 @@
----
-name: ai_assist_web_ide
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/121368
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/412427
-milestone: '16.1'
-type: development
-group: group::ai assisted
-default_enabled: false
