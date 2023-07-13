@@ -51889,9 +51889,6 @@ msgstr ""
 msgid "Won't fix / Accept risk"
 msgstr ""
 
-msgid "Work Item promoted successfully."
-msgstr ""
-
 msgid "Work Item type with id %{id} was not found"
 msgstr ""
 
@@ -51899,6 +51896,9 @@ msgid "Work in progress (open and unassigned)"
 msgstr ""
 
 msgid "Work in progress limit"
+msgstr ""
+
+msgid "Work item promoted successfully."
 msgstr ""
 
 msgid "WorkItem|%{count} more assignees"

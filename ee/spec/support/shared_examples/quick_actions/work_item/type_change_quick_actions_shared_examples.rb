@@ -16,7 +16,7 @@ RSpec.shared_examples 'quick actions that change work item type ee' do
       it 'populates :issue_type: and :work_item_type' do
         _, updates, message = service.execute(command, work_item)
 
-        expect(message).to eq(_('Work Item promoted successfully.'))
+        expect(message).to eq(_('Work item promoted successfully.'))
         expect(updates).to eq({ issue_type: 'objective', work_item_type: WorkItems::Type.default_by_type(:objective) })
       end
 
