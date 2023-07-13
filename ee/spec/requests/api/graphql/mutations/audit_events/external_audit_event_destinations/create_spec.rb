@@ -73,7 +73,31 @@ RSpec.describe 'Create an external audit event destination', feature_category: :
         destination = AuditEvents::ExternalAuditEventDestination.last
         expect(destination.group).to eq(group)
         expect(destination.destination_url).to eq(destination_url)
+        expect(destination.name).not_to be_empty
         expect(destination.verification_token).to be_present
+      end
+
+      context 'when overriding default name' do
+        let(:name) { 'My Destination' }
+
+        let(:input) do
+          {
+            'groupPath': group.full_path,
+            'destinationUrl': destination_url,
+            'name': name
+          }
+        end
+
+        it 'creates the destination' do
+          expect { subject }
+            .to change { AuditEvents::ExternalAuditEventDestination.count }.by(1)
+
+          destination = AuditEvents::ExternalAuditEventDestination.last
+          expect(destination.group).to eq(group)
+          expect(destination.destination_url).to eq(destination_url)
+          expect(destination.name).to eq(name)
+          expect(destination.verification_token).to be_present
+        end
       end
 
       it_behaves_like 'creates an audit event'

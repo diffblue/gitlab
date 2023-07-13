@@ -12,6 +12,10 @@ module Mutations
                  required: true,
                  description: 'Destination URL.'
 
+        argument :name, GraphQL::Types::String,
+                 required: false,
+                 description: 'Destination name.'
+
         argument :group_path, GraphQL::Types::ID,
                  required: true,
                  description: 'Group path.'
@@ -24,11 +28,12 @@ module Mutations
               null: true,
               description: 'Destination created.'
 
-        def resolve(destination_url:, group_path:, verification_token: nil)
+        def resolve(destination_url:, group_path:, verification_token: nil, name: nil)
           group = authorized_find!(group_path)
           destination = ::AuditEvents::ExternalAuditEventDestination.new(group: group,
                                                                          destination_url: destination_url,
-                                                                         verification_token: verification_token)
+                                                                         verification_token: verification_token,
+                                                                         name: name)
 
           audit(destination, action: :create) if destination.save
 

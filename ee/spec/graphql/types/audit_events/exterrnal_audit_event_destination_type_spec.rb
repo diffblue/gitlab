@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe GitlabSchema.types['ExternalAuditEventDestination'] do
   let(:fields) do
-    %i[id destination_url group verification_token headers event_type_filters]
+    %i[id destination_url group verification_token headers event_type_filters name]
   end
 
   specify { expect(described_class.graphql_name).to eq('ExternalAuditEventDestination') }

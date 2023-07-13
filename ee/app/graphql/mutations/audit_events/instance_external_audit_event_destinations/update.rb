@@ -16,15 +16,21 @@ module Mutations
           required: false,
           description: 'Destination URL to change.'
 
+        argument :name, GraphQL::Types::String,
+          required: false,
+          description: 'Destination name.'
+
         field :instance_external_audit_event_destination,
           ::Types::AuditEvents::InstanceExternalAuditEventDestinationType,
           null: true,
           description: 'Updated destination.'
 
-        def resolve(id:, destination_url:)
+        def resolve(id:, destination_url: nil, name: nil)
           destination = find_object(id)
 
-          destination.update(destination_url: destination_url)
+          destination_attributes = { destination_url: destination_url, name: name }.compact
+
+          destination.update(destination_attributes)
 
           {
             instance_external_audit_event_destination: (destination if destination.persisted?),

@@ -6,6 +6,10 @@ module Mutations
       class Update < Base
         graphql_name 'ExternalAuditEventDestinationUpdate'
 
+        include ::Audit::Changes
+
+        UPDATE_EVENT_NAME = 'update_event_streaming_destination'
+
         authorize :admin_external_audit_events
 
         argument :id, ::Types::GlobalIDType[::AuditEvents::ExternalAuditEventDestination],
@@ -16,14 +20,21 @@ module Mutations
                  required: false,
                  description: 'Destination URL to change.'
 
+        argument :name, GraphQL::Types::String,
+                 required: false,
+                 description: 'Destination name.'
+
         field :external_audit_event_destination, ::Types::AuditEvents::ExternalAuditEventDestinationType,
               null: true,
               description: 'Updated destination.'
 
-        def resolve(id:, destination_url:)
+        def resolve(id:, destination_url: nil, name: nil)
           destination = authorized_find!(id)
 
-          audit_update(destination) if destination.update(destination_url: destination_url)
+          destination_attributes = { destination_url: destination_url,
+                                     name: name }.compact
+
+          audit_update(destination) if destination.update(destination_attributes)
 
           {
             external_audit_event_destination: (destination if destination.persisted?),
@@ -34,11 +45,15 @@ module Mutations
         private
 
         def audit_update(destination)
-          return unless destination.previous_changes.any?
-
-          message = "Updated event streaming destination from #{destination.previous_changes['destination_url'].join(' to ')}"
-
-          audit(destination, action: :update, extra_context: { message: message })
+          [:destination_url, :name].each do |column|
+            audit_changes(
+              column,
+              as: column.to_s,
+              entity: destination.group,
+              model: destination,
+              event_type: UPDATE_EVENT_NAME
+            )
+          end
         end
 
         def find_object(destination_gid)
