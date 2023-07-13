@@ -47,11 +47,16 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
 
     mockApollo = createMockApollo([[userWorkspacesListQuery, userWorkspacesListQueryHandler]]);
   };
-  const createWrapper = () => {
+  const createWrapper = ({
+    glFeatures = { remoteDevelopment: true, remoteDevelopmentFeatureFlag: true },
+  } = {}) => {
     updateWorkspaceMutationMock = jest.fn();
 
     wrapper = shallowMountExtended(WorkspacesDropdownGroup, {
       apolloProvider: mockApollo,
+      provide: {
+        glFeatures,
+      },
       propsData: {
         projectId: PROJECT_ID,
         projectFullPath: PROJECT_FULL_PATH,
@@ -75,6 +80,29 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
 
   beforeEach(() => {
     buildMockApollo();
+  });
+
+  describe('feature flag visibility', () => {
+    describe.each`
+      rdAvailable | rdFFlagEnabled | visible
+      ${true}     | ${true}        | ${true}
+      ${true}     | ${false}       | ${false}
+      ${false}    | ${true}        | ${false}
+    `(
+      'rdAvailable=$rdAvailable, rdFFlagEnabled=$rdFFlagEnabled, isBlob=$isBlob',
+      ({ rdAvailable, rdFFlagEnabled, visible }) => {
+        it(`workspaces dropdown visible=$visible`, () => {
+          createWrapper({
+            glFeatures: {
+              remoteDevelopment: rdAvailable,
+              remoteDevelopmentFeatureFlag: rdFFlagEnabled,
+            },
+          });
+
+          expect(findUpdateWorkspaceMutation().exists()).toBe(visible);
+        });
+      },
+    );
   });
 
   describe('when loading data', () => {
@@ -247,6 +275,9 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
 
   describe('new workspace button visibility', () => {
     beforeEach(() => {
+      userWorkspacesListQueryHandler.mockReset();
+      userWorkspacesListQueryHandler.mockResolvedValueOnce(USER_WORKSPACES_QUERY_EMPTY_RESULT);
+
       createWrapper();
     });
 
@@ -256,14 +287,17 @@ describe('remote_development/components/workspaces_dropdown_group/workspaces_dro
       ${'result'} | ${{ hasDevFile: true, clusterAgents: [] }}
       ${'result'} | ${{ hasDevFile: false, clusterAgents: [{}] }}
       ${'error'}  | ${undefined}
-    `('when $event is emitted with $payload, visible = $visible', async ({ event, payload }) => {
-      findGetProjectDetailsQuery().vm.$emit(event, payload);
+    `(
+      'when $event is emitted with $payload, the dropdown is hidden',
+      async ({ event, payload }) => {
+        findGetProjectDetailsQuery().vm.$emit(event, payload);
 
-      await waitForPromises();
+        await waitForPromises();
 
-      expect(wrapper.text()).toContain(i18n.noWorkspacesSupportMessage);
-      expect(findNewWorkspaceButton().exists()).toBe(false);
-    });
+        expect(wrapper.text()).toContain(i18n.noWorkspacesSupportMessage);
+        expect(findNewWorkspaceButton().exists()).toBe(false);
+      },
+    );
 
     it('displays new workspace button when project has devfile and associated cluster agents', async () => {
       findGetProjectDetailsQuery().vm.$emit('result', { hasDevFile: true, clusterAgents: [{}] });

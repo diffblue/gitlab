@@ -214,7 +214,7 @@ describe('remote_development/pages/list.vue', () => {
       await waitForPromises();
     });
     it('displays a link button that navigates to the create workspace page', () => {
-      expect(findNewWorkspaceButton().attributes().to).toBe(ROUTES.create);
+      expect(findNewWorkspaceButton().attributes().to).toBe(ROUTES.new);
       expect(findNewWorkspaceButton().text()).toMatch(/New workspace/);
     });
 

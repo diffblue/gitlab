@@ -34,7 +34,7 @@ export default {
         <gl-button
           variant="confirm"
           class="gl-mb-3 gl-mx-2"
-          :to="$options.ROUTES.create"
+          :to="$options.ROUTES.new"
           data-qa-selector="empty_new_workspace_button"
           >{{ $options.i18n.primaryButtonText }}</gl-button
         >

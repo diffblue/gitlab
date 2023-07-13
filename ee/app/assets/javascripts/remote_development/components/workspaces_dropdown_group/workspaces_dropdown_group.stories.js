@@ -15,6 +15,12 @@ export const WithAPIAccess = (args, { argTypes, createVueApollo }) => {
   return {
     components: { WorkspacesDropdownGroup, GlDisclosureDropdown },
     apolloProvider: createVueApollo(),
+    provide: {
+      glFeatures: {
+        remoteDevelopment: true,
+        remoteDevelopmentFeatureFlag: true,
+      },
+    },
     props: Object.keys(argTypes),
     template: `<gl-disclosure-dropdown fluid-width toggle-text="Edit">
       <workspaces-dropdown-group :new-workspace-path="newWorkspacePath" :project-id="projectId" :project-full-path="projectFullPath" />

@@ -73,7 +73,8 @@ RSpec.describe BlobHelper do
 
       expect(helper.vue_blob_app_data(project, blob, ref)).to include({
         user_id: '',
-        explain_code_available: 'false'
+        explain_code_available: 'false',
+        new_workspace_path: new_remote_development_workspace_path
       })
     end
   end

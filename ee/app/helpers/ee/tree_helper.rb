@@ -14,5 +14,13 @@ module EE
         explain_code_available: ::Llm::ExplainCodeService.new(current_user, project).valid?.to_s
       })
     end
+
+    override :web_ide_button_data
+    def web_ide_button_data(options = {})
+      super.merge({
+        new_workspace_path: new_remote_development_workspace_path,
+        project_id: project_to_use.id
+      })
+    end
   end
 end

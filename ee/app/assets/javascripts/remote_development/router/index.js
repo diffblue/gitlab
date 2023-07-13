@@ -14,8 +14,8 @@ export default function createRouter({ base }) {
       component: WorkspacesList,
     },
     {
-      path: '/create',
-      name: ROUTES.create,
+      path: '/new',
+      name: ROUTES.new,
       component: CreateWorkspace,
     },
     {

@@ -41,7 +41,7 @@ describe('remote_development/components/list/empty_state.vue', () => {
         variant: 'confirm',
       });
       expect(button.attributes()).toMatchObject({
-        to: ROUTES.create,
+        to: ROUTES.new,
       });
     });
   });
