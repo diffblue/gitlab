@@ -579,6 +579,15 @@
   :weight: 1
   :idempotent: false
   :tags: []
+- :name: cronjob:vulnerabilities_orphaned_remediations_cleanup
+  :worker_name: Vulnerabilities::OrphanedRemediationsCleanupWorker
+  :feature_category: :vulnerability_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: cronjob:vulnerabilities_statistics_schedule
   :worker_name: Vulnerabilities::Statistics::ScheduleWorker
   :feature_category: :vulnerability_management
