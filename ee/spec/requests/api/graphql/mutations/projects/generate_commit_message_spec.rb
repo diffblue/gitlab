@@ -27,7 +27,11 @@ RSpec.describe 'AiAction for Generate Commit Message', :saas, feature_category: 
     group.namespace_settings.update!(third_party_ai_features_enabled: true, experiment_features_enabled: true)
   end
 
-  it 'successfully performs an explain code request' do
+  before_all do
+    group.add_developer(current_user)
+  end
+
+  it 'successfully performs an generate commit message request' do
     expect(Llm::CompletionWorker).to receive(:perform_async).with(
       current_user.id, merge_request.id, "MergeRequest", :generate_commit_message, {
         markup_format: :raw, request_id: an_instance_of(String)

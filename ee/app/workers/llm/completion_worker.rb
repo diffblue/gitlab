@@ -26,8 +26,7 @@ module Llm
       return unless user
 
       resource = find_resource(resource_id, resource_class)
-      return unless resource
-      return unless user.can?("read_#{resource.to_ability_name}", resource)
+      return if resource && !user.can?("read_#{resource.to_ability_name}", resource)
 
       params = options.extract!(:request_id, :internal_request)
       ai_completion = ::Gitlab::Llm::CompletionsFactory.completion(ai_action_name.to_sym, params)
@@ -43,6 +42,8 @@ module Llm
     end
 
     def find_resource(resource_id, resource_class)
+      return unless resource_id
+
       resource_class.classify.constantize.find_by_id(resource_id)
     end
   end

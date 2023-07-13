@@ -72,6 +72,15 @@ RSpec.describe Llm::CompletionWorker, feature_category: :team_planning do
 
         it_behaves_like 'performs successfully'
       end
+
+      context 'when resource is nil' do
+        let(:resource) { nil }
+        let(:resource_id) { nil }
+        let(:resource_type) { nil }
+        let(:ai_action_name) { :chat }
+
+        it_behaves_like 'performs successfully'
+      end
     end
 
     context 'with invalid parameters' do

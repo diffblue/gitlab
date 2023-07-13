@@ -28,6 +28,10 @@ RSpec.describe 'AiAction for Generate Test File', :saas, feature_category: :code
     group.namespace_settings.update!(third_party_ai_features_enabled: true, experiment_features_enabled: true)
   end
 
+  before_all do
+    group.add_developer(current_user)
+  end
+
   it 'successfully performs an explain code request' do
     expect(Llm::CompletionWorker).to receive(:perform_async).with(
       current_user.id, merge_request.id, "MergeRequest", :generate_test_file, {

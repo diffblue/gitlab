@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Llm::GenerateCommitMessageService, :saas, feature_category: :code_review_workflow do
-  let_it_be(:group) { create(:group_with_plan, :public, plan: :ultimate_plan) }
+  let_it_be_with_reload(:group) { create(:group_with_plan, :public, plan: :ultimate_plan) }
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :public, group: group) }
   let_it_be(:merge_request) { create(:merge_request, source_project: project) }
@@ -26,7 +26,7 @@ RSpec.describe Llm::GenerateCommitMessageService, :saas, feature_category: :code
 
     context 'when the user is permitted to view the merge request' do
       before do
-        project.add_maintainer(user)
+        group.add_developer(user)
       end
 
       it 'schedules a job' do
@@ -79,7 +79,7 @@ RSpec.describe Llm::GenerateCommitMessageService, :saas, feature_category: :code
 
     with_them do
       before do
-        project.add_maintainer(user)
+        group.add_maintainer(user)
         project.root_ancestor.namespace_settings.update!(
           third_party_ai_features_enabled: third_party_ai_features_enabled,
           experiment_features_enabled: experiment_features_enabled)

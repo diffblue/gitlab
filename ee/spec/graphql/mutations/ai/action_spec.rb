@@ -126,6 +126,28 @@ RSpec.describe Mutations::Ai::Action, feature_category: :not_owned do # rubocop:
           expect(subject[:request_id]).to eq(request_id)
         end
 
+        context 'when resource is null' do
+          let(:input) { { chat: { resource_id: nil } } }
+          let(:expected_options) { {} }
+
+          it 'calls Llm::ExecuteMethodService' do
+            expect_next_instance_of(
+              Llm::ExecuteMethodService,
+              user,
+              nil,
+              :chat,
+              expected_options
+            ) do |svc|
+              expect(svc)
+                .to receive(:execute)
+                .and_return(ServiceResponse.success(payload: { request_id: request_id }))
+            end
+
+            expect(subject[:errors]).to be_empty
+            expect(subject[:request_id]).to eq(request_id)
+          end
+        end
+
         context 'when Llm::ExecuteMethodService errors out' do
           it 'returns errors' do
             expect_next_instance_of(

@@ -23,7 +23,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_c
 
   describe '#execute', :saas do
     let_it_be(:user) { create(:user) }
-    let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+    let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
     let_it_be(:project) { create(:project, group: group) }
     let_it_be(:issue1) { create(:issue, project: project) }
 
@@ -31,8 +31,8 @@ RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_c
       stub_application_setting(check_namespace_plan: true)
       stub_licensed_features(summarize_notes: true, ai_features: true)
 
-      project.add_developer(user)
-      project.root_ancestor.update!(experiment_features_enabled: true, third_party_ai_features_enabled: true)
+      group.add_developer(user)
+      group.update!(experiment_features_enabled: true, third_party_ai_features_enabled: true)
     end
 
     context 'when issue is identified' do

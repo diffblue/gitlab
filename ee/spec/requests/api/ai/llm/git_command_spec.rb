@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Ai::Llm::GitCommand, feature_category: :source_code_management do
+RSpec.describe API::Ai::Llm::GitCommand, :saas, feature_category: :source_code_management do
   let_it_be(:current_user) { create :user }
 
   let(:header) { { 'Authorization' => ['Bearer test-key'], 'Content-Type' => ['application/json'] } }
@@ -12,6 +12,7 @@ RSpec.describe API::Ai::Llm::GitCommand, feature_category: :source_code_manageme
   before do
     stub_application_setting(openai_api_key: 'test-key')
     stub_licensed_features(ai_git_command: true)
+    stub_ee_application_setting(should_check_namespace_plan: true)
   end
 
   describe 'POST /ai/llm/git_command', :saas do

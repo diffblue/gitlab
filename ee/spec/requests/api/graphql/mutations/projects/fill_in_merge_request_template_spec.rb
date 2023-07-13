@@ -35,6 +35,10 @@ RSpec.describe 'AiAction for Fill In Merge Request Template', :saas, feature_cat
     group.namespace_settings.update!(third_party_ai_features_enabled: true, experiment_features_enabled: true)
   end
 
+  before_all do
+    group.add_developer(current_user)
+  end
+
   it 'successfully performs an explain code request' do
     expect(Llm::CompletionWorker).to receive(:perform_async).with(
       current_user.id,

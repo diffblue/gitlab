@@ -6,7 +6,7 @@ module Subscriptions
     payload_type ::Types::Ai::AiResponseType
 
     argument :resource_id, Types::GlobalIDType[::Ai::Model],
-      required: true,
+      required: false,
       description: 'ID of the resource.'
 
     argument :user_id, ::Types::GlobalIDType[::User],

@@ -23,12 +23,7 @@ module Llm
     def valid?
       return false if resource.respond_to?(:resource_parent) && !resource.resource_parent.member?(user)
 
-      case resource
-      when User
-        ai_integration_enabled? && user == resource && user_can_send_to_ai?
-      else
-        ai_integration_enabled?
-      end
+      ai_integration_enabled? && user_can_send_to_ai?
     end
 
     private
@@ -51,19 +46,19 @@ module Llm
       logger.debug(
         message: "Enqueuing CompletionWorker",
         user_id: user.id,
-        resource_id: resource.id,
-        resource_class: resource.class.name,
+        resource_id: resource&.id,
+        resource_class: resource&.class&.name,
         request_id: request_id,
         action_name: action_name
       )
 
       if options[:sync] == true
         response_data = ::Llm::CompletionWorker.new.perform(
-          user.id, resource.id, resource.class.name, action_name, options
+          user.id, resource&.id, resource&.class&.name, action_name, options
         )
         payload.merge!(response_data)
       else
-        ::Llm::CompletionWorker.perform_async(user.id, resource.id, resource.class.name, action_name, options)
+        ::Llm::CompletionWorker.perform_async(user.id, resource&.id, resource&.class&.name, action_name, options)
       end
 
       success(payload)
@@ -73,7 +68,6 @@ module Llm
       Feature.enabled?(:openai_experimentation)
     end
 
-    # This check is used for features that do not act on a specific namespace, and the `resource` is a `User`.
     # https://gitlab.com/gitlab-org/gitlab/-/issues/413520
     def user_can_send_to_ai?
       return true unless ::Gitlab.com?

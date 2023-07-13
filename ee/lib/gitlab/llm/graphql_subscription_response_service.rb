@@ -17,7 +17,7 @@ module Gitlab
         data = {
           id: SecureRandom.uuid,
           request_id: options[:request_id],
-          model_name: resource.class.name,
+          model_name: resource&.class&.name,
           # todo: do we need to sanitize/refine this response in any ways?
           response_body: generate_response_body(response_modifier.response_body),
           errors: response_modifier.errors,
@@ -32,8 +32,8 @@ module Gitlab
         response_data = data.slice(:request_id, :errors, :role).merge(content: data[:response_body])
 
         unless options[:internal_request]
-          Gitlab::Llm::Cache.new(user).add(response_data)
-          GraphqlTriggers.ai_completion_response(user.to_global_id, resource.to_global_id, data)
+          Gitlab::Llm::Cache.new(user).add(response_data) unless options[:skip_cache]
+          GraphqlTriggers.ai_completion_response(user.to_global_id, resource&.to_global_id, data)
         end
 
         response_data
@@ -44,7 +44,7 @@ module Gitlab
       attr_reader :user, :resource, :response_modifier, :options, :logger
 
       def generate_response_body(response_body)
-        return response_body if options[:markup_format].nil? || options[:markup_format].to_sym == :raw
+        return response_body if options[:markup_format].nil? || options[:markup_format].to_sym == :raw || resource.nil?
 
         banzai_options = { only_path: false, pipeline: :full, current_user: user }
 
