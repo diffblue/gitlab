@@ -72,7 +72,7 @@ module Audit
       details = additional_details(options)
       audit_context = {
         name: name,
-        author: @current_user, # rubocop:disable Gitlab/ModuleWithInstanceVariables
+        author: @current_user.nil? && respond_to?(:current_user) ? current_user : @current_user, # rubocop:disable Gitlab/ModuleWithInstanceVariables
         scope: entity,
         target: model,
         message: build_message(details),

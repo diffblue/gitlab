@@ -12,13 +12,18 @@ module Mutations
           required: true,
           description: 'Destination URL.'
 
+        argument :name, GraphQL::Types::String,
+          required: false,
+          description: 'Destination name.'
+
         field :instance_external_audit_event_destination,
           ::Types::AuditEvents::InstanceExternalAuditEventDestinationType,
           null: true,
           description: 'Destination created.'
 
-        def resolve(destination_url:)
-          destination = ::AuditEvents::InstanceExternalAuditEventDestination.new(destination_url: destination_url)
+        def resolve(destination_url:, name: nil)
+          destination = ::AuditEvents::InstanceExternalAuditEventDestination.new(destination_url: destination_url,
+            name: name)
           audit(destination, action: :create) if destination.save
 
           {

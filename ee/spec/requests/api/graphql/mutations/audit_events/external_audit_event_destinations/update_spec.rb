@@ -7,14 +7,15 @@ RSpec.describe 'Update an external audit event destination', feature_category: :
 
   let_it_be(:group) { create(:group) }
   let_it_be(:owner) { create(:user) }
-  let_it_be(:destination) { create(:external_audit_event_destination, group: group) }
+  let_it_be(:destination) { create(:external_audit_event_destination, name: "Old Destination", destination_url: "https://example.com/old", group: group) }
 
   let(:current_user) { owner }
 
   let(:input) do
     {
       'id': GitlabSchema.id_from_object(destination).to_s,
-      'destinationUrl': "https://example.com/test"
+      'destinationUrl': "https://example.com/new",
+      'name': "New Destination"
     }
   end
 
@@ -64,16 +65,63 @@ RSpec.describe 'Update an external audit event destination', feature_category: :
         group.add_owner(owner)
       end
 
-      it 'updates the destination' do
-        expect { post_graphql_mutation(mutation, current_user: owner) }
-          .to change { destination.reload.destination_url }.to("https://example.com/test")
+      it 'updates the destination_url' do
+        expect do
+          post_graphql_mutation(mutation, current_user: owner)
+        end.to change { destination.reload.destination_url }.to("https://example.com/new")
       end
 
-      it 'audits the update' do
-        expect { post_graphql_mutation(mutation, current_user: owner) }
-          .to change { AuditEvent.count }.by(1)
+      it 'updates the destination name' do
+        expect do
+          post_graphql_mutation(mutation, current_user: owner)
+        end.to change { destination.reload.name }.to("New Destination")
+      end
 
-        expect(AuditEvent.last.details[:custom_message]).to match(/Updated event streaming destination from .* to .*/)
+      context 'when both destination url and destination name are updated' do
+        it 'audits the update' do
+          expect { post_graphql_mutation(mutation, current_user: owner) }
+            .to change { AuditEvent.count }.by(2)
+
+          audit_events = AuditEvent.last(2)
+          expect(audit_events[0].details[:custom_message]).to match("Changed destination_url " \
+                                                                    "from https://example.com/old to https://example.com/new")
+          expect(audit_events[1].details[:custom_message]).to match("Changed name from Old Destination " \
+                                                                    "to New Destination")
+        end
+      end
+
+      context 'when only destination url is updated' do
+        let(:input) do
+          {
+            'id': GitlabSchema.id_from_object(destination).to_s,
+            'destinationUrl': "https://example.com/new"
+          }
+        end
+
+        it 'audits the update' do
+          expect { post_graphql_mutation(mutation, current_user: owner) }
+            .to change { AuditEvent.count }.by(1)
+
+          expect(AuditEvent.last.details[:custom_message]).to match("Changed destination_url from " \
+                                                                    "https://example.com/old to https://example.com/new")
+        end
+      end
+
+      context 'when only destination name is updated' do
+        let(:input) do
+          {
+            'id': GitlabSchema.id_from_object(destination).to_s,
+            'name': "New Destination"
+          }
+        end
+
+        it 'audits the update' do
+          expect { post_graphql_mutation(mutation, current_user: owner) }
+            .to change { AuditEvent.count }.by(1)
+
+          expect(AuditEvent.last.details[:custom_message]).to match("Changed name from Old Destination " \
+                                                                    "to New Destination")
+        end
       end
     end
 

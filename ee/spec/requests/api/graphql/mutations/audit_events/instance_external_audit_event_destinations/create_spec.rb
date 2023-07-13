@@ -73,7 +73,28 @@ RSpec.describe 'Create an instance external audit event destination', feature_ca
           expect(mutation_response['errors']).to be_empty
           expect(mutation_response['instanceExternalAuditEventDestination']['destinationUrl']).to eq(destination_url)
           expect(mutation_response['instanceExternalAuditEventDestination']['id']).not_to be_empty
+          expect(mutation_response['instanceExternalAuditEventDestination']['name']).not_to be_empty
           expect(mutation_response['instanceExternalAuditEventDestination']['verificationToken']).not_to be_empty
+        end
+
+        context 'when overriding default name' do
+          name = "My Destination"
+
+          let(:input) do
+            {
+              destinationUrl: destination_url,
+              name: name
+            }
+          end
+
+          it 'creates the destination' do
+            expect { subject }
+              .to change { AuditEvents::InstanceExternalAuditEventDestination.count }.by(1)
+
+            destination = AuditEvents::InstanceExternalAuditEventDestination.last
+            expect(destination.destination_url).to eq(destination_url)
+            expect(destination.name).to eq(name)
+          end
         end
 
         it_behaves_like 'creates an audit event'

@@ -9,6 +9,10 @@ module Types
         null: false,
         description: 'ID of the destination.'
 
+      field :name, GraphQL::Types::String,
+        null: false,
+        description: 'Name of the external destination to send audit events to.'
+
       field :destination_url, GraphQL::Types::String,
         null: false,
         description: 'External destination to send audit events to.'

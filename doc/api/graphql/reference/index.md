@@ -3582,6 +3582,7 @@ Input type: `ExternalAuditEventDestinationCreateInput`
 | <a id="mutationexternalauditeventdestinationcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationexternalauditeventdestinationcreatedestinationurl"></a>`destinationUrl` | [`String!`](#string) | Destination URL. |
 | <a id="mutationexternalauditeventdestinationcreategrouppath"></a>`groupPath` | [`ID!`](#id) | Group path. |
+| <a id="mutationexternalauditeventdestinationcreatename"></a>`name` | [`String`](#string) | Destination name. |
 | <a id="mutationexternalauditeventdestinationcreateverificationtoken"></a>`verificationToken` | [`String`](#string) | Verification token. |
 
 #### Fields
@@ -3621,6 +3622,7 @@ Input type: `ExternalAuditEventDestinationUpdateInput`
 | <a id="mutationexternalauditeventdestinationupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationexternalauditeventdestinationupdatedestinationurl"></a>`destinationUrl` | [`String`](#string) | Destination URL to change. |
 | <a id="mutationexternalauditeventdestinationupdateid"></a>`id` | [`AuditEventsExternalAuditEventDestinationID!`](#auditeventsexternalauditeventdestinationid) | ID of external audit event destination to update. |
+| <a id="mutationexternalauditeventdestinationupdatename"></a>`name` | [`String`](#string) | Destination name. |
 
 #### Fields
 
@@ -3877,6 +3879,7 @@ Input type: `InstanceExternalAuditEventDestinationCreateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationinstanceexternalauditeventdestinationcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationinstanceexternalauditeventdestinationcreatedestinationurl"></a>`destinationUrl` | [`String!`](#string) | Destination URL. |
+| <a id="mutationinstanceexternalauditeventdestinationcreatename"></a>`name` | [`String`](#string) | Destination name. |
 
 #### Fields
 
@@ -3915,6 +3918,7 @@ Input type: `InstanceExternalAuditEventDestinationUpdateInput`
 | <a id="mutationinstanceexternalauditeventdestinationupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationinstanceexternalauditeventdestinationupdatedestinationurl"></a>`destinationUrl` | [`String`](#string) | Destination URL to change. |
 | <a id="mutationinstanceexternalauditeventdestinationupdateid"></a>`id` | [`AuditEventsInstanceExternalAuditEventDestinationID!`](#auditeventsinstanceexternalauditeventdestinationid) | ID of the external instance audit event destination to update. |
+| <a id="mutationinstanceexternalauditeventdestinationupdatename"></a>`name` | [`String`](#string) | Destination name. |
 
 #### Fields
 
@@ -15405,6 +15409,7 @@ Represents an external resource to send audit events to.
 | <a id="externalauditeventdestinationgroup"></a>`group` | [`Group!`](#group) | Group the destination belongs to. |
 | <a id="externalauditeventdestinationheaders"></a>`headers` | [`AuditEventStreamingHeaderConnection!`](#auditeventstreamingheaderconnection) | List of additional HTTP headers sent with each event. (see [Connections](#connections)) |
 | <a id="externalauditeventdestinationid"></a>`id` | [`ID!`](#id) | ID of the destination. |
+| <a id="externalauditeventdestinationname"></a>`name` | [`String!`](#string) | Name of the external destination to send audit events to. |
 | <a id="externalauditeventdestinationverificationtoken"></a>`verificationToken` | [`String!`](#string) | Verification token to validate source of event. |
 
 ### `ExternalIssue`
@@ -17107,6 +17112,7 @@ Represents an external resource to send instance audit events to.
 | <a id="instanceexternalauditeventdestinationeventtypefilters"></a>`eventTypeFilters` | [`[String!]!`](#string) | List of event type filters added for streaming. |
 | <a id="instanceexternalauditeventdestinationheaders"></a>`headers` | [`AuditEventsStreamingInstanceHeaderConnection!`](#auditeventsstreaminginstanceheaderconnection) | List of additional HTTP headers sent with each event. (see [Connections](#connections)) |
 | <a id="instanceexternalauditeventdestinationid"></a>`id` | [`ID!`](#id) | ID of the destination. |
+| <a id="instanceexternalauditeventdestinationname"></a>`name` | [`String!`](#string) | Name of the external destination to send audit events to. |
 | <a id="instanceexternalauditeventdestinationverificationtoken"></a>`verificationToken` | [`String!`](#string) | Verification token to validate source of event. |
 
 ### `InstanceSecurityDashboard`
@@ -28190,6 +28196,7 @@ Implementations:
 | <a id="externalauditeventdestinationinterfacedestinationurl"></a>`destinationUrl` | [`String!`](#string) | External destination to send audit events to. |
 | <a id="externalauditeventdestinationinterfaceeventtypefilters"></a>`eventTypeFilters` | [`[String!]!`](#string) | List of event type filters added for streaming. |
 | <a id="externalauditeventdestinationinterfaceid"></a>`id` | [`ID!`](#id) | ID of the destination. |
+| <a id="externalauditeventdestinationinterfacename"></a>`name` | [`String!`](#string) | Name of the external destination to send audit events to. |
 | <a id="externalauditeventdestinationinterfaceverificationtoken"></a>`verificationToken` | [`String!`](#string) | Verification token to validate source of event. |
 
 #### `MemberInterface`

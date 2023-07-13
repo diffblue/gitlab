@@ -9,11 +9,13 @@ RSpec.describe 'Update an instance external audit event destination', feature_ca
   let_it_be(:user) { create(:user) }
   let_it_be(:destination) { create(:instance_external_audit_event_destination) }
   let_it_be(:destination_url) { 'https://example.com/test' }
+  let_it_be(:name) { "My Destination" }
 
   let(:input) do
     {
       id: GitlabSchema.id_from_object(destination).to_s,
-      destinationUrl: destination_url
+      destinationUrl: destination_url,
+      name: name
     }
   end
 
@@ -49,6 +51,7 @@ RSpec.describe 'Update an instance external audit event destination', feature_ca
           expect(mutation_response['errors']).to be_empty
           expect(mutation_response['instanceExternalAuditEventDestination']['destinationUrl']).to eq(destination_url)
           expect(mutation_response['instanceExternalAuditEventDestination']['id']).not_to be_empty
+          expect(mutation_response['instanceExternalAuditEventDestination']['name']).to eq(name)
           expect(mutation_response['instanceExternalAuditEventDestination']['verificationToken']).not_to be_empty
         end
 
