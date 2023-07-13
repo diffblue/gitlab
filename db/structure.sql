@@ -33725,8 +33725,6 @@ CREATE INDEX tmp_index_ci_job_artifacts_on_expire_at_where_locked_unknown ON ci_
 
 CREATE INDEX tmp_index_cis_vulnerability_reads_on_id ON vulnerability_reads USING btree (id) WHERE (report_type = 7);
 
-CREATE INDEX tmp_index_for_backfilling_resource_link_events ON system_note_metadata USING btree (id) WHERE (((action)::text = 'relate_to_parent'::text) OR ((action)::text = 'unrelate_from_parent'::text));
-
 CREATE INDEX tmp_index_for_null_member_namespace_id ON members USING btree (member_namespace_id) WHERE (member_namespace_id IS NULL);
 
 CREATE INDEX tmp_index_for_project_namespace_id_migration_on_routes ON routes USING btree (id) WHERE ((namespace_id IS NULL) AND ((source_type)::text = 'Project'::text));
