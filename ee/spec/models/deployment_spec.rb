@@ -29,20 +29,6 @@ RSpec.describe Deployment do
 
       it { is_expected.to eq(false) }
     end
-
-    context 'when dynamically_compute_deployment_approval feature flag is disabled' do
-      before do
-        stub_feature_flags(dynamically_compute_deployment_approval: false)
-      end
-
-      it { is_expected.to eq(true) }
-
-      context 'with a deployment that is not waiting for approval' do
-        let(:deployment) { create(:deployment, :success, project: project, environment: environment) }
-
-        it { is_expected.to eq(false) }
-      end
-    end
   end
 
   describe '#pending_approval_count' do
@@ -84,20 +70,6 @@ RSpec.describe Deployment do
 
         it 'returns zero' do
           expect(deployment.pending_approval_count).to eq(0)
-        end
-      end
-
-      context 'when dynamically_compute_deployment_approval feature flag is disabled' do
-        before do
-          stub_feature_flags(dynamically_compute_deployment_approval: false)
-        end
-
-        context 'with a deployment that is not waiting for approval' do
-          let(:deployment) { create(:deployment, :success, project: project, environment: environment) }
-
-          it 'returns zero' do
-            expect(deployment.pending_approval_count).to eq(0)
-          end
         end
       end
 

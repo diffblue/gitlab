@@ -23,18 +23,10 @@ module EE
     end
 
     def waiting_for_approval?
-      if ::Feature.enabled?(:dynamically_compute_deployment_approval, project)
-        pending_approval_count > 0
-      else
-        blocked?
-      end
+      pending_approval_count > 0
     end
 
     def pending_approval_count
-      if ::Feature.disabled?(:dynamically_compute_deployment_approval, project)
-        return 0 unless blocked? # rubocop:disable Style/SoleNestedConditional
-      end
-
       required_approval_count = environment.required_approval_count
 
       return 0 unless required_approval_count > 0
