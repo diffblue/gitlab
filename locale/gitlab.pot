@@ -11361,6 +11361,9 @@ msgstr ""
 msgid "Comment templates can be used when creating comments inside issues, merge requests, and epics."
 msgstr ""
 
+msgid "Comment type"
+msgstr ""
+
 msgid "Comment/Reply (quoting selected text)"
 msgstr ""
 
