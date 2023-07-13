@@ -2,6 +2,7 @@
 
 module Vulnerabilities
   class Remediation < ApplicationRecord
+    include EachBatch
     include FileStoreMounter
     include ShaAttribute
 
