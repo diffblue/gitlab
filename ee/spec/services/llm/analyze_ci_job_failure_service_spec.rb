@@ -9,7 +9,8 @@ RSpec.describe Llm::AnalyzeCiJobFailureService, feature_category: :continuous_in
 
   describe '#perform', :saas do
     let_it_be(:user) { create(:user) }
-    let_it_be(:project) { create(:project) }
+    let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+    let_it_be(:project) { create(:project, group: group) }
     let_it_be(:pipeline) { create(:ci_pipeline, project: project) }
     let_it_be(:job) { create(:ci_build, :trace_live, pipeline: pipeline) }
 
@@ -21,7 +22,7 @@ RSpec.describe Llm::AnalyzeCiJobFailureService, feature_category: :continuous_in
 
         if has_permission
           allow(job).to receive(:debug_mode?).and_return(false)
-          project.add_maintainer(user)
+          group.add_developer(user)
         end
 
         allow(Gitlab::Llm::StageCheck).to receive(:available?).and_return(stage_avalible)
@@ -34,6 +35,7 @@ RSpec.describe Llm::AnalyzeCiJobFailureService, feature_category: :continuous_in
       end
 
       with_them do
+        include_context 'with ai features enabled for group'
         include_context 'with prerequisites'
 
         it 'is successful' do

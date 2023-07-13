@@ -38,7 +38,7 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
     let(:payload) do
       {
         id: uuid,
-        model_name: resource.class.name,
+        model_name: expected_resource_class_name,
         response_body: response_body,
         request_id: 'uuid',
         role: 'assistant',
@@ -53,7 +53,7 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
     it 'triggers subscription' do
       expect(GraphqlTriggers)
         .to receive(:ai_completion_response)
-        .with(user.to_global_id, resource.to_global_id, payload)
+        .with(user.to_global_id, expected_resource_gid, payload)
 
       subject
     end
@@ -80,6 +80,9 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
     subject { described_class.new(user, resource, response_modifier, options: options).execute }
 
     let_it_be(:resource) { create(:merge_request, source_project: project) }
+
+    let(:expected_resource_class_name) { resource.class.name }
+    let(:expected_resource_gid) { resource.to_global_id }
 
     context 'without user' do
       let(:user) { nil }
@@ -126,6 +129,15 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
 
         expect(subject[:content]).to eq(response_body)
       end
+    end
+
+    context 'for an empty resource' do
+      let_it_be(:resource) { nil }
+
+      let(:expected_resource_class_name) { nil }
+      let(:expected_resource_gid) { nil }
+
+      it_behaves_like 'graphql subscription response'
     end
   end
 end

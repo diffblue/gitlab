@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Llm::MergeRequests::SummarizeReviewService, :saas, feature_category: :code_review_workflow do
   let_it_be(:user) { create(:user) }
   let_it_be(:user_2) { create(:user) }
-  let_it_be(:group) { create(:group_with_plan, :public, plan: :ultimate_plan) }
+  let_it_be_with_reload(:group) { create(:group_with_plan, :public, plan: :ultimate_plan) }
   let_it_be(:project) { create(:project, :public, group: group) }
   let_it_be(:merge_request) { create(:merge_request, source_project: project, target_project: project, author: user) }
 
@@ -18,7 +18,7 @@ RSpec.describe Llm::MergeRequests::SummarizeReviewService, :saas, feature_catego
       stub_ee_application_setting(should_check_namespace_plan: true)
       stub_licensed_features(summarize_my_mr_code_review: true, ai_features: true)
 
-      project.add_developer(user)
+      group.add_developer(user)
 
       group.namespace_settings.update!(third_party_ai_features_enabled: true, experiment_features_enabled: true)
     end

@@ -43,6 +43,10 @@ RSpec.describe 'AiAction for Explain Code', :saas, feature_category: :source_cod
     )
   end
 
+  before_all do
+    group.add_developer(current_user)
+  end
+
   it 'successfully performs an explain code request' do
     allow(SecureRandom).to receive(:uuid).and_return(uuid)
     expect(Llm::CompletionWorker).to receive(:perform_async).with(

@@ -43,6 +43,14 @@ RSpec.describe Llm::BaseService, :saas, feature_category: :no_category do # rubo
 
       expect(subject.execute).to be_success
     end
+
+    context 'when resource is nil' do
+      let(:resource) { nil }
+
+      it 'is successful' do
+        expect(subject.execute).to be_success
+      end
+    end
   end
 
   context 'when user has no access' do
@@ -55,12 +63,22 @@ RSpec.describe Llm::BaseService, :saas, feature_category: :no_category do # rubo
       group.add_developer(user)
     end
 
-    it_behaves_like 'raises a NotImplementedError'
-
-    context 'when ai integration is not enabled' do
+    context 'when openai_experimentation feature flag is not enabled' do
       before do
         stub_feature_flags(openai_experimentation: false)
       end
+
+      it_behaves_like 'returns an error'
+    end
+
+    context 'when experimental features are disabled for the group' do
+      include_context 'with experiment features disabled for group'
+
+      it_behaves_like 'returns an error'
+    end
+
+    context 'when third party features are disabled for the group' do
+      include_context 'with third party features disabled for group'
 
       it_behaves_like 'returns an error'
     end
@@ -85,26 +103,12 @@ RSpec.describe Llm::BaseService, :saas, feature_category: :no_category do # rubo
         it_behaves_like 'success when implemented'
       end
 
-      context 'when resource is not the current user' do
-        let_it_be(:resource) { create(:user) }
+      context 'when resource is nil' do
+        let_it_be(:resource) { nil }
+        let(:expected_resource_id) { nil }
+        let(:expected_resource_class) { nil }
 
-        it_behaves_like 'returns an error'
-      end
-    end
-
-    context 'when resource is a user' do
-      let_it_be(:resource) { user }
-
-      context 'when third party features are disabled' do
-        include_context 'with third party features disabled for group'
-
-        it_behaves_like 'returns an error'
-      end
-
-      context 'when experiment features are disabled' do
-        include_context 'with experiment features disabled for group'
-
-        it_behaves_like 'returns an error'
+        it_behaves_like 'success when implemented'
       end
     end
   end

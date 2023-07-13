@@ -9,9 +9,10 @@ RSpec.describe 'AiAction for chat', :saas, feature_category: :shared do
   let_it_be(:project) { create(:project, :public, group: group) }
   let_it_be(:current_user) { create(:user, developer_projects: [project]) }
   let_it_be(:resource) { create(:issue, project: project) }
+  let(:resource_id) { resource.to_gid }
 
   let(:mutation) do
-    params = { chat: { resource_id: resource.to_gid, content: "summarize" } }
+    params = { chat: { resource_id: resource_id, content: "summarize" } }
 
     graphql_mutation(:ai_action, params) do
       <<-QL.strip_heredoc
@@ -25,6 +26,20 @@ RSpec.describe 'AiAction for chat', :saas, feature_category: :shared do
   end
 
   include_context 'with ai features enabled for group'
+
+  context 'when resource is nil' do
+    let(:resource_id) { nil }
+
+    it 'successfully performs a chat request' do
+      expect(Llm::CompletionWorker).to receive(:perform_async).with(
+        current_user.id, nil, nil, :chat, {
+          content: "summarize", markup_format: :raw, request_id: an_instance_of(String)
+        }
+      )
+
+      post_graphql_mutation(mutation, current_user: current_user)
+    end
+  end
 
   context 'when resource is an issue' do
     it 'successfully performs a request' do

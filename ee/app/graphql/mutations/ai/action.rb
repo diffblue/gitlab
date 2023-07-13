@@ -34,7 +34,7 @@ module Mutations
         verify_rate_limit!
 
         resource_id, method, options = extract_method_params!(attributes)
-        resource = authorized_find!(id: resource_id)
+        resource = resource_id&.then { |id| authorized_find!(id: id) }
 
         response = Llm::ExecuteMethodService.new(current_user, resource, method, options).execute
 

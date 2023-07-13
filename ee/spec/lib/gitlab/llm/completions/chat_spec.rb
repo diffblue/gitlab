@@ -8,6 +8,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:resource) { create(:issue, project: project) }
 
+  let(:expected_container) { group }
   let(:content) { 'Summarize issue' }
   let(:ai_request) { instance_double(Gitlab::Llm::Chain::Requests::Anthropic) }
   let(:context) { instance_double(Gitlab::Llm::Chain::GitlabContext) }
@@ -41,7 +42,8 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
       end
 
       expect(::Gitlab::Llm::Chain::GitlabContext).to receive(:new)
-        .with(current_user: user, container: container, resource: resource, ai_request: ai_request).and_return(context)
+        .with(current_user: user, container: expected_container, resource: resource, ai_request: ai_request)
+        .and_return(context)
 
       subject
     end
@@ -58,7 +60,15 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
 
     context 'when resource is a user' do
       let(:container) { nil }
+      let(:expected_container) { nil }
       let_it_be(:resource) { user }
+
+      it_behaves_like 'success'
+    end
+
+    context 'when resource is nil' do
+      let(:resource) { nil }
+      let(:expected_container) { nil }
 
       it_behaves_like 'success'
     end
