@@ -55449,7 +55449,7 @@ msgstr ""
 msgid "starts on %{timebox_start_date}"
 msgstr ""
 
-msgid "structure is too large"
+msgid "structure is too large. Maximum size is %{max_size} characters"
 msgstr ""
 
 msgid "stuck"
