@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'User adds a merge request to a merge train', :js, feature_category: :merge_trains do
+  include ContentEditorHelpers
+
   let(:project) { create(:project, :repository) }
   let(:user) { create(:user) }
 
@@ -31,6 +33,7 @@ RSpec.describe 'User adds a merge request to a merge train', :js, feature_catego
 
   it "shows 'Start merge train' button" do
     visit project_merge_request_path(project, merge_request)
+    close_rich_text_promo_popover_if_present
 
     expect(page).to have_button('Merge')
     expect(page).to have_content('Add to merge train')
@@ -43,6 +46,7 @@ RSpec.describe 'User adds a merge request to a merge train', :js, feature_catego
 
     it 'does not show Start merge train helper text' do
       visit project_merge_request_path(project, merge_request)
+      close_rich_text_promo_popover_if_present
 
       expect(page).not_to have_content('Start merge train')
     end
@@ -51,6 +55,7 @@ RSpec.describe 'User adds a merge request to a merge train', :js, feature_catego
   context "when user clicks 'Start merge train' button" do
     before do
       visit project_merge_request_path(project, merge_request)
+      close_rich_text_promo_popover_if_present
       click_button 'Merge'
       wait_for_requests
     end
@@ -66,6 +71,7 @@ RSpec.describe 'User adds a merge request to a merge train', :js, feature_catego
     context 'when pipeline for merge train succeeds', :sidekiq_might_not_need_inline do
       before do
         visit project_merge_request_path(project, merge_request)
+        close_rich_text_promo_popover_if_present
         merge_request.merge_train_car.pipeline.builds.map(&:success!)
       end
 
@@ -106,6 +112,7 @@ RSpec.describe 'User adds a merge request to a merge train', :js, feature_catego
 
     it "shows 'Merge' button and 'Add to merge train' helper text" do
       visit project_merge_request_path(project, merge_request)
+      close_rich_text_promo_popover_if_present
 
       expect(page).to have_button('Merge')
       expect(page).to have_content('Add to merge train')

@@ -47,7 +47,6 @@ export function mountMarkdownEditor() {
   }
 
   return mountCEMarkdownEditor({
-    useApollo: true,
     provide: {
       editorAiActions: provideEEAiActions,
     },

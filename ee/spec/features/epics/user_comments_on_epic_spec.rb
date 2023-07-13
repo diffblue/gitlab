@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'User comments on epic', :js, feature_category: :portfolio_management do
   include Features::NotesHelpers
+  include ContentEditorHelpers
 
   let_it_be(:user) { create(:user, name: '💃speciąl someone💃', username: 'someone.special') }
   let_it_be(:group) { create(:group) }
@@ -19,6 +20,7 @@ RSpec.describe 'User comments on epic', :js, feature_category: :portfolio_manage
     sign_in(user)
 
     visit group_epic_path(group, epic)
+    close_rich_text_promo_popover_if_present
   end
 
   context 'when adding comments' do

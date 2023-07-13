@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'User adds to merge train when pipeline succeeds', :js, feature_category: :merge_trains do
+  include ContentEditorHelpers
+
   let(:project) { create(:project, :repository) }
   let(:user) { create(:user) }
 
@@ -54,6 +56,7 @@ RSpec.describe 'User adds to merge train when pipeline succeeds', :js, feature_c
   context "when user clicks 'Start merge train when pipeline succeeds' button" do
     before do
       visit project_merge_request_path(project, merge_request)
+      close_rich_text_promo_popover_if_present
       click_button 'Set to auto-merge'
     end
 
