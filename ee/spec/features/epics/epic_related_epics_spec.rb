@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Related Epics', :js, feature_category: :portfolio_management do
+  include ContentEditorHelpers
+
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:project) { create(:project, :public, group: group) }
@@ -16,6 +18,7 @@ RSpec.describe 'Related Epics', :js, feature_category: :portfolio_management do
     stub_licensed_features(epics: true, related_epics: related_epics)
     sign_in(user)
     visit group_epic_path(group, epic1)
+    close_rich_text_promo_popover_if_present
 
     wait_for_requests
   end

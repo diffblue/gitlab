@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Merge request > User merges with Push Rules', :js, feature_category: :code_review_workflow do
+  include ContentEditorHelpers
+
   let(:user) { create(:user) }
   let(:project) { create(:project, :public, :repository, push_rule: push_rule) }
   let(:merge_request) { create(:merge_request_with_diffs, source_project: project, author: user, title: 'Bug NS-04') }
@@ -43,6 +45,7 @@ RSpec.describe 'Merge request > User merges with Push Rules', :js, feature_categ
 
   def visit_merge_request(merge_request)
     visit project_merge_request_path(merge_request.project, merge_request)
+    close_rich_text_promo_popover_if_present
   end
 
   def click_merge_button

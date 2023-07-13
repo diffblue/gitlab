@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
   include DragTo
+  include ContentEditorHelpers
 
   let(:user) { create(:user, name: 'Sherlock Holmes') }
   let(:user2) { create(:user, name: 'John') }
@@ -93,6 +94,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
   context 'for objective' do
     before do
       visit project_work_items_path(project, work_items_path: objective.iid)
+      close_rich_text_promo_popover_if_present
     end
 
     let(:work_item) { objective }
@@ -229,6 +231,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
       end
 
       visit project_work_items_path(project, objective.iid)
+      close_rich_text_promo_popover_if_present
       wait_for_all_requests
 
       page.within('[data-testid="widget-body"]') do
@@ -287,6 +290,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
   context 'for keyresult' do
     before do
       visit project_work_items_path(project, work_items_path: key_result.iid)
+      close_rich_text_promo_popover_if_present
     end
 
     let(:work_item) { key_result }

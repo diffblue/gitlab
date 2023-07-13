@@ -5,6 +5,7 @@ require "spec_helper"
 RSpec.describe "Merge request > User merges with namespace storage limits", :js, :saas, :sidekiq_inline,
   feature_category: :code_review_workflow do
   include NamespaceStorageHelpers
+  include ContentEditorHelpers
 
   let_it_be(:user) { create(:user) }
   let_it_be(:group, refind: true) { create(:group) }
@@ -31,6 +32,7 @@ RSpec.describe "Merge request > User merges with namespace storage limits", :js,
 
     it 'merges the merge request' do
       visit(merge_request_path(merge_request))
+      close_rich_text_promo_popover_if_present
 
       click_merge_button
 
@@ -45,6 +47,7 @@ RSpec.describe "Merge request > User merges with namespace storage limits", :js,
 
     it 'does not merge the merge request' do
       visit(merge_request_path(merge_request))
+      close_rich_text_promo_popover_if_present
 
       click_merge_button
 

@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Related issues', :js, feature_category: :team_planning do
+  include ContentEditorHelpers
+
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project_empty_repo, :public) }
   let_it_be(:project_b) { create(:project_empty_repo, :public) }
@@ -19,6 +21,7 @@ RSpec.describe 'Related issues', :js, feature_category: :team_planning do
       # Workaround for modal not showing when issue is first added
       stub_feature_flags(moved_mr_sidebar: false)
       visit project_issue_path(project, issue_a)
+      close_rich_text_promo_popover_if_present
 
       wait_for_requests
 
@@ -64,6 +67,7 @@ RSpec.describe 'Related issues', :js, feature_category: :team_planning do
 
       before do
         visit project_issue_path(project, issue_a)
+        close_rich_text_promo_popover_if_present
         wait_for_requests
       end
 

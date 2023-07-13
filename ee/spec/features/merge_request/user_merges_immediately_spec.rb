@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Merge requests > User merges immediately', :js, feature_category: :code_review_workflow do
+  include ContentEditorHelpers
+
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:user) { create(:user) }
 
@@ -45,6 +47,7 @@ RSpec.describe 'Merge requests > User merges immediately', :js, feature_category
       sign_in(user)
       visit project_merge_request_path(project, merge_request)
       wait_for_requests
+      close_rich_text_promo_popover_if_present
     end
 
     it 'shows a warning dialog and does nothing if the user selects "Cancel"' do
