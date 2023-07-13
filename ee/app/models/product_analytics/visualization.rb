@@ -12,7 +12,7 @@ module ProductAnalytics
       trees = config_project.repository.tree(:head, VISUALIZATIONS_ROOT_LOCATION)
 
       trees.entries.map do |entry|
-        config = project.repository.blob_data_at(project.repository.root_ref_sha, entry.path)
+        config = config_project.repository.blob_data_at(config_project.repository.root_ref_sha, entry.path)
 
         new(config: config)
       end.append(*builtin_visualizations)
