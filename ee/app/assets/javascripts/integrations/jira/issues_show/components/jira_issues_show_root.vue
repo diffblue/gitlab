@@ -6,7 +6,7 @@ import ExternalIssueAlert from 'ee/external_issues_show/components/external_issu
 import { fetchIssue } from 'ee/integrations/jira/issues_show/api';
 
 import JiraIssueSidebar from 'ee/integrations/jira/issues_show/components/sidebar/jira_issues_sidebar_root.vue';
-import { issuableStatusText, STATUS_OPEN } from '~/issues/constants';
+import { STATUS_OPEN } from '~/issues/constants';
 import IssuableShow from '~/vue_shared/issuable/show/components/issuable_show_root.vue';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { s__ } from '~/locale';
@@ -40,9 +40,6 @@ export default {
   computed: {
     isIssueOpen() {
       return this.issue.state === STATUS_OPEN;
-    },
-    statusBadgeText() {
-      return issuableStatusText[this.issue.state];
     },
     statusIcon() {
       return this.isIssueOpen ? 'issue-open-m' : 'mobile-issue-close';
@@ -89,8 +86,6 @@ export default {
         :status-icon="statusIcon"
         status-icon-class="gl-sm-display-none"
       >
-        <template #status-badge>{{ statusBadgeText }}</template>
-
         <template #right-sidebar-items="{ sidebarExpanded, toggleSidebar }">
           <jira-issue-sidebar
             :sidebar-expanded="sidebarExpanded"
