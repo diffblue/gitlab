@@ -136,7 +136,7 @@ export default {
     v-if="filePath"
     class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-justify-content-space-between gl-align-items-center"
   >
-    <div class="gl-display-flex gl-flex-wrap">
+    <div class="gl-display-flex gl-flex-wrap gl-p-3">
       <div class="gl-mr-2">
         <gl-icon name="users" data-testid="users-icon" />
         <component
