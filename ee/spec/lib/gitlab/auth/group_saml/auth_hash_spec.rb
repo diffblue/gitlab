@@ -3,7 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Auth::GroupSaml::AuthHash do
-  let(:raw_info_attr) { { group_attribute => %w(Developers Owners) } }
   let(:omniauth_auth_hash) do
     OmniAuth::AuthHash.new(extra: { raw_info: OneLogin::RubySaml::Attributes.new(raw_info_attr) })
   end
@@ -11,6 +10,8 @@ RSpec.describe Gitlab::Auth::GroupSaml::AuthHash do
   subject(:saml_auth_hash) { described_class.new(omniauth_auth_hash) }
 
   describe '#groups' do
+    let(:raw_info_attr) { { group_attribute => %w(Developers Owners) } }
+
     context 'with a lowercase groups attribute' do
       let(:group_attribute) { 'groups' }
 
@@ -32,6 +33,32 @@ RSpec.describe Gitlab::Auth::GroupSaml::AuthHash do
 
       it 'returns an empty array' do
         expect(saml_auth_hash.groups).to match_array([])
+      end
+    end
+  end
+
+  describe '#azure_group_overage_claim?' do
+    context 'when the claim is not present' do
+      let(:raw_info_attr) { {} }
+
+      it 'is false' do
+        expect(saml_auth_hash.azure_group_overage_claim?).to eq(false)
+      end
+    end
+
+    context 'when the claim is present' do
+      # The value of the claim is irrelevant, but it's still included
+      # in the test response to keep tests as real-world as possible.
+      # https://learn.microsoft.com/en-us/security/zero-trust/develop/configure-tokens-group-claims-app-roles#group-overages
+      let(:raw_info_attr) do
+        {
+          'http://schemas.microsoft.com/claims/groups.link' =>
+            ['https://graph.windows.net/8c750e43/users/e631c82c/getMemberObjects']
+        }
+      end
+
+      it 'is true' do
+        expect(saml_auth_hash.azure_group_overage_claim?).to eq(true)
       end
     end
   end

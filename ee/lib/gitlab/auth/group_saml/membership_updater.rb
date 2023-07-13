@@ -18,6 +18,7 @@ module Gitlab
 
         def execute
           add_default_membership
+
           enqueue_group_sync if sync_groups?
         end
 
@@ -34,13 +35,29 @@ module Gitlab
         end
 
         def enqueue_group_sync
-          GroupSamlGroupSyncWorker.perform_async(user.id, group.id, group_link_ids)
+          return enqueue_microsoft_group_sync if microsoft_overage_sync?
+
+          enqueue_saml_group_sync if saml_group_sync?
         end
 
         def sync_groups?
-          return false unless user && group.saml_group_sync_available?
+          user && any_group_links_in_hierarchy?
+        end
 
-          any_group_links_in_hierarchy?
+        def saml_group_sync?
+          group.saml_group_sync_available?
+        end
+
+        def microsoft_overage_sync?
+          auth_hash.azure_group_overage_claim? && microsoft_group_sync_available?
+        end
+
+        def enqueue_saml_group_sync
+          GroupSamlGroupSyncWorker.perform_async(user.id, group.id, group_link_ids)
+        end
+
+        def enqueue_microsoft_group_sync
+          ::SystemAccess::GroupSamlMicrosoftGroupSyncWorker.perform_async(user.id, group.id)
         end
 
         # rubocop:disable CodeReuse/ActiveRecord
@@ -78,6 +95,12 @@ module Gitlab
             member.source,
             action: :create
           ).for_member(member).security_event
+        end
+
+        def microsoft_group_sync_available?
+          ::Feature.enabled?(:microsoft_azure_group_sync, group) &&
+            group.saml_group_sync_available? && group.licensed_feature_available?(:microsoft_group_sync) &&
+            group.system_access_microsoft_application.present? && group.system_access_microsoft_application.enabled?
         end
       end
     end

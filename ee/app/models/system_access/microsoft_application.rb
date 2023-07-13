@@ -4,7 +4,7 @@ module SystemAccess
   class MicrosoftApplication < ApplicationRecord
     belongs_to :namespace
     has_one :system_access_microsoft_graph_access_token,
-      class_name: 'SystemAccess::MicrosoftGraphAccessToken',
+      class_name: '::SystemAccess::MicrosoftGraphAccessToken',
       inverse_of: :system_access_microsoft_application,
       foreign_key: :system_access_microsoft_application_id
 
