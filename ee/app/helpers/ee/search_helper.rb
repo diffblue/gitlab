@@ -144,11 +144,6 @@ module EE
       options + original_options
     end
 
-    override :search_navigation
-    def search_navigation
-      super.merge(epics: { sort: 3, label: _("Epics"), condition: @project.nil? && search_service.show_epics? })
-    end
-
     override :search_scope
     def search_scope
       if current_controller?(:epics)
@@ -205,6 +200,13 @@ module EE
         search_service.show_snippets? &&
         ::Gitlab.com? &&
         ::Gitlab::CurrentSettings.search_using_elasticsearch?(scope: nil)
+    end
+
+    override :nav_options
+    def nav_options
+      super.merge(show_epics: search_service.show_epics?,
+        show_elasticsearch_tabs: search_service.show_elasticsearch_tabs?
+      )
     end
   end
 end

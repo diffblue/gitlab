@@ -327,50 +327,22 @@ RSpec.describe SearchHelper, feature_category: :global_search do
     end
   end
 
-  describe '.search_navigation' do
-    using RSpec::Parameterized::TableSyntax
-    let(:user) { build(:user) }
-    let(:project) { build(:project) }
-
-    before do
-      allow(self).to receive(:current_user).and_return(user)
-      allow(self).to receive(:can?).and_return(true)
-    end
-
-    context 'for epics' do
-      where(:global_project, :show_epics, :condition) do
-        nil                 | false      | false
-        ref(:project)       | true       | false
-        ref(:project)       | false      | false
-        nil                 | true       | true
+  describe '.search_navigation_json' do
+    context 'when all options enabled' do
+      before do
+        allow(self).to receive(:current_user).and_return(build(:user))
+        allow(self).to receive(:can?).and_return(true)
+        allow(self).to receive(:project_search_tabs?).and_return(true)
+        allow(self).to receive(:feature_flag_tab_enabled?).and_return(true)
+        allow(search_service).to receive(:show_elasticsearch_tabs?).and_return(true)
+        allow(search_service).to receive(:show_epics?).and_return(true)
+        allow(search_service).to receive(:show_snippets?).and_return(true)
+        @project = nil
       end
 
-      with_them do
-        it 'data item condition is set correctly' do
-          @project = global_project
-          allow(search_service).to receive(:show_epics?).and_return(show_epics)
-
-          expect(search_navigation[:epics][:condition]).to eq(condition)
-        end
+      it 'returns items in order' do
+        expect(Gitlab::Json.parse(search_navigation_json).keys).to eq(%w[projects blobs epics issues merge_requests wiki_blobs commits notes milestones users snippet_titles])
       end
-    end
-  end
-
-  describe '.search_navigation_json with .search_navigation' do
-    before do
-      allow(self).to receive(:current_user).and_return(build(:user))
-      allow(self).to receive(:can?).and_return(true)
-      allow(self).to receive(:project_search_tabs?).and_return(true)
-      allow(self).to receive(:feature_flag_tab_enabled?).and_return(true)
-      allow(self).to receive(:feature_flag_tab_enabled?).and_return(true)
-      allow(search_service).to receive(:show_elasticsearch_tabs?).and_return(true)
-      allow(search_service).to receive(:show_epics?).and_return(true)
-      allow(search_service).to receive(:show_snippets?).and_return(true)
-      @project = nil
-    end
-
-    it 'test search navigation item order for CE all options enabled' do
-      expect(Gitlab::Json.parse(search_navigation_json).keys).to eq(%w[projects blobs epics issues merge_requests wiki_blobs commits notes milestones users snippet_titles])
     end
   end
 
@@ -412,23 +384,6 @@ RSpec.describe SearchHelper, feature_category: :global_search do
           expect(search_filter_link_json(scope, label, data, search)).to eq(expected)
         end
       end
-    end
-  end
-
-  describe 'show_elasticsearch_tabs' do
-    let(:user) { build(:user) }
-    let_it_be(:project) { build(:project) }
-
-    before do
-      stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
-      allow(self).to receive(:current_user).and_return(user)
-      allow(self).to receive(:can?).and_return(false)
-      allow(self).to receive(:project_search_tabs?).and_return(false)
-      allow(self).to receive(:feature_flag_tab_enabled?).and_return(false)
-    end
-
-    it 'show_elasticsearch_tabs? returns true' do
-      expect(search_service.show_elasticsearch_tabs?).to eq(true)
     end
   end
 
