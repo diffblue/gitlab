@@ -23,7 +23,9 @@ RSpec.describe 'SAML provider settings', feature_category: :system_access do
   end
 
   def submit
-    click_button('Save changes')
+    page.within('.saml_provider') do
+      click_button('Save changes')
+    end
   end
 
   def test_sso
