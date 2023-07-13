@@ -101,11 +101,6 @@ export default {
       required: false,
       default: false,
     },
-    codequalityDiff: {
-      type: Array,
-      required: false,
-      default: () => [],
-    },
   },
   idState() {
     return {

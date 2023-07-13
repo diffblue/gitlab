@@ -1,9 +1,10 @@
 <script>
 import { GlIcon, GlTooltip } from '@gitlab/ui';
+import { cloneDeep } from 'lodash';
 import { s__, n__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-
-import { SEVERITIES } from '~/ci/reports/codequality_report/constants';
+import { getSeverity } from '~/ci/reports/utils';
+import { SAST_SCALE_KEY, CODE_QUALITY_SCALE_KEY } from '~/ci/reports/constants';
 
 const codequalityCountThreshold = 3;
 
@@ -31,6 +32,11 @@ export default {
       required: false,
       default: () => [],
     },
+    sast: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -38,14 +44,33 @@ export default {
     };
   },
   computed: {
-    tooltipTextCollapsed() {
-      return n__('1 Code quality finding', '%d Code quality findings', this.codequality.length);
+    combinedFindings() {
+      // add scale info
+      this.codequality.map((e) => {
+        const scaledCodeQuality = e;
+        scaledCodeQuality.scale = CODE_QUALITY_SCALE_KEY;
+        return scaledCodeQuality;
+      });
+      this.sast.map((e) => {
+        const scaledSast = e;
+        scaledSast.scale = SAST_SCALE_KEY;
+        return scaledSast;
+      });
+
+      // cloneDeep to not mutate props
+      return this.codequality.concat(cloneDeep(this.sast));
+    },
+    codeQualityTooltipTextCollapsed() {
+      return n__('1 Code Quality finding', '%d Code Quality findings', this.codequality.length);
+    },
+    sastTooltipTextCollapsed() {
+      return n__('1 Security finding', '%d Security findings', this.sast.length);
     },
     showMoreCount() {
       return this.moreCount && this.isHoveringFirstIcon;
     },
     line() {
-      return this.codequality[0].line;
+      return this.combinedFindings[0].line;
     },
     degradations() {
       return this.codequality.map((degradation) => {
@@ -56,27 +81,29 @@ export default {
       });
     },
     moreCount() {
-      return this.codequality.length > codequalityCountThreshold
-        ? this.codequality.length - codequalityCountThreshold
+      return this.combinedFindings.length > codequalityCountThreshold
+        ? this.combinedFindings.length - codequalityCountThreshold
         : 0;
     },
-    severity() {
-      return this.codequality.reduce((acc, elem) => {
-        return { ...acc, [elem.severity]: SEVERITIES[elem.severity] || SEVERITIES.unknown };
-      }, {});
+    findingsWithSeverity() {
+      return getSeverity(this.combinedFindings);
     },
     firstCodequalityItem() {
-      return this.codequality[0];
+      return { ...this.combinedFindings[0], filePath: this.filePath };
     },
     codeQualitySubItems() {
-      return this.codequality.slice(1, codequalityCountThreshold);
+      return this.findingsWithSeverity.slice(1, codequalityCountThreshold);
     },
   },
 };
 </script>
 
 <template>
-  <div class="gl-z-index-1 gl-relative" @click="$emit('showCodeQualityFindings')">
+  <div
+    v-if="findingsWithSeverity.length"
+    class="gl-z-index-1 gl-relative"
+    @click="$emit('showCodeQualityFindings')"
+  >
     <div
       v-if="!codeQualityExpanded"
       class="codequality-severity-icon-container gl-display-inline-flex"
@@ -87,8 +114,8 @@ export default {
           ref="firstCodeQualityIcon"
           :key="firstCodequalityItem.description"
           :size="16"
-          :name="severity[firstCodequalityItem.severity].name"
-          :class="severity[firstCodequalityItem.severity].class"
+          :name="findingsWithSeverity[0].name"
+          :class="findingsWithSeverity[0].class"
           class="gl-hover-cursor-pointer gl-relative gl-top-1 codequality-severity-icon gl-vertical-align-baseline!"
           @mouseenter="isHoveringFirstIcon = true"
           @mouseleave="isHoveringFirstIcon = false"
@@ -102,11 +129,11 @@ export default {
           -->
           <!-- eslint-disable vue/no-use-v-if-with-v-for -->
           <gl-icon
-            v-for="item in codeQualitySubItems"
+            v-for="(item, index) in codeQualitySubItems"
             v-if="isHoveringFirstIcon"
             :key="item.description"
-            :name="severity[item.severity].name"
-            :class="severity[item.severity].class"
+            :name="codeQualitySubItems[index].name"
+            :class="codeQualitySubItems[index].class"
             class="gl-hover-cursor-pointer gl-relative gl-top-1 codequality-severity-icon gl-absolute gl-left-0"
           />
           <!-- eslint-enable -->
@@ -134,7 +161,10 @@ export default {
       data-testid="codeQualityTooltip"
       :target="() => $refs.codeQualityIcon"
     >
-      {{ tooltipTextCollapsed }}
+      <span v-if="codequality.length" class="gl-display-block">{{
+        codeQualityTooltipTextCollapsed
+      }}</span>
+      <span v-if="sast.length" class="gl-display-block">{{ sastTooltipTextCollapsed }}</span>
     </gl-tooltip>
   </div>
 </template>

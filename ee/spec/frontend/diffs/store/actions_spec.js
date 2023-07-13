@@ -4,6 +4,10 @@ import {
   clearCodequalityPoll,
   stopCodequalityPolling,
   fetchCodequality,
+  setSastEndpoint,
+  clearSastPoll,
+  stopSastPolling,
+  fetchSast,
 } from 'ee/diffs/store/actions';
 import { RETRY_DELAY } from 'ee/diffs/store/constants';
 import * as types from 'ee/diffs/store/mutation_types';
@@ -87,6 +91,104 @@ describe('EE DiffsStoreActions', () => {
         expect(pollDelayedRequest).toHaveBeenCalledTimes(1);
         expect(pollStop).toHaveBeenCalledTimes(0);
 
+        for (let i = 0; i < 4; i += 1) {
+          jest.advanceTimersByTime(RETRY_DELAY);
+          // eslint-disable-next-line no-await-in-loop
+          await waitForPromises();
+        }
+
+        expect(pollDelayedRequest).toHaveBeenCalledTimes(5);
+
+        jest.advanceTimersByTime(RETRY_DELAY);
+        await waitForPromises();
+
+        expect(pollStop).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('with unexpected error should stop polling and show an alert message', async () => {
+      mock.onGet(endpointCodequality).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
+
+      await testAction(
+        fetchCodequality,
+        {},
+        { endpointCodequality },
+        [],
+        [{ type: 'stopCodequalityPolling' }],
+      );
+      expect(createAlert).toHaveBeenCalledTimes(1);
+      expect(createAlert).toHaveBeenCalledWith({
+        message: 'An unexpected error occurred while loading the code quality diff.',
+      });
+    });
+  });
+
+  describe('setSastEndpoint', () => {
+    it('should set given endpoint', async () => {
+      const endpoint = '/sast_mr_diff_reports.json';
+
+      await testAction(
+        setSastEndpoint,
+        { endpoint },
+        {},
+        [{ type: types.SET_SAST_ENDPOINT, payload: { endpoint } }],
+        [],
+      );
+    });
+  });
+
+  describe('fetchSast', () => {
+    let mock;
+    const endpointSast = '/sast_mr_diff_reports.json';
+
+    beforeEach(() => {
+      mock = new MockAdapter(axios);
+    });
+
+    afterEach(() => {
+      stopSastPolling();
+      clearSastPoll();
+    });
+
+    it('should commit SET_SAST_DATA with received response and stop polling', async () => {
+      const data = {
+        files: { 'app.js': [{ line: 1, description: 'Unexpected alert.', severity: 'minor' }] },
+      };
+
+      mock.onGet(endpointSast).reply(HTTP_STATUS_OK, { data });
+
+      await testAction(
+        fetchSast,
+        {},
+        { endpointSast },
+        [{ type: types.SET_SAST_DATA, payload: { data } }],
+        [{ type: 'stopSastPolling' }],
+      );
+    });
+
+    describe('with 400 status response', () => {
+      let pollDelayedRequest;
+      let pollStop;
+
+      beforeEach(() => {
+        pollDelayedRequest = jest.spyOn(Poll.prototype, 'makeDelayedRequest');
+        pollStop = jest.spyOn(Poll.prototype, 'stop');
+
+        mock.onGet(endpointSast).reply(HTTP_STATUS_BAD_REQUEST);
+      });
+
+      it('should not show an alert message', async () => {
+        await testAction(fetchSast, {}, { endpointSast }, [], []);
+
+        expect(createAlert).not.toHaveBeenCalled();
+      });
+
+      it('should retry five times with a delay, then stop polling', async () => {
+        await testAction(fetchSast, {}, { endpointSast }, [], []);
+
+        expect(pollDelayedRequest).toHaveBeenCalledTimes(1);
+        expect(pollStop).toHaveBeenCalledTimes(0);
+
         jest.advanceTimersByTime(RETRY_DELAY);
 
         return waitForPromises()
@@ -113,18 +215,12 @@ describe('EE DiffsStoreActions', () => {
     });
 
     it('with unexpected error should stop polling and show an alert message', async () => {
-      mock.onGet(endpointCodequality).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
+      mock.onGet(endpointSast).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
-      await testAction(
-        fetchCodequality,
-        {},
-        { endpointCodequality },
-        [],
-        [{ type: 'stopCodequalityPolling' }],
-      );
+      await testAction(fetchSast, {}, { endpointSast }, [], [{ type: 'stopSastPolling' }]);
       expect(createAlert).toHaveBeenCalledTimes(1);
       expect(createAlert).toHaveBeenCalledWith({
-        message: 'An unexpected error occurred while loading the code quality diff.',
+        message: 'An unexpected error occurred while loading the Sast diff.',
       });
     });
   });

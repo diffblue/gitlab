@@ -95,6 +95,11 @@ export default {
       required: false,
       default: '',
     },
+    endpointSast: {
+      type: String,
+      required: false,
+      default: '',
+    },
     endpointCodequality: {
       type: String,
       required: false,
@@ -277,6 +282,10 @@ export default {
       this.setCodequalityEndpoint(this.endpointCodequality);
     }
 
+    if (this.endpointSast) {
+      this.setSastEndpoint(this.endpointSast);
+    }
+
     if (this.shouldShow) {
       this.fetchData();
     }
@@ -358,11 +367,13 @@ export default {
       'moveToNeighboringCommit',
       'setBaseConfig',
       'setCodequalityEndpoint',
+      'setSastEndpoint',
       'fetchDiffFilesMeta',
       'fetchDiffFilesBatch',
       'fetchFileByFile',
       'fetchCoverageFiles',
       'fetchCodequality',
+      'fetchSast',
       'rereadNoteHash',
       'startRenderDiffsQueue',
       'assignDiscussionsToDiff',
@@ -458,6 +469,10 @@ export default {
 
       if (this.endpointCodequality) {
         this.fetchCodequality();
+      }
+
+      if (this.endpointSast) {
+        this.fetchSast();
       }
 
       if (!this.isNotesFetched) {

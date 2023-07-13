@@ -11,9 +11,26 @@ import * as types from './mutation_types';
 export * from '~/diffs/store/actions';
 
 let codequalityPoll;
+let sastPoll;
 
 export const setCodequalityEndpoint = ({ commit }, endpoint) => {
   commit(types.SET_CODEQUALITY_ENDPOINT, endpoint);
+};
+
+export const setSastEndpoint = ({ commit }, endpoint) => {
+  commit(types.SET_SAST_ENDPOINT, endpoint);
+};
+
+export const clearSastPoll = () => {
+  sastPoll = null;
+};
+
+export const stopSastPolling = () => {
+  if (sastPoll) sastPoll.stop();
+};
+
+export const restartSastPolling = () => {
+  if (sastPoll) sastPoll.restart();
 };
 
 export const clearCodequalityPoll = () => {
@@ -81,3 +98,52 @@ export const fetchCodequality = ({ commit, state, dispatch }) => {
 
 export const setGenerateTestFilePath = ({ commit }, path) =>
   commit(types.SET_GENERATE_TEST_FILE_PATH, path);
+
+export const fetchSast = ({ commit, state, dispatch }) => {
+  let retryCount = 0;
+  sastPoll = new Poll({
+    resource: {
+      getSastDiffReports: (endpoint) => axios.get(endpoint),
+    },
+    data: state.endpointSast,
+    method: 'getSastDiffReports',
+    successCallback: ({ status, data }) => {
+      retryCount = 0;
+      if (status === HTTP_STATUS_OK) {
+        commit(types.SET_SAST_DATA, data);
+        dispatch('stopSastPolling');
+      }
+    },
+    errorCallback: ({ response }) => {
+      if (response.status === HTTP_STATUS_BAD_REQUEST) {
+        // we could get a 400 status response temporarily during report processing
+        // so we retry up to MAX_RETRIES times in case the reports are on their way
+        // and stop polling if we get 400s consistently
+        if (retryCount < MAX_RETRIES) {
+          sastPoll.makeDelayedRequest(RETRY_DELAY);
+          retryCount += 1;
+        } else {
+          sastPoll.stop();
+        }
+      } else {
+        retryCount = 0;
+        dispatch('stopSastPolling');
+        createAlert({
+          message: __('An unexpected error occurred while loading the Sast diff.'),
+        });
+      }
+    },
+  });
+
+  if (!Visibility.hidden()) {
+    sastPoll.makeRequest();
+  }
+
+  Visibility.change(() => {
+    if (!Visibility.hidden()) {
+      dispatch('restartSastPolling');
+    } else {
+      dispatch('stopSastPolling');
+    }
+  });
+};
