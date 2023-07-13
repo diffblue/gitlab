@@ -205,7 +205,7 @@ module QA
         Resource::Repository::Commit.fabricate_via_api! do |commit|
           commit.project = project
           commit.commit_message = 'Create Secure compatible application to serve premade reports'
-          commit.add_directory(Pathname.new(File.join(EE::Runtime::Path.fixtures_path, 'secure_premade_reports')))
+          commit.add_directory(Pathname.new(EE::Runtime::Path.fixture('secure_premade_reports')))
         end
 
         project.visit!

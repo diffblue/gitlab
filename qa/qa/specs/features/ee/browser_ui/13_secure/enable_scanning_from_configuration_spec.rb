@@ -32,7 +32,7 @@ module QA
           project_push.project = project
           project_push.commit_message = 'Create Secure compatible application to serve premade reports'
           project_push.directory = Pathname.new(
-            File.join(EE::Runtime::Path.fixtures_path, 'secure_scanning_enable_from_ui_files')
+            EE::Runtime::Path.fixture('secure_scanning_enable_from_ui_files')
           )
         end
 

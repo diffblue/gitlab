@@ -3,7 +3,7 @@
 module QA
   RSpec.describe 'Systems', :orchestrated, :geo, product_group: :geo do
     describe 'GitLab Geo attachment replication' do
-      let(:file_to_attach) { File.join(Runtime::Path.fixtures_path, 'designs', 'banana_sample.gif') }
+      let(:file_to_attach) { Runtime::Path.fixture('designs', 'banana_sample.gif') }
       let(:project) do
         Resource::Project.fabricate_via_api! do |project|
           project.name = 'project-for-issues'
