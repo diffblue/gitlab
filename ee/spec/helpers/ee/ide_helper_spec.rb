@@ -53,27 +53,15 @@ RSpec.describe IdeHelper, feature_category: :web_ide do
 
       context 'when user can access code suggestions' do
         before do
-          stub_feature_flags(ai_assist_web_ide: false)
           allow(user).to receive(:can?).with(:access_code_suggestions).and_return(true)
         end
 
-        it 'returns hash with code suggestions disabled' do
-          expect(helper.ide_data(project: nil, fork_info: fork_info, params: params))
-            .to include(base_data)
-        end
-
-        context 'when the feature flag ai_assist_web_ide has been enabled' do
-          before do
-            stub_feature_flags(ai_assist_web_ide: true)
-          end
-
-          it 'returns hash with code suggestions enabled' do
-            expect(
-              helper.ide_data(project: project, fork_info: nil, params: params)
-            ).to include(base_data.merge(
-              'code-suggestions-enabled' => 'true'
-            ))
-          end
+        it 'returns hash with code suggestions enabled' do
+          expect(
+            helper.ide_data(project: project, fork_info: nil, params: params)
+          ).to include(base_data.merge(
+            'code-suggestions-enabled' => 'true'
+          ))
         end
       end
     end

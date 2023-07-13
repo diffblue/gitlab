@@ -14,8 +14,7 @@ module EE
     end
 
     def show_code_suggestions?
-      ::Feature.enabled?(:ai_assist_web_ide, current_user) &&
-        current_user.can?(:access_code_suggestions)
+      current_user.can?(:access_code_suggestions)
     end
   end
 end
