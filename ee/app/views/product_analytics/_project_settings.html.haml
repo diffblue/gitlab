@@ -1,6 +1,5 @@
 - return unless @project.feature_available?(:product_analytics) && Feature.enabled?(:product_analytics_admin_settings) && current_user.can?(:modify_product_analytics_settings, @project) && Feature.enabled?(:product_analytics_dashboards, @project)
-- data = analytics_project_settings_data(@project)
-- link_start = '<a href="%{url}" rel="noopener noreferrer">'.html_safe % { url: project_analytics_dashboards_path(@project, vueroute: 'product-analytics-onboarding') }
+- data = analytics_project_settings_data(@project).merge(onboarding_path: project_analytics_dashboards_path(@project, vueroute: 'product-analytics-onboarding'))
 
 %section.settings.product-analytics.no-animate#js-product-analytics-settings{ class: ('expanded' if expanded) }
   .settings-header
@@ -12,10 +11,7 @@
       = link_to _('Learn more.'), help_page_path('user/product_analytics/index')
   .settings-content
     .gl-mb-3
-    - if data && data[:tracking_key].present?
       #js-product-analytics-instrumentation-settings{ data: data }
-    - else
-      = html_escape(s_('ProjectSettings|Product analytics needs to be set up before your application can be instrumented. Follow the %{link_start}set up process%{link_end}.')) % { link_start: link_start.html_safe, link_end: "</a>".html_safe }
     %hr
     = gitlab_ui_form_for @project, html: { class: 'fieldset-form', id: 'product-analytics-settings', autocomplete: 'off' } do |f|
       %h4

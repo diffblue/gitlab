@@ -1,4 +1,3 @@
-import AnalyticsClipboardInput from 'ee/product_analytics/shared/analytics_clipboard_input.vue';
 import InstrumentationInstructions from 'ee/product_analytics/onboarding/components/instrumentation_instructions.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import {
@@ -13,10 +12,8 @@ import {
 } from 'ee_jest/analytics/analytics_dashboards/mock_data';
 import { s__ } from '~/locale';
 
-describe('ProductAnalyticsSetupView', () => {
+describe('ProductAnalyticsInstrumentationInstructions', () => {
   let wrapper;
-
-  const findKeyInputAt = (index) => wrapper.findAllComponents(AnalyticsClipboardInput).at(index);
 
   const findNpmInstructions = () => wrapper.findByTestId('npm-instrumentation-instructions');
   const findHtmlInstructions = () => wrapper.findByTestId('html-instrumentation-instructions');
@@ -38,19 +35,7 @@ describe('ProductAnalyticsSetupView', () => {
   };
 
   describe('when mounted', () => {
-    beforeEach(() => {
-      createWrapper();
-    });
-
-    it.each`
-      key                    | index
-      ${TEST_COLLECTOR_HOST} | ${0}
-      ${TEST_TRACKING_KEY}   | ${1}
-    `('should render key inputs at $index', ({ key, index }) => {
-      createWrapper();
-
-      expect(findKeyInputAt(index).props('value')).toBe(key);
-    });
+    beforeEach(() => createWrapper());
 
     it('renders the expected instructions', () => {
       const initInstructionsWithKeys = wrapper.vm.replaceKeys(INIT_TRACKING);
@@ -66,10 +51,6 @@ describe('ProductAnalyticsSetupView', () => {
     });
 
     describe('static text', () => {
-      beforeEach(() => {
-        createWrapper();
-      });
-
       it('renders the further browser SDK info text', () => {
         expect(findFurtherBrowserSDKInfo().attributes('message')).toBe(
           s__('ProductAnalytics|For more information, see the %{linkStart}docs%{linkEnd}.'),

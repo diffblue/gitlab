@@ -2,6 +2,7 @@ import VueApollo from 'vue-apollo';
 import Vue from 'vue';
 import { GlLoadingIcon } from '@gitlab/ui';
 import ProductAnalyticsSetupView from 'ee/product_analytics/onboarding/onboarding_setup.vue';
+import InstrumentationInstructionsSdkDetails from 'ee/product_analytics/onboarding/components/instrumentation_instructions_sdk_details.vue';
 import InstrumentationInstructions from 'ee/product_analytics/onboarding/components/instrumentation_instructions.vue';
 import getProjectJitsuKeyQuery from 'ee/product_analytics/graphql/queries/get_project_tracking_key.query.graphql';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
@@ -35,6 +36,7 @@ describe('ProductAnalyticsSetupView', () => {
   const findIntroduction = () => wrapper.findByTestId('introduction');
   const findBackToDashboardsButton = () => wrapper.findByTestId('back-to-dashboards-button');
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findSdkDetails = () => wrapper.findComponent(InstrumentationInstructionsSdkDetails);
   const findInstrumentationInstructions = () => wrapper.findComponent(InstrumentationInstructions);
 
   const createWrapper = (props = {}, provide = {}, apolloMock = mockApolloSuccess) => {
@@ -89,6 +91,17 @@ describe('ProductAnalyticsSetupView', () => {
       createWrapper({}, { trackingKey: null });
 
       expect(findLoadingIcon().exists()).toBe(true);
+    });
+
+    it('displays the SDK details when the query succeeds', async () => {
+      createWrapper({}, { trackingKey: null });
+
+      await waitForPromises();
+
+      const sdkDetails = findSdkDetails();
+
+      expect(sdkDetails.exists()).toBe(true);
+      expect(sdkDetails.props('trackingKey')).toBe(TEST_TRACKING_KEY);
     });
 
     it('displays the instrumentation instructions when the query succeeds', async () => {

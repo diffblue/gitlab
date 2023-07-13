@@ -1,14 +1,14 @@
 import Vue from 'vue';
 
-import InstrumentationInstructions from './components/instrumentation_instructions.vue';
+import ProductAnalyticsSettingsInstrumentationInstructions from './settings_instrumentation_instructions.vue';
 
-export function initProductAnalyticsInstrumentationInstructions() {
+export function initProductAnalyticsSettingsInstrumentationInstructions() {
   const el = document.getElementById('js-product-analytics-instrumentation-settings');
   if (!el) {
     return null;
   }
 
-  const { collectorHost, trackingKey, dashboardsPath } = el.dataset;
+  const { collectorHost, trackingKey, dashboardsPath, onboardingPath } = el.dataset;
 
   return new Vue({
     el,
@@ -16,10 +16,11 @@ export function initProductAnalyticsInstrumentationInstructions() {
       collectorHost,
     },
     render: (createElement) =>
-      createElement(InstrumentationInstructions, {
+      createElement(ProductAnalyticsSettingsInstrumentationInstructions, {
         props: {
           trackingKey,
           dashboardsPath,
+          onboardingPath,
         },
       }),
   });
