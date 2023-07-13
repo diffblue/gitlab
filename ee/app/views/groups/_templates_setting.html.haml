@@ -8,7 +8,7 @@
       = expanded ? _('Collapse') : _('Expand')
     %p
       = _('Select a repository containing templates for common files.')
-      = link_to _('What templates can I create?'), help_page_path('user/admin_area/settings/instance_template_repository.md', anchor: 'supported-file-types-and-locations'), target: '_blank', rel: 'noopener noreferrer'
+      = link_to _('What templates can I create?'), help_page_path('administration/settings/instance_template_repository.md', anchor: 'supported-file-types-and-locations'), target: '_blank', rel: 'noopener noreferrer'
   .settings-content
     = gitlab_ui_form_for @group, url: group_path, html: { class: 'fieldset-form' } do |f|
       = form_errors(@group)
