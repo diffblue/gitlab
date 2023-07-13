@@ -13,7 +13,8 @@ module Resolvers
 
       def preloads
         {
-          headers: [:headers]
+          headers: [:headers],
+          event_type_filters: [:event_type_filters]
         }
       end
     end
