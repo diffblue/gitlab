@@ -110,10 +110,10 @@ describe('Iteration Form', () => {
   describe('New iteration', () => {
     const resolverMock = jest.fn().mockResolvedValue(createMutationSuccess);
 
-    beforeEach(() => {
-      router.replace({
+    beforeEach(async () => {
+      await router.replace({
         name: 'newIteration',
-        params: { cadenceId, iterationId: undefined },
+        params: { cadenceId },
       });
       createComponent({ resolverMock });
     });
@@ -215,16 +215,14 @@ describe('Iteration Form', () => {
   });
 
   describe('Edit iteration for manual cadence', () => {
-    beforeEach(() => {
+    beforeEach(() =>
       router.replace({
         name: 'editIteration',
         params: { cadenceId, iterationId },
-      });
-    });
+      }),
+    );
 
-    afterEach(() => {
-      router.replace({ name: 'index' });
-    });
+    afterEach(() => router.replace({ name: 'index' }));
 
     it('shows update text title', () => {
       createComponent();
