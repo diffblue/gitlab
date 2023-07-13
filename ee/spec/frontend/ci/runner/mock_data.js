@@ -3,4 +3,7 @@
 // List queries
 import allRunnersUpgradeStatusData from 'test_fixtures/graphql/ci/runner/list/all_runners.query.graphql.upgrade_status.json';
 
-export { allRunnersUpgradeStatusData };
+// Dashboard queries
+import mostActiveRunnersData from 'test_fixtures/graphql/ci/runner/performance/most_active_runners.graphql.json';
+
+export { allRunnersUpgradeStatusData, mostActiveRunnersData };
