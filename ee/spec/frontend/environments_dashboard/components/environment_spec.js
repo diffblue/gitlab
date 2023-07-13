@@ -38,9 +38,6 @@ describe('Environment', () => {
       it('binds alert count to count', () => {
         expect(alert.props('count')).toBe(environment.alert_count);
       });
-      it('binds last alert', () => {
-        expect(alert.props('lastAlert')).toBe(environment.last_alert);
-      });
     });
 
     describe('commit', () => {
