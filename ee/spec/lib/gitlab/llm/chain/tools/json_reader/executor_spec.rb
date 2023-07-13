@@ -133,7 +133,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failu
         context 'when the response contains no action' do
           let(:ai_response) do
             <<~PROMPT
-                I'm here for the birthday party. Beep beep boop.
+                Action Input: I'm here for the birthday party. Beep beep boop.
             PROMPT
           end
 
@@ -142,6 +142,18 @@ RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failu
             error_msg = "is not valid, Action must be either `JsonReaderListKeys` or `JsonReaderGetValue`"
             expect(response).to be_a(Gitlab::Llm::Chain::Answer)
             expect(response.content).to include(error_msg)
+          end
+        end
+
+        context 'when the response does not contain any keywords' do
+          let(:ai_response) do
+            <<~PROMPT
+                I'm here for the birthday party. Beep beep boop.
+            PROMPT
+          end
+
+          it 'returns final response' do
+            expect_answer_with_content(ai_response.strip)
           end
         end
       end

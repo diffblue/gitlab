@@ -14,6 +14,9 @@ module Gitlab
             parse_action_input
             parse_thought
             parse_final_answer
+
+            # this should be last (fallback) step after all parsing is done
+            final_answer_from_unformatted_response
           end
 
           private
@@ -48,6 +51,19 @@ module Gitlab
             /Final Answer:(?<final_answer>.+)/m =~ output
 
             @final_answer = final_answer&.strip
+          end
+
+          # if response doesn't follow expected format, it usually means it's
+          # a final answer (although there is a risk of hallucination). Such
+          # response is treated as final response instead of returning "I
+          # don't know"
+          def final_answer_from_unformatted_response
+            return if action || action_input || thought || final_answer
+
+            answer = output.to_s.strip
+            return if answer.empty?
+
+            @final_answer = answer
           end
         end
       end

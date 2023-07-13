@@ -51,5 +51,23 @@ RSpec.describe Gitlab::Llm::Chain::Answer, feature_category: :shared do
         expect(answer.content).to eq(described_class.default_final_message)
       end
     end
+
+    context 'when response is empty' do
+      let(:input) { '' }
+
+      it 'returns final answer with default response' do
+        expect(answer.is_final?).to eq(true)
+        expect(answer.content).to eq(described_class.default_final_message)
+      end
+    end
+
+    context 'when tool does not contain any of expected keyword' do
+      let(:input) { 'Here is my freestyle answer.' }
+
+      it 'returns final answer with default response' do
+        expect(answer.is_final?).to eq(true)
+        expect(answer.content).to eq(input)
+      end
+    end
   end
 end
