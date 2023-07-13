@@ -70,14 +70,14 @@ module Projects
         project_licenses_endpoint: project_licenses_path(@project, detected: true, format: :json),
         read_license_policies_endpoint: expose_path(api_v4_projects_managed_licenses_path(id: @project.id)),
         write_license_policies_endpoint: write_license_policies_endpoint,
-        documentation_path: help_page_path('user/compliance/license_compliance/index'),
+        documentation_path: help_page_path('user/compliance/license_scanning_of_cyclonedx_files'),
         empty_state_svg_path: helpers.image_path('illustrations/Dependency-list-empty-state.svg'),
         software_licenses: SoftwareLicense.unclassified_licenses_for(project).pluck_names,
         project_id: @project.id,
         project_path: expose_path(api_v4_projects_path(id: @project.id)),
         rules_path: expose_path(api_v4_projects_approval_settings_rules_path(id: @project.id)),
         settings_path: expose_path(api_v4_projects_approval_settings_path(id: @project.id)),
-        approvals_documentation_path: help_page_path('user/compliance/license_compliance/index', anchor: 'enabling-license-approvals-within-a-project'),
+        approvals_documentation_path: help_page_path('user/compliance/license_approval_policies'),
         locked_approvals_rule_name: ApprovalRuleLike::DEFAULT_NAME_FOR_LICENSE_REPORT
       }
     end
