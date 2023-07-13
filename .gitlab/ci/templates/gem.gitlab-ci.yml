@@ -15,6 +15,7 @@ spec:
       changes:
         - "$[[inputs.gem_path_prefix]]$[[inputs.gem_name]]/**/*"
         - ".gitlab/ci/gitlab-gems.gitlab-ci.yml"
+        - ".gitlab/ci/vendored-gems.gitlab-ci.yml"
         - ".gitlab/ci/templates/gem.gitlab-ci.yml"
         - "gems/gem.gitlab-ci.yml"
 
