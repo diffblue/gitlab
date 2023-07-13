@@ -251,11 +251,13 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             'Content-Type' => 'application/json',
             'X-GitLab-CS-Accepts' => 'accepts',
             'X-GitLab-CS-Requests' => "requests",
-            'X-GitLab-CS-Errors' => 'errors'
+            'X-GitLab-CS-Errors' => 'errors',
+            'X-GitLab-CS-Custom' => 'helloworld',
+            'X-GitLab-NO-Ignore' => 'ignoreme'
           }
         end
 
-        it 'proxies request to code suggestions service' do
+        it 'proxies appropriate headers to code suggestions service' do
           expect(Gitlab::HTTP).to receive(:post).with(
             "https://codesuggestions.gitlab.com/v2/completions",
             {
@@ -264,9 +266,10 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
                 'X-Gitlab-Authentication-Type' => 'oidc',
                 'Authorization' => 'Bearer JWTTOKEN',
                 'Content-Type' => 'application/json',
-                'X-GitLab-CS-Accepts' => 'accepts',
-                'X-GitLab-CS-Requests' => "requests",
-                'X-GitLab-CS-Errors' => 'errors'
+                'X-Gitlab-Cs-Accepts' => 'accepts',
+                'X-Gitlab-Cs-Requests' => "requests",
+                'X-Gitlab-Cs-Errors' => 'errors',
+                'X-Gitlab-Cs-Custom' => 'helloworld'
               },
               open_timeout: 3,
               read_timeout: 5,

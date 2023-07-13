@@ -19,17 +19,11 @@ module API
       end
 
       def model_gateway_headers(headers)
-        token = headers["X-Gitlab-Oidc-Token"]
-
-        telemetry_headers = {
-          'X-GitLab-CS-Accepts' => headers['X-Gitlab-Cs-Accepts'],
-          'X-GitLab-CS-Requests' => headers['X-Gitlab-Cs-Requests'],
-          'X-GitLab-CS-Errors' => headers['X-Gitlab-Cs-Errors']
-        }.compact
+        telemetry_headers = headers.select { |k| /\Ax-gitlab-cs-/i.match?(k) }
 
         {
           'X-Gitlab-Authentication-Type' => 'oidc',
-          'Authorization' => "Bearer #{token}",
+          'Authorization' => "Bearer #{headers['X-Gitlab-Oidc-Token']}",
           'Content-Type' => 'application/json'
         }.merge(telemetry_headers)
       end
