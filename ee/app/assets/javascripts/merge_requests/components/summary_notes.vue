@@ -17,7 +17,7 @@ import SummaryNote from './summary_note.vue';
 
 export const INITIAL_STATE = {
   open: false,
-  summaryNotes: { nodes: [], pageInfo: {} },
+  mergeRequestDiffs: { nodes: [], pageInfo: {} },
   afterCursor: '',
   loadingCount: 0,
   fetchingMore: false,
@@ -31,7 +31,7 @@ export const summaryState = Vue.observable({
 
 export default {
   apollo: {
-    summaryNotes: {
+    mergeRequestDiffs: {
       query: summaryNotesQuery,
       skip() {
         return !this.open;
@@ -43,7 +43,7 @@ export default {
           after: '',
         };
       },
-      update: (d) => d.project?.mergeRequest?.diffLlmSummaries,
+      update: (d) => d.project?.mergeRequest?.mergeRequestDiffs,
       watchLoading(isLoading) {
         if (!isLoading) this.loadingCount += 1;
       },
@@ -79,20 +79,26 @@ export default {
       return getContentWrapperHeight();
     },
     notes() {
-      return this.summaryNotes?.nodes;
+      return this.mergeRequestDiffs.nodes.reduce((acc, diff) => {
+        if (diff.diffLlmSummary) {
+          acc.push({ ...diff.diffLlmSummary, reviewLlmSummaries: diff.reviewLlmSummaries.nodes });
+        }
+
+        return acc;
+      }, []);
     },
   },
   methods: {
     async fetchMore() {
-      if (!this.summaryNotes?.pageInfo.hasNextPage || this.fetchingMore) return;
+      if (!this.mergeRequestDiffs?.pageInfo.hasNextPage || this.fetchingMore) return;
 
       this.fetchingMore = true;
 
-      await this.$apollo.queries.summaryNotes.fetchMore({
+      await this.$apollo.queries.mergeRequestDiffs.fetchMore({
         variables: {
           projectPath: this.projectPath,
           iid: this.iid,
-          after: this.summaryNotes.pageInfo.endCursor,
+          after: this.mergeRequestDiffs.pageInfo.endCursor,
         },
       });
 
@@ -179,6 +185,7 @@ export default {
             v-for="summary in notes"
             :key="summary.mergeRequestDiffId"
             :summary="summary"
+            type="diff_summary"
             data-testid="summary-note"
           />
           <gl-loading-icon v-if="fetchingMore" />

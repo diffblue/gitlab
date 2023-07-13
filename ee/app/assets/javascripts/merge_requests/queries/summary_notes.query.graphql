@@ -1,17 +1,30 @@
+#import "~/graphql_shared/fragments/user.fragment.graphql"
+
 query summaryNotes($projectPath: ID!, $iid: String!, $after: String!) {
   project(fullPath: $projectPath) {
     id
     mergeRequest(iid: $iid) {
       id
-      diffLlmSummaries(after: $after) {
+      mergeRequestDiffs(after: $after) {
         pageInfo {
-          hasNextPage
           endCursor
+          hasNextPage
         }
         nodes {
-          mergeRequestDiffId
-          content
-          createdAt
+          diffLlmSummary {
+            content
+            createdAt
+          }
+          reviewLlmSummaries {
+            nodes {
+              reviewer {
+                ...User
+                webUrl
+              }
+              content
+              createdAt
+            }
+          }
         }
       }
     }
