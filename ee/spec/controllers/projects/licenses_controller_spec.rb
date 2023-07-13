@@ -51,14 +51,14 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
               expect(licenses_app_data[:project_licenses_endpoint]).to eql(controller.helpers.project_licenses_path(project, detected: true, format: :json))
               expect(licenses_app_data[:read_license_policies_endpoint]).to eql(controller.helpers.api_v4_projects_managed_licenses_path(id: project.id))
               expect(licenses_app_data[:write_license_policies_endpoint]).to eql('')
-              expect(licenses_app_data[:documentation_path]).to eql(help_page_path('user/compliance/license_compliance/index'))
+              expect(licenses_app_data[:documentation_path]).to eql(help_page_path('user/compliance/license_scanning_of_cyclonedx_files'))
               expect(licenses_app_data[:empty_state_svg_path]).to eql(controller.helpers.image_path('illustrations/Dependency-list-empty-state.svg'))
               expect(licenses_app_data[:software_licenses]).to eql([apache_license.name, mit_license.name])
               expect(licenses_app_data[:project_id]).to eql(project.id)
               expect(licenses_app_data[:project_path]).to eql(controller.helpers.api_v4_projects_path(id: project.id))
               expect(licenses_app_data[:rules_path]).to eql(controller.helpers.api_v4_projects_approval_settings_rules_path(id: project.id))
               expect(licenses_app_data[:settings_path]).to eql(controller.helpers.api_v4_projects_approval_settings_path(id: project.id))
-              expect(licenses_app_data[:approvals_documentation_path]).to eql(help_page_path('user/compliance/license_compliance/index', anchor: 'enabling-license-approvals-within-a-project'))
+              expect(licenses_app_data[:approvals_documentation_path]).to eql(help_page_path('user/compliance/license_approval_policies'))
               expect(licenses_app_data[:locked_approvals_rule_name]).to eql(ApprovalRuleLike::DEFAULT_NAME_FOR_LICENSE_REPORT)
             end
           end
@@ -631,7 +631,7 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
             expect(licenses_app_data[:project_licenses_endpoint]).to eql(controller.helpers.project_licenses_path(project, detected: true, format: :json))
             expect(licenses_app_data[:read_license_policies_endpoint]).to eql(controller.helpers.api_v4_projects_managed_licenses_path(id: project.id))
             expect(licenses_app_data[:write_license_policies_endpoint]).to eql(controller.helpers.api_v4_projects_managed_licenses_path(id: project.id))
-            expect(licenses_app_data[:documentation_path]).to eql(help_page_path('user/compliance/license_compliance/index'))
+            expect(licenses_app_data[:documentation_path]).to eql(help_page_path('user/compliance/license_scanning_of_cyclonedx_files'))
             expect(licenses_app_data[:empty_state_svg_path]).to eql(controller.helpers.image_path('illustrations/Dependency-list-empty-state.svg'))
           end
         end

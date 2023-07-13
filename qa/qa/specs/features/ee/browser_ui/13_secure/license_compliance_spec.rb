@@ -27,7 +27,7 @@ module QA
           aggregate_failures do
             expect(license_compliance).to have_empty_state_description('The license list details information about the licenses used within your project.')
             expect(license_compliance).to have_link('More Information',
-              href: %r{/help/user/compliance/license_compliance/index})
+              href: %r{/help/user/compliance/license_scanning_of_cyclonedx_files/index})
           end
         end
       end
