@@ -114,6 +114,20 @@ FactoryBot.modify do
       end
     end
 
+    trait :with_product_analytics_custom_visualization do
+      repository
+
+      after(:create) do |project|
+        project.repository.create_file(
+          project.creator,
+          '.gitlab/analytics/dashboards/visualizations/example_custom_visualization.yaml',
+          File.open(Rails.root.join('ee/spec/fixtures/product_analytics/example_custom_visualization.yaml')).read,
+          message: 'test',
+          branch_name: 'master'
+        )
+      end
+    end
+
     trait :with_dashboard_attempting_path_traversal do
       repository
 

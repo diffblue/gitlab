@@ -32,9 +32,29 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
   describe '.for_project' do
     subject { described_class.for_project(project) }
 
+    num_builtin_visualizations = 14
+
     it 'returns all visualizations stored in the project as well as built-in ones' do
-      expect(subject.count).to eq(16)
+      num_custom_visualizations = 2
+      expect(subject.count).to eq(num_builtin_visualizations + num_custom_visualizations)
       expect(subject.map { |v| v.config['type'] }).to include('BarChart', 'LineChart')
+    end
+
+    context 'when a custom dashboard pointer project is configured' do
+      before do
+        project.analytics_dashboards_configuration_project = create(:project,
+          :with_product_analytics_custom_visualization)
+      end
+
+      it 'returns custom visualizations from pointer project' do
+        num_custom_visualizations = 1
+        expect(subject.count).to eq(num_builtin_visualizations + num_custom_visualizations)
+        expect(subject.map { |v| v.config['title'] }).to include('Example custom visualization')
+      end
+
+      it 'does not return custom visualizations from self' do
+        expect(subject.map { |v| v.config['title'] }).not_to include('Daily Something', 'Example title')
+      end
     end
   end
 
