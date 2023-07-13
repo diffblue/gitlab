@@ -79,7 +79,7 @@ RSpec.describe Projects::Analytics::DashboardsController, type: :request, featur
       context 'with the licensed feature' do
         where(:access_level, :example_to_run) do
           nil         | 'returns not found'
-          :reporter   | 'returns success'
+          :reporter   | 'returns not found'
           :developer  | 'returns success'
           :maintainer | 'returns success'
         end

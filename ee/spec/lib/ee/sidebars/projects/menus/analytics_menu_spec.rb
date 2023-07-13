@@ -116,7 +116,7 @@ RSpec.describe Sidebars::Projects::Menus::AnalyticsMenu, feature_category: :navi
       context 'with different user access levels' do
         where(:access_level, :has_menu_item) do
           nil         | false
-          :reporter   | true
+          :reporter   | false
           :developer  | true
           :maintainer | true
         end

@@ -117,6 +117,10 @@ RSpec.shared_examples 'product analytics dashboards' do
         end
 
         context 'without the correct user permissions' do
+          before do
+            project.add_reporter(user)
+          end
+
           it_behaves_like 'does not render the product analytics list item'
         end
 
