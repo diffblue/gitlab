@@ -4,7 +4,7 @@ module Onboarding
   class CreateIterableTriggerWorker
     include ApplicationWorker
 
-    CreateIterableError = Class.new(StandardError)
+    CreateIterableTriggerError = Class.new(StandardError)
 
     deduplicate :until_executed
     data_consistency :delayed
@@ -27,7 +27,7 @@ module Onboarding
         )
       )
 
-      raise CreateIterableError
+      raise CreateIterableTriggerError
     end
   end
 end

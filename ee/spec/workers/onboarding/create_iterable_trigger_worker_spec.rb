@@ -41,7 +41,7 @@ RSpec.describe Onboarding::CreateIterableTriggerWorker, type: :worker, feature_c
       it 'has an error' do
         expect(logger).to receive(:error).with(hash_including(log_params.stringify_keys)).and_call_original
 
-        expect { described_class.new.perform(*job_args) }.to raise_error(described_class::CreateIterableError)
+        expect { described_class.new.perform(*job_args) }.to raise_error(described_class::CreateIterableTriggerError)
       end
     end
   end

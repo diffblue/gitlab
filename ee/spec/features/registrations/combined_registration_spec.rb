@@ -84,6 +84,17 @@ RSpec.describe 'Registration group and project creation flow', :saas, :js, featu
     expect(page).to have_content('To connect GitHub repositories, you first need to authorize GitLab to')
   end
 
+  context 'with readme status honored on failures' do
+    it 'honors previous include readme checkbox setting' do
+      fill_in 'group_name', with: '@@@' # this forces the error
+      fill_in 'blank_project_name', with: 'Test Project'
+      uncheck 'Include a Getting Started README'
+      click_on 'Create project'
+
+      expect(find_field('Include a Getting Started README')).not_to be_checked
+    end
+  end
+
   def expect_filled_form_and_error_message
     expect(find('[data-testid="group-name"]').value).to eq('@_')
     expect(find('[data-testid="project-name"]').value).to eq('test project')

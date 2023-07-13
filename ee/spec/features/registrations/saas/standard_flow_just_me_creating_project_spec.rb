@@ -33,24 +33,6 @@ RSpec.describe 'Standard flow for user picking just me and creating a project', 
     end
   end
 
-  it 'honors include readme checkbox' do
-    regular_sign_up
-
-    expect_to_see_welcome_form
-
-    fills_in_welcome_form
-    click_on 'Continue'
-
-    expect_to_see_group_and_project_creation_form
-
-    fill_in 'group_name', with: '@@@'
-    fill_in 'blank_project_name', with: 'Test Project'
-    uncheck 'Include a Getting Started README'
-    click_on 'Create project'
-
-    expect(find_field('Include a Getting Started README')).not_to be_checked
-  end
-
   def fills_in_welcome_form
     select 'Software Developer', from: 'user_role'
     select 'A different reason', from: 'user_registration_objective'

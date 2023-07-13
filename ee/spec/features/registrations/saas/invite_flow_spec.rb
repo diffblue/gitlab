@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, feature_category: :onboarding do
-  it 'registers the user and sends them to the group activity page', :sidekiq_inline do
+RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sidekiq_inline, feature_category: :onboarding do
+  it 'registers the user and sends them to the group activity page' do
     new_user = build(:user, name: 'Registering User', email: user_email)
     group = create(:group, name: 'Test Group')
 
@@ -19,7 +19,7 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, feat
     ensure_onboarding_is_finished
   end
 
-  it 'registers the user with multiple invites and sends them to the root page', :sidekiq_inline do
+  it 'registers the user with multiple invites and sends them to the root page' do
     new_user = build(:user, name: 'Registering User', email: user_email)
     group = create(:group, name: 'Test Group')
 
@@ -43,7 +43,7 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, feat
     ensure_onboarding_is_finished
   end
 
-  it 'registers the user and sends them to the tasks to be done page', :sidekiq_inline do
+  it 'registers the user and sends them to the tasks to be done page' do
     new_user = build(:user, name: 'Registering User', email: user_email)
     group = create(:group, name: 'Test Group')
 
