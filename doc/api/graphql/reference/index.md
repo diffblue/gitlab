@@ -24568,6 +24568,7 @@ Represents a progress widget.
 | ---- | ---- | ----------- |
 | <a id="workitemwidgetprogressprogress"></a>`progress` | [`Int`](#int) | Progress of the work item. |
 | <a id="workitemwidgetprogresstype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
+| <a id="workitemwidgetprogressupdatedat"></a>`updatedAt` | [`Time`](#time) | Timestamp of last progress update. |
 
 ### `WorkItemWidgetRequirementLegacy`
 

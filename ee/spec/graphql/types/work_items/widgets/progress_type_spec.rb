@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe ::Types::WorkItems::Widgets::ProgressType do
   let(:fields) do
-    %i[type progress]
+    %i[type progress updated_at]
   end
 
   specify { expect(described_class.graphql_name).to eq('WorkItemWidgetProgress') }
