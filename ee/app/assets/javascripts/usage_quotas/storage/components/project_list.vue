@@ -1,5 +1,5 @@
 <script>
-import { GlTable, GlLink } from '@gitlab/ui';
+import { GlTable, GlLink, GlSprintf } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 import { helpPagePath } from '~/helpers/help_page_helper';
@@ -12,6 +12,7 @@ export default {
   components: {
     GlTable,
     GlLink,
+    GlSprintf,
     ProjectAvatar,
     NumberToHumanSize,
     StorageTypeHelpLink,
@@ -57,6 +58,9 @@ export default {
      */
     getProjectRelativePath(fullPath) {
       return fullPath.replace(/.*?\s?\/\s?/, '');
+    },
+    isCostFactored(project) {
+      return project.statistics.storageSize !== project.statistics.costFactoredStorageSize;
     },
   },
   fields: [
@@ -150,7 +154,20 @@ export default {
     </template>
 
     <template #cell(storage)="{ item: project }">
-      <number-to-human-size :value="project.statistics.storageSize" />
+      <template v-if="isCostFactored(project)">
+        <number-to-human-size :value="project.statistics.costFactoredStorageSize" />
+
+        <div class="gl-text-gray-600 gl-mt-2 gl-font-sm">
+          <gl-sprintf :message="s__('UsageQuotas|(of %{totalStorageSize})')">
+            <template #totalStorageSize>
+              <number-to-human-size :value="project.statistics.storageSize" />
+            </template>
+          </gl-sprintf>
+        </div>
+      </template>
+      <template v-else>
+        <number-to-human-size :value="project.statistics.storageSize" />
+      </template>
     </template>
 
     <template #cell(repository)="{ item: project }">

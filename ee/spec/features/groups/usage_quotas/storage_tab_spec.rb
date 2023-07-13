@@ -54,6 +54,38 @@ RSpec.describe 'Groups > Usage Quotas > Storage tab', :js, :saas, feature_catego
         expect(page).to have_text(project.name)
       end
     end
+
+    context 'with a fork of a project' do
+      let_it_be(:project_fork) { create(:project, namespace: group) }
+      let_it_be(:statistics) { create(:project_statistics, project: project_fork, repository_size: 100.megabytes) }
+      let_it_be(:fork_network) { create(:fork_network, root_project: project) }
+      let_it_be(:fork_network_member) do
+        create(:fork_network_member, project: project_fork,
+          fork_network: fork_network, forked_from_project: project)
+      end
+
+      context 'with a cost factor for forks' do
+        before do
+          stub_const('Namespaces::Storage::RootSize::COST_FACTOR_FOR_FORKS', 0.1)
+        end
+
+        it 'displays the storage size with the cost factor applied' do
+          visit_usage_quotas_page('storage-quota-tab')
+
+          expect(page).to have_css('td[data-label="Total"]', text: "10.0 MiB")
+          expect(page).to have_css('td[data-label="Total"]', text: "(of 100.0 MiB)")
+        end
+      end
+
+      context 'without a cost factor for forks' do
+        it 'does not display the forked storage size' do
+          visit_usage_quotas_page('storage-quota-tab')
+
+          expect(page).to have_css('td[data-label="Total"]', text: '100.0 MiB')
+          expect(page).not_to have_text('of 100.0 MiB')
+        end
+      end
+    end
   end
 
   def visit_usage_quotas_page(anchor = 'seats-quota-tab')

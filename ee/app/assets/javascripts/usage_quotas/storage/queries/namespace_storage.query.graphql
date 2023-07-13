@@ -51,6 +51,7 @@ query getNamespaceStorageStatistics(
         statistics {
           commitCount
           storageSize
+          costFactoredStorageSize
           repositorySize
           lfsObjectsSize
           containerRegistrySize
