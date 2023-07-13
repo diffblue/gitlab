@@ -48,7 +48,7 @@ module QA
       end
 
       def read_agent_fixture(file_name)
-        File.read(File.join(Runtime::Path.fixtures_path, 'kubernetes_agent', file_name))
+        File.read(Runtime::Path.fixture('kubernetes_agent', file_name))
       end
 
       def creates_agent_config(project)

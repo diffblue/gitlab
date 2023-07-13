@@ -35,7 +35,7 @@ module QA
         # Push fixture to generate Secure reports
         @source = Resource::Repository::ProjectPush.fabricate! do |push|
           push.project = @project
-          push.directory = Pathname.new(File.join(EE::Runtime::Path.fixtures_path, 'secure_premade_reports'))
+          push.directory = Pathname.new(EE::Runtime::Path.fixture('secure_premade_reports'))
           push.commit_message = 'Create Secure compatible application to serve premade reports'
           push.branch_name = 'secure-mr'
         end

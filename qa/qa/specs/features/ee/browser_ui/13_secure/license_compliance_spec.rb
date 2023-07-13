@@ -86,18 +86,12 @@ module QA
               project_push.files = [
                 {
                   name: '.gitlab-ci.yml',
-                  content: File.read(
-                    File.join(EE::Runtime::Path.fixtures_path, 'secure_license_files', '.gitlab-ci.yml')
-                  )
+                  content: File.read(EE::Runtime::Path.fixture('secure_license_files', '.gitlab-ci.yml'))
                 },
                 {
                   name: 'gl-license-scanning-report.json',
                   content: File.read(
-                    File.join(
-                      EE::Runtime::Path.fixtures_path,
-                      'secure_premade_reports',
-                      'gl-license-scanning-report.json'
-                    )
+                    EE::Runtime::Path.fixture('secure_premade_reports', 'gl-license-scanning-report.json')
                   )
                 }
               ]
@@ -158,7 +152,7 @@ module QA
             Resource::Repository::Commit.fabricate_via_api! do |resource|
               resource.project = @project
               resource.commit_message = 'Create sbom file'
-              resource.add_directory(Pathname.new(File.join(EE::Runtime::Path.fixtures_path, 'secure_sbom_files')))
+              resource.add_directory(Pathname.new(EE::Runtime::Path.fixture('secure_sbom_files')))
             end
 
             login_and_set_license_state(approved_license_name, denied_license_name)

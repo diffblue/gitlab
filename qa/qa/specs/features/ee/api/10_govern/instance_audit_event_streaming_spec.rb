@@ -167,7 +167,7 @@ module QA
     #
     # @return [String]
     def mocks
-      @mocks ||= File.read(File.join(EE::Runtime::Path.fixtures_path, 'audit_event_streaming', 'mocks.yml'))
+      @mocks ||= File.read(EE::Runtime::Path.fixture('audit_event_streaming', 'mocks.yml'))
     end
 
     # Wait for the mock service to receive a request with the specified event type

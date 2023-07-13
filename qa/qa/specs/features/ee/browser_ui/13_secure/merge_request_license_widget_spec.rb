@@ -34,7 +34,7 @@ module QA
           Resource::Repository::Commit.fabricate_via_api! do |resource|
             resource.project = @project
             resource.commit_message = 'Create license file'
-            resource.add_directory(Pathname.new(File.join(EE::Runtime::Path.fixtures_path, 'secure_license_files')))
+            resource.add_directory(Pathname.new(EE::Runtime::Path.fixture('secure_license_files')))
           end
 
           @project.visit!
@@ -158,7 +158,7 @@ module QA
           Resource::Repository::Commit.fabricate_via_api! do |resource|
             resource.project = @project
             resource.commit_message = 'Create sbom file'
-            resource.add_directory(Pathname.new(File.join(EE::Runtime::Path.fixtures_path, 'secure_sbom_files')))
+            resource.add_directory(Pathname.new(EE::Runtime::Path.fixture('secure_sbom_files')))
           end
 
           @project.visit!

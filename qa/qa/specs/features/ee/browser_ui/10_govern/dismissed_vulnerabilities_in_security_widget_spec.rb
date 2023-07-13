@@ -14,7 +14,7 @@ module QA
       end
 
       let!(:artefacts_directory) do
-        Pathname.new(File.join(EE::Runtime::Path.fixtures_path, 'dismissed_security_findings_mr_widget'))
+        Pathname.new(EE::Runtime::Path.fixture('dismissed_security_findings_mr_widget'))
       end
 
       let!(:runner) do
