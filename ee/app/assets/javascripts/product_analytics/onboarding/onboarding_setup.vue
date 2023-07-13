@@ -3,6 +3,7 @@ import { GlButton, GlLink, GlLoadingIcon } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import getProjectTrackingKeyQuery from '../graphql/queries/get_project_tracking_key.query.graphql';
+import InstrumentationInstructionsSdkDetails from './components/instrumentation_instructions_sdk_details.vue';
 import InstrumentationInstructions from './components/instrumentation_instructions.vue';
 
 export default {
@@ -11,6 +12,7 @@ export default {
     GlLoadingIcon,
     GlLink,
     GlButton,
+    InstrumentationInstructionsSdkDetails,
     InstrumentationInstructions,
   },
   inject: {
@@ -87,6 +89,8 @@ export default {
     addHtmlScriptToPage: s__(
       'ProductAnalytics|Add the script to the page and assign the client SDK to window:',
     ),
+    instrumentAppTitle: s__('ProductAnalytics|Instrument your application'),
+    sdkClientsTitle: s__('ProductAnalytics|SDK clients'),
   },
   docsPath: helpPagePath('user/product_analytics/index'),
 };
@@ -120,6 +124,12 @@ export default {
       {{ $options.i18n.introduction }}
     </p>
 
+    <h4 class="gl-mb-5 gl-w-full">
+      {{ $options.i18n.sdkClientsTitle }}
+    </h4>
+    <instrumentation-instructions-sdk-details :tracking-key="appIdKey" />
+
+    <h4 class="gl-mb-5 gl-w-full">{{ $options.i18n.instrumentAppTitle }}</h4>
     <instrumentation-instructions :tracking-key="appIdKey" :dashboards-path="dashboardsPath" />
   </section>
 </template>
