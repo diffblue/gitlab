@@ -1,7 +1,6 @@
 <script>
 import {
   GlTooltipDirective,
-  GlIcon,
   GlButton,
   GlDisclosureDropdown,
   GlDisclosureDropdownItem,
@@ -30,15 +29,14 @@ export default {
   },
   name: 'NoteActions',
   components: {
-    GlIcon,
-    ReplyButton,
-    TimelineEventButton,
+    AbuseCategorySelector,
+    EmojiPicker: () => import('~/emoji/components/picker.vue'),
     GlButton,
     GlDisclosureDropdown,
     GlDisclosureDropdownItem,
+    ReplyButton,
+    TimelineEventButton,
     UserAccessRoleBadge,
-    EmojiPicker: () => import('~/emoji/components/picker.vue'),
-    AbuseCategorySelector,
   },
   directives: {
     GlTooltip: GlTooltipDirective,

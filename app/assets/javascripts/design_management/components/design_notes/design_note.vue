@@ -5,7 +5,6 @@ import {
   GlButton,
   GlDisclosureDropdown,
   GlLink,
-  GlIcon,
   GlTooltipDirective,
 } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
@@ -32,10 +31,9 @@ export default {
     deleteCommentText: __('Delete comment'),
   },
   components: {
-    EmojiPicker,
     DesignNoteAwardsList,
     DesignReplyForm,
-    GlIcon,
+    EmojiPicker,
     GlAvatar,
     GlAvatarLink,
     GlButton,

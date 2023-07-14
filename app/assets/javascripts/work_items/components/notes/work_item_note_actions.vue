@@ -1,7 +1,6 @@
 <script>
 import {
   GlButton,
-  GlIcon,
   GlTooltipDirective,
   GlDisclosureDropdown,
   GlDisclosureDropdownItem,
@@ -24,12 +23,11 @@ export default {
     reportAbuseText: __('Report abuse to administrator'),
   },
   components: {
+    EmojiPicker: () => import('~/emoji/components/picker.vue'),
     GlButton,
-    GlIcon,
     GlDisclosureDropdown,
     GlDisclosureDropdownItem,
     ReplyButton,
-    EmojiPicker: () => import('~/emoji/components/picker.vue'),
     UserAccessRoleBadge,
   },
   directives: {
