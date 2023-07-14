@@ -6,7 +6,7 @@ import { getParameterValues } from '~/lib/utils/url_utility';
 import { extractFilterQueryParameters } from '~/analytics/shared/utils';
 import MergeRequestAnalyticsApp from './components/app.vue';
 import createStore from './store';
-import { parseAndValidateDates } from './utils';
+import { toDateRange } from './utils';
 
 Vue.use(VueApollo);
 
@@ -47,7 +47,7 @@ export default () => {
     selectedLabelList,
   });
 
-  const { startDate, endDate } = parseAndValidateDates(
+  const { startDate, endDate } = toDateRange(
     getParameterValues('start_date'),
     getParameterValues('end_date'),
   );

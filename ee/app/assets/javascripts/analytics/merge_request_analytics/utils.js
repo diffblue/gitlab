@@ -1,10 +1,13 @@
 import { dateFormats } from '~/analytics/shared/constants';
 import dateFormat from '~/lib/dateformat';
+import { __ } from '~/locale';
+import { createAlert, VARIANT_WARNING } from '~/alert';
 import {
   getMonthNames,
   getDateInPast,
   getDayDifference,
   secondsToDays,
+  isValidDate,
 } from '~/lib/utils/datetime_utility';
 import {
   THROUGHPUT_CHART_STRINGS,
@@ -116,6 +119,18 @@ export const computeMttmData = (rawData) => {
 };
 
 /**
+ * A utility function which returns the default date range for Merge Request Analytics.
+ *
+ * @return {Object} an object containing the default startDate and endDate.
+ */
+export const getDefaultDateRange = () => {
+  const startDate = getDateInPast(new Date(), DEFAULT_NUMBER_OF_DAYS);
+  const endDate = new Date();
+
+  return { startDate, endDate };
+};
+
+/**
  * A utility function which accepts start and end date params
  * and validates that the date range does not exceed the bounds
  *
@@ -123,16 +138,48 @@ export const computeMttmData = (rawData) => {
  * @param {Date} endDate the endDate for the data range
  *
  * @return {Object} an object containing the startDate and endDate
+ *
+ *  @throws {Error} throws an error whether:
+ * - startDate and/or endDate are invalid.
+ * - date range (startDate <-> endDate) is too large.
  */
 export const parseAndValidateDates = (startDateParam, endDateParam) => {
-  let startDate = new Date(startDateParam);
-  let endDate = new Date(endDateParam);
-  const numberOfDays = getDayDifference(startDate, endDate);
+  const startDate = new Date(startDateParam);
+  const endDate = new Date(endDateParam);
 
-  if (!startDateParam.length || numberOfDays > DEFAULT_NUMBER_OF_DAYS || endDate < startDate) {
-    startDate = getDateInPast(new Date(), DEFAULT_NUMBER_OF_DAYS);
-    endDate = new Date();
+  if (!isValidDate(startDate) || !isValidDate(endDate) || endDate < startDate) {
+    throw new Error(__('Invalid dates set'));
+  }
+
+  const numberOfDays = getDayDifference(startDate, endDate);
+  if (numberOfDays > DEFAULT_NUMBER_OF_DAYS || endDate < startDate) {
+    throw new Error(__('Date range too large'));
   }
 
   return { startDate, endDate };
+};
+
+/**
+ * A utility function which accepts start and end date params
+ * and returns a date range that does not exceed the bounds.
+ *
+ * @param {Date} startDate the startDate for the data range
+ * @param {Date} endDate the endDate for the data range
+ *
+ * @return {Object} an object containing the startDate and endDate
+ */
+export const toDateRange = (startDateParam, endDateParam) => {
+  if (!startDateParam.length && !endDateParam.length) {
+    return getDefaultDateRange();
+  }
+
+  try {
+    return parseAndValidateDates(startDateParam, endDateParam);
+  } catch (error) {
+    createAlert({
+      message: __(`${error.message}, defaulting to 365 days.`),
+      variant: VARIANT_WARNING,
+    });
+    return getDefaultDateRange();
+  }
 };
