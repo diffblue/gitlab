@@ -20,6 +20,7 @@ namespace :gitlab do
           counter = 0.0
           correct_answers_counter = 0
           default_answers_counter = 0
+          reset_chat
 
           YAML.load_file(FILENAME).values.flatten.each do |row|
             counter += 1
@@ -58,11 +59,10 @@ namespace :gitlab do
           ::Gitlab::Llm::Chain::Tools::GitlabDocumentation
         ]
 
-        user = User.first
-        resource = user
-        ai_request = ::Gitlab::Llm::Chain::Requests::Anthropic.new(user)
+        resource = current_user
+        ai_request = ::Gitlab::Llm::Chain::Requests::Anthropic.new(current_user)
         context = ::Gitlab::Llm::Chain::GitlabContext.new(
-          current_user: user,
+          current_user: current_user,
           container: resource.try(:resource_parent)&.root_ancestor,
           resource: resource,
           ai_request: ai_request
@@ -92,6 +92,17 @@ namespace :gitlab do
 
       def default_answer_check(final_answer)
         final_answer == Gitlab::Llm::Chain::Answer.default_final_message
+      end
+
+      def current_user
+        @current_user ||= User.first
+      end
+
+      def reset_chat
+        messages = Gitlab::Llm::Cache.new(current_user).last_conversation
+        return if messages.empty?
+
+        Gitlab::Llm::Cache.new(current_user).add({ request_id: SecureRandom.uuid, role: 'user', content: '/reset' })
       end
     end
   end
