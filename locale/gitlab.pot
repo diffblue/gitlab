@@ -1198,6 +1198,11 @@ msgid_plural "%{strong_start}%{tag_count}%{strong_end} Tags"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%{strong_start}%{terraform_states_count}%{strong_end} Terraform State"
+msgid_plural "%{strong_start}%{terraform_states_count}%{strong_end} Terraform States"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%{tabname} changed"
 msgstr ""
 
