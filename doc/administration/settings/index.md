@@ -47,7 +47,7 @@ The **General** settings contain:
  Enable mandatory two-factor authentication.
 - [Terms of Service and Privacy Policy](../../user/admin_area/settings/terms.md) - Include a Terms of Service agreement
  and Privacy Policy that all users must accept.
-- [External Authentication](../../user/admin_area/settings/external_authorization.md#configuration) - External Classification Policy Authorization.
+- [External Authentication](../../administration/settings/external_authorization.md#configuration) - External Classification Policy Authorization.
 - [Web terminal](../integration/terminal.md#limiting-websocket-connection-time) -
  Set max session time for web terminal.
 - [FLoC](floc.md) - Enable or disable
