@@ -2300,44 +2300,28 @@ RSpec.describe User, feature_category: :system_access do
   end
 
   describe '#third_party_ai_features_enabled' do
-    subject { user.reload.third_party_ai_features_enabled? }
+    using RSpec::Parameterized::TableSyntax
 
-    let(:user) { create(:user) }
-    let(:group1) { create(:group) }
-    let(:group2) { create(:group) }
+    let_it_be(:user) { create(:user) }
+    let_it_be(:group1, reload: true) { create(:group).tap { |r| r.add_reporter(user) } }
+    let_it_be(:group2, reload: true) { create(:group).tap { |r| r.add_reporter(user) } }
 
-    context 'when current_user is a member of two groups' do
+    subject { user.third_party_ai_features_enabled? }
+
+    where(:group1_enabled, :group2_enabled, :result) do
+      false | false | false
+      true  | false | false
+      false | true  | false
+      true  | true  | true
+    end
+
+    with_them do
       before do
-        group1.add_reporter(user)
-        group2.add_reporter(user)
+        group1.update_attribute(:third_party_ai_features_enabled, group1_enabled)
+        group2.update_attribute(:third_party_ai_features_enabled, group2_enabled)
       end
 
-      context 'when both groups have disabled third party AI services' do
-        before do
-          group1.update_attribute(:third_party_ai_features_enabled, false)
-          group2.update_attribute(:third_party_ai_features_enabled, false)
-        end
-
-        it { is_expected.to eq false }
-      end
-
-      context 'when one group disables and another enables third party AI services' do
-        before do
-          group1.update_attribute(:third_party_ai_features_enabled, true)
-          group2.update_attribute(:third_party_ai_features_enabled, false)
-        end
-
-        it { is_expected.to eq false }
-      end
-
-      context 'when both groups have enabled third party AI services' do
-        before do
-          group1.update_attribute(:third_party_ai_features_enabled, true)
-          group2.update_attribute(:third_party_ai_features_enabled, true)
-        end
-
-        it { is_expected.to eq true }
-      end
+      it { is_expected.to eq result }
     end
   end
 
