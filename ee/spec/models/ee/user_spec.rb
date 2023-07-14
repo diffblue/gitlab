@@ -2892,7 +2892,7 @@ RSpec.describe User, feature_category: :system_access do
     context 'when member of a sub-group only' do
       include_context 'with ai features enabled for group'
 
-      context 'with eligable group' do
+      context 'with eligible group' do
         let(:group) { ultimate_group }
 
         before do
@@ -2902,7 +2902,7 @@ RSpec.describe User, feature_category: :system_access do
         it { is_expected.to eq(true) }
       end
 
-      context 'with not eligable group' do
+      context 'with not eligible group' do
         let(:group) { bronze_group }
 
         before do

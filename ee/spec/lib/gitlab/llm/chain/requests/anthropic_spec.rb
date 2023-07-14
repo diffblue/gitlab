@@ -19,7 +19,7 @@ RSpec.describe Gitlab::Llm::Chain::Requests::Anthropic, feature_category: :share
     let(:expected_params) do
       {
         prompt: "some user request",
-        temperature: 0.2,
+        temperature: 0.1,
         stop_sequences: ["\n\nHuman", "Observation:"]
       }
     end
