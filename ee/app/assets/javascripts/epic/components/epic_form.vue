@@ -21,6 +21,8 @@ import { DEFAULT_COLOR } from '~/vue_shared/components/color_select_dropdown/con
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { CLEAR_AUTOSAVE_ENTRY_EVENT } from '~/vue_shared/constants';
 import markdownEditorEventHub from '~/vue_shared/components/markdown/eventhub';
+import { trackSavedUsingEditor } from '~/vue_shared/components/markdown/tracking';
+import { EPIC_NOTEABLE_TYPE } from '~/notes/constants';
 import createEpic from '../queries/create_epic.mutation.graphql';
 
 const i18n = {
@@ -104,6 +106,8 @@ export default {
     save() {
       this.loading = true;
 
+      trackSavedUsingEditor(this.$refs.markdownEditor.isContentEditorActive, EPIC_NOTEABLE_TYPE);
+
       const input = {
         addLabelIds: this.labelIds,
         groupPath: this.groupPath,
@@ -180,6 +184,7 @@ export default {
       </gl-form-group>
       <gl-form-group :label="__('Description')" label-for="epic-description">
         <markdown-editor
+          ref="markdownEditor"
           v-model="description"
           :form-field-props="$options.descriptionFormFieldProps"
           :render-markdown-path="markdownPreviewPath"
