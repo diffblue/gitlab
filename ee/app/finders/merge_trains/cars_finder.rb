@@ -14,7 +14,7 @@ module MergeTrains
     end
 
     def execute
-      return MergeTrains::Car.none unless @current_user.can? :read_merge_train, @project
+      return MergeTrains::Car.none unless Ability.allowed?(@current_user, :read_merge_train, @project)
 
       items = @merge_train_cars
       items = for_target(items, @params[:target_branch])
