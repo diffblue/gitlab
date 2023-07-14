@@ -15754,6 +15754,9 @@ msgstr ""
 msgid "Descriptive label"
 msgstr ""
 
+msgid "Deselect all"
+msgstr ""
+
 msgid "Design"
 msgstr ""
 
@@ -19322,6 +19325,9 @@ msgid "Fill in the fields below, turn on %{strong_open}Enable SAML authenticatio
 msgstr ""
 
 msgid "Filter"
+msgstr ""
+
+msgid "Filter activity"
 msgstr ""
 
 msgid "Filter by"
