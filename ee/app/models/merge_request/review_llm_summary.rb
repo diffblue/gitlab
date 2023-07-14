@@ -9,7 +9,7 @@ class MergeRequest::ReviewLlmSummary < ApplicationRecord
   validates :provider, presence: true
   validates :content, presence: true, length: { maximum: 2056 }
 
-  enum provider: { open_ai: 0 }
+  enum provider: { open_ai: 0, vertex_ai: 1 }
 
   def reviewer
     review.author

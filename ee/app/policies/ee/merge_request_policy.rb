@@ -46,6 +46,18 @@ module EE
         @subject.target_project.licensed_feature_available?(:report_approver_rules)
       end
 
+      with_scope :subject
+      condition(:ai_features_enabled) do
+        ::Feature.enabled?(:openai_experimentation)
+      end
+
+      with_scope :subject
+      condition(:summarize_submitted_review_enabled) do
+        ::Feature.enabled?(:automatically_summarize_mr_review, subject.project) &&
+          subject.project.licensed_feature_available?(:summarize_submitted_review) &&
+          ::Gitlab::Llm::StageCheck.available?(subject.project.root_ancestor, :summarize_submitted_review)
+      end
+
       def read_only?
         @subject.target_project&.namespace&.read_only?
       end
@@ -83,6 +95,10 @@ module EE
       end
 
       rule { approval_rules_licence_enabled }.enable :create_merge_request_approval_rules
+
+      rule do
+        ai_features_enabled & summarize_submitted_review_enabled & can?(:read_merge_request)
+      end.enable :summarize_submitted_review
     end
 
     private

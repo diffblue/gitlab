@@ -51,6 +51,10 @@ module Gitlab
         fill_in_merge_request_template: {
           service_class: ::Gitlab::Llm::VertexAi::Completions::FillInMergeRequestTemplate,
           prompt_class: ::Gitlab::Llm::Templates::FillInMergeRequestTemplate
+        },
+        summarize_submitted_review: {
+          service_class: ::Gitlab::Llm::VertexAi::Completions::SummarizeSubmittedReview,
+          prompt_class: ::Gitlab::Llm::Templates::SummarizeSubmittedReview
         }
       }.freeze
 
