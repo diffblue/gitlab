@@ -53,6 +53,9 @@ class EpicsFinder < IssuableFinder
 
     items = filter_and_search(init_collection)
 
+    # fails in ee/spec/graphql/resolvers/boards/board_list_epics_resolver_spec.rb
+    items = items.allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417462")
+
     sort(items)
   end
 

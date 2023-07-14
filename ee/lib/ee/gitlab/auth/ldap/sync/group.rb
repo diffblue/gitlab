@@ -162,6 +162,7 @@ module EE
                 .where(users: { identities: ::Identity.iwhere(extern_uid: access_levels.keys) })
                 .select(:id, 'identities.extern_uid AS distinguished_name', :access_level, :source_id)
                 .references(:identities)
+                .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417455")
 
               permissions_in_ancestry.each do |member|
                 access_levels.set([member.distinguished_name], to: member.access_level)

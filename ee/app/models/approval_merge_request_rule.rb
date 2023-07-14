@@ -105,7 +105,7 @@ class ApprovalMergeRequestRule < ApplicationRecord
       next scope_or_array if project.merge_requests_author_approval?
 
       if scope_or_array.respond_to?(:where)
-        scope_or_array.where.not(id: merge_request.author)
+        scope_or_array.where.not(id: merge_request.author).allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417459")
       else
         scope_or_array - [merge_request.author]
       end

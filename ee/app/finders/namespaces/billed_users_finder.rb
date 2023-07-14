@@ -28,10 +28,13 @@ module Namespaces
     }.freeze
 
     def calculate_user_ids(method_name)
-      @ids[METHOD_KEY_MAP[method_name]] = group.public_send(method_name, exclude_guests: @exclude_guests) # rubocop:disable GitlabSecurity/PublicSend
-                                               .pluck(:id).to_set # rubocop:disable CodeReuse/ActiveRecord
+      cross_join_issue = "https://gitlab.com/gitlab-org/gitlab/-/issues/417464"
+      ::Gitlab::Database.allow_cross_joins_across_databases(url: cross_join_issue) do
+        @ids[METHOD_KEY_MAP[method_name]] = group.public_send(method_name, exclude_guests: @exclude_guests) # rubocop:disable GitlabSecurity/PublicSend
+                                            .pluck(:id).to_set # rubocop:disable CodeReuse/ActiveRecord
 
-      append_to_user_ids(ids[METHOD_KEY_MAP[method_name]])
+        append_to_user_ids(ids[METHOD_KEY_MAP[method_name]])
+      end
     end
 
     def append_to_user_ids(user_ids)

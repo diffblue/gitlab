@@ -51,6 +51,10 @@ module ApprovalRuleLike
     end
   end
 
+  def group_users
+    super.loaded? ? super : super.allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417457")
+  end
+
   def audit_add
     raise NotImplementedError
   end
@@ -125,6 +129,7 @@ module ApprovalRuleLike
   def filter_inactive_approvers(approvers)
     if approvers.respond_to?(:with_state)
       approvers.with_state(:active)
+        .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417457")
     else
       approvers.select(&:active?)
     end

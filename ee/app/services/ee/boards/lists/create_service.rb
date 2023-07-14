@@ -89,7 +89,9 @@ module EE
         # rubocop: disable CodeReuse/ActiveRecord
         def find_user(board)
           user_ids = user_finder(board).execute.reselect(:user_id)
-          ::User.id_in(user_ids).find_by(id: params['assignee_id'])
+          ::User.id_in(user_ids)
+            .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417465")
+            .find_by(id: params['assignee_id'])
         end
         # rubocop: enable CodeReuse/ActiveRecord
 

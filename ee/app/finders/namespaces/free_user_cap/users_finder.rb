@@ -27,7 +27,8 @@ module Namespaces
         return if ids[:user_ids].count >= limit
 
         @ids[METHOD_KEY_MAP[method_name]] = group.public_send(method_name).limit(limit) # rubocop:disable GitlabSecurity/PublicSend
-                                                 .pluck(:id).to_set # rubocop:disable CodeReuse/ActiveRecord
+                                              .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417464")
+                                              .pluck(:id).to_set # rubocop:disable CodeReuse/ActiveRecord
 
         append_to_user_ids(ids[METHOD_KEY_MAP[method_name]])
       end

@@ -57,6 +57,7 @@ module Security
               .arel
               .exists
           )
+          .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417460")
       end
       # rubocop: enable CodeReuse/ActiveRecord
 

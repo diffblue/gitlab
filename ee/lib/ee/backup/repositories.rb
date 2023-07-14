@@ -32,8 +32,11 @@ module EE
       end
 
       def enqueue_consecutive_groups
-        find_groups_in_batches do |group|
-          enqueue_group(group)
+        cross_join_issue = "https://gitlab.com/gitlab-org/gitlab/-/issues/417467"
+        ::Gitlab::Database.allow_cross_joins_across_databases(url: cross_join_issue) do
+          find_groups_in_batches do |group|
+            enqueue_group(group)
+          end
         end
       end
     end
