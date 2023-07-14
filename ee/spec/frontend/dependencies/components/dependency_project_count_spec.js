@@ -1,38 +1,82 @@
-import { GlLink, GlTruncate } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
+import VueApollo from 'vue-apollo';
+import { GlLink, GlTruncate, GlCollapsibleListbox, GlButton, GlAvatar } from '@gitlab/ui';
+import { shallowMount, mount } from '@vue/test-utils';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import DependencyProjectCount from 'ee/dependencies/components/dependency_project_count.vue';
+import dependenciesProjectsQuery from 'ee/dependencies/graphql/projects.query.graphql';
+import waitForPromises from 'helpers/wait_for_promises';
+
+Vue.use(VueApollo);
 
 describe('Dependency Project Count component', () => {
   let wrapper;
 
-  const project = { full_path: 'full_path', name: 'project-name' };
+  const projectName = 'project-name';
+  const fullPath = 'top-level-group/project-name';
+  const avatarUrl = 'url/avatar';
 
-  const createComponent = ({ propsData } = {}) => {
-    wrapper = shallowMount(DependencyProjectCount, {
-      propsData,
-      stubs: { GlTruncate, GlLink },
+  const payload = {
+    data: {
+      group: {
+        id: 1,
+        projects: {
+          nodes: [
+            {
+              avatarUrl,
+              fullPath,
+              id: 2,
+              name: projectName,
+            },
+          ],
+        },
+      },
+    },
+  };
+
+  const apolloResolver = jest.fn().mockResolvedValue(payload);
+
+  const createComponent = ({ propsData, mountFn = shallowMount } = {}) => {
+    const endpoint = 'groups/endpoint/-/dependencies.json';
+    const project = { fullPath, name: projectName };
+
+    const basicProps = {
+      projectCount: 1,
+      project,
+      componentId: 1,
+    };
+
+    const handlers = [[dependenciesProjectsQuery, apolloResolver]];
+
+    wrapper = mountFn(DependencyProjectCount, {
+      apolloProvider: createMockApollo(handlers),
+      propsData: { ...basicProps, ...propsData },
+      provide: { endpoint },
+      stubs: { GlLink, GlTruncate },
     });
   };
 
-  const findMainComponent = () => wrapper.find('[data-testid="dependency-project-count"]');
+  const findProjectLink = () => wrapper.findComponent(GlLink);
+  const findProjectAvatar = () => wrapper.findComponent(GlAvatar);
+  const findProjectList = () => wrapper.findComponent(GlCollapsibleListbox);
+  const findProjectListToggle = () => findProjectList().findComponent(GlButton);
 
   describe('with a single project', () => {
     beforeEach(() => {
-      createComponent({
-        propsData: {
-          projectCount: 1,
-          project,
-        },
-      });
+      createComponent();
     });
 
     it('renders link to project path', () => {
-      expect(findMainComponent().element.tagName).toBe('GLLINK-STUB');
-      expect(findMainComponent().attributes('href')).toContain(project.full_path);
+      expect(findProjectLink().exists()).toBe(true);
+      expect(findProjectLink().attributes('href')).toContain(fullPath);
     });
 
     it('renders project name', () => {
-      expect(wrapper.text()).toContain(project.name);
+      expect(findProjectLink().text()).toContain(projectName);
+    });
+
+    it('does not render listbox', () => {
+      expect(findProjectList().exists()).toBe(false);
     });
   });
 
@@ -41,19 +85,94 @@ describe('Dependency Project Count component', () => {
       createComponent({
         propsData: {
           projectCount: 2,
-          project,
         },
       });
     });
 
-    it('does not render a link', () => {
-      expect(findMainComponent().element.tagName).toBe('SPAN');
-      expect(findMainComponent().attributes('href')).toBe('');
+    it('renders the listbox', () => {
+      expect(findProjectList().props()).toMatchObject({
+        headerText: '2 projects',
+        toggleText: '2 projects',
+        block: true,
+        searchable: true,
+        noCaret: true,
+        variant: 'link',
+        items: [],
+        loading: false,
+        searching: false,
+      });
     });
 
     it('renders project count instead project name', () => {
-      expect(wrapper.text()).toContain('2 projects');
-      expect(wrapper.text()).not.toContain(project.name);
+      expect(findProjectList().props('toggleText')).toBe('2 projects');
+    });
+
+    describe('with fetched data', () => {
+      beforeEach(() => {
+        createComponent({
+          propsData: {
+            projectCount: 2,
+          },
+          mountFn: mount,
+        });
+      });
+
+      it('sets searching based on the data being fetched', async () => {
+        findProjectListToggle().vm.$emit('click');
+        await waitForPromises();
+
+        expect(apolloResolver).toHaveBeenCalled();
+        expect(findProjectList().props('searching')).toBe(false);
+      });
+
+      it('sets searching when search term is updated', async () => {
+        await findProjectList().vm.$emit('search', 'a');
+
+        expect(findProjectList().props('searching')).toBe(true);
+
+        await waitForPromises();
+
+        expect(findProjectList().props('searching')).toBe(false);
+      });
+
+      describe('after the click event', () => {
+        beforeEach(async () => {
+          findProjectListToggle().vm.$emit('click');
+          await waitForPromises();
+        });
+
+        it('displays project avatar', () => {
+          expect(findProjectAvatar().props('src')).toBe(avatarUrl);
+        });
+
+        it('displays project name', () => {
+          expect(findProjectLink().text()).toContain(projectName);
+        });
+
+        it('displays link to project dependencies', () => {
+          expect(findProjectLink().attributes('href')).toBe(`/${fullPath}/-/dependencies`);
+        });
+
+        describe('with relative url root set', () => {
+          beforeEach(async () => {
+            gon.relative_url_root = '/relative_url';
+            createComponent({
+              propsData: {
+                projectCount: 2,
+              },
+              mountFn: mount,
+            });
+            findProjectListToggle().vm.$emit('click');
+            await waitForPromises();
+          });
+
+          it('displays link to project dependencies', () => {
+            expect(findProjectLink().attributes('href')).toBe(
+              `/relative_url/${fullPath}/-/dependencies`,
+            );
+          });
+        });
+      });
     });
   });
 });

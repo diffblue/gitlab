@@ -279,5 +279,27 @@ RSpec.describe Namespaces::ProjectsFinder, feature_category: :groups_and_project
         end
       end
     end
+
+    context 'with existing SBOM occurrence records' do
+      let(:occurrence) { create(:sbom_occurrence, project: project_1) }
+
+      context 'when sbom_component_id is not provided' do
+        it { is_expected.to match_array([project_2, project_1]) }
+      end
+
+      context 'when sbom_component_id is provided as part of params' do
+        let(:params) { { sbom_component_id: occurrence.component_id } }
+
+        it { is_expected.to eq([project_1]) }
+
+        context 'when group_level_dependencies is disabled' do
+          before do
+            stub_feature_flags(group_level_dependencies: false)
+          end
+
+          it { is_expected.to match_array([project_2, project_1]) }
+        end
+      end
+    end
   end
 end

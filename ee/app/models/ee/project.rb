@@ -305,6 +305,10 @@ module EE
           .where(project_states: { verification_state: verification_state_value(state) })
       }
 
+      scope :with_sbom_component, -> (id) do
+        where(id: Sbom::Occurrence.select(:project_id).where(component_id: id))
+      end
+
       delegate :shared_runners_seconds, to: :statistics, allow_nil: true
 
       delegate :ci_minutes_usage, to: :shared_runners_limit_namespace

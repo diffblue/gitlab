@@ -93,10 +93,10 @@ export default {
       }));
     },
     uniqueBasedOnComponentId(dependencies) {
-      return uniqBy(dependencies, 'component_id');
+      return uniqBy(dependencies, 'componentId');
     },
     displayLocation(item) {
-      return this.isProjectNamespace || item.occurrence_count < 2;
+      return this.isProjectNamespace || item.occurrenceCount < 2;
     },
   },
   projectFields: [
@@ -168,7 +168,7 @@ export default {
 
     <template #cell(location)="{ item }">
       <dependency-location v-if="displayLocation(item)" :location="item.location" />
-      <dependency-location-count v-else :location-count="item.occurrence_count" />
+      <dependency-location-count v-else :location-count="item.occurrenceCount" />
     </template>
 
     <template #cell(license)="{ item }">
@@ -179,7 +179,8 @@ export default {
       <dependency-project-count
         v-if="!isProjectNamespace"
         :project="item.project"
-        :project-count="item.project_count"
+        :project-count="item.projectCount"
+        :component-id="item.componentId"
       />
     </template>
 

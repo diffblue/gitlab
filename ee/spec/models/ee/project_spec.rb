@@ -590,6 +590,15 @@ RSpec.describe Project, feature_category: :groups_and_projects do
         it { is_expected.to match_array([project_with_framework_1, project_with_framework_2]) }
       end
     end
+
+    describe '.with_sbom_component' do
+      let_it_be(:project_with_occurrence) { create(:project) }
+      let(:occurrence) { create(:sbom_occurrence, project: project_with_occurrence) }
+
+      subject { described_class.with_sbom_component(occurrence.component_id) }
+
+      it { is_expected.to match_array([project_with_occurrence]) }
+    end
   end
 
   describe 'validations' do

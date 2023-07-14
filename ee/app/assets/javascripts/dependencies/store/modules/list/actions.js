@@ -1,6 +1,10 @@
 import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
-import { normalizeHeaders, parseIntPagination } from '~/lib/utils/common_utils';
+import {
+  normalizeHeaders,
+  parseIntPagination,
+  convertObjectPropsToCamelCase,
+} from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
 import pollUntilComplete from '~/lib/utils/poll_until_complete';
 import download from '~/lib/utils/downloader';
@@ -27,8 +31,17 @@ export const receiveDependenciesSuccess = ({ commit }, { headers, data }) => {
   const normalizedHeaders = normalizeHeaders(headers);
   const pageInfo = parseIntPagination(normalizedHeaders);
   const { dependencies, report: reportInfo } = data;
+  const convertedDependencies = dependencies.map((item) =>
+    convertObjectPropsToCamelCase(item, {
+      deep: true,
+    }),
+  );
 
-  commit(types.RECEIVE_DEPENDENCIES_SUCCESS, { dependencies, reportInfo, pageInfo });
+  commit(types.RECEIVE_DEPENDENCIES_SUCCESS, {
+    dependencies: convertedDependencies,
+    reportInfo,
+    pageInfo,
+  });
 };
 
 export const receiveDependenciesError = ({ commit }, error) =>

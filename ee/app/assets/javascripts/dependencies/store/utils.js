@@ -6,3 +6,8 @@ export const addListType = (store, listType) => {
   store.dispatch('addListType', listType);
   store.dispatch(`${namespace}/setInitialState`, initialState);
 };
+
+export const extractGroupNamespace = (endpoint) => {
+  const match = endpoint.match(/groups\/(.*)\/-\/dependencies.json/);
+  return match ? match[1] : '';
+};

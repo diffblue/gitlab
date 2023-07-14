@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import DependenciesApp from './components/app.vue';
 import createStore from './store';
+import apolloProvider from './graphql/provider';
 
 export default (namespaceType) => {
   const el = document.querySelector('#js-dependencies-app');
@@ -22,6 +23,7 @@ export default (namespaceType) => {
       DependenciesApp,
     },
     store,
+    apolloProvider,
     provide: {
       emptyStateSvgPath,
       documentationPath,

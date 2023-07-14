@@ -1,0 +1,24 @@
+query dependenciesGetGroupProjects(
+  $groupFullPath: ID!
+  $search: String!
+  $first: Int!
+  $sbomComponentId: ID!
+) {
+  group(fullPath: $groupFullPath) {
+    id
+    projects(
+      search: $search
+      first: $first
+      sbomComponentId: $sbomComponentId
+      includeSubgroups: true
+      sort: SIMILARITY
+    ) {
+      nodes {
+        id
+        name
+        avatarUrl
+        fullPath
+      }
+    }
+  }
+}
