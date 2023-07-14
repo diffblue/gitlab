@@ -89,16 +89,29 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         .add(request_id: 'uuid2', role: 'assistant', content: 'response 2', errors: ['error'])
       # this should be ignored because it doesn't contain response
       Gitlab::Llm::Cache.new(user).add(request_id: 'uuid3', role: 'user', content: 'question 3')
-      Gitlab::Llm::Cache.new(user).add(request_id: 'uuid4', role: 'user', content: 'question 4')
-      Gitlab::Llm::Cache.new(user).add(request_id: 'uuid4', role: 'assistant', content: 'response 4')
+
+      travel(2.minutes) do
+        Gitlab::Llm::Cache.new(user).add(request_id: 'uuid4', role: 'user', content: 'question 4')
+      end
+      travel(2.minutes) do
+        Gitlab::Llm::Cache.new(user).add(request_id: 'uuid5', role: 'user', content: 'question 5')
+      end
+      travel(3.minutes) do
+        Gitlab::Llm::Cache.new(user).add(request_id: 'uuid4', role: 'assistant', content: 'response 4')
+      end
+      travel(4.minutes) do
+        Gitlab::Llm::Cache.new(user).add(request_id: 'uuid5', role: 'assistant', content: 'response 5')
+      end
     end
 
-    it 'includes cleaned chat in prompt options' do
+    it 'includes cleaned chat in prompt options with responses reordered to be paired with questions' do
       expected_chat = [
         an_object_having_attributes(content: 'question 1'),
         an_object_having_attributes(content: 'response 1'),
         an_object_having_attributes(content: 'question 4'),
-        an_object_having_attributes(content: 'response 4')
+        an_object_having_attributes(content: 'response 4'),
+        an_object_having_attributes(content: 'question 5'),
+        an_object_having_attributes(content: 'response 5')
       ]
       expect(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
         .to receive(:prompt).once.with(a_hash_including(conversation: expected_chat))
