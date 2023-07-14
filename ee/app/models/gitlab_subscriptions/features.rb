@@ -251,6 +251,7 @@ module GitlabSubscriptions
       summarize_mr_changes
       summarize_my_mr_code_review
       summarize_notes
+      summarize_submitted_review
       stale_runner_cleanup_for_namespace
       status_page
       suggested_reviewers

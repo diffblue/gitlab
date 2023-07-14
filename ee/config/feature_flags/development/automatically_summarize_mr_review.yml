@@ -1,0 +1,8 @@
+---
+name: automatically_summarize_mr_review
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/124581
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/416706
+milestone: '16.2'
+type: development
+group: group::code review
+default_enabled: false

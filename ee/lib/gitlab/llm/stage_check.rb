@@ -14,7 +14,8 @@ module Gitlab
         :explain_vulnerability,
         :generate_commit_message,
         :chat,
-        :fill_in_merge_request_template
+        :fill_in_merge_request_template,
+        :summarize_submitted_review
       ].freeze
       BETA_FEATURES = [].freeze
       THIRD_PARTY_FEATURES = EXPERIMENTAL_FEATURES + BETA_FEATURES
