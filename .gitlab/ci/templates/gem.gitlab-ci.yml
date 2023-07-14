@@ -22,6 +22,8 @@ spec:
 gems $[[inputs.gem_name]]:
   extends: ".gems:rules:$[[inputs.gem_name]]"
   needs: []
+  rules:
+    - exists: ["$[[inputs.gem_path_prefix]]$[[inputs.gem_name]]/.gitlab-ci.yml"]
   trigger:
     include: "$[[inputs.gem_path_prefix]]$[[inputs.gem_name]]/.gitlab-ci.yml"
     strategy: depend
