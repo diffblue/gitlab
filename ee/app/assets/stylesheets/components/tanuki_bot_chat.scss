@@ -1,5 +1,5 @@
 .tanuki-bot-chat-drawer {
-  $height-offset: calc(#{$header-height} + #{$calc-application-bars-height});
+  $height-offset: $calc-application-bars-height;
 
   height: calc(100% - #{$height-offset});
   top: $height-offset !important; // overrides drawerStyles from GlDrawer
