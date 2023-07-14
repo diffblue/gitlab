@@ -174,7 +174,7 @@ The **Repository** settings contain:
   Set a custom branch name for new repositories created in your instance.
 - [Repository's initial default branch protection](../../user/project/repository/branches/default.md#instance-level-default-branch-protection) -
   Configure the branch protections to apply to every repository's default branch.
-- [Repository mirror](../../user/admin_area/settings/visibility_and_access_controls.md#enable-project-mirroring) -
+- [Repository mirror](visibility_and_access_controls.md#enable-project-mirroring) -
   Configure repository mirroring.
 - [Repository storage](../repository_storage_types.md) - Configure storage path settings.
 - Repository maintenance:
