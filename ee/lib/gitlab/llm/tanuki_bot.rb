@@ -138,7 +138,7 @@ module Gitlab
       end
 
       def query_search_documents
-        embeddings_result = openai_client.embeddings(input: question, moderated: true)
+        embeddings_result = openai_client.embeddings(input: question, moderated: false)
         question_embedding = embeddings_result['data'].first['embedding']
 
         ::Embedding::TanukiBotMvc.current.neighbor_for(

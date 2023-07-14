@@ -180,7 +180,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
                 .exactly(3).times
                 .and_return(completion_response)
               expect(openai_client).to receive(:embeddings)
-                .with(hash_including(moderated: true))
+                .with(hash_including(moderated: false))
                 .and_return(embedding_response)
               allow(completion_response).to receive(:parsed_response).and_return(completion_response)
 
@@ -230,7 +230,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
             before do
               allow(Embedding::TanukiBotMvc).to receive(:neighbor_for).and_return(Embedding::TanukiBotMvc.none)
               allow(openai_client).to receive(:embeddings)
-                .with(input: question, moderated: true)
+                .with(input: question, moderated: false)
                 .and_return(embedding_response)
             end
 
@@ -256,7 +256,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
 
                 it 'creates an embedding for the question' do
                   expect(openai_client).to receive(:embeddings)
-                    .with(input: question, moderated: true)
+                    .with(input: question, moderated: false)
                     .and_return(embedding_response)
 
                   execute
@@ -264,7 +264,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
 
                 it 'queries the embedding database for nearest neighbors' do
                   allow(openai_client).to receive(:embeddings)
-                    .with(input: question, moderated: true)
+                    .with(input: question, moderated: false)
                     .and_return(embedding_response)
 
                   expect(::Embedding::TanukiBotMvc).to receive(:current).and_call_original.once
@@ -289,7 +289,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
 
                   it 'raises an error when an error is returned' do
                     allow(openai_client).to receive(:embeddings)
-                      .with(input: question, moderated: true)
+                      .with(input: question, moderated: false)
                       .and_return(embedding_response)
 
                     expect { execute }.to raise_error(RuntimeError, /something went wrong/)
@@ -300,7 +300,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
               describe 'checking documents for relevance and summarizing' do
                 before do
                   allow(openai_client).to receive(:embeddings)
-                    .with(hash_including(moderated: true))
+                    .with(hash_including(moderated: false))
                     .and_return(embedding_response)
                 end
 
