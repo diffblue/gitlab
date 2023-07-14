@@ -1,20 +1,23 @@
-import { GlDropdownItem } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlListboxItem } from '@gitlab/ui';
+import { shallowMount } from '@vue/test-utils';
 import { POLICY_TYPE_FILTER_OPTIONS } from 'ee/security_orchestration/components/policies/constants';
 import PolicyTypeFilter from 'ee/security_orchestration/components/policies/filters/policy_type_filter.vue';
-import { mountExtended } from 'helpers/vue_test_utils_helper';
 
 describe('PolicyTypeFilter component', () => {
   let wrapper;
 
   const createWrapper = (value = '') => {
-    wrapper = mountExtended(PolicyTypeFilter, {
+    wrapper = shallowMount(PolicyTypeFilter, {
       propsData: {
         value,
+      },
+      stubs: {
+        GlCollapsibleListbox,
       },
     });
   };
 
-  const findToggle = () => wrapper.find('button[aria-haspopup="menu"]');
+  const findToggle = () => wrapper.findComponent(GlCollapsibleListbox);
 
   it.each`
     value                                                          | expectedToggleText
@@ -23,13 +26,13 @@ describe('PolicyTypeFilter component', () => {
   `('selects the correct option when value is "$value"', ({ value, expectedToggleText }) => {
     createWrapper(value);
 
-    expect(findToggle().text()).toBe(expectedToggleText);
+    expect(findToggle().props('toggleText')).toBe(expectedToggleText);
   });
 
   it('displays the "All policies" option first', () => {
     createWrapper();
 
-    expect(wrapper.findAllComponents(GlDropdownItem).at(0).text()).toBe(
+    expect(wrapper.findAllComponents(GlListboxItem).at(0).text()).toBe(
       POLICY_TYPE_FILTER_OPTIONS.ALL.text,
     );
   });
@@ -39,11 +42,7 @@ describe('PolicyTypeFilter component', () => {
 
     expect(wrapper.emitted('input')).toBeUndefined();
 
-    wrapper
-      .findByTestId(
-        `policy-type-${POLICY_TYPE_FILTER_OPTIONS.POLICY_TYPE_SCAN_EXECUTION.value}-option`,
-      )
-      .trigger('click');
+    findToggle().vm.$emit('select', POLICY_TYPE_FILTER_OPTIONS.POLICY_TYPE_SCAN_EXECUTION.value);
 
     expect(wrapper.emitted('input')).toEqual([
       [POLICY_TYPE_FILTER_OPTIONS.POLICY_TYPE_SCAN_EXECUTION.value],

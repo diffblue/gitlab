@@ -1,5 +1,5 @@
 <script>
-import { GlFormGroup, GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { GlFormGroup, GlCollapsibleListbox } from '@gitlab/ui';
 import { __ } from '~/locale';
 import { POLICY_TYPE_FILTER_OPTIONS } from '../constants';
 
@@ -7,8 +7,7 @@ export default {
   name: 'PolicyTypeFilter',
   components: {
     GlFormGroup,
-    GlDropdown,
-    GlDropdownItem,
+    GlCollapsibleListbox,
   },
   props: {
     value: {
@@ -21,13 +20,20 @@ export default {
     },
   },
   computed: {
+    listboxItems() {
+      return Object.values(POLICY_TYPE_FILTER_OPTIONS).map((option) => ({
+        value: option.value,
+        text: option.text,
+      }));
+    },
+
     selectedValueText() {
       return Object.values(POLICY_TYPE_FILTER_OPTIONS).find(({ value }) => value === this.value)
         .text;
     },
   },
   methods: {
-    setPolicyType({ value }) {
+    setPolicyType(value) {
       this.$emit('input', value);
     },
   },
@@ -45,20 +51,15 @@ export default {
     label-size="sm"
     :label-for="$options.policyTypeFilterId"
   >
-    <gl-dropdown
+    <gl-collapsible-listbox
       :id="$options.policyTypeFilterId"
       class="gl-display-flex"
       toggle-class="gl-truncate"
-      :text="selectedValueText"
-    >
-      <gl-dropdown-item
-        v-for="option in $options.POLICY_TYPE_FILTER_OPTIONS"
-        :key="option.value"
-        :data-testid="`policy-type-${option.value}-option`"
-        @click="setPolicyType(option)"
-      >
-        {{ option.text }}
-      </gl-dropdown-item>
-    </gl-dropdown>
+      block
+      :toggle-text="selectedValueText"
+      :items="listboxItems"
+      :selected="value"
+      @select="setPolicyType"
+    />
   </gl-form-group>
 </template>
