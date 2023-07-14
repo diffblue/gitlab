@@ -6,11 +6,11 @@ RSpec.describe AlertManagement::HttpIntegrationsFinder, feature_category: :incid
   describe '#execute' do
     let_it_be(:project) { create(:project) }
     let_it_be(:active_integration) { create(:alert_management_http_integration, project: project, endpoint_identifier: 'abc123' ) }
-    let_it_be(:inactive_integration) { create(:alert_management_http_integration, :inactive, project: project, endpoint_identifier: 'abc123' ) }
+    let_it_be(:inactive_integration) { create(:alert_management_http_integration, :inactive, project: project) }
     let_it_be(:prometheus_integration) { create(:alert_management_prometheus_integration, :inactive, project: project ) }
     let_it_be(:extra_prometheus_integration) { create(:alert_management_prometheus_integration, project: project ) }
     let_it_be(:alt_identifier_integration) { create(:alert_management_http_integration, project: project) }
-    let_it_be(:alt_project_integration) { create(:alert_management_http_integration) }
+    let_it_be(:alt_project_integration) { create(:alert_management_http_integration, endpoint_identifier: 'abc123') }
 
     let(:params) { {} }
 
@@ -35,7 +35,7 @@ RSpec.describe AlertManagement::HttpIntegrationsFinder, feature_category: :incid
     context 'endpoint_identifier given' do
       let(:params) { { endpoint_identifier: active_integration.endpoint_identifier } }
 
-      it { is_expected.to contain_exactly(active_integration, inactive_integration) }
+      it { is_expected.to contain_exactly(active_integration) }
     end
 
     context 'active param given' do
