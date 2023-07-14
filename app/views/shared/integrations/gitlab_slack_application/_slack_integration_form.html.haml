@@ -20,7 +20,7 @@
       %td{ class: 'gl-py-3!' }
         = time_ago_with_tooltip(slack_integration.created_at)
       %td{ class: 'gl-py-3!' }
-        .controls
+        .controls.gl-display-flex.gl-gap-3
           - project = integration.project
           = render Pajamas::ButtonComponent.new(href: edit_project_settings_slack_path(project)) do
             = _('Edit')
