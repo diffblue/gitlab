@@ -5855,6 +5855,12 @@ msgstr ""
 msgid "ApprovalRule|Rule name"
 msgstr ""
 
+msgid "ApprovalRule|Search in"
+msgstr ""
+
+msgid "ApprovalRule|Search users or groups"
+msgstr ""
+
 msgid "ApprovalRule|Select eligible approvers by expertise or files changed."
 msgstr ""
 
@@ -5862,6 +5868,12 @@ msgid "ApprovalRule|Target branch"
 msgstr ""
 
 msgid "ApprovalRule|Try for free"
+msgstr ""
+
+msgid "ApprovalRule|all groups"
+msgstr ""
+
+msgid "ApprovalRule|project groups"
 msgstr ""
 
 msgid "ApprovalSettings|Keep approvals"
@@ -40888,9 +40900,6 @@ msgid "Search settings"
 msgstr ""
 
 msgid "Search users"
-msgstr ""
-
-msgid "Search users or groups"
 msgstr ""
 
 msgid "Search your projects"
