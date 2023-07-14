@@ -87,6 +87,7 @@ describe('Usage Quotas Seats mutations', () => {
         mutations[types.RECEIVE_GITLAB_SUBSCRIPTION_SUCCESS](state, {});
 
         expect(state).toMatchObject({
+          planCode: undefined,
           seatsInSubscription: 0,
           seatsInUse: 0,
           maxSeatsUsed: 0,

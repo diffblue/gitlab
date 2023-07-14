@@ -14,7 +14,6 @@ import {
   GlSkeletonLoader,
 } from '@gitlab/ui';
 import { mapActions, mapState, mapGetters } from 'vuex';
-import { helpPagePath } from '~/helpers/help_page_helper';
 import dateFormat from '~/lib/dateformat';
 import { visitUrl } from '~/lib/utils/url_utility';
 import {
@@ -25,6 +24,16 @@ import {
   CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_TITLE,
   CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT,
   SORT_OPTIONS,
+  emailNotVisibleTooltipText,
+  filterUsersPlaceholder,
+  pendingMembersAlertButtonText,
+  seatsAvailableText,
+  seatsInSubscriptionText,
+  seatsInSubscriptionTextForFreePlan,
+  seatsInUseLink,
+  seatsTooltipText,
+  seatsTooltipTrialText,
+  unlimited,
 } from 'ee/usage_quotas/seats/constants';
 import { s__, __, sprintf, n__ } from '~/locale';
 import SearchAndSortBar from 'ee/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
@@ -84,7 +93,7 @@ export default {
       'notificationFreeUserCapEnabled',
       'activeTrial',
     ]),
-    ...mapGetters(['tableItems', 'isLoading']),
+    ...mapGetters(['tableItems', 'hasFreePlan', 'isLoading']),
     currentPage: {
       get() {
         return this.page;
@@ -138,6 +147,10 @@ export default {
       return this.total;
     },
     seatsInUseText() {
+      if (this.hasFreePlan) {
+        return this.$options.i18n.seatsInSubscriptionTextForFreePlan;
+      }
+
       return this.hasLimitedPlanOrInNotificationFreePlan
         ? this.$options.i18n.seatsAvailableText
         : this.$options.i18n.seatsInSubscriptionText;
@@ -210,23 +223,19 @@ export default {
       visitUrl(this.pendingMembersPagePath);
     },
   },
+  helpLinks: {
+    seatsInUseLink,
+  },
   i18n: {
-    emailNotVisibleTooltipText: s__(
-      'Billing|An email address is only visible for users with public emails.',
-    ),
-    filterUsersPlaceholder: __('Filter users'),
-    pendingMembersAlertButtonText: s__('Billing|View pending approvals'),
-    seatsInSubscriptionText: s__('Billings|Seats in use / Seats in subscription'),
-    seatsAvailableText: s__('Billings|Seats in use / Seats available'),
-    seatsTooltipText: s__('Billings|Free groups are limited to %{number} seats.'),
-    seatsTooltipTrialText: s__(
-      'Billings|Free tier and trial groups can invite a maximum of 20 members per day.',
-    ),
-    inASeatLabel: s__('Billings|In a seat'),
-    seatsInUseLink: helpPagePath('subscriptions/gitlab_com/index', {
-      anchor: 'how-seat-usage-is-determined',
-    }),
-    unlimited: __('Unlimited'),
+    seatsInSubscriptionTextForFreePlan,
+    seatsAvailableText,
+    seatsInSubscriptionText,
+    seatsTooltipTrialText,
+    seatsTooltipText,
+    unlimited,
+    pendingMembersAlertButtonText,
+    filterUsersPlaceholder,
+    emailNotVisibleTooltipText,
   },
   avatarSize: AVATAR_SIZE,
   fields: FIELDS,
@@ -278,7 +287,7 @@ export default {
 
       <div v-else class="gl-display-grid gl-md-grid-template-columns-2 gl-gap-5">
         <statistics-card
-          :help-link="$options.i18n.seatsInUseLink"
+          :help-link="$options.helpLinks.seatsInUseLink"
           :help-tooltip="seatsInUseTooltipText"
           :description="seatsInUseText"
           :percentage="seatsInUsePercentage"
