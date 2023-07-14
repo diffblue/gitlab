@@ -18,7 +18,7 @@ module Analytics
     #     }
     #   }
     class ValueStreamErrorsSerializer
-      STAGE_ATTRIBUTE_REGEX = /stages\[(\d+)\]\.(.+)/.freeze
+      STAGE_ATTRIBUTE_REGEX = /stages\[(\d+)\]\.(.+)/
 
       def initialize(value_stream)
         @value_stream = value_stream

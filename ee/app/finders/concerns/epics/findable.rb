@@ -15,7 +15,7 @@ module Epics
     include Gitlab::Utils::StrongMemoize
     extend ::Gitlab::Utils::Override
 
-    IID_STARTS_WITH_PATTERN = %r{\A(\d)+\z}.freeze
+    IID_STARTS_WITH_PATTERN = %r{\A(\d)+\z}
 
     class_methods do
       def scalar_params

@@ -8,7 +8,7 @@ module Gitlab
     class ReferenceExtractor
       # Not using `Devise.email_regexp` to filter out any chars that an email
       # does not end with and not pinning the email to a start of end of a string.
-      EMAIL_REGEXP = /(?<email>([^@\s]+@[^@\s]+(?<!\W)))/.freeze
+      EMAIL_REGEXP = /(?<email>([^@\s]+@[^@\s]+(?<!\W)))/
       NAME_REGEXP = User.reference_pattern
 
       def initialize(text)

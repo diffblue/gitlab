@@ -135,7 +135,7 @@ class Iteration < ApplicationRecord
           "[^"]+"        # String-based multi-word iteration surrounded in quotes
         )
       )
-    }x.freeze
+    }x
     end
 
     def link_reference_pattern

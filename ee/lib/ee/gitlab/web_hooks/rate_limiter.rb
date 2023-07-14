@@ -10,8 +10,8 @@ module EE
         MID_RATE_LIMIT = :web_hook_calls_mid
         HIGH_RATE_LIMIT = ::Gitlab::WebHooks::RateLimiter::LIMIT_NAME
 
-        PREMIUM_MID_RANGE = (100..399).freeze
-        ULTIMATE_MID_RANGE = (1_000..4_999).freeze
+        PREMIUM_MID_RANGE = (100..399)
+        ULTIMATE_MID_RANGE = (1_000..4_999)
 
         LIMIT_MAP = {
           Plan::BRONZE => PREMIUM_MID_RANGE,

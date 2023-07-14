@@ -8,7 +8,7 @@ module EE
     prepended do
       BACKOFF_PERIOD = 24.seconds
       JITTER = 6.seconds
-      SSL_CERTIFICATE_PROBLEM = /SSL certificate problem/.freeze
+      SSL_CERTIFICATE_PROBLEM = /SSL certificate problem/
 
       delegate :mirror?, :mirror_with_content?, :archived, :pending_delete, to: :project
 

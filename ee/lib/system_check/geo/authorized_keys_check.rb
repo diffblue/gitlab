@@ -16,7 +16,7 @@ module SystemCheck
         \k<quote>              # boundary for command, backtracks the same detected quote, or none
         \s*                    # optional any amount of space character
         (?:\#.*)?$             # optional start-comment symbol followed by optionally any character until end of line
-      }x.freeze
+      }x
       OPENSSH_AUTHORIZED_KEYS_USER_REGEXP = %r{
         ^AuthorizedKeysCommandUser # line starts with
         \s+                        # one space or more
@@ -25,7 +25,7 @@ module SystemCheck
         \k<quote>                  # boundary for command, backtracks the same detected quote, or none
         \s*                        # optional any amount of space character
         (?:\#.*)?$                 # optional start-comment symbol followed by optionally any character until end of line
-      }x.freeze
+      }x
       OPENSSH_EXPECTED_COMMAND = '/opt/gitlab/embedded/service/gitlab-shell/bin/gitlab-shell-authorized-keys-check git %u %k'
 
       def multi_check
