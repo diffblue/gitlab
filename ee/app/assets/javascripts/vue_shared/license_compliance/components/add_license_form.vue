@@ -92,7 +92,8 @@ export default {
           v-for="option in $options.approvalStatusOptions"
           :key="option.value"
           :value="option.value"
-          :data-qa-selector="`${option.value}_license_radio`"
+          data-testid="license-radio"
+          :data-qa-option="option.value"
           :aria-describedby="`js-${option.value}-license-radio`"
           class="gl-mb-3"
         >
@@ -109,7 +110,7 @@ export default {
         :disabled="submitDisabled"
         :loading="loading"
         variant="confirm"
-        data-qa-selector="add_license_submit_button"
+        data-testid="add-license-submit-button"
         @click="addLicense"
       >
         {{ __('Submit') }}

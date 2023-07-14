@@ -77,7 +77,7 @@ module QA
           end
 
           def status_dropdown_button_selector
-            "[data-qa-selector='filter_status_dropdown'] > button"
+            "[data-testid='filter-status-dropdown'] > button"
           end
 
           def status_item_selector(status)
@@ -90,7 +90,7 @@ module QA
           end
 
           def activity_dropdown_button_selector
-            "[data-qa-selector='filter_activity_dropdown'] > button"
+            "[data-testid='filter-activity-dropdown'] > button"
           end
 
           def activity_item_selector(activity_name)

@@ -124,7 +124,7 @@ export default {
     :fields="fields"
     :items="localDependencies"
     :busy="isLoading"
-    data-qa-selector="dependencies_table_content"
+    data-testid="dependencies-table-content"
     details-td-class="pt-0"
     stacked="md"
   >

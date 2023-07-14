@@ -13,10 +13,10 @@ module QA
             end
 
             view 'ee/app/assets/javascripts/security_dashboard/components/pipeline/vulnerability_action_buttons.vue' do
-              element :finding_dismiss_symbol_button
-              element :finding_create_issue_button
-              element :finding_undo_dismiss_button
-              element :finding_more_info_button
+              element :dismiss_vulnerability
+              element :create_issue
+              element :undo_dismiss
+              element :more_info
             end
 
             view 'ee/app/assets/javascripts/security_dashboard/components/pipeline/filters.vue' do
@@ -51,15 +51,15 @@ module QA
             end
 
             def undo_dismiss_button_present?(finding_name)
-              has_element?(:finding_undo_dismiss_button, finding_name: finding_name)
+              has_element?(:undo_dismiss, finding_name: finding_name)
             end
 
             def create_issue(finding_name)
-              click_element(:finding_create_issue_button, QA::Page::Project::Issue::Show, finding_name: finding_name)
+              click_element(:create_issue, QA::Page::Project::Issue::Show, finding_name: finding_name)
             end
 
             def expand_security_finding(finding_name)
-              click_element(:finding_more_info_button, finding_name: finding_name)
+              click_element(:more_info, finding_name: finding_name)
             end
           end
         end
