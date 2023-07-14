@@ -36,7 +36,7 @@ export default {
           return;
         }
 
-        const { repository, group, id } = result.data.project;
+        const { nameWithNamespace, repository, group, id } = result.data.project;
 
         const hasDevFile = repository
           ? repository.blobs.nodes.some(({ path }) => path === DEFAULT_DEVFILE_PATH)
@@ -53,6 +53,8 @@ export default {
 
         this.$emit('result', {
           id,
+          fullPath: this.projectFullPath,
+          nameWithNamespace,
           clusterAgents: clusterAgentsResponse.result,
           groupPath,
           hasDevFile,

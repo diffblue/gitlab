@@ -108,6 +108,7 @@ export const GET_PROJECT_DETAILS_QUERY_RESULT = {
   data: {
     project: {
       id: 'gid://gitlab/Project/79',
+      nameWithNamespace: 'Gitlab Org / GitLab Shell',
       repository: {
         rootRef: 'main',
         blobs: {
