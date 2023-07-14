@@ -37,7 +37,6 @@ RSpec.shared_examples 'a model with a requirement issue association' do
           # the state is technically "invalid" (there are test reports associated with a non-requirement issue)
           # but we don't want to prevent updating other fields
           requirement_issue.update_columns(
-            issue_type: :incident,
             work_item_type_id: WorkItems::Type.default_by_type(:incident).id
           )
         end

@@ -8,7 +8,7 @@ RSpec.describe WorkItems::Widgets::IterationService::CreateService, feature_cate
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:cadence) { create(:iterations_cadence, group: group) }
   let_it_be(:iteration) { create(:iteration, iterations_cadence: cadence) }
-  let_it_be_with_reload(:work_item) { create(:work_item, :issue, project: project, author: user) }
+  let_it_be_with_reload(:work_item) { create(:work_item, project: project, author: user) }
 
   let(:widget) { work_item.widgets.find { |widget| widget.is_a?(WorkItems::Widgets::Iteration) } }
 

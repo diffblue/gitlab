@@ -19,14 +19,12 @@ end
 # when migration is completed. More information at https://gitlab.com/gitlab-org/gitlab/-/issues/323779
 FactoryBot.define do
   factory :requirement_issue, parent: :issue do
-    issue_type { :requirement }
     association :work_item_type, :default, :requirement
   end
 end
 
 FactoryBot.define do
   factory :quality_test_case, parent: :issue do
-    issue_type { :test_case }
     association :work_item_type, :default, :test_case
   end
 end

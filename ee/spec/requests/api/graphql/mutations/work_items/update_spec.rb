@@ -506,7 +506,7 @@ RSpec.describe 'Update a work item' do
           end
 
           context 'when the work item type does not support the health status widget' do
-            let_it_be(:work_item) { create(:work_item, :issue, project: project) }
+            let_it_be(:work_item) { create(:work_item, project: project) }
 
             let(:input) do
               { 'descriptionWidget' => { 'description' => "Updating health status.\n/health_status on_track" } }

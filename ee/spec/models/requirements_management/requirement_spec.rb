@@ -232,7 +232,7 @@ RSpec.describe RequirementsManagement::Requirement do
 
     context 'when destroying a requirement' do
       it 'also destroys the associated requirement issue' do
-        expect { requirement.destroy! }.to change { Issue.where(issue_type: 'requirement').count }.by(-1)
+        expect { requirement.destroy! }.to change { Issue.with_issue_type(:requirement).count }.by(-1)
       end
     end
 
