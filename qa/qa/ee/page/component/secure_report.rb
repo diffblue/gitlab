@@ -35,11 +35,14 @@ module QA
             end
           end
 
-          def filter_report_type(report)
+          def filter_report_type(report, project_filter = true)
             click_element(:filter_tool_dropdown)
 
-            click_element "filter_#{report.downcase.tr(" ", "_")}_dropdown_item"
-
+            if project_filter
+              find("[data-testid='listbox-item-GitLab.#{report.upcase.tr(" ", "_")}']").click
+            else
+              find("[data-testid='listbox-item-#{report.upcase.tr(" ", "_")}']").click
+            end
             # Click the dropdown to close the modal and ensure it isn't open if this function is called again
             click_element(:filter_tool_dropdown)
           end

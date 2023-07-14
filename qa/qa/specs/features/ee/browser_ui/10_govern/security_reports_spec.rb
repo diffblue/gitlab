@@ -58,51 +58,47 @@ module QA
         Page::Project::Pipeline::Show.perform do |pipeline|
           pipeline.click_on_security
 
-          filter_report_and_perform(pipeline, "Dependency Scanning") do
+          filter_report_and_perform(page: pipeline, filter_report: "Dependency Scanning", project_filter: false) do
             expect(pipeline).to have_vulnerability_info_content dependency_scan_example_vuln
           end
 
-          filter_report_and_perform(pipeline, "Container Scanning") do
+          filter_report_and_perform(page: pipeline, filter_report: "Container Scanning", project_filter: false) do
             expect(pipeline).to have_vulnerability_info_content container_scan_example_vuln
           end
 
-          filter_report_and_perform(pipeline, "SAST") do
+          filter_report_and_perform(page: pipeline, filter_report: "SAST", project_filter: false) do
             expect(pipeline).to have_vulnerability_info_content sast_scan_example_vuln
             expect(pipeline).to have_vulnerability_info_content sast_scan_fp_example_vuln
           end
 
-          filter_report_and_perform(pipeline, "DAST") do
+          filter_report_and_perform(page: pipeline, filter_report: "DAST", project_filter: false) do
             expect(pipeline).to have_vulnerability_info_content dast_scan_example_vuln
           end
         end
       end
 
       it 'displays security reports in the project security dashboard',
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348037',
-        quarantine: {
-          type: :stale,
-          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/416731'
-        } do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348037' do
         push_security_reports
         Page::Project::Menu.perform(&:click_project)
         Page::Project::Menu.perform(&:go_to_vulnerability_report)
 
         EE::Page::Project::Secure::Show.perform do |dashboard|
-          filter_report_and_perform(dashboard, "Dependency Scanning") do
+          filter_report_and_perform(page: dashboard, filter_report: "Dependency Scanning", project_filter: true) do
             expect(dashboard).to have_vulnerability dependency_scan_example_vuln
           end
 
-          filter_report_and_perform(dashboard, "Container Scanning") do
+          filter_report_and_perform(page: dashboard, filter_report: "Container Scanning", project_filter: true) do
             expect(dashboard).to have_vulnerability container_scan_example_vuln
           end
 
-          filter_report_and_perform(dashboard, "SAST") do
+          filter_report_and_perform(page: dashboard, filter_report: "SAST", project_filter: true) do
             expect(dashboard).to have_vulnerability sast_scan_example_vuln
             expect(dashboard).to have_vulnerability sast_scan_fp_example_vuln
             expect(dashboard).to have_false_positive_vulnerability
           end
 
-          filter_report_and_perform(dashboard, "DAST") do
+          filter_report_and_perform(page: dashboard, filter_report: "DAST", project_filter: true) do
             expect(dashboard).to have_vulnerability dast_scan_example_vuln
           end
         end
@@ -123,32 +119,28 @@ module QA
         Page::Group::Menu.perform(&:click_group_vulnerability_link)
 
         EE::Page::Group::Secure::Show.perform do |dashboard|
-          dashboard.filter_project(project.name)
+          dashboard.filter_project(project.id)
 
-          filter_report_and_perform(dashboard, "Dependency Scanning") do
+          filter_report_and_perform(page: dashboard, filter_report: "Dependency Scanning", project_filter: false) do
             expect(dashboard).to have_vulnerability dependency_scan_example_vuln
           end
 
-          filter_report_and_perform(dashboard, "Container Scanning") do
+          filter_report_and_perform(page: dashboard, filter_report: "Container Scanning", project_filter: false) do
             expect(dashboard).to have_vulnerability container_scan_example_vuln
           end
 
-          filter_report_and_perform(dashboard, "SAST") do
+          filter_report_and_perform(page: dashboard, filter_report: "SAST", project_filter: false) do
             expect(dashboard).to have_vulnerability sast_scan_example_vuln
           end
 
-          filter_report_and_perform(dashboard, "DAST") do
+          filter_report_and_perform(page: dashboard, filter_report: "DAST", project_filter: false) do
             expect(dashboard).to have_vulnerability dast_scan_example_vuln
           end
         end
       end
 
       it 'displays false positives for the vulnerabilities',
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/350412',
-        quarantine: {
-          type: :stale,
-          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/416731'
-        } do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/350412' do
         push_security_reports
         Page::Project::Menu.perform(&:click_project)
         Support::Waiter.wait_until(sleep_interval: 3) do
@@ -195,10 +187,10 @@ module QA
         end
       end
 
-      def filter_report_and_perform(page, report)
-        page.filter_report_type report
+      def filter_report_and_perform(page:, filter_report:, project_filter: true)
+        page.filter_report_type(filter_report, project_filter)
         yield
-        page.filter_report_type report # Disable filter to avoid combining
+        page.filter_report_type(filter_report, project_filter) # Disable filter to avoid combining
       end
 
       def push_security_reports

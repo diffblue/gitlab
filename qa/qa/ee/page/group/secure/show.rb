@@ -16,9 +16,9 @@ module QA
               element :project_name_text, required: true
             end
 
-            def filter_project(project)
+            def filter_project(project_id)
               click_element(:filter_project_dropdown)
-              click_element "filter_#{project.downcase.tr(" ", "_")}_dropdown_item"
+              find("[data-testid='listbox-item-#{project_id}']").click
             end
 
             def has_security_status_project_for_severity?(severity, project)

@@ -1,9 +1,7 @@
-import { GlDropdown } from '@gitlab/ui';
+import { GlCollapsibleListbox } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import ToolFilter from 'ee/security_dashboard/components/shared/filters/tool_filter.vue';
 import QuerystringSync from 'ee/security_dashboard/components/shared/filters/querystring_sync.vue';
-import DropdownButtonText from 'ee/security_dashboard/components/shared/filters/dropdown_button_text.vue';
-import FilterItem from 'ee/security_dashboard/components/shared/filters/filter_item.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { ALL_ID } from 'ee/security_dashboard/components/shared/filters/constants';
 import {
@@ -25,20 +23,12 @@ describe('Tool Filter component', () => {
   };
 
   const findQuerystringSync = () => wrapper.findComponent(QuerystringSync);
-  const findDropdownItems = () => wrapper.findAllComponents(FilterItem);
-  const findDropdownItem = (id) => wrapper.findByTestId(id);
-
-  const clickDropdownItem = async (id) => {
-    findDropdownItem(id).vm.$emit('click');
-    await nextTick();
-  };
+  const findListBox = () => wrapper.findComponent(GlCollapsibleListbox);
+  const findListboxItem = (id) => wrapper.findByTestId(`listbox-item-${id}`);
+  const clickListboxItem = (id) => findListboxItem(id).trigger('click');
 
   const expectSelectedItems = (ids) => {
-    const checkedItems = findDropdownItems()
-      .wrappers.filter((item) => item.props('isChecked'))
-      .map((item) => item.attributes('data-testid'));
-
-    expect(checkedItems).toEqual(ids);
+    expect(findListBox().props('selected')).toMatchObject(ids);
   };
 
   beforeEach(() => {
@@ -56,9 +46,9 @@ describe('Tool Filter component', () => {
     it.each`
       emitted                    | expected
       ${[]}                      | ${[ALL_ID]}
-      ${[ALL_ID]}                | ${[]}
+      ${[ALL_ID]}                | ${['ALL']}
       ${['SAST']}                | ${['SAST']}
-      ${['SAST', 'API_FUZZING']} | ${['API_FUZZING', 'SAST']}
+      ${['SAST', 'API_FUZZING']} | ${['SAST', 'API_FUZZING']}
     `('restores selected items - $emitted', async ({ emitted, expected }) => {
       findQuerystringSync().vm.$emit('input', emitted);
       await nextTick();
@@ -73,14 +63,8 @@ describe('Tool Filter component', () => {
     });
 
     it('shows the dropdown with correct header text', () => {
-      expect(wrapper.findComponent(GlDropdown).props('headerText')).toBe('Tool');
-    });
-
-    it('shows the DropdownButtonText component with the correct props', () => {
-      expect(wrapper.findComponent(DropdownButtonText).props()).toMatchObject({
-        items: ['All tools'],
-        name: 'Tool',
-      });
+      expect(wrapper.find('label').text()).toBe(ToolFilter.i18n.label);
+      expect(findListBox().props('headerText')).toBe(ToolFilter.i18n.label);
     });
   });
 
@@ -95,14 +79,14 @@ describe('Tool Filter component', () => {
       ({ dashboardType, reportTypes }) => {
         createWrapper({ dashboardType });
         const dropdownOptions = Object.entries(reportTypes).map(([id, text]) => ({
-          id: id.toUpperCase(),
+          value: id.toUpperCase(),
           text,
         }));
 
-        expect(findDropdownItems()).toHaveLength(dropdownOptions.length + 1);
-        expect(findDropdownItem(ALL_ID).text()).toBe('All tools');
-        dropdownOptions.forEach(({ id, text }) => {
-          expect(findDropdownItem(id).text()).toBe(text);
+        expect(findListBox().props('items')).toHaveLength(dropdownOptions.length + 1);
+        expect(findListboxItem(ALL_ID).text()).toBe('All tools');
+        dropdownOptions.forEach(({ value, text }) => {
+          expect(findListboxItem(value).text()).toBe(text);
         });
       },
     );
@@ -111,7 +95,7 @@ describe('Tool Filter component', () => {
       const ids = [];
 
       for await (const id of OPTION_IDS) {
-        await clickDropdownItem(id);
+        await clickListboxItem(id);
         ids.push(id);
 
         expectSelectedItems(ids);
@@ -120,11 +104,11 @@ describe('Tool Filter component', () => {
 
     it('toggles the item selection when clicked on', async () => {
       for await (const id of OPTION_IDS) {
-        await clickDropdownItem(id);
+        await clickListboxItem(id);
 
         expectSelectedItems([id]);
 
-        await clickDropdownItem(id);
+        await clickListboxItem(id);
 
         expectSelectedItems([ALL_ID]);
       }
@@ -135,15 +119,15 @@ describe('Tool Filter component', () => {
     });
 
     it('selects ALL item and deselects everything else when it is clicked', async () => {
-      await clickDropdownItem(ALL_ID);
-      await clickDropdownItem(ALL_ID); // Click again to verify that it doesn't toggle.
+      await clickListboxItem(ALL_ID);
+      await clickListboxItem(ALL_ID); // Click again to verify that it doesn't toggle.
 
       expectSelectedItems([ALL_ID]);
     });
 
     it('deselects the ALL item when another item is clicked', async () => {
-      await clickDropdownItem(ALL_ID);
-      await clickDropdownItem(OPTION_IDS[0]);
+      await clickListboxItem(ALL_ID);
+      await clickListboxItem(OPTION_IDS[0]);
 
       expectSelectedItems([OPTION_IDS[0]]);
     });
@@ -154,7 +138,7 @@ describe('Tool Filter component', () => {
       const ids = [];
 
       for await (const id of OPTION_IDS) {
-        await clickDropdownItem(id);
+        await clickListboxItem(id);
         ids.push(id);
 
         expect(wrapper.emitted('filter-changed')[ids.length - 1][0].reportType).toEqual(ids);
@@ -162,7 +146,7 @@ describe('Tool Filter component', () => {
     });
 
     it('emits filter-changed event with preset report types when ALL item is clicked', async () => {
-      await clickDropdownItem(ALL_ID);
+      await clickListboxItem(ALL_ID);
 
       expect(wrapper.emitted('filter-changed')[0][0].reportType).toEqual(
         REPORT_TYPE_PRESETS.DEVELOPMENT,
