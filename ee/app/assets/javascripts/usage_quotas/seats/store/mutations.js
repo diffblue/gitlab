@@ -21,6 +21,7 @@ export default {
     state.maxSeatsUsed = usage?.max_seats_used ?? 0;
     state.seatsOwed = usage?.seats_owed ?? 0;
     state.activeTrial = Boolean(plan?.trial);
+    state.planCode = plan?.code;
 
     if (state.hasLimitedFreePlan) {
       state.hasReachedFreePlanLimit = state.seatsInUse >= state.maxFreeNamespaceSeats;

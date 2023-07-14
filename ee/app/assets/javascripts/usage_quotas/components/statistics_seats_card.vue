@@ -1,23 +1,28 @@
 <script>
 import { GlLink, GlIcon, GlButton } from '@gitlab/ui';
-import { __, s__ } from '~/locale';
-import { helpPagePath } from '~/helpers/help_page_helper';
+import {
+  addSeatsText,
+  seatsOwedHelpText,
+  seatsOwedLink,
+  seatsOwedText,
+  seatsUsedHelpText,
+  seatsUsedLink,
+  seatsUsedText,
+} from 'ee/usage_quotas/seats/constants';
 
 export default {
   name: 'StatisticsSeatsCard',
   components: { GlLink, GlIcon, GlButton },
-  i18n: {
-    seatsUsedText: __('Max seats used'),
-    seatsUsedHelpText: __('Learn more about max seats used'),
-    seatsOwedText: __('Seats owed'),
-    seatsOwedHelpText: __('Learn more about seats owed'),
-    addSeatsText: s__('Billing|Add seats'),
-  },
   helpLinks: {
-    seatsOwedLink: helpPagePath('subscriptions/gitlab_com/index', { anchor: 'seats-owed' }),
-    seatsUsedLink: helpPagePath('subscriptions/gitlab_com/index', {
-      anchor: 'view-your-gitlab-saas-subscription',
-    }),
+    seatsUsedLink,
+    seatsOwedLink,
+  },
+  i18n: {
+    seatsUsedText,
+    seatsUsedHelpText,
+    seatsOwedText,
+    seatsOwedHelpText,
+    addSeatsText,
   },
   props: {
     /**

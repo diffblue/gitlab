@@ -23,6 +23,7 @@ export default ({
   pendingMembersCount,
   members: [],
   total: null,
+  planCode: null,
   page: null,
   perPage: null,
   billableMemberToRemove: null,

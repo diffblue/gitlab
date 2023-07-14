@@ -7469,6 +7469,9 @@ msgstr ""
 msgid "Billings|Free groups are limited to %{number} seats."
 msgstr ""
 
+msgid "Billings|Free seats used"
+msgstr ""
+
 msgid "Billings|Free tier and trial groups can invite a maximum of 20 members per day."
 msgstr ""
 

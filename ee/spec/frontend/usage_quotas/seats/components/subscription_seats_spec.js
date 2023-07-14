@@ -52,6 +52,7 @@ const fakeStore = ({ initialState, initialGetters }) =>
     getters: {
       tableItems: () => mockTableItems,
       isLoading: () => false,
+      hasFreePlan: () => false,
       ...initialGetters,
     },
     state: {
@@ -292,6 +293,9 @@ describe('Subscription Seats', () => {
                 hasLimitedFreePlan: false,
                 activeTrial: false,
               },
+              initialGetters: {
+                hasFreePlan: () => true,
+              },
             });
           });
 
@@ -301,7 +305,7 @@ describe('Subscription Seats', () => {
             expect(statisticsCard.exists()).toBe(true);
             expect(statisticsCard.props()).toMatchObject({
               ...defaultProps,
-              description: 'Seats in use / Seats in subscription',
+              description: 'Free seats used',
               percentage: 0,
               totalValue: 'Unlimited',
               usageValue: '2',
