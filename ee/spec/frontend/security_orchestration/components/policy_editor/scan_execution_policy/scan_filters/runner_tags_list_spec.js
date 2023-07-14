@@ -1,7 +1,7 @@
 import { GlButton, GlPopover, GlLink } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import RunnerTagsList from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/runner_tags_list.vue';
+import RunnerTagsList from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/scan_filters/runner_tags_list.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { createMockApolloProvider } from 'ee_jest/vue_shared/components/runner_tags_dropdown/mocks/apollo_mock';
 import {

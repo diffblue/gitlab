@@ -1,19 +1,14 @@
 <script>
 import { isEmpty } from 'lodash';
-import {
-  GlCollapsibleListbox,
-  GlFormGroup,
-  GlIcon,
-  GlSprintf,
-  GlTooltipDirective as GlTooltip,
-} from '@gitlab/ui';
+import { GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import GenericBaseLayoutComponent from '../generic_base_layout_component.vue';
 import { ACTION_AND_LABEL, RULE_MODE_SCANNERS } from '../constants';
 import ScanFilterSelector from '../scan_filter_selector.vue';
-import { CI_VARIABLE, FILTERS } from './scan_filters/constants';
+import { CI_VARIABLE, RUNNER_TAGS, FILTERS } from './scan_filters/constants';
 import CiVariablesSelectors from './scan_filters/ci_variables_selectors.vue';
+import RunnerTagsFilter from './scan_filters/runner_tags_filter.vue';
 import {
   DAST_HUMANIZED_TEMPLATE,
   DEFAULT_SCANNER,
@@ -24,7 +19,6 @@ import {
 } from './constants';
 import ProjectDastProfileSelector from './project_dast_profile_selector.vue';
 import GroupDastProfileSelector from './group_dast_profile_selector.vue';
-import RunnerTagsList from './runner_tags_list.vue';
 import { buildScannerAction } from './lib';
 
 export default {
@@ -36,18 +30,13 @@ export default {
   POLICY_ACTION_BUILDER_TAGS_ERROR_KEY,
   components: {
     GlCollapsibleListbox,
-    GlFormGroup,
-    GlIcon,
     GlSprintf,
     GenericBaseLayoutComponent,
     CiVariablesSelectors,
-    RunnerTagsList,
     ProjectDastProfileSelector,
     GroupDastProfileSelector,
+    RunnerTagsFilter,
     ScanFilterSelector,
-  },
-  directives: {
-    GlTooltip,
   },
   inject: ['namespacePath', 'namespaceType'],
   props: {
@@ -64,6 +53,7 @@ export default {
   data() {
     return {
       filters: {
+        [RUNNER_TAGS]: this.initAction?.tags?.length ? [] : null,
         [CI_VARIABLE]: null,
       },
       selectedScanner: this.initAction.scan || DEFAULT_SCANNER,
@@ -89,6 +79,9 @@ export default {
         this.isFilterSelected(this.$options.CI_VARIABLE) || Object.keys(this.ciVariables).length > 0
       );
     },
+    isRunnerTagFilterSelected() {
+      return this.isFilterSelected(RUNNER_TAGS) || this.tags.length > 0;
+    },
     selectedScannerText() {
       return RULE_MODE_SCANNERS[this.selectedScanner];
     },
@@ -104,13 +97,8 @@ export default {
     scannerProfile() {
       return this.initAction.scanner_profile?.trim() ?? '';
     },
-    tags: {
-      get() {
-        return this.initAction.tags || [];
-      },
-      set(values) {
-        this.$emit('changed', { ...this.initAction, tags: values });
-      },
+    tags() {
+      return this.initAction.tags || [];
     },
   },
   methods: {
@@ -122,14 +110,27 @@ export default {
       delete updatedAction.variables;
       this.$emit('changed', updatedAction);
     },
+    emitRunnerTagsFilterChanges() {
+      const updatedAction = { ...this.initAction, tags: [] };
+      this.$emit('changed', updatedAction);
+    },
     removeCiFilter() {
       const newFilters = { ...this.filters };
       delete newFilters[CI_VARIABLE];
       this.filters = newFilters;
       this.emitCiVariableFilterChanges();
     },
+    removeRunnerFilter() {
+      const newFilters = { ...this.filters };
+      delete newFilters[RUNNER_TAGS];
+      this.filters = newFilters;
+      this.emitRunnerTagsFilterChanges();
+    },
     selectFilter(filter) {
       this.$set(this.filters, filter, []);
+      if (filter === RUNNER_TAGS) {
+        this.triggerChanged({ tags: [] });
+      }
       if (filter === CI_VARIABLE) {
         this.triggerChanged({ variables: { '': '' } });
       }
@@ -161,11 +162,7 @@ export default {
     },
   },
   i18n: {
-    selectedTagsInformation: s__(
-      'ScanExecutionPolicy|If the field is empty, the runner will be automatically selected',
-    ),
     scannersHeaderText: s__('ScanExecutionPolicy|Select a scanner'),
-    tags: s__('ScanExecutionPolicy|Tags'),
   },
 };
 </script>
@@ -211,30 +208,6 @@ export default {
                   @set-profile="setSelectedScanner"
                 />
               </template>
-
-              <template #tags>
-                <gl-form-group
-                  class="gl-mb-0"
-                  :label="$options.i18n.tags"
-                  label-for="policy-tags"
-                  label-sr-only
-                >
-                  <div class="gl-display-flex gl-align-items-center">
-                    <runner-tags-list
-                      v-model="tags"
-                      :namespace-path="namespacePath"
-                      :namespace-type="namespaceType"
-                      @error="$emit('parsing-error', $options.POLICY_ACTION_BUILDER_TAGS_ERROR_KEY)"
-                    />
-                    <gl-icon
-                      v-gl-tooltip
-                      name="question-o"
-                      :title="$options.i18n.selectedTagsInformation"
-                      class="gl-text-blue-600 gl-ml-2"
-                    />
-                  </div>
-                </gl-form-group>
-              </template>
             </gl-sprintf>
           </template>
         </generic-base-layout-component>
@@ -242,6 +215,14 @@ export default {
     </generic-base-layout-component>
     <generic-base-layout-component class="gl-pt-3" :show-remove-button="false">
       <template #content>
+        <runner-tags-filter
+          v-if="isRunnerTagFilterSelected"
+          :selected="tags"
+          @remove="removeRunnerFilter"
+          @input="triggerChanged"
+          @error="$emit('parsing-error', $options.POLICY_ACTION_BUILDER_TAGS_ERROR_KEY)"
+        />
+
         <ci-variables-selectors
           v-if="isCIVariableSelectorSelected"
           class="gl-bg-white"
