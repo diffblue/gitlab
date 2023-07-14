@@ -667,24 +667,18 @@ class Group < Namespace
       .reorder(nil)
   end
 
-  # Returns all users that are members of the group because:
-  # 1. They belong to the group
-  # 2. They belong to a project that belongs to the group
-  # 3. They belong to a sub-group or project in such sub-group
-  # 4. They belong to an ancestor group
-  # 5. They belong to a group that is shared with this group, if share_with_groups is true
-  def direct_and_indirect_users(share_with_groups: false)
-    members = if share_with_groups
-                # We only need :user_id column, but
-                # `members_from_self_and_ancestor_group_shares` needs more
-                # columns to make the CTE query work.
-                GroupMember.from_union([
-                  direct_and_indirect_members.select(:user_id, :source_type, :type),
-                  members_from_self_and_ancestor_group_shares.reselect(:user_id, :source_type, :type)
-                ])
-              else
-                direct_and_indirect_members
-              end
+  # Returns all users that are related to the group because:
+  # 1. They are members of the group, its sub-groups, or its ancestor groups
+  # 2. They are members of a group that is shared with this group or its ancestors
+  # 3. They are members of a project that belongs to the group
+  def direct_and_indirect_users
+    # We only need :user_id column, but
+    # `members_from_self_and_ancestor_group_shares` needs more
+    # columns to make the CTE query work.
+    members = GroupMember.from_union([
+                direct_and_indirect_members.select(:user_id, :source_type, :type),
+                members_from_self_and_ancestor_group_shares.reselect(:user_id, :source_type, :type)
+              ])
 
     User.from_union([
       User.where(id: members.select(:user_id)).reorder(nil),

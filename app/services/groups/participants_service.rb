@@ -29,9 +29,7 @@ module Groups
     def group_members
       return [] unless group
 
-      sorted(
-        group.direct_and_indirect_users(share_with_groups: group.member?(current_user))
-      )
+      sorted(group.direct_and_indirect_users)
     end
   end
 end
