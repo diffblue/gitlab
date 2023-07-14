@@ -82,7 +82,6 @@ describe('GitLab Duo Chat', () => {
     });
   };
 
-  const findChatBackdrop = () => wrapper.findByTestId('tanuki-bot-chat-drawer-backdrop');
   const findWarning = () => wrapper.findByTestId('chat-legal-warning');
   const findGenieChat = () => wrapper.findComponent(AiGenieChat);
   const findGeneratedByAI = () => wrapper.findByText(i18n.GENIE_CHAT_LEGAL_GENERATED_BY_AI);
@@ -119,41 +118,11 @@ describe('GitLab Duo Chat', () => {
       helpCenterState.showTanukiBotChatDrawer = true;
     });
 
-    it('closes the chat and the backdrop on @chat-hidden', async () => {
+    it('closes the chat on @chat-hidden', async () => {
       findGenieChat().vm.$emit('chat-hidden');
       await nextTick();
       expect(helpCenterState.showTanukiBotChatDrawer).toBe(false);
-      expect(findChatBackdrop().exists()).toBe(false);
       expect(findGenieChat().exists()).toBe(false);
-    });
-  });
-
-  describe('The backdrop', () => {
-    beforeEach(() => {
-      createComponent();
-    });
-
-    it('is not rendered when the chat is closed', () => {
-      expect(findChatBackdrop().exists()).toBe(false);
-    });
-
-    describe('when chat is opened', () => {
-      beforeEach(() => {
-        createComponent();
-        helpCenterState.showTanukiBotChatDrawer = true;
-      });
-
-      it('is rendered', () => {
-        expect(findChatBackdrop().exists()).toBe(true);
-      });
-
-      it('calls `closeDrawer` when clicked', async () => {
-        findChatBackdrop().trigger('click');
-
-        await nextTick();
-
-        expect(findGenieChat().exists()).toBe(false);
-      });
     });
   });
 
