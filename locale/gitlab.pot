@@ -18853,6 +18853,9 @@ msgstr ""
 msgid "Failed to deploy to"
 msgstr ""
 
+msgid "Failed to enable tracing."
+msgstr ""
+
 msgid "Failed to enqueue the rebase operation, possibly due to a long-lived transaction. Try again later."
 msgstr ""
 
@@ -18931,6 +18934,9 @@ msgstr ""
 msgid "Failed to load milestones. Please try again."
 msgstr ""
 
+msgid "Failed to load page."
+msgstr ""
+
 msgid "Failed to load projects"
 msgstr ""
 
@@ -18938,6 +18944,9 @@ msgid "Failed to load related branches"
 msgstr ""
 
 msgid "Failed to load stacktrace."
+msgstr ""
+
+msgid "Failed to load traces."
 msgstr ""
 
 msgid "Failed to make repository read-only. %{reason}"
@@ -20527,6 +20536,9 @@ msgid "Get started"
 msgstr ""
 
 msgid "Get started with GitLab"
+msgstr ""
+
+msgid "Get started with Tracing"
 msgstr ""
 
 msgid "Get started with error tracking"
@@ -29589,6 +29601,9 @@ msgstr ""
 msgid "Monitor Settings"
 msgstr ""
 
+msgid "Monitor your applications with GitLab Distributed Tracing."
+msgstr ""
+
 msgid "Monitor your errors directly in GitLab."
 msgstr ""
 
@@ -30746,6 +30761,9 @@ msgid "No template selected"
 msgstr ""
 
 msgid "No test coverage"
+msgstr ""
+
+msgid "No traces to display."
 msgstr ""
 
 msgid "No user provided"
@@ -32095,6 +32113,9 @@ msgid "Opens in a new window"
 msgstr ""
 
 msgid "Opens new window"
+msgstr ""
+
+msgid "Operation"
 msgstr ""
 
 msgid "Operation not allowed"
@@ -48412,6 +48433,9 @@ msgid "TotalMilestonesIndicator|1000+"
 msgstr ""
 
 msgid "TotalRefCountIndicator|1000+"
+msgstr ""
+
+msgid "Traces"
 msgstr ""
 
 msgid "Tracing"
