@@ -12,13 +12,10 @@ RSpec.describe Boards::EpicLists::ListService do
     let_it_be_with_reload(:board) { create(:epic_board, group: parent) }
     let_it_be(:list) { create(:epic_list, epic_board: board, label: label) }
     let_it_be(:closed_list) { create(:epic_list, epic_board: board, list_type: :closed) }
+    let_it_be(:backlog_list) { create(:epic_list, epic_board: board, list_type: :backlog) }
 
     let(:service) { described_class.new(parent, user) }
 
     it_behaves_like 'lists list service'
-
-    def create_backlog_list(board)
-      create(:epic_list, epic_board: board, list_type: :backlog)
-    end
   end
 end

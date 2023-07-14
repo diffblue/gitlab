@@ -35,7 +35,6 @@ RSpec.describe 'Boards licensed features', :js, feature_category: :team_planning
     shared_context "project issue board" do
       let_it_be(:issue) { create(:issue, project: project) }
       let_it_be(:board) { create(:board, project: project) }
-      let_it_be(:list) { create(:backlog_list, board: board) }
     end
 
     context "GitLab SaaS", :saas do

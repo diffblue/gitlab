@@ -12,7 +12,6 @@ RSpec.describe 'epics swimlanes', :js, feature_category: :team_planning do
   let_it_be(:board) { create(:board, project: project) }
   let_it_be(:label) { create(:label, project: project, name: 'Label1') }
   let_it_be(:list) { create(:list, board: board, label: label, position: 0) }
-  let_it_be(:backlog_list) { create(:backlog_list, board: board) }
 
   let_it_be(:issue1) { create(:issue, project: project, labels: [label]) }
   let_it_be(:issue2) { create(:issue, project: project) }

@@ -54,7 +54,7 @@ RSpec.describe Mutations::Boards::Lists::Create do
         end
 
         it 'creates a new issue board list for milestones' do
-          expect { subject }.to change { board.lists.count }.from(1).to(2)
+          expect { subject }.to change { board.lists.count }.by(1)
 
           new_list = subject[:list]
 
@@ -84,7 +84,7 @@ RSpec.describe Mutations::Boards::Lists::Create do
         end
 
         it 'creates a new issue board list for assignees' do
-          expect { subject }.to change { board.lists.count }.from(1).to(2)
+          expect { subject }.to change { board.lists.count }.by(1)
 
           new_list = subject[:list]
 
@@ -115,7 +115,7 @@ RSpec.describe Mutations::Boards::Lists::Create do
         end
 
         it 'creates a new issue board list for the iteration' do
-          expect { subject }.to change { board.lists.count }.from(1).to(2)
+          expect { subject }.to change { board.lists.count }.by(1)
 
           new_list = subject[:list]
 

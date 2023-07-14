@@ -102,7 +102,6 @@ RSpec.describe 'User visits issue boards', :js, feature_category: :team_planning
   %w[project group].each do |workspace|
     context "visiting #{workspace} boards with search params" do
       let_it_be(:board) { workspace == "project" ? create(:board, project: project) : create(:board, group: group) }
-      let_it_be(:backlog_list) { create(:backlog_list, board: board) }
 
       context 'in list view' do
         let(:board_path) { board_path_helper(workspace, params) }
