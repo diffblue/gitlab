@@ -245,6 +245,7 @@ export default {
       :no-results-text="noResultsText"
       :infinite-scroll="hasInfiniteScroll"
       :searchable="!isMaxProjectsSelected"
+      data-testid="filter-project-dropdown"
       block
       multiple
       @shown="setDropdownOpened"

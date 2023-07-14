@@ -162,6 +162,7 @@ export default {
       :selected="selectedIds"
       multiple
       block
+      data-testid="filter-tool-dropdown"
       @select="updateSelected"
     />
   </div>
