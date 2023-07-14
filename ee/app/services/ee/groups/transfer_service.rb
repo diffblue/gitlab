@@ -21,6 +21,13 @@ module EE
 
       private
 
+      override :add_owner_on_transferred_group
+      def add_owner_on_transferred_group
+        return super unless ::Namespaces::FreeUserCap::Enforcement.new(group).enforce_cap?
+
+        ::Members::Groups::CreatorService.add_member(group, current_user, :owner, ignore_user_limits: true)
+      end
+
       def saml_provider_or_scim_token_present?
         group.saml_provider.present? || group.scim_oauth_access_token.present?
       end

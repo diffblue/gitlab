@@ -30,6 +30,8 @@ module EE
         where(source_id: groups.pluck(:id), access_level: ::Gitlab::Access::DEVELOPER...)
           .limit(::Security::ScanResultPolicy::APPROVERS_LIMIT)
       end
+
+      attr_accessor :ignore_user_limits
     end
 
     class_methods do
@@ -112,6 +114,13 @@ module EE
     override :send_welcome_email?
     def send_welcome_email?
       !provisioned_by_this_group?
+    end
+
+    override :seat_available
+    def seat_available
+      return if ignore_user_limits
+
+      super
     end
   end
 end

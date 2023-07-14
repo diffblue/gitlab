@@ -75,6 +75,34 @@ RSpec.describe Groups::TransferService, '#execute', feature_category: :groups_an
         end
       end
     end
+
+    context 'with free user cap enforced', :saas do
+      before do
+        stub_ee_application_setting(dashboard_limit_new_namespace_creation_enforcement_date: 2.days.ago)
+        stub_ee_application_setting(dashboard_limit: 1)
+      end
+
+      context 'when transferring a subgroup into root group' do
+        let(:group) { create(:group_with_plan, :private, plan: :free_plan) }
+        let(:subgroup) { create(:group, :private, parent: group) }
+        let(:transfer_service) { described_class.new(subgroup, user) }
+
+        before do
+          create(:project, group: subgroup).tap { |r| create(:project_member, project: r) }
+          stub_ee_application_setting(dashboard_limit_enabled: true)
+        end
+
+        it 'ensures there is still an owner for the transferred group' do
+          expect(subgroup.owners).to be_empty
+
+          transfer_service.execute(nil)
+          subgroup.reload
+
+          expect(subgroup.owners).to match_array(user)
+          expect(subgroup.parent).to be_nil
+        end
+      end
+    end
   end
 
   describe 'elasticsearch indexing', :aggregate_failures, :elastic do
