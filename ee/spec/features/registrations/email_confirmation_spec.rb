@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Email Confirmation', feature_category: :onboarding do
+RSpec.describe 'Email Confirmation', feature_category: :instance_resiliency do
   include EmailHelpers
   include SessionsHelper
 
