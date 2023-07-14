@@ -200,11 +200,5 @@ export default {
         </div>
       </template>
     </ai-genie-chat>
-    <div
-      v-if="helpCenterState.showTanukiBotChatDrawer"
-      class="modal-backdrop tanuki-bot-backdrop"
-      data-testid="tanuki-bot-chat-drawer-backdrop"
-      @click="closeDrawer"
-    ></div>
   </div>
 </template>
