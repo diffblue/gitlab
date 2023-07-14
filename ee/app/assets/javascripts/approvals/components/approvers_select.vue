@@ -1,9 +1,15 @@
 <script>
-import { GlCollapsibleListbox, GlAvatarLabeled } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlDropdown, GlDropdownItem, GlAvatarLabeled } from '@gitlab/ui';
 import Api from 'ee/api';
-import { __ } from '~/locale';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import { TYPE_USER, TYPE_GROUP } from '../constants';
+import {
+  TYPE_USER,
+  TYPE_GROUP,
+  DROPDOWN_ITEM_LABEL,
+  SEARCH_PLACEHOLDER,
+  GROUP_OPTIONS,
+  DROPDOWN_OPTION_ALL_GROUPS,
+} from '../constants';
 
 function addType(type) {
   return (items) => items.map((obj) => Object.assign(obj, { type }));
@@ -13,10 +19,14 @@ export default {
   components: {
     GlCollapsibleListbox,
     GlAvatarLabeled,
+    GlDropdown,
+    GlDropdownItem,
   },
   i18n: {
-    toggleText: __('Search users or groups'),
+    toggleText: SEARCH_PLACEHOLDER,
+    dropdownItemLabel: DROPDOWN_ITEM_LABEL,
   },
+  groupOptions: GROUP_OPTIONS,
   props: {
     value: {
       type: Array,
@@ -53,12 +63,19 @@ export default {
       listboxItems: [],
       isSearching: false,
       searchString: '',
+      selectedGroupOption: this.$options.groupOptions[0],
     };
+  },
+  computed: {
+    isAllGroupsOptionSelected() {
+      return this.selectedGroupOption === DROPDOWN_OPTION_ALL_GROUPS;
+    },
   },
   methods: {
     fetchGroupsAndUsers(term) {
-      const groupsAsync = this.fetchGroups(term).then(addType(TYPE_GROUP));
-
+      const groupsAsync = this.isAllGroupsOptionSelected
+        ? this.fetchGroups(term).then(addType(TYPE_GROUP))
+        : this.fetchProjectGroups(term).then(addType(TYPE_GROUP));
       const usersAsync =
         this.namespaceType === NAMESPACE_TYPES.PROJECT
           ? this.fetchProjectUsers(term).then(addType(TYPE_USER))
@@ -77,6 +94,17 @@ export default {
         skip_groups: this.skipGroupIds,
         all_available: includeAll,
         order_by: 'id',
+      });
+    },
+    fetchProjectGroups(term) {
+      const hasTerm = term.trim().length > 0;
+      const DEVELOPER_ACCESS_LEVEL = 30;
+
+      return Api.projectGroups(this.namespaceId, {
+        skip_groups: this.skipGroupIds,
+        ...(hasTerm ? { search: term } : {}),
+        with_shared: true,
+        shared_min_access_level: DEVELOPER_ACCESS_LEVEL,
       });
     },
     fetchProjectUsers(term) {
@@ -119,33 +147,55 @@ export default {
 
       this.listboxItems = this.listboxItems.filter((item) => item.value !== selected);
     },
+    selectGroupOption(option) {
+      if (option === this.selectedGroupOption) {
+        return;
+      }
+      this.selectedGroupOption = option;
+      this.getItems();
+    },
   },
 };
 </script>
 
 <template>
-  <gl-collapsible-listbox
-    :items="listboxItems"
-    :toggle-text="$options.i18n.toggleText"
-    :no-caret="true"
-    :searchable="true"
-    :searching="isSearching"
-    :variant="isInvalid ? 'danger' : 'default'"
-    category="secondary"
-    toggle-class="gl-flex-direction-column gl-align-items-stretch!"
-    class="approvers-select gl-w-full"
-    @shown.once="getItems"
-    @search="onSearch"
-    @select="onSelect"
-  >
-    <template #list-item="{ item }">
-      <gl-avatar-labeled
-        :label="item.name"
-        :sub-label="item.subtitle"
-        :src="item.avatar_url"
-        :entity-name="item.name"
-        :size="32"
-      />
-    </template>
-  </gl-collapsible-listbox>
+  <div>
+    <gl-collapsible-listbox
+      :items="listboxItems"
+      :toggle-text="$options.i18n.toggleText"
+      :no-caret="true"
+      :searchable="true"
+      :searching="isSearching"
+      :variant="isInvalid ? 'danger' : 'default'"
+      category="secondary"
+      toggle-class="gl-flex-direction-column gl-align-items-stretch!"
+      class="approvers-select"
+      @shown.once="getItems"
+      @search="onSearch"
+      @select="onSelect"
+    >
+      <template #list-item="{ item }">
+        <gl-avatar-labeled
+          :label="item.name"
+          :sub-label="item.subtitle"
+          :src="item.avatar_url"
+          :entity-name="item.name"
+          :size="32"
+        />
+      </template>
+    </gl-collapsible-listbox>
+    <gl-dropdown
+      data-testid="group-options-dropdown"
+      :text="selectedGroupOption"
+      class="gl-w-30p gl-ml-4"
+    >
+      <gl-dropdown-item
+        v-for="groupOption in $options.groupOptions"
+        :key="groupOption"
+        @click="selectGroupOption(groupOption)"
+      >
+        {{ $options.i18n.dropdownItemLabel }} {{ groupOption }}
+      </gl-dropdown-item>
+    </gl-dropdown>
+  </div>
 </template>

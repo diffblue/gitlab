@@ -1,4 +1,10 @@
-import { GlCollapsibleListbox, GlListboxItem, GlAvatarLabeled } from '@gitlab/ui';
+import {
+  GlCollapsibleListbox,
+  GlListboxItem,
+  GlAvatarLabeled,
+  GlDropdown,
+  GlDropdownItem,
+} from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { cloneDeep } from 'lodash';
 import { shallowMount } from '@vue/test-utils';
@@ -7,7 +13,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import Api from 'ee/api';
 import ApproversSelect from 'ee/approvals/components/approvers_select.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import { TYPE_USER } from 'ee/approvals/constants';
+import { TYPE_USER, GROUP_OPTIONS, DROPDOWN_OPTION_ALL_GROUPS } from 'ee/approvals/constants';
 
 const TEST_PROJECT_ID = '17';
 const TEST_GROUP_AVATAR = `${TEST_HOST}/group-avatar.png`;
@@ -34,6 +40,8 @@ describe('Approvers Selector', () => {
   const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
   const findAllListboxItems = () => wrapper.findAllComponents(GlListboxItem);
   const findAvatar = (index) => findAllListboxItems().at(index).findComponent(GlAvatarLabeled);
+  const findGroupOptionsDropdown = () => wrapper.findComponent(GlDropdown);
+  const findGroupOtions = () => wrapper.findAllComponents(GlDropdownItem);
   const search = (searchString) => findListbox().vm.$emit('search', searchString);
 
   const createComponent = (props = {}) => {
@@ -124,6 +132,24 @@ describe('Approvers Selector', () => {
       });
     });
 
+    describe('group options dropdown', () => {
+      it('renders dropdown with group options', () => {
+        createComponent();
+
+        expect(findGroupOptionsDropdown().exists()).toBe(true);
+      });
+
+      it('renders all groups option selected by default', () => {
+        createComponent();
+        expect(findGroupOptionsDropdown().props('text')).toBe(DROPDOWN_OPTION_ALL_GROUPS);
+      });
+
+      it('renders expected amount of group options', () => {
+        createComponent();
+        expect(findGroupOtions()).toHaveLength(GROUP_OPTIONS.length);
+      });
+    });
+
     describe('on search', () => {
       it('sets `searching` to `true` while searching', async () => {
         createComponent();
@@ -136,10 +162,9 @@ describe('Approvers Selector', () => {
         expect(findListbox().props('searching')).toBe(true);
       });
 
-      it('fetches groups and users matching the search string', async () => {
+      it('fetches all groups and users matching the search string', async () => {
         const searchString = 'searchString';
         createComponent();
-
         search(searchString);
         await waitForPromises();
 
@@ -209,6 +234,20 @@ describe('Approvers Selector', () => {
           expect(Api.projectUsers).toHaveBeenCalledWith(TEST_PROJECT_ID, '', {
             skip_users: skipUserIds,
           });
+        });
+      });
+    });
+
+    describe('on project groups option selection', () => {
+      it('fetches project groups when the project group option is selected', async () => {
+        createComponent();
+        findGroupOtions().at(1).vm.$emit('click');
+        await waitForPromises();
+
+        expect(Api.projectGroups).toHaveBeenCalledWith('17', {
+          with_shared: true,
+          skip_groups: [],
+          shared_min_access_level: 30,
         });
       });
     });

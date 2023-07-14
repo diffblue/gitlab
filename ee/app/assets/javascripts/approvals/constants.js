@@ -116,3 +116,13 @@ export const MR_APPROVALS_PROMO_I18N = {
     s__('ApprovalRule|Reduce your time to merge.'),
   ],
 };
+
+export const SEARCH_PLACEHOLDER = s__('ApprovalRule|Search users or groups');
+
+export const DROPDOWN_ITEM_LABEL = s__('ApprovalRule|Search in');
+
+export const DROPDOWN_OPTION_PROJECT_GROUPS = s__('ApprovalRule|project groups');
+
+export const DROPDOWN_OPTION_ALL_GROUPS = s__('ApprovalRule|all groups');
+
+export const GROUP_OPTIONS = [DROPDOWN_OPTION_ALL_GROUPS, DROPDOWN_OPTION_PROJECT_GROUPS];
