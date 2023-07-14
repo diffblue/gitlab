@@ -1,19 +1,16 @@
 - if @project.mirror? && can?(current_user, :push_code, @project)
   .gl-mb-3
     - if @project.import_state.mirror_update_due?
-      %span.btn.gl-button.btn-default.disabled
-        = sprite_icon('retry', css_class: 'spin gl-mr-3')
+      = render Pajamas::ButtonComponent.new(disabled: true, icon: 'retry') do
         = _('Update Scheduled…')
     - elsif @project.import_state.updating_mirror?
-      %span.btn.gl-button.btn-default.disabled
-        = sprite_icon('retry', css_class: 'spin gl-mr-3')
+      = render Pajamas::ButtonComponent.new(disabled: true, icon: 'retry') do
         = _('Updating…')
     - elsif can?(current_user, :admin_project, @project)
       = link_button_to update_now_project_mirror_path(@project), method: :post, icon: 'retry' do
         = _('Update Now')
     - else
-      %span.btn.gl-button.btn-default.disabled
-        = sprite_icon('retry', css_class: 'gl-mr-3')
+      = render Pajamas::ButtonComponent.new(disabled: true, icon: 'retry') do
         = _('Update Now')
     - if @project.mirror_last_update_succeeded?
       %p.inline.gl-ml-3
