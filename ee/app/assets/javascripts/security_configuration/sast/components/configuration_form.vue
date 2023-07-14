@@ -109,7 +109,7 @@ export default {
         type="submit"
         variant="confirm"
         category="primary"
-        data-qa-selector="submit_button"
+        data-testid="submit-button"
         >{{ $options.i18n.submitButton }}</gl-button
       >
 

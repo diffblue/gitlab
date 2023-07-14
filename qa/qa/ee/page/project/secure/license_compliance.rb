@@ -16,12 +16,12 @@ module QA
               element :license_add_button
             end
             view 'ee/app/assets/javascripts/vue_shared/license_compliance/components/add_license_form.vue' do
-              element :license_radio, 'data-qa-selector="`${option.value}_license_radio`"' # rubocop:disable QA/ElementWithPattern
+              element :license_radio
               element :add_license_submit_button
             end
 
             view 'ee/app/assets/javascripts/vue_shared/license_compliance/components/admin_license_management_row.vue' do
-              element :admin_license_compliance_container
+              element :admin_license_compliance_row
             end
 
             def has_empty_state_description?(text)
@@ -39,7 +39,7 @@ module QA
 
             def approve_license(license)
               add_and_enter_license(license)
-              choose_element(:allowed_license_radio, true)
+              choose_element(:license_radio, true, option: "allowed")
               click_element(:add_license_submit_button)
 
               has_approved_license?(license)

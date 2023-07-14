@@ -78,11 +78,7 @@ export default {
 };
 </script>
 <template>
-  <div
-    class="gl-display-flex gl-align-items-center"
-    data-qa-selector="admin_license_compliance_container"
-    data-testid="admin-license-compliance-row"
-  >
+  <div class="gl-display-flex gl-align-items-center" data-testid="admin-license-compliance-row">
     <issue-status-icon :status="status" class="gl-display-flex gl-mr-3" />
     <span class="gl-flex-grow-1" data-testid="license-name">{{ license.name }}</span>
     <div class="gl-display-flex">

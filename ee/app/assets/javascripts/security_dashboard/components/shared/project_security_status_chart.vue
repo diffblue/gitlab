@@ -208,7 +208,7 @@ export default {
                 <gl-link
                   target="_blank"
                   :href="project.securityDashboardPath"
-                  data-qa-selector="project_name_text"
+                  data-testid="project-name-text"
                   >{{ project.nameWithNamespace }}</gl-link
                 >
                 <span

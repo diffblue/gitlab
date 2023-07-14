@@ -140,7 +140,7 @@ export default {
       :toggle-text="toggleText"
       multiple
       block
-      data-qa-selector="filter_activity_dropdown"
+      data-testid="filter-activity-dropdown"
       @select="updateSelected"
     >
       <template #group-label="{ group }">

@@ -83,7 +83,7 @@ export default {
       :empty-message="$options.emptyMessage"
       :filterable="isAdmin"
       filter="name"
-      data-qa-selector="license_compliance_list"
+      data-testid="license-compliance-list"
     >
       <template #header>
         <div v-if="isAdmin" class="order-1 gl-display-flex gl-align-items-center">
@@ -91,7 +91,7 @@ export default {
             class="js-open-form"
             :disabled="formIsOpen"
             variant="confirm"
-            data-qa-selector="license_add_button"
+            data-testid="license-add-button"
             @click="openAddLicenseForm"
           >
             {{ s__('LicenseCompliance|Add license policy') }}

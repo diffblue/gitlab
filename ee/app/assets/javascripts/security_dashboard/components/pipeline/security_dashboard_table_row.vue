@@ -124,7 +124,7 @@ export default {
         :checked="isSelected"
         :inline="true"
         class="my-0 ml-1 mr-3"
-        data-qa-selector="security_finding_checkbox"
+        data-testid="security-finding-checkbox"
         :data-qa-finding-name="vulnerability.name"
         @change="toggleVulnerability"
       />
@@ -145,7 +145,7 @@ export default {
       <div class="table-mobile-header" role="rowheader">{{ s__('Reports|Vulnerability') }}</div>
       <div
         class="table-mobile-content gl-white-space-normal"
-        data-qa-selector="vulnerability_info_content"
+        data-testid="vulnerability-info-content"
       >
         <gl-skeleton-loader v-if="isLoading" :lines="2" />
         <template v-else>
@@ -154,7 +154,7 @@ export default {
             class="text-body gl-display-grid"
             button-text-classes="gl-text-left gl-white-space-normal! gl-pr-4!"
             variant="link"
-            data-qa-selector="security_finding_name_button"
+            data-testid="security-finding-name-button"
             :data-qa-status-description="vulnerability.name"
             @click="openModal({ vulnerability })"
             >{{ vulnerability.name }}</gl-button

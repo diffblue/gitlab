@@ -80,7 +80,7 @@ export default {
       :header-text="$options.i18n.label"
       block
       multiple
-      data-qa-selector="filter_status_dropdown"
+      data-testid="filter-status-dropdown"
       :items="$options.DROPDOWN_OPTIONS"
       :selected="selected"
       :toggle-text="toggleText"

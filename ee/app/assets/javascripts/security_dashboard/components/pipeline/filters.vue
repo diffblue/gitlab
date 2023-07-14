@@ -46,7 +46,7 @@ export default {
         <div class="pl-md-6 gl-pt-1">
           <gl-toggle
             v-model="hideDismissed"
-            data-qa-selector="findings_hide_dismissed_toggle"
+            data-testid="findings-hide-dismissed-toggle"
             :label="$options.i18n.toggleLabel"
           />
         </div>

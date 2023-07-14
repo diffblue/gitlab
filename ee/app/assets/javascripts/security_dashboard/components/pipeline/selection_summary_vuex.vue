@@ -61,12 +61,12 @@ export default {
       <gl-form-select
         v-model="dismissalReason"
         class="mx-3 w-auto"
-        data-qa-selector="finding_dismissal_reason"
+        data-testid="finding-dismissal-reason"
         :options="$options.dismissalReasons"
       />
       <gl-button
         type="submit"
-        data-qa-selector="finding_dismiss_button"
+        data-testid="finding-dismiss-button"
         :disabled="!canDismissVulnerability"
       >
         {{ __('Dismiss selected') }}
