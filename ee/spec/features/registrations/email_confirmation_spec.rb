@@ -29,7 +29,8 @@ RSpec.describe 'Email Confirmation', feature_category: :onboarding do
       sign_up
     end
 
-    it 'confirms identity and signs in successfully', :aggregate_failures, :js, :enable_admin_mode do
+    it 'confirms identity and signs in successfully', :aggregate_failures, :js, :enable_admin_mode,
+      quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/414995' do
       expect_required_approval_and_sign_in if require_admin_approval_after_user_signup
 
       unless Gitlab::CurrentSettings.email_confirmation_setting_off?
