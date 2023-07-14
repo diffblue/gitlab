@@ -1,0 +1,34 @@
+---
+schemaVersion: 2.2.0
+components:
+  # This example proves that all components are processed, not just the first one
+  - name: example-valid-component
+    volume:
+      size: 42Gi
+  - name: example-valid-second-component
+    attributes:
+      gl/inject-editor: true
+    container:
+      image: quay.io/mloriedo/universal-developer-image:ubi8-dw-demo
+      endpoints:
+        - name: example-valid-endpoint
+          targetPort: 3101
+          protocol: https
+          exposure: none
+        - name: example-valid-second-endpoint
+          targetPort: 3102
+          protocol: https
+          exposure: none
+commands:
+  - id: example-valid-non-apply-or-exec-command
+    composite:
+      commands:
+        - example-valid-command
+        - example-valid-second-command
+      parallel: false
+  - id: example-valid-command
+    apply:
+      component: example-valid-component
+  - id: example-valid-second-command
+    apply:
+      component: example-valid-second-component

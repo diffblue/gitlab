@@ -2,16 +2,17 @@
 
 module RemoteDevelopment
   module Workspaces
-    module Update
+    module Create
       class Authorizer
         include Messages
 
         # @param [Hash] value
         # @return [Result]
         def self.authorize(value)
-          value => { workspace: RemoteDevelopment::Workspace => workspace, current_user: User => current_user }
+          value => { current_user: User => current_user, params: Hash => params }
+          params => { project: Project => project }
 
-          if current_user.can?(:update_workspace, workspace)
+          if current_user.can?(:create_workspace, project)
             Result.ok(value)
           else
             Result.err(Unauthorized.new)

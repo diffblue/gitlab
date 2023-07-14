@@ -1,0 +1,16 @@
+---
+schemaVersion: 2.2.0
+components:
+  - name: example
+    attributes:
+      gl/inject-editor: true
+    container:
+      image: quay.io/mloriedo/universal-developer-image:ubi8-dw-demo
+# This example proves that all commands with components are processed, not just the first one
+commands:
+  - id: example-valid-component-comment
+    apply:
+      component: example
+  - id: example-invalid-second-component-command
+    apply:
+      component: gl-example-invalid-component

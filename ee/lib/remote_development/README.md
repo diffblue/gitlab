@@ -204,6 +204,18 @@ All of these Messsage classes represent every possible type of success and error
 
 Unlike `Result`, the `Messages` module and `Message` class are intentionally part of the `RemoteDevelopment` namespace, and are not included in the top-level `lib` directory, because they are specific to the Remote Development domain. Other domains which use `Result` may want to use their own type(s) as the `value` of a `Result`.
 
+#### What types of errors should be handled as domain Messages?
+
+Domain message classes should normally only be defined and used for _expected_ errors. I.e., validation or authorization
+errors, yes. Infrastructure errors, or bugs in our own code, no.
+
+The exception to this would be if you are processing multiple items or models (i.e. `Workspaces`) in a single request, and you want to
+ensure that an unexpected error in one of them will not prevent the others from being processed successfully. In this case, you would
+probably want to add logic to the top level of the loop which is procssing the individual items, to catch and report any possible
+`StandardError`, but still continue attempting to process the remaining items.
+
+See [this MR comment thread](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/125358#note_1469298937) for more context.
+
 ### ROP code examples
 
 Here is an example of Railway Oriented Programming pattern, with extra code removed to focus on the patterns.

@@ -1,0 +1,11 @@
+---
+schemaVersion: 2.2.0
+metadata: {}
+components:
+  - name: tooling-container
+    attributes:
+      gl/inject-editor: true
+    container:
+      dedicatedPod: false
+      mountSources: true
+      image: quay.io/mloriedo/universal-developer-image:ubi8-dw-demo

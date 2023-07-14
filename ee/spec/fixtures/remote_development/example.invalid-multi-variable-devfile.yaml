@@ -1,0 +1,12 @@
+---
+schemaVersion: 2.2.0
+components:
+  - name: example
+    attributes:
+      gl/inject-editor: true
+    container:
+      image: quay.io/mloriedo/universal-developer-image:ubi8-dw-demo
+# This example proves that all variables are processed, not just the first one
+variables:
+  example: "valid"
+  gl-example-invalid: "invalid prefix"

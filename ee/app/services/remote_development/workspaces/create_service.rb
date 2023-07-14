@@ -3,6 +3,8 @@
 module RemoteDevelopment
   module Workspaces
     class CreateService
+      include ServiceResponseFactory
+
       attr_reader :current_user
 
       # NOTE: This constructor intentionally does not follow all of the conventions from
@@ -17,28 +19,15 @@ module RemoteDevelopment
         @current_user = current_user
       end
 
-      # noinspection RubyNilAnalysis,RubyResolve
       # @param [Hash] params
       # @return [ServiceResponse]
       def execute(params:)
-        project = params[:project]
-        return ServiceResponse.error(message: 'Unauthorized', reason: :unauthorized) unless authorized?(project)
+        response_hash = Create::Main.main(current_user: current_user, params: params)
 
-        payload, error = RemoteDevelopment::Workspaces::Create::CreateProcessor.new.process(params: params)
+        # Type-check payload using rightward assignment
+        response_hash[:payload] => { workspace: Workspace } if response_hash[:payload]
 
-        if error
-          ServiceResponse.error(message: error.message, reason: error.reason)
-        else
-          ServiceResponse.success(payload: payload)
-        end
-      end
-
-      private
-
-      # @param [Project] project
-      # @return [TrueClass, FalseClass]
-      def authorized?(project)
-        current_user&.can?(:create_workspace, project)
+        create_service_response(response_hash)
       end
     end
   end

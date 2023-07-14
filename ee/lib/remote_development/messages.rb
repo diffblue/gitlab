@@ -18,7 +18,16 @@ module RemoteDevelopment
     # AgentConfig errors
     AgentConfigUpdateFailed = Class.new(Message)
 
-    # Workspace errors
+    # Workspace create errors
+    WorkspaceCreateParamsValidationFailed = Class.new(Message)
+    WorkspaceCreateDevfileLoadFailed = Class.new(Message)
+    WorkspaceCreateDevfileYamlParseFailed = Class.new(Message)
+    WorkspaceCreatePreFlattenDevfileValidationFailed = Class.new(Message)
+    WorkspaceCreateDevfileFlattenFailed = Class.new(Message)
+    WorkspaceCreatePostFlattenDevfileValidationFailed = Class.new(Message)
+    WorkspaceCreateFailed = Class.new(Message)
+
+    # Workspace update errors
     WorkspaceUpdateFailed = Class.new(Message)
 
     #---------------------------------------------------------
@@ -30,6 +39,7 @@ module RemoteDevelopment
     AgentConfigUpdateSuccessful = Class.new(Message)
 
     # Workspace domain events
+    WorkspaceCreateSuccessful = Class.new(Message)
     WorkspaceUpdateSuccessful = Class.new(Message)
   end
 end
