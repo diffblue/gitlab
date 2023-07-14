@@ -159,32 +159,35 @@ describe('Comparison chart', () => {
     );
   };
 
-  const expectDoraMetricsRequests = (timePeriods, fullPath = groupPath) =>
+  const expectDoraMetricsRequests = (timePeriods, { fullPath = groupPath } = {}) =>
     expectTimePeriodRequests({
       timePeriods,
       requestHandler: doraMetricsRequestHandler,
       paramsFn: (timePeriod) => doraMetricsParamsHelper({ ...timePeriod, fullPath }),
     });
 
-  const expectFlowMetricsRequests = (timePeriods, fullPath = groupPath) =>
+  const expectFlowMetricsRequests = (timePeriods, { fullPath = groupPath, labelNames = [] } = {}) =>
     expectTimePeriodRequests({
       timePeriods,
       requestHandler: flowMetricsRequestHandler,
-      paramsFn: (timePeriod) => flowMetricsParamsHelper({ ...timePeriod, fullPath }),
+      paramsFn: (timePeriod) => flowMetricsParamsHelper({ ...timePeriod, fullPath, labelNames }),
     });
 
-  const expectVulnerabilityRequests = (timePeriods, fullPath = groupPath) =>
+  const expectVulnerabilityRequests = (timePeriods, { fullPath = groupPath } = {}) =>
     expectTimePeriodRequests({
       timePeriods,
       requestHandler: vulnerabilityRequestHandler,
       paramsFn: (timePeriod) => vulnerabilityParamsHelper({ ...timePeriod, fullPath }),
     });
 
-  const expectMergeRequestsRequests = (timePeriods, fullPath = groupPath) =>
+  const expectMergeRequestsRequests = (
+    timePeriods,
+    { fullPath = groupPath, labelNames = [] } = {},
+  ) =>
     expectTimePeriodRequests({
       timePeriods,
       requestHandler: mergeRequestsRequestHandler,
-      paramsFn: (timePeriod) => mergeRequestsParamsHelper({ ...timePeriod, fullPath }),
+      paramsFn: (timePeriod) => mergeRequestsParamsHelper({ ...timePeriod, fullPath, labelNames }),
     });
 
   afterEach(() => {
@@ -238,6 +241,28 @@ describe('Comparison chart', () => {
 
     it('renders a chart on each row', () => {
       expect(getTableData().filter(({ chart }) => !chart)).toEqual([]);
+    });
+  });
+
+  describe('filterLabels set', () => {
+    const filterLabels = ['test::one', 'test::two'];
+
+    beforeEach(async () => {
+      setGraphqlQueryHandlerResponses();
+      mockApolloProvider = createMockApolloProvider();
+
+      await createWrapper({
+        props: { filterLabels },
+        apolloProvider: mockApolloProvider,
+      });
+    });
+
+    it('will filter flow metrics using filterLabels', () => {
+      expectFlowMetricsRequests(allTimePeriods, { labelNames: filterLabels });
+    });
+
+    it('will filter merge request data using filterLabels', () => {
+      expectMergeRequestsRequests(allTimePeriods, { labelNames: filterLabels });
     });
   });
 
@@ -362,15 +387,15 @@ describe('Comparison chart', () => {
     });
 
     it('will request project dora metrics for the table and sparklines', () => {
-      expectDoraMetricsRequests(allTimePeriods, fakeProjectPath);
+      expectDoraMetricsRequests(allTimePeriods, { fullPath: fakeProjectPath });
     });
 
     it('will request project flow metrics for the table and sparklines', () => {
-      expectFlowMetricsRequests(allTimePeriods, fakeProjectPath);
+      expectFlowMetricsRequests(allTimePeriods, { fullPath: fakeProjectPath });
     });
 
     it('will request project vulnerability metrics for the table and sparklines', () => {
-      expectVulnerabilityRequests(allTimePeriods, fakeProjectPath);
+      expectVulnerabilityRequests(allTimePeriods, { fullPath: fakeProjectPath });
     });
   });
 

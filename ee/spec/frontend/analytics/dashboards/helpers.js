@@ -26,10 +26,11 @@ export const doraMetricsParamsHelper = ({
   endDate: end.toISOString(),
 });
 
-export const flowMetricsParamsHelper = ({ start, end, fullPath = '' }) => ({
+export const flowMetricsParamsHelper = ({ start, end, fullPath = '', labelNames = [] }) => ({
   fullPath,
   startDate: start.toISOString(),
   endDate: end.toISOString(),
+  labelNames,
 });
 
 // For the vulnerabilities request we just query for the last date in the time period
@@ -39,11 +40,12 @@ export const vulnerabilityParamsHelper = ({ fullPath, end }) => ({
   endDate: utils.toYmd(end),
 });
 
-export const mergeRequestsParamsHelper = ({ start, end, fullPath = '' }) => ({
+export const mergeRequestsParamsHelper = ({ start, end, fullPath = '', labelNames = [] }) => ({
   fullPath,
   startDate: utils.toYmd(start),
   endDate: utils.toYmd(end),
   state: MERGE_REQUESTS_STATE_MERGED,
+  labelNames,
 });
 
 export const mockAllTimePeriodApiResponses = () =>
@@ -87,6 +89,16 @@ export const mockGraphqlMergeRequestsResponse = (
       namespace: { id: 'fake-merge-requests-request', mergeRequests: mockDataResponse },
     },
   });
+
+export const mockFilterLabelsResponse = (mockLabels) => ({
+  namespace: mockLabels.reduce(
+    (acc, label, index) =>
+      Object.assign(acc, {
+        [`label_${index}`]: { nodes: [{ id: label, title: label, color: '#FFFFFF' }] },
+      }),
+    { id: 'id' },
+  ),
+});
 
 export const expectTimePeriodRequests = ({ requestHandler, timePeriods, paramsFn }) => {
   let params = {};

@@ -69,6 +69,11 @@ export default {
       required: false,
       default: () => [],
     },
+    filterLabels: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -221,6 +226,7 @@ export default {
         ...this.defaultQueryParams,
         startDate,
         endDate,
+        labelNames: this.filterLabels,
       });
 
       // The vulnerabilities API request takes a date, so the timezone skews it outside the monthly range
@@ -238,6 +244,7 @@ export default {
         startDate: toYmd(startDate),
         endDate: toYmd(endDate),
         state: MERGE_REQUESTS_STATE_MERGED,
+        labelNames: this.filterLabels,
       });
 
       return {

@@ -82,6 +82,16 @@ export const TABLE_METRICS = {
 };
 
 export const METRICS_WITH_NO_TREND = [VULNERABILITY_METRICS.CRITICAL, VULNERABILITY_METRICS.HIGH];
+export const METRICS_WITH_LABEL_FILTERING = [
+  FLOW_METRICS.ISSUES,
+  FLOW_METRICS.ISSUES_COMPLETED,
+  FLOW_METRICS.CYCLE_TIME,
+  FLOW_METRICS.LEAD_TIME,
+  MERGE_REQUEST_METRICS.THROUGHPUT,
+];
+export const METRICS_WITHOUT_LABEL_FILTERING = Object.keys(TABLE_METRICS).filter(
+  (metric) => !METRICS_WITH_LABEL_FILTERING.includes(metric),
+);
 
 export const DASHBOARD_TITLE = s__('DORA4Metrics|Value Streams Dashboard');
 export const DASHBOARD_DESCRIPTION = s__(
@@ -96,6 +106,9 @@ export const DASHBOARD_NO_DATA = __('No data available');
 export const DASHBOARD_LOADING_FAILURE = __('Failed to load');
 export const DASHBOARD_NAMESPACE_LOAD_ERROR = s__(
   'DORA4Metrics|Failed to load comparison chart for Namespace: %{fullPath}',
+);
+export const DASHBOARD_LABELS_LOAD_ERROR = s__(
+  'DORA4Metrics|Failed to load labels matching the filter: %{labels}',
 );
 
 export const CHART_GRADIENT = ['#499767', '#5252B5'];

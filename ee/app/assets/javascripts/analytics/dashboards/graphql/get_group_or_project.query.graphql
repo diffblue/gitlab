@@ -2,9 +2,11 @@ query getGroupOrProject($fullPath: ID!) {
   group(fullPath: $fullPath) {
     id
     name
+    webUrl
   }
   project(fullPath: $fullPath) {
     id
     name
+    webUrl
   }
 }
