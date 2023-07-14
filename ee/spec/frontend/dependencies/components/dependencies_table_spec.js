@@ -15,6 +15,7 @@ describe('DependenciesTable component', () => {
 
   const basicAppProps = {
     namespaceType: 'project',
+    endpoint: 'endpoint',
   };
 
   const createComponent = ({ propsData, provide } = {}) => {
@@ -56,7 +57,7 @@ describe('DependenciesTable component', () => {
 
     expect(findDependencyLocation().exists()).toBe(true);
     const locationLink = locationCell.findComponent(GlLink);
-    expect(locationLink.attributes().href).toBe(dependency.location.blob_path);
+    expect(locationLink.attributes().href).toBe(dependency.location.blobPath);
     expect(locationLink.text()).toContain(dependency.location.path);
 
     const licenseLinks = licenseCell.findComponent(DependencyLicenseLinks);
@@ -89,8 +90,8 @@ describe('DependenciesTable component', () => {
     expect(packagerCell.text()).toBe(dependency.packager);
 
     const {
-      occurrence_count: occurrenceCount,
-      project_count: projectCount,
+      occurrenceCount,
+      projectCount,
       location: { path },
       project: { name },
     } = dependency;
@@ -267,27 +268,27 @@ describe('DependenciesTable component', () => {
     });
   });
 
-  describe('with multiple dependencies sharing the same component_id', () => {
+  describe('with multiple dependencies sharing the same componentId', () => {
     let dependencies;
     beforeEach(() => {
       dependencies = [
         makeDependency({
-          component_id: 1,
-          occurrence_count: 2,
+          componentId: 1,
+          occurrenceCount: 2,
           project: { full_path: 'full_path', name: 'name' },
-          project_count: 2,
+          projectCount: 2,
         }),
         makeDependency({
-          component_id: 1,
-          occurrence_count: 2,
+          componentId: 1,
+          occurrenceCount: 2,
           project: { full_path: 'full_path', name: 'name' },
-          project_count: 2,
+          projectCount: 2,
         }),
         makeDependency({
-          component_id: 2,
-          occurrence_count: 1,
+          componentId: 2,
+          occurrenceCount: 1,
           project: { full_path: 'full_path', name: 'name' },
-          project_count: 1,
+          projectCount: 1,
         }),
       ];
 
@@ -300,7 +301,7 @@ describe('DependenciesTable component', () => {
       });
     });
 
-    it('displays the dependencies grouped by component_id', () => {
+    it('displays the dependencies grouped by componentId', () => {
       expect(findTableRows()).toHaveLength(2);
     });
 

@@ -110,12 +110,24 @@ RSpec.describe Resolvers::NamespaceProjectsResolver do
           end
         end
       end
+
+      context 'with existing SBOM occurrence records' do
+        let(:occurrence) { create(:sbom_occurrence, project: project_1) }
+
+        context 'when sbom_component_id is not set' do
+          it { expect(resolve_projects).to match_array([project_2, project_1]) }
+        end
+
+        context 'when sbom_component_id set' do
+          it { expect(resolve_projects(sbom_component_id: occurrence.component_id)).to eq([project_1]) }
+        end
+      end
     end
   end
 
   def resolve_projects(
     has_vulnerabilities: false, sort: :similarity, ids: nil, has_code_coverage: false,
-    compliance_framework_filters: nil)
+    compliance_framework_filters: nil, sbom_component_id: nil)
     args = {
       include_subgroups: false,
       has_vulnerabilities: has_vulnerabilities,
@@ -123,7 +135,8 @@ RSpec.describe Resolvers::NamespaceProjectsResolver do
       search: nil,
       ids: nil,
       has_code_coverage: has_code_coverage,
-      compliance_framework_filters: compliance_framework_filters
+      compliance_framework_filters: compliance_framework_filters,
+      sbom_component_id: sbom_component_id
     }
 
     resolve(described_class, obj: group, args: args, ctx: { current_user: current_user }, arg_style: :internal)

@@ -1,7 +1,7 @@
 export const containerImagePath = {
   ancestors: null,
-  top_level: null,
-  blob_path: 'test.link',
+  topLevel: null,
+  blobPath: 'test.link',
   path: 'container-image:nginx:1.17',
   image: 'nginx:1.17',
 };
@@ -29,8 +29,8 @@ export const longPath = {
       version: '1.0',
     },
   ],
-  top_level: false,
-  blob_path: 'test.link',
+  topLevel: false,
+  blobPath: 'test.link',
   path: 'package.json',
 };
 
@@ -45,21 +45,21 @@ export const shortPath = {
       version: '10.11',
     },
   ],
-  top_level: false,
-  blob_path: 'test.link',
+  topLevel: false,
+  blobPath: 'test.link',
   path: 'package.json',
 };
 
 export const noPath = {
   ancestors: [],
-  top_level: false,
-  blob_path: 'test.link',
+  topLevel: false,
+  blobPath: 'test.link',
   path: 'package.json',
 };
 
 export const topLevelPath = {
   ancestors: [],
-  top_level: true,
-  blob_path: 'test.link',
+  topLevel: true,
+  blobPath: 'test.link',
   path: 'package.json',
 };

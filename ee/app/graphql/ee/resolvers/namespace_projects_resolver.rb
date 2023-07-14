@@ -20,6 +20,11 @@ module EE
                  required: false,
                  default_value: false,
                  description: 'Returns only the projects which have vulnerabilities.'
+
+        argument :sbom_component_id, ::GraphQL::Types::ID,
+                 required: false,
+                 default_value: nil,
+                 description: 'Return only the projects related to the specified SBOM component.'
       end
 
       private
@@ -27,9 +32,8 @@ module EE
       override :finder_params
       def finder_params(args)
         super(args).merge(
-          has_vulnerabilities: args.dig(:has_vulnerabilities),
-          has_code_coverage: args.dig(:has_code_coverage),
-          compliance_framework_filters: args.dig(:compliance_framework_filters))
+          args.slice(:has_vulnerabilities, :has_code_coverage, :compliance_framework_filters, :sbom_component_id)
+        )
       end
     end
   end

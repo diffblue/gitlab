@@ -43,7 +43,7 @@ export default {
       return this.location.path;
     },
     isTopLevelDependency() {
-      return this.location.top_level;
+      return this.location.topLevel;
     },
     visibleDependencies() {
       return this.ancestors.slice(0, VISIBLE_DEPENDENCY_COUNT);
@@ -69,7 +69,7 @@ export default {
         :is="locationComponent"
         class="gl-md-white-space-nowrap"
         data-testid="dependency-path"
-        :href="location.blob_path"
+        :href="location.blobPath"
       >
         <gl-icon v-if="isContainerImageDependency" name="container-image" />
         <gl-icon v-else name="doc-text" />

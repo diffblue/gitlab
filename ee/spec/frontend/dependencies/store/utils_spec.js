@@ -1,5 +1,5 @@
 import listModule from 'ee/dependencies/store/modules/list';
-import { addListType } from 'ee/dependencies/store/utils';
+import { addListType, extractGroupNamespace } from 'ee/dependencies/store/utils';
 
 const mockModule = { mock: true };
 jest.mock('ee/dependencies/store/modules/list', () => ({
@@ -30,6 +30,18 @@ describe('Dependencies store utils', () => {
         ['addListType', listType],
         [`${listType.namespace}/setInitialState`, listType.initialState],
       ]);
+    });
+  });
+
+  describe('extractGroupNamespace', () => {
+    it('returns empty string when source endpoint does not match', () => {
+      const invalidEndpoint = '/my-group/my-project/-/dependencies.json';
+      expect(extractGroupNamespace(invalidEndpoint)).toBe('');
+    });
+
+    it('returns group namespace for a valid endpoint', () => {
+      const validEndpoint = '/groups/my-group/-/dependencies.json';
+      expect(extractGroupNamespace(validEndpoint)).toBe('my-group');
     });
   });
 });
