@@ -36,17 +36,17 @@ RSpec.describe WorkItems::Widgets::ProgressService::UpdateService, feature_categ
       end
     end
 
-    shared_examples 'progress is updated' do |new_value|
+    shared_examples 'current_value & progress are updated' do |current_value, progress|
       it 'updates work item progress value' do
         expect { subject }
-          .to change { work_item_progress }.to(new_value).and change { work_item_current_value }.to(new_value)
+          .to change { work_item_progress }.to(progress).and change { work_item_current_value }.to(current_value)
       end
 
       it 'creates notes' do
         subject
 
         work_item_note = work_item.notes.last
-        expect(work_item_note.note).to eq("changed progress to **#{new_value}**")
+        expect(work_item_note.note).to eq("changed progress to **#{progress}**")
       end
     end
 
@@ -60,7 +60,7 @@ RSpec.describe WorkItems::Widgets::ProgressService::UpdateService, feature_categ
       end
 
       context 'when user cannot update work item' do
-        let(:params) { { progress: 10 } }
+        let(:params) { { current_value: 10 } }
 
         before do
           project.add_guest(user)
@@ -74,11 +74,21 @@ RSpec.describe WorkItems::Widgets::ProgressService::UpdateService, feature_categ
           project.add_reporter(user)
         end
 
-        context 'when progress param is present' do
-          context 'when progress param is valid' do
-            let(:params) { { progress: 20 } }
+        context 'when current_value param is present' do
+          context 'when current_value param is valid' do
+            let(:params) { { current_value: 20 } }
 
-            it_behaves_like 'progress is updated', 20
+            it_behaves_like 'current_value & progress are updated', 20, 20
+
+            context 'when start & end values are non-defaults' do
+              before do
+                progress.update!(start_value: 20, end_value: 220)
+              end
+
+              let(:params) { { current_value: 100 } }
+
+              it_behaves_like 'current_value & progress are updated', 100, 40
+            end
           end
 
           context 'when widget does not exist in new type' do
@@ -97,39 +107,39 @@ RSpec.describe WorkItems::Widgets::ProgressService::UpdateService, feature_categ
             end
           end
 
-          context 'when progress param is invalid' do
-            context 'if progress is greater than 100' do
-              let(:params) { { progress: 101 } }
+          context 'when current_value param is invalid' do
+            context 'if current_value is greater than 100' do
+              let(:params) { { current_value: 120 } }
 
               it_behaves_like 'raises a WidgetError' do
                 let(:message) { 'Progress must be less than or equal to 100' }
               end
             end
 
-            context 'if progress is less than 0' do
-              let(:params) { { progress: -1 } }
+            context 'if current_value is less than 0' do
+              let(:params) { { current_value: -120 } }
 
               it_behaves_like 'raises a WidgetError' do
-                let(:message) { 'Progress must be greater than or equal to 0' }
+                let(:message) { 'Progress must be less than or equal to 100' }
               end
             end
           end
         end
 
-        context 'when progress param is not present' do
+        context 'when current_value param is not present' do
           let(:params) { {} }
 
           it_behaves_like 'work item and progress is unchanged'
         end
 
         context 'when progress is same as current value' do
-          let(:params) { { progress: 5 } }
+          let(:params) { { current_value: 5 } }
 
           it_behaves_like 'work item and progress is unchanged'
         end
 
-        context 'when progress param is nil' do
-          let(:params) { { progress: nil } }
+        context 'when current_value param is nil' do
+          let(:params) { { current_value: nil } }
 
           it_behaves_like 'raises a WidgetError' do
             let(:message) { "Progress is not a number, Current value can't be blank" }

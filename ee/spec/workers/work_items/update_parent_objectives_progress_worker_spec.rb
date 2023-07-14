@@ -23,10 +23,6 @@ RSpec.describe WorkItems::UpdateParentObjectivesProgressWorker, feature_category
       parent_work_item.reload.progress&.progress
     end
 
-    def parent_work_item_current_value
-      parent_work_item.reload.progress&.current_value
-    end
-
     shared_examples 'parent progress is not changed' do
       it "doesn't update parent progress" do
         expect { subject }.to not_change { parent_work_item_progress }
@@ -47,7 +43,6 @@ RSpec.describe WorkItems::UpdateParentObjectivesProgressWorker, feature_category
       it 'updates parent progress value' do
         expect { subject }
           .to change { parent_work_item_progress }.to(new_value)
-          .and change { parent_work_item_current_value }.to(new_value)
       end
 
       it 'creates notes' do

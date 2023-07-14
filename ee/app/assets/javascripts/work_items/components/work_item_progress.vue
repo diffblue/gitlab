@@ -112,7 +112,7 @@ export default {
             input: {
               id: this.workItemId,
               progressWidget: {
-                progress: valueAsNumber,
+                currentValue: valueAsNumber,
               },
             },
           },

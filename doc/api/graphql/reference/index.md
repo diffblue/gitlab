@@ -29477,7 +29477,7 @@ A time-frame defined as a closed inclusive range of two dates.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="workitemwidgetprogressinputprogress"></a>`progress` | [`Int!`](#int) | Progress of the work item. |
+| <a id="workitemwidgetprogressinputcurrentvalue"></a>`currentValue` | [`Int!`](#int) | Current progress value of the work item. |
 
 ### `WorkItemWidgetStartAndDueDateUpdateInput`
 
