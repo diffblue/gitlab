@@ -25,6 +25,7 @@ describe('ee_component/vue_shared/components/web_ide_link', () => {
       },
       stubs: {
         WorkspacesDropdownGroup: stubComponent(WorkspacesDropdownGroup),
+        WebIdeLink: CEWebIdeLink,
       },
     });
   }

@@ -40,7 +40,6 @@ export default {
       this.isWorkspacesDropdownGroupEnabled = true;
     },
   },
-  webIdeButtonId: 'web-ide-link',
 };
 </script>
 
@@ -51,11 +50,13 @@ export default {
     @shown="enableWorkspacesDropdownGroup"
     @hidden="disableWorkspacesDropdownGroup"
   >
-    <workspaces-dropdown-group
-      v-if="isWorkspacesDropdownGroupEnabled"
-      :new-workspace-path="newWorkspacePath"
-      :project-id="projectId"
-      :project-full-path="projectPath"
-    />
+    <template #after-actions>
+      <workspaces-dropdown-group
+        v-if="isWorkspacesDropdownGroupEnabled"
+        :new-workspace-path="newWorkspacePath"
+        :project-id="projectId"
+        :project-full-path="projectPath"
+      />
+    </template>
   </web-ide-link>
 </template>
