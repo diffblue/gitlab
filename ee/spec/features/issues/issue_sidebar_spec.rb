@@ -17,6 +17,7 @@ RSpec.describe 'Issue Sidebar', feature_category: :team_planning do
   before do
     sign_in(user)
     stub_feature_flags(moved_mr_sidebar: false)
+    stub_feature_flags(move_close_into_dropdown: false)
   end
 
   context 'for Assignees', :js do

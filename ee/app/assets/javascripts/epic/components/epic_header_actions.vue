@@ -134,7 +134,7 @@ export default {
     </gl-button>
 
     <gl-button
-      v-if="canUpdate"
+      v-if="canUpdate && !glFeatures.moveCloseIntoDropdown"
       :loading="epicStatusChangeInProgress"
       :class="actionButtonClass"
       category="secondary"
@@ -166,6 +166,14 @@ export default {
         />
         <gl-dropdown-divider />
       </template>
+      <gl-dropdown-item
+        v-if="canUpdate && glFeatures.moveCloseIntoDropdown"
+        data-qa-selector="close_reopen_epic_button"
+        data-testid="toggle-status-button"
+        @click="toggleEpicStatus(isEpicOpen)"
+      >
+        {{ actionButtonText }}
+      </gl-dropdown-item>
       <gl-dropdown-item v-if="canCreate" :href="newEpicWebUrl">
         {{ $options.i18n.newEpicText }}
       </gl-dropdown-item>
