@@ -282,8 +282,8 @@ RSpec.describe Boards::Issues::MoveService, services: true, feature_category: :t
     let(:milestone_list2) { create(:milestone_list, board: board1, milestone: milestone2, position: 5) }
     let(:iteration_list1) { create(:iteration_list, board: board1, iteration: iteration1, position: 6) }
     let(:iteration_list2) { create(:iteration_list, board: board1, iteration: iteration2, position: 7) }
-    let(:closed) { create(:closed_list, board: board1) }
-    let(:backlog) { create(:backlog_list, board: board1) }
+    let(:closed) { board1.lists.closed.first }
+    let(:backlog) { board1.lists.backlog.first }
 
     context 'when parent is a project' do
       let_it_be(:milestone1) { create(:milestone, project: project) }

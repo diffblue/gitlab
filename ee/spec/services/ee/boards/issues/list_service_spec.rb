@@ -53,10 +53,10 @@ RSpec.describe Boards::Issues::ListService, services: true, feature_category: :t
       let!(:user_list) { create(:user_list, board: board, position: 2) }
       let!(:milestone_list) { create(:milestone_list, board: board, position: 3, milestone: milestone) }
       let!(:iteration_list) { create(:iteration_list, board: board, position: 4, iteration: iteration) }
-      let!(:backlog)   { create(:backlog_list, board: board) }
+      let!(:backlog)   { board.lists.backlog.first }
       let!(:list1)     { create(:list, board: board, label: development, position: 0) }
       let!(:list2)     { create(:list, board: board, label: testing, position: 1) }
-      let!(:closed)    { create(:closed_list, board: board) }
+      let!(:closed)    { board.lists.closed.first }
 
       context 'milestone lists' do
         let!(:milestone_issue) { create(:labeled_issue, project: project, milestone: milestone_list.milestone, labels: [p3]) }

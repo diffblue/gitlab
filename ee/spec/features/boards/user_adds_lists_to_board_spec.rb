@@ -12,8 +12,6 @@ RSpec.describe 'User adds milestone/iterations lists', :js, :aggregate_failures,
   let_it_be(:milestone) { create(:milestone, group: group) }
   let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
 
-  let_it_be(:group_backlog_list) { create(:backlog_list, board: group_board) }
-
   let_it_be(:issue_with_milestone) { create(:issue, project: project, milestone: milestone) }
   let_it_be(:issue_with_assignee) { create(:issue, project: project, assignees: [user]) }
   let_it_be(:issue_with_iteration) { create(:issue, project: project, iteration: iteration) }

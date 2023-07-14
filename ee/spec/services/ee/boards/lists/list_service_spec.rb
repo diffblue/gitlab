@@ -14,7 +14,7 @@ RSpec.describe Boards::Lists::ListService, feature_category: :team_planning do
 
     shared_examples 'list service for board with assignee lists' do
       let!(:assignee_list) { build(:user_list, board: board).tap { |l| l.save!(validate: false) } }
-      let!(:backlog_list) { create(:backlog_list, board: board) }
+      let!(:backlog_list) { board.lists.backlog.first }
       let!(:list) { create(:list, board: board, label: label) }
 
       context 'when the feature is enabled' do
@@ -36,7 +36,7 @@ RSpec.describe Boards::Lists::ListService, feature_category: :team_planning do
 
     shared_examples 'list service for board with milestone lists' do
       let!(:milestone_list) { build(:milestone_list, board: board).tap { |l| l.save!(validate: false) } }
-      let!(:backlog_list) { create(:backlog_list, board: board) }
+      let!(:backlog_list) { board.lists.backlog.first }
       let!(:list) { create(:list, board: board, label: label) }
 
       context 'when the feature is enabled' do
@@ -59,7 +59,7 @@ RSpec.describe Boards::Lists::ListService, feature_category: :team_planning do
 
     shared_examples 'list service for board with iteration lists' do
       let!(:iteration_list) { build(:iteration_list, board: board).tap { |l| l.save!(validate: false) } }
-      let!(:backlog_list) { create(:backlog_list, board: board) }
+      let!(:backlog_list) { board.lists.backlog.first }
       let!(:list) { create(:list, board: board, label: label) }
 
       context 'when the feature is enabled' do

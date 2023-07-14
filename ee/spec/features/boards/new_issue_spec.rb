@@ -12,7 +12,6 @@ RSpec.describe 'Issue Boards new issue', :js, feature_category: :team_planning d
   let_it_be(:project)         { create(:project, :public, group: group) }
   let_it_be(:milestone)       { create(:milestone, project: project, title: 'Milestone 1') }
   let_it_be(:board)           { create(:board, project: project) }
-  let_it_be(:backlog_list)    { create(:backlog_list, board: board) }
 
   let!(:milestone_list)       { create(:milestone_list, board: board, milestone: milestone, position: 0) }
 

@@ -80,13 +80,15 @@ RSpec.describe 'get board lists', feature_category: :team_planning do
           )
         end
 
+        # rubocop:disable RSpec/MultipleMemoizedHelpers
         context 'when using default sorting' do
           let!(:milestone_list)  { create(:milestone_list, board: board, milestone: milestone, position: 10) }
           let!(:milestone_list2) { create(:milestone_list, board: board, milestone: milestone2, position: 2) }
           let!(:assignee_list)   { create(:user_list, board: board, user: assignee, position: 5) }
           let!(:assignee_list2)  { create(:user_list, board: board, user: assignee2, position: 1) }
+          let(:backlog_list)     { board.lists.find_by(list_type: :backlog) }
           let(:closed_list)      { board.lists.find_by(list_type: :closed) }
-          let(:lists)            { [closed_list, assignee_list2, assignee_list, milestone_list2, milestone_list] }
+          let(:lists)            { [backlog_list, closed_list, assignee_list2, assignee_list, milestone_list2, milestone_list] }
 
           context 'when ascending' do
             it_behaves_like 'sorted paginated query' do
@@ -97,6 +99,7 @@ RSpec.describe 'get board lists', feature_category: :team_planning do
             end
           end
         end
+        # rubocop:enable RSpec/MultipleMemoizedHelpers
       end
 
       describe 'limit metric settings' do

@@ -17,7 +17,7 @@ RSpec.describe 'Issue boards sidebar labels using epic swimlanes', :js, feature_
   context 'group boards' do
     context 'in the top-level group board' do
       let_it_be(:group_board) { create(:board, group: group) }
-      let_it_be(:board_list) { create(:backlog_list, board: group_board) }
+      let_it_be(:board_list) { group_board.lists.backlog.first }
 
       before do
         load_board group_board_path(group, group_board)
