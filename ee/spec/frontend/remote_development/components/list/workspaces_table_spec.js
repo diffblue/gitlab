@@ -25,14 +25,14 @@ const findTableRowsAsData = (wrapper) =>
   findTableRows(wrapper).wrappers.map((x) => {
     const tds = x.findAll('td');
     const rowData = {
-      nameText: tds.at(0).text(),
       workspaceState: tds.at(0).findComponent(WorkspaceStateIndicator).props('workspaceState'),
-      actionsProps: tds.at(2).findComponent(WorkspaceActions).props(),
+      nameText: tds.at(1).text(),
+      actionsProps: tds.at(3).findComponent(WorkspaceActions).props(),
     };
 
-    if (tds.at(1).findComponent(GlLink).exists()) {
-      rowData.previewText = tds.at(1).text();
-      rowData.previewHref = tds.at(1).findComponent(GlLink).attributes('href');
+    if (tds.at(2).findComponent(GlLink).exists()) {
+      rowData.previewText = tds.at(2).text();
+      rowData.previewHref = tds.at(2).findComponent(GlLink).attributes('href');
     }
 
     return rowData;

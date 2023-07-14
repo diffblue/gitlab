@@ -2,6 +2,10 @@
 
 .workspace-preview-link {
   @include gl-white-space-normal;
-  display: flex;
+  overflow: hidden;
+  // This property is necessary to implement line truncation.
+  // stylelint-disable-next-line
+  display: -webkit-box;
   -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }

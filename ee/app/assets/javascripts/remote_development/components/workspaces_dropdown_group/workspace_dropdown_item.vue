@@ -31,7 +31,7 @@ export default {
       <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
         <span class="gl-display-inline-flex gl-align-items-center">
           <workspace-state-indicator class="gl-mr-3" :workspace-state="workspace.actualState" />
-          <span class="gl-mr-4 gl-text-truncate">{{ workspace.name }}</span>
+          <span class="gl-mr-4 gl-word-break-word">{{ workspace.name }}</span>
         </span>
         <workspace-actions
           :actual-state="workspace.actualState"

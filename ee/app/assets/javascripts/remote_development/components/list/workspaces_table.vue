@@ -50,6 +50,18 @@ export default {
   },
   fields: [
     {
+      key: 'status',
+      /*
+       * The status and action columns in this table
+       * do not have a label in the table header. We
+       * use this zero-width unicode character because
+       * using an empty string breaks the table alignment
+       * in mobile views.
+       */
+      label: '\u200b',
+      thClass: 'gl-w-5p',
+    },
+    {
       key: 'name',
       label: i18n.tableColumnHeaders.name,
       thClass: 'gl-w-25p',
@@ -61,7 +73,7 @@ export default {
     },
     {
       key: 'actions',
-      label: '',
+      label: '\u200b',
       thClass: 'gl-w-20p',
     },
   ],
@@ -75,18 +87,18 @@ export default {
     @updateSucceed="$emit('updateSucceed')"
   >
     <template #default="{ update }">
-      <gl-table-lite :items="sortedWorkspaces" :fields="$options.fields">
+      <gl-table-lite :items="sortedWorkspaces" stacked="sm" :fields="$options.fields">
+        <template #cell(status)="{ item }">
+          <workspace-state-indicator
+            :workspace-state="item.actualState"
+            class="gl-mr-5"
+            :data-qa-selector="`${item.name}_actual_state`"
+          />
+        </template>
         <template #cell(name)="{ item }">
-          <div class="gl-display-flex gl-align-items-center">
-            <workspace-state-indicator
-              :workspace-state="item.actualState"
-              class="gl-mr-5"
-              :data-qa-selector="`${item.name}_actual_state`"
-            />
-            <div class="gl-display-flex gl-flex-direction-column">
-              <span class="gl-text-gray-500 gl-font-sm gl-pb-1"> {{ item.projectName }} </span>
-              <span class="gl-text-black-normal"> {{ item.name }} </span>
-            </div>
+          <div class="gl-display-flex gl-flex-direction-column">
+            <span class="gl-text-gray-500 gl-font-sm gl-pb-1"> {{ item.projectName }} </span>
+            <span class="gl-text-black-normal"> {{ item.name }} </span>
           </div>
         </template>
         <template #cell(preview)="{ item }">

@@ -139,10 +139,12 @@ export default {
         <h2>{{ $options.i18n.heading }}</h2>
         <gl-badge class="gl-mt-4 gl-ml-3" variant="info">{{ $options.i18n.betaBadge }}</gl-badge>
       </div>
-      <div class="gl-display-flex gl-align-items-center">
-        <gl-link class="gl-mr-5 workspace-preview-link" :href="$options.workspacesHelpPath">{{
-          $options.i18n.learnMoreHelpLink
-        }}</gl-link>
+      <div class="gl-display-flex gl-align-items-center gl-sm-flex-direction-column">
+        <gl-link
+          class="gl-mr-5 workspace-preview-link gl-sm-display-none"
+          :href="$options.workspacesHelpPath"
+          >{{ $options.i18n.learnMoreHelpLink }}</gl-link
+        >
         <gl-button
           variant="confirm"
           :to="$options.ROUTES.new"
