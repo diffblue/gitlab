@@ -1,19 +1,28 @@
 #import "./flow_metric_item.fragment.graphql"
 
-query groupFlowMetricsQuery($fullPath: ID!, $startDate: Time!, $endDate: Time!) {
+query groupFlowMetricsQuery(
+  $fullPath: ID!
+  $startDate: Time!
+  $endDate: Time!
+  $labelNames: [String!]
+) {
   namespace: group(fullPath: $fullPath) {
     id
     flowMetrics {
-      issues: issueCount(from: $startDate, to: $endDate) {
+      issues: issueCount(from: $startDate, to: $endDate, labelNames: $labelNames) {
         ...FlowMetricItem
       }
-      issues_completed: issuesCompletedCount(from: $startDate, to: $endDate) {
+      issues_completed: issuesCompletedCount(
+        from: $startDate
+        to: $endDate
+        labelNames: $labelNames
+      ) {
         ...FlowMetricItem
       }
-      cycle_time: cycleTime(from: $startDate, to: $endDate) {
+      cycle_time: cycleTime(from: $startDate, to: $endDate, labelNames: $labelNames) {
         ...FlowMetricItem
       }
-      lead_time: leadTime(from: $startDate, to: $endDate) {
+      lead_time: leadTime(from: $startDate, to: $endDate, labelNames: $labelNames) {
         ...FlowMetricItem
       }
       deploys: deploymentCount(from: $startDate, to: $endDate) {

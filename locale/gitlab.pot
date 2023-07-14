@@ -14023,6 +14023,9 @@ msgstr ""
 msgid "DORA4Metrics|Failed to load comparison chart for Namespace: %{fullPath}"
 msgstr ""
 
+msgid "DORA4Metrics|Failed to load labels matching the filter: %{labels}"
+msgstr ""
+
 msgid "DORA4Metrics|Filtered by"
 msgstr ""
 

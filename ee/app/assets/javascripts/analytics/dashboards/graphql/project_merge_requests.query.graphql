@@ -3,10 +3,16 @@ query projectMergeRequests(
   $startDate: Time!
   $endDate: Time!
   $state: MergeRequestState!
+  $labelNames: [String!]
 ) {
   namespace: project(fullPath: $fullPath) {
     id
-    mergeRequests(mergedBefore: $endDate, mergedAfter: $startDate, state: $state) {
+    mergeRequests(
+      mergedBefore: $endDate
+      mergedAfter: $startDate
+      state: $state
+      labels: $labelNames
+    ) {
       merge_request_throughput: count
     }
   }
