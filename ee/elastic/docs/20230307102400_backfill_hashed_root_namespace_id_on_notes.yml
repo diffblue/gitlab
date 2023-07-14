@@ -1,0 +1,10 @@
+---
+name: BackfillHashedRootNamespaceIdOnNotes
+version: '20230307102400'
+description: BackfillHashedRootNamespaceIdOnNotes
+group: group::global search
+milestone: 15.11
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/113868
+obsolete: false
+marked_obsolete_by_url:
+marked_obsolete_in_milestone:

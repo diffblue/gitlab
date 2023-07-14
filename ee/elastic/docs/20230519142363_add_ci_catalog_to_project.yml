@@ -1,0 +1,10 @@
+---
+name: AddCiCatalogToProject
+version: '20230519142363'
+description: AddCiCatalogToProject
+group: group::pipeline composition
+milestone: 16.1
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/121562
+obsolete: false
+marked_obsolete_by_url:
+marked_obsolete_in_milestone:

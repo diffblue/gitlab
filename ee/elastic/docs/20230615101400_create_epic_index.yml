@@ -1,0 +1,10 @@
+---
+name: CreateEpicIndex
+version: '20230615101400'
+description: Create a standalone index for Epics
+group: group::global search
+milestone: 16.2
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/121635
+obsolete: false
+marked_obsolete_by_url:
+marked_obsolete_in_milestone:

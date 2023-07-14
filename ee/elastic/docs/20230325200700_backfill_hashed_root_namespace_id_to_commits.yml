@@ -1,0 +1,10 @@
+---
+name: BackfillHashedRootNamespaceIdToCommits
+version: '20230325200700'
+description: BackfillHashedRootNamespaceIdToCommits
+group: group::global search
+milestone: 15.11
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/115411
+obsolete: false
+marked_obsolete_by_url:
+marked_obsolete_in_milestone:
