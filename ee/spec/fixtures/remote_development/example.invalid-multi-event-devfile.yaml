@@ -1,0 +1,17 @@
+---
+schemaVersion: 2.2.0
+components:
+  - name: example
+    attributes:
+      gl/inject-editor: true
+    container:
+      image: quay.io/mloriedo/universal-developer-image:ubi8-dw-demo
+commands:
+  - id: example
+    apply:
+      component: example
+# This example proves that all events are processed, not just the first one
+events:
+  preStart:
+    - example
+    - gl-example

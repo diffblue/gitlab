@@ -678,12 +678,18 @@ RSpec.shared_context 'with remote development shared fixtures' do
     read_devfile('example.devfile.yaml')
   end
 
+  def example_flattened_devfile
+    read_devfile('example.flattened-devfile.yaml')
+  end
+
   def example_processed_devfile
     devfile_contents = read_devfile('example.processed-devfile.yaml')
     devfile_contents.gsub!('http://localhost/', Gitlab::Routing.url_helpers.root_url)
     devfile_contents
   end
 
+  # TODO: Rename this method and all methods which use it to end in `_yaml`, to clearly distinguish between
+  #       a String YAML representation of a devfile, and a devfile which has been converted to a Hash.
   def read_devfile(filename)
     # noinspection RubyMismatchedArgumentType
     File.read(Rails.root.join('ee/spec/fixtures/remote_development', filename))
