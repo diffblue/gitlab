@@ -2622,8 +2622,8 @@ This change will be reflected in the automatic language detection portion of the
 
 If you've already dismissed a vulnerability finding from one of the deprecated analyzers, the replacement attempts to respect your previous dismissal. The system behavior depends on:
 
-- whether you’ve excluded the Semgrep-based analyzer from running in the past.
-- which analyzer first discovered the vulnerabilities shown in the project’s Vulnerability Report.
+- whether you've excluded the Semgrep-based analyzer from running in the past.
+- which analyzer first discovered the vulnerabilities shown in the project's Vulnerability Report.
 
 See [Vulnerability translation documentation](https://docs.gitlab.com/ee/user/application_security/sast/analyzers.html#vulnerability-translation) for further details.
 
@@ -3283,7 +3283,7 @@ You should [opt in](https://docs.gitlab.com/ee/integration/oauth_provider.html#e
 tokens before GitLab 15.0 is released:
 
 1. Edit the application.
-1. Select **Expire access tokens** to enable them. Tokens must be revoked or they don’t expire.
+1. Select **Expire access tokens** to enable them. Tokens must be revoked or they don't expire.
 
 </div>
 
@@ -3372,7 +3372,10 @@ If you rely on Java 8 being present in the analyzer environment, you must take a
 - To discuss this change or learn more, see the [deprecation issue](https://gitlab.com/gitlab-org/gitlab/-/issues/359133).
 </div>
 
-As Advanced Search migrations usually require support multiple code paths for a long period of time, it’s important to clean those up when we safely can. We use GitLab major version upgrades as a safe time to remove backward compatibility for indices that have not been fully migrated. See the [upgrade documentation](https://docs.gitlab.com/ee/update/index.html#upgrading-to-a-new-major-version) for details.
+As Advanced Search migrations usually require support multiple code paths for a long period of time,
+it's important to clean those up when we safely can. We use GitLab major version upgrades as a safe
+time to remove backward compatibility for indices that have not been fully migrated. See the
+[upgrade documentation](https://docs.gitlab.com/ee/update/index.html#upgrading-to-a-new-major-version) for details.
 
 </div>
 
@@ -3737,7 +3740,7 @@ To simplify setting a test coverage pattern, in GitLab 15.0 the
 [project setting for test coverage parsing](https://docs.gitlab.com/ee/ci/pipelines/settings.html#add-test-coverage-results-using-project-settings-removed)
 is being removed.
 
-Instead, using the project’s `.gitlab-ci.yml`, provide a regular expression with the `coverage` keyword to set
+Instead, using the project's `.gitlab-ci.yml`, provide a regular expression with the `coverage` keyword to set
 testing coverage results in merge requests.
 
 </div>
