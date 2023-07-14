@@ -1820,14 +1820,14 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     let_it_be(:developer) { group.add_member(create(:user), GroupMember::DEVELOPER) }
     let_it_be(:other_developer) { group.add_member(create(:user), GroupMember::DEVELOPER) }
 
-    describe '#direct_and_indirect_members' do
+    describe '#hierarchy_members' do
       it 'returns parents members' do
-        expect(group.direct_and_indirect_members).to include(developer)
-        expect(group.direct_and_indirect_members).to include(maintainer)
+        expect(group.hierarchy_members).to include(developer)
+        expect(group.hierarchy_members).to include(maintainer)
       end
 
       it 'returns descendant members' do
-        expect(group.direct_and_indirect_members).to include(other_developer)
+        expect(group.hierarchy_members).to include(other_developer)
       end
     end
 
@@ -1897,15 +1897,15 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       project.add_developer(user_d)
     end
 
-    describe '#direct_and_indirect_users' do
+    describe '#users_from_hierarchy_with_projects' do
       it 'returns member users on every nest level without duplication' do
-        expect(group.direct_and_indirect_users).to contain_exactly(user_a, user_b, user_c, user_d)
-        expect(nested_group.direct_and_indirect_users).to contain_exactly(user_a, user_b, user_c)
-        expect(deep_nested_group.direct_and_indirect_users).to contain_exactly(user_a, user_b, user_c)
+        expect(group.users_from_hierarchy_with_projects).to contain_exactly(user_a, user_b, user_c, user_d)
+        expect(nested_group.users_from_hierarchy_with_projects).to contain_exactly(user_a, user_b, user_c)
+        expect(deep_nested_group.users_from_hierarchy_with_projects).to contain_exactly(user_a, user_b, user_c)
       end
 
       it 'does not return members of projects belonging to ancestor groups' do
-        expect(nested_group.direct_and_indirect_users).not_to include(user_d)
+        expect(nested_group.users_from_hierarchy_with_projects).not_to include(user_d)
       end
 
       context 'with shared group members' do
@@ -1915,7 +1915,28 @@ RSpec.describe Group, feature_category: :groups_and_projects do
         it 'also returns members of groups invited to this group' do
           create(:group_group_link, shared_group: group, shared_with_group: another_group)
 
-          expect(group.direct_and_indirect_users)
+          expect(group.users_from_hierarchy_with_projects)
+            .to contain_exactly(user_a, user_b, user_c, user_d, another_user)
+        end
+
+        it 'also returns members of groups invited to an ancestor group' do
+          create(:group_group_link, shared_group: group, shared_with_group: another_group)
+
+          expect(nested_group.users_from_hierarchy_with_projects)
+            .to contain_exactly(user_a, user_b, user_c, another_user)
+        end
+
+        it 'also returns members of groups invited to a descendant group' do
+          create(:group_group_link, shared_group: nested_group, shared_with_group: another_group)
+
+          expect(group.users_from_hierarchy_with_projects)
+            .to contain_exactly(user_a, user_b, user_c, user_d, another_user)
+        end
+
+        it 'also returns members of groups invited to a sub-project' do
+          create(:project_group_link, project: project, group: another_group)
+
+          expect(group.users_from_hierarchy_with_projects)
             .to contain_exactly(user_a, user_b, user_c, user_d, another_user)
         end
       end

@@ -635,7 +635,7 @@ class Group < Namespace
   end
 
   # Returns all members that are part of the group, it's subgroups, and ancestor groups
-  def direct_and_indirect_members
+  def hierarchy_members
     GroupMember
       .active_without_invites_and_requests
       .where(source_id: self_and_hierarchy.reorder(nil).select(:id))
@@ -667,23 +667,20 @@ class Group < Namespace
       .reorder(nil)
   end
 
-  # Returns all users that are related to the group because:
-  # 1. They are members of the group, its sub-groups, or its ancestor groups
-  # 2. They are members of a group that is shared with this group or its ancestors
-  # 3. They are members of a project that belongs to the group
-  def direct_and_indirect_users
-    # We only need :user_id column, but
-    # `members_from_self_and_ancestor_group_shares` needs more
-    # columns to make the CTE query work.
-    members = GroupMember.from_union([
-                direct_and_indirect_members.select(:user_id, :source_type, :type),
-                members_from_self_and_ancestor_group_shares.reselect(:user_id, :source_type, :type)
-              ])
+  # Returns all users that are related to this group because:
+  # 1. They are members of this group, its sub-groups, or its ancestor groups
+  # 2. They are members of a group that is invited to this group, its sub-groups, or its ancestors
+  # 3. They are members of a project that belongs to this group
+  # 4. They are members of a group that is invited to this group's descendant projects
+  def users_from_hierarchy_with_projects
+    members = Member.from_union([
+      hierarchy_members.select(:user_id),
+      members_from_hierarchy_group_shares.reselect(:user_id),
+      members_from_descendant_projects.select(:user_id),
+      members_from_descendant_project_shares.select(:user_id)
+    ], remove_duplicates: false)
 
-    User.from_union([
-      User.where(id: members.select(:user_id)).reorder(nil),
-      project_users_with_descendants
-    ])
+    User.where(id: members.select(:user_id)).reorder(nil)
   end
 
   def users_count
@@ -938,7 +935,7 @@ class Group < Namespace
   end
 
   def update_two_factor_requirement_for_members
-    direct_and_indirect_members.find_each(&:update_two_factor_requirement)
+    hierarchy_members.find_each(&:update_two_factor_requirement)
   end
 
   def readme_project
@@ -1045,6 +1042,29 @@ class Group < Namespace
       .where(group_member_table[:source_type].eq('Namespace'))
       .where(group_member_table[:state].eq(::Member::STATE_ACTIVE))
       .non_minimal_access
+  end
+
+  def members_from_hierarchy_group_shares
+    source_ids = self_and_hierarchy.reorder(nil).select(:id)
+    invited_groups = GroupGroupLink.where(shared_group_id: source_ids).select(:shared_with_group_id)
+
+    GroupMember
+      .with_source_id(invited_groups)
+      .without_invites_and_requests
+  end
+
+  def members_from_descendant_projects
+    ProjectMember
+      .with_source_id(all_projects)
+      .without_invites_and_requests
+  end
+
+  def members_from_descendant_project_shares
+    descendant_project_invited_groups = ProjectGroupLink.where(project: all_projects).select(:group_id)
+
+    GroupMember
+      .with_source_id(descendant_project_invited_groups)
+      .without_invites_and_requests
   end
 
   def smallest_value_arel(args, column_alias)

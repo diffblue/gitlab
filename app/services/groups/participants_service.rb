@@ -13,7 +13,7 @@ module Groups
         participants_in_noteable +
         all_members +
         groups +
-        group_members
+        group_hierarchy_users
 
       render_participants_as_hash(participants.uniq)
     end
@@ -26,10 +26,10 @@ module Groups
       [{ username: "all", name: "All Group Members", count: group.users_count }]
     end
 
-    def group_members
+    def group_hierarchy_users
       return [] unless group
 
-      sorted(group.direct_and_indirect_users)
+      sorted(group.users_from_hierarchy_with_projects)
     end
   end
 end
