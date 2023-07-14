@@ -48,7 +48,7 @@ RSpec.describe WebHooks::WebHooksHelper, :clean_gitlab_redis_shared_state, featu
       include_context 'when a hook has failed'
 
       it 'is true' do
-        expect(helper).to be_show_group_hook_failed_callout(group: group)
+        expect(helper.show_group_hook_failed_callout?(group: group)).to eq(true)
       end
     end
 
@@ -65,7 +65,7 @@ RSpec.describe WebHooks::WebHooksHelper, :clean_gitlab_redis_shared_state, featu
           contexts.each { |ctx| include_context(ctx) unless ctx == name }
 
           it 'is false' do
-            expect(helper).not_to be_show_group_hook_failed_callout(group: group)
+            expect(helper.show_group_hook_failed_callout?(group: group)).to eq(false)
           end
         end
       end
