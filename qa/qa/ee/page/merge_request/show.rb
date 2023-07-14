@@ -226,6 +226,8 @@ module QA
           end
 
           def skip_merge_train_and_merge_immediately
+            close_rich_text_promo_popover_if_present
+
             click_element :merge_moment_dropdown
             click_element :merge_immediately_menu_item
 
