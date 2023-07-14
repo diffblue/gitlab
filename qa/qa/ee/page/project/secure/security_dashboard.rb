@@ -52,6 +52,7 @@ module QA
 
             def change_state(status, dismissal_reason = "not_applicable")
               click_element(:status_listbox, wait: 10)
+              wait_for_requests
               click_element(:"listbox-item-#{status}", wait: 10)
 
               if status.include?("dismissed")
@@ -83,6 +84,7 @@ module QA
               wait_until(max_duration: 20, sleep_interval: 2, message: "Vulnerability report not loaded yet") do
                 has_element?(:vulnerability_report_header)
               end
+              wait_for_requests
             end
           end
         end
