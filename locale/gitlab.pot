@@ -14664,6 +14664,9 @@ msgstr ""
 msgid "Date range must be shorter than %{max_range} days."
 msgstr ""
 
+msgid "Date range too large"
+msgstr ""
+
 msgid "Date to enact enforcement on newly created namespaces"
 msgstr ""
 
@@ -24794,6 +24797,9 @@ msgid "Invalid date format. Please use UTC format as YYYY-MM-DD"
 msgstr ""
 
 msgid "Invalid date range"
+msgstr ""
+
+msgid "Invalid dates set"
 msgstr ""
 
 msgid "Invalid feature"
