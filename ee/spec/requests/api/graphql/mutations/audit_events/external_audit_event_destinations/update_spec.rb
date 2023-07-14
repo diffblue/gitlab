@@ -75,6 +75,17 @@ RSpec.describe 'Update an external audit event destination', feature_category: :
 
         expect(AuditEvent.last.details[:custom_message]).to match(/Updated event streaming destination from .* to .*/)
       end
+
+      context 'when there is no change in values' do
+        let(:input) do
+          {
+            'id': GitlabSchema.id_from_object(destination).to_s,
+            'destinationUrl': destination.reload.destination_url
+          }
+        end
+
+        it_behaves_like 'a mutation that does not update a destination'
+      end
     end
 
     context 'when current user is a group maintainer' do
