@@ -58,6 +58,34 @@ RSpec.describe GroupMember do
         end
       end
     end
+
+    context 'with seat availability concerns', :saas do
+      let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan) }
+
+      before do
+        stub_ee_application_setting(dashboard_limit_enabled: true)
+      end
+
+      context 'when seat is not available' do
+        let_it_be(:group_member) { build(:group_member, source: group, user: create(:user)) }
+
+        context 'when ignore_user_limits is falsey' do
+          it 'is invalid' do
+            expect(group_member).to be_invalid
+          end
+        end
+
+        context 'when ignore_user_limits is true' do
+          before do
+            group_member.ignore_user_limits = true
+          end
+
+          it 'is valid' do
+            expect(group_member).to be_valid
+          end
+        end
+      end
+    end
   end
 
   describe 'scopes' do
