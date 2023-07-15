@@ -46,7 +46,7 @@ module Mutations
 
         override :read_only?
         def read_only?
-          ::Gitlab.maintenance_mode?
+          false
         end
 
         private
