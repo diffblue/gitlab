@@ -246,6 +246,10 @@ module EE
         security_scans.pluck(:scan_type)
       end
 
+      def self_and_descendant_security_scans
+        Security::Scan.where(pipeline_id: self_and_project_descendants.pluck(:id))
+      end
+
       private
 
       def has_security_reports?

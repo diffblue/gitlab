@@ -942,4 +942,17 @@ RSpec.describe Ci::Pipeline do
       expect(pipeline.security_scan_types).to match_array([scan_type])
     end
   end
+
+  describe ".self_and_descendant_security_scans" do
+    it 'returns the security scan from the parent and each child pipeline' do
+      parent_pipeline = create(:ee_ci_pipeline, :success, project: project)
+      pipeline_1 = create(:ee_ci_pipeline, :success, child_of: parent_pipeline, project: project)
+      pipeline_2 = create(:ee_ci_pipeline, :success, child_of: parent_pipeline, project: project)
+      parent_scan = create(:security_scan, pipeline: parent_pipeline)
+      scan_1 = create(:security_scan, pipeline: pipeline_1)
+      scan_2 = create(:security_scan, pipeline: pipeline_2)
+
+      expect(parent_pipeline.self_and_descendant_security_scans).to match_array([parent_scan, scan_1, scan_2])
+    end
+  end
 end
