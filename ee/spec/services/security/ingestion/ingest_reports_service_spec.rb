@@ -56,6 +56,39 @@ RSpec.describe Security::Ingestion::IngestReportsService, feature_category: :vul
       ingest_reports
     end
 
+    context 'when the same scanner is used into separate child pipelines' do
+      let_it_be(:parent_pipeline) { create(:ee_ci_pipeline, :success, project: project) }
+      let_it_be(:child_pipeline_1) { create(:ee_ci_pipeline, :success, child_of: parent_pipeline, project: project) }
+      let_it_be(:child_pipeline_2) { create(:ee_ci_pipeline, :success, child_of: parent_pipeline, project: project) }
+      let_it_be(:parent_scan) { create(:security_scan, pipeline: parent_pipeline) }
+      let_it_be(:scan_1) { create(:security_scan, pipeline: child_pipeline_1) }
+      let_it_be(:scan_2) { create(:security_scan, pipeline: child_pipeline_2) }
+
+      subject(:service_object) { described_class.new(parent_pipeline) }
+
+      it 'ingests the scan from both child pipelines' do
+        service_object.execute
+
+        expect(Security::Ingestion::IngestReportService).to have_received(:execute).with(parent_scan)
+        expect(Security::Ingestion::IngestReportService).to have_received(:execute).with(scan_1)
+        expect(Security::Ingestion::IngestReportService).to have_received(:execute).with(scan_2)
+      end
+
+      context 'with `descendant_security_scans` disabled' do
+        before do
+          stub_feature_flags(descendant_security_scans: false)
+        end
+
+        it 'ingest the scan from the parent pipeline' do
+          service_object.execute
+
+          expect(Security::Ingestion::IngestReportService).to have_received(:execute).with(parent_scan)
+          expect(Security::Ingestion::IngestReportService).not_to have_received(:execute).with(scan_1)
+          expect(Security::Ingestion::IngestReportService).not_to have_received(:execute).with(scan_2)
+        end
+      end
+    end
+
     describe 'scheduling the AutoFix background job' do
       let(:auto_fix_dependency_scanning?) { false }
 

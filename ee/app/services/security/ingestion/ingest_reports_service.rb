@@ -39,7 +39,12 @@ module Security
       end
 
       def latest_security_scans
-        @latest_security_scans ||= pipeline.security_scans.without_errors.latest
+        @latest_security_scans ||=
+          if Feature.enabled?(:descendant_security_scans, project)
+            pipeline.root_ancestor.self_and_descendant_security_scans.without_errors.latest
+          else
+            pipeline.security_scans.without_errors.latest
+          end
       end
 
       def ingested_ids_by_scanner
