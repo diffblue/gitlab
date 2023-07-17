@@ -4,7 +4,7 @@ module Zoekt
   module SearchableRepository
     extend ActiveSupport::Concern
 
-    INDEXING_TIMEOUT_S = 10.minutes.to_i
+    INDEXING_TIMEOUT_S = 30.minutes.to_i
 
     class_methods do
       def truncate_zoekt_index!(shard)
