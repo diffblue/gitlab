@@ -4262,6 +4262,26 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     end
   end
 
+  describe '#merge_train_for' do
+    subject { project.merge_train_for(project.default_branch) }
+
+    before do
+      allow(project).to receive(:merge_trains_enabled?).and_return(setting)
+    end
+
+    context 'with merge_trains_enabled' do
+      let(:setting) { true }
+
+      it { is_expected.to be_a(MergeTrains::Train) }
+    end
+
+    context 'with merge_trains disabled' do
+      let(:setting) { false }
+
+      it { is_expected.to eq(nil) }
+    end
+  end
+
   describe 'deprecated requirements_enabled attribute' do
     it 'delegates the attribute to project feature' do
       project = described_class.new(requirements_enabled: false)

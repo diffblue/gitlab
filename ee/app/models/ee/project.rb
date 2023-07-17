@@ -110,6 +110,7 @@ module EE
       has_many :software_license_policies, inverse_of: :project, class_name: 'SoftwareLicensePolicy'
       has_many :software_licenses, through: :software_license_policies
       accepts_nested_attributes_for :software_license_policies, allow_destroy: true
+      # We should consider avoiding direct use of this relation and instead rely on MergeTrains::Train
       has_many :merge_train_cars, class_name: 'MergeTrains::Car', foreign_key: 'target_project_id', inverse_of: :target_project
 
       has_many :scan_result_policy_reads,
@@ -1151,6 +1152,12 @@ module EE
 
     def resource_parent
       self
+    end
+
+    def merge_train_for(target_branch)
+      return unless merge_trains_enabled?
+
+      MergeTrains::Train.new(self.id, target_branch)
     end
 
     private
