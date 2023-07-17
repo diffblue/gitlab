@@ -6,6 +6,12 @@ module EE
       extend ActiveSupport::Concern
 
       prepended do
+        field :add_on_purchase,
+          ::Types::GitlabSubscriptions::AddOnPurchaseType,
+          null: true,
+          description: 'AddOnPurchase associated with the namespace',
+          resolver: ::Resolvers::GitlabSubscriptions::AddOnPurchaseResolver
+
         field :additional_purchased_storage_size,
               GraphQL::Types::Float,
               null: true,

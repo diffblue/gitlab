@@ -28,4 +28,27 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :subscripti
     it { is_expected.to validate_presence_of(:purchase_xid) }
     it { is_expected.to validate_length_of(:purchase_xid).is_at_most(255) }
   end
+
+  describe 'scopes' do
+    let_it_be(:namespace) { create(:namespace) }
+    let_it_be(:add_on) { create(:gitlab_subscription_add_on) }
+
+    let_it_be(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase, add_on: add_on, namespace: namespace) }
+
+    describe '.active' do
+      it 'returns only active add_on_purchases' do
+        create(:gitlab_subscription_add_on_purchase, add_on: add_on, expires_on: 1.day.ago)
+
+        expect(described_class.count).to eq(2)
+        expect(described_class.active).to contain_exactly(add_on_purchase)
+      end
+    end
+
+    describe '.by_add_on_name' do
+      it 'returns records filtered by namespace' do
+        expect(described_class.by_add_on_name('foo-bar')).to eq([])
+        expect(described_class.by_add_on_name('code_suggestions')).to contain_exactly(add_on_purchase)
+      end
+    end
+  end
 end
