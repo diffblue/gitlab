@@ -10,8 +10,11 @@ export const I18N_BUILT_IN_DASHBOARD_LABEL = s__('Analytics|By GitLab');
 
 export const I18N_DASHBOARD_LIST_TITLE = s__('Analytics|Analytics dashboards');
 export const I18N_DASHBOARD_LIST_TITLE_BREADCRUMB = s__('Analytics|Analytics dashboards');
-export const I18N_DASHBOARD_LIST_DESCRIPTION = s__(
+export const I18N_DASHBOARD_LIST_PROJECT_DESCRIPTION = s__(
   'Analytics|Dashboards are created by editing the projects dashboard files.',
+);
+export const I18N_DASHBOARD_LIST_GROUP_DESCRIPTION = s__(
+  'Analytics|Dashboards are created by editing the groups dashboard files.',
 );
 export const I18N_DASHBOARD_LIST_LEARN_MORE = __('Learn more.');
 export const I18N_DASHBOARD_LIST_NEW_DASHBOARD = s__('Analytics|New dashboard');

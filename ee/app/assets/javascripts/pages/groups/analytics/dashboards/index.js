@@ -1,3 +1,3 @@
-import initGroupAnalyticsDashboards from 'ee/analytics/dashboards';
+import initAnalyticsDashboards from 'ee/analytics/analytics_dashboards';
 
-initGroupAnalyticsDashboards();
+initAnalyticsDashboards();

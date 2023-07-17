@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Sidebars::Groups::Menus::AnalyticsMenu, feature_category: :navigation do
+  using RSpec::Parameterized::TableSyntax
+
   let_it_be(:owner) { create(:user) }
   let_it_be_with_refind(:group) do
     create(:group, :private).tap do |g|
@@ -213,6 +215,58 @@ RSpec.describe Sidebars::Groups::Menus::AnalyticsMenu, feature_category: :naviga
 
       describe 'when the user does not have access' do
         let(:user) { nil }
+
+        specify { is_expected.to be_nil }
+      end
+    end
+
+    describe 'Dashboards' do
+      let(:item_id) { :dashboards_analytics }
+
+      before do
+        stub_feature_flags(group_analytics_dashboards: true)
+        stub_licensed_features(group_level_analytics_dashboard: true)
+      end
+
+      specify { is_expected.not_to be_nil }
+
+      context 'with different user access levels' do
+        where(:access_level, :has_menu_item) do
+          nil         | false
+          :reporter   | true
+          :developer  | true
+          :maintainer | true
+        end
+
+        with_them do
+          let(:user) { create(:user) }
+
+          before do
+            group.add_member(user, access_level)
+          end
+
+          describe "when the user is not allowed to view the menu item", if: !params[:has_menu_item] do
+            specify { is_expected.to be_nil }
+          end
+
+          describe "when the user is allowed to view the menu item", if: params[:has_menu_item] do
+            specify { is_expected.not_to be_nil }
+          end
+        end
+      end
+
+      describe 'when the license does not support the feature' do
+        before do
+          stub_licensed_features(group_level_analytics_dashboard: false)
+        end
+
+        specify { is_expected.to be_nil }
+      end
+
+      describe 'when the dashboards analytics feature is disabled' do
+        before do
+          stub_feature_flags(group_analytics_dashboards: false)
+        end
 
         specify { is_expected.to be_nil }
       end

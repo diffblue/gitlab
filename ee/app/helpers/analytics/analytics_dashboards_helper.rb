@@ -8,6 +8,7 @@ module Analytics
 
       {
         namespace_id: namespace.id,
+        is_project: is_project.to_s,
         dashboard_project: analytics_dashboard_pointer_project(namespace)&.to_json,
         tracking_key: can_read_product_analytics && is_project ? tracking_key(namespace) : nil,
         collector_host: can_read_product_analytics ? collector_host : nil,

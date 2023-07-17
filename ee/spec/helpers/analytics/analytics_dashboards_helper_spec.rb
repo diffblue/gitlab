@@ -61,6 +61,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
 
         def expected_data
           {
+            is_project: 'true',
             namespace_id: project.id,
             dashboard_project: {
               id: pointer.target_project.id,
@@ -104,6 +105,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
 
       def expected_data(collector_host)
         {
+          is_project: 'false',
           namespace_id: group.id,
           dashboard_project: {
             id: group_pointer.target_project.id,
