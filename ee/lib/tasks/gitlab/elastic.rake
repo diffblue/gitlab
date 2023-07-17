@@ -199,7 +199,8 @@ namespace :gitlab do
 
       not_indexed = []
 
-      elastic_enabled_projects.id_not_in(IndexStatus.select(:project_id).distinct).each_batch do |batch|
+      elastic_enabled_projects.joins('LEFT JOIN index_statuses ON projects.id = index_statuses.project_id')
+                              .where(index_statuses: { project_id: nil }).each_batch do |batch|
         batch.each do |project|
           not_indexed << project
         end
