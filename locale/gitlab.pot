@@ -41362,6 +41362,9 @@ msgstr ""
 msgid "SecurityOrchestration|Are you sure you want to delete this policy? This action cannot be undone."
 msgstr ""
 
+msgid "SecurityOrchestration|Automatically selected runners"
+msgstr ""
+
 msgid "SecurityOrchestration|Branch types don't match any existing branches."
 msgstr ""
 
@@ -41497,6 +41500,11 @@ msgstr ""
 msgid "SecurityOrchestration|Not enabled"
 msgstr ""
 
+msgid "SecurityOrchestration|On runners with tag:"
+msgid_plural "SecurityOrchestration|On runners with the tags:"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "SecurityOrchestration|Only owners can update Security Policy Project"
 msgstr ""
 
@@ -41545,13 +41553,8 @@ msgstr ""
 msgid "SecurityOrchestration|Rules"
 msgstr ""
 
-msgid "SecurityOrchestration|Run %{scannerStart}%{scanner}%{scannerEnd}"
+msgid "SecurityOrchestration|Run %{scannerStart}%{scanner}%{scannerEnd} with the following options:"
 msgstr ""
-
-msgid "SecurityOrchestration|Run %{scannerStart}%{scanner}%{scannerEnd} on runners with tag:"
-msgid_plural "SecurityOrchestration|Run %{scannerStart}%{scanner}%{scannerEnd} on runners with the tags:"
-msgstr[0] ""
-msgstr[1] ""
 
 msgid "SecurityOrchestration|Run a DAST scan with Scan Profile A and Site Profile A when a pipeline run against the main branch."
 msgstr ""
@@ -41704,6 +41707,9 @@ msgid "SecurityOrchestration|When %{scanners} %{vulnerabilitiesAllowed} %{vulner
 msgstr ""
 
 msgid "SecurityOrchestration|When license scanner finds any license %{matching} %{licenses}%{detection} in an open merge request targeting %{branches}."
+msgstr ""
+
+msgid "SecurityOrchestration|With the following customized CI variables:"
 msgstr ""
 
 msgid "SecurityOrchestration|YAML"

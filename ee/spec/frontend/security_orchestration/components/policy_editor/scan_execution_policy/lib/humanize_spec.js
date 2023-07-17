@@ -2,7 +2,10 @@ import {
   humanizeActions,
   humanizeRules,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib';
-import { NO_RULE_MESSAGE } from 'ee/security_orchestration/components/policy_editor/constants';
+import {
+  NO_RULE_MESSAGE,
+  ACTIONS,
+} from 'ee/security_orchestration/components/policy_editor/constants';
 
 jest.mock('~/locale', () => ({
   getPreferredLocales: jest.fn().mockReturnValue(['en']),
@@ -57,6 +60,11 @@ const mockRules = [
     },
   },
 ];
+const mockDefaultTagsAction = {
+  message: 'Automatically selected runners',
+  tags: [],
+  action: ACTIONS.tags,
+};
 
 describe('humanizeActions', () => {
   it('returns an empty Array of actions as an empty Set', () => {
@@ -65,20 +73,26 @@ describe('humanizeActions', () => {
 
   it('returns a single action as human-readable string', () => {
     expect(humanizeActions([mockActions[0]])).toStrictEqual([
-      { message: 'Run %{scannerStart}DAST%{scannerEnd}' },
+      {
+        message: 'Run %{scannerStart}DAST%{scannerEnd} with the following options:',
+        criteriaList: [mockDefaultTagsAction],
+      },
     ]);
   });
 
   it('returns multiple actions as human-readable strings', () => {
     expect(humanizeActions(mockActions)).toStrictEqual([
       {
-        message: 'Run %{scannerStart}DAST%{scannerEnd}',
+        message: 'Run %{scannerStart}DAST%{scannerEnd} with the following options:',
+        criteriaList: [mockDefaultTagsAction],
       },
       {
-        message: 'Run %{scannerStart}Secret Detection%{scannerEnd}',
+        message: 'Run %{scannerStart}Secret Detection%{scannerEnd} with the following options:',
+        criteriaList: [mockDefaultTagsAction],
       },
       {
-        message: 'Run %{scannerStart}Container Scanning%{scannerEnd}',
+        message: 'Run %{scannerStart}Container Scanning%{scannerEnd} with the following options:',
+        criteriaList: [mockDefaultTagsAction],
       },
     ]);
   });
@@ -92,9 +106,24 @@ describe('humanizeActions', () => {
 
     it.each`
       title                   | input                       | output
-      ${'one tag'}            | ${[mockActionsWithTags[0]]} | ${[{ message: 'Run %{scannerStart}SAST%{scannerEnd} on runners with tag:', tags: mockActionsWithTags[0].tags }]}
-      ${'two tags'}           | ${[mockActionsWithTags[1]]} | ${[{ message: 'Run %{scannerStart}Secret Detection%{scannerEnd} on runners with the tags:', tags: mockActionsWithTags[1].tags }]}
-      ${'more than two tags'} | ${[mockActionsWithTags[2]]} | ${[{ message: 'Run %{scannerStart}Container Scanning%{scannerEnd} on runners with the tags:', tags: mockActionsWithTags[2].tags }]}
+      ${'one tag'}            | ${[mockActionsWithTags[0]]} | ${[{ message: 'Run %{scannerStart}SAST%{scannerEnd} with the following options:', criteriaList: [{ message: 'On runners with tag:', tags: mockActionsWithTags[0].tags, action: ACTIONS.tags }] }]}
+      ${'two tags'}           | ${[mockActionsWithTags[1]]} | ${[{ message: 'Run %{scannerStart}Secret Detection%{scannerEnd} with the following options:', criteriaList: [{ message: 'On runners with the tags:', tags: mockActionsWithTags[1].tags, action: ACTIONS.tags }] }]}
+      ${'more than two tags'} | ${[mockActionsWithTags[2]]} | ${[{ message: 'Run %{scannerStart}Container Scanning%{scannerEnd} with the following options:', criteriaList: [{ message: 'On runners with the tags:', tags: mockActionsWithTags[2].tags, action: ACTIONS.tags }] }]}
+    `('$title', ({ input, output }) => {
+      expect(humanizeActions(input)).toStrictEqual(output);
+    });
+  });
+
+  describe('with variables', () => {
+    const mockActionsWithVariables = [
+      { scan: 'sast', variables: [] },
+      { scan: 'secret_detection', variables: { variable1: 'value1', variable2: 'value2' } },
+    ];
+
+    it.each`
+      title             | input                            | output
+      ${'no variables'} | ${[mockActionsWithVariables[0]]} | ${[{ message: 'Run %{scannerStart}SAST%{scannerEnd} with the following options:', criteriaList: [mockDefaultTagsAction] }]}
+      ${'variables'}    | ${[mockActionsWithVariables[1]]} | ${[{ message: 'Run %{scannerStart}Secret Detection%{scannerEnd} with the following options:', criteriaList: [mockDefaultTagsAction, { message: 'With the following customized CI variables:', variables: [{ variable: 'variable1', value: 'value1' }, { variable: 'variable2', value: 'value2' }], action: ACTIONS.variables }] }]}
     `('$title', ({ input, output }) => {
       expect(humanizeActions(input)).toStrictEqual(output);
     });
