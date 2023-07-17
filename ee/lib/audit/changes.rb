@@ -100,7 +100,7 @@ module Audit
       return true if ::License.feature_available?(:admin_audit_log)
       return true if ::License.feature_available?(:extended_audit_events)
 
-      entity.respond_to?(:feature_available?) && entity.licensed_feature_available?(:audit_events)
+      entity.respond_to?(:licensed_feature_available?) && entity.licensed_feature_available?(:audit_events)
     end
   end
 end

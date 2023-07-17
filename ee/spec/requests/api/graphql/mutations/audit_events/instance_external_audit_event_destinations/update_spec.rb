@@ -5,9 +5,15 @@ require 'spec_helper'
 RSpec.describe 'Update an instance external audit event destination', feature_category: :audit_events do
   include GraphqlHelpers
 
+  let_it_be(:old_destination_url) { "https://example.com/old" }
   let_it_be(:admin) { create(:admin) }
   let_it_be(:user) { create(:user) }
-  let_it_be(:destination) { create(:instance_external_audit_event_destination) }
+  let_it_be_with_reload(:destination) do
+    create(:instance_external_audit_event_destination,
+      name: "Old Destination",
+      destination_url: old_destination_url)
+  end
+
   let_it_be(:destination_url) { 'https://example.com/test' }
   let_it_be(:name) { "My Destination" }
 
@@ -35,6 +41,11 @@ RSpec.describe 'Update an instance external audit event destination', feature_ca
 
     it_behaves_like 'a mutation that returns top-level errors',
       errors: ['You do not have access to this mutation.']
+
+    it 'does not audit the update' do
+      expect { post_graphql_mutation(mutation, current_user: current_user) }
+        .not_to change { AuditEvent.count }
+    end
   end
 
   context 'when feature is licensed' do
@@ -53,6 +64,23 @@ RSpec.describe 'Update an instance external audit event destination', feature_ca
           expect(mutation_response['instanceExternalAuditEventDestination']['id']).not_to be_empty
           expect(mutation_response['instanceExternalAuditEventDestination']['name']).to eq(name)
           expect(mutation_response['instanceExternalAuditEventDestination']['verificationToken']).not_to be_empty
+        end
+
+        it_behaves_like 'audits update to external streaming destination'
+
+        context 'when destination is same as previous one' do
+          let(:input) { super().merge(destinationUrl: old_destination_url) }
+
+          it 'updates the destination with correct response' do
+            expect { post_graphql_mutation(mutation, current_user: admin) }
+              .not_to change { destination.reload.destination_url }
+
+            expect(mutation_response['errors']).to be_empty
+            expect(mutation_response['instanceExternalAuditEventDestination']['destinationUrl'])
+              .to eq(old_destination_url)
+            expect(mutation_response['instanceExternalAuditEventDestination']['id']).not_to be_empty
+            expect(mutation_response['instanceExternalAuditEventDestination']['verificationToken']).not_to be_empty
+          end
         end
 
         context 'when the destination id is invalid' do

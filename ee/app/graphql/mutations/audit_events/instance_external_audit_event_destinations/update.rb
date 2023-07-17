@@ -6,7 +6,11 @@ module Mutations
       class Update < Base
         graphql_name 'InstanceExternalAuditEventDestinationUpdate'
 
+        include ::Audit::Changes
+
         authorize :admin_instance_external_audit_events
+
+        UPDATE_EVENT_NAME = 'update_instance_event_streaming_destination'
 
         argument :id, ::Types::GlobalIDType[::AuditEvents::InstanceExternalAuditEventDestination],
           required: true,
@@ -30,12 +34,26 @@ module Mutations
 
           destination_attributes = { destination_url: destination_url, name: name }.compact
 
-          destination.update(destination_attributes)
+          audit_update(destination) if destination.update(destination_attributes)
 
           {
             instance_external_audit_event_destination: (destination if destination.persisted?),
             errors: Array(destination.errors)
           }
+        end
+
+        private
+
+        def audit_update(destination)
+          [:destination_url, :name].each do |column|
+            audit_changes(
+              column,
+              as: column.to_s,
+              entity: Gitlab::Audit::InstanceScope.new,
+              model: destination,
+              event_type: UPDATE_EVENT_NAME
+            )
+          end
         end
       end
     end

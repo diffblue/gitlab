@@ -26,7 +26,7 @@ module Mutations
           destination
         end
 
-        def audit(destination, action:)
+        def audit(destination, action:, extra_context: {})
           audit_context = {
             name: "#{action}_instance_event_streaming_destination",
             author: current_user,
@@ -35,7 +35,7 @@ module Mutations
             message: "#{action.capitalize} instance event streaming destination #{destination.destination_url}"
           }
 
-          ::Gitlab::Audit::Auditor.audit(audit_context)
+          ::Gitlab::Audit::Auditor.audit(audit_context.merge(extra_context))
         end
       end
     end
