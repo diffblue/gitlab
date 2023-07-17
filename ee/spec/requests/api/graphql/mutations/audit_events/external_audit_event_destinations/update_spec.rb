@@ -77,51 +77,8 @@ RSpec.describe 'Update an external audit event destination', feature_category: :
         end.to change { destination.reload.name }.to("New Destination")
       end
 
-      context 'when both destination url and destination name are updated' do
-        it 'audits the update' do
-          expect { post_graphql_mutation(mutation, current_user: owner) }
-            .to change { AuditEvent.count }.by(2)
-
-          audit_events = AuditEvent.last(2)
-          expect(audit_events[0].details[:custom_message]).to match("Changed destination_url " \
-                                                                    "from https://example.com/old to https://example.com/new")
-          expect(audit_events[1].details[:custom_message]).to match("Changed name from Old Destination " \
-                                                                    "to New Destination")
-        end
-      end
-
-      context 'when only destination url is updated' do
-        let(:input) do
-          {
-            'id': GitlabSchema.id_from_object(destination).to_s,
-            'destinationUrl': "https://example.com/new"
-          }
-        end
-
-        it 'audits the update' do
-          expect { post_graphql_mutation(mutation, current_user: owner) }
-            .to change { AuditEvent.count }.by(1)
-
-          expect(AuditEvent.last.details[:custom_message]).to match("Changed destination_url from " \
-                                                                    "https://example.com/old to https://example.com/new")
-        end
-      end
-
-      context 'when only destination name is updated' do
-        let(:input) do
-          {
-            'id': GitlabSchema.id_from_object(destination).to_s,
-            'name': "New Destination"
-          }
-        end
-
-        it 'audits the update' do
-          expect { post_graphql_mutation(mutation, current_user: owner) }
-            .to change { AuditEvent.count }.by(1)
-
-          expect(AuditEvent.last.details[:custom_message]).to match("Changed name from Old Destination " \
-                                                                    "to New Destination")
-        end
+      it_behaves_like 'audits update to external streaming destination' do
+        let_it_be(:current_user) { owner }
       end
 
       context 'when there is no change in values' do

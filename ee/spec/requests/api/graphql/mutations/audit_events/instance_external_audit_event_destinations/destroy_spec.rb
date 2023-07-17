@@ -29,6 +29,11 @@ RSpec.describe 'Destroy an instance external audit event destination', feature_c
 
     it_behaves_like 'a mutation that returns top-level errors',
       errors: ['You do not have access to this mutation.']
+
+    it 'does not audit the destruction' do
+      expect { post_graphql_mutation(mutation, current_user: current_user) }
+        .not_to change { AuditEvent.count }
+    end
   end
 
   context 'when feature is licensed' do
@@ -41,6 +46,14 @@ RSpec.describe 'Destroy an instance external audit event destination', feature_c
         it 'destroys the destination' do
           expect { post_graphql_mutation(mutation, current_user: admin) }
             .to change { AuditEvents::InstanceExternalAuditEventDestination.count }.by(-1)
+        end
+
+        it 'audits the destruction' do
+          expect { post_graphql_mutation(mutation, current_user: admin) }
+            .to change { AuditEvent.count }.by(1)
+
+          expect(AuditEvent.last.details[:custom_message])
+            .to eq("Destroy instance event streaming destination #{destination.destination_url}")
         end
 
         context 'when the destination id is invalid' do
