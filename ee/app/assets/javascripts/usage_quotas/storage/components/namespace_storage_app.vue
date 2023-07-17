@@ -176,6 +176,9 @@ export default {
     <template v-if="namespace.rootStorageStatistics">
       <container-registry-usage
         :container-registry-size="namespace.rootStorageStatistics.containerRegistrySize"
+        :container-registry-size-is-estimated="
+          namespace.rootStorageStatistics.containerRegistrySizeIsEstimated
+        "
       />
     </template>
 

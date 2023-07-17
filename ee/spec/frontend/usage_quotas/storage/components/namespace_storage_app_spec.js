@@ -140,18 +140,27 @@ describe('NamespaceStorageApp', () => {
   });
 
   describe('Container registry usage', () => {
-    it('should show the container registry usage component', async () => {
+    beforeEach(async () => {
       mockApollo = createMockApolloProvider();
       createComponent({
         mockApollo,
         dependencyProxyTotalSizeInBytes: 512,
       });
       await waitForPromises();
+    });
 
+    it('will be rendered', () => {
       expect(findContainerRegistry().exists()).toBe(true);
+    });
+
+    it('will have receive relevant props', () => {
+      const {
+        containerRegistrySize,
+        containerRegistrySizeIsEstimated,
+      } = mockedNamespaceStorageResponse.data.namespace.rootStorageStatistics;
       expect(findContainerRegistry().props()).toEqual({
-        containerRegistrySize:
-          mockedNamespaceStorageResponse.data.namespace.rootStorageStatistics.containerRegistrySize,
+        containerRegistrySize,
+        containerRegistrySizeIsEstimated,
       });
     });
   });
