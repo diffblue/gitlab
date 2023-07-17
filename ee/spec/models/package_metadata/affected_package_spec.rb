@@ -11,6 +11,8 @@ RSpec.describe PackageMetadata::AffectedPackage, type: :model, feature_category:
     it { is_expected.to validate_presence_of(:purl_type) }
     it { is_expected.to validate_presence_of(:package_name) }
     it { is_expected.to validate_presence_of(:affected_range) }
+    it { is_expected.to allow_value(['x'] * 10).for(:fixed_versions) }
+    it { is_expected.not_to allow_value(['x'] * 11).for(:fixed_versions) }
 
     describe 'length validation' do
       where(:attribute, :max_length) do

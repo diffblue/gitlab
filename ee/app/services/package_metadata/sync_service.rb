@@ -3,15 +3,17 @@
 module PackageMetadata
   class SyncService
     UnknownAdapterError = Class.new(StandardError)
+    MAX_LEASE_LENGTH = 6.minutes
+    MAX_SYNC_DURATION = 4.minutes
     INGEST_SLICE_SIZE = 200
     THROTTLE_RATE = 0.75.seconds
-    LICENSES_DATA_TYPE = :licenses
 
-    def self.execute(signal)
-      SyncConfiguration.all_configs_for_licenses.each do |sync_config|
+    def self.execute(data_type:, lease:)
+      signal = PackageMetadata::StopSignal.new(lease, MAX_LEASE_LENGTH, MAX_SYNC_DURATION)
+      SyncConfiguration.configs_for(data_type).each do |sync_config|
         if signal.stop?
           break Gitlab::AppJsonLogger.debug(class: name,
-            message: "Stop signal received before starting #{sync_config.purl_type} sync")
+            message: "Stop signal before sync of #{sync_config}")
         end
 
         new(sync_config, signal).execute
@@ -37,13 +39,9 @@ module PackageMetadata
 
         if signal.stop?
           return Gitlab::AppJsonLogger.debug(class: self.class.name,
-            message: "Stopping #{sync_config.purl_type} sync after checkpointing")
+            message: "Stop signal after checkpointing")
         end
       end
-    end
-
-    def data_type
-      LICENSES_DATA_TYPE
     end
 
     private
@@ -51,7 +49,9 @@ module PackageMetadata
     attr_accessor :sync_config, :signal
 
     def ingest(data)
-      if sync_config.v2?
+      if sync_config.advisories?
+        PackageMetadata::Ingestion::Advisory::IngestionService.execute(data)
+      elsif sync_config.v2?
         PackageMetadata::Ingestion::CompressedPackage::IngestionService.execute(data)
       else
         PackageMetadata::Ingestion::IngestionService.execute(data)
@@ -59,8 +59,8 @@ module PackageMetadata
     end
 
     def checkpoint
-      @checkpoint ||= PackageMetadata::Checkpoint.with_path_components(data_type, sync_config.version_format,
-        sync_config.purl_type)
+      @checkpoint ||= PackageMetadata::Checkpoint
+        .with_path_components(sync_config.data_type, sync_config.version_format, sync_config.purl_type)
     end
 
     def connector
@@ -77,8 +77,7 @@ module PackageMetadata
     def log_progress(file)
       Gitlab::AppJsonLogger
         .debug(class: self.class.name,
-          message: "Evaluating data for " \
-                   "#{sync_config.version_format}/#{sync_config.purl_type}/#{file.sequence}/#{file.chunk}")
+          message: "Evaluating data for #{sync_config}/#{file}")
     end
   end
 end

@@ -5,8 +5,8 @@ require 'spec_helper'
 RSpec.describe PackageMetadata::SyncService, feature_category: :software_composition_analysis do
   describe '#execute' do
     let(:connector) { instance_double(Gitlab::PackageMetadata::Connector::Gcp, data_after: [file1, file2]) }
-    let(:file1) { instance_double(Gitlab::PackageMetadata::Connector::CsvDataFile, sequence: 1675363107, chunk: 0) }
-    let(:file2) { instance_double(Gitlab::PackageMetadata::Connector::CsvDataFile, sequence: 1675366673, chunk: 0) }
+    let(:file1) { Gitlab::PackageMetadata::Connector::CsvDataFile.new(StringIO.new, 1675363107, 0) }
+    let(:file2) { Gitlab::PackageMetadata::Connector::CsvDataFile.new(StringIO.new, 1675366673, 0) }
     let(:should_stop) { false }
     let(:stop_signal) { double('stop signal', stop?: should_stop) } # rubocop:disable RSpec/VerifiedDoubles
     let(:data_objects) { build_list(:pm_data_object, 3, purl_type: sync_config.purl_type) }
@@ -25,13 +25,15 @@ RSpec.describe PackageMetadata::SyncService, feature_category: :software_composi
       allow(Gitlab::PackageMetadata::Connector::Offline).to receive(:new).and_return(connector)
       allow(PackageMetadata::Ingestion::IngestionService).to receive(:execute)
       allow(PackageMetadata::Ingestion::CompressedPackage::IngestionService).to receive(:execute)
+      allow(PackageMetadata::Ingestion::Advisory::IngestionService).to receive(:execute)
       allow(service).to receive(:sleep)
+      allow(Gitlab::AppJsonLogger).to receive(:debug)
     end
 
     shared_examples_for 'it syncs imported data' do
       let(:checkpoint) do
         PackageMetadata::Checkpoint.first_or_initialize(purl_type: sync_config.purl_type,
-          version_format: sync_config.version_format, data_type: service.data_type)
+          version_format: sync_config.version_format, data_type: sync_config.data_type)
       end
 
       it 'calls connector with the correct checkpoint' do
@@ -63,18 +65,38 @@ RSpec.describe PackageMetadata::SyncService, feature_category: :software_composi
               .to have_received(:execute).with(data_objects).twice
           end
         end
+
+        context 'if data_type is advisories' do
+          before do
+            sync_config.data_type = 'advisories'
+          end
+
+          it 'calls v1 ingestion service to store data' do
+            execute
+            expect(PackageMetadata::Ingestion::Advisory::IngestionService)
+              .to have_received(:execute).with(data_objects).twice
+          end
+        end
       end
 
       it 'throttles calls to ingestion service after each ingested slice' do
         expect(service).to receive(:sleep).with(described_class::THROTTLE_RATE).twice
         service.execute
       end
+
+      it 'logs progress with correct sync position' do
+        service.execute
+        expect(Gitlab::AppJsonLogger).to have_received(:debug)
+          .with(hash_including(message: "Evaluating data for #{sync_config}/#{file1}")).once
+        expect(Gitlab::AppJsonLogger).to have_received(:debug)
+          .with(hash_including(message: "Evaluating data for #{sync_config}/#{file2}")).once
+      end
     end
 
     context 'when checkpoint exists' do
       let(:checkpoint) do
         create(:pm_checkpoint, purl_type: sync_config.purl_type, version_format: sync_config.version_format,
-          data_type: service.data_type)
+          data_type: sync_config.data_type)
       end
 
       it_behaves_like 'it syncs imported data'
@@ -93,7 +115,7 @@ RSpec.describe PackageMetadata::SyncService, feature_category: :software_composi
           .from(0).to(1)
 
         checkpoint = PackageMetadata::Checkpoint.where(purl_type: sync_config.purl_type,
-          version_format: sync_config.version_format, data_type: service.data_type)
+          version_format: sync_config.version_format, data_type: sync_config.data_type)
           .first
         expect(checkpoint.sequence).to eq(file2.sequence)
         expect(checkpoint.chunk).to eq(file2.chunk)
@@ -123,7 +145,7 @@ RSpec.describe PackageMetadata::SyncService, feature_category: :software_composi
       it 'terminates after checkpointing' do
         execute
         checkpoint = PackageMetadata::Checkpoint.where(purl_type: sync_config.purl_type,
-          version_format: sync_config.version_format, data_type: service.data_type).first
+          version_format: sync_config.version_format, data_type: sync_config.data_type).first
         expect(checkpoint.sequence).to eq(file1.sequence)
         expect(checkpoint.chunk).to eq(file1.chunk)
         expect(PackageMetadata::Ingestion::IngestionService)
@@ -154,44 +176,50 @@ RSpec.describe PackageMetadata::SyncService, feature_category: :software_composi
 
   describe '.execute' do
     let(:observer) { instance_double(described_class) }
-    let(:stop_signal) { double('stop signal', stop?: should_stop) } # rubocop:disable RSpec/VerifiedDoubles
+    let(:lease) { instance_double(Gitlab::ExclusiveLease) }
+    let(:stop_signal) { instance_double(PackageMetadata::StopSignal, stop?: should_stop) }
 
-    subject(:execute) { described_class.execute(stop_signal) }
+    subject(:execute) { described_class.execute(data_type: data_type, lease: lease) }
 
-    before do
-      stub_application_setting(package_metadata_purl_types: Enums::PackageMetadata.purl_types.values)
-      stub_feature_flags(compressed_package_metadata_synchronization: false)
-    end
-
-    context 'when stop_signal.stop? is false' do
+    shared_examples_for 'it calls #execute for each enabled config' do
       let(:should_stop) { false }
 
-      it 'creates an instance and calls execute' do
+      before do
+        stub_application_setting(package_metadata_purl_types: Enums::PackageMetadata.purl_types.values)
+        stub_feature_flags(compressed_package_metadata_synchronization: false)
+        allow(PackageMetadata::StopSignal).to receive(:new)
+          .with(lease, described_class::MAX_LEASE_LENGTH, described_class::MAX_SYNC_DURATION)
+          .and_return(stop_signal)
+      end
+
+      specify do
         expect(observer).to receive(:execute).exactly(::Enums::PackageMetadata.purl_types.count).times
-        ::Enums::PackageMetadata.purl_types.each do |_purl_type, _|
+        ::Enums::PackageMetadata.purl_types.each do |purl_type, _|
           expect(described_class).to receive(:new)
-            .with(kind_of(PackageMetadata::SyncConfiguration), stop_signal)
+            .with(having_attributes(data_type: data_type, purl_type: purl_type), stop_signal)
             .and_return(observer)
         end
         execute
       end
     end
 
-    context 'when stop_signal.stop? is true' do
-      let(:should_stop) { true }
+    context 'when stop_signal.stop? is false' do
+      context 'and the data_type is licenses' do
+        let(:data_type) { 'licenses' }
 
-      it 'does not proceed' do
-        expect(described_class).not_to receive(:new)
-        execute
+        it_behaves_like 'it calls #execute for each enabled config'
+      end
+
+      context 'and the data_type is advisories' do
+        let(:data_type) { 'advisories' }
+
+        it_behaves_like 'it calls #execute for each enabled config'
       end
     end
 
-    context 'when none purl types enabled to sync' do
-      let(:should_stop) { false }
-
-      before do
-        stub_application_setting(package_metadata_purl_types: [])
-      end
+    context 'when stop_signal.stop? is true' do
+      let(:should_stop) { true }
+      let(:data_type) { 'licenses' }
 
       it 'does not proceed' do
         expect(described_class).not_to receive(:new)

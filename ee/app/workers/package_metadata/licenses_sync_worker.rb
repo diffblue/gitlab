@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module PackageMetadata
-  class SyncWorker
+  class LicensesSyncWorker
     include ApplicationWorker
     include CronjobQueue # rubocop:disable Scalability/CronWorkerContext
     include ExclusiveLeaseGuard
@@ -16,8 +16,25 @@ module PackageMetadata
     sidekiq_options retry: false
     worker_has_external_dependencies!
 
-    # Functionality extracted to PackageMetadata::LicensesSyncWorker and to be removed in subsequent release:
-    # https://gitlab.com/gitlab-org/gitlab/-/issues/417692
-    def perform; end
+    def perform
+      return unless should_run?
+
+      try_obtain_lease do
+        SyncService.execute(data_type: 'licenses', lease: exclusive_lease)
+      end
+    end
+
+    private
+
+    def should_run?
+      return false unless ::License.feature_available?(:license_scanning)
+      return false if Rails.env.development? && ENV.fetch('PM_SYNC_IN_DEV', 'false') != 'true'
+
+      true
+    end
+
+    def lease_timeout
+      LEASE_TIMEOUT
+    end
   end
 end

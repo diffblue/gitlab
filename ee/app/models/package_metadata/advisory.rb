@@ -8,6 +8,9 @@ module PackageMetadata
 
     has_many :affected_packages, inverse_of: :advisory, foreign_key: :pm_advisory_id
 
+    # the position of this line is important - it needs to be after the has_many declaration
+    include BulkInsertSafe
+
     enum source_xid: ::Enums::PackageMetadata.advisory_sources
 
     validates :advisory_xid, presence: true, length: { maximum: 36 }

@@ -1,0 +1,8 @@
+---
+name: package_metadata_advisory_sync
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/125594
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/417191
+milestone: '16.2'
+type: development
+group: group::composition analysis
+default_enabled: false

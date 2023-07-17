@@ -3,14 +3,14 @@
 require 'spec_helper'
 
 RSpec.describe PackageMetadata::SyncConfiguration, feature_category: :software_composition_analysis do
+  using RSpec::Parameterized::TableSyntax
+
   before do
     stub_feature_flags(package_metadata_synchronization: true)
     stub_feature_flags(compressed_package_metadata_synchronization: false)
   end
 
   describe 'configs based on enabled purl types' do
-    using RSpec::Parameterized::TableSyntax
-
     let(:all_purl_types) { Enums::PackageMetadata.purl_types.values }
 
     shared_examples_for 'it returns all enabled sync configs' do
@@ -35,9 +35,9 @@ RSpec.describe PackageMetadata::SyncConfiguration, feature_category: :software_c
 
     context 'when syncing licenses' do
       let(:expected_data_type) { 'licenses' }
-      let(:expected_bucket) { described_class::STORAGE_LOCATIONS.dig(:licenses, :gcp) }
+      let(:expected_bucket) { described_class::Location::LICENSES_BUCKET }
 
-      subject(:configurations) { described_class.all_configs_for_licenses }
+      subject(:configurations) { described_class.configs_for('licenses') }
 
       where(:sync_v1, :sync_v2, :expected_version_formats, :enabled_purl_types, :expected_num_configs) do
         true  | false | ['v1']        | ref(:all_purl_types)  | 12
@@ -66,62 +66,73 @@ RSpec.describe PackageMetadata::SyncConfiguration, feature_category: :software_c
 
     context 'when syncing advisories' do
       let(:expected_data_type) { 'advisories' }
-      let(:expected_bucket) { described_class::STORAGE_LOCATIONS.dig(:advisories, :gcp) }
-      let(:expected_version_formats) { ['v2'] }
+      let(:expected_bucket) { described_class::Location::ADVISORIES_BUCKET }
 
-      subject(:configurations) { described_class.all_configs_for_advisories }
+      subject(:configurations) { described_class.configs_for('advisories') }
 
-      where(:enabled_purl_types, :expected_num_configs) do
-        ref(:all_purl_types)  | 12
-        [1, 5]                | 2
-        []                    | 0
+      where(:ff_enabled, :expected_version_formats, :enabled_purl_types, :expected_num_configs) do
+        true  | ['v2']  | ref(:all_purl_types)  | 12
+        true  | ['v2']  | [1, 5]                | 2
+        true  | ['v2']  | []                    | 0
+        false | []      | ref(:all_purl_types)  | 0
       end
 
       with_them do
+        before do
+          stub_feature_flags(package_metadata_advisory_sync: ff_enabled)
+        end
+
         it_behaves_like 'it returns all enabled sync configs'
       end
     end
   end
 
-  describe '.get_storage_type_and_base_uri_for' do
-    subject(:get_storage_and_base_uri_for) { described_class.get_storage_and_base_uri_for(data_type) }
+  context 'when syncing an unsupported data type' do
+    subject(:configurations!) { described_class.configs_for('foo') }
 
-    before do
-      allow(File).to receive(:exist?).with(described_class::STORAGE_LOCATIONS.dig(:advisories, :offline))
-        .and_return(file_exists)
-      allow(File).to receive(:exist?).with(described_class::STORAGE_LOCATIONS.dig(:licenses, :offline))
-        .and_return(file_exists)
+    specify do
+      expect { configurations! }.to raise_error(NoMethodError)
+    end
+  end
+
+  describe PackageMetadata::SyncConfiguration::Location do
+    describe '.for_licenses' do
+      subject { described_class.for_licenses }
+
+      where(:filepath_exists, :old_filepath_exists, :expected_storage_type, :expected_base_uri) do
+        true     | false   | :offline  | described_class::LICENSES_PATH
+        false    | true    | :offline  | described_class::OLD_LICENSES_PATH
+        true     | true    | :offline  | described_class::LICENSES_PATH
+        false    | false   | :gcp      | described_class::LICENSES_BUCKET
+      end
+
+      with_them do
+        before do
+          allow(File).to receive(:exist?).with(described_class::LICENSES_PATH)
+            .and_return(filepath_exists)
+          allow(File).to receive(:exist?).with(described_class::OLD_LICENSES_PATH)
+            .and_return(old_filepath_exists)
+        end
+
+        it { is_expected.to match_array([expected_storage_type, expected_base_uri]) }
+      end
     end
 
-    context 'when offline path exists' do
-      let(:file_exists) { true }
+    describe '.for_advisories' do
+      subject { described_class.for_advisories }
 
-      context 'and the data_type is advisories' do
-        let(:data_type) { 'advisories' }
-
-        it { is_expected.to match_array([:offline, described_class::STORAGE_LOCATIONS.dig(:advisories, :offline)]) }
+      where(:filepath_exists, :expected_storage_type, :expected_base_uri) do
+        true     | :offline  | described_class::ADVISORIES_PATH
+        false    | :gcp      | described_class::ADVISORIES_BUCKET
       end
 
-      context 'and the data_type is licenses' do
-        let(:data_type) { 'licenses' }
+      with_them do
+        before do
+          allow(File).to receive(:exist?).with(described_class::ADVISORIES_PATH)
+            .and_return(filepath_exists)
+        end
 
-        it { is_expected.to match_array([:offline, described_class::STORAGE_LOCATIONS.dig(:licenses, :offline)]) }
-      end
-    end
-
-    context 'when offline path does not exist' do
-      let(:file_exists) { false }
-
-      context 'and the data_type is advisories' do
-        let(:data_type) { 'advisories' }
-
-        it { is_expected.to match_array([:gcp, described_class::STORAGE_LOCATIONS.dig(:advisories, :gcp)]) }
-      end
-
-      context 'and the data_type is licenses' do
-        let(:data_type) { 'licenses' }
-
-        it { is_expected.to match_array([:gcp, described_class::STORAGE_LOCATIONS.dig(:licenses, :gcp)]) }
+        it { is_expected.to match_array([expected_storage_type, expected_base_uri]) }
       end
     end
   end
@@ -134,5 +145,11 @@ RSpec.describe PackageMetadata::SyncConfiguration, feature_category: :software_c
         end
       end
     end
+  end
+
+  describe '#to_s' do
+    subject { described_class.new('advisories', 'gcp', 'adv-bucket', 'v1', 'pypi').to_s }
+
+    it { is_expected.to eq('advisories:gcp/adv-bucket/v1/pypi') }
   end
 end

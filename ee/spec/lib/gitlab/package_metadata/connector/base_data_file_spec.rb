@@ -139,4 +139,18 @@ RSpec.describe ::Gitlab::PackageMetadata::Connector::BaseDataFile, feature_categ
       it { is_expected.to be(false) }
     end
   end
+
+  describe '#to_s' do
+    context 'when ndjson' do
+      subject { ::Gitlab::PackageMetadata::Connector::NdjsonDataFile.new(StringIO.new, 1684175500, 99999).to_s }
+
+      it { is_expected.to eq("1684175500/99999.ndjson") }
+    end
+
+    context 'when csv' do
+      subject { ::Gitlab::PackageMetadata::Connector::CsvDataFile.new(StringIO.new, 1684175500, 99999).to_s }
+
+      it { is_expected.to eq("1684175500/99999.csv") }
+    end
+  end
 end

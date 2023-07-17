@@ -2,18 +2,10 @@
 
 module PackageMetadata
   class SyncConfiguration
+    include Gitlab::Utils::StrongMemoize
+
     VERSION_FORMAT_V1 = 'v1'
     VERSION_FORMAT_V2 = 'v2'
-    STORAGE_LOCATIONS = {
-      advisories: {
-        offline: Rails.root.join('vendor/advisory_package_metadata_db').freeze,
-        gcp: 'prod-export-advisory-bucket-1a6c642fc4de57d4'
-      },
-      licenses: {
-        offline: Rails.root.join('vendor/package_metadata_db').freeze,
-        gcp: 'prod-export-license-bucket-1a6c642fc4de57d4'
-      }
-    }.with_indifferent_access.freeze
 
     PURL_TYPE_TO_REGISTRY_ID = {
       composer: "packagist",
@@ -31,16 +23,29 @@ module PackageMetadata
 
     }.with_indifferent_access.freeze
 
-    def self.all_configs_for_advisories
-      storage_type, base_uri = get_storage_and_base_uri_for('advisories')
+    def self.configs_for(data_type)
+      case data_type
+      when 'advisories'
+        advisory_configs
+      when 'licenses'
+        license_configs
+      else
+        raise NoMethodError, "unsupported data type: #{data_type}"
+      end
+    end
+
+    def self.advisory_configs
+      return [] unless Feature.enabled?(:package_metadata_advisory_sync)
+
+      storage_type, base_uri = Location.for_advisories
 
       permitted_purl_types.map do |purl_type, _|
         new('advisories', storage_type, base_uri, VERSION_FORMAT_V2, purl_type)
       end
     end
 
-    def self.all_configs_for_licenses
-      storage_type, base_uri = get_storage_and_base_uri_for('licenses')
+    def self.license_configs
+      storage_type, base_uri = Location.for_licenses
 
       configs = []
 
@@ -57,14 +62,6 @@ module PackageMetadata
       end
 
       configs
-    end
-
-    def self.get_storage_and_base_uri_for(data_type)
-      data = STORAGE_LOCATIONS[data_type]
-
-      return [:offline, data[:offline]] if File.exist?(data[:offline])
-
-      [:gcp, data[:gcp]]
     end
 
     def self.registry_id(purl_type)
@@ -91,6 +88,38 @@ module PackageMetadata
 
     def advisories?
       data_type == 'advisories'
+    end
+
+    def to_s
+      "#{data_type}:#{storage_type}/#{base_uri}/#{version_format}/#{purl_type}"
+    end
+    strong_memoize_attr :to_s
+
+    class Location
+      LICENSES_PATH = Rails.root.join('vendor/package_metadata/licenses').freeze
+      # old licenses path did not differentiate between data_types
+      OLD_LICENSES_PATH = Rails.root.join('vendor/package_metadata_db').freeze
+      LICENSES_BUCKET = 'prod-export-license-bucket-1a6c642fc4de57d4'
+      ADVISORIES_PATH = Rails.root.join('vendor/package_metadata/advisories').freeze
+      ADVISORIES_BUCKET = 'prod-export-advisory-bucket-1a6c642fc4de57d4'
+
+      def self.for_licenses
+        if File.exist?(LICENSES_PATH)
+          [:offline, LICENSES_PATH]
+        elsif File.exist?(OLD_LICENSES_PATH)
+          [:offline, OLD_LICENSES_PATH]
+        else
+          [:gcp, LICENSES_BUCKET]
+        end
+      end
+
+      def self.for_advisories
+        if File.exist?(ADVISORIES_PATH)
+          [:offline, ADVISORIES_PATH]
+        else
+          [:gcp, ADVISORIES_BUCKET]
+        end
+      end
     end
   end
 end

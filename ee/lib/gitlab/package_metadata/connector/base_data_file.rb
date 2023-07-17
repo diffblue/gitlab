@@ -9,6 +9,7 @@ module Gitlab
 
       class BaseDataFile
         include Enumerable
+        include Gitlab::Utils::StrongMemoize
 
         attr_reader :sequence, :chunk
 
@@ -28,6 +29,15 @@ module Gitlab
         def checkpoint?(checkpoint)
           checkpoint.sequence == sequence && checkpoint.chunk == chunk
         end
+
+        def file_suffix
+          self.class.file_suffix
+        end
+
+        def to_s
+          "#{sequence}/#{chunk}.#{file_suffix}"
+        end
+        strong_memoize_attr :to_s
 
         private
 
