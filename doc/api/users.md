@@ -1079,6 +1079,8 @@ Example response:
 
 Get a list of the authenticated user's SSH keys.
 
+This function takes pagination parameters `page` and `per_page` to restrict the list of keys.
+
 ```plaintext
 GET /user/keys
 ```
