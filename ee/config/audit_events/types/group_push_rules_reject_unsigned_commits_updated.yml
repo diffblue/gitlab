@@ -1,0 +1,9 @@
+---
+name: group_push_rules_reject_unsigned_commits_updated
+description: Triggered when group push rule setting is updated for reject unsigned commits.
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/227629
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/86046
+feature_category: source_code_management
+milestone: '15.0'
+saved_to_database: true
+streamed: true
