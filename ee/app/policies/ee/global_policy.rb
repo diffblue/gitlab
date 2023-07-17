@@ -37,8 +37,8 @@ module EE
         ::License.feature_available?(:instance_level_devops_adoption)
       end
 
-      condition(:runner_jobs_statistics_available) do
-        ::License.feature_available?(:runner_jobs_statistics)
+      condition(:runner_performance_insights_available) do
+        ::License.feature_available?(:runner_performance_insights)
       end
 
       condition(:runner_upgrade_management_available) do
@@ -98,7 +98,7 @@ module EE
 
       rule { admin & pages_size_limit_available }.enable :update_max_pages_size
 
-      rule { admin & runner_jobs_statistics_available }.enable :read_jobs_statistics
+      rule { admin & runner_performance_insights_available }.enable :read_jobs_statistics
 
       rule { admin & service_accounts_available }.enable :admin_service_accounts
 

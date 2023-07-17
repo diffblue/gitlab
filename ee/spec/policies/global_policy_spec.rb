@@ -370,7 +370,7 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
   describe 'read_jobs_statistics' do
     context 'when feature is enabled' do
       before do
-        stub_licensed_features(runner_jobs_statistics: true)
+        stub_licensed_features(runner_performance_insights: true)
       end
 
       it { is_expected.to be_disallowed(:read_jobs_statistics) }
@@ -386,7 +386,7 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
 
     context 'when feature is disabled' do
       before do
-        stub_licensed_features(runner_jobs_statistics: false)
+        stub_licensed_features(runner_performance_insights: false)
       end
 
       context 'when admin mode enabled', :enable_admin_mode do
