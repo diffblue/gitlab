@@ -15,5 +15,8 @@ module GitlabSubscriptions
     validates :purchase_xid,
       presence: true,
       length: { maximum: 255 }
+
+    scope :active, -> { where('expires_on >= ?', Date.current) }
+    scope :by_add_on_name, ->(name) { joins(:add_on).where(add_on: { name: name }) }
   end
 end

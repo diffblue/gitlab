@@ -453,6 +453,7 @@ module EE
         enable :read_group_credentials_inventory
         enable :admin_group_credentials_inventory
         enable :admin_ci_minutes
+        enable :admin_add_on_purchase
       end
 
       rule { (admin | owner) & group_merge_request_approval_settings_enabled }.policy do
