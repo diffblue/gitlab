@@ -17,6 +17,18 @@ RSpec.describe Security::ScanResultPolicies::FindingsFinder, feature_category: :
   let_it_be(:high_severity_finding) { create(:security_finding, scan: dependency_scan, severity: 'high') }
   let_it_be(:container_scanning_finding) { create(:security_finding, scan: container_scan) }
   let_it_be(:dismissed_finding) { create(:security_finding, scan: dependency_scan) }
+  let_it_be(:false_positive_finding) do
+    create(:security_finding, :with_finding_data, false_positive: true, scan: dependency_scan)
+  end
+
+  let_it_be(:non_false_positive_finding) do
+    create(:security_finding, :with_finding_data, false_positive: false, scan: dependency_scan)
+  end
+
+  let_it_be(:fix_available_finding) { create(:security_finding, :with_finding_data, scan: dependency_scan) }
+  let_it_be(:no_fix_available_finding) do
+    create(:security_finding, :with_finding_data, remediation_byte_offsets: [], scan: dependency_scan)
+  end
 
   before do
     create(:vulnerabilities_finding, :dismissed, project: project, uuid: dismissed_finding.uuid)
@@ -31,6 +43,8 @@ RSpec.describe Security::ScanResultPolicies::FindingsFinder, feature_category: :
   describe '#execute' do
     subject { described_class.new(project, pipeline, params).execute }
 
+    let(:all_findings) { pipeline.security_findings }
+
     context 'with severity_levels' do
       let(:params) { { severity_levels: ['high'] } }
 
@@ -39,7 +53,7 @@ RSpec.describe Security::ScanResultPolicies::FindingsFinder, feature_category: :
       context 'when it is an empty array' do
         let(:params) { { severity_levels: [] } }
 
-        it { is_expected.to contain_exactly(high_severity_finding, container_scanning_finding, dismissed_finding) }
+        it { is_expected.to match_array(all_findings) }
       end
     end
 
@@ -53,17 +67,13 @@ RSpec.describe Security::ScanResultPolicies::FindingsFinder, feature_category: :
       context 'when check_dismissed is true' do
         let(:params) { { check_dismissed: true, vulnerability_states: ['new_needs_triage'] } }
 
-        it { is_expected.to contain_exactly(high_severity_finding, container_scanning_finding) }
+        it { is_expected.to match_array(all_findings - [dismissed_finding]) }
       end
 
       context 'when check_dismissed is false' do
         let(:params) { { check_dismissed: false, vulnerability_states: ['new_needs_triage'] } }
 
-        it {
-          is_expected.to contain_exactly(
-            high_severity_finding, container_scanning_finding, dismissed_finding
-          )
-        }
+        it { is_expected.to match_array(all_findings) }
       end
     end
 
@@ -77,12 +87,51 @@ RSpec.describe Security::ScanResultPolicies::FindingsFinder, feature_category: :
       context 'when check_dismissed is false' do
         let(:params) { { check_dismissed: false, vulnerability_states: ['new_dismissed'] } }
 
-        it {
-          is_expected.to contain_exactly(
-            high_severity_finding, container_scanning_finding, dismissed_finding
-          )
-        }
+        it { is_expected.to match_array(all_findings) }
       end
+    end
+
+    shared_examples 'disabled vulnerability attribute rules' do
+      before do
+        stub_feature_flags(enforce_vulnerability_attributes_rules: false)
+      end
+
+      it { is_expected.to match_array(all_findings) }
+    end
+
+    context 'with false_positives true' do
+      let(:params) { { false_positive: true } }
+
+      it { is_expected.to contain_exactly(false_positive_finding) }
+
+      it_behaves_like 'disabled vulnerability attribute rules'
+    end
+
+    context 'with false_positives false' do
+      let(:params) { { false_positive: false } }
+
+      it { is_expected.to match_array(all_findings - [false_positive_finding]) }
+
+      it_behaves_like 'disabled vulnerability attribute rules'
+    end
+
+    context 'with fix_available true' do
+      let(:params) { { fix_available: true } }
+
+      it { is_expected.to contain_exactly(fix_available_finding, false_positive_finding, non_false_positive_finding) }
+
+      it_behaves_like 'disabled vulnerability attribute rules'
+    end
+
+    context 'with fix_available false' do
+      let(:params) { { fix_available: false } }
+
+      it do
+        is_expected.to contain_exactly(no_fix_available_finding, high_severity_finding, container_scanning_finding,
+          dismissed_finding)
+      end
+
+      it_behaves_like 'disabled vulnerability attribute rules'
     end
 
     context 'when pipeline is empty' do

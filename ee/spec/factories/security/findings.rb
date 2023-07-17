@@ -10,6 +10,14 @@ FactoryBot.define do
     uuid { SecureRandom.uuid }
     project_fingerprint { generate(:project_fingerprint) }
 
+    transient do
+      false_positive { false }
+    end
+
+    transient do
+      remediation_byte_offsets { [{ "end_byte" => 13602, "start_byte" => 12719 }] }
+    end
+
     trait :with_finding_data do
       finding_data do
         {
@@ -23,12 +31,13 @@ FactoryBot.define do
               url: 'https://crypto.stackexchange.com/questions/31428/pbewithmd5anddes-cipher-does-not-check-for-integrity-first'
             }
           ],
-          false_positive?: false,
+          false_positive?: false_positive,
           location: {},
           evidence: {},
           assets: [],
           details: {},
-          raw_source_code_extract: 'AES/ECB/NoPadding'
+          raw_source_code_extract: 'AES/ECB/NoPadding',
+          remediation_byte_offsets: remediation_byte_offsets
         }
       end
     end
