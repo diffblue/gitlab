@@ -29,8 +29,8 @@ module Gitlab
           prompt_class: ::Gitlab::Llm::Anthropic::Templates::TanukiBot
         },
         generate_test_file: {
-          service_class: ::Gitlab::Llm::OpenAi::Completions::GenerateTestFile,
-          prompt_class: ::Gitlab::Llm::OpenAi::Templates::GenerateTestFile
+          service_class: ::Gitlab::Llm::VertexAi::Completions::GenerateTestFile,
+          prompt_class: ::Gitlab::Llm::Templates::GenerateTestFile
         },
         generate_description: {
           service_class: ::Gitlab::Llm::OpenAi::Completions::GenerateDescription,

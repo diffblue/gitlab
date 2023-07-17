@@ -8,8 +8,8 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateTestFile, feature_categ
   let_it_be(:project) { create(:project, :public, group: group) }
   let_it_be(:merge_request) { create(:merge_request, source_project: project) }
 
-  let(:template_class) { ::Gitlab::Llm::OpenAi::Templates::GenerateTestFile }
-  let(:ai_template) { { content: 'something', temperature: 0.2 } }
+  let(:template_class) { ::Gitlab::Llm::Templates::GenerateTestFile }
+  let(:ai_template) { 'something' }
   let(:content) { "some ai response text" }
   let(:ai_response) do
     {
@@ -24,7 +24,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateTestFile, feature_categ
   end
 
   subject(:generate_test_file) do
-    described_class.new(template_class, { request_id: 'uuid' }).execute(user, merge_request, { file_path: 'index.js' })
+    described_class.new(template_class).execute(user, merge_request, { file_path: 'index.js' })
   end
 
   before do
@@ -32,20 +32,6 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateTestFile, feature_categ
   end
 
   describe "#execute" do
-    context 'with invalid params' do
-      context 'without user' do
-        let(:user) { nil }
-
-        specify { expect(generate_test_file).to be_nil }
-      end
-
-      context 'without merge request' do
-        let_it_be(:merge_request) { nil }
-
-        specify { expect(generate_test_file).to be_nil }
-      end
-    end
-
     context 'with valid params' do
       it 'performs the OpenAI request' do
         expect_next_instance_of(::Gitlab::Llm::OpenAi::Completions::GenerateTestFile) do |completion_service|
@@ -53,10 +39,12 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateTestFile, feature_categ
             .and_call_original
         end
 
-        expect(Gitlab::Llm::OpenAi::Templates::GenerateTestFile).to receive(:get_options).and_return(ai_template)
+        expect_next_instance_of(::Gitlab::Llm::Templates::GenerateTestFile) do |template|
+          expect(template).to receive(:to_prompt).and_return(ai_template)
+        end
 
         allow_next_instance_of(Gitlab::Llm::OpenAi::Client) do |instance|
-          params = { content: 'something', max_tokens: 1000, temperature: 0.2 }
+          params = { content: 'something', max_tokens: 1000, moderated: true }
           allow(instance).to receive(:chat).with(params).and_return(ai_response)
         end
 
@@ -68,7 +56,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateTestFile, feature_categ
           id: uuid,
           model_name: 'MergeRequest',
           response_body: content,
-          request_id: uuid,
+          request_id: nil,
           role: 'assistant',
           errors: []
         }
