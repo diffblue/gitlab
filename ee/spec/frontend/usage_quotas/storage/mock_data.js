@@ -37,6 +37,7 @@ export const withRootStorageStatistics = {
   actualRepositorySizeLimit: 1002321,
   rootStorageStatistics: {
     containerRegistrySize: 3_900_000,
+    containerRegistrySizeIsEstimated: true,
     storageSize: 129334601,
     repositorySize: 46012030,
     lfsObjectsSize: 4329334601203,
@@ -68,6 +69,7 @@ export const mockedNamespaceStorageResponse = {
       repositorySizeExcessProjectCount: 0,
       rootStorageStatistics: {
         containerRegistrySize: 3_900_000,
+        containerRegistrySizeIsEstimated: true,
         storageSize: 125771,
         repositorySize: 20971,
         lfsObjectsSize: 0,

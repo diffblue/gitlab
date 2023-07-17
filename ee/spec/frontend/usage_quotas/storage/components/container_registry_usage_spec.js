@@ -1,28 +1,26 @@
-import { GlSprintf, GlLink } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { helpPagePath } from '~/helpers/help_page_helper';
 import ContainerRegistryUsage from 'ee/usage_quotas/storage/components/container_registry_usage.vue';
-import { numberToHumanSize } from '~/lib/utils/number_utils';
+import StorageTypeWarning from 'ee/usage_quotas/storage/components/storage_type_warning.vue';
 
 describe('Container registry usage component', () => {
   let wrapper;
 
-  const helpPath = helpPagePath('user/packages/container_registry/index');
   const defaultProps = {
     containerRegistrySize: 512,
+    containerRegistrySizeIsEstimated: false,
   };
 
   const findTotalSizeSection = () => wrapper.findByTestId('total-size-section');
-  const findMoreInformation = () => wrapper.findByTestId('container-registry-description');
+  const findWarningIcon = () => wrapper.findComponent(StorageTypeWarning);
 
-  const createComponent = () => {
+  const createComponent = (props) => {
     wrapper = shallowMountExtended(ContainerRegistryUsage, {
       propsData: {
         ...defaultProps,
+        ...props,
       },
       stubs: {
-        GlSprintf,
-        GlLink,
+        StorageTypeWarning,
       },
     });
   };
@@ -32,17 +30,22 @@ describe('Container registry usage component', () => {
   });
 
   it('displays the total size section when prop is provided', () => {
-    const expectedValue = numberToHumanSize(defaultProps.containerRegistrySize, 1);
-
-    expect(findTotalSizeSection().text()).toBe(expectedValue);
+    expect(findTotalSizeSection().props('value')).toBe(defaultProps.containerRegistrySize);
   });
 
-  it('displays a description and more information link', () => {
-    const moreInformationComponent = findMoreInformation();
+  describe('estimated value indication', () => {
+    it('hides warning icon', () => {
+      createComponent({
+        containerRegistrySizeIsEstimated: false,
+      });
+      expect(findWarningIcon().exists()).toBe(false);
+    });
 
-    expect(moreInformationComponent.text()).toBe(
-      'Gitlab-integrated Docker Container Registry for storing Docker Images. More information',
-    );
-    expect(moreInformationComponent.findComponent(GlLink).attributes('href')).toBe(helpPath);
+    it('displays warning icon', () => {
+      createComponent({
+        containerRegistrySizeIsEstimated: true,
+      });
+      expect(findWarningIcon().exists()).toBe(true);
+    });
   });
 });

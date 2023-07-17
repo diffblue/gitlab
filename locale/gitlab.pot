@@ -49400,9 +49400,6 @@ msgstr ""
 msgid "UsageQuota|Gitlab-integrated Docker Container Registry for storing Docker Images."
 msgstr ""
 
-msgid "UsageQuota|Gitlab-integrated Docker Container Registry for storing Docker Images. %{linkStart}More information%{linkEnd}"
-msgstr ""
-
 msgid "UsageQuota|Group settings &gt; Usage quotas"
 msgstr ""
 
@@ -49449,6 +49446,9 @@ msgid "UsageQuota|Pipeline artifacts and job artifacts, created with CI/CD."
 msgstr ""
 
 msgid "UsageQuota|Pipelines"
+msgstr ""
+
+msgid "UsageQuota|Precise calculation of Container Registry storage size is delayed because it is too large for synchronous estimation. Precise evaluation will be scheduled within 24 hours."
 msgstr ""
 
 msgid "UsageQuota|Project storage included in %{planName} subscription"
