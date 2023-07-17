@@ -34,7 +34,7 @@ class ElasticCommitIndexerWorker
 
     force = !!options['force']
     search_indexing_duration_s = Benchmark.realtime do
-      @ret = in_lock("#{self.class.name}/#{project_id}/#{wiki}", ttl: (Gitlab::Elastic::Indexer.timeout + 1.minute), retries: LOCK_RETRIES, sleep_sec: LOCK_SLEEP_SEC) do
+      @ret = in_lock("#{self.class.name}/#{project_id}/#{wiki}", ttl: (Gitlab::Elastic::Indexer::TIMEOUT + 1.minute), retries: LOCK_RETRIES, sleep_sec: LOCK_SLEEP_SEC) do
         Gitlab::Elastic::Indexer.new(@project, wiki: wiki, force: force).run
       end
     end
