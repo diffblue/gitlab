@@ -1272,6 +1272,49 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     end
   end
 
+  describe '#mergeable?' do
+    context 'with skip_approved_check option' do
+      before do
+        allow(subject).to receive_messages(mergeable_ci_state?: true,
+          mergeable_discussions_state?: true,
+          check_mergeability: nil,
+          can_be_merged?: true,
+          broken?: false)
+      end
+
+      where(:approved_state, :skip_approved_check, :expected_mergeable) do
+        false | false | false
+        false | true  | true
+        true  | false | true
+        true  | true  | true
+      end
+
+      with_them do
+        it 'overrides mergeable?' do
+          allow(merge_request).to receive(:approved?) { approved_state }
+
+          expect(merge_request.mergeable?(skip_approved_check: skip_approved_check)).to eq(expected_mergeable)
+        end
+      end
+    end
+  end
+
+  describe '#skipped_mergeable_checks' do
+    subject { build_stubbed(:merge_request).skipped_mergeable_checks(options) }
+
+    let(:options) { { auto_merge_strategy: auto_merge_strategy } }
+
+    where(:auto_merge_strategy, :skip_approved_check) do
+      ''                                                      | false
+      AutoMergeService::STRATEGY_MERGE_WHEN_PIPELINE_SUCCEEDS | false
+      AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS       | true
+    end
+
+    with_them do
+      it { is_expected.to include(skip_approved_check: skip_approved_check) }
+    end
+  end
+
   describe '#mergeable_state?' do
     subject { merge_request.mergeable_state? }
 

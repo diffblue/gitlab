@@ -404,6 +404,117 @@ RSpec.describe Projects::MergeRequestsController do
     end
   end
 
+  describe 'POST #merge', feature_category: :code_review_workflow do
+    let(:base_params) do
+      {
+        namespace_id: project.namespace,
+        project_id: project,
+        id: merge_request.iid,
+        squash: false,
+        format: 'json'
+      }
+    end
+
+    context 'with STRATEGY_MERGE_WHEN_CHECKS_PASS requested' do
+      def merge_when_pipeline_succeeds
+        post :merge, params: base_params.merge(sha: merge_request.diff_head_sha, merge_when_pipeline_succeeds: '1',
+          auto_merge_strategy: AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS)
+      end
+
+      shared_examples_for 'merge MR when checks pass' do
+        it 'sets the MR to merge when it gets approved and the pipeline succeeds' do
+          merge_when_pipeline_succeeds
+
+          expect(json_response).to eq('status' => 'merge_when_checks_pass')
+        end
+
+        context 'when feature flag "merge_when_checks_pass" is disabled' do
+          before do
+            stub_feature_flags(merge_when_checks_pass: false)
+          end
+
+          it 'fails to merge' do
+            merge_when_pipeline_succeeds
+
+            expect(json_response).to eq('status' => 'failed')
+          end
+        end
+      end
+
+      describe 'mergeable conditions' do
+        context 'when pipeline is active and no approvals are required' do
+          let_it_be(:project) { create(:project, :repository, approvals_before_merge: 0) }
+
+          before do
+            create(:ci_empty_pipeline, project: project, sha: merge_request.diff_head_sha, ref: merge_request.source_branch, head_pipeline_of: merge_request)
+          end
+
+          it_behaves_like 'merge MR when checks pass'
+        end
+
+        context 'when pipeline has succeeded but required approvals are missing' do
+          let_it_be(:project) { create(:project, :repository, approvals_before_merge: 1) }
+
+          before do
+            create(:ci_pipeline, :success, project: project, sha: merge_request.diff_head_sha, ref: merge_request.source_branch, head_pipeline_of: merge_request)
+          end
+
+          it_behaves_like 'merge MR when checks pass'
+        end
+
+        context 'when pipeline is active and required approvals are missing' do
+          let_it_be(:project) { create(:project, :repository, approvals_before_merge: 1) }
+
+          before do
+            create(:ci_empty_pipeline, project: project, sha: merge_request.diff_head_sha, ref: merge_request.source_branch, head_pipeline_of: merge_request)
+          end
+
+          it_behaves_like 'merge MR when checks pass'
+        end
+
+        context 'when pipeline has succeeded and approvals are given' do
+          let_it_be(:project) { create(:project, :repository, approvals_before_merge: 1) }
+          let_it_be(:approver) { create(:user) }
+          let(:merge_request) { create(:merge_request_with_diffs, source_project: project, author: author, approval_users: [approver]) }
+
+          before do
+            create(:ci_pipeline, :success, project: project, sha: merge_request.diff_head_sha, ref: merge_request.source_branch, head_pipeline_of: merge_request)
+          end
+
+          it 'returns :failed' do
+            merge_when_pipeline_succeeds
+
+            expect(json_response).to eq('status' => 'failed')
+          end
+        end
+      end
+
+      context 'when auto merge has not been enabled yet' do
+        it 'calls AutoMergeService#execute' do
+          expect_next_instance_of(AutoMergeService) do |service|
+            expect(service).to receive(:execute).with(merge_request, 'merge_when_checks_pass')
+          end
+
+          merge_when_pipeline_succeeds
+        end
+      end
+
+      context 'when auto merge has already been enabled' do
+        before do
+          merge_request.update!(auto_merge_enabled: true, merge_user: user)
+        end
+
+        it 'calls AutoMergeService#update' do
+          expect_next_instance_of(AutoMergeService) do |service|
+            expect(service).to receive(:update).with(merge_request)
+          end
+
+          merge_when_pipeline_succeeds
+        end
+      end
+    end
+  end
+
   describe 'POST #rebase', feature_category: :code_review_workflow do
     def post_rebase
       post :rebase, params: { namespace_id: project.namespace, project_id: project, id: merge_request }
