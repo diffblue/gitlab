@@ -99,10 +99,10 @@ export default {
        * Based on value we remove one and
        * set another and vice versa
        */
-      const updatedRule = { ...this.initRule };
+      const updatedRule = { ...this.initRule, branches };
       delete updatedRule.branch_type;
 
-      this.$emit('changed', { ...updatedRule, branches });
+      this.$emit('changed', updatedRule);
     },
     handleBranchTypeSelect(branchType) {
       this.selectedBranchType = branchType;
@@ -125,10 +125,10 @@ export default {
        * Based on value we remove one and
        * set another and vice versa
        */
-      const updatedRule = { ...this.initRule };
+      const updatedRule = { ...this.initRule, branch_type: branchType };
       delete updatedRule.branches;
 
-      this.$emit('changed', { ...updatedRule, branch_type: branchType });
+      this.$emit('changed', updatedRule);
     },
   },
 };

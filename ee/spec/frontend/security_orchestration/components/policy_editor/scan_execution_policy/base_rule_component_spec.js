@@ -9,10 +9,9 @@ import {
   SCAN_EXECUTION_RULES_PIPELINE_KEY,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/constants';
 import {
-  ALL_BRANCHES,
-  GROUP_DEFAULT_BRANCHES,
   ALL_PROTECTED_BRANCHES,
   SPECIFIC_BRANCHES,
+  VALID_SCAN_EXECUTION_BRANCH_TYPE_OPTIONS,
 } from 'ee/security_orchestration/components/policy_editor/constants';
 
 describe('BaseRuleComponent', () => {
@@ -152,13 +151,7 @@ describe('BaseRuleComponent', () => {
   });
 
   describe('branch types', () => {
-    const BRANCH_TYPE_VALUES = [
-      ALL_BRANCHES.value,
-      ALL_PROTECTED_BRANCHES.value,
-      GROUP_DEFAULT_BRANCHES.value,
-    ];
-
-    it.each(BRANCH_TYPE_VALUES)('should select branch type', (branchType) => {
+    it.each(VALID_SCAN_EXECUTION_BRANCH_TYPE_OPTIONS)('should select branch type', (branchType) => {
       createComponent();
 
       findBranchTypeSelector().vm.$emit('set-branch-type', branchType);
