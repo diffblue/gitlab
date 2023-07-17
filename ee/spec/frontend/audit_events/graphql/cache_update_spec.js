@@ -73,7 +73,7 @@ describe('Audit Events GraphQL cache updates', () => {
       externalAuditEventDestination: newDestination,
     } = destinationCreateMutationPopulator().data.externalAuditEventDestinationCreate;
 
-    it('adds new destination to list of destinations for specific fullPath', () => {
+    it('adds new destination to beginning of list of destinations for specific fullPath', () => {
       const { length: originalDestinationsLengthForGroup1 } = getDestinations(GROUP1_PATH);
       const { length: originalDestinationsLengthForGroup2 } = getDestinations(GROUP2_PATH);
 
@@ -84,9 +84,7 @@ describe('Audit Events GraphQL cache updates', () => {
       });
 
       expect(getDestinations(GROUP1_PATH)).toHaveLength(originalDestinationsLengthForGroup1 + 1);
-      expect(getDestinations(GROUP1_PATH)).toStrictEqual(
-        expect.arrayContaining([expect.objectContaining({ id: newDestination.id })]),
-      );
+      expect(getDestinations(GROUP1_PATH)[0].id).toBe(newDestination.id);
       expect(getDestinations(GROUP2_PATH)).toHaveLength(originalDestinationsLengthForGroup2);
     });
 

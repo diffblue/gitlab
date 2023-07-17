@@ -48,7 +48,7 @@ export function addAuditEventsStreamingDestination({ store, fullPath, newDestina
       fullPath === 'instance'
         ? draftData.instanceExternalAuditEventDestinations.nodes
         : draftData.group.externalAuditEventDestinations.nodes;
-    nodes.push(newDestination);
+    nodes.unshift(newDestination);
   });
 
   store.writeQuery({ query: getDestinationQuery, variables: { fullPath }, data });
@@ -157,7 +157,7 @@ export function addGcpLoggingAuditEventsStreamingDestination({ store, fullPath, 
 
   const data = produce(sourceData, (draftData) => {
     const { nodes } = draftData.group.googleCloudLoggingConfigurations;
-    nodes.push(newDestination);
+    nodes.unshift(newDestination);
   });
 
   store.writeQuery({ query: gcpLoggingDestinationsQuery, variables: { fullPath }, data });
