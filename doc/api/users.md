@@ -35,7 +35,7 @@ GET /users
 | `created_after`    | DateTime| no       | Returns users created after specified time.                                                                            |
 | `created_before`   | DateTime| no       | Returns users created before specified time.                                                                           |
 | `exclude_internal` | boolean | no       | Filters only non internal users. Default is `false`.                                                                   |
-| `without_projects_bots`| boolean | no       | Filters user without project bots. Default is `false`.                                                             |
+| `without_project_bots`| boolean | no       | Filters user without project bots. Default is `false`.                                                             |
 
 ```json
 [
