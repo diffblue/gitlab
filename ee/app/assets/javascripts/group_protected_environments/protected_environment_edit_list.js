@@ -7,9 +7,9 @@ Vue.use(GlToast);
 
 export const initProtectedEnvironmentEditList = () => {
   const parentContainer = document.querySelector('.js-protected-environments-list');
-  const envEditFormEls = parentContainer.querySelectorAll('.js-protected-environment-edit-form');
+  const envEditFormEls = parentContainer?.querySelectorAll('.js-protected-environment-edit-form');
 
-  envEditFormEls.forEach((el) => {
+  envEditFormEls?.forEach((el) => {
     const accessDropdownEl = el.querySelector('.js-allowed-to-deploy');
     if (!accessDropdownEl) {
       return false;
