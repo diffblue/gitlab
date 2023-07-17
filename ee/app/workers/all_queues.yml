@@ -489,6 +489,24 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: cronjob:package_metadata_advisories_sync
+  :worker_name: PackageMetadata::AdvisoriesSyncWorker
+  :feature_category: :software_composition_analysis
+  :has_external_dependencies: true
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: cronjob:package_metadata_licenses_sync
+  :worker_name: PackageMetadata::LicensesSyncWorker
+  :feature_category: :software_composition_analysis
+  :has_external_dependencies: true
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: cronjob:package_metadata_sync
   :worker_name: PackageMetadata::SyncWorker
   :feature_category: :software_composition_analysis

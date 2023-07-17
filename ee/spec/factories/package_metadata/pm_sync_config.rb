@@ -10,7 +10,7 @@ FactoryBot.define do
 
     trait :for_offline_license_storage do
       storage_type { :offline }
-      base_uri { PackageMetadata::SyncConfiguration::STORAGE_LOCATIONS.dig(:licenses, :offline) }
+      base_uri { PackageMetadata::SyncConfiguration::Location::LICENSES_PATH }
     end
 
     initialize_with do

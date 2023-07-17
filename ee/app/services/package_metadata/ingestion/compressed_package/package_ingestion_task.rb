@@ -14,7 +14,6 @@ module PackageMetadata
         end
 
         def execute
-          valid_packages = validate(packages)
           PackageMetadata::Package.bulk_upsert!(valid_packages, unique_by: %w[purl_type name])
         end
 
@@ -24,7 +23,7 @@ module PackageMetadata
 
         # validate checks the list of provided package models and returns
         # only those which are valid and logs the invalid packages as an error
-        def validate(packages)
+        def valid_packages
           packages.filter do |package|
             if package.valid?
               true
