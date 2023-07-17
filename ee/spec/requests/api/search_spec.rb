@@ -106,7 +106,7 @@ RSpec.describe API::Search, :clean_gitlab_redis_rate_limiting, factory_default: 
         ensure_elasticsearch_index!
       end
 
-      it_behaves_like 'response is correct', schema: 'public_api/v4/blobs' do
+      it_behaves_like 'response is correct', schema: 'public_api/v4/wiki_blobs' do
         before do
           get api(endpoint, user), params: { scope: 'wiki_blobs', search: 'awesome' }
         end
@@ -474,7 +474,7 @@ RSpec.describe API::Search, :clean_gitlab_redis_rate_limiting, factory_default: 
           get api(endpoint, user), params: { scope: 'wiki_blobs', search: 'awesome' }
         end
 
-        it_behaves_like 'response is correct', schema: 'public_api/v4/blobs'
+        it_behaves_like 'response is correct', schema: 'public_api/v4/wiki_blobs'
       end
 
       context 'for commits scope' do
