@@ -87,9 +87,9 @@ RSpec.describe ::EE::API::Entities::UserWithAdmin do
   end
 
   context 'enterprise_group_id' do
-    context 'when group_saml is available' do
+    context 'when domain_verification is available' do
       before do
-        stub_licensed_features(group_saml: true)
+        stub_licensed_features(domain_verification: true)
       end
 
       it 'returns nil when user is not associated with an enterprise group' do
@@ -106,9 +106,9 @@ RSpec.describe ::EE::API::Entities::UserWithAdmin do
       end
     end
 
-    context 'when group_saml is not available' do
+    context 'when domain_verification is not available' do
       before do
-        stub_licensed_features(group_saml: false)
+        stub_licensed_features(domain_verification: false)
       end
 
       it 'does not have the enterprise_group_id param' do
@@ -118,9 +118,9 @@ RSpec.describe ::EE::API::Entities::UserWithAdmin do
   end
 
   context 'enterprise_group_associated_at' do
-    context 'when group_saml is available' do
+    context 'when domain_verification is available' do
       before do
-        stub_licensed_features(group_saml: true)
+        stub_licensed_features(domain_verification: true)
       end
 
       it 'returns nil when user is not associated with an enterprise group' do
@@ -140,9 +140,9 @@ RSpec.describe ::EE::API::Entities::UserWithAdmin do
       end
     end
 
-    context 'when group_saml is not available' do
+    context 'when domain_verification is not available' do
       before do
-        stub_licensed_features(group_saml: false)
+        stub_licensed_features(domain_verification: false)
       end
 
       it 'does not have the enterprise_group_associated_at param' do
