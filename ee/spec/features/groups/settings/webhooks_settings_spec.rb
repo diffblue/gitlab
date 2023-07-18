@@ -72,6 +72,7 @@ RSpec.describe 'Groups > Settings > Group Hooks', feature_category: :webhooks do
       it 'creates a group hook', :js do
         visit webhooks_path
 
+        click_button 'Add new webhook'
         fill_in 'URL', with: url
         check 'Tag push events'
         check 'Enable SSL verification'
