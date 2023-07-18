@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['ApprovalProjectRule'] do
+RSpec.describe GitlabSchema.types['ApprovalProjectRule'], feature_category: :source_code_management do
   subject { described_class }
 
   let_it_be(:fields) { %i[id name type approvals_required eligible_approvers] }

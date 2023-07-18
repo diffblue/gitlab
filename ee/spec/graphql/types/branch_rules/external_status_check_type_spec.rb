@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['ExternalStatusCheck'] do
+RSpec.describe GitlabSchema.types['ExternalStatusCheck'], feature_category: :source_code_management do
   subject { described_class }
 
   let(:fields) { %i[id name external_url] }
