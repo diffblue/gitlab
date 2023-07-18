@@ -1,21 +1,11 @@
 <script>
-import {
-  GlFormGroup,
-  GlDropdown,
-  GlDropdownSectionHeader,
-  GlDropdownItem,
-  GlFormText,
-  GlLink,
-  GlSprintf,
-} from '@gitlab/ui';
+import { GlFormGroup, GlCollapsibleListbox, GlFormText, GlLink, GlSprintf } from '@gitlab/ui';
 import { CUSTOM_VALUE_MESSAGE } from './constants';
 
 export default {
   components: {
     GlFormGroup,
-    GlDropdown,
-    GlDropdownSectionHeader,
-    GlDropdownItem,
+    GlCollapsibleListbox,
     GlFormText,
     GlLink,
     GlSprintf,
@@ -72,6 +62,11 @@ export default {
         options.every(({ value, text }) => ![value, text].includes(undefined)),
     },
   },
+  data() {
+    return {
+      selected: null,
+    };
+  },
   computed: {
     showCustomValueMessage() {
       return this.defaultValue !== null && !this.disabled && this.value !== this.defaultValue;
@@ -84,8 +79,8 @@ export default {
     resetToDefaultValue() {
       this.$emit('input', this.defaultValue);
     },
-    handleInput(option) {
-      this.$emit('input', option.value);
+    handleInput(value) {
+      this.$emit('input', value);
     },
   },
   i18n: {
@@ -103,16 +98,15 @@ export default {
       }}</gl-form-text>
     </template>
 
-    <gl-dropdown :id="field" :text="text" :disabled="disabled">
-      <gl-dropdown-section-header
-        v-if="sectionHeader"
-        data-testid="dropdown-input-section-header"
-        >{{ sectionHeader }}</gl-dropdown-section-header
-      >
-      <gl-dropdown-item v-for="option in options" :key="option.value" @click="handleInput(option)">
-        {{ option.text }}
-      </gl-dropdown-item>
-    </gl-dropdown>
+    <gl-collapsible-listbox
+      :id="field"
+      v-model="selected"
+      :items="options"
+      :toggle-text="text"
+      :disabled="disabled"
+      :header-text="sectionHeader"
+      @select="handleInput"
+    />
 
     <template v-if="showCustomValueMessage" #description>
       <gl-sprintf :message="$options.i18n.CUSTOM_VALUE_MESSAGE">

@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils';
+import { GlCollapsibleListbox } from '@gitlab/ui';
 import { merge } from 'lodash';
 import { nextTick } from 'vue';
 import ConfigurationForm from 'ee/security_configuration/api_fuzzing/components/configuration_form.vue';
@@ -88,13 +89,12 @@ describe('EE - ApiFuzzingConfigurationForm', () => {
     });
 
     it('displays a dropdown option for each scan mode', () => {
-      findScanModeInput()
-        .findAll('li')
-        .wrappers.forEach((item, index) => {
-          expect(item.text()).toBe(
-            SCAN_MODES[apiFuzzingCiConfiguration.scanModes[index]].scanModeLabel,
-          );
-        });
+      expect(findScanModeInput().findComponent(GlCollapsibleListbox).props('items')).toEqual(
+        apiFuzzingCiConfiguration.scanModes.map((mode) => ({
+          value: mode,
+          text: SCAN_MODES[mode].scanModeLabel,
+        })),
+      );
     });
 
     it('by default, the specification file input is hidden', () => {
@@ -161,11 +161,11 @@ describe('EE - ApiFuzzingConfigurationForm', () => {
     });
 
     it('displays a dropdown option for each scan profile', () => {
-      const dropdownItems = findScanProfileDropdownInput().findAll('li').wrappers;
-      dropdownItems.shift(); // Skip section header
-      dropdownItems.forEach((item, index) => {
-        expect(item.text()).toBe(apiFuzzingCiConfiguration.scanProfiles[index].description);
-      });
+      expect(
+        findScanProfileDropdownInput().findComponent(GlCollapsibleListbox).props('items'),
+      ).toEqual(
+        apiFuzzingCiConfiguration.scanProfiles.map((s) => ({ value: s.name, text: s.description })),
+      );
     });
 
     it('by default, YAML viewer is not visible', () => {

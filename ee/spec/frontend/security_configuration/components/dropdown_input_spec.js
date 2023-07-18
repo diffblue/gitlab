@@ -1,4 +1,4 @@
-import { GlDropdown, GlLink } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlLink } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import GlDropdownInput from 'ee/security_configuration/components/dropdown_input.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -39,9 +39,8 @@ describe('DropdownInput component', () => {
   const findToggle = () => wrapper.find('button');
   const findLabel = () => wrapper.find('label');
   const findDescription = () => wrapper.findByTestId('dropdown-input-description');
-  const findInputComponent = () => wrapper.findComponent(GlDropdown);
+  const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
   const findRestoreDefaultLink = () => wrapper.findComponent(GlLink);
-  const findSectionHeader = () => wrapper.findByTestId('dropdown-input-section-header');
 
   describe('label', () => {
     describe('with a description', () => {
@@ -82,7 +81,7 @@ describe('DropdownInput component', () => {
         props: testProps,
       });
 
-      expect(findSectionHeader().exists()).toBe(false);
+      expect(findListbox().props('headerText')).toBe('');
     });
 
     it('renders a section header when passed a sectionHeader prop', () => {
@@ -91,8 +90,7 @@ describe('DropdownInput component', () => {
         props: { ...testProps, sectionHeader },
       });
 
-      expect(findSectionHeader().exists()).toBe(true);
-      expect(findSectionHeader().text()).toBe(sectionHeader);
+      expect(findListbox().props('headerText')).toBe(sectionHeader);
     });
   });
 
@@ -108,13 +106,13 @@ describe('DropdownInput component', () => {
     });
 
     it('is connected to the label', () => {
-      expect(findInputComponent().attributes('id')).toBe(testProps.field);
+      expect(findListbox().attributes('id')).toBe(testProps.field);
       expect(findLabel().attributes('for')).toBe(testProps.field);
     });
 
     describe('when the user changes the value', () => {
       beforeEach(() => {
-        wrapper.findAll('li').at(1).find('button').trigger('click');
+        findListbox().vm.$emit('select', option2.value);
       });
 
       it('emits an input event with the new value', () => {
