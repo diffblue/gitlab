@@ -568,6 +568,35 @@ describe('vulnerability actions', () => {
             expect(toast).toHaveBeenCalledWith(expectedToastMessage, expectedToastOptions);
           },
         );
+
+        it('should not show a toast message when "showToast" is false', async () => {
+          const [vulnerabilityToDismiss] = mockDataVulnerabilities;
+          state.vulnerabilities = mockDataVulnerabilities;
+          state.pageInfo.page = 1;
+          state.filters = {
+            filters: { scope: DISMISSAL_STATES.DISMISSED },
+          };
+
+          expect(toast).not.toHaveBeenCalled();
+
+          await testAction(
+            actions.reFetchVulnerabilitiesAfterDismissal,
+            {
+              vulnerability: vulnerabilityToDismiss,
+              showToast: false,
+            },
+            state,
+            [],
+            [
+              {
+                type: 'fetchVulnerabilities',
+                payload: { page: 1, ...state.filters.filters },
+              },
+            ],
+          );
+
+          expect(toast).not.toHaveBeenCalled();
+        });
       });
     });
 

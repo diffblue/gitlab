@@ -135,16 +135,18 @@ describe('Security Dashboard component', () => {
         expect(wrapper.findComponent(VulnerabilityFindingModal).exists()).toBe(false);
       });
 
-      it('re-fetches the vulnerability list when "stateUpdated" is emitted', () => {
+      it.each`
+        description                                                         | eventName      | expectedPayload
+        ${'re-fetches the vulnerability list'}                              | ${'dismissed'} | ${{ vulnerability: { uuid: findingUuid } }}
+        ${'re-fetches the vulnerability list without show a toast message'} | ${'detected'}  | ${{ vulnerability: { uuid: findingUuid }, showToast: false }}
+      `('$description when "$eventName" is emitted', ({ eventName, expectedPayload }) => {
         jest.spyOn(store, 'dispatch').mockImplementation(() => Promise.resolve());
 
-        wrapper.findComponent(VulnerabilityFindingModal).vm.$emit('state-updated');
+        wrapper.findComponent(VulnerabilityFindingModal).vm.$emit(eventName);
 
         expect(store.dispatch).toHaveBeenLastCalledWith(
           'vulnerabilities/reFetchVulnerabilitiesAfterDismissal',
-          {
-            vulnerability: { uuid: findingUuid },
-          },
+          expectedPayload,
         );
       });
     });
