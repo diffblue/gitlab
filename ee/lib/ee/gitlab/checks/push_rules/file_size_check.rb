@@ -14,14 +14,14 @@ module EE
             return if max_file_size == 0
 
             logger.log_timed(LOG_MESSAGE) do
-              large_blob = ::Gitlab::Checks::FileSizeCheck::AnyOversizedBlob.new(
+              large_blobs = ::Gitlab::Checks::FileSizeCheck::AnyOversizedBlobs.new(
                 project: project,
                 changes: changes_access.changes,
                 file_size_limit_megabytes: max_file_size
-              ).find!(timeout: logger.time_left)
+              ).find(timeout: logger.time_left)
 
-              if large_blob
-                raise ::Gitlab::GitAccess::ForbiddenError, %{File "#{large_blob.path}" is larger than the allowed size of #{max_file_size} MiB. Use Git LFS to manage this file.}
+              if large_blobs.present?
+                raise ::Gitlab::GitAccess::ForbiddenError, %{File "#{large_blobs.first.path}" is larger than the allowed size of #{max_file_size} MiB. Use Git LFS to manage this file.}
               end
             end
           end
