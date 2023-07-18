@@ -293,7 +293,7 @@ export default {
             <gl-button
               icon="paper-airplane"
               category="primary"
-              variant="info"
+              variant="confirm"
               class="gl-absolute! gl-bottom-2 gl-right-2 gl-rounded-base!"
               type="submit"
               :disabled="isLoading"
