@@ -144,7 +144,8 @@ export default {
         :finding-uuid="vulnerability.uuid"
         :pipeline-iid="pipeline.iid"
         :project-full-path="projectFullPath"
-        @state-updated="reFetchVulnerabilitiesAfterDismissal({ vulnerability })"
+        @dismissed="reFetchVulnerabilitiesAfterDismissal({ vulnerability })"
+        @detected="reFetchVulnerabilitiesAfterDismissal({ vulnerability, showToast: false })"
         @hidden="shouldShowModal = false"
       />
       <issue-modal

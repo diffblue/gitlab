@@ -169,7 +169,7 @@ export const deselectVulnerability = ({ commit }, { id }) => {
 
 export const reFetchVulnerabilitiesAfterDismissal = (
   { dispatch, state, rootState },
-  { vulnerability },
+  { vulnerability, showToast = true },
 ) => {
   const { filters } = rootState.filters;
   const { vulnerabilities, pageInfo } = state;
@@ -213,7 +213,9 @@ export const reFetchVulnerabilitiesAfterDismissal = (
     page: pageToFetch,
   });
 
-  toast(toastMsg, toastOptions);
+  if (showToast) {
+    toast(toastMsg, toastOptions);
+  }
 };
 
 export const dismissSelectedVulnerabilities = (
