@@ -8,7 +8,6 @@ import {
   ADD_STREAM_MESSAGE,
   AUDIT_STREAMS_NETWORK_ERRORS,
   DELETE_STREAM_MESSAGE,
-  UPDATE_STREAM_MESSAGE,
   streamsLabel,
   DESTINATION_TYPE_HTTP,
   DESTINATION_TYPE_GCP_LOGGING,
@@ -114,7 +113,6 @@ export default {
     },
     async onUpdatedDestination() {
       this.hideEditor();
-      this.successMessage = UPDATE_STREAM_MESSAGE;
     },
     async onDeletedDestination(id) {
       removeAuditEventsStreamingDestination({

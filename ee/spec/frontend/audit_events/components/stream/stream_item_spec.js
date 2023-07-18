@@ -1,6 +1,7 @@
+import { GlAlert } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { STREAM_ITEMS_I18N } from 'ee/audit_events/constants';
+import { STREAM_ITEMS_I18N, UPDATE_STREAM_MESSAGE } from 'ee/audit_events/constants';
 import StreamItem from 'ee/audit_events/components/stream/stream_item.vue';
 import StreamDestinationEditor from 'ee/audit_events/components/stream/stream_destination_editor.vue';
 import StreamGcpLoggingDestinationEditor from 'ee/audit_events/components/stream/stream_gcp_logging_destination_editor.vue';
@@ -42,6 +43,7 @@ describe('StreamItem', () => {
 
   const findToggleButton = () => wrapper.findByTestId('toggle-btn');
   const findEditor = () => wrapper.findComponent(StreamDestinationEditor);
+  const findAlert = () => wrapper.findComponent(GlAlert);
   const findGcpLoggingEditor = () => wrapper.findComponent(StreamGcpLoggingDestinationEditor);
   const findFilterBadge = () => wrapper.findByTestId('filter-badge');
 
@@ -80,13 +82,12 @@ describe('StreamItem', () => {
         expect(findEditor().props('item')).toStrictEqual(mockExternalDestinations[0]);
       });
 
-      it('should emit the updated event when the editor fires its update event', async () => {
-        findEditor().vm.$emit('updated');
-        await waitForPromises();
+      it('should emit the updated event and show success message when the editor fires its update event', async () => {
+        await findEditor().vm.$emit('updated');
 
+        expect(findAlert().text()).toBe(UPDATE_STREAM_MESSAGE);
         expect(wrapper.emitted('updated')).toBeDefined();
-
-        expect(findEditor().exists()).toBe(false);
+        expect(findEditor().exists()).toBe(true);
       });
 
       it('should emit the error event when the editor fires its error event', () => {
@@ -101,6 +102,13 @@ describe('StreamItem', () => {
         await waitForPromises();
 
         expect(findEditor().exists()).toBe(false);
+      });
+
+      it('clears success message when closing', async () => {
+        await findEditor().vm.$emit('updated');
+        await findToggleButton().vm.$emit('click');
+
+        expect(findAlert().exists()).toBe(false);
       });
     });
 
@@ -169,13 +177,12 @@ describe('StreamItem', () => {
         expect(findGcpLoggingEditor().props('item')).toStrictEqual(mockExternalDestinations[0]);
       });
 
-      it('should emit the updated event when the editor fires its update event', async () => {
-        findGcpLoggingEditor().vm.$emit('updated');
-        await waitForPromises();
+      it('should emit the updated event and show success message when the editor fires its update event', async () => {
+        await findGcpLoggingEditor().vm.$emit('updated');
 
         expect(wrapper.emitted('updated')).toBeDefined();
-
-        expect(findGcpLoggingEditor().exists()).toBe(false);
+        expect(findAlert().text()).toBe(UPDATE_STREAM_MESSAGE);
+        expect(findGcpLoggingEditor().exists()).toBe(true);
       });
 
       it('should emit the error event when the editor fires its error event', () => {
@@ -190,6 +197,13 @@ describe('StreamItem', () => {
         await waitForPromises();
 
         expect(findGcpLoggingEditor().exists()).toBe(false);
+      });
+
+      it('clears success message when closing', async () => {
+        await findGcpLoggingEditor().vm.$emit('updated');
+        await findToggleButton().vm.$emit('click');
+
+        expect(findAlert().exists()).toBe(false);
       });
     });
   });
@@ -235,12 +249,12 @@ describe('StreamItem', () => {
         expect(findEditor().props('item')).toStrictEqual(mockInstanceExternalDestinations[0]);
       });
 
-      it('should emit the updated event when the editor fires its update event', async () => {
-        findEditor().vm.$emit('updated');
-        await waitForPromises();
+      it('should emit the updated event and show success message when the editor fires its update event', async () => {
+        await findEditor().vm.$emit('updated');
 
+        expect(findAlert().text()).toBe(UPDATE_STREAM_MESSAGE);
         expect(wrapper.emitted('updated')).toBeDefined();
-        expect(findEditor().exists()).toBe(false);
+        expect(findEditor().exists()).toBe(true);
       });
 
       it('should emit the error event when the editor fires its error event', () => {
@@ -255,6 +269,13 @@ describe('StreamItem', () => {
         await waitForPromises();
 
         expect(findEditor().exists()).toBe(false);
+      });
+
+      it('clears success message when closing', async () => {
+        await findEditor().vm.$emit('updated');
+        await findToggleButton().vm.$emit('click');
+
+        expect(findAlert().exists()).toBe(false);
       });
     });
 

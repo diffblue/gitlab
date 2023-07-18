@@ -49,7 +49,21 @@ export default {
   },
   computed: {
     isSubmitButtonDisabled() {
-      return !this.googleProjectIdName || !this.logIdName || !this.privateKey || !this.clientEmail;
+      if (!this.googleProjectIdName || !this.logIdName || !this.privateKey || !this.clientEmail) {
+        return true;
+      }
+
+      return this.hasNoChanges;
+    },
+    hasNoChanges() {
+      const { googleProjectIdName, logIdName, privateKey, clientEmail } = this.item;
+
+      return (
+        googleProjectIdName === this.googleProjectIdName &&
+        logIdName === this.logIdName &&
+        privateKey === this.privateKey &&
+        clientEmail === this.clientEmail
+      );
     },
     isEditing() {
       return !isEmpty(this.item);
@@ -223,44 +237,44 @@ export default {
     <gl-form @submit.prevent="formSubmission">
       <gl-form-group
         :label="$options.i18n.GCP_LOGGING_DESTINATION_PROJECT_ID_LABEL"
-        data-testid="gcp-logging-destination-project-id-form-group"
+        data-testid="project-id-form-group"
       >
         <gl-form-input
           v-model="googleProjectIdName"
           :placeholder="$options.i18n.GCP_LOGGING_DESTINATION_PROJECT_ID_PLACEHOLDER"
-          data-testid="gcp-logging-destination-project-id"
+          data-testid="project-id"
         />
       </gl-form-group>
       <gl-form-group
         :label="$options.i18n.GCP_LOGGING_DESTINATION_CLIENT_EMAIL_LABEL"
-        data-testid="gcp-logging-destination-client-email-form-group"
+        data-testid="client-email-form-group"
       >
         <gl-form-input
           v-model="clientEmail"
           :placeholder="$options.i18n.GCP_LOGGING_DESTINATION_CLIENT_EMAIL_PLACEHOLDER"
-          data-testid="gcp-logging-destination-client-email"
+          data-testid="client-email"
         />
       </gl-form-group>
       <gl-form-group
         :label="$options.i18n.GCP_LOGGING_DESTINATION_LOG_ID_LABEL"
-        data-testid="gcp-logging-destination-log-id-form-group"
+        data-testid="log-id-form-group"
       >
         <gl-form-input
           v-model="logIdName"
           :placeholder="$options.i18n.GCP_LOGGING_DESTINATION_LOG_ID_PLACEHOLDER"
-          data-testid="gcp-logging-destination-log-id"
+          data-testid="log-id"
         />
       </gl-form-group>
       <gl-form-group
         :label="$options.i18n.GCP_LOGGING_DESTINATION_PASSWORD_LABEL"
-        data-testid="gcp-logging-destination-private-key-form-group"
+        data-testid="private-key-form-group"
       >
         <gl-form-textarea
           v-model="privateKey"
           rows="16"
           :formatter="privateKeyFormatter"
           class="gl-h-auto!"
-          data-testid="gcp-logging-destination-private-key"
+          data-testid="private-key"
         />
       </gl-form-group>
 

@@ -177,8 +177,7 @@ describe('AuditEventsStream', () => {
 
         await findHttpDropdownItem().trigger('click');
 
-        findStreamDestinationEditor().vm.$emit('error');
-        await waitForPromises();
+        await findStreamDestinationEditor().vm.$emit('error');
 
         expect(findSuccessMessage().exists()).toBe(false);
       });
@@ -303,8 +302,7 @@ describe('AuditEventsStream', () => {
 
         await findHttpDropdownItem().trigger('click');
 
-        findStreamDestinationEditor().vm.$emit('error');
-        await waitForPromises();
+        await findStreamDestinationEditor().vm.$emit('error');
 
         expect(findSuccessMessage().exists()).toBe(false);
       });

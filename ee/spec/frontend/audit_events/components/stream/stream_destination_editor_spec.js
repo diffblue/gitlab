@@ -286,42 +286,6 @@ describe('StreamDestinationEditor', () => {
         expect(wrapper.emitted('added')).toBeDefined();
       });
 
-      it('should ignore empty headers and emit add event after destination and headers are added', async () => {
-        const headerCreateSpy = jest
-          .fn()
-          .mockResolvedValue(destinationHeaderCreateMutationPopulator());
-
-        createComponent({
-          mountFn: mountExtended,
-          apolloHandlers: [
-            [
-              externalAuditEventDestinationCreate,
-              jest.fn().mockResolvedValue(destinationCreateMutationPopulator()),
-            ],
-            [externalAuditEventDestinationHeaderCreate, headerCreateSpy],
-          ],
-        });
-
-        findDestinationUrl().vm.$emit('input', 'https://example.test');
-        await findAddHeaderBtn().trigger('click');
-        await setHeadersRowData(0, { name: 'row header', value: 'row value' });
-        await findAddHeaderBtn().trigger('click');
-        await setHeadersRowData(1, { name: '', value: '' });
-        findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
-        await waitForPromises();
-
-        expect(findAlertErrors()).toHaveLength(0);
-        expect(headerCreateSpy).toHaveBeenCalledTimes(1);
-        expect(headerCreateSpy).toHaveBeenCalledWith({
-          destinationId: 'test-create-id',
-          isInstance: false,
-          key: 'row header',
-          value: 'row value',
-        });
-        expect(wrapper.emitted('error')).toBeUndefined();
-        expect(wrapper.emitted('added')).toBeDefined();
-      });
-
       it('should not emit add destination event and reports error when server returns error while adding headers', async () => {
         const errorMsg = 'Destination hosts limit exceeded';
         createComponent({
@@ -420,6 +384,7 @@ describe('StreamDestinationEditor', () => {
 
       it.each`
         name     | value    | disabled
+        ${''}    | ${''}    | ${true}
         ${'abc'} | ${''}    | ${true}
         ${''}    | ${'abc'} | ${true}
         ${'abc'} | ${'abc'} | ${false}
@@ -433,6 +398,16 @@ describe('StreamDestinationEditor', () => {
           expect(findAddStreamBtn().props('disabled')).toBe(disabled);
         },
       );
+
+      it('disables add button when there are headers with the same name', async () => {
+        await findDestinationUrl().setValue('https://example.test');
+        await findAddHeaderBtn().trigger('click');
+        await setHeadersRowData(0, { name: 'a', value: 'b' });
+
+        await findAddHeaderBtn().trigger('click');
+        await setHeadersRowData(1, { name: 'a', value: 'c' });
+        expect(findAddStreamBtn().props('disabled')).toBe(true);
+      });
 
       it('should delete a row when the delete button is clicked', async () => {
         await findAddHeaderBtn().trigger('click');
@@ -508,6 +483,10 @@ describe('StreamDestinationEditor', () => {
             ADD_STREAM_EDITOR_I18N.SAVE_BUTTON_NAME,
           );
           expect(findAddStreamBtn().text()).toBe(ADD_STREAM_EDITOR_I18N.SAVE_BUTTON_TEXT);
+        });
+
+        it('disables the save button text at first', () => {
+          expect(findAddStreamBtn().props('disabled')).toBe(true);
         });
 
         it('renders the delete button', () => {
@@ -706,7 +685,9 @@ describe('StreamDestinationEditor', () => {
             apolloHandlers: [[deleteExternalDestinationFilters, filterRemoveSpy]],
           });
 
-          findFilters().vm.$emit('input', mockRemoveFilterSelect);
+          await findFilters().vm.$emit('input', mockRemoveFilterSelect);
+
+          expect(findAddStreamBtn().props('disabled')).toBe(false);
 
           findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
           await waitForPromises();
@@ -732,7 +713,9 @@ describe('StreamDestinationEditor', () => {
             apolloHandlers: [[addExternalDestinationFilters, filterAddSpy]],
           });
 
-          findFilters().vm.$emit('input', mockAddFilterSelect);
+          await findFilters().vm.$emit('input', mockAddFilterSelect);
+
+          expect(findAddStreamBtn().props('disabled')).toBe(false);
 
           findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
           await waitForPromises();
@@ -933,42 +916,6 @@ describe('StreamDestinationEditor', () => {
         expect(wrapper.emitted('added')).toBeDefined();
       });
 
-      it('should ignore empty headers and emit add event after destination and headers are added', async () => {
-        const headerCreateSpy = jest
-          .fn()
-          .mockResolvedValue(destinationInstanceHeaderCreateMutationPopulator());
-
-        createComponent({
-          mountFn: mountExtended,
-          apolloHandlers: [
-            [
-              instanceExternalAuditEventDestinationCreate,
-              jest.fn().mockResolvedValue(destinationInstanceCreateMutationPopulator()),
-            ],
-            [externalInstanceAuditEventDestinationHeaderCreate, headerCreateSpy],
-          ],
-        });
-
-        findDestinationUrl().vm.$emit('input', 'https://example.test');
-        await findAddHeaderBtn().trigger('click');
-        await setHeadersRowData(0, { name: 'row header', value: 'row value' });
-        await findAddHeaderBtn().trigger('click');
-        await setHeadersRowData(1, { name: '', value: '' });
-        findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
-        await waitForPromises();
-
-        expect(findAlertErrors()).toHaveLength(0);
-        expect(headerCreateSpy).toHaveBeenCalledTimes(1);
-        expect(headerCreateSpy).toHaveBeenCalledWith({
-          destinationId: 'test-create-id',
-          isInstance: true,
-          key: 'row header',
-          value: 'row value',
-        });
-        expect(wrapper.emitted('error')).toBeUndefined();
-        expect(wrapper.emitted('added')).toBeDefined();
-      });
-
       it('should not emit add destination event and reports error when server returns error while adding headers', async () => {
         const errorMsg = 'Destination hosts limit exceeded';
         createComponent({
@@ -1073,6 +1020,7 @@ describe('StreamDestinationEditor', () => {
 
       it.each`
         name     | value    | disabled
+        ${''}    | ${''}    | ${true}
         ${'abc'} | ${''}    | ${true}
         ${''}    | ${'abc'} | ${true}
         ${'abc'} | ${'abc'} | ${false}
@@ -1086,6 +1034,16 @@ describe('StreamDestinationEditor', () => {
           expect(findAddStreamBtn().props('disabled')).toBe(disabled);
         },
       );
+
+      it('disables add button when there are headers with the same name', async () => {
+        await findDestinationUrl().setValue('https://example.test');
+        await findAddHeaderBtn().trigger('click');
+        await setHeadersRowData(0, { name: 'a', value: 'b' });
+
+        await findAddHeaderBtn().trigger('click');
+        await setHeadersRowData(1, { name: 'a', value: 'c' });
+        expect(findAddStreamBtn().props('disabled')).toBe(true);
+      });
 
       it('should delete a row when the delete button is clicked', async () => {
         await findAddHeaderBtn().trigger('click');
@@ -1163,6 +1121,19 @@ describe('StreamDestinationEditor', () => {
             ADD_STREAM_EDITOR_I18N.SAVE_BUTTON_NAME,
           );
           expect(findAddStreamBtn().text()).toBe(ADD_STREAM_EDITOR_I18N.SAVE_BUTTON_TEXT);
+        });
+
+        it('disables the save button text at first', () => {
+          expect(findAddStreamBtn().props('disabled')).toBe(true);
+        });
+
+        it('renders the delete button', () => {
+          expect(findDeleteBtn().attributes('name')).toBe(
+            ADD_STREAM_EDITOR_I18N.DELETE_BUTTON_TEXT,
+          );
+          expect(findDeleteBtn().classes('gl-ml-auto')).toBe(true);
+          expect(findDeleteBtn().props('variant')).toBe('danger');
+          expect(findDeleteBtn().text()).toBe(ADD_STREAM_EDITOR_I18N.DELETE_BUTTON_TEXT);
         });
       });
 

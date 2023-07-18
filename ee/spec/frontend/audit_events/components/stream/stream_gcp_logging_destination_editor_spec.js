@@ -56,18 +56,14 @@ describe('StreamDestinationEditor', () => {
   const findDeleteBtn = () => wrapper.findByTestId('stream-destination-delete-button');
   const findDeleteModal = () => wrapper.findComponent(StreamDeleteModal);
 
-  const findProjectIdFormGroup = () =>
-    wrapper.findByTestId('gcp-logging-destination-project-id-form-group');
-  const findProjectId = () => wrapper.findByTestId('gcp-logging-destination-project-id');
-  const findClientEmailFormGroup = () =>
-    wrapper.findByTestId('gcp-logging-destination-client-email-form-group');
-  const findClientEmailUrl = () => wrapper.findByTestId('gcp-logging-destination-client-email');
-  const findLogIdFormGroup = () =>
-    wrapper.findByTestId('gcp-logging-destination-log-id-form-group');
-  const findLogId = () => wrapper.findByTestId('gcp-logging-destination-log-id');
-  const findPrivateKeyFormGroup = () =>
-    wrapper.findByTestId('gcp-logging-destination-private-key-form-group');
-  const findPrivateKey = () => wrapper.findByTestId('gcp-logging-destination-private-key');
+  const findProjectIdFormGroup = () => wrapper.findByTestId('project-id-form-group');
+  const findProjectId = () => wrapper.findByTestId('project-id');
+  const findClientEmailFormGroup = () => wrapper.findByTestId('client-email-form-group');
+  const findClientEmailUrl = () => wrapper.findByTestId('client-email');
+  const findLogIdFormGroup = () => wrapper.findByTestId('log-id-form-group');
+  const findLogId = () => wrapper.findByTestId('log-id');
+  const findPrivateKeyFormGroup = () => wrapper.findByTestId('private-key-form-group');
+  const findPrivateKey = () => wrapper.findByTestId('private-key');
 
   afterEach(() => {
     createAlert.mockClear();
@@ -116,8 +112,13 @@ describe('StreamDestinationEditor', () => {
         expect(findDeleteBtn().exists()).toBe(false);
       });
 
-      it('renders the save button text', () => {
+      it('renders the add button text', () => {
+        expect(findAddStreamBtn().attributes('name')).toBe(ADD_STREAM_EDITOR_I18N.ADD_BUTTON_NAME);
         expect(findAddStreamBtn().text()).toBe(ADD_STREAM_EDITOR_I18N.ADD_BUTTON_TEXT);
+      });
+
+      it('disables the add button at first', () => {
+        expect(findAddStreamBtn().props('disabled')).toBe(true);
       });
     });
 
@@ -129,6 +130,9 @@ describe('StreamDestinationEditor', () => {
         await findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestination.clientEmail);
         await findLogId().vm.$emit('input', mockGcpLoggingDestination.logIdName);
         await findPrivateKey().vm.$emit('input', mockGcpLoggingDestination.privateKey);
+
+        expect(findAddStreamBtn().props('disabled')).toBe(false);
+
         await findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -217,6 +221,33 @@ describe('StreamDestinationEditor', () => {
         it('the delete button', () => {
           expect(findDeleteBtn().exists()).toBe(true);
         });
+
+        it('renders the save button text', () => {
+          expect(findAddStreamBtn().attributes('name')).toBe(
+            ADD_STREAM_EDITOR_I18N.SAVE_BUTTON_NAME,
+          );
+          expect(findAddStreamBtn().text()).toBe(ADD_STREAM_EDITOR_I18N.SAVE_BUTTON_TEXT);
+        });
+
+        it('disables the save button at first', () => {
+          expect(findAddStreamBtn().props('disabled')).toBe(true);
+        });
+      });
+
+      it.each`
+        name              | findInputFn
+        ${'Project ID'}   | ${findProjectId}
+        ${'Client Email'} | ${findClientEmailUrl}
+        ${'Log ID'}       | ${findLogId}
+        ${'Private Key'}  | ${findPrivateKey}
+      `('enable the save button when $name is edited', async ({ findInputFn }) => {
+        createComponent({ props: { item: mockGcpLoggingDestination } });
+
+        expect(findAddStreamBtn().props('disabled')).toBe(true);
+
+        await findInputFn().vm.$emit('input', 'test');
+
+        expect(findAddStreamBtn().props('disabled')).toBe(false);
       });
 
       it('should emit updated event after destination updated', async () => {
