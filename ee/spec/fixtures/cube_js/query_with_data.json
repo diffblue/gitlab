@@ -6,21 +6,35 @@
         "measures": [
           "SnowplowTrackedEvents.pageViewsCount"
         ],
-        "limit": 100,
-        "rowLimit": 100,
-        "timezone": "UTC",
-        "order": [
-
-        ],
         "filters": [
-
+          {
+            "operator": "equals",
+            "values": [
+              "page_view"
+            ],
+            "member": "SnowplowTrackedEvents.event"
+          },
+          {
+            "member": "SnowplowTrackedEvents.derivedTstamp",
+            "operator": "inDateRange",
+            "values": [
+              "2023-01-02",
+              "2023-07-12"
+            ]
+          }
         ],
+        "limit": 100,
+        "timezone": "UTC",
         "dimensions": [
 
         ],
         "timeDimensions": [
 
         ],
+        "order": [
+
+        ],
+        "rowLimit": 100,
         "queryType": "regularQuery"
       },
       "data": [
@@ -28,11 +42,11 @@
           "SnowplowTrackedEvents.pageViewsCount": "335"
         }
       ],
-      "lastRefreshTime": "2023-06-07T01:51:48.546Z",
+      "lastRefreshTime": "2023-07-13T09:24:31.279Z",
       "refreshKeyValues": [
         [
           {
-            "refresh_key": "168610247"
+            "refresh_key": "168924027"
           }
         ]
       ],
@@ -40,7 +54,8 @@
       },
       "transformedQuery": {
         "sortedDimensions": [
-
+          "SnowplowTrackedEvents.derivedTstamp",
+          "SnowplowTrackedEvents.event"
         ],
         "sortedTimeDimensions": [
 
@@ -65,7 +80,7 @@
           ]
         },
         "hasNoTimeDimensionsWithoutGranularity": true,
-        "allFiltersWithinSelectedDimensions": true,
+        "allFiltersWithinSelectedDimensions": false,
         "isAdditive": true,
         "granularityHierarchies": {
           "year": [
@@ -122,10 +137,10 @@
         "hasMultipliedMeasures": false,
         "hasCumulativeMeasures": false,
         "windowGranularity": null,
-        "filterDimensionsSingleValueEqual": {
-        },
+        "filterDimensionsSingleValueEqual": null,
         "ownedDimensions": [
-
+          "SnowplowTrackedEvents.derivedTstamp",
+          "SnowplowTrackedEvents.event"
         ],
         "ownedTimeDimensionsWithRollupGranularity": [
 
@@ -134,7 +149,7 @@
 
         ]
       },
-      "requestId": "e3bc6e94-163e-4c60-935b-cc8becc87874-span-1",
+      "requestId": "e10b4c42-3546-48d2-be32-22b48bd153b0-span-1",
       "annotation": {
         "measures": {
           "SnowplowTrackedEvents.pageViewsCount": {
@@ -173,21 +188,35 @@
     "measures": [
       "SnowplowTrackedEvents.pageViewsCount"
     ],
-    "limit": 100,
-    "rowLimit": 100,
-    "timezone": "UTC",
-    "order": [
-
-    ],
     "filters": [
-
+      {
+        "operator": "equals",
+        "values": [
+          "page_view"
+        ],
+        "member": "SnowplowTrackedEvents.event"
+      },
+      {
+        "member": "SnowplowTrackedEvents.derivedTstamp",
+        "operator": "inDateRange",
+        "values": [
+          "2023-01-02",
+          "2023-07-12"
+        ]
+      }
     ],
+    "limit": 100,
+    "timezone": "UTC",
     "dimensions": [
 
     ],
     "timeDimensions": [
 
     ],
+    "order": [
+
+    ],
+    "rowLimit": 100,
     "queryType": "regularQuery"
   },
   "slowQuery": false

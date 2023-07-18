@@ -1,0 +1,284 @@
+{
+  "queryType": "regularQuery",
+  "results": [
+    {
+      "query": {
+        "limit": 100,
+        "measures": [
+          "SnowplowSessions.count",
+          "SnowplowSessions.repeatPercent"
+        ],
+        "timeDimensions": [
+          {
+            "dimension": "SnowplowSessions.startAt",
+            "granularity": "day"
+          }
+        ],
+        "filters": [
+          {
+            "member": "SnowplowSessions.startAt",
+            "operator": "inDateRange",
+            "values": [
+              "2023-01-01",
+              "2023-07-01"
+            ]
+          }
+        ],
+        "timezone": "UTC",
+        "order": [
+
+        ],
+        "dimensions": [
+
+        ],
+        "rowLimit": 100,
+        "queryType": "regularQuery"
+      },
+      "data": [
+        {
+          "SnowplowSessions.startAt.day": "2023-05-30T00:00:00.000",
+          "SnowplowSessions.startAt": "2023-05-30T00:00:00.000",
+          "SnowplowSessions.count": "1",
+          "SnowplowSessions.repeatPercent": "0"
+        },
+        {
+          "SnowplowSessions.startAt.day": "2023-06-05T00:00:00.000",
+          "SnowplowSessions.startAt": "2023-06-05T00:00:00.000",
+          "SnowplowSessions.count": "1",
+          "SnowplowSessions.repeatPercent": "100"
+        },
+        {
+          "SnowplowSessions.startAt.day": "2023-06-06T00:00:00.000",
+          "SnowplowSessions.startAt": "2023-06-06T00:00:00.000",
+          "SnowplowSessions.count": "1",
+          "SnowplowSessions.repeatPercent": "100"
+        }
+      ],
+      "lastRefreshTime": "2023-07-05T13:46:59.074Z",
+      "refreshKeyValues": [
+        [
+          {
+            "refresh_key": "168856100"
+          }
+        ]
+      ],
+      "usedPreAggregations": {
+      },
+      "transformedQuery": {
+        "sortedDimensions": [
+          "SnowplowSessions.startAt"
+        ],
+        "sortedTimeDimensions": [
+          [
+            "SnowplowSessions.startAt",
+            "day"
+          ]
+        ],
+        "timeDimensions": [
+          [
+            "SnowplowSessions.startAt",
+            "day"
+          ]
+        ],
+        "measures": [
+          "SnowplowSessions.count",
+          "SnowplowSessions.repeatPercent"
+        ],
+        "leafMeasureAdditive": true,
+        "leafMeasures": [
+          "SnowplowSessions.count",
+          "SnowplowSessions.repeatCount"
+        ],
+        "measureToLeafMeasures": {
+          "SnowplowSessions.count": [
+            {
+              "measure": "SnowplowSessions.count",
+              "additive": true,
+              "type": "count"
+            }
+          ],
+          "SnowplowSessions.repeatPercent": [
+            {
+              "measure": "SnowplowSessions.repeatCount",
+              "additive": true,
+              "type": "count"
+            },
+            {
+              "measure": "SnowplowSessions.count",
+              "additive": true,
+              "type": "count"
+            }
+          ]
+        },
+        "hasNoTimeDimensionsWithoutGranularity": true,
+        "allFiltersWithinSelectedDimensions": false,
+        "isAdditive": false,
+        "granularityHierarchies": {
+          "year": [
+            "year",
+            "quarter",
+            "month",
+            "month",
+            "day",
+            "hour",
+            "minute",
+            "second"
+          ],
+          "quarter": [
+            "quarter",
+            "month",
+            "day",
+            "hour",
+            "minute",
+            "second"
+          ],
+          "month": [
+            "month",
+            "day",
+            "hour",
+            "minute",
+            "second"
+          ],
+          "week": [
+            "week",
+            "day",
+            "hour",
+            "minute",
+            "second"
+          ],
+          "day": [
+            "day",
+            "hour",
+            "minute",
+            "second"
+          ],
+          "hour": [
+            "hour",
+            "minute",
+            "second"
+          ],
+          "minute": [
+            "minute",
+            "second"
+          ],
+          "second": [
+            "second"
+          ]
+        },
+        "hasMultipliedMeasures": false,
+        "hasCumulativeMeasures": false,
+        "windowGranularity": null,
+        "filterDimensionsSingleValueEqual": null,
+        "ownedDimensions": [
+          "SnowplowSessions.startAt"
+        ],
+        "ownedTimeDimensionsWithRollupGranularity": [
+          [
+            "SnowplowSessions.startAt",
+            "day"
+          ]
+        ],
+        "ownedTimeDimensionsAsIs": [
+          [
+            "SnowplowSessions.startAt",
+            "day"
+          ]
+        ]
+      },
+      "requestId": "54a673d5-93a8-4f17-85ed-9626f22aa6bc-span-1",
+      "annotation": {
+        "measures": {
+          "SnowplowSessions.count": {
+            "title": "Snowplow Sessions Count",
+            "shortTitle": "Count",
+            "type": "number",
+            "drillMembers": [
+
+            ],
+            "drillMembersGrouped": {
+              "measures": [
+
+              ],
+              "dimensions": [
+
+              ]
+            }
+          },
+          "SnowplowSessions.repeatPercent": {
+            "title": "Snowplow Sessions Repeat Percent",
+            "shortTitle": "Repeat Percent",
+            "description": "Percent of Repeat Sessions",
+            "type": "number",
+            "format": "percent",
+            "drillMembers": [
+
+            ],
+            "drillMembersGrouped": {
+              "measures": [
+
+              ],
+              "dimensions": [
+
+              ]
+            }
+          }
+        },
+        "dimensions": {
+        },
+        "segments": {
+        },
+        "timeDimensions": {
+          "SnowplowSessions.startAt.day": {
+            "title": "Snowplow Sessions Start at",
+            "shortTitle": "Start at",
+            "type": "time"
+          },
+          "SnowplowSessions.startAt": {
+            "title": "Snowplow Sessions Start at",
+            "shortTitle": "Start at",
+            "type": "time"
+          }
+        }
+      },
+      "dataSource": "default",
+      "dbType": "clickhouse",
+      "extDbType": "cubestore",
+      "external": false,
+      "slowQuery": false,
+      "total": null
+    }
+  ],
+  "pivotQuery": {
+    "limit": 100,
+    "measures": [
+      "SnowplowSessions.count",
+      "SnowplowSessions.repeatPercent"
+    ],
+    "timeDimensions": [
+      {
+        "dimension": "SnowplowSessions.startAt",
+        "granularity": "day"
+      }
+    ],
+    "filters": [
+      {
+        "member": "SnowplowSessions.startAt",
+        "operator": "inDateRange",
+        "values": [
+          "2023-01-01",
+          "2023-07-01"
+        ]
+      }
+    ],
+    "timezone": "UTC",
+    "order": [
+
+    ],
+    "dimensions": [
+
+    ],
+    "rowLimit": 100,
+    "queryType": "regularQuery"
+  },
+  "slowQuery": false
+}

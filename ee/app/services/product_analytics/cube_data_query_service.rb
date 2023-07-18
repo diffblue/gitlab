@@ -49,7 +49,17 @@ module ProductAnalytics
         ServiceResponse.error(message: '404 Clickhouse Database Not Found', reason: :not_found)
       elsif body['error'].present?
         ServiceResponse.error(message: body['error'], reason: :bad_request)
+      elsif params[:path] == 'meta'
+        ServiceResponse.success(message: 'Cube Query Successful', payload: body)
       else
+        # TODO: Remove the transformer when https://gitlab.com/gitlab-org/gitlab/-/issues/417231
+        # is done and cube has been updated
+        body['results'] = ::Gitlab::CubeJs::DataTransformer
+                             .new(
+                               query: params[:query],
+                               results: body['results'].deep_dup
+                             )
+                             .transform
         ServiceResponse.success(message: 'Cube Query Successful', payload: body)
       end
     end
