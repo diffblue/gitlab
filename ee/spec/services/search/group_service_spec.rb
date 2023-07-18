@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Search::GroupService, feature_category: :global_search do
+RSpec.describe Search::GroupService, feature_category: :global_search,
+  quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/418757' do
   include SearchResultHelpers
   include ProjectHelpers
   include UserHelpers
