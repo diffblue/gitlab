@@ -23,6 +23,22 @@ module QA
                 yield
               end
             end
+
+            def go_to_value_stream_analytics
+              hover_analytics do
+                within_submenu do
+                  click_element(:sidebar_menu_item_link, menu_item: 'Value stream')
+                end
+              end
+            end
+
+            def go_to_merge_request_analytics
+              hover_analytics do
+                within_submenu do
+                  click_element(:sidebar_menu_item_link, menu_item: 'Merge request')
+                end
+              end
+            end
           end
         end
       end
