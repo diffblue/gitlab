@@ -486,4 +486,28 @@ RSpec.describe API::Users, :aggregate_failures, feature_category: :user_profile 
       end
     end
   end
+
+  describe 'GET /api/users?extern_uid=:extern_uid&provider=scim' do
+    context 'querying users by SCIM identity as an admin' do
+      let(:instance_scim_user) { create(:user) }
+      let!(:instance_scim_identity) { create(:scim_identity, user: instance_scim_user, extern_uid: 'test_uid') }
+
+      let(:group) { create(:group) }
+      let(:group_scim_user) { create(:user) }
+      let!(:group_scim_identity) { create(:scim_identity, user: group_scim_user, group: group, extern_uid: 'test_uid') }
+      let(:group_scim_user_2) { create(:user) }
+      let!(:group_scim_identity_2) { create(:scim_identity, user: group_scim_user_2, group: group, extern_uid: 'test_uid_2') }
+
+      it 'returns only users for the extern_uid' do
+        non_scim_user = create(:user)
+
+        get api("/users", admin, admin_mode: true), params: { extern_uid: 'test_uid', provider: 'scim' }
+
+        expect(json_response.map { |u| u['id'] }).to include(instance_scim_user.id)
+        expect(json_response.map { |u| u['id'] }).to include(group_scim_user.id)
+        expect(json_response.map { |u| u['id'] }).not_to include(group_scim_user_2.id)
+        expect(json_response.map { |u| u['id'] }).not_to include(non_scim_user.id)
+      end
+    end
+  end
 end
