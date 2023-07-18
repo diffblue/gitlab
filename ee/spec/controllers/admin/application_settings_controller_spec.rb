@@ -27,7 +27,8 @@ RSpec.describe Admin::ApplicationSettingsController do
         allow_group_owners_to_manage_ldap: false,
         lock_memberships_to_ldap: true,
         geo_node_allowed_ips: '0.0.0.0/0, ::/0',
-        allow_account_deletion: true
+        allow_account_deletion: true,
+        namespace_storage_forks_cost_factor: 0.5
       }
 
       put :update, params: { application_setting: settings }

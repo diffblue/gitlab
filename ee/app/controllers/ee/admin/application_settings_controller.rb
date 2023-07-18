@@ -124,6 +124,7 @@ module EE
         end
 
         attrs << :new_user_signups_cap
+        attrs << :namespace_storage_forks_cost_factor
 
         attrs
       end
