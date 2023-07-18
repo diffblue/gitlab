@@ -17,12 +17,12 @@ OR
 const { glClientSDK } = require('@gitlab/application-sdk-browser');
 `;
 
-export const INIT_TRACKING = `this.glClient = glClientSDK({ appId: '$appId', host: '$host' });`;
+export const INIT_TRACKING = `this.glClient = glClientSDK({ appId: '%{appId}', host: '%{host}' });`;
 
 export const HTML_SCRIPT_SETUP = `<script src="https://unpkg.com/@gitlab/application-sdk-browser/dist/gl-sdk.min.js"></script>
 <script>window.glClient = window.glSDK.glClientSDK({
-    appId: '$appId',
-    host: '$host',
+    appId: '%{appId}',
+    host: '%{host}',
 });
 // Tracks the current page view
 window.glClient.page();

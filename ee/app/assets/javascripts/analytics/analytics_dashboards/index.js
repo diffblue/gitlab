@@ -103,7 +103,7 @@ export default () => {
 
   return new Vue({
     el,
-    name: 'AnalyticsRoot',
+    name: 'AnalyticsDashboardsRoot',
     apolloProvider,
     router,
     provide: {

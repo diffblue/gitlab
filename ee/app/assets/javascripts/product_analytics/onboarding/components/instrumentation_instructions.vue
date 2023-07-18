@@ -36,17 +36,9 @@ export default {
       return {
         install: INSTALL_NPM_PACKAGE,
         import: IMPORT_NPM_PACKAGE,
-        init: this.replaceKeys(INIT_TRACKING),
-        htmlSetup: this.replaceKeys(HTML_SCRIPT_SETUP),
+        init: INIT_TRACKING,
+        htmlSetup: HTML_SCRIPT_SETUP,
       };
-    },
-  },
-  methods: {
-    replaceKeys(template) {
-      const hostKey = '$host';
-      const appIdKey = '$appId';
-
-      return template.replace(hostKey, this.collectorHost).replace(appIdKey, this.trackingKey);
     },
   },
   i18n: {
@@ -94,7 +86,10 @@ export default {
         }}</strong>
         <pre class="gl-mb-5">{{ instructions.import }}</pre>
         <strong class="gl-display-block gl-mt-5 gl-mb-3">{{ $options.i18n.initNpmPackage }}</strong>
-        <pre class="gl-mb-5">{{ instructions.init }}</pre>
+        <pre class="gl-mb-5"><gl-sprintf :message="instructions.init">
+          <template #appId><span>{{ trackingKey }}</span></template>
+          <template #host><span>{{ collectorHost }}</span></template>
+        </gl-sprintf></pre>
       </section>
 
       <section class="gl-mb-6" data-testid="html-instrumentation-instructions">
@@ -102,7 +97,10 @@ export default {
         <strong class="gl-display-block gl-mb-3">{{
           $options.i18n.htmlScriptTagDescription
         }}</strong>
-        <pre class="gl-mb-5">{{ instructions.htmlSetup }}</pre>
+        <pre class="gl-mb-5"><gl-sprintf :message="instructions.htmlSetup">
+          <template #appId><span>{{ trackingKey }}</span></template>
+          <template #host><span>{{ collectorHost }}</span></template>
+        </gl-sprintf></pre>
       </section>
     </section>
 

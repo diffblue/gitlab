@@ -1,14 +1,10 @@
 import MockAdapter from 'axios-mock-adapter';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
 import service from '~/ide/services/';
 
 import {
-  getCustomDashboard,
   saveCustomDashboard,
-  getProductAnalyticsVisualizationList,
-  getProductAnalyticsVisualization,
   saveProductAnalyticsVisualization,
   CUSTOM_DASHBOARDS_PATH,
   PRODUCT_ANALYTICS_VISUALIZATIONS_PATH,
@@ -17,15 +13,10 @@ import {
   CONFIGURATION_FILE_TYPE,
   DASHBOARD_BRANCH,
 } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
-import {
-  TEST_CUSTOM_DASHBOARDS_PROJECT,
-  TEST_CUSTOM_DASHBOARDS_LIST,
-  TEST_CUSTOM_DASHBOARD,
-} from '../mock_data';
+import { TEST_CUSTOM_DASHBOARDS_PROJECT } from '../mock_data';
 
 describe('AnalyticsDashboard', () => {
   const dummyUrlRoot = '/gitlab';
-  const dummyRandom = 0.123;
 
   let mock;
 
@@ -40,23 +31,6 @@ describe('AnalyticsDashboard', () => {
   afterEach(() => {
     mock.restore();
     jest.spyOn(global.Math, 'random').mockRestore();
-  });
-
-  describe('dashboard functions', () => {
-    it('get a single dashboard', async () => {
-      const expectedUrl = `${dummyUrlRoot}/${
-        TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath
-      }/-/raw/main/${encodeURIComponent(
-        CUSTOM_DASHBOARDS_PATH + `abc${CONFIGURATION_FILE_TYPE}`.replace(/^\//, ''),
-      )}`;
-
-      mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, TEST_CUSTOM_DASHBOARD());
-      jest.spyOn(axios, 'get');
-      await getCustomDashboard('abc', TEST_CUSTOM_DASHBOARDS_PROJECT);
-      expect(axios.get).toHaveBeenCalledWith(expectedUrl, {
-        params: { cb: dummyRandom },
-      });
-    });
   });
 
   describe('dashboard save functions', () => {
@@ -98,45 +72,6 @@ describe('AnalyticsDashboard', () => {
         TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
         callPayload,
       );
-    });
-  });
-
-  describe('visualization functions', () => {
-    it.each`
-      scenario                                            | response                       | expected
-      ${'returns all visualizations for array responses'} | ${TEST_CUSTOM_DASHBOARDS_LIST} | ${TEST_CUSTOM_DASHBOARDS_LIST}
-      ${'returns an empty array for non-array responses'} | ${'Not an array'}              | ${[]}
-    `('$scenario', async ({ response, expected }) => {
-      const expectedUrl = `${dummyUrlRoot}/${
-        TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath
-      }/-/refs/main/logs_tree/${encodeURIComponent(
-        PRODUCT_ANALYTICS_VISUALIZATIONS_PATH.replace(/^\//, ''),
-      )}`;
-
-      mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, response);
-      jest.spyOn(axios, 'get');
-
-      const result = await getProductAnalyticsVisualizationList(TEST_CUSTOM_DASHBOARDS_PROJECT);
-
-      expect(result).toStrictEqual(expected);
-      expect(axios.get).toHaveBeenCalledWith(expectedUrl, {
-        params: { cb: dummyRandom, format: 'json', offset: 0 },
-      });
-    });
-
-    it('get a single visualization', async () => {
-      const expectedUrl = `${dummyUrlRoot}/${
-        TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath
-      }/-/raw/main/${encodeURIComponent(
-        PRODUCT_ANALYTICS_VISUALIZATIONS_PATH + `abc${CONFIGURATION_FILE_TYPE}`.replace(/^\//, ''),
-      )}`;
-
-      mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, TEST_CUSTOM_DASHBOARD());
-      jest.spyOn(axios, 'get');
-      await getProductAnalyticsVisualization('abc', TEST_CUSTOM_DASHBOARDS_PROJECT);
-      expect(axios.get).toHaveBeenCalledWith(expectedUrl, {
-        params: { cb: dummyRandom },
-      });
     });
   });
 
