@@ -132,14 +132,30 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
           end
 
           it 'logs the audit event info', :aggregate_failures do
+            expect(::Gitlab::Audit::Auditor).to receive(:audit).with(hash_including({
+              name: "registration_created"
+            })).and_call_original
+
             subject
 
             created_user = User.find_by(email: new_user_email)
             audit_event = AuditEvent.where(author_id: created_user.id).last
 
-            expect(audit_event.ip_address).to eq(created_user.current_sign_in_ip)
-            expect(audit_event.details[:target_details]).to eq(created_user.username)
-            expect(audit_event.details[:custom_message]).to eq('Instance access request')
+            expect(audit_event).to have_attributes(
+              entity: created_user,
+              author: created_user,
+              ip_address: created_user.current_sign_in_ip,
+              attributes: hash_including({
+                "target_details" => created_user.username,
+                "target_id" => created_user.id,
+                "target_type" => "User",
+                "entity_path" => created_user.full_path
+              }),
+              details: hash_including({
+                target_details: created_user.username,
+                custom_message: "Instance access request"
+              })
+            )
           end
 
           context 'with invalid user' do
