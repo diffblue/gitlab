@@ -1,8 +1,9 @@
 <script>
+import { GlAlert } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import Api from '~/api';
 import axios from '~/lib/utils/axios_utils';
-import { UPDATE_FREE_PLAN_LIMITS_ENDPOINT, UPDATE_PLAN_LIMIT_PARAM_NAMES } from '../constants';
+import { APP_PLAN_LIMITS_ENDPOINT, APP_PLAN_LIMIT_PARAM_NAMES } from '../constants';
 import ExcludedNamespaces from './excluded_namespaces.vue';
 import NamespaceLimitsSection from './namespace_limits_section.vue';
 
@@ -37,68 +38,83 @@ const i18n = {
 export default {
   name: 'NamespaceLimitsApp',
   components: {
+    GlAlert,
     ExcludedNamespaces,
     NamespaceLimitsSection,
   },
   data() {
     return {
+      loadingError: null,
       notificationsLimitError: '',
       enforcementLimitError: '',
       dashboardLimitError: '',
+      plan: {},
     };
   },
   i18n,
+  created() {
+    this.fetchPlanData();
+  },
   methods: {
+    async fetchPlanData() {
+      this.loadingError = null;
+      const endpoint = Api.buildUrl(APP_PLAN_LIMITS_ENDPOINT);
+      try {
+        const response = await axios.get(endpoint, { params: { plan_name: 'free' } });
+        this.plan = response.data;
+      } catch {
+        this.loadingError = s__(
+          'NamespaceLimits|Namespace limits could not be loaded. Reload the page to try again.',
+        );
+      }
+    },
+    async updateLimit(limit, limitType) {
+      const endpoint = Api.buildUrl(APP_PLAN_LIMITS_ENDPOINT);
+      try {
+        const response = await axios.put(endpoint, undefined, {
+          params: {
+            plan_name: 'free',
+            [limitType]: limit,
+          },
+        });
+        this.plan = response.data;
+      } catch (error) {
+        throw error?.response?.data?.message ?? error?.message;
+      }
+    },
     async handleNotificationsLimitChange(limit) {
       // clear any previous errors
       this.notificationsLimitError = null;
-
-      const endpoint = Api.buildUrl(UPDATE_FREE_PLAN_LIMITS_ENDPOINT);
-      const updateNotificationsLimitUrl = `${endpoint}&${UPDATE_PLAN_LIMIT_PARAM_NAMES.notifications}=${limit}`;
-
       try {
-        await axios.put(updateNotificationsLimitUrl);
-
+        await this.updateLimit(limit, APP_PLAN_LIMIT_PARAM_NAMES.notifications);
         const toastMessage =
           limit === '0'
             ? s__('NamespaceLimits|Notifications limit was successfully removed')
             : s__('NamespaceLimits|Notifications limit was successfully added');
-
         this.$toast.show(toastMessage);
       } catch (error) {
-        this.notificationsLimitError = error?.response?.data?.message || error.message;
+        this.notificationsLimitError = error;
       }
     },
     async handleEnforcementLimitChange(limit) {
       // clear any previous errors
       this.enforcementLimitError = null;
-
-      const endpoint = Api.buildUrl(UPDATE_FREE_PLAN_LIMITS_ENDPOINT);
-      const updateEnforcementLimitUrl = `${endpoint}&${UPDATE_PLAN_LIMIT_PARAM_NAMES.enforcement}=${limit}`;
-
       try {
-        await axios.put(updateEnforcementLimitUrl);
-
+        await this.updateLimit(limit, APP_PLAN_LIMIT_PARAM_NAMES.enforcement);
         const toastMessage =
           limit === '0'
             ? s__('NamespaceLimits|Enforcement limit was successfully removed')
             : s__('NamespaceLimits|Enforcement limit was successfully added');
-
         this.$toast.show(toastMessage);
       } catch (error) {
-        this.enforcementLimitError = error?.response?.data?.message || error.message;
+        this.enforcementLimitError = error;
       }
     },
     async handleDashboardLimitChange(limit) {
       // clear any previous errors
       this.dashboardLimitError = null;
-
-      const endpoint = Api.buildUrl(UPDATE_FREE_PLAN_LIMITS_ENDPOINT);
-      const updateDashboardLimitUrl = `${endpoint}&${UPDATE_PLAN_LIMIT_PARAM_NAMES.dashboard}=${limit}`;
-
       try {
-        await axios.put(updateDashboardLimitUrl);
-
+        await this.updateLimit(limit, APP_PLAN_LIMIT_PARAM_NAMES.dashboard);
         const toastMessage =
           limit === '0'
             ? s__('NamespaceLimits|Dashboard limit was successfully removed')
@@ -106,7 +122,7 @@ export default {
 
         this.$toast.show(toastMessage);
       } catch (error) {
-        this.dashboardLimitError = error?.response?.data?.message || error.message;
+        this.dashboardLimitError = error;
       }
     },
   },
@@ -115,8 +131,13 @@ export default {
 
 <template>
   <div>
+    <gl-alert v-if="loadingError" variant="danger" :dismissible="false" class="gl-mb-4">
+      {{ loadingError }}
+    </gl-alert>
+
     <h2>{{ $options.i18n.notificationsLimitTitle }}</h2>
     <namespace-limits-section
+      :limit="plan.notification_limit || 0"
       :label="$options.i18n.notificationsLimitLabel"
       :description="$options.i18n.notificationsLimitDescription"
       :error-message="notificationsLimitError"
@@ -127,6 +148,7 @@ export default {
     <hr />
     <h2>{{ $options.i18n.enforcementLimitTitle }}</h2>
     <namespace-limits-section
+      :limit="plan.enforcement_limit || 0"
       :label="$options.i18n.enforcementLimitLabel"
       :description="$options.i18n.enforcementLimitDescription"
       :error-message="enforcementLimitError"
@@ -137,6 +159,7 @@ export default {
     <hr />
     <h2>{{ $options.i18n.dashboardLimitTitle }}</h2>
     <namespace-limits-section
+      :limit="plan.storage_size_limit || 0"
       :label="$options.i18n.dashboardLimitLabel"
       :description="$options.i18n.dashboardLimitDescription"
       :error-message="dashboardLimitError"
