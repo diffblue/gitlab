@@ -83,7 +83,7 @@ for all authenticated users, and on the Admin Area pages. The statuses are:
 - Red: The version of GitLab you are running is vulnerable. You should install
   the latest version with security fixes as soon as possible.
 
-![Orange version check example](../../user/admin_area/settings/img/update-available.png)
+![Orange version check example](../settings/img/update-available.png)
 
 GitLab Inc. collects your instance's version and hostname (through the HTTP
 referer) as part of the version check. No other information is collected.
