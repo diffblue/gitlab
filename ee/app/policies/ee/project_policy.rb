@@ -233,6 +233,13 @@ module EE
         @user.custom_permission_for?(project, :admin_vulnerability)
       end
 
+      desc "Custom role on project that enables read dependency"
+      condition(:role_enables_read_dependency) do
+        next unless @user.is_a?(User)
+
+        @user.custom_permission_for?(project, :read_dependency)
+      end
+
       with_scope :subject
       condition(:suggested_reviewers_available) do
         @subject.can_suggest_reviewers?
@@ -605,6 +612,9 @@ module EE
       end
       rule { custom_roles_allowed & role_enables_admin_vulnerability }.policy do
         enable :admin_vulnerability
+      end
+      rule { custom_roles_allowed & role_enables_read_dependency & dependency_scanning_enabled }.policy do
+        enable :read_dependencies
       end
 
       rule { can?(:create_issue) & okrs_enabled }.policy do

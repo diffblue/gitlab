@@ -23,6 +23,7 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
       namespace: group_with_member_roles,
       base_access_level: ::Gitlab::Access::REPORTER,
       read_code: false,
+      read_dependency: false,
       read_vulnerability: true
     )
   end
@@ -33,6 +34,7 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
       namespace: group_with_member_roles,
       base_access_level: ::Gitlab::Access::REPORTER,
       read_code: true,
+      read_dependency: true,
       read_vulnerability: false
     )
   end
@@ -95,6 +97,7 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
                   "id" => member_role_1.id,
                   "base_access_level" => ::Gitlab::Access::REPORTER,
                   "read_code" => false,
+                  "read_dependency" => false,
                   "read_vulnerability" => true,
                   "admin_vulnerability" => false,
                   "group_id" => group_id
@@ -103,6 +106,7 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
                   "id" => member_role_2.id,
                   "base_access_level" => ::Gitlab::Access::REPORTER,
                   "read_code" => true,
+                  "read_dependency" => true,
                   "read_vulnerability" => false,
                   "admin_vulnerability" => false,
                   "group_id" => group_id
