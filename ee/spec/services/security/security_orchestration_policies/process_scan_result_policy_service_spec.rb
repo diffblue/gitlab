@@ -377,6 +377,36 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       end
     end
 
+    context 'with vulnerability_age' do
+      let(:rule) do
+        {
+          type: 'scan_finding',
+          branches: %w[master],
+          scanners: %w[container_scanning],
+          vulnerabilities_allowed: 0,
+          severity_levels: %w[critical],
+          vulnerability_states: %w[detected],
+          vulnerability_age: { operator: 'greater_than', interval: 'day', value: 1 }
+        }
+      end
+
+      let(:rules) { [rule] }
+      let(:policy) { build(:scan_result_policy, name: 'Test Policy', rules: rules) }
+
+      it 'creates new approval rules' do
+        expect { subject }.to change { project.approval_rules.count }.by(1)
+      end
+
+      it 'creates scan_result_policy_read' do
+        subject
+
+        scan_result_policy_read = project.approval_rules.first.scan_result_policy_read
+        expect(scan_result_policy_read.greater_than?).to be_truthy
+        expect(scan_result_policy_read.day?).to be_truthy
+        expect(scan_result_policy_read.age_value).to eq(1)
+      end
+    end
+
     describe 'rule params `protected_branch_ids`' do
       let(:protected_branch_name) { 'protected-branch-name' }
       let(:rule) do

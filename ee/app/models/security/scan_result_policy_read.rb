@@ -22,5 +22,11 @@ module Security
     def newly_detected?
       license_states.include?(ApprovalProjectRule::NEWLY_DETECTED)
     end
+
+    def vulnerability_age
+      return {} unless age_operator.present? && age_interval.present? && age_value.present?
+
+      { operator: age_operator.to_sym, interval: age_interval.to_sym, value: age_value }
+    end
   end
 end

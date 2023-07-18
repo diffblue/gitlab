@@ -391,6 +391,33 @@
                   },
                   "additionalProperties": false
                 },
+                "vulnerability_age": {
+                  "type": "object",
+                  "properties": {
+                    "operator": {
+                      "enum": [
+                        "greater_than",
+                        "less_than"
+                      ],
+                      "type": "string",
+                      "description": "Specify the operator to which the age value is compared to"
+                    },
+                    "value": {
+                      "description": "Specifies an age number",
+                      "type": "integer"
+                    },
+                    "interval": {
+                      "enum": [
+                        "day",
+                        "week",
+                        "month",
+                        "year"
+                      ],
+                      "type": "string",
+                      "description": "Specify the interval to which the age value is compared to"
+                    }
+                  }
+                },
                 "match_on_inclusion": {
                   "type": "boolean",
                   "description": "Specifies whether to match licenses on inclusion or exclusion."

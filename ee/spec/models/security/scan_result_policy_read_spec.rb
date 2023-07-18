@@ -53,4 +53,24 @@ RSpec.describe Security::ScanResultPolicyRead, feature_category: :security_polic
       it { is_expected.to be_falsey }
     end
   end
+
+  describe '#vulnerability_age' do
+    let_it_be(:scan_result_policy_read) do
+      create(:scan_result_policy_read, age_operator: 'less_than', age_interval: 'day', age_value: 1)
+    end
+
+    subject { scan_result_policy_read.vulnerability_age }
+
+    context 'when vulnerability age attributes are present' do
+      it { is_expected.to eq({ operator: :less_than, interval: :day, value: 1 }) }
+    end
+
+    context 'when vulnerability age attributes are not present' do
+      let_it_be(:scan_result_policy_read) do
+        create(:scan_result_policy_read)
+      end
+
+      it { is_expected.to eq({}) }
+    end
+  end
 end

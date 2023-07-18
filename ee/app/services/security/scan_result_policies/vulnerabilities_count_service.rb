@@ -42,7 +42,7 @@ module Security
       def vulnerability_age_valid?
         vulnerability_age.present? &&
           vulnerability_age[:operator].in?(%i[greater_than less_than]) &&
-          vulnerability_age[:interval].in?(%i[days weeks months years]) &&
+          vulnerability_age[:interval].in?(%i[day week month year]) &&
           vulnerability_age[:value].is_a?(::Integer)
       end
 
@@ -55,10 +55,10 @@ module Security
 
       def age_in_days(vulnerability_age)
         interval_in_days = case vulnerability_age[:interval]
-                           when :days then 1
-                           when :weeks then 7
-                           when :months then 30
-                           when :years then 365
+                           when :day then 1
+                           when :week then 7
+                           when :month then 30
+                           when :year then 365
                            end
 
         vulnerability_age[:value] * interval_in_days
