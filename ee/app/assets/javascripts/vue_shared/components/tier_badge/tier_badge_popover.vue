@@ -75,7 +75,7 @@ export default {
     <gl-button
       :href="primaryCtaLink"
       class="my-1 w-100"
-      variant="info"
+      variant="confirm"
       data-testid="tier-badge-popover-primary-cta"
       @click="trackPrimaryCta"
       >{{ $options.i18n.primaryCtaText }}</gl-button
@@ -83,7 +83,7 @@ export default {
     <gl-button
       :href="secondaryCtaLink"
       class="my-1 w-100"
-      variant="info"
+      variant="confirm"
       category="secondary"
       data-testid="tier-badge-popover-secondary-cta"
       @click="trackSecondaryCta"

@@ -210,7 +210,7 @@ export default {
             <gl-button
               icon="paper-airplane"
               category="primary"
-              variant="info"
+              variant="confirm"
               class="gl-border-l-0"
               type="submit"
               :aria-label="$options.i18n.GENIE_CHAT_SUBMIT_LABEL"

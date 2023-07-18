@@ -105,7 +105,7 @@ export default {
         v-if="!fetchInProgress"
         class="d-inline-block mb-2"
         category="tertiary"
-        variant="info"
+        variant="confirm"
         @click="handleShowMoreClick($event)"
         >{{ __('Show more') }}</gl-button
       >
