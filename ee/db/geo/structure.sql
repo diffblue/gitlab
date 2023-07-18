@@ -242,7 +242,17 @@ CREATE TABLE group_wiki_repository_registry (
     retry_count smallint DEFAULT 0,
     last_sync_failure text,
     force_to_redownload boolean,
-    missing_on_primary boolean
+    missing_on_primary boolean,
+    verified_at timestamp with time zone,
+    verification_started_at timestamp with time zone,
+    verification_retry_at timestamp with time zone,
+    verification_state smallint DEFAULT 0 NOT NULL,
+    verification_retry_count smallint DEFAULT 0 NOT NULL,
+    checksum_mismatch boolean DEFAULT false NOT NULL,
+    verification_checksum bytea,
+    verification_checksum_mismatched bytea,
+    verification_failure text,
+    CONSTRAINT check_0a6e7bc04a CHECK ((char_length(verification_failure) <= 255))
 );
 
 CREATE SEQUENCE group_wiki_repository_registry_id_seq
@@ -785,6 +795,12 @@ CREATE INDEX file_registry_failed_verification ON file_registry USING btree (ver
 CREATE INDEX file_registry_needs_verification ON file_registry USING btree (verification_state) WHERE ((state = 2) AND (verification_state = ANY (ARRAY[0, 3])));
 
 CREATE INDEX file_registry_pending_verification ON file_registry USING btree (verified_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 0));
+
+CREATE INDEX group_wiki_repository_registry_failed_verification ON group_wiki_repository_registry USING btree (verification_retry_at NULLS FIRST) WHERE (verification_state = 3);
+
+CREATE INDEX group_wiki_repository_registry_needs_verification ON group_wiki_repository_registry USING btree (verification_state) WHERE (verification_state = ANY (ARRAY[0, 3]));
+
+CREATE INDEX group_wiki_repository_registry_pending_verification ON group_wiki_repository_registry USING btree (verified_at NULLS FIRST) WHERE (verification_state = 0);
 
 CREATE UNIQUE INDEX i_dependency_proxy_blob_registry_on_dependency_proxy_blob_id ON dependency_proxy_blob_registry USING btree (dependency_proxy_blob_id);
 
