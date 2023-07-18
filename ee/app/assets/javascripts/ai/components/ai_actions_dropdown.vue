@@ -1,5 +1,11 @@
 <script>
-import { GlButton, GlDisclosureDropdown, GlIcon, GlLoadingIcon } from '@gitlab/ui';
+import {
+  GlButton,
+  GlDisclosureDropdown,
+  GlIcon,
+  GlLoadingIcon,
+  GlTooltipDirective,
+} from '@gitlab/ui';
 import { fetchPolicies } from '~/lib/graphql';
 import { __ } from '~/locale';
 import { createAlert } from '~/alert';
@@ -15,6 +21,9 @@ export default {
     GlButton,
     GlLoadingIcon,
     GlIcon,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   props: {
     actions: {
@@ -163,7 +172,14 @@ export default {
     no-caret
   >
     <template #toggle>
-      <gl-button category="tertiary" size="small" class="gl-mr-3 gl-px-2!">
+      <gl-button
+        v-gl-tooltip
+        :title="__('AI actions')"
+        :aria-label="__('AI actions')"
+        category="tertiary"
+        size="small"
+        class="gl-mr-3 gl-px-2!"
+      >
         <gl-loading-icon v-if="loading" />
         <gl-icon v-else name="tanuki" />
       </gl-button>
