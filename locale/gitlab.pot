@@ -43348,7 +43348,7 @@ msgstr ""
 msgid "SlackIntegration|GitLab slash commands"
 msgstr ""
 
-msgid "SlackIntegration|Install GitLab for Slack app"
+msgid "SlackIntegration|Install GitLab for Slack app…"
 msgstr ""
 
 msgid "SlackIntegration|Interact with GitLab without leaving your Slack workspace!"
@@ -43360,7 +43360,7 @@ msgstr ""
 msgid "SlackIntegration|Project alias"
 msgstr ""
 
-msgid "SlackIntegration|Reinstall GitLab for Slack app"
+msgid "SlackIntegration|Reinstall GitLab for Slack app…"
 msgstr ""
 
 msgid "SlackIntegration|Remove project"
