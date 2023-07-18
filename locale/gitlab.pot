@@ -2675,7 +2675,7 @@ msgstr ""
 msgid "Add a GPG key"
 msgstr ""
 
-msgid "Add a GPG key for secure access to GitLab. %{help_link_start}Learn more.%{help_link_end}"
+msgid "Add a GPG key for secure access to GitLab. %{help_link_start}Learn more%{help_link_end}."
 msgstr ""
 
 msgid "Add a Terms of Service agreement and Privacy Policy for users of this GitLab instance."
@@ -2747,7 +2747,7 @@ msgstr ""
 msgid "Add an SSH key"
 msgstr ""
 
-msgid "Add an SSH key for secure access to GitLab. %{help_link_start}Learn more.%{help_link_end}"
+msgid "Add an SSH key for secure access to GitLab. %{help_link_start}Learn more%{help_link_end}."
 msgstr ""
 
 msgid "Add an existing issue"
@@ -40431,9 +40431,6 @@ msgstr ""
 msgid "SHA256"
 msgstr ""
 
-msgid "SSH Fingerprints"
-msgstr ""
-
 msgid "SSH Key"
 msgstr ""
 
@@ -52816,9 +52813,6 @@ msgid "You can only transfer the project to namespaces you manage."
 msgstr ""
 
 msgid "You can resolve the merge conflict using either the Interactive mode, by choosing %{use_ours} or %{use_theirs} buttons, or by editing the files directly. Commit these changes into %{branch_name}."
-msgstr ""
-
-msgid "You can see your chat accounts."
 msgstr ""
 
 msgid "You can set up jobs to only use runners with specific tags. Separate tags with commas."
