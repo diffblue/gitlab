@@ -146,6 +146,14 @@ RSpec.describe ApplicationSetting do
       it { is_expected.to validate_numericality_of(:deletion_adjourned_period).is_greater_than(0).is_less_than_or_equal_to(90) }
     end
 
+    describe 'namespace_storage_forks_cost_factor' do
+      it do
+        is_expected.to validate_numericality_of(:namespace_storage_forks_cost_factor)
+          .is_greater_than_or_equal_to(0)
+          .is_less_than_or_equal_to(1)
+      end
+    end
+
     describe 'dashboard', feature_category: :metrics do
       it { is_expected.to validate_numericality_of(:dashboard_limit).only_integer.is_greater_than_or_equal_to(0) }
       it { is_expected.to validate_numericality_of(:dashboard_notification_limit).only_integer.is_greater_than_or_equal_to(0) }
