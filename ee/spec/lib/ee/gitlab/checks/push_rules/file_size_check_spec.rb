@@ -34,13 +34,13 @@ RSpec.describe EE::Gitlab::Checks::PushRules::FileSizeCheck, feature_category: :
     let(:newrev)    { 'bf12d2567099e26f59692896f73ac819bae45b00' }
     let(:ref)       { 'my-branch' }
 
-    let(:any_blob_double) { instance_double(Gitlab::Checks::FileSizeCheck::AnyOversizedBlob, find!: nil) }
+    let(:any_blob_double) { instance_double(Gitlab::Checks::FileSizeCheck::AnyOversizedBlobs, find: []) }
 
     it_behaves_like 'check ignored when push rule unlicensed'
     it_behaves_like 'use predefined push rules'
 
-    it 'delegates to AnyOversizedBlob' do
-      expect(Gitlab::Checks::FileSizeCheck::AnyOversizedBlob).to receive(:new).with(
+    it 'delegates to AnyOversizedBlobs' do
+      expect(Gitlab::Checks::FileSizeCheck::AnyOversizedBlobs).to receive(:new).with(
         project: project,
         changes: changes,
         file_size_limit_megabytes: push_rule.max_file_size
@@ -51,8 +51,8 @@ RSpec.describe EE::Gitlab::Checks::PushRules::FileSizeCheck, feature_category: :
 
     context 'when the file size limit is exceeded' do
       before do
-        allow(Gitlab::Checks::FileSizeCheck::AnyOversizedBlob).to receive(:new).and_return(any_blob_double)
-        allow(any_blob_double).to receive(:find!).and_return(instance_double(Gitlab::Git::Blob, path: 'file.bin'))
+        allow(Gitlab::Checks::FileSizeCheck::AnyOversizedBlobs).to receive(:new).and_return(any_blob_double)
+        allow(any_blob_double).to receive(:find).and_return([instance_double(Gitlab::Git::Blob, path: 'file.bin')])
       end
 
       it 'returns an error if file exceeds the maximum file size' do
