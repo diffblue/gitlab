@@ -49,8 +49,9 @@ import StreamDeleteModal from './stream_delete_modal.vue';
 const { CREATING_ERROR, UPDATING_ERROR } = AUDIT_STREAMS_NETWORK_ERRORS;
 
 const thClasses = `gl-p-0! gl-border-0!`;
-const tdClasses = `gl-p-3! gl-pl-0! gl-border-0!`;
-const finalTdClasses = `gl-w-2 gl-py-3! gl-px-0! gl-border-0!`;
+const tdClasses = `gl-p-3! gl-pr-4! gl-pl-0! gl-border-0!`;
+const activeTdClasses = `gl-white-space-nowrap gl-w-2 ${tdClasses}`;
+const actionsTdClasses = `gl-w-2 gl-py-3! gl-px-0! gl-border-0!`;
 
 export default {
   components: {
@@ -577,7 +578,7 @@ export default {
       key: 'active',
       label: '',
       thClass: thClasses,
-      tdClass: tdClasses,
+      tdClass: activeTdClasses,
     },
     {
       key: 'name',
@@ -595,7 +596,7 @@ export default {
       key: 'actions',
       label: '',
       thClass: thClasses,
-      tdClass: finalTdClasses,
+      tdClass: actionsTdClasses,
     },
   ],
   DESTINATION_TYPE_HTTP,
