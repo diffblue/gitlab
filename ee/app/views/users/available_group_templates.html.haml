@@ -42,4 +42,5 @@
       %p
         = _("Custom project templates have not been set up for groups that you are a member of. They are enabled from a group’s settings page. Contact your group’s Owner or Maintainer to setup custom project templates.")
       %strong
-        = link_to _("Learn more about group-level project templates"), help_page_path("user/group/custom_project_templates")
+        = render Pajamas::ButtonComponent.new(href: help_page_path("user/group/custom_project_templates")) do
+          = _("Learn more about group-level project templates")
