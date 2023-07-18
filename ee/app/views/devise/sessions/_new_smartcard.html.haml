@@ -1,6 +1,6 @@
 - if smartcard_enabled?
   .login-box.tab-pane{ id: 'smartcard', role: 'tabpanel', class: active_when(form_based_auth_provider_has_active_class?(:smartcard)) }
     .login-body
-      = form_tag(auth_smartcard_url, html: { 'aria-live' => 'assertive'}) do
-        .submit-container
-          = submit_tag _('Login with smartcard'), class: 'gl-button btn btn-confirm'
+      = gitlab_ui_form_for(:smartcard, url: auth_smartcard_url, html: { class: 'gl-p-5 gl-show-field-errors', aria: { live: 'assertive' }}) do |f|
+        = render Pajamas::ButtonComponent.new(type: :submit, variant: :confirm, block: true) do
+          = _('Login with smartcard')
