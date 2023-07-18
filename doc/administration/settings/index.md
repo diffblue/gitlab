@@ -41,7 +41,7 @@ The **General** settings contain:
  restrict visibility levels. Configure import sources and Git access protocol.
 - [Account and limit](../settings/account_and_limit_settings.md) - Set projects and maximum size limits,
  session duration, user options, and check feature availability for namespace plan.
-- [Diff limits](../../user/admin_area/diff_limits.md) - Diff content limits.
+- [Diff limits](../diff_limits.md) - Diff content limits.
 - [Sign-up restrictions](../settings/sign_up_restrictions.md) - Configure the way a user creates a new account.
 - [Sign in restrictions](../settings/sign_in_restrictions.md) - Set requirements for a user to sign in.
  Enable mandatory two-factor authentication.
@@ -161,10 +161,10 @@ The **Reporting** settings contain:
 
 - Spam and Anti-bot protection:
   - Anti-spam services, such as [reCAPTCHA](../../integration/recaptcha.md),
-    [Akismet](../../integration/akismet.md), or [Spamcheck](../../user/admin_area/reporting/spamcheck.md).
-  - [IP address restrictions](../../user/admin_area/reporting/ip_addr_restrictions.md).
-- [Abuse reports](../../user/admin_area/review_abuse_reports.md) - Set notification email for abuse reports.
-- [Git abuse rate limit](../../user/admin_area/reporting/git_abuse_rate_limit.md) - Configure Git abuse rate limit settings. **(ULTIMATE SELF)**
+    [Akismet](../../integration/akismet.md), or [Spamcheck](../reporting/spamcheck.md).
+  - [IP address restrictions](../reporting/ip_addr_restrictions.md).
+- [Abuse reports](../review_abuse_reports.md) - Set notification email for abuse reports.
+- [Git abuse rate limit](../reporting/git_abuse_rate_limit.md) - Configure Git abuse rate limit settings. **(ULTIMATE SELF)**
 
 ### Repository
 
@@ -192,7 +192,7 @@ The **Repository** settings contain:
 The **Templates** settings contain:
 
 - [Templates](instance_template_repository.md#configuration) - Set instance-wide template repository.
-- [Custom project templates](../../user/admin_area/custom_project_templates.md) - Select the custom project template source group.
+- [Custom project templates](../custom_project_templates.md) - Select the custom project template source group.
 
 ## Default first day of the week
 
