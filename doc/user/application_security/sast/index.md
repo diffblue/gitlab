@@ -292,9 +292,7 @@ The method you can use depends on your GitLab license tier.
 
 #### Configure SAST with customizations **(ULTIMATE)**
 
-> - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/3659) in GitLab 13.3.
-> - [Improved](https://gitlab.com/gitlab-org/gitlab/-/issues/232862) in GitLab 13.4.
-> - [Improved](https://gitlab.com/groups/gitlab-org/-/epics/3635) in GitLab 13.5.
+> [Removed](https://gitlab.com/gitlab-org/gitlab/-/issues/410013) individual SAST analyzers configuration options from the UI in GitLab 16.2.
 
 NOTE:
 The configuration tool works best with no existing `.gitlab-ci.yml` file, or with a minimal
@@ -311,9 +309,6 @@ To enable and configure SAST with customizations:
 
    Custom values are stored in the `.gitlab-ci.yml` file. For CI/CD variables not in the SAST
    Configuration page, their values are inherited from the GitLab SAST template.
-
-1. Optionally, expand the **SAST analyzers** section, select individual
-   [SAST analyzers](analyzers.md) and enter custom analyzer values.
 1. Select **Create Merge Request**.
 1. Review and merge the merge request.
 
