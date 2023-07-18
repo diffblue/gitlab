@@ -6395,9 +6395,6 @@ msgstr ""
 msgid "Assign labels"
 msgstr ""
 
-msgid "Assign myself"
-msgstr ""
-
 msgid "Assign reviewer"
 msgstr ""
 
@@ -6417,6 +6414,9 @@ msgid "Assign to commenting user"
 msgstr ""
 
 msgid "Assign to me"
+msgstr ""
+
+msgid "Assign yourself"
 msgstr ""
 
 msgid "Assigned"
