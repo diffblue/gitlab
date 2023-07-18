@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "spec_helper"
+require 'spec_helper'
 
 RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
   include ProjectForksHelper
@@ -478,6 +478,16 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
       let(:train_car) { create(:merge_train_car, :merged) }
 
       it { is_expected.to eq(false) }
+    end
+  end
+
+  describe '#train' do
+    include_context 'with train cars in many states'
+
+    it 'returns a MergeTrains::Train regardless of state' do
+      [idle_car, stale_car, fresh_car, merging_car, merged_car].each do |car|
+        expect(car.train).to be_a(MergeTrains::Train)
+      end
     end
   end
 
