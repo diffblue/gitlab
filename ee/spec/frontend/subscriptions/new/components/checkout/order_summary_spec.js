@@ -32,6 +32,7 @@ import {
   mockInvoicePreviewWithPromoOffer,
   mockInvoicePreviewWithoutPromoOffer,
 } from 'ee_jest/subscriptions/mock_data';
+import { PROMO_URL } from 'jh_else_ce/lib/utils/url_utility';
 
 jest.mock('~/alert');
 
@@ -385,7 +386,7 @@ describe('Order Summary', () => {
 
         it('contains a help link', () => {
           expect(findTaxHelpLink().attributes('href')).toBe(
-            'https://about.gitlab.com/handbook/tax/#indirect-taxes-management',
+            `${PROMO_URL}/handbook/tax/#indirect-taxes-management`,
           );
         });
       });
@@ -413,7 +414,7 @@ describe('Order Summary', () => {
 
         it('contains a help link', () => {
           expect(findTaxHelpLink().attributes('href')).toBe(
-            'https://about.gitlab.com/handbook/tax/#indirect-taxes-management',
+            `${PROMO_URL}/handbook/tax/#indirect-taxes-management`,
           );
         });
       });

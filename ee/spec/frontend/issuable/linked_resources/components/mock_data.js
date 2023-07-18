@@ -1,19 +1,21 @@
+import { DOCS_URL } from 'jh_else_ce/lib/utils/url_utility';
+
 export const mockResourceLinks = [
   {
     id: 'gid://gitlab/IncidentManagement::IssuableResourceLink/1',
-    link: 'http://docs.gitlab.com/incident-info',
+    link: `${DOCS_URL}/incident-info`,
     linkType: 'zoom',
     linkText: 'Doclink for incident',
   },
   {
     id: 'gid://gitlab/IncidentManagement::IssuableResourceLink/2',
-    link: 'http://docs.gitlab.com/incident-info2',
+    link: `${DOCS_URL}/incident-info2`,
     linkType: 'zoom',
     linkText: 'Doclink for incident 2',
   },
   {
     id: 'gid://gitlab/IncidentManagement::IssuableResourceLink/3',
-    link: 'http://docs.gitlab.com/incident-info3',
+    link: `${DOCS_URL}/incident-info3`,
     linkType: 'zoom',
     linkText: 'Doclink for incident 3',
   },

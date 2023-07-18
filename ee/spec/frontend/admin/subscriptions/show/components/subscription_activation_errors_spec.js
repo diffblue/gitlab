@@ -14,13 +14,14 @@ import {
   SUBSCRIPTION_INSUFFICIENT_TRUE_UP_SERVER_ERROR_REGEX,
 } from 'ee/admin/subscriptions/show/constants';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { PROMO_URL } from 'jh_else_ce/lib/utils/url_utility';
 
 const GENERAL_ERROR_MESSAGE = 'A fake error';
 
-const SUBSCRIPTION_OVERAGES_SERVER_ERROR = `This GitLab installation currently has 22 active users, exceeding this license's limit of 18 by 4 users. Please add a license for at least 22 users or contact sales at https://about.gitlab.com/sales/`;
+const SUBSCRIPTION_OVERAGES_SERVER_ERROR = `This GitLab installation currently has 22 active users, exceeding this license's limit of 18 by 4 users. Please add a license for at least 22 users or contact sales at ${PROMO_URL}/sales/`;
 const EXPECTED_SUBSCRIPTION_OVERAGES_CLIENTSIDE_ERROR = `Your current GitLab installation has 22 active users, which exceeds your new subscription seat count of 18 by 4. To activate your new subscription, purchase an additional 4 seats, or deactivate or block 4 users. For further assistance, contact GitLab support.`;
 
-const SUBSCRIPTION_INSUFFICIENT_TRUE_UP_SERVER_ERROR = `You have applied a True-up for 1 user but you need one for 4 users. Please contact sales at https://about.gitlab.com/sales/`;
+const SUBSCRIPTION_INSUFFICIENT_TRUE_UP_SERVER_ERROR = `You have applied a True-up for 1 user but you need one for 4 users. Please contact sales at ${PROMO_URL}/sales/`;
 const EXPECTED_SUBSCRIPTION_INSUFFICIENT_TRUE_UP_CLIENTSIDE_ERROR = `You have applied a true-up for 1 user but you need one for 4 users. To pay for seat overages, contact your sales representative. For further assistance, contact GitLab support.`;
 
 describe('SubscriptionActivationErrors', () => {

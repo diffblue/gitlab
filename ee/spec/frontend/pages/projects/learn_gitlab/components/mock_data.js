@@ -1,3 +1,5 @@
+import { DOCS_URL_IN_EE_DIR } from 'jh_else_ce/lib/utils/url_utility';
+
 export const testActions = {
   codeAdded: {
     url: 'http://example.com/',
@@ -48,21 +50,21 @@ export const testActions = {
     enabled: true,
   },
   licenseScanningRun: {
-    url: 'https://docs.gitlab.com/ee/foobar/',
+    url: `${DOCS_URL_IN_EE_DIR}/foobar/`,
     completed: false,
     svg: 'http://example.com/images/illustration.svg',
     enabled: true,
     openInNewTab: true,
   },
   secureDependencyScanningRun: {
-    url: 'https://docs.gitlab.com/ee/foobar/',
+    url: `${DOCS_URL_IN_EE_DIR}/foobar/`,
     completed: false,
     svg: 'http://example.com/images/illustration.svg',
     enabled: true,
     openInNewTab: true,
   },
   secureDastRun: {
-    url: 'https://docs.gitlab.com/ee/foobar/',
+    url: `${DOCS_URL_IN_EE_DIR}/foobar/`,
     completed: false,
     svg: 'http://example.com/images/illustration.svg',
     enabled: true,

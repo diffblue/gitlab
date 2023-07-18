@@ -1,6 +1,7 @@
 import { GlLink, GlButton, GlProgressBar, GlSkeletonLoader } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import StatisticsCard from 'ee/usage_quotas/components/statistics_card.vue';
+import { DOCS_URL } from 'jh_else_ce/lib/utils/url_utility';
 
 describe('StatisticsCard', () => {
   let wrapper;
@@ -95,7 +96,7 @@ describe('StatisticsCard', () => {
 
     it('renders help link if description and helpLink props are passed', () => {
       const description = 'description value';
-      const helpLink = 'https://docs.gitlab.com';
+      const helpLink = `${DOCS_URL}`;
       const helpTooltip = 'Tooltip text';
 
       createComponent({ description, helpLink, helpTooltip });
