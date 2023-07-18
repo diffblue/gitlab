@@ -36,7 +36,7 @@ components:
       size: 15Gi
   - name: gl-editor-injector
     container:
-      image: registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:1
+      image: registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:2
       volumeMounts:
         - name: gl-workspace-data
           path: /projects

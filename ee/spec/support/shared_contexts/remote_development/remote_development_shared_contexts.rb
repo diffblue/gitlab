@@ -373,7 +373,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
                 value: "/projects"
               - name: GL_WORKSPACE_DOMAIN_TEMPLATE
                 value: #{host_template_environment_variable}
-              image: registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:1
+              image: registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:2
               imagePullPolicy: Always
               name: gl-editor-injector-gl-editor-injector-command-2
               resources:
@@ -579,7 +579,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
                 value: "/projects"
               - name: GL_WORKSPACE_DOMAIN_TEMPLATE
                 value: #{host_template_environment_variable}
-              image: registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:1
+              image: registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:2
               imagePullPolicy: Always
               name: gl-editor-injector-gl-editor-injector-command-2
               resources:
