@@ -61,7 +61,10 @@ module Security
           match_on_inclusion: rule[:match_on_inclusion] || false,
           role_approvers: role_access_levels(action_info[:role_approvers]),
           vulnerability_attributes: rule[:vulnerability_attributes],
-          project_id: project.id
+          project_id: project.id,
+          age_operator: rule.dig(:vulnerability_age, :operator),
+          age_interval: rule.dig(:vulnerability_age, :interval),
+          age_value: rule.dig(:vulnerability_age, :value)
         )
       end
 

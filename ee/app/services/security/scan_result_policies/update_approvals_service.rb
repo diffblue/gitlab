@@ -181,7 +181,8 @@ module Security
           project: project,
           uuids: uuids,
           states: states_without_newly_detected(approval_rule.vulnerability_states),
-          allowed_count: approval_rule.vulnerabilities_allowed
+          allowed_count: approval_rule.vulnerabilities_allowed,
+          vulnerability_age: approval_rule.scan_result_policy_read&.vulnerability_age
         ).execute
       end
 

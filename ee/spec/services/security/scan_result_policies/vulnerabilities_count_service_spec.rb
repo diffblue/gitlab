@@ -68,18 +68,18 @@ RSpec.describe Security::ScanResultPolicies::VulnerabilitiesCountService, featur
       end
 
       shared_examples 'counting vulnerabilities detected in the interval' do
-        context 'when counting vulnerabilities created after the desired age' do
+        context 'when counting vulnerabilities detected in the desired age' do
           let(:operator) { :greater_than }
 
           context 'when the vulnerabilities were detected in the selected age' do
+            before do
+              Vulnerability.update_all(created_at: 2.years.ago)
+            end
+
             it_behaves_like 'vulnerabilities detected in the desired age'
           end
 
           context 'when the vulnerabilities were not detected in the selected age' do
-            before do
-              Vulnerability.update_all(detected_at: 2.years.ago)
-            end
-
             it_behaves_like 'vulnerabilities not detected in the desired age'
           end
         end
@@ -88,39 +88,39 @@ RSpec.describe Security::ScanResultPolicies::VulnerabilitiesCountService, featur
           let(:operator) { :less_than }
 
           context 'when the vulnerabilities were not detected in the selected age' do
-            it_behaves_like 'vulnerabilities not detected in the desired age'
+            it_behaves_like 'vulnerabilities detected in the desired age'
           end
 
           context 'when the vulnerabilities were detected in the selected age' do
             before do
-              Vulnerability.update_all(detected_at: 2.years.ago)
+              Vulnerability.update_all(created_at: 2.years.ago)
             end
 
-            it_behaves_like 'vulnerabilities detected in the desired age'
+            it_behaves_like 'vulnerabilities not detected in the desired age'
           end
         end
       end
 
       context 'when interval is in days' do
-        let(:interval) { :days }
+        let(:interval) { :day }
 
         it_behaves_like 'counting vulnerabilities detected in the interval'
       end
 
       context 'when interval is in weeks' do
-        let(:interval) { :weeks }
+        let(:interval) { :week }
 
         it_behaves_like 'counting vulnerabilities detected in the interval'
       end
 
       context 'when interval is in months' do
-        let(:interval) { :months }
+        let(:interval) { :month }
 
         it_behaves_like 'counting vulnerabilities detected in the interval'
       end
 
       context 'when interval is in years' do
-        let(:interval) { :years }
+        let(:interval) { :year }
 
         it_behaves_like 'counting vulnerabilities detected in the interval'
       end
@@ -140,14 +140,14 @@ RSpec.describe Security::ScanResultPolicies::VulnerabilitiesCountService, featur
 
       context 'when operator is invalid' do
         let(:operator) { :invalid_operator }
-        let(:interval) { :years }
+        let(:interval) { :year }
 
         it_behaves_like 'ignores vulnerability age attributes'
       end
 
       context 'when age value is invalid' do
         let(:operator) { :less_than }
-        let(:interval) { :years }
+        let(:interval) { :year }
         let(:age_value) { 'invalid age value' }
 
         it_behaves_like 'ignores vulnerability age attributes'
