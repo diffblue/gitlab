@@ -25,7 +25,7 @@ module PackageMetadata
 
     # rubocop:disable Metrics/ParameterLists
     def initialize(
-      advisory_xid:, source_xid:, published_date:, title: '', description: '', cvss_v2: '', cvss_v3: '', urls: [],
+      advisory_xid:, source_xid:, published_date:, title: '', description: '', cvss_v2: nil, cvss_v3: nil, urls: [],
       identifiers: [], affected_packages: [])
       # rubocop:enable Metrics/ParameterLists
       @advisory_xid = advisory_xid

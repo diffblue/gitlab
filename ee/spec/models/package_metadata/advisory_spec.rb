@@ -16,6 +16,8 @@ RSpec.describe PackageMetadata::Advisory, type: :model, feature_category: :softw
     it { is_expected.to validate_presence_of(:published_date) }
     it { is_expected.to allow_value(nil).for(:cvss_v2) }
     it { is_expected.to allow_value(nil).for(:cvss_v3) }
+    it { is_expected.not_to allow_value('').for(:cvss_v2) }
+    it { is_expected.not_to allow_value('').for(:cvss_v3) }
 
     describe 'length validation' do
       where(:attribute, :value, :is_valid) do
