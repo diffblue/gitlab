@@ -5229,6 +5229,9 @@ msgstr ""
 msgid "Analytics"
 msgstr ""
 
+msgid "Analytics dashboards"
+msgstr ""
+
 msgid "Analytics|A visualization with that name already exists."
 msgstr ""
 

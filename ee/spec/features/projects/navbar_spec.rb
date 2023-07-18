@@ -144,7 +144,7 @@ RSpec.describe 'Project navbar', feature_category: :navigation do
       insert_before_sub_nav_item(
         _('Value stream'),
         within: _('Analytics'),
-        new_sub_nav_item_name: _('Dashboards')
+        new_sub_nav_item_name: _('Analytics dashboards')
       )
 
       visit project_path(project)
