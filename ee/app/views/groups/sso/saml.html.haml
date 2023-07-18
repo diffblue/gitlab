@@ -7,8 +7,8 @@
   = saml_link _('Sign in with single sign-on'), @group_path, id: 'js-auto-redirect-to-provider', html_class: 'gl-display-none', redirect: @redirect_path
 - else
   = render 'devise/shared/tab_single', tab_title: _('SAML single sign-on')
-  .login-box
-    .login-body.gl-px-5.gl-pt-5
+  .login-box.gl-p-5
+    .login-body
       - if user_signed_in?
         %h4.gl-mt-0= s_('Allow %{strongOpen}%{group_name}%{strongClose} to sign you in?').html_safe % { strongOpen: '<strong>'.html_safe, group_name: @group_name, strongClose: '</strong>'.html_safe }
         %p= s_('SAML|The %{strongOpen}%{group_path}%{strongClose} group allows you to sign in using single sign-on.').html_safe % { strongOpen: '<strong>'.html_safe, group_path: @group_path, strongClose: '</strong>'.html_safe }
