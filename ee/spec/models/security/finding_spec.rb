@@ -238,53 +238,6 @@ RSpec.describe Security::Finding, feature_category: :vulnerability_management do
     it { is_expected.to eq(expected_findings) }
   end
 
-  describe '.false_positives' do
-    let_it_be(:finding_without_data) { create(:security_finding) }
-    let_it_be(:finding_1) { create(:security_finding, :with_finding_data, false_positive: true) }
-    let_it_be(:finding_2) { create(:security_finding, :with_finding_data, false_positive: false) }
-
-    subject { described_class.false_positives }
-
-    it { is_expected.to contain_exactly(finding_1) }
-  end
-
-  describe '.non_false_positives' do
-    let_it_be(:finding_without_data) { create(:security_finding) }
-    let_it_be(:finding_1) { create(:security_finding, :with_finding_data, false_positive: true) }
-    let_it_be(:finding_2) { create(:security_finding, :with_finding_data, false_positive: false) }
-
-    subject { described_class.non_false_positives }
-
-    it { is_expected.to include(finding_2, finding_without_data) }
-
-    it { is_expected.not_to include(finding_1) }
-  end
-
-  describe '.fix_available' do
-    let_it_be(:finding_without_data) { create(:security_finding) }
-    let_it_be(:finding_1) { create(:security_finding, :with_finding_data) }
-    let_it_be(:finding_2) { create(:security_finding, :with_finding_data, remediation_byte_offsets: []) }
-
-    subject { described_class.fix_available }
-
-    it { is_expected.to contain_exactly(finding_1) }
-  end
-
-  describe '.no_fix_available' do
-    let_it_be(:finding_1) do
-      create(:security_finding, :with_finding_data, remediation_byte_offsets: [{ "end_byte" => 1, "start_byte" => 2 }])
-    end
-
-    let_it_be(:finding_2) { create(:security_finding, :with_finding_data, remediation_byte_offsets: []) }
-    let_it_be(:finding_without_data) { create(:security_finding) }
-
-    subject { described_class.no_fix_available }
-
-    it { is_expected.to include(finding_2, finding_without_data) }
-
-    it { is_expected.not_to include(finding_1) }
-  end
-
   describe '.count_by_scan_type' do
     subject { described_class.count_by_scan_type }
 

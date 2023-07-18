@@ -64,7 +64,6 @@ module Security
     scope :by_report_types, -> (report_types) { joins(:scan).merge(Scan.by_scan_types(report_types)) }
     scope :by_scan, -> (scans) { where(scan: scans) }
     scope :by_scanners, -> (scanners) { where(scanner: scanners) }
-    scope :by_partition_number, -> (partition_number) { where(partition_number: partition_number) }
     scope :by_project_id_and_pipeline_ids, -> (project_id, pipeline_ids) do
       joins(:scan).merge(Security::Scan.succeeded.by_project(project_id).by_pipeline_ids(pipeline_ids))
     end
@@ -115,21 +114,6 @@ module Security
     scope :with_merge_request_links, -> { with_vulnerability.includes(:merge_request_links) }
     scope :deduplicated, -> { where(deduplicated: true) }
     scope :grouped_by_scan_type, -> { joins(:scan).group('security_scans.scan_type') }
-    scope :false_positives, -> do
-      where("COALESCE((finding_data -> 'false_positive?')::boolean, FALSE) IS TRUE")
-    end
-    scope :non_false_positives, -> do
-      where("COALESCE((finding_data -> 'false_positive?')::boolean, FALSE) IS FALSE")
-    end
-    scope :fix_available, -> do
-      where("jsonb_array_length(finding_data -> 'remediation_byte_offsets')::bigint > 0")
-    end
-    scope :no_fix_available, -> do
-      where(
-        "finding_data -> 'remediation_byte_offsets' IS NULL
-        OR jsonb_array_length(finding_data -> 'remediation_byte_offsets')::bigint <= 0"
-      )
-    end
 
     delegate :scan_type, :pipeline, :remediations_proxy, to: :scan, allow_nil: true
     delegate :project, :sha, to: :pipeline

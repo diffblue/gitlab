@@ -385,28 +385,5 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
         it_behaves_like 'triggers policy bot comment', :scan_finding, true
       end
     end
-
-    context 'when the approval rule has vulnerability attributes' do
-      let(:report_approver_rule) { nil }
-      let_it_be(:policy) { create(:scan_result_policy_read, vulnerability_attributes: { fix_available: true }) }
-      let_it_be(:approval_rule) do
-        create(:approval_project_rule, :scan_finding, project: project, scan_result_policy_read: policy)
-      end
-
-      let_it_be(:mr_rule) do
-        create(:approval_merge_request_rule, :scan_finding, merge_request: merge_request,
-          approval_project_rule: approval_rule)
-      end
-
-      specify do
-        expect(Security::ScanResultPolicies::FindingsFinder).to receive(:new).at_least(:once).with(
-          anything,
-          anything,
-          hash_including(fix_available: true)
-        ).and_call_original
-
-        execute
-      end
-    end
   end
 end

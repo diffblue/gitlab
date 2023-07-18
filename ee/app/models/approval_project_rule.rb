@@ -3,7 +3,6 @@
 class ApprovalProjectRule < ApplicationRecord
   include ApprovalRuleLike
   include Auditable
-  extend ::Gitlab::Utils::Override
 
   UNSUPPORTED_SCANNER = 'cluster_image_scanning'
   SUPPORTED_SCANNERS = (::Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES - [UNSUPPORTED_SCANNER]).freeze
@@ -51,16 +50,6 @@ class ApprovalProjectRule < ApplicationRecord
   validates :protected_branches, presence: true, if: -> { scan_finding? && !applies_to_all_protected_branches? }
 
   delegate :vulnerability_attributes, to: :scan_result_policy_read, allow_nil: true
-
-  override :vulnerability_attribute_false_positive
-  def vulnerability_attribute_false_positive
-    vulnerability_attributes['false_positive']
-  end
-
-  override :vulnerability_attribute_fix_available
-  def vulnerability_attribute_fix_available
-    vulnerability_attributes['fix_available']
-  end
 
   def applies_to_branch?(branch)
     return !applies_to_all_protected_branches? if protected_branches.empty?
