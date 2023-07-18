@@ -98,15 +98,24 @@ export default {
     hasHeaderValidationErrors() {
       return this.headers.some((header) => header.validationErrors.name !== '');
     },
-    hasMissingKeyValuePairs() {
-      return this.headers.some(
-        (header) =>
-          (header.name !== '' && header.value === '') ||
-          (header.name === '' && header.value !== ''),
-      );
+    hasEmptyHeaders() {
+      return this.headers.some((header) => !header.name || !header.value);
     },
     isSubmitButtonDisabled() {
-      return !this.destinationUrl || this.hasHeaderValidationErrors || this.hasMissingKeyValuePairs;
+      if (!this.destinationUrl || this.hasHeaderValidationErrors || this.hasEmptyHeaders) {
+        return true;
+      }
+
+      return this.hasNoChanges;
+    },
+    hasNoChanges() {
+      return (
+        !this.headersToAdd.length &&
+        !this.headersToUpdate.length &&
+        !this.headersToDelete.length &&
+        !this.isEventTypeUpdated &&
+        this.item?.destinationUrl === this.destinationUrl
+      );
     },
     isEditing() {
       return !isEmpty(this.item);
@@ -162,11 +171,37 @@ export default {
         ? 'auditEventsStreamingInstanceHeadersDestroy'
         : 'auditEventsStreamingHeadersDestroy';
     },
+    headersToAdd() {
+      return this.headers.filter((header) => header.id === null);
+    },
+    headersToUpdate() {
+      return this.headers.filter((changed) =>
+        this.existingHeaders.some(
+          (existing) =>
+            changed.id === existing.id &&
+            (changed.name !== existing.name || changed.value !== existing.value),
+        ),
+      );
+    },
+    headersToDelete() {
+      return this.existingHeaders.filter(
+        (existing) => !this.headers.some((changed) => existing.id === changed.id),
+      );
+    },
+    existingHeaders() {
+      return mapItemHeadersToFormData(this.item);
+    },
+    isEventTypeUpdated() {
+      return !isEqual(this.item?.eventTypeFilters || [], this.filters);
+    },
+  },
+  watch: {
+    item() {
+      this.headers = mapItemHeadersToFormData(this.item);
+    },
   },
   mounted() {
-    const existingHeaders = mapItemHeadersToFormData(this.item);
-
-    this.headers = existingHeaders;
+    this.headers = mapItemHeadersToFormData(this.item);
     this.destinationUrl = this.item.destinationUrl;
     this.filters = this.item.eventTypeFilters || [];
   },
@@ -242,89 +277,83 @@ export default {
     },
     async addDestinationHeaders(destinationId, headers) {
       const { groupPath: fullPath } = this;
-      const mutations = headers
-        .filter((header) => this.isHeaderFilled(header))
-        .map((header) => {
-          return this.$apollo.mutate({
-            mutation: this.headersCreateMutation,
-            variables: {
+      const mutations = headers.map((header) => {
+        return this.$apollo.mutate({
+          mutation: this.headersCreateMutation,
+          variables: {
+            destinationId,
+            key: header.name,
+            value: header.value,
+            isInstance: this.isInstance,
+          },
+          update(cache, { data }, args) {
+            const errors = args.variables.isInstance
+              ? data.auditEventsStreamingInstanceHeadersCreate.errors
+              : data.auditEventsStreamingHeadersCreate.errors;
+
+            if (errors.length) {
+              return;
+            }
+
+            const newHeader = args.variables.isInstance
+              ? data.auditEventsStreamingInstanceHeadersCreate.header
+              : data.auditEventsStreamingHeadersCreate.header;
+
+            addAuditEventStreamingHeader({
+              store: cache,
+              fullPath,
               destinationId,
-              key: header.name,
-              value: header.value,
-              isInstance: this.isInstance,
-            },
-            update(cache, { data }, args) {
-              const errors = args.variables.isInstance
-                ? data.auditEventsStreamingInstanceHeadersCreate.errors
-                : data.auditEventsStreamingHeadersCreate.errors;
-
-              if (errors.length) {
-                return;
-              }
-
-              const newHeader = args.variables.isInstance
-                ? data.auditEventsStreamingInstanceHeadersCreate.header
-                : data.auditEventsStreamingHeadersCreate.header;
-
-              addAuditEventStreamingHeader({
-                store: cache,
-                fullPath,
-                destinationId,
-                newHeader,
-              });
-            },
-          });
+              newHeader,
+            });
+          },
         });
+      });
 
       return mapAllMutationErrors(mutations, this.headersCreateString);
     },
     async updateDestinationHeaders(headers) {
-      const mutations = headers
-        .filter((header) => this.isHeaderFilled(header))
-        .map((header) => {
-          return this.$apollo.mutate({
-            mutation: this.headersUpdateMutation,
-            variables: {
-              headerId: header.id,
-              key: header.name,
-              value: header.value,
-              isInstance: this.isInstance,
-            },
-          });
+      const mutations = headers.map((header) => {
+        return this.$apollo.mutate({
+          mutation: this.headersUpdateMutation,
+          variables: {
+            headerId: header.id,
+            key: header.name,
+            value: header.value,
+            isInstance: this.isInstance,
+          },
         });
+      });
 
       return mapAllMutationErrors(mutations, this.headersUpdateString);
     },
     async deleteDestinationHeaders(headers) {
       const { id: destinationId } = this.item;
       const { groupPath: fullPath } = this;
-      const mutations = headers
-        .filter((header) => this.isHeaderFilled(header))
-        .map((header) => {
-          return this.$apollo.mutate({
-            mutation: this.headersDestroyMutation,
-            variables: {
+      const mutations = headers.map((header) => {
+        return this.$apollo.mutate({
+          mutation: this.headersDestroyMutation,
+          variables: {
+            headerId: header.id,
+            isInstance: this.isInstance,
+          },
+          update(cache, { data }, args) {
+            const errors = args.variables.isInstance
+              ? data.auditEventsStreamingInstanceHeadersDestroy.errors
+              : data.auditEventsStreamingHeadersDestroy.errors;
+
+            if (errors.length) {
+              return;
+            }
+
+            removeAuditEventStreamingHeader({
+              store: cache,
+              fullPath,
+              destinationId,
               headerId: header.id,
-              isInstance: this.isInstance,
-            },
-            update(cache, { data }, args) {
-              const errors = args.variables.isInstance
-                ? data.auditEventsStreamingInstanceHeadersDestroy.errors
-                : data.auditEventsStreamingHeadersDestroy.errors;
-
-              if (errors.length) {
-                return;
-              }
-
-              removeAuditEventStreamingHeader({
-                store: cache,
-                fullPath,
-                destinationId,
-                headerId: header.id,
-              });
-            },
-          });
+            });
+          },
         });
+      });
 
       return mapAllMutationErrors(mutations, this.headersDestroyString);
     },
@@ -354,25 +383,6 @@ export default {
           });
         },
       });
-    },
-    findHeadersToDelete(existingHeaders, changedHeaders) {
-      return existingHeaders.filter(
-        (existingHeader) =>
-          !changedHeaders.some((changedHeader) => existingHeader.id === changedHeader.id),
-      );
-    },
-    findHeadersToUpdate(existingHeaders, changedHeaders) {
-      return changedHeaders.filter((changedHeader) =>
-        existingHeaders.some(
-          (existingHeader) =>
-            changedHeader.id === existingHeader.id &&
-            (changedHeader.name !== existingHeader.name ||
-              changedHeader.value !== existingHeader.value),
-        ),
-      );
-    },
-    findHeadersToAdd(changedHeaders) {
-      return changedHeaders.filter((header) => header.id === null && this.isHeaderFilled(header));
     },
     async removeDestinationFilters(destinationId, filters) {
       const { data } = await this.$apollo.mutate({
@@ -474,27 +484,18 @@ export default {
     async updateDestination() {
       this.errors = [];
       this.loading = true;
-      const existingHeaders = mapItemHeadersToFormData(this.item);
-      const changedHeaders = this.headers.filter(
-        (header) => header.name !== '' && header.value !== '',
-      );
 
       try {
         const errors = [];
 
-        if (existingHeaders.length > 0) {
-          const headersToDelete = this.findHeadersToDelete(existingHeaders, changedHeaders);
-          const headersToUpdate = this.findHeadersToUpdate(existingHeaders, changedHeaders);
-
-          errors.push(...(await this.deleteDestinationHeaders(headersToDelete)));
-          errors.push(...(await this.updateDestinationHeaders(headersToUpdate)));
+        if (this.existingHeaders.length > 0) {
+          errors.push(...(await this.deleteDestinationHeaders(this.headersToDelete)));
+          errors.push(...(await this.updateDestinationHeaders(this.headersToUpdate)));
         }
 
-        const headersToAdd = this.findHeadersToAdd(changedHeaders);
+        errors.push(...(await this.addDestinationHeaders(this.item.id, this.headersToAdd)));
 
-        errors.push(...(await this.addDestinationHeaders(this.item.id, headersToAdd)));
-
-        if (!this.isInstance && !isEqual(this.item?.eventTypeFilters, this.filters)) {
+        if (!this.isInstance && this.isEventTypeUpdated) {
           const removeFilters = this.item.eventTypeFilters.filter((f) => !this.filters.includes(f));
           const addFilters = this.filters.filter((f) => !this.item.eventTypeFilters.includes(f));
           if (removeFilters?.length) {
@@ -529,9 +530,6 @@ export default {
     },
     deleteDestination() {
       this.$refs.deleteModal.show();
-    },
-    isHeaderFilled(header) {
-      return header.name !== '' && header.value !== '';
     },
     headerNameExists(value) {
       return this.headers.some((header) => header.name === value);

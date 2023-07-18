@@ -1,5 +1,6 @@
 <script>
 import {
+  GlAlert,
   GlBadge,
   GlLink,
   GlPopover,
@@ -13,12 +14,14 @@ import {
   STREAM_ITEMS_I18N,
   DESTINATION_TYPE_HTTP,
   DESTINATION_TYPE_GCP_LOGGING,
+  UPDATE_STREAM_MESSAGE,
 } from '../../constants';
 import StreamDestinationEditor from './stream_destination_editor.vue';
 import StreamGcpLoggingDestinationEditor from './stream_gcp_logging_destination_editor.vue';
 
 export default {
   components: {
+    GlAlert,
     GlBadge,
     GlLink,
     GlPopover,
@@ -46,6 +49,7 @@ export default {
   data() {
     return {
       isEditing: false,
+      successMessage: null,
     };
   },
   computed: {
@@ -68,21 +72,29 @@ export default {
   methods: {
     toggleEditMode() {
       this.isEditing = !this.isEditing;
+
+      if (!this.isEditing) {
+        this.clearSuccessMessage();
+      }
     },
-    onUpdated(event) {
-      this.toggleEditMode();
-      this.$emit('updated', event);
+    onUpdated() {
+      this.successMessage = UPDATE_STREAM_MESSAGE;
+      this.$emit('updated');
     },
     onDelete($event) {
       this.$emit('deleted', $event);
     },
     onEditorError() {
+      this.clearSuccessMessage();
       this.$emit('error');
     },
     getQueryResponse(queryData) {
       return this.isInstance
         ? queryData.externalAuditEventDestinationCreate
         : queryData.group.externalAuditEventDestinationCreate;
+    },
+    clearSuccessMessage() {
+      this.successMessage = null;
     },
   },
   i18n: { ...STREAM_ITEMS_I18N },
@@ -131,6 +143,15 @@ export default {
       </template>
     </div>
     <gl-collapse :visible="isEditing">
+      <gl-alert
+        v-if="successMessage"
+        :dismissible="true"
+        class="gl-ml-6 gl-mb-6"
+        variant="success"
+        @dismiss="clearSuccessMessage"
+      >
+        {{ successMessage }}
+      </gl-alert>
       <stream-destination-editor
         v-if="isEditing && type == $options.DESTINATION_TYPE_HTTP"
         :item="item"
