@@ -52321,6 +52321,9 @@ msgstr ""
 msgid "WorkItem|Something went wrong while fetching milestones. Please try again."
 msgstr ""
 
+msgid "WorkItem|Something went wrong while fetching work item award emojis. Please try again."
+msgstr ""
+
 msgid "WorkItem|Something went wrong while promoting the %{workItemType}. Please try again."
 msgstr ""
 
