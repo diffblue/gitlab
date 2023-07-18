@@ -143,8 +143,7 @@ module Security
       end
 
       def invalid_branch_types?
-        return false if container.blank? || !project_container? ||
-          Feature.disabled?(:security_policies_branch_type, container)
+        return false if container.blank? || !project_container?
 
         service = Security::SecurityOrchestrationPolicies::PolicyBranchesService.new(project: container)
 

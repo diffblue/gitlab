@@ -12,7 +12,7 @@ module Security
 
         return ServiceResponse.error(message: "No scheduled rules") if schedule_rules.empty?
 
-        branches = branches_for(schedule, rules)
+        branches = branches_for(rules)
         actions = actions_for(schedule)
         schedule_errors = schedule_scan(actions, branches).select { |service_result| service_result[:status] == :error }
 
@@ -33,9 +33,7 @@ module Security
         policy[:actions]
       end
 
-      def branches_for(schedule, rules)
-        return schedule.applicable_branches(project) unless Feature.enabled?(:security_policies_branch_type, project)
-
+      def branches_for(rules)
         ::Security::SecurityOrchestrationPolicies::PolicyBranchesService
           .new(project: project)
           .scan_execution_branches(rules)

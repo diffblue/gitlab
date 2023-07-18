@@ -1,8 +1,0 @@
----
-name: security_policies_branch_type
-introduced_by_url: "https://gitlab.com/gitlab-org/gitlab/-/merge_requests/121679"
-rollout_issue_url: "https://gitlab.com/gitlab-org/gitlab/-/issues/413062"
-milestone: '16.1'
-type: development
-group: group::security policies
-default_enabled: true

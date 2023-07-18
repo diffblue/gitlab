@@ -96,8 +96,6 @@ module Security
       end
 
       def protected_branch_ids(rule)
-        return project.all_protected_branches.get_ids_by_name(rule[:branches]) unless branch_type_enabled?
-
         service = Security::SecurityOrchestrationPolicies::PolicyBranchesService.new(project: project)
         applicable_branches = service.scan_result_branches([rule])
         protected_branches = project.all_protected_branches.select do |protected_branch|
@@ -108,11 +106,7 @@ module Security
       end
 
       def applies_to_all_protected_branches?(rule)
-        branches = rule[:branches]
-
-        return branches == [] unless branch_type_enabled?
-
-        branches == [] || rule[:branch_type] == "protected"
+        rule[:branches] == [] || rule[:branch_type] == "protected"
       end
 
       def rule_type_allowed?(rule_type)
@@ -156,10 +150,6 @@ module Security
 
       def search_groups_globally?
         Gitlab::CurrentSettings.security_policy_global_group_approvers_enabled?
-      end
-
-      def branch_type_enabled?
-        Feature.enabled?(:security_policies_branch_type, project)
       end
     end
   end
