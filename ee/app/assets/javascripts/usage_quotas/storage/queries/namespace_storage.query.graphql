@@ -21,6 +21,7 @@ query getNamespaceStorageStatistics(
     repositorySizeExcessProjectCount
     rootStorageStatistics {
       storageSize
+      costFactoredStorageSize
       repositorySize
       lfsObjectsSize
       containerRegistrySize

@@ -354,9 +354,9 @@ describe('NamespaceStorageApp', () => {
       expect(findStorageUsageStatistics().exists()).toBe(true);
     });
 
-    it('passes storageSize as usedStorage', () => {
+    it('passes costFactoredStorageSize as usedStorage', () => {
       expect(findStorageUsageStatistics().props('usedStorage')).toBe(
-        mockedNamespaceStorageResponse.data.namespace.rootStorageStatistics.storageSize,
+        mockedNamespaceStorageResponse.data.namespace.rootStorageStatistics.costFactoredStorageSize,
       );
     });
 

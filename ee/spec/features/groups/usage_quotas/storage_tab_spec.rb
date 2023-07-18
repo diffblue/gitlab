@@ -7,7 +7,10 @@ RSpec.describe 'Groups > Usage Quotas > Storage tab', :js, :saas, feature_catego
 
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group_with_plan, plan: :premium_plan) }
-  let_it_be(:root_storage_statistics, refind: true) { create(:namespace_root_storage_statistics, namespace: group) }
+  let_it_be(:root_storage_statistics, refind: true) do
+    create(:namespace_root_storage_statistics, namespace: group,
+      storage_size: 300.megabytes, public_forks_storage_size: 100.megabytes)
+  end
 
   before_all do
     group.add_owner(user)
@@ -85,6 +88,20 @@ RSpec.describe 'Groups > Usage Quotas > Storage tab', :js, :saas, feature_catego
           expect(page).not_to have_text('of 100.0 MiB')
         end
       end
+    end
+  end
+
+  context 'with a cost factor for forks' do
+    before do
+      stub_const('Namespaces::Storage::RootSize::COST_FACTOR_FOR_FORKS', 0.1)
+    end
+
+    it 'displays the total storage size taking into account the cost factor' do
+      visit_usage_quotas_page('storage-quota-tab')
+
+      # A cost factor for forks of 0.1 means that forks consume only 10% of their storage size.
+      # So this is the total storage_size (300 MB) - 90% of the public_forks_storage_size (90 MB).
+      expect(page).to have_css('[data-testid="denominator"]', text: "210.0 MiB")
     end
   end
 
