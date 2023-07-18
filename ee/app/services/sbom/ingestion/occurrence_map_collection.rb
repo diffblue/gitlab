@@ -12,7 +12,7 @@ module Sbom
       def each
         return to_enum(:each) unless block_given?
 
-        sbom_report.components.each do |report_component|
+        sorted_components.each do |report_component|
           yield OccurrenceMap.new(report_component, sbom_report.source)
         end
       end
@@ -20,6 +20,27 @@ module Sbom
       private
 
       attr_reader :sbom_report
+
+      def sorted_components
+        sbom_report.components.sort_by { |component| sort_index(component) }
+      end
+
+      def sort_index(component)
+        [
+          component.name,
+          purl_type_int(component),
+          component_type_int(component),
+          component&.version.to_s
+        ]
+      end
+
+      def component_type_int(component)
+        ::Enums::Sbom::COMPONENT_TYPES.fetch(component.component_type.to_sym, 0)
+      end
+
+      def purl_type_int(component)
+        ::Enums::Sbom::PURL_TYPES.fetch(component.purl&.type&.to_sym, 0)
+      end
     end
   end
 end
