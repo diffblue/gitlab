@@ -26206,9 +26206,6 @@ msgstr ""
 msgid "Job Failed #%{build_id}"
 msgstr ""
 
-msgid "Job ID"
-msgstr ""
-
 msgid "Job artifacts"
 msgstr ""
 
@@ -26225,9 +26222,6 @@ msgid "Job is stuck. Check runners."
 msgstr ""
 
 msgid "Job logs and artifacts"
-msgstr ""
-
-msgid "Job name"
 msgstr ""
 
 msgid "Job was retried"
