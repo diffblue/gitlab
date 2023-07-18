@@ -13,17 +13,14 @@ module Boards
 
     # rubocop: disable CodeReuse/ActiveRecord
     def metadata(required_fields = [:issue_count, :total_issue_weight])
-      # Failing tests in spec/requests/api/graphql/boards/board_lists_query_spec.rb
-      ::Gitlab::Database.allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417465") do
-        fields = metadata_fields(required_fields)
-        keys = fields.keys
-        # TODO: eliminate need for SQL literal fragment
-        columns = Arel.sql(fields.values_at(*keys).join(', '))
-        results = item_model.where(id: collection_ids)
-        results = results.select(columns)
+      fields = metadata_fields(required_fields)
+      keys = fields.keys
+      # TODO: eliminate need for SQL literal fragment
+      columns = Arel.sql(fields.values_at(*keys).join(', '))
+      results = item_model.where(id: collection_ids)
+      results = results.select(columns)
 
-        Hash[keys.zip(results.pluck(columns).flatten)]
-      end
+      Hash[keys.zip(results.pluck(columns).flatten)]
     end
     # rubocop: enable CodeReuse/ActiveRecord
 
