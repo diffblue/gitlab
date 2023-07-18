@@ -163,8 +163,6 @@ module Security
           vulnerability_states: approval_rule.vulnerability_states_for_branch,
           severity_levels: approval_rule.severity_levels,
           scanners: approval_rule.scanners,
-          fix_available: approval_rule.vulnerability_attribute_fix_available,
-          false_positive: approval_rule.vulnerability_attribute_false_positive,
           check_dismissed: check_dismissed
         }
 
