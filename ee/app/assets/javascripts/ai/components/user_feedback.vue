@@ -76,11 +76,14 @@ export default {
 </script>
 
 <template>
-  <div class="gl-display-flex" :class="{ 'gl-mt-6 gl-pb-5': size === 'medium' }">
+  <div
+    class="gl-display-flex gl-flex-wrap gl-mb-n2"
+    :class="{ 'gl-mt-6 gl-pb-5': size === 'medium' }"
+  >
     <gl-button
       v-for="option in feedbackOptions"
       :key="`${option.value}-${feedbackValue}`"
-      class="gl-mr-2"
+      class="gl-mr-2 gl-mb-2"
       :class="{ 'btn-icon': feedbackValue === '' && iconOnly }"
       variant="default"
       :category="category"
