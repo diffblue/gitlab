@@ -13069,9 +13069,6 @@ msgstr ""
 msgid "Create AI-generated commit message"
 msgstr ""
 
-msgid "Create LLM-generated summary from diff(s)"
-msgstr ""
-
 msgid "Create New Directory"
 msgstr ""
 
@@ -13520,9 +13517,6 @@ msgid "Created on %{created_at}"
 msgstr ""
 
 msgid "Created on:"
-msgstr ""
-
-msgid "Creates a LLM-generated summary from diff(s)."
 msgstr ""
 
 msgid "Creates a branch and a merge request to resolve this issue."
@@ -39008,9 +39002,6 @@ msgid "Request data is too large"
 msgstr ""
 
 msgid "Request details"
-msgstr ""
-
-msgid "Request for summary queued."
 msgstr ""
 
 msgid "Request parameter %{param} is missing."
