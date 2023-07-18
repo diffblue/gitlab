@@ -9267,9 +9267,6 @@ msgstr ""
 msgid "Changes"
 msgstr ""
 
-msgid "Changes are shown as if the %{b_open}source%{b_close} revision was being merged into the %{b_open}target%{b_close} revision."
-msgstr ""
-
 msgid "Changes saved."
 msgstr ""
 
@@ -11560,9 +11557,6 @@ msgstr ""
 msgid "Compare %{oldCommitId}...%{newCommitId}"
 msgstr ""
 
-msgid "Compare Git revisions"
-msgstr ""
-
 msgid "Compare GitLab editions"
 msgstr ""
 
@@ -11590,10 +11584,7 @@ msgstr ""
 msgid "Compare with previous version"
 msgstr ""
 
-msgid "CompareBranches|%{source_branch} and %{target_branch} are the same."
-msgstr ""
-
-msgid "CompareBranches|There isn't anything to compare."
+msgid "CompareRevisions|%{source_branch} and %{target_branch} are the same."
 msgstr ""
 
 msgid "CompareRevisions|Branches"
@@ -11642,6 +11633,9 @@ msgid "CompareRevisions|Swap revisions"
 msgstr ""
 
 msgid "CompareRevisions|Tags"
+msgstr ""
+
+msgid "CompareRevisions|There isn't anything to compare."
 msgstr ""
 
 msgid "CompareRevisions|There was an error while loading the branch/tag list. Please try again."
@@ -48140,9 +48134,6 @@ msgid "To see this project's operational details, %{linkStart}upgrade its group 
 msgstr ""
 
 msgid "To see this project's operational details, contact an owner of group %{groupName} to upgrade the plan. You can also remove the project from the dashboard."
-msgstr ""
-
-msgid "To see what's changed or create a merge request, choose a branch or tag (like %{branch}), or enter a commit (like %{sha})."
 msgstr ""
 
 msgid "To set up SAML authentication for your group through an identity provider like Azure, Okta, Onelogin, Ping Identity, or your custom SAML 2.0 provider:"
