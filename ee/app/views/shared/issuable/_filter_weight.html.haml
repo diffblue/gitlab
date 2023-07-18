@@ -4,12 +4,13 @@
 #js-dropdown-weight.filtered-search-input-dropdown-menu.dropdown-menu
   %ul{ 'data-dropdown' => true }
     %li.filter-dropdown-item{ 'data-value' => 'None' }
-      %button.btn.gl-button.btn-link
+      = render Pajamas::ButtonComponent.new(variant: :link) do
         None
     %li.filter-dropdown-item{ 'data-value' => 'Any' }
-      %button.btn.gl-button.btn-link
+      = render Pajamas::ButtonComponent.new(variant: :link) do
         Any
     %li.divider.droplab-item-ignore
   %ul.filter-dropdown{ data: { dropdown: true, dynamic: true } }
     %li.filter-dropdown-item{ data: { value: '{{id}}' } }
-      %button.btn.gl-button.btn-link {{title}}
+      = render Pajamas::ButtonComponent.new(variant: :link) do
+        {{title}}
