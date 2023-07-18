@@ -221,6 +221,29 @@ RSpec.describe Sidebars::Groups::Menus::AnalyticsMenu, feature_category: :naviga
     end
 
     describe 'Dashboards' do
+      let(:item_id) { :analytics_dashboards }
+      let(:group_level_analytics_dashboard_enabled) { true }
+
+      before do
+        stub_licensed_features(group_level_analytics_dashboard: group_level_analytics_dashboard_enabled)
+      end
+
+      specify { is_expected.not_to be_nil }
+
+      describe 'when licensed feature :group_level_analytics_dashboard is disabled' do
+        let(:group_level_analytics_dashboard_enabled) { false }
+
+        specify { is_expected.to be_nil }
+      end
+
+      describe 'when the user does not have access' do
+        let(:user) { nil }
+
+        specify { is_expected.to be_nil }
+      end
+    end
+
+    describe 'Dashboards analytics' do
       let(:item_id) { :dashboards_analytics }
 
       before do
