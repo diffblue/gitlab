@@ -92,47 +92,34 @@ RSpec.describe Security::Ingestion::ScheduleMarkDroppedAsResolvedService,
 
   subject(:service) { described_class.new(pipeline.project_id, 'sast', [untriaged_ident]).execute }
 
-  context 'when flag is enabled' do
-    before do
-      stub_const("#{described_class.name}::BATCH_SIZE", 1)
-      stub_feature_flags(sec_mark_dropped_findings_as_resolved: true)
-    end
+  before do
+    stub_const("#{described_class.name}::BATCH_SIZE", 1)
+  end
 
-    it 'schedules MarkDroppedAsResolvedWorker' do
-      expect { service }.to change { ::Vulnerabilities::MarkDroppedAsResolvedWorker.jobs.count }.by(2)
+  it 'schedules MarkDroppedAsResolvedWorker' do
+    expect { service }.to change { ::Vulnerabilities::MarkDroppedAsResolvedWorker.jobs.count }.by(2)
 
-      expect(
-        ::Vulnerabilities::MarkDroppedAsResolvedWorker.jobs.first['args']
-      ).to eq([pipeline.project_id, [dropped_ident1.id]])
-      expect(
-        ::Vulnerabilities::MarkDroppedAsResolvedWorker.jobs.last['args']
-      ).to eq([pipeline.project_id, [dropped_ident2.id]])
-    end
+    expect(
+      ::Vulnerabilities::MarkDroppedAsResolvedWorker.jobs.first['args']
+    ).to eq([pipeline.project_id, [dropped_ident1.id]])
+    expect(
+      ::Vulnerabilities::MarkDroppedAsResolvedWorker.jobs.last['args']
+    ).to eq([pipeline.project_id, [dropped_ident2.id]])
+  end
 
-    context 'when primary_identifiers is empty' do
-      subject(:service) { described_class.new(pipeline.project_id, 'sast', []).execute }
+  context 'when primary_identifiers is empty' do
+    subject(:service) { described_class.new(pipeline.project_id, 'sast', []).execute }
 
-      it 'wont schedule MarkDroppedAsResolvedWorker' do
-        expect { service }.to change { ::Vulnerabilities::MarkDroppedAsResolvedWorker.jobs.count }.by(0)
-      end
-    end
-
-    context 'when primary_identifiers do not reference existing types' do
-      subject(:service) { described_class.new(pipeline.project_id, 'sast', [dropped_ident1, dropped_ident2]).execute }
-
-      it 'will not schedule a MarkDroppedAsResolvedWorker' do
-        expect { service }.to change { ::Vulnerabilities::MarkDroppedAsResolvedWorker.jobs.count }.by(0)
-      end
+    it 'will not schedule a MarkDroppedAsResolvedWorker' do
+      expect { service }.not_to change { ::Vulnerabilities::MarkDroppedAsResolvedWorker.jobs.count }
     end
   end
 
-  context 'when flag is disabled' do
-    before do
-      stub_feature_flags(sec_mark_dropped_findings_as_resolved: false)
-    end
+  context 'when primary_identifiers do not reference existing types' do
+    subject(:service) { described_class.new(pipeline.project_id, 'sast', [dropped_ident1, dropped_ident2]).execute }
 
-    it 'wont schedule MarkDroppedAsResolvedWorker' do
-      expect { service }.to change { ::Vulnerabilities::MarkDroppedAsResolvedWorker.jobs.count }.by(0)
+    it 'will not schedule a MarkDroppedAsResolvedWorker' do
+      expect { service }.not_to change { ::Vulnerabilities::MarkDroppedAsResolvedWorker.jobs.count }
     end
   end
 end
