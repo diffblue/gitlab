@@ -136,6 +136,8 @@ module EE
         where(id: ::PersonalAccessToken.with_invalid_expires_at(expiration_date).select(:user_id))
       end
 
+      scope :with_scim_identities_by_extern_uid, ->(extern_uid) { joins(:scim_identities).merge(ScimIdentity.with_extern_uid(extern_uid)) }
+
       accepts_nested_attributes_for :namespace
       accepts_nested_attributes_for :custom_attributes
 

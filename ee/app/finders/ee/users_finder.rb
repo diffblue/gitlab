@@ -22,5 +22,13 @@ module EE
 
       users.limit_to_saml_provider(saml_provider_id)
     end
+
+    override :by_external_identity
+    def by_external_identity(users)
+      return users unless params[:extern_uid] && params[:provider]
+      return super unless params[:provider] == "scim"
+
+      users.with_scim_identities_by_extern_uid(params[:extern_uid])
+    end
   end
 end
