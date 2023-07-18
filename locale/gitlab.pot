@@ -29892,6 +29892,9 @@ msgstr ""
 msgid "NamespaceLimits|Free Tier"
 msgstr ""
 
+msgid "NamespaceLimits|Namespace limits could not be loaded. Reload the page to try again."
+msgstr ""
+
 msgid "NamespaceLimits|Notifications Limit"
 msgstr ""
 

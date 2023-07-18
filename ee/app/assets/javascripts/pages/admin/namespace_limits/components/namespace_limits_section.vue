@@ -45,6 +45,10 @@ export default {
       type: String,
       required: true,
     },
+    limit: {
+      type: Number,
+      required: true,
+    },
     description: {
       type: String,
       required: false,
@@ -67,7 +71,7 @@ export default {
   },
   data() {
     return {
-      limit: '0',
+      value: String(this.limit),
       validationError: '',
       modalId: uniqueId('namespace-limits-'),
     };
@@ -75,6 +79,11 @@ export default {
   computed: {
     error() {
       return this.errorMessage || this.validationError;
+    },
+  },
+  watch: {
+    limit(limit) {
+      this.value = String(limit);
     },
   },
   i18n,
@@ -85,12 +94,12 @@ export default {
       this.validationError = '';
 
       // validate the limit is a positive number
-      if (!this.limit || Number(this.limit) < 0) {
+      if (!this.value || Number(this.value) < 0) {
         this.validationError = i18n.limitValidationError;
         return;
       }
 
-      this.$emit('limit-change', this.limit);
+      this.$emit('limit-change', this.value);
     },
   },
 };
@@ -103,7 +112,7 @@ export default {
         {{ error }}
       </gl-alert>
       <gl-form-group :label="label" :description="description" class="gl-lg-w-half">
-        <gl-form-input v-model="limit" size="md" type="number" min="0" />
+        <gl-form-input v-model="value" size="md" type="number" min="0" />
       </gl-form-group>
       <gl-button v-gl-modal="modalId" variant="danger">{{
         $options.i18n.updateLimitsButton

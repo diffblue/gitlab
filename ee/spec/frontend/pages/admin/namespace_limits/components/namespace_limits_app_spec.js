@@ -1,19 +1,28 @@
 import MockAdapter from 'axios-mock-adapter';
+import { GlAlert } from '@gitlab/ui';
+import { Wrapper } from '@vue/test-utils'; // eslint-disable-line no-unused-vars
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
-  UPDATE_FREE_PLAN_LIMITS_ENDPOINT,
-  UPDATE_PLAN_LIMIT_PARAM_NAMES,
+  APP_PLAN_LIMITS_ENDPOINT,
+  APP_PLAN_LIMIT_PARAM_NAMES,
 } from 'ee/pages/admin/namespace_limits/constants';
 import NamespaceLimitsApp from 'ee/pages/admin/namespace_limits/components/namespace_limits_app.vue';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_OK, HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
 
 describe('NamespaceLimitsApp', () => {
+  /** @type { Wrapper } */
   let wrapper;
+  /** @type { MockAdapter } */
   let axiosMock;
 
-  const updateFreePlanLimitsEndpoint = UPDATE_FREE_PLAN_LIMITS_ENDPOINT.replace(':version', 'v4');
+  const updateFreePlanLimitsEndpoint = APP_PLAN_LIMITS_ENDPOINT.replace(':version', 'v4');
+  const defaultPlanData = Object.freeze({
+    notification_limit: 1,
+    enforcement_limit: 2,
+    storage_size_limit: 3,
+  });
 
   const $toast = {
     show: jest.fn(),
@@ -27,20 +36,54 @@ describe('NamespaceLimitsApp', () => {
   const findEnforcementLimitSection = () => wrapper.findByTestId('enforcement-limit-section');
   const findDashboardLimitSection = () => wrapper.findByTestId('dashboard-limit-section');
 
+  beforeEach(async () => {
+    window.gon = { api_version: 'v4' };
+    jest.spyOn(axios, 'put');
+    axiosMock = new MockAdapter(axios);
+    axiosMock
+      .onGet(updateFreePlanLimitsEndpoint, { params: { plan_name: 'free' } })
+      .reply(HTTP_STATUS_OK, defaultPlanData);
+
+    createComponent();
+    await waitForPromises();
+  });
+
+  afterEach(() => {
+    axios.put.mockReset();
+    axiosMock.reset();
+  });
+
+  describe('fetching initial values', () => {
+    it('will fetch and set initial values', () => {
+      expect(findNotificationsLimitSection().props().limit).toBe(
+        defaultPlanData.notification_limit,
+      );
+      expect(findEnforcementLimitSection().props().limit).toBe(defaultPlanData.enforcement_limit);
+      expect(findDashboardLimitSection().props().limit).toBe(defaultPlanData.storage_size_limit);
+    });
+
+    describe('failed API response', () => {
+      beforeEach(async () => {
+        axiosMock.reset();
+        axiosMock
+          .onGet(updateFreePlanLimitsEndpoint, { params: { plan_name: 'free' } })
+          .replyOnce(HTTP_STATUS_BAD_REQUEST);
+
+        createComponent();
+        await waitForPromises();
+      });
+
+      it('will display a data loading error', () => {
+        const alert = wrapper.findComponent(GlAlert);
+        expect(alert.exists()).toBe(true);
+      });
+    });
+  });
+
   describe('notifications limit section', () => {
-    beforeEach(() => {
-      window.gon = { api_version: 'v4' };
-      axiosMock = new MockAdapter(axios);
-    });
-
-    afterEach(() => {
-      axiosMock.restore();
-    });
-
     it('renders namespace-limit-section component', () => {
-      createComponent();
-
       expect(findNotificationsLimitSection().props()).toMatchObject({
+        limit: defaultPlanData.notification_limit,
         label: 'Set Notifications limit',
         description:
           'Add minimum free storage amount (in GiB) that will be used to show notifications for namespace on free plan. To remove the limit, set the value to 0 and click "Update limit" button.',
@@ -50,39 +93,38 @@ describe('NamespaceLimitsApp', () => {
       });
     });
 
-    describe('successful API response', () => {
-      it.each([
-        ['0', 'Notifications limit was successfully removed'],
-        ['10', 'Notifications limit was successfully added'],
-      ])('shows correct toast when limit is %d', async (limit, toastMessage) => {
-        axiosMock
-          .onPut(
-            `${updateFreePlanLimitsEndpoint}&${UPDATE_PLAN_LIMIT_PARAM_NAMES.notifications}=${limit}`,
-          )
-          .replyOnce(HTTP_STATUS_OK);
-        createComponent();
+    describe.each([
+      ['0', 'Notifications limit was successfully removed'],
+      ['10', 'Notifications limit was successfully added'],
+    ])('setting limit to %d', (limit, toastMessage) => {
+      beforeEach(async () => {
+        axiosMock.onPut(updateFreePlanLimitsEndpoint).replyOnce(HTTP_STATUS_OK, defaultPlanData);
         findNotificationsLimitSection().vm.$emit('limit-change', limit);
         await waitForPromises();
+      });
+
+      it('will call relevant API endpoint', () => {
+        expect(axios.put).toHaveBeenCalledWith(updateFreePlanLimitsEndpoint, undefined, {
+          params: {
+            plan_name: 'free',
+            [APP_PLAN_LIMIT_PARAM_NAMES.notifications]: limit,
+          },
+        });
+      });
+
+      it('will display a success toast message', () => {
         expect($toast.show).toHaveBeenCalledWith(toastMessage);
       });
     });
 
-    describe('failed API response', () => {
-      beforeEach(() => {
-        const limit = 1;
-        axiosMock
-          .onPut(
-            `${updateFreePlanLimitsEndpoint}&${UPDATE_PLAN_LIMIT_PARAM_NAMES.notifications}=${limit}`,
-          )
-          .replyOnce(HTTP_STATUS_BAD_REQUEST, {
-            message: 'There was a problem processing the request',
-          });
-        createComponent();
-        findNotificationsLimitSection().vm.$emit('limit-change', limit);
-        return waitForPromises();
-      });
+    describe('failed API response on update', () => {
+      it('passes the error message to the namespace-limits-section', async () => {
+        axiosMock.onPut(updateFreePlanLimitsEndpoint).replyOnce(HTTP_STATUS_BAD_REQUEST, {
+          message: 'There was a problem processing the request',
+        });
+        findNotificationsLimitSection().vm.$emit('limit-change', 41);
+        await waitForPromises();
 
-      it('passes the error message to the namespace-limits-section', () => {
         expect(findNotificationsLimitSection().props()).toMatchObject({
           errorMessage: 'There was a problem processing the request',
         });
@@ -91,19 +133,9 @@ describe('NamespaceLimitsApp', () => {
   });
 
   describe('enforcement limit section', () => {
-    beforeEach(() => {
-      window.gon = { api_version: 'v4' };
-      axiosMock = new MockAdapter(axios);
-    });
-
-    afterEach(() => {
-      axiosMock.restore();
-    });
-
     it('renders namespace-limit-section component', () => {
-      createComponent();
-
       expect(findEnforcementLimitSection().props()).toMatchObject({
+        limit: defaultPlanData.enforcement_limit,
         label: 'Set Enforcement limit',
         description:
           'Add minimum free storage amount (in GiB) that will be used to enforce storage usage for namespaces on free plan. To remove the limit, set the value to 0 and click "Update limit" button.',
@@ -113,39 +145,38 @@ describe('NamespaceLimitsApp', () => {
       });
     });
 
-    describe('successful API response', () => {
-      it.each([
-        ['0', 'Enforcement limit was successfully removed'],
-        ['10', 'Enforcement limit was successfully added'],
-      ])('shows correct toast when limit is %d', async (limit, toastMessage) => {
-        axiosMock
-          .onPut(
-            `${updateFreePlanLimitsEndpoint}&${UPDATE_PLAN_LIMIT_PARAM_NAMES.enforcement}=${limit}`,
-          )
-          .replyOnce(HTTP_STATUS_OK);
-        createComponent();
+    describe.each([
+      ['0', 'Enforcement limit was successfully removed'],
+      ['10', 'Enforcement limit was successfully added'],
+    ])('setting limit to %d', (limit, toastMessage) => {
+      beforeEach(async () => {
+        axiosMock.onPut(updateFreePlanLimitsEndpoint).replyOnce(HTTP_STATUS_OK, defaultPlanData);
         findEnforcementLimitSection().vm.$emit('limit-change', limit);
         await waitForPromises();
+      });
+
+      it('will call relevant API endpoint', () => {
+        expect(axios.put).toHaveBeenCalledWith(updateFreePlanLimitsEndpoint, undefined, {
+          params: {
+            plan_name: 'free',
+            [APP_PLAN_LIMIT_PARAM_NAMES.enforcement]: limit,
+          },
+        });
+      });
+
+      it('will display a success toast message', () => {
         expect($toast.show).toHaveBeenCalledWith(toastMessage);
       });
     });
 
-    describe('failed API response', () => {
-      beforeEach(() => {
-        const limit = 1;
-        axiosMock
-          .onPut(
-            `${updateFreePlanLimitsEndpoint}&${UPDATE_PLAN_LIMIT_PARAM_NAMES.enforcement}=${limit}`,
-          )
-          .replyOnce(HTTP_STATUS_BAD_REQUEST, {
-            message: 'There was a problem processing the request',
-          });
-        createComponent();
-        findEnforcementLimitSection().vm.$emit('limit-change', limit);
-        return waitForPromises();
-      });
+    describe('failed API response on update', () => {
+      it('passes the error message to the namespace-limits-section', async () => {
+        axiosMock.onPut(updateFreePlanLimitsEndpoint).replyOnce(HTTP_STATUS_BAD_REQUEST, {
+          message: 'There was a problem processing the request',
+        });
+        findEnforcementLimitSection().vm.$emit('limit-change', 41);
+        await waitForPromises();
 
-      it('passes the error message to the namespace-limits-section', () => {
         expect(findEnforcementLimitSection().props()).toMatchObject({
           errorMessage: 'There was a problem processing the request',
         });
@@ -154,19 +185,9 @@ describe('NamespaceLimitsApp', () => {
   });
 
   describe('dashboard limit section', () => {
-    beforeEach(() => {
-      window.gon = { api_version: 'v4' };
-      axiosMock = new MockAdapter(axios);
-    });
-
-    afterEach(() => {
-      axiosMock.restore();
-    });
-
     it('renders namespace-limit-section component', () => {
-      createComponent();
-
       expect(findDashboardLimitSection().props()).toMatchObject({
+        limit: defaultPlanData.storage_size_limit,
         label: 'Set Dashboard limit',
         description:
           'Add minimum free storage amount (in GiB) that will be used to set the dashboard limit for namespaces on free plan. To remove the limit, set the value to 0 and click "Update limit" button.',
@@ -176,39 +197,38 @@ describe('NamespaceLimitsApp', () => {
       });
     });
 
-    describe('successful API response', () => {
-      it.each([
-        ['0', 'Dashboard limit was successfully removed'],
-        ['10', 'Dashboard limit was successfully added'],
-      ])('shows correct toast when limit is %d', async (limit, toastMessage) => {
-        axiosMock
-          .onPut(
-            `${updateFreePlanLimitsEndpoint}&${UPDATE_PLAN_LIMIT_PARAM_NAMES.dashboard}=${limit}`,
-          )
-          .replyOnce(HTTP_STATUS_OK);
-        createComponent();
+    describe.each([
+      ['0', 'Dashboard limit was successfully removed'],
+      ['10', 'Dashboard limit was successfully added'],
+    ])('setting limit to %d', (limit, toastMessage) => {
+      beforeEach(async () => {
+        axiosMock.onPut(updateFreePlanLimitsEndpoint).replyOnce(HTTP_STATUS_OK, defaultPlanData);
         findDashboardLimitSection().vm.$emit('limit-change', limit);
         await waitForPromises();
+      });
+
+      it('will call relevant API endpoint', () => {
+        expect(axios.put).toHaveBeenCalledWith(updateFreePlanLimitsEndpoint, undefined, {
+          params: {
+            plan_name: 'free',
+            [APP_PLAN_LIMIT_PARAM_NAMES.dashboard]: limit,
+          },
+        });
+      });
+
+      it('will display a success toast message', () => {
         expect($toast.show).toHaveBeenCalledWith(toastMessage);
       });
     });
 
-    describe('failed API response', () => {
-      beforeEach(() => {
-        const limit = 1;
-        axiosMock
-          .onPut(
-            `${updateFreePlanLimitsEndpoint}&${UPDATE_PLAN_LIMIT_PARAM_NAMES.dashboard}=${limit}`,
-          )
-          .replyOnce(HTTP_STATUS_BAD_REQUEST, {
-            message: 'There was a problem processing the request',
-          });
-        createComponent();
-        findDashboardLimitSection().vm.$emit('limit-change', limit);
-        return waitForPromises();
-      });
+    describe('failed API response on update', () => {
+      it('passes the error message to the namespace-limits-section', async () => {
+        axiosMock.onPut(updateFreePlanLimitsEndpoint).replyOnce(HTTP_STATUS_BAD_REQUEST, {
+          message: 'There was a problem processing the request',
+        });
+        findDashboardLimitSection().vm.$emit('limit-change', 41);
+        await waitForPromises();
 
-      it('passes the error message to the namespace-limits-section', () => {
         expect(findDashboardLimitSection().props()).toMatchObject({
           errorMessage: 'There was a problem processing the request',
         });

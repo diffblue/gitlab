@@ -1,11 +1,10 @@
 import { s__, __ } from '~/locale';
 
-export const UPDATE_FREE_PLAN_LIMITS_ENDPOINT =
-  '/api/:version/application/plan_limits?plan_name=free';
+export const APP_PLAN_LIMITS_ENDPOINT = '/api/:version/application/plan_limits';
 export const LIST_EXCLUSIONS_ENDPOINT = '/api/:version/namespaces/storage/limit_exclusions';
 export const DELETE_EXCLUSION_ENDPOINT = '/api/:version/namespaces/:id/storage/limit_exclusion';
 
-export const UPDATE_PLAN_LIMIT_PARAM_NAMES = {
+export const APP_PLAN_LIMIT_PARAM_NAMES = {
   notifications: 'notification_limit',
   enforcement: 'enforcement_limit',
   dashboard: 'storage_size_limit',
