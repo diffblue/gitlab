@@ -609,6 +609,71 @@ RSpec.describe Projects::CreateService, '#execute' do
         end
       end
     end
+
+    describe 'create security policy project bots', feature_category: :security_policy_management do
+      let_it_be(:group, reload: true) { create(:group) }
+      let_it_be(:sub_group, reload: true) { create(:group, parent: group) }
+
+      before do
+        group.add_owner(user)
+      end
+
+      context 'when group has security_orchestration_policy_configuration' do
+        let(:policy) { build(:scan_result_policy, branches: []) }
+        let_it_be(:group_configuration, reload: true) do
+          create(:security_orchestration_policy_configuration, project: nil, namespace: group)
+        end
+
+        before do
+          allow_next_found_instance_of(Security::OrchestrationPolicyConfiguration) do |configuration|
+            allow(configuration).to receive(:policy_last_updated_by).and_return(user)
+          end
+
+          allow_next_instance_of(Repository) do |repository|
+            allow(repository).to receive(:blob_data_at).and_return({ scan_result_policy: [policy] }.to_yaml)
+          end
+        end
+
+        it 'invokes OrchestrationConfigurationCreateBotWorker', :sidekiq_inline do
+          expect(::Security::OrchestrationConfigurationCreateBotWorker).to receive(:perform_async).and_call_original
+
+          project = create_project(user, name: 'GitLab', namespace_id: group.id)
+
+          expect(project.security_policy_bot).to be_present
+        end
+
+        context 'when project is created in a sub-group with inherited policy' do
+          it 'invokes OrchestrationConfigurationCreateBotWorker', :sidekiq_inline do
+            expect(::Security::OrchestrationConfigurationCreateBotWorker).to receive(:perform_async).and_call_original
+
+            project = create_project(user, name: 'GitLab', namespace_id: sub_group.id)
+
+            expect(project.security_policy_bot).to be_present
+          end
+        end
+
+        context 'when feature flag "scan_execution_group_bot_users" is disabled' do
+          before do
+            stub_feature_flags(scan_execution_group_bot_users: false)
+          end
+
+          it 'does not invoke OrchestrationConfigurationCreateBotWorker' do
+            expect(::Security::OrchestrationConfigurationCreateBotWorker).not_to receive(:perform_async)
+
+            create_project(user, { name: 'GitLab', namespace_id: group.id })
+          end
+        end
+      end
+
+      context 'when group does not have security_orchestration_policy_configuration' do
+        it 'does not invoke OrchestrationConfigurationCreateBotWorker' do
+          expect(::Security::OrchestrationConfigurationCreateBotWorker).not_to receive(:perform_async)
+
+          group_without_policy = create(:group)
+          create_project(user, { name: 'GitLab', namespace_id: group_without_policy.id })
+        end
+      end
+    end
   end
 
   def create_project(user, opts)

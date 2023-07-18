@@ -87,7 +87,7 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category
 
       context 'when policy has a security_policy_bot user' do
         let_it_be(:security_policy_bot) { create(:user, user_type: :security_policy_bot) }
-        let_it_be(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, bot_user: security_policy_bot) }
+        let_it_be(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration) }
         let_it_be(:schedule) { create(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: security_orchestration_policy_configuration) }
 
         before do

@@ -150,6 +150,7 @@ module EE
         class_name: 'Geo::ProjectState'
 
       has_many :compliance_standards_adherence, class_name: 'Projects::ComplianceStandards::Adherence'
+      has_many :security_policy_bots, -> { security_policy_bot }, through: :project_members, source: :user
 
       elastic_index_dependant_association :issues, on_change: :visibility_level
       elastic_index_dependant_association :issues, on_change: :archived, depends_on_finished_migration: :add_archived_to_issues
@@ -1158,6 +1159,16 @@ module EE
       return unless merge_trains_enabled?
 
       MergeTrains::Train.new(self.id, target_branch)
+    end
+
+    # Scan execution policies use a security_policy_bot to run pipelines.
+    # `security_policy_bots` association is used to preload the bots for scheduled pipelines and to prevent N+1 in
+    # `ee/app/workers/security/orchestration_policy_rule_schedule_worker.rb`
+    # It is expected to have only one security_policy_bot per project.
+    # A follow-up issue exists to make the relationship between the bot and the project more explicit:
+    # https://gitlab.com/gitlab-org/gitlab/-/issues/418013
+    def security_policy_bot
+      security_policy_bots.take
     end
 
     private

@@ -193,34 +193,40 @@ RSpec.describe Security::Orchestration::AssignService, feature_category: :securi
       end
     end
 
-    context 'for project' do
-      let(:container) { project }
-      let(:another_container) { another_project }
-
-      it_behaves_like 'executes assign service'
-
+    shared_examples 'triggers bot user create worker' do |feature_flag|
       context 'with owner access' do
         before do
           container.add_owner(current_user)
         end
 
         it 'triggers the project bot user create worker' do
-          expect(Security::OrchestrationConfigurationCreateBotWorker).to receive(:perform_async).with(anything, current_user.id)
+          expected_projects.each do |expected_project|
+            expect(Security::OrchestrationConfigurationCreateBotWorker).to receive(:perform_async).with(expected_project.id, current_user.id)
+          end
 
           expect(service).to be_success
         end
 
-        context 'when the scan_execution_bot_users feature is disabled' do
+        context 'when the feature is disabled' do
           before do
-            stub_feature_flags(scan_execution_bot_users: false)
+            stub_feature_flags(feature_flag => false)
           end
 
           it 'does not trigger the project bot user create worker' do
-            expect(service).to be_success
-
             expect(Security::OrchestrationConfigurationCreateBotWorker).not_to receive(:perform_async)
+            expect(service).to be_success
           end
         end
+      end
+    end
+
+    context 'for project' do
+      let(:container) { project }
+      let(:another_container) { another_project }
+
+      it_behaves_like 'executes assign service'
+      it_behaves_like 'triggers bot user create worker', :scan_execution_bot_users do
+        let!(:expected_projects) { [container] }
       end
     end
 
@@ -229,6 +235,9 @@ RSpec.describe Security::Orchestration::AssignService, feature_category: :securi
       let(:another_container) { another_namespace }
 
       it_behaves_like 'executes assign service'
+      it_behaves_like 'triggers bot user create worker', :scan_execution_group_bot_users do
+        let!(:expected_projects) { create_list(:project, 2, group: container) }
+      end
     end
   end
 end

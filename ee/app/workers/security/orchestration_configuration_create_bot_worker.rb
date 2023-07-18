@@ -10,18 +10,17 @@ module Security
 
     idempotent!
 
-    def perform(configuration_id, current_user_id)
-      configuration = Security::OrchestrationPolicyConfiguration.find_by_id(configuration_id)
+    def perform(project_id, current_user_id)
+      project = Project.find_by_id(project_id)
 
-      return if configuration.nil?
+      return if project.nil?
 
       current_user = User.find_by_id(current_user_id)
 
-      return unless current_user
+      return if current_user.nil?
 
-      Security::Orchestration::CreateBotService.new(configuration, current_user).execute
-    rescue Gitlab::Access::AccessDeniedError,
-      Security::Orchestration::CreateBotService::SecurityOrchestrationPolicyConfigurationHasNoProjectError
+      Security::Orchestration::CreateBotService.new(project, current_user).execute
+    rescue Gitlab::Access::AccessDeniedError
       # Rescue errors to avoid worker retry
     end
   end

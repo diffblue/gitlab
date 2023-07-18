@@ -8,7 +8,7 @@ module Security
 
         old_policy_project = security_orchestration_policy_configuration.security_policy_management_project
 
-        remove_bot(security_orchestration_policy_configuration.bot_user)
+        remove_bot
 
         result = security_orchestration_policy_configuration.delete
 
@@ -38,10 +38,14 @@ module Security
         ServiceResponse.error(message: message)
       end
 
-      def remove_bot(bot_user)
-        return unless bot_user
-
-        security_orchestration_policy_configuration.project.member(bot_user).destroy
+      def remove_bot
+        if container.is_a?(Project)
+          container.member(container.security_policy_bot)&.destroy
+        else
+          container.all_projects.find_each do |project|
+            project.security_policy_bot&.destroy
+          end
+        end
       end
     end
   end
