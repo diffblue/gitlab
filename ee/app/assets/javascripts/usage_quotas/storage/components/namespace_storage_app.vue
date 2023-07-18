@@ -86,7 +86,7 @@ export default {
       }
 
       return {
-        totalStorageUsed: this.namespace.rootStorageStatistics?.storageSize,
+        costFactoredStorageSize: this.namespace.rootStorageStatistics?.costFactoredStorageSize,
         additionalPurchasedStorageSize: this.namespace.additionalPurchasedStorageSize,
       };
     },
@@ -159,7 +159,7 @@ export default {
     <div v-if="storageStatistics">
       <storage-usage-statistics
         :additional-purchased-storage-size="storageStatistics.additionalPurchasedStorageSize"
-        :used-storage="storageStatistics.totalStorageUsed"
+        :used-storage="storageStatistics.costFactoredStorageSize"
         :loading="isStorageUsageStatisticsLoading"
       />
     </div>

@@ -38,6 +38,7 @@ export const withRootStorageStatistics = {
   rootStorageStatistics: {
     containerRegistrySize: 3_900_000,
     storageSize: 129334601,
+    costFactoredStorageSize: 12933460,
     repositorySize: 46012030,
     lfsObjectsSize: 4329334601203,
     buildArtifactsSize: 1272375,
@@ -69,6 +70,7 @@ export const mockedNamespaceStorageResponse = {
       rootStorageStatistics: {
         containerRegistrySize: 3_900_000,
         storageSize: 125771,
+        costFactoredStorageSize: 12577,
         repositorySize: 20971,
         lfsObjectsSize: 0,
         buildArtifactsSize: 0,
@@ -91,7 +93,7 @@ export const mockedNamespaceStorageResponse = {
             statistics: {
               commitCount: 1,
               storageSize: 125771,
-              costFactoredStorageSize: 125771,
+              costFactoredStorageSize: 12577,
               repositorySize: 20971,
               lfsObjectsSize: 0,
               containerRegistrySize: 0,
@@ -115,7 +117,7 @@ export const mockedNamespaceStorageResponse = {
             statistics: {
               commitCount: 1,
               storageSize: 125771,
-              costFactoredStorageSize: 125771,
+              costFactoredStorageSize: 12577,
               repositorySize: 20971,
               lfsObjectsSize: 0,
               containerRegistrySize: 0,
