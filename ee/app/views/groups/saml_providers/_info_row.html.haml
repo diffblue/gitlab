@@ -1,6 +1,6 @@
 - value = local_assigns[:value] || @saml_provider.send(field)
 = label_tag field, label_text, class: 'label-bold'
 .clipboard-input-group.input-group
-  = text_field_tag field, value, class: "js-select-on-focus form-control bg-white", readonly: true, aria: { label: label_text }
+  = text_field_tag field, value, class: "js-select-on-focus form-control gl-form-input", readonly: true, aria: { label: label_text }
   .input-group-append
     = clipboard_button(target: "##{field}", title: _("Copy URL"), class: "btn-default btn-gray")
