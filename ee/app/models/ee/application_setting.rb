@@ -61,6 +61,10 @@ module EE
         presence: true,
         numericality: { only_integer: true, greater_than: 0 }
 
+      validates :namespace_storage_forks_cost_factor,
+        presence: true,
+        numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }
+
       validates :elasticsearch_url,
         presence: { message: "can't be blank when indexing is enabled" },
         if: ->(setting) { setting.elasticsearch_indexing? }
