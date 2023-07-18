@@ -2825,9 +2825,6 @@ msgstr ""
 msgid "Add key"
 msgstr ""
 
-msgid "Add label(s)"
-msgstr ""
-
 msgid "Add labels"
 msgstr ""
 
@@ -21099,7 +21096,7 @@ msgstr ""
 msgid "GlobalSearch|Issues assigned to me"
 msgstr ""
 
-msgid "GlobalSearch|Label(s)"
+msgid "GlobalSearch|Labels"
 msgstr ""
 
 msgid "GlobalSearch|Language"
@@ -38296,7 +38293,7 @@ msgstr ""
 msgid "Remove all or specific assignees"
 msgstr ""
 
-msgid "Remove all or specific label(s)"
+msgid "Remove all or specific labels"
 msgstr ""
 
 msgid "Remove all or specific reviewers"
@@ -38605,7 +38602,7 @@ msgstr ""
 msgid "Replace %{name}"
 msgstr ""
 
-msgid "Replace all label(s)"
+msgid "Replace all labels"
 msgstr ""
 
 msgid "Replace audio"
