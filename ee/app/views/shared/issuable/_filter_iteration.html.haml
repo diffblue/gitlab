@@ -4,18 +4,18 @@
 #js-dropdown-iteration.filtered-search-input-dropdown-menu.dropdown-menu
   %ul{ 'data-dropdown' => true }
     %li.filter-dropdown-item{ 'data-value' => 'None' }
-      %button.btn.gl-button.btn-link
+      = render Pajamas::ButtonComponent.new(variant: :link) do
         = _('None')
     %li.filter-dropdown-item{ 'data-value' => 'Any' }
-      %button.btn.gl-button.btn-link
+      = render Pajamas::ButtonComponent.new(variant: :link) do
         = _('Any')
     %li.filter-dropdown-item{ 'data-value' => 'Current' }
-      %button.btn.gl-button.btn-link
+      = render Pajamas::ButtonComponent.new(variant: :link) do
         = _('Current')
     %li.divider.droplab-item-ignore
   %ul.filter-dropdown{ data: { dropdown: true, dynamic: true } }
     %li.filter-dropdown-item
-      %button.btn.gl-button.btn-link{ type: 'button' }
+      = render Pajamas::ButtonComponent.new(variant: :link) do
         -# haml-lint:disable NoPlainNodes
         %span.dropdown-light-content
           {{title}}
