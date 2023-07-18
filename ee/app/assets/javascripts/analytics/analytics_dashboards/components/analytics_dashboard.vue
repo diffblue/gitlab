@@ -1,26 +1,15 @@
 <script>
 import { GlEmptyState, GlLoadingIcon } from '@gitlab/ui';
 import { createAlert } from '~/alert';
-import {
-  HTTP_STATUS_BAD_REQUEST,
-  HTTP_STATUS_CREATED,
-  HTTP_STATUS_NOT_FOUND,
-} from '~/lib/utils/http_status';
+import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
 import {
   buildDefaultDashboardFilters,
   getDashboardConfig,
   updateApolloCache,
 } from 'ee/vue_shared/components/customizable_dashboard/utils';
-import { configFileNameToID, isValidConfigFileName } from 'ee/analytics/analytics_dashboards/utils';
-import {
-  getCustomDashboard,
-  getProductAnalyticsVisualization,
-  getProductAnalyticsVisualizationList,
-  saveCustomDashboard,
-} from 'ee/analytics/analytics_dashboards/api/dashboards_api';
+import { saveCustomDashboard } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { builtinDashboards, builtinVisualizations } from '../gl_dashboards';
 import {
   I18N_DASHBOARD_ERROR_WHILE_SAVING,
   I18N_DASHBOARD_NOT_FOUND_ACTION,
@@ -29,7 +18,6 @@ import {
   I18N_DASHBOARD_SAVED_SUCCESSFULLY,
   I18N_PRODUCT_ANALYTICS_TITLE,
   NEW_DASHBOARD,
-  VISUALIZATION_TYPE_FILE,
 } from '../constants';
 import getProductAnalyticsDashboardQuery from '../graphql/queries/get_product_analytics_dashboard.query.graphql';
 import getAvailableVisualizations from '../graphql/queries/get_all_product_analytics_visualizations.query.graphql';
@@ -83,38 +71,20 @@ export default {
       isSaving: false,
       backUrl: this.$router.resolve('/').href,
       editingEnabled: this.glFeatures.combinedAnalyticsDashboardsEditor,
-      jitsuEnabled: !this.glFeatures.productAnalyticsSnowplowSupport,
       alert: null,
     };
   },
   async created() {
-    // Only allow new dashboards when the dashboards editor is enabled
-    if (this.editingEnabled && this.isNewDashboard) {
+    if (!this.isNewDashboard) {
+      return;
+    }
+
+    if (this.editingEnabled) {
       this.initialDashboard = this.createNewDashboard();
       return;
     }
 
-    let loadedDashboard;
-
-    // Only check Jitsu dashboards when Jitsu is enabled and this isn't a new
-    // dashboard request
-    if (this.jitsuEnabled && !this.isNewDashboard) {
-      if (builtinDashboards[this.$route?.params.slug]) {
-        loadedDashboard = await this.loadBuiltInDashboard(this.$route?.params.slug);
-      } else if (this.customDashboardsProject) {
-        loadedDashboard = await this.loadCustomDashboard();
-      }
-    }
-
-    // If we've got a new dashboard prepped or we found a Jitsu dashboard render it
-    // Otherwise, show the empty state if Jitsu is enabled and we couldn't find it
-    // Or we couldn't prep the new dashboard because the dashboard editor is disabled
-    if (loadedDashboard) {
-      this.initialDashboard = await this.importDashboardDependencies(loadedDashboard);
-      await this.loadAvailableVisualizations();
-    } else if (this.jitsuEnabled || this.isNewDashboard) {
-      this.showEmptyState = true;
-    }
+    this.showEmptyState = true;
   },
   beforeDestroy() {
     this.alert?.dismiss();
@@ -133,7 +103,7 @@ export default {
         };
       },
       skip() {
-        return this.jitsuEnabled || this.isNewDashboard;
+        return this.isNewDashboard;
       },
       update(data) {
         const dashboard = data?.project?.productAnalyticsDashboards?.nodes[0];
@@ -171,10 +141,7 @@ export default {
       },
       skip() {
         return (
-          !this.editingEnabled ||
-          this.jitsuEnabled ||
-          !this.initialDashboard ||
-          !this.initialDashboard?.userDefined
+          !this.editingEnabled || !this.initialDashboard || !this.initialDashboard?.userDefined
         );
       },
       update(data) {
@@ -197,82 +164,6 @@ export default {
   methods: {
     createNewDashboard() {
       return NEW_DASHBOARD();
-    },
-    async loadBuiltInDashboard() {
-      const builtInDashboard = await builtinDashboards[this.$route.params.slug]();
-      return { ...builtInDashboard, builtin: true };
-    },
-    async loadCustomDashboard() {
-      try {
-        const customDashboard = await getCustomDashboard(
-          this.$route?.params.slug,
-          this.customDashboardsProject,
-        );
-        return { ...customDashboard, default: { ...customDashboard } };
-      } catch (error) {
-        if (error?.response?.status === HTTP_STATUS_NOT_FOUND) {
-          return null;
-        }
-        // TODO: Show user friendly errors when request fails
-        // https://gitlab.com/gitlab-org/gitlab/-/issues/395788
-        throw error;
-      }
-    },
-    async getCustomVisualizationIds() {
-      const visualizationFiles = await getProductAnalyticsVisualizationList(
-        this.customDashboardsProject,
-      );
-
-      return visualizationFiles
-        .filter(({ file_name }) => isValidConfigFileName(file_name))
-        .map(({ file_name }) => configFileNameToID(file_name));
-    },
-    async loadAvailableVisualizations() {
-      const builtInVisualizationIds = Object.keys(builtinVisualizations).map((id) => id);
-      const customVisualizationIds = this.customDashboardsProject
-        ? await this.getCustomVisualizationIds()
-        : [];
-
-      this.availableVisualizations[I18N_PRODUCT_ANALYTICS_TITLE] = {
-        loading: false,
-        visualizationIds: [...builtInVisualizationIds, ...customVisualizationIds],
-      };
-    },
-    // TODO: Remove in https://gitlab.com/gitlab-org/gitlab/-/issues/382551
-    async importVisualization(visualization, visualizationType) {
-      const isFileVisualization =
-        visualizationType === VISUALIZATION_TYPE_FILE || visualizationType === undefined;
-
-      if (isFileVisualization && builtinVisualizations[visualization]) {
-        const module = await builtinVisualizations[visualization]();
-        return { ...module };
-      }
-
-      if (isFileVisualization) {
-        const file = await getProductAnalyticsVisualization(
-          visualization,
-          this.customDashboardsProject,
-        );
-        return { ...file };
-      }
-
-      return visualization;
-    },
-    async importDashboardDependencies(dashboard) {
-      return {
-        ...dashboard,
-        panels: dashboard.panels
-          ? await Promise.all(
-              dashboard.panels.map(async (panel) => ({
-                ...panel,
-                visualization: {
-                  slug: panel.visualization,
-                  ...(await this.importVisualization(panel.visualization, panel.visualizationType)),
-                },
-              })),
-            )
-          : [],
-      };
     },
     async saveDashboard(dashboardSlug, dashboard) {
       try {
@@ -334,7 +225,6 @@ export default {
     <customizable-dashboard
       v-if="initialDashboard"
       :initial-dashboard="initialDashboard"
-      :get-visualization="importVisualization"
       :available-visualizations="availableVisualizations"
       :default-filters="defaultFilters"
       :is-saving="isSaving"

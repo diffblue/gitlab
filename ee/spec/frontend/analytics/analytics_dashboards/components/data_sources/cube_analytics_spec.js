@@ -33,8 +33,8 @@ describe('Cube Analytics Data Source', () => {
   });
   const projectId = 'TEST_ID';
   const visualizationType = 'LineChart';
-  const query = { measures: ['TrackedEvents.count'] };
-  const queryOverrides = { measures: ['TrackedEvents.userLanguage'] };
+  const query = { measures: ['SnowplowTrackedEvents.count'] };
+  const queryOverrides = { measures: ['SnowplowTrackedEvents.userLanguage'] };
 
   describe('fetch', () => {
     beforeEach(() => {
@@ -56,7 +56,7 @@ describe('Cube Analytics Data Source', () => {
             ['2022-11-09T00:00:00.000', 55],
             ['2022-11-10T00:00:00.000', 14],
           ],
-          name: 'pageview, TrackedEvents Count',
+          name: 'pageview, SnowplowTrackedEvents Count',
         });
       });
 
@@ -68,7 +68,7 @@ describe('Cube Analytics Data Source', () => {
             ['2022-11-09T00:00:00.000', 55],
             ['2022-11-10T00:00:00.000', 14],
           ],
-          name: 'pageview, TrackedEvents Count',
+          name: 'pageview, SnowplowTrackedEvents Count',
         });
       });
 
@@ -89,14 +89,14 @@ describe('Cube Analytics Data Source', () => {
           projectId,
           visualizationType: 'DataTable',
           query: {
-            measures: ['TrackedEvents.pageViewsCount'],
-            dimensions: ['TrackedEvents.docPath', 'TrackedEvents.url'],
+            measures: ['SnowplowTrackedEvents.pageViewsCount'],
+            dimensions: ['SnowplowTrackedEvents.docPath', 'SnowplowTrackedEvents.url'],
           },
           visualizationOptions: {
             links: [
               {
-                text: 'TrackedEvents.docPath',
-                href: 'TrackedEvents.url',
+                text: 'SnowplowTrackedEvents.docPath',
+                href: 'SnowplowTrackedEvents.url',
               },
             ],
           },
@@ -118,7 +118,7 @@ describe('Cube Analytics Data Source', () => {
       });
 
       it('returns the expected data format for single stats with custom measure', async () => {
-        const override = { measures: ['TrackedEvents.url'] };
+        const override = { measures: ['SnowplowTrackedEvents.url'] };
         const result = await fetch({
           projectId,
           visualizationType: 'SingleStat',
@@ -148,15 +148,13 @@ describe('Cube Analytics Data Source', () => {
       {
         operator: 'equals',
         values: ['pageview'],
-        member: 'TrackedEvents.eventType',
+        member: 'SnowplowTrackedEvents.eventType',
       },
     ];
 
     it.each`
       type                       | queryMeasurement                         | expectedDimension
-      ${'TrackedEvents'}         | ${'TrackedEvents.pageViewCount'}         | ${'TrackedEvents.utcTime'}
       ${'SnowplowTrackedEvents'} | ${'SnowplowTrackedEvents.pageViewCount'} | ${'SnowplowTrackedEvents.derivedTstamp'}
-      ${'Sessions'}              | ${'Sessions.pageViewCount'}              | ${'Sessions.startAt'}
       ${'SnowplowSessions'}      | ${'SnowplowSessions.pageViewCount'}      | ${'SnowplowSessions.startAt'}
     `(
       'loads the query with date range filters for "$type"',

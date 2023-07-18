@@ -92,9 +92,10 @@ export const getDashboardConfig = (hydratedDashboard) => {
   };
 };
 
+/**
+ * Adds/updates a dashboard detail in cache from getProductAnalyticsDashboard:{slug}
+ */
 const updateDashboardDetailsApolloCache = (apolloClient, projectRef, dashboardRef, dashboard) => {
-  // Adds/updates a dashboard detail in cache from getProductAnalyticsDashboard:{slug}
-
   apolloClient.writeFragment({
     id: dashboardRef,
     fragment: productAnalyticsDashboardFragment,
@@ -111,9 +112,10 @@ const updateDashboardDetailsApolloCache = (apolloClient, projectRef, dashboardRe
   });
 };
 
+/**
+ * Links a newly created dashboard to the project in cache from getAllProductAnalyticsDashboards
+ */
 const updateDashboardsListApolloCache = (apolloClient, projectRef, dashboardRef) => {
-  // Links a newly created dashboard to the project in cache from getAllProductAnalyticsDashboards
-
   apolloClient.cache.modify({
     id: projectRef,
     fields: {

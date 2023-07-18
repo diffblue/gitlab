@@ -59,10 +59,6 @@ export const I18N_DASHBOARD_NOT_FOUND_ACTION = s__('Analytics|View available das
 
 export const I18N_DASHBOARD_SAVED_SUCCESSFULLY = s__('Analytics|Dashboard was saved successfully');
 export const I18N_DASHBOARD_ERROR_WHILE_SAVING = s__('Analytics|Error while saving dashboard');
-
-export const VISUALIZATION_TYPE_FILE = 'yml';
-export const VISUALIZATION_TYPE_BUILT_IN = 'builtin';
-
 export const EVENTS_TYPES = ['pageViews', 'featureUsages', 'clickEvents', 'events'];
 
 export function isTrackedEvent(eventType) {

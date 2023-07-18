@@ -14,17 +14,6 @@ export const TEST_CUSTOM_DASHBOARDS_PROJECT = {
   name: 'test-dashboards',
 };
 
-export const TEST_CUSTOM_DASHBOARDS_LIST = [
-  {
-    file_name: 'product_analytics',
-    lock_label: null,
-  },
-  {
-    file_name: 'new_dashboard.yml',
-    lock_label: null,
-  },
-];
-
 export const TEST_VISUALIZATION = () => ({
   version: 1,
   type: 'LineChart',
@@ -32,10 +21,10 @@ export const TEST_VISUALIZATION = () => ({
   data: {
     type: 'cube_analytics',
     query: {
-      measures: ['TrackedEvents.count'],
+      measures: ['SnowplowTrackedEvents.count'],
       timeDimensions: [
         {
-          dimension: 'TrackedEvents.utcTime',
+          dimension: 'SnowplowTrackedEvents.utcTime',
           granularity: 'day',
         },
       ],
@@ -45,25 +34,6 @@ export const TEST_VISUALIZATION = () => ({
       dimensions: [],
     },
   },
-});
-
-export const TEST_CUSTOM_DASHBOARD = () => ({
-  slug: 'new_dashboard',
-  title: 'New dashboard',
-  panels: [
-    {
-      id: 1,
-      visualization: 'page_views_per_day',
-      visualizationType: 'yml',
-      gridAttributes: {
-        yPos: 0,
-        xPos: 0,
-        width: 7,
-        height: 6,
-      },
-      options: {},
-    },
-  ],
 });
 
 export const TEST_DASHBOARD_GRAPHQL_404_RESPONSE = {
@@ -237,68 +207,68 @@ export const TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE = {
 export const mockResultSet = {
   seriesNames: () => [
     {
-      title: 'pageview, TrackedEvents Count',
-      key: 'pageview,TrackedEvents.count',
-      yValues: ['pageview', 'TrackedEvents.count'],
+      title: 'pageview, SnowplowTrackedEvents Count',
+      key: 'pageview,SnowplowTrackedEvents.count',
+      yValues: ['pageview', 'SnowplowTrackedEvents.count'],
     },
   ],
   chartPivot: () => [
     {
       x: '2022-11-09T00:00:00.000',
       xValues: ['2022-11-09T00:00:00.000'],
-      'pageview,TrackedEvents.count': 55,
+      'pageview,SnowplowTrackedEvents.count': 55,
     },
     {
       x: '2022-11-10T00:00:00.000',
       xValues: ['2022-11-10T00:00:00.000'],
-      'pageview,TrackedEvents.count': 14,
+      'pageview,SnowplowTrackedEvents.count': 14,
     },
   ],
   tableColumns: () => [
     {
-      key: 'TrackedEvents.utcTime.day',
-      title: 'TrackedEvents Utc Time',
+      key: 'SnowplowTrackedEvents.utcTime.day',
+      title: 'SnowplowTrackedEvents Utc Time',
       shortTitle: 'Utc Time',
       type: 'time',
-      dataIndex: 'TrackedEvents.utcTime.day',
+      dataIndex: 'SnowplowTrackedEvents.utcTime.day',
     },
     {
-      key: 'TrackedEvents.eventType',
-      title: 'TrackedEvents Event Type',
+      key: 'SnowplowTrackedEvents.eventType',
+      title: 'SnowplowTrackedEvents Event Type',
       shortTitle: 'Event Type',
       type: 'string',
-      dataIndex: 'TrackedEvents.eventType',
+      dataIndex: 'SnowplowTrackedEvents.eventType',
     },
     {
-      key: 'TrackedEvents.count',
+      key: 'SnowplowTrackedEvents.count',
       type: 'number',
-      dataIndex: 'TrackedEvents.count',
-      title: 'TrackedEvents Count',
+      dataIndex: 'SnowplowTrackedEvents.count',
+      title: 'SnowplowTrackedEvents Count',
       shortTitle: 'Count',
     },
   ],
   tablePivot: () => [
     {
-      'TrackedEvents.utcTime.day': '2022-11-09T00:00:00.000',
-      'TrackedEvents.eventType': 'pageview',
-      'TrackedEvents.count': '55',
+      'SnowplowTrackedEvents.utcTime.day': '2022-11-09T00:00:00.000',
+      'SnowplowTrackedEvents.eventType': 'pageview',
+      'SnowplowTrackedEvents.count': '55',
     },
     {
-      'TrackedEvents.utcTime.day': '2022-11-10T00:00:00.000',
-      'TrackedEvents.eventType': 'pageview',
-      'TrackedEvents.count': '14',
+      'SnowplowTrackedEvents.utcTime.day': '2022-11-10T00:00:00.000',
+      'SnowplowTrackedEvents.eventType': 'pageview',
+      'SnowplowTrackedEvents.count': '14',
     },
   ],
   rawData: () => [
     {
-      'TrackedEvents.userLanguage': 'en-US',
-      'TrackedEvents.count': '36',
-      'TrackedEvents.url': 'https://example.com/us',
+      'SnowplowTrackedEvents.userLanguage': 'en-US',
+      'SnowplowTrackedEvents.count': '36',
+      'SnowplowTrackedEvents.url': 'https://example.com/us',
     },
     {
-      'TrackedEvents.userLanguage': 'es-ES',
-      'TrackedEvents.count': '60',
-      'TrackedEvents.url': 'https://example.com/es',
+      'SnowplowTrackedEvents.userLanguage': 'es-ES',
+      'SnowplowTrackedEvents.count': '60',
+      'SnowplowTrackedEvents.url': 'https://example.com/es',
     },
   ],
 };
@@ -306,32 +276,32 @@ export const mockResultSet = {
 export const mockTableWithLinksResultSet = {
   tableColumns: () => [
     {
-      key: 'TrackedEvents.docPath',
+      key: 'SnowplowTrackedEvents.docPath',
       title: 'Tracked Events Doc Path',
       shortTitle: 'Doc Path',
       type: 'string',
-      dataIndex: 'TrackedEvents.docPath',
+      dataIndex: 'SnowplowTrackedEvents.docPath',
     },
     {
-      key: 'TrackedEvents.url',
+      key: 'SnowplowTrackedEvents.url',
       title: 'Tracked Events Url',
       shortTitle: 'Url',
       type: 'string',
-      dataIndex: 'TrackedEvents.url',
+      dataIndex: 'SnowplowTrackedEvents.url',
     },
     {
-      key: 'TrackedEvents.pageViewsCount',
+      key: 'SnowplowTrackedEvents.pageViewsCount',
       type: 'number',
-      dataIndex: 'TrackedEvents.pageViewsCount',
+      dataIndex: 'SnowplowTrackedEvents.pageViewsCount',
       title: 'Tracked Events Page Views Count',
       shortTitle: 'Page Views Count',
     },
   ],
   tablePivot: () => [
     {
-      'TrackedEvents.docPath': '/foo',
-      'TrackedEvents.url': 'https://example.com/foo',
-      'TrackedEvents.pageViewsCount': '1',
+      'SnowplowTrackedEvents.docPath': '/foo',
+      'SnowplowTrackedEvents.url': 'https://example.com/foo',
+      'SnowplowTrackedEvents.pageViewsCount': '1',
     },
   ],
 };
