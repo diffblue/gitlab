@@ -133,7 +133,6 @@ RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_mana
         stub_licensed_features(
           sast: true
         )
-        stub_feature_flags(sec_mark_dropped_findings_as_resolved: true)
       end
 
       it 'resolves vulnerabilities' do

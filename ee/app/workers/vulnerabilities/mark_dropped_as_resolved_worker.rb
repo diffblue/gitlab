@@ -14,8 +14,6 @@ module Vulnerabilities
     loggable_arguments 1
 
     def perform(project_id, dropped_identifier_ids)
-      return unless Feature.enabled?(:sec_mark_dropped_findings_as_resolved, Project.find(project_id))
-
       @project_id = project_id
       @dropped_identifier_ids = dropped_identifier_ids
 
