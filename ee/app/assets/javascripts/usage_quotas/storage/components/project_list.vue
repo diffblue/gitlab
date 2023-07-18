@@ -87,7 +87,7 @@ export default {
   })),
   containerRegistryPopover: {
     content: s__(
-      'UsageQuotas|Container Registry storage statistics are not used to calculate the total project storage. After namespace container deduplication, the total of all unique containers is added to the namespace storage total.',
+      'UsageQuotas|Container Registry storage statistics are not used to calculate the total project storage. Total project storage is calculated after namespace container deduplication, where the total of all unique containers is added to the namespace storage total.',
     ),
     docsLink: helpPagePath(
       'user/packages/container_registry/reduce_container_registry_storage.html',
