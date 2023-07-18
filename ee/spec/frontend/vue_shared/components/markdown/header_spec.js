@@ -1,8 +1,12 @@
 import { GlTabs, GlDisclosureDropdown, GlListboxItem } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
+
+import { MergeRequestGeneratedContent } from '~/merge_requests/generated_content';
 import HeaderComponent from '~/vue_shared/components/markdown/header.vue';
 import AiActionsDropdown from 'ee/ai/components/ai_actions_dropdown.vue';
-import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
+
+jest.mock('~/merge_requests/generated_content');
 
 describe('Markdown field header component', () => {
   document.execCommand = jest.fn();
@@ -36,43 +40,44 @@ describe('Markdown field header component', () => {
     },
   );
 
-  describe('generated text responses', () => {
+  describe('when AI features are enabled and a generated content class is provided to the component', () => {
     const sha = 'abc123';
     const addendum = `
 
 ---
 
 _This description was generated for revision ${sha} using AI_`;
+    let gen;
 
     beforeEach(() => {
+      gen = new MergeRequestGeneratedContent({ editor: {} });
+
       setHTMLFixture(`<div class="md-area">
         <input id="merge_request_diff_head_sha" value="${sha}" />
         <textarea></textarea>
         <div id="root"></div>
       </div>`);
+
+      createWrapper({
+        attachTo: '#root',
+        provide: {
+          editorAiActions: [{ value: 'myAction', title: 'myAction' }],
+          mrGeneratedContent: gen,
+        },
+      });
     });
 
     afterEach(() => {
       resetHTMLFixture();
     });
 
-    it('replaces the text content when the AI actions dropdown reports a `replace` event', () => {
-      const text = document.querySelector('textarea');
+    describe('and the AI Actions Dropdown reports a `replace` event', () => {
+      it('calls the MergeRequestGeneratedContent instance with the correct value and shows the warning', () => {
+        findAiActionsButton().vm.$emit('replace', 'other text');
 
-      text.value = 'test';
-
-      createWrapper({
-        attachTo: '#root',
-        provide: {
-          editorAiActions: [{ value: 'myAction', title: 'myAction' }],
-        },
+        expect(gen.setGeneratedContent).toHaveBeenCalledWith(`other text${addendum}`);
+        expect(gen.showWarning).toHaveBeenCalled();
       });
-
-      expect(text.value).toBe('test');
-
-      findAiActionsButton().vm.$emit('replace', 'other text');
-
-      expect(text.value).toBe(`other text${addendum}`);
     });
   });
 });

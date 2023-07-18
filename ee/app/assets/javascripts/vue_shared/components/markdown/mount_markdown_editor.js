@@ -4,11 +4,15 @@ import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { generateDescriptionAction } from 'ee/ai/editor_actions/generate_description';
 import aiFillDescriptionMutation from 'ee/ai/graphql/fill_mr_description.mutation.graphql';
 import { mountMarkdownEditor as mountCEMarkdownEditor } from '~/vue_shared/components/markdown/mount_markdown_editor';
+import { MergeRequestGeneratedContent } from '~/merge_requests/generated_content';
 
 export function mountMarkdownEditor() {
   const provideEEAiActions = [];
+  let mrGeneratedContent;
 
   if (window.gon?.features?.fillInMrTemplate) {
+    mrGeneratedContent = new MergeRequestGeneratedContent();
+
     provideEEAiActions.push({
       title: __('Fill in merge request template'),
       description: __('Replace current template with filled in placeholders'),
@@ -46,9 +50,15 @@ export function mountMarkdownEditor() {
     provideEEAiActions.push(generateDescriptionAction());
   }
 
-  return mountCEMarkdownEditor({
+  const editor = mountCEMarkdownEditor({
+    useApollo: true,
     provide: {
       editorAiActions: provideEEAiActions,
+      mrGeneratedContent,
     },
   });
+
+  mrGeneratedContent?.setEditor(editor);
+
+  return editor;
 }
