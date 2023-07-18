@@ -5,6 +5,10 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   ALL_CUSTOMIZABLE_PERMISSIONS = {
     read_code:
       { description: 'Permission to read code', minimal_level: Gitlab::Access::GUEST },
+    read_dependency: {
+      description: 'Permission to read dependency',
+      minimal_level: Gitlab::Access::GUEST
+    },
     read_vulnerability:
       { descripition: 'Permission to read vulnerability', minimal_level: Gitlab::Access::GUEST },
     admin_vulnerability: {

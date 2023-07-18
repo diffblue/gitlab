@@ -2459,6 +2459,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     let(:member_role_abilities) { {} }
     let(:allowed_abilities) { [] }
     let(:current_user) { guest }
+    let(:licensed_features) { {} }
 
     def create_member_role(member, abilities = member_role_abilities)
       params = abilities.merge(namespace: project.group)
@@ -2483,7 +2484,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
       context 'with custom_roles license enabled' do
         before do
-          stub_licensed_features(custom_roles: true)
+          stub_licensed_features(licensed_features.merge(custom_roles: true))
         end
 
         context 'custom role for parent group' do
@@ -2549,6 +2550,22 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     context 'for a member role with admin_vulnerability true' do
       let(:member_role_abilities) { { read_vulnerability: true, admin_vulnerability: true } }
       let(:allowed_abilities) { [:read_vulnerability, :admin_vulnerability] }
+
+      it_behaves_like 'custom roles abilities'
+    end
+
+    context 'for a member role with read_dependency true' do
+      let(:member_role_abilities) { { read_dependency: true } }
+      let(:allowed_abilities) { [:read_dependencies] }
+      let(:licensed_features) { { dependency_scanning: true } }
+
+      it_behaves_like 'custom roles abilities'
+    end
+
+    context 'for a member role with read_dependency false' do
+      let(:member_role_abilities) { { read_dependency: false } }
+      let(:allowed_abilities) { [] }
+      let(:licensed_features) { { dependency_scanning: true } }
 
       it_behaves_like 'custom roles abilities'
     end
