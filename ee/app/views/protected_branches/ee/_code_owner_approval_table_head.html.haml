@@ -2,6 +2,6 @@
   %th
     = s_("ProtectedBranch|Code owner approval")
     %span.sr-only
-      = "(" << s_("ProtectedBranch|Does not apply to users allowed to push. Optional sections are not enforced.") << ")"
-    %span.has-tooltip{ data: { container: 'body' }, title: s_('ProtectedBranch|Does not apply to users allowed to push. Optional sections are not enforced.'), 'aria-hidden': 'true' }
+      = "(" << s_("ProtectedBranch|When pushing directly to the branch. Does not apply to users **Allowed to push**. Optional sections are not enforced.") << ")"
+    %span.has-tooltip{ data: { container: 'body' }, title: s_('ProtectedBranch|When pushing directly to the branch. Does not apply to users **Allowed to push**. Optional sections are not enforced.'), 'aria-hidden': 'true' }
       = sprite_icon('question-o', size: 16, css_class: 'gl-text-blue-500')
