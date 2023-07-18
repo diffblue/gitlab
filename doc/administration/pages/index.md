@@ -10,9 +10,8 @@ GitLab Pages allows for hosting of static sites. It must be configured by an
 administrator. Separate [user documentation](../../user/project/pages/index.md) is available.
 
 NOTE:
-This guide is for Omnibus GitLab installations. If you have installed
-GitLab from source, see
-[GitLab Pages administration for source installations](source.md).
+This guide is for Linux package installations. If you have a self-compiled GitLab installation, see
+[GitLab Pages administration for self-compiled installations](source.md).
 
 ## The GitLab Pages daemon
 
@@ -225,7 +224,7 @@ This setup is primarily intended to be used when [installing a GitLab POC on Ama
 
 ### Global settings
 
-Below is a table of all configuration settings known to Pages in Omnibus GitLab,
+Below is a table of all configuration settings known to Pages in a Linux package installation,
 and what they do. These options can be adjusted in `/etc/gitlab/gitlab.rb`,
 and take effect after you [reconfigure GitLab](../restart_gitlab.md#reconfigure-a-linux-package-installation).
 Most of these settings don't have to be configured manually unless you need more granular
@@ -530,7 +529,7 @@ This usually results in this error:
 For installation from source, this can be fixed by installing the custom Certificate
 Authority (CA) in the system certificate store.
 
-For Omnibus, this is fixed by [installing a custom CA in Omnibus GitLab](https://docs.gitlab.com/omnibus/settings/ssl/index.html#install-custom-public-certificates).
+For Linux package installations, this is fixed by [installing a custom CA](https://docs.gitlab.com/omnibus/settings/ssl/index.html#install-custom-public-certificates).
 
 ### ZIP serving and cache configuration
 
@@ -784,7 +783,7 @@ database encryption. Proceed with caution.
 
 1. Set up a new server. This becomes the **Pages server**.
 
-1. On the **Pages server**, install Omnibus GitLab and modify `/etc/gitlab/gitlab.rb`
+1. On the **Pages server**, install GitLab by using the Linux package and modify `/etc/gitlab/gitlab.rb`
    to include:
 
    ```ruby
@@ -898,8 +897,8 @@ configuration is tried to be resolved automatically before reporting an error.
 
 The following [object storage](../object_storage.md) settings are:
 
-- Nested under `pages:` and then `object_store:` on source installations.
-- Prefixed by `pages_object_store_` on Omnibus GitLab installations.
+- Nested under `pages:` and then `object_store:` on self-compiled installations.
+- Prefixed by `pages_object_store_` on Linux package installations.
 
 | Setting | Description | Default |
 |---------|-------------|---------|
@@ -919,7 +918,9 @@ This section describes the earlier configuration format.
 
 See [the available connection settings for different providers](../object_storage.md#configure-the-connection-settings).
 
-In Omnibus installations:
+::Tabs
+
+:::TabTitle Linux package (Omnibus)
 
 1. Add the following lines to `/etc/gitlab/gitlab.rb` and replace the values with the ones you want:
 
@@ -950,7 +951,7 @@ In Omnibus installations:
 
 1. [Migrate existing Pages deployments to object storage.](#migrate-pages-deployments-to-object-storage)
 
-In installations from source:
+:::TabTitle Self-compiled (source)
 
 1. Edit `/home/git/gitlab/config/gitlab.yml` and add or amend the following lines:
 
@@ -971,6 +972,8 @@ In installations from source:
 
 1. [Migrate existing Pages deployments to object storage.](#migrate-pages-deployments-to-object-storage)
 
+::EndTabs
+
 ### Migrate Pages deployments to object storage
 
 Existing Pages deployment objects (zip archives) can be stored in either:
@@ -987,9 +990,9 @@ sudo gitlab-rake gitlab:pages:deployments:migrate_to_object_storage
 You can track progress and verify that all Pages deployments migrated successfully using the
 [PostgreSQL console](https://docs.gitlab.com/omnibus/settings/database.html#connecting-to-the-bundled-postgresql-database):
 
-- `sudo gitlab-rails dbconsole` for Omnibus GitLab 14.1 and earlier.
-- `sudo gitlab-rails dbconsole --database main` for Omnibus GitLab 14.2 and later.
-- `sudo -u git -H psql -d gitlabhq_production` for source-installed instances.
+- `sudo gitlab-rails dbconsole` for Linux package installations running GitLab 14.1 and earlier.
+- `sudo gitlab-rails dbconsole --database main` for Linux package installations running 14.2 and later.
+- `sudo -u git -H psql -d gitlabhq_production` for self-compiled installations.
 
 Verify `objectstg` below (where `store=2`) has count of all Pages deployments:
 
