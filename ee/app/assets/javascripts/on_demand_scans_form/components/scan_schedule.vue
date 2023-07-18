@@ -130,6 +130,7 @@ export default {
 
           <timezone-dropdown
             v-model="timezone"
+            class="gl-mb-5"
             :timezone-data="timezones"
             :disabled="!form.isScheduledScan"
             @input="handleInput"
