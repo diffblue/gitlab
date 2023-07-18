@@ -2912,6 +2912,32 @@ RSpec.describe User, feature_category: :system_access do
         it { is_expected.to eq(false) }
       end
     end
+
+    context 'when member of a project only' do
+      include_context 'with ai features enabled for group'
+
+      context 'with eligible group' do
+        let(:group) { ultimate_group }
+        let_it_be(:project) { create(:project, group: ultimate_group) }
+
+        before do
+          project.add_guest(user)
+        end
+
+        it { is_expected.to eq(true) }
+      end
+
+      context 'with not eligible group' do
+        let(:group) { bronze_group }
+        let_it_be(:project) { create(:project, group: bronze_group) }
+
+        before do
+          project.add_guest(user)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+    end
   end
 
   describe '#unlock_access!' do

@@ -584,7 +584,7 @@ module EE
 
     def any_group_with_ai_available?
       Rails.cache.fetch(['users', id, 'group_with_ai_enabled'], expires_in: GROUP_WITH_AI_ENABLED_CACHE_PERIOD) do
-        groups.roots.namespace_settings_with_ai_enabled.with_ai_supported_plan.any?
+        member_namespaces.namespace_settings_with_ai_enabled.with_ai_supported_plan.any?
       end
     end
 
