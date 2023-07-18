@@ -182,7 +182,7 @@ describe('Comparison chart', () => {
 
   const expectMergeRequestsRequests = (
     timePeriods,
-    { fullPath = groupPath, labelNames = [] } = {},
+    { fullPath = groupPath, labelNames = null } = {},
   ) =>
     expectTimePeriodRequests({
       timePeriods,

@@ -244,7 +244,7 @@ export default {
         startDate: toYmd(startDate),
         endDate: toYmd(endDate),
         state: MERGE_REQUESTS_STATE_MERGED,
-        labelNames: this.filterLabels,
+        labelNames: this.filterLabels.length > 0 ? this.filterLabels : null,
       });
 
       return {
