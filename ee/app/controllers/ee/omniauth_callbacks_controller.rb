@@ -22,11 +22,20 @@ module EE
 
     override :log_failed_login
     def log_failed_login(author, provider)
-      ::AuditEventService.new(
-        author,
-        nil,
-        with: provider
-      ).for_failed_login.unauth_security_event
+      unauth_author = ::Gitlab::Audit::UnauthenticatedAuthor.new(name: author)
+      user = ::User.new(id: unauth_author.id, name: author)
+      ::Gitlab::Audit::Auditor.audit({
+        name: "omniauth_login_failed",
+        author: unauth_author,
+        scope: user,
+        target: user,
+        additional_details: {
+          failed_login: provider.upcase,
+          author_name: user.name,
+          target_details: user.name
+        },
+        message: "#{provider.upcase} login failed"
+      })
     end
 
     override :after_sign_up_path
