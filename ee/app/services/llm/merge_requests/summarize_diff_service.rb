@@ -34,30 +34,42 @@ module Llm
       attr_reader :title, :user, :diff
 
       def prompt
-        "The above is the code diff of a merge request. The merge request's " \
-          "title is: '#{title}'\n\n" \
-          "Write a summary the way an expert engineer would summarize the " \
-          "changes using simple - generally non-technical - terms."
+        <<~PROMPT
+          You are a code assistant, developed to help summarize code in non-technical terms.
+
+          ```
+          #{extracted_diff}
+          ```
+
+          The code above, enclosed by three ticks, is the code diff of a merge request. The merge request's
+          title is: '#{title}'
+
+          Write a summary of the changes in couple sentences, the way an expert engineer would summarize the
+          changes using simple - generally non-technical - terms.
+        PROMPT
       end
 
       def summary_message
-        # Truncate diffs_blob to 2000 "words" which roughly translates to
-        #   ~1500 tokens according to OpenAI guidance.
-        #
-        extracted_diff.truncate_words(2000) << prompt
+        prompt
+      end
+
+      def diff_output(old_path, new_path, diff)
+        <<~DIFF
+          --- #{old_path}
+          +++ #{new_path}
+          #{diff}
+        DIFF
       end
 
       def extracted_diff
-        # Extract only the diff strings and discard everything else
-        #
-        diffs = diff.raw_diffs.to_a.collect(&:diff)
-
         # Each diff string starts with information about the lines changed,
         #   bracketed by @@. Removing this saves us tokens.
         #
         # Ex: @@ -0,0 +1,58 @@\n+# frozen_string_literal: true\n+\n+module MergeRequests\n+
         #
-        diffs.map { |diff| diff.sub(GIT_DIFF_PREFIX_REGEX, "") }.join
+        diff.raw_diffs.to_a.map do |diff|
+          diff_output(diff.old_path, diff.new_path, diff.diff.sub(GIT_DIFF_PREFIX_REGEX, ""))
+        end.join.truncate_words(2000)
       end
 
       def response_modifier
