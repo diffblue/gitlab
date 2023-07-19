@@ -1,6 +1,6 @@
 import { GlLink } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import StatisticsSeatsCard from 'ee/usage_quotas/components/statistics_seats_card.vue';
+import StatisticsSeatsCard from 'ee/usage_quotas/seats/components/statistics_seats_card.vue';
 
 describe('StatisticsSeatsCard', () => {
   let wrapper;

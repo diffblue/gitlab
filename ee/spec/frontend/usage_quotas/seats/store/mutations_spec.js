@@ -87,13 +87,15 @@ describe('Usage Quotas Seats mutations', () => {
         mutations[types.RECEIVE_GITLAB_SUBSCRIPTION_SUCCESS](state, {});
 
         expect(state).toMatchObject({
-          planCode: undefined,
+          planCode: null,
           seatsInSubscription: 0,
           seatsInUse: 0,
           maxSeatsUsed: 0,
           seatsOwed: 0,
           isLoadingGitlabSubscription: false,
           activeTrial: false,
+          subscriptionEndDate: null,
+          subscriptionStartDate: null,
         });
       });
     });

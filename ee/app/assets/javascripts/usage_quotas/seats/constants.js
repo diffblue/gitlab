@@ -126,3 +126,6 @@ export const seatsUsedHelpText = __('Learn more about max seats used');
 export const seatsOwedText = __('Seats owed');
 export const seatsOwedHelpText = __('Learn more about seats owed');
 export const addSeatsText = s__('Billing|Add seats');
+export const subscriptionEndDateText = s__('Billing|Subscription end');
+export const subscriptionStartDateText = s__('Billing|Subscription start');
+export const seatsUsedDescriptionText = s__('Billing|%{plan} SaaS Plan seats used');

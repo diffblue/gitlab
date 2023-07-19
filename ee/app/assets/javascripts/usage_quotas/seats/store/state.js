@@ -40,4 +40,6 @@ export default ({
   hasLimitedFreePlan: enforcementFreeUserCapEnabled,
   hasReachedFreePlanLimit: null,
   activeTrial: false,
+  subscriptionEndDate: null,
+  subscriptionStartDate: null,
 });

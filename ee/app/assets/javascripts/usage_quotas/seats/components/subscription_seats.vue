@@ -38,7 +38,9 @@ import {
 import { s__, __, sprintf, n__ } from '~/locale';
 import SearchAndSortBar from 'ee/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
 import StatisticsCard from 'ee/usage_quotas/components/statistics_card.vue';
-import StatisticsSeatsCard from 'ee/usage_quotas/components/statistics_seats_card.vue';
+import StatisticsSeatsCard from 'ee/usage_quotas/seats/components/statistics_seats_card.vue';
+import SubscriptionUsageStatisticsCard from 'ee/usage_quotas/seats/components/subscription_usage_statistics_card.vue';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SubscriptionUpgradeInfoCard from './subscription_upgrade_info_card.vue';
 import RemoveBillableMemberModal from './remove_billable_member_modal.vue';
 import SubscriptionSeatDetails from './subscription_seat_details.vue';
@@ -64,8 +66,10 @@ export default {
     StatisticsCard,
     StatisticsSeatsCard,
     SubscriptionUpgradeInfoCard,
+    SubscriptionUsageStatisticsCard,
     GlSkeletonLoader,
   },
+  mixins: [glFeatureFlagsMixin()],
   computed: {
     ...mapState([
       'hasError',
@@ -123,6 +127,9 @@ export default {
       return (
         this.pendingMembersCount > 0 && this.pendingMembersPagePath && !this.hasLimitedFreePlan
       );
+    },
+    shouldShowSubscriptionUsageStatistics() {
+      return Boolean(this.glFeatures?.enableHamiltonInUsageQuotasUi) && !this.hasNoSubscription;
     },
     seatsInUsePercentage() {
       if (this.totalSeatsAvailable == null || this.activeTrial) {
@@ -280,7 +287,14 @@ export default {
       </div>
 
       <div v-else class="gl-display-grid gl-md-grid-template-columns-2 gl-gap-5">
+        <subscription-usage-statistics-card
+          v-if="shouldShowSubscriptionUsageStatistics"
+          :percentage="seatsInUsePercentage"
+          :usage-value="String(totalSeatsInUse)"
+          :total-value="displayedTotalSeats"
+        />
         <statistics-card
+          v-else
           :help-link="$options.helpLinks.seatsInUseLink"
           :help-tooltip="seatsInUseTooltipText"
           :description="seatsInUseText"
@@ -289,7 +303,6 @@ export default {
           :total-value="displayedTotalSeats"
           data-qa-selector="seats_in_use"
         />
-
         <subscription-upgrade-info-card
           v-if="showUpgradeInfoCard"
           :max-namespace-seats="maxFreeNamespaceSeats"

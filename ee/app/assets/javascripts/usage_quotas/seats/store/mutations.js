@@ -14,14 +14,16 @@ export default {
   },
 
   [types.RECEIVE_GITLAB_SUBSCRIPTION_SUCCESS](state, payload) {
-    const { usage, plan } = payload;
+    const { billing, usage, plan } = payload;
 
     state.seatsInSubscription = usage?.seats_in_subscription ?? 0;
     state.seatsInUse = usage?.seats_in_use ?? 0;
     state.maxSeatsUsed = usage?.max_seats_used ?? 0;
     state.seatsOwed = usage?.seats_owed ?? 0;
     state.activeTrial = Boolean(plan?.trial);
-    state.planCode = plan?.code;
+    state.planCode = plan?.code ?? null;
+    state.subscriptionEndDate = billing?.subscription_end_date ?? null;
+    state.subscriptionStartDate = billing?.subscription_start_date ?? null;
 
     if (state.hasLimitedFreePlan) {
       state.hasReachedFreePlanLimit = state.seatsInUse >= state.maxFreeNamespaceSeats;

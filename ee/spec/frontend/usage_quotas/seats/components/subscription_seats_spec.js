@@ -11,8 +11,9 @@ import { mount, shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import StatisticsCard from 'ee/usage_quotas/components/statistics_card.vue';
-import StatisticsSeatsCard from 'ee/usage_quotas/components/statistics_seats_card.vue';
+import StatisticsSeatsCard from 'ee/usage_quotas/seats/components/statistics_seats_card.vue';
 import SubscriptionUpgradeInfoCard from 'ee/usage_quotas/seats/components/subscription_upgrade_info_card.vue';
+import SubscriptionUsageStatisticsCard from 'ee/usage_quotas/seats/components/subscription_usage_statistics_card.vue';
 import SubscriptionSeats from 'ee/usage_quotas/seats/components/subscription_seats.vue';
 import {
   CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT,
@@ -79,7 +80,12 @@ describe('Subscription Seats', () => {
     return extendedWrapper(
       mountFn(SubscriptionSeats, {
         store: fakeStore({ initialState, initialGetters }),
-        provide,
+        provide: {
+          glFeatures: {
+            enableHamiltonInUsageQuotasUi: false,
+          },
+          ...provide,
+        },
       }),
     );
   };
@@ -97,6 +103,8 @@ describe('Subscription Seats', () => {
   const findStatisticsSeatsCard = () => wrapper.findComponent(StatisticsSeatsCard);
   const findSubscriptionUpgradeCard = () => wrapper.findComponent(SubscriptionUpgradeInfoCard);
   const findSkeletonLoaderCards = () => wrapper.findByTestId('skeleton-loader-cards');
+  const findSubscriptionUsageStatisticsCard = () =>
+    wrapper.findComponent(SubscriptionUsageStatisticsCard);
 
   const serializeUser = (rowWrapper) => {
     const avatarLink = rowWrapper.findComponent(GlAvatarLink);
@@ -242,6 +250,7 @@ describe('Subscription Seats', () => {
 
   describe('statistics cards', () => {
     const defaultInitialState = {
+      hasNoSubscription: false,
       seatsInSubscription: 3,
       total: 2,
       seatsInUse: 2,
@@ -268,16 +277,24 @@ describe('Subscription Seats', () => {
     describe('renders <statistics-card>', () => {
       describe('when group has a subscription', () => {
         it('renders <statistics-card> with the necessary props', () => {
-          const statisticsCard = findStatisticsCard();
-
-          expect(statisticsCard.exists()).toBe(true);
-          expect(statisticsCard.props()).toMatchObject({
+          expect(findStatisticsCard().props()).toMatchObject({
             ...defaultProps,
             description: 'Seats in use / Seats in subscription',
             percentage: 67,
             totalValue: '3',
             usageValue: '2',
             helpTooltip: null,
+          });
+        });
+
+        describe('with `enable hamilton for usage quotas ui` enabled', () => {
+          it(`renders <subscription-usage-statistics-card> with the necessary props`, () => {
+            wrapper = createComponent({
+              initialState: defaultInitialState,
+              provide: { glFeatures: { enableHamiltonInUsageQuotasUi: true } },
+            });
+
+            expect(findSubscriptionUsageStatisticsCard().props()).toMatchObject({});
           });
         });
       });

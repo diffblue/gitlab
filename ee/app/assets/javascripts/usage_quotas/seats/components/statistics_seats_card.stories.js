@@ -1,5 +1,5 @@
 import { GlCard } from '@gitlab/ui';
-import StatisticsSeatsCard from './statistics_seats_card.vue';
+import StatisticsSeatsCard from 'ee/usage_quotas/seats/components/statistics_seats_card.vue';
 
 export default {
   component: StatisticsSeatsCard,
