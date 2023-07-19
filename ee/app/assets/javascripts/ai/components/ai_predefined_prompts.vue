@@ -27,8 +27,9 @@ export default {
         :aria-label="prompt"
         category="secondary"
         variant="confirm"
+        class="gl-text-left"
         @click="$emit('click', prompt)"
-        >{{ prompt }}</gl-button
+        ><span class="gl-white-space-normal">{{ prompt }}</span></gl-button
       >
     </div>
   </div>
