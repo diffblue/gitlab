@@ -22388,7 +22388,9 @@ CREATE TABLE sbom_occurrences (
     source_id bigint,
     commit_sha bytea NOT NULL,
     component_id bigint NOT NULL,
-    uuid uuid NOT NULL
+    uuid uuid NOT NULL,
+    package_manager text,
+    CONSTRAINT check_3f2d2c7ffc CHECK ((char_length(package_manager) <= 255))
 );
 
 CREATE SEQUENCE sbom_occurrences_id_seq
