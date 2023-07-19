@@ -163,14 +163,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
   end
 
   describe 'POST /code_suggestions/completions' do
+    let_it_be(:token) { 'JWTTOKEN' }
     let(:access_code_suggestions) { true }
-    let(:headers) do
-      {
-        'X-Gitlab-Authentication-Type' => 'oidc',
-        'X-Gitlab-Oidc-Token' => "JWTTOKEN",
-        'Content-Type' => 'application/json'
-      }
-    end
 
     let(:body) do
       {
@@ -193,56 +187,113 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       allow(Ability).to receive(:allowed?).and_call_original
       allow(Ability).to receive(:allowed?).with(current_user, :access_code_suggestions, :global)
                                           .and_return(access_code_suggestions)
-      allow(Gitlab).to receive(:org_or_com?).and_return(true)
     end
 
-    context 'when user is not logged in' do
-      let(:current_user) { nil }
+    shared_examples 'code completions endpoint' do
+      context 'when user is not logged in' do
+        let(:current_user) { nil }
 
-      include_examples 'an unauthorized response'
-    end
-
-    context 'when user does not have access to code suggestions' do
-      let(:access_code_suggestions) { false }
-
-      include_examples 'an unauthorized response'
-    end
-
-    context 'when user is logged in' do
-      let(:current_user) { create(:user) }
-
-      it 'proxies request to code suggestions service' do
-        expect(Gitlab::HTTP).to receive(:post).with(
-          "https://codesuggestions.gitlab.com/v2/completions",
-          {
-            body: body.to_json,
-            headers: {
-              'X-Gitlab-Authentication-Type' => 'oidc',
-              'Authorization' => 'Bearer JWTTOKEN',
-              'Content-Type' => 'application/json'
-            },
-            open_timeout: 3,
-            read_timeout: 5,
-            write_timeout: 5
-          }
-        )
-
-        post_api
+        include_examples 'an unauthorized response'
       end
 
-      context 'when overriding service base URL' do
-        before do
-          stub_env('CODE_SUGGESTIONS_BASE_URL', 'http://test.com')
-        end
+      context 'when user does not have access to code suggestions' do
+        let(:access_code_suggestions) { false }
 
-        it 'sends requests to this URL instead' do
-          expect(Gitlab::HTTP).to receive(:post).with('http://test.com/v2/completions', an_instance_of(Hash))
+        include_examples 'an unauthorized response'
+      end
+
+      context 'when user is logged in' do
+        let(:current_user) { create(:user) }
+
+        it 'proxies request to code suggestions service with the auth token from the DB' do
+          expect(Gitlab::HTTP).to receive(:post).with(
+            "https://codesuggestions.gitlab.com/v2/completions",
+            {
+              body: body.to_json,
+              headers: {
+                'X-Gitlab-Authentication-Type' => 'oidc',
+                'Authorization' => "Bearer #{token}",
+                'Content-Type' => 'application/json'
+              },
+              open_timeout: 3,
+              read_timeout: 5,
+              write_timeout: 5
+            }
+          )
 
           post_api
         end
+
+        context 'when overriding service base URL' do
+          before do
+            stub_env('CODE_SUGGESTIONS_BASE_URL', 'http://test.com')
+          end
+
+          it 'sends requests to this URL instead' do
+            expect(Gitlab::HTTP).to receive(:post).with('http://test.com/v2/completions', an_instance_of(Hash))
+
+            post_api
+          end
+        end
+
+        context 'with telemetry headers' do
+          let(:headers) do
+            {
+              'X-Gitlab-Authentication-Type' => 'oidc',
+              'X-Gitlab-Oidc-Token' => token,
+              'Content-Type' => 'application/json',
+              'X-GitLab-CS-Accepts' => 'accepts',
+              'X-GitLab-CS-Requests' => "requests",
+              'X-GitLab-CS-Errors' => 'errors',
+              'X-GitLab-CS-Custom' => 'helloworld',
+              'X-GitLab-NO-Ignore' => 'ignoreme'
+            }
+          end
+
+          it 'proxies appropriate headers to code suggestions service' do
+            expect(Gitlab::HTTP).to receive(:post).with(
+              "https://codesuggestions.gitlab.com/v2/completions",
+              {
+                body: body.to_json,
+                headers: {
+                  'X-Gitlab-Authentication-Type' => 'oidc',
+                  'Authorization' => "Bearer #{token}",
+                  'Content-Type' => 'application/json',
+                  'X-Gitlab-Cs-Accepts' => 'accepts',
+                  'X-Gitlab-Cs-Requests' => "requests",
+                  'X-Gitlab-Cs-Errors' => 'errors',
+                  'X-Gitlab-Cs-Custom' => 'helloworld'
+                },
+                open_timeout: 3,
+                read_timeout: 5,
+                write_timeout: 5
+              }
+            )
+
+            post_api
+          end
+        end
+      end
+    end
+
+    context 'when the instance is Gitlab.org_or_com' do
+      before do
+        allow(Gitlab).to receive(:org_or_com?).and_return(true)
       end
 
+      let(:headers) do
+        {
+          'X-Gitlab-Authentication-Type' => 'oidc',
+          'X-Gitlab-Oidc-Token' => token,
+          'Content-Type' => 'application/json'
+        }
+      end
+
+      it_behaves_like 'code completions endpoint'
+
       context 'when feature flag is disabled' do
+        let(:current_user) { create(:user) }
+
         before do
           stub_feature_flags(code_suggestions_completion_api: false)
         end
@@ -254,42 +305,49 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           end
         end
       end
+    end
 
-      context 'with telemetry headers' do
-        let(:headers) do
-          {
-            'X-Gitlab-Authentication-Type' => 'oidc',
-            'X-Gitlab-Oidc-Token' => "JWTTOKEN",
-            'Content-Type' => 'application/json',
-            'X-GitLab-CS-Accepts' => 'accepts',
-            'X-GitLab-CS-Requests' => "requests",
-            'X-GitLab-CS-Errors' => 'errors',
-            'X-GitLab-CS-Custom' => 'helloworld',
-            'X-GitLab-NO-Ignore' => 'ignoreme'
-          }
+    context 'when the instance is Gitlab self-managed' do
+      before do
+        allow(Gitlab).to receive(:org_or_com?).and_return(false)
+      end
+
+      let(:headers) do
+        {
+          'X-Gitlab-Authentication-Type' => 'oidc',
+          'Content-Type' => 'application/json'
+        }
+      end
+
+      let_it_be(:service_access_token) { create(:service_access_token, :code_suggestions, :active, token: token) }
+
+      it_behaves_like 'code completions endpoint'
+
+      context 'when there is no active code suggestions token' do
+        before do
+          create(:service_access_token, :code_suggestions, :expired, token: token)
         end
 
-        it 'proxies appropriate headers to code suggestions service' do
-          expect(Gitlab::HTTP).to receive(:post).with(
-            "https://codesuggestions.gitlab.com/v2/completions",
-            {
-              body: body.to_json,
-              headers: {
-                'X-Gitlab-Authentication-Type' => 'oidc',
-                'Authorization' => 'Bearer JWTTOKEN',
-                'Content-Type' => 'application/json',
-                'X-Gitlab-Cs-Accepts' => 'accepts',
-                'X-Gitlab-Cs-Requests' => "requests",
-                'X-Gitlab-Cs-Errors' => 'errors',
-                'X-Gitlab-Cs-Custom' => 'helloworld'
-              },
-              open_timeout: 3,
-              read_timeout: 5,
-              write_timeout: 5
-            }
-          )
+        include_examples 'a response', 'unauthorized' do
+          let(:result) { :unauthorized }
+          let(:body) do
+            { "message" => "401 Unauthorized" }
+          end
+        end
+      end
 
-          post_api
+      context 'when feature flag is disabled' do
+        let(:current_user) { create(:user) }
+
+        before do
+          stub_feature_flags(self_managed_code_suggestions_completion_api: false)
+        end
+
+        include_examples 'a response', 'not found' do
+          let(:result) { :not_found }
+          let(:body) do
+            { "message" => "404 Not Found" }
+          end
         end
       end
     end
