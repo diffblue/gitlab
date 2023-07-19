@@ -1392,7 +1392,7 @@ Input type: `AwardEmojiAddInput`
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="mutationawardemojiaddawardemoji"></a>`awardEmoji` | [`AwardEmoji`](#awardemoji) | Award emoji after mutation. |
+| <a id="mutationawardemojiaddawardemoji"></a>`awardEmoji` | [`AwardEmoji`](#awardemoji) | Emoji reactions after mutation. |
 | <a id="mutationawardemojiaddclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationawardemojiadderrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
@@ -1412,7 +1412,7 @@ Input type: `AwardEmojiRemoveInput`
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="mutationawardemojiremoveawardemoji"></a>`awardEmoji` | [`AwardEmoji`](#awardemoji) | Award emoji after mutation. |
+| <a id="mutationawardemojiremoveawardemoji"></a>`awardEmoji` | [`AwardEmoji`](#awardemoji) | Emoji reactions after mutation. |
 | <a id="mutationawardemojiremoveclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationawardemojiremoveerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
@@ -1432,7 +1432,7 @@ Input type: `AwardEmojiToggleInput`
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="mutationawardemojitoggleawardemoji"></a>`awardEmoji` | [`AwardEmoji`](#awardemoji) | Award emoji after mutation. |
+| <a id="mutationawardemojitoggleawardemoji"></a>`awardEmoji` | [`AwardEmoji`](#awardemoji) | Emoji reactions after mutation. |
 | <a id="mutationawardemojitoggleclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationawardemojitoggleerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationawardemojitoggletoggledon"></a>`toggledOn` | [`Boolean!`](#boolean) | Indicates the status of the emoji. True if the toggle awarded the emoji, and false if the toggle removed the emoji. |
@@ -7285,7 +7285,7 @@ Input type: `WorkItemUpdateInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationworkitemupdateassigneeswidget"></a>`assigneesWidget` | [`WorkItemWidgetAssigneesInput`](#workitemwidgetassigneesinput) | Input for assignees widget. |
-| <a id="mutationworkitemupdateawardemojiwidget"></a>`awardEmojiWidget` | [`WorkItemWidgetAwardEmojiUpdateInput`](#workitemwidgetawardemojiupdateinput) | Input for award emoji widget. |
+| <a id="mutationworkitemupdateawardemojiwidget"></a>`awardEmojiWidget` | [`WorkItemWidgetAwardEmojiUpdateInput`](#workitemwidgetawardemojiupdateinput) | Input for emoji reactions widget. |
 | <a id="mutationworkitemupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationworkitemupdateconfidential"></a>`confidential` | [`Boolean`](#boolean) | Sets the work item confidentiality. |
 | <a id="mutationworkitemupdatecurrentusertodoswidget"></a>`currentUserTodosWidget` | [`WorkItemWidgetCurrentUserTodosInput`](#workitemwidgetcurrentusertodosinput) | Input for to-dos widget. |
@@ -12570,7 +12570,7 @@ Represents an epic on an issue board.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="boardepicauthor"></a>`author` | [`UserCore!`](#usercore) | Author of the epic. |
-| <a id="boardepicawardemoji"></a>`awardEmoji` | [`AwardEmojiConnection`](#awardemojiconnection) | List of award emojis associated with the epic. (see [Connections](#connections)) |
+| <a id="boardepicawardemoji"></a>`awardEmoji` | [`AwardEmojiConnection`](#awardemojiconnection) | List of emoji reactions associated with the epic. (see [Connections](#connections)) |
 | <a id="boardepicblocked"></a>`blocked` | [`Boolean`](#boolean) | Indicates the epic is blocked. |
 | <a id="boardepicblockedbycount"></a>`blockedByCount` | [`Int`](#int) | Count of epics blocking this epic. |
 | <a id="boardepicblockedbyepics"></a>`blockedByEpics` | [`EpicConnection`](#epicconnection) | Epics blocking this epic. (see [Connections](#connections)) |
@@ -14921,7 +14921,7 @@ Represents an epic.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="epicauthor"></a>`author` | [`UserCore!`](#usercore) | Author of the epic. |
-| <a id="epicawardemoji"></a>`awardEmoji` | [`AwardEmojiConnection`](#awardemojiconnection) | List of award emojis associated with the epic. (see [Connections](#connections)) |
+| <a id="epicawardemoji"></a>`awardEmoji` | [`AwardEmojiConnection`](#awardemojiconnection) | List of emoji reactions associated with the epic. (see [Connections](#connections)) |
 | <a id="epicblocked"></a>`blocked` | [`Boolean`](#boolean) | Indicates the epic is blocked. |
 | <a id="epicblockedbycount"></a>`blockedByCount` | [`Int`](#int) | Count of epics blocking this epic. |
 | <a id="epicblockedbyepics"></a>`blockedByEpics` | [`EpicConnection`](#epicconnection) | Epics blocking this epic. (see [Connections](#connections)) |
@@ -17696,7 +17696,7 @@ Defines which user roles, users, or groups can merge into a protected branch.
 | <a id="mergerequestautomergeenabled"></a>`autoMergeEnabled` | [`Boolean!`](#boolean) | Indicates if auto merge is enabled for the merge request. |
 | <a id="mergerequestautomergestrategy"></a>`autoMergeStrategy` | [`String`](#string) | Selected auto merge strategy. |
 | <a id="mergerequestavailableautomergestrategies"></a>`availableAutoMergeStrategies` | [`[String!]`](#string) | Array of available auto merge strategies. |
-| <a id="mergerequestawardemoji"></a>`awardEmoji` | [`AwardEmojiConnection`](#awardemojiconnection) | List of award emojis associated with the merge request. (see [Connections](#connections)) |
+| <a id="mergerequestawardemoji"></a>`awardEmoji` | [`AwardEmojiConnection`](#awardemojiconnection) | List of emoji reactions associated with the merge request. (see [Connections](#connections)) |
 | <a id="mergerequestcommenters"></a>`commenters` | [`UserCoreConnection!`](#usercoreconnection) | All commenters on this noteable. (see [Connections](#connections)) |
 | <a id="mergerequestcommitcount"></a>`commitCount` | [`Int`](#int) | Number of commits in the merge request. |
 | <a id="mergerequestcommits"></a>`commits` | [`CommitConnection`](#commitconnection) | Merge request commits. (see [Connections](#connections)) |
@@ -19372,7 +19372,7 @@ Represents the network policy.
 | ---- | ---- | ----------- |
 | <a id="noteauthor"></a>`author` | [`UserCore!`](#usercore) | User who wrote this note. |
 | <a id="noteauthoriscontributor"></a>`authorIsContributor` | [`Boolean`](#boolean) | Indicates whether the note author is a contributor. |
-| <a id="noteawardemoji"></a>`awardEmoji` | [`AwardEmojiConnection`](#awardemojiconnection) | List of award emojis associated with the note. (see [Connections](#connections)) |
+| <a id="noteawardemoji"></a>`awardEmoji` | [`AwardEmojiConnection`](#awardemojiconnection) | List of emoji reactions associated with the note. (see [Connections](#connections)) |
 | <a id="notebody"></a>`body` | [`String!`](#string) | Content of the note. |
 | <a id="notebodyhtml"></a>`bodyHtml` | [`String`](#string) | GitLab Flavored Markdown rendering of `note`. |
 | <a id="noteconfidential"></a>`confidential` **{warning-solid}** | [`Boolean`](#boolean) | **Deprecated** in 15.5. This was renamed. Use: `internal`. |
@@ -24476,13 +24476,13 @@ Represents an assignees widget.
 
 ### `WorkItemWidgetAwardEmoji`
 
-Represents the award emoji widget.
+Represents the emoji reactions widget.
 
 #### Fields
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="workitemwidgetawardemojiawardemoji"></a>`awardEmoji` | [`AwardEmojiConnection`](#awardemojiconnection) | Award emoji on the work item. (see [Connections](#connections)) |
+| <a id="workitemwidgetawardemojiawardemoji"></a>`awardEmoji` | [`AwardEmojiConnection`](#awardemojiconnection) | Emoji reactions on the work item. (see [Connections](#connections)) |
 | <a id="workitemwidgetawardemojidownvotes"></a>`downvotes` | [`Int!`](#int) | Number of downvotes the work item has received. |
 | <a id="workitemwidgetawardemojitype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
 | <a id="workitemwidgetawardemojiupvotes"></a>`upvotes` | [`Int!`](#int) | Number of upvotes the work item has received. |
@@ -29445,7 +29445,7 @@ A time-frame defined as a closed inclusive range of two dates.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="workitemupdatedtaskinputassigneeswidget"></a>`assigneesWidget` | [`WorkItemWidgetAssigneesInput`](#workitemwidgetassigneesinput) | Input for assignees widget. |
-| <a id="workitemupdatedtaskinputawardemojiwidget"></a>`awardEmojiWidget` | [`WorkItemWidgetAwardEmojiUpdateInput`](#workitemwidgetawardemojiupdateinput) | Input for award emoji widget. |
+| <a id="workitemupdatedtaskinputawardemojiwidget"></a>`awardEmojiWidget` | [`WorkItemWidgetAwardEmojiUpdateInput`](#workitemwidgetawardemojiupdateinput) | Input for emoji reactions widget. |
 | <a id="workitemupdatedtaskinputconfidential"></a>`confidential` | [`Boolean`](#boolean) | Sets the work item confidentiality. |
 | <a id="workitemupdatedtaskinputcurrentusertodoswidget"></a>`currentUserTodosWidget` | [`WorkItemWidgetCurrentUserTodosInput`](#workitemwidgetcurrentusertodosinput) | Input for to-dos widget. |
 | <a id="workitemupdatedtaskinputdescriptionwidget"></a>`descriptionWidget` | [`WorkItemWidgetDescriptionInput`](#workitemwidgetdescriptioninput) | Input for description widget. |
