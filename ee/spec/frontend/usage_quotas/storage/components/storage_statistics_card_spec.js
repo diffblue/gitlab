@@ -60,36 +60,10 @@ describe('StorageStatisticsCard', () => {
     });
   });
 
-  describe('progress bar', () => {
-    it.each`
-      showProgressBar | totalStorage | usedStorage | shouldRender
-      ${false}        | ${100}       | ${50}       | ${false}
-      ${false}        | ${100}       | ${0}        | ${false}
-      ${false}        | ${100}       | ${null}     | ${false}
-      ${false}        | ${null}      | ${50}       | ${false}
-      ${false}        | ${null}      | ${null}     | ${false}
-      ${true}         | ${100}       | ${50}       | ${true}
-      ${true}         | ${100}       | ${0}        | ${true}
-      ${true}         | ${100}       | ${null}     | ${false}
-      ${true}         | ${null}      | ${50}       | ${false}
-    `(
-      'renders progress bar as $shouldRender when showProgressBar: $showProgressBar, totalStorage: $totalStorage, usedStorage: $usedStorage',
-      ({ showProgressBar, totalStorage, usedStorage, shouldRender }) => {
-        createComponent({
-          showProgressBar,
-          totalStorage,
-          usedStorage,
-        });
+  it('renders progress bar with correct percentage', () => {
+    createComponent({ totalStorage: 10, usedStorage: 5 });
 
-        expect(findProgressBar().exists()).toBe(shouldRender);
-      },
-    );
-
-    it('renders progress bar with correct percentage', () => {
-      createComponent({ totalStorage: 10, usedStorage: 5, showProgressBar: true });
-
-      expect(findProgressBar().attributes('value')).toBe(String(50));
-    });
+    expect(findProgressBar().attributes('value')).toBe(String(50));
   });
 
   describe('skeleton loader', () => {

@@ -16,11 +16,6 @@ export default {
       required: false,
       default: null,
     },
-    showProgressBar: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
     loading: {
       type: Boolean,
       required: true,
@@ -61,7 +56,7 @@ export default {
       return this.totalStorage && this.usedStorage !== null;
     },
     shouldShowProgressBar() {
-      return this.showProgressBar && this.percentage !== null;
+      return this.percentage !== null;
     },
   },
   methods: {

@@ -1,10 +1,13 @@
-import { GlLink, GlSprintf, GlProgressBar } from '@gitlab/ui';
+import { GlButton, GlLink, GlSprintf, GlProgressBar } from '@gitlab/ui';
 import StorageStatisticsCard from 'ee/usage_quotas/storage/components/storage_statistics_card.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { NAMESPACE_STORAGE_OVERVIEW_SUBTITLE } from 'ee/usage_quotas/storage/constants';
+import {
+  NAMESPACE_STORAGE_OVERVIEW_SUBTITLE,
+  NAMESPACE_ENFORCEMENT_TYPE,
+} from 'ee/usage_quotas/storage/constants';
 import StorageUsageStatistics from 'ee/usage_quotas/storage/components/storage_usage_statistics.vue';
 
-import { withRootStorageStatistics } from '../mock_data';
+import { withRootStorageStatistics, defaultNamespaceProvideValues } from '../mock_data';
 
 describe('StorageUsageStatistics', () => {
   let wrapper;
@@ -12,22 +15,19 @@ describe('StorageUsageStatistics', () => {
   const createComponent = ({ props = {}, provide = {} } = {}) => {
     wrapper = shallowMountExtended(StorageUsageStatistics, {
       propsData: {
-        actualRepositorySizeLimit: withRootStorageStatistics.actualRepositorySizeLimit,
         additionalPurchasedStorageSize: withRootStorageStatistics.additionalPurchasedStorageSize,
+        usedStorage: withRootStorageStatistics.rootStorageStatistics.storageSize,
         loading: false,
         ...props,
       },
       provide: {
-        purchaseStorageUrl: 'some-fancy-url',
-        buyAddonTargetAttr: '_self',
-        namespacePlanName: 'Free',
-        enforcementType: 'project_repository_limit',
-        namespacePlanStorageIncluded: withRootStorageStatistics.actualRepositorySizeLimit,
+        ...defaultNamespaceProvideValues,
         ...provide,
       },
       stubs: {
         StorageStatisticsCard,
         GlSprintf,
+        GlButton,
         GlLink,
         GlProgressBar,
       },
@@ -41,38 +41,98 @@ describe('StorageUsageStatistics', () => {
   const findTotalStorage = () => wrapper.findByTestId('total-storage');
   const findOverviewSubtitle = () => wrapper.findByTestId('overview-subtitle');
 
-  describe('namespace storage card', () => {
-    it('shows the namespace storage overview subtitle', () => {
-      createComponent();
-
-      expect(findOverviewSubtitle().text()).toBe(NAMESPACE_STORAGE_OVERVIEW_SUBTITLE);
-    });
-
-    it('renders card description with help link', () => {
-      createComponent();
-
-      expect(findNamespaceStorageCard().text()).toContain('Namespace storage used');
-      expect(findNamespaceStorageCard().findComponent(GlLink).exists()).toBe(true);
-    });
-
-    describe('additional storage purchased', () => {
-      createComponent({
-        props: {
-          usedStorage: withRootStorageStatistics.actualRepositorySizeLimit + 1,
-          actualRepositorySizeLimit: withRootStorageStatistics.actualRepositorySizeLimit,
-          additionalPurchasedStorageSize: withRootStorageStatistics.additionalPurchasedStorageSize,
-        },
-      });
-    });
-  });
-
-  describe('storage detail card', () => {
+  describe('namespace overview section', () => {
     beforeEach(() => {
       createComponent();
     });
 
-    it('renders storage included in the plan', () => {
-      expect(findStorageIncludedInPlan().text()).toContain('978.8 KiB');
+    it('shows the namespace storage overview subtitle', () => {
+      expect(findOverviewSubtitle().text()).toBe(NAMESPACE_STORAGE_OVERVIEW_SUBTITLE);
+    });
+
+    describe('purchase more storage button', () => {
+      it('renders the button if purchaseStorageUrl is provided', () => {
+        expect(wrapper.findComponent(GlButton).exists()).toBe(true);
+      });
+
+      it('does not render the button if purchaseStorageUrl is not provided', () => {
+        createComponent({
+          provide: {
+            purchaseStorageUrl: undefined,
+          },
+        });
+
+        expect(wrapper.findComponent(GlButton).exists()).toBe(false);
+      });
+    });
+
+    describe('enforcement type subtitle', () => {
+      it('renders project enforcement copy if enforcementType is project', () => {
+        expect(wrapper.text()).toContain(
+          'Projects under this namespace have 978.8 KiB of storage. How are limits applied?',
+        );
+      });
+
+      it('renders namespace enforcement copy if enforcementType is namespace', () => {
+        // Namespace enforcement type is declared in ee/app/models/namespaces/storage/root_size.rb
+        // More about namespace storage limit at https://docs.gitlab.com/ee/user/usage_quotas#namespace-storage-limit
+        createComponent({
+          provide: {
+            enforcementType: NAMESPACE_ENFORCEMENT_TYPE,
+          },
+        });
+
+        expect(wrapper.text()).toContain(
+          'This namespace has 978.8 KiB of storage. How are limits applied?',
+        );
+      });
+    });
+  });
+
+  describe('StorageStatisticsCard', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
+    it('renders card description with help link', () => {
+      expect(findNamespaceStorageCard().text()).toContain('Namespace storage used');
+      expect(findNamespaceStorageCard().findComponent(GlLink).exists()).toBe(true);
+    });
+
+    it('passes the correct props to StorageStatisticsCard', () => {
+      expect(findNamespaceStorageCard().props()).toEqual({
+        usedStorage: withRootStorageStatistics.rootStorageStatistics.storageSize,
+        totalStorage:
+          withRootStorageStatistics.actualRepositorySizeLimit +
+          withRootStorageStatistics.additionalPurchasedStorageSize,
+        loading: false,
+      });
+    });
+  });
+
+  describe('storage available card', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
+    describe('storage included in the plan', () => {
+      it('renders storage included in the plan', () => {
+        expect(findStorageIncludedInPlan().text()).toContain('978.8 KiB');
+      });
+
+      it('renders per project copy if enforcementType is project', () => {
+        expect(wrapper.text()).toContain('Storage per project included in Free subscription');
+      });
+
+      it('renders namespace enforcement copy if enforcementType is namespace', () => {
+        createComponent({
+          provide: {
+            enforcementType: NAMESPACE_ENFORCEMENT_TYPE,
+          },
+        });
+
+        expect(wrapper.text()).toContain('Included in Free subscription');
+      });
     });
 
     it('renders purchased storage', () => {

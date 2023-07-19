@@ -49505,7 +49505,7 @@ msgstr ""
 msgid "UsageQuota|Precise calculation of Container Registry storage size is delayed because it is too large for synchronous estimation. Precise evaluation will be scheduled within 24 hours."
 msgstr ""
 
-msgid "UsageQuota|Project storage included in %{planName} subscription"
+msgid "UsageQuota|Projects under this namespace have %{planLimit} of storage. %{linkStart}How are limits applied?%{linkEnd}"
 msgstr ""
 
 msgid "UsageQuota|Recalculate repository usage"
@@ -49538,6 +49538,9 @@ msgstr ""
 msgid "UsageQuota|Storage"
 msgstr ""
 
+msgid "UsageQuota|Storage per project included in %{planName} subscription"
+msgstr ""
+
 msgid "UsageQuota|Storage type"
 msgstr ""
 
@@ -49560,6 +49563,9 @@ msgid "UsageQuota|The namespace is currently using %{strong_start}%{used_storage
 msgstr ""
 
 msgid "UsageQuota|The table below shows usage since %{usageSince}"
+msgstr ""
+
+msgid "UsageQuota|This namespace has %{planLimit} of storage. %{linkStart}How are limits applied?%{linkEnd}"
 msgstr ""
 
 msgid "UsageQuota|This namespace has no projects which used shared runners in the current period"
