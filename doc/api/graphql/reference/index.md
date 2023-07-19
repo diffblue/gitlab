@@ -1226,7 +1226,7 @@ Input type: `AuditEventsStreamingDestinationEventsRemoveInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationauditeventsstreamingdestinationeventsremoveclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationauditeventsstreamingdestinationeventsremovedestinationid"></a>`destinationId` | [`AuditEventsExternalAuditEventDestinationID!`](#auditeventsexternalauditeventdestinationid) | Destination URL. |
+| <a id="mutationauditeventsstreamingdestinationeventsremovedestinationid"></a>`destinationId` | [`AuditEventsExternalAuditEventDestinationID!`](#auditeventsexternalauditeventdestinationid) | Destination id. |
 | <a id="mutationauditeventsstreamingdestinationeventsremoveeventtypefilters"></a>`eventTypeFilters` | [`[String!]!`](#string) | List of event type filters to remove from streaming. |
 
 #### Fields
@@ -1255,6 +1255,25 @@ Input type: `AuditEventsStreamingDestinationInstanceEventsAddInput`
 | <a id="mutationauditeventsstreamingdestinationinstanceeventsaddclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationauditeventsstreamingdestinationinstanceeventsadderrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationauditeventsstreamingdestinationinstanceeventsaddeventtypefilters"></a>`eventTypeFilters` | [`[String!]`](#string) | List of event type filters for the audit event external destination. |
+
+### `Mutation.auditEventsStreamingDestinationInstanceEventsRemove`
+
+Input type: `AuditEventsStreamingDestinationInstanceEventsRemoveInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationauditeventsstreamingdestinationinstanceeventsremoveclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationauditeventsstreamingdestinationinstanceeventsremovedestinationid"></a>`destinationId` | [`AuditEventsInstanceExternalAuditEventDestinationID!`](#auditeventsinstanceexternalauditeventdestinationid) | Destination id. |
+| <a id="mutationauditeventsstreamingdestinationinstanceeventsremoveeventtypefilters"></a>`eventTypeFilters` | [`[String!]!`](#string) | List of event type filters to remove from streaming. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationauditeventsstreamingdestinationinstanceeventsremoveclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationauditeventsstreamingdestinationinstanceeventsremoveerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
 ### `Mutation.auditEventsStreamingHeadersCreate`
 
