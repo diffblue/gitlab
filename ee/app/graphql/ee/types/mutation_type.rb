@@ -124,6 +124,7 @@ module EE
         mount_mutation ::Mutations::AuditEvents::Streaming::InstanceHeaders::Update
         mount_mutation ::Mutations::AuditEvents::Streaming::InstanceHeaders::Destroy
         mount_mutation ::Mutations::AuditEvents::Streaming::InstanceEventTypeFilters::Create
+        mount_mutation ::Mutations::AuditEvents::Streaming::InstanceEventTypeFilters::Destroy
 
         prepend(Types::DeprecatedMutations)
       end
