@@ -12700,7 +12700,19 @@ msgstr ""
 msgid "ContributionEvent|Accepted merge request %{targetLink} in %{resourceParentLink}."
 msgstr ""
 
+msgid "ContributionEvent|Added design %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
 msgid "ContributionEvent|Approved merge request %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Created project %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Created resource."
+msgstr ""
+
+msgid "ContributionEvent|Created wiki page %{targetLink} in %{resourceParentLink}."
 msgstr ""
 
 msgid "ContributionEvent|Deleted branch %{refLink} in %{resourceParentLink}."
@@ -12716,6 +12728,36 @@ msgid "ContributionEvent|Left project %{resourceParentLink}."
 msgstr ""
 
 msgid "ContributionEvent|Made a private contribution."
+msgstr ""
+
+msgid "ContributionEvent|Opened Epic %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Opened incident %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Opened issue %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Opened key result %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Opened merge request %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Opened milestone %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Opened objective %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Opened requirement %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Opened task %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Opened test case %{targetLink} in %{resourceParentLink}."
 msgstr ""
 
 msgid "ContributionEvent|Pushed a new branch %{refLink} in %{resourceParentLink}."
