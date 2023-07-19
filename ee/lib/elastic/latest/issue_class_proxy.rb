@@ -52,7 +52,7 @@ module Elastic
             query_hash = context.name(:hidden) { hidden_filter(query_hash) }
           end
 
-          if Feature.enabled?(:search_issues_hide_archived_projects) && ::Elastic::DataMigrationService.migration_has_finished?(:backfill_archived_on_issues)
+          if Feature.enabled?(:search_issues_hide_archived_projects) && ::Elastic::DataMigrationService.migration_has_finished?(:backfill_archived_on_work_items)
             query_hash = context.name(:archived) { archived_filter(query_hash) } unless options[:include_archived]
           end
         end
