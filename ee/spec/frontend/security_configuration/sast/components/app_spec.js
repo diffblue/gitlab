@@ -1,16 +1,15 @@
 import { GlLink, GlLoadingIcon, GlSprintf } from '@gitlab/ui';
-import { merge } from 'lodash';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import ConfigurationPageLayout from 'ee/security_configuration/components/configuration_page_layout.vue';
 import SASTConfigurationApp, { i18n } from 'ee/security_configuration/sast/components/app.vue';
 import ConfigurationForm from 'ee/security_configuration/sast/components/configuration_form.vue';
 import sastCiConfigurationQuery from 'ee/security_configuration/sast/graphql/sast_ci_configuration.query.graphql';
-import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { sastCiConfigurationQueryResponse } from '../mock_data';
-import { specificErrorMessage, technicalErrorMessage } from '../constants';
+import { specificErrorMessage } from '../constants';
 
 Vue.use(VueApollo);
 
@@ -22,33 +21,23 @@ describe('SAST Configuration App', () => {
 
   const pendingHandler = () => new Promise(() => {});
   const successHandler = () => sastCiConfigurationQueryResponse;
-  // Prefixed with window.gon.uf_error_prefix as used in lib/gitlab/utils/error_message.rb to indicate a user facing error
-  const failureHandlerSpecific = () => ({
-    errors: [{ message: `${window.gon.uf_error_prefix} ${specificErrorMessage}` }],
-  });
-  const failureHandlerGeneric = () => ({
-    errors: [{ message: technicalErrorMessage }],
-  });
-  const createMockApolloProvider = (handler) =>
-    createMockApollo([[sastCiConfigurationQuery, handler]]);
+  const failureHandler = jest.fn().mockRejectedValue(new Error('Error'));
+  const failureHandlerGraphQL = () => ({ errors: [{ message: specificErrorMessage }] });
 
-  const createComponent = (options) => {
-    wrapper = shallowMountExtended(
-      SASTConfigurationApp,
-      merge(
-        {
-          // Use a function reference here so it's lazily initialized, and can
-          // be replaced with other handlers in certain tests without
-          // initialising twice.
-          apolloProvider: () => createMockApolloProvider(successHandler),
-          provide: {
-            sastDocumentationPath,
-            projectPath,
-          },
-        },
-        options,
-      ),
-    );
+  const createMockApolloProvider = (handler) => {
+    return createMockApollo([[sastCiConfigurationQuery, handler]]);
+  };
+
+  const createComponent = ({ options, customMock } = {}) => {
+    wrapper = mountExtended(SASTConfigurationApp, {
+      apolloProvider: customMock || createMockApolloProvider(successHandler),
+      provide: {
+        sastDocumentationPath,
+        projectPath,
+      },
+      options,
+    });
+    return waitForPromises();
   };
 
   const findHeader = () => wrapper.find('header');
@@ -62,7 +51,7 @@ describe('SAST Configuration App', () => {
   describe('feedback alert', () => {
     beforeEach(() => {
       createComponent({
-        stubs: { GlSprintf, ConfigurationPageLayout },
+        options: { stubs: { GlSprintf, ConfigurationPageLayout } },
       });
     });
 
@@ -82,7 +71,7 @@ describe('SAST Configuration App', () => {
   describe('header', () => {
     beforeEach(() => {
       createComponent({
-        stubs: { GlSprintf, ConfigurationPageLayout },
+        options: { stubs: { GlSprintf, ConfigurationPageLayout } },
       });
     });
 
@@ -97,9 +86,7 @@ describe('SAST Configuration App', () => {
 
   describe('when loading', () => {
     beforeEach(() => {
-      createComponent({
-        apolloProvider: createMockApolloProvider(pendingHandler),
-      });
+      createComponent({ customMock: createMockApolloProvider(pendingHandler) });
     });
 
     it('displays a loading spinner', () => {
@@ -115,11 +102,9 @@ describe('SAST Configuration App', () => {
     });
   });
 
-  describe('when loading failed with Error Message including user facing keyword', () => {
+  describe('when loading failed with a GraphQl error', () => {
     beforeEach(() => {
-      createComponent({
-        apolloProvider: createMockApolloProvider(failureHandlerSpecific),
-      });
+      createComponent({ customMock: createMockApolloProvider(failureHandlerGraphQL) });
       return waitForPromises();
     });
 
@@ -135,18 +120,16 @@ describe('SAST Configuration App', () => {
       expect(findErrorAlert().exists()).toBe(true);
     });
 
-    it('shows specific error message without keyword and with link when defined', () => {
+    it('shows a specific error message with link when defined', () => {
       expect(findErrorAlert().exists()).toBe(true);
       expect(findErrorAlert().text()).toContain('some specific error');
       expect(findErrorAlert().html()).toContain('<a href="#" rel="noopener">error</a>');
     });
   });
 
-  describe('when loading failed with Error Message without user facing keyword', () => {
+  describe('when loading failed with a network error', () => {
     beforeEach(() => {
-      createComponent({
-        apolloProvider: createMockApolloProvider(failureHandlerGeneric),
-      });
+      createComponent({ customMock: createMockApolloProvider(failureHandler) });
       return waitForPromises();
     });
 
@@ -158,7 +141,7 @@ describe('SAST Configuration App', () => {
 
   describe('when loaded', () => {
     beforeEach(() => {
-      createComponent();
+      createComponent({ customMock: createMockApolloProvider(successHandler) });
     });
 
     it('does not display a loading spinner', () => {

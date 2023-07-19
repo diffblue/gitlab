@@ -1,6 +1,5 @@
 <script>
 import { GlAlert, GlLink, GlLoadingIcon, GlSprintf } from '@gitlab/ui';
-import { parseErrorMessage } from '~/lib/utils/error_message';
 import { __, s__ } from '~/locale';
 import DismissibleFeedbackAlert from '~/vue_shared/components/dismissible_feedback_alert.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
@@ -80,8 +79,9 @@ export default {
   },
   methods: {
     onError(error) {
+      const { gqlError, networkError } = error;
       this.hasLoadingError = true;
-      this.errorText = parseErrorMessage(error, this.$options.i18n.genericErrorText);
+      this.errorText = networkError ? this.$options.i18n.genericErrorText : gqlError.message;
     },
   },
   feedbackIssue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/225991',
