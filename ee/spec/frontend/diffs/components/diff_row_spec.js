@@ -9,7 +9,7 @@ Vue.use(Vuex);
 describe('EE DiffRow', () => {
   let wrapper;
 
-  const findIcon = () => wrapper.find('[data-testid="codeQualityIcon"]');
+  const findIcon = () => wrapper.find('[data-testid="inlineFindingsIcon"]');
 
   const defaultProps = {
     fileHash: 'abc',
