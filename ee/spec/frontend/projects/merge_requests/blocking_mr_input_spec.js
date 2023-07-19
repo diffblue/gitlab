@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import initBlockingMrInput from 'ee/projects/merge_requests/blocking_mr_input';
 
+// quarantine: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/38778#note_394925422
 // eslint-disable-next-line jest/no-disabled-tests
 describe.skip('BlockingMrInput', () => {
   let h;
