@@ -37,6 +37,8 @@ module Elastic
         indexes :language, type: :keyword
 
         indexes :schema_version, type: :short
+
+        indexes :archived, type: :boolean
       end
     end
   end
