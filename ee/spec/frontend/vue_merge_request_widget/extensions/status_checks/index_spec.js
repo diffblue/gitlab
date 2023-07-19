@@ -11,9 +11,7 @@ import {
   pendingChecks,
 } from 'ee_jest/ci/reports/status_checks_report/mock_data';
 import axios from '~/lib/utils/axios_utils';
-import extensionsContainer from '~/vue_merge_request_widget/components/extensions/container';
-import { registerExtension } from '~/vue_merge_request_widget/components/extensions';
-import statusChecksExtension from 'ee/vue_merge_request_widget/extensions/status_checks';
+import statusChecksExtension from 'ee/vue_merge_request_widget/extensions/status_checks/index.vue';
 import {
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_NOT_FOUND,
@@ -36,10 +34,8 @@ describe('Status checks extension', () => {
   const getChecksEndpoint = 'https://test-get-check';
   const retryCheckEndpoint = 'https://test-retry-check';
 
-  registerExtension(statusChecksExtension);
-
   const createComponent = (mr) => {
-    wrapper = mount(extensionsContainer, {
+    wrapper = mount(statusChecksExtension, {
       propsData: {
         mr: {
           apiStatusChecksPath: getChecksEndpoint,
@@ -165,7 +161,7 @@ describe('Status checks extension', () => {
       ]);
 
       wrapper
-        .find('[data-testid="widget-extension"] [data-testid="toggle-button"]')
+        .find('[data-testid="info-status-checks"] [data-testid="toggle-button"]')
         .trigger('click');
     });
 
@@ -189,7 +185,7 @@ describe('Status checks extension', () => {
         canRetryExternalStatusChecks: false,
       });
       wrapper
-        .find('[data-testid="widget-extension"] [data-testid="toggle-button"]')
+        .find('[data-testid="info-status-checks"] [data-testid="toggle-button"]')
         .trigger('click');
     });
 
@@ -210,7 +206,7 @@ describe('Status checks extension', () => {
       beforeEach(async () => {
         await setupWithResponse(HTTP_STATUS_OK, response);
         wrapper
-          .find('[data-testid="widget-extension"] [data-testid="toggle-button"]')
+          .find('[data-testid="info-status-checks"] [data-testid="toggle-button"]')
           .trigger('click');
       });
 
@@ -223,10 +219,10 @@ describe('Status checks extension', () => {
     });
 
     describe('and the status checks are failed', () => {
-      function getAndClickRetryActionButton() {
+      async function getAndClickRetryActionButton() {
         const listItem = wrapper.findAll('[data-testid="extension-list-item"]').at(0);
         const actionButton = listItem.find('[data-testid="extension-actions-button"]');
-        actionButton.trigger('click');
+        await actionButton.trigger('click');
 
         return actionButton;
       }
@@ -234,7 +230,7 @@ describe('Status checks extension', () => {
       beforeEach(async () => {
         await setupWithResponse(HTTP_STATUS_OK, failedChecks);
         wrapper
-          .find('[data-testid="widget-extension"] [data-testid="toggle-button"]')
+          .find('[data-testid="info-status-checks"] [data-testid="toggle-button"]')
           .trigger('click');
       });
 
@@ -263,8 +259,7 @@ describe('Status checks extension', () => {
           .spyOn(StatusCheckRetryApi, 'mrStatusCheckRetry')
           .mockResolvedValue({ response: { status: HTTP_STATUS_OK, data: {} } });
 
-        const actionButton = getAndClickRetryActionButton();
-        await nextTick();
+        const actionButton = await getAndClickRetryActionButton();
 
         expect(actionButton.attributes('disabled')).toBeDefined();
         expect(actionButton.find('[aria-label="Loading"]').exists()).toBe(true);
@@ -292,7 +287,7 @@ describe('Status checks extension', () => {
         getAndClickRetryActionButton();
         await waitForPromises();
 
-        expect(mock.history.get.length).toBe(1);
+        expect(mock.history.get.length).toBe(2);
         expect(mock.history.get[0].url).toBe(getChecksEndpoint);
       });
 

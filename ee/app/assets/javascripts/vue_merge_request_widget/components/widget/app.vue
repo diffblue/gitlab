@@ -11,17 +11,29 @@ export default {
       import(
         '~/vue_merge_request_widget/extensions/security_reports/mr_widget_security_reports.vue'
       ),
+    MrStatusChecksWidget: () =>
+      import('ee/vue_merge_request_widget/extensions/status_checks/index.vue'),
   },
 
   extends: CEWidgetApp,
 
   computed: {
+    statusChecksWidget() {
+      return this.mr.apiStatusChecksPath && !this.mr.isNothingToMergeState
+        ? 'MrStatusChecksWidget'
+        : undefined;
+    },
+
     securityReportsWidget() {
       return this.mr.canReadVulnerabilities ? 'MrSecurityWidgetEE' : 'MrSecurityWidgetCE';
     },
 
     widgets() {
-      return [this.terraformPlansWidget, this.securityReportsWidget].filter((w) => w);
+      return [
+        this.statusChecksWidget,
+        this.terraformPlansWidget,
+        this.securityReportsWidget,
+      ].filter((w) => w);
     },
   },
 

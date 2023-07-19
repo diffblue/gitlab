@@ -11,7 +11,6 @@ import MrWidgetGeoSecondaryNode from './components/states/mr_widget_secondary_ge
 import WidgetContainer from './components/widget/app.vue';
 import loadPerformanceExtension from './extensions/load_performance';
 import browserPerformanceExtension from './extensions/browser_performance';
-import statusChecksExtension from './extensions/status_checks';
 import metricsExtension from './extensions/metrics';
 import licenseComplianceExtension from './extensions/license_compliance';
 
@@ -85,9 +84,6 @@ export default {
       const loadPerformance = this.mr?.loadPerformance || {};
 
       return Boolean(loadPerformance.head_path && loadPerformance.base_path);
-    },
-    shouldRenderStatusReport() {
-      return this.mr?.apiStatusChecksPath && !this.mr?.isNothingToMergeState;
     },
     shouldRenderMetricsReport() {
       return Boolean(this.mr?.metricsReportsPath);
@@ -173,11 +169,6 @@ export default {
         this.fetchLoadPerformance();
       }
     },
-    shouldRenderStatusReport(newVal) {
-      if (newVal) {
-        this.registerStatusCheck();
-      }
-    },
     shouldRenderMetricsReport(newVal) {
       if (newVal) {
         this.registerMetrics();
@@ -198,9 +189,6 @@ export default {
     },
     registerBrowserPerformance() {
       registerExtension(browserPerformanceExtension);
-    },
-    registerStatusCheck() {
-      registerExtension(statusChecksExtension);
     },
     registerMetrics() {
       registerExtension(metricsExtension);
