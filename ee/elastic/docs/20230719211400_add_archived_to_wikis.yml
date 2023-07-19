@@ -1,0 +1,10 @@
+---
+name: AddArchivedToWikis
+version: '20230719211400'
+description: Adds the boolean archived field on wikis index
+group: group::global search
+milestone: 16.3
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/126157
+obsolete: false
+marked_obsolete_by_url:
+marked_obsolete_in_milestone:
