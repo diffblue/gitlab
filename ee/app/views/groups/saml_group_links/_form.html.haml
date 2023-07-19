@@ -1,5 +1,5 @@
 %section.saml-group-links
-  = form_for [group, SamlGroupLink.new] do |f|
+  = gitlab_ui_form_for [group, SamlGroupLink.new] do |f|
     .form-holder
       .form-group.row
         .col-sm-2.col-form-label
@@ -18,4 +18,4 @@
             = s_('GroupSAML|Role to assign members of this SAML group.')
 
     .form-actions.gl-mb-5
-      = f.submit _('Save'), class: 'btn gl-button btn-success'
+      = f.submit _('Save'), pajamas_button: true
