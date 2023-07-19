@@ -1,13 +1,20 @@
 import cronstrue from 'cronstrue/i18n';
 import { getPreferredLocales, sprintf, n__, s__ } from '~/locale';
-import { NO_RULE_MESSAGE, ACTIONS } from '../../constants';
+import {
+  ACTIONS,
+  BRANCH_TYPE_KEY,
+  HUMANIZED_BRANCH_TYPE_TEXT_DICT,
+  INVALID_RULE_MESSAGE,
+  NO_RULE_MESSAGE,
+  SCAN_EXECUTION_BRANCH_TYPE_OPTIONS,
+} from '../../constants';
 import { createHumanizedScanners } from '../../utils';
 
 /**
  * Create a human-readable list of runner tags, adding the necessary punctuation and conjunctions
  * @param {string} scanner humanized scanner
  * @param {Array} originalTags all tags associated with the scanner
- * @returns {String} human-readable list of tags
+ * @returns {Object} human-readable list of tags
  */
 const humanizeCriteria = (scanner, originalActions) => {
   const tags = originalActions?.tags ? [...originalActions.tags] : [];
@@ -92,20 +99,24 @@ const humanizeAgent = (agents) => {
  * @param {Array} originalBranches strings representing branches
  * @returns {String}
  */
-const humanizeBranches = (originalBranches) => {
+const humanizeBranches = (originalBranches = []) => {
   const branches = [...originalBranches];
 
   if (branches.length === 1) {
-    return sprintf(s__('SecurityOrchestration|%{branches} branch'), {
+    return sprintf(s__('SecurityOrchestration|the %{branches} branch'), {
       branches: branches[0],
     });
   }
 
   const lastBranch = branches.pop();
-  return sprintf(s__('SecurityOrchestration|%{branches} and %{lastBranch} branches'), {
+  return sprintf(s__('SecurityOrchestration|the %{branches} and %{lastBranch} branches'), {
     branches: branches.join(', '),
     lastBranch,
   });
+};
+
+const humanizeBranchType = (branchType) => {
+  return HUMANIZED_BRANCH_TYPE_TEXT_DICT[branchType];
 };
 
 const humanizeCadence = (cadence) => {
@@ -114,9 +125,30 @@ const humanizeCadence = (cadence) => {
     .toLowerCase();
 };
 
+const hasBranchType = (rule) => BRANCH_TYPE_KEY in rule;
+
+const hasValidBranchType = (rule) => {
+  if (!rule) return false;
+
+  return (
+    hasBranchType(rule) &&
+    SCAN_EXECUTION_BRANCH_TYPE_OPTIONS()
+      .map(({ value }) => value)
+      .includes(rule.branch_type)
+  );
+};
+
 const humanizePipelineRule = (rule) => {
-  return sprintf(s__('SecurityOrchestration|on every pipeline on the %{branches}'), {
-    branches: humanizeBranches(rule.branches),
+  const humanizedValue = hasBranchType(rule)
+    ? humanizeBranchType(rule.branch_type)
+    : humanizeBranches(rule.branches);
+
+  if (hasBranchType(rule) && !hasValidBranchType(rule)) {
+    return INVALID_RULE_MESSAGE;
+  }
+
+  return sprintf(s__('SecurityOrchestration|Every time a pipeline runs for %{branches}'), {
+    branches: humanizedValue,
   });
 };
 
@@ -128,9 +160,17 @@ const humanizeScheduleRule = (rule) => {
     });
   }
 
-  return sprintf(s__('SecurityOrchestration|%{cadence} on the %{branches}'), {
+  const humanizedValue = hasBranchType(rule)
+    ? humanizeBranchType(rule.branch_type)
+    : humanizeBranches(rule.branches);
+
+  if (hasBranchType(rule) && !hasValidBranchType(rule)) {
+    return INVALID_RULE_MESSAGE;
+  }
+
+  return sprintf(s__('SecurityOrchestration|%{cadence} on %{branches}'), {
     cadence: humanizeCadence(rule.cadence),
-    branches: humanizeBranches(rule.branches),
+    branches: humanizedValue,
   });
 };
 
@@ -174,7 +214,9 @@ export const humanizeActions = (actions) => {
  */
 export const humanizeRules = (rules) => {
   const humanizedRules = rules.reduce((acc, curr) => {
-    return curr.branches || curr.agents ? [...acc, HUMANIZE_RULES_METHODS[curr.type](curr)] : acc;
+    return curr.branches || curr.branch_type || curr.agents
+      ? [...acc, HUMANIZE_RULES_METHODS[curr.type](curr)]
+      : acc;
   }, []);
 
   return humanizedRules.length ? humanizedRules : [NO_RULE_MESSAGE];

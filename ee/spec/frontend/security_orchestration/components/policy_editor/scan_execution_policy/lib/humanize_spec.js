@@ -3,8 +3,9 @@ import {
   humanizeRules,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib';
 import {
-  NO_RULE_MESSAGE,
   ACTIONS,
+  INVALID_RULE_MESSAGE,
+  NO_RULE_MESSAGE,
 } from 'ee/security_orchestration/components/policy_editor/constants';
 
 jest.mock('~/locale', () => ({
@@ -65,6 +66,17 @@ const mockDefaultTagsAction = {
   tags: [],
   action: ACTIONS.tags,
 };
+
+const mockRulesBranchType = [
+  { type: 'pipeline', branch_type: 'invalid' },
+  { type: 'pipeline', branch_type: 'protected' },
+  { type: 'pipeline', branch_type: 'default' },
+  {
+    type: 'schedule',
+    cadence: '* */20 4 * *',
+    branch_type: 'protected',
+  },
+];
 
 describe('humanizeActions', () => {
   it('returns an empty Array of actions as an empty Set', () => {
@@ -139,22 +151,29 @@ describe('humanizeRules', () => {
     expect(humanizeRules([mockRules[0]])).toStrictEqual([NO_RULE_MESSAGE]);
   });
 
-  it('returns a single rule as a human-readable string', () => {
-    expect(humanizeRules([mockRules[1]])).toStrictEqual([
-      'every 10 minutes, every hour, every day on the main branch',
-    ]);
-  });
-
-  it('returns multiple rules with different number of branches as human-readable strings', () => {
+  it('returns rules with different number of branches as human-readable strings', () => {
     expect(humanizeRules(mockRules)).toStrictEqual([
       'every 10 minutes, every hour, every day on the main branch',
-      'on every pipeline on the release/* and staging branches',
-      'on every pipeline on the release/1.*, canary and staging branches',
+      'Every time a pipeline runs for the release/* and staging branches',
+      'Every time a pipeline runs for the release/1.*, canary and staging branches',
       'by the agent named default-agent for all namespaces every minute, every 20 hours, on day 4 of the month',
       'by the agent named default-agent for all namespaces every minute, every 20 hours, on day 4 of the month',
       'by the agent named default-agent for the production namespace every minute, every 20 hours, on day 4 of the month',
       'by the agent named default-agent for the staging and releases namespaces every minute, every 20 hours, on day 4 of the month',
       'by the agent named default-agent for the staging, releases and dev namespaces every minute, every 20 hours, on day 4 of the month',
+    ]);
+  });
+
+  it('returns the empty rules message in an Array if a single rule is passed in without an invalid branch type', () => {
+    expect(humanizeRules([mockRulesBranchType[0]])).toStrictEqual([INVALID_RULE_MESSAGE]);
+  });
+
+  it('returns rules with different branch types as human-readable strings', () => {
+    expect(humanizeRules(mockRulesBranchType)).toStrictEqual([
+      INVALID_RULE_MESSAGE,
+      'Every time a pipeline runs for any protected branch',
+      'Every time a pipeline runs for the default branch',
+      'every minute, every 20 hours, on day 4 of the month on any protected branch',
     ]);
   });
 });

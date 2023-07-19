@@ -59,6 +59,10 @@ export const ACTIONS = {
   variables: 'VARIABLES',
 };
 
+export const INVALID_RULE_MESSAGE = s__(
+  'SecurityOrchestration|Invalid branch type detected - rule will not be applied.',
+);
+
 export const INVALID_PROTECTED_BRANCHES = s__(
   'SecurityOrchestration|The following branches do not exist on this development project: %{branches}. Please review all protected branches to ensure the values are accurate before updating this policy.',
 );
@@ -145,3 +149,10 @@ export const VALID_SCAN_RESULT_BRANCH_TYPE_OPTIONS = [
 
 export const BRANCHES_KEY = 'branches';
 export const BRANCH_TYPE_KEY = 'branch_type';
+
+export const HUMANIZED_BRANCH_TYPE_TEXT_DICT = {
+  [ALL_BRANCHES.value]: s__('SecurityOrchestration|any branch'),
+  [ALL_PROTECTED_BRANCHES.value]: s__('SecurityOrchestration|any protected branch'),
+  [GROUP_DEFAULT_BRANCHES.value]: s__('SecurityOrchestration|any default branch'),
+  [PROJECT_DEFAULT_BRANCH.value]: s__('SecurityOrchestration|the default branch'),
+};

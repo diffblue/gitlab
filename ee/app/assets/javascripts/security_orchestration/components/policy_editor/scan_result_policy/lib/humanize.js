@@ -1,5 +1,12 @@
 import { sprintf, s__, n__, __ } from '~/locale';
-import { NO_RULE_MESSAGE, INVALID_PROTECTED_BRANCHES } from '../../constants';
+import {
+  INVALID_RULE_MESSAGE,
+  NO_RULE_MESSAGE,
+  INVALID_PROTECTED_BRANCHES,
+  BRANCH_TYPE_KEY,
+  HUMANIZED_BRANCH_TYPE_TEXT_DICT,
+  SCAN_RESULT_BRANCH_TYPE_OPTIONS,
+} from '../../constants';
 import { createHumanizedScanners } from '../../utils';
 import {
   NEEDS_TRIAGE_PLURAL,
@@ -57,7 +64,7 @@ const humanizeBranches = (branches = []) => {
   const hasNoBranch = branches.length === 0;
 
   if (hasNoBranch) {
-    return s__('SecurityOrchestration|all protected branches');
+    return s__('SecurityOrchestration|any protected branch');
   }
 
   return sprintf(s__('SecurityOrchestration|the %{branches}'), {
@@ -66,6 +73,12 @@ const humanizeBranches = (branches = []) => {
       singular: s__('SecurityOrchestration|branch'),
       plural: s__('SecurityOrchestration|branches'),
     }),
+  });
+};
+
+const humanizeBranchType = (branchType) => {
+  return sprintf(s__('SecurityOrchestration|targeting %{branchTypeText}'), {
+    branchTypeText: HUMANIZED_BRANCH_TYPE_TEXT_DICT[branchType],
   });
 };
 
@@ -170,25 +183,52 @@ const humanizeLicenses = (originalLicenses) => {
   });
 };
 
+const hasBranchType = (rule) => BRANCH_TYPE_KEY in rule;
+
+const hasValidBranchType = (rule) => {
+  if (!rule) return false;
+
+  return (
+    hasBranchType(rule) &&
+    SCAN_RESULT_BRANCH_TYPE_OPTIONS()
+      .map(({ value }) => value)
+      .includes(rule.branch_type)
+  );
+};
+
 /**
  * Create a human-readable version of the rule
- * @param {Object} rule {type: 'scan_finding', branches: ['master'], scanners: ['container_scanning'], vulnerabilities_allowed: 1, severity_levels: ['critical']}
+ * @param {Object} rule {type: 'scan_finding', branch_type: 'protected', branches: ['master'], scanners: ['container_scanning'], vulnerabilities_allowed: 1, severity_levels: ['critical']}
  * @returns {Object} {summary: '', criteriaList: []}
  */
 const humanizeRule = (rule) => {
-  if (rule.type === LICENSE_FINDING) {
+  const humanizedValue = hasBranchType(rule)
+    ? humanizeBranchType(rule.branch_type)
+    : humanizeBranches(rule.branches);
+  const targetingValue = hasBranchType(rule) ? '' : __('targeting ');
+
+  if (hasBranchType(rule) && !hasValidBranchType(rule)) {
     return {
-      summary: sprintf(
-        s__(
-          'SecurityOrchestration|When license scanner finds any license %{matching} %{licenses}%{detection} in an open merge request targeting %{branches}.',
-        ),
-        {
-          matching: rule.match_on_inclusion ? 'matching' : 'except',
-          licenses: humanizeLicenses(rule.license_types),
-          detection: humanizeLicenseDetection(rule.license_states),
-          branches: humanizeBranches(rule.branches),
-        },
-      ),
+      summary: INVALID_RULE_MESSAGE,
+    };
+  }
+
+  if (rule.type === LICENSE_FINDING) {
+    const summaryText = rule.match_on_inclusion
+      ? s__(
+          'SecurityOrchestration|When license scanner finds any license matching %{licenses}%{detection} in an open merge request %{targeting}%{branches}.',
+        )
+      : s__(
+          'SecurityOrchestration|When license scanner finds any license except %{licenses}%{detection} in an open merge request %{targeting}%{branches}.',
+        );
+
+    return {
+      summary: sprintf(summaryText, {
+        licenses: humanizeLicenses(rule.license_types),
+        detection: humanizeLicenseDetection(rule.license_states),
+        branches: humanizedValue,
+        targeting: targetingValue,
+      }),
     };
   }
 
@@ -210,11 +250,12 @@ const humanizeRule = (rule) => {
   return {
     summary: sprintf(
       s__(
-        'SecurityOrchestration|When %{scanners} %{vulnerabilitiesAllowed} %{vulnerability} in an open merge request targeting %{branches}%{criteriaApply}',
+        'SecurityOrchestration|When %{scanners} %{vulnerabilitiesAllowed} %{vulnerability} in an open merge request %{targeting}%{branches}%{criteriaApply}',
       ),
       {
         scanners: humanizeScanners(createHumanizedScanners(rule.scanners)),
-        branches: humanizeBranches(rule.branches),
+        branches: humanizedValue,
+        targeting: targetingValue,
         vulnerabilitiesAllowed: humanizeVulnerabilitiesAllowed(rule.vulnerabilities_allowed),
         vulnerability: n__('vulnerability', 'vulnerabilities', rule.vulnerabilities_allowed),
         criteriaApply: criteriaList.length
