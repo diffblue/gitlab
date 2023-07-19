@@ -190,6 +190,7 @@ namespace :gitlab do
     desc "GitLab | Elasticsearch | Clear indexing status"
     task clear_index_status: :environment do
       IndexStatus.delete_all
+      Elastic::GroupIndexStatus.delete_all
       puts "Index status has been reset".color(:green)
     end
 
