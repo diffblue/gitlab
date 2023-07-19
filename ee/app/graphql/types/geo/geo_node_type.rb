@@ -70,8 +70,7 @@ module Types
             null: true,
             resolver: ::Resolvers::Geo::ProjectRepositoryRegistriesResolver,
             description: 'Find Project registries on this Geo node. ' \
-                         'Ignored if `geo_project_repository_replication` feature flag is disabled.',
-            alpha: { milestone: '16.2' }
+                         'Ignored if `geo_project_repository_replication` feature flag is disabled.'
       field :project_wiki_repository_registries, ::Types::Geo::ProjectWikiRepositoryRegistryType.connection_type,
             null: true,
             resolver: ::Resolvers::Geo::ProjectWikiRepositoryRegistriesResolver,
