@@ -37,7 +37,7 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
     button_name = 'Add an existing issue'
 
     page.within('.related-items-tree-container') do
-      find('.js-add-epics-issues-button .dropdown-toggle').click
+      click_button 'Add'
       click_button button_name
       fill_in "Paste issue link", with: '#'
       wait_for_requests
@@ -48,7 +48,7 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
     button_name = 'Add an existing epic'
 
     page.within('.related-items-tree-container') do
-      find('.js-add-epics-issues-button .dropdown-toggle').click
+      click_button 'Add'
       click_button button_name
       fill_in "Paste epic link", with: '&'
       wait_for_requests
@@ -107,7 +107,7 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
 
     describe 'Roadmap tab' do
       before do
-        find('[data-testid="roadmap-view-button"]').click
+        click_button 'Roadmap view'
         wait_for_requests
       end
 
@@ -133,15 +133,14 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
     end
 
     it 'switches between Epics and Issues tab and Roadmap tab when clicking on tab links', :aggregate_failures, quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/342232' do
-      find('.js-epic-roadmap-tab').click
-      wait_for_all_requests # Wait for Roadmap bundle load and then Epics fetch load
+      click_button 'Roadmap view'
 
       page.within('.related-items-tree-container') do
         expect(page).to have_selector('#roadmap.tab-pane', visible: true)
         expect(page).to have_selector('#tree.tab-pane', visible: false)
       end
 
-      find('.js-epic-tree-tab').click
+      click_button 'Tree view'
 
       page.within('.related-items-tree-container') do
         expect(page).to have_selector('#tree.tab-pane', visible: true)
@@ -187,8 +186,8 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
 
     it 'shows epic status, date and author in header' do
       within('.detail-page-header-body') do
-        expect(page).to have_css('.issuable-status-badge', text: 'Open')
-        expect(page).to have_css('.issuable-meta', text: 'Created')
+        expect(page).to have_css('.gl-badge', text: 'Open')
+        expect(page).to have_text('Created')
         expect(page).to have_link('Rick Sanchez')
       end
     end
@@ -220,8 +219,8 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
       context 'when sorted by `Newest first`' do
         before do
           page.within('[data-testid="discussion-preferences"]') do
-            find('#discussion-preferences-dropdown').click
-            find('.js-newest-first').click
+            click_button 'Sort or filter'
+            click_button 'Newest first'
             wait_for_requests
           end
         end
@@ -241,22 +240,11 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
     end
 
     describe 'Labels select' do
-      it 'opens dropdown when `Edit` is clicked' do
-        page.within('aside.right-sidebar [data-testid="labels-select"]') do
-          click_button 'Edit'
-        end
-
-        wait_for_requests
-
-        expect(page).to have_css('.js-labels-block .js-labels-list')
-      end
-
       context 'when dropdown is open' do
         before do
           page.within('aside.right-sidebar [data-testid="labels-select"]') do
             click_button 'Edit'
           end
-          wait_for_requests
         end
 
         it 'shows labels within the label dropdown' do
@@ -267,7 +255,7 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
 
         it 'shows checkmark next to label when label is clicked' do
           page.within('.js-labels-list [data-testid="dropdown-content"]') do
-            find('li', text: label1.title).click
+            click_button label1.title
 
             expect(find('li', text: label1.title)).to have_selector('.gl-icon', visible: true)
           end
@@ -275,7 +263,7 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
 
         it 'shows label create view when `Create group label` is clicked' do
           page.within('.js-labels-block') do
-            click_on 'Create group label'
+            click_button 'Create group label'
 
             expect(page).to have_selector('.js-labels-create')
           end
@@ -283,13 +271,10 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
 
         it 'creates new label using create view' do
           page.within('.js-labels-block') do
-            click_on 'Create group label'
-
-            find('.dropdown-input .gl-form-input').set('Test label')
-            find('.suggest-colors-dropdown a', match: :first).click
-            find('.dropdown-actions button', text: 'Create').click
-
-            wait_for_requests
+            click_button 'Create group label'
+            fill_in 'Name new label', with: 'Test label'
+            click_link 'Magenta-pink'
+            click_button 'Create'
           end
 
           page.within('.js-labels-list [data-testid="dropdown-content"]') do
@@ -300,10 +285,8 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
 
         it 'shows labels list view when `Cancel` button is clicked from create view' do
           page.within('.js-labels-block') do
-            click_on 'Create group label'
-
-            find('.js-btn-cancel-create').click
-            wait_for_requests
+            click_button 'Create group label'
+            click_button 'Cancel'
 
             expect(page).to have_selector('.js-labels-list')
           end
@@ -311,10 +294,8 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
 
         it 'shows labels list view when back button is clicked from create view' do
           page.within('.js-labels-block') do
-            click_on 'Create group label'
-
-            find('.js-btn-back').click
-            wait_for_requests
+            click_button 'Create group label'
+            click_button 'Go back'
 
             expect(page).to have_selector('.js-labels-list')
           end
@@ -358,8 +339,7 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
 
           it 'shows checkmark next to color after a new color has been selected' do
             page.within('.js-colors-list [data-testid="dropdown-content"]') do
-              find('li', text: 'Green').click
-              wait_for_all_requests
+              click_button 'Green'
             end
 
             open_colors_dropdown
@@ -376,25 +356,25 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
   describe 'epic actions', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/297505' do
     shared_examples 'epic closed' do |selector|
       it 'can close an epic' do
-        expect(find('.issuable-status-badge')).to have_content 'Open'
+        expect(page).to have_css('.gl-badge', text: 'Open')
 
         within selector do
           click_button 'Close epic'
         end
 
-        expect(find('.issuable-status-badge')).to have_content 'Closed'
+        expect(page).to have_css('.gl-badge', text: 'Closed')
       end
     end
 
     shared_examples 'epic reopened' do |selector|
       it 'can reopen an epic' do
-        expect(find('.issuable-status-badge')).to have_content 'Closed'
+        expect(page).to have_css('.gl-badge', text: 'Closed')
 
         within selector do
           click_button 'Reopen epic'
         end
 
-        expect(find('.issuable-status-badge')).to have_content 'Open'
+        expect(page).to have_css('.gl-badge', text: 'Open')
       end
     end
 

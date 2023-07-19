@@ -12,169 +12,114 @@ RSpec.describe 'Test cases', :js, feature_category: :quality_management do
   before do
     project.add_developer(user)
     stub_licensed_features(quality_management: true)
-
     sign_in(user)
   end
 
   context 'test case page' do
     before do
       visit project_quality_test_case_path(project, test_case)
-
-      wait_for_all_requests
+      wait_for_requests
     end
 
     context 'header' do
       it 'shows status, created date and author' do
-        page.within('.test-case-container .detail-page-header-body') do
-          expect(page.find('.issuable-status-badge')).to have_content('Open')
-          expect(page.find('.issuable-meta')).to have_content('Test case created 5 days ago')
-          expect(page.find('.issuable-meta')).to have_link(user.name)
-        end
+        expect(page).to have_css('.gl-badge', text: 'Open')
+        expect(page).to have_text('Test case created 5 days ago')
+        expect(page).to have_link(user.name)
       end
 
       it 'shows action buttons' do
-        page.within('.test-case-container .detail-page-header') do
-          expect(page).to have_selector('.dropdown', visible: false)
-          expect(page).to have_button('Archive test case')
-          expect(page).to have_link('New test case', href: new_project_quality_test_case_path(project))
-        end
+        expect(page).to have_button('Archive test case')
+        expect(page).to have_link('New test case', href: new_project_quality_test_case_path(project))
+        expect(page).not_to have_button('Options')
       end
 
       it 'archives test case' do
-        page.within('.test-case-container') do
-          click_button 'Archive test case'
+        click_button('Archive test case')
 
-          wait_for_requests
-
-          expect(page.find('.issuable-status-badge')).to have_content('Archived')
-          expect(page).to have_button('Reopen test case')
-        end
+        expect(page).to have_css('.gl-badge', text: 'Archived')
+        expect(page).to have_button('Reopen test case')
       end
     end
 
     context 'body' do
       it 'shows title, description and edit button' do
-        page.within('.test-case-container .issuable-details') do
-          expect(page.find('.title')).to have_content(test_case.title)
-          expect(page.find('.description')).to have_content(test_case.description)
-          expect(page).to have_selector('button.js-issuable-edit')
-        end
+        expect(page).to have_text(test_case.title)
+        expect(page).to have_text(test_case.description)
+        expect(page).to have_button('Edit title and description')
       end
 
       it 'makes title and description editable on edit click' do
-        find('.test-case-container .issuable-details .js-issuable-edit').click
+        click_button('Edit title and description')
 
-        page.within('.test-case-container .issuable-details form') do
-          expect(page.find('input#issuable-title').value).to eq(test_case.title)
-          expect(page.find('textarea#issuable-description').value).to eq(test_case.description)
-          expect(page).to have_button('Save changes')
-          expect(page).to have_button('Cancel')
-        end
+        expect(page).to have_field('Title', with: test_case.title)
+        expect(page).to have_field('Description', with: test_case.description)
+        expect(page).to have_button('Save changes')
+        expect(page).to have_button('Cancel')
       end
 
       it 'enters into zen mode when clicking on zen mode button' do
-        page.within('.test-case-container .issuable-details') do
-          page.find('.js-issuable-edit').click
-          page.find('.js-vue-markdown-field button.js-zen-enter').click
+        click_button('Edit title and description')
+        click_button('Go full screen')
 
-          expect(page).to have_selector('.zen-backdrop.fullscreen')
-        end
+        expect(page).to have_css('.zen-backdrop.fullscreen')
       end
 
       it 'update title and description' do
         title = 'Updated title'
         description = 'Updated test case description.'
-        find('.test-case-container .issuable-details .js-issuable-edit').click
 
-        page.within('.test-case-container .issuable-details form') do
-          page.find('input#issuable-title').set(title)
-          page.find('textarea#issuable-description').set(description)
+        click_button('Edit title and description')
+        fill_in('Title', with: title)
+        fill_in('Description', with: description)
+        click_button 'Save changes'
 
-          click_button 'Save changes'
-        end
-
-        wait_for_requests
-
-        page.within('.test-case-container .issuable-details') do
-          expect(page.find('.title')).to have_content(title)
-          expect(page.find('.description')).to have_content(description)
-          expect(page.find('.edited-text')).to have_content("Edited just now by #{user.name}")
-        end
+        expect(page).to have_text(title)
+        expect(page).to have_text(description)
+        expect(page).to have_text("Edited just now by #{user.name}")
       end
     end
 
     context 'sidebar' do
       it 'shows expand/collapse button' do
-        page.within('.test-case-container .right-sidebar') do
-          expect(page).to have_button('Collapse sidebar')
-        end
+        expect(page).to have_button('Collapse sidebar')
       end
 
       context 'todo' do
-        it 'shows todo status' do
-          page.within('.test-case-container .issuable-sidebar') do
-            expect(page.find('.block.todo')).to have_content('To Do')
-            expect(page).to have_button('Add a to do')
-          end
-        end
-
         it 'add test case as todo' do
-          page.within('.test-case-container .issuable-sidebar') do
-            click_button 'Add a to do'
+          click_button('Add a to do')
 
-            wait_for_all_requests
-
-            expect(page).to have_button('Mark as done')
-          end
+          expect(page).to have_button('Mark as done')
         end
 
         it 'mark test case todo as done' do
-          page.within('.test-case-container .issuable-sidebar') do
-            click_button 'Add a to do'
+          click_button('Add a to do')
+          click_button('Mark as done')
 
-            wait_for_all_requests
-
-            click_button 'Mark as done'
-
-            wait_for_all_requests
-
-            expect(page).to have_button('Add a to do')
-          end
+          expect(page).to have_button('Add a to do')
         end
       end
 
       context 'labels' do
         it 'shows assigned labels' do
-          page.within('.test-case-container .issuable-sidebar') do
-            expect(page).to have_selector('.labels-select-wrapper')
-            expect(page.find('.labels-select-wrapper .value')).to have_content(label_bug.title)
-          end
+          expect(page).to have_css('.labels-select-wrapper', text: label_bug.title)
         end
 
         it 'shows labels dropdown on edit click' do
-          page.within('.test-case-container .issuable-sidebar .labels-select-wrapper') do
-            click_button 'Edit'
+          click_button('Edit')
 
-            wait_for_requests
-
-            expect(page.find('.js-labels-list [data-testid="dropdown-content"]')).to have_selector('li', count: 2)
-            expect(page.find('[data-testid="dropdown-footer"]')).to have_selector('li', count: 2)
-          end
+          expect(page).to have_button(label_bug.title)
+          expect(page).to have_button(label_doc.title)
+          expect(page).to have_button('Create group label')
+          expect(page).to have_link('Manage group labels')
         end
 
         it 'applies label using labels dropdown' do
-          page.within('.test-case-container .issuable-sidebar .labels-select-wrapper') do
-            click_button 'Edit'
+          click_button('Edit')
+          click_button(label_doc.title)
+          send_keys(:escape)
 
-            wait_for_requests
-
-            click_button label_doc.title
-            page.find('.labels-select-wrapper [data-testid="title"]').click
-
-            wait_for_requests
-
-            expect(page.find('.labels-select-wrapper .value')).to have_content(label_doc.title)
-          end
+          expect(page).to have_css('.labels-select-wrapper', text: label_doc.title)
         end
       end
     end
@@ -186,8 +131,7 @@ RSpec.describe 'Test cases', :js, feature_category: :quality_management do
     it 'renders 404 page' do
       requests = inspect_requests do
         visit project_quality_test_case_path(project, test_case)
-
-        wait_for_all_requests
+        wait_for_requests
       end
 
       expect(requests.first.status_code).to eq(404)
