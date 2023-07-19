@@ -1,0 +1,10 @@
+---
+name: BackfillHashedRootNamespaceIdOnMergeRequests
+version: '20230321202400'
+description: BackfillHashedRootNamespaceIdOnMergeRequests
+group: group::global search
+milestone: 15.11
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/115449
+obsolete: false
+marked_obsolete_by_url:
+marked_obsolete_in_milestone:

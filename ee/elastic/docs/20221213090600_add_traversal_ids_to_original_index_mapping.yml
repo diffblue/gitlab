@@ -1,0 +1,10 @@
+---
+name: AddTraversalIdsToOriginalIndexMapping
+version: '20221213090600'
+description: AddTraversalIdsToOriginalIndexMapping
+group: group::global search
+milestone: 15.7
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/104956
+obsolete: true
+marked_obsolete_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/119969
+marked_obsolete_in_milestone: 16.0

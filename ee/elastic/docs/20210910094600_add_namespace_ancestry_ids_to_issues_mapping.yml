@@ -1,0 +1,10 @@
+---
+name: AddNamespaceAncestryIdsToIssuesMapping
+version: '20210910094600'
+description: AddNamespaceAncestryIdsToIssuesMapping
+group: group::global search
+milestone: 14.3
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/68946
+obsolete: true
+marked_obsolete_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/83937
+marked_obsolete_in_milestone: 15.0

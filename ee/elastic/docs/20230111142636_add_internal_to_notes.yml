@@ -1,0 +1,10 @@
+---
+name: AddInternalToNotes
+version: '20230111142636'
+description: AddInternalToNotes
+group: group::global search
+milestone: 15.9
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/108792
+obsolete: true
+marked_obsolete_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/118111
+marked_obsolete_in_milestone: 16.0

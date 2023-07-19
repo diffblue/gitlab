@@ -1,0 +1,10 @@
+---
+name: DeleteCommitsFromOriginalIndex
+version: '20220713103500'
+description: DeleteCommitsFromOriginalIndex
+group: group::global search
+milestone: 15.3
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/92090
+obsolete: true
+marked_obsolete_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/118111
+marked_obsolete_in_milestone: 16.0
