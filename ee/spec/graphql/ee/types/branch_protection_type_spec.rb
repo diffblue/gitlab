@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['BranchProtection'] do
+RSpec.describe GitlabSchema.types['BranchProtection'], feature_category: :source_code_management do
   subject { described_class }
 
   let(:fields) do

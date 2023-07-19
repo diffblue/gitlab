@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['AccessLevelGroup'] do
+RSpec.describe GitlabSchema.types['AccessLevelGroup'], feature_category: :source_code_management do
   include GraphqlHelpers
 
   subject { described_class }

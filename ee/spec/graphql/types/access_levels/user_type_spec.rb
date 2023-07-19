@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['AccessLevelUser'] do
+RSpec.describe GitlabSchema.types['AccessLevelUser'], feature_category: :source_code_management do
   include GraphqlHelpers
 
   describe 'config' do
