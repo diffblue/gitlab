@@ -234,4 +234,106 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
       end
     end
   end
+
+  describe 'GET locations' do
+    let_it_be(:project) { create(:project, namespace: group) }
+    let_it_be(:component) { create(:sbom_component) }
+    let(:params) { { group_id: group.to_param, search: 'file', component_id: component.id } }
+
+    subject { get locations_group_dependencies_path(group_id: group.full_path), params: params, as: :json }
+
+    context 'when security dashboard feature is enabled' do
+      before do
+        stub_licensed_features(security_dashboard: true)
+        stub_feature_flags(group_level_dependencies: true)
+      end
+
+      context 'and user is allowed to access group level dependencies' do
+        before do
+          group.add_developer(user)
+        end
+
+        it 'returns http status :ok' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:ok)
+        end
+
+        it 'returns empty array' do
+          subject
+
+          expect(json_response['locations']).to be_empty
+        end
+
+        context 'with existing matches' do
+          let_it_be(:occurrence_npm) { create(:sbom_occurrence, component: component, project: project) }
+          let_it_be(:source_npm) { occurrence_npm.source }
+          let_it_be(:source_bundler) { create(:sbom_source, packager_name: 'bundler', input_file_path: 'Gemfile.lock') }
+          let_it_be(:occurrence_bundler) do
+            create(:sbom_occurrence, source: source_bundler, component: component, project: project)
+          end
+
+          let_it_be(:location_bundler) { occurrence_bundler.location }
+
+          let(:expected_response) do
+            [
+              {
+                'location' => {
+                  "blob_path" => location_bundler[:blob_path],
+                  "path" => location_bundler[:path]
+                },
+                'project' => {
+                  "name" => project.name
+                }
+              }
+            ]
+          end
+
+          it 'returns location related data' do
+            subject
+
+            expect(json_response['locations']).to eq(expected_response)
+          end
+
+          context 'without filtering params' do
+            let(:params) { { group_id: group.to_param } }
+
+            it 'returns empty array' do
+              subject
+
+              expect(json_response['locations']).to be_empty
+            end
+          end
+        end
+
+        context 'when feature flag group_level_dependencies is disabled' do
+          before do
+            stub_feature_flags(group_level_dependencies: false)
+          end
+
+          it 'returns http status :forbidden' do
+            subject
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
+        end
+      end
+
+      context 'when user is not allowed to access group level dependencies' do
+        it 'returns http status :forbidden' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
+      end
+    end
+
+    context 'when security dashboard feature is disabled' do
+      it 'returns http status :forbidden' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+  end
 end

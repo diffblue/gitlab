@@ -37,6 +37,13 @@ module Sbom
       joins(:component).where(sbom_components: { name: component_names })
     end
 
+    scope :filter_by_search_with_component_and_group, ->(search, component_id, group) do
+      includes(project: :namespace).where(
+        source_id: Sbom::Source.select(:id).where("source->'input_file'->>'path' ILIKE ?", sanitize_sql("%#{search}%")),
+        component_id: component_id,
+        project: group.all_projects)
+    end
+
     scope :with_component, -> { includes(:component) }
     scope :with_source, -> { includes(:source) }
     scope :with_version, -> { includes(:component_version) }

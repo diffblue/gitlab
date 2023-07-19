@@ -89,6 +89,56 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     end
   end
 
+  describe '.filter_by_search_with_component_and_group' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, namespace: group) }
+    let_it_be(:occurrence_npm) { create(:sbom_occurrence, project: project) }
+    let_it_be(:source_npm) { occurrence_npm.source }
+    let_it_be(:component) { occurrence_npm.component }
+    let_it_be(:source_bundler) { create(:sbom_source, packager_name: 'bundler', input_file_path: 'Gemfile.lock') }
+    let_it_be(:occurrence_bundler) do
+      create(:sbom_occurrence, source: source_bundler, component: component, project: project)
+    end
+
+    context 'with different search keywords' do
+      using RSpec::Parameterized::TableSyntax
+
+      where(:keyword, :occurrences) do
+        'file'  | [ref(:occurrence_bundler)]
+        'pack'  | [ref(:occurrence_npm)]
+        'lock'  | [ref(:occurrence_npm), ref(:occurrence_bundler)]
+      end
+
+      with_them do
+        it 'returns records filtered by search' do
+          result = described_class.filter_by_search_with_component_and_group(keyword, component.id, group)
+
+          expect(result).to eq(occurrences)
+        end
+      end
+    end
+
+    context 'with unrelated group' do
+      let_it_be(:unrelated_group) { create(:group) }
+
+      it 'returns empty array' do
+        result = described_class.filter_by_search_with_component_and_group('file', component.id, unrelated_group)
+
+        expect(result).to be_empty
+      end
+    end
+
+    context 'with unrelated component' do
+      let_it_be(:unrelated_component) { create(:sbom_component) }
+
+      it 'returns empty array' do
+        result = described_class.filter_by_search_with_component_and_group('file', unrelated_component.id, group)
+
+        expect(result).to be_empty
+      end
+    end
+  end
+
   describe '#name' do
     let(:component) { build(:sbom_component, name: 'rails') }
     let(:occurrence) { build(:sbom_occurrence, component: component) }
