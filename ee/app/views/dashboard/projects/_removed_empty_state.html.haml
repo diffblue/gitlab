@@ -1,10 +1,6 @@
-.row.empty-state
-  .col-12
-    .svg-content.svg-150
-      = image_tag 'illustrations/empty-state/empty-projects-deleted-md.svg'
-    .text-content
-      %h4.gl-text-center
-        = s_("RemovedProjects|No projects pending deletion found")
-      %p.gl-text-center
-        = s_("RemovedProjects|Projects that are pending deletion that you have access to are listed here.")
-        = link_to _('Learn more.'), help_page_url('user/project/settings/index', anchor: 'delayed-project-deletion')
+= render Pajamas::EmptyStateComponent.new(svg_path: 'illustrations/empty-state/empty-projects-deleted-md.svg',
+  title: s_("RemovedProjects|No projects pending deletion found")) do |c|
+
+  - c.with_description do
+    = s_("RemovedProjects|Projects that are pending deletion that you have access to are listed here.")
+    = link_to _('Learn more.'), help_page_url('user/project/settings/index', anchor: 'delayed-project-deletion')
