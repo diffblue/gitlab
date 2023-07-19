@@ -18,6 +18,7 @@ module Projects
       validate :namespace_is_group
 
       scope :for_group, ->(group) { where(namespace: group) }
+      scope :for_group_and_its_subgroups, ->(group) { where(namespace: group.self_and_descendants_ids) }
       scope :for_projects, ->(project_ids) { where(project: project_ids) }
       scope :for_check_name, ->(check_name) { where(check_name: check_name) }
       scope :for_standard, ->(standard) { where(standard: standard) }

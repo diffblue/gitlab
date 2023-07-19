@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Projects::ComplianceStandards::AdherenceFinder, feature_category: :compliance_management do
   let_it_be(:group) { create(:group) }
+  let_it_be(:sub_group) { create(:group, parent: group) }
   let_it_be(:user) { create(:user) }
 
   let(:finder) { described_class.new(group, user, params) }
@@ -78,6 +79,36 @@ RSpec.describe Projects::ComplianceStandards::AdherenceFinder, feature_category:
 
       it 'returns the adherence records for the specified standard' do
         is_expected.to match_array([adherence_1, adherence_2])
+      end
+    end
+
+    context 'for include_subgroups param' do
+      let_it_be(:sub_group_project_1) { create(:project, namespace: sub_group) }
+      let_it_be(:adherence_3) do
+        create(:compliance_standards_adherence, :gitlab, project: sub_group_project_1,
+          check_name: :prevent_approval_by_merge_request_author)
+      end
+
+      context 'when true' do
+        let(:params) { { include_subgroups: true } }
+
+        it 'returns the adherence records for all the projects within the group and its subgroups' do
+          is_expected.to match_array([adherence_1, adherence_2, adherence_3])
+        end
+      end
+
+      context 'when false' do
+        let(:params) { { include_subgroups: false } }
+
+        it 'returns the adherence records for projects within the group only' do
+          is_expected.to match_array([adherence_1, adherence_2])
+        end
+      end
+
+      context 'when not set' do
+        it 'returns the adherence records for projects within the group only' do
+          is_expected.to match_array([adherence_1, adherence_2])
+        end
       end
     end
   end

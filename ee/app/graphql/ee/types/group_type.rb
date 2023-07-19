@@ -157,6 +157,12 @@ module EE
           method: :itself,
           authorize: :read_group_cycle_analytics,
           alpha: { milestone: '15.10' }
+        field :project_compliance_standards_adherence,
+          ::Types::Projects::ComplianceStandards::AdherenceType.connection_type,
+          null: true,
+          description: 'Compliance standards adherence for the projects in a group and its subgroups.',
+          resolver: ::Resolvers::Projects::ComplianceStandards::AdherenceResolver,
+          authorize: :read_group_compliance_dashboard
 
         def billable_members_count(requested_hosted_plan: nil)
           object.billable_members_count(requested_hosted_plan)
