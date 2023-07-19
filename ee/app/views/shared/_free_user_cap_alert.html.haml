@@ -10,11 +10,3 @@
   = render Namespaces::FreeUserCap::NonOwnerEnforcementAlertComponent.new(namespace: source.root_ancestor,
     user: current_user,
     content_class: full_content_class)
-
-  = render Namespaces::FreeUserCap::NotificationAlertComponent.new(namespace: source.root_ancestor,
-    user: current_user,
-    content_class: full_content_class)
-
-  = render Namespaces::FreeUserCap::NonOwnerNotificationAlertComponent.new(namespace: source.root_ancestor,
-    user: current_user,
-    content_class: full_content_class)

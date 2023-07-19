@@ -10,8 +10,7 @@ RSpec.describe EE::ApplicationSettingsHelper do
 
     context 'with dashboard limits' do
       let(:params) do
-        %i[dashboard_limit_enabled dashboard_limit dashboard_notification_limit dashboard_notification_limit
-           dashboard_limit_new_namespace_creation_enforcement_date]
+        %i[dashboard_limit_enabled dashboard_limit dashboard_limit_new_namespace_creation_enforcement_date]
       end
 
       context 'when on GitLab.com', :saas do

@@ -58,8 +58,9 @@ RSpec.describe 'projects/project_members/index', :aggregate_failures, feature_ca
 
       before do
         allow(view).to receive(:can?).with(user, :admin_group_member, project.root_ancestor).and_return(true)
-        allow(::Namespaces::FreeUserCap).to receive(:notification_or_enforcement_enabled?)
-                                              .with(project.root_ancestor).and_return(true)
+        allow_next_instance_of(::Namespaces::FreeUserCap::Enforcement, project.root_ancestor) do |instance|
+          allow(instance).to receive(:enforce_cap?).and_return(true)
+        end
       end
 
       it 'renders as expected' do

@@ -56,44 +56,10 @@ RSpec.describe EE::InviteMembersHelper, feature_category: :onboarding do
         Gitlab::Json.parse(helper.common_invite_modal_dataset(project)[:users_limit_dataset])
       end
 
-      context 'with feature flag :preview_free_user_cap enabled' do
-        let(:expected_remaining_seats) { 0 }
-
-        before do
-          stub_feature_flags(preview_free_user_cap: true)
-          stub_feature_flags(free_user_cap: false)
-        end
-
-        context 'when notifying the free user cap limit' do
-          context 'when not over limit' do
-            let(:expected_variant) { nil }
-
-            it 'includes correct users limit notification data' do
-              expect(users_limit_dataset).to eq(expected_alert_data)
-            end
-          end
-
-          context 'when over limit' do
-            let_it_be(:user) { create(:user) }
-
-            let(:expected_variant) { 'notification' }
-
-            before do
-              group.add_owner(user)
-            end
-
-            it 'includes correct users limit notification data' do
-              expect(users_limit_dataset).to eq(expected_alert_data)
-            end
-          end
-        end
-      end
-
       context 'with feature flag :free_user_cap enabled' do
         before do
           stub_ee_application_setting(dashboard_limit_new_namespace_creation_enforcement_date: 2.days.ago)
 
-          stub_feature_flags(preview_free_user_cap: false)
           stub_feature_flags(free_user_cap: true)
         end
 

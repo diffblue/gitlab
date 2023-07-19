@@ -80,8 +80,9 @@ RSpec.describe Groups::GroupMembersHelper do
 
     before do
       allow(helper).to receive(:can?).with(current_user, :admin_group_member, group).and_return(can_admin_member)
-      allow(::Namespaces::FreeUserCap).to receive(:notification_or_enforcement_enabled?)
-                                                      .with(group).and_return(enforce_free_user_cap)
+      allow_next_instance_of(::Namespaces::FreeUserCap::Enforcement, group) do |instance|
+        allow(instance).to receive(:enforce_cap?).and_return(enforce_free_user_cap)
+      end
     end
 
     with_them do

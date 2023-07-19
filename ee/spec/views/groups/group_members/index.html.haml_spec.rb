@@ -16,8 +16,9 @@ RSpec.describe 'groups/group_members/index', feature_category: :groups_and_proje
     before do
       allow(view).to receive(:can_admin_group_member?).with(group).and_return(true)
       allow(view).to receive(:can?).with(user, :admin_group_member, group.root_ancestor).and_return(true)
-      allow(::Namespaces::FreeUserCap).to receive(:notification_or_enforcement_enabled?)
-                                            .with(group.root_ancestor).and_return(true)
+      allow_next_instance_of(::Namespaces::FreeUserCap::Enforcement, group.root_ancestor) do |instance|
+        allow(instance).to receive(:enforce_cap?).and_return(true)
+      end
     end
 
     it 'renders as expected' do

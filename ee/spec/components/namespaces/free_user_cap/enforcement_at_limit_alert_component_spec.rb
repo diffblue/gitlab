@@ -68,8 +68,7 @@ RSpec.describe Namespaces::FreeUserCap::EnforcementAtLimitAlertComponent, :saas,
         before do
           allow(user).to receive(:dismissed_callout_for_group?).with(
             feature_name: described_class::ENFORCEMENT_AT_LIMIT_ALERT,
-            group: namespace,
-            ignore_dismissal_earlier_than: nil
+            group: namespace
           ).and_return(true)
         end
 

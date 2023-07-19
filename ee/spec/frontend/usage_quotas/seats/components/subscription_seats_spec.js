@@ -42,7 +42,6 @@ const providedFields = {
   hasNoSubscription: false,
   hasLimitedFreePlan: false,
   hasReachedFreePlanLimit: false,
-  notificationFreeUserCapEnabled: false,
   activeTrial: false,
 };
 
@@ -395,32 +394,6 @@ describe('Subscription Seats', () => {
             });
           });
         });
-
-        describe('when notification free user cap is enabled', () => {
-          beforeEach(() => {
-            wrapper = createComponent({
-              initialState: {
-                ...defaultInitialState,
-                hasNoSubscription: true,
-                hasLimitedFreePlan: false,
-                notificationFreeUserCapEnabled: true,
-              },
-            });
-          });
-
-          it('renders <statistics-card> with the necessary props', () => {
-            const statisticsCard = findStatisticsCard();
-
-            expect(statisticsCard.exists()).toBe(true);
-            expect(statisticsCard.props()).toMatchObject({
-              ...defaultProps,
-              description: 'Seats in use / Seats available',
-              percentage: 0,
-              totalValue: 'Unlimited',
-              usageValue: '2',
-            });
-          });
-        });
       });
     });
 
@@ -439,30 +412,6 @@ describe('Subscription Seats', () => {
       beforeEach(() => {
         wrapper = createComponent({
           initialState: { hasNoSubscription: true, hasLimitedFreePlan: true },
-        });
-      });
-
-      it('renders <subscription-upgrade-info-card> with the necessary props', () => {
-        const upgradeInfoCard = findSubscriptionUpgradeCard();
-
-        expect(findStatisticsSeatsCard().exists()).toBe(false);
-        expect(upgradeInfoCard.exists()).toBe(true);
-        expect(upgradeInfoCard.props()).toMatchObject({
-          maxNamespaceSeats: providedFields.maxFreeNamespaceSeats,
-          explorePlansPath: providedFields.explorePlansPath,
-          activeTrial: false,
-        });
-      });
-    });
-
-    describe('for free namespace with free user cap notification enabled', () => {
-      beforeEach(() => {
-        wrapper = createComponent({
-          initialState: {
-            hasNoSubscription: true,
-            hasLimitedFreePlan: false,
-            notificationFreeUserCapEnabled: true,
-          },
         });
       });
 
@@ -535,28 +484,20 @@ describe('Subscription Seats', () => {
 
   describe('pending members alert', () => {
     it.each`
-      pendingMembersPagePath | pendingMembersCount | hasLimitedFreePlan | notificationFreeUserCapEnabled | shouldBeRendered
-      ${undefined}           | ${undefined}        | ${false}           | ${false}                       | ${false}
-      ${undefined}           | ${0}                | ${false}           | ${false}                       | ${false}
-      ${'fake-path'}         | ${0}                | ${false}           | ${false}                       | ${false}
-      ${'fake-path'}         | ${3}                | ${true}            | ${false}                       | ${false}
-      ${'fake-path'}         | ${3}                | ${false}           | ${true}                        | ${false}
-      ${'fake-path'}         | ${3}                | ${false}           | ${false}                       | ${true}
+      pendingMembersPagePath | pendingMembersCount | hasLimitedFreePlan | shouldBeRendered
+      ${undefined}           | ${undefined}        | ${false}           | ${false}
+      ${undefined}           | ${0}                | ${false}           | ${false}
+      ${'fake-path'}         | ${0}                | ${false}           | ${false}
+      ${'fake-path'}         | ${3}                | ${true}            | ${false}
+      ${'fake-path'}         | ${3}                | ${false}           | ${true}
     `(
-      'rendering alert is $shouldBeRendered when pendingMembersPagePath=$pendingMembersPagePath and pendingMembersCount=$pendingMembersCount and hasLimitedFreePlan=$hasLimitedFreePlan and notificationFreeUserCapEnabled=$notificationFreeUserCapEnabled',
-      ({
-        pendingMembersPagePath,
-        pendingMembersCount,
-        shouldBeRendered,
-        hasLimitedFreePlan,
-        notificationFreeUserCapEnabled,
-      }) => {
+      'rendering alert is $shouldBeRendered when pendingMembersPagePath=$pendingMembersPagePath and pendingMembersCount=$pendingMembersCount and hasLimitedFreePlan=$hasLimitedFreePlan',
+      ({ pendingMembersPagePath, pendingMembersCount, shouldBeRendered, hasLimitedFreePlan }) => {
         wrapper = createComponent({
           initialState: {
             pendingMembersCount,
             pendingMembersPagePath,
             hasLimitedFreePlan,
-            notificationFreeUserCapEnabled,
           },
         });
 
