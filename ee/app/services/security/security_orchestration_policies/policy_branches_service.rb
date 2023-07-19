@@ -16,6 +16,10 @@ module Security
       private
 
       def execute(policy_type, rules)
+        included_branches(policy_type, rules) - excluded_branches(rules)
+      end
+
+      def included_branches(policy_type, rules)
         return Set.new if rules.empty? || project.empty_repo?
 
         all_matched_branches = matched_branches(policy_type, rules)
@@ -24,6 +28,29 @@ module Security
 
         # Scan result policies can only affect protected branches
         all_matched_branches & matched_protected_branches
+      end
+
+      def excluded_branches(rules)
+        return Set.new unless Feature.enabled?(:security_policies_branch_exceptions, project)
+
+        rules.reduce(Set.new) do |set, rule|
+          set.merge(match_exceptions(rule))
+        end
+      end
+
+      def match_exceptions(rule)
+        exceptions = rule[:branch_exceptions]
+
+        return [] unless exceptions&.any?
+
+        exceptions_for_project = exceptions.filter_map do |exception|
+          case exception
+          when String then exception
+          when Hash then exception[:name] if exception[:full_path] == project.full_path
+          end
+        end
+
+        all_branches_matched_by(exceptions_for_project)
       end
 
       def matched_branches(policy_type, rules)
