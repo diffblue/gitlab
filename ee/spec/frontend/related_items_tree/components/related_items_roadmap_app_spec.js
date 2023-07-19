@@ -30,7 +30,7 @@ const createComponent = ({ initialConfig = {} } = {}) => {
 
 describe('RelatedItemsTree', () => {
   describe('RelatedItemsRoadmapApp', () => {
-    // https://gitlab.com/gitlab-org/gitlab/-/issues/363214
+    // quarantine: https://gitlab.com/gitlab-org/gitlab/-/issues/363214
     // eslint-disable-next-line jest/no-disabled-tests
     describe.skip('template', () => {
       let wrapper = null;
@@ -80,7 +80,7 @@ describe('RelatedItemsTree', () => {
       });
     });
 
-    // https://gitlab.com/gitlab-org/gitlab/-/issues/407474
+    // quarantine: https://gitlab.com/gitlab-org/gitlab/-/issues/407474
     // eslint-disable-next-line jest/no-disabled-tests
     describe.skip('roadmap tab', () => {
       it('tracks loading of the component', async () => {
