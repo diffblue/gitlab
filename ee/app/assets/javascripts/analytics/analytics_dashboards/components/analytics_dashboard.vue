@@ -113,14 +113,9 @@ export default {
           return null;
         }
 
-        const panels = (dashboard.panels?.nodes || []).map((panel, index) => ({
-          ...panel,
-          id: index + 1,
-        }));
-
         return {
           ...dashboard,
-          panels,
+          panels: dashboard.panels?.nodes || [],
         };
       },
       result() {

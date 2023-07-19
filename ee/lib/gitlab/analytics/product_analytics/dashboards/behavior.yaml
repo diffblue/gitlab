@@ -2,8 +2,7 @@
 title: Behavior
 description: All insights on user activity
 panels:
-  - id: 1
-    visualization: page_views_over_time
+  - visualization: page_views_over_time
     title: Page views over time
     gridAttributes:
       yPos: 1
@@ -11,8 +10,7 @@ panels:
       width: 6
       height: 5
     options: {}
-  - id: 2
-    visualization: total_pageviews
+  - visualization: total_pageviews
     title: Total pageviews
     gridAttributes:
       yPos: 0
@@ -20,8 +18,7 @@ panels:
       width: 6
       height: 1
     options: {}
-  - id: 3
-    visualization: total_events
+  - visualization: total_events
     title: Total events
     gridAttributes:
       yPos: 0
@@ -29,8 +26,7 @@ panels:
       width: 6
       height: 1
     options: {}
-  - id: 4
-    visualization: events_over_time
+  - visualization: events_over_time
     title: Events over time
     gridAttributes:
       yPos: 1
@@ -38,8 +34,7 @@ panels:
       width: 6
       height: 5
     options: {}
-  - id: 5
-    visualization: top_pages
+  - visualization: top_pages
     title: Top pages
     gridAttributes:
       yPos: 6

@@ -9,10 +9,7 @@ import { createAlert } from '~/alert';
 import { s__, sprintf } from '~/locale';
 import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/url_sync.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import {
-  createNewVisualizationPanel,
-  getNextPanelId,
-} from 'ee/analytics/analytics_dashboards/utils';
+import { createNewVisualizationPanel } from 'ee/analytics/analytics_dashboards/utils';
 import PanelsBase from './panels_base.vue';
 import {
   GRIDSTACK_MARGIN,
@@ -185,12 +182,12 @@ export default {
         });
       }
     },
-    registerNewGridPanel(panelId) {
-      const id = this.panelDomId(panelId);
+    registerNewGridPanel(panelIndex) {
+      const domId = this.panelDomId(panelIndex);
 
-      this.grid.makeWidget(`#${id}`);
+      this.grid.makeWidget(`#${domId}`);
 
-      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+      document.getElementById(domId)?.scrollIntoView({ behavior: 'smooth' });
     },
     getGridAttribute(panel, attribute) {
       const { gridAttributes = {} } = panel;
@@ -198,14 +195,12 @@ export default {
       return gridAttributes[attribute];
     },
     async addNewPanel(visualization) {
-      const panelId = getNextPanelId(this.dashboard.panels);
-      const panel = createNewVisualizationPanel(panelId, visualization);
-
+      const panel = createNewVisualizationPanel(visualization);
       this.dashboard.panels.push(panel);
 
       // Wait for the panels to render
       await this.$nextTick();
-      this.registerNewGridPanel(panelId);
+      this.registerNewGridPanel(this.dashboard.panels.length - 1);
     },
     convertToGridAttributes(gridStackProperties) {
       return {
@@ -250,7 +245,7 @@ export default {
       }
     },
     updatePanelWithGridStackItem(item) {
-      const updatedPanel = this.dashboard.panels.find((element) => element.id === Number(item.id));
+      const updatedPanel = this.dashboard.panels.at(Number(item.id));
       if (updatedPanel) {
         updatedPanel.gridAttributes = this.convertToGridAttributes(item);
       }
@@ -258,7 +253,7 @@ export default {
     handlePanelError(panelTitle, error) {
       this.alert = createAlert({
         message: sprintf(
-          s__('ProductAnalytics|An error occured while loading the %{panelTitle} panel.'),
+          s__('ProductAnalytics|An error occurred while loading the %{panelTitle} panel.'),
           { panelTitle },
         ),
         error,
@@ -366,9 +361,9 @@ export default {
           <div v-if="!showCode" class="grid-stack">
             <div
               v-for="(panel, index) in dashboard.panels"
-              :id="panelDomId(panel.id)"
+              :id="panelDomId(index)"
               :key="index"
-              :gs-id="panel.id"
+              :gs-id="index"
               :gs-x="getGridAttribute(panel, 'xPos')"
               :gs-y="getGridAttribute(panel, 'yPos')"
               :gs-h="getGridAttribute(panel, 'height')"

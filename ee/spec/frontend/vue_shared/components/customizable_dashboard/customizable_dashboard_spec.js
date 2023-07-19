@@ -163,7 +163,6 @@ describe('CustomizableDashboard', () => {
 
     it.each(
       dashboard.panels.map((panel, index) => [
-        panel.id,
         panel.title,
         panel.visualization,
         panel.gridAttributes,
@@ -172,7 +171,7 @@ describe('CustomizableDashboard', () => {
       ]),
     )(
       'should render the panel for %s',
-      (id, title, visualization, gridAttributes, queryOverrides, index) => {
+      (title, visualization, gridAttributes, queryOverrides, index) => {
         expect(findPanels().at(index).props()).toMatchObject({
           title,
           visualization,
@@ -181,7 +180,7 @@ describe('CustomizableDashboard', () => {
         });
 
         expect(findGridStackPanels().at(index).attributes()).toMatchObject({
-          'gs-id': `${id}`,
+          'gs-id': `${index}`,
           'gs-h': `${gridAttributes.height}`,
           'gs-w': `${gridAttributes.width}`,
         });
@@ -194,7 +193,7 @@ describe('CustomizableDashboard', () => {
       findPanels().at(0).vm.$emit('error', error);
 
       expect(createAlert).toHaveBeenCalledWith({
-        message: `An error occured while loading the ${dashboard.panels[0].title} panel.`,
+        message: `An error occurred while loading the ${dashboard.panels[0].title} panel.`,
         captureError: true,
         error,
       });
@@ -286,10 +285,10 @@ describe('CustomizableDashboard', () => {
       });
 
       it('updates panels when their values change', async () => {
-        await wrapper.vm.updatePanelWithGridStackItem({ id: 1, x: 10, y: 20, w: 30, h: 40 });
+        await wrapper.vm.updatePanelWithGridStackItem({ id: '0', x: 10, y: 20, w: 30, h: 40 });
 
         expect(findGridStackPanels().at(0).attributes()).toMatchObject({
-          id: 'panel-1',
+          id: 'panel-0',
           'gs-h': '40',
           'gs-w': '30',
           'gs-x': '10',
