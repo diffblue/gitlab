@@ -6,7 +6,13 @@ import {
   securityScanBuildRule,
   licenseScanBuildRule,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/rules';
-import { NO_RULE_MESSAGE } from 'ee/security_orchestration/components/policy_editor/constants';
+import {
+  ALL_PROTECTED_BRANCHES,
+  HUMANIZED_BRANCH_TYPE_TEXT_DICT,
+  INVALID_RULE_MESSAGE,
+  NO_RULE_MESSAGE,
+  PROJECT_DEFAULT_BRANCH,
+} from 'ee/security_orchestration/components/policy_editor/constants';
 
 jest.mock('~/locale', () => ({
   getPreferredLocales: jest.fn().mockReturnValue(['en']),
@@ -16,9 +22,19 @@ jest.mock('~/locale', () => ({
   __: jest.requireActual('~/locale').__,
 }));
 
+const {
+  branch_type: defaultSecurityScanBranchType,
+  ...securityScanBuildRuleWithoutBranchType
+} = securityScanBuildRule();
+
+const {
+  branch_type: defaultLicenseScanBranchType,
+  ...licenseScanBuildRuleWithoutBranchType
+} = licenseScanBuildRule();
+
 const singleValuedSecurityScannerRule = {
   rule: {
-    ...securityScanBuildRule(),
+    ...securityScanBuildRuleWithoutBranchType,
     branches: ['main'],
     scanners: ['sast'],
     severity_levels: ['critical'],
@@ -36,7 +52,7 @@ const singleValuedSecurityScannerRule = {
 
 const noVulnerabilityStatesSecurityScannerRule = {
   rule: {
-    ...securityScanBuildRule(),
+    ...securityScanBuildRuleWithoutBranchType,
     branches: ['main'],
     scanners: ['sast'],
     severity_levels: ['critical'],
@@ -50,7 +66,7 @@ const noVulnerabilityStatesSecurityScannerRule = {
 
 const multipleValuedSecurityScannerRule = {
   rule: {
-    ...securityScanBuildRule(),
+    ...securityScanBuildRuleWithoutBranchType,
     branches: ['staging', 'main'],
     scanners: ['dast', 'sast'],
     vulnerabilities_allowed: 2,
@@ -69,7 +85,7 @@ const multipleValuedSecurityScannerRule = {
 
 const noCriteriaSecurityScannerRule = {
   rule: {
-    ...securityScanBuildRule(),
+    ...securityScanBuildRuleWithoutBranchType,
     branches: ['staging', 'main'],
     scanners: ['sast'],
     vulnerabilities_allowed: 1,
@@ -77,6 +93,43 @@ const noCriteriaSecurityScannerRule = {
   humanized: {
     summary:
       'When SAST scanner finds more than 1 vulnerability in an open merge request targeting the staging or main branches.',
+    criteriaList: [],
+  },
+};
+
+const branchTypeSecurityScannerRule = (branchType = PROJECT_DEFAULT_BRANCH.value) => ({
+  rule: {
+    ...securityScanBuildRule(),
+    branch_type: branchType,
+    severity_levels: [],
+    vulnerability_states: [],
+    scanners: ['sast'],
+    vulnerabilities_allowed: 1,
+  },
+  humanized: {
+    summary: `When SAST scanner finds more than 1 vulnerability in an open merge request targeting ${HUMANIZED_BRANCH_TYPE_TEXT_DICT[branchType]}.`,
+    criteriaList: [],
+  },
+});
+
+const invalidBranchTypeSecurityScannerRule = {
+  rule: {
+    ...securityScanBuildRule(),
+    branch_type: 'invalid',
+  },
+  humanized: {
+    summary: INVALID_RULE_MESSAGE,
+  },
+};
+
+const branchTypeAndBranchesSecurityScannerRule = {
+  rule: {
+    ...securityScanBuildRule(),
+    branch_type: PROJECT_DEFAULT_BRANCH.value,
+  },
+  humanized: {
+    summary:
+      'When any security scanner finds any vulnerabilities in an open merge request targeting the default branch.',
     criteriaList: [],
   },
 };
@@ -90,7 +143,7 @@ const allValuedSecurityScannerRule = {
   },
   humanized: {
     summary:
-      'When any security scanner finds more than 2 vulnerabilities in an open merge request targeting all protected branches and all the following apply:',
+      'When any security scanner finds more than 2 vulnerabilities in an open merge request targeting any protected branch and all the following apply:',
     criteriaList: [
       'Severity is info or critical.',
       'Vulnerabilities are new and need triage, or previously existing and resolved or confirmed.',
@@ -100,7 +153,7 @@ const allValuedSecurityScannerRule = {
 
 const singleValuedLicenseScanRule = {
   rule: {
-    ...licenseScanBuildRule(),
+    ...licenseScanBuildRuleWithoutBranchType,
     branches: ['main'],
     license_types: ['MIT License'],
     license_states: ['detected'],
@@ -113,7 +166,7 @@ const singleValuedLicenseScanRule = {
 
 const multipleValuedLicenseScanRule = {
   rule: {
-    ...licenseScanBuildRule(),
+    ...licenseScanBuildRuleWithoutBranchType,
     branches: ['staging', 'main'],
     match_on_inclusion: false,
     license_types: ['CMU License', 'CNRI Jython License', 'CNRI Python License'],
@@ -124,6 +177,19 @@ const multipleValuedLicenseScanRule = {
       'When license scanner finds any license except CMU License, CNRI Jython License and CNRI Python License in an open merge request targeting the staging or main branches.',
   },
 };
+
+const branchTypeLicenseScanRule = (branchType = PROJECT_DEFAULT_BRANCH.value) => ({
+  rule: {
+    ...licenseScanBuildRule(),
+    branch_type: branchType,
+    match_on_inclusion: false,
+    license_types: ['CMU License', 'CNRI Jython License', 'CNRI Python License'],
+    license_states: ['detected', 'newly_detected'],
+  },
+  humanized: {
+    summary: `When license scanner finds any license except CMU License, CNRI Jython License and CNRI Python License in an open merge request targeting ${HUMANIZED_BRANCH_TYPE_TEXT_DICT[branchType]}.`,
+  },
+});
 
 describe('humanizeRules', () => {
   it('returns the empty rules message in an Array if no rules are specified', () => {
@@ -159,22 +225,52 @@ describe('humanizeRules', () => {
       ]);
     });
 
-    describe('license scanner rules', () => {
-      it('returns a single rule as a human-readable string for user approvers only', () => {
-        expect(humanizeRules([singleValuedLicenseScanRule.rule])).toStrictEqual([
-          singleValuedLicenseScanRule.humanized,
+    it.each([PROJECT_DEFAULT_BRANCH.value, ALL_PROTECTED_BRANCHES.value])(
+      'returns a single rule as a human-readable string for rules with branch type',
+      (branchType) => {
+        expect(humanizeRules([branchTypeSecurityScannerRule(branchType).rule])).toStrictEqual([
+          branchTypeSecurityScannerRule(branchType).humanized,
         ]);
-      });
+      },
+    );
 
-      it('returns multiple rules with different number of branches/scanners as human-readable strings', () => {
-        expect(
-          humanizeRules([singleValuedLicenseScanRule.rule, multipleValuedLicenseScanRule.rule]),
-        ).toStrictEqual([
-          singleValuedLicenseScanRule.humanized,
-          multipleValuedLicenseScanRule.humanized,
-        ]);
-      });
+    it('returns a single rule as a human-readable string for rules with branch type and branches', () => {
+      expect(humanizeRules([branchTypeAndBranchesSecurityScannerRule.rule])).toStrictEqual([
+        branchTypeAndBranchesSecurityScannerRule.humanized,
+      ]);
     });
+
+    it('returns a default human-readable string for rules with invalid branch type', () => {
+      expect(humanizeRules([invalidBranchTypeSecurityScannerRule.rule])).toStrictEqual([
+        invalidBranchTypeSecurityScannerRule.humanized,
+      ]);
+    });
+  });
+
+  describe('license scanner rules', () => {
+    it('returns a single rule as a human-readable string for user approvers only', () => {
+      expect(humanizeRules([singleValuedLicenseScanRule.rule])).toStrictEqual([
+        singleValuedLicenseScanRule.humanized,
+      ]);
+    });
+
+    it('returns multiple rules with different number of branches/scanners as human-readable strings', () => {
+      expect(
+        humanizeRules([singleValuedLicenseScanRule.rule, multipleValuedLicenseScanRule.rule]),
+      ).toStrictEqual([
+        singleValuedLicenseScanRule.humanized,
+        multipleValuedLicenseScanRule.humanized,
+      ]);
+    });
+
+    it.each([PROJECT_DEFAULT_BRANCH.value, ALL_PROTECTED_BRANCHES.value])(
+      'returns a single rule as a human-readable string for rules with branch type',
+      (branchType) => {
+        expect(humanizeRules([branchTypeLicenseScanRule(branchType).rule])).toStrictEqual([
+          branchTypeLicenseScanRule(branchType).humanized,
+        ]);
+      },
+    );
   });
 });
 

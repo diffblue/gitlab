@@ -51,7 +51,7 @@ exports[`ScanExecutionPolicy component default policy renders the correct policy
       <ul>
         <li>
           
-          on every pipeline on the main branch
+          Every time a pipeline runs for the main branch
         
         </li>
       </ul>
@@ -153,7 +153,7 @@ exports[`ScanExecutionPolicy component multiple action policy renders the correc
       <ul>
         <li>
           
-          on every pipeline on the main branch
+          Every time a pipeline runs for the main branch
         
         </li>
       </ul>
@@ -190,7 +190,7 @@ exports[`ScanExecutionPolicy component no action policy renders the correct poli
       <ul>
         <li>
           
-          on every pipeline on the main branch
+          Every time a pipeline runs for the main branch
         
         </li>
       </ul>
@@ -277,7 +277,7 @@ exports[`ScanExecutionPolicy component policy with tags and CI variables renders
       <ul>
         <li>
           
-          on every pipeline on the main branch
+          Every time a pipeline runs for the main branch
         
         </li>
       </ul>
@@ -337,7 +337,7 @@ exports[`ScanExecutionPolicy component policy with unsupported attributes render
       <ul>
         <li>
           
-          on every pipeline on the main branch
+          Every time a pipeline runs for the main branch
         
         </li>
       </ul>
