@@ -91,4 +91,5 @@ module MergeRequests
   end
 end
 
+# Added for JiHu
 MergeRequests::Llm::SummarizeMergeRequestWorker.prepend_mod

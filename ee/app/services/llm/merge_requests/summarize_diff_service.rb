@@ -91,4 +91,5 @@ module Llm
   end
 end
 
+# Added for JiHu
 Llm::MergeRequests::SummarizeDiffService.prepend_mod

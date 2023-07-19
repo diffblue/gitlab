@@ -12,3 +12,6 @@ class MergeRequest::DiffLlmSummary < ApplicationRecord
   enum provider: { open_ai: 0, vertex_ai: 1 }
 end
 # rubocop:enable Style/ClassAndModuleChildren
+
+# Added for JiHu
+MergeRequest::DiffLlmSummary.prepend_mod
