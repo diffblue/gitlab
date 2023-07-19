@@ -164,9 +164,9 @@ export default {
       />
     </div>
 
-    <h4 data-testid="breakdown-subtitle">
+    <h3 data-testid="breakdown-subtitle">
       {{ $options.i18n.NAMESPACE_STORAGE_BREAKDOWN_SUBTITLE }}
-    </h4>
+    </h3>
 
     <dependency-proxy-usage
       v-if="!userNamespace"

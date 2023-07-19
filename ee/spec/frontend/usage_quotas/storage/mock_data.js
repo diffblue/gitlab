@@ -11,7 +11,7 @@ export const defaultNamespaceProvideValues = {
   namespacePath: 'h5bp',
   userNamespace: false,
   defaultPerPage: 20,
-  purchaseStorageUrl: '',
+  purchaseStorageUrl: 'some-fancy-url',
   buyAddonTargetAttr: '_blank',
   namespacePlanName: 'Free',
   namespacePlanStorageIncluded: 1002321,
