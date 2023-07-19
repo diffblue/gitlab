@@ -106,13 +106,14 @@ module Gitlab
             def conversation
               return [] unless Feature.enabled?(:ai_chat_history_context, context.current_user)
 
-              # include only messages with successful response
+              # include only messages with successful response and reorder
+              # messages so each question is followed by its answer
               by_request = last_conversation
                 .reject { |message| message.error.present? }
                 .group_by(&:request_id)
                 .select { |_uuid, messages| messages.size > 1 }
-              # TODO: we could consider also reorder messages so each request is followed by its response
-              by_request.values.flatten.sort_by(&:timestamp)
+
+              by_request.values.sort_by { |messages| messages.first.timestamp }.flatten
             end
 
             PROMPT_TEMPLATE = [

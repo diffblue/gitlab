@@ -102,7 +102,8 @@ namespace :gitlab do
         messages = Gitlab::Llm::Cache.new(current_user).last_conversation
         return if messages.empty?
 
-        Gitlab::Llm::Cache.new(current_user).add({ request_id: SecureRandom.uuid, role: 'user', content: '/reset' })
+        Gitlab::Llm::Cache.new(current_user)
+          .add({ request_id: SecureRandom.uuid, role: 'user', content: Gitlab::Llm::CachedMessage::RESET_MESSAGE })
       end
     end
   end
