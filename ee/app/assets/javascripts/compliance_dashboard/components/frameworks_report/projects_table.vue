@@ -333,7 +333,7 @@ export default {
           @create="createComplianceFramework(id)"
         >
           <template #toggle>
-            <gl-button icon="plus" category="tertiary" variant="info">
+            <gl-button icon="plus" category="tertiary" variant="confirm">
               {{ $options.i18n.addFrameworkMessage }}
             </gl-button>
           </template>
