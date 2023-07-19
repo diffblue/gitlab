@@ -236,7 +236,7 @@ RSpec.describe 'Query.runner(id)', feature_category: :runner_fleet do
 
       context 'when licensed' do
         before do
-          stub_licensed_features(runner_jobs_statistics: true)
+          stub_licensed_features(runner_performance_insights: true)
         end
 
         context 'with builds' do
@@ -282,7 +282,7 @@ RSpec.describe 'Query.runner(id)', feature_category: :runner_fleet do
 
       context 'when unlicensed' do
         before do
-          stub_licensed_features(runner_jobs_statistics: false)
+          stub_licensed_features(runner_performance_insights: false)
         end
 
         context 'with builds' do

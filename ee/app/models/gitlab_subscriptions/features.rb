@@ -35,7 +35,6 @@ module GitlabSubscriptions
       runner_maintenance_note
       runner_performance_insights
       runner_upgrade_management
-      runner_jobs_statistics
       seat_link
       usage_quotas
       zoekt_code_search
@@ -238,7 +237,6 @@ module GitlabSubscriptions
       runner_performance_insights
       runner_upgrade_management
       runner_upgrade_management_for_namespace
-      runner_jobs_statistics
       sast
       sast_iac
       sast_custom_rulesets

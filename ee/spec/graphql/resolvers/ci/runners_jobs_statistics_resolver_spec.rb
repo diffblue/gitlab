@@ -42,7 +42,7 @@ RSpec.describe Resolvers::Ci::RunnersJobsStatisticsResolver, feature_category: :
 
       context 'when licensed' do
         before do
-          stub_licensed_features(runner_jobs_statistics: true)
+          stub_licensed_features(runner_performance_insights: true)
         end
 
         context 'with no builds' do
@@ -119,7 +119,7 @@ RSpec.describe Resolvers::Ci::RunnersJobsStatisticsResolver, feature_category: :
 
       context 'when not licensed' do
         before do
-          stub_licensed_features(runner_jobs_statistics: false)
+          stub_licensed_features(runner_performance_insights: false)
         end
 
         context 'when all fields are requested' do
@@ -133,7 +133,7 @@ RSpec.describe Resolvers::Ci::RunnersJobsStatisticsResolver, feature_category: :
 
       context 'when licensed' do
         before do
-          stub_licensed_features(runner_jobs_statistics: true)
+          stub_licensed_features(runner_performance_insights: true)
         end
 
         context 'when all fields are requested' do
