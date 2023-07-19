@@ -179,6 +179,7 @@ module Elastic
 
           indexes :id, type: :keyword, index_options: 'docs', normalizer: :sha_normalizer
           indexes :rid, type: :keyword
+          indexes :archived, type: :boolean
           indexes :oid, type: :keyword, index_options: 'docs', normalizer: :sha_normalizer
           indexes :commit_sha, type: :keyword, index_options: 'docs', normalizer: :sha_normalizer
           indexes :path, type: :text, analyzer: :path_analyzer
