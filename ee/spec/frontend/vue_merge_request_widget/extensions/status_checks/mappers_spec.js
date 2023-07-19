@@ -11,7 +11,7 @@ const TEST_STATUS_RESPONSE = {
 const EXPECTATION_STATUS = {
   id: 1,
   text: 'some check: %{small_start}https://example.com%{small_end}',
-  subtext: '%{small_start}Status Check ID: 1%{small_end}',
+  supportingText: '%{small_start}Status Check ID: 1%{small_end}',
 };
 
 describe('status checks widget extension mappers', () => {
