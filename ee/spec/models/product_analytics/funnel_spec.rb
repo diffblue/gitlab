@@ -59,38 +59,15 @@ RSpec.describe ProductAnalytics::Funnel, feature_category: :product_analytics do
   describe '#to_sql' do
     subject { project.product_analytics_funnels.first.to_sql }
 
-    context 'with jitsu' do
-      before do
-        stub_feature_flags(product_analytics_snowplow_support: false)
-      end
-
-      let(:query) do
-        <<-SQL
-      SELECT
-        (SELECT max(utc_time) FROM jitsu) as x,
-        windowFunnel(3600)(utc_time, doc_path = '/page1.html', doc_path = '/page2.html') as step
-        FROM gitlab_project_#{project.id}.jitsu
-        SQL
-      end
-
-      it { is_expected.to eq(query) }
-    end
-
-    context 'with snowplow' do
-      before do
-        stub_feature_flags(product_analytics_snowplow_support: true)
-      end
-
-      let(:query) do
-        <<-SQL
+    let(:query) do
+      <<-SQL
       SELECT
         (SELECT max(derived_tstamp) FROM snowplow_events) as x,
         windowFunnel(3600)(toDateTime(derived_tstamp), page_urlpath = '/page1.html', page_urlpath = '/page2.html') as step
         FROM gitlab_project_#{project.id}.snowplow_events
-        SQL
-      end
-
-      it { is_expected.to eq(query) }
+      SQL
     end
+
+    it { is_expected.to eq(query) }
   end
 end

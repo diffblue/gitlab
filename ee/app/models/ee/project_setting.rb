@@ -16,16 +16,6 @@ module EE
         length: { maximum: 512 },
         addressable_url: { schemes: %w[http https], allow_localhost: true, allow_local_network: true },
         allow_blank: true
-      validates :jitsu_host,
-        length: { maximum: 255 },
-        addressable_url: { schemes: %w[http https], allow_localhost: true, allow_local_network: true },
-        allow_blank: true
-      validates :jitsu_project_xid, length: { maximum: 255 }, allow_blank: true
-      validates :jitsu_administrator_email,
-        length: { maximum: 255 },
-        devise_email: true,
-        allow_blank: true
-      validates :jitsu_administrator_password, length: { maximum: 255 }, allow_blank: true
       validates :product_analytics_data_collector_host,
         length: { maximum: 255 },
         addressable_url: { schemes: %w[http https], allow_localhost: true, allow_local_network: true },

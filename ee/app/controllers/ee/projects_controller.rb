@@ -98,10 +98,6 @@ module EE
       attributes = %i[
         prevent_merge_without_jira_issue
         cve_id_request_enabled
-        jitsu_host
-        jitsu_project_xid
-        jitsu_administrator_email
-        jitsu_administrator_password
         product_analytics_data_collector_host
         product_analytics_clickhouse_connection_string
         cube_api_base_url

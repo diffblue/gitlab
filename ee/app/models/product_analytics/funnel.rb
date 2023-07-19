@@ -57,18 +57,6 @@ module ProductAnalytics
     end
 
     def to_sql
-      return to_snowplow_sql if Feature.enabled?(:product_analytics_snowplow_support)
-
-      # This query will only run on a clickhouse database.
-      <<-SQL
-      SELECT
-        (SELECT max(utc_time) FROM jitsu) as x,
-        windowFunnel(#{@seconds_to_convert})(utc_time, #{steps.filter_map(&:step_definition).join(', ')}) as step
-        FROM gitlab_project_#{project.id}.jitsu
-      SQL
-    end
-
-    def to_snowplow_sql
       <<-SQL
       SELECT
         (SELECT max(derived_tstamp) FROM snowplow_events) as x,

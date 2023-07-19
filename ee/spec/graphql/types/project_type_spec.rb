@@ -34,28 +34,22 @@ RSpec.describe GitlabSchema.types['Project'] do
     describe 'tracking_key' do
       where(
         :can_read_product_analytics,
-        :snowplow_feature_flag_enabled,
-        :project_jitsu_key,
         :project_instrumentation_key,
         :expected
       ) do
-        false | false | nil | nil | nil
-        false | true | nil | nil | nil
-        true | false | 'jitsu-key' | 'snowplow-key' | 'jitsu-key'
-        true | true | 'jitsu-key' | 'snowplow-key' | 'snowplow-key'
-        true | true | 'jitsu-key' | nil | nil
-        true | true | nil | 'snowplow-key' | 'snowplow-key'
+        false | nil | nil
+        true  | 'snowplow-key' | 'snowplow-key'
+        true  | nil | nil
       end
 
       with_them do
         let_it_be(:project) { create(:project) }
 
         before do
-          project.project_setting.update!(jitsu_key: project_jitsu_key)
           project.project_setting.update!(product_analytics_instrumentation_key: project_instrumentation_key)
 
           stub_application_setting(product_analytics_enabled: can_read_product_analytics)
-          stub_feature_flags(product_analytics_dashboards: can_read_product_analytics, product_analytics_snowplow_support: snowplow_feature_flag_enabled)
+          stub_feature_flags(product_analytics_dashboards: can_read_product_analytics)
           stub_licensed_features(product_analytics: can_read_product_analytics)
         end
 

@@ -42,19 +42,7 @@ RSpec.describe ProductAnalytics::FunnelStep, feature_category: :product_analytic
   describe '#step_definition' do
     subject { funnel_step.step_definition }
 
-    context 'when jitsu' do
-      before do
-        stub_feature_flags(product_analytics_snowplow_support: false)
-      end
-
-      it { is_expected.to eq("doc_path = '/page1.html'") }
-    end
-
     context 'when snowplow' do
-      before do
-        stub_feature_flags(product_analytics_snowplow_support: true)
-      end
-
       it { is_expected.to eq("page_urlpath = '/page1.html'") }
     end
   end

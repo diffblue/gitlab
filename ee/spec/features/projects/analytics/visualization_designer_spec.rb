@@ -29,17 +29,12 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
       stub_licensed_features(combined_project_analytics_dashboards: true, product_analytics: true)
 
       stub_application_setting(product_analytics_enabled?: true)
-      stub_application_setting(jitsu_host: 'https://jitsu.example.com')
-      stub_application_setting(jitsu_project_xid: '123')
-      stub_application_setting(jitsu_administrator_email: 'test@example.com')
-      stub_application_setting(jitsu_administrator_password: 'password')
       stub_application_setting(product_analytics_data_collector_host: 'https://collector.example.com')
       stub_application_setting(product_analytics_clickhouse_connection_string: 'clickhouse://localhost:9000')
       stub_application_setting(cube_api_base_url: 'https://cube.example.com')
       stub_application_setting(cube_api_key: '123')
 
       project.add_developer(user)
-      project.project_setting.update!(jitsu_key: '123')
       project.reload
 
       stub_request(:get, cube_meta_api_url)
