@@ -43,6 +43,7 @@ module Elastic
         indexes :repository_access_level, type: :integer
         indexes :hashed_root_namespace_id, type: :integer
         indexes :schema_version, type: :integer
+        indexes :archived, type: :boolean
       end
     end
   end
