@@ -30,7 +30,7 @@ export default () => {
     subscriptionSyncPath,
     licenseUsageFilePath,
   } = el.dataset;
-  const connectivityHelpURL = helpPagePath('/user/admin_area/license.html', {
+  const connectivityHelpURL = helpPagePath('/administration/license.html', {
     anchor: 'cannot-activate-instance-due-to-connectivity-error',
   });
 

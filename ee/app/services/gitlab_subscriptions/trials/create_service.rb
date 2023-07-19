@@ -127,7 +127,7 @@ module GitlabSubscriptions
 
       def create_group_flow
         # Instance admins can disable user's ability to create top level groups.
-        # See https://docs.gitlab.com/ee/user/admin_area/index.html#prevent-a-user-from-creating-groups
+        # See https://docs.gitlab.com/ee/administration/admin_area.html#prevent-a-user-from-creating-groups
         return not_found unless user.can_create_group?
 
         name = ActionController::Base.helpers.sanitize(trial_params[:new_group_name])
