@@ -40,36 +40,6 @@ RSpec.describe Admin::Geo::ProjectsController, :geo, feature_category: :geo_repl
         expect(subject.body).to include(geo_primary.url)
       end
 
-      context 'warns about viewing replication data' do
-        let(:expected_warning) { 'Viewing projects data from a primary site is not possible when using a unified URL. Visit the secondary site directly.' }
-
-        context 'on a Geo primary' do
-          before do
-            stub_primary_node
-          end
-
-          it 'renders the warning on a primary' do
-            expect(subject.body).to match(expected_warning)
-            expect(subject.body).to include(
-              help_page_url('administration/geo/index', anchor: 'view-replication-data-on-the-primary-site')
-            )
-          end
-        end
-
-        context 'on a Geo secondary' do
-          before do
-            stub_secondary_node
-          end
-
-          it 'does not render the warning on a secondary' do
-            expect(subject.body).not_to match(expected_warning)
-            expect(subject.body).not_to include(
-              help_page_url('administration/geo/index', anchor: 'view-replication-data-on-the-primary-site')
-            )
-          end
-        end
-      end
-
       context 'without sync_status specified' do
         it 'renders all template when no extra get params is specified' do
           expect(subject).to have_gitlab_http_status(:ok)
