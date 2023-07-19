@@ -98,6 +98,7 @@ export default {
     >
       <failed-jobs-list
         v-if="isExpanded"
+        :failed-jobs-count="failedJobsCount"
         :is-pipeline-active="isPipelineActive"
         :pipeline-iid="pipelineIid"
         @failed-jobs-count="setFailedJobsCount"

@@ -21,6 +21,10 @@ export default {
   },
   inject: ['fullPath', 'graphqlPath'],
   props: {
+    failedJobsCount: {
+      required: true,
+      type: Number,
+    },
     isPipelineActive: {
       required: true,
       type: Boolean,
@@ -91,6 +95,13 @@ export default {
     },
     isActive(flag) {
       this.handlePolling(flag);
+    },
+    failedJobsCount(count) {
+      // If the REST data is updated first, we force a refetch
+      // to keep them in sync
+      if (this.failedJobs.length !== count) {
+        this.$apollo.queries.failedJobs.refetch();
+      }
     },
   },
   mounted() {
