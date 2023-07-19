@@ -68,12 +68,12 @@ export const links = Object.freeze({
   licenseSupportLink:
     'https://support.gitlab.com/hc/en-us/requests/new?ticket_form_id=360000071293',
   subscriptionActivationHelpLink: helpPagePath('user/admin_area/license.html'),
-  troubleshootingHelpLink: helpPagePath('/user/admin_area/license.html', {
+  troubleshootingHelpLink: helpPagePath('/administration/license.html', {
     anchor: 'cannot-activate-instance-due-to-connectivity-error',
   }),
   addSeats: `${DOCS_URL_IN_EE_DIR}/subscriptions/self_managed/#add-seats-to-a-subscription`,
-  deactivateUser: `${DOCS_URL_IN_EE_DIR}/user/admin_area/moderate_users.html#deactivate-a-user`,
-  blockUser: `${DOCS_URL_IN_EE_DIR}/user/admin_area/moderate_users.html#block-a-user`,
+  deactivateUser: `${DOCS_URL_IN_EE_DIR}/administration/moderate_users.html#deactivate-a-user`,
+  blockUser: `${DOCS_URL_IN_EE_DIR}/administration/moderate_users.html#block-a-user`,
 });
 
 export default {
