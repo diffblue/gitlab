@@ -38,14 +38,6 @@ RSpec.describe Admin::NamespaceLimitsController, :enable_admin_mode,
       context 'when not on .com' do
         it_behaves_like 'not found'
       end
-
-      context 'when :namespace_limits_admin_dashboard is disabled' do
-        before do
-          stub_feature_flags(namespace_limits_admin_dashboard: false)
-        end
-
-        it_behaves_like 'not found'
-      end
     end
 
     context 'with non-admin user' do
