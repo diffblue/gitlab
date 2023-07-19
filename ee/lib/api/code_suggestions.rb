@@ -27,7 +27,7 @@ module API
           'X-Gitlab-Authentication-Type' => 'oidc',
           'Authorization' => "Bearer #{headers['X-Gitlab-Oidc-Token']}",
           'Content-Type' => 'application/json'
-        }.merge(telemetry_headers)
+        }.merge(telemetry_headers).transform_values { |v| Array(v) }
       end
 
       # In case the request was proxied from the self-managed instance,
@@ -96,15 +96,18 @@ module API
             headers['X-Gitlab-Oidc-Token'] = code_suggestions_token.token
           end
 
-          response = ::Gitlab::HTTP.post(completions_endpoint, {
-            body: params.except(:private_token).to_json,
-            headers: model_gateway_headers(headers),
-            open_timeout: 3,
-            read_timeout: 5,
-            write_timeout: 5
-          })
-          status response.code
-          response
+          workhorse_headers =
+            Gitlab::Workhorse.send_url(
+              completions_endpoint,
+              body: params.except(:private_token).to_json,
+              headers: model_gateway_headers(headers),
+              method: "POST"
+            )
+
+          header(*workhorse_headers)
+
+          status :ok
+          body ''
         end
       end
     end
