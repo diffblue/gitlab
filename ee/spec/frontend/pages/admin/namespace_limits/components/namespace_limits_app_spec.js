@@ -43,7 +43,7 @@ describe('NamespaceLimitsApp', () => {
       expect(findNotificationsLimitSection().props()).toMatchObject({
         label: 'Set Notifications limit',
         description:
-          'Add minimum free storage amount (in GiB) that will be used to show notifications for namespace on free plan. To remove the limit, set the value to 0 and click "Update limit" button.',
+          'Add minimum free storage amount (in MiB) that will be used to show notifications for namespace on free plan. To remove the limit, set the value to 0 and click "Update limit" button.',
         modalBody:
           'This will limit the amount of notifications all free namespaces receives except the excluded namespaces, the limit can be removed later.',
         errorMessage: '',
@@ -106,7 +106,7 @@ describe('NamespaceLimitsApp', () => {
       expect(findEnforcementLimitSection().props()).toMatchObject({
         label: 'Set Enforcement limit',
         description:
-          'Add minimum free storage amount (in GiB) that will be used to enforce storage usage for namespaces on free plan. To remove the limit, set the value to 0 and click "Update limit" button.',
+          'Add minimum free storage amount (in MiB) that will be used to enforce storage usage for namespaces on free plan. To remove the limit, set the value to 0 and click "Update limit" button.',
         modalBody:
           'This will change when free namespaces get storage enforcement except the excluded namespaces, the limit can be removed later.',
         errorMessage: '',
@@ -169,7 +169,7 @@ describe('NamespaceLimitsApp', () => {
       expect(findDashboardLimitSection().props()).toMatchObject({
         label: 'Set Dashboard limit',
         description:
-          'Add minimum free storage amount (in GiB) that will be used to set the dashboard limit for namespaces on free plan. To remove the limit, set the value to 0 and click "Update limit" button.',
+          'Add minimum free storage amount (in MiB) that will be used to set the dashboard limit for namespaces on free plan. To remove the limit, set the value to 0 and click "Update limit" button.',
         modalBody:
           'This will change the dashboard limit for all free namespaces except the excluded namespaces, the limit can be removed later.',
         errorMessage: '',
