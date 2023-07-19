@@ -12,9 +12,10 @@ module EE
               {
                 image: 'illustrations/manual_action.svg',
                 size: 'svg-394',
-                title: _('Waiting for approval'),
+                title: _('Waiting for approvals'),
                 content: format(
-                  _("This job deploys to the protected environment \"%{environment}\" which requires approvals."),
+                  _("This job deploys to the protected environment \"%{environment}\", which requires approvals. " \
+                    "You can approve or reject the deployment on the environment details page."),
                   environment: subject.deployment&.environment&.name
                 )
               }
@@ -33,11 +34,11 @@ module EE
             end
 
             def action_button_title
-              _('Go to environments page to approve or reject')
+              _('View environment details page')
             end
 
             def action_path
-              project_environments_path(subject.project)
+              project_environment_path(subject.project, subject.deployment&.environment)
             end
 
             def action_method
