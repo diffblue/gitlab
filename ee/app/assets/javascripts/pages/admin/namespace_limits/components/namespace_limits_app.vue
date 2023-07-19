@@ -12,7 +12,7 @@ const i18n = {
   notificationsLimitTitle: s__('NamespaceLimits|Notifications Limit'),
   notificationsLimitLabel: s__('NamespaceLimits|Set Notifications limit'),
   notificationsLimitDescription: s__(
-    'NamespaceLimits|Add minimum free storage amount (in GiB) that will be used to show notifications for namespace on free plan. To remove the limit, set the value to 0 and click "Update limit" button.',
+    'NamespaceLimits|Add minimum free storage amount (in MiB) that will be used to show notifications for namespace on free plan. To remove the limit, set the value to 0 and click "Update limit" button.',
   ),
   notificationsLimitModalBody: s__(
     'NamespaceLimits|This will limit the amount of notifications all free namespaces receives except the excluded namespaces, the limit can be removed later.',
@@ -20,7 +20,7 @@ const i18n = {
   enforcementLimitTitle: s__('NamespaceLimits|Enforcement Limit'),
   enforcementLimitLabel: s__('NamespaceLimits|Set Enforcement limit'),
   enforcementLimitDescription: s__(
-    'NamespaceLimits|Add minimum free storage amount (in GiB) that will be used to enforce storage usage for namespaces on free plan. To remove the limit, set the value to 0 and click "Update limit" button.',
+    'NamespaceLimits|Add minimum free storage amount (in MiB) that will be used to enforce storage usage for namespaces on free plan. To remove the limit, set the value to 0 and click "Update limit" button.',
   ),
   enforcementLimitModalBody: s__(
     'NamespaceLimits|This will change when free namespaces get storage enforcement except the excluded namespaces, the limit can be removed later.',
@@ -28,7 +28,7 @@ const i18n = {
   dashboardLimitTitle: s__('NamespaceLimits|Dashboard Limit'),
   dashboardLimitLabel: s__('NamespaceLimits|Set Dashboard limit'),
   dashboardLimitDescription: s__(
-    'NamespaceLimits|Add minimum free storage amount (in GiB) that will be used to set the dashboard limit for namespaces on free plan. To remove the limit, set the value to 0 and click "Update limit" button.',
+    'NamespaceLimits|Add minimum free storage amount (in MiB) that will be used to set the dashboard limit for namespaces on free plan. To remove the limit, set the value to 0 and click "Update limit" button.',
   ),
   dashboardLimitModalBody: s__(
     'NamespaceLimits|This will change the dashboard limit for all free namespaces except the excluded namespaces, the limit can be removed later.',
