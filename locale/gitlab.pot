@@ -6968,7 +6968,7 @@ msgstr ""
 msgid "Awaiting user signup"
 msgstr ""
 
-msgid "AwardEmoji|No emojis found."
+msgid "AwardEmoji|No emoji found."
 msgstr ""
 
 msgid "Back"
@@ -9694,7 +9694,7 @@ msgstr ""
 msgid "Choose the top-level group for your repository imports."
 msgstr ""
 
-msgid "Choose visibility level, enable/disable project features and their permissions, disable email notifications, and show default award emoji."
+msgid "Choose visibility level, enable/disable project features and their permissions, disable email notifications, and show default emoji reactions."
 msgstr ""
 
 msgid "Choose what content you want to see on a group’s overview page."
@@ -24908,7 +24908,7 @@ msgstr ""
 msgid "Invalid hash"
 msgstr ""
 
-msgid "Invalid input, please avoid emojis"
+msgid "Invalid input, please avoid emoji"
 msgstr ""
 
 msgid "Invalid login or password"
@@ -29841,7 +29841,7 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-msgid "Name can contain only lowercase or uppercase letters, digits, emojis, spaces, dots, underscores, dashes, or pluses."
+msgid "Name can contain only lowercase or uppercase letters, digits, emoji, spaces, dots, underscores, dashes, or pluses."
 msgstr ""
 
 msgid "Name can't be blank"
@@ -35540,7 +35540,7 @@ msgstr ""
 msgid "Profiles|Username successfully changed"
 msgstr ""
 
-msgid "Profiles|Using emojis in names seems fun, but please try to set a status message instead"
+msgid "Profiles|Using emoji in names seems fun, but please try to set a status message instead"
 msgstr ""
 
 msgid "Profiles|Website url"
@@ -36110,7 +36110,7 @@ msgstr ""
 msgid "ProjectSettings|Allow anyone to pull from Package Registry"
 msgstr ""
 
-msgid "ProjectSettings|Always show thumbs-up and thumbs-down award emoji buttons on issues, merge requests, and snippets."
+msgid "ProjectSettings|Always show thumbs-up and thumbs-down emoji buttons on issues, merge requests, and snippets."
 msgstr ""
 
 msgid "ProjectSettings|Analytics"
@@ -36434,7 +36434,7 @@ msgstr ""
 msgid "ProjectSettings|Share code with others outside the project."
 msgstr ""
 
-msgid "ProjectSettings|Show default award emojis"
+msgid "ProjectSettings|Show default emoji reactions"
 msgstr ""
 
 msgid "ProjectSettings|Show link to create or view a merge request when pushing from the command line"
@@ -46708,7 +46708,7 @@ msgstr ""
 msgid "There was a problem fetching branches."
 msgstr ""
 
-msgid "There was a problem fetching emojis."
+msgid "There was a problem fetching emoji."
 msgstr ""
 
 msgid "There was a problem fetching epics."

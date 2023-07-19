@@ -755,7 +755,7 @@ RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_an
 
     result = update_project(project, admin, { name: 'foo&bar' })
 
-    expect(result).to eq({ status: :error, message: "Name can contain only letters, digits, emojis, '_', '.', '+', dashes, or spaces. It must start with a letter, digit, emoji, or '_'." })
+    expect(result).to eq({ status: :error, message: "Name can contain only letters, digits, emoji, '_', '.', '+', dashes, or spaces. It must start with a letter, digit, emoji, or '_'." })
   end
 
   it 'calls remove_import_data if mirror was disabled in previous change' do
