@@ -42,4 +42,6 @@ export default ({
   hasReachedFreePlanLimit: null,
   notificationFreeUserCapEnabled,
   activeTrial: false,
+  subscriptionEndDate: null,
+  subscriptionStartDate: null,
 });

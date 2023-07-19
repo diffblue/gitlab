@@ -17,6 +17,7 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category
   before do
     stub_feature_flags(usage_quotas_for_all_editions: false)
     stub_application_setting(check_namespace_plan: true)
+    stub_feature_flags(enable_hamilton_in_usage_quotas_ui: false)
 
     group.add_owner(user)
     group.add_maintainer(maintainer)
@@ -255,7 +256,7 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category
 
       context 'when on a free plan' do
         it 'has correct seats in use and plans link' do
-          expect(page).to have_content("4 / 5 Seats in use")
+          expect(page).to have_content("4 / 5 Seats in use / Seats available")
           expect(page).to have_link("Explore paid plans")
         end
       end
@@ -267,7 +268,7 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category
           expect(page.text).not_to include(*awaiting_user_names)
           expect(page.text).to include(*active_user_names)
           expect(page).to have_content("You have 3 pending members")
-          expect(page).to have_content("4 / 10 Seats in use")
+          expect(page).to have_content("4 / 10 Seats in use / Seats in subscription")
         end
       end
 
@@ -299,7 +300,7 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category
           expect(page.text).not_to include(*awaiting_user_names)
           expect(page.text).to include(*active_user_names)
           expect(page).to have_content("You have 3 pending members")
-          expect(page).to have_content("4 / Unlimited Seats in use")
+          expect(page).to have_content("4 / Unlimited Seats in use / Seats in subscription")
         end
       end
     end
