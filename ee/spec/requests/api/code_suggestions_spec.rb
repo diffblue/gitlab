@@ -230,6 +230,18 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
         post_api
       end
 
+      context 'when overriding service base URL' do
+        before do
+          stub_env('CODE_SUGGESTIONS_BASE_URL', 'http://test.com')
+        end
+
+        it 'sends requests to this URL instead' do
+          expect(Gitlab::HTTP).to receive(:post).with('http://test.com/v2/completions', an_instance_of(Hash))
+
+          post_api
+        end
+      end
+
       context 'when feature flag is disabled' do
         before do
           stub_feature_flags(code_suggestions_completion_api: false)
