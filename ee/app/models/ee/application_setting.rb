@@ -166,28 +166,6 @@ module EE
         presence: true,
         allow_blank: true
 
-      validates :jitsu_host,
-        length: { maximum: 255 },
-        addressable_url: ::ApplicationSetting::ADDRESSABLE_URL_VALIDATION_OPTIONS.merge({ allow_localhost: true }),
-        presence: true,
-        if: ->(setting) { setting.product_analytics_enabled && ::Feature.disabled?(:product_analytics_snowplow_support) }
-
-      validates :jitsu_project_xid,
-        length: { maximum: 255 },
-        presence: true,
-        if: ->(setting) { setting.product_analytics_enabled && ::Feature.disabled?(:product_analytics_snowplow_support) }
-
-      validates :jitsu_administrator_email,
-        length: { maximum: 255 },
-        presence: true,
-        devise_email: true,
-        if: ->(setting) { setting.product_analytics_enabled && ::Feature.disabled?(:product_analytics_snowplow_support) }
-
-      validates :jitsu_administrator_password,
-        length: { maximum: 255 },
-        presence: true,
-        if: ->(setting) { setting.product_analytics_enabled && ::Feature.disabled?(:product_analytics_snowplow_support) }
-
       validates :product_analytics_clickhouse_connection_string,
         length: { maximum: 512 },
         addressable_url: ::ApplicationSetting::ADDRESSABLE_URL_VALIDATION_OPTIONS.merge({ allow_localhost: true }),
@@ -299,13 +277,9 @@ module EE
           git_rate_limit_users_alertlist: [],
           auto_ban_user_on_excessive_projects_download: false,
           product_analytics_enabled: false,
-          jitsu_host: nil,
-          jitsu_project_xid: nil,
           product_analytics_data_collector_host: nil,
           product_analytics_clickhouse_connection_string: nil,
           product_analytics_configurator_connection_string: nil,
-          jitsu_administrator_email: nil,
-          jitsu_administrator_password: nil,
           cube_api_base_url: nil,
           cube_api_key: nil
         )
@@ -532,12 +506,6 @@ module EE
       personal_access_tokens_disabled? || read_attribute(:disable_feed_token)
     end
     alias_method :disable_feed_token?, :disable_feed_token
-
-    def jitsu_administrator_password=(value)
-      return if value == MASK_PASSWORD
-
-      super
-    end
 
     def git_rate_limit_users_alertlist
       (self[:git_rate_limit_users_alertlist].presence || ::User.admins.active.pluck_primary_key).sort

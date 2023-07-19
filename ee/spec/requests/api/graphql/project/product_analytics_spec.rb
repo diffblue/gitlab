@@ -25,34 +25,33 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics d
 
     using RSpec::Parameterized::TableSyntax
 
-    where(:licensed, :enabled, :snowplow_enabled, :user_role, :jitsu_key, :snowplow_instrumentation_key, :output) do
-      true  | true | false | :developer | 'jitsu_key' | nil | 'jitsu_key'
-      true  | true | true | :developer | 'jitsu_key' | 'snowplow_key' | 'snowplow_key'
-      true  | false | false | :developer | 'jitsu_key' | nil | nil
-      false | true | false | :developer | 'jitsu_key' | nil | nil
-      false | false | false | :developer | 'jitsu_key' | nil | nil
-      true  | true | false | :maintainer | 'jitsu_key' | nil | 'jitsu_key'
-      true  | true | true | :maintainer | 'jitsu_key' | 'snowplow_key' | 'snowplow_key'
-      true  | false | false | :maintainer | 'jitsu_key' | nil | nil
-      false | true | false | :maintainer | 'jitsu_key' | nil | nil
-      false | false | false | :maintainer | 'jitsu_key' | nil | nil
-      true  | true | false | :owner | 'jitsu_key' | nil | 'jitsu_key'
-      true  | true | true | :owner | 'jitsu_key' | 'snowplow_key' | 'snowplow_key'
-      true  | false | false | :owner | 'jitsu_key' | nil | nil
-      false | true | false | :owner | 'jitsu_key' | nil | nil
-      false | false | false | :owner | 'jitsu_key' | nil | nil
-      true  | true | false | :guest | 'jitsu_key' | nil | nil
-      true  | false | false | :guest | 'jitsu_key' | nil | nil
-      false | true | false | :guest | 'jitsu_key' | nil | nil
-      false | false | false | :guest | 'jitsu_key' | nil | nil
+    where(:licensed, :enabled, :user_role, :snowplow_instrumentation_key, :output) do
+      true  | true | :developer | nil | nil
+      true  | true | :developer | 'snowplow_key' | 'snowplow_key'
+      true  | false | :developer | nil | nil
+      false | true | :developer | nil | nil
+      false | false | :developer | nil | nil
+      true  | true | :maintainer | nil | nil
+      true  | true | :maintainer | 'snowplow_key' | 'snowplow_key'
+      true  | false | :maintainer | nil | nil
+      false | true | :maintainer | nil | nil
+      false | false | :maintainer | nil | nil
+      true  | true | :owner | nil | nil
+      true  | true | :owner | 'snowplow_key' | 'snowplow_key'
+      true  | false | :owner | nil | nil
+      false | true | :owner | nil | nil
+      false | false | :owner | nil | nil
+      true  | true | :guest | nil | nil
+      true  | false | :guest | nil | nil
+      false | true | :guest | nil | nil
+      false | false | :guest | nil | nil
     end
 
     with_them do
       before do
         stub_licensed_features(product_analytics: licensed)
-        stub_feature_flags(product_analytics_dashboards: enabled, product_analytics_snowplow_support: snowplow_enabled)
+        stub_feature_flags(product_analytics_dashboards: enabled)
         project.add_role(user, user_role)
-        project.project_setting.update!(jitsu_key: jitsu_key)
         project.project_setting.update!(product_analytics_instrumentation_key: snowplow_instrumentation_key)
         project.reload
       end
@@ -97,7 +96,7 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics d
       stub_feature_flags(product_analytics_snowplow_support: false)
 
       allow_next_instance_of(ProjectSetting) do |instance|
-        allow(instance).to receive(:jitsu_key).and_return('test key')
+        allow(instance).to receive(:product_analytics_instrumentation_key).and_return('test key')
       end
 
       allow_next_instance_of(Resolvers::ProductAnalytics::StateResolver) do |instance|
@@ -142,19 +141,6 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics d
       end
 
       expect(subject.dig('errors', 0, 'message')).to eq('Error from Cube API: Connection Error')
-    end
-
-    context 'with snowplow enabled' do
-      let_it_be(:events_table) { 'SnowplowTrackedEvents.pageViewsCount' }
-
-      before do
-        stub_feature_flags(product_analytics_snowplow_support: true)
-        allow_next_instance_of(ProjectSetting) do |instance|
-          allow(instance).to receive(:product_analytics_instrumentation_key).and_return('test key')
-        end
-      end
-
-      it_behaves_like 'queries state successfully'
     end
   end
 end

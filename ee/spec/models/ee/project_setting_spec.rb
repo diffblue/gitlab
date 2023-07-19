@@ -7,32 +7,22 @@ RSpec.describe ProjectSetting, feature_category: :groups_and_projects do
   it { is_expected.to validate_length_of(:product_analytics_instrumentation_key).is_at_most(255).allow_blank }
 
   it { is_expected.to allow_value('https://test.com').for(:product_analytics_configurator_connection_string) }
-  it { is_expected.to allow_value('https://test.com').for(:jitsu_host) }
   it { is_expected.to allow_value('https://test.com').for(:product_analytics_data_collector_host) }
   it { is_expected.to allow_value('https://test.com').for(:product_analytics_clickhouse_connection_string) }
   it { is_expected.to allow_value('https://test.com').for(:cube_api_base_url) }
 
   it { is_expected.to allow_value('').for(:product_analytics_configurator_connection_string) }
-  it { is_expected.to allow_value('').for(:jitsu_host) }
-  it { is_expected.to allow_value('').for(:jitsu_project_xid) }
-  it { is_expected.to allow_value('').for(:jitsu_administrator_email) }
-  it { is_expected.to allow_value('').for(:jitsu_administrator_password) }
   it { is_expected.to allow_value('').for(:product_analytics_data_collector_host) }
   it { is_expected.to allow_value('').for(:product_analytics_clickhouse_connection_string) }
   it { is_expected.to allow_value('').for(:cube_api_base_url) }
   it { is_expected.to allow_value('').for(:cube_api_key) }
 
   it { is_expected.not_to allow_value('notavalidurl').for(:product_analytics_configurator_connection_string) }
-  it { is_expected.not_to allow_value('notavalidurl').for(:jitsu_host) }
   it { is_expected.not_to allow_value('notavalidurl').for(:product_analytics_data_collector_host) }
   it { is_expected.not_to allow_value('notavalidurl').for(:product_analytics_clickhouse_connection_string) }
   it { is_expected.not_to allow_value('notavalidurl').for(:cube_api_base_url) }
 
   it { is_expected.to validate_length_of(:product_analytics_configurator_connection_string).is_at_most(512) }
-  it { is_expected.to validate_length_of(:jitsu_host).is_at_most(255) }
-  it { is_expected.to validate_length_of(:jitsu_project_xid).is_at_most(255) }
-  it { is_expected.to validate_length_of(:jitsu_administrator_email).is_at_most(255) }
-  it { is_expected.to validate_length_of(:jitsu_administrator_password).is_at_most(255) }
   it { is_expected.to validate_length_of(:product_analytics_data_collector_host).is_at_most(255) }
   it { is_expected.to validate_length_of(:product_analytics_clickhouse_connection_string).is_at_most(512) }
   it { is_expected.to validate_length_of(:cube_api_base_url).is_at_most(512) }
