@@ -5,7 +5,6 @@ import { logError } from '~/lib/logger';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import userWorkspacesListQuery from '../../graphql/queries/user_workspaces_list.query.graphql';
 import {
   WORKSPACES_LIST_POLL_INTERVAL,
@@ -13,7 +12,6 @@ import {
   WORKSPACE_STATES,
 } from '../../constants';
 import UpdateWorkspaceMutation from '../common/update_workspace_mutation.vue';
-import GetProjectDetailsQuery from '../common/get_project_details_query.vue';
 import WorkspaceDropdownItem from './workspace_dropdown_item.vue';
 
 export const i18n = {
@@ -36,9 +34,7 @@ export default {
     GlLoadingIcon,
     WorkspaceDropdownItem,
     UpdateWorkspaceMutation,
-    GetProjectDetailsQuery,
   },
-  mixins: [glFeatureFlagMixin()],
   props: {
     projectId: {
       type: Number,
@@ -49,6 +45,14 @@ export default {
       required: true,
     },
     newWorkspacePath: {
+      type: String,
+      required: true,
+    },
+    supportsWorkspaces: {
+      type: Boolean,
+      required: true,
+    },
+    borderPosition: {
       type: String,
       required: true,
     },
@@ -76,6 +80,9 @@ export default {
           projectIds: [convertToGraphQLId(TYPENAME_PROJECT, this.projectId)],
         };
       },
+      skip() {
+        return !this.supportsWorkspaces;
+      },
       update(data) {
         this.loadingWorkspacesFailed = false;
 
@@ -92,8 +99,6 @@ export default {
       workspaces: [],
       loadingWorkspacesFailed: false,
       updateWorkspaceErrorMessage: null,
-      projectDetailsLoaded: false,
-      supportsWorkspaces: false,
     };
   },
   computed: {
@@ -101,10 +106,7 @@ export default {
       return this.workspaces.length > 0;
     },
     isLoading() {
-      return this.$apollo.queries.workspaces.loading || !this.projectDetailsLoaded;
-    },
-    isWorkspacesDropdownGroupAvailable() {
-      return this.glFeatures.remoteDevelopment && this.glFeatures.remoteDevelopmentFeatureFlag;
+      return this.$apollo.queries.workspaces.loading;
     },
     newWorkspacePathWithProjectId() {
       return `${this.newWorkspacePath}?project=${encodeURIComponent(this.projectFullPath)}`;
@@ -117,13 +119,6 @@ export default {
     hideUpdateFailedAlert() {
       this.updateWorkspaceErrorMessage = null;
     },
-    onProjectDetailsResult({ hasDevFile, clusterAgents }) {
-      this.projectDetailsLoaded = true;
-      this.supportsWorkspaces = hasDevFile && clusterAgents.length > 0;
-    },
-    onProjectDetailsError() {
-      this.projectDetailsLoaded = true;
-    },
   },
   i18n,
   workspacesHelpPath,
@@ -131,24 +126,19 @@ export default {
 </script>
 <template>
   <update-workspace-mutation
-    v-if="isWorkspacesDropdownGroupAvailable"
     @updateSucceed="hideUpdateFailedAlert"
     @updateFailed="displayUpdateFailedAlert"
   >
     <template #default="{ update }">
       <gl-disclosure-dropdown-group
         bordered
+        :border-position="borderPosition"
         class="edit-dropdown-group-width gl-pt-2 gl-pb-4"
         data-testid="workspaces-dropdown-group"
       >
         <template #group-label>
           <span class="gl-display-flex gl-font-base">{{ $options.i18n.workspacesGroupLabel }}</span>
         </template>
-        <get-project-details-query
-          :project-full-path="projectFullPath"
-          @result="onProjectDetailsResult"
-          @error="onProjectDetailsError"
-        />
         <gl-loading-icon v-if="isLoading" />
         <template v-else>
           <gl-alert
@@ -188,7 +178,6 @@ export default {
               {{ $options.i18n.noWorkspacesSupportMessage }}
             </p>
           </div>
-
           <div
             v-if="supportsWorkspaces"
             class="gl-px-4 gl-py-3 gl-display-flex gl-justify-content-start"
