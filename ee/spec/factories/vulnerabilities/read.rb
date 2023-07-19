@@ -7,7 +7,7 @@ FactoryBot.define do
     scanner factory: :vulnerabilities_scanner
     report_type { :sast }
     severity { :high }
-    state { Vulnerability.states[:detected] }
+    state { :detected }
     uuid { SecureRandom.uuid }
   end
 end

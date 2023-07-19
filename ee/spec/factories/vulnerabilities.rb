@@ -13,21 +13,21 @@ FactoryBot.define do
     present_on_default_branch { true }
 
     trait :detected do
-      state { Vulnerability.states[:detected] }
+      state { :detected }
     end
 
     trait :resolved do
-      state { Vulnerability.states[:resolved] }
+      state { :resolved }
       resolved_at { Time.current }
     end
 
     trait :dismissed do
-      state { Vulnerability.states[:dismissed] }
+      state { :dismissed }
       dismissed_at { Time.current }
     end
 
     trait :confirmed do
-      state { Vulnerability.states[:confirmed] }
+      state { :confirmed }
       confirmed_at { Time.current }
     end
 
