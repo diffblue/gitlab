@@ -452,8 +452,8 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
           create(:elasticsearch_indexed_project, project: project_no_repository)
 
           expected = <<~STD_OUT
-          Project '#{project_no_repository.full_path}' (ID: #{project_no_repository.id}) isn't indexed.
-          1 out of 1 non-indexed projects shown.
+            Project '#{project_no_repository.full_path}' (ID: #{project_no_repository.id}) isn't indexed.
+            1 out of 1 non-indexed projects shown.
           STD_OUT
 
           expect { subject }.to output(expected).to_stdout
@@ -665,6 +665,21 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
           /#{setting.alias_name}:\s+number_of_shards: 5\s+number_of_replicas: 1\s+blocks\.write: yes/
         ).to_stdout
       end
+    end
+  end
+
+  describe 'clear_index_status' do
+    subject { run_rake_task('gitlab:elastic:clear_index_status') }
+
+    it 'deletes all records for Elastic::GroupIndexStatus and IndexStatus tables' do
+      expect(Elastic::GroupIndexStatus).to receive(:delete_all)
+      expect(IndexStatus).to receive(:delete_all)
+
+      expected = <<~STD_OUT
+        Index status has been reset
+      STD_OUT
+
+      expect { subject }.to output(expected).to_stdout
     end
   end
 end
