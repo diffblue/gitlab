@@ -2822,9 +2822,6 @@ msgstr ""
 msgid "Add deploy keys to grant read/write access to this repository. %{link_start}What are deploy keys?%{link_end}"
 msgstr ""
 
-msgid "Add email address"
-msgstr ""
-
 msgid "Add email participant(s)"
 msgstr ""
 
@@ -4623,9 +4620,6 @@ msgid "All changes are committed"
 msgstr ""
 
 msgid "All eligible users"
-msgstr ""
-
-msgid "All email addresses will be used to identify your commits."
 msgstr ""
 
 msgid "All environments"
@@ -12737,9 +12731,6 @@ msgid "Contributor"
 msgstr ""
 
 msgid "Contributor statistics"
-msgstr ""
-
-msgid "Control emails linked to your account"
 msgstr ""
 
 msgid "Control how the CI_JOB_TOKEN CI/CD variable is used for API access between projects."
@@ -27496,9 +27487,6 @@ msgstr ""
 msgid "Link to your Grafana instance."
 msgstr ""
 
-msgid "Linked emails (%{email_count})"
-msgstr ""
-
 msgid "Linked epics"
 msgstr ""
 
@@ -35237,7 +35225,13 @@ msgstr ""
 msgid "Profiles|Active"
 msgstr ""
 
+msgid "Profiles|Add email address"
+msgstr ""
+
 msgid "Profiles|Add key"
+msgstr ""
+
+msgid "Profiles|Add new email"
 msgstr ""
 
 msgid "Profiles|An error occurred while updating your username, please try again."
@@ -35280,6 +35274,9 @@ msgid "Profiles|Connect a service for sign-in."
 msgstr ""
 
 msgid "Profiles|Connected Accounts"
+msgstr ""
+
+msgid "Profiles|Control emails linked to your account"
 msgstr ""
 
 msgid "Profiles|Created %{time_ago}"
@@ -35325,6 +35322,12 @@ msgid "Profiles|Don't display activity-related personal information on your prof
 msgstr ""
 
 msgid "Profiles|Edit Profile"
+msgstr ""
+
+msgid "Profiles|Email"
+msgstr ""
+
+msgid "Profiles|Email addresses"
 msgstr ""
 
 msgid "Profiles|Ensure you have two-factor authentication recovery codes stored in a safe place."
@@ -35396,6 +35399,9 @@ msgstr ""
 msgid "Profiles|Last used:"
 msgstr ""
 
+msgid "Profiles|Linked emails"
+msgstr ""
+
 msgid "Profiles|Location"
 msgstr ""
 
@@ -35409,9 +35415,6 @@ msgid "Profiles|Manage two-factor authentication"
 msgstr ""
 
 msgid "Profiles|No file chosen."
-msgstr ""
-
-msgid "Profiles|Notification email"
 msgstr ""
 
 msgid "Profiles|Optional but recommended. If set, key becomes invalid on the specified date."
@@ -35453,7 +35456,13 @@ msgstr ""
 msgid "Profiles|Remove avatar"
 msgstr ""
 
+msgid "Profiles|Resend confirmation email"
+msgstr ""
+
 msgid "Profiles|Select a service to sign in with."
+msgstr ""
+
+msgid "Profiles|Send confirmation email"
 msgstr ""
 
 msgid "Profiles|Service sign-in"
@@ -42451,9 +42460,6 @@ msgid "Send"
 msgstr ""
 
 msgid "Send a single email notification to Owners and Maintainers for new alerts."
-msgstr ""
-
-msgid "Send confirmation email"
 msgstr ""
 
 msgid "Send email"
@@ -49843,6 +49849,15 @@ msgstr ""
 msgid "Used by more than 100,000 organizations, GitLab is the most popular solution to manage git repositories on-premises."
 msgstr ""
 
+msgid "Used for account notifications if a %{openingTag}group-specific email address%{closingTag} is not set."
+msgstr ""
+
+msgid "Used for avatar detection. You can change it in your %{openingTag}profile settings%{closingTag}."
+msgstr ""
+
+msgid "Used for web based operations, such as edits and merges."
+msgstr ""
+
 msgid "Used programming language"
 msgstr ""
 
@@ -53491,9 +53506,6 @@ msgstr ""
 msgid "Your comment will be discarded."
 msgstr ""
 
-msgid "Your commit email is used for web based operations, such as edits and merges."
-msgstr ""
-
 msgid "Your current password is required to register a new device."
 msgstr ""
 
@@ -53504,9 +53516,6 @@ msgid "Your dashboard has been copied. You can %{web_ide_link_start}edit it here
 msgstr ""
 
 msgid "Your dashboard has been updated. You can %{web_ide_link_start}edit it here%{web_ide_link_end}."
-msgstr ""
-
-msgid "Your default notification email is used for account notifications if a %{openingTag}group-specific email address%{closingTag} is not set."
 msgstr ""
 
 msgid "Your deployment services will be broken, you will need to manually fix the services after renaming."
@@ -53581,9 +53590,6 @@ msgid "Your personal access tokens have expired"
 msgstr ""
 
 msgid "Your personal access tokens will expire in %{days_to_expire} days or less"
-msgstr ""
-
-msgid "Your primary email is used for avatar detection. You can change it in your %{openingTag}profile settings%{closingTag}."
 msgstr ""
 
 msgid "Your profile"
