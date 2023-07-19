@@ -18,6 +18,10 @@ module Groups
       end
     end
 
+    def locations
+      render json: locations_info
+    end
+
     private
 
     def authorize_read_dependency_list!
@@ -27,7 +31,7 @@ module Groups
     end
 
     def dependency_list_params
-      params.permit(:sort_by, :sort, package_managers: [])
+      params.permit(:sort_by, :sort, :component_id, :search, package_managers: [])
     end
 
     def collect_dependencies
@@ -49,6 +53,16 @@ module Groups
           render_403
         end
       end
+    end
+
+    def locations_info
+      ::Sbom::DependencyLocationListEntity.represent(dependency_locations)
+    end
+
+    def dependency_locations
+      Sbom::DependencyLocationsFinder
+        .new(namespace: group, params: dependency_list_params.slice(:component_id, :search))
+        .execute
     end
   end
 end
