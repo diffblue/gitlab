@@ -25,8 +25,6 @@ module MergeRequests
     scope :by_target_branch, -> (branch) { where(target_branch: branch) }
     scope :order_by_reason, -> (direction) { order(reason: direction, id: direction) }
     scope :order_by_severity_level, -> (direction) { order(severity_level: direction, id: direction) }
-    scope :order_by_merge_request_title, -> (direction) { join_merge_requests.order("\"merge_requests\".\"title\" #{direction.to_s.upcase}", id: direction).references(:merge_request) }
-    scope :order_by_merged_at, -> (direction) { join_metrics.order("\"merge_request_metrics\".\"merged_at\" #{direction.to_s.upcase}", id: direction).references(:merge_request_metrics) }
 
     scope :in_optimization_array_mapping_scope, -> (id_expression) { where(arel_table[:target_project_id].eq(id_expression)) }
     scope :in_optimization_finder_query, -> (_, id_expression) { where(arel_table[:id].eq(id_expression)) }
