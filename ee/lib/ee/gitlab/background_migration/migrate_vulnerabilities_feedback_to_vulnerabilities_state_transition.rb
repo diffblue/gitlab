@@ -245,7 +245,6 @@ module EE
         def build_state_transition(feedback:, vulnerability:)
           from_state = Vulnerability.states[:detected]
           to_state = Vulnerability.states[:dismissed]
-
           max_length_comment = strip_or_truncate_comment(feedback: feedback)
 
           attrs = {

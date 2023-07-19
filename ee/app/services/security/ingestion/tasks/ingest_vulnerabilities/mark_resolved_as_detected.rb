@@ -23,7 +23,7 @@ module Security
               ::Vulnerability
                 .resolved
                 .where(id: resolved_vulnerabilities_ids)
-                .update_all(state: ::Vulnerability.states[:detected])
+                .update_all(state: :detected)
             end
           end
 
@@ -43,8 +43,8 @@ module Security
           def create_state_transition_for(vulnerability_id)
             ::Vulnerabilities::StateTransition.create!(
               vulnerability: vulnerability_id,
-              from_state: ::Vulnerability.states[:resolved],
-              to_state: ::Vulnerability.states[:detected]
+              from_state: :resolved,
+              to_state: :detected
             )
           end
         end
