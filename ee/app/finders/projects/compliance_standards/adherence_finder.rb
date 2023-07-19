@@ -12,7 +12,7 @@ module Projects
       def execute
         return ::Projects::ComplianceStandards::Adherence.none unless allowed?
 
-        items = ::Projects::ComplianceStandards::Adherence.for_group(group)
+        items = init_collection
         items = items.for_projects(params[:project_ids]) if params[:project_ids].present?
         items = items.for_check_name(params[:check_name]) if params[:check_name].present?
         items = items.for_standard(params[:standard]) if params[:standard].present?
@@ -28,6 +28,14 @@ module Projects
         return true if params[:skip_authorization].present?
 
         Ability.allowed?(current_user, :read_group_compliance_dashboard, group)
+      end
+
+      def init_collection
+        if params[:include_subgroups].present?
+          ::Projects::ComplianceStandards::Adherence.for_group_and_its_subgroups(group)
+        else
+          ::Projects::ComplianceStandards::Adherence.for_group(group)
+        end
       end
     end
   end

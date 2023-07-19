@@ -66,6 +66,8 @@ RSpec.describe Projects::ComplianceStandards::Adherence, type: :model, feature_c
   describe 'scopes' do
     let_it_be(:project_1) { create(:project, :in_group) }
     let_it_be(:project_2) { create(:project, :in_group) }
+    let_it_be(:subgroup) { create(:group, parent: project_1.group) }
+    let_it_be(:subgroup_project) { create(:project, namespace: subgroup) }
 
     let_it_be(:adherence_1) do
       create(:compliance_standards_adherence, project: project_1,
@@ -77,6 +79,8 @@ RSpec.describe Projects::ComplianceStandards::Adherence, type: :model, feature_c
         check_name: :prevent_approval_by_merge_request_author, standard: :gitlab)
     end
 
+    let_it_be(:adherence_3) { create(:compliance_standards_adherence, project: subgroup_project) }
+
     describe '.for_projects' do
       it 'returns the adherence records for the specified projects', :aggregate_failures do
         expect(described_class.for_projects(project_1.id)).to contain_exactly(adherence_1)
@@ -87,13 +91,13 @@ RSpec.describe Projects::ComplianceStandards::Adherence, type: :model, feature_c
     describe '.for_check_name' do
       it 'returns the adherence records for the specified check_name' do
         expect(described_class.for_check_name(:prevent_approval_by_merge_request_author))
-          .to contain_exactly(adherence_1, adherence_2)
+          .to contain_exactly(adherence_1, adherence_2, adherence_3)
       end
     end
 
     describe '.for_standard' do
       it 'returns the adherence records for the specified standard' do
-        expect(described_class.for_standard(:gitlab)).to contain_exactly(adherence_1, adherence_2)
+        expect(described_class.for_standard(:gitlab)).to contain_exactly(adherence_1, adherence_2, adherence_3)
       end
     end
 
@@ -101,6 +105,15 @@ RSpec.describe Projects::ComplianceStandards::Adherence, type: :model, feature_c
       it 'returns the adherence records for the specified group', :aggregate_failures do
         expect(described_class.for_group(project_1.group.id)).to contain_exactly(adherence_1)
         expect(described_class.for_group(project_2.group.id)).to contain_exactly(adherence_2)
+      end
+    end
+
+    describe '.for_group_and_its_subgroups' do
+      it 'returns the adherence records for the specified group and its subgroups', :aggregate_failures do
+        expect(described_class.for_group_and_its_subgroups(project_1.group))
+          .to contain_exactly(adherence_1, adherence_3)
+
+        expect(described_class.for_group_and_its_subgroups(project_2.group)).to contain_exactly(adherence_2)
       end
     end
   end
