@@ -1,7 +1,7 @@
 <script>
 import { GlIcon, GlTooltip } from '@gitlab/ui';
 import { cloneDeep } from 'lodash';
-import { s__, n__ } from '~/locale';
+import { n__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { getSeverity } from '~/ci/reports/utils';
 import { SAST_SCALE_KEY, CODE_QUALITY_SCALE_KEY } from '~/ci/reports/constants';
@@ -12,9 +12,6 @@ export default {
   components: {
     GlIcon,
     GlTooltip,
-  },
-  i18n: {
-    popoverTitle: s__('CodeQuality|New code quality degradations on this line'),
   },
   mixins: [glFeatureFlagsMixin()],
   props: {
@@ -71,14 +68,6 @@ export default {
     },
     line() {
       return this.combinedFindings[0].line;
-    },
-    degradations() {
-      return this.codequality.map((degradation) => {
-        return {
-          name: degradation.description,
-          severity: degradation.severity,
-        };
-      });
     },
     moreCount() {
       return this.combinedFindings.length > codequalityCountThreshold

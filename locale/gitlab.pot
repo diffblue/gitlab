@@ -11204,9 +11204,6 @@ msgstr ""
 msgid "CodeOwner|Pattern"
 msgstr ""
 
-msgid "CodeQuality|New code quality degradations on this line"
-msgstr ""
-
 msgid "CodeSuggestionsAlert|Code faster and more efficiently with AI-powered code suggestions in VS Code. 13 languages are supported, including JavaScript, Python, Go, Java, and Kotlin. Enable Code Suggestions in your %{preference_link_start}user profile preferences%{link_end} or %{docs_link_start}see the documentation%{link_end} to learn more."
 msgstr ""
 
