@@ -193,16 +193,16 @@ RSpec.describe "Admin::Users", :js, feature_category: :user_management do
       # Check that the regular Key shows the delete icon and the LDAPKey does not
 
       # SSH key should be the first in the list
-      within('ul.content-list li.key-list-item:nth-of-type(1)') do
+      within('.ssh-keys-list .key-list-item:nth-of-type(1)') do
         expect(page).to have_content(key2.title)
-        expect(page).to have_content('Remove')
+        expect(page).to have_css('[aria-label="Remove"]')
         expect(page).not_to have_content('Revoke')
       end
 
       # Next, LDAP key
-      within('ul.content-list li.key-list-item:nth-of-type(2)') do
+      within('.ssh-keys-list .key-list-item:nth-of-type(2)') do
         expect(page).to have_content(key1.title)
-        expect(page).not_to have_content('Remove')
+        expect(page).not_to have_css('[aria-label="Remove"]')
         expect(page).not_to have_content('Revoke')
       end
     end
