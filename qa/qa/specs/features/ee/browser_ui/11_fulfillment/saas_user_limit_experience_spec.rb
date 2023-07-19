@@ -56,32 +56,6 @@ module QA
       end
 
       context 'when Saas user limit experience ' do
-        context 'when group is in notification' do
-          before do
-            # Since we have logic for 'reached' the limit, we need to go over the notification_limit by going to 4
-            # and still be under the dashboard_limit of 5 to see the notification message.
-            # We also want to keep a matching scenario of production in staging, we don't want to have this
-            # setting be permanent.
-            Runtime::ApplicationSettings.set_application_settings(dashboard_notification_limit: 3)
-          end
-
-          after do
-            Runtime::ApplicationSettings.restore_application_settings(:dashboard_notification_limit)
-          end
-
-          it(
-            'preview notification displayed for private group when over limit',
-            testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/387825'
-          ) do
-            private_group.add_members(user_2, user_3, user_4)
-            page.refresh
-
-            expect { page.text.squish }
-              .to eventually_include(notifications(private_group, :limit_overage_preview_msg))
-                    .within(max_attempts: 5, sleep_interval: 2, reload_page: page)
-          end
-        end
-
         it(
           'limit overage enforcement removed from private group when trial is started',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/387826'
@@ -197,10 +171,6 @@ module QA
       # @param [Symbol] type notification message type
       def notifications(group, type)
         {
-          limit_overage_preview_msg:
-            "Your top-level group #{group.path} will move to a read-only state soon
-             Because you are over the 5 user limit, your top-level group, including any subgroups
-             and projects, will be placed in a read-only state soon",
           limit_reached_enforcement_msg:
             "Your top-level group #{group.path} has reached the 5 user limit To invite more users,
             you can reduce the number of users in your top-level group to 5 users or less",

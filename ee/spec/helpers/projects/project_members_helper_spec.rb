@@ -84,8 +84,9 @@ RSpec.describe Projects::ProjectMembersHelper do
       allow(helper).to receive(:can?).with(current_user, :admin_project_member, current_project).and_return(true)
       allow(helper).to receive(:can?).with(current_user, :admin_group_member, current_project.root_ancestor)
                                      .and_return(can_admin_member)
-      allow(::Namespaces::FreeUserCap).to receive(:notification_or_enforcement_enabled?)
-                                            .with(current_project.root_ancestor).and_return(enforce_free_user_cap)
+      allow_next_instance_of(::Namespaces::FreeUserCap::Enforcement, current_project.root_ancestor) do |instance|
+        allow(instance).to receive(:enforce_cap?).and_return(enforce_free_user_cap)
+      end
     end
 
     with_them do

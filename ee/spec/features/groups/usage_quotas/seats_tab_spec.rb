@@ -220,7 +220,6 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category
   end
 
   context 'with free user limit' do
-    let(:preview_free_user_cap) { false }
     let(:free_user_cap) { false }
     let(:awaiting_user_names) { awaiting_members.map { |m| m.user.name } }
     let(:active_user_names) { active_members.map { |m| m.user.name } }
@@ -230,7 +229,7 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category
     let_it_be(:active_members) { create_list(:group_member, 1, source: group) }
 
     before do
-      stub_feature_flags(preview_free_user_cap: preview_free_user_cap, free_user_cap: free_user_cap)
+      stub_feature_flags(free_user_cap: free_user_cap)
       stub_ee_application_setting(dashboard_limit_enabled: true)
       stub_ee_application_setting(dashboard_limit: 5)
       allow_next_instance_of(GitlabSubscriptions::FetchSubscriptionPlansService) do |instance|

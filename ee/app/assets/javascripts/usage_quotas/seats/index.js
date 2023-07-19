@@ -24,7 +24,6 @@ export default (containerId = 'js-seat-usage-app') => {
     maxFreeNamespaceSeats,
     explorePlansPath,
     enforcementFreeUserCapEnabled,
-    notificationFreeUserCapEnabled,
   } = el.dataset;
 
   return new Vue({
@@ -43,7 +42,6 @@ export default (containerId = 'js-seat-usage-app') => {
         maxFreeNamespaceSeats: parseInt(maxFreeNamespaceSeats, 10),
         explorePlansPath,
         enforcementFreeUserCapEnabled: parseBoolean(enforcementFreeUserCapEnabled),
-        notificationFreeUserCapEnabled: parseBoolean(notificationFreeUserCapEnabled),
       }),
     ),
     render(createElement) {

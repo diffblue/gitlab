@@ -243,7 +243,6 @@ RSpec.describe GroupsHelper do
 
     let(:user_cap_applied) { true }
     let(:enforcement_free_user_cap) { false }
-    let(:notification_free_user_cap) { false }
     let(:data) do
       {
         namespace_id: group.id,
@@ -255,8 +254,7 @@ RSpec.describe GroupsHelper do
         has_no_subscription: group.has_free_or_no_subscription?.to_s,
         max_free_namespace_seats: 10,
         explore_plans_path: group_billings_path(group),
-        enforcement_free_user_cap_enabled: 'false',
-        notification_free_user_cap_enabled: 'false'
+        enforcement_free_user_cap_enabled: 'false'
       }
     end
 
@@ -266,9 +264,6 @@ RSpec.describe GroupsHelper do
 
       expect_next_instance_of(::Namespaces::FreeUserCap::Enforcement, group) do |instance|
         expect(instance).to receive(:enforce_cap?).and_return(enforcement_free_user_cap)
-      end
-      expect_next_instance_of(::Namespaces::FreeUserCap::Notification, group) do |instance|
-        expect(instance).to receive(:enforce_cap?).and_return(notification_free_user_cap)
       end
     end
 
@@ -288,13 +283,6 @@ RSpec.describe GroupsHelper do
     context 'when free user cap is enforced' do
       let(:enforcement_free_user_cap) { true }
       let(:expected_data) { data.merge({ enforcement_free_user_cap_enabled: 'true' }) }
-
-      it { is_expected.to eql(expected_data) }
-    end
-
-    context 'when notification free user cap is enabled' do
-      let(:notification_free_user_cap) { true }
-      let(:expected_data) { data.merge({ notification_free_user_cap_enabled: 'true' }) }
 
       it { is_expected.to eql(expected_data) }
     end

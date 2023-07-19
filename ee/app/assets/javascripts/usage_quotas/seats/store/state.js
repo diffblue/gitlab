@@ -9,7 +9,6 @@ export default ({
   maxFreeNamespaceSeats = null,
   explorePlansPath = '',
   enforcementFreeUserCapEnabled = false,
-  notificationFreeUserCapEnabled = false,
 } = {}) => ({
   isLoadingBillableMembers: false,
   isLoadingGitlabSubscription: false,
@@ -40,6 +39,5 @@ export default ({
   explorePlansPath,
   hasLimitedFreePlan: enforcementFreeUserCapEnabled,
   hasReachedFreePlanLimit: null,
-  notificationFreeUserCapEnabled,
   activeTrial: false,
 });

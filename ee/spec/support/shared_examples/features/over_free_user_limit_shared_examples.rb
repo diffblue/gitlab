@@ -21,91 +21,9 @@ RSpec.shared_examples_for 'over the free user limit alert' do
     end
   end
 
-  context 'when over limit for notification' do
-    let(:non_owner_text) { 'ask your top-level group Owner to' }
-
-    before do
-      stub_feature_flags(free_user_cap: true)
-      stub_feature_flags(preview_free_user_cap: true)
-      # setup here so we are over the preview limit, but not the enforcement
-      # this will validate we only see one banner
-      stub_ee_application_setting(dashboard_notification_limit: 1)
-      stub_ee_application_setting(dashboard_enforcement_limit: 3)
-    end
-
-    it 'does not show alert and then goes over limit and shows alert', :js do
-      visit_page
-
-      expect(page).to have_content(group.name)
-      expect_not_to_see_owner_alert
-
-      group.add_developer(new_user)
-
-      page.refresh
-
-      expect_to_see_owner_alert
-    end
-
-    context 'when over storage limits' do
-      include_context 'with over storage limit setup'
-
-      it 'does not show alerts' do
-        stub_feature_flags(free_user_cap_without_storage_check: false)
-
-        visit_page
-
-        expect(page).to have_content(group.name)
-        expect_not_to_see_owner_alert
-      end
-    end
-
-    context 'when user is not an owner' do
-      let(:role) { :developer }
-
-      it 'does not show alert and then goes over limit and shows alert', :js do
-        visit_page
-
-        expect(page).to have_content(group.name)
-        expect_not_to_see_owner_alert
-
-        group.add_developer(new_user)
-
-        page.refresh
-
-        expect_to_see_non_owner_alert
-      end
-    end
-
-    def expect_to_see_non_owner_alert
-      page.within('[data-testid="user-over-limit-free-plan-alert"]') do
-        expect(page).to have_content('will move to a')
-        expect(page).to have_content('read-only state soon')
-        expect(page).to have_content(non_owner_text)
-        expect(page).not_to have_css(dismiss_button)
-      end
-    end
-
-    def expect_to_see_owner_alert
-      page.within('[data-testid="user-over-limit-free-plan-alert"]') do
-        expect(page).to have_content('Because you are over the')
-        expect(page).to have_content('user limit')
-        expect(page).not_to have_content(non_owner_text)
-        expect(page).not_to have_css(dismiss_button)
-        expect(page).to have_link('Manage members')
-        expect(page).to have_link('Explore paid plans')
-      end
-    end
-
-    def expect_not_to_see_owner_alert
-      expect(page).not_to have_content('Because you are over the')
-      expect(page).not_to have_content('user limit')
-    end
-  end
-
   describe 'with enforcement concerns' do
     before do
       stub_feature_flags(free_user_cap: true)
-      stub_feature_flags(preview_free_user_cap: true)
       stub_ee_application_setting(dashboard_enforcement_limit: dashboard_enforcement_limit)
     end
 

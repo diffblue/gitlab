@@ -7,9 +7,7 @@ module EE
     override :common_invite_group_modal_data
     def common_invite_group_modal_data(source, _member_class, _is_project)
       super.merge(
-        free_user_cap_enabled: ::Namespaces::FreeUserCap.notification_or_enforcement_enabled?(
-          source.root_ancestor
-        ).to_s,
+        free_user_cap_enabled: ::Namespaces::FreeUserCap::Enforcement.new(source.root_ancestor).enforce_cap?.to_s,
         free_users_limit: ::Namespaces::FreeUserCap.dashboard_limit
       )
     end
@@ -19,15 +17,14 @@ module EE
       dataset = super
 
       free_user_cap = ::Namespaces::FreeUserCap::Enforcement.new(source.root_ancestor)
-      notification_free_user_cap = ::Namespaces::FreeUserCap::Notification.new(source.root_ancestor)
 
       if source.root_ancestor.trial_active? && free_user_cap.qualified_namespace?
         dataset[:active_trial_dataset] = ::Gitlab::Json.dump(active_trial_dataset(source))
       end
 
-      if free_user_cap.enforce_cap? || notification_free_user_cap.enforce_cap?
+      if free_user_cap.enforce_cap?
         dataset[:users_limit_dataset] = ::Gitlab::Json.dump(
-          users_limit_dataset(source, free_user_cap, notification_free_user_cap)
+          users_limit_dataset(source, free_user_cap)
         )
       end
 
@@ -41,7 +38,7 @@ module EE
       }
     end
 
-    def users_limit_dataset(source, free_user_cap, notification_free_user_cap)
+    def users_limit_dataset(source, free_user_cap)
       alert_variant =
         if free_user_cap.enforce_cap?
           if free_user_cap.reached_limit?
@@ -49,8 +46,6 @@ module EE
           elsif free_user_cap.close_to_dashboard_limit?
             ::Namespaces::FreeUserCap::CLOSE_TO_LIMIT_VARIANT
           end
-        elsif notification_free_user_cap.over_limit?
-          ::Namespaces::FreeUserCap::NOTIFICATION_LIMIT_VARIANT
         end
 
       {

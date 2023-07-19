@@ -38,13 +38,7 @@ module Namespaces
       end
 
       def dismissed?
-        user.dismissed_callout_for_group?(feature_name: feature_name,
-                                          group: namespace,
-                                          ignore_dismissal_earlier_than: ignore_dismissal_earlier_than)
-      end
-
-      def ignore_dismissal_earlier_than
-        nil
+        user.dismissed_callout_for_group?(feature_name: feature_name, group: namespace)
       end
 
       def alert_data
