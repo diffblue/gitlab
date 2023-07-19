@@ -2,6 +2,8 @@
 
 module API
   class CodeSuggestions < ::API::Base
+    DEFAULT_CODE_SUGGESTIONS_URL = 'https://codesuggestions.gitlab.com'
+
     feature_category :code_suggestions
 
     helpers ::API::Helpers::AiProxyHelper
@@ -48,6 +50,12 @@ module API
 
         Gitlab::CodeSuggestions::AccessToken::GITLAB_REALM_SAAS
       end
+
+      def completions_endpoint
+        base_url = ENV.fetch('CODE_SUGGESTIONS_BASE_URL', DEFAULT_CODE_SUGGESTIONS_URL)
+
+        "#{base_url}/v2/completions"
+      end
     end
 
     namespace 'code_suggestions' do
@@ -79,7 +87,7 @@ module API
         post do
           not_found! unless ::Feature.enabled?(:code_suggestions_completion_api, current_user)
 
-          response = ::Gitlab::HTTP.post('https://codesuggestions.gitlab.com/v2/completions', {
+          response = ::Gitlab::HTTP.post(completions_endpoint, {
             body: params.except(:private_token).to_json,
             headers: model_gateway_headers(headers),
             open_timeout: 3,
