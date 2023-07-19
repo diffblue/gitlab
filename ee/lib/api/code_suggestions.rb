@@ -85,7 +85,16 @@ module API
 
       resources :completions do
         post do
-          not_found! unless ::Feature.enabled?(:code_suggestions_completion_api, current_user)
+          if Gitlab.org_or_com?
+            not_found! unless ::Feature.enabled?(:code_suggestions_completion_api, current_user)
+          else
+            not_found! unless ::Feature.enabled?(:self_managed_code_suggestions_completion_api)
+
+            code_suggestions_token = ::Ai::ServiceAccessToken.code_suggestions.active.last
+            unauthorized! if code_suggestions_token.nil?
+
+            headers['X-Gitlab-Oidc-Token'] = code_suggestions_token.token
+          end
 
           response = ::Gitlab::HTTP.post(completions_endpoint, {
             body: params.except(:private_token).to_json,
