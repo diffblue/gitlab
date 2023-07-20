@@ -165,11 +165,6 @@ module Elastic
         query_hash
       end
 
-      def archived_filter(query_hash)
-        query_hash[:query][:bool][:filter] << { term: { archived: { _name: context.name(:non_archived), value: false } } }
-        query_hash
-      end
-
       def label_ids_filter(query_hash, options)
         labels = [options[:labels]].flatten
         return query_hash unless labels.any?

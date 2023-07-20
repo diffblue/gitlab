@@ -401,12 +401,12 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
 
       context 'for projects' do
         let_it_be(:group) { create(:group) }
-        let!(:unarchived_project) { create(:project, :public, group: group) }
-        let!(:archived_project) { create(:project, :archived, :public, group: group) }
+        let!(:unarchived_result) { create(:project, :public, group: group) }
+        let!(:archived_result) { create(:project, :archived, :public, group: group) }
+        let(:scope) { 'projects' }
+        let(:results) { described_class.new(user, '*', [unarchived_result.id, archived_result.id], filters: filters) }
 
-        let(:results) { described_class.new(user, '*', [unarchived_project.id, archived_project.id], filters: filters) }
-
-        it_behaves_like 'search results filtered by archived' do
+        it_behaves_like 'search results filtered by archived', 'search_projects_hide_archived' do
           before do
             ensure_elasticsearch_index!
           end
@@ -802,16 +802,24 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
 
     context 'filtering' do
       let!(:project) { create(:project, :public) }
+      let_it_be(:unarchived_project) { create(:project, :public) }
+      let_it_be(:archived_project) { create(:project, :public, :archived) }
       let!(:opened_result) { create(:merge_request, :opened, source_project: project, title: 'foo opened') }
       let!(:closed_result) { create(:merge_request, :closed, source_project: project, title: 'foo closed') }
+      let!(:unarchived_result) { create(:merge_request, source_project: unarchived_project, title: 'foo unarchived') }
+      let!(:archived_result) { create(:merge_request, source_project: archived_project, title: 'foo archived') }
+      let(:scope) { 'merge_requests' }
+      let(:project_ids) { [project.id, unarchived_project.id, archived_project.id] }
 
-      let(:results) { described_class.new(user, 'foo', [project.id], filters: filters) }
+      let(:results) { described_class.new(user, 'foo', project_ids, filters: filters) }
 
-      include_examples 'search results filtered by state' do
-        before do
-          ensure_elasticsearch_index!
-        end
+      before do
+        set_elasticsearch_migration_to(:backfill_archived_on_merge_requests, including: true)
+        ensure_elasticsearch_index!
       end
+
+      include_examples 'search results filtered by state'
+      include_examples 'search results filtered by archived', 'search_merge_requests_hide_archived_projects'
     end
 
     context 'ordering' do

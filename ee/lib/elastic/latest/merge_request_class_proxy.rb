@@ -24,6 +24,7 @@ module Elastic
         context.name(:merge_request) do
           query_hash = context.name(:authorized) { project_ids_filter(query_hash, options) }
           query_hash = context.name(:match) { state_filter(query_hash, options) }
+          query_hash = context.name(:archived) { archived_filter(query_hash) } if archived_filter_applicable?(options)
           if hidden_filter_applicable?(options[:current_user])
             query_hash = context.name(:hidden) { hidden_filter(query_hash) }
           end
@@ -67,6 +68,12 @@ module Elastic
 
       def hidden_filter_applicable?(user)
         Feature.enabled?(:hide_merge_requests_from_banned_users) && !user&.can_admin_all_resources?
+      end
+
+      def archived_filter_applicable?(options)
+        Feature.enabled?(:search_merge_requests_hide_archived_projects) &&
+          ::Elastic::DataMigrationService.migration_has_finished?(:backfill_archived_on_merge_requests) &&
+          !options[:include_archived]
       end
 
       def hidden_filter(query_hash)

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module ElasticsearchHelpers
-  def assert_named_queries(*expected_names)
+  def assert_named_queries(*expected_names, without: [])
     es_host = Gitlab::CurrentSettings.elasticsearch_url.first
     search_uri = %r{#{es_host}/[\w-]+/_search}
 
@@ -15,12 +15,14 @@ module ElasticsearchHelpers
 
       inspector.inspect(query)
       inspector.has_named_query?(*expected_names)
+      inspector.excludes_named_query?(*without)
     rescue ::JSON::ParserError
       false
     end
 
     a_named_query = a_request(:post, search_uri).with(&ensure_names_present)
-    message = "Expected a query with the following names: #{expected_names.inspect}"
+    message = "Expected a query with the names #{expected_names.inspect}"
+    message << " and without the names #{without.inspect}" if without.any?
     expect(a_named_query).to have_been_made.at_least_once, message
   end
 

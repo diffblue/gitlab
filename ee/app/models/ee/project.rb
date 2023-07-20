@@ -155,6 +155,8 @@ module EE
       elastic_index_dependant_association :issues, on_change: :visibility_level
       elastic_index_dependant_association :issues, on_change: :archived, depends_on_finished_migration: :add_archived_to_issues
       elastic_index_dependant_association :merge_requests, on_change: :visibility_level
+      elastic_index_dependant_association :merge_requests, on_change: :archived,
+        depends_on_finished_migration: :add_archived_to_merge_requests
       elastic_index_dependant_association :notes, on_change: :visibility_level
       elastic_index_dependant_association :milestones, on_change: :visibility_level
 
