@@ -56,6 +56,7 @@ describe('ArchivedProjectsService', () => {
 
       expect(Api.groupProjects).toHaveBeenCalledWith(groupId, query, {
         archived: true,
+        include_subgroups: true,
         page,
         order_by: 'created_at',
         sort: 'asc',
@@ -79,6 +80,7 @@ describe('ArchivedProjectsService', () => {
 
           expect(Api.groupProjects).toHaveBeenCalledWith(groupId, query, {
             archived: true,
+            include_subgroups: true,
             page,
             order_by: expectedOrderByParameter,
             sort: expectedSortParameter,
