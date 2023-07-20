@@ -1,0 +1,21 @@
+- page_title _("Namespace Storage")
+- add_page_specific_style 'page_bundles/settings'
+
+%section.settings.expanded
+  .settings-header
+    %h4.settings-title
+      = _('Cost Factor Settings')
+    %p
+      = s_('AdminSettings|Set options for cost factors of forks')
+  .settings-content
+    = gitlab_ui_form_for @application_setting, url: namespace_storage_admin_application_settings_path, html: { class: 'fieldset-form' } do |f|
+      = form_errors(@application_setting)
+
+      %fieldset
+        .form-group
+          = f.label :namespace_storage_forks_cost_factor, _('Cost factor for forks of projects'), class: 'label-light'
+          = f.text_field :namespace_storage_forks_cost_factor, class: 'form-control gl-form-input'
+          %span.form-text.text-muted
+            = s_("AdminSettings|This cost factor will be applied to the storage consumed by forks.")
+
+      = f.submit _('Save changes'), pajamas_button: true
