@@ -16,30 +16,7 @@ module Search
       idempotent!
 
       def perform(group_id)
-        remove_group_wiki_documents(group_id)
-      end
-
-      private
-
-      def remove_group_wiki_documents(group_id)
-        Gitlab::Elastic::Helper.default.client.delete_by_query(
-          {
-            index: Elastic::Latest::WikiConfig.index_name,
-            routing: "group_#{group_id}",
-            conflicts: 'proceed',
-            body: {
-              query: {
-                bool: {
-                  filter: {
-                    term: {
-                      rid: "wiki_group_#{group_id}"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        )
+        Gitlab::Elastic::Helper.default.remove_wikis_from_the_standalone_index(group_id, 'Group')
       end
     end
   end

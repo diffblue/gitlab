@@ -132,7 +132,7 @@ module Gitlab
       #
       # @return: whether the index has been purged
       def purge_unreachable_commits_from_index!(target)
-        target.delete_index_for_commits_and_blobs(wiki: index_wiki?)
+        target.delete_index_for_commits_and_blobs(is_wiki: index_wiki?)
       rescue ::Elasticsearch::Transport::Transport::Errors::BadRequest => e
         Gitlab::ErrorTracking.track_exception(e, group_id: group&.id, project_id: project&.id)
       end

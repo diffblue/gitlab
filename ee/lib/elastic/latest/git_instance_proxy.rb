@@ -11,8 +11,11 @@ module Elastic
         end
       end
 
-      def es_parent
-        project_id ? "project_#{project_id}" : "group_#{group_id}"
+      def es_parent(is_wiki = false)
+        return "project_#{project_id}" unless is_wiki
+        return unless ::Elastic::DataMigrationService.migration_has_finished?(:reindex_wikis_to_fix_routing)
+
+        "n_#{project ? project.root_ancestor.id : group.root_ancestor.id}"
       end
 
       def elastic_search(query, type: 'all', page: 1, per: 20, options: {})
@@ -32,28 +35,28 @@ module Elastic
         self.class.blob_aggregations(query, repository_specific_options(options))
       end
 
-      # If wiki is true and migrate_wikis_to_separate_index is finished then set
+      # If is_wiki is true and migrate_wikis_to_separate_index is finished then set
       # index as (#{env}-wikis)
       # rid as (wiki_project_#{id}) for ProjectWiki and (wiki_group_#{id}) for GroupWiki
       # If add_suffix_project_in_wiki_rid has not finished then rid might not have prefix(project/group) then
       # run delete_query_by_rid with sending rid as 'wiki_#{project_id}'
-      def delete_index_for_commits_and_blobs(wiki: false)
-        types = wiki ? %w[wiki_blob] : %w[commit blob]
+      def delete_index_for_commits_and_blobs(is_wiki: false)
+        types = is_wiki ? %w[wiki_blob] : %w[commit blob]
 
-        if (wiki && ::Elastic::DataMigrationService.migration_has_finished?(:migrate_wikis_to_separate_index)) || types.include?('commit')
-          index, rid = if wiki
-                         [::Elastic::Latest::WikiConfig.index_name, "wiki_#{es_parent}"]
+        if (is_wiki && ::Elastic::DataMigrationService.migration_has_finished?(:migrate_wikis_to_separate_index)) || types.include?('commit')
+          index, rid = if is_wiki
+                         [::Elastic::Latest::WikiConfig.index_name, wiki_rid]
                        else
                          [::Elastic::Latest::CommitConfig.index_name, project_id]
                        end
 
-          response = delete_query_by_rid(index, rid)
+          response = delete_query_by_rid(index, rid, is_wiki)
           # Consider to delete wikis by older rid(without suffix _project) as well
-          if wiki && project_id && !::Elastic::DataMigrationService.migration_has_finished?(:add_suffix_project_in_wiki_rid)
-            response = delete_query_by_rid(index, "wiki_#{project_id}")
+          if is_wiki && project_id && !::Elastic::DataMigrationService.migration_has_finished?(:add_suffix_project_in_wiki_rid)
+            response = delete_query_by_rid(index, "wiki_#{project_id}", is_wiki)
           end
 
-          return response if wiki # if condition can be removed once the blob gets migrated to the separate index
+          return response if is_wiki # if condition can be removed once the blob gets migrated to the separate index
         end
 
         client.delete_by_query(
@@ -115,6 +118,10 @@ module Elastic
 
       private
 
+      def wiki_rid
+        project ? "wiki_project_#{project_id}" : "wiki_group_#{group_id}"
+      end
+
       def repository_id
         raise NotImplementedError
       end
@@ -127,24 +134,26 @@ module Elastic
         options
       end
 
-      def delete_query_by_rid(index, rid)
+      def delete_query_by_rid(index, rid, is_wiki)
         client.delete_by_query(
-          index: index,
-          routing: es_parent,
-          conflicts: 'proceed',
-          body: {
-            query: {
-              bool: {
-                filter: [
-                  {
-                    term: {
-                      rid: rid
+          {
+            index: index,
+            routing: es_parent(is_wiki),
+            conflicts: 'proceed',
+            body: {
+              query: {
+                bool: {
+                  filter: [
+                    {
+                      term: {
+                        rid: rid
+                      }
                     }
-                  }
-                ]
+                  ]
+                }
               }
             }
-          }
+          }.compact
         )
       end
     end

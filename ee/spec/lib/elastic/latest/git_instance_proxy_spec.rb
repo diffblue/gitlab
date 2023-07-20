@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::Latest::GitInstanceProxy do
+RSpec.describe Elastic::Latest::GitInstanceProxy, feature_category: :global_search do
   let(:project) { create(:project, :repository) }
   let(:included_class) { Elastic::Latest::RepositoryInstanceProxy }
 
@@ -18,13 +18,54 @@ RSpec.describe Elastic::Latest::GitInstanceProxy do
   end
 
   describe '#es_parent' do
-    it 'contains project id for ProjectWiki repository' do
-      expect(included_class.new(project.wiki.repository).es_parent).to eq("project_#{project.id}")
+    context 'for wiki is false' do
+      it 'contains project id' do
+        expect(included_class.new(project.repository).es_parent).to eq("project_#{project.id}")
+      end
     end
 
-    it 'contains group id for GroupWiki repository' do
-      group = create(:group)
-      expect(included_class.new(group.wiki.repository).es_parent).to eq("group_#{group.id}")
+    context 'for wiki is true' do
+      include ElasticsearchHelpers
+      context 'when migration reindex_wikis_to_fix_routing is finished' do
+        before do
+          set_elasticsearch_migration_to(:reindex_wikis_to_fix_routing, including: true)
+        end
+
+        context 'for ProjectWiki repository' do
+          it "contains project's root ancestor id" do
+            repository = project.wiki.repository
+            expect(included_class.new(repository).es_parent(true)).to eq "n_#{project.root_ancestor.id}"
+          end
+        end
+
+        context 'for GroupWiki repository' do
+          let_it_be(:group) { create :group }
+
+          it "contains group's root ancestor id" do
+            expect(included_class.new(group.wiki.repository).es_parent(true)).to eq "n_#{group.root_ancestor.id}"
+          end
+        end
+      end
+
+      context 'when migration reindex_wikis_to_fix_routing is not finished' do
+        before do
+          set_elasticsearch_migration_to(:reindex_wikis_to_fix_routing, including: false)
+        end
+
+        context 'for ProjectWiki repository' do
+          it 'returns nil' do
+            expect(included_class.new(project.wiki.repository).es_parent(true)).to be nil
+          end
+        end
+
+        context 'for GroupWiki repository' do
+          let_it_be(:group) { create :group }
+
+          it 'returns nil' do
+            expect(included_class.new(project.wiki.repository).es_parent(true)).to be nil
+          end
+        end
+      end
     end
   end
 

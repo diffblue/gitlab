@@ -98,7 +98,7 @@ RSpec.describe BackfillExistingGroupWiki, :elastic_clean, :sidekiq_inline, featu
     def remove_all_group_wikis
       helper.client.delete_by_query(
         index: Elastic::Latest::WikiConfig.index_name,
-        routing: "group_#{group.id},group_#{group2.id}",
+        routing: "n_#{group.id},n_#{group2.id}",
         conflicts: 'proceed',
         refresh: true,
         body: { query: { regexp: { rid: "wiki_group_[0-9].*" } } }

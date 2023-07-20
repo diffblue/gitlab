@@ -1,0 +1,10 @@
+---
+name: ReindexWikisToFixRouting
+version: '20230720000000'
+description: Change the wiki docs routing from project_{id} or group_{id} to n_{id}
+group: group::global search
+milestone: 16.3
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/125137
+obsolete: false
+marked_obsolete_by_url:
+marked_obsolete_in_milestone:

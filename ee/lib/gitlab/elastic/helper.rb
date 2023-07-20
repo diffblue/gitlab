@@ -452,6 +452,21 @@ module Gitlab
       def get_alias_info(pattern)
         client.indices.get_alias(index: pattern)
       end
+
+      def remove_wikis_from_the_standalone_index(container_id, container_type)
+        return unless %w[Group Project].include?(container_type) && Wiki.use_separate_indices?
+
+        container = container_type.constantize.find_by_id(container_id)
+        route = if container && ::Elastic::DataMigrationService.migration_has_finished?(:reindex_wikis_to_fix_routing)
+                  "n_#{container.root_ancestor.id}"
+                end
+
+        client.delete_by_query({
+          index: ::Elastic::Latest::WikiConfig.index_name,
+          routing: route,
+          body: { query: { bool: { filter: { term: { rid: "wiki_#{container_type.downcase}_#{container_id}" } } } } }
+        }.compact)
+      end
     end
   end
 end
