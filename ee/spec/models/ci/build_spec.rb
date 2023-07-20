@@ -903,4 +903,38 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
       end
     end
   end
+
+  describe '#secrets_provider?' do
+    subject(:secrets_provider?) { job.secrets_provider? }
+
+    context 'when no secret CI variables are set' do
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when the VAULT_SERVER_URL is set' do
+      before do
+        project.variables.create!(key: 'VAULT_SERVER_URL', value: 'server_url')
+      end
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when only one Azure key vault CI variable is set' do
+      before do
+        project.variables.create!(key: 'AZURE_KEY_VAULT_SERVER_URL', value: 'server_url')
+      end
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when all Azure key vault CI variables are set' do
+      before do
+        project.variables.create!(key: 'AZURE_KEY_VAULT_SERVER_URL', value: 'server_url')
+        project.variables.create!(key: 'AZURE_CLIENT_ID', value: 'client_ID')
+        project.variables.create!(key: 'AZURE_TENANT_ID', value: 'tenant_id')
+      end
+
+      it { is_expected.to eq(true) }
+    end
+  end
 end

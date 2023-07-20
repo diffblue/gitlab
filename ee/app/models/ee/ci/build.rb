@@ -188,7 +188,7 @@ module EE
       end
 
       def secrets_provider?
-        variable_value('VAULT_SERVER_URL').present?
+        hashicorp_vault_provider? || azure_key_vault_provider?
       end
 
       def variable_value(key, default = nil)
@@ -285,6 +285,16 @@ module EE
             event: 'i_ci_secrets_management_vault_build_created'
           ).to_context]
         )
+      end
+
+      def azure_key_vault_provider?
+        variable_value('AZURE_KEY_VAULT_SERVER_URL').present? &&
+          variable_value('AZURE_CLIENT_ID').present? &&
+          variable_value('AZURE_TENANT_ID').present?
+      end
+
+      def hashicorp_vault_provider?
+        variable_value('VAULT_SERVER_URL').present?
       end
     end
   end
