@@ -1,0 +1,17 @@
+query groupDoraPerformanceScoreCountsQuery($fullPath: ID!) {
+  namespace: group(fullPath: $fullPath) {
+    id
+    projects(includeSubgroups: true) {
+      count
+    }
+    doraPerformanceScoreCounts {
+      nodes {
+        metricName
+        lowProjectsCount
+        mediumProjectsCount
+        highProjectsCount
+        noDataProjectsCount
+      }
+    }
+  }
+}

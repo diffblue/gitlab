@@ -15,6 +15,7 @@ import {
   extractGraphqlFlowData,
   extractGraphqlVulnerabilitiesData,
   extractGraphqlMergeRequestsData,
+  extractDoraPerformanceScoreCounts,
 } from 'ee/analytics/dashboards/api';
 import {
   DEPLOYMENT_FREQUENCY_METRIC_TYPE,
@@ -35,6 +36,8 @@ import {
   mockLastVulnerabilityCountData,
   mockFlowMetricsResponseData,
   mockMergeRequestsResponseData,
+  mockDoraPerformersScoreResponseData,
+  mockDoraPerformersScoreChartData,
 } from './mock_data';
 
 describe('Analytics Dashboards api', () => {
@@ -199,6 +202,21 @@ describe('Analytics Dashboards api', () => {
     it('replaces null values with `-`', () => {
       expect(extractGraphqlMergeRequestsData(mockMergeRequestsResponseData)).toEqual(
         mergeRequestsResponse,
+      );
+    });
+  });
+
+  describe('extractDoraPerformanceScoreCounts', () => {
+    it('returns each DORA performance score category', () => {
+      const categories = extractDoraPerformanceScoreCounts(mockDoraPerformersScoreResponseData).map(
+        ({ name }) => name,
+      );
+      expect(categories).toEqual(['High', 'Medium', 'Low', 'Not included']);
+    });
+
+    it('prepares DORA performance score counts for display', () => {
+      expect(extractDoraPerformanceScoreCounts(mockDoraPerformersScoreResponseData)).toEqual(
+        mockDoraPerformersScoreChartData,
       );
     });
   });

@@ -12,6 +12,7 @@ import {
   mockPreviousMonthApiResponse,
   mockTwoMonthsAgoApiResponse,
   mockThreeMonthsAgoApiResponse,
+  mockDoraPerformersScoreResponseData,
 } from './mock_data';
 
 export const doraMetricsParamsHelper = ({
@@ -109,3 +110,21 @@ export const expectTimePeriodRequests = ({ requestHandler, timePeriods, paramsFn
     expect(requestHandler).toHaveBeenCalledWith(params);
   });
 };
+
+export const mockGraphqlDoraPerformanceScoreCountsResponse = ({
+  mockDataResponse = mockDoraPerformersScoreResponseData,
+  projectsCount = 0,
+} = {}) =>
+  jest.fn().mockResolvedValue({
+    data: {
+      namespace: {
+        id: 'fake-dora-performance-score-counts-request',
+        projects: {
+          count: projectsCount,
+        },
+        doraPerformanceScoreCounts: {
+          nodes: mockDataResponse,
+        },
+      },
+    },
+  });
