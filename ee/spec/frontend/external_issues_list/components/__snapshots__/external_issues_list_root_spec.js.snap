@@ -10,6 +10,7 @@ exports[`ExternalIssuesListRoot error handling when request fails displays error
 
 exports[`ExternalIssuesListRoot when request succeeds renders issuable-list component with correct props 1`] = `
 Object {
+  "activeIssuable": null,
   "currentPage": 1,
   "currentTab": "opened",
   "defaultPageSize": 2,
@@ -120,6 +121,7 @@ Object {
   "labelFilterParam": "labels",
   "namespace": "gitlab-org/gitlab-test",
   "nextPage": 2,
+  "preventRedirect": false,
   "previousPage": 0,
   "recentSearchesStorageKey": "jira_issues",
   "searchInputPlaceholder": "Search Jira issues",
