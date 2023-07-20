@@ -28,13 +28,14 @@ module EE
       end
 
       override :post_update_hooks
-      def post_update_hooks(project)
+      def post_update_hooks(project, old_group)
         super
 
         ::Elastic::ProjectTransferWorker.perform_async(project.id, old_namespace.id, new_namespace.id)
 
-        delete_scan_result_policies
+        delete_scan_result_policies(old_group)
         unassign_policy_project
+        sync_new_group_policies
         delete_compliance_framework_setting
       end
 
@@ -51,10 +52,19 @@ module EE
         ::Security::Orchestration::UnassignService.new(container: project, current_user: current_user).execute
       end
 
-      def delete_scan_result_policies
+      def delete_scan_result_policies(old_group)
         project.all_security_orchestration_policy_configurations.each do |configuration|
           configuration.delete_scan_finding_rules_for_project(project.id)
         end
+        return unless old_group
+
+        old_group.all_security_orchestration_policy_configurations.each do |configuration|
+          configuration.delete_scan_finding_rules_for_project(project.id)
+        end
+      end
+
+      def sync_new_group_policies
+        ::Security::ScanResultPolicies::SyncProjectWorker.perform_async(project.id)
       end
 
       def revoke_project_access_tokens
