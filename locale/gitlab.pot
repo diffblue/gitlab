@@ -41851,6 +41851,9 @@ msgstr ""
 msgid "SecurityOrchestration|Vulnerabilities are %{vulnerabilityStates}."
 msgstr ""
 
+msgid "SecurityOrchestration|Vulnerability age requires previously existing vulnerability states (detected, confirmed, resolved, or dismissed)"
+msgstr ""
+
 msgid "SecurityOrchestration|When %{scanners} %{vulnerabilitiesAllowed} %{vulnerability} in an open merge request %{targeting}%{branches}%{criteriaApply}"
 msgstr ""
 

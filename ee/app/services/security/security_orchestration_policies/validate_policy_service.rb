@@ -19,6 +19,7 @@ module Security
         return error_with_title(s_('SecurityOrchestration|Policy cannot be enabled for non-existing branches (%{branches})') % { branches: missing_branch_names.join(', ') }, field: :branches) if missing_branch_for_rule?
         return error_with_title(s_('SecurityOrchestration|Branch types don\'t match any existing branches.'), field: :branches) if invalid_branch_types?
         return error_with_title(s_('SecurityOrchestration|Timezone is invalid'), field: :timezone) if invalid_timezone?
+        return error_with_title(s_('SecurityOrchestration|Vulnerability age requires previously existing vulnerability states (detected, confirmed, resolved, or dismissed)'), field: :vulnerability_age) if invalid_vulnerability_age?
 
         return error_with_title(s_('SecurityOrchestration|Required approvals exceed eligible approvers.'), title: s_('SecurityOrchestration|Logic error'), field: :approvers_ids) if required_approvals_exceed_eligible_approvers?
 
@@ -167,6 +168,15 @@ module Security
           false
         rescue TZInfo::InvalidTimezoneIdentifier
           true
+        end
+      end
+
+      def invalid_vulnerability_age?
+        return false unless scan_result_policy?
+
+        policy[:rules].select { |rule| rule[:vulnerability_age].present? }
+                      .any? do |rule|
+          ((rule[:vulnerability_states] || []) & ::Enums::Vulnerability.vulnerability_states.keys.map(&:to_s)).empty?
         end
       end
 
