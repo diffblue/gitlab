@@ -12,7 +12,7 @@ import {
   singularCodeQualityFinding,
   singularFindingSast,
   oneCodeQualityTwoSastFindings,
-} from '../../../../../spec/frontend/diffs/mock_data/diff_code_quality';
+} from '../../../../../spec/frontend/diffs/mock_data/inline_findings';
 
 jest.mock('~/mr_notes/stores', () => jest.requireActual('helpers/mocks/mr_notes/stores'));
 
