@@ -13,14 +13,13 @@ class ElasticDeleteProjectWorker
 
   def perform(project_id, es_id)
     remove_project_and_children_documents(project_id, es_id)
+    helper.remove_wikis_from_the_standalone_index(project_id, 'Project') # Wikis have different routing that's why one more query is needed.
     IndexStatus.for_project(project_id).delete_all
   end
 
   private
 
   def indices
-    helper = Gitlab::Elastic::Helper.default
-
     # some standalone indices may not be created yet if pending advanced search migrations exist
     standalone_indices = helper.standalone_indices_proxies.select do |klass|
       alias_name = helper.klass_to_alias_name(klass: klass)
@@ -31,7 +30,7 @@ class ElasticDeleteProjectWorker
   end
 
   def remove_project_and_children_documents(project_id, es_id)
-    Gitlab::Elastic::Helper.default.client.delete_by_query({
+    helper.client.delete_by_query({
       index: indices,
       routing: es_id,
       body: {
@@ -69,5 +68,9 @@ class ElasticDeleteProjectWorker
         }
       }
     })
+  end
+
+  def helper
+    Gitlab::Elastic::Helper.default
   end
 end

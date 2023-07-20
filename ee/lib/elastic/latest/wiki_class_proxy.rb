@@ -3,8 +3,8 @@
 module Elastic
   module Latest
     class WikiClassProxy < ApplicationClassProxy
-      include GitClassProxy
       include Routing
+      include GitClassProxy
 
       def es_type
         'wiki_blob'
@@ -16,12 +16,12 @@ module Elastic
         end
       end
 
-      # Disable the routing for group level search
-      # Will be enabled from MR: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/125137
       def routing_options(options)
-        return {} if options[:group_ids].present?
+        return {} if routing_disabled?(options)
 
-        super
+        ids = options[:root_ancestor_ids].presence || []
+        routing = build_routing(ids, prefix: 'n')
+        { routing: routing.presence }.compact
       end
     end
   end

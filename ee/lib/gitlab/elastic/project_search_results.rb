@@ -10,11 +10,11 @@ module Gitlab
 
       attr_reader :project, :repository_ref, :filters
 
-      def initialize(current_user, query, project:, repository_ref: nil, order_by: nil, sort: nil, filters: {})
+      def initialize(current_user, query, project:, root_ancestor_ids: nil, repository_ref: nil, order_by: nil, sort: nil, filters: {})
         @project = project
         @repository_ref = repository_ref.presence || project.default_branch
 
-        super(current_user, query, [project.id], public_and_internal_projects: false, order_by: order_by, sort: sort, filters: filters)
+        super(current_user, query, [project.id], root_ancestor_ids: root_ancestor_ids, public_and_internal_projects: false, order_by: order_by, sort: sort, filters: filters)
       end
 
       private
@@ -43,7 +43,7 @@ module Gitlab
             query,
             page: (page || 1).to_i,
             per: per_page,
-            options: base_options.merge(count_only: count_only)
+            options: scope_options(:wiki_blobs).merge(count_only: count_only)
           )
         end
       end

@@ -21,25 +21,25 @@ RSpec.describe Search::Wiki::ElasticDeleteGroupWikiWorker, feature_category: :gl
     end
 
     it 'removes all the wikis in the Elastic of the passed group' do
-      expect(get_wiki_documents_count(group.id, group.class.name)).to be 1
+      expect(get_wiki_documents_count(group)).to be 1
       described_class.new.perform(group.id)
       refresh_index!
-      expect(get_wiki_documents_count(group.id, group.class.name)).to be 0
-      expect(get_wiki_documents_count(group2.id, group2.class.name)).to be 1
-      expect(get_wiki_documents_count(project.id, project.class.name)).to be 1
+      expect(get_wiki_documents_count(group)).to be 0
+      expect(get_wiki_documents_count(group2)).to be 1
+      expect(get_wiki_documents_count(project)).to be 1
     end
 
-    def get_wiki_documents_count(container_id, container_type)
+    def get_wiki_documents_count(container)
       Gitlab::Elastic::Helper.default.client.search(
         {
           index: Elastic::Latest::WikiConfig.index_name,
-          routing: "#{container_type.downcase}_#{container_id}",
+          routing: "n_#{container.root_ancestor.id}",
           body: {
             query: {
               bool: {
                 filter: {
                   term: {
-                    rid: "wiki_#{container_type.downcase}_#{container_id}"
+                    rid: "wiki_#{container.class.name.downcase}_#{container.id}"
                   }
                 }
               }

@@ -9,16 +9,17 @@ module Gitlab
       ELASTIC_COUNT_LIMIT = 10000
       DEFAULT_PER_PAGE = Gitlab::SearchResults::DEFAULT_PER_PAGE
 
-      attr_reader :current_user, :query, :public_and_internal_projects, :order_by, :sort, :filters
+      attr_reader :current_user, :query, :public_and_internal_projects, :order_by, :sort, :filters, :root_ancestor_ids
 
       # Limit search results by passed projects
       # It allows us to search only for projects user has access to
       attr_reader :limit_project_ids
 
-      def initialize(current_user, query, limit_project_ids = nil, public_and_internal_projects: true, order_by: nil, sort: nil, filters: {})
+      def initialize(current_user, query, limit_project_ids = nil, root_ancestor_ids: nil, public_and_internal_projects: true, order_by: nil, sort: nil, filters: {})
         @current_user = current_user
         @query = query
         @limit_project_ids = limit_project_ids
+        @root_ancestor_ids = root_ancestor_ids
         @public_and_internal_projects = public_and_internal_projects
         @order_by = order_by
         @sort = sort
@@ -299,6 +300,8 @@ module Gitlab
           base_options.merge(admin: current_user&.admin?, routing_disabled: true) # rubocop:disable Cop/UserAdmin
         when :blobs
           base_options.merge(filters.slice(:language))
+        when :wiki_blobs
+          base_options.merge(root_ancestor_ids: root_ancestor_ids, routing_disabled: !reindex_wikis_to_fix_routing_done?)
         else
           base_options
         end
@@ -445,6 +448,10 @@ module Gitlab
       def self.get_highlight_content(result)
         content_key = use_separate_wiki_index?(result['_source']['type']) ? 'content' : 'blob.content'
         result.dig('highlight', content_key)&.first || ''
+      end
+
+      def reindex_wikis_to_fix_routing_done?
+        ::Elastic::DataMigrationService.migration_has_finished?(:reindex_wikis_to_fix_routing)
       end
     end
   end

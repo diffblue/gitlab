@@ -737,4 +737,90 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
       it { is_expected.to eq(false) }
     end
   end
+
+  describe '#remove_wikis_from_the_standalone_index' do
+    context 'container_type is other than Group or Project' do
+      it 'not calls delete_by_query' do
+        expect(helper.client).not_to receive(:delete_by_query)
+        helper.remove_wikis_from_the_standalone_index(1, 'Random')
+      end
+    end
+
+    context 'Wiki does not use separate indices' do
+      let_it_be(:project) { create(:project) }
+
+      it 'not calls delete_by_query' do
+        expect(helper.client).not_to receive(:delete_by_query)
+        helper.remove_wikis_from_the_standalone_index(project.id, project.class.name)
+      end
+    end
+
+    context 'Wiki uses separate indices' do
+      include ElasticsearchHelpers
+      let(:body) do
+        { query: { bool: { filter: { term: { rid: rid } } } } }
+      end
+
+      let(:index) { Elastic::Latest::WikiConfig.index_name }
+
+      before do
+        allow(Wiki).to receive(:use_separate_indices?).and_return true
+      end
+
+      context 'container not found' do
+        let(:rid) { "wiki_project_#{non_existing_record_id}" }
+
+        it 'calls delete_by_query without routing' do
+          expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index })
+          helper.remove_wikis_from_the_standalone_index(non_existing_record_id, 'Project')
+        end
+      end
+
+      context 'container found is Group' do
+        let_it_be(:group) { create :group }
+        let(:rid) { "wiki_group_#{group.id}" }
+
+        context 'migration reindex_wikis_to_fix_routing is finished' do
+          before do
+            set_elasticsearch_migration_to :reindex_wikis_to_fix_routing, including: true
+          end
+
+          it 'calls delete_by_query with routing' do
+            expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index, routing: "n_#{group.root_ancestor.id}" })
+            helper.remove_wikis_from_the_standalone_index(group.id, group.class.name)
+          end
+        end
+
+        context 'migration reindex_wikis_to_fix_routing is not finished' do
+          it 'calls delete_by_query without routing' do
+            expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index })
+            helper.remove_wikis_from_the_standalone_index(group.id, group.class.name)
+          end
+        end
+      end
+
+      context 'container found is Project' do
+        let_it_be(:project) { create :project }
+        let(:rid) { "wiki_project_#{project.id}" }
+
+        context 'migration reindex_wikis_to_fix_routing is finished' do
+          before do
+            set_elasticsearch_migration_to :reindex_wikis_to_fix_routing, including: true
+          end
+
+          it 'calls delete_by_query with routing' do
+            expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index, routing: "n_#{project.root_ancestor.id}" })
+            helper.remove_wikis_from_the_standalone_index(project.id, project.class.name)
+          end
+        end
+
+        context 'migration reindex_wikis_to_fix_routing is not finished' do
+          it 'calls delete_by_query without routing' do
+            expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index })
+            helper.remove_wikis_from_the_standalone_index(project.id, project.class.name)
+          end
+        end
+      end
+    end
+  end
 end

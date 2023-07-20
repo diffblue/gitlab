@@ -31,10 +31,10 @@ module Elastic
 
       private
 
-      def build_routing(ids)
+      def build_routing(ids, prefix: 'project')
         return [] if ids.count > ES_ROUTING_MAX_COUNT
 
-        ids.map { |id| "project_#{id}" }.join(',')
+        ids.map { |id| "#{prefix}_#{id}" }.join(',')
       end
 
       def routing_disabled?(options)

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic do
+RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic, feature_category: :global_search do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :public, :repository) }
 
