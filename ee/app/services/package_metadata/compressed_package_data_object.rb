@@ -32,7 +32,7 @@ module PackageMetadata
     end
 
     def spdx_identifiers
-      default_licenses.concat(other_licenses.flat_map { |hash| hash['licenses'] })
+      (default_licenses + other_licenses.flat_map { |hash| hash['licenses'] })
         .sort.uniq
     end
   end

@@ -142,7 +142,12 @@ RSpec.describe PackageMetadata::CompressedPackageDataObject, feature_category: :
     subject(:spdx_identifiers) { obj.spdx_identifiers }
 
     it 'sorts licenses and removes duplicates' do
-      expect(spdx_identifiers).to eq(%w[Apache-1.1 CC-PDDC unknown])
+      expect(obj.spdx_identifiers).to eq(%w[Apache-1.1 CC-PDDC unknown])
+    end
+
+    # See https://gitlab.com/gitlab-org/gitlab/-/issues/418114
+    it 'does not mutate default_licenses' do
+      expect { spdx_identifiers }.not_to change { obj.default_licenses }
     end
   end
 end
