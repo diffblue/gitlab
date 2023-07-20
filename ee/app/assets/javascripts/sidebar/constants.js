@@ -2,6 +2,9 @@ import { invert } from 'lodash';
 import { TYPE_EPIC, TYPE_ISSUE } from '~/issues/constants';
 import { __, s__, sprintf } from '~/locale';
 import {
+  STATUS_TRIGGERED,
+  STATUS_ACKNOWLEDGED,
+  STATUS_RESOLVED,
   IssuableAttributeType as IssuableAttributeTypeFoss,
   IssuableAttributeState as IssuableAttributeStateFoss,
   LocalizedIssuableAttributeType as LocalizedIssuableAttributeTypeFoss,
@@ -249,11 +252,12 @@ export const i18nPolicyText = {
   none,
 };
 
-export const i18nStatusText = {
-  dropdownHeader: s__('IncidentManagement|Assign paging status'),
-  dropdownInfo: s__(
-    'IncidentManagement|Setting the status to Acknowledged or Resolved stops paging when escalation policies are selected for the incident.',
-  ),
-  learnMoreShort: __('Learn More.'),
-  learnMoreFull: s__('IncidentManagement|Learn more about incident statuses'),
+export const i18nStatusHeaderText = s__('IncidentManagement|Assign paging status');
+const STOPS_PAGING = s__('IncidentManagement|Stops paging');
+
+export const STATUS_SUBTEXTS = {
+  [STATUS_TRIGGERED]: '',
+
+  [STATUS_ACKNOWLEDGED]: STOPS_PAGING,
+  [STATUS_RESOLVED]: STOPS_PAGING,
 };

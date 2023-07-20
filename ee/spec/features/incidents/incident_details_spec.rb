@@ -207,17 +207,24 @@ RSpec.describe 'Incident details', :js, feature_category: :incident_management d
   end
 
   describe 'escalation status dropdown' do
-    let(:current_user) { developer }
+    let_it_be(:current_user) { developer }
+    let_it_be(:help_info_text) { s_('IncidentManagement|Stops paging') }
 
     before do
       stub_licensed_features(oncall_schedules: true, escalation_policies: true)
-    end
 
-    it 'includes help info for escalations' do
       visit_incident_with_expanded_sidebar
 
       click_edit_status
-      expect(escalation_status_container).to have_selector('#escalation-status-help')
+    end
+
+    it 'includes help info as a subtext for status ACKNOWLEDGED and RESOLVED' do
+      expect(page.find('[data-testid="listbox-item-ACKNOWLEDGED"]')).to have_text(help_info_text)
+      expect(page.find('[data-testid="listbox-item-RESOLVED"]')).to have_text(help_info_text)
+    end
+
+    it 'doesn\'t include help info as a subtext for status TRIGGERED' do
+      expect(page.find('[data-testid="listbox-item-TRIGGERED"]')).not_to have_text(help_info_text)
     end
   end
 
