@@ -177,6 +177,7 @@ RSpec.describe 'getting a work item list for a project', feature_category: :team
               type
               ... on WorkItemWidgetProgress {
                 progress
+                updatedAt
               }
             }
           }
