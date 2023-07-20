@@ -259,4 +259,97 @@ RSpec.describe 'Query.ciCatalogResource', feature_category: :pipeline_compositio
       )
     end
   end
+
+  describe 'openIssuesCount' do
+    before do
+      stub_licensed_features(ci_namespace_catalog: true)
+    end
+
+    context 'when open_issue_count is requested' do
+      let(:query) do
+        <<~GQL
+          query {
+            ciCatalogResource(id: "#{resource.to_global_id}") {
+              openIssuesCount
+            }
+          }
+        GQL
+      end
+
+      it 'returns the correct count' do
+        create(:issue, :opened, project: project)
+        create(:issue, :opened, project: project)
+
+        namespace.add_developer(user)
+
+        post_query
+
+        expect(graphql_data_at(:ciCatalogResource)).to match(
+          a_graphql_entity_for(
+            open_issues_count: 2
+          )
+        )
+      end
+
+      context 'when open_issue_count is zero' do
+        it 'returns zero' do
+          namespace.add_developer(user)
+
+          post_query
+
+          expect(graphql_data_at(:ciCatalogResource)).to match(
+            a_graphql_entity_for(
+              open_issues_count: 0
+            )
+          )
+        end
+      end
+    end
+  end
+
+  describe 'openMergeRequestsCount' do
+    before do
+      stub_licensed_features(ci_namespace_catalog: true)
+    end
+
+    context 'when merge_requests_count is requested' do
+      let(:query) do
+        <<~GQL
+          query {
+            ciCatalogResource(id: "#{resource.to_global_id}") {
+              openMergeRequestsCount
+            }
+          }
+        GQL
+      end
+
+      it 'returns the correct count' do
+        create(:merge_request, :opened, source_project: project)
+
+        namespace.add_developer(user)
+
+        post_query
+
+        expect(graphql_data_at(:ciCatalogResource)).to match(
+          a_graphql_entity_for(
+            open_merge_requests_count: 1
+          )
+        )
+      end
+
+      context 'when open merge_requests_count is zero' do
+        it 'returns zero' do
+          namespace.add_developer(user)
+
+          post_query
+
+          expect(graphql_data_at(:ciCatalogResource)).to match(
+            a_graphql_entity_for(
+              open_merge_requests_count: 0
+            )
+          )
+        end
+      end
+    end
+  end
 end
