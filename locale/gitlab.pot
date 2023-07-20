@@ -22784,7 +22784,7 @@ msgstr ""
 msgid "Hide details"
 msgstr ""
 
-msgid "Hide file browser"
+msgid "Hide file browser (or press F)"
 msgstr ""
 
 msgid "Hide file contents"
@@ -43122,7 +43122,7 @@ msgstr ""
 msgid "Show failed jobs (%{count})"
 msgstr ""
 
-msgid "Show file browser"
+msgid "Show file browser (or press F)"
 msgstr ""
 
 msgid "Show file contents"
@@ -48447,6 +48447,9 @@ msgid "Toggle details"
 msgstr ""
 
 msgid "Toggle emoji award"
+msgstr ""
+
+msgid "Toggle file browser"
 msgstr ""
 
 msgid "Toggle focus mode"
