@@ -82,7 +82,9 @@ module Namespaces
           faq_link_start: faq_link_start,
           link_end: link_end,
           free_users_limit: free_users_limit,
-          free_storage_limit: free_storage_limit
+          free_storage_limit: free_storage_limit,
+          strong_start: strong_start,
+          strong_end: strong_end
         }
       end
 
@@ -100,7 +102,7 @@ module Namespaces
       end
 
       def faq_link_start
-        link_start('https://about.gitlab.com/pricing/faq-efficient-free-tier/')
+        link_start('https://about.gitlab.com/pricing/faq-efficient-free-tier/#next-steps')
       end
 
       def link_start(url)
@@ -109,6 +111,14 @@ module Namespaces
 
       def link_end
         '</a>'.html_safe
+      end
+
+      def strong_start
+        '<strong>'.html_safe
+      end
+
+      def strong_end
+        '</strong>'.html_safe
       end
     end
   end
