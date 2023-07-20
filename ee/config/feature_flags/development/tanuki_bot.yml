@@ -4,5 +4,5 @@ introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/117967
 rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/407337
 milestone: '16.0'
 type: development
-group: group::global search
+group: group::ai-enablement
 default_enabled: false
