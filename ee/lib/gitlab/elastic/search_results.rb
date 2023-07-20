@@ -286,7 +286,7 @@ module Gitlab
         when :projects
           base_options.merge(filters.slice(:include_archived))
         when :merge_requests
-          base_options.merge(filters.slice(:order_by, :sort, :state))
+          base_options.merge(filters.slice(:order_by, :sort, :state, :include_archived))
         when :issues
           base_options.merge(filters.slice(:order_by, :sort, :confidential, :state, :labels, :include_archived))
         when :milestones

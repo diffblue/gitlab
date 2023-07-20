@@ -90,6 +90,8 @@ RSpec.describe MergeRequest, :elastic, feature_category: :global_search do
         'merge_requests_access_level' => ProjectFeature::ENABLED,
         'visibility_level' => Gitlab::VisibilityLevel::INTERNAL,
         'project_id' => merge_request.target_project.id,
+        'hidden' => merge_request.author.banned?,
+        'archived' => merge_request.target_project.archived?,
         'hashed_root_namespace_id' => merge_request.target_project.namespace.hashed_root_namespace_id })
     end
 
@@ -99,11 +101,15 @@ RSpec.describe MergeRequest, :elastic, feature_category: :global_search do
 
     it 'does not include hidden if add_hidden_to_merge_requests is not finished' do
       set_elasticsearch_migration_to :add_hidden_to_merge_requests, including: false
-      expect(merge_request.__elasticsearch__.as_indexed_json).to eq(expected_hash)
+      expect(merge_request.__elasticsearch__.as_indexed_json).to eq(expected_hash.except('hidden', 'archived'))
+    end
+
+    it 'does not include archived if add_archived_to_merge_requests is not finished' do
+      set_elasticsearch_migration_to :add_archived_to_merge_requests, including: false
+      expect(merge_request.__elasticsearch__.as_indexed_json).to eq(expected_hash.except('archived'))
     end
 
     it 'returns json with all needed elements' do
-      expected_hash['hidden'] = merge_request.author.banned?
       expect(merge_request.__elasticsearch__.as_indexed_json).to eq(expected_hash)
     end
   end

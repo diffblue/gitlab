@@ -39,6 +39,10 @@ module Elastic
           data['hidden'] = target.author&.banned?
         end
 
+        if ::Elastic::DataMigrationService.migration_has_finished?(:add_archived_to_merge_requests)
+          data['archived'] = target.project.archived?
+        end
+
         data.merge(generic_attributes)
       end
 

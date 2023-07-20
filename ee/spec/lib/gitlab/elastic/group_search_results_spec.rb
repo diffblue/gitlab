@@ -38,17 +38,23 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
 
   context 'merge_requests search', :sidekiq_inline do
     let!(:project) { create(:project, :public, group: group) }
+    let_it_be(:unarchived_project) { create(:project, :public, group: group) }
+    let_it_be(:archived_project) { create(:project, :public, :archived, group: group) }
     let!(:opened_result) { create(:merge_request, :opened, source_project: project, title: 'foo opened') }
     let!(:closed_result) { create(:merge_request, :closed, source_project: project, title: 'foo closed') }
+    let!(:unarchived_result) { create(:merge_request, source_project: unarchived_project, title: 'foo unarchived') }
+    let!(:archived_result) { create(:merge_request, source_project: archived_project, title: 'foo archived') }
 
     let(:query) { 'foo' }
     let(:scope) { 'merge_requests' }
 
-    include_examples 'search results filtered by state' do
-      before do
-        ensure_elasticsearch_index!
-      end
+    before do
+      set_elasticsearch_migration_to(:backfill_archived_on_merge_requests, including: true)
+      ensure_elasticsearch_index!
     end
+
+    include_examples 'search results filtered by state'
+    include_examples 'search results filtered by archived', 'search_merge_requests_hide_archived_projects'
   end
 
   context 'blobs' do
@@ -58,12 +64,12 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
   end
 
   context 'for projects' do
-    let!(:unarchived_project) { create(:project, :public, group: group) }
-    let!(:archived_project) { create(:project, :archived, :public, group: group) }
+    let!(:unarchived_result) { create(:project, :public, group: group) }
+    let!(:archived_result) { create(:project, :archived, :public, group: group) }
 
     let(:scope) { 'projects' }
 
-    it_behaves_like 'search results filtered by archived' do
+    it_behaves_like 'search results filtered by archived', 'search_projects_hide_archived' do
       before do
         ensure_elasticsearch_index!
       end

@@ -241,6 +241,13 @@ module Elastic
         fields.map { |m| m.split('^').first }
       end
 
+      def archived_filter(query_hash)
+        exclude_archived_query = { term: { archived: { _name: context.name(:non_archived), value: false } } }
+        query_hash[:query][:bool][:filter] << exclude_archived_query
+
+        query_hash
+      end
+
       # Builds an elasticsearch query that will select projects the user is
       # granted access to.
       #
