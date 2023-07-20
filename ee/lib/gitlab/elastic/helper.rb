@@ -114,6 +114,9 @@ module Gitlab
             },
             completed_at: {
               type: 'date'
+            },
+            name: {
+              type: 'keyword'
             }
           }
         }
