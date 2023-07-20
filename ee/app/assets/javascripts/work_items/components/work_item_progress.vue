@@ -158,7 +158,7 @@ export default {
         :min="$options.minValue"
         :max="$options.maxValue"
         data-testid="work-item-progress-input"
-        class="gl-hover-border-gray-200! gl-border-solid! gl-border-white! work-item-field-value"
+        class="gl-hover-border-gray-200! gl-border-solid! hide-unfocused-input-decoration work-item-field-value"
         :class="{ 'hide-spinners gl-shadow-none!': !isEditing }"
         :placeholder="placeholder"
         :readonly="!canUpdate"
@@ -169,7 +169,7 @@ export default {
       />
       <span
         v-if="showPercent"
-        class="gl-mx-4 gl-my-3 gl-absolute gl-top-0 gl-bg-white gl-border gl-border-white gl-line-height-normal"
+        class="gl-mx-4 gl-my-3 gl-absolute gl-top-0 gl-bg-transparent gl-border gl-border-transparent gl-line-height-normal gl-pointer-events-none"
         data-testid="progress-displayed-value"
       >
         {{ localProgress }}%
