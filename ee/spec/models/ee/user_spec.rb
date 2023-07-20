@@ -207,6 +207,83 @@ RSpec.describe User, feature_category: :system_access do
     end
   end
 
+  describe 'after_update' do
+    describe '#email_changed_hook' do
+      context 'for a new user' do
+        let(:user) { build(:user) }
+
+        it 'is not triggered' do
+          expect(user).not_to receive(:email_changed_hook)
+
+          user.save!
+        end
+      end
+
+      context 'for an existing user' do
+        let(:user) { create(:user) }
+
+        context 'when skip_reconfirmation is disabled' do
+          context 'when email change is not confirmed' do
+            it 'is not triggered' do
+              expect(user).not_to receive(:email_changed_hook)
+
+              user.update!(email: 'new-email@example.com')
+            end
+          end
+
+          context 'when email change is confirmed' do
+            it 'is triggered' do
+              user.update!(email: 'new-email@example.com')
+
+              expect(user).to receive(:email_changed_hook)
+              user.confirm
+            end
+          end
+        end
+
+        context 'when skip_reconfirmation is enabled' do
+          before do
+            user.skip_reconfirmation!
+          end
+
+          context 'when email was not changed' do
+            it 'is not triggered' do
+              expect(user).not_to receive(:email_changed_hook)
+
+              user.update!(name: 'New name')
+            end
+          end
+
+          context 'when email was changed' do
+            it 'is triggered' do
+              expect(user).to receive(:email_changed_hook)
+
+              user.update!(email: 'new-email@example.com')
+            end
+
+            context 'when user is not an enterprise user' do
+              it 'does not schedule Groups::EnterpriseUsers::DisassociateWorker' do
+                expect(Groups::EnterpriseUsers::DisassociateWorker).not_to receive(:perform_async)
+
+                user.update!(email: 'new-email@example.com')
+              end
+            end
+
+            context 'when user is an enterprise user' do
+              let(:user) { create(:user, :enterprise_user) }
+
+              it 'schedules Groups::EnterpriseUsers::DisassociateWorker' do
+                expect(Groups::EnterpriseUsers::DisassociateWorker).to receive(:perform_async).with(user.id)
+
+                user.update!(email: 'new-email@example.com')
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+
   describe '.find_by_smartcard_identity' do
     let!(:user) { create(:user) }
     let!(:smartcard_identity) { create(:smartcard_identity, user: user) }
@@ -1158,6 +1235,30 @@ RSpec.describe User, feature_category: :system_access do
 
       it 'returns false' do
         expect(user.enterprise_user_of_group?(group)).to eq false
+      end
+    end
+  end
+
+  describe '#enterprise_user?' do
+    context 'when user is not an enterprise user' do
+      before do
+        user.user_detail.enterprise_group = nil
+      end
+
+      it 'returns false' do
+        expect(user.enterprise_user?).to eq false
+      end
+    end
+
+    context 'when user is an enterprise user' do
+      let_it_be(:group) { create(:group) }
+
+      before do
+        user.user_detail.enterprise_group = group
+      end
+
+      it 'returns true' do
+        expect(user.enterprise_user?).to eq true
       end
     end
   end
