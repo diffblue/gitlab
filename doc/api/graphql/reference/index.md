@@ -26956,6 +26956,7 @@ Values for sorting timelogs.
 | <a id="todoactionenummentioned"></a>`mentioned` | User was mentioned. |
 | <a id="todoactionenummerge_train_removed"></a>`merge_train_removed` | Merge request authored by the user was removed from the merge train. |
 | <a id="todoactionenumreview_requested"></a>`review_requested` | Review was requested from the user. |
+| <a id="todoactionenumreview_submitted"></a>`review_submitted` | Merge request authored by the user received a review. |
 | <a id="todoactionenumunmergeable"></a>`unmergeable` | Merge request authored by the user could not be merged. |
 
 ### `TodoStateEnum`

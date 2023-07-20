@@ -40,6 +40,18 @@ module EE
       end
     end
 
+    def review_submitted(review)
+      merge_request = review.merge_request
+
+      # We don't need to create a To-Do for the review author if they added a
+      # review for their own merge request.
+      return if merge_request.author == review.author
+
+      project = merge_request.project
+      attributes = attributes_for_todo(project, merge_request, review.author, ::Todo::REVIEW_SUBMITTED)
+      create_todos(merge_request.author, attributes, project.namespace, project)
+    end
+
     private
 
     override :attributes_for_target
