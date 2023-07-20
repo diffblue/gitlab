@@ -98,7 +98,7 @@ module EE
             end
 
             ::Sidebars::MenuItem.new(
-              title: context.is_super_sidebar ? _('Application analytics') : _('Dashboards'),
+              title: _('Analytics dashboards'),
               link: project_analytics_dashboards_path(context.project),
               super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::AnalyzeMenu,
               container_html_options: { class: 'shortcuts-project-dashboards-analytics' },
