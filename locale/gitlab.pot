@@ -13519,6 +13519,9 @@ msgstr ""
 msgid "Created %{timeAgo} by %{author}"
 msgstr ""
 
+msgid "Created %{time_ago}"
+msgstr ""
+
 msgid "Created %{timestamp}"
 msgstr ""
 
@@ -35415,9 +35418,6 @@ msgstr ""
 msgid "Profiles|Control emails linked to your account"
 msgstr ""
 
-msgid "Profiles|Created %{time_ago}"
-msgstr ""
-
 msgid "Profiles|Created%{time_ago}"
 msgstr ""
 
@@ -44774,7 +44774,7 @@ msgstr ""
 msgid "Subject Key Identifier:"
 msgstr ""
 
-msgid "Subkeys"
+msgid "Subkeys:"
 msgstr ""
 
 msgid "Submit"
@@ -53549,7 +53549,7 @@ msgstr ""
 msgid "Your Free top-level group, %{group_name}, has more than %{free_users_limit} users and uses more than %{free_storage_limit} of data. After usage limits are applied to Free top-level groups, projects in this group will be in a %{read_only_link_start}read-only state%{link_end}. You should reduce the number of users or upgrade to a paid tier %{strong_start}before%{strong_end} you manage your storage usage. Otherwise, your Free top-level group will become read-only immediately because the 5-user limit applies. For more information, see our %{faq_link_start}FAQ%{link_end}."
 msgstr ""
 
-msgid "Your GPG keys (%{count})"
+msgid "Your GPG keys"
 msgstr ""
 
 msgid "Your GitLab Ultimate free trial lasts for 30 days. After this period, you can maintain a GitLab Free account forever or upgrade to a paid plan."
