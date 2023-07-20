@@ -21,7 +21,7 @@
           "type": "gemnasium",
           "name": "Gemnasium-051e7fdd-4e0a-4dfd-ba52-083ee235a580",
           "value": "051e7fdd-4e0a-4dfd-ba52-083ee235a580",
-          "url": "https://gitlab.com/gitlab-org/security-products/gemnasium-db/-/blob/v1.2.142/go/github.com/minio/minio/CVE-2018-1000538.yml"
+          "url": "https://gitlab.com/gitlab-org/security-products/gemnasium-db/-/blob/master/go/github.com/minio/minio/CVE-2018-1000538.yml"
         },
         {
           "type": "cve",
@@ -66,7 +66,7 @@
           "type": "gemnasium",
           "name": "Gemnasium-216192fe-2efa-4c52-addd-4bf3522c2b69",
           "value": "216192fe-2efa-4c52-addd-4bf3522c2b69",
-          "url": "https://gitlab.com/gitlab-org/security-products/gemnasium-db/-/blob/v1.2.142/go/github.com/minio/minio/CVE-2020-11012.yml"
+          "url": "https://gitlab.com/gitlab-org/security-products/gemnasium-db/-/blob/master/go/github.com/minio/minio/CVE-2020-11012.yml"
         },
         {
           "type": "cve",
