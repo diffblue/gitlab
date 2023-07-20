@@ -21,7 +21,7 @@ module QA
       end
 
       let(:uri) { URI.parse(Runtime::Scenario.gitlab_address) }
-      let(:gitlab_address_with_port) { "#{uri.scheme}://#{uri.host}:#{uri.port}" }
+      let(:gitlab_address_with_port) { Support::GitlabAddress.address_with_port }
 
       it 'replicates to the secondary site',
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348012' do
