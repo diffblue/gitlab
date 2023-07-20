@@ -18,6 +18,8 @@ RSpec.describe Types::Ci::Catalog::ResourceType, feature_category: :pipeline_com
       forks_count
       root_namespace
       readme_html
+      open_issues_count
+      open_merge_requests_count
     ]
 
     expect(described_class).to have_graphql_fields(*expected_fields)

@@ -9,6 +9,14 @@ module Types
 
         connection_type_class(Types::CountableConnectionType)
 
+        field :open_issues_count, GraphQL::Types::Int, null: false,
+          description: 'Count of open issues that belong to the the catalog resource.',
+          alpha: { milestone: '16.3' }
+
+        field :open_merge_requests_count, GraphQL::Types::Int, null: false,
+          description: 'Count of open merge requests that belong to the the catalog resource.',
+          alpha: { milestone: '16.3' }
+
         field :id, GraphQL::Types::ID, null: false, description: 'ID of the catalog resource.',
           alpha: { milestone: '15.11' }
 
@@ -47,6 +55,14 @@ module Types
 
         markdown_field :readme_html, null: false,
           alpha: { milestone: '16.1' }
+
+        def open_issues_count
+          BatchLoader::GraphQL.wrap(object.project.open_issues_count)
+        end
+
+        def open_merge_requests_count
+          BatchLoader::GraphQL.wrap(object.project.open_merge_requests_count)
+        end
 
         def web_path
           ::Gitlab::Routing.url_helpers.project_path(object.project)

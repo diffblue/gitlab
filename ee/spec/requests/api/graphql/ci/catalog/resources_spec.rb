@@ -454,4 +454,88 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
       end
     end
   end
+
+  describe 'openIssuesCount' do
+    before do
+      stub_licensed_features(ci_namespace_catalog: true)
+      namespace.add_developer(user)
+    end
+
+    context 'when open_issues_count is requested' do
+      before_all do
+        create(:issue, :opened, project: project1)
+        create(:issue, :opened, project: project1)
+
+        create(:issue, :opened, project: project2)
+      end
+
+      let(:query) do
+        <<~GQL
+          query {
+            ciCatalogResources(projectPath: "#{project1.full_path}") {
+              nodes {
+                openIssuesCount
+              }
+            }
+          }
+        GQL
+      end
+
+      it 'returns the correct count' do
+        create(:catalog_resource, project: project2)
+
+        post_query
+
+        expect(graphql_data_at(:ciCatalogResources, :nodes)).to contain_exactly(
+          a_graphql_entity_for(
+            openIssuesCount: 2),
+          a_graphql_entity_for(
+            openIssuesCount: 1)
+        )
+      end
+
+      it_behaves_like 'avoids N+1 queries'
+    end
+  end
+
+  describe 'openMergeRequestsCount' do
+    before do
+      stub_licensed_features(ci_namespace_catalog: true)
+      namespace.add_developer(user)
+    end
+
+    context 'when open_merge_requests_count is requested' do
+      before_all do
+        create(:merge_request, :opened, source_project: project1)
+        create(:merge_request, :opened, source_project: project2)
+      end
+
+      let(:query) do
+        <<~GQL
+          query {
+            ciCatalogResources(projectPath: "#{project1.full_path}") {
+              nodes {
+                openMergeRequestsCount
+              }
+            }
+          }
+        GQL
+      end
+
+      it 'returns the correct count' do
+        create(:catalog_resource, project: project2)
+
+        post_query
+
+        expect(graphql_data_at(:ciCatalogResources, :nodes)).to contain_exactly(
+          a_graphql_entity_for(
+            openMergeRequestsCount: 1),
+          a_graphql_entity_for(
+            openMergeRequestsCount: 1)
+        )
+      end
+
+      it_behaves_like 'avoids N+1 queries'
+    end
+  end
 end
