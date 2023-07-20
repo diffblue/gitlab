@@ -1,6 +1,8 @@
 import { nextTick } from 'vue';
+import { GlLoadingIcon } from '@gitlab/ui';
+import GetProjectDetailsQuery from 'ee_component/remote_development/components/common/get_project_details_query.vue';
 import WorkspacesDropdownGroup from 'ee_component/remote_development/components/workspaces_dropdown_group/workspaces_dropdown_group.vue';
-import CEWebIdeLink from '~/vue_shared/components/web_ide_link.vue';
+import CeWebIdeLink from '~/vue_shared/components/web_ide_link.vue';
 import WebIdeLink from 'ee_component/vue_shared/components/web_ide_link.vue';
 import { stubComponent } from 'helpers/stub_component';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -25,59 +27,142 @@ describe('ee_component/vue_shared/components/web_ide_link', () => {
       },
       stubs: {
         WorkspacesDropdownGroup: stubComponent(WorkspacesDropdownGroup),
-        WebIdeLink: CEWebIdeLink,
+        CeWebIdeLink,
       },
     });
   }
 
-  const findCEWebIdeLink = () => wrapper.findComponent(CEWebIdeLink);
+  const findCeWebIdeLink = () => wrapper.findComponent(CeWebIdeLink);
   const findWorkspacesDropdownGroup = () => wrapper.findComponent(WorkspacesDropdownGroup);
+  const findGetProjectDetailsQuery = () => wrapper.findComponent(GetProjectDetailsQuery);
+  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
 
-  it('passes down properties to the CEWebIdeLink component', () => {
-    createComponent({ props: { isBlob: true } });
+  describe('default', () => {
+    it('does not render workspaces dropdown group', () => {
+      createComponent();
 
-    expect(findCEWebIdeLink().props('isBlob')).toBe(true);
+      expect(findWorkspacesDropdownGroup().exists()).toBe(false);
+    });
+
+    it('passes down properties to the CEWebIdeLink component', () => {
+      createComponent({ props: { isBlob: true } });
+
+      expect(findCeWebIdeLink().props('isBlob')).toBe(true);
+    });
+
+    it('bubbles up edit event emitted by CeWebIdeLink', () => {
+      createComponent();
+
+      findCeWebIdeLink().vm.$emit('edit', true);
+
+      expect(wrapper.emitted('edit')).toEqual([[true]]);
+    });
   });
 
-  it('bubbles up edit event emitted by CEWebIdeLink', () => {
-    createComponent();
+  describe.each`
+    rdAvailable | rdFFlagEnabled | executed
+    ${true}     | ${true}        | ${true}
+    ${true}     | ${false}       | ${false}
+    ${false}    | ${true}        | ${false}
+  `(
+    'when rdAvailable=$rdAvailable, rdFFlagEnabled=$rdFFlagEnabled',
+    ({ rdAvailable, rdFFlagEnabled, executed }) => {
+      it(`getProjectDetailsQuery is${executed ? ' ' : ' not '}executed`, async () => {
+        createComponent({
+          provide: {
+            glFeatures: {
+              remoteDevelopment: rdAvailable,
+              remoteDevelopmentFeatureFlag: rdFFlagEnabled,
+            },
+          },
+        });
 
-    findCEWebIdeLink().vm.$emit('edit', true);
+        findCeWebIdeLink().vm.$emit('shown');
 
-    expect(wrapper.emitted('edit')).toEqual([[true]]);
-  });
+        await nextTick();
 
-  describe('when CE Web IDE Link component emits "shown" event', () => {
+        expect(findGetProjectDetailsQuery().exists()).toBe(executed);
+      });
+    },
+  );
+
+  describe('when remote development feature flags are on', () => {
     describe('when workspaces dropdown group is visible', () => {
       beforeEach(async () => {
         createComponent({
           props: { projectId, projectPath },
           provide: {
             newWorkspacePath,
+            glFeatures: {
+              remoteDevelopment: true,
+              remoteDevelopmentFeatureFlag: true,
+            },
           },
         });
 
-        findCEWebIdeLink().vm.$emit('shown');
+        findCeWebIdeLink().vm.$emit('shown');
 
         await nextTick();
       });
 
-      it('provides required parameters to workspaces dropdown group', () => {
-        expect(findWorkspacesDropdownGroup().props()).toEqual({
-          projectId,
+      it('provides required parameters to GetProjectDetailsQuery', () => {
+        expect(findGetProjectDetailsQuery().props()).toEqual({
           projectFullPath: projectPath,
-          newWorkspacePath,
         });
       });
 
-      it('hides workspaces dropdown group when actions button emits hidden event', async () => {
-        expect(findWorkspacesDropdownGroup().exists()).toBe(true);
+      it('displays loading indicator', () => {
+        expect(findLoadingIcon().exists()).toBe(true);
+      });
 
-        findCEWebIdeLink().vm.$emit('hidden');
+      describe('when project hasDevFile and cluster agents', () => {
+        beforeEach(async () => {
+          findGetProjectDetailsQuery().vm.$emit('result', {
+            hasDevFile: true,
+            clusterAgents: [{}],
+          });
 
-        await nextTick();
+          await nextTick();
+        });
 
-        expect(findWorkspacesDropdownGroup().exists()).toBe(false);
+        it('hides loading icon', () => {
+          expect(findLoadingIcon().exists()).toBe(false);
+        });
+
+        it('shows workspaces dropdown group above the edit actions', () => {
+          expect(findWorkspacesDropdownGroup().props()).toEqual({
+            projectId,
+            projectFullPath: projectPath,
+            newWorkspacePath,
+            borderPosition: 'bottom',
+            supportsWorkspaces: true,
+          });
+        });
+      });
+
+      describe.each([
+        { hasDevFile: false, clusterAgents: [{}] },
+        { hasDevFile: true, clusterAgents: [] },
+      ])('when does not have devfile or cluster agents', (result) => {
+        beforeEach(async () => {
+          findGetProjectDetailsQuery().vm.$emit('result', result);
+
+          await nextTick();
+        });
+
+        it('hides loading icon', () => {
+          expect(findLoadingIcon().exists()).toBe(false);
+        });
+
+        it('shows workspaces dropdown group below the edit actions', () => {
+          expect(findWorkspacesDropdownGroup().props()).toEqual({
+            projectId,
+            projectFullPath: projectPath,
+            newWorkspacePath,
+            borderPosition: 'top',
+            supportsWorkspaces: false,
+          });
+        });
       });
     });
   });
