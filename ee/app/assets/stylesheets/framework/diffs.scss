@@ -31,7 +31,7 @@
     height: $default-icon-size;
   }
 
-  .code-quality-transition-container .codequality-severity-icon {
+  .code-quality-transition-container .inline-findings-severity-icon {
     @for $i from 1 through 4 {
       $z-index: 100;
       $x-pos: 10px;
@@ -44,7 +44,7 @@
   }
 
   .more-count,
-  .codequality-severity-icon {
+  .inline-findings-severity-icon {
     filter: drop-shadow(0 1px 0.5px #fff) drop-shadow(1px 0 0.5px #fff) drop-shadow(0 -1px 0.5px #fff) drop-shadow(-1px 0 0.5px #fff);
   }
 
@@ -81,19 +81,19 @@
 
     .icons-enter,
     .icons-leave-to {
-      &.codequality-severity-icon {
+      &.inline-findings-severity-icon {
         opacity: 0;
         transform: translateX(0);
       }
     }
 
-    .codequality-severity-icon {
+    .inline-findings-severity-icon {
       transition: opacity 0.1s, transform 0.2s;
     }
 
     .icons-enter-to,
     .icons-leave {
-      &.codequality-severity-icon {
+      &.inline-findings-severity-icon {
         @for $i from 1 through 4 {
           $x-pos: 10px;
           &:nth-child(#{$i}) {

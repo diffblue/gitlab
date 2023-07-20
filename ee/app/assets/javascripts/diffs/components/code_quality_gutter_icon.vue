@@ -105,7 +105,7 @@ export default {
           :size="16"
           :name="findingsWithSeverity[0].name"
           :class="findingsWithSeverity[0].class"
-          class="gl-hover-cursor-pointer gl-relative gl-top-1 codequality-severity-icon gl-vertical-align-baseline!"
+          class="gl-hover-cursor-pointer gl-relative gl-top-1 inline-findings-severity-icon gl-vertical-align-baseline!"
           @mouseenter="isHoveringFirstIcon = true"
           @mouseleave="isHoveringFirstIcon = false"
         />
@@ -123,7 +123,7 @@ export default {
             :key="item.description"
             :name="codeQualitySubItems[index].name"
             :class="codeQualitySubItems[index].class"
-            class="gl-hover-cursor-pointer gl-relative gl-top-1 codequality-severity-icon gl-absolute gl-left-0"
+            class="gl-hover-cursor-pointer gl-relative gl-top-1 inline-findings-severity-icon gl-absolute gl-left-0"
           />
           <!-- eslint-enable -->
         </transition-group>
