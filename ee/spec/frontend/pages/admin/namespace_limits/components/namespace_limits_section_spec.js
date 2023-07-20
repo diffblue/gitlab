@@ -1,22 +1,8 @@
 import { nextTick } from 'vue';
-import { GlFormInput, GlModal, GlAlert, GlLink } from '@gitlab/ui';
+import { GlFormInput, GlModal, GlAlert } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import NamespaceLimitsSection from 'ee/pages/admin/namespace_limits/components/namespace_limits_section.vue';
-
-const sampleChangelogEntries = [
-  {
-    user_web_url: 'https://gitlab.com/admin',
-    username: 'admin',
-    limit: '150 GiB',
-    date: '2023-04-05 19:14:00',
-  },
-  {
-    user_web_url: 'https://gitlab.com/gitlab-bot',
-    username: 'gitlab-bot',
-    limit: '10 GiB',
-    date: '2023-04-06 19:14:00',
-  },
-];
+import NamespaceLimitsChangelog from 'ee/pages/admin/namespace_limits/components/namespace_limits_changelog.vue';
 
 describe('NamespaceLimitsSection', () => {
   let wrapper;
@@ -24,7 +10,8 @@ describe('NamespaceLimitsSection', () => {
   const defaultProps = {
     label: 'Set notifications limit',
     modalBody: 'Do you confirm changing notifications limits for all free namespaces?',
-    changelogEntries: sampleChangelogEntries,
+    changelogEntries: [],
+    limit: 10,
   };
   const glModalDirective = jest.fn();
 
@@ -45,8 +32,7 @@ describe('NamespaceLimitsSection', () => {
   const findModal = () => wrapper.findComponent(GlModal);
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findInput = () => wrapper.findComponent(GlFormInput);
-  const findChangelogEntries = () => wrapper.findByTestId('changelog-entries');
-  const findChangelogHeader = () => wrapper.findByText('Changelog');
+  const findChangelogComponent = () => wrapper.findComponent(NamespaceLimitsChangelog);
 
   describe('showing alert', () => {
     it('shows the alert if there is `errorMessage` passed to the component', () => {
@@ -141,50 +127,10 @@ describe('NamespaceLimitsSection', () => {
   });
 
   describe('changelog', () => {
-    describe('when there are changelog entries', () => {
-      beforeEach(() => {
-        createComponent();
-      });
-
-      it('renders changelog entries links', () => {
-        const changelogLinks = findChangelogEntries()
-          .findAllComponents(GlLink)
-          .wrappers.map((w) => w.attributes('href'));
-
-        expect(changelogLinks).toStrictEqual(
-          sampleChangelogEntries.map((item) => item.user_web_url),
-        );
-      });
-
-      it('renders changelog entries interpolated text', () => {
-        const changelogTexts = findChangelogEntries()
-          .findAll('li')
-          .wrappers.map((w) => w.text().replace(/\s\s+/g, ' '));
-
-        const sampleChangelogInterpolatedText = sampleChangelogEntries.map(
-          (item) => `${item.username} changed the limit to ${item.limit} at ${item.date}`,
-        );
-
-        expect(changelogTexts).toStrictEqual(sampleChangelogInterpolatedText);
-      });
-
-      it('renders changelog header', () => {
-        expect(findChangelogHeader().exists()).toBe(true);
-      });
-    });
-
-    describe('when there are no changelog entries', () => {
-      beforeEach(() => {
-        createComponent({ changelogEntries: [] });
-      });
-
-      it('does not render changelog entries section', () => {
-        expect(findChangelogEntries().exists()).toBe(false);
-      });
-
-      it('does not render changelog header', () => {
-        expect(findChangelogHeader().exists()).toBe(false);
-      });
+    it('renders <namespace-limits-changelog/>', () => {
+      createComponent();
+      expect(findChangelogComponent().exists()).toBe(true);
+      expect(findChangelogComponent().props()).toEqual({ entries: [] });
     });
   });
 });

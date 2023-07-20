@@ -1,22 +1,10 @@
 <script>
-import {
-  GlAlert,
-  GlSprintf,
-  GlLink,
-  GlFormInput,
-  GlFormGroup,
-  GlButton,
-  GlModal,
-  GlModalDirective,
-} from '@gitlab/ui';
+import { GlAlert, GlFormInput, GlFormGroup, GlButton, GlModal, GlModalDirective } from '@gitlab/ui';
 import { uniqueId } from 'lodash';
 import { __, s__ } from '~/locale';
+import NamespaceLimitsChangelog from './namespace_limits_changelog.vue';
 
 const i18n = {
-  changelogTitle: __('Changelog'),
-  changelogEntry: s__(
-    'NamespaceLimits|%{linkStart}%{username}%{linkEnd} changed the limit to %{limit} at %{date}',
-  ),
   updateLimitsButton: s__('NamespaceLimits|Update limit'),
   modalTitle: __('Are you sure?'),
   limitValidationError: s__('NamespaceLimits|Enter a valid number greater or equal to zero.'),
@@ -36,7 +24,14 @@ const modalActionsProps = {
 
 export default {
   name: 'NamespaceLimitsSection',
-  components: { GlAlert, GlSprintf, GlLink, GlFormInput, GlFormGroup, GlButton, GlModal },
+  components: {
+    GlAlert,
+    GlFormInput,
+    GlFormGroup,
+    GlButton,
+    GlModal,
+    NamespaceLimitsChangelog,
+  },
   directives: {
     GlModal: GlModalDirective,
   },
@@ -127,23 +122,6 @@ export default {
         {{ modalBody }}
       </gl-modal>
     </div>
-    <template v-if="changelogEntries.length">
-      <p class="gl-mt-4 gl-mb-2 gl-font-weight-bold">{{ $options.i18n.changelogTitle }}</p>
-      <ul data-testid="changelog-entries">
-        <li v-for="(entry, index) in changelogEntries" :key="index">
-          <gl-sprintf :message="$options.i18n.changelogEntry">
-            <template #link>
-              <gl-link :href="entry.user_web_url">{{ entry.username }}</gl-link>
-            </template>
-            <template #limit>
-              {{ entry.limit }}
-            </template>
-            <template #date>
-              {{ entry.date }}
-            </template>
-          </gl-sprintf>
-        </li>
-      </ul>
-    </template>
+    <namespace-limits-changelog :entries="changelogEntries" />
   </div>
 </template>
