@@ -51228,10 +51228,16 @@ msgstr ""
 msgid "Vulnerability|Crash address"
 msgstr ""
 
+msgid "Vulnerability|Crash address:"
+msgstr ""
+
 msgid "Vulnerability|Crash state"
 msgstr ""
 
 msgid "Vulnerability|Crash type"
+msgstr ""
+
+msgid "Vulnerability|Crash type:"
 msgstr ""
 
 msgid "Vulnerability|Description"
@@ -51297,6 +51303,9 @@ msgstr ""
 msgid "Vulnerability|Image"
 msgstr ""
 
+msgid "Vulnerability|Image:"
+msgstr ""
+
 msgid "Vulnerability|Information related to how the vulnerability was discovered and its impact on the system."
 msgstr ""
 
@@ -51310,6 +51319,9 @@ msgid "Vulnerability|Method"
 msgstr ""
 
 msgid "Vulnerability|Namespace"
+msgstr ""
+
+msgid "Vulnerability|Namespace:"
 msgstr ""
 
 msgid "Vulnerability|Project"
@@ -51360,6 +51372,9 @@ msgstr ""
 msgid "Vulnerability|Show prompt"
 msgstr ""
 
+msgid "Vulnerability|Stacktrace snippet:"
+msgstr ""
+
 msgid "Vulnerability|Status"
 msgstr ""
 
@@ -51400,6 +51415,12 @@ msgid "Vulnerability|Unmodified response:"
 msgstr ""
 
 msgid "Vulnerability|View training"
+msgstr ""
+
+msgid "Vulnerability|Vulnerable class:"
+msgstr ""
+
+msgid "Vulnerability|Vulnerable method:"
 msgstr ""
 
 msgid "WARNING:"
