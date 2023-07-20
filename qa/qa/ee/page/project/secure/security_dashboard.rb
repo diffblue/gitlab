@@ -51,9 +51,11 @@ module QA
             end
 
             def change_state(status, dismissal_reason = "not_applicable")
-              click_element(:status_listbox, wait: 10)
-              wait_for_requests
-              click_element(:"listbox-item-#{status}", wait: 10)
+              retry_until(max_attempts: 3, sleep_interval: 2, message: "Setting status and comment") do
+                click_element(:status_listbox, wait: 5)
+                click_element(:"listbox-item-#{status}", wait: 5)
+                has_element?(:change_status_comment_textbox, wait: 2)
+              end
 
               if status.include?("dismissed")
                 click_element(:dismissal_reason_listbox)
