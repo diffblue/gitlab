@@ -13567,9 +13567,6 @@ msgstr ""
 msgid "Creates a summary of all comments"
 msgstr ""
 
-msgid "Creates a summary of all your draft code comments"
-msgstr ""
-
 msgid "Creates branch '%{branch_name}' and a merge request to resolve this issue."
 msgstr ""
 
@@ -45125,7 +45122,7 @@ msgstr ""
 msgid "Summarize comments"
 msgstr ""
 
-msgid "Summarize my code review"
+msgid "Summarize my pending comments"
 msgstr ""
 
 msgid "Summary"
@@ -47034,6 +47031,9 @@ msgid "There was an error while retrying this job"
 msgstr ""
 
 msgid "There was an error with the reCAPTCHA. Please solve the reCAPTCHA again."
+msgstr ""
+
+msgid "There was an summarizing your pending comments."
 msgstr ""
 
 msgid "These dates affect how your epics appear in the roadmap. Set a fixed date or one inherited from the milestones assigned to issues in this epic."

@@ -33,5 +33,10 @@ module EE
     def summarize_llm_enabled?(project, user)
       ::Llm::MergeRequests::SummarizeDiffService.enabled?(group: project.root_ancestor, user: user)
     end
+
+    override :review_bar_data
+    def review_bar_data(merge_request, user)
+      super.merge({ can_summarize: Ability.allowed?(user, :summarize_draft_code_review, merge_request).to_s })
+    end
   end
 end
