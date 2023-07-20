@@ -3584,6 +3584,9 @@ msgstr ""
 msgid "AdminSettings|Set a CI/CD template as the required pipeline configuration for all projects in the instance. Project CI/CD configuration merges into the required pipeline configuration when the pipeline runs. %{link_start}What is a required pipeline configuration?%{link_end}"
 msgstr ""
 
+msgid "AdminSettings|Set options for cost factors of forks"
+msgstr ""
+
 msgid "AdminSettings|Set the expiration time of authentication tokens of newly registered group runners."
 msgstr ""
 
@@ -3630,6 +3633,9 @@ msgid "AdminSettings|The template for the required pipeline configuration can be
 msgstr ""
 
 msgid "AdminSettings|There are Advanced Search migrations pending that require indexing to pause. Indexing must remain paused until GitLab completes the migrations."
+msgstr ""
+
+msgid "AdminSettings|This cost factor will be applied to the storage consumed by forks."
 msgstr ""
 
 msgid "AdminSettings|This limit cannot be disabled. Set to 0 to block all DAG dependencies."
@@ -12959,6 +12965,12 @@ msgid "CorpusManagement|To use this corpus, edit the corresponding YAML file"
 msgstr ""
 
 msgid "CorpusManagement|Total Size: %{totalSize}"
+msgstr ""
+
+msgid "Cost Factor Settings"
+msgstr ""
+
+msgid "Cost factor for forks of projects"
 msgstr ""
 
 msgid "Could not access the Wiki Repository at this time."
@@ -29960,6 +29972,9 @@ msgid "Namespace ID:"
 msgstr ""
 
 msgid "Namespace Limits"
+msgstr ""
+
+msgid "Namespace Storage"
 msgstr ""
 
 msgid "Namespace doesn't exist or you don't have permission."

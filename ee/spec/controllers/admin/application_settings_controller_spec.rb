@@ -287,10 +287,19 @@ RSpec.describe Admin::ApplicationSettingsController do
     end
 
     describe 'verify panel actions' do
-      Admin::ApplicationSettingsController::EE_VALID_SETTING_PANELS.each do |valid_action|
-        it_behaves_like 'renders correct panels' do
-          let(:action) { valid_action }
+      Admin::ApplicationSettingsController::EE_VALID_SETTING_PANELS
+        .excluding('namespace_storage').each do |valid_action|
+          it_behaves_like 'renders correct panels' do
+            let(:action) { valid_action }
+          end
         end
+
+      it_behaves_like 'renders correct panels' do
+        before do
+          stub_ee_application_setting(check_namespace_plan: true)
+        end
+
+        let(:action) { 'namespace_storage' }
       end
     end
 
@@ -535,6 +544,38 @@ RSpec.describe Admin::ApplicationSettingsController do
         expect(response).to have_gitlab_http_status(:ok)
         expect(response.body).to eq(Gitlab::SeatLinkData.new.to_json)
       end
+    end
+  end
+
+  describe 'GET #namespace_storage', feature_category: :consumables_cost_management do
+    before do
+      sign_in(admin)
+    end
+
+    it 'returns not found when namespace plans are not checked' do
+      get :namespace_storage
+
+      expect(response).to have_gitlab_http_status(:not_found)
+    end
+
+    it 'returns ok when namespace plans are checked' do
+      stub_ee_application_setting(check_namespace_plan: true)
+
+      get :namespace_storage
+
+      expect(response).to have_gitlab_http_status(:ok)
+    end
+  end
+
+  describe 'PUT #namespace_storage', feature_category: :consumables_cost_management do
+    before do
+      sign_in(admin)
+    end
+
+    it 'returns not found when namespace plans are not checked' do
+      put :namespace_storage
+
+      expect(response).to have_gitlab_http_status(:not_found)
     end
   end
 

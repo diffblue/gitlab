@@ -565,6 +565,36 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
   end
 
+  describe 'Namespace storage cost factor for forks setting', feature_category: :consumables_cost_management do
+    context 'when checking namespace plans' do
+      before do
+        stub_ee_application_setting(check_namespace_plan: true)
+      end
+
+      it 'saves the cost factor for forks' do
+        visit namespace_storage_admin_application_settings_path
+
+        fill_in 'Cost factor for forks of projects', with: '0.008'
+
+        click_button 'Save changes'
+
+        expect(page).to have_content 'Application settings saved successfully'
+        expect(page).to have_field 'Cost factor for forks of projects', with: '0.008'
+      end
+
+      it 'shows an error when the cost factor is out of range' do
+        visit namespace_storage_admin_application_settings_path
+
+        fill_in 'Cost factor for forks of projects', with: '2.0'
+
+        click_button 'Save changes'
+
+        expect(page).to have_content 'Application settings update failed'
+        expect(page).to have_content 'Namespace storage forks cost factor must be less than or equal to 1'
+      end
+    end
+  end
+
   def current_settings
     ApplicationSetting.current_without_cache
   end
