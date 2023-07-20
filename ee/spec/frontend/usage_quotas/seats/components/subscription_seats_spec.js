@@ -10,6 +10,7 @@ import {
 import { mount, shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
+import CodeSuggestionsUsageStatisticsCard from 'ee/usage_quotas/seats/components/code_suggestions_usage_statistics_card.vue';
 import StatisticsCard from 'ee/usage_quotas/components/statistics_card.vue';
 import StatisticsSeatsCard from 'ee/usage_quotas/seats/components/statistics_seats_card.vue';
 import SubscriptionUpgradeInfoCard from 'ee/usage_quotas/seats/components/subscription_upgrade_info_card.vue';
@@ -98,6 +99,8 @@ describe('Subscription Seats', () => {
   const findPagination = () => wrapper.findComponent(GlPagination);
 
   const findAllRemoveUserItems = () => wrapper.findAllByTestId('remove-user');
+  const findCodeSuggestionsStatisticsCard = () =>
+    wrapper.findComponent(CodeSuggestionsUsageStatisticsCard);
   const findErrorModal = () => wrapper.findComponent(GlModal);
   const findStatisticsCard = () => wrapper.findComponent(StatisticsCard);
   const findStatisticsSeatsCard = () => wrapper.findComponent(StatisticsSeatsCard);
@@ -423,6 +426,23 @@ describe('Subscription Seats', () => {
         seatsOwed: 1,
         seatsUsed: 3,
       });
+    });
+
+    it('renders <code-suggestions-usage-statistics-card>', () => {
+      wrapper = createComponent({
+        initialState: {
+          ...defaultInitialState,
+          hasNoSubscription: false,
+        },
+        provide: {
+          glFeatures: {
+            enableHamiltonInUsageQuotasUi: true,
+          },
+        },
+      });
+
+      expect(findStatisticsSeatsCard().exists()).toBe(false);
+      expect(findCodeSuggestionsStatisticsCard().exists()).toBe(true);
     });
 
     describe('for free namespace with limit', () => {
