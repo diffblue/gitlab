@@ -29977,7 +29977,7 @@ msgstr ""
 msgid "Namespace:"
 msgstr ""
 
-msgid "NamespaceLimits|%{linkStart}%{username}%{linkEnd} changed the limit to %{limit} at %{date}"
+msgid "NamespaceLimits|%{date} %{linkStart}%{username}%{linkEnd} changed the limit to %{limit}"
 msgstr ""
 
 msgid "NamespaceLimits|Add minimum free storage amount (in MiB) that will be used to enforce storage usage for namespaces on free plan. To remove the limit, set the value to 0 and click \"Update limit\" button."
@@ -30035,6 +30035,9 @@ msgid "NamespaceLimits|Exclusion added successfully"
 msgstr ""
 
 msgid "NamespaceLimits|Free Tier"
+msgstr ""
+
+msgid "NamespaceLimits|NONE"
 msgstr ""
 
 msgid "NamespaceLimits|Namespace limits could not be loaded. Reload the page to try again."

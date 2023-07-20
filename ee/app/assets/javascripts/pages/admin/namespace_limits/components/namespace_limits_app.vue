@@ -52,6 +52,11 @@ export default {
     };
   },
   i18n,
+  computed: {
+    changelog() {
+      return this.plan?.limits_history || {};
+    },
+  },
   created() {
     this.fetchPlanData();
   },
@@ -142,6 +147,7 @@ export default {
       :description="$options.i18n.notificationsLimitDescription"
       :error-message="notificationsLimitError"
       :modal-body="$options.i18n.notificationsLimitModalBody"
+      :changelog-entries="changelog.notification_limit"
       data-testid="notifications-limit-section"
       @limit-change="handleNotificationsLimitChange"
     />
@@ -153,6 +159,7 @@ export default {
       :description="$options.i18n.enforcementLimitDescription"
       :error-message="enforcementLimitError"
       :modal-body="$options.i18n.enforcementLimitModalBody"
+      :changelog-entries="changelog.enforcement_limit"
       data-testid="enforcement-limit-section"
       @limit-change="handleEnforcementLimitChange"
     />
@@ -164,6 +171,7 @@ export default {
       :description="$options.i18n.dashboardLimitDescription"
       :error-message="dashboardLimitError"
       :modal-body="$options.i18n.dashboardLimitModalBody"
+      :changelog-entries="changelog.storage_size_limit"
       data-testid="dashboard-limit-section"
       @limit-change="handleDashboardLimitChange"
     />
