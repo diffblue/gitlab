@@ -25115,6 +25115,9 @@ msgstr ""
 msgid "InviteMembersModal|Something went wrong"
 msgstr ""
 
+msgid "InviteMembersModal|The following %{errorMembersLength} out of %{totalMembersCount} members could not be added"
+msgstr ""
+
 msgid "InviteMembersModal|The following member couldn't be invited"
 msgid_plural "InviteMembersModal|The following %d members couldn't be invited"
 msgstr[0] ""

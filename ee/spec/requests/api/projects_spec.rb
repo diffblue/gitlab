@@ -1773,7 +1773,7 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
           end.not_to change { target_project.members.count }
 
           expect(response).to have_gitlab_http_status(:unprocessable_entity)
-          expect(json_response['message']).to eq('Import failed')
+          expect(json_response['message']).to eq('Forbidden')
         end
       end
 
@@ -1788,7 +1788,7 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
           end.not_to change { target_project.members.count }
 
           expect(response).to have_gitlab_http_status(:unprocessable_entity)
-          expect(json_response['message']).to eq('Import failed')
+          expect(json_response['message']).to eq('Forbidden')
         end
       end
     end
