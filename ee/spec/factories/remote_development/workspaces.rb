@@ -2,7 +2,6 @@
 
 FactoryBot.define do
   factory :workspace, class: 'RemoteDevelopment::Workspace' do
-    # noinspection RailsParamDefResolve
     project factory: [:project, :public, :in_group]
     user
     agent factory: [:ee_cluster_agent, :with_remote_development_agent_config]
@@ -15,7 +14,7 @@ FactoryBot.define do
     actual_state { RemoteDevelopment::Workspaces::States::STOPPED }
     deployment_resource_version { 2 }
     editor { 'webide' }
-    # noinspection RubyResolve
+    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
     max_hours_before_termination { 24 }
 
     # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409779
@@ -23,33 +22,30 @@ FactoryBot.define do
     #       so we can interpolate it here and ensure it is consistent?
     url { "https://60001-#{name}.workspaces.localdev.me" }
 
-    # noinspection RubyResolve
+    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
     devfile_ref { 'main' }
-    # noinspection RubyResolve
+    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
     devfile_path { '.devfile.yaml' }
 
-    # noinspection RubyResolve
     devfile do
-      # noinspection RubyMismatchedArgumentType
-      File.read(Rails.root.join('ee/spec/fixtures/remote_development/example.devfile.yaml'))
+      File.read(Rails.root.join('ee/spec/fixtures/remote_development/example.devfile.yaml').to_s)
     end
 
-    # noinspection RubyResolve
+    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
     processed_devfile do
-      # noinspection RubyMismatchedArgumentType
-      File.read(Rails.root.join('ee/spec/fixtures/remote_development/example.processed-devfile.yaml'))
+      File.read(Rails.root.join('ee/spec/fixtures/remote_development/example.processed-devfile.yaml').to_s)
     end
 
     transient do
       random_string { SecureRandom.alphanumeric(6).downcase }
-      # noinspection RubyResolve
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       skip_realistic_after_create_timestamp_updates { false }
     end
 
     # Use this trait if you want to directly control any timestamp fields when invoking the factory.
     trait :without_realistic_after_create_timestamp_updates do
       transient do
-        # noinspection RubyResolve
+        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         skip_realistic_after_create_timestamp_updates { true }
       end
     end
@@ -61,9 +57,9 @@ FactoryBot.define do
     end
 
     after(:create) do |workspace, evaluator|
-      # noinspection RubyResolve
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       if evaluator.skip_realistic_after_create_timestamp_updates
-        # noinspection RubyResolve
+        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         # Set responded_to_agent_at to a non-nil value unless it has already been set
         workspace.update!(responded_to_agent_at: workspace.updated_at) unless workspace.responded_to_agent_at
       else
@@ -94,7 +90,7 @@ FactoryBot.define do
     trait :unprovisioned do
       desired_state { RemoteDevelopment::Workspaces::States::RUNNING }
       actual_state { RemoteDevelopment::Workspaces::States::CREATION_REQUESTED }
-      # noinspection RubyResolve
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       responded_to_agent_at { nil }
       deployment_resource_version { nil }
     end

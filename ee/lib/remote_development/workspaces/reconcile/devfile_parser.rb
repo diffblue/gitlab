@@ -5,6 +5,7 @@ require 'devfile'
 module RemoteDevelopment
   module Workspaces
     module Reconcile
+      # noinspection RubyInstanceMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
       class DevfileParser
         # @param [String] processed_devfile
         # @param [String] name

@@ -130,19 +130,18 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, :
           # NOTE: rubocop:disable RSpec/ExpectInHook could be avoided with a helper method or custom expectation,
           #       but this works for now.
           # rubocop:disable RSpec/ExpectInHook
+          # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
           before do
             # Ensure that both desired_state_updated_at and responded_to_agent_at are before Time.current,
             # so that we can test for any necessary differences after processing updates them
-            # noinspection RubyResolve
             expect(workspace.desired_state_updated_at).to be_before(Time.current)
-            # noinspection RubyResolve
             expect(workspace.responded_to_agent_at).to be_before(Time.current)
           end
 
+          # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
           after do
             # After processing, the responded_to_agent_at should always have been updated
             workspace.reload
-            # noinspection RubyResolve
             expect(workspace.responded_to_agent_at)
               .not_to be_before(workspace.desired_state_updated_at)
           end
@@ -150,8 +149,8 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, :
 
           context 'when desired_state matches actual_state' do
             # rubocop:disable RSpec/ExpectInHook
+            # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
             before do
-              # noinspection RubyResolve
               expect(workspace.responded_to_agent_at)
                 .to be_after(workspace.desired_state_updated_at)
             end
@@ -216,13 +215,11 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, :
             end
           end
 
+          # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
           context 'when desired_state does not match actual_state' do
-            # noinspection RubyResolve
             let(:deployment_resource_version_from_agent) { workspace.deployment_resource_version }
-            # noinspection RubyResolve
             let(:owning_inventory) { "#{workspace.name}-workspace-inventory" }
 
-            # noinspection RubyResolve
             let(:expected_config_to_apply) do
               create_config_to_apply(
                 workspace_id: workspace.id,
@@ -240,16 +237,17 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, :
 
             # rubocop:disable RSpec/ExpectInHook
             before do
-              # noinspection RubyResolve
+              # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
               expect(workspace.responded_to_agent_at)
                 .to be_before(workspace.desired_state_updated_at)
             end
             # rubocop:enable RSpec/ExpectInHook
 
+            # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
             context 'when desired_state is Running' do
               let(:desired_state) { RemoteDevelopment::Workspaces::States::RUNNING }
 
-              # noinspection RubyResolve
+              # noinspection RubyLocalVariableNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
               it 'returns proper workspace_rails_info entry with config_to_apply' do
                 # verify initial states in db (sanity check of match between factory and fixtures)
                 expect(workspace.desired_state).to eq(desired_state)
@@ -270,7 +268,6 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, :
                   .to eq(expected_deployment_resource_version)
 
                 # test the config to apply first to get a more specific diff if it fails
-                # noinspection RubyResolve
                 provisioned_workspace_rails_info =
                   workspace_rails_infos.detect { |info| info.fetch(:name) == workspace.name }
                 expect(provisioned_workspace_rails_info.fetch(:config_to_apply))
@@ -285,7 +282,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, :
               let(:desired_state) { RemoteDevelopment::Workspaces::States::TERMINATED }
               let(:expected_value_for_started) { false }
 
-              # noinspection RubyResolve
+              # noinspection RubyLocalVariableNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
               it 'returns proper workspace_rails_info entry with config_to_apply' do
                 # verify initial states in db (sanity check of match between factory and fixtures)
                 expect(workspace.desired_state).to eq(desired_state)
@@ -306,7 +303,6 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, :
                   .to eq(expected_deployment_resource_version)
 
                 # test the config to apply first to get a more specific diff if it fails
-                # noinspection RubyResolve
                 provisioned_workspace_rails_info =
                   workspace_rails_infos.detect { |info| info.fetch(:name) == workspace.name }
                 expect(provisioned_workspace_rails_info.fetch(:config_to_apply))
@@ -321,7 +317,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, :
               let(:desired_state) { RemoteDevelopment::Workspaces::States::RESTART_REQUESTED }
               let(:expected_desired_state) { RemoteDevelopment::Workspaces::States::RUNNING }
 
-              # noinspection RubyResolve
+              # noinspection RubyLocalVariableNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
               it 'changes desired_state to Running' do
                 # verify initial states in db (sanity check of match between factory and fixtures)
                 expect(workspace.desired_state).to eq(desired_state)
@@ -339,7 +335,6 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, :
                 expect(workspace.desired_state).to eq(expected_desired_state)
 
                 # test the config to apply first to get a more specific diff if it fails
-                # noinspection RubyResolve
                 provisioned_workspace_rails_info =
                   workspace_rails_infos.detect { |info| info.fetch(:name) == workspace.name }
                 expect(provisioned_workspace_rails_info[:config_to_apply])
@@ -407,10 +402,10 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, :
 
         let(:workspace_agent_infos) { [] }
 
-        # noinspection RubyResolve
+        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         let(:owning_inventory) { "#{unprovisioned_workspace.name}-workspace-inventory" }
 
-        # noinspection RubyResolve
+        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         let(:expected_config_to_apply) do
           create_config_to_apply(
             workspace_id: unprovisioned_workspace.id,
@@ -424,7 +419,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, :
           )
         end
 
-        # noinspection RubyResolve
+        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         let(:expected_unprovisioned_workspace_rails_info) do
           {
             name: unprovisioned_workspace.name,
@@ -438,7 +433,8 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, :
 
         let(:expected_workspace_rails_infos) { [expected_unprovisioned_workspace_rails_info] }
 
-        # noinspection RubyResolve
+        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
+        # noinspection RubyLocalVariableNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
         it 'returns proper workspace_rails_info entry' do
           # verify initial states in db (sanity check of match between factory and fixtures)
           expect(unprovisioned_workspace.desired_state).to eq(desired_state)
@@ -454,7 +450,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, :
           expect(workspace_rails_infos.length).to eq(1)
 
           # test the config to apply first to get a more specific diff if it fails
-          # noinspection RubyResolve
+          # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
           unprovisioned_workspace_rails_info =
             workspace_rails_infos.detect { |info| info.fetch(:name) == unprovisioned_workspace.name }
           expect(unprovisioned_workspace_rails_info.fetch(:config_to_apply))

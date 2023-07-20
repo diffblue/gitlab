@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe RemoteDevelopment::RemoteDevelopmentAgentConfig, feature_category: :remote_development do
-  # noinspection RubyResolve
+  # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
   let_it_be_with_reload(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
 
   subject { agent.remote_development_agent_config }

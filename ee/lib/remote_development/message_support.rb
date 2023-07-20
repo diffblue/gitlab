@@ -3,6 +3,7 @@
 require 'active_model/errors'
 
 module RemoteDevelopment
+  # noinspection RubyInstanceMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
   module MessageSupport
     # @param [RemoteDevelopment::Message] message
     # @param [Symbol] reason

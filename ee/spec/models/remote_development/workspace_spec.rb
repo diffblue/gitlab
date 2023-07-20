@@ -45,7 +45,7 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
 
       it 'sets desired_state_updated_at' do
         subject.save!
-        # noinspection RubyResolve
+        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         expect(subject.desired_state_updated_at).to eq(Time.current)
       end
     end
@@ -53,7 +53,7 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
     describe 'when updating desired_state' do
       it 'sets desired_state_updated_at' do
         expect { subject.update!(desired_state: ::RemoteDevelopment::Workspaces::States::RUNNING) }.to change {
-          # noinspection RubyResolve
+          # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
           subject.desired_state_updated_at
         }
       end
@@ -62,7 +62,7 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
     describe 'when updating a field other than desired_state' do
       it 'does not set desired_state_updated_at' do
         expect { subject.update!(actual_state: ::RemoteDevelopment::Workspaces::States::RUNNING) }.not_to change {
-          # noinspection RubyResolve
+          # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
           subject.desired_state_updated_at
         }
       end
@@ -70,13 +70,11 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
   end
 
   describe 'validations' do
+    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
     it 'validates max_hours_before_termination is no more than 120' do
-      # noinspection RubyResolve
       subject.max_hours_before_termination = described_class::MAX_HOURS_BEFORE_TERMINATION_LIMIT
-      # noinspection RubyResolve
       expect(subject).to be_valid
 
-      # noinspection RubyResolve
       subject.max_hours_before_termination = described_class::MAX_HOURS_BEFORE_TERMINATION_LIMIT + 1
       expect(subject).not_to be_valid
     end

@@ -31,13 +31,13 @@ RSpec.describe 'Query.workspaces(ids: [RemoteDevelopmentWorkspaceID!])', feature
 
     it_behaves_like 'a working graphql query'
 
-    # noinspection RubyResolve
+    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
     it { is_expected.to match_array(a_hash_including('name' => workspace.name)) }
-    # noinspection RubyResolve
 
     context 'when the user requests a workspace that they are not authorized for' do
       let_it_be(:other_workspace) { create(:workspace) }
-      # noinspection RubyResolve
+
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       let(:ids) do
         [
           workspace.to_global_id.to_s,
@@ -46,7 +46,7 @@ RSpec.describe 'Query.workspaces(ids: [RemoteDevelopmentWorkspaceID!])', feature
       end
 
       it 'does not contain fields for the other workspace' do
-        # noinspection RubyResolve
+        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         expect(subject).to match_array(a_hash_including('name' => workspace.name))
       end
     end

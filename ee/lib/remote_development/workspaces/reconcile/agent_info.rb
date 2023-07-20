@@ -3,6 +3,7 @@
 module RemoteDevelopment
   module Workspaces
     module Reconcile
+      # noinspection RubyParameterNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
       class AgentInfo
         attr_reader :name, :namespace, :actual_state, :deployment_resource_version
 

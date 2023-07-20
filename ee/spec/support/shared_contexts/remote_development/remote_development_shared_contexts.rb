@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 RSpec.shared_context 'with remote development shared fixtures' do
-  # noinspection RubyDeadCode
   # rubocop:disable Metrics/ParameterLists
   # rubocop:disable Metrics/CyclomaticComplexity
   # rubocop:disable Metrics/PerceivedComplexity
+  # rubocop:disable Layout/LineLength
+  # noinspection RubyInstanceMethodNamingConvention, RubyLocalVariableNamingConvention, RubyParameterNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
+  # rubocop:enable Layout/LineLength
   def create_workspace_agent_info(
     workspace_id:,
     workspace_name:,
@@ -53,7 +55,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
     host_template_environment_variable = get_workspace_host_template_env_var(workspace_name, dns_zone)
     root_url = Gitlab::Routing.url_helpers.root_url
 
-    # rubocop:disable Lint/UnreachableCode, Lint/DuplicateBranch
+    # rubocop:disable Lint/DuplicateBranch
     status =
       case [previous_actual_state, current_actual_state, workspace_exists]
       in [RemoteDevelopment::Workspaces::States::CREATION_REQUESTED, RemoteDevelopment::Workspaces::States::STARTING, _]
@@ -226,31 +228,31 @@ RSpec.shared_context 'with remote development shared fixtures' do
         raise RemoteDevelopment::AgentInfoStatusFixtureNotImplementedError
       in [_, RemoteDevelopment::Workspaces::States::FAILED, _]
         raise RemoteDevelopment::AgentInfoStatusFixtureNotImplementedError
-        <<~STATUS_YAML
-          conditions:
-            - lastTransitionTime: "2023-03-06T14:36:31Z"
-              lastUpdateTime: "2023-03-08T11:16:35Z"
-              message: ReplicaSet "#{workspace_name}-hash" has successfully progressed.
-              reason: NewReplicaSetAvailable
-              status: "True"
-              type: Progressing
-            - lastTransitionTime: "2023-03-08T11:16:55Z"
-              lastUpdateTime: "2023-03-08T11:16:55Z"
-              message: Deployment does not have minimum availability.
-              reason: MinimumReplicasUnavailable
-              status: "False"
-              type: Available
-            replicas: 1
-            unavailableReplicas: 1
-            updatedReplicas: 1
-        STATUS_YAML
+        # <<~STATUS_YAML
+        #   conditions:
+        #     - lastTransitionTime: "2023-03-06T14:36:31Z"
+        #       lastUpdateTime: "2023-03-08T11:16:35Z"
+        #       message: ReplicaSet "#{workspace_name}-hash" has successfully progressed.
+        #       reason: NewReplicaSetAvailable
+        #       status: "True"
+        #       type: Progressing
+        #     - lastTransitionTime: "2023-03-08T11:16:55Z"
+        #       lastUpdateTime: "2023-03-08T11:16:55Z"
+        #       message: Deployment does not have minimum availability.
+        #       reason: MinimumReplicasUnavailable
+        #       status: "False"
+        #       type: Available
+        #     replicas: 1
+        #     unavailableReplicas: 1
+        #     updatedReplicas: 1
+        # STATUS_YAML
       else
         msg = 'Unsupported state transition passed for create_workspace_agent_info fixture creation: ' \
               "actual_state: #{previous_actual_state} -> #{current_actual_state}, " \
               "existing_workspace: #{workspace_exists}"
         raise RemoteDevelopment::AgentInfoStatusFixtureNotImplementedError, msg
       end
-    # rubocop:enable Lint/UnreachableCode, Lint/DuplicateBranch
+    # rubocop:enable Lint/DuplicateBranch
 
     latest_k8s_deployment_info = <<~RESOURCES_YAML
       apiVersion: apps/v1
@@ -411,6 +413,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
   # rubocop:enable Metrics/CyclomaticComplexity
   # rubocop:enable Metrics/PerceivedComplexity
 
+  # noinspection RubyParameterNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
   def create_workspace_rails_info(
     name:,
     namespace:,
@@ -430,6 +433,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
   end
 
   # rubocop:disable Metrics/ParameterLists
+  # noinspection RubyLocalVariableNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
   def create_config_to_apply(
     workspace_id:,
     workspace_name:,
@@ -666,10 +670,12 @@ RSpec.shared_context 'with remote development shared fixtures' do
   end
   # rubocop:enable Metrics/ParameterLists
 
+  # noinspection RubyInstanceMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
   def get_workspace_host_template_annotation(workspace_name, dns_zone)
     %("{{.port}}-#{workspace_name}.#{dns_zone}")
   end
 
+  # noinspection RubyInstanceMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
   def get_workspace_host_template_env_var(workspace_name, dns_zone)
     %("${PORT}-#{workspace_name}.#{dns_zone}")
   end
@@ -691,7 +697,6 @@ RSpec.shared_context 'with remote development shared fixtures' do
   # TODO: Rename this method and all methods which use it to end in `_yaml`, to clearly distinguish between
   #       a String YAML representation of a devfile, and a devfile which has been converted to a Hash.
   def read_devfile(filename)
-    # noinspection RubyMismatchedArgumentType
-    File.read(Rails.root.join('ee/spec/fixtures/remote_development', filename))
+    File.read(Rails.root.join('ee/spec/fixtures/remote_development', filename).to_s)
   end
 end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module RemoteDevelopment
-  # noinspection RailsParamDefResolve
+  # noinspection RailsParamDefResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31540
   class RemoteDevelopmentAgentConfig < ApplicationRecord
     # NOTE: See the following comment for the reasoning behind the `RemoteDevelopment` prefix of this table/model:
     #       https://gitlab.com/gitlab-org/gitlab/-/issues/410045#note_1385602915
@@ -16,7 +16,7 @@ module RemoteDevelopment
 
     # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409772 - Make this a type:enum
     validates :enabled, inclusion: { in: [true], message: 'is currently immutable, and must be set to true' }
-    # noinspection RubyResolve
+    # noinspection RubyResolve - likely due to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31540
     before_validation :prevent_dns_zone_update, if: ->(record) { record.persisted? && record.dns_zone_changed? }
 
     private

@@ -3,7 +3,8 @@
 module RemoteDevelopment
   module Workspaces
     module Reconcile
-      # noinspection RubyResolve
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
+      # noinspection RubyInstanceMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
       class DesiredConfigGenerator
         include States
 
@@ -57,7 +58,6 @@ module RemoteDevelopment
           0
         end
 
-        # noinspection RubyInstanceMethodNamingConvention
         # @param [String] name
         # @param [String] namespace
         # @param [String] agent_id
