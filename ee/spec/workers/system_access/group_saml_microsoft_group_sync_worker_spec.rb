@@ -212,6 +212,7 @@ RSpec.describe SystemAccess::GroupSamlMicrosoftGroupSyncWorker, :aggregate_failu
 
                   expect_metadata_logging_call({ added: 1, updated: 0, removed: 0 })
 
+                  # Use arbitrary future time to test whether worker touches the member record
                   travel_to(5.minutes.from_now) do
                     perform
                   end
