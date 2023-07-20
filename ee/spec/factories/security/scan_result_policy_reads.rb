@@ -7,5 +7,6 @@ FactoryBot.define do
 
     orchestration_policy_idx { 0 }
     match_on_inclusion { true }
+    sequence :rule_idx
   end
 end

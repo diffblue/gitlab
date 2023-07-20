@@ -18,6 +18,9 @@ module Security
     validates :age_value, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
     validates :vulnerability_attributes, json_schema: { filename: 'scan_result_policy_vulnerability_attributes' },
       allow_blank: true
+    validates :rule_idx,
+      uniqueness: { scope: %i[security_orchestration_policy_configuration_id project_id orchestration_policy_idx] },
+      numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
 
     def newly_detected?
       license_states.include?(ApprovalProjectRule::NEWLY_DETECTED)

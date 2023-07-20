@@ -483,6 +483,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
         expect(scan_result_policy_read).to eq(Security::ScanResultPolicyRead.first)
         expect(scan_result_policy_read.match_on_inclusion).to be_truthy
         expect(scan_result_policy_read.license_states).to match_array(%w[newly_detected detected])
+        expect(scan_result_policy_read.rule_idx).to be(0)
       end
 
       it 'creates software_license_policies' do
