@@ -112,7 +112,7 @@ module Groups
         projects = ::GroupProjectsFinder.new(
           group: group,
           current_user: current_user,
-          options: { only_owned: true, include_subgroups: true }
+          options: { exclude_shared: true, include_subgroups: true }
         ).execute
         projects.find_by_id(project_id)
       end

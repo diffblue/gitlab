@@ -56,7 +56,7 @@ module Gitlab
             current_user: nil,
             group: gitlab_org_group,
             params: { non_archived: true },
-            options: { include_subgroups: true, only_owned: true }
+            options: { include_subgroups: true, exclude_shared: true }
           ).execute.include_project_feature.inc_routes
         end
       end
