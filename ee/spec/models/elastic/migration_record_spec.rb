@@ -2,14 +2,22 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::MigrationRecord, :elastic_clean, feature_category: :global_search do
+RSpec.describe Elastic::MigrationRecord, :elastic_delete_by_query, feature_category: :global_search do
   using RSpec::Parameterized::TableSyntax
 
+  let_it_be(:helper) { Gitlab::Elastic::Helper.default }
+
+  let(:migration) { Class.new }
   let(:record) { described_class.new(version: Time.now.to_i, name: 'ExampleMigration', filename: nil) }
 
+  before do
+    allow(record).to receive(:load_migration).and_return(migration)
+    allow(Gitlab::Elastic::Helper).to receive(:default).and_return(helper)
+  end
+
   describe '#save!' do
-    it 'creates an index if it is not found' do
-      es_helper.delete_migrations_index
+    it 'raises an error if the migrations index is not found' do
+      allow(helper).to receive(:index_exists?).with(index_name: 'gitlab-test-migrations').and_return(false)
 
       expect { record.save!(completed: true) }.to raise_error(/index is not found/)
     end
@@ -51,13 +59,13 @@ RSpec.describe Elastic::MigrationRecord, :elastic_clean, feature_category: :glob
 
   describe '#load_from_index' do
     it 'does not raise an exception when connection refused' do
-      allow(Gitlab::Elastic::Helper.default).to receive(:get).and_raise(Faraday::ConnectionFailed)
+      allow(helper.client).to receive(:get).and_raise(Faraday::ConnectionFailed)
 
       expect(record.load_from_index).to be_nil
     end
 
     it 'does not raise an exception when record does not exist' do
-      allow(Gitlab::Elastic::Helper.default).to receive(:get).and_raise(Elasticsearch::Transport::Transport::Errors::NotFound)
+      allow(helper.client).to receive(:get).and_raise(Elasticsearch::Transport::Transport::Errors::NotFound)
 
       expect(record.load_from_index).to be_nil
     end
@@ -88,7 +96,7 @@ RSpec.describe Elastic::MigrationRecord, :elastic_clean, feature_category: :glob
   end
 
   describe '#started?' do
-    it 'changes on object save' do
+    it 'changes on first save to the index' do
       expect { record.save!(completed: true) }.to change { record.started? }.from(false).to(true)
     end
   end
@@ -98,12 +106,12 @@ RSpec.describe Elastic::MigrationRecord, :elastic_clean, feature_category: :glob
     let(:in_progress_migration) { described_class.new(version: 10, name: 10, filename: nil) }
 
     before do
-      es_helper.delete_migrations_index
-      es_helper.create_migrations_index
+      helper.delete_migrations_index
+      helper.create_migrations_index
       completed_versions.each { |migration| migration.save!(completed: true) }
       in_progress_migration.save!(completed: false)
 
-      es_helper.refresh_index(index_name: es_helper.migrations_index_name)
+      helper.refresh_index(index_name: helper.migrations_index_name)
     end
 
     it 'loads all records' do
@@ -112,7 +120,7 @@ RSpec.describe Elastic::MigrationRecord, :elastic_clean, feature_category: :glob
     end
 
     it 'raises an exception if no index present' do
-      es_helper.delete_migrations_index
+      allow(Gitlab::Elastic::Helper.default.client).to receive(:search).and_raise(Elasticsearch::Transport::Transport::Errors::NotFound)
 
       expect { described_class.load_versions(completed: true) }.to raise_exception(Elasticsearch::Transport::Transport::Errors::NotFound)
       expect { described_class.load_versions(completed: false) }.to raise_exception(Elasticsearch::Transport::Transport::Errors::NotFound)
@@ -274,6 +282,44 @@ RSpec.describe Elastic::MigrationRecord, :elastic_clean, feature_category: :glob
       end
 
       it { is_expected.to eq(true) }
+    end
+  end
+
+  describe '#save_state!' do
+    it 'only modifies the state field' do
+      record.save!(completed: false)
+
+      original_source = record.load_from_index['_source']
+
+      record.save_state!({ projects: [1], remaining_documents: 500 })
+
+      source = record.load_from_index['_source']
+      expected_state = original_source['state'].merge({ 'projects' => [1], 'remaining_documents' => 500 })
+
+      expect(source['state']).to eq(expected_state)
+
+      source.delete('state')
+      source.each_key do |key|
+        expect(source[key]).to eq(original_source[key])
+      end
+    end
+
+    it 'only overwrites the state fields provided to the method' do
+      record.save_state!({ remaining_documents: 5_000, halted: false })
+
+      original_source = record.load_from_index['_source']
+
+      record.save_state!({ projects: [1], remaining_documents: 100 })
+
+      source = record.load_from_index['_source']
+      expected_state = { 'halted' => false, 'projects' => [1], 'remaining_documents' => 100 }
+
+      expect(source['state']).to eq(expected_state)
+
+      source.delete('state')
+      source.each_key do |key|
+        expect(source[key]).to eq(original_source[key])
+      end
     end
   end
 end

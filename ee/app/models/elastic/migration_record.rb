@@ -20,13 +20,18 @@ module Elastic
 
       data = { completed: completed, state: load_state, name: name }.merge(timestamps(completed: completed))
 
-      client.index index: index_name, type: '_doc', id: version, body: data
+      client.index index: index_name, refresh: true, type: '_doc', id: version, body: data
     end
 
     def save_state!(state)
-      completed = load_completed_from_index
+      source = load_from_index&.dig('_source')&.with_indifferent_access || {}
+      current_state = source['state']&.with_indifferent_access || {}
+      completed = source['completed']
 
-      client.index index: index_name, refresh: true, type: '_doc', id: version, body: { completed: completed, state: load_state.merge(state) }
+      source.delete(:state)
+      body = source.merge(state: current_state.merge(state), completed: completed)
+
+      client.index index: index_name, refresh: true, type: '_doc', id: version, body: body
     end
 
     def started?
@@ -107,12 +112,18 @@ module Elastic
       end
     end
 
+    def respond_to_missing?(method, include_private = false)
+      migration.respond_to?(method) || super
+    end
+
     def self.load_versions(completed:)
       helper = Gitlab::Elastic::Helper.default
+      body = { query: { term: { completed: completed } }, size: ELASTICSEARCH_SIZE }
       helper.client
-            .search(index: helper.migrations_index_name, body: { query: { term: { completed: completed } }, size: ELASTICSEARCH_SIZE })
+            .search(index: helper.migrations_index_name, body: body)
             .dig('hits', 'hits')
             .map { |v| v['_id'].to_i }
+            .sort
     end
 
     def self.completed_versions
