@@ -16,8 +16,8 @@ RSpec.describe GroupProjectsFinder do
       it { is_expected.to eq([shared_project_3, shared_project_2, shared_project_1]) }
     end
 
-    context 'only owned' do
-      let(:options) { { only_owned: true } }
+    context 'when shared projects are excluded' do
+      let(:options) { { exclude_shared: true } }
 
       it { is_expected.to eq([private_project, public_project]) }
     end
