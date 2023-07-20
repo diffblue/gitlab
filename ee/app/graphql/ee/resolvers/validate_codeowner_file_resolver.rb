@@ -13,21 +13,32 @@ module EE
         required: false,
         description: "Ref where code owners file needs to be  checked. Defaults to the repository's default branch."
 
+      argument :path, GraphQL::Types::String,
+        required: false,
+        description: "Path of a file called CODEOWNERS that should be validated. Default to file in use."
+
       alias_method :repository, :object
 
-      def resolve(ref: nil)
-        loader = ::Gitlab::CodeOwners::Loader.new(
-          repository.project,
-          ref || repository.root_ref
-        )
+      def resolve(ref: nil, path: nil)
+        requested_ref = ref.presence || repository.root_ref
+        requested_path = fetch_code_owners_path(requested_ref, path)
 
-        return if loader.empty_code_owners? # return nil if code owner is not present or empty
+        return unless requested_path
 
-        file_errors = loader.file_errors
+        file_name = File.basename(requested_path)
+        return if file_name != ::Gitlab::CodeOwners::FILE_NAME
 
-        response = {
-          total: file_errors.size
-        }
+        blob = repository.blobs_at([[requested_ref, requested_path]]).first
+
+        return if blob.nil?
+
+        code_owners_file = ::Gitlab::CodeOwners::File.new(blob)
+
+        code_owners_file.valid?
+
+        file_errors = code_owners_file.errors
+
+        response = { total: file_errors.size }
 
         response[:validation_errors] = file_errors.group_by(&:message).map do |message, err_group|
           {
@@ -37,6 +48,19 @@ module EE
         end
 
         response
+      end
+
+      private
+
+      def fetch_code_owners_path(ref, path)
+        return path if path.present?
+
+        loader = ::Gitlab::CodeOwners::Loader.new(
+          repository.project,
+          ref
+        )
+
+        loader.code_owners_path
       end
     end
   end
