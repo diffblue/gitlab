@@ -389,6 +389,26 @@ RSpec.describe TodoService, feature_category: :team_planning do
         end
       end
     end
+
+    describe '#review_submitted' do
+      let(:review) { create(:review, merge_request: merge_request) }
+
+      before do
+        service.review_submitted(review)
+      end
+
+      it 'creates a pending todo for reviewed merge request author' do
+        should_create_todo(user: merge_request.author, author: review.author, target: merge_request, action: Todo::REVIEW_SUBMITTED)
+      end
+
+      context 'when merge request author is the review author' do
+        let(:review) { create(:review, merge_request: merge_request, author: merge_request.author) }
+
+        it 'does not create a pending todo for reviewed merge request author' do
+          should_not_create_todo(user: merge_request.author, author: review.author, target: merge_request, action: Todo::REVIEW_SUBMITTED)
+        end
+      end
+    end
   end
 
   def should_create_todo(attributes = {})

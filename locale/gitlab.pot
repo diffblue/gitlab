@@ -48440,6 +48440,9 @@ msgstr ""
 msgid "Todos|requested a review"
 msgstr ""
 
+msgid "Todos|reviewed your merge request"
+msgstr ""
+
 msgid "Todos|set %{who} as an approver"
 msgstr ""
 
