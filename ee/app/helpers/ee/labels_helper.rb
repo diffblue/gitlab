@@ -33,7 +33,7 @@ module EE
       %(<span class="#{wrapper_classes.join(' ')}" style="--label-inset-border: inset 0 0 0 #{border_width} #{html_escape(label.color)}; color: #{html_escape(label.color)}">#{label_html}</span>).html_safe
     end
 
-    def label_tooltip_title(label)
+    def label_tooltip_title(label, tooltip_shows_title: false)
       tooltip = super
       tooltip = %(<span class='font-weight-bold scoped-label-tooltip-title'>Scoped label</span><br>#{tooltip}) if label.scoped_label?
 
