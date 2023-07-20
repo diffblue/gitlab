@@ -75,6 +75,10 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
           }
         }
         location {
+          ... on VulnerabilityLocationContainerScanning {
+            image
+            operatingSystem
+          }
           ... on VulnerabilityLocationSast {
             startLine
             endLine
@@ -96,6 +100,11 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
             endLine
             file
             blobPath
+            crashAddress
+            crashType
+            stacktraceSnippet
+            vulnerableMethod
+            vulnerableClass
           }
         }
         links {
