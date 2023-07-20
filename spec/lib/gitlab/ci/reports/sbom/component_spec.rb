@@ -117,6 +117,17 @@ RSpec.describe Gitlab::Ci::Reports::Sbom::Component, feature_category: :dependen
           a_version: '2.0.0',
           b_version: '1.0.0',
           expected: 1
+        },
+        'version nulls first' => {
+          a_name: 'component-a',
+          b_name: 'component-a',
+          a_type: 'library',
+          b_type: 'library',
+          a_purl: 'pkg:npm/component-a@1.0.0',
+          b_purl: 'pkg:npm/component-a@1.0.0',
+          a_version: nil,
+          b_version: '1.0.0',
+          expected: -1
         }
       }
     end
