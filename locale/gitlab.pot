@@ -40248,6 +40248,9 @@ msgstr ""
 msgid "Runners|Runs untagged jobs"
 msgstr ""
 
+msgid "Runners|Search description..."
+msgstr ""
+
 msgid "Runners|Security or compatibility upgrades are recommended."
 msgstr ""
 

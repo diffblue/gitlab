@@ -54,20 +54,18 @@ RSpec.describe "Admin Runners", feature_category: :runner_fleet do
           visit admin_runners_path
         end
 
-        describe 'filters' do
-          it 'shows upgrade filter' do
-            focus_filtered_search
-
-            page.within(search_bar_selector) do
-              expect(page).to have_link(s_('Runners|Upgrade Status'))
-            end
-          end
-        end
-
         describe 'recommended to upgrade' do
           let(:upgrade_status) { :recommended }
 
           it_behaves_like 'upgrade is recommended'
+
+          context 'when filtering "up to date"' do
+            before do
+              input_filtered_search_filter_is_only(s_('Runners|Upgrade Status'), s_('Runners|Up to date'))
+            end
+
+            it_behaves_like 'shows no runners found'
+          end
         end
 
         describe 'available to upgrade' do
