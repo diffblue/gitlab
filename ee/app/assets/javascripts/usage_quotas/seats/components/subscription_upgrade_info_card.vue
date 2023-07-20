@@ -50,7 +50,7 @@ export default {
 </script>
 
 <template>
-  <div class="gl-bg-white gl-border-1 gl-border-gray-100 gl-border-solid gl-p-5 gl-rounded-base">
+  <div class="gl-bg-white gl-border-1 gl-border-blue-300 gl-border-solid gl-p-6 gl-rounded-base">
     <div class="gl-display-flex gl-sm-flex-direction-column">
       <div class="gl-mb-3 gl-md-mb-0 gl-md-mr-5 gl-sm-mr-0">
         <p class="gl-font-weight-bold gl-mb-3" data-testid="title">
@@ -65,6 +65,7 @@ export default {
           :href="explorePlansPath"
           category="primary"
           variant="confirm"
+          size="small"
           @click="trackClick"
         >
           {{ $options.i18n.cta }}

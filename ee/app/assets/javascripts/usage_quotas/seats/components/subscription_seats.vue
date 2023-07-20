@@ -35,12 +35,13 @@ import {
   seatsTooltipTrialText,
   unlimited,
 } from 'ee/usage_quotas/seats/constants';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { s__, __, sprintf, n__ } from '~/locale';
+import CodeSuggestionsUsageStatisticsCard from 'ee/usage_quotas/seats/components/code_suggestions_usage_statistics_card.vue';
 import SearchAndSortBar from 'ee/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
 import StatisticsCard from 'ee/usage_quotas/components/statistics_card.vue';
 import StatisticsSeatsCard from 'ee/usage_quotas/seats/components/statistics_seats_card.vue';
 import SubscriptionUsageStatisticsCard from 'ee/usage_quotas/seats/components/subscription_usage_statistics_card.vue';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SubscriptionUpgradeInfoCard from './subscription_upgrade_info_card.vue';
 import RemoveBillableMemberModal from './remove_billable_member_modal.vue';
 import SubscriptionSeatDetails from './subscription_seat_details.vue';
@@ -60,6 +61,7 @@ export default {
     GlIcon,
     GlPagination,
     GlTable,
+    CodeSuggestionsUsageStatisticsCard,
     RemoveBillableMemberModal,
     SubscriptionSeatDetails,
     SearchAndSortBar,
@@ -128,7 +130,7 @@ export default {
         this.pendingMembersCount > 0 && this.pendingMembersPagePath && !this.hasLimitedFreePlan
       );
     },
-    shouldShowSubscriptionUsageStatistics() {
+    shouldShowSubscriptionRelatedCards() {
       return Boolean(this.glFeatures?.enableHamiltonInUsageQuotasUi) && !this.hasNoSubscription;
     },
     seatsInUsePercentage() {
@@ -288,7 +290,7 @@ export default {
 
       <div v-else class="gl-display-grid gl-md-grid-template-columns-2 gl-gap-5">
         <subscription-usage-statistics-card
-          v-if="shouldShowSubscriptionUsageStatistics"
+          v-if="shouldShowSubscriptionRelatedCards"
           :percentage="seatsInUsePercentage"
           :usage-value="String(totalSeatsInUse)"
           :total-value="displayedTotalSeats"
@@ -309,6 +311,7 @@ export default {
           :explore-plans-path="explorePlansPath"
           :active-trial="activeTrial"
         />
+        <code-suggestions-usage-statistics-card v-else-if="shouldShowSubscriptionRelatedCards" />
         <statistics-seats-card
           v-else
           :seats-used="maxSeatsUsed"

@@ -35,11 +35,11 @@ describe('UsageStatistics', () => {
     });
 
     it('renders the usage value', () => {
-      expect(wrapper.findByTestId('denominator').text()).toBe(`${usageValue}${usageUnit}`);
+      expect(wrapper.findByTestId('usage').text()).toBe(`${usageValue}${usageUnit}`);
     });
 
     it('renders the usage unit', () => {
-      expect(wrapper.findByTestId('denominator-usage-unit').text()).toBe(usageUnit);
+      expect(wrapper.findByTestId('usage-unit').text()).toBe(usageUnit);
     });
   });
 
@@ -52,11 +52,11 @@ describe('UsageStatistics', () => {
     });
 
     it('renders the total value', () => {
-      expect(wrapper.findByTestId('denominator-total').text()).toBe(`/ ${totalValue}${totalUnit}`);
+      expect(wrapper.findByTestId('total').text()).toBe(`/ ${totalValue}${totalUnit}`);
     });
 
     it('renders the total unit', () => {
-      expect(wrapper.findByTestId('denominator-total-unit').text()).toBe(totalUnit);
+      expect(wrapper.findByTestId('total-unit').text()).toBe(totalUnit);
     });
   });
 

@@ -86,7 +86,7 @@ export default {
 
 <template>
   <div
-    class="gl-bg-white gl-border-1 gl-border-gray-100 gl-border-solid gl-p-5 gl-rounded-base"
+    class="gl-bg-white gl-border-1 gl-border-gray-100 gl-border-solid gl-p-6 gl-rounded-base"
     data-testid="container"
     :class="cssClass"
   >

@@ -48,15 +48,15 @@ export default {
         <p
           v-if="usageValue"
           class="gl-font-size-h-display gl-font-weight-bold gl-mb-0"
-          data-testid="denominator"
+          data-testid="usage"
         >
           {{ usageValue
-          }}<span v-if="usageUnit" data-testid="denominator-usage-unit" class="gl-font-lg">{{
+          }}<span v-if="usageUnit" data-testid="usage-unit" class="gl-font-lg">{{
             usageUnit
           }}</span>
-          <span v-if="totalValue" data-testid="denominator-total">
+          <span v-if="totalValue" data-testid="total">
             / {{ totalValue
-            }}<span v-if="totalUnit" class="gl-font-lg" data-testid="denominator-total-unit">{{
+            }}<span v-if="totalUnit" class="gl-font-lg" data-testid="total-unit">{{
               totalUnit
             }}</span>
           </span>
