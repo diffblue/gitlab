@@ -450,66 +450,6 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
       end
     end
 
-    context "summarize_diff command" do
-      let(:content) { "/summarize_diff" }
-      let(:summarize_flag) { true }
-      let(:summarize_diff_enabled) { true }
-
-      before do
-        stub_feature_flags(summarize_diff_quick_action: summarize_flag)
-
-        allow(::Llm::MergeRequests::SummarizeDiffService).to receive(:enabled?).and_return(summarize_diff_enabled)
-      end
-
-      context "when the checks are enabled" do
-        context 'when summarize_diff_vertex is enabled' do
-          before do
-            allow_next_instance_of(Gitlab::Llm::VertexAi::Client) do |llm_client|
-              allow(llm_client).to receive(:text)
-            end
-          end
-
-          it "applies /summarize_diff" do
-            _, _, msg = service.execute(content, merge_request)
-
-            expect(msg).to include("Request for summary queued")
-          end
-        end
-
-        context 'when summarize_diff_vertex is disabled' do
-          before do
-            stub_feature_flags(summarize_diff_vertex: false)
-          end
-
-          it "applies /summarize_diff" do
-            _, _, msg = service.execute(content, merge_request)
-
-            expect(msg).to include("Request for summary queued")
-          end
-        end
-      end
-
-      context "when :summarize_diff_quick_action feature flag is disabled" do
-        let(:summarize_flag) { false }
-
-        it "doesn't apply /summarize_diff" do
-          _, _, msg = service.execute(content, merge_request)
-
-          expect(msg).to include("Could not apply summarize_diff command")
-        end
-      end
-
-      context "when SummarizeDiffService is disabled" do
-        let(:summarize_diff_enabled) { false }
-
-        it "doesn't apply /summarize_diff" do
-          _, _, msg = service.execute(content, merge_request)
-
-          expect(msg).to include("Could not apply summarize_diff command")
-        end
-      end
-    end
-
     context 'iteration command' do
       let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
 
