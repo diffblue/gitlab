@@ -103,7 +103,7 @@ RSpec.describe 'Group', feature_category: :groups_and_projects do
 
     let_it_be_with_refind(:user) { create(:user) }
     let(:alert) do
-      'Your top-level group, over_storage_and_users, has more than 5 users and uses more than 5 GiB of data'
+      'Your Free top-level group, over_storage_and_users, has more than 5 users and uses more than 5 GiB of data'
     end
 
     before do

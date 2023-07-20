@@ -22,7 +22,7 @@ module Namespaces
       end
 
       def alert_body
-        safe_format(_("Your top-level group, %{group_name}, has more than %{free_users_limit} users " \
+        safe_format(_("Your Free top-level group, %{group_name}, has more than %{free_users_limit} users " \
                       "and uses more than %{free_storage_limit} of data. " \
                       "After usage limits are applied to Free top-level groups, " \
                       "projects in this group will be in a %{read_only_link_start}read-only state%{link_end}. " \
@@ -30,7 +30,7 @@ module Namespaces
                       "you should contact a user with the Owner role for this group " \
                       "to upgrade to a paid tier, or manage your usage. " \
                       "For more information about the upcoming usage limits, " \
-                      "see our %{faq_link_start}FAQ%{link_end}"), alert_body_params)
+                      "see our %{faq_link_start}FAQ%{link_end}."), alert_body_params)
       end
     end
   end
