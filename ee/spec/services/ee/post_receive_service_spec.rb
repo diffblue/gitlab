@@ -125,26 +125,37 @@ RSpec.describe PostReceiveService, :geo, feature_category: :team_planning do
       context 'when repository size limit enforcement' do
         let(:user) { project.namespace.owner }
 
-        include RepositoryStorageHelpers
+        before do
+          stub_feature_flags(namespace_storage_limit: false)
+        end
 
-        it 'returns error message' do
-          stub_over_repository_limit(project.root_ancestor)
+        context 'when a project in the namespace is over the limit' do
+          before do
+            stub_ee_application_setting(repository_size_limit: 10.gigabytes)
 
-          expect(subject).to match_array([
-            {
-              "message" =>
-                "Your push has been rejected, because this repository " \
-                "has exceeded its size limit of 10 B by 45 B. " \
-                "Please contact your GitLab administrator for more information.",
-              "type" => "alert"
-            }
-          ])
+            allow_next_instance_of(Namespaces::Storage::RootExcessSize) do |root_storage_size|
+              allow(root_storage_size).to receive(:current_size).and_return(55)
+              allow(root_storage_size).to receive(:limit).and_return(10)
+            end
+          end
+
+          it 'returns error message' do
+            expect(subject).to match_array([
+              {
+                "message" =>
+                  <<~MSG.squish,
+                    You have reached the free storage limit of 10 GiB on one or more projects.
+                    To unlock your projects over the free 10 GiB project limit, you must purchase
+                    additional storage. You can't push to your repository, create pipelines, create issues, or add comments.
+                    To reduce storage capacity, you can delete unused repositories, artifacts, wikis, issues, and pipelines.
+                  MSG
+                "type" => "alert"
+              }
+            ])
+          end
         end
 
         it 'returns warning message when under storage limit' do
-          namespace = project.root_ancestor
-
-          stub_feature_flags(namespace_storage_limit: false)
           allow_next_instance_of(Namespaces::Storage::RootExcessSize) do |root_storage_size|
             allow(root_storage_size).to receive(:usage_ratio).and_return(0.95)
           end
@@ -152,12 +163,13 @@ RSpec.describe PostReceiveService, :geo, feature_category: :team_planning do
           expect(subject).to match_array([
             {
               "message" =>
-                "##### WARNING ##### You have used 95% of the storage quota for #{namespace.name} " \
-                "(0 B of 0 B). If #{namespace.name} exceeds the storage quota, all projects " \
-                "in the namespace will be locked and actions will be restricted. To manage storage, " \
-                "or purchase additional storage, see " \
-                "http://localhost/help/user/usage_quotas#manage-your-storage-usage. To learn more about " \
-                "restricted actions, see http://localhost/help/user/read_only_namespaces#restricted-actions",
+                <<~MSG.squish,
+                  ##### WARNING ##### You have used 95% of the storage quota for this project
+                  (0 B of 0 B). If a project reaches 100% of the storage quota (0 B)
+                  the project will be in a read-only state, and you won't be able to push to your repository or add large files.
+                  To reduce storage usage, reduce git repository and git LFS storage. For more information about storage limits,
+                  see our docs: http://localhost/help/user/usage_quotas#project-storage-limit.
+                MSG
               "type" => "alert"
             }
           ])

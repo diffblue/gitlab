@@ -5,6 +5,8 @@ module Namespaces
     class RootExcessSize
       include ::Gitlab::Utils::StrongMemoize
 
+      attr_reader :root_namespace
+
       def initialize(root_namespace)
         @root_namespace = root_namespace.root_ancestor # just in case the true root isn't passed
       end
@@ -46,16 +48,12 @@ module Namespaces
       def error_message
         message_params = { namespace_name: root_namespace.name }
 
-        @error_message_object ||= ::Gitlab::RepositorySizeErrorMessage.new(self, message_params)
+        @error_message_object ||= ::Gitlab::RootExcessSizeErrorMessage.new(self, message_params)
       end
 
       def enforcement_type
         :project_repository_limit
       end
-
-      private
-
-      attr_reader :root_namespace
     end
   end
 end
