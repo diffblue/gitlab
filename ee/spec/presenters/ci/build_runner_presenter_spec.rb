@@ -16,135 +16,246 @@ RSpec.describe Ci::BuildRunnerPresenter, feature_category: :secrets_management d
     end
 
     context 'build has secrets' do
-      let(:secrets) do
-        {
-          DATABASE_PASSWORD: {
-            file: true,
-            vault: {
-              engine: { name: 'kv-v2', path: 'kv-v2' },
-              path: 'production/db',
-              field: 'password'
-            }
-          }
-        }
-      end
-
-      context 'Vault server URL' do
-        let(:vault_server) { presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'vault', 'server') }
-
-        context 'VAULT_SERVER_URL CI variable is present' do
-          it 'returns the URL' do
-            create(:ci_variable, project: ci_build.project, key: 'VAULT_SERVER_URL', value: 'https://vault.example.com')
-
-            expect(vault_server.fetch('url')).to eq('https://vault.example.com')
-          end
-        end
-
-        context 'VAULT_SERVER_URL CI variable is not present' do
-          it 'returns nil' do
-            expect(vault_server.fetch('url')).to be_nil
-          end
-        end
-      end
-
-      context 'Vault auth role' do
-        let(:vault_auth_data) { presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'vault', 'server', 'auth', 'data') }
-
-        context 'VAULT_AUTH_ROLE CI variable is present' do
-          it 'contains the  auth role' do
-            create(:ci_variable, project: ci_build.project, key: 'VAULT_AUTH_ROLE', value: 'production')
-
-            expect(vault_auth_data.fetch('role')).to eq('production')
-          end
-        end
-
-        context 'VAULT_AUTH_ROLE CI variable is not present' do
-          it 'skips the auth role' do
-            expect(vault_auth_data).not_to have_key('role')
-          end
-        end
-      end
-
-      context 'Vault auth path' do
-        let(:vault_auth) { presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'vault', 'server', 'auth') }
-
-        context 'VAULT_AUTH_PATH CI variable is present' do
-          it 'contains user defined auth path' do
-            create(:ci_variable, project: ci_build.project, key: 'VAULT_AUTH_PATH', value: 'custom/path')
-
-            expect(vault_auth.fetch('path')).to eq('custom/path')
-          end
-        end
-
-        context 'VAULT_AUTH_PATH CI variable is not present' do
-          it 'contains the default auth path' do
-            expect(vault_auth.fetch('path')).to eq('jwt')
-          end
-        end
-      end
-
-      context 'Vault namespace' do
-        let(:vault_server) { presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'vault', 'server') }
-
-        context 'VAULT_NAMESPACE CI variable is present' do
-          it 'contains user defined namespace' do
-            create(:ci_variable, project: ci_build.project, key: 'VAULT_NAMESPACE', value: 'custom_namespace')
-
-            expect(vault_server.fetch('namespace')).to eq('custom_namespace')
-          end
-        end
-
-        context 'VAULT_NAMESPACE CI variable is not present' do
-          it 'returns nil' do
-            expect(vault_server.fetch('namespace')).to be_nil
-          end
-        end
-      end
-
-      context 'File variable configuration' do
-        subject { presenter.secrets_configuration.dig('DATABASE_PASSWORD') }
-
-        it 'contains the file configuration directive' do
-          expect(subject.fetch('file')).to be_truthy
-        end
-      end
-
-      context 'when there are ID tokens available' do
-        before do
-          rsa_key = OpenSSL::PKey::RSA.generate(3072).to_s
-          stub_application_setting(ci_jwt_signing_key: rsa_key)
-          ci_build.id_tokens = {
-            'VAULT_ID_TOKEN_1' => { id_token: { aud: 'https://gitlab.test' } },
-            'VAULT_ID_TOKEN_2' => { id_token: { aud: 'https://gitlab.link' } }
-          }
-          ci_build.runner = build_stubbed(:ci_runner)
-        end
-
-        it 'adds the first ID token to the Vault server payload' do
-          jwt = presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'vault', 'server', 'auth', 'data', 'jwt')
-
-          expect(jwt).to eq('$VAULT_ID_TOKEN_1')
-        end
-
-        context 'when the token variable is specified for the vault secret' do
-          let(:secrets) do
-            {
-              DATABASE_PASSWORD: {
-                file: true,
-                token: '$VAULT_ID_TOKEN_2',
-                vault: {
-                  engine: { name: 'kv-v2', path: 'kv-v2' },
-                  path: 'production/db',
-                  field: 'password'
-                }
+      context 'with Hashicorp vault' do
+        let(:secrets) do
+          {
+            DATABASE_PASSWORD: {
+              file: true,
+              vault: {
+                engine: { name: 'kv-v2', path: 'kv-v2' },
+                path: 'production/db',
+                field: 'password'
               }
             }
+          }
+        end
+
+        context 'Vault server URL' do
+          let(:vault_server) { presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'vault', 'server') }
+
+          context 'VAULT_SERVER_URL CI variable is present' do
+            it 'returns the URL' do
+              create(:ci_variable, project: ci_build.project, key: 'VAULT_SERVER_URL', value: 'https://vault.example.com')
+
+              expect(vault_server.fetch('url')).to eq('https://vault.example.com')
+            end
           end
 
-          it 'uses the specified token variable' do
+          context 'VAULT_SERVER_URL CI variable is not present' do
+            it 'returns nil' do
+              expect(vault_server.fetch('url')).to be_nil
+            end
+          end
+        end
+
+        context 'Vault auth role' do
+          let(:vault_auth_data) { presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'vault', 'server', 'auth', 'data') }
+
+          context 'VAULT_AUTH_ROLE CI variable is present' do
+            it 'contains the  auth role' do
+              create(:ci_variable, project: ci_build.project, key: 'VAULT_AUTH_ROLE', value: 'production')
+
+              expect(vault_auth_data.fetch('role')).to eq('production')
+            end
+          end
+
+          context 'VAULT_AUTH_ROLE CI variable is not present' do
+            it 'skips the auth role' do
+              expect(vault_auth_data).not_to have_key('role')
+            end
+          end
+        end
+
+        context 'Vault auth path' do
+          let(:vault_auth) { presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'vault', 'server', 'auth') }
+
+          context 'VAULT_AUTH_PATH CI variable is present' do
+            it 'contains user defined auth path' do
+              create(:ci_variable, project: ci_build.project, key: 'VAULT_AUTH_PATH', value: 'custom/path')
+
+              expect(vault_auth.fetch('path')).to eq('custom/path')
+            end
+          end
+
+          context 'VAULT_AUTH_PATH CI variable is not present' do
+            it 'contains the default auth path' do
+              expect(vault_auth.fetch('path')).to eq('jwt')
+            end
+          end
+        end
+
+        context 'Vault namespace' do
+          let(:vault_server) { presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'vault', 'server') }
+
+          context 'VAULT_NAMESPACE CI variable is present' do
+            it 'contains user defined namespace' do
+              create(:ci_variable, project: ci_build.project, key: 'VAULT_NAMESPACE', value: 'custom_namespace')
+
+              expect(vault_server.fetch('namespace')).to eq('custom_namespace')
+            end
+          end
+
+          context 'VAULT_NAMESPACE CI variable is not present' do
+            it 'returns nil' do
+              expect(vault_server.fetch('namespace')).to be_nil
+            end
+          end
+        end
+
+        context 'File variable configuration' do
+          subject { presenter.secrets_configuration.dig('DATABASE_PASSWORD') }
+
+          it 'contains the file configuration directive' do
+            expect(subject.fetch('file')).to be_truthy
+          end
+        end
+
+        context 'when there are ID tokens available' do
+          before do
+            rsa_key = OpenSSL::PKey::RSA.generate(3072).to_s
+            stub_application_setting(ci_jwt_signing_key: rsa_key)
+            ci_build.id_tokens = {
+              'VAULT_ID_TOKEN_1' => { id_token: { aud: 'https://gitlab.test' } },
+              'VAULT_ID_TOKEN_2' => { id_token: { aud: 'https://gitlab.link' } }
+            }
+            ci_build.runner = build_stubbed(:ci_runner)
+          end
+
+          it 'adds the first ID token to the Vault server payload' do
             jwt = presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'vault', 'server', 'auth', 'data', 'jwt')
 
-            expect(jwt).to eq('$VAULT_ID_TOKEN_2')
+            expect(jwt).to eq('$VAULT_ID_TOKEN_1')
+          end
+
+          context 'when the token variable is specified for the vault secret' do
+            let(:secrets) do
+              {
+                DATABASE_PASSWORD: {
+                  file: true,
+                  token: '$VAULT_ID_TOKEN_2',
+                  vault: {
+                    engine: { name: 'kv-v2', path: 'kv-v2' },
+                    path: 'production/db',
+                    field: 'password'
+                  }
+                }
+              }
+            end
+
+            it 'uses the specified token variable' do
+              jwt = presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'vault', 'server', 'auth', 'data', 'jwt')
+
+              expect(jwt).to eq('$VAULT_ID_TOKEN_2')
+            end
+          end
+        end
+      end
+
+      context 'with Azure key vault' do
+        let(:secrets) do
+          {
+            DATABASE_PASSWORD: {
+              azure_key_vault: {
+                name: 'key',
+                version: 'version'
+              }
+            }
+          }
+        end
+
+        let(:azure_key_vault_server) { presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'azure_key_vault', 'server') }
+
+        context 'Vault azure key vault server url' do
+          context 'AZURE_KEY_VAULT_SERVER_URL CI variable is present' do
+            it 'returns the URL' do
+              create(:ci_variable, project: ci_build.project, key: 'AZURE_KEY_VAULT_SERVER_URL', value: 'test')
+
+              expect(azure_key_vault_server.fetch('url')).to eq('test')
+            end
+          end
+
+          context 'AZURE_KEY_VAULT_SERVER_URL CI variable is not present' do
+            it 'returns the nil' do
+              expect(azure_key_vault_server.fetch('url')).to eq(nil)
+            end
+          end
+        end
+
+        context 'Vault client id' do
+          context 'AZURE_CLIENT_ID CI variable is present' do
+            it 'returns the URL' do
+              create(:ci_variable, project: ci_build.project, key: 'AZURE_CLIENT_ID', value: 'test')
+
+              expect(azure_key_vault_server.fetch('client_id')).to eq('test')
+            end
+          end
+
+          context 'AZURE_CLIENT_ID CI variable is not present' do
+            it 'returns the nil' do
+              expect(azure_key_vault_server.fetch('client_id')).to eq(nil)
+            end
+          end
+        end
+
+        context 'Vault tenant id' do
+          context 'AZURE_TENANT_ID CI variable is present' do
+            it 'returns the URL' do
+              create(:ci_variable, project: ci_build.project, key: 'AZURE_TENANT_ID', value: 'test')
+
+              expect(azure_key_vault_server.fetch('tenant_id')).to eq('test')
+            end
+          end
+
+          context 'AZURE_TENANT_ID CI variable is not present' do
+            it 'returns the nil' do
+              expect(azure_key_vault_server.fetch('tenant_id')).to eq(nil)
+            end
+          end
+        end
+
+        context 'when there are ID tokens available' do
+          before do
+            rsa_key = OpenSSL::PKey::RSA.generate(3072).to_s
+            stub_application_setting(ci_jwt_signing_key: rsa_key)
+            ci_build.id_tokens = {
+              'VAULT_ID_TOKEN_1' => { id_token: { aud: 'https://gitlab.test' } },
+              'VAULT_ID_TOKEN_2' => { id_token: { aud: 'https://gitlab.link' } }
+            }
+            ci_build.runner = build_stubbed(:ci_runner)
+          end
+
+          it 'adds the first ID token to the Vault server payload' do
+            jwt = presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'azure_key_vault', 'server', 'jwt')
+
+            expect(jwt).to eq('$VAULT_ID_TOKEN_1')
+          end
+
+          context 'when the token variable is specified for the vault secret' do
+            let(:secrets) do
+              {
+                DATABASE_PASSWORD: {
+                  token: '$VAULT_ID_TOKEN_2',
+                  azure_key_vault: {
+                    name: 'key',
+                    version: 'version'
+                  }
+                }
+              }
+            end
+
+            it 'uses the specified token variable' do
+              jwt = presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'azure_key_vault', 'server', 'jwt')
+
+              expect(jwt).to eq('$VAULT_ID_TOKEN_2')
+            end
+          end
+        end
+
+        context 'when there are no ID tokens available' do
+          it 'adds CI_JOB_JWT_V2 to the Vault server payload' do
+            jwt = presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'azure_key_vault', 'server', 'jwt')
+
+            expect(jwt).to eq('${CI_JOB_JWT_V2}')
           end
         end
       end

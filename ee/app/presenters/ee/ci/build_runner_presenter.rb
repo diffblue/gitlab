@@ -8,6 +8,7 @@ module EE
       def secrets_configuration
         secrets.to_h.transform_values do |secret|
           secret['vault']['server'] = vault_server(secret) if secret['vault']
+          secret['azure_key_vault']['server'] = azure_key_vault_server(secret) if secret['azure_key_vault']
           secret
         end
       end
@@ -39,6 +40,23 @@ module EE
 
       def id_token_var(secret)
         secret['token'] || "$#{id_tokens.each_key.first}"
+      end
+
+      def azure_key_vault_server(secret)
+        @azure_key_vault_server ||= {
+          'url' => variable_value('AZURE_KEY_VAULT_SERVER_URL'),
+          'client_id' => variable_value('AZURE_CLIENT_ID'),
+          'tenant_id' => variable_value('AZURE_TENANT_ID'),
+          'jwt' => azure_vault_jwt(secret)
+        }
+      end
+
+      def azure_vault_jwt(secret)
+        if id_tokens?
+          id_token_var(secret)
+        else
+          '${CI_JOB_JWT_V2}'
+        end
       end
     end
   end

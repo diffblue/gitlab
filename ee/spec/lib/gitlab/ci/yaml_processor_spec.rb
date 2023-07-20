@@ -268,30 +268,62 @@ RSpec.describe Gitlab::Ci::YamlProcessor do
   end
 
   describe 'secrets' do
-    let(:secrets) do
-      {
-        DATABASE_PASSWORD: {
-          vault: 'production/db/password'
-        }
-      }
-    end
-
-    let(:config) { { deploy_to_production: { stage: 'deploy', script: ['echo'], secrets: secrets } } }
-
-    subject(:result) { described_class.new(YAML.dump(config)).execute }
-
-    it "returns secrets info" do
-      secrets = result.builds.first.fetch(:secrets)
-
-      expect(secrets).to eq({
-        DATABASE_PASSWORD: {
-          vault: {
-            engine: { name: 'kv-v2', path: 'kv-v2' },
-            path: 'production/db',
-            field: 'password'
+    context 'hashicorp vault' do
+      let(:secrets) do
+        {
+          DATABASE_PASSWORD: {
+            vault: 'production/db/password'
           }
         }
-      })
+      end
+
+      let(:config) { { deploy_to_production: { stage: 'deploy', script: ['echo'], secrets: secrets } } }
+
+      subject(:result) { described_class.new(YAML.dump(config)).execute }
+
+      it "returns secrets info" do
+        secrets = result.builds.first.fetch(:secrets)
+
+        expect(secrets).to eq({
+          DATABASE_PASSWORD: {
+            vault: {
+              engine: { name: 'kv-v2', path: 'kv-v2' },
+              path: 'production/db',
+              field: 'password'
+            }
+          }
+        })
+      end
+    end
+
+    context 'azure key vault' do
+      let(:secrets) do
+        {
+          DATABASE_PASSWORD: {
+            azure_key_vault: {
+              name: 'key',
+              version: 'version'
+            }
+          }
+        }
+      end
+
+      let(:config) { { deploy_to_production: { stage: 'deploy', script: ['echo'], secrets: secrets } } }
+
+      subject(:result) { described_class.new(YAML.dump(config)).execute }
+
+      it "returns secrets info" do
+        secrets = result.builds.first.fetch(:secrets)
+
+        expect(secrets).to eq({
+          DATABASE_PASSWORD: {
+            azure_key_vault: {
+              name: 'key',
+              version: 'version'
+            }
+          }
+        })
+      end
     end
   end
 end
