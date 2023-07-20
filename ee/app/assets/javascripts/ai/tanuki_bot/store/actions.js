@@ -41,20 +41,14 @@ export const tanukiBotMessageError = ({ commit }) => {
 };
 
 export const setMessages = ({ commit, dispatch }, messages) => {
-  messages.forEach((msg, index) => {
+  messages.forEach((msg) => {
     if (msg.errors?.length) {
       dispatch('tanukiBotMessageError');
     } else {
       switch (msg.role.toLowerCase()) {
         case MESSAGE_TYPES.USER:
           dispatch('sendUserMessage', msg.content);
-          if (index !== messages.length - 1) {
-            // if this is not the last message in the array,
-            // then we need to set loading to false.
-            // Otherwise, if the message is the last one and is from user,
-            // then we need to keep loading as `true` - the AI response is still pending.
-            commit(types.SET_LOADING, false);
-          }
+          commit(types.SET_LOADING, false);
           break;
         case MESSAGE_TYPES.TANUKI:
           dispatch('receiveTanukiBotMessage', {

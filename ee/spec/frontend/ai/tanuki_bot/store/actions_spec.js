@@ -143,7 +143,7 @@ describe('TanukiBot Store Actions', () => {
         expectedMutations: [{ type: types.SET_LOADING, payload: false }],
       });
     });
-    it('does not set loading to false if the last messages is from a user', () => {
+    it('sets loading to false even if the last message is from user', () => {
       return testAction({
         action: actions.setMessages,
         payload: [MOCK_TANUKI_MESSAGE, MOCK_USER_MESSAGE],
@@ -155,6 +155,7 @@ describe('TanukiBot Store Actions', () => {
           },
           { type: 'sendUserMessage', payload: MOCK_USER_MESSAGE.content },
         ],
+        expectedMutations: [{ type: types.SET_LOADING, payload: false }],
       });
     });
     it('if messge has an error, it correctly dispatches the tanukiBotMessageError action', () => {
