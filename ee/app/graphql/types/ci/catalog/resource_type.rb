@@ -7,7 +7,7 @@ module Types
       class ResourceType < BaseObject
         graphql_name 'CiCatalogResource'
 
-        connection_type_class(Types::CountableConnectionType)
+        connection_type_class Types::CountableConnectionType
 
         field :id, GraphQL::Types::ID, null: false, description: 'ID of the catalog resource.',
           alpha: { milestone: '15.11' }

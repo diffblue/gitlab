@@ -7,7 +7,7 @@ module Types
       graphql_name 'CodeQualityDegradation'
       description 'Represents a code quality degradation on the pipeline.'
 
-      connection_type_class(Types::CountableConnectionType)
+      connection_type_class Types::CountableConnectionType
 
       alias_method :degradation, :object
 
