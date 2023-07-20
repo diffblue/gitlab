@@ -47,7 +47,7 @@ module Gitlab
               component.name,
               purl_type_int(component),
               component_type_int(component),
-              component&.version.to_s
+              component.version.to_s
             ]
           end
 
