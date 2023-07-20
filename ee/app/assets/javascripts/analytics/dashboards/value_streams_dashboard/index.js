@@ -16,7 +16,10 @@ export default () => {
 
   let queryPaths;
   try {
-    queryPaths = JSON.parse(namespaces).map((namespace) => namespace.full_path);
+    queryPaths = JSON.parse(namespaces).map(({ full_path: namespace, is_project: isProject }) => ({
+      namespace,
+      isProject,
+    }));
   } catch {
     queryPaths = [];
   }

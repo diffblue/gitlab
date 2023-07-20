@@ -15,6 +15,7 @@ module Groups
       before_action :redirect_to_value_streams_dashboard, only: :index
       before_action do
         push_frontend_feature_flag(:vsd_graphql_dora_and_flow_metrics, @group)
+        push_frontend_feature_flag(:dora_performers_score_panel, @group)
       end
 
       layout 'group'

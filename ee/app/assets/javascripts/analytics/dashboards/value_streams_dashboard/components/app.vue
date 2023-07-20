@@ -11,8 +11,10 @@ import {
 } from '../../constants';
 import { fetchYamlConfig } from '../../api';
 import DoraVisualization from '../../components/dora_visualization.vue';
+import DoraPerformersScore from '../../components/dora_performers_score.vue';
 
-const pathsToPanels = (paths) => paths.map((namespace) => ({ data: { namespace } }));
+const pathsToPanels = (paths) =>
+  paths.map(({ namespace, isProject = false }) => ({ data: { namespace }, isProject }));
 
 export default {
   name: 'DashboardsApp',
@@ -21,6 +23,7 @@ export default {
     GlLink,
     GlSkeletonLoader,
     DoraVisualization,
+    DoraPerformersScore,
   },
   props: {
     fullPath: {
@@ -57,7 +60,7 @@ export default {
       return this.dashboardDescription === DASHBOARD_DESCRIPTION;
     },
     defaultPanels() {
-      return pathsToPanels([this.fullPath]);
+      return pathsToPanels([{ namespace: this.fullPath }]);
     },
     queryPanels() {
       return pathsToPanels(this.queryPaths);
@@ -73,6 +76,9 @@ export default {
       // Each panel requires many requests to render, so restrict
       // the number of panels to prevent overloading the server.
       return list.slice(0, MAX_PANELS_LIMIT);
+    },
+    groupPanels() {
+      return this.panels.filter(({ isProject }) => !isProject);
     },
     loadError() {
       if (!this.yamlConfigProject?.id || this.yamlConfig) return '';
@@ -110,6 +116,13 @@ export default {
       :key="index"
       :title="title"
       :data="data"
+    />
+
+    <dora-performers-score
+      v-for="({ data }, index) in groupPanels"
+      :key="`dora-performers-score-panel-${index}`"
+      :data="data"
+      class="gl-mt-5"
     />
   </div>
 </template>

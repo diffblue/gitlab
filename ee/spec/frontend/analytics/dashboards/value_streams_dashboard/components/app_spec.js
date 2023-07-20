@@ -9,6 +9,7 @@ import {
 import * as api from 'ee/analytics/dashboards/api';
 import Component from 'ee/analytics/dashboards/value_streams_dashboard/components/app.vue';
 import DoraVisualization from 'ee/analytics/dashboards/components/dora_visualization.vue';
+import DoraPerformersScore from 'ee/analytics/dashboards/components/dora_performers_score.vue';
 
 describe('Executive dashboard app', () => {
   let wrapper;
@@ -32,6 +33,7 @@ describe('Executive dashboard app', () => {
   const findTitle = () => wrapper.findByTestId('dashboard-title');
   const findDescription = () => wrapper.findByTestId('dashboard-description');
   const findDoraVisualizations = () => wrapper.findAllComponents(DoraVisualization);
+  const findDoraPerformersScorePanels = () => wrapper.findAllComponents(DoraPerformersScore);
 
   it('shows a loading skeleton when fetching the YAML config', () => {
     createWrapper();
@@ -66,14 +68,38 @@ describe('Executive dashboard app', () => {
     });
 
     it('queryPaths are shown in addition to the group visualization', async () => {
-      const queryPaths = ['group/one', 'group/two', 'group/three'];
+      const queryPaths = [
+        { namespace: 'group/one', isProject: false },
+        { namespace: 'group/two', isProject: false },
+        { namespace: 'group/three', isProject: false },
+      ];
+      const groupFullPath = { namespace: fullPath };
       await createWrapper({ props: { queryPaths } });
 
       const charts = findDoraVisualizations();
       expect(charts.length).toBe(4);
 
-      [fullPath, ...queryPaths].forEach((namespace, index) => {
+      [groupFullPath, ...queryPaths].forEach(({ namespace }, index) => {
         expect(charts.wrappers[index].props()).toMatchObject({ data: { namespace } });
+      });
+    });
+
+    it('does not render group-only visualizations for project queryPaths', async () => {
+      const groupQueryPaths = [
+        { namespace: 'group/one', isProject: false },
+        { namespace: 'group/two', isProject: false },
+      ];
+      const projectQueryPath = { namespace: 'project/one', isProject: true };
+      const groupFullPath = { namespace: fullPath };
+      const queryPaths = [projectQueryPath, ...groupQueryPaths];
+
+      await createWrapper({ props: { queryPaths } });
+
+      const panels = findDoraPerformersScorePanels();
+      expect(panels).toHaveLength(groupQueryPaths.length + 1);
+
+      [groupFullPath, ...groupQueryPaths].forEach(({ namespace }, index) => {
+        expect(panels.wrappers[index].props()).toMatchObject({ data: { namespace } });
       });
     });
   });
@@ -127,7 +153,12 @@ describe('Executive dashboard app', () => {
     });
 
     it('queryPaths override the panels list', async () => {
-      const queryPaths = ['group/one', 'group/two', 'group/three'];
+      const queryPaths = [
+        { namespace: 'group/one', isProject: false },
+        { namespace: 'group/two', isProject: false },
+        { namespace: 'group/three', isProject: false },
+      ];
+      const groupFullPath = { namespace: fullPath };
 
       jest.spyOn(api, 'fetchYamlConfig').mockResolvedValue({ panels });
       await createWrapper({ props: { yamlConfigProject, queryPaths } });
@@ -135,7 +166,7 @@ describe('Executive dashboard app', () => {
       const charts = findDoraVisualizations();
       expect(charts.length).toBe(4);
 
-      [fullPath, ...queryPaths].forEach((namespace, index) => {
+      [groupFullPath, ...queryPaths].forEach(({ namespace }, index) => {
         expect(charts.wrappers[index].props()).toMatchObject({ data: { namespace } });
       });
     });
