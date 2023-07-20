@@ -1398,6 +1398,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: groups_enterprise_users_disassociate
+  :worker_name: Groups::EnterpriseUsers::DisassociateWorker
+  :feature_category: :user_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: groups_export_memberships
   :worker_name: Groups::ExportMembershipsWorker
   :feature_category: :compliance_management

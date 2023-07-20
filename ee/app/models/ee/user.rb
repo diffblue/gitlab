@@ -36,6 +36,7 @@ module EE
       validate :cannot_be_admin_and_auditor
 
       after_create :perform_user_cap_check
+      after_update :email_changed_hook, if: :saved_change_to_email?
 
       delegate :shared_runners_minutes_limit, :shared_runners_minutes_limit=,
         :extra_shared_runners_minutes_limit, :extra_shared_runners_minutes_limit=,
@@ -456,6 +457,10 @@ module EE
       user_detail.enterprise_group_id == group.id
     end
 
+    def enterprise_user?
+      user_detail.enterprise_group_id.present?
+    end
+
     def gitlab_employee?
       gitlab_team_member?
     end
@@ -687,6 +692,14 @@ module EE
 
       run_after_commit do
         SetUserStatusBasedOnUserCapSettingWorker.perform_async(id)
+      end
+    end
+
+    def email_changed_hook
+      run_after_commit do
+        if enterprise_user?
+          ::Groups::EnterpriseUsers::DisassociateWorker.perform_async(id)
+        end
       end
     end
 
