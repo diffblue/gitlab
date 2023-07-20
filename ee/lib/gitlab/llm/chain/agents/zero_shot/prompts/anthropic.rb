@@ -16,9 +16,6 @@ module Gitlab
                 base_prompt = super(options)
                 text = <<~PROMPT
                   #{ROLE_NAMES[Llm::Cache::ROLE_USER]}: #{base_prompt[:prompt]}
-
-
-                  #{ROLE_NAMES[Llm::Cache::ROLE_ASSISTANT]}:
                 PROMPT
 
                 history = truncated_conversation(options[:conversation], Requests::Anthropic::PROMPT_SIZE - text.size)

@@ -36,7 +36,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failu
 
   describe '#name' do
     it 'returns tool name' do
-      expect(described_class::NAME).to eq('Resource Reader')
+      expect(described_class::NAME).to eq('ResourceReader')
     end
   end
 

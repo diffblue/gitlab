@@ -7,6 +7,7 @@ module Gitlab
         module IssueIdentifier
           module Prompts
             class Anthropic
+              MODEL = 'claude-instant-1.1'
               def self.prompt(options)
                 base_prompt = Utils::Prompt.no_role_text(
                   ::Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor::PROMPT_TEMPLATE, options
@@ -14,7 +15,7 @@ module Gitlab
 
                 {
                   prompt: "\n\nHuman: #{base_prompt}\n\nAssistant:",
-                  options: {}
+                  options: { model: MODEL }
                 }
               end
             end
