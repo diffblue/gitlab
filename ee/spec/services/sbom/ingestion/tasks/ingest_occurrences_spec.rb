@@ -17,6 +17,17 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
       expect { ingest_occurrences }.not_to change(Sbom::Occurrence, :count)
     end
 
+    describe 'setting the `package_manager`' do
+      let(:ingested_occurrences) { Sbom::Occurrence.last(4) }
+      let(:ingested_package_managers) { ingested_occurrences.map(&:package_manager).uniq }
+
+      it 'sets `package_manager` for the occurrences' do
+        ingest_occurrences
+
+        expect(ingested_package_managers).to contain_exactly('npm')
+      end
+    end
+
     context 'when there is an existing occurrence' do
       let!(:existing_occurrence) do
         attributes = occurrence_maps.first.to_h.slice(

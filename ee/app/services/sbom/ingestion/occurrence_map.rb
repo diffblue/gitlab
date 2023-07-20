@@ -29,6 +29,7 @@ module Sbom
         version.present?
       end
 
+      delegate :packager, to: :report_source
       delegate :version, to: :report_component, private: true
 
       private
