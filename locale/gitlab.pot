@@ -34779,9 +34779,6 @@ msgstr ""
 msgid "Preferences|Behavior"
 msgstr ""
 
-msgid "Preferences|Choose between fixed (max. 1280px) and fluid (%{percentage}) application layout."
-msgstr ""
-
 msgid "Preferences|Choose what content you want to see by default on your homepage."
 msgstr ""
 
@@ -34798,6 +34795,12 @@ msgid "Preferences|Color theme"
 msgstr ""
 
 msgid "Preferences|Configure how dates and times display for you."
+msgstr ""
+
+msgid "Preferences|Content will be a maximum of 1280 pixels wide."
+msgstr ""
+
+msgid "Preferences|Content will span %{percentage} of the page width."
 msgstr ""
 
 msgid "Preferences|Customize integrations with third party services."
