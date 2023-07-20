@@ -2483,6 +2483,9 @@ msgstr ""
 msgid "AccessTokens|Feed token"
 msgstr ""
 
+msgid "AccessTokens|For example, the application using the token or the purpose of the token."
+msgstr ""
+
 msgid "AccessTokens|For example, the application using the token or the purpose of the token. Do not give sensitive information for the name of the token, as it will be visible to all %{resource_type} members."
 msgstr ""
 
