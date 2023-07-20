@@ -11,16 +11,16 @@ module Gitlab
             PromptRoles = ::Gitlab::Llm::Chain::Utils::Prompt
             TextUtils = Gitlab::Llm::Chain::Utils::TextProcessing
 
-            NAME = 'Resource Reader'
+            NAME = 'ResourceReader'
             DESCRIPTION = 'Useful tool when you need to get information about specific resource ' \
                           'that was already identified. ' \
                           'Action Input for this tools always starts with: `data`'
             EXAMPLE =
               <<~PROMPT
                 Question: Who is an author of this issue
-                Picked tools: First: "IssueIdentifier" tool, second: "Resource Reader" tool.
+                Picked tools: First: "IssueIdentifier" tool, second: "ResourceReader" tool.
                 Reason: You have access to the same resources as user who asks a question.
-                  Once the resource is identified, you should use "Resource Reader" tool to fetch relevant information
+                  Once the resource is identified, you should use "ResourceReader" tool to fetch relevant information
                   about the resource. Based on this information you can present final answer.
               PROMPT
 

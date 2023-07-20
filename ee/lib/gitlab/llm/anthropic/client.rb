@@ -7,8 +7,8 @@ module Gitlab
         include Gitlab::Llm::Concerns::ExponentialBackoff
 
         URL = 'https://api.anthropic.com'
-        DEFAULT_MODEL = 'claude-v1.3'
-        DEFAULT_TEMPERATURE = 0.2
+        DEFAULT_MODEL = 'claude-2'
+        DEFAULT_TEMPERATURE = 0
         DEFAULT_MAX_TOKENS = 2048
 
         def initialize(user)
@@ -19,7 +19,7 @@ module Gitlab
         def complete(prompt:, **options)
           return unless enabled?
 
-          logger.debug(message: "Performing request to Anthropic")
+          logger.debug(message: "Performing request to Anthropic", options: options)
 
           response = Gitlab::HTTP.post(
             URI.join(URL, '/v1/complete'),

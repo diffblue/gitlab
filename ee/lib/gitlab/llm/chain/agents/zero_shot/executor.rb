@@ -33,7 +33,7 @@ module Gitlab
 
             def execute
               MAX_ITERATIONS.times do
-                answer = Answer.from_response(response_body: request, tools: tools, context: context)
+                answer = Answer.from_response(response_body: "Thought: #{request}", tools: tools, context: context)
 
                 return answer if answer.is_final?
 
@@ -71,6 +71,7 @@ module Gitlab
             def base_prompt
               {
                 prompt: Utils::Prompt.no_role_text(PROMPT_TEMPLATE, options),
+                agent_scratchpad: options[:agent_scratchpad],
                 options: {}
               }
             end
@@ -78,8 +79,8 @@ module Gitlab
             def options
               @options ||= {
                 tool_names: tools.map { |tool_class| tool_class::Executor::NAME }.join(', '),
-                tools_definitions: tools.map do |tool_class|
-                  "- #{tool_class::Executor::NAME}: #{tool_class::Executor::DESCRIPTION}" \
+                tools_definitions: tools.map.with_index do |tool_class, idx|
+                  "#{idx + 1}. #{tool_class::Executor::NAME}: #{tool_class::Executor::DESCRIPTION}" \
                     "\n" \
                     "#{tool_class::Executor.full_example}" \
                 end.join("\n"),
@@ -146,8 +147,7 @@ module Gitlab
               PROMPT
               ),
               Utils::Prompt.as_assistant("%<agent_scratchpad>s"),
-              Utils::Prompt.as_user("Question: %<user_input>s"),
-              Utils::Prompt.as_assistant("Thought: ")
+              Utils::Prompt.as_user("Question: %<user_input>s")
             ].freeze
 
             ALTERNATIVE_PROMPT_TEMPLATE = [
@@ -157,7 +157,7 @@ module Gitlab
 
                 You have access to the following tools:
                 %<tools_definitions>s
-                Consider every tool before making decision.
+                Consider every tool before making a decision.
                 Identifying resource mustn't be the last step.
                 Ensure that your answer is accurate and contain only information directly supported
                 by the information retrieved using provided tools.
@@ -165,24 +165,24 @@ module Gitlab
                 You must always use the following format:
                 Question: the input question you must answer
                 Thought: you should always think about what to do
-                Action: the action to take, should be one from this list: %<tool_names>s
-                Action Input: the input to the action
-                Observation: the result of the actions
+                Action: the action to take, should be one tool from this list or an direct answer (then use DirectAnswer as action): [%<tool_names>s]
+                Action Input: the input to the action needs to be provided for every action that uses a tool
+                Observation: the result of the actions. If the Action is DirectAnswer never write an Observation!
 
                 ... (this Thought/Action/Action Input/Observation sequence can repeat N times)
 
                 Thought: I know the final answer.
                 Final Answer: the final answer to the original input question.
 
-                Avoid using phrases "Here is" or "Here are" to give the final answer, use "Final Answer:" instead.
-                Return the final answer as soon as you recognize it.
+                When concluding your response, provide the final answer as "Final Answer:" as soon as the answer is recognized.
 
-                REMEMBER to ALWAYS start a line with "Final Answer:" to give me the final answer.
+                If no tool is needed, give a final answer with "Final Answer: DirectAnswer" for the Action parameter and skip writing an Observation.
                 Begin!
               PROMPT
               ),
-              Utils::Prompt.as_assistant("%<agent_scratchpad>s"),
-              Utils::Prompt.as_user("Question: %<user_input>s")
+              Utils::Prompt.as_user("Question: %<user_input>s"),
+              Utils::Prompt.as_assistant("Assistant: %<agent_scratchpad>s"),
+              Utils::Prompt.as_assistant("Thought: ")
             ].freeze
           end
         end

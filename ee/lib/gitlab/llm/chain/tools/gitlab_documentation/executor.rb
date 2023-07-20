@@ -10,8 +10,7 @@ module Gitlab
             RESOURCE_NAME = 'documentation answer'
             DESCRIPTION =
               <<-PROMPT
-                This tool is useful when you need to answer questions about GitLab,
-                like how to perform certain actions or how to use certain features.
+                This tool is beneficial when you need to answer questions concerning GitLab and its features.
                 Questions can be about GitLab's projects, groups, issues, merge requests,
                 epics, milestones, labels, CI/CD pipelines, git repositories, and more.
               PROMPT

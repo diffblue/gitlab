@@ -22,10 +22,10 @@ module Gitlab
             EXAMPLE =
               <<~PROMPT
                 Question: Please identify the author of http://gitlab.example/ai/test/-/issues/1 issue
-                Picked tools: First: "IssueIdentifier" tool, second: "Resource Reader" tool.
+                Picked tools: First: "IssueIdentifier" tool, second: "ResourceReader" tool.
                 Reason: You have access to the same resources as user who asks a question.
                   There is issue identifier in the question, so you need to use "IssueIdentifier" tool.
-                  Once the issue is identified, you should use "Resource Reader" tool to fetch relevant information
+                  Once the issue is identified, you should use "ResourceReader" tool to fetch relevant information
                   about the resource. Based on this information you can present final answer.
               PROMPT
 
@@ -86,6 +86,15 @@ module Gitlab
                 {
                   "ResourceIdentifierType": "reference",
                   "ResourceIdentifier": "long/groups/path#12312312"
+                }
+                ```
+
+                Question: Summarize the current issue
+                Response:
+                ```json
+                {
+                  "ResourceIdentifierType": "current",
+                  "ResourceIdentifier": "issue"
                 }
                 ```
 
@@ -156,7 +165,7 @@ module Gitlab
                         extract_issue(resource_identifier, resource_identifier_type)
                       end
 
-              return issue if Utils::Authorizer.resource_authorized?(resource: issue, user: context.current_user)
+              issue if Utils::Authorizer.resource_authorized?(resource: issue, user: context.current_user)
             end
 
             def by_iid(resource_identifier)

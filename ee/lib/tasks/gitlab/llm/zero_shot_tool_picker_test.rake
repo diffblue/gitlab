@@ -16,7 +16,8 @@ namespace :gitlab do
 
           args.with_defaults(issue: 'http://127.0.0.1:3001/jashkenas/Underscore/-/issues/41')
 
-          zero_shot_prompt_action = "the action to take, should be one from this list"
+          zero_shot_prompt_action = "the action to take, should be one tool from this list " \
+                                    "or an direct answer (then use DirectAnswer as action): "
           counter = 0.0
           correct_answers_counter = 0
           default_answers_counter = 0
@@ -32,10 +33,15 @@ namespace :gitlab do
             response = agent.execute
 
             actions = agent.prompt[:prompt].scan(/Action: (?<action>.+?)(?=$)/)
-            actions.reject! { |action| action.first.start_with?(zero_shot_prompt_action) }
+            actions.reject! do |action|
+              action.first.start_with?(zero_shot_prompt_action, "DirectAnswer")
+            end
 
             correct_answers_counter += accuracy_check(actions, row['answer'], response.content)
-            default_answers_counter += default_answer_check(response.content) ? 1 : 0
+            if default_answer_check(response.content)
+              default_answers_counter += 1
+              logger.info("response: #{response}")
+            end
 
             logger.info("tools used: #{actions}")
             logger.info("actual response: #{response.content}")
@@ -52,7 +58,6 @@ namespace :gitlab do
 
       def llm_agent(options)
         tools = [
-          ::Gitlab::Llm::Chain::Tools::ExplainCode,
           ::Gitlab::Llm::Chain::Tools::IssueIdentifier,
           ::Gitlab::Llm::Chain::Tools::JsonReader,
           ::Gitlab::Llm::Chain::Tools::SummarizeComments,
