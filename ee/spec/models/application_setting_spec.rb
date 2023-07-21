@@ -156,7 +156,6 @@ RSpec.describe ApplicationSetting do
 
     describe 'dashboard', feature_category: :metrics do
       it { is_expected.to validate_numericality_of(:dashboard_limit).only_integer.is_greater_than_or_equal_to(0) }
-      it { is_expected.to validate_numericality_of(:dashboard_notification_limit).only_integer.is_greater_than_or_equal_to(0) }
       it { is_expected.to validate_numericality_of(:dashboard_enforcement_limit).only_integer.is_greater_than_or_equal_to(0) }
       it { is_expected.to allow_value(true, false).for(:dashboard_limit_enabled) }
       it { is_expected.not_to allow_value(nil).for(:dashboard_limit_enabled) }

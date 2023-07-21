@@ -149,7 +149,6 @@ module EE
 
       with_options(presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }) do
         validates :dashboard_limit
-        validates :dashboard_notification_limit
         validates :dashboard_enforcement_limit
       end
 
@@ -231,7 +230,6 @@ module EE
           custom_project_templates_group_id: nil,
           dashboard_limit_enabled: false,
           dashboard_limit: 0,
-          dashboard_notification_limit: 0,
           dashboard_enforcement_limit: 0,
           dashboard_limit_new_namespace_creation_enforcement_date: nil,
           default_project_deletion_protection: false,
