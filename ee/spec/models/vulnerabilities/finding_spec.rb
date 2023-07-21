@@ -7,7 +7,7 @@ RSpec.describe Vulnerabilities::Finding, feature_category: :vulnerability_manage
   it { is_expected.to define_enum_for(:severity) }
   it { is_expected.to define_enum_for(:detection_method) }
 
-  it { is_expected.to have_locked_schema('b10c77716e35e1b63499af167373cfa2f43d9a0f919c934fe974b9c4ad492a15').reference('https://gitlab.com/gitlab-org/gitlab/-/issues/349315') }
+  it { is_expected.to have_locked_schema('0865cedff019ba2d3430a1e4354506034acc179fcdb2632efd645bb51c132eb8').reference('https://gitlab.com/gitlab-org/gitlab/-/issues/349315') }
 
   where(vulnerability_finding_signatures: [true, false])
   with_them do
