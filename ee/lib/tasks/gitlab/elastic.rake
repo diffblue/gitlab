@@ -4,6 +4,8 @@ namespace :gitlab do
   namespace :elastic do
     desc "GitLab | Elasticsearch | Index everything at once"
     task index: :environment do
+      raise 'This task cannot be run on GitLab.com' if Gitlab.com?
+
       if Gitlab::CurrentSettings.elasticsearch_pause_indexing
         puts "WARNING: `elasticsearch_pause_indexing` is enabled. " \
              "Disable this setting by running `rake gitlab:elastic:resume_indexing` " \
@@ -24,10 +26,19 @@ namespace :gitlab do
         puts "Setting `elasticsearch_indexing` has been enabled."
       end
 
+      Rake::Task["gitlab:elastic:index_group_entities"].invoke
       Rake::Task["gitlab:elastic:index_projects"].invoke
       Rake::Task["gitlab:elastic:index_snippets"].invoke
       Rake::Task["gitlab:elastic:index_users"].invoke
+    end
+
+    desc 'GitLab | Elasticsearch | Index Group entities'
+    task index_group_entities: :environment do
+      raise 'This task cannot be run on GitLab.com' if Gitlab.com?
+
+      puts 'Enqueuing Group level entities…'
       Rake::Task["gitlab:elastic:index_epics"].invoke
+      Rake::Task["gitlab:elastic:index_group_wikis"].invoke
     end
 
     desc 'GitLab | Elasticsearch | Enable Elasticsearch search'
@@ -108,6 +119,8 @@ namespace :gitlab do
 
     desc "GitLab | Elasticsearch | Index epics"
     task index_epics: :environment do
+      raise 'This task cannot be run on GitLab.com' if Gitlab.com?
+
       logger = Logger.new($stdout)
       logger.info("Indexing epics...")
 
@@ -122,6 +135,25 @@ namespace :gitlab do
       end
 
       logger.info("Indexing epics... #{'done'.color(:green)}")
+    end
+
+    desc "GitLab | Elasticsearch | Index group wikis"
+    task index_group_wikis: :environment do
+      raise 'This task cannot be run on GitLab.com' if Gitlab.com?
+
+      logger = Logger.new($stdout)
+      logger.info("Indexing group wikis...")
+
+      group_ids = if Gitlab::CurrentSettings.elasticsearch_limit_indexing?
+                    sql = 'INNER JOIN group_wiki_repositories ON namespaces.id = group_wiki_repositories.group_id'
+                    Gitlab::CurrentSettings.elasticsearch_limited_namespaces.where(type: 'Group').joins(sql).pluck(:id)
+                  else
+                    GroupWikiRepository.pluck(:group_id)
+                  end
+
+      group_ids.each { |group_id| ::ElasticWikiIndexerWorker.perform_async(group_id, 'Group', force: true) }
+
+      logger.info("Indexing group wikis... #{'done'.color(:green)}")
     end
 
     desc "GitLab | Elasticsearch | Create empty indexes and assigns an alias for each"
