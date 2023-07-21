@@ -103,6 +103,7 @@ RSpec.describe Note, :elastic, :clean_gitlab_redis_shared_state, feature_categor
         'confidential',
         'internal'
       ).merge({
+                'archived' => project.archived,
                 'issue' => {
                   'assignee_id' => issue.assignee_ids,
                   'author_id' => issue.author_id,
