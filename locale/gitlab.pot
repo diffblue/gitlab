@@ -37600,6 +37600,9 @@ msgstr ""
 msgid "ProtectedEnvironment|Protected Environment (%{protected_environments_count})"
 msgstr ""
 
+msgid "ProtectedEnvironment|Protected Environments"
+msgstr ""
+
 msgid "ProtectedEnvironment|Required approvals"
 msgstr ""
 
@@ -37615,10 +37618,13 @@ msgstr ""
 msgid "ProtectedEnvironment|Select users"
 msgstr ""
 
-msgid "ProtectedEnvironment|There are currently no protected environments. Protect an environment with this form."
+msgid "ProtectedEnvironment|There are currently no protected environments."
 msgstr ""
 
 msgid "ProtectedEnvironment|Unprotect"
+msgstr ""
+
+msgid "ProtectedEnvironment|Unprotect environment"
 msgstr ""
 
 msgid "ProtectedEnvironment|Users with at least the Developer role can write to unprotected environments. Are you sure you want to unprotect %{environment_name}?"
