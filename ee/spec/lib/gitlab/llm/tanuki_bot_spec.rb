@@ -127,7 +127,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
     describe 'execute' do
       before do
         allow(License).to receive(:feature_available?).and_return(true)
-        allow(logger).to receive(:info)
+        allow(logger).to receive(:debug)
         allow(completion_response).to receive(:code).and_return(status_code)
         allow(completion_response).to receive(:success?).and_return(success)
       end
@@ -177,7 +177,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
               embeddings
 
               expect(anthropic_client).to receive(:complete)
-                .exactly(3).times
+                .once
                 .and_return(completion_response)
               expect(openai_client).to receive(:embeddings)
                 .with(hash_including(moderated: false))
@@ -239,83 +239,6 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
                 content: 'I do not know.',
                 sources: []
               })
-            end
-          end
-
-          [true, false].each do |parallel_bot|
-            context "with tanuki_bot_parallel set to #{parallel_bot}" do
-              before do
-                stub_feature_flags(tanuki_bot_parallel: parallel_bot)
-              end
-
-              describe 'getting matching documents' do
-                before do
-                  allow(anthropic_client).to receive(:complete)
-                    .and_return(completion_response)
-                end
-
-                it 'creates an embedding for the question' do
-                  expect(openai_client).to receive(:embeddings)
-                    .with(input: question, moderated: false)
-                    .and_return(embedding_response)
-
-                  execute
-                end
-
-                it 'queries the embedding database for nearest neighbors' do
-                  allow(openai_client).to receive(:embeddings)
-                    .with(input: question, moderated: false)
-                    .and_return(embedding_response)
-
-                  expect(::Embedding::TanukiBotMvc).to receive(:current).and_call_original.once
-
-                  expect(::Embedding::TanukiBotMvc).to receive(:neighbor_for)
-                    .with(embedding, limit: described_class::RECORD_LIMIT)
-                    .and_call_original.once
-
-                  execute
-                end
-
-                context 'when an error is returned' do
-                  let(:final_completion_response) { { error: { message: 'something went wrong' } } }
-
-                  before do
-                    allow(anthropic_client).to receive(:complete)
-                      .with(hash_including(prompt: /create a final answer/))
-                      .and_return(final_completion_response)
-                    allow(final_completion_response).to receive(:code).and_return(500)
-                    allow(final_completion_response).to receive(:success?).and_return(false)
-                  end
-
-                  it 'raises an error when an error is returned' do
-                    allow(openai_client).to receive(:embeddings)
-                      .with(input: question, moderated: false)
-                      .and_return(embedding_response)
-
-                    expect { execute }.to raise_error(RuntimeError, /something went wrong/)
-                  end
-                end
-              end
-
-              describe 'checking documents for relevance and summarizing' do
-                before do
-                  allow(openai_client).to receive(:embeddings)
-                    .with(hash_including(moderated: false))
-                    .and_return(embedding_response)
-                end
-
-                it 'calls the completions API once for each document and once for summarizing' do
-                  expect(anthropic_client).to receive(:complete)
-                    .with(hash_including(prompt: /see if any of the text is relevant to answer the question/))
-                    .and_return(completion_response).twice
-
-                  expect(anthropic_client).to receive(:complete)
-                    .with(hash_including(prompt: /create a final answer/))
-                    .and_return(completion_response).once
-
-                  execute
-                end
-              end
             end
           end
         end
