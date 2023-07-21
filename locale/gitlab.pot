@@ -18736,9 +18736,6 @@ msgstr ""
 msgid "Expires %{preposition} %{expires_at}"
 msgstr ""
 
-msgid "Expires:"
-msgstr ""
-
 msgid "Explain why you're reporting the user."
 msgstr ""
 
@@ -26747,6 +26744,9 @@ msgstr ""
 msgid "Key (PEM)"
 msgstr ""
 
+msgid "Key details"
+msgstr ""
+
 msgid "Key result"
 msgstr ""
 
@@ -27049,9 +27049,6 @@ msgid "Last used"
 msgstr ""
 
 msgid "Last used %{last_used_at} ago"
-msgstr ""
-
-msgid "Last used on:"
 msgstr ""
 
 msgid "Last week"
@@ -35424,6 +35421,12 @@ msgstr ""
 msgid "Profiles|Control emails linked to your account"
 msgstr ""
 
+msgid "Profiles|Copy SSH key"
+msgstr ""
+
+msgid "Profiles|Created"
+msgstr ""
+
 msgid "Profiles|Created%{time_ago}"
 msgstr ""
 
@@ -35493,7 +35496,13 @@ msgstr ""
 msgid "Profiles|Expiration date"
 msgstr ""
 
+msgid "Profiles|Expired"
+msgstr ""
+
 msgid "Profiles|Expired:"
+msgstr ""
+
+msgid "Profiles|Expires"
 msgstr ""
 
 msgid "Profiles|Expires:"
@@ -35536,6 +35545,9 @@ msgid "Profiles|Key becomes invalid on this date. Maximum lifetime for SSH keys 
 msgstr ""
 
 msgid "Profiles|Key titles are publicly visible."
+msgstr ""
+
+msgid "Profiles|Last used"
 msgstr ""
 
 msgid "Profiles|Last used:"
@@ -35599,6 +35611,9 @@ msgid "Profiles|Remove avatar"
 msgstr ""
 
 msgid "Profiles|Resend confirmation email"
+msgstr ""
+
+msgid "Profiles|SSH Key: %{title}"
 msgstr ""
 
 msgid "Profiles|Select a service to sign in with."
