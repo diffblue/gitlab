@@ -15,12 +15,14 @@ module Boards
     def metadata(required_fields = [:issue_count, :total_issue_weight])
       fields = metadata_fields(required_fields)
       keys = fields.keys
-      # TODO: eliminate need for SQL literal fragment
-      columns = Arel.sql(fields.values_at(*keys).join(', '))
-      results = item_model.where(id: collection_ids)
-      results = results.select(columns)
+      columns = fields.values_at(*keys)
 
-      Hash[keys.zip(results.pluck(columns).flatten)]
+      results = item_model
+        .where(id: collection_ids)
+        .pluck(*columns)
+        .flatten
+
+      Hash[keys.zip(results)]
     end
     # rubocop: enable CodeReuse/ActiveRecord
 
@@ -31,7 +33,7 @@ module Boards
     end
 
     def metadata_fields(required_fields)
-      required_fields&.include?(:issue_count) ? { size: 'COUNT(*)' } : {}
+      required_fields&.include?(:issue_count) ? { size: Arel.sql('COUNT(*)') } : {}
     end
 
     def order(items)
