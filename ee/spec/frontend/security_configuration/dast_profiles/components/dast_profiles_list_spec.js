@@ -78,7 +78,7 @@ describe('EE - DastProfilesList', () => {
 
     describe('with profiles and more to load', () => {
       beforeEach(() => {
-        createComponent({
+        createFullComponent({
           propsData: {
             isLoading: true,
             profilesPerPage,

@@ -25,7 +25,13 @@ exports[`SiteProfileSelector renders properly with no profiles 1`] = `
    
   <empty-state-stub
     class="gl-mb-4"
-  />
+  >
+    
+      No site profile selected
+    
+      Select a site profile to run a DAST scan
+    
+  </empty-state-stub>
    
   <gl-button-stub
     buttontextclasses=""
@@ -67,7 +73,13 @@ exports[`SiteProfileSelector renders properly with profiles 1`] = `
    
   <empty-state-stub
     class="gl-mb-4"
-  />
+  >
+    
+      No site profile selected
+    
+      Select a site profile to run a DAST scan
+    
+  </empty-state-stub>
    
   <gl-button-stub
     buttontextclasses=""

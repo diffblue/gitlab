@@ -84,7 +84,33 @@ exports[`dashboard should match the snapshot 1`] = `
       invertindarkmode="true"
       svgpath="/assets/illustrations/operations-dashboard_empty.svg"
       title="Add a project to the dashboard"
-    />
+    >
+      
+        The environments dashboard provides a summary of each project's environments' status, including pipeline and alert statuses.
+        
+      <gl-link-stub
+        class="js-documentation-link"
+        href="/help/user/operations_dashboard/index.html"
+      >
+        View documentation
+      </gl-link-stub>
+      .
+      
+      <gl-button-stub
+        buttontextclasses=""
+        category="primary"
+        class="js-add-projects-button"
+        icon=""
+        role="button"
+        size="medium"
+        tabindex="0"
+        variant="confirm"
+      >
+        
+          Add projects
+        
+      </gl-button-stub>
+    </gl-empty-state-stub>
   </div>
 </div>
 `;
