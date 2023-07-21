@@ -30,24 +30,72 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :subscripti
   end
 
   describe 'scopes' do
-    let_it_be(:namespace) { create(:namespace) }
-    let_it_be(:add_on) { create(:gitlab_subscription_add_on) }
+    shared_context 'with add-on purchases' do
+      let_it_be(:code_suggestions_add_on) { create(:gitlab_subscription_add_on) }
 
-    let_it_be(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase, add_on: add_on, namespace: namespace) }
+      let_it_be(:code_suggestion_expired_purchase) do
+        create(:gitlab_subscription_add_on_purchase, expires_on: 1.day.ago, add_on: code_suggestions_add_on)
+      end
+
+      let_it_be(:code_suggestion_active_purchase) do
+        create(:gitlab_subscription_add_on_purchase, add_on: code_suggestions_add_on)
+      end
+
+      let_it_be(:code_suggestion_active_purchase_for_project) do
+        create(:gitlab_subscription_add_on_purchase, add_on: code_suggestions_add_on)
+      end
+
+      let_it_be(:project) do
+        create(:project, group: code_suggestion_active_purchase_for_project.namespace)
+      end
+    end
 
     describe '.active' do
-      it 'returns only active add_on_purchases' do
-        create(:gitlab_subscription_add_on_purchase, add_on: add_on, expires_on: 1.day.ago)
+      include_context 'with add-on purchases'
 
-        expect(described_class.count).to eq(2)
-        expect(described_class.active).to contain_exactly(add_on_purchase)
+      subject(:active_purchases) { described_class.active }
+
+      it 'returns all the purchases that are not expired' do
+        expect(active_purchases).to match_array(
+          [code_suggestion_active_purchase, code_suggestion_active_purchase_for_project]
+        )
       end
     end
 
     describe '.by_add_on_name' do
+      include_context 'with add-on purchases'
+
       it 'returns records filtered by namespace' do
         expect(described_class.by_add_on_name('foo-bar')).to eq([])
-        expect(described_class.by_add_on_name('code_suggestions')).to contain_exactly(add_on_purchase)
+        expect(described_class.by_add_on_name('code_suggestions')).to match_array(
+          [code_suggestion_active_purchase, code_suggestion_active_purchase_for_project,
+            code_suggestion_expired_purchase]
+        )
+      end
+    end
+
+    describe '.for_code_suggestions' do
+      subject(:code_suggestion_purchases) { described_class.for_code_suggestions }
+
+      include_context 'with add-on purchases'
+
+      it 'returns all the purchases related to code_suggestions' do
+        expect(code_suggestion_purchases).to match_array(
+          [code_suggestion_active_purchase, code_suggestion_active_purchase_for_project,
+            code_suggestion_expired_purchase]
+        )
+      end
+    end
+
+    describe '.for_project' do
+      subject(:project_purchases) { described_class.for_project(project.id) }
+
+      include_context 'with add-on purchases'
+
+      it 'returns all the purchases related to a project' do
+        expect(project_purchases).to match_array(
+          [code_suggestion_active_purchase_for_project]
+        )
       end
     end
   end

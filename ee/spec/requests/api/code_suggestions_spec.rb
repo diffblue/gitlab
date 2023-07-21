@@ -52,6 +52,15 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     end
   end
 
+  shared_examples 'a not found response' do
+    include_examples 'a response', 'not found' do
+      let(:result) { :not_found }
+      let(:body) do
+        { "message" => "404 Not Found" }
+      end
+    end
+  end
+
   describe 'POST /code_suggestions/tokens' do
     let(:headers) { {} }
     let(:access_code_suggestions) { true }
@@ -80,12 +89,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           stub_feature_flags(code_suggestions_tokens_api: false)
         end
 
-        include_examples 'a response', 'not found' do
-          let(:result) { :not_found }
-          let(:body) do
-            { "message" => "404 Not Found" }
-          end
-        end
+        include_examples 'a not found response'
       end
 
       context 'with no access to code suggestions' do
@@ -289,21 +293,43 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
         }
       end
 
-      it_behaves_like 'code completions endpoint'
+      context 'when project does not have active code suggestions purchase' do
+        let(:current_user) { create(:user) }
 
-      context 'when feature flag is disabled' do
+        include_examples 'a not found response'
+      end
+
+      context 'when project has active code suggestions purchase' do
+        let_it_be(:project) { create(:project) }
+        let_it_be(:code_suggestions_add_on) { create(:gitlab_subscription_add_on) }
+
+        let(:body) { super().merge!(project_id: project.id) }
+
+        before do
+          create(:gitlab_subscription_add_on_purchase, add_on: code_suggestions_add_on, namespace: project.namespace)
+        end
+
+        it_behaves_like 'code completions endpoint'
+      end
+
+      context 'when code_suggestions_completion_api feature flag is disabled' do
         let(:current_user) { create(:user) }
 
         before do
           stub_feature_flags(code_suggestions_completion_api: false)
         end
 
-        include_examples 'a response', 'not found' do
-          let(:result) { :not_found }
-          let(:body) do
-            { "message" => "404 Not Found" }
-          end
+        include_examples 'a not found response'
+      end
+
+      context 'when purchase_code_suggestions feature flag is disabled' do
+        let(:current_user) { create(:user) }
+
+        before do
+          stub_feature_flags(purchase_code_suggestions: false)
         end
+
+        include_examples 'a not found response'
       end
     end
 
@@ -343,12 +369,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           stub_feature_flags(self_managed_code_suggestions_completion_api: false)
         end
 
-        include_examples 'a response', 'not found' do
-          let(:result) { :not_found }
-          let(:body) do
-            { "message" => "404 Not Found" }
-          end
-        end
+        include_examples 'a not found response'
       end
     end
   end
