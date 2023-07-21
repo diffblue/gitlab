@@ -4,6 +4,8 @@ module PackageMetadata
   module Ingestion
     module CompressedPackage
       class LicenseIngestionTask
+        include ::Gitlab::Utils::StrongMemoize
+
         def initialize(import_data, license_map)
           @import_data = import_data
           @license_map = license_map
@@ -27,13 +29,14 @@ module PackageMetadata
         attr_reader :import_data
         attr_accessor :license_map
 
+        def spdx_identifiers
+          import_data.flat_map(&:spdx_identifiers).sort.uniq
+        end
+        strong_memoize_attr :spdx_identifiers
+
         def existing_licenses
           PackageMetadata::License.with_spdx_identifiers(spdx_identifiers)
             .to_h { |license| [license.spdx_identifier, license.id] }
-        end
-
-        def spdx_identifiers
-          import_data.flat_map(&:spdx_identifiers).sort.uniq
         end
 
         def new_licenses
