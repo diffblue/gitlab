@@ -53805,10 +53805,16 @@ msgstr ""
 msgid "ZentaoIntegration|ZenTao issues"
 msgstr ""
 
+msgid "Zoom in"
+msgstr ""
+
 msgid "Zoom meeting added"
 msgstr ""
 
 msgid "Zoom meeting removed"
+msgstr ""
+
+msgid "Zoom out"
 msgstr ""
 
 msgid "[No reason]"
