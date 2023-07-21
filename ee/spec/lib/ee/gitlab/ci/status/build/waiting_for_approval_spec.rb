@@ -43,7 +43,7 @@ RSpec.describe Gitlab::Ci::Status::Build::WaitingForApproval, feature_category: 
     end
 
     it { expect(subject.illustration).to include(:image, :size) }
-    it { expect(subject.illustration[:title]).to eq('Waiting for approval') }
+    it { expect(subject.illustration[:title]).to eq('Waiting for approvals') }
 
     it do
       expect(subject.illustration[:content]).to include('This job deploys to the protected environment "production"')
@@ -63,10 +63,15 @@ RSpec.describe Gitlab::Ci::Status::Build::WaitingForApproval, feature_category: 
   end
 
   describe '#action_button_title' do
-    it { expect(subject.action_button_title).to eq('Go to environments page to approve or reject') }
+    it { expect(subject.action_button_title).to eq('View environment details page') }
   end
 
   describe '#action_path' do
+    before do
+      environment = create(:environment, name: 'production', project: project)
+      create(:deployment, :blocked, project: project, environment: environment, deployable: build)
+    end
+
     it { expect(subject.action_path).to include('environments') }
   end
 
