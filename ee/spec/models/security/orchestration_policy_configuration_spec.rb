@@ -406,6 +406,58 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
       end
     end
 
+    shared_examples "branch_exceptions" do
+      let(:valid_exceptions) do
+        [
+          %w[master develop],
+          [{ name: "master", full_path: "foobar" }],
+          ["master", { name: "develop", full_path: "foobar" }]
+        ]
+      end
+
+      specify do
+        valid_exceptions.each do |exceptions|
+          rule[:branch_exceptions] = exceptions
+
+          expect(errors).not_to include(match("branch_exceptions"))
+        end
+      end
+
+      context "with empty branch_exceptions" do
+        let(:empty_exceptions) do
+          [[], [""]]
+        end
+
+        specify do
+          empty_exceptions.each do |exceptions|
+            rule[:branch_exceptions] = exceptions
+
+            expect(errors).to include(match("property '/.*branch_exceptions' is invalid: error_type=minItems"))
+          end
+        end
+      end
+
+      context "with repeated items" do
+        specify do
+          rule[:branch_exceptions] = %w[master master]
+
+          expect(errors).to include(match(%r{property '/.*branch_exceptions' is invalid: error_type=uniqueItems}))
+        end
+      end
+
+      context "with invalid branch_exceptions" do
+        let(:invalid_exceptions) { [{}, { name: "master" }, { full_path: "foobar" }] }
+
+        specify do
+          invalid_exceptions.each do |exceptions|
+            rule[:branch_exceptions] = [exceptions]
+
+            expect(errors).to include(match(%r{property '/.*branch_exceptions/0' is missing required keys}))
+          end
+        end
+      end
+    end
+
     describe "scan execution policies" do
       let(:scan_execution_policy) { build(:scan_execution_policy, rules: rules, actions: actions) }
       let(:rules) { [rule].compact }
@@ -512,6 +564,12 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
           let(:rule) { { type: "pipeline", branch_type: "protected" } }
 
           specify { expect(errors).to be_empty }
+        end
+
+        context "with branch_exceptions" do
+          let(:rule) { {} }
+
+          it_behaves_like "branch_exceptions"
         end
       end
 
@@ -762,6 +820,8 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
               end
             end
           end
+
+          it_behaves_like "branch_exceptions"
         end
       end
 
