@@ -103,7 +103,7 @@ export default {
 <template>
   <div
     class="js-dashboard-project dashboard-card card border-0"
-    data-qa-selector="dashboard_project_card"
+    data-testid="dashboard-project-card"
   >
     <project-header
       :project="project"
