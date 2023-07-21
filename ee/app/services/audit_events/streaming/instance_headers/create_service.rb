@@ -5,8 +5,7 @@ module AuditEvents
     module InstanceHeaders
       class CreateService < BaseService
         def execute
-          _, response, _ = create_header(params[:destination], params[:key], params[:value])
-          response
+          create_header(params[:destination], params[:key], params[:value])
         end
       end
     end
