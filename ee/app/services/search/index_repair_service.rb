@@ -88,7 +88,12 @@ module Search
       return false unless blobs_missing?
       return true if project.index_status.blank?
 
-      project.index_status.last_commit != project.commit.sha
+      # Use root_ref to avoid when HEAD points to non-existent branch
+      # https://gitlab.com/gitlab-org/gitaly/-/issues/1446
+      last_commit_for_root_ref = project.commit(project.repository.root_ref)
+      return false if last_commit_for_root_ref.blank?
+
+      project.index_status.last_commit != last_commit_for_root_ref.sha
     end
 
     def client
