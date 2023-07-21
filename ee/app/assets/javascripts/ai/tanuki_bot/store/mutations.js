@@ -30,11 +30,11 @@ export default {
       });
     }
   },
-  [types.ADD_ERROR_MESSAGE](state) {
+  [types.ADD_ERROR_MESSAGE](state, msg) {
     state.messages.push({
       id: state.messages.length,
       role: MESSAGE_TYPES.TANUKI,
-      content: '',
+      content: msg ? msg.content || msg.errors.join(' ') : '',
       errors: [ERROR_MESSAGE],
     });
   },

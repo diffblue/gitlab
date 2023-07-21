@@ -51,10 +51,15 @@ describe('TanukiBot Store Mutations', () => {
 
   describe('ADD_ERROR_MESSAGE', () => {
     it('pushes an error message to the messages array with type: Tanuki', () => {
-      mutations[types.ADD_ERROR_MESSAGE](state);
+      mutations[types.ADD_ERROR_MESSAGE](state, { ...MOCK_TANUKI_MESSAGE, msg: 'test' });
 
       expect(state.messages).toStrictEqual([
-        { id: 0, role: MESSAGE_TYPES.TANUKI, errors: [ERROR_MESSAGE], content: '' },
+        {
+          id: 0,
+          role: MESSAGE_TYPES.TANUKI,
+          errors: [ERROR_MESSAGE],
+          content: 'Tanuki Bot message',
+        },
       ]);
     });
   });

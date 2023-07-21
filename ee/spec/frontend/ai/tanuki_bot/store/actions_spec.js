@@ -81,11 +81,21 @@ describe('TanukiBot Store Actions', () => {
 
     describe('with error', () => {
       it(`should dispatch the correct actions`, () => {
+        const contentObject = {
+          content: '',
+          source: 'foo-bar',
+        };
+        const stringifiedContent = JSON.stringify(contentObject);
         return testAction({
           action: actions.receiveTanukiBotMessage,
-          payload: MOCK_TANUKI_ERROR_RES.data,
+          payload: MOCK_TANUKI_ERROR_RES(stringifiedContent).data,
           state,
-          expectedActions: [{ type: 'tanukiBotMessageError' }],
+          expectedActions: [
+            {
+              payload: contentObject,
+              type: 'tanukiBotMessageError',
+            },
+          ],
         });
       });
     });
@@ -172,7 +182,22 @@ describe('TanukiBot Store Actions', () => {
           },
         ],
         state,
-        expectedActions: [{ type: 'tanukiBotMessageError' }, { type: 'tanukiBotMessageError' }],
+        expectedActions: [
+          {
+            type: 'tanukiBotMessageError',
+            payload: {
+              ...MOCK_USER_MESSAGE,
+              errors: ['foo'],
+            },
+          },
+          {
+            type: 'tanukiBotMessageError',
+            payload: {
+              ...MOCK_TANUKI_MESSAGE,
+              errors: ['foo'],
+            },
+          },
+        ],
       });
     });
   });
