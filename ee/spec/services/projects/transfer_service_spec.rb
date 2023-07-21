@@ -76,7 +76,7 @@ RSpec.describe Projects::TransferService do
     end
   end
 
-  describe 'security policy project' do
+  describe 'security policy project', feature_category: :security_policy_management do
     context 'when project has policy project' do
       let!(:configuration) { create(:security_orchestration_policy_configuration, project: project) }
 
@@ -97,19 +97,46 @@ RSpec.describe Projects::TransferService do
       let!(:sub_group_approval_rule) { create(:approval_project_rule, :scan_finding, :requires_approval, project: project, security_orchestration_policy_configuration: sub_group_configuration) }
 
       before do
-        sub_group.add_owner(user)
-
         allow_next_found_instance_of(Security::OrchestrationPolicyConfiguration) do |configuration|
           allow(configuration).to receive(:policy_configuration_valid?).and_return(true)
         end
       end
 
-      it 'deletes scan_finding_rules for inherited policy project' do
-        subject.execute(sub_group)
+      context 'when transferring the project within the same hierarchy' do
+        before do
+          sub_group.add_owner(user)
+        end
 
-        expect(project.approval_rules).to be_empty
-        expect { group_approval_rule.reload }.to raise_exception(ActiveRecord::RecordNotFound)
-        expect { sub_group_approval_rule.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+        it 'deletes scan_finding_rules for inherited policy project' do
+          subject.execute(sub_group)
+
+          expect(project.approval_rules).to be_empty
+          expect { group_approval_rule.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+          expect { sub_group_approval_rule.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+        end
+      end
+
+      context 'when transferring the project from one hierarchy to another' do
+        let(:project) { create(:project, :repository, group: sub_group) }
+
+        let_it_be(:other_group, reload: true) { create(:group) }
+
+        before do
+          other_group.add_owner(user)
+        end
+
+        it 'deletes scan_finding_rules for inherited policy project' do
+          subject.execute(other_group)
+
+          expect(project.approval_rules).to be_empty
+          expect { group_approval_rule.reload }.to raise_exception(ActiveRecord::RecordNotFound)
+        end
+
+        it 'triggers Security::ScanResultPolicies::SyncProjectWorker to sync new group policies' do
+          expect(Security::ScanResultPolicies::SyncProjectWorker).to receive(:perform_async).with(project.id)
+
+          subject.execute(other_group)
+        end
       end
     end
   end
