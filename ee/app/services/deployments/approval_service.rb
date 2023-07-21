@@ -47,9 +47,9 @@ module Deployments
         # Approvers might not have sufficient permission to execute the deployment job,
         # so we just unblock the deployment, which stays as manual job.
         # Executors can later run the manual job at their ideal timing.
-        deployment.unblock! if deployment.approved?
+        deployment.unblock! if deployment.approved? && ::Feature.disabled?(:track_manual_deployments, deployment.project) # rubocop:disable Style/IfUnlessModifier
       elsif deployment.pending_approval_count <= 0
-        deployment.unblock!
+        deployment.unblock! if ::Feature.disabled?(:track_manual_deployments, deployment.project)
         deployment.deployable.enqueue!
       end
     end

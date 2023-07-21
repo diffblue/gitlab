@@ -168,8 +168,18 @@ RSpec.describe Deployments::ApprovalService, feature_category: :continuous_deliv
           expect { subject }.to change { deployment.deployable.status }.from('manual').to('pending')
         end
 
-        it 'unblocks the deployment' do
-          expect { subject }.to change { deployment.status }.from('blocked').to('created')
+        it 'keeps the deployment blocked' do
+          expect { subject }.not_to change { deployment.status }
+        end
+
+        context 'when track_manual_deployments feature flag is disabled' do
+          before do
+            stub_feature_flags(track_manual_deployments: false)
+          end
+
+          it 'unblocks the deployment' do
+            expect { subject }.to change { deployment.status }.from('blocked').to('created')
+          end
         end
       end
 
@@ -214,8 +224,18 @@ RSpec.describe Deployments::ApprovalService, feature_category: :continuous_deliv
           expect(deployment.deployable).to be_manual
         end
 
-        it 'unblocks the deployment' do
-          expect { subject }.to change { deployment.status }.from('blocked').to('created')
+        it 'keeps the deployment blocked' do
+          expect { subject }.not_to change { deployment.status }
+        end
+
+        context 'when track_manual_deployments feature flag is disabled' do
+          before do
+            stub_feature_flags(track_manual_deployments: false)
+          end
+
+          it 'unblocks the deployment' do
+            expect { subject }.to change { deployment.status }.from('blocked').to('created')
+          end
         end
       end
 
