@@ -62,42 +62,6 @@ RSpec.describe ::Zoekt::SearchableRepository, :zoekt, feature_category: :global_
 
       expect(search_for('somenewsearchablefile.txt')).to match_array(['somenewsearchablefile.txt'])
     end
-
-    it 'raises an exception when indexing errors out' do
-      allow(::Gitlab::HTTP).to receive(:post).and_return({ 'Error' => 'command failed: exit status 128' })
-
-      expect { repository.update_zoekt_index! }.to raise_error(RuntimeError, 'command failed: exit status 128')
-    end
-
-    it 'raises an exception when response is not successful' do
-      response = {}
-      allow(response).to receive(:success?).and_return(false)
-
-      allow(::Gitlab::HTTP).to receive(:post).and_return(response)
-
-      expect { repository.update_zoekt_index! }.to raise_error(RuntimeError, /Request failed with/)
-    end
-
-    it 'sets http the correct timeout' do
-      response = {}
-      allow(response).to receive(:success?).and_return(true)
-
-      expect(::Gitlab::HTTP).to receive(:post)
-                                .with(anything, hash_including(timeout: described_class::INDEXING_TIMEOUT_S))
-                                .and_return(response)
-
-      repository.update_zoekt_index!
-    end
-  end
-
-  describe '.truncate_zoekt_index!' do
-    it 'removes all data from the Zoekt shard' do
-      expect(search_for('.')).not_to be_empty
-
-      Repository.truncate_zoekt_index!(::Zoekt::Shard.last)
-
-      expect(search_for('.')).to be_empty
-    end
   end
 
   describe '#async_update_zoekt_index' do

@@ -114,64 +114,11 @@ module Gitlab
         end
       end
 
-      def zoekt_search(query, num:, options:)
-        start = Time.current
-
-        body = {
-          Q: query,
-          Opts: {
-            TotalMaxMatchCount: num,
-            NumContextLines: 1
-          }
-        }
-
-        # Safety net because Zoekt will match all projects if you provide
-        # an empty array.
-        raise "Not possible to search no projects" if options[:project_ids] == []
-
-        body[:RepoIDs] = options[:project_ids] unless options[:project_ids] == :any
-
-        base_url = ::Zoekt::Shard.first.search_base_url
-
-        path = '/api/search'
-        request_body = body.to_json
-        response = ::Gitlab::HTTP.post(
-          URI.join(base_url, path),
-          headers: { "Content-Type" => "application/json" },
-          body: request_body,
-          allow_local_requests: true
-        )
-
-        unless response.success?
-          logger.error(message: "Zoekt search failed", status: response.code, response: response.body)
-        end
-
-        ::Gitlab::Json.parse(response.body, symbolize_names: true)
-      ensure
-        add_request_details(start_time: start, path: path, body: request_body)
-      end
-
-      def add_request_details(start_time:, path:, body:)
-        return unless ::Gitlab::SafeRequestStore.active?
-
-        duration = (Time.current - start_time)
-
-        ::Gitlab::Instrumentation::Zoekt.increment_request_count
-        ::Gitlab::Instrumentation::Zoekt.add_duration(duration)
-
-        ::Gitlab::Instrumentation::Zoekt.add_call_details(
-          duration: duration,
-          method: 'POST',
-          path: path,
-          body: body
-        )
-      end
-
       def zoekt_search_and_wrap(query, page: 1, per_page: 20, options: {}, preload_method: nil, &blk)
-        search_result = zoekt_search(
+        search_result = ::Gitlab::Search::Zoekt::Client.search(
           query,
           num: (per_page * page),
-          options: options
+          project_ids: options[:project_ids]
         )
 
         if search_result[:Error]
@@ -223,10 +170,6 @@ module Gitlab
         items.compact!
 
         [items, total_count]
-      end
-
-      def logger
-        @logger ||= ::Zoekt::Logger.build
       end
     end
   end
