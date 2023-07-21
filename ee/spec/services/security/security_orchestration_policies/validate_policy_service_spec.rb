@@ -475,6 +475,54 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
       end
     end
 
+    shared_examples 'checks if vulnerability_age is valid' do
+      let(:policy_type) { 'scan_result_policy' }
+
+      context 'when vulnerability_age is not provided' do
+        it { expect(result[:status]).to eq(:success) }
+      end
+
+      context 'when vulnerability_age is provided' do
+        let(:rule) do
+          {
+            branches: ['master'],
+            vulnerability_states: vulnerability_states,
+            vulnerability_age: {
+              value: 1,
+              interval: 'day',
+              operator: 'less_than'
+            }
+          }
+        end
+
+        where(:vulnerability_states, :status) do
+          nil                                       | :error
+          []                                        | :error
+          %w[new_needs_triage newly_detected]       | :error
+          %w[detected new_needs_triage]             | :success
+          %w[detected confirmed resolved dismissed] | :success
+        end
+
+        with_them do
+          it { expect(result[:status]).to eq(status) }
+
+          it 'returns a corresponding error message for error case' do
+            if status == :error
+              expect(result[:details]).to contain_exactly(/Vulnerability age requires previously existing/)
+            else
+              expect(result[:details]).to be_nil
+            end
+          end
+
+          it_behaves_like 'sets validation errors', field: :vulnerability_age, message: /Vulnerability age requires previously existing/ do
+            before do
+              skip if status != :error
+            end
+          end
+        end
+      end
+    end
+
     context 'when project or namespace is not provided' do
       let_it_be(:container) { nil }
 
@@ -482,6 +530,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
       it_behaves_like 'checks policy name'
       it_behaves_like 'checks if branches are provided in rule'
       it_behaves_like 'checks if timezone is valid'
+      it_behaves_like 'checks if vulnerability_age is valid'
     end
 
     context 'when project is provided' do
@@ -530,6 +579,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
         it_behaves_like 'checks if branches are defined in the project'
         it_behaves_like 'checks if required approvals exceed eligible approvers'
         it_behaves_like 'checks if timezone is valid'
+        it_behaves_like 'checks if vulnerability_age is valid'
         it_behaves_like 'checks if branches exist for the provided branch_type' do
           where(:policy_type, :branch_type, :status) do
             :scan_execution_policy | 'all' | :success
@@ -555,6 +605,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
         it_behaves_like 'checks if branches are defined in the project'
         it_behaves_like 'checks if required approvals exceed eligible approvers'
         it_behaves_like 'checks if timezone is valid'
+        it_behaves_like 'checks if vulnerability_age is valid'
         it_behaves_like 'checks if branches exist for the provided branch_type' do
           where(:policy_type, :branch_type, :status) do
             :scan_execution_policy | 'all' | :success
@@ -611,6 +662,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
       it_behaves_like 'checks if branches are provided in rule'
       it_behaves_like 'checks if required approvals exceed eligible approvers'
       it_behaves_like 'checks if timezone is valid'
+      it_behaves_like 'checks if vulnerability_age is valid'
     end
   end
 end
