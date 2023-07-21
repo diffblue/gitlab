@@ -40,18 +40,6 @@ RSpec.describe AuditEvents::Streaming::Headers::CreateService do
                                               .with(hash_including(audit_context)).and_call_original
         expect { response }.to change { AuditEvent.count }.from(0).to(1)
       end
-
-      context "with license feature external_audit_events" do
-        before do
-          stub_licensed_features(external_audit_events: true)
-        end
-
-        it 'sends correct event type in audit event stream' do
-          expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).with(event_type, nil, anything)
-
-          response
-        end
-      end
     end
   end
 end

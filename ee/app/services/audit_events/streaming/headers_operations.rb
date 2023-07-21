@@ -6,9 +6,14 @@ module AuditEvents
       def create_header(destination, key, value)
         header = destination.headers.new(key: key, value: value)
 
-        return true, ServiceResponse.success(payload: { header: header, errors: [] }), header if header.save
+        if header.save
+          audit_message = "Created custom HTTP header with key #{key}."
+          audit(action: :create, header: header, message: audit_message)
 
-        [false, ServiceResponse.error(message: Array(header.errors)), nil]
+          ServiceResponse.success(payload: { header: header, errors: [] })
+        else
+          ServiceResponse.error(message: Array(header.errors))
+        end
       end
 
       def update_header(header, key, value)

@@ -26,6 +26,18 @@ RSpec.shared_examples 'header creation successful' do
     expect(header.key).to eq('a_key')
     expect(header.value).to eq('a_value')
   end
+
+  context "with license feature external_audit_events" do
+    before do
+      stub_licensed_features(external_audit_events: true)
+    end
+
+    it 'sends correct event type in audit event stream' do
+      expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).with(event_type, nil, anything)
+
+      response
+    end
+  end
 end
 
 RSpec.shared_examples 'header updation' do
