@@ -1,0 +1,10 @@
+---
+name: DeleteWikisFromOriginalIndex
+version: '20230720010000'
+description: Delete the wikis from the main index
+group: group::global search
+milestone: 16.3
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/126538
+obsolete: false
+marked_obsolete_by_url:
+marked_obsolete_in_milestone:
