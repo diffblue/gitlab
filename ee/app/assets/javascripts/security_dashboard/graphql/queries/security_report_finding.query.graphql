@@ -106,6 +106,10 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
             vulnerableMethod
             vulnerableClass
           }
+          ... on VulnerabilityLocationDast {
+            hostname
+            path
+          }
         }
         links {
           name
