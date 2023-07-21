@@ -1,7 +1,7 @@
 import { GlIcon, GlTooltip } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import CodeQualityGutterIcon from 'ee/diffs/components/code_quality_gutter_icon.vue';
+import inlineFindingsGutterIcon from 'ee/diffs/components/inline_findings_gutter_icon.vue';
 import store from '~/mr_notes/stores';
 import { SEVERITY_CLASSES, SEVERITY_ICONS } from '~/ci/reports/codequality_report/constants';
 
@@ -19,7 +19,7 @@ jest.mock('~/mr_notes/stores', () => jest.requireActual('helpers/mocks/mr_notes/
 let wrapper;
 const findIcon = () => wrapper.findComponent(GlIcon);
 const findIcons = () => wrapper.findAllComponents(GlIcon);
-const findFirstIcon = () => wrapper.findComponent({ ref: 'firstCodeQualityIcon' });
+const findFirstIcon = () => wrapper.findComponent({ ref: 'firstInlineFindingsIcon' });
 
 let codequalityDiff;
 
@@ -33,10 +33,10 @@ const createComponent = (props = {}) => {
       $store: store,
     },
   };
-  wrapper = shallowMountExtended(CodeQualityGutterIcon, payload);
+  wrapper = shallowMountExtended(inlineFindingsGutterIcon, payload);
 };
 
-describe('EE CodeQualityGutterIcon', () => {
+describe('EE inlineFindingsGutterIcon', () => {
   const containsATooltip = (container) => container.findComponent(GlTooltip).exists();
 
   it.each`
@@ -82,9 +82,9 @@ describe('EE CodeQualityGutterIcon', () => {
         expect(wrapper.findComponent(GlTooltip).text()).toContain('3 Code Quality findings');
       });
 
-      it('emits showCodeQualityFindings event on click', () => {
+      it('emits showInlineFindings event on click', () => {
         wrapper.trigger('click');
-        expect(wrapper.emitted('showCodeQualityFindings')).toHaveLength(1);
+        expect(wrapper.emitted('showInlineFindings')).toHaveLength(1);
       });
 
       it('displays first icon with correct severity', () => {
@@ -104,7 +104,7 @@ describe('EE CodeQualityGutterIcon', () => {
       });
 
       it('does not display more count', () => {
-        expect(wrapper.findByTestId('codeQualityMoreCount').exists()).toBe(false);
+        expect(wrapper.findByTestId('inlineFindingsMoreCount').exists()).toBe(false);
       });
     });
 
@@ -127,9 +127,9 @@ describe('EE CodeQualityGutterIcon', () => {
         expect(wrapper.findComponent(GlTooltip).text()).toContain('3 Security findings');
       });
 
-      it('emits showCodeQualityFindings event on click', () => {
+      it('emits showInlineFindings event on click', () => {
         wrapper.trigger('click');
-        expect(wrapper.emitted('showCodeQualityFindings')).toHaveLength(1);
+        expect(wrapper.emitted('showInlineFindings')).toHaveLength(1);
       });
 
       it('displays first icon with correct severity', () => {
@@ -149,7 +149,7 @@ describe('EE CodeQualityGutterIcon', () => {
       });
 
       it('does not display more count', () => {
-        expect(wrapper.findByTestId('codeQualityMoreCount').exists()).toBe(false);
+        expect(wrapper.findByTestId('inlineFindingsMoreCount').exists()).toBe(false);
       });
     });
 
@@ -174,9 +174,9 @@ describe('EE CodeQualityGutterIcon', () => {
         );
       });
 
-      it('emits showCodeQualityFindings event on click', () => {
+      it('emits showInlineFindings event on click', () => {
         wrapper.trigger('click');
-        expect(wrapper.emitted('showCodeQualityFindings')).toHaveLength(1);
+        expect(wrapper.emitted('showInlineFindings')).toHaveLength(1);
       });
 
       it('displays first icon with correct severity', () => {
@@ -196,7 +196,7 @@ describe('EE CodeQualityGutterIcon', () => {
       });
 
       it('does not display more count', () => {
-        expect(wrapper.findByTestId('codeQualityMoreCount').exists()).toBe(false);
+        expect(wrapper.findByTestId('inlineFindingsMoreCount').exists()).toBe(false);
       });
     });
 
@@ -219,7 +219,7 @@ describe('EE CodeQualityGutterIcon', () => {
         expect(icons.at(0).props('name')).toBe('severity-low');
         expect(icons.at(1).props('name')).toBe('severity-medium');
         expect(icons.at(2).props('name')).toBe('severity-info');
-        expect(wrapper.findByTestId('codeQualityMoreCount').exists()).toBe(true);
+        expect(wrapper.findByTestId('inlineFindingsMoreCount').exists()).toBe(true);
       });
     });
 
@@ -234,7 +234,7 @@ describe('EE CodeQualityGutterIcon', () => {
         expect(wrapper.findComponent(GlTooltip).text()).toContain('1 Security finding');
       });
 
-      it('does not trigger "first-icon-hovered" class when firstCodeQualityIcon is hovered', async () => {
+      it('does not trigger "first-icon-hovered" class when firstInlineFindingsIcon is hovered', async () => {
         createComponent(singularCodeQualityFinding, true);
         findFirstIcon().vm.$emit('mouseenter');
         await nextTick();
@@ -243,7 +243,7 @@ describe('EE CodeQualityGutterIcon', () => {
     });
 
     describe('indicator icon', () => {
-      describe('with codeQualityExpanded prop false', () => {
+      describe('with inlineFindingsExpanded prop false', () => {
         beforeEach(() => {
           createComponent(singularCodeQualityFinding, true);
         });
@@ -253,9 +253,9 @@ describe('EE CodeQualityGutterIcon', () => {
           expect(wrapper.findComponent(GlIcon).props('name')).toBe('severity-low');
         });
       });
-      describe('with codeQualityExpanded prop true', () => {
+      describe('with inlineFindingsExpanded prop true', () => {
         beforeEach(() => {
-          createComponent({ ...singularCodeQualityFinding, codeQualityExpanded: true }, true);
+          createComponent({ ...singularCodeQualityFinding, inlineFindingsExpanded: true }, true);
         });
 
         it('shows collapse icon', () => {

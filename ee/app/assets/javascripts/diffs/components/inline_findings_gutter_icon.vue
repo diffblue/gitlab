@@ -6,7 +6,7 @@ import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { getSeverity } from '~/ci/reports/utils';
 import { SAST_SCALE_KEY, CODE_QUALITY_SCALE_KEY } from '~/ci/reports/constants';
 
-const codequalityCountThreshold = 3;
+const inlineFindingsCountThreshold = 3;
 
 export default {
   components: {
@@ -15,7 +15,7 @@ export default {
   },
   mixins: [glFeatureFlagsMixin()],
   props: {
-    codeQualityExpanded: {
+    inlineFindingsExpanded: {
       type: Boolean,
       required: false,
       default: false,
@@ -70,18 +70,18 @@ export default {
       return this.combinedFindings[0].line;
     },
     moreCount() {
-      return this.combinedFindings.length > codequalityCountThreshold
-        ? this.combinedFindings.length - codequalityCountThreshold
+      return this.combinedFindings.length > inlineFindingsCountThreshold
+        ? this.combinedFindings.length - inlineFindingsCountThreshold
         : 0;
     },
     findingsWithSeverity() {
       return getSeverity(this.combinedFindings);
     },
-    firstCodequalityItem() {
+    firstItem() {
       return { ...this.combinedFindings[0], filePath: this.filePath };
     },
-    codeQualitySubItems() {
-      return this.findingsWithSeverity.slice(1, codequalityCountThreshold);
+    inlineFindingsSubItems() {
+      return this.findingsWithSeverity.slice(1, inlineFindingsCountThreshold);
     },
   },
 };
@@ -91,17 +91,14 @@ export default {
   <div
     v-if="findingsWithSeverity.length"
     class="gl-z-index-1 gl-relative"
-    @click="$emit('showCodeQualityFindings')"
+    @click="$emit('showInlineFindings')"
   >
-    <div
-      v-if="!codeQualityExpanded"
-      class="codequality-severity-icon-container gl-display-inline-flex"
-    >
-      <span ref="codeQualityIcon" class="gl-z-index-200">
+    <div v-if="!inlineFindingsExpanded" class="gl-display-inline-flex">
+      <span ref="inlineFindingsIcon" class="gl-z-index-200">
         <gl-icon
-          :id="`codequality-${firstCodequalityItem.filePath}:${firstCodequalityItem.line}`"
-          ref="firstCodeQualityIcon"
-          :key="firstCodequalityItem.description"
+          :id="`inline-findings-${firstItem.filePath}:${firstItem.line}`"
+          ref="firstInlineFindingsIcon"
+          :key="firstItem.description"
           :size="16"
           :name="findingsWithSeverity[0].name"
           :class="findingsWithSeverity[0].class"
@@ -110,7 +107,7 @@ export default {
           @mouseleave="isHoveringFirstIcon = false"
         />
       </span>
-      <span class="code-quality-transition-container gl-display-inline-flex">
+      <span class="inline-findings-transition-container gl-display-inline-flex">
         <transition-group name="icons">
           <!--
             The TransitionGroup Component will only apply its classes when first-level children are added/removed to the DOM.
@@ -118,11 +115,11 @@ export default {
           -->
           <!-- eslint-disable vue/no-use-v-if-with-v-for -->
           <gl-icon
-            v-for="(item, index) in codeQualitySubItems"
+            v-for="(item, index) in inlineFindingsSubItems"
             v-if="isHoveringFirstIcon"
             :key="item.description"
-            :name="codeQualitySubItems[index].name"
-            :class="codeQualitySubItems[index].class"
+            :name="inlineFindingsSubItems[index].name"
+            :class="inlineFindingsSubItems[index].class"
             class="gl-hover-cursor-pointer gl-relative gl-top-1 inline-findings-severity-icon gl-absolute gl-left-0"
           />
           <!-- eslint-enable -->
@@ -131,25 +128,21 @@ export default {
           <div
             v-if="showMoreCount"
             class="more-count gl-px-2 gl-w-auto gl-absolute gl-left-0 gl-relative gl-top-1"
-            data-testid="codeQualityMoreCount"
+            data-testid="inlineFindingsMoreCount"
           >
             <p class="gl-mb-0 gl-display-block gl-w-3 more-count-copy">{{ moreCount }}</p>
           </div>
         </transition>
       </span>
     </div>
-    <button v-else class="diff-codequality-collapse gl-mx-n2">
+    <button v-else class="inline-findings-collapse gl-mx-n2">
       <gl-icon :size="12" name="collapse" />
     </button>
     <!-- Only show tooltip when indicator is not expanded
       a) to stay consistent with other collapsed icon on the same page
       b) because the tooltip would be misaligned hence the negative margin
      -->
-    <gl-tooltip
-      v-if="!$props.codeQualityExpanded"
-      data-testid="codeQualityTooltip"
-      :target="() => $refs.codeQualityIcon"
-    >
+    <gl-tooltip v-if="!$props.inlineFindingsExpanded" :target="() => $refs.inlineFindingsIcon">
       <span v-if="codequality.length" class="gl-display-block">{{
         codeQualityTooltipTextCollapsed
       }}</span>
