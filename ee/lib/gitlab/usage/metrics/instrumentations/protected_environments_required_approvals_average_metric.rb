@@ -8,7 +8,7 @@ module Gitlab
           operation :average, column: :required_approval_count
 
           relation do
-            ProtectedEnvironment.where(required_approval_count: 1..) # rubocop: disable CodeReuse/ActiveRecord
+            ProtectedEnvironment.where(required_approval_count: 1..)
           end
         end
       end

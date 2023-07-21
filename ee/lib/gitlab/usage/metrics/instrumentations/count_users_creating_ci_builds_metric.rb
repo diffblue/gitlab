@@ -38,7 +38,7 @@ module Gitlab
           ].freeze
 
           def relation
-            secure_type_all? ? super.where(name: SECURE_PRODUCT_TYPES) : super.where(name: secure_type) # rubocop: disable CodeReuse/ActiveRecord
+            secure_type_all? ? super.where(name: SECURE_PRODUCT_TYPES) : super.where(name: secure_type)
           end
 
           def secure_type

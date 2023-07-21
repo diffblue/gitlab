@@ -17,9 +17,7 @@ module Gitlab
           finish { ApprovalProjectRule.regular.maximum(:id) }
 
           def to_sql
-            # rubocop: disable CodeReuse/ActiveRecord
             ApplicationRecord.select(Arel.star.count).from("(#{super}) subquery").to_sql
-            # rubocop: enable CodeReuse/ActiveRecord
           end
 
           def value
@@ -29,13 +27,11 @@ module Gitlab
           private
 
           def relation
-            # rubocop: disable CodeReuse/ActiveRecord
             ApprovalProjectRule
               .regular
               .joins('INNER JOIN approval_project_rules_users ON approval_project_rules_users.approval_project_rule_id = approval_project_rules.id')
               .group(:id)
               .having(having_clause)
-            # rubocop: enable CodeReuse/ActiveRecord
           end
 
           def having_clause

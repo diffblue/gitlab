@@ -10,7 +10,7 @@ module Gitlab
           start { MergeRequest.minimum(:id) }
           finish { MergeRequest.maximum(:id) }
 
-          relation { MergeRequest.merged.joins(:approval_rules) } # rubocop: disable CodeReuse/ActiveRecord
+          relation { MergeRequest.merged.joins(:approval_rules) }
 
           cache_start_and_finish_as :merge_request
         end
