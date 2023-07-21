@@ -46,13 +46,15 @@ export const GENERATE_MOCK_TANUKI_RES = (body = JSON.stringify(MOCK_TANUKI_MESSA
 
 export const MOCK_TANUKI_SUCCESS_RES = GENERATE_MOCK_TANUKI_RES();
 
-export const MOCK_TANUKI_ERROR_RES = {
-  data: {
-    aiCompletionResponse: {
-      responseBody: null,
-      errors: ['error'],
+export const MOCK_TANUKI_ERROR_RES = (body = JSON.stringify(MOCK_TANUKI_MESSAGE)) => {
+  return {
+    data: {
+      aiCompletionResponse: {
+        responseBody: body,
+        errors: ['error'],
+      },
     },
-  },
+  };
 };
 
 export const MOCK_CHAT_CACHED_MESSAGES_RES = {

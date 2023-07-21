@@ -20,30 +20,31 @@ export const receiveMutationResponse = ({ commit, dispatch }, { data, message })
 export const receiveTanukiBotMessage = async ({ commit, dispatch }, data) => {
   const { errors = [], responseBody } = data.aiCompletionResponse || {};
 
+  let parsedResponse;
+  try {
+    parsedResponse = JSON.parse(responseBody);
+  } catch {
+    parsedResponse = { content: responseBody };
+  }
+
   if (errors?.length) {
-    dispatch('tanukiBotMessageError');
+    dispatch('tanukiBotMessageError', parsedResponse);
   } else if (responseBody) {
     commit(types.SET_LOADING, false);
 
-    let parsedResponse;
-    try {
-      parsedResponse = JSON.parse(responseBody);
-    } catch {
-      parsedResponse = { content: responseBody };
-    }
     commit(types.ADD_TANUKI_MESSAGE, parsedResponse);
   }
 };
 
-export const tanukiBotMessageError = ({ commit }) => {
+export const tanukiBotMessageError = ({ commit }, data) => {
   commit(types.SET_LOADING, false);
-  commit(types.ADD_ERROR_MESSAGE);
+  commit(types.ADD_ERROR_MESSAGE, data);
 };
 
 export const setMessages = ({ commit, dispatch }, messages) => {
   messages.forEach((msg) => {
     if (msg.errors?.length) {
-      dispatch('tanukiBotMessageError');
+      dispatch('tanukiBotMessageError', msg);
     } else {
       switch (msg.role.toLowerCase()) {
         case MESSAGE_TYPES.USER:
