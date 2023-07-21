@@ -81,6 +81,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
           'group_runners_enabled' => '',
           'default_git_depth' => 'ci_',
           'forward_deployment_enabled' => 'ci_',
+          'forward_deployment_rollback_allowed' => 'ci_',
           'keep_latest_artifact' => '',
           'restrict_user_defined_variables' => '',
           'runner_token_expiration_interval' => '',

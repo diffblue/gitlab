@@ -4703,6 +4703,12 @@ msgstr ""
 msgid "Allow group owners to manage LDAP-related settings"
 msgstr ""
 
+msgid "Allow job retries even if the deployment job is outdated."
+msgstr ""
+
+msgid "Allow job retries for rollback deployments"
+msgstr ""
+
 msgid "Allow new users to create top-level groups"
 msgstr ""
 
