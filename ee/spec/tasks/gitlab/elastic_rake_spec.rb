@@ -153,20 +153,26 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
   end
 
   context "with elasticsearch_indexing enabled" do
-    subject { run_rake_task('gitlab:elastic:index') }
-
     before do
       stub_ee_application_setting(elasticsearch_indexing: true)
     end
 
     describe 'index' do
+      subject { run_rake_task('gitlab:elastic:index') }
+
+      context 'when on GitLab.com', :saas do
+        it 'raises an error' do
+          expect { subject }.to raise_error('This task cannot be run on GitLab.com')
+        end
+      end
+
       it 'calls all indexing tasks in order' do
         expect(Rake::Task['gitlab:elastic:recreate_index']).to receive(:invoke).ordered
         expect(Rake::Task['gitlab:elastic:clear_index_status']).to receive(:invoke).ordered
+        expect(Rake::Task['gitlab:elastic:index_group_entities']).to receive(:invoke).ordered
         expect(Rake::Task['gitlab:elastic:index_projects']).to receive(:invoke).ordered
         expect(Rake::Task['gitlab:elastic:index_snippets']).to receive(:invoke).ordered
         expect(Rake::Task['gitlab:elastic:index_users']).to receive(:invoke).ordered
-        expect(Rake::Task['gitlab:elastic:index_epics']).to receive(:invoke).ordered
 
         subject
       end
@@ -175,6 +181,23 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
         stub_ee_application_setting(elasticsearch_pause_indexing: true)
 
         expect { subject }.to output(/WARNING: `elasticsearch_pause_indexing` is enabled/).to_stdout
+      end
+    end
+
+    describe 'index_group_entities' do
+      subject { run_rake_task('gitlab:elastic:index_group_entities') }
+
+      context 'when on GitLab.com', :saas do
+        it 'raises an error' do
+          expect { subject }.to raise_error('This task cannot be run on GitLab.com')
+        end
+      end
+
+      it 'calls all indexing tasks in order for the group entities' do
+        expect(Rake::Task['gitlab:elastic:index_epics']).to receive(:invoke).ordered
+        expect(Rake::Task['gitlab:elastic:index_group_wikis']).to receive(:invoke).ordered
+
+        subject
       end
     end
 
@@ -239,6 +262,12 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
     describe 'index_epics' do
       let_it_be(:epic) { create(:epic) }
 
+      context 'when on GitLab.com', :saas do
+        it 'raises an error' do
+          expect { run_rake_task 'gitlab:elastic:index_epics' }.to raise_error('This task cannot be run on GitLab.com')
+        end
+      end
+
       it 'calls maintain_indexed_group_associations for groups' do
         expect(Elastic::ProcessInitialBookkeepingService).to receive(:maintain_indexed_group_associations!)
           .with(epic.group)
@@ -263,6 +292,62 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
             .with(group1, group3)
 
           run_rake_task 'gitlab:elastic:index_epics'
+        end
+      end
+    end
+
+    describe 'index_group_wikis' do
+      let(:group1) { create(:group) }
+      let(:group2) { create(:group) }
+      let(:group3) { create(:group) }
+      let(:subgrp) { create(:group, parent: group1) }
+      let(:wiki1) { create(:group_wiki, group: group1) }
+      let(:wiki2) { create(:group_wiki, group: group2) }
+      let(:wiki3) { create(:group_wiki, group: group3) }
+      let(:wiki4) { create(:group_wiki, group: subgrp) }
+
+      context 'when on GitLab.com', :saas do
+        it 'raises an error' do
+          expect { run_rake_task('gitlab:elastic:index') }.to raise_error('This task cannot be run on GitLab.com')
+        end
+      end
+
+      context 'with limited indexing disabled' do
+        before do
+          [wiki1, wiki2, wiki3, wiki4].each do |w|
+            w.create_page('index_page', 'Bla bla term')
+            w.index_wiki_blobs
+          end
+        end
+
+        it 'calls ElasticWikiIndexerWorker for groups' do
+          expect(ElasticWikiIndexerWorker).to receive(:perform_async).with(group1.id, group1.class.name, force: true)
+          expect(ElasticWikiIndexerWorker).to receive(:perform_async).with(group2.id, group2.class.name, force: true)
+          expect(ElasticWikiIndexerWorker).to receive(:perform_async).with(group3.id, group3.class.name, force: true)
+          expect(ElasticWikiIndexerWorker).to receive(:perform_async).with(subgrp.id, subgrp.class.name, force: true)
+          run_rake_task 'gitlab:elastic:index_group_wikis'
+        end
+      end
+
+      context 'with limited indexing enabled' do
+        before do
+          create(:elasticsearch_indexed_namespace, namespace: group1)
+          create(:elasticsearch_indexed_namespace, namespace: group3)
+
+          stub_ee_application_setting(elasticsearch_limit_indexing: true)
+
+          [wiki1, wiki2, wiki3, wiki4].each do |w|
+            w.create_page('index_page', 'Bla bla term')
+            w.index_wiki_blobs
+          end
+        end
+
+        it 'calls ElasticWikiIndexerWorker for groups which has elasticsearch enabled' do
+          expect(ElasticWikiIndexerWorker).to receive(:perform_async).with(group1.id, group1.class.name, force: true)
+          expect(ElasticWikiIndexerWorker).to receive(:perform_async).with(group3.id, group3.class.name, force: true)
+          expect(ElasticWikiIndexerWorker).to receive(:perform_async).with(subgrp.id, subgrp.class.name, force: true)
+          expect(ElasticWikiIndexerWorker).not_to receive(:perform_async).with group2.id, group2.class.name, force: true
+          run_rake_task 'gitlab:elastic:index_group_wikis'
         end
       end
     end
@@ -423,10 +508,8 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
     let_it_be(:project_no_repository) { create(:project) }
     let_it_be(:project_empty_repository) { create(:project, :empty_repo) }
 
-    context 'when on GitLab.com' do
+    context 'when on GitLab.com', :saas do
       it 'raises an error' do
-        allow(Gitlab).to receive(:com?).and_return(true)
-
         expect { subject }.to raise_error('This task cannot be run on GitLab.com')
       end
     end
@@ -481,10 +564,8 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
     let_it_be_with_reload(:project_no_repository) { create(:project) }
     let_it_be_with_reload(:project_empty_repository) { create(:project, :empty_repo) }
 
-    context 'when on GitLab.com' do
+    context 'when on GitLab.com', :saas do
       it 'raises an error' do
-        allow(Gitlab).to receive(:com?).and_return(true)
-
         expect { subject }.to raise_error('This task cannot be run on GitLab.com')
       end
     end
