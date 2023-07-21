@@ -36,11 +36,13 @@ module Gitlab
         return unless display?
 
         _(
-          'Per your subscription agreement with GitLab, you must report your license usage data on a monthly basis. ' \
-          'GitLab uses this data to keep your subscription up to date. To report your license usage data, export ' \
-          'your license usage file and email it to %{renewal_service_email}. If you need an updated license, ' \
-          'GitLab will send the license to the email address registered in the %{customers_dot}, and you can ' \
-          'upload this license to your instance.'
+          'For the GitLab Team to keep your subscription data up to date, this is a ' \
+          'reminder to report your license usage on a monthly basis, or at the ' \
+          'cadence set in your agreement with GitLab. This allows us to simplify ' \
+          'the billing process for overages and renewals. To report your usage data, ' \
+          'export your license usage file and email it to %{renewal_service_email}. ' \
+          'If you need an updated license, GitLab will send the license to the email ' \
+          'address registered in the %{customers_dot}, and you can upload this license to your instance.'
         ).html_safe % { renewal_service_email: renewal_service_email, customers_dot: customers_dot_url }
       end
 
