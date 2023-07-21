@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/browser';
 import { mount, shallowMount } from '@vue/test-utils';
-import { GlBadge } from '@gitlab/ui';
+import { GlBadge, GlLink } from '@gitlab/ui';
 import { DATA_VIZ_BLUE_500 } from '@gitlab/ui/dist/tokens/js/tokens';
 import MockAdapter from 'axios-mock-adapter';
 import last180DaysData from 'test_fixtures/api/dora/metrics/daily_deployment_frequency_for_last_180_days.json';
@@ -104,6 +104,8 @@ describe('deployment_frequency_charts.vue', () => {
   const findCiCdAnalyticsCharts = () => wrapper.findComponent(CiCdAnalyticsCharts);
   const findDataForecastToggle = () => wrapper.findByTestId('data-forecast-toggle');
   const findExperimentBadge = () => wrapper.findComponent(GlBadge);
+  const findForecastFeedbackAlert = () => wrapper.findByTestId('forecast-feedback');
+  const findForecastFeedbackLink = () => findForecastFeedbackAlert().findComponent(GlLink);
   const getChartData = () => findCiCdAnalyticsCharts().props().charts;
 
   const selectChartByIndex = async (id) => {
@@ -333,6 +335,10 @@ describe('deployment_frequency_charts.vue', () => {
       expect(dataSeries.data).toEqual(result);
     });
 
+    it('does not display info alert with link to forecast feedback issue by default', () => {
+      expect(findForecastFeedbackAlert().exists()).toBe(false);
+    });
+
     describe('Show forecast toggle', () => {
       afterEach(() => {
         confirmAction.mockReset();
@@ -389,6 +395,18 @@ describe('deployment_frequency_charts.vue', () => {
           expect(forecastSeries.areaStyle).toEqual({ opacity: 0 });
         },
       );
+
+      it('displays info alert with link to forecast feature feedback issue', async () => {
+        await toggleDataForecast();
+
+        const feedbackText =
+          'To help us improve the Show forecast feature, please share feedback about your experience in this issue.';
+        const feedbackLink = 'https://gitlab.com/gitlab-org/gitlab/-/issues/416833';
+
+        expect(findForecastFeedbackAlert().exists()).toBe(true);
+        expect(findForecastFeedbackAlert().text()).toBe(feedbackText);
+        expect(findForecastFeedbackLink().attributes('href')).toBe(feedbackLink);
+      });
     });
   });
 });
