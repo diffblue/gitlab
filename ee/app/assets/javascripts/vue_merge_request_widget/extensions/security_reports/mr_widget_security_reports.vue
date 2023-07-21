@@ -60,10 +60,7 @@ export default {
       isCreatingMergeRequest: false,
       hasAtLeastOneReportWithMaxNewVulnerabilities: false,
       modalData: null,
-      vulnerabilities: {
-        collapsed: null,
-        expanded: null,
-      },
+      collapsedData: {},
     };
   },
 
@@ -100,6 +97,7 @@ export default {
         }
 
         const issue = finding.issueLinks?.nodes.find((x) => x.linkType === 'CREATED')?.issue;
+
         if (issue) {
           this.$set(this.modalData.vulnerability, 'hasIssue', true);
 
@@ -125,6 +123,12 @@ export default {
   },
 
   computed: {
+    reports() {
+      return this.endpoints
+        .map(([, reportType]) => this.collapsedData[reportType])
+        .filter((r) => r);
+    },
+
     helpPopovers() {
       return {
         SAST: {
@@ -172,21 +176,17 @@ export default {
     },
 
     isCollapsible() {
-      if (!this.vulnerabilities.collapsed) {
-        return false;
-      }
-
       return this.vulnerabilitiesCount > 0;
     },
 
     vulnerabilitiesCount() {
-      return this.vulnerabilities.collapsed.reduce((counter, current) => {
+      return this.reports.reduce((counter, current) => {
         return counter + current.numberOfNewFindings + (current.fixed?.length || 0);
       }, 0);
     },
 
     highlights() {
-      if (!this.vulnerabilities.collapsed) {
+      if (!this.reports.length) {
         return {};
       }
 
@@ -202,19 +202,13 @@ export default {
       //  { scanner: "DAST", added: [{ id: 15, severity: 'high' }] },
       //  ...
       // ]
-      this.vulnerabilities.collapsed.forEach((report) =>
-        this.highlightsFromReport(report, highlights),
-      );
+      this.reports.forEach((report) => this.highlightsFromReport(report, highlights));
 
       return highlights;
     },
 
     totalNewVulnerabilities() {
-      if (!this.vulnerabilities.collapsed) {
-        return 0;
-      }
-
-      return this.vulnerabilities.collapsed.reduce((counter, current) => {
+      return this.reports.reduce((counter, current) => {
         return counter + (current.numberOfNewFindings || 0);
       }, 0);
     },
@@ -308,26 +302,30 @@ export default {
               this.hasAtLeastOneReportWithMaxNewVulnerabilities = true;
             }
 
+            const report = {
+              ...props,
+              ...data,
+              added,
+              fixed,
+              findings: [...added, ...fixed],
+              numberOfNewFindings: added.length,
+              numberOfFixedFindings: fixed.length,
+              qaSelector: this.$options.qaSelectors[reportType],
+            };
+
+            this.$set(this.collapsedData, reportType, report);
+
             return {
               headers,
               status,
-              data: {
-                ...props,
-                ...data,
-                added,
-                fixed,
-                findings: [...added, ...fixed],
-                numberOfNewFindings: added.length,
-                numberOfFixedFindings: fixed.length,
-                qaSelector: this.$options.qaSelectors[reportType],
-              },
+              data: report,
             };
           })
-          .catch(({ headers = {}, status = 500 }) => ({
-            headers,
-            status,
-            data: { ...props, error: true },
-          }));
+          .catch(({ headers = {}, status = 500 }) => {
+            const report = { ...props, error: true };
+            this.$set(this.collapsedData, reportType, report);
+            return { headers, status, data: report };
+          });
       });
     },
 
@@ -396,11 +394,11 @@ export default {
         })
         .then(({ data }) => {
           const url = getCreatedIssueForVulnerability(data).issue_url;
-
           visitUrl(url);
         })
         .catch(() => {
           this.isCreatingIssue = false;
+
           this.modalData.error = s__(
             'ciReport|There was an error creating the issue. Please try again.',
           );
@@ -609,7 +607,6 @@ export default {
 <template>
   <mr-widget
     v-if="shouldRenderMrWidget"
-    v-model="vulnerabilities"
     :error-text="$options.i18n.error"
     :fetch-collapsed-data="fetchCollapsedData"
     :status-icon-name="statusIconName"
@@ -662,7 +659,7 @@ export default {
         :project-full-path="mr.sourceProjectFullPath"
       />
       <mr-widget-row
-        v-for="report in vulnerabilities.collapsed"
+        v-for="report in reports"
         :key="report.reportType"
         :widget-name="$options.name"
         :level="2"
