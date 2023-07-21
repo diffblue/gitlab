@@ -17,7 +17,6 @@ describe('WorkItemProgress component', () => {
   let wrapper;
 
   const workItemId = 'gid://gitlab/WorkItem/1';
-  const workItemType = 'Objective';
 
   const findForm = () => wrapper.findComponent(GlForm);
   const findInput = () => wrapper.findComponent(GlFormInput);
@@ -27,6 +26,8 @@ describe('WorkItemProgress component', () => {
     canUpdate = false,
     hasOkrsFeature = true,
     okrsMvc = true,
+    okrAutomaticRollups = false,
+    workItemType = 'Objective',
     isEditing = false,
     progress,
     mutationHandler = jest.fn().mockResolvedValue(updateWorkItemMutationResponse),
@@ -43,6 +44,7 @@ describe('WorkItemProgress component', () => {
         hasOkrsFeature,
         glFeatures: {
           okrsMvc,
+          okrAutomaticRollups,
         },
       },
     });
@@ -102,6 +104,22 @@ describe('WorkItemProgress component', () => {
           createComponent({ canUpdate });
 
           expect(findInput().attributes('readonly')).toBe(value);
+        });
+      });
+    });
+
+    describe('showProgressTooltip', () => {
+      describe.each`
+        description                                                     | okrAutomaticRollups | workItemType    | value
+        ${'when okrAutomaticRollups enabled and type is an objective'}  | ${true}             | ${'Objective'}  | ${true}
+        ${'when okrAutomaticRollups enabled and type is a key_result'}  | ${true}             | ${'Key Result'} | ${false}
+        ${'when okrAutomaticRollups disabled and type is an objective'} | ${false}            | ${'Objective'}  | ${false}
+        ${'when okrAutomaticRollups disabled and type is a key_result'} | ${false}            | ${'Key Result'} | ${false}
+      `('$description', ({ okrAutomaticRollups, workItemType, value }) => {
+        it(`returns ${value}`, () => {
+          createComponent({ okrAutomaticRollups, workItemType });
+
+          expect(wrapper.findByTestId('question-o-icon').exists()).toBe(value);
         });
       });
     });
