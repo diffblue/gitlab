@@ -1,8 +1,0 @@
----
-name: code_suggestions_alert
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/121282
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/412452
-milestone: '16.1'
-type: development
-group: group::activation
-default_enabled: false
