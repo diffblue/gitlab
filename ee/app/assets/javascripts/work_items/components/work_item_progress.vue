@@ -1,5 +1,5 @@
 <script>
-import { GlForm, GlFormGroup, GlFormInput, GlTooltipDirective } from '@gitlab/ui';
+import { GlForm, GlFormGroup, GlFormInput, GlIcon, GlPopover } from '@gitlab/ui';
 import { isNumber } from 'lodash';
 import * as Sentry from '@sentry/browser';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
@@ -13,9 +13,6 @@ import {
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 
 export default {
-  directives: {
-    GlTooltip: GlTooltipDirective,
-  },
   inputId: 'progress-widget-input',
   minValue: 0,
   maxValue: 100,
@@ -23,9 +20,17 @@ export default {
     GlForm,
     GlFormGroup,
     GlFormInput,
+    GlIcon,
+    GlPopover,
   },
   mixins: [Tracking.mixin(), glFeatureFlagMixin()],
   inject: ['hasOkrsFeature'],
+  i18n: {
+    progressPopoverTitle: __('How is progress calculated?'),
+    progressPopoverContent: __(
+      'This field is auto-calculated based on the Progress score of its direct children. You can overwrite this value but it will be replaced by the auto-calculation anytime the Progress score of its direct children are updated.',
+    ),
+  },
   props: {
     canUpdate: {
       type: Boolean,
@@ -128,12 +133,8 @@ export default {
           Sentry.captureException(error);
         });
     },
-    getProgressTooltip() {
-      return this.glFeatures.okrAutomaticRollups && this.workItemType === __('Objective')
-        ? __(
-            'This field is auto-calculated based on the Progress score of its direct children. You can overwrite this value but it will be replaced by the auto-calculation anytime the Progress score of its direct children is updated.',
-          )
-        : '';
+    showProgressPopover() {
+      return this.glFeatures.okrAutomaticRollups && this.workItemType === __('Objective');
     },
   },
 };
@@ -143,18 +144,32 @@ export default {
   <gl-form v-if="isOkrsEnabled" data-testid="work-item-progress" @submit.prevent="blurInput">
     <gl-form-group
       class="gl-align-items-center"
-      :label="__('Progress')"
       label-for="progress-widget-input"
       label-class="gl-pb-0! gl-overflow-wrap-break work-item-field-label"
       label-cols="3"
       label-cols-lg="2"
     >
+      <template #label>
+        {{ __('Progress') }}
+        <gl-icon
+          v-if="showProgressPopover()"
+          id="okr-progress-popover"
+          class="gl-text-blue-600"
+          name="question-o"
+        />
+        <gl-popover
+          triggers="hover"
+          target="okr-progress-popover"
+          placement="right"
+          :title="$options.i18n.progressPopoverTitle"
+          :content="$options.i18n.progressPopoverContent"
+        />
+      </template>
+
       <gl-form-input
         id="progress-widget-input"
         ref="input"
         v-model="localProgress"
-        v-gl-tooltip
-        :title="getProgressTooltip"
         :min="$options.minValue"
         :max="$options.maxValue"
         data-testid="work-item-progress-input"
