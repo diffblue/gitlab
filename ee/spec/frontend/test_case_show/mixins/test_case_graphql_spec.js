@@ -1,10 +1,12 @@
 import { shallowMount } from '@vue/test-utils';
 
 import TestCaseShowRoot from 'ee/test_case_show/components/test_case_show_root.vue';
+import IssuableShow from '~/vue_shared/issuable/show/components/issuable_show_root.vue';
 import markTestCaseTodoDone from 'ee/test_case_show/queries/mark_test_case_todo_done.mutation.graphql';
 import moveTestCase from 'ee/test_case_show/queries/move_test_case.mutation.graphql';
 import updateTestCase from 'ee/test_case_show/queries/update_test_case.mutation.graphql';
 import { mockCurrentUserTodo } from 'jest/vue_shared/issuable/list/mock_data';
+import { stubComponent } from 'helpers/stub_component';
 
 import Api from '~/api';
 import { createAlert } from '~/alert';
@@ -30,6 +32,9 @@ const createComponent = ({ testCase, testCaseQueryLoading = false } = {}) =>
         },
         mutate: jest.fn(),
       },
+    },
+    stubs: {
+      IssuableShow: stubComponent(IssuableShow),
     },
     data() {
       return {
