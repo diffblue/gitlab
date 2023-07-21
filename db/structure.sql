@@ -31671,8 +31671,6 @@ CREATE INDEX index_issues_on_duplicated_to_id ON issues USING btree (duplicated_
 
 CREATE INDEX index_issues_on_id_and_weight ON issues USING btree (id, weight);
 
-CREATE INDEX index_issues_on_incident_issue_type ON issues USING btree (issue_type) WHERE (issue_type = 1);
-
 CREATE INDEX index_issues_on_last_edited_by_id ON issues USING btree (last_edited_by_id);
 
 CREATE INDEX index_issues_on_milestone_id ON issues USING btree (milestone_id);
@@ -31684,8 +31682,6 @@ CREATE INDEX index_issues_on_namespace_id ON issues USING btree (namespace_id);
 CREATE INDEX index_issues_on_project_health_status_asc_work_item_type ON issues USING btree (project_id, health_status, id DESC, state_id, work_item_type_id);
 
 CREATE INDEX index_issues_on_project_health_status_desc_work_item_type ON issues USING btree (project_id, health_status DESC NULLS LAST, id DESC, state_id, work_item_type_id);
-
-CREATE INDEX index_issues_on_project_id_and_created_at_issue_type_incident ON issues USING btree (project_id, created_at) WHERE (issue_type = 1);
 
 CREATE UNIQUE INDEX index_issues_on_project_id_and_external_key ON issues USING btree (project_id, external_key) WHERE (external_key IS NOT NULL);
 
@@ -32224,12 +32220,6 @@ CREATE INDEX index_on_identities_lower_extern_uid_and_provider ON identities USI
 CREATE UNIQUE INDEX index_on_instance_statistics_recorded_at_and_identifier ON analytics_usage_trends_measurements USING btree (identifier, recorded_at);
 
 CREATE INDEX index_on_issue_assignment_events_issue_id_action_created_at_id ON issue_assignment_events USING btree (issue_id, action, created_at, id);
-
-CREATE INDEX index_on_issues_closed_incidents_by_project_id_and_closed_at ON issues USING btree (project_id, closed_at) WHERE ((issue_type = 1) AND (state_id = 2));
-
-CREATE INDEX index_on_issues_health_status_asc_order ON issues USING btree (project_id, health_status, id DESC, state_id, issue_type);
-
-CREATE INDEX index_on_issues_health_status_desc_order ON issues USING btree (project_id, health_status DESC NULLS LAST, id DESC, state_id, issue_type);
 
 CREATE INDEX index_on_label_links_all_columns ON label_links USING btree (target_id, label_id, target_type);
 
