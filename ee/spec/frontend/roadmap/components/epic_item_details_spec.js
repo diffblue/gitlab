@@ -49,7 +49,10 @@ describe('EpicItemDetails', () => {
   const getChildEpicsCount = () => wrapper.findByTestId('child-epics-count');
   const getChildEpicsCountTooltip = () => wrapper.findByTestId('child-epics-count-tooltip');
   const getBlockedIcon = () => wrapper.findByTestId('blocked-icon');
-  const getLabels = () => wrapper.findByTestId('epic-labels');
+  const findLabelsContainer = () => wrapper.findByTestId('epic-labels');
+  const findAllLabels = () => wrapper.findAllComponents(GlLabel);
+  const findRegularLabel = () => findAllLabels().at(0);
+  const findScopedLabel = () => findAllLabels().at(1);
 
   const getExpandButtonData = () => ({
     icon: wrapper.findComponent(GlButton).attributes('icon'),
@@ -303,23 +306,58 @@ describe('EpicItemDetails', () => {
   });
 
   describe('epic labels', () => {
+    const mockLabels = mockFormattedEpic.labels.nodes;
+    const mockRegularLabel = mockLabels[0];
+    const mockScopedLabel = mockLabels[1];
+
     beforeEach(() => {
       createWrapper();
     });
 
     it('do not display by default', () => {
-      expect(getLabels().exists()).toBe(false);
+      expect(findLabelsContainer().exists()).toBe(false);
     });
 
-    it('display when isShowingLabels setting is set to true', async () => {
-      expect(getLabels().exists()).toBe(false);
+    it('display labels with correct props when isShowingLabels setting is set to true', async () => {
+      expect(findLabelsContainer().exists()).toBe(false);
 
       store.dispatch('toggleLabels');
+      store.state.allowScopedLabels = true;
 
       await nextTick();
 
-      expect(getLabels().exists()).toBe(true);
+      expect(findLabelsContainer().exists()).toBe(true);
+
+      expect(findRegularLabel().props()).toMatchObject({
+        title: mockRegularLabel.title,
+        backgroundColor: mockRegularLabel.color,
+        description: mockRegularLabel.description,
+        scoped: false,
+      });
+
+      expect(findScopedLabel().props()).toMatchObject({
+        title: mockScopedLabel.title,
+        backgroundColor: mockScopedLabel.color,
+        description: mockScopedLabel.description,
+        scoped: true,
+      });
     });
+
+    it.each`
+      assertionName       | allowScopedLabels | scopedLabel
+      ${'do not display'} | ${false}          | ${false}
+      ${'display'}        | ${true}           | ${true}
+    `(
+      '$assertionName scoped labels when allowScopedLabels is $allowScopedLabels',
+      async ({ allowScopedLabels, scopedLabel }) => {
+        store.dispatch('toggleLabels');
+        store.state.allowScopedLabels = allowScopedLabels;
+
+        await nextTick();
+
+        expect(findScopedLabel().props('scoped')).toBe(scopedLabel);
+      },
+    );
 
     describe('click on label', () => {
       beforeEach(() => {

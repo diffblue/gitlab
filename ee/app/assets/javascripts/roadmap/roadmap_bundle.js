@@ -123,6 +123,7 @@ export default () => {
             ? true
             : parseBoolean(rawFilterParams.show_milestones),
         milestonesType: rawFilterParams.milestones_type || MILESTONES_ALL,
+        allowScopedLabels: dataset.allowScopedLabels,
         isShowingLabels: parseBoolean(rawFilterParams.show_labels),
       };
     },
@@ -146,6 +147,7 @@ export default () => {
         progressTracking: this.progressTracking,
         isShowingMilestones: this.isShowingMilestones,
         milestonesType: this.milestonesType,
+        allowScopedLabels: this.allowScopedLabels,
         isShowingLabels: this.isShowingLabels,
       });
     },

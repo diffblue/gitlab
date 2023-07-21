@@ -27,4 +27,5 @@
   epics_state: @epics_state,
   sorted_by: @sort,
   allow_sub_epics: allow_sub_epics,
+  allow_scoped_labels: @group.licensed_feature_available?(:scoped_labels) ? 'true' : 'false',
   can_create_epic: can?(current_user, :create_epic, @group).to_s } }
