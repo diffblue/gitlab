@@ -32,6 +32,7 @@ fragment BaseEpic on Epic {
     nodes {
       id
       title
+      description
       color
       textColor
     }

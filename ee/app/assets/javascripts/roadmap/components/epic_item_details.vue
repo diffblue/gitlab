@@ -2,7 +2,7 @@
 import { GlButton, GlIcon, GlLabel, GlTooltip } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
 import { getIdFromGraphQLId, getNodesOrDefault } from '~/graphql_shared/utils';
-import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
+import { convertObjectPropsToCamelCase, isScopedLabel } from '~/lib/utils/common_utils';
 import { queryToObject, updateHistory } from '~/lib/utils/url_utility';
 import { __, n__ } from '~/locale';
 import IssuableBlockedIcon from '~/vue_shared/components/issuable_blocked_icon/issuable_blocked_icon.vue';
@@ -49,7 +49,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(['allowSubEpics', 'isShowingLabels', 'filterParams']),
+    ...mapState(['allowSubEpics', 'isShowingLabels', 'filterParams', 'allowScopedLabels']),
     itemId() {
       return this.epic.id;
     },
@@ -137,6 +137,9 @@ export default {
         this.fetchEpics();
       }
     },
+    scopedLabel(label) {
+      return this.allowScopedLabels && isScopedLabel(label);
+    },
   },
 };
 </script>
@@ -217,6 +220,8 @@ export default {
             :title="label.title"
             size="sm"
             :target="filterByLabelUrl(label)"
+            :description="label.description"
+            :scoped="scopedLabel(label)"
             @click.prevent="filterByLabel(label)"
           />
         </div>

@@ -247,7 +247,16 @@ export const mockRawEpic = {
       {
         id: 'gid://gitlab/GroupLabel/12',
         title: 'Aquanix',
+        description: 'This is Aquanix description',
         color: '#e65431',
+        textColor: '#FFFFFF',
+        __typename: 'Label',
+      },
+      {
+        id: 'gid://gitlab/GroupLabel/13',
+        title: 'group::product planning',
+        description: 'This is scoped label description',
+        color: '#96201a',
         textColor: '#FFFFFF',
         __typename: 'Label',
       },
