@@ -3,6 +3,7 @@
 - page_title @vulnerability.title
 - page_description @vulnerability.description
 - add_page_specific_style 'page_bundles/security_dashboard'
+- add_page_specific_style 'page_bundles/merge_request'
 
 #js-vulnerability-main{ data: { vulnerability: vulnerability_details_json(@vulnerability, @pipeline),
                                 can_view_false_positive: @project.licensed_feature_available?(:sast_fp_reduction).to_s,
