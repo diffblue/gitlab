@@ -155,7 +155,7 @@ module RemoteDevelopment
 
         # @param [Hash] workspace_agent_infos_by_name
         # @param [Array] persisted_workspace_names
-        # @param [String] agent_id
+        # @param [Integer] agent_id
         # @param [String] update_type
         # @return [void]
         def check_for_orphaned_workspaces(
