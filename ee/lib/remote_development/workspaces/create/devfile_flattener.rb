@@ -11,9 +11,11 @@ module RemoteDevelopment
         def self.flatten(value)
           value => { devfile_yaml: String => devfile_yaml }
 
-          # NOTE: We do not attempt to rescue any exceptions from Devfile::Parser.flatten here because we assume that
-          #       the input devfile_yaml has already been fully validated by the pre-flatten devfile validator.
-          flattened_devfile_yaml = Devfile::Parser.flatten(devfile_yaml)
+          begin
+            flattened_devfile_yaml = Devfile::Parser.flatten(devfile_yaml)
+          rescue Devfile::CliError => e
+            return Result.err(WorkspaceCreateDevfileFlattenFailed.new(details: e.message))
+          end
 
           # NOTE: We do not attempt to rescue any exceptions from YAML.safe_load here because we assume that the
           #       Devfile::Parser gem will not produce invalid YAML. We own the gem, and will fix and add any regression
@@ -23,7 +25,7 @@ module RemoteDevelopment
 
           processed_devfile['components'] ||= []
 
-          value.merge(processed_devfile: processed_devfile)
+          Result.ok(value.merge(processed_devfile: processed_devfile))
         end
       end
     end

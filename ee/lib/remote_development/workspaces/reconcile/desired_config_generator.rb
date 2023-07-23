@@ -4,7 +4,9 @@ module RemoteDevelopment
   module Workspaces
     module Reconcile
       # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
-      # noinspection RubyInstanceMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
+      # rubocop:disable Layout/LineLength
+      # noinspection RubyInstanceMethodNamingConvention,RubyLocalVariableNamingConvention,RubyParameterNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
+      # rubocop:enable Layout/LineLength
       class DesiredConfigGenerator
         include States
 
@@ -40,6 +42,12 @@ module RemoteDevelopment
             annotations: annotations,
             user: user
           )
+          # If we got no resources back from the devfile parser, this indicates some error was encountered in parsing
+          # the processed_devfile. So we return an empty array which will result in no updates being applied by the
+          # agent. We should not continue on and try to add anything else to the resources, as this would result
+          # in an invalid configuration being applied to the cluster.
+          return [] if workspace_resources.empty?
+
           workspace_resources.insert(0, workspace_inventory_config_map)
 
           remote_development_agent_config = workspace.agent.remote_development_agent_config

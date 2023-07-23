@@ -22,6 +22,7 @@ require_relative '../../support/shared_contexts/remote_development/remote_develo
 
 require 'rspec-parameterized'
 require 'json_schemer'
+require 'devfile'
 
 RSpec.configure do |config|
   config.include NextInstanceOf

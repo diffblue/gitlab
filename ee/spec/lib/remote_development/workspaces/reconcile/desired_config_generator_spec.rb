@@ -78,5 +78,19 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::DesiredConfigGenerator,
         expect(workspace_resources).to eq(expected_config)
       end
     end
+
+    context 'when DevfileParser returns empty array' do
+      before do
+        allow_next_instance_of(RemoteDevelopment::Workspaces::Reconcile::DevfileParser) do |instance|
+          allow(instance).to receive(:get_all).and_return([])
+        end
+      end
+
+      it 'returns an empty array' do
+        workspace_resources = subject.generate_desired_config(workspace: workspace)
+
+        expect(workspace_resources).to eq([])
+      end
+    end
   end
 end

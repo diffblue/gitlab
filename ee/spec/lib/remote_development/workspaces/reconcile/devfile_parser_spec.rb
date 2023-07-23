@@ -53,4 +53,36 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::DevfileParser, feature_
       expect(workspace_resources).to eq(expected_workspace_resources)
     end
   end
+
+  context "when Devfile::CliError is raised" do
+    let(:logger) { instance_double(RemoteDevelopment::Logger) }
+
+    before do
+      allow(Devfile::Parser).to receive(:get_all).and_raise(Devfile::CliError.new("some error"))
+      allow(RemoteDevelopment::Logger).to receive(:build) { logger }
+    end
+
+    it "logs the error" do
+      expect(logger).to receive(:warn).with(
+        message: 'Error parsing devfile with Devfile::Parser.get_all',
+        error_type: 'reconcile_devfile_parser_error',
+        workspace_name: workspace.name,
+        workspace_namespace: workspace.namespace,
+        devfile_parser_error: "some error"
+      )
+
+      workspace_resources = subject.get_all(
+        processed_devfile: "",
+        name: workspace.name,
+        namespace: workspace.namespace,
+        replicas: 1,
+        domain_template: "",
+        labels: {},
+        annotations: {},
+        user: user
+      )
+
+      expect(workspace_resources).to eq([])
+    end
+  end
 end

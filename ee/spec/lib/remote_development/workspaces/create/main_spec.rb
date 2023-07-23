@@ -134,11 +134,10 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::Main, feature_category: :r
       stub_methods_to_return_ok_result(
         authorizer_method,
         devfile_fetcher_method,
-        pre_flatten_devfile_validator_method
-      )
-      stub_methods_to_return_value(
+        pre_flatten_devfile_validator_method,
         devfile_flattener_method
       )
+
       stub_methods_to_return_err_result(
         method: post_flatten_devfile_validator_method,
         message_class: RemoteDevelopment::Messages::WorkspaceCreatePostFlattenDevfileValidationFailed
@@ -167,7 +166,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::Main, feature_category: :r
         post_flatten_devfile_validator_method
       )
       stub_methods_to_return_value(
-        devfile_flattener_method,
         volume_definer_method,
         volume_component_injector_method,
         editor_component_injector_method,
@@ -203,7 +201,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::Main, feature_category: :r
         post_flatten_devfile_validator_method
       )
       stub_methods_to_return_value(
-        devfile_flattener_method,
         volume_definer_method,
         volume_component_injector_method,
         editor_component_injector_method,
@@ -234,7 +231,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::Main, feature_category: :r
         post_flatten_devfile_validator_method
       )
       stub_methods_to_return_value(
-        devfile_flattener_method,
         volume_definer_method,
         volume_component_injector_method,
         editor_component_injector_method,
