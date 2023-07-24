@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe ApprovalRuleLike, feature_category: :source_code_management do
+  # rubocop:disable RSpec/FactoryBot/AvoidCreate
   let(:user1) { create(:user) }
   let(:user2) { create(:user) }
   let(:user3) { create(:user) }
@@ -167,6 +168,64 @@ RSpec.describe ApprovalRuleLike, feature_category: :source_code_management do
           expect(subject).not_to be_valid
         end
       end
+
+      context 'when importing' do
+        before do
+          subject.importing = true
+        end
+
+        context 'when orchestration_policy_idx is not nil' do
+          it 'is invalid' do
+            subject.orchestration_policy_idx = 2
+
+            expect(subject).to be_invalid
+            expect(subject.errors.key?(:orchestration_policy_idx)).to eq(true)
+          end
+        end
+
+        context 'when orchestration_policy_idx is nil' do
+          it 'is valid' do
+            subject.orchestration_policy_idx = nil
+
+            expect(subject).to be_valid
+          end
+        end
+
+        context 'when report type is nil' do
+          it 'is valid' do
+            subject.report_type = nil
+
+            expect(subject).to be_valid
+          end
+        end
+
+        context 'when report type is scan_finding' do
+          it 'is invalid' do
+            subject.report_type = :scan_finding
+
+            expect(subject).to be_invalid
+            expect(subject.errors).to have_key(:report_type)
+          end
+        end
+
+        context 'when report type is license_scanning' do
+          it 'is invalid' do
+            subject.report_type = :license_scanning
+
+            expect(subject).to be_invalid
+            expect(subject.errors).to have_key(:report_type)
+          end
+        end
+
+        context 'when report type is code_coverage' do
+          it 'is valid' do
+            subject.report_type = :code_coverage
+            subject.name = 'Coverage-Check'
+
+            expect(subject).to be_valid
+          end
+        end
+      end
     end
   end
 
@@ -275,6 +334,22 @@ RSpec.describe ApprovalRuleLike, feature_category: :source_code_management do
       subject.groups = [group1, group2]
 
       expect(subject.group_users).to eq([user1])
+    end
+  end
+
+  describe '.exportable' do
+    let_it_be(:project) { create(:project) }
+
+    let_it_be(:any_approver_rule) { create(:approval_project_rule, :any_approver_rule, project: project) }
+    let_it_be(:license_scanning_rule) { create(:approval_project_rule, :license_scanning, project: project) }
+    let_it_be(:code_coverage) { create(:approval_project_rule, :code_coverage, project: project) }
+    let_it_be(:scan_finding) { create(:approval_project_rule, :scan_finding, project: project) }
+    # rubocop:enable RSpec/FactoryBot/AvoidCreate
+
+    subject { project.approval_rules.exportable }
+
+    it 'does not include rules created from scan result policies' do
+      is_expected.to match_array([any_approver_rule, code_coverage])
     end
   end
 end

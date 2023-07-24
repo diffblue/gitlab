@@ -3,6 +3,7 @@
 module ApprovalRuleLike
   extend ActiveSupport::Concern
   include EachBatch
+  include Importable
 
   DEFAULT_NAME = 'Default'
   DEFAULT_NAME_FOR_LICENSE_REPORT = 'License-Check'
@@ -41,11 +42,16 @@ module ApprovalRuleLike
     validates :approvals_required, numericality: { less_than_or_equal_to: APPROVALS_REQUIRED_MAX, greater_than_or_equal_to: 0 }
     validates :report_type, presence: true, if: :report_approver?
 
+    # We should not import Approval Rules when they are created from Security Policies
+    validates :orchestration_policy_idx, absence: true, if: :importing?
+    validates :report_type, exclusion: %w[scan_finding license_scanning], if: :importing?
+
     scope :with_users, -> { preload(:users, :group_users) }
     scope :regular_or_any_approver, -> { where(rule_type: [:regular, :any_approver]) }
     scope :for_groups, -> (groups) { joins(:groups).where(approval_project_rules_groups: { group_id: groups }) }
     scope :including_scan_result_policy_read, -> { includes(:scan_result_policy_read) }
     scope :with_scan_result_policy_read, -> { where.not(scan_result_policy_id: nil) }
+    scope :exportable, -> { where.not(report_type: %i[scan_finding license_scanning]).or(where(report_type: nil)) } # We are not exporting approval rules that were created from Security Policies
     scope :for_policy_configuration, -> (configuration_id) do
       where(security_orchestration_policy_configuration_id: configuration_id)
     end
