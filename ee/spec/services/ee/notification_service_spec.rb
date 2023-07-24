@@ -59,6 +59,35 @@ RSpec.describe EE::NotificationService, :mailer, feature_category: :team_plannin
       subject.new_review(review)
     end
 
+    context 'when review author is allowed to summarize_submitted_review' do
+      before do
+        allow(Ability).to receive(:allowed?).and_call_original
+        allow(Ability)
+          .to receive(:allowed?)
+          .with(review.author, :summarize_submitted_review, review.merge_request)
+          .and_return(true)
+      end
+
+      it 'delays the sending of new_review_email by 2 minutes' do
+        new_review_email = double
+
+        expect(Notify).not_to receive(:new_review_email).with(review.author.id, review.id)
+        expect(Notify).not_to receive(:new_review_email).with(@unsubscriber.id, review.id)
+        merge_request.assignee_ids.each do |assignee_id|
+          expect(Notify).to receive(:new_review_email).with(assignee_id, review.id).and_return(new_review_email)
+        end
+        expect(Notify).to receive(:new_review_email).with(merge_request.author.id, review.id).and_return(new_review_email)
+        expect(Notify).to receive(:new_review_email).with(@u_watcher.id, review.id).and_return(new_review_email)
+        expect(Notify).to receive(:new_review_email).with(@u_mentioned.id, review.id).and_return(new_review_email)
+        expect(Notify).to receive(:new_review_email).with(@subscriber.id, review.id).and_return(new_review_email)
+        expect(Notify).to receive(:new_review_email).with(@watcher_and_subscriber.id, review.id).and_return(new_review_email)
+        expect(Notify).to receive(:new_review_email).with(@subscribed_participant.id, review.id).and_return(new_review_email)
+        expect(new_review_email).to receive(:deliver_later).with({ wait: 2.minutes }).exactly(8).times
+
+        subject.new_review(review)
+      end
+    end
+
     it_behaves_like 'project emails are disabled' do
       let(:notification_target)  { review }
       let(:notification_trigger) { subject.new_review(review) }

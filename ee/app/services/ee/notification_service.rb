@@ -182,5 +182,17 @@ module EE
       email = user.notification_email_or_default
       mailer.account_validation_email(pipeline, email).deliver_later
     end
+
+    override :new_review_deliver_options
+    def new_review_deliver_options(review)
+      options = super
+
+      # We delay delivery by 2 minutes since we generate review summary asynchronously.
+      # We expect that in 2 minutes, we already have the summary generated so we
+      # can include it in the email.
+      options[:wait] = 2.minutes if Ability.allowed?(review.author, :summarize_submitted_review, review.merge_request)
+
+      options
+    end
   end
 end

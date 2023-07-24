@@ -402,6 +402,17 @@ RSpec.describe Notify, feature_category: :not_owned do # rubocop:disable RSpec/I
     end
   end
 
+  describe 'merge request reviews' do
+    let!(:review) { create(:review, project: project, merge_request: merge_request) }
+    let!(:review_summary) { create(:merge_request_review_llm_summary, review: review) }
+
+    subject { described_class.new_review_email(recipient.id, review.id) }
+
+    it 'includes review summary' do
+      expect(subject.text_part.body.raw_source).to include(review_summary.content)
+    end
+  end
+
   def expect_sender(user)
     sender = subject.header[:from].addrs[0]
     expect(sender.display_name).to eq("#{user.name} (@#{user.username})")
