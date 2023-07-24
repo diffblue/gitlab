@@ -11240,15 +11240,6 @@ msgstr ""
 msgid "CodeOwner|Pattern"
 msgstr ""
 
-msgid "CodeSuggestionsAlert|Code faster and more efficiently with AI-powered code suggestions in VS Code. 13 languages are supported, including JavaScript, Python, Go, Java, and Kotlin. Enable Code Suggestions in your %{preference_link_start}user profile preferences%{link_end} or %{docs_link_start}see the documentation%{link_end} to learn more."
-msgstr ""
-
-msgid "CodeSuggestionsAlert|Enable Code Suggestions"
-msgstr ""
-
-msgid "CodeSuggestionsAlert|Get started with Code Suggestions, available for free during the beta period."
-msgstr ""
-
 msgid "CodeSuggestionsSM|By enabling this feature, you agree to the %{terms_link_start}GitLab Testing Agreement%{link_end} and acknowledge that GitLab will send data from the instance, including personal data, to our %{ai_docs_link_start}AI providers%{link_end} to provide this feature."
 msgstr ""
 

@@ -103,12 +103,6 @@ module EE
         current_user.dismissed_callout_for_group?(group: object, **query)
       end
 
-      def user_dismissed_before?(feature_name, dismissed_before)
-        return false unless current_user
-
-        current_user.dismissed_callout_before?(feature_name, dismissed_before)
-      end
-
       def eoa_bronze_plan_end_date
         Date.parse(EOA_BRONZE_PLAN_END_DATE)
       end

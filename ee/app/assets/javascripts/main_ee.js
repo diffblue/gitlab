@@ -1,7 +1,6 @@
 import initEETrialBanner from 'ee/ee_trial_banner';
 import trackNavbarEvents from 'ee/event_tracking/navbar';
 import initNamespaceUserCapReachedAlert from 'ee/namespace_user_cap_reached_alert';
-import initCodeSuggestionsAlertDismiss from 'ee/code_suggestions_alert_dismiss';
 import { initTanukiBotChatDrawer } from 'ee/ai/tanuki_bot';
 
 if (document.querySelector('.js-verification-reminder') !== null) {
@@ -14,7 +13,6 @@ if (document.querySelector('.js-verification-reminder') !== null) {
 // EE specific calls
 initEETrialBanner();
 initNamespaceUserCapReachedAlert();
-initCodeSuggestionsAlertDismiss();
 
 trackNavbarEvents();
 initTanukiBotChatDrawer();
