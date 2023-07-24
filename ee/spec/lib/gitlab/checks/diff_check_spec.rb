@@ -239,6 +239,42 @@ RSpec.describe Gitlab::Checks::DiffCheck, feature_category: :source_code_managem
             expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, /File name #{file_path} was prohibited by the pattern/)
           end
         end
+
+        context 'when the repository was empty' do
+          let(:project) { create(:project, :empty_repo, push_rule: push_rule) }
+          let(:new_rev) { project.repository.create_file(user, file_path, "commit #{file_path}", message: "commit #{file_path}", branch_name: "master") }
+          let(:new_commits) { [project.repository.commit(new_rev)] }
+
+          before do
+            allow(project.repository).to receive(:empty?).and_return(true)
+          end
+
+          context 'when file contains secrets' do
+            let(:file_path) { 'aws/credentials' }
+
+            it "returns an error if a new or renamed filed doesn't match the file name regex" do
+              expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, /File name #{file_path} was prohibited by the pattern/)
+            end
+
+            context 'when feature flag "verify_push_rules_for_first_commit" is disabled' do
+              before do
+                stub_feature_flags(verify_push_rules_for_first_commit: false)
+              end
+
+              it 'does not raise an error' do
+                expect(subject.validate!).to be_truthy
+              end
+            end
+          end
+
+          context 'when file is permitted' do
+            let(:file_path) { 'aws/not_credentials' }
+
+            it 'does not raise an error' do
+              expect(subject.validate!).to be_truthy
+            end
+          end
+        end
       end
     end
 
