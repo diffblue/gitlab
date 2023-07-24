@@ -1,6 +1,8 @@
 import { GlButton, GlTooltip } from '@gitlab/ui';
+import { createWrapper } from '@vue/test-utils';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ActionButton from 'ee/on_demand_scans/components/action_button.vue';
+import { BV_HIDE_TOOLTIP } from '~/lib/utils/constants';
 
 describe('ActionButton', () => {
   let wrapper;
@@ -42,10 +44,11 @@ describe('ActionButton', () => {
 
   it('emits bv::hide::tooltip and click events on click', () => {
     createComponent();
-    jest.spyOn(wrapper.vm.$root, '$emit');
+    const rootWrapper = createWrapper(wrapper.vm.$root);
+
     findButton().vm.$emit('click');
 
-    expect(wrapper.vm.$root.$emit).toHaveBeenCalledWith('bv::hide::tooltip', expect.any(String));
+    expect(rootWrapper.emitted(BV_HIDE_TOOLTIP)[0]).toContainEqual(expect.any(String));
     expect(wrapper.emitted('click')).toHaveLength(1);
   });
 
