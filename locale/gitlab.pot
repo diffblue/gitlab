@@ -1153,9 +1153,6 @@ msgstr[1] ""
 msgid "%{strongStart}Tip:%{strongEnd} You can also %{linkStart}check out with merge request ID%{linkEnd}."
 msgstr ""
 
-msgid "%{strong_open}%{group_name}%{strong_close} projects:"
-msgstr ""
-
 msgid "%{strong_start}%{branch_count}%{strong_end} Branch"
 msgid_plural "%{strong_start}%{branch_count}%{strong_end} Branches"
 msgstr[0] ""
@@ -50990,6 +50987,9 @@ msgid "View labels"
 msgstr ""
 
 msgid "View log"
+msgstr ""
+
+msgid "View members"
 msgstr ""
 
 msgid "View milestones"
