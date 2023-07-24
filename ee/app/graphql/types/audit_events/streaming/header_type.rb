@@ -12,7 +12,7 @@ module Types
 
         authorize :admin_external_audit_events
 
-        implements(BaseHeaderInterface)
+        implements BaseHeaderInterface
       end
     end
   end
