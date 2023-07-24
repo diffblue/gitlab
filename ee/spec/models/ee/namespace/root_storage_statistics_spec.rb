@@ -96,9 +96,13 @@ RSpec.describe EE::Namespace::RootStorageStatistics, feature_category: :consumab
   describe '#cost_factored_storage_size', :saas do
     let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
 
+    before do
+      stub_ee_application_setting(check_namespace_plan: true)
+    end
+
     context 'with a cost factor for forks' do
       before do
-        stub_const("::Namespaces::Storage::RootSize::COST_FACTOR_FOR_FORKS", 0.05)
+        stub_ee_application_setting(namespace_storage_forks_cost_factor: 0.05)
       end
 
       context 'with a free plan' do
@@ -166,7 +170,7 @@ RSpec.describe EE::Namespace::RootStorageStatistics, feature_category: :consumab
 
     context 'with a fork cost factor of 1' do
       before do
-        stub_const("::Namespaces::Storage::RootSize::COST_FACTOR_FOR_FORKS", 1.0)
+        stub_ee_application_setting(namespace_storage_forks_cost_factor: 1.0)
       end
 
       it 'considers forks to take up their full actual disk storage' do
@@ -179,7 +183,7 @@ RSpec.describe EE::Namespace::RootStorageStatistics, feature_category: :consumab
 
     context 'with a fork cost factor of 0' do
       before do
-        stub_const("::Namespaces::Storage::RootSize::COST_FACTOR_FOR_FORKS", 0)
+        stub_ee_application_setting(namespace_storage_forks_cost_factor: 0)
       end
 
       it 'considers forks to take up no storage at all' do
@@ -192,7 +196,7 @@ RSpec.describe EE::Namespace::RootStorageStatistics, feature_category: :consumab
 
     context 'when the cost factor would result in a fractional storage_size' do
       before do
-        stub_const("::Namespaces::Storage::RootSize::COST_FACTOR_FOR_FORKS", 0.1)
+        stub_ee_application_setting(namespace_storage_forks_cost_factor: 0.1)
       end
 
       it 'rounds to the nearest integer' do
