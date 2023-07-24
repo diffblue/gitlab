@@ -68,7 +68,6 @@ export const projectClusters = {
 };
 
 export const clusterImageScanningVulnerability = {
-  hasSolutions: null,
   mergeRequest: null,
   __typename: 'Vulnerability',
   id: 'gid://gitlab/Vulnerability/22087293',
@@ -110,7 +109,6 @@ export const generateVulnerabilities = () => [
   {
     id: 'id_0',
     detectedAt: '2020-07-29T15:36:54Z',
-    hasSolutions: true,
     mergeRequest: {
       id: 'mr-1',
       webUrl: 'www.testmr.com/1',
@@ -177,7 +175,6 @@ export const generateVulnerabilities = () => [
     id: 'id_1',
     detectedAt: '2020-07-22T19:31:24Z',
     resolvedOnDefaultBranch: false,
-    hasSolutions: false,
     issueLinks: [],
     identifiers: [
       {
