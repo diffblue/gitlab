@@ -1725,7 +1725,7 @@
 - :name: repository_update_mirror
   :worker_name: RepositoryUpdateMirrorWorker
   :feature_category: :source_code_management
-  :has_external_dependencies: false
+  :has_external_dependencies: true
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
