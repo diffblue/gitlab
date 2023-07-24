@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
+  include WorkhorseHelpers
+
   let(:current_user) { nil }
 
   shared_examples 'a response' do |case_name|
@@ -209,23 +211,28 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       context 'when user is logged in' do
         let(:current_user) { create(:user) }
 
-        it 'proxies request to code suggestions service with the auth token from the DB' do
-          expect(Gitlab::HTTP).to receive(:post).with(
-            "https://codesuggestions.gitlab.com/v2/completions",
-            {
-              body: body.to_json,
-              headers: {
-                'X-Gitlab-Authentication-Type' => 'oidc',
-                'Authorization' => "Bearer #{token}",
-                'Content-Type' => 'application/json'
-              },
-              open_timeout: 3,
-              read_timeout: 5,
-              write_timeout: 5
-            }
-          )
+        before do
+          stub_env('CODE_SUGGESTIONS_BASE_URL', nil)
+        end
 
+        it 'delegates downstream service call to Workhorse with auth token from the DB' do
           post_api
+
+          expect(response.status).to be(200)
+          expect(response.body).to eq("".to_json)
+          command, params = workhorse_send_data
+          expect(command).to eq('send-url')
+          expect(params).to eq({
+            'URL' => 'https://codesuggestions.gitlab.com/v2/completions',
+            'AllowRedirects' => false,
+            'Body' => body.to_json,
+            'Header' => {
+              'X-Gitlab-Authentication-Type' => ['oidc'],
+              'Authorization' => ["Bearer #{token}"],
+              'Content-Type' => ['application/json']
+            },
+            'Method' => 'POST'
+          })
         end
 
         context 'when overriding service base URL' do
@@ -234,9 +241,12 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           end
 
           it 'sends requests to this URL instead' do
-            expect(Gitlab::HTTP).to receive(:post).with('http://test.com/v2/completions', an_instance_of(Hash))
-
             post_api
+
+            _, params = workhorse_send_data
+            expect(params).to include({
+              'URL' => 'http://test.com/v2/completions'
+            })
           end
         end
 
@@ -255,26 +265,20 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           end
 
           it 'proxies appropriate headers to code suggestions service' do
-            expect(Gitlab::HTTP).to receive(:post).with(
-              "https://codesuggestions.gitlab.com/v2/completions",
-              {
-                body: body.to_json,
-                headers: {
-                  'X-Gitlab-Authentication-Type' => 'oidc',
-                  'Authorization' => "Bearer #{token}",
-                  'Content-Type' => 'application/json',
-                  'X-Gitlab-Cs-Accepts' => 'accepts',
-                  'X-Gitlab-Cs-Requests' => "requests",
-                  'X-Gitlab-Cs-Errors' => 'errors',
-                  'X-Gitlab-Cs-Custom' => 'helloworld'
-                },
-                open_timeout: 3,
-                read_timeout: 5,
-                write_timeout: 5
-              }
-            )
-
             post_api
+
+            _, params = workhorse_send_data
+            expect(params).to include({
+              'Header' => {
+                'X-Gitlab-Authentication-Type' => ['oidc'],
+                'Authorization' => ["Bearer #{token}"],
+                'Content-Type' => ['application/json'],
+                'X-Gitlab-Cs-Accepts' => ['accepts'],
+                'X-Gitlab-Cs-Requests' => ['requests'],
+                'X-Gitlab-Cs-Errors' => ['errors'],
+                'X-Gitlab-Cs-Custom' => ['helloworld']
+              }
+            })
           end
         end
       end
