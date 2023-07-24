@@ -64,9 +64,9 @@ RSpec.describe 'SCIM Token handling', :js, feature_category: :system_access do
 
         expect(page).to have_button('Copy SCIM token')
 
-        expect(find_token_field.value).to eq('********************')
+        expect(find_token_field[:type]).to eq('password')
         page.click_button('Click to reveal')
-        expect(find_token_field.value).not_to eq('********************')
+        expect(find_token_field[:type]).to eq('text')
         expect(find_token_field.value).not_to eq('')
       end
     end

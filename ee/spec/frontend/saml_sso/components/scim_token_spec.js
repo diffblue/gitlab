@@ -59,6 +59,7 @@ describe('ScimToken', () => {
       copyButtonTitle,
       showToggleVisibilityButton,
       showCopyButton,
+      readonly,
       label,
       labelFor,
     } = props;
@@ -71,6 +72,7 @@ describe('ScimToken', () => {
           copyButtonTitle,
           showToggleVisibilityButton,
           showCopyButton,
+          readonly,
         },
         !isUndefined,
       ),
@@ -99,6 +101,7 @@ describe('ScimToken', () => {
         copyButtonTitle: ScimToken.i18n.copyToken,
         showToggleVisibilityButton: true,
         showCopyButton: true,
+        readonly: true,
         label: ScimToken.i18n.tokenLabel,
         labelFor: ScimToken.tokenInputId,
       });
@@ -112,6 +115,7 @@ describe('ScimToken', () => {
         value: mockApiResponse.scim_api_url,
         copyButtonTitle: ScimToken.i18n.copyEndpointUrl,
         showToggleVisibilityButton: false,
+        readonly: true,
         label: ScimToken.i18n.endpointUrlLabel,
         labelFor: ScimToken.endpointUrlInputId,
       });
@@ -208,6 +212,7 @@ describe('ScimToken', () => {
         value: '********************',
         showToggleVisibilityButton: false,
         showCopyButton: false,
+        readonly: true,
         label: ScimToken.i18n.tokenLabel,
         labelFor: ScimToken.tokenInputId,
       });
@@ -217,6 +222,7 @@ describe('ScimToken', () => {
         value: initialEndpointUrl,
         copyButtonTitle: ScimToken.i18n.copyEndpointUrl,
         showToggleVisibilityButton: false,
+        readonly: true,
         label: ScimToken.i18n.endpointUrlLabel,
         labelFor: ScimToken.endpointUrlInputId,
       });

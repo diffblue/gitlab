@@ -162,6 +162,7 @@ export default {
         :copy-button-title="$options.i18n.copyToken"
         :show-toggle-visibility-button="!tokenNeedsToBeReset"
         :show-copy-button="!tokenNeedsToBeReset"
+        readonly
       >
         <template #description>
           <gl-sprintf
@@ -184,6 +185,7 @@ export default {
         :value="endpointUrl"
         :copy-button-title="$options.i18n.copyEndpointUrl"
         :show-toggle-visibility-button="false"
+        readonly
       />
     </div>
   </div>
