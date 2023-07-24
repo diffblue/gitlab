@@ -13,8 +13,8 @@ module Gitlab
           prompt_class: nil
         },
         summarize_review: {
-          service_class: ::Gitlab::Llm::OpenAi::Completions::SummarizeReview,
-          prompt_class: ::Gitlab::Llm::OpenAi::Templates::SummarizeReview
+          service_class: ::Gitlab::Llm::VertexAi::Completions::SummarizeReview,
+          prompt_class: ::Gitlab::Llm::Templates::SummarizeReview
         },
         explain_code: {
           service_class: ::Gitlab::Llm::VertexAi::Completions::ExplainCode,
