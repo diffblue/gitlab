@@ -57,6 +57,7 @@ RSpec.shared_examples 'git access for a read-only GitLab instance' do
               'api_endpoints' => %w{/api/v4/geo/proxy_git_ssh/info_refs_upload_pack /api/v4/geo/proxy_git_ssh/upload_pack},
               'primary_repo' => primary_repo_url,
               "geo_proxy_direct_to_primary" => true,
+              "geo_proxy_fetch_direct_to_primary" => true,
               "request_headers" => include('Authorization')
             }
           }
@@ -79,6 +80,7 @@ RSpec.shared_examples 'git access for a read-only GitLab instance' do
               'api_endpoints' => %w{/api/v4/geo/proxy_git_ssh/info_refs_receive_pack /api/v4/geo/proxy_git_ssh/receive_pack},
               'primary_repo' => primary_repo_url,
               "geo_proxy_direct_to_primary" => true,
+              "geo_proxy_fetch_direct_to_primary" => true,
               "request_headers" => include('Authorization')
             }
           }
