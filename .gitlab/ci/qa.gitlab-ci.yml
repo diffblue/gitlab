@@ -187,4 +187,3 @@ e2e:test-on-gdk:
     DYNAMIC_PIPELINE_YML: test-on-gdk-pipeline.yml
     SKIP_MESSAGE: Skipping test-on-gdk due to mr containing only quarantine changes!
     GDK_IMAGE: "${CI_REGISTRY_IMAGE}/gitlab-qa-gdk:${CI_COMMIT_SHA}"
-  allow_failure: true
