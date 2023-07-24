@@ -7,9 +7,9 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
 
   let_it_be(:group) { create(:group_with_plan, plan: :bronze_plan) }
 
-  let(:project) { create(:project, :repository, group: group) }
+  let_it_be_with_refind(:project) { create(:project, :repository, group: group) }
 
-  let(:pipeline) do
+  let_it_be_with_refind(:pipeline) do
     create(
       :ci_pipeline,
       project: project,
@@ -935,6 +935,21 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
       end
 
       it { is_expected.to eq(true) }
+    end
+  end
+
+  context 'with loose foreign keys for partitioned tables' do
+    before do
+      create(:security_scan, build: job)
+    end
+
+    it 'removes records through partitioned LFK' do
+      pipeline.destroy!
+
+      Gitlab::Database::SharedModel.using_connection(job.connection) do
+        expect { LooseForeignKeys::ProcessDeletedRecordsService.new(connection: job.connection).execute }
+          .to change { Security::Scan.count }.by(-1)
+      end
     end
   end
 end
