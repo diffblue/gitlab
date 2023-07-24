@@ -5,14 +5,13 @@ import { DATA_VIZ_BLUE_500 } from '@gitlab/ui/dist/tokens/js/tokens';
 import * as DoraApi from 'ee/api/dora_api';
 import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
 import { toYmd } from '~/analytics/shared/utils';
-import { linearRegression } from 'ee/analytics/shared/utils';
 import { createAlert } from '~/alert';
 import { __, s__, sprintf } from '~/locale';
 import { spriteIcon } from '~/lib/utils/common_utils';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
-import { nDaysAfter } from '~/lib/utils/datetime_utility';
 import { SUMMARY_METRICS_REQUEST } from '~/analytics/cycle_analytics/constants';
 import CiCdAnalyticsCharts from '~/vue_shared/components/ci_cd_analytics/ci_cd_analytics_charts.vue';
+import { DEFAULT_SELECTED_CHART } from '~/vue_shared/components/ci_cd_analytics/constants';
 import glFeaturesFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { PROMO_URL } from 'jh_else_ce/lib/utils/url_utility';
 import DoraChartHeader from './dora_chart_header.vue';
@@ -29,7 +28,12 @@ import {
   LAST_180_DAYS,
   CHART_TITLE,
 } from './static_data/deployment_frequency';
-import { apiDataToChartSeries, seriesToAverageSeries } from './util';
+import {
+  apiDataToChartSeries,
+  seriesToAverageSeries,
+  calculateForecast,
+  forecastDataToSeries,
+} from './util';
 
 const VISIBLE_METRICS = ['deploys', 'deployment-frequency', 'deployment_frequency'];
 const filterFn = (data) =>
@@ -102,6 +106,7 @@ export default {
         [LAST_90_DAYS]: {},
         [LAST_180_DAYS]: {},
       },
+      selectedChartIndex: DEFAULT_SELECTED_CHART,
     };
   },
   computed: {
@@ -166,19 +171,20 @@ export default {
         };
 
         if (apiData?.length > 0) {
-          const { data: forecastedData } = apiDataToChartSeries(
-            linearRegression(apiData, this.$options.forecastDays[id]),
+          const forecastDataSeries = forecastDataToSeries({
+            forecastData: calculateForecast({
+              rawApiData: apiData,
+              forecastHorizon: this.$options.forecastDays[id],
+            }),
+            forecastHorizon: this.$options.forecastDays[id],
+            forecastSeriesLabel: this.$options.i18n.forecast,
+            dataSeries: seriesData[0].data,
             endDate,
-            nDaysAfter(endDate, this.$options.forecastDays[id]),
-            this.$options.i18n.forecast,
-          )[0];
-
-          // Add the last point from the data series so the chart visually joins together
-          const lastDataPoint = seriesData[0].data.slice(-1);
+          });
 
           this.forecastChartData[id] = {
             ...this.forecastChartData[id],
-            data: [...lastDataPoint, ...forecastedData],
+            data: forecastDataSeries,
           };
         }
       }),
@@ -200,10 +206,13 @@ export default {
     }
   },
   methods: {
-    getMetricsRequestParams(selectedChart) {
+    async onSelectChart(selectedChartIndex) {
+      this.selectedChartIndex = selectedChartIndex;
+    },
+    getMetricsRequestParams(selectedChartIndex) {
       const {
         requestParams: { start_date },
-      } = allChartDefinitions[selectedChart];
+      } = allChartDefinitions[selectedChartIndex];
 
       return {
         created_after: toYmd(start_date),
@@ -251,7 +260,11 @@ export default {
       :chart-description-text="$options.chartDescriptionText"
       :chart-documentation-href="$options.chartDocumentationHref"
     />
-    <ci-cd-analytics-charts :charts="charts" :chart-options="$options.areaChartOptions">
+    <ci-cd-analytics-charts
+      :charts="charts"
+      :chart-options="$options.areaChartOptions"
+      @select-chart="onSelectChart"
+    >
       <template v-if="glFeatures.doraChartsForecast" #extend-button-group>
         <div class="gl-display-flex gl-align-items-center">
           <gl-toggle
