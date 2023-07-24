@@ -376,10 +376,6 @@ If this is not the case, there are two options:
 
 For a complete list of upgrade notices and special considerations for older versions, see the [Mattermost documentation](https://docs.mattermost.com/administration/important-upgrade-notes.html).
 
-## Upgrading GitLab Mattermost to 15.10
-
-GitLab 15.10 ships with Mattermost 7.8. Before upgrading, [connect to the bundled PostgreSQL database](#connecting-to-the-bundled-postgresql-database) to perform the PostgreSQL maintenance described in the [Important Upgrade Notes](https://docs.mattermost.com/administration/important-upgrade-notes.html) provided by Mattermost.
-
 ## Upgrading GitLab Mattermost to 14.6
 
 GitLab 14.6 ships with Mattermost 6.1 including potentially long running database migrations for Mattermost 6.0. For information about upgrading and for ways to reduce the downtime caused by those migrations, read the [Important Upgrade Notes](https://docs.mattermost.com/administration/important-upgrade-notes.html) for both versions. If you need to perform any manual migrations, [connect to the bundled PostgreSQL database](#connecting-to-the-bundled-postgresql-database).
