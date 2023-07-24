@@ -18,7 +18,7 @@ module Types
       field :username,
         type: GraphQL::Types::String,
         null: false,
-        description: 'Username of the user. Unique within this instance of GitLab.'
+        description: 'Username of the user.'
 
       field :name,
         type: GraphQL::Types::String,
