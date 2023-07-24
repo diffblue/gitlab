@@ -2,7 +2,7 @@
 
 module Zoekt
   module TestHelpers
-    def zoekt_shard
+    def ensure_zoekt_shard!
       index_base_url = ENV.fetch('ZOEKT_INDEX_BASE_URL', 'http://127.0.0.1:6060')
       search_base_url = ENV.fetch('ZOEKT_SEARCH_BASE_URL', 'http://127.0.0.1:6070')
       ::Zoekt::Shard.find_or_create_by!(
@@ -10,10 +10,15 @@ module Zoekt
         search_base_url: search_base_url
       )
     end
+    module_function :ensure_zoekt_shard!
+
+    def zoekt_shard
+      ensure_zoekt_shard!
+    end
     module_function :zoekt_shard
 
     def zoekt_truncate_index!
-      Repository.truncate_zoekt_index!(zoekt_shard)
+      ::Gitlab::Search::Zoekt::Client.truncate
     end
     module_function :zoekt_truncate_index!
 
@@ -31,6 +36,7 @@ end
 
 RSpec.configure do |config|
   config.around(:each, :zoekt) do |example|
+    ::Zoekt::TestHelpers.ensure_zoekt_shard!
     ::Zoekt::TestHelpers.zoekt_truncate_index!
 
     example.run

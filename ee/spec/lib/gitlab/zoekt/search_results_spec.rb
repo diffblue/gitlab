@@ -63,31 +63,10 @@ RSpec.describe ::Gitlab::Zoekt::SearchResults, :zoekt, feature_category: :global
       expect(results.blobs_count).to eq 3
     end
 
-    it 'raises an error if there are somehow no project_id in the filter' do
-      expect do
-        described_class.new(user, 'project_name_regex', []).objects('blobs')
-      end.to raise_error('Not possible to search no projects')
-    end
-
     it 'returns zero when blobs are not found' do
       results = described_class.new(user, 'asdfg', limit_project_ids)
 
       expect(results.blobs_count).to eq 0
-    end
-
-    context 'with an invalid search' do
-      it 'logs an error and returns an empty array for results', :aggregate_failures do
-        search_results = described_class.new(user, '(invalid search(', limit_project_ids)
-
-        logger = instance_double(::Zoekt::Logger)
-        expect(::Zoekt::Logger).to receive(:build).and_return(logger)
-        expect(logger).to receive(:error).with(hash_including(status: 400))
-
-        blobs = search_results.objects('blobs')
-        expect(blobs).to be_empty
-        expect(search_results).to be_failed
-        expect(search_results.error).to include('error parsing regexp')
-      end
     end
 
     context 'when searching with special characters', :aggregate_failures do
