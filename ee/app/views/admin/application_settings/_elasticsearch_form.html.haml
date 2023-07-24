@@ -38,8 +38,8 @@
                 = f.gitlab_ui_checkbox_component :elasticsearch_indexing, s_('AdminSettings|Elasticsearch indexing'), checkbox_options: { data: { qa_selector: 'indexing_checkbox' } }, help_text: s_('AdminSettings|If there isn\'t any existing index, GitLab creates one.')
               - if Gitlab::CurrentSettings.elasticsearch_indexing?
                 = f.gitlab_ui_checkbox_component :elasticsearch_indexing, s_('AdminSettings|Elasticsearch indexing'), checkbox_options: { data: { qa_selector: 'indexing_checkbox' } }
-                = link_to _('Index all projects'), admin_elasticsearch_enqueue_index_path,
-                      class: ['gl-button', 'btn', 'btn-confirm'], method: :post
+                = render Pajamas::ButtonComponent.new(variant: :confirm, href: admin_elasticsearch_enqueue_index_path, method: :post) do
+                  = _('Index all projects')
 
             .form-group
               - first_pending_migration = Elastic::DataMigrationService.pending_migrations.first if elasticsearch_available
