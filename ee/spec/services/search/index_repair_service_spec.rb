@@ -170,8 +170,12 @@ RSpec.describe ::Search::IndexRepairService, feature_category: :global_search do
       end
 
       context 'when index_status exists' do
+        let_it_be_with_reload(:index_status) { create(:index_status, project: project) }
+
         context 'when index_status last_commit does not match last project commit' do
-          let_it_be(:index_status) { create(:index_status, project: project, last_commit: 'FAKE_SHA') }
+          before do
+            index_status.update!(last_commit: 'FAKE_SHA')
+          end
 
           it_behaves_like 'a service that repairs the blobs index' do
             let(:expected_hash) do
@@ -191,7 +195,13 @@ RSpec.describe ::Search::IndexRepairService, feature_category: :global_search do
         end
 
         context 'when index_status last_commit matches the repository head_commit' do
-          let_it_be(:index_status) { create(:index_status, project: project) }
+          it_behaves_like 'a service that does no repair work for the blobs index'
+        end
+
+        context 'when project has a null commit' do
+          before do
+            allow(project).to receive(:commit).and_return(nil)
+          end
 
           it_behaves_like 'a service that does no repair work for the blobs index'
         end
