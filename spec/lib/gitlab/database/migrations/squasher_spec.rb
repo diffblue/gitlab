@@ -4,6 +4,7 @@ require 'spec_helper'
 RSpec.describe Gitlab::Database::Migrations::Squasher, feature_category: :database do
   let(:git_output) do
     <<~FILES
+    db/migrate/misplaced.txt
     db/migrate/20221003041700_init_schema.rb
     db/migrate/20221003041800_foo_migrate.rb
     db/migrate/20221003041900_foo_migrate_two.rb

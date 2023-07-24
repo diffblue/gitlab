@@ -6,8 +6,6 @@ module Gitlab
   module Database
     module Migrations
       class Squasher
-        INIT_SCHEMA_MATCHER = /\d{14}_init_schema.rb\z/
-
         def initialize(git_output)
           @migration_data = migration_files_from_git(git_output).filter_map do |mf|
             basename = Pathname(mf).basename.to_s
