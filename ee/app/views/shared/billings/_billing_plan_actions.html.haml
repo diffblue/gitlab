@@ -4,7 +4,5 @@
                                       track_label: 'hand_raise_lead_form',
                                       track_property: plan.code } }
 - if show_upgrade_button
-  = link_to upgrade_button_text(plan_offer_type),
-    plan_purchase_or_upgrade_url(namespace, plan),
-    class: ["btn btn-confirm gl-button", upgrade_button_css_classes(namespace, plan, is_current), "gl-ml-3"],
-    data: billing_upgrade_button_data(plan)
+  = render Pajamas::ButtonComponent.new(variant: :confirm, href: plan_purchase_or_upgrade_url(namespace, plan), button_options: { class: ['gl-ml-3', upgrade_button_css_classes(namespace, plan, is_current)], data: billing_upgrade_button_data(plan) }) do
+    = upgrade_button_text(plan_offer_type)
