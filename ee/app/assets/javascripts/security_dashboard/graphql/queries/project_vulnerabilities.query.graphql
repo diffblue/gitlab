@@ -51,7 +51,6 @@ query projectVulnerabilities(
             }
           }
         }
-        hasSolutions
         mergeRequest {
           id
           webUrl
