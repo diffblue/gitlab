@@ -22608,6 +22608,7 @@ Returns [`RepositoryCodeownerValidation`](#repositorycodeownervalidation).
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="repositoryvalidatecodeownerfilepath"></a>`path` | [`String`](#string) | Path of a file called CODEOWNERS that should be validated. Default to file in use. |
 | <a id="repositoryvalidatecodeownerfileref"></a>`ref` | [`String`](#string) | Ref where code owners file needs to be checked. Defaults to the repository's default branch. |
 
 ### `RepositoryBlob`
