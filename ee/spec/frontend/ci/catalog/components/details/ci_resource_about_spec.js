@@ -6,10 +6,8 @@ describe('CiResourceAbout', () => {
   let wrapper;
 
   const defaultProps = {
-    statistics: {
-      issues: 4,
-      mergeRequests: 9,
-    },
+    openIssuesCount: 4,
+    openMergeRequestsCount: 9,
     versions: [{ id: 1, tagName: 'v1.0.0', releasedAt: '2022-08-23T17:19:09Z' }],
     webPath: 'path/to/project',
   };
@@ -24,9 +22,9 @@ describe('CiResourceAbout', () => {
   };
 
   const findProjectLink = () => wrapper.findByText('Go to the project');
-  const findIssueCount = () => wrapper.findByText(`${defaultProps.statistics.issues} Issues`);
+  const findIssueCount = () => wrapper.findByText(`${defaultProps.openIssuesCount} issues`);
   const findMergeRequestCount = () =>
-    wrapper.findByText(`${defaultProps.statistics.mergeRequests} Merge Requests`);
+    wrapper.findByText(`${defaultProps.openMergeRequestsCount} merge requests`);
   const findLastRelease = () =>
     wrapper.findByText(
       `Last release at ${formatDate(defaultProps.versions[0].releasedAt, 'yyyy-mm-dd')}`,

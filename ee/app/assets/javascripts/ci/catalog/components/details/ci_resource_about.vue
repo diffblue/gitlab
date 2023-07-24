@@ -9,9 +9,13 @@ export default {
     GlLink,
   },
   props: {
-    statistics: {
+    openIssuesCount: {
       required: true,
-      type: Object,
+      type: Number,
+    },
+    openMergeRequestsCount: {
+      required: true,
+      type: Number,
     },
     versions: {
       required: true,
@@ -35,11 +39,11 @@ export default {
 
       return this.$options.i18n.lastReleaseMissing;
     },
-    openedIssuesText() {
-      return n__('%d Issue', '%d Issues', this.statistics.issues);
+    openIssuesText() {
+      return n__('%d issue', '%d issues', this.openIssuesCount);
     },
-    openedMergeRequestText() {
-      return n__('%d Merge Request', '%d Merge Requests', this.statistics.mergeRequests);
+    openMergeRequestText() {
+      return n__('%d merge request', '%d merge requests', this.openMergeRequestsCount);
     },
     releasedAt() {
       return this.hasVersion && formatDate(this.versions[0].releasedAt, 'yyyy-mm-dd');
@@ -54,12 +58,12 @@ export default {
         {
           icon: 'issues',
           link: `${this.webPath}/issues`,
-          text: this.openedIssuesText,
+          text: this.openIssuesText,
         },
         {
           icon: 'merge-request',
           link: `${this.webPath}/merge_requests`,
-          text: this.openedMergeRequestText,
+          text: this.openMergeRequestText,
         },
         {
           icon: 'clock',

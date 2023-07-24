@@ -103,7 +103,8 @@ describe('CiResourceDetailsPage', () => {
 
       it('passes expected props', () => {
         expect(findAboutComponent().props()).toEqual({
-          statistics: defaultDetailsValues.statistics,
+          openIssuesCount: defaultDetailsValues.openIssuesCount,
+          openMergeRequestsCount: defaultDetailsValues.openMergeRequestsCount,
           versions: defaultDetailsValues.versions.nodes,
           webPath: defaultDetailsValues.webPath,
         });

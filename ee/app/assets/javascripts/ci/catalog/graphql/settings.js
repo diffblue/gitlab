@@ -11,18 +11,6 @@ export const cacheConfig = {
           },
         },
       },
-      CiCatalogResource: {
-        fields: {
-          statistics: {
-            read() {
-              return {
-                issues: 11,
-                mergeRequests: 2,
-              };
-            },
-          },
-        },
-      },
     },
   },
 };

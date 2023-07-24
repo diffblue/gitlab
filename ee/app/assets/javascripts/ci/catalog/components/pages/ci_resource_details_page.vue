@@ -61,7 +61,8 @@ export default {
       </div>
       <div>
         <ci-resource-about
-          :statistics="resourceDetails.statistics"
+          :open-issues-count="resourceDetails.openIssuesCount"
+          :open-merge-requests-count="resourceDetails.openMergeRequestsCount"
           :versions="versions"
           :web-path="resourceDetails.webPath"
         />
