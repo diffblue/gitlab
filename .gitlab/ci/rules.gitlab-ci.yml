@@ -1452,6 +1452,43 @@
     - <<: *if-force-ci
       allow_failure: true
 
+# All rules copied from qa:rules:package-and-test-ee but jobs are automatic and not allowed to fail
+.qa:rules:trigger-omnibus-env:
+  rules:
+    # From .qa:rules:package-and-test-common
+    - !reference [".qa:rules:package-and-test-never-run", rules]
+    - <<: *if-merge-request-targeting-stable-branch
+      changes: *setup-test-env-patterns
+    - <<: *if-ruby3_1-branch
+      variables:
+        USE_OLD_RUBY_VERSION: 'false'
+        CACHE_EDITION: 'GITLAB_RUBY3_1'
+    - <<: *if-merge-request
+      changes: *dependency-patterns
+      variables:
+        OMNIBUS_GITLAB_BUILD_ON_ALL_OS: 'true'
+    - <<: *if-merge-request-labels-run-all-e2e
+    - <<: *if-dot-com-gitlab-org-and-security-merge-request-manual-ff-package-and-e2e
+      changes: *feature-flag-development-config-patterns
+    - <<: *if-merge-request
+      changes: *feature-flag-development-config-patterns
+    - <<: *if-merge-request
+      changes: *initializers-patterns
+    - <<: *if-merge-request
+      changes: *nodejs-patterns
+    - <<: *if-merge-request
+      changes: *ci-qa-patterns
+    - <<: *if-merge-request
+      changes: *qa-patterns
+    - <<: *if-dot-com-gitlab-org-and-security-merge-request-and-qa-tests-specified
+      changes: *code-patterns
+    - <<: *if-force-ci
+    # From .qa:rules:package-and-test-schedule
+    - <<: *if-dot-com-gitlab-org-schedule
+    # From .qa:rules:code-merge-request-manual
+    - <<: *if-merge-request
+      changes: *code-patterns
+
 .qa:rules:package-and-test-never-run:
   rules:
     - <<: *if-not-canonical-namespace
@@ -1524,6 +1561,10 @@
         QA_SAVE_TEST_METRICS: "true"
         QA_EXPORT_TEST_METRICS: "false"  # on main runs, metrics are exported to separate bucket via rake task for better consistency
 
+# Note: If any changes are made to this rule, the following should also be updated:
+# 1) .qa:rules:manual-omnibus-and-follow-up-e2e
+# 2) .qa:rules:follow-up-e2e
+# 3) .qa:rules:trigger-omnibus-env
 .qa:rules:package-and-test-ee:
   rules:
     - !reference [".qa:rules:package-and-test-common", rules]
@@ -1597,6 +1638,94 @@
   rules:
     - !reference [".qa:rules:package-and-test-nightly", rules]
     - !reference [".qa:rules:package-and-test-ce", rules]
+
+# These are based on `.qa:rules:trigger-omnibus` but with automatic jobs changed to `when: never.`
+# If any changes are made to this rule, `.qa:rules:follow-up-e2e` should also be updated.
+.qa:rules:manual-omnibus-and-follow-up-e2e:
+  rules:
+    - !reference [".qa:rules:package-and-test-never-run", rules]
+    - !reference [".qa:rules:code-merge-request-manual", rules]
+    - <<: *if-dot-com-gitlab-org-schedule
+      when: never
+    - <<: *if-merge-request-targeting-stable-branch
+      changes: *setup-test-env-patterns
+      when: never
+    - <<: *if-ruby3_1-branch
+      when: never
+    - <<: *if-merge-request
+      changes: *dependency-patterns
+      when: never
+    - <<: *if-merge-request-labels-run-all-e2e
+      when: never
+    - <<: *if-dot-com-gitlab-org-and-security-merge-request-manual-ff-package-and-e2e
+      changes: *feature-flag-development-config-patterns
+      when: manual
+      allow_failure: true
+    - <<: *if-merge-request
+      changes: *feature-flag-development-config-patterns
+      when: never
+    - <<: *if-merge-request
+      changes: *initializers-patterns
+      when: never
+    - <<: *if-merge-request
+      changes: *nodejs-patterns
+      when: never
+    - <<: *if-merge-request
+      changes: *ci-qa-patterns
+      when: never
+    - <<: *if-merge-request
+      changes: *qa-patterns
+      when: never
+    - <<: *if-dot-com-gitlab-org-and-security-merge-request-and-qa-tests-specified
+      changes: *code-patterns
+      when: never
+    - <<: *if-force-ci
+      when: manual
+      allow_failure: true
+
+# These are based on `.qa:rules:manual-omnibus-and-follow-up-e2e` but with manual jobs changed to automatic
+.qa:rules:follow-up-e2e:
+  rules:
+    - !reference [".qa:rules:package-and-test-never-run", rules]
+    - <<: *if-merge-request
+      changes: *code-patterns
+      allow_failure: true
+    - <<: *if-dot-com-gitlab-org-schedule
+      when: never
+    - <<: *if-merge-request-targeting-stable-branch
+      changes: *setup-test-env-patterns
+      when: never
+    - <<: *if-ruby3_1-branch
+      when: never
+    - <<: *if-merge-request
+      changes: *dependency-patterns
+      when: never
+    - <<: *if-merge-request-labels-run-all-e2e
+      when: never
+    - <<: *if-dot-com-gitlab-org-and-security-merge-request-manual-ff-package-and-e2e
+      changes: *feature-flag-development-config-patterns
+      allow_failure: true
+    - <<: *if-merge-request
+      changes: *feature-flag-development-config-patterns
+      when: never
+    - <<: *if-merge-request
+      changes: *initializers-patterns
+      when: never
+    - <<: *if-merge-request
+      changes: *nodejs-patterns
+      when: never
+    - <<: *if-merge-request
+      changes: *ci-qa-patterns
+      when: never
+    - <<: *if-merge-request
+      changes: *qa-patterns
+      when: never
+    - <<: *if-dot-com-gitlab-org-and-security-merge-request-and-qa-tests-specified
+      changes: *code-patterns
+      when: never
+    - <<: *if-force-ci
+      allow_failure: true
+
 
 ###############
 # Rails rules #
