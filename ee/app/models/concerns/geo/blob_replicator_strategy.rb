@@ -140,13 +140,17 @@ module Geo
       File.join(uploader_class.constantize.root, path)
     end
 
-    # Returns a checksum of the file
+    # Returns a checksum for the local files and file size for remote ones
     #
-    # @return [String] SHA256 hash of the carrierwave file
+    # @return [String] SHA256 hash or file size
     def calculate_checksum
       raise 'File is not checksummable' unless checksummable?
 
-      model.sha256_hexdigest(blob_path)
+      if carrierwave_uploader.file_storage?
+        model.sha256_hexdigest(blob_path)
+      else
+        carrierwave_uploader.file.size.to_s
+      end
     end
 
     # Returns whether the file exists on disk or in remote storage
@@ -178,7 +182,11 @@ module Geo
     #
     # @return [Boolean] whether it can generate a checksum
     def checksummable?
-      carrierwave_uploader.file_storage? && file_exists?
+      if Feature.enabled?(:geo_object_storage_verification)
+        file_exists?
+      else
+        carrierwave_uploader.file_storage? && file_exists?
+      end
     end
 
     # Return whether it's immutable

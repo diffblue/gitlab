@@ -31,11 +31,15 @@ module Geo
       scope :available_replicables, -> { all }
 
       # On primary, `verifiables` are records that can be checksummed and/or are replicable.
-
       # On secondary, `verifiables` are records that have already been replicated
       # and (ideally) have been checksummed on the primary
-
-      scope :verifiables, -> { self.respond_to?(:with_files_stored_locally) ? available_replicables.with_files_stored_locally : available_replicables }
+      scope :verifiables, -> do
+        if Feature.enabled?(:geo_object_storage_verification)
+          available_replicables
+        else
+          self.respond_to?(:with_files_stored_locally) ? available_replicables.with_files_stored_locally : available_replicables
+        end
+      end
 
       # When storing verification details in the same table as the model,
       # the scope `available_verifiables` returns only those records

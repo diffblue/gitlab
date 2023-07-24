@@ -233,7 +233,11 @@ module Gitlab
         end
 
         def actual_checksum(file_path)
-          @actual_checksum = Digest::SHA256.file(file_path).hexdigest
+          @actual_checksum = if file_storage?
+                               Digest::SHA256.file(file_path).hexdigest
+                             elsif Feature.enabled?(:geo_object_storage_verification)
+                               File.size(file_path).to_s
+                             end
         end
 
         def non_success_response_result(response, url)
