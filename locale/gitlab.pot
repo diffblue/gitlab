@@ -2867,6 +2867,9 @@ msgstr ""
 msgid "Add new directory"
 msgstr ""
 
+msgid "Add new emoji"
+msgstr ""
+
 msgid "Add new webhook"
 msgstr ""
 
@@ -13733,6 +13736,12 @@ msgid "Custom Git clone URL for HTTP(S)"
 msgstr ""
 
 msgid "Custom analyzers: language support"
+msgstr ""
+
+msgid "Custom emoji"
+msgstr ""
+
+msgid "Custom emoji will be available to use in every project in group."
 msgstr ""
 
 msgid "Custom hostname (for private commit emails)"
