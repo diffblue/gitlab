@@ -2207,6 +2207,9 @@ msgstr ""
 msgid "AbuseReportEvent|Successfully scheduled the user for deletion and closed the report"
 msgstr ""
 
+msgid "AbuseReports|%{reportedUser} reported for %{category} by %{count} users"
+msgstr ""
+
 msgid "AbuseReports|%{reportedUser} reported for %{category} by %{reporter}"
 msgstr ""
 
@@ -31645,6 +31648,9 @@ msgid "Number of Git pushes after which Gitaly is asked to optimize a repository
 msgstr ""
 
 msgid "Number of LOCs per commit"
+msgstr ""
+
+msgid "Number of Reports"
 msgstr ""
 
 msgid "Number of commits"
