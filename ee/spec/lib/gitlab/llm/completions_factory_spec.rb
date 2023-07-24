@@ -8,8 +8,8 @@ RSpec.describe Gitlab::Llm::CompletionsFactory, feature_category: :no_category d
       let(:completion_name) { :summarize_review }
 
       it 'returns completion service' do
-        completion_class = ::Gitlab::Llm::OpenAi::Completions::SummarizeReview
-        template_class = ::Gitlab::Llm::OpenAi::Templates::SummarizeReview
+        completion_class = ::Gitlab::Llm::VertexAi::Completions::SummarizeReview
+        template_class = ::Gitlab::Llm::Templates::SummarizeReview
 
         expect(completion_class).to receive(:new).with(template_class, {}).and_call_original
 

@@ -13,17 +13,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::SummarizeReview, feature_catego
   let!(:draft_note_by_current_user) { create(:draft_note, merge_request: merge_request, author: user) }
   let!(:draft_note_by_random_user) { create(:draft_note, merge_request: merge_request) }
 
-  let(:template_class) { ::Gitlab::Llm::OpenAi::Templates::SummarizeReview }
-
-  let(:ai_options) do
-    {
-      messages: [
-        { role: "system", content: "You are a helpful assistant that summarizes reviews." },
-        { role: "user", content: "Some content" }
-      ],
-      temperature: 0.2
-    }
-  end
+  let(:template_class) { ::Gitlab::Llm::Templates::SummarizeReview }
 
   let(:ai_response) do
     {
@@ -69,15 +59,14 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::SummarizeReview, feature_catego
             .and_call_original
         end
 
-        expect(Gitlab::Llm::OpenAi::Templates::SummarizeReview)
-          .to receive(:get_options)
-          .with("Comment: #{draft_note_by_current_user.note}\n")
-          .and_return(ai_options)
+        expect_next_instance_of(template_class) do |template|
+          expect(template).to receive(:to_prompt).and_return('AI prompt')
+        end
 
         expect_next_instance_of(Gitlab::Llm::OpenAi::Client) do |instance|
           expect(instance)
             .to receive(:chat)
-            .with(content: nil, **ai_options)
+            .with(content: 'AI prompt', moderated: true)
             .and_return(ai_response)
         end
 
