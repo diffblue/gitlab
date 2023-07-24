@@ -9880,6 +9880,9 @@ msgstr ""
 msgid "CiStatus|running"
 msgstr ""
 
+msgid "CiVariables|Add Variable"
+msgstr ""
+
 msgid "CiVariables|Attributes"
 msgstr ""
 
@@ -9892,7 +9895,13 @@ msgstr ""
 msgid "CiVariables|Environments"
 msgstr ""
 
+msgid "CiVariables|Expand variable reference"
+msgstr ""
+
 msgid "CiVariables|Expanded"
+msgstr ""
+
+msgid "CiVariables|Export variable to pipelines running on protected branches and tags only."
 msgstr ""
 
 msgid "CiVariables|File"
@@ -9910,6 +9919,9 @@ msgstr ""
 msgid "CiVariables|Key"
 msgstr ""
 
+msgid "CiVariables|Mask variable"
+msgstr ""
+
 msgid "CiVariables|Masked"
 msgstr ""
 
@@ -9917,6 +9929,9 @@ msgid "CiVariables|Maximum number of Inherited Group CI variables loaded (2000)"
 msgstr ""
 
 msgid "CiVariables|Maximum number of variables reached."
+msgstr ""
+
+msgid "CiVariables|Protect variable"
 msgstr ""
 
 msgid "CiVariables|Protected"
@@ -9956,6 +9971,9 @@ msgid "CiVariables|Type"
 msgstr ""
 
 msgid "CiVariables|Value"
+msgstr ""
+
+msgid "CiVariables|Variable will be masked in job logs. Requires values to meet regular expression requirements."
 msgstr ""
 
 msgid "CiVariables|Variables"
@@ -50655,6 +50673,9 @@ msgid "ValueStreamEvent|Stop"
 msgstr ""
 
 msgid "Variable"
+msgstr ""
+
+msgid "Variable (default)"
 msgstr ""
 
 msgid "Variable name '%{variable}' must not start with '%{prefix}'"
