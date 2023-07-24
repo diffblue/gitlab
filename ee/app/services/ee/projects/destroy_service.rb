@@ -67,16 +67,13 @@ module EE
       end
 
       def log_geo_event(project)
-        if ::Geo::ProjectWikiRepositoryReplicator.enabled?
-          project.wiki_repository.geo_handle_after_destroy if project.wiki_repository
-        else
-          ::Geo::RepositoryDeletedEventStore.new(
-            project,
-            repo_path: project.disk_path,
-            wiki_path: project.wiki.disk_path
-          ).create!
-        end
+        ::Geo::RepositoryDeletedEventStore.new(
+          project,
+          repo_path: project.disk_path,
+          wiki_path: project.wiki.disk_path
+        ).create!
 
+        project.wiki_repository.geo_handle_after_destroy if project.wiki_repository
         project.design_management_repository.geo_handle_after_destroy if project.design_management_repository
       end
 

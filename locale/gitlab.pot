@@ -53006,9 +53006,6 @@ msgstr ""
 msgid "WikiPage|Write your content or drag files here…"
 msgstr ""
 
-msgid "Wikis"
-msgstr ""
-
 msgid "Wiki|Create New Page"
 msgstr ""
 

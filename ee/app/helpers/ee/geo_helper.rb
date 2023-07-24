@@ -180,17 +180,6 @@ module EE
           data_type: 'repository',
           data_type_title: _('Git'),
           data_type_sort_order: 0,
-          title: _('Wiki'),
-          title_plural: _('Wikis'),
-          name: 'wiki',
-          name_plural: 'wikis',
-          no_replication_view: true,
-          verification_enabled: true
-        },
-        {
-          data_type: 'repository',
-          data_type_title: _('Git'),
-          data_type_sort_order: 0,
           title: _('Design repository'),
           title_plural: _('Design repositories'),
           name: 'design_repository',
@@ -203,7 +192,6 @@ module EE
       migrated_to_ssf = []
       migrated_to_ssf << 'design_repository' if ::Geo::DesignManagementRepositoryReplicator.enabled?
       migrated_to_ssf << 'repository' if ::Geo::ProjectRepositoryReplicator.enabled?
-      migrated_to_ssf << 'wiki' if ::Geo::ProjectWikiRepositoryReplicator.enabled?
 
       replicable_types.reject! { |t| migrated_to_ssf.include?(t[:name]) }
 

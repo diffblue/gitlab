@@ -30,8 +30,6 @@ module EE
     def process_wiki_changes(post_received, wiki)
       super
 
-      return unless ::Gitlab::Geo.primary?
-
       if wiki.is_a?(ProjectWiki)
         process_project_wiki_changes(wiki)
       else
@@ -40,12 +38,8 @@ module EE
     end
 
     def process_project_wiki_changes(wiki)
-      if ::Geo::ProjectWikiRepositoryReplicator.enabled?
-        project_wiki_repository = wiki.project.wiki_repository
-        project_wiki_repository.geo_handle_after_update if project_wiki_repository
-      else
-        ::Geo::RepositoryUpdatedService.new(wiki.repository).execute
-      end
+      project_wiki_repository = wiki.project.wiki_repository
+      project_wiki_repository.geo_handle_after_update if project_wiki_repository
     end
 
     def process_group_wiki_changes(wiki)

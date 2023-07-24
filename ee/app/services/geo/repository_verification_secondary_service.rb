@@ -2,9 +2,9 @@
 
 module Geo
   class RepositoryVerificationSecondaryService < BaseRepositoryVerificationService
-    def initialize(registry, type)
+    def initialize(registry, _type)
       @registry = registry
-      @type     = type.to_sym
+      @type     = :repository
     end
 
     def execute
@@ -22,7 +22,6 @@ module Geo
     delegate :project, to: :registry
 
     def should_verify_checksum?
-      return false if type == :wiki && ::Geo::ProjectWikiRepositoryReplicator.enabled?
       return false if resync?
       return false unless primary_checksummed?
 
@@ -50,7 +49,7 @@ module Geo
     end
 
     def verify_checksum
-      checksum = calculate_checksum(repository)
+      checksum = calculate_checksum(project.repository)
 
       if mismatch?(checksum)
         update_registry!(mismatch: checksum, failure: "#{type.to_s.capitalize} checksum mismatch")
@@ -87,14 +86,6 @@ module Geo
         "#{type}_retry_at" => resync_retry_at,
         "#{type}_retry_count" => resync_retry_count
       )
-    end
-
-    def repository
-      @repository ||=
-        case type
-        when :repository then project.repository
-        when :wiki then project.wiki.repository
-        end
     end
   end
 end

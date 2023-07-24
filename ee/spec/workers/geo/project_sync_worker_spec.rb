@@ -11,13 +11,9 @@ RSpec.describe Geo::ProjectSyncWorker, feature_category: :geo_replication do
   end
 
   describe '#perform' do
-    let(:wiki_sync_service) { spy }
     let(:repository_sync_service) { spy }
 
     before do
-      allow(Geo::WikiSyncService).to receive(:new)
-        .with(instance_of(Project)).once.and_return(wiki_sync_service)
-
       allow(Geo::RepositorySyncService).to receive(:new)
         .with(instance_of(Project)).and_return(repository_sync_service)
     end
@@ -39,7 +35,6 @@ RSpec.describe Geo::ProjectSyncWorker, feature_category: :geo_replication do
 
         expect(subject).to receive(:log_error).with("Project shard '#{project_with_broken_storage.repository_storage}' is unhealthy, skipping syncing", project_id: project_with_broken_storage.id)
         expect(repository_sync_service).not_to receive(:execute)
-        expect(wiki_sync_service).not_to receive(:execute)
 
         subject.perform(project_with_broken_storage.id)
       end
@@ -50,32 +45,6 @@ RSpec.describe Geo::ProjectSyncWorker, feature_category: :geo_replication do
         subject.perform(project.id, sync_repository: true)
 
         expect(repository_sync_service).to have_received(:execute).once
-        expect(wiki_sync_service).not_to have_received(:execute)
-      end
-
-      context 'with geo_project_wiki_repository_replication feature flag disabled' do
-        before do
-          stub_feature_flags(geo_project_wiki_repository_replication: false)
-        end
-
-        it 'performs Geo::WikiSyncService for the given project' do
-          subject.perform(project.id, sync_wiki: true)
-
-          expect(wiki_sync_service).to have_received(:execute).once
-          expect(repository_sync_service).not_to have_received(:execute)
-        end
-      end
-
-      context 'with geo_project_wiki_repository_replication feature flag enabled' do
-        before do
-          stub_feature_flags(geo_project_wiki_repository_replication: true)
-        end
-
-        it 'does not perform Geo::WikiSyncService for the given project' do
-          subject.perform(project.id, sync_wiki: true)
-
-          expect(wiki_sync_service).not_to have_received(:execute)
-        end
       end
     end
 
@@ -87,30 +56,6 @@ RSpec.describe Geo::ProjectSyncWorker, feature_category: :geo_replication do
 
         expect(repository_sync_service).not_to have_received(:execute)
       end
-
-      context 'with geo_project_wiki_repository_replication feature flag disabled' do
-        before do
-          stub_feature_flags(geo_project_wiki_repository_replication: false)
-        end
-
-        it 'does not perform Geo::WikiSyncService for the given project' do
-          subject.perform(project.id, sync_wiki: true)
-
-          expect(wiki_sync_service).not_to have_received(:execute)
-        end
-      end
-
-      context 'with geo_project_wiki_repository_replication feature flag enabled' do
-        before do
-          stub_feature_flags(geo_project_wiki_repository_replication: true)
-        end
-
-        it 'does not perform Geo::WikiSyncService for the given project' do
-          subject.perform(project.id, sync_wiki: true)
-
-          expect(wiki_sync_service).not_to have_received(:execute)
-        end
-      end
     end
 
     context 'when last attempt to sync project repositories failed' do
@@ -120,30 +65,6 @@ RSpec.describe Geo::ProjectSyncWorker, feature_category: :geo_replication do
         subject.perform(project.id, sync_repository: true)
 
         expect(repository_sync_service).to have_received(:execute).once
-      end
-
-      context 'with geo_project_wiki_repository_replication feature flag disabled' do
-        before do
-          stub_feature_flags(geo_project_wiki_repository_replication: false)
-        end
-
-        it 'performs Geo::WikiSyncService for the given project' do
-          subject.perform(project.id, sync_wiki: true)
-
-          expect(wiki_sync_service).to have_received(:execute).once
-        end
-      end
-
-      context 'with geo_project_wiki_repository_replication feature flag enabled' do
-        before do
-          stub_feature_flags(geo_project_wiki_repository_replication: true)
-        end
-
-        it 'does not perform Geo::WikiSyncService for the given project' do
-          subject.perform(project.id, sync_wiki: true)
-
-          expect(wiki_sync_service).not_to have_received(:execute)
-        end
       end
     end
   end

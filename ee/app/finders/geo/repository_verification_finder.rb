@@ -18,17 +18,6 @@ module Geo
     # rubocop: enable CodeReuse/ActiveRecord
 
     # rubocop: disable CodeReuse/ActiveRecord
-    def find_failed_wikis(batch_size:)
-      query = build_query_to_find_failed_projects(type: :wiki, batch_size: batch_size)
-      cte   = Gitlab::SQL::CTE.new(:failed_wikis, query)
-
-      project_with_select_all.with(cte.to_arel)
-             .from(cte.alias_to(projects_table))
-             .order("projects.wiki_retry_at ASC")
-    end
-    # rubocop: enable CodeReuse/ActiveRecord
-
-    # rubocop: disable CodeReuse/ActiveRecord
     def find_recently_updated_projects(batch_size:)
       query = build_query_to_find_recently_updated_projects(batch_size: batch_size)
       cte   = Gitlab::SQL::CTE.new(:recently_updated_projects, query)
@@ -56,24 +45,12 @@ module Geo
       build_query_to_find_reverifiable_projects(type: :repository, interval: interval, batch_size: batch_size)
     end
 
-    def find_reverifiable_wikis(interval:, batch_size:)
-      build_query_to_find_reverifiable_projects(type: :wiki, interval: interval, batch_size: batch_size)
-    end
-
     def count_verified_repositories
       ProjectRepositoryState.verified_repos.count
     end
 
-    def count_verified_wikis
-      ProjectRepositoryState.verified_wikis.count
-    end
-
     def count_verification_failed_repositories
       ProjectRepositoryState.verification_failed_repos.count
-    end
-
-    def count_verification_failed_wikis
-      ProjectRepositoryState.verification_failed_wikis.count
     end
 
     private
@@ -101,22 +78,11 @@ module Geo
         repository_state_table[:repository_verification_checksum].eq(nil)
           .and(repository_state_table[:last_repository_verification_failure].eq(nil))
 
-      where_clause =
-        if ::Geo::ProjectWikiRepositoryReplicator.enabled?
-          repository_recently_updated
-        else
-          wiki_recently_updated =
-            repository_state_table[:wiki_verification_checksum].eq(nil)
-              .and(repository_state_table[:last_wiki_verification_failure].eq(nil))
-
-          repository_recently_updated.or(wiki_recently_updated)
-        end
-
       query =
         projects_table
           .join(repository_state_table).on(project_id_matcher)
           .project(projects_table[:id], projects_table[:last_repository_updated_at])
-          .where(where_clause)
+          .where(repository_recently_updated)
           .take(batch_size)
 
       apply_shard_restriction(query)

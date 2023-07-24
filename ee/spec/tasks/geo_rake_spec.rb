@@ -155,7 +155,6 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout, feature_category: :geo_r
 
         context 'with geo replication feature flags disabled' do
           before do
-            stub_feature_flags(geo_project_wiki_repository_replication: false)
             stub_feature_flags(geo_design_management_repository_replication: false)
             stub_feature_flags(geo_project_repository_replication: false)
           end
@@ -171,8 +170,6 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout, feature_category: :geo_r
               /Database replication lag: /,
               /Repositories: /,
               /Verified Repositories: /,
-              /Wikis: /,
-              /Verified Wikis: /,
               /Uploads: /,
               /Container repositories: /,
               /Design repositories: /,
@@ -184,16 +181,6 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout, feature_category: :geo_r
             checks.each do |text|
               expect { run_rake_task('geo:status') }.to output(text).to_stdout
             end
-          end
-        end
-
-        context 'with geo_project_wiki_repository_replication feature flag enabled' do
-          before do
-            stub_feature_flags(geo_project_wiki_repository_replication: true)
-          end
-
-          it 'does not print message for wiki status checks' do
-            expect { run_rake_task('geo:status') }.not_to output(/Wikis/).to_stdout
           end
         end
 

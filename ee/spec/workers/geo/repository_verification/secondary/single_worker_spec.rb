@@ -59,58 +59,20 @@ RSpec.describe Geo::RepositoryVerification::Secondary::SingleWorker, :geo, :clea
       expect { subject.perform(registry.id) }.not_to raise_error
     end
 
-    context 'with geo_project_wiki_repository_replication feature flag disabled' do
-      before do
-        stub_feature_flags(geo_project_wiki_repository_replication: false)
-      end
+    it 'runs verification for project repositories' do
+      stub_exclusive_lease
 
-      it 'runs verification for both repository and wiki' do
-        stub_exclusive_lease
+      service =
+        instance_double(Geo::RepositoryVerificationSecondaryService, execute: true)
 
-        service =
-          instance_double(Geo::RepositoryVerificationSecondaryService, execute: true)
+      allow(Geo::RepositoryVerificationSecondaryService)
+        .to receive(:new)
+        .with(registry, :repository)
+        .and_return(service)
 
-        allow(Geo::RepositoryVerificationSecondaryService)
-          .to receive(:new)
-          .with(registry, :repository)
-          .and_return(service)
+      subject.perform(registry.id)
 
-        allow(Geo::RepositoryVerificationSecondaryService)
-          .to receive(:new)
-          .with(registry, :wiki)
-          .and_return(service)
-
-        subject.perform(registry.id)
-
-        expect(service).to have_received(:execute).twice
-      end
-    end
-
-    context 'with geo_project_wiki_repository_replication feature flag enabled' do
-      before do
-        stub_feature_flags(geo_project_wiki_repository_replication: true)
-      end
-
-      it 'does not run verification for wiki' do
-        stub_exclusive_lease
-
-        service =
-          instance_double(Geo::RepositoryVerificationSecondaryService, execute: true)
-
-        allow(Geo::RepositoryVerificationSecondaryService)
-          .to receive(:new)
-          .with(registry, :repository)
-          .and_return(service)
-
-        allow(Geo::RepositoryVerificationSecondaryService)
-          .to receive(:new)
-          .with(registry, :wiki)
-          .and_return(service)
-
-        subject.perform(registry.id)
-
-        expect(service).to have_received(:execute).once
-      end
+      expect(service).to have_received(:execute).once
     end
   end
 end

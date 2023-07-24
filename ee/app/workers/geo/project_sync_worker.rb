@@ -44,7 +44,6 @@ module Geo
       end
 
       sync_repository(registry, options)
-      sync_wiki(registry, options)
     end
     # rubocop: enable CodeReuse/ActiveRecord
 
@@ -52,13 +51,6 @@ module Geo
       return unless options[:sync_repository] && registry.resync_repository?
 
       Geo::RepositorySyncService.new(registry.project).execute
-    end
-
-    def sync_wiki(registry, options)
-      return if ::Geo::ProjectWikiRepositoryReplicator.enabled?
-      return unless options[:sync_wiki] && registry.resync_wiki?
-
-      Geo::WikiSyncService.new(registry.project).execute
     end
   end
 end

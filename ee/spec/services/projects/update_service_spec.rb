@@ -268,73 +268,55 @@ RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_an
   end
 
   context 'triggering wiki Geo syncs', :geo, feature_category: :geo_replication do
+    let_it_be(:primary) { create(:geo_node, :primary) }
+    let_it_be(:secondary) { create(:geo_node) }
+
+    before do
+      create(:project_wiki_repository, project: project)
+    end
+
     context 'with geo_project_wiki_repository_replication feature flag disabled' do
       before do
         stub_feature_flags(geo_project_wiki_repository_replication: false)
       end
 
       context 'when on a Geo primary site' do
-        let_it_be(:primary) { create(:geo_node, :primary) }
-        let_it_be(:secondary) { create(:geo_node) }
-
         before do
           stub_current_geo_node(primary)
         end
 
         context 'when enabling a wiki' do
-          it 'creates a RepositoryUpdatedEvent' do
+          it 'does not log an event to the Geo event log' do
             project.project_feature.update_column(:wiki_access_level, ProjectFeature::DISABLED)
             project.reload
 
-            expect do
-              result = update_project(project, user, project_feature_attributes: { wiki_access_level: ProjectFeature::ENABLED })
-              expect(result).to eq({ status: :success })
-            end.to change { Geo::RepositoryUpdatedEvent.count }.by(1)
+            expect { update_project(project, user, project_feature_attributes: { wiki_access_level: ProjectFeature::ENABLED }) }
+              .not_to change {
+                Geo::Event.where(replicable_name: :project_wiki_repository, event_name: :updated).count
+              }
 
             expect(project.wiki_enabled?).to be true
-          end
-        end
-
-        context 'when we update project but not enabling a wiki' do
-          context 'when the wiki is disabled' do
-            it 'does not create a RepositoryUpdatedEvent' do
-              project.project_feature.update_column(:wiki_access_level, ProjectFeature::DISABLED)
-
-              expect do
-                result = update_project(project, user, { name: 'test1' })
-                expect(result).to eq({ status: :success })
-              end.not_to change { Geo::RepositoryUpdatedEvent.count }
-
-              expect(project.wiki_enabled?).to be false
-            end
-          end
-
-          context 'when the wiki was already enabled' do
-            it 'does not create a RepositoryUpdatedEvent' do
-              project.project_feature.update_column(:wiki_access_level, ProjectFeature::ENABLED)
-
-              expect do
-                result = update_project(project, user, { name: 'test1' })
-                expect(result).to eq({ status: :success })
-              end.not_to change { Geo::RepositoryUpdatedEvent.count }
-
-              expect(project.wiki_enabled?).to be true
-            end
           end
         end
       end
 
       context 'when not on a Geo primary site' do
-        it 'does not create a RepositoryUpdatedEvent when enabling a wiki' do
-          project.project_feature.update_column(:wiki_access_level, ProjectFeature::DISABLED)
-          project.reload
+        before do
+          stub_current_geo_node(secondary)
+        end
 
-          expect do
-            result = update_project(project, user, project_feature_attributes: { wiki_access_level: ProjectFeature::ENABLED })
-            expect(result).to eq({ status: :success })
-          end.not_to change { Geo::RepositoryUpdatedEvent.count }
+        context 'when enabling a wiki' do
+          it 'does not log an event to the Geo event log' do
+            project.project_feature.update_column(:wiki_access_level, ProjectFeature::DISABLED)
+            project.reload
 
-          expect(project.wiki_enabled?).to be true
+            expect { update_project(project, user, project_feature_attributes: { wiki_access_level: ProjectFeature::ENABLED }) }
+              .not_to change {
+                Geo::Event.where(replicable_name: :project_wiki_repository, event_name: :updated).count
+              }
+
+            expect(project.wiki_enabled?).to be true
+          end
         end
       end
     end
@@ -346,22 +328,13 @@ RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_an
 
       context 'when on a Geo primary site' do
         before do
-          stub_primary_node
+          stub_current_geo_node(primary)
         end
 
         context 'when enabling a wiki' do
           before do
             project.project_feature.update_column(:wiki_access_level, ProjectFeature::DISABLED)
             project.reload
-          end
-
-          it 'does not call Geo::RepositoryUpdatedService' do
-            expect_next_instance_of(::Geo::RepositoryUpdatedService).never
-
-            result = update_project(project, user, project_feature_attributes: { wiki_access_level: ProjectFeature::ENABLED })
-
-            expect(result).to eq({ status: :success })
-            expect(project.wiki_enabled?).to be true
           end
 
           it 'calls replicator to update Geo' do
@@ -374,21 +347,19 @@ RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_an
             expect(result).to eq({ status: :success })
             expect(project.wiki_enabled?).to be true
           end
+
+          it 'logs an event to the Geo event log' do
+            expect { update_project(project, user, project_feature_attributes: { wiki_access_level: ProjectFeature::ENABLED }) }
+              .to change {
+                Geo::Event.where(replicable_name: :project_wiki_repository, event_name: :updated).count
+              }.by(1)
+          end
         end
 
         context 'when we update project but not enabling a wiki' do
           context 'when the wiki is disabled' do
             before do
               project.project_feature.update_column(:wiki_access_level, ProjectFeature::DISABLED)
-            end
-
-            it 'does not call Geo::RepositoryUpdatedService' do
-              expect_next_instance_of(::Geo::RepositoryUpdatedService).never
-
-              result = update_project(project, user, { name: 'test1' })
-
-              expect(result).to eq({ status: :success })
-              expect(project.wiki_enabled?).to be false
             end
 
             it 'does not call replicator to update Geo' do
@@ -406,15 +377,6 @@ RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_an
               project.project_feature.update_column(:wiki_access_level, ProjectFeature::ENABLED)
             end
 
-            it 'does not call Geo::RepositoryUpdatedService' do
-              expect_next_instance_of(::Geo::RepositoryUpdatedService).never
-
-              result = update_project(project, user, { name: 'test1' })
-
-              expect(result).to eq({ status: :success })
-              expect(project.wiki_enabled?).to be true
-            end
-
             it 'does not call replicator to update Geo' do
               expect_next_instance_of(Geo::ProjectWikiRepositoryReplicator).never
 
@@ -429,7 +391,7 @@ RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_an
 
       context 'when not on a Geo primary site' do
         before do
-          stub_secondary_node
+          stub_current_geo_node(secondary)
         end
 
         context 'when enabling a wiki' do
@@ -438,21 +400,12 @@ RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_an
             project.reload
           end
 
-          it 'does not call Geo::RepositoryUpdatedService' do
-            expect_next_instance_of(::Geo::RepositoryUpdatedService).never
+          it 'does not log an event to the Geo event log' do
+            expect { update_project(project, user, project_feature_attributes: { wiki_access_level: ProjectFeature::ENABLED }) }
+              .not_to change {
+                Geo::Event.where(replicable_name: :project_wiki_repository, event_name: :updated).count
+              }
 
-            result = update_project(project, user, project_feature_attributes: { wiki_access_level: ProjectFeature::ENABLED })
-
-            expect(result).to eq({ status: :success })
-            expect(project.wiki_enabled?).to be true
-          end
-
-          it 'does not call replicator to update Geo' do
-            expect_next_instance_of(Geo::ProjectWikiRepositoryReplicator).never
-
-            result = update_project(project, user, project_feature_attributes: { wiki_access_level: ProjectFeature::ENABLED })
-
-            expect(result).to eq({ status: :success })
             expect(project.wiki_enabled?).to be true
           end
         end

@@ -28,15 +28,12 @@ module Geo
 
           try_obtain_lease do
             verify_checksum(:repository)
-            verify_checksum(:wiki)
           end
         end
 
         private
 
         def verify_checksum(type)
-          return if type == :wiki && ::Geo::ProjectWikiRepositoryReplicator.enabled?
-
           Geo::RepositoryVerificationSecondaryService.new(registry, type).execute
         rescue StandardError => e
           log_error('Error verifying the repository checksum', e, type: type)

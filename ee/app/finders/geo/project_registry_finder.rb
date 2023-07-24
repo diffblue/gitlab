@@ -34,19 +34,8 @@ module Geo
 
     # rubocop:disable CodeReuse/ActiveRecord
     def find_project_ids_pending_verification(batch_size:, except_ids: [])
-      registries =
-        if ::Geo::ProjectWikiRepositoryReplicator.enabled?
-          registry_class
-            .repositories_checksummed_pending_verification
-        else
-          registry_class
-            .from_union([
-                          repositories_checksummed_pending_verification,
-                          wikis_checksummed_pending_verification
-                        ])
-        end
-
-      registries
+      registry_class
+        .repositories_checksummed_pending_verification
         .model_id_not_in(except_ids)
         .limit(batch_size)
         .pluck_model_foreign_key
@@ -58,21 +47,5 @@ module Geo
     def registry_class
       Geo::ProjectRegistry
     end
-
-    # rubocop:disable CodeReuse/ActiveRecord
-    def repositories_checksummed_pending_verification
-      registry_class
-        .repositories_checksummed_pending_verification
-        .select(registry_class.arel_table[:project_id])
-    end
-    # rubocop:enable CodeReuse/ActiveRecord
-
-    # rubocop:disable CodeReuse/ActiveRecord
-    def wikis_checksummed_pending_verification
-      registry_class
-        .wikis_checksummed_pending_verification
-        .select(registry_class.arel_table[:project_id])
-    end
-    # rubocop:enable CodeReuse/ActiveRecord
   end
 end

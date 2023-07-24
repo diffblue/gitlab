@@ -44,68 +44,85 @@ RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects 
       stub_current_geo_node(primary)
     end
 
-    context 'with geo_project_wiki_repository_replication feature flag disabled' do
-      before do
-        stub_feature_flags(geo_project_wiki_repository_replication: false)
+    it 'logs an event to the Geo event log' do
+      # Run Sidekiq immediately to check that renamed repository will be removed
+      Sidekiq::Testing.inline! do
+        expect(subject).to receive(:log_destroy_events).and_call_original
+        expect { subject.execute }.to change(Geo::RepositoryDeletedEvent, :count).by(1)
       end
+    end
 
-      it 'logs an event to the Geo event log' do
+    it 'does not log event to the Geo log if project deletion fails' do
+      expect(subject).to receive(:log_destroy_event).and_call_original
+      expect(project).to receive(:destroy!).and_raise(StandardError.new('Other error message'))
+
+      Sidekiq::Testing.inline! do
+        expect { subject.execute }.not_to change(Geo::RepositoryDeletedEvent, :count)
+      end
+    end
+
+    context 'when wiki_repository does not exist' do
+      it 'does not call replicator to update Geo', :aggregate_failures do
         # Run Sidekiq immediately to check that renamed repository will be removed
         Sidekiq::Testing.inline! do
           expect(subject).to receive(:log_destroy_events).and_call_original
-          expect { subject.execute }.to change(Geo::RepositoryDeletedEvent, :count).by(1)
-        end
-      end
+          expect_next_instance_of(Geo::ProjectWikiRepositoryReplicator).never
 
-      it 'does not log event to the Geo log if project deletion fails' do
-        expect(subject).to receive(:log_destroy_event).and_call_original
-        expect(project).to receive(:destroy!).and_raise(StandardError.new('Other error message'))
-
-        Sidekiq::Testing.inline! do
-          expect { subject.execute }.not_to change(Geo::RepositoryDeletedEvent, :count)
+          subject.execute
         end
       end
     end
 
-    context 'with geo_project_wiki_repository_replication feature flag enabled' do
+    context 'when wiki_repository exists' do
       before do
-        stub_feature_flags(geo_project_wiki_repository_replication: true)
+        create(:project_wiki_repository, project: project)
       end
 
-      context 'when wiki_repository does not exist' do
-        it 'does not call replicator to update Geo', :aggregate_failures do
-          # Run Sidekiq immediately to check that renamed repository will be removed
-          Sidekiq::Testing.inline! do
-            expect(subject).to receive(:log_destroy_events).and_call_original
-            expect_next_instance_of(Geo::ProjectWikiRepositoryReplicator).never
+      it 'calls replicator to update Geo', :aggregate_failures do
+        # Run Sidekiq immediately to check that renamed repository will be removed
+        Sidekiq::Testing.inline! do
+          expect(subject).to receive(:log_destroy_events).and_call_original
+          expect(project.wiki_repository.replicator).to receive(:geo_handle_after_destroy)
 
-            subject.execute
-          end
+          subject.execute
         end
       end
 
-      context 'when wiki_repository exists' do
-        it 'calls replicator to update Geo', :aggregate_failures do
-          create(:project_wiki_repository, project: project)
+      it 'does not call replicator to update Geo if project deletion fails' do
+        allow(project).to receive(:destroy!).and_raise(StandardError.new('Other error message'))
 
-          # Run Sidekiq immediately to check that renamed repository will be removed
-          Sidekiq::Testing.inline! do
-            expect(subject).to receive(:log_destroy_events).and_call_original
-            expect(project.wiki_repository.replicator).to receive(:geo_handle_after_destroy)
+        Sidekiq::Testing.inline! do
+          expect(subject).to receive(:log_destroy_event).and_call_original
+          expect_next_instance_of(Geo::ProjectWikiRepositoryReplicator).never
 
-            subject.execute
-          end
+          subject.execute
         end
+      end
 
-        it 'does not call replicator to update Geo if project deletion fails' do
-          allow(project).to receive(:destroy!).and_raise(StandardError.new('Other error message'))
+      it 'logs an event to the Geo event log' do
+        Sidekiq::Testing.inline! do
+          expect(subject).to receive(:log_destroy_events).and_call_original
+          expect { subject.execute }.to change {
+            Geo::Event.where(replicable_name: :project_wiki_repository, event_name: :deleted).count
+          }.by(1)
 
-          Sidekiq::Testing.inline! do
-            expect(subject).to receive(:log_destroy_event).and_call_original
-            expect_next_instance_of(Geo::ProjectWikiRepositoryReplicator).never
+          payload = Geo::Event.where(replicable_name: :project_wiki_repository, event_name: :deleted).last.payload
 
-            subject.execute
-          end
+          expect(payload['model_record_id']).to eq(project.wiki_repository.id)
+          expect(payload['disk_path']).to eq(project.wiki_repository.repository.disk_path)
+          expect(payload['full_path']).to eq(project.wiki_repository.repository.full_path)
+          expect(payload['repository_storage']).to eq(project.wiki_repository.repository_storage)
+        end
+      end
+
+      it 'does not log an event to the Geo event log if feature flag disabled' do
+        stub_feature_flags(geo_project_wiki_repository_replication: false)
+
+        Sidekiq::Testing.inline! do
+          expect(subject).to receive(:log_destroy_events).and_call_original
+          expect { subject.execute }.not_to change {
+            Geo::Event.where(replicable_name: :project_wiki_repository, event_name: :deleted).count
+          }
         end
       end
     end
