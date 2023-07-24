@@ -1,12 +1,12 @@
 import { GlModal, GlAlert } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { cloneDeep } from 'lodash';
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
 import AddEscalationPolicyForm from 'ee/escalation_policies/components/add_edit_escalation_policy_form.vue';
 import AddEscalationPolicyModal, {
   i18n,
 } from 'ee/escalation_policies/components/add_edit_escalation_policy_modal.vue';
-
 import {
   addEscalationPolicyModalId,
   editEscalationPolicyModalId,
@@ -15,27 +15,44 @@ import {
 import createEscalationPolicyMutation from 'ee/escalation_policies/graphql/mutations/create_escalation_policy.mutation.graphql';
 import updateEscalationPolicyMutation from 'ee/escalation_policies/graphql/mutations/update_escalation_policy.mutation.graphql';
 import { stubComponent } from 'helpers/stub_component';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import mockPolicies from './mocks/mockPolicies.json';
 
 describe('AddEditsEscalationPolicyModal', () => {
   let wrapper;
+  let requestHandlers;
   const projectPath = 'group/project';
   const modalHideSpy = jest.fn();
-  const mutate = jest.fn();
   const mockEscalationPolicy = cloneDeep(mockPolicies[0]);
   const updatedName = 'Policy name';
   const updatedDescription = 'Policy description';
   const updatedRules = [{ status: 'RESOLVED', elapsedTimeMinutes: 1, oncallScheduleIid: 1 }];
   const serializedRules = [{ status: 'RESOLVED', elapsedTimeSeconds: 60, oncallScheduleIid: 1 }];
 
-  const createComponent = ({ escalationPolicy, isEditMode = false, modalId, data } = {}) => {
+  const defaultHandlers = {
+    createEscalationPolicyHandler: jest.fn().mockResolvedValue({}),
+    updateEscalationPolicyHandler: jest.fn().mockResolvedValue({}),
+  };
+
+  const createMockApolloProvider = (handlers) => {
+    Vue.use(VueApollo);
+    requestHandlers = handlers;
+
+    return createMockApollo([
+      [createEscalationPolicyMutation, handlers.createEscalationPolicyHandler],
+      [updateEscalationPolicyMutation, handlers.updateEscalationPolicyHandler],
+    ]);
+  };
+
+  const createComponent = ({
+    escalationPolicy,
+    isEditMode = false,
+    modalId,
+    handlers = defaultHandlers,
+  } = {}) => {
     wrapper = shallowMount(AddEscalationPolicyModal, {
-      data() {
-        return {
-          ...data,
-        };
-      },
+      apolloProvider: createMockApolloProvider(handlers),
       propsData: {
         escalationPolicy,
         isEditMode,
@@ -43,11 +60,6 @@ describe('AddEditsEscalationPolicyModal', () => {
       },
       provide: {
         projectPath,
-      },
-      mocks: {
-        $apollo: {
-          mutate,
-        },
       },
       stubs: {
         GlModal: stubComponent(GlModal, {
@@ -93,23 +105,16 @@ describe('AddEditsEscalationPolicyModal', () => {
     });
 
     it('makes a request with form data to create an escalation policy', () => {
-      mutate.mockResolvedValueOnce({});
       updateForm();
       findModal().vm.$emit('primary', { preventDefault: jest.fn() });
-      expect(mutate).toHaveBeenCalledWith(
-        expect.objectContaining({
-          mutation: createEscalationPolicyMutation,
-          variables: {
-            input: {
-              projectPath,
-              name: updatedName,
-              description: updatedDescription,
-              rules: serializedRules,
-            },
-          },
-          update: expect.any(Function),
-        }),
-      );
+      expect(requestHandlers.createEscalationPolicyHandler).toHaveBeenCalledWith({
+        input: {
+          projectPath,
+          name: updatedName,
+          description: updatedDescription,
+          rules: serializedRules,
+        },
+      });
     });
 
     it('clears the form on modal cancel', async () => {
@@ -164,23 +169,16 @@ describe('AddEditsEscalationPolicyModal', () => {
     });
 
     it('makes a request with form data to update an escalation policy', () => {
-      mutate.mockResolvedValueOnce({});
       updateForm();
       findModal().vm.$emit('primary', { preventDefault: jest.fn() });
-      expect(mutate).toHaveBeenCalledWith(
-        expect.objectContaining({
-          mutation: updateEscalationPolicyMutation,
-          variables: {
-            input: {
-              name: updatedName,
-              description: updatedDescription,
-              rules: serializedRules,
-              id: mockEscalationPolicy.id,
-            },
-          },
-          update: expect.any(Function),
-        }),
-      );
+      expect(requestHandlers.updateEscalationPolicyHandler).toHaveBeenCalledWith({
+        input: {
+          name: updatedName,
+          description: updatedDescription,
+          rules: serializedRules,
+          id: mockEscalationPolicy.id,
+        },
+      });
     });
 
     it('clears the form on modal cancel', async () => {
@@ -210,7 +208,7 @@ describe('AddEditsEscalationPolicyModal', () => {
       const getNameValidationState = () => form.props('validationState').name;
       expect(getNameValidationState()).toBe(true);
 
-      expect(wrapper.vm.validationState.name).toBe(true);
+      expect(findEscalationPolicyForm().props('validationState').name).toBe(true);
 
       form.vm.$emit('update-escalation-policy-form', {
         field: 'name',
@@ -226,20 +224,38 @@ describe('AddEditsEscalationPolicyModal', () => {
   });
 
   describe('Create/update success/failure', () => {
-    beforeEach(() => {
-      createComponent({ modalId: addEscalationPolicyModalId });
-    });
-
     it('hides the modal on successful policy creation', async () => {
-      mutate.mockResolvedValueOnce({ data: { escalationPolicyCreate: { errors: [] } } });
+      createComponent({
+        modalId: addEscalationPolicyModalId,
+        handlers: {
+          ...defaultHandlers,
+          createEscalationPolicyHandler: jest.fn().mockResolvedValue({
+            data: {
+              escalationPolicyCreate: { escalationPolicy: mockEscalationPolicy, errors: [] },
+            },
+          }),
+        },
+      });
+
       findModal().vm.$emit('primary', { preventDefault: jest.fn() });
       await waitForPromises();
-      expect(modalHideSpy).toHaveBeenCalled();
+
+      expect(requestHandlers.createEscalationPolicyHandler).toHaveBeenCalled();
+      expect(findModal().props('visible')).toBe(false);
     });
 
     it("doesn't hide a modal and shows error alert on creation failure", async () => {
       const error = 'some error';
-      mutate.mockResolvedValueOnce({ data: { escalationPolicyCreate: { errors: [error] } } });
+      createComponent({
+        modalId: addEscalationPolicyModalId,
+        handlers: {
+          ...defaultHandlers,
+          createEscalationPolicyHandler: jest
+            .fn()
+            .mockResolvedValue({ data: { escalationPolicyCreate: { errors: [error] } } }),
+        },
+      });
+
       findModal().vm.$emit('primary', { preventDefault: jest.fn() });
       await waitForPromises();
       const alert = findAlert();
