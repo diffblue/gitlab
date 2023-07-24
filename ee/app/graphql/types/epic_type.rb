@@ -5,7 +5,7 @@ module Types
     graphql_name 'Epic'
     description 'Represents an epic'
 
-    connection_type_class(Types::CountableConnectionType)
+    connection_type_class Types::CountableConnectionType
 
     include ::Gitlab::Graphql::Aggregations::Epics::Constants
 

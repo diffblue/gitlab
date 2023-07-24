@@ -7,7 +7,7 @@ module Types
       class ResourceType < BaseObject
         graphql_name 'CiCatalogResource'
 
-        connection_type_class(Types::CountableConnectionType)
+        connection_type_class Types::CountableConnectionType
 
         field :open_issues_count, GraphQL::Types::Int, null: false,
           description: 'Count of open issues that belong to the the catalog resource.',

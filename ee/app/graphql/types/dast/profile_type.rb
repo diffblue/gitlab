@@ -6,7 +6,7 @@ module Types
       graphql_name 'DastProfile'
       description 'Represents a DAST Profile'
 
-      connection_type_class(Types::CountableConnectionType)
+      connection_type_class Types::CountableConnectionType
 
       authorize :read_on_demand_dast_scan
 
