@@ -21,6 +21,11 @@ export const I18N_UPGRADE_STATUS_RECOMMENDED_TOOLTIP = s__(
   'Runners|This runner is outdated, an upgrade is recommended',
 );
 
+export const I18N_MEDIAN = s__('Runners|Median');
+export const I18N_P75 = s__('Runners|75th percentile');
+export const I18N_P90 = s__('Runners|90th percentile');
+export const I18N_P99 = s__('Runners|99th percentile');
+
 // Help pages
 
 // Runner install help page is external from this repo, must be
