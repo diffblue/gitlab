@@ -15428,7 +15428,7 @@ msgstr ""
 msgid "DependencyProxy|Enable Dependency Proxy"
 msgstr ""
 
-msgid "DependencyProxy|Enable the Dependency Proxy and settings for clearing the cache."
+msgid "DependencyProxy|Enable the Dependency Proxy to cache container images from Docker Hub and automatically clear the cache."
 msgstr ""
 
 msgid "DependencyProxy|Image list"
