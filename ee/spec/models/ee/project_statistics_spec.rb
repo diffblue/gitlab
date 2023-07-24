@@ -82,7 +82,8 @@ RSpec.describe ProjectStatistics do
 
     context 'when there is a cost factor for forks' do
       before do
-        stub_const('Namespaces::Storage::RootSize::COST_FACTOR_FOR_FORKS', 0.1)
+        stub_ee_application_setting(check_namespace_plan: true)
+        stub_ee_application_setting(namespace_storage_forks_cost_factor: 0.1)
       end
 
       where(:plan, :fork_visibility) do

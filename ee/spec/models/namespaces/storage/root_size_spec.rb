@@ -212,7 +212,8 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
       end
 
       before do
-        stub_const("#{described_class}::COST_FACTOR_FOR_FORKS", 0.05)
+        stub_ee_application_setting(check_namespace_plan: true)
+        stub_ee_application_setting(namespace_storage_forks_cost_factor: 0.05)
       end
 
       it 'returns the cost factored storage size' do

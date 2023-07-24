@@ -11,11 +11,7 @@ module EE
     private
 
     def cost_factor
-      if project.forked? && (project.root_ancestor.paid? || !project.private?)
-        ::Namespaces::Storage::RootSize::COST_FACTOR_FOR_FORKS
-      else
-        ::Namespaces::Storage::RootSize::COST_FACTOR
-      end
+      ::Namespaces::Storage::CostFactor.cost_factor_for(project)
     end
 
     override :storage_size_components
