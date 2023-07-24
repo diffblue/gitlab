@@ -24,28 +24,42 @@ RSpec.describe Gitlab::ContributionAnalytics::DataFormatter, feature_category: :
     create(:event, :pushed, project: project1, target: nil, author: user_2)
   end
 
-  describe '#totals' do
-    it 'returns formatted data for received events' do
-      data_formatter = described_class.new(data)
+  shared_examples 'correct collection of data' do
+    describe '#totals' do
+      it 'returns formatted data for received events' do
+        data_formatter = described_class.new(data)
 
-      expect(data_formatter.totals).to eq({
-        issues_closed: { user_1.id => 1 },
-        issues_created: {},
-        merge_requests_created: { user_1.id => 1 },
-        merge_requests_merged: {},
-        merge_requests_approved: { user_1.id => 1 },
-        merge_requests_closed: { user_1.id => 1 },
-        push: { user_1.id => 1, user_2.id => 1 },
-        total_events: { user_1.id => 5, user_2.id => 1 }
-      })
+        expect(data_formatter.totals).to eq({
+          issues_closed: { user_1.id => 1 },
+          issues_created: {},
+          merge_requests_created: { user_1.id => 1 },
+          merge_requests_merged: {},
+          merge_requests_approved: { user_1.id => 1 },
+          merge_requests_closed: { user_1.id => 1 },
+          push: { user_1.id => 1, user_2.id => 1 },
+          total_events: { user_1.id => 5, user_2.id => 1 }
+        })
+      end
+
+      describe '#users' do
+        it 'returns correct users' do
+          users = described_class.new(data).users
+
+          expect(users).to match_array([user_1, user_2])
+        end
+      end
     end
   end
 
-  describe '#users' do
-    it 'returns correct users' do
-      users = described_class.new(data).users
+  context 'when postgres is the data source' do
+    it_behaves_like 'correct collection of data'
+  end
 
-      expect(users).to match_array([user_1, user_2])
+  context 'when clickhouse is the data source', :click_house do
+    before do
+      stub_feature_flags(clickhouse_data_collection: true)
     end
+
+    it_behaves_like 'correct collection of data'
   end
 end

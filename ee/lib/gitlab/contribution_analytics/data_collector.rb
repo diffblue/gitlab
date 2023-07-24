@@ -3,6 +3,8 @@
 module Gitlab
   module ContributionAnalytics
     class DataCollector
+      include Gitlab::Utils::StrongMemoize
+
       EVENT_TYPES = %i[push issues_created issues_closed merge_requests_closed merge_requests_created merge_requests_merged merge_requests_approved total_events].freeze
 
       attr_reader :group, :from, :to
@@ -30,8 +32,15 @@ module Gitlab
       end
 
       def db_data_collector
-        @data_formatter ||= PostgresqlDataCollector.new(group: group, from: from, to: to)
+        @data_formatter ||= db_collector_klass.new(group: group, from: from, to: to)
       end
+
+      def db_collector_klass
+        return ClickHouseDataCollector if Feature.enabled?(:clickhouse_data_collection, group)
+
+        PostgresqlDataCollector
+      end
+      strong_memoize_attr(:db_collector_klass)
 
       # Format:
       # {

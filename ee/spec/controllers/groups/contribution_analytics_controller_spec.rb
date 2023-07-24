@@ -133,76 +133,90 @@ RSpec.describe Groups::ContributionAnalyticsController, feature_category: :value
       expect(assigns[:data_collector].totals[:total_events].values.sum).to eq(6)
     end
 
-    it "returns member contributions JSON when format is JSON" do
-      get :show, params: { group_id: group.path }, format: :json
-
-      expect(json_response.length).to eq(3)
-
-      first_user = json_response.at(0)
-      expect(first_user["username"]).to eq(user.username)
-      expect(first_user["user_web_url"]).to eq("/#{user.username}")
-      expect(first_user["fullname"]).to eq(user.name)
-      expect(first_user["push"]).to eq(1)
-      expect(first_user["issues_created"]).to eq(0)
-      expect(first_user["issues_closed"]).to eq(1)
-      expect(first_user["merge_requests_created"]).to eq(0)
-      expect(first_user["merge_requests_merged"]).to eq(0)
-      expect(first_user["total_events"]).to eq(2)
-    end
-
-    it "includes projects in subgroups" do
-      subgroup = create(:group, parent: group)
-      subproject = create(:project, :repository, group: subgroup)
-
-      create_event(user, subproject, issue, :closed)
-      create_push_event(user, subproject)
-
-      get :show, params: { group_id: group.path }, format: :json
-
-      first_user = json_response.first
-      expect(first_user["issues_closed"]).to eq(2)
-      expect(first_user["push"]).to eq(2)
-    end
-
-    it "excludes projects outside of the group" do
-      empty_group = create(:group)
-      other_project = create(:project, :repository)
-
-      empty_group.add_reporter(user)
-
-      create_event(user, other_project, issue, :closed)
-      create_push_event(user, other_project)
-
-      get :show, params: { group_id: empty_group.path }, format: :json
-
-      expect(json_response).to be_empty
-    end
-
-    it 'does not cause N+1 queries when the format is JSON' do
-      control_count = ActiveRecord::QueryRecorder.new do
+    shared_examples 'correct data is returned' do
+      it "returns member contributions JSON when format is JSON" do
         get :show, params: { group_id: group.path }, format: :json
+
+        expect(json_response.length).to eq(3)
+
+        first_user = json_response.at(0)
+        expect(first_user["username"]).to eq(user.username)
+        expect(first_user["user_web_url"]).to eq("/#{user.username}")
+        expect(first_user["fullname"]).to eq(user.name)
+        expect(first_user["push"]).to eq(1)
+        expect(first_user["issues_created"]).to eq(0)
+        expect(first_user["issues_closed"]).to eq(1)
+        expect(first_user["merge_requests_created"]).to eq(0)
+        expect(first_user["merge_requests_merged"]).to eq(0)
+        expect(first_user["total_events"]).to eq(2)
       end
 
-      controller.instance_variable_set(:@group, nil)
-      user4 = create(:user)
-      group.add_member(user4, GroupMember::DEVELOPER)
+      it "includes projects in subgroups" do
+        subgroup = create(:group, parent: group)
+        subproject = create(:project, :repository, group: subgroup)
 
-      expect { get :show, params: { group_id: group.path }, format: :json }
-        .not_to exceed_query_limit(control_count)
+        create_event(user, subproject, issue, :closed)
+        create_push_event(user, subproject)
+
+        get :show, params: { group_id: group.path }, format: :json
+
+        first_user = json_response.first
+        expect(first_user["issues_closed"]).to eq(2)
+        expect(first_user["push"]).to eq(2)
+      end
+
+      it "excludes projects outside of the group" do
+        empty_group = create(:group)
+        other_project = create(:project, :repository)
+
+        empty_group.add_reporter(user)
+
+        create_event(user, other_project, issue, :closed)
+        create_push_event(user, other_project)
+
+        get :show, params: { group_id: empty_group.path }, format: :json
+
+        expect(json_response).to be_empty
+      end
     end
 
-    describe 'with views' do
-      render_views
+    context 'when postgres is the data source' do
+      it_behaves_like 'correct data is returned'
 
-      it 'avoids a N+1 query in #show' do
-        # Warm the cache
-        get :show, params: { group_id: group.path }
+      it 'does not cause N+1 queries when the format is JSON' do
+        control_count = ActiveRecord::QueryRecorder.new do
+          get :show, params: { group_id: group.path }, format: :json
+        end
 
-        control_queries = ActiveRecord::QueryRecorder.new { get :show, params: { group_id: group.path } }
-        create_push_event(user, project)
+        controller.instance_variable_set(:@group, nil)
+        user4 = create(:user)
+        group.add_member(user4, GroupMember::DEVELOPER)
 
-        expect { get :show, params: { group_id: group.path } }.not_to exceed_query_limit(control_queries)
+        expect { get :show, params: { group_id: group.path }, format: :json }
+          .not_to exceed_query_limit(control_count)
       end
+
+      describe 'with views' do
+        render_views
+
+        it 'avoids a N+1 query in #show' do
+          # Warm the cache
+          get :show, params: { group_id: group.path }
+
+          control_queries = ActiveRecord::QueryRecorder.new { get :show, params: { group_id: group.path } }
+          create_push_event(user, project)
+
+          expect { get :show, params: { group_id: group.path } }.not_to exceed_query_limit(control_queries)
+        end
+      end
+    end
+
+    context 'when clickhouse is the data source', :click_house do
+      before do
+        stub_feature_flags(clickhouse_data_collection: true)
+      end
+
+      it_behaves_like 'correct data is returned'
     end
 
     describe 'GET #show' do
