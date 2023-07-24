@@ -39,7 +39,7 @@ RSpec.describe Analytics::ValueStreamDashboard::CountWorker, feature_category: :
 
       context 'when no records present' do
         it 'does nothing' do
-          expect(Analytics::ValueStreamDashboard::CountService).not_to receive(:new)
+          expect(Analytics::ValueStreamDashboard::TopLevelGroupCounterService).not_to receive(:new)
 
           run_job
         end
@@ -49,7 +49,7 @@ RSpec.describe Analytics::ValueStreamDashboard::CountWorker, feature_category: :
         it 'invokes the count service' do
           create_list(:value_stream_dashboard_aggregation, 3, last_run_at: nil)
 
-          expect(Analytics::ValueStreamDashboard::CountService).to receive(:new).thrice.and_call_original
+          expect(Analytics::ValueStreamDashboard::TopLevelGroupCounterService).to receive(:new).thrice.and_call_original
           run_job
 
           last_run_at_values = Analytics::ValueStreamDashboard::Aggregation.pluck(:last_run_at)
@@ -60,12 +60,12 @@ RSpec.describe Analytics::ValueStreamDashboard::CountWorker, feature_category: :
       context 'when some records were processed recently' do
         it 'skips the recently processed record' do
           create(:value_stream_dashboard_aggregation, last_run_at: 3.days.ago) # should not be processed
-          aggregation = create(:value_stream_dashboard_aggregation, last_run_at: 15.days.ago).reload
-
-          expect(Analytics::ValueStreamDashboard::CountService).to receive(:new).with(aggregation: aggregation,
-            cursor: {}).and_call_original
+          outdated_aggregation = create(:value_stream_dashboard_aggregation, last_run_at: 15.days.ago)
 
           run_job
+
+          namespace_ids = Analytics::ValueStreamDashboard::Count.distinct.pluck(:namespace_id)
+          expect(namespace_ids).to eq([outdated_aggregation.id])
         end
       end
 
@@ -74,11 +74,10 @@ RSpec.describe Analytics::ValueStreamDashboard::CountWorker, feature_category: :
           create_list(:value_stream_dashboard_aggregation, 3, last_run_at: nil)
 
           expect_next_instance_of(Analytics::CycleAnalytics::RuntimeLimiter) do |runtime_limiter|
-            expect(runtime_limiter).to receive(:over_time?).and_return(false)
-            expect(runtime_limiter).to receive(:over_time?).and_return(true)
+            allow(runtime_limiter).to receive(:over_time?).and_return(true)
           end
 
-          expect(Analytics::ValueStreamDashboard::CountService).to receive(:new).twice.and_call_original
+          expect(Analytics::ValueStreamDashboard::TopLevelGroupCounterService).to receive(:new).once.and_call_original
 
           run_job
         end

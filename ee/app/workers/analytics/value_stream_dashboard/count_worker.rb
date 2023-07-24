@@ -27,12 +27,12 @@ module Analytics
         return if batch.empty?
 
         batch.each do |aggregation|
-          Analytics::ValueStreamDashboard::CountService.new(
-            aggregation: aggregation,
-            cursor: {}
-          ).execute
+          cursor = Analytics::ValueStreamDashboard::TopLevelGroupCounterService
+            .load_cursor(raw_cursor: { top_level_namespace_id: aggregation.id })
 
-          aggregation.update!(last_run_at: Time.current)
+          Analytics::ValueStreamDashboard::TopLevelGroupCounterService
+            .new(aggregation: aggregation, cursor: cursor, runtime_limiter: runtime_limiter)
+            .execute
 
           break if runtime_limiter.over_time?
         end

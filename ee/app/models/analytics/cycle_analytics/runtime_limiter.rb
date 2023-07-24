@@ -19,7 +19,11 @@ module Analytics
       end
 
       def over_time?
-        elapsed_time >= max_runtime
+        @last_check = elapsed_time >= max_runtime
+      end
+
+      def was_over_time?
+        !!@last_check
       end
     end
   end

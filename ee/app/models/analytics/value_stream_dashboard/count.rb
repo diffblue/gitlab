@@ -14,14 +14,7 @@ module Analytics
 
       validates :namespace_id, :count, :metric, :recorded_at, presence: true
 
-      enum metric: {
-        projects: 1,
-        issues: 2,
-        groups: 3,
-        merge_requests: 4,
-        pipelines: 5,
-        members: 6
-      }
+      enum metric: { projects: 1, issues: 2 }
     end
   end
 end
