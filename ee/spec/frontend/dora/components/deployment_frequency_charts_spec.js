@@ -81,8 +81,42 @@ describe('deployment_frequency_charts.vue', () => {
       .replyOnce(HTTP_STATUS_OK, data);
   };
 
+  const setupDefaultMockTimePeriods = () => {
+    setUpMockDeploymentFrequencies({
+      start_date: '2015-06-27T00:00:00+0000',
+      data: lastWeekData,
+    });
+    setUpMockDeploymentFrequencies({
+      start_date: '2015-06-04T00:00:00+0000',
+      data: lastMonthData,
+    });
+    setUpMockDeploymentFrequencies({
+      start_date: '2015-04-05T00:00:00+0000',
+      data: last90DaysData,
+    });
+    setUpMockDeploymentFrequencies({
+      start_date: '2015-01-05T00:00:00+0000',
+      data: last180DaysData,
+    });
+  };
+
   const findValueStreamMetrics = () => wrapper.findComponent(ValueStreamMetrics);
   const findCiCdAnalyticsCharts = () => wrapper.findComponent(CiCdAnalyticsCharts);
+  const findDataForecastToggle = () => wrapper.findByTestId('data-forecast-toggle');
+  const findExperimentBadge = () => wrapper.findComponent(GlBadge);
+  const getChartData = () => findCiCdAnalyticsCharts().props().charts;
+
+  const selectChartByIndex = async (id) => {
+    await findCiCdAnalyticsCharts().vm.$emit('select-chart', id);
+    await waitForPromises();
+  };
+
+  async function toggleDataForecast(confirmationValue = true) {
+    confirmAction.mockResolvedValueOnce(confirmationValue);
+
+    await findDataForecastToggle().vm.$emit('change', !findDataForecastToggle().props('value'));
+    await waitForPromises();
+  }
 
   afterEach(() => {
     mock.restore();
@@ -92,22 +126,7 @@ describe('deployment_frequency_charts.vue', () => {
     beforeEach(async () => {
       mock = new MockAdapter(axios);
 
-      setUpMockDeploymentFrequencies({
-        start_date: '2015-06-27T00:00:00+0000',
-        data: lastWeekData,
-      });
-      setUpMockDeploymentFrequencies({
-        start_date: '2015-06-04T00:00:00+0000',
-        data: lastMonthData,
-      });
-      setUpMockDeploymentFrequencies({
-        start_date: '2015-04-05T00:00:00+0000',
-        data: last90DaysData,
-      });
-      setUpMockDeploymentFrequencies({
-        start_date: '2015-01-05T00:00:00+0000',
-        data: last180DaysData,
-      });
+      setupDefaultMockTimePeriods();
 
       createComponent();
 
@@ -286,37 +305,11 @@ describe('deployment_frequency_charts.vue', () => {
       },
     };
 
-    const findDataForecastToggle = () => wrapper.findByTestId('data-forecast-toggle');
-    const findExperimentBadge = () => wrapper.findComponent(GlBadge);
-    const getChartData = () => findCiCdAnalyticsCharts().props().charts;
-
-    async function toggleDataForecast(confirmationValue = true) {
-      confirmAction.mockResolvedValueOnce(confirmationValue);
-
-      await findDataForecastToggle().vm.$emit('change', !findDataForecastToggle().props('value'));
-      await waitForPromises();
-    }
-
     beforeEach(async () => {
       mock = new MockAdapter(axios);
       window.gon = { features: { doraChartsForecast: true } };
 
-      setUpMockDeploymentFrequencies({
-        start_date: '2015-06-27T00:00:00+0000',
-        data: lastWeekData,
-      });
-      setUpMockDeploymentFrequencies({
-        start_date: '2015-06-04T00:00:00+0000',
-        data: lastMonthData,
-      });
-      setUpMockDeploymentFrequencies({
-        start_date: '2015-04-05T00:00:00+0000',
-        data: last90DaysData,
-      });
-      setUpMockDeploymentFrequencies({
-        start_date: '2015-01-05T00:00:00+0000',
-        data: last180DaysData,
-      });
+      setupDefaultMockTimePeriods();
 
       createComponent(mountOpts, mount);
       await axios.waitForAll();
@@ -368,6 +361,12 @@ describe('deployment_frequency_charts.vue', () => {
         expect(confirmAction).toHaveBeenCalledTimes(1);
       });
 
+      it('no change when the confirmation is cancelled', async () => {
+        await toggleDataForecast(false);
+
+        expect(findDataForecastToggle().props().value).toBe(false);
+      });
+
       it.each`
         timePeriod         | chartDataIndex | daysForecasted | result
         ${'Last week'}     | ${0}           | ${4}           | ${mockLastWeekForecastData}
@@ -377,6 +376,7 @@ describe('deployment_frequency_charts.vue', () => {
       `(
         'Calculates the forecasted data for $timePeriod',
         async ({ chartDataIndex, result, daysForecasted }) => {
+          await selectChartByIndex(chartDataIndex);
           await toggleDataForecast();
 
           const currentTimePeriodChartData = getChartData()[chartDataIndex];
@@ -389,12 +389,6 @@ describe('deployment_frequency_charts.vue', () => {
           expect(forecastSeries.areaStyle).toEqual({ opacity: 0 });
         },
       );
-
-      it('no change when the confirmation is cancelled', async () => {
-        await toggleDataForecast(false);
-
-        expect(findDataForecastToggle().props().value).toBe(false);
-      });
     });
   });
 });

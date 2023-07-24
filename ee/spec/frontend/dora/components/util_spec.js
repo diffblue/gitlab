@@ -7,7 +7,11 @@ import {
   extractTimeSeriesTooltip,
   secondsToDays,
   formatAsPercentage,
+  forecastDataToSeries,
+  calculateForecast,
 } from 'ee/dora/components/util';
+import * as utils from 'ee/analytics/shared/utils';
+import { forecastDataToChartDate } from './helpers';
 
 const NO_DATA_MESSAGE = 'No data available';
 
@@ -176,6 +180,64 @@ describe('ee/dora/components/util.js', () => {
     it('formats valid values', () => {
       expect(formatAsPercentage(0.25)).toBe('25.0%');
       expect(formatAsPercentage('1.86', 0)).toBe('186%');
+    });
+  });
+
+  describe('forecastDataToSeries', () => {
+    let res;
+
+    const mockTimePeriod = [
+      { date: '2023-01-10', value: 7 },
+      { date: '2023-01-11', value: 4 },
+      { date: '2023-01-12', value: 3 },
+      { date: '2023-01-13', value: 16 },
+    ];
+    const mockForecastPeriod = [
+      { date: '2023-01-14', value: 47 },
+      { date: '2023-01-15', value: 37 },
+      { date: '2023-01-16', value: 106 },
+    ];
+
+    const forecastResponse = forecastDataToChartDate(mockTimePeriod, mockForecastPeriod);
+
+    beforeEach(() => {
+      res = forecastDataToSeries({
+        forecastData: mockForecastPeriod,
+        forecastHorizon: 3,
+        forecastSeriesLabel: 'Forecast',
+        dataSeries: [
+          ['Jan 10', 7],
+          ['Jan 11', 4],
+          ['Jan 12', 3],
+          ['Jan 13', 16],
+        ],
+        endDate: new Date('2023-01-14'),
+      });
+    });
+
+    it('returns the data data series to be displayed in charts', () => {
+      expect(res).toEqual(forecastResponse);
+    });
+
+    it('includes the last data point from the data series', () => {
+      expect(res[0]).toEqual(['Jan 13', 16]);
+    });
+  });
+
+  describe('calculateForecast', () => {
+    let linearRegressionSpy;
+
+    const forecastHorizon = 3;
+    const rawApiData = [];
+    const defaultParams = { forecastHorizon, rawApiData };
+
+    beforeEach(() => {
+      linearRegressionSpy = jest.spyOn(utils, 'linearRegression');
+      calculateForecast({ ...defaultParams, useHoltWintersForecast: false });
+    });
+
+    it('will generate a linear regression request', () => {
+      expect(linearRegressionSpy).toHaveBeenCalledWith(rawApiData, forecastHorizon);
     });
   });
 });
