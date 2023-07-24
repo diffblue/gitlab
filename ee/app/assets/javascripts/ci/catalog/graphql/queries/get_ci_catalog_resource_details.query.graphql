@@ -4,16 +4,14 @@ query getCiCatalogResourceDetails($id: CiCatalogResourceID!) {
     icon
     name
     description
+    openIssuesCount
+    openMergeRequestsCount
     readmeHtml
     webPath
     rootNamespace {
       id
       fullPath
       name
-    }
-    statistics @client {
-      issues
-      mergeRequests
     }
     starCount
     forksCount

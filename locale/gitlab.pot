@@ -97,16 +97,6 @@ msgid_plural "%d Approvals"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "%d Issue"
-msgid_plural "%d Issues"
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "%d Merge Request"
-msgid_plural "%d Merge Requests"
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "%d Module"
 msgid_plural "%d Modules"
 msgstr[0] ""
