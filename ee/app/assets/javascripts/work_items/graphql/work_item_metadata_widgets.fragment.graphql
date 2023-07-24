@@ -21,6 +21,7 @@ fragment WorkItemMetadataWidgets on WorkItemWidget {
   ... on WorkItemWidgetProgress {
     type
     progress
+    updatedAt
   }
   ... on WorkItemWidgetHealthStatus {
     type
