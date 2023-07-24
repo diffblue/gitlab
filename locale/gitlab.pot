@@ -7235,6 +7235,30 @@ msgstr ""
 msgid "Beta"
 msgstr ""
 
+msgid "BetaBadge|A Beta feature is not production-ready, but is unlikely to change drastically before it's released. We encourage users to try Beta features and provide feedback."
+msgstr ""
+
+msgid "BetaBadge|A Beta feature:"
+msgstr ""
+
+msgid "BetaBadge|Beta"
+msgstr ""
+
+msgid "BetaBadge|Is complete or near completion."
+msgstr ""
+
+msgid "BetaBadge|Is supported by a commercially reasonable effort."
+msgstr ""
+
+msgid "BetaBadge|May have performance or stability issues."
+msgstr ""
+
+msgid "BetaBadge|Should not cause data loss."
+msgstr ""
+
+msgid "BetaBadge|What's Beta?"
+msgstr ""
+
 msgid "Bi-weekly code coverage"
 msgstr ""
 
