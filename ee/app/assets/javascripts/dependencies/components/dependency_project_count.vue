@@ -114,17 +114,23 @@ export default {
     <gl-collapsible-listbox
       v-if="hasMultipleProjects"
       :header-text="projectText"
-      :toggle-text="projectText"
       :items="availableProjects"
       :searching="loading"
       searchable
-      no-caret
-      block
-      variant="link"
       @hidden="onHide"
       @search="search"
       @shown="onShown"
     >
+      <template #toggle>
+        <span class="gl-md-white-space-nowrap gl-text-blue-500">
+          <gl-truncate
+            class="gl-display-none gl-md-display-inline-flex"
+            position="start"
+            :text="projectText"
+            with-tooltip
+          />
+        </span>
+      </template>
       <template #list-item="{ item }">
         <div class="gl-display-flex">
           <gl-link :href="getUrl(item)" class="gl-hover-text-decoration-none">

@@ -168,7 +168,11 @@ export default {
 
     <template #cell(location)="{ item }">
       <dependency-location v-if="displayLocation(item)" :location="item.location" />
-      <dependency-location-count v-else :location-count="item.occurrenceCount" />
+      <dependency-location-count
+        v-else
+        :location-count="item.occurrenceCount"
+        :component-id="item.componentId"
+      />
     </template>
 
     <template #cell(license)="{ item }">
