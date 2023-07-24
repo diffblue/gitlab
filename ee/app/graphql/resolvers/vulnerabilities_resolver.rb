@@ -77,6 +77,7 @@ module Resolvers
 
     def preloads
       {
+        has_remediations: { vulnerability: { findings: :remediations } },
         has_solutions: { vulnerability: { findings: :remediations } },
         merge_request: { vulnerability: :merge_requests },
         state_comment: { vulnerability: :state_transitions },
