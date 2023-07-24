@@ -1,8 +1,8 @@
 <script>
 import { GlTable, GlLink, GlSprintf } from '@gitlab/ui';
-import { s__, __ } from '~/locale';
+import { __ } from '~/locale';
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
-import { helpPagePath } from '~/helpers/help_page_helper';
+import { containerRegistryPopover } from '~/usage_quotas/storage/constants';
 import NumberToHumanSize from './number_to_human_size.vue';
 import StorageTypeHelpLink from './storage_type_help_link.vue';
 import StorageTypeWarning from './storage_type_warning.vue';
@@ -85,15 +85,7 @@ export default {
     // eslint-disable-next-line @gitlab/require-i18n-strings
     tdClass: `${f.tdClass ?? ''} gl-px-3!`,
   })),
-  containerRegistryPopover: {
-    content: s__(
-      'UsageQuotas|Container Registry storage statistics are not used to calculate the total project storage. Total project storage is calculated after namespace container deduplication, where the total of all unique containers is added to the namespace storage total.',
-    ),
-    docsLink: helpPagePath(
-      'user/packages/container_registry/reduce_container_registry_storage.html',
-      { anchor: 'check-container-registry-storage-use' },
-    ),
-  },
+  containerRegistryPopover,
 };
 </script>
 
