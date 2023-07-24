@@ -16,6 +16,7 @@ describe('DependenciesTable component', () => {
   const basicAppProps = {
     namespaceType: 'project',
     endpoint: 'endpoint',
+    locationsEndpoint: 'endpoint',
   };
 
   const createComponent = ({ propsData, provide } = {}) => {

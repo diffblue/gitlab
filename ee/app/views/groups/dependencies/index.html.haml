@@ -4,6 +4,7 @@
 #js-dependencies-app{
   data: {
     endpoint: group_dependencies_path(@group, format: :json),
+    locations_endpoint: locations_group_dependencies_path(@group),
     export_endpoint: expose_path(api_v4_groups_dependency_list_exports_path(id: @group.id)),
     documentation_path: help_page_path('user/application_security/dependency_list/index'),
     support_documentation_path: help_page_path('user/application_security/dependency_scanning/index', anchor: 'supported-languages-and-package-managers'),

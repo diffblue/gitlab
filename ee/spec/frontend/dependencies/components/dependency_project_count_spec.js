@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { GlLink, GlTruncate, GlCollapsibleListbox, GlButton, GlAvatar } from '@gitlab/ui';
+import { GlLink, GlTruncate, GlCollapsibleListbox, GlAvatar } from '@gitlab/ui';
 import { shallowMount, mount } from '@vue/test-utils';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import DependencyProjectCount from 'ee/dependencies/components/dependency_project_count.vue';
@@ -59,7 +59,6 @@ describe('Dependency Project Count component', () => {
   const findProjectLink = () => wrapper.findComponent(GlLink);
   const findProjectAvatar = () => wrapper.findComponent(GlAvatar);
   const findProjectList = () => wrapper.findComponent(GlCollapsibleListbox);
-  const findProjectListToggle = () => findProjectList().findComponent(GlButton);
 
   describe('with a single project', () => {
     beforeEach(() => {
@@ -92,11 +91,7 @@ describe('Dependency Project Count component', () => {
     it('renders the listbox', () => {
       expect(findProjectList().props()).toMatchObject({
         headerText: '2 projects',
-        toggleText: '2 projects',
-        block: true,
         searchable: true,
-        noCaret: true,
-        variant: 'link',
         items: [],
         loading: false,
         searching: false,
@@ -104,7 +99,7 @@ describe('Dependency Project Count component', () => {
     });
 
     it('renders project count instead project name', () => {
-      expect(findProjectList().props('toggleText')).toBe('2 projects');
+      expect(findProjectList().props('headerText')).toBe('2 projects');
     });
 
     describe('with fetched data', () => {
@@ -118,7 +113,7 @@ describe('Dependency Project Count component', () => {
       });
 
       it('sets searching based on the data being fetched', async () => {
-        findProjectListToggle().vm.$emit('click');
+        findProjectList().vm.$emit('shown');
         await waitForPromises();
 
         expect(apolloResolver).toHaveBeenCalled();
@@ -137,7 +132,7 @@ describe('Dependency Project Count component', () => {
 
       describe('after the click event', () => {
         beforeEach(async () => {
-          findProjectListToggle().vm.$emit('click');
+          findProjectList().vm.$emit('shown');
           await waitForPromises();
         });
 
@@ -162,7 +157,7 @@ describe('Dependency Project Count component', () => {
               },
               mountFn: mount,
             });
-            findProjectListToggle().vm.$emit('click');
+            findProjectList().vm.$emit('shown');
             await waitForPromises();
           });
 
