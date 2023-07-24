@@ -1456,29 +1456,5 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
         expect(active_scan_actions).to match_array(dast_policy[:actions])
       end
     end
-
-    context "with `branch_type` feature disabled" do
-      before do
-        stub_feature_flags(security_policies_branch_type: false)
-      end
-
-      it "does not evaluate `branch_type`" do
-        allow_next_instance_of(Security::SecurityOrchestrationPolicies::PolicyBranchesService) do |service|
-          expect(service).not_to receive(:scan_execution_branches)
-        end
-
-        active_scan_actions
-      end
-
-      context "with `branch_type` rules" do
-        let(:scan_execution_policies) do
-          [build(:scan_result_policy, rules: [{ type: 'pipeline', branch_type: 'protected' }])]
-        end
-
-        it "is empty" do
-          expect(active_scan_actions).to be_empty
-        end
-      end
-    end
   end
 end

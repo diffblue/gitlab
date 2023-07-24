@@ -401,28 +401,17 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
       end
 
       with_them do
-        context 'when feature flag "security_policies_branch_type" is enabled' do
-          it { expect(result[:status]).to eq(status) }
+        it { expect(result[:status]).to eq(status) }
 
-          it 'returns a corresponding error message for error case' do
-            if status == :error
-              expect(result[:details]).to eq(["Branch types don't match any existing branches."])
-            else
-              expect(result[:details]).to be_nil
-            end
+        it 'returns a corresponding error message for error case' do
+          if status == :error
+            expect(result[:details]).to eq(["Branch types don't match any existing branches."])
+          else
+            expect(result[:details]).to be_nil
           end
-
-          it_behaves_like 'checks only if policy is enabled'
         end
 
-        context 'when feature flag "security_policies_branch_type" is disabled' do
-          before do
-            stub_feature_flags(security_policies_branch_type: false)
-          end
-
-          it { expect(result[:status]).to eq(:success) }
-          it { expect(result[:details]).to be_nil }
-        end
+        it_behaves_like 'checks only if policy is enabled'
       end
     end
 

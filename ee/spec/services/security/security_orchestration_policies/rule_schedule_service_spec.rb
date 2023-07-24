@@ -228,14 +228,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, fea
 
         service.execute(schedule)
       end
-
-      context "with `branch_type` feature disabled" do
-        before do
-          stub_feature_flags(security_policies_branch_type: false)
-        end
-
-        it_behaves_like 'does not execute scan'
-      end
     end
   end
 end

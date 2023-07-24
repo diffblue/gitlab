@@ -124,9 +124,7 @@ module EE
 
         ::Gitlab::Audit::Auditor.audit(audit_context)
 
-        if ::Feature.enabled?(:security_policies_branch_type, project)
-          ::Security::ScanResultPolicies::SyncProjectWorker.perform_async(project.id)
-        end
+        ::Security::ScanResultPolicies::SyncProjectWorker.perform_async(project.id)
       end
 
       # A user who enables shared runners must meet the credit card requirement if
