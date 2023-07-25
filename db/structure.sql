@@ -19080,7 +19080,8 @@ CREATE TABLE notes (
     confidential boolean,
     last_edited_at timestamp with time zone,
     internal boolean DEFAULT false NOT NULL,
-    id bigint NOT NULL
+    id bigint NOT NULL,
+    namespace_id bigint
 );
 
 CREATE SEQUENCE notes_id_seq
