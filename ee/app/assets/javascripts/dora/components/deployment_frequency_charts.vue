@@ -1,6 +1,6 @@
 <script>
 import * as Sentry from '@sentry/browser';
-import { GlToggle, GlBadge } from '@gitlab/ui';
+import { GlToggle, GlBadge, GlAlert, GlSprintf, GlLink } from '@gitlab/ui';
 import { DATA_VIZ_BLUE_500 } from '@gitlab/ui/dist/tokens/js/tokens';
 import * as DoraApi from 'ee/api/dora_api';
 import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
@@ -40,6 +40,7 @@ const filterFn = (data) =>
   data.filter((d) => VISIBLE_METRICS.includes(d.identifier)).map(({ links, ...rest }) => rest);
 
 const TESTING_TERMS_URL = `${PROMO_URL}/handbook/legal/testing-agreement/`;
+const FORECAST_FEEDBACK_ISSUE_URL = 'https://gitlab.com/gitlab-org/gitlab/-/issues/416833';
 
 export default {
   name: 'DeploymentFrequencyCharts',
@@ -49,6 +50,9 @@ export default {
     ValueStreamMetrics,
     GlToggle,
     GlBadge,
+    GlAlert,
+    GlSprintf,
+    GlLink,
   },
   mixins: [glFeaturesFlagMixin()],
   inject: {
@@ -88,6 +92,11 @@ export default {
         )}</a>`,
       },
       false,
+    ),
+    forecastFeedbackText: sprintf(
+      s__(
+        'DORA4Metrics|To help us improve the Show forecast feature, please share feedback about your experience in %{linkStart}this issue%{linkEnd}.',
+      ),
     ),
   },
   data() {
@@ -251,6 +260,7 @@ export default {
   chartDocumentationHref,
   metricsRequest: SUMMARY_METRICS_REQUEST,
   filterFn,
+  FORECAST_FEEDBACK_ISSUE_URL,
 };
 </script>
 <template>
@@ -278,6 +288,26 @@ export default {
             $options.i18n.badgeTitle
           }}</gl-badge>
         </div>
+      </template>
+      <template #alerts>
+        <gl-alert
+          v-if="showForecast"
+          class="gl-my-5"
+          data-testid="forecast-feedback"
+          variant="info"
+          :dismissible="false"
+        >
+          <gl-sprintf :message="$options.i18n.forecastFeedbackText">
+            <template #link="{ content }">
+              <gl-link
+                class="gl-text-decoration-none!"
+                :href="$options.FORECAST_FEEDBACK_ISSUE_URL"
+                target="_blank"
+                >{{ content }}</gl-link
+              >
+            </template>
+          </gl-sprintf>
+        </gl-alert>
       </template>
       <template #metrics="{ selectedChart }">
         <value-stream-metrics
