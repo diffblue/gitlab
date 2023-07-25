@@ -47219,9 +47219,6 @@ msgstr ""
 msgid "This PDF is too large to display. Please download to view."
 msgstr ""
 
-msgid "This Project is currently archived and read-only. Please unarchive the project first if you want to resume Pull mirroring"
-msgstr ""
-
 msgid "This URL already exists."
 msgstr ""
 
@@ -47724,6 +47721,9 @@ msgid "This project is %{strongStart}NOT%{strongEnd} a fork. This process delete
 msgstr ""
 
 msgid "This project is archived and cannot be commented on."
+msgstr ""
+
+msgid "This project is archived and read-only. To resume pull mirroring, unarchive the project."
 msgstr ""
 
 msgid "This project is licensed under the %{strong_start}%{license_name}%{strong_end}."

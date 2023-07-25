@@ -28,7 +28,7 @@
           icon_classes: 'spin')
       - elsif @project.archived?
         = render Pajamas::ButtonComponent.new(icon: 'retry',
-          button_options: { class: 'disabled', title: _('This Project is currently archived and read-only. Please unarchive the project first if you want to resume Pull mirroring'), data: { container: 'body', toggle: 'tooltip', qa_selector: 'update_now_button', testid: 'update-now-button' } },
+          button_options: { class: 'disabled', title: _('This project is archived and read-only. To resume pull mirroring, unarchive the project.'), data: { container: 'body', toggle: 'tooltip', qa_selector: 'update_now_button', testid: 'update-now-button' } },
           icon_classes: 'spin')
       - else
         = link_button_to nil, update_now_project_mirror_path(@project), method: :post, class: 'js-force-update-mirror', data: { container: 'body', toggle: 'tooltip', qa_selector: 'update_now_button', testid: 'update-now-button' }, title: _('Update now'), icon: 'retry'
