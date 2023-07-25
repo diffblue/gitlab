@@ -60,7 +60,8 @@ RSpec.describe 'Merge request > User sees merge widget', :js, feature_category: 
         visit project_merge_request_path(project, merge_request)
 
         within '.ci-widget-content' do
-          expect(page).to have_content("Merge train pipeline ##{pipeline.id} pending for #{pipeline.short_sha}")
+          expect(page).to have_content("Merge train pipeline ##{pipeline.id} pending")
+          expect(page).to have_content("Merge train pipeline pending for #{pipeline.short_sha}")
         end
       end
     end
