@@ -62,34 +62,6 @@ RSpec.describe 'Subscription flow for existing user with eligible group', :js, f
     expect_to_be_on_group_overview
   end
 
-  def fill_in_checkout_form
-    click_button 'Continue to billing'
-
-    within_fieldset('Country') do
-      select 'United States of America'
-    end
-
-    within_fieldset('Street address') do
-      first("input[type='text']").fill_in with: '123 fake street'
-    end
-
-    within_fieldset('City') do
-      fill_in with: 'Fake city'
-    end
-
-    within_fieldset('State') do
-      select 'Florida'
-    end
-
-    within_fieldset('Zip code') do
-      fill_in with: 'A1B 2C3'
-    end
-
-    click_button 'Continue to payment'
-
-    stub_confirm_purchase
-  end
-
   def stub_confirm_purchase
     allow_next_instance_of(GitlabSubscriptions::CreateService) do |instance|
       allow(instance).to receive(:execute).and_return({ success: true, data: 'foo' })
