@@ -88,6 +88,7 @@ module GitlabSubscriptions
       cluster_agents_user_impersonation
       cluster_deployments
       code_owner_approval_required
+      code_suggestions
       commit_committer_check
       commit_committer_name_check
       compliance_framework
