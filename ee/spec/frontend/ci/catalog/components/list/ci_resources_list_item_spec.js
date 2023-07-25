@@ -1,8 +1,17 @@
-import { GlAvatar, GlAvatarLink, GlBadge, GlButton, GlSprintf } from '@gitlab/ui';
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import { GlAvatar, GlBadge, GlButton, GlSprintf } from '@gitlab/ui';
 import responseBodySinglePage from 'test_fixtures/graphql/ci/catalog/ci_catalog_resources_single_page.json';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { createRouter } from 'ee/ci/catalog/router/index';
 import CiResourcesListItem from 'ee/ci/catalog/components/list/ci_resources_list_item.vue';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { CI_RESOURCE_DETAILS_PAGE_NAME } from 'ee/ci/catalog/router/constants';
+
+Vue.use(VueRouter);
+
+let router;
+let routerPush;
 
 describe('CiResourcesListItem', () => {
   let wrapper;
@@ -19,6 +28,7 @@ describe('CiResourcesListItem', () => {
 
   const createComponent = ({ props = {} } = {}) => {
     wrapper = shallowMountExtended(CiResourcesListItem, {
+      router,
       propsData: {
         ...defaultProps,
         ...props,
@@ -26,12 +36,12 @@ describe('CiResourcesListItem', () => {
       stubs: {
         GlSprintf,
         RouterLink: true,
+        RouterView: true,
       },
     });
   };
 
   const findAvatar = () => wrapper.findComponent(GlAvatar);
-  const findAvatarLink = () => wrapper.findComponent(GlAvatarLink);
   const findBadge = () => wrapper.findComponent(GlBadge);
   const findResourceName = () => wrapper.findComponent(GlButton);
   const findResourceDescription = () => wrapper.findByText(defaultProps.resource.description);
@@ -40,6 +50,11 @@ describe('CiResourcesListItem', () => {
   const findFavorites = () => wrapper.findByTestId('stats-favorites');
   const findForks = () => wrapper.findByTestId('stats-forks');
 
+  beforeEach(() => {
+    router = createRouter();
+    routerPush = jest.spyOn(router, 'push').mockImplementation(() => {});
+  });
+
   describe('when mounted', () => {
     beforeEach(() => {
       createComponent();
@@ -47,6 +62,7 @@ describe('CiResourcesListItem', () => {
 
     it('renders the resource avatar and passes the right props', () => {
       const { icon, id, name } = defaultProps.resource;
+
       expect(findAvatar().exists()).toBe(true);
       expect(findAvatar().props()).toMatchObject({
         entityId: getIdFromGraphQLId(id),
@@ -55,13 +71,8 @@ describe('CiResourcesListItem', () => {
       });
     });
 
-    it('renders the resource avatar link', () => {
-      expect(findAvatarLink().attributes('href')).toBe(resource.webPath);
-    });
-
     it('renders the resource name button', () => {
       expect(findResourceName().exists()).toBe(true);
-      expect(findResourceName().attributes('href')).toBe(resource.webPath);
     });
 
     it('renders the resource version badge', () => {
@@ -106,6 +117,40 @@ describe('CiResourcesListItem', () => {
           expect(findBadge().exists()).toBe(true);
           expect(findBadge().text()).toBe(release.tagName);
         });
+      });
+    });
+  });
+
+  describe('when clicking on an item title', () => {
+    beforeEach(async () => {
+      createComponent();
+
+      await findResourceName().vm.$emit('click');
+    });
+
+    it('navigates to the details page', () => {
+      expect(routerPush).toHaveBeenCalledWith({
+        name: CI_RESOURCE_DETAILS_PAGE_NAME,
+        params: {
+          id: getIdFromGraphQLId(resource.id),
+        },
+      });
+    });
+  });
+
+  describe('when clicking on an item avatar', () => {
+    beforeEach(async () => {
+      createComponent();
+
+      await findAvatar().vm.$emit('click');
+    });
+
+    it('navigates to the details page', () => {
+      expect(routerPush).toHaveBeenCalledWith({
+        name: CI_RESOURCE_DETAILS_PAGE_NAME,
+        params: {
+          id: getIdFromGraphQLId(resource.id),
+        },
       });
     });
   });

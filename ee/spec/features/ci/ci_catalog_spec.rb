@@ -57,9 +57,8 @@ RSpec.describe 'Ci Catalog', :js, feature_category: :pipeline_composition do
           find('[data-testid="ci-resource-link"]', match: :first).click
         end
 
-        it 'navigate to the project page', :aggregate_failures do
-          expect(page).not_to have_content('CI/CD Catalog')
-          expect(page).to have_content("A simple component")
+        it 'navigate to the details page', :aggregate_failures do
+          expect(page).to have_content('About this project')
         end
       end
     end
@@ -67,12 +66,9 @@ RSpec.describe 'Ci Catalog', :js, feature_category: :pipeline_composition do
 
   describe 'GET /:project/-/ci/catalog/resources/:id' do
     before do
-      # This can be replaced when clicking on the list item of a catalog item
-      # will take you to the details page. For now, we manually get the id
-      # and navigate to the page directly.
-      resource_id = Ci::Catalog::Resource.where(project_id: ci_resource_projects[0].id)[0].id
-      visit project_ci_catalog_resource_path(project, id: resource_id)
+      visit project_ci_catalog_resources_path(project)
       wait_for_requests
+      find('[data-testid="ci-resource-link"]', match: :first).click
     end
 
     it 'shows CI Catalog title in details page' do
