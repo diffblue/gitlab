@@ -1,4 +1,4 @@
-# Security Policy Project for <%= @container.name %>
+# Security Policy Project for Target Group
 
 This project is automatically generated to manage security policies for the project.
 
@@ -31,11 +31,11 @@ scan_execution_policy:
     site_profile: Site Profile D
 ```
 
-You can read more about the format and policies schema in the [documentation](<%= scan_execution_policies_docs_link %>).
+You can read more about the format and policies schema in the [documentation](http://localhost/help/user/application_security/policies/scan-execution-policies#scan-execution-policy-schema).
 
 ## Default branch protection settings
 
 This project is preconfigured with the default branch set as a protected branch, and only maintainers/owners of
-[<%= @container.name %>](<%= @container.web_url %>) have permission to merge into that branch. This overrides any default branch protection both at the
-[group level](<%= group_level_branch_protection_docs_link %>) and at the
-[instance level](<%= instance_level_branch_protection_docs_link %>).
+[Target Group](http://localhost/groups/target-group) have permission to merge into that branch. This overrides any default branch protection both at the
+[group level](http://localhost/help/user/group/manage#change-the-default-branch-protection-of-a-group) and at the
+[instance level](http://localhost/help/user/project/repository/branches/default#instance-level-default-branch-protection).
