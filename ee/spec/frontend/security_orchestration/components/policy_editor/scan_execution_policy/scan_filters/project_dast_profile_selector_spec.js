@@ -5,9 +5,10 @@ import { createMockApolloProvider } from 'ee_jest/security_configuration/dast_pr
 import waitForPromises from 'helpers/wait_for_promises';
 import DastProfilesDrawer from 'ee/security_configuration/dast_profiles/dast_profiles_drawer/dast_profiles_drawer.vue';
 import DastProfilesDrawerHeader from 'ee/security_configuration/dast_profiles/dast_profiles_drawer/dast_profiles_drawer_header.vue';
-import ProjectDastProfileSelector from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/project_dast_profile_selector.vue';
+import ProjectDastProfileSelector from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/scan_filters/project_dast_profile_selector.vue';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { SCANNER_TYPE, SITE_TYPE } from 'ee/on_demand_scans/constants';
+import GenericBaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/generic_base_layout_component.vue';
 
 describe('ProjectDastProfileSelector', () => {
   let wrapper;
@@ -21,6 +22,7 @@ describe('ProjectDastProfileSelector', () => {
         namespacePath: 'path/to/project',
       },
       stubs: {
+        GenericBaseLayoutComponent,
         GlSprintf,
       },
     });
