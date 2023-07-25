@@ -11,7 +11,12 @@ module Gitlab
             question = options[:question]
 
             response = ::Gitlab::Llm::TanukiBot.execute(current_user: user, question: question)
-            response_modifier = Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot.new(response)
+
+            response_modifier = if response.empty?
+                                  Gitlab::Llm::ResponseModifiers::EmptyResponseModifier.new(response)
+                                else
+                                  Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot.new(response.body)
+                                end
 
             ::Gitlab::Llm::GraphqlSubscriptionResponseService.new(
               user, resource, response_modifier, options: response_options

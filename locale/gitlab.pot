@@ -9338,6 +9338,9 @@ msgstr ""
 msgid "Chat"
 msgstr ""
 
+msgid "Chat not available."
+msgstr ""
+
 msgid "ChatMessage|%{project_link}: Pipeline %{pipeline_link} of %{ref_type} %{ref_link} by %{user_combined_name} %{humanized_status} in %{duration}"
 msgstr ""
 
@@ -23065,9 +23068,6 @@ msgid "How to track time"
 msgstr ""
 
 msgid "I accept the %{terms_link}"
-msgstr ""
-
-msgid "I do not know."
 msgstr ""
 
 msgid "I forgot my password"
