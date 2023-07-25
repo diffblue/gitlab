@@ -37,7 +37,7 @@ export default {
   mixins: [glFeatureFlagsMixin()],
   inject: ['resourceId', 'userId'],
   props: {
-    containerId: {
+    containerSelector: {
       type: String,
       required: true,
     },
@@ -120,7 +120,7 @@ export default {
   },
   methods: {
     handleSelectionChange() {
-      this.container = document.getElementById(this.containerId);
+      this.container = document.querySelector(this.containerSelector);
       if (!this.container) {
         throw new Error(this.$options.i18n.GENIE_NO_CONTAINER_ERROR);
       }
@@ -145,9 +145,10 @@ export default {
       const { top: finishSelectionTop } = selection
         .getRangeAt(selection.rangeCount - 1)
         .getBoundingClientRect();
+      const containerOffset = this.container.offsetTop;
       const { top: containerTop } = this.container.getBoundingClientRect();
 
-      this.top = Math.min(startSelectionTop, finishSelectionTop) - containerTop;
+      this.top = Math.min(startSelectionTop, finishSelectionTop) - containerTop + containerOffset;
     },
     requestCodeExplanation() {
       this.messages = [];

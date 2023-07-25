@@ -153,7 +153,7 @@ describe('Blob content viewer component', () => {
 
     it('sets correct props on the AI Genie component', async () => {
       await prepGonAndLoad();
-      expect(findAiGenie().props('containerId')).toBe('fileHolder');
+      expect(findAiGenie().props('containerSelector')).toBe('.file-content');
       expect(findAiGenie().props('filePath')).toBe(propsMock.projectPath);
     });
   });
