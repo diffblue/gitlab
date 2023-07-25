@@ -19,7 +19,7 @@ RSpec.describe ComplianceManagement::MergeRequests::CreateComplianceViolationsSe
     end
   end
 
-  context 'when the compliance report feature is disabled' do
+  context 'when the compliance center feature is disabled' do
     before do
       stub_licensed_features(group_level_compliance_dashboard: false)
     end
@@ -27,7 +27,7 @@ RSpec.describe ComplianceManagement::MergeRequests::CreateComplianceViolationsSe
     it_behaves_like 'does not call process_merge_request'
   end
 
-  context 'when the compliance report feature is enabled' do
+  context 'when the compliance center feature is enabled' do
     before do
       stub_licensed_features(group_level_compliance_dashboard: true)
     end
