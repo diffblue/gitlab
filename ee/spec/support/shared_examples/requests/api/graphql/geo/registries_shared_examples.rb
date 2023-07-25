@@ -113,7 +113,7 @@ RSpec.shared_examples 'gets registries for' do |args|
   end
 
   def registry_to_graphql_data_hash(registry)
-    hash = {
+    data = {
       'id' => registry.to_global_id.to_s,
       registry_foreign_key_field_name => registry.send(registry_foreign_key).to_s,
       'state' => registry.state_name.to_s.upcase,
@@ -124,9 +124,23 @@ RSpec.shared_examples 'gets registries for' do |args|
       'createdAt' => registry.created_at.iso8601
     }
 
-    hash['verifiedAt'] = registry.verified_at if verification_enabled
-    hash['verificationRetryAt'] = registry.verification_retry_at if verification_enabled
+    verification_data_to_registry_hash(data, registry)
+  end
 
-    hash
+  def verification_data_to_registry_hash(data, registry)
+    data['verificationChecksum'] = registry.verification_checksum
+    data['verificationFailure'] = registry.verification_failure
+    data['verificationRetryCount'] = registry.verification_retry_count
+    data['verificationStartedAt'] = registry.verification_started_at
+
+    # NOTE: remove respond_to? when GroupWikiRepositoryRegistry includes the verification state machine
+    # Issue: https://gitlab.com/gitlab-org/gitlab/-/issues/323897
+    data['verificationState'] = if registry.respond_to?(:verification_state_name)
+                                  registry.verification_state_name.to_s.gsub('verification_', '').upcase
+                                end
+
+    data['verifiedAt'] = registry.verified_at if verification_enabled
+    data['verificationRetryAt'] = registry.verification_retry_at if verification_enabled
+    data
   end
 end
