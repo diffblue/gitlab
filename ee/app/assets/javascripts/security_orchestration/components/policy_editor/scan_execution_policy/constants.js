@@ -51,10 +51,6 @@ export const SCANNER_HUMANIZED_TEMPLATE = s__(
   'ScanExecutionPolicy|Run a %{scan} scan with the following options:',
 );
 
-export const DAST_HUMANIZED_TEMPLATE = s__(
-  'ScanExecutionPolicy|Run a %{scan} scan with %{dastProfiles} with the following options:',
-);
-
 export const POLICY_ACTION_BUILDER_TAGS_ERROR_KEY = 'tags';
 export const POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY = 'profiles';
 

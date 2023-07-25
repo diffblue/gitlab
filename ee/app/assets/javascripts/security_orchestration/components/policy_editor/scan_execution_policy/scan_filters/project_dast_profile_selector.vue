@@ -1,27 +1,22 @@
 <script>
-import { GlButton, GlSprintf, GlTruncate } from '@gitlab/ui';
+import { GlButton, GlTruncate } from '@gitlab/ui';
 import DastProfilesDrawer from 'ee/security_configuration/dast_profiles/dast_profiles_drawer/dast_profiles_drawer.vue';
-import { s__ } from '~/locale';
 import dastProfileConfiguratorMixin from 'ee/security_configuration/dast_profiles/dast_profiles_configurator_mixin';
 import { SCANNER_TYPE, SITE_TYPE, DRAWER_VIEW_MODE } from 'ee/on_demand_scans/constants';
+import GenericBaseLayoutComponent from '../../generic_base_layout_component.vue';
+import { DAST_PROFILE_I18N } from './constants';
 
 export default {
   SITE_TYPE,
   SCANNER_TYPE,
   DRAWER_VIEW_MODE,
-  i18n: {
-    scannerButtonText: s__('ScanExecutionPolicy|Select scanner profile'),
-    siteButtonText: s__('ScanExecutionPolicy|Select site profile'),
-    dastProfilesMessage: s__(
-      'ScanExecutionPolicy|scanner profile %{scannerProfile} and site profile %{siteProfile}',
-    ),
-  },
+  i18n: { ...DAST_PROFILE_I18N },
   name: 'ProjectDastProfileSelector',
   components: {
     GlButton,
-    GlSprintf,
     GlTruncate,
     DastProfilesDrawer,
+    GenericBaseLayoutComponent,
   },
   mixins: [dastProfileConfiguratorMixin()],
   provide() {
@@ -41,10 +36,15 @@ export default {
   },
   computed: {
     scannerProfileButtonText() {
-      return this.selectedScannerProfile?.profileName || this.$options.i18n.scannerButtonText;
+      return (
+        this.selectedScannerProfile?.profileName ||
+        this.$options.i18n.selectedScannerProfilePlaceholder
+      );
     },
     siteProfileButtonText() {
-      return this.selectedSiteProfile?.profileName || this.$options.i18n.siteButtonText;
+      return (
+        this.selectedSiteProfile?.profileName || this.$options.i18n.selectedSiteProfilePlaceholder
+      );
     },
     profileIdInUse() {
       return this.isScannerProfile ? this.savedScannerProfileId : this.savedSiteProfileId;
@@ -95,10 +95,19 @@ export default {
 </script>
 
 <template>
-  <div class="gl-display-flex gl-align-items-center gl-gap-3">
-    <gl-sprintf :message="$options.i18n.dastProfilesMessage">
-      <template #scannerProfile>
+  <div class="gl-w-full">
+    <generic-base-layout-component
+      class="gl-w-full gl-bg-white gl-mb-3"
+      :show-remove-button="false"
+    >
+      <template #selector>
+        <label class="gl-mb-0 gl-mr-4" for="scanner-profile">
+          {{ $options.i18n.scanLabel }}
+        </label>
+      </template>
+      <template #content>
         <gl-button
+          id="scanner-profile"
           data-testid="scanner-profile-trigger"
           :disabled="failedToLoadProfiles"
           :loading="isLoadingProfiles"
@@ -112,8 +121,16 @@ export default {
           <gl-truncate :text="scannerProfileButtonText" />
         </gl-button>
       </template>
-      <template #siteProfile>
+    </generic-base-layout-component>
+    <generic-base-layout-component class="gl-w-full gl-bg-white" :show-remove-button="false">
+      <template #selector>
+        <label class="gl-mb-0 gl-mr-4" for="site-profile">
+          {{ $options.i18n.siteLabel }}
+        </label>
+      </template>
+      <template #content>
         <gl-button
+          id="site-profile"
           data-testid="site-profile-trigger"
           :disabled="failedToLoadProfiles"
           :loading="isLoadingProfiles"
@@ -127,7 +144,7 @@ export default {
           <gl-truncate :text="siteProfileButtonText" />
         </gl-button>
       </template>
-    </gl-sprintf>
+    </generic-base-layout-component>
 
     <dast-profiles-drawer
       :active-profile="activeProfile"

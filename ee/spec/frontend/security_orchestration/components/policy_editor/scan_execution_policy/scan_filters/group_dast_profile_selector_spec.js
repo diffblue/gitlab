@@ -1,6 +1,7 @@
 import { GlSprintf } from '@gitlab/ui';
-import GroupDastProfileSelector from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/group_dast_profile_selector.vue';
+import GroupDastProfileSelector from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/scan_filters/group_dast_profile_selector.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import GenericBaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/generic_base_layout_component.vue';
 
 describe('GroupDastProfileSelector', () => {
   let wrapper;
@@ -11,6 +12,7 @@ describe('GroupDastProfileSelector', () => {
         ...props,
       },
       stubs: {
+        GenericBaseLayoutComponent,
         GlSprintf,
       },
     });

@@ -8,17 +8,16 @@ import { ACTION_AND_LABEL, RULE_MODE_SCANNERS } from '../constants';
 import ScanFilterSelector from '../scan_filter_selector.vue';
 import { CI_VARIABLE, RUNNER_TAGS, FILTERS } from './scan_filters/constants';
 import CiVariablesSelectors from './scan_filters/ci_variables_selectors.vue';
+import GroupDastProfileSelector from './scan_filters/group_dast_profile_selector.vue';
+import ProjectDastProfileSelector from './scan_filters/project_dast_profile_selector.vue';
 import RunnerTagsFilter from './scan_filters/runner_tags_filter.vue';
 import {
-  DAST_HUMANIZED_TEMPLATE,
   DEFAULT_SCANNER,
   SCANNER_DAST,
   SCANNER_HUMANIZED_TEMPLATE,
   POLICY_ACTION_BUILDER_TAGS_ERROR_KEY,
   POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY,
 } from './constants';
-import ProjectDastProfileSelector from './project_dast_profile_selector.vue';
-import GroupDastProfileSelector from './group_dast_profile_selector.vue';
 import { buildScannerAction } from './lib';
 
 export default {
@@ -66,11 +65,6 @@ export default {
         text,
       }));
     },
-    actionMessage() {
-      return this.selectedScanner === SCANNER_DAST
-        ? DAST_HUMANIZED_TEMPLATE
-        : SCANNER_HUMANIZED_TEMPLATE;
-    },
     ciVariables() {
       return this.initAction.variables || {};
     },
@@ -78,6 +72,9 @@ export default {
       return (
         this.isFilterSelected(this.$options.CI_VARIABLE) || Object.keys(this.ciVariables).length > 0
       );
+    },
+    isDast() {
+      return this.selectedScanner === SCANNER_DAST;
     },
     isRunnerTagFilterSelected() {
       return this.isFilterSelected(RUNNER_TAGS) || this.tags.length > 0;
@@ -87,6 +84,9 @@ export default {
     },
     isFirstAction() {
       return this.actionIndex === 0;
+    },
+    isGroup() {
+      return this.namespaceType === NAMESPACE_TYPES.GROUP;
     },
     isProject() {
       return this.namespaceType === NAMESPACE_TYPES.PROJECT;
@@ -163,6 +163,7 @@ export default {
   },
   i18n: {
     scannersHeaderText: s__('ScanExecutionPolicy|Select a scanner'),
+    scannerHumanizedTemplate: SCANNER_HUMANIZED_TEMPLATE,
   },
 };
 </script>
@@ -180,7 +181,7 @@ export default {
       <template #content>
         <generic-base-layout-component class="gl-w-full gl-bg-white" @remove="$emit('remove')">
           <template #content>
-            <gl-sprintf :message="actionMessage">
+            <gl-sprintf :message="$options.i18n.scannerHumanizedTemplate">
               <template #scan>
                 <gl-collapsible-listbox
                   :items="actionScannerList"
@@ -190,24 +191,6 @@ export default {
                   @select="setSelectedScanner({ scanner: $event })"
                 />
               </template>
-              <template #dastProfiles>
-                <project-dast-profile-selector
-                  v-if="isProject"
-                  :full-path="namespacePath"
-                  :saved-scanner-profile-name="scannerProfile"
-                  :saved-site-profile-name="siteProfile"
-                  @error="
-                    $emit('parsing-error', $options.POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY)
-                  "
-                  @profiles-selected="setSelectedScanner"
-                />
-                <group-dast-profile-selector
-                  v-else
-                  :saved-scanner-profile-name="scannerProfile"
-                  :saved-site-profile-name="siteProfile"
-                  @set-profile="setSelectedScanner"
-                />
-              </template>
             </gl-sprintf>
           </template>
         </generic-base-layout-component>
@@ -215,6 +198,22 @@ export default {
     </generic-base-layout-component>
     <generic-base-layout-component class="gl-pt-3" :show-remove-button="false">
       <template #content>
+        <project-dast-profile-selector
+          v-if="isProject && isDast"
+          :full-path="namespacePath"
+          :saved-scanner-profile-name="scannerProfile"
+          :saved-site-profile-name="siteProfile"
+          @error="$emit('parsing-error', $options.POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY)"
+          @profiles-selected="setSelectedScanner"
+        />
+
+        <group-dast-profile-selector
+          v-if="isGroup && isDast"
+          :saved-scanner-profile-name="scannerProfile"
+          :saved-site-profile-name="siteProfile"
+          @set-profile="setSelectedScanner"
+        />
+
         <runner-tags-filter
           v-if="isRunnerTagFilterSelected"
           :selected="tags"
