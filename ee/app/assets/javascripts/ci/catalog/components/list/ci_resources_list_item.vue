@@ -1,7 +1,6 @@
 <script>
 import {
   GlAvatar,
-  GlAvatarLink,
   GlBadge,
   GlButton,
   GlIcon,
@@ -12,6 +11,7 @@ import {
 import { s__ } from '~/locale';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { formatDate, getTimeago } from '~/lib/utils/datetime_utility';
+import { CI_RESOURCE_DETAILS_PAGE_NAME } from '../../router/constants';
 
 export default {
   i18n: {
@@ -20,7 +20,6 @@ export default {
   },
   components: {
     GlAvatar,
-    GlAvatarLink,
     GlBadge,
     GlButton,
     GlIcon,
@@ -71,6 +70,14 @@ export default {
       return this.latestVersion?.tagName || this.$options.i18n.unreleased;
     },
   },
+  methods: {
+    navigateToDetailsPage() {
+      this.$router.push({
+        name: CI_RESOURCE_DETAILS_PAGE_NAME,
+        params: { id: this.entityId },
+      });
+    },
+  },
 };
 </script>
 <template>
@@ -78,23 +85,22 @@ export default {
     class="gl-display-flex gl-display-flex-wrap gl-border-b-1 gl-border-gray-100 gl-border-b-solid gl-text-gray-500 gl-py-3"
     data-testid="catalog-resource-item"
   >
-    <gl-avatar-link :href="resource.webPath">
-      <gl-avatar
-        class="gl-mr-4"
-        :entity-id="entityId"
-        :entity-name="resource.name"
-        shape="rect"
-        :size="48"
-        :src="resource.icon"
-      />
-    </gl-avatar-link>
+    <gl-avatar
+      class="gl-mr-4"
+      :entity-id="entityId"
+      :entity-name="resource.name"
+      shape="rect"
+      :size="48"
+      :src="resource.icon"
+      @click="navigateToDetailsPage"
+    />
     <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-1">
       <div class="gl-display-flex gl-flex-wrap gl-gap-2 gl-mb-2">
         <gl-button
           variant="link"
-          :href="resource.webPath"
           class="gl-text-gray-900! gl-mr-1"
           data-testid="ci-resource-link"
+          @click="navigateToDetailsPage"
         >
           {{ resourcePath }} <b> {{ resource.name }}</b>
         </gl-button>
