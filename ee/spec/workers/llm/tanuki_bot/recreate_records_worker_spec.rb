@@ -7,7 +7,7 @@ RSpec.describe Llm::TanukiBot::RecreateRecordsWorker, feature_category: :global_
 
   describe '#perform' do
     before do
-      stub_const("#{described_class}::DOC_DIRECTORY", './ee/spec/fixtures')
+      stub_const("#{described_class}::DOC_DIRECTORY", './ee/spec/fixtures/tanuki_bot_docs')
       allow(::Gitlab::Llm::ContentParser).to receive(:parse_and_split).and_return([item])
       allow(::Embedding::TanukiBotMvc).to receive(:get_current_version).and_return(version)
     end

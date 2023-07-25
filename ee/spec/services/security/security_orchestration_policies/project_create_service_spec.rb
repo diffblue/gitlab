@@ -4,12 +4,21 @@ require 'spec_helper'
 
 RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService, feature_category: :security_policy_management do
   describe '#execute' do
-    let_it_be_with_refind(:project) { create(:project) }
-    let_it_be(:group) { create(:group) }
+    let_it_be(:namespace) { create(:namespace, path: 'target-namespace') }
 
+    let_it_be_with_refind(:project) do
+      create(:project, path: 'target-project', name: 'Target Project', namespace: namespace)
+    end
+
+    let_it_be(:group) { create(:group, path: 'target-group', name: 'Target Group') }
     let_it_be(:owner) { create(:user) }
     let_it_be(:maintainer) { create(:user) }
     let_it_be(:developer) { create(:user) }
+
+    let(:expected_readme_data) do
+      path = "ee/spec/fixtures/projects/security/policies/expected_readme_for_#{container.class.name.downcase}.md"
+      File.read(Rails.root.join(path))
+    end
 
     let(:current_user) { container.first_owner }
     let(:container) { project }
@@ -21,7 +30,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService, fe
     end
 
     context 'when security_orchestration_policies_configuration does not exist for project' do
-      before do
+      before_all do
         project.add_maintainer(maintainer)
         project.add_developer(developer)
       end
@@ -34,15 +43,14 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService, fe
         expect(policy_project.namespace).to eq(project.namespace)
         expect(policy_project.team.developers).to contain_exactly(maintainer, developer)
         expect(policy_project.container_registry_access_level).to eq(ProjectFeature::DISABLED)
-        expect(policy_project.repository.readme.data).to include('# Security Policy Project for')
-        expect(policy_project.repository.readme.data).to include('## Default branch protection settings')
+        expect(policy_project.repository.readme.data).to eq(expected_readme_data)
       end
     end
 
     context 'when security_orchestration_policies_configuration does not exist for namespace' do
       let(:container) { group }
 
-      before do
+      before_all do
         group.add_owner(owner)
         group.add_maintainer(maintainer)
         group.add_developer(developer)
@@ -57,17 +65,18 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService, fe
         expect(policy_project.owner).to eq(group)
         expect(MembersFinder.new(policy_project, nil).execute.map(&:user)).to contain_exactly(owner, maintainer, developer)
         expect(policy_project.container_registry_access_level).to eq(ProjectFeature::DISABLED)
-        expect(policy_project.repository.readme.data).to include('# Security Policy Project for')
-        expect(policy_project.repository.readme.data).to include('## Default branch protection settings')
+        expect(policy_project.repository.readme.data).to eq(expected_readme_data)
       end
     end
 
     context 'when adding users to security policy project fails' do
       let(:current_user) { project.first_owner }
 
-      before do
+      before_all do
         project.add_maintainer(maintainer)
+      end
 
+      before do
         errors = ActiveModel::Errors.new(ProjectMember.new).tap { |e| e.add(:source, "cannot be nil") }
         error_member = ProjectMember.new
         allow(error_member).to receive(:errors).and_return(errors)
@@ -86,10 +95,11 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService, fe
       let(:error_message) { "Path can't be blank" }
 
       let(:invalid_project) do
-        instance_double(::Project,
-                        saved?: false,
-                        errors: instance_double(ActiveModel::Errors,
-                                                   full_messages: [error_message]))
+        instance_double(
+          ::Project,
+          saved?: false,
+          errors: instance_double(ActiveModel::Errors, full_messages: [error_message])
+        )
       end
 
       before do

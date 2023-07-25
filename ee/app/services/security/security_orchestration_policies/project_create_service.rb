@@ -73,6 +73,24 @@ module Security
         ERB.new(File.read(README_TEMPLATE_PATH), trim_mode: '<>').result(binding)
       end
 
+      def url_helpers
+        Rails.application.routes.url_helpers
+      end
+
+      def scan_execution_policies_docs_link
+        url_helpers.help_page_url('user/application_security/policies/scan-execution-policies',
+          anchor: 'scan-execution-policy-schema')
+      end
+
+      def group_level_branch_protection_docs_link
+        url_helpers.help_page_url('user/group/manage', anchor: 'change-the-default-branch-protection-of-a-group')
+      end
+
+      def instance_level_branch_protection_docs_link
+        url_helpers.help_page_url('user/project/repository/branches/default',
+          anchor: 'instance-level-default-branch-protection')
+      end
+
       def can_create_projects_in_container?
         current_user.can?(:create_projects, project_container? ? container.namespace : container)
       end
