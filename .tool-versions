@@ -1,6 +1,6 @@
 gitleaks 8.16.4
 minio 2022-07-15T03-44-22Z
-nodejs 18.16.1
+nodejs 18.17.0
 postgres 13.9 14.8
 redis 7.0.12
 ruby 3.1.4
