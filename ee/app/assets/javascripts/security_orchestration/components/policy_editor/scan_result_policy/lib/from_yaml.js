@@ -26,6 +26,7 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
         'severity_levels',
         'vulnerabilities_allowed',
         'vulnerability_states',
+        'vulnerability_age',
       ];
       const actionsKeys = [
         'type',

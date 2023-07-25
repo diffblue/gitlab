@@ -34,22 +34,35 @@ export default {
       required: false,
       default: () => ({}),
     },
+    shouldDisableFilter: {
+      type: Function,
+      required: false,
+      default: () => false,
+    },
     tooltipTitle: {
       type: String,
       required: false,
       default: '',
     },
+    customFilterTooltip: {
+      type: Function,
+      required: false,
+      default: () => null,
+    },
   },
   methods: {
-    filterSelected(value) {
-      return Boolean(this.selected[value]);
+    filterDisabled(value) {
+      return this.shouldDisableFilter(value) || Boolean(this.selected[value]);
     },
     selectFilter(filter) {
-      if (this.filterSelected(filter)) {
+      if (this.filterDisabled(filter)) {
         return;
       }
 
       this.$emit('select', filter);
+    },
+    filterTooltip(filter) {
+      return this.customFilterTooltip(filter) || filter.tooltip;
     },
   },
 };
@@ -75,17 +88,17 @@ export default {
             <span
               :id="item.value"
               class="gl-pr-3"
-              :class="{ 'gl-text-gray-500': filterSelected(item.value) }"
+              :class="{ 'gl-text-gray-500': filterDisabled(item.value) }"
             >
               {{ item.text }}
             </span>
             <gl-badge
-              v-if="filterSelected(item.value)"
+              v-if="filterDisabled(item.value)"
               v-gl-tooltip.right.viewport
               class="gl-ml-auto"
               size="sm"
               variant="neutral"
-              :title="item.tooltip"
+              :title="filterTooltip(item)"
             >
               {{ $options.i18n.disabledLabel }}
             </gl-badge>

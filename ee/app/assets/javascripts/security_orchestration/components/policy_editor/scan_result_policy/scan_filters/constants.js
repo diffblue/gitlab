@@ -2,31 +2,51 @@ import { s__ } from '~/locale';
 
 export const SEVERITY = 'severity';
 export const STATUS = 'status';
+export const AGE = 'age';
 
 export const UNKNOWN_LICENSE = {
   value: 'unknown',
   text: s__('ScanResultPolicy|Unknown'),
 };
 
+export const AGE_TOOLTIP_MAXIMUM_REACHED = 'maximumReached';
+export const AGE_TOOLTIP_NO_PREVIOUSLY_EXISTING_VULNERABILITY = 'noPreviouslyExistingVulnerability';
+
+const AGE_TOOLTIPS = {
+  [AGE_TOOLTIP_MAXIMUM_REACHED]: s__('ScanResultPolicy|Only 1 age criteria is allowed'),
+  [AGE_TOOLTIP_NO_PREVIOUSLY_EXISTING_VULNERABILITY]: s__(
+    'ScanResultPolicy|Age criteria can only be added for pre-existing vulnerabilities',
+  ),
+};
+
 export const FILTERS = [
   {
     text: s__('ScanResultPolicy|New severity'),
     value: SEVERITY,
-    tooltip: s__('ScanResultPolicy|Maximum number of severity-criteria is one'),
+    tooltip: s__('ScanResultPolicy|Only 1 severity is allowed'),
   },
   {
     text: s__('ScanResultPolicy|New status'),
     value: STATUS,
-    tooltip: s__('ScanResultPolicy|Maximum number of status-criteria is two'),
+    tooltip: s__('ScanResultPolicy|Only 2 status criteria are allowed'),
+  },
+  {
+    text: s__('ScanResultPolicy|New age'),
+    value: AGE,
+    tooltip: AGE_TOOLTIPS,
   },
 ];
 
-export const FILTERS_STATUS_INDEX = FILTERS.findIndex(({ value }) => value === STATUS);
+export const AGE_DAY = 'day';
 
-export const FILTER_POLICY_PROPERTY_MAP = {
-  [STATUS]: 'vulnerability_states',
-  [SEVERITY]: 'severity_levels',
-};
+export const AGE_INTERVALS = [
+  { value: AGE_DAY, text: s__('ApprovalRule|day(s)') },
+  { value: 'week', text: s__('ApprovalRule|week(s)') },
+  { value: 'month', text: s__('ApprovalRule|month(s)') },
+  { value: 'year', text: s__('ApprovalRule||year(s)') },
+];
+
+export const FILTERS_STATUS_INDEX = FILTERS.findIndex(({ value }) => value === STATUS);
 
 export const NEWLY_DETECTED = 'newly_detected';
 export const PREVIOUSLY_EXISTING = 'previously_existing';

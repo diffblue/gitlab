@@ -118,12 +118,20 @@ export const ALL_PROTECTED_BRANCHES = {
 
 export const ANY_OPERATOR = 'ANY';
 
-export const MORE_THAN_OPERATOR = 'MORE_THAN';
+export const GREATER_THAN_OPERATOR = 'greater_than';
 
-export const NUMBER_RANGE_I18N_MAP = {
-  [ANY_OPERATOR]: s__('ApprovalRule|Any'),
-  [MORE_THAN_OPERATOR]: s__('ApprovalRule|More than'),
-};
+export const LESS_THAN_OPERATOR = 'less_than';
+
+export const VULNERABILITIES_ALLOWED_OPERATORS = [
+  { value: ANY_OPERATOR, text: s__('ApprovalRule|Any') },
+  { value: GREATER_THAN_OPERATOR, text: s__('ApprovalRule|More than') },
+];
+
+export const VULNERABILITY_AGE_OPERATORS = [
+  { value: ANY_OPERATOR, text: s__('ApprovalRule|Any') },
+  { value: GREATER_THAN_OPERATOR, text: s__('ApprovalRule|Greater than') },
+  { value: LESS_THAN_OPERATOR, text: s__('ApprovalRule|Less than') },
+];
 
 export const SCAN_RESULT_BRANCH_TYPE_OPTIONS = (nameSpaceType = NAMESPACE_TYPES.GROUP) => [
   nameSpaceType === NAMESPACE_TYPES.GROUP ? GROUP_DEFAULT_BRANCHES : PROJECT_DEFAULT_BRANCH,
