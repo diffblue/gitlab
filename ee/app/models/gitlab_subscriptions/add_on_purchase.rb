@@ -20,5 +20,13 @@ module GitlabSubscriptions
     scope :by_add_on_name, ->(name) { joins(:add_on).where(add_on: { name: name }) }
     scope :for_code_suggestions, -> { where(subscription_add_on_id: AddOn.code_suggestions.pick(:id)) }
     scope :for_project, ->(project_id) { where(namespace: Project.find_by_id(project_id)&.root_namespace) }
+
+    def already_assigned?(user)
+      assigned_users.where(user: user).exists?
+    end
+
+    def active?
+      expires_on >= Date.current
+    end
   end
 end

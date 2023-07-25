@@ -1533,6 +1533,110 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     end
   end
 
+  describe '#billed_group_user?' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:sub_group) { create(:group, parent: group) }
+    let_it_be(:developer) { group.add_developer(create(:user)).user }
+    let_it_be(:sub_developer) { sub_group.add_developer(create(:user)).user }
+    let_it_be(:guest) { group.add_guest(create(:user)).user }
+
+    where(:user, :exclude_guests, :result) do
+      ref(:developer)     | false | true
+      ref(:sub_developer) | false | true
+      ref(:guest)         | false | true
+      ref(:developer)     | true  | true
+      ref(:sub_developer) | true  | true
+      ref(:guest)         | true  | false
+    end
+
+    subject { group.billed_group_user?(user, exclude_guests: exclude_guests) }
+
+    with_them do
+      it { is_expected.to eq(result) }
+    end
+  end
+
+  describe '#billed_project_user?' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, namespace: group) }
+    let_it_be(:sub_group_project) { create(:project, namespace: create(:group, parent: group)) }
+    let_it_be(:developer) { project.add_developer(create(:user)).user }
+    let_it_be(:sub_developer) { sub_group_project.add_developer(create(:user)).user }
+    let_it_be(:guest) { project.add_guest(create(:user)).user }
+
+    where(:user, :exclude_guests, :result) do
+      ref(:developer)     | false | true
+      ref(:sub_developer) | false | true
+      ref(:guest)         | false | true
+      ref(:developer)     | true  | true
+      ref(:sub_developer) | true  | true
+      ref(:guest)         | true  | false
+    end
+
+    subject { group.billed_project_user?(user, exclude_guests: exclude_guests) }
+
+    with_them do
+      it { is_expected.to eq(result) }
+    end
+  end
+
+  describe '#billed_shared_group_user?' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:ancestor_invited_group) { create(:group) }
+    let_it_be(:invited_group) { create(:group, parent: ancestor_invited_group) }
+    let_it_be(:ancestor_invited_developer) { ancestor_invited_group.add_developer(create(:user)).user }
+    let_it_be(:invited_developer) { invited_group.add_developer(create(:user)).user }
+    let_it_be(:invited_guest) { invited_group.add_guest(create(:user)).user }
+
+    before_all do
+      create(:group_group_link, { shared_with_group: invited_group, shared_group: group })
+    end
+
+    where(:user, :exclude_guests, :result) do
+      ref(:ancestor_invited_developer) | false | true
+      ref(:invited_developer)          | false | true
+      ref(:invited_guest)              | false | true
+      ref(:ancestor_invited_developer) | true  | true
+      ref(:invited_developer)          | true  | true
+      ref(:invited_guest)              | true  | false
+    end
+
+    subject { group.billed_shared_group_user?(user, exclude_guests: exclude_guests) }
+
+    with_them do
+      it { is_expected.to eq(result) }
+    end
+  end
+
+  describe '#billed_shared_project_user?' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, namespace: group) }
+    let_it_be(:ancestor_invited_group) { create(:group) }
+    let_it_be(:invited_group) { create(:group, parent: ancestor_invited_group) }
+    let_it_be(:ancestor_invited_developer) { ancestor_invited_group.add_developer(create(:user)).user }
+    let_it_be(:invited_developer) { invited_group.add_developer(create(:user)).user }
+    let_it_be(:invited_guest) { invited_group.add_guest(create(:user)).user }
+
+    before_all do
+      create(:project_group_link, project: project, group: invited_group)
+    end
+
+    where(:user, :exclude_guests, :result) do
+      ref(:ancestor_invited_developer) | false | true
+      ref(:invited_developer)          | false | true
+      ref(:invited_guest)              | false | true
+      ref(:ancestor_invited_developer) | true  | true
+      ref(:invited_developer)          | true  | true
+      ref(:invited_guest)              | true  | false
+    end
+
+    subject { group.billed_shared_project_user?(user, exclude_guests: exclude_guests) }
+
+    with_them do
+      it { is_expected.to eq(result) }
+    end
+  end
+
   describe '#capacity_left_for_user?' do
     let_it_be(:group) { create(:group) }
     let_it_be(:user) { create(:user) }
