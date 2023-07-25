@@ -8,7 +8,7 @@ module EE
       override :execute
       def execute(extra_params = {})
         super.tap do |email|
-          log_audit_event(action: :create) if email.persisted?
+          log_audit_event(action: :create, target: email) if email.persisted?
         end
       end
     end

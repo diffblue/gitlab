@@ -114,7 +114,14 @@ class SmartcardController < ApplicationController
   end
 
   def log_audit_event(user, options = {})
-    AuditEventService.new(user, user, options).for_authentication.security_event
+    ::Gitlab::Audit::Auditor.audit({
+      name: "smartcard_authentication_created",
+      author: user,
+      scope: user,
+      target: user,
+      message: "User authenticated with smartcard",
+      additional_details: options
+    })
   end
 
   def after_sign_in_path_for(resource)

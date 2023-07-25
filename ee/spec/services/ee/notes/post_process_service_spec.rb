@@ -28,6 +28,9 @@ RSpec.describe Notes::PostProcessService, feature_category: :team_planning do
         let(:note) { create(:note, author: project_bot) }
 
         it 'audits with correct name' do
+          # Stub .audit here so that only relevant audit events are received below
+          allow(::Gitlab::Audit::Auditor).to receive(:audit)
+
           expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
             hash_including(name: "comment_by_project_bot", stream_only: true)
           ).and_call_original
@@ -44,7 +47,9 @@ RSpec.describe Notes::PostProcessService, feature_category: :team_planning do
         let(:note) { create(:note) }
 
         it 'does not invoke Gitlab::Audit::Auditor' do
-          expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
+          expect(::Gitlab::Audit::Auditor).not_to receive(:audit).with(hash_including(
+            name: 'comment_by_project_bot'
+          ))
 
           notes_post_process_service.execute
         end

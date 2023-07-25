@@ -22,6 +22,9 @@ RSpec.describe 'VerifiesWithEmail', feature_category: :instance_resiliency do
     end
 
     it 'logs a user_access_locked audit event with correct message', feature_category: :audit_events do
+      # Stub .audit here so that only relevant audit events are received below
+      allow(::Gitlab::Audit::Auditor).to receive(:audit)
+
       expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
         hash_including(
           name: 'user_access_locked',

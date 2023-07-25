@@ -33,7 +33,9 @@ RSpec.describe Audit::MergeRequestBeforeDestroyAuditor, feature_category: :audit
       it 'does not audit the event' do
         subject.execute
 
-        expect(Gitlab::Audit::Auditor).not_to have_received(:audit)
+        expect(Gitlab::Audit::Auditor).not_to have_received(:audit).with(hash_including(
+          name: 'merged_merge_request_deletion_started'
+        ))
       end
     end
 
@@ -58,16 +60,14 @@ RSpec.describe Audit::MergeRequestBeforeDestroyAuditor, feature_category: :audit
         end
 
         it 'includes additional details in the message' do
+          expect(Gitlab::Audit::Auditor).to receive(:audit).with(hash_including(
+            message: "Removed MergeRequest(#{merge_request.title} with IID: #{merge_request.iid} " \
+                     "and ID: #{merge_request.id}), labels: label1 and label2, " \
+                     "approved_by_user_ids: 1 and 2, " \
+                     "committer_user_ids: 4 and 5, merged_by_user_id: 3"
+          ))
+
           subject.execute
-
-          expect(Gitlab::Audit::Auditor).to have_received(:audit) do |args|
-            expected_message = "Removed MergeRequest(#{merge_request.title} with IID: #{merge_request.iid} " \
-                               "and ID: #{merge_request.id}), labels: label1 and label2, " \
-                               "approved_by_user_ids: 1 and 2, " \
-                               "committer_user_ids: 4 and 5, merged_by_user_id: 3"
-
-            expect(args[:message]).to eq(expected_message)
-          end
         end
 
         context 'when metrics is not present' do
@@ -76,15 +76,14 @@ RSpec.describe Audit::MergeRequestBeforeDestroyAuditor, feature_category: :audit
           end
 
           it 'does not include merged_by_user_id in the message' do
-            subject.execute
+            expect(Gitlab::Audit::Auditor).to receive(:audit).with(hash_including(
+              message: "Removed MergeRequest(#{merge_request.title} with IID: #{merge_request.iid} " \
+                       "and ID: #{merge_request.id}), labels: label1 and label2, " \
+                       "approved_by_user_ids: 1 and 2, " \
+                       "committer_user_ids: 4 and 5"
+            ))
 
-            expect(Gitlab::Audit::Auditor).to have_received(:audit) do |args|
-              expected_message = "Removed MergeRequest(#{merge_request.title} with IID: #{merge_request.iid} " \
-                                 "and ID: #{merge_request.id}), labels: label1 and label2, " \
-                                 "approved_by_user_ids: 1 and 2, " \
-                                 "committer_user_ids: 4 and 5"
-              expect(args[:message]).to eq(expected_message)
-            end
+            subject.execute
           end
         end
       end
@@ -96,14 +95,12 @@ RSpec.describe Audit::MergeRequestBeforeDestroyAuditor, feature_category: :audit
         end
 
         it 'omits labels and approvers from the message' do
+          expect(Gitlab::Audit::Auditor).to receive(:audit).with(hash_including(
+            message: "Removed MergeRequest(#{merge_request.title} with IID: #{merge_request.iid} " \
+                     "and ID: #{merge_request.id}), committer_user_ids: 4 and 5, merged_by_user_id: 3"
+          ))
+
           subject.execute
-
-          expect(Gitlab::Audit::Auditor).to have_received(:audit) do |args|
-            expected_message = "Removed MergeRequest(#{merge_request.title} with IID: #{merge_request.iid} " \
-                               "and ID: #{merge_request.id}), committer_user_ids: 4 and 5, merged_by_user_id: 3" \
-
-            expect(args[:message]).to eq(expected_message)
-          end
         end
       end
     end

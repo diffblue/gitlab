@@ -160,7 +160,9 @@ RSpec.describe ApprovalRules::CreateService do
       end
 
       it 'creates approval without audit' do
-        expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
+        expect(::Gitlab::Audit::Auditor).not_to receive(:audit).with(
+          hash_including(name: 'approval_rule_created')
+        )
 
         expect(result[:status]).to eq(:success)
       end

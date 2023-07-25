@@ -1,0 +1,9 @@
+---
+name: smartcard_authentication_created
+description: Event triggered when a user authenticates with smartcard
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/726
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/8120
+feature_category: compliance_management
+milestone: '16.0'
+saved_to_database: true
+streamed: false

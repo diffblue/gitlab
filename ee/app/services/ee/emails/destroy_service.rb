@@ -8,7 +8,7 @@ module EE
       override :execute
       def execute(email)
         super.tap do
-          log_audit_event(action: :destroy)
+          log_audit_event(action: :destroy, target: email)
         end
       end
     end

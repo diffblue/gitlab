@@ -18,8 +18,14 @@ module AuditEvents
     end
 
     def log_instance_audit_event
-      AuditEvents::ImpersonationAuditEventService.new(@impersonator, @remote_ip, "#{@action.capitalize} Impersonation", @created_at)
-                                                 .for_user(full_path: @user.username, entity_id: @user.id).security_event
+      ::Gitlab::Audit::Auditor.audit({
+        name: "user_impersonation",
+        author: @impersonator,
+        scope: @impersonator,
+        target: @user,
+        message: "#{@action.capitalize} Impersonation",
+        created_at: @created_at
+      })
     end
 
     def log_groups_audit_events

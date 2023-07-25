@@ -164,18 +164,19 @@ RSpec.describe SmartcardController, type: :request, feature_category: :system_ac
         end
 
         it 'logs audit event' do
-          audit_event_service = instance_double(::AuditEventService)
-
           # Creating a confirmed user also creates an email corresponding to the user primary email
-          expect(::AuditEventService).to(
-            receive(:new)
-              .with(instance_of(User), instance_of(User), { action: :create }).and_call_original)
+          expect(::Gitlab::Audit::Auditor).to receive(:audit).with(hash_including({
+            name: "email_created"
+          })).and_call_original
 
-          expect(::AuditEventService).to(
-            receive(:new)
-              .with(instance_of(User), instance_of(User), { with: auth_method, ip_address: '127.0.0.1' })
-              .and_return(audit_event_service))
-          expect(audit_event_service).to receive_message_chain(:for_authentication, :security_event)
+          expect(::Gitlab::Audit::Auditor).to receive(:audit).with(hash_including({
+            name: "smartcard_authentication_created",
+            author: instance_of(User),
+            scope: instance_of(User),
+            target: instance_of(User),
+            message: "User authenticated with smartcard",
+            additional_details: { with: auth_method, ip_address: '127.0.0.1' }
+          })).and_call_original
 
           subject
         end
