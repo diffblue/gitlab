@@ -109,10 +109,7 @@ module Gitlab
       end
 
       def empty_response
-        {
-          content: _("I do not know."),
-          sources: []
-        }
+        {}
       end
 
       def info(payload)

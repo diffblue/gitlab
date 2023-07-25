@@ -10,7 +10,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Completions::TanukiBot, feature_category:
   let(:params) { { request_id: 'uuid' } }
   let(:template_class) { ::Gitlab::Llm::Anthropic::Templates::TanukiBot }
 
-  let(:ai_response) do
+  let(:ai_response_body) do
     {
       choices: [
         {
@@ -18,6 +18,13 @@ RSpec.describe Gitlab::Llm::Anthropic::Completions::TanukiBot, feature_category:
         }
       ]
     }.to_json
+  end
+
+  let(:ai_response) do
+    double( # rubocop: disable RSpec/VerifiedDoubles
+      body: ai_response_body,
+      empty?: false
+    )
   end
 
   subject(:tanuki_bot) { described_class.new(template_class, params).execute(user, user, options) }
@@ -38,7 +45,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Completions::TanukiBot, feature_category:
       response_service = double
       params = [user, user, response_modifier, { options: { request_id: 'uuid' } }]
 
-      expect(Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot).to receive(:new).with(ai_response).and_return(
+      expect(Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot).to receive(:new).with(ai_response_body).and_return(
         response_modifier
       )
 
@@ -51,7 +58,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Completions::TanukiBot, feature_category:
     end
 
     it 'handles nil responses' do
-      allow(::Gitlab::Llm::TanukiBot).to receive(:execute).and_return(nil)
+      allow(::Gitlab::Llm::TanukiBot).to receive(:execute).and_return({})
 
       expect { tanuki_bot }.not_to raise_error
     end
