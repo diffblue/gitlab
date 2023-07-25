@@ -28,4 +28,4 @@
         -# We're inferring the revoked date from the last updated_at, see https://gitlab.com/gitlab-org/gitlab/-/issues/218046#note_362875952
         = personal_access_token.updated_at.to_date
       - elsif personal_access_token.active?
-        = link_to _('Revoke'), personal_access_token_revoke_path(personal_access_token), method: :put, data: { confirm: _('Are you sure you want to revoke this personal access token? This action cannot be undone.') }, class: 'btn btn-danger btn-danger-secondary btn-md btn-secondary gl-button'
+        = link_button_to _('Revoke'), personal_access_token_revoke_path(personal_access_token), method: :put, data: { confirm: _('Are you sure you want to revoke this personal access token? This action cannot be undone.') }, variant: :danger, category: :secondary
