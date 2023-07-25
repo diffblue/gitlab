@@ -1,22 +1,23 @@
 import { MESSAGE_TYPES, SOURCE_TYPES } from 'ee/ai/tanuki_bot/constants';
+import { PROMO_URL } from 'jh_else_ce/lib/utils/url_utility';
 
 export const MOCK_SOURCE_TYPES = {
   HANDBOOK: {
     title: 'GitLab Handbook',
     source_type: SOURCE_TYPES.HANDBOOK.value,
-    source_url: 'https://about.gitlab.com/handbook/',
+    source_url: `${PROMO_URL}/handbook/`,
   },
   DOC: {
     stage: 'Mock Stage',
     group: 'Mock Group',
     source_type: SOURCE_TYPES.DOC.value,
-    source_url: 'https://about.gitlab.com/company/team/',
+    source_url: `${PROMO_URL}/company/team/`,
   },
   BLOG: {
     date: '2023-04-21',
     author: 'Test User',
     source_type: SOURCE_TYPES.BLOG.value,
-    source_url: 'https://about.gitlab.com/blog/',
+    source_url: `${PROMO_URL}/blog/`,
   },
 };
 
