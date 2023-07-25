@@ -9,8 +9,8 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 You can use the Jira development panel to view GitLab activity for a Jira issue directly in Jira.
 To set up the Jira development panel:
 
-- **For Jira Cloud**, use the [GitLab for Jira Cloud app](connect-app.md) developed by GitLab.
-- **For Jira Data Center or Jira Server**, use the [Jira DVCS connector](dvcs/index.md) developed by Atlassian.
+- **For Jira Cloud**, use the [GitLab for Jira Cloud app](connect-app.md) developed and maintained by GitLab.
+- **For Jira Data Center or Jira Server**, use the [Jira DVCS connector](dvcs/index.md) developed and maintained by Atlassian.
 
 <i class="fa fa-youtube-play youtube" aria-hidden="true"></i>
 For an overview, see [Jira development panel integration](https://www.youtube.com/watch?v=VjVTOmMl85M).
