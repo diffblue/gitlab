@@ -23,7 +23,6 @@ RSpec.describe Namespaces::FreeUserCap::NotifyOverLimitService, :saas, feature_c
     # - We need to create namespaces that are over the limit which isn't possible
     #   anymore with net-new namespaces
     stub_ee_application_setting dashboard_limit: limit
-    stub_ee_application_setting dashboard_enforcement_limit: limit
     stub_ee_application_setting dashboard_limit_enabled: true
     stub_ee_application_setting should_check_namespace_plan: true
   end

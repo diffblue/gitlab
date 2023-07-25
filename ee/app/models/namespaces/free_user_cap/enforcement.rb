@@ -33,7 +33,6 @@ module Namespaces
 
       def at_limit?
         return false unless enforce_cap?
-        return false unless new_namespace_enforcement?
 
         users_count == limit
       end
@@ -47,7 +46,6 @@ module Namespaces
 
       def close_to_dashboard_limit?
         return false unless enforce_cap?
-        return false unless new_namespace_enforcement?
         return false if reached_limit?
 
         users_count >= (limit - CLOSE_TO_LIMIT_COUNT_DIFFERENCE)
@@ -99,7 +97,7 @@ module Namespaces
       end
 
       def database_limit
-        max_limit + 1
+        ::Gitlab::CurrentSettings.dashboard_limit + 1
       end
 
       def enforceable_subscription?
@@ -125,23 +123,12 @@ module Namespaces
         end
       end
 
-      def max_limit
-        [
-          ::Gitlab::CurrentSettings.dashboard_limit,
-          ::Gitlab::CurrentSettings.dashboard_enforcement_limit
-        ].max
-      end
-
       def above_size_limit?
         ::Namespaces::FreeUserCap::RootSize.new(root_namespace).above_size_limit?
       end
 
       def limit
-        if new_namespace_enforcement?
-          Namespaces::FreeUserCap.dashboard_limit
-        else
-          ::Gitlab::CurrentSettings.dashboard_enforcement_limit
-        end
+        Namespaces::FreeUserCap.dashboard_limit
       end
 
       def member_with_user_already_exists?(user)
@@ -149,15 +136,8 @@ module Namespaces
         user && ::Member.in_hierarchy(root_namespace).with_user(user).exists?
       end
 
-      def new_namespace_enforcement?
-        return false unless ::Feature.enabled?(:free_user_cap_new_namespaces, root_namespace)
-        return false unless ::Gitlab::CurrentSettings.dashboard_limit_new_namespace_creation_enforcement_date.present?
-
-        root_namespace.created_at >= ::Gitlab::CurrentSettings.dashboard_limit_new_namespace_creation_enforcement_date
-      end
-
       def feature_enabled?
-        ::Feature.enabled?(:free_user_cap, root_namespace) || new_namespace_enforcement?
+        ::Feature.enabled?(:free_user_cap, root_namespace)
       end
 
       def git_read_only_message

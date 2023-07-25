@@ -31,7 +31,7 @@ RSpec.describe Namespaces::FreeUserCap::UsageQuotaTrialAlertComponent, :saas, :a
 
   before do
     stub_ee_application_setting(dashboard_limit_enabled: true)
-    stub_ee_application_setting(dashboard_enforcement_limit: 5)
+    stub_ee_application_setting(dashboard_limit: 5)
     stub_feature_flags(free_user_cap: free_user_cap_enabled)
     namespace.add_owner(user)
     travel_to(trial_ends_on)

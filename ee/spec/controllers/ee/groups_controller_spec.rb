@@ -35,7 +35,7 @@ RSpec.describe GroupsController, feature_category: :groups_and_projects do
 
       before do
         stub_ee_application_setting(dashboard_limit_enabled: true)
-        stub_ee_application_setting(dashboard_enforcement_limit: 5)
+        stub_ee_application_setting(dashboard_limit: 5)
       end
 
       it 'avoids extra user count queries', :request_store do

@@ -76,8 +76,6 @@ module EE
 
         settings << :dashboard_limit_enabled
         settings << :dashboard_limit
-        settings << :dashboard_enforcement_limit
-        settings << :dashboard_limit_new_namespace_creation_enforcement_date
       end
     end
 

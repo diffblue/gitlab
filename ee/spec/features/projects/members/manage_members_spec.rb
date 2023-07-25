@@ -20,7 +20,7 @@ RSpec.describe 'Projects > Members > Manage members', :js, feature_category: :gr
 
     context 'when at free user limit' do
       it 'shows the alert notification in the modal' do
-        stub_ee_application_setting(dashboard_enforcement_limit: 1)
+        stub_ee_application_setting(dashboard_limit: 1)
 
         sign_in(user)
 
@@ -35,10 +35,9 @@ RSpec.describe 'Projects > Members > Manage members', :js, feature_category: :gr
       end
     end
 
-    context 'when close to free user limit on new top-level group' do
+    context 'when close to free user limit on a top-level group' do
       it 'shows the alert notification in the modal' do
         stub_ee_application_setting(dashboard_limit: 4)
-        stub_ee_application_setting(dashboard_limit_new_namespace_creation_enforcement_date: 2.days.ago)
 
         sign_in(user)
 
