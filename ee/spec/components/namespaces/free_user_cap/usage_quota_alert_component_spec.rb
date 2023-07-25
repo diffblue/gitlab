@@ -27,7 +27,7 @@ RSpec.describe Namespaces::FreeUserCap::UsageQuotaAlertComponent, :saas, :aggreg
     namespace.add_owner(user)
 
     stub_ee_application_setting(dashboard_limit_enabled: true)
-    stub_ee_application_setting(dashboard_enforcement_limit: 5)
+    stub_ee_application_setting(dashboard_limit: 5)
     allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return({ user_ids: free_plan_members_count })
   end
 

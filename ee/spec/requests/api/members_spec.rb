@@ -66,7 +66,7 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
 
         context 'when there are at the size limit' do
           before do
-            stub_ee_application_setting(dashboard_enforcement_limit: 1)
+            stub_ee_application_setting(dashboard_limit: 1)
           end
 
           it_behaves_like 'does not add members'
@@ -78,7 +78,7 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
 
         context 'when there is a seat left' do
           before do
-            stub_ee_application_setting(dashboard_enforcement_limit: 3)
+            stub_ee_application_setting(dashboard_limit: 3)
           end
 
           it 'creates a member' do

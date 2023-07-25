@@ -124,9 +124,9 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
 
       context 'when there are over the size limit' do
         before do
-          stub_ee_application_setting(dashboard_enforcement_limit: 3) # allow us to add a user/member
+          stub_ee_application_setting(dashboard_limit: 3) # allow us to add a user/member
           group.add_developer(create(:user))
-          stub_ee_application_setting(dashboard_enforcement_limit: 0) # set us up to now be over
+          stub_ee_application_setting(dashboard_limit: 0) # set us up to now be over
         end
 
         it_behaves_like 'does not add members'
@@ -134,7 +134,7 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
 
       context 'when there is a seat left' do
         before do
-          stub_ee_application_setting(dashboard_enforcement_limit: 3)
+          stub_ee_application_setting(dashboard_limit: 3)
         end
 
         it 'creates a member' do
@@ -146,7 +146,7 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
 
       context 'when there are seats left and we add enough to exhaust all seats' do
         before do
-          stub_ee_application_setting(dashboard_enforcement_limit: 1)
+          stub_ee_application_setting(dashboard_limit: 1)
         end
 
         it 'creates one member and errors on the other member' do

@@ -24,7 +24,7 @@ RSpec.shared_examples_for 'over the free user limit alert' do
   describe 'with enforcement concerns' do
     before do
       stub_feature_flags(free_user_cap: true)
-      stub_ee_application_setting(dashboard_enforcement_limit: dashboard_enforcement_limit)
+      stub_ee_application_setting(dashboard_limit: dashboard_limit)
     end
 
     let(:alert_title_content) do
@@ -32,7 +32,7 @@ RSpec.shared_examples_for 'over the free user limit alert' do
     end
 
     context 'when over limit' do
-      let(:dashboard_enforcement_limit) { 0 }
+      let(:dashboard_limit) { 0 }
 
       it 'shows free user limit warning', :js do
         visit_page
@@ -74,7 +74,7 @@ RSpec.shared_examples_for 'over the free user limit alert' do
     end
 
     context 'when at limit' do
-      let(:dashboard_enforcement_limit) { 1 }
+      let(:dashboard_limit) { 1 }
 
       it 'does not show free user limit warning', :js do
         visit_page
@@ -85,7 +85,7 @@ RSpec.shared_examples_for 'over the free user limit alert' do
     end
 
     context 'when under limit' do
-      let(:dashboard_enforcement_limit) { 2 }
+      let(:dashboard_limit) { 2 }
 
       it 'does not show free user limit warning', :js do
         visit_page

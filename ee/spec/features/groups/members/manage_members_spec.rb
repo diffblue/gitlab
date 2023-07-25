@@ -386,7 +386,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js, feature_category
 
     context 'when at free user limit' do
       it 'shows the alert notification in the modal' do
-        stub_ee_application_setting(dashboard_enforcement_limit: 1)
+        stub_ee_application_setting(dashboard_limit: 1)
 
         sign_in(user)
 

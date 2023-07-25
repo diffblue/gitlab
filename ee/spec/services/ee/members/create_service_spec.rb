@@ -158,7 +158,7 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
     context 'when creating' do
       context 'when seat is available' do
         before do
-          stub_ee_application_setting(dashboard_enforcement_limit: 3)
+          stub_ee_application_setting(dashboard_limit: 3)
         end
 
         context 'with existing user that is a member in our hierarchy' do
@@ -202,7 +202,7 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
       end
 
       before do
-        stub_ee_application_setting(dashboard_enforcement_limit: 1)
+        stub_ee_application_setting(dashboard_limit: 1)
       end
 
       it 'allows updating existing invited member' do

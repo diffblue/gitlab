@@ -22,11 +22,5 @@
         .gl-form-group
           = f.label :dashboard_limit
           = f.number_field :dashboard_limit, min: 0, class: 'form-control gl-form-input'
-        .gl-form-group
-          = f.label :dashboard_enforcement_limit
-          = f.number_field :dashboard_enforcement_limit, min: 0, class: 'form-control gl-form-input'
-        .gl-form-group
-          = f.label :dashboard_limit_new_namespace_creation_enforcement_date, _('Date to enact enforcement on newly created namespaces')
-          = f.text_field :dashboard_limit_new_namespace_creation_enforcement_date, class: 'datepicker form-control gl-form-input', placeholder: 'YYYY-MM-DD'
 
       = f.submit _('Save changes'), pajamas_button: true
