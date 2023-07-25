@@ -99,4 +99,36 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :subscripti
       end
     end
   end
+
+  describe '#already_assigned?' do
+    let_it_be(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase) }
+
+    let(:user) { create(:user) }
+
+    subject { add_on_purchase.already_assigned?(user) }
+
+    context 'when the user has been already assigned' do
+      before do
+        create(:gitlab_subscription_user_add_on_assignment, add_on_purchase: add_on_purchase, user: user)
+      end
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when user is not already assigned' do
+      it { is_expected.to eq(false) }
+    end
+  end
+
+  describe '#active?' do
+    let_it_be(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase) }
+
+    subject { add_on_purchase.active? }
+
+    it { is_expected.to eq(true) }
+
+    context 'when subscription has expired' do
+      it { travel_to(add_on_purchase.expires_on + 1.day) { is_expected.to eq(false) } }
+    end
+  end
 end

@@ -789,6 +789,26 @@ module EE
       users_without_bots(members)
     end
 
+    # Checks if user belongs to billed_group_users
+    def billed_group_user?(user, exclude_guests: false)
+      billed_group_users(exclude_guests: exclude_guests).exists?(id: user.id)
+    end
+
+    # Checks if user belongs to billed_project_users
+    def billed_project_user?(user, exclude_guests: false)
+      billed_project_users(exclude_guests: exclude_guests).exists?(id: user.id)
+    end
+
+    # Checks if user belongs to billed_shared_group_users
+    def billed_shared_group_user?(user, exclude_guests: false)
+      billed_shared_group_users(exclude_guests: exclude_guests).exists?(id: user.id)
+    end
+
+    # Checks if user belongs to billed_invited_group_to_project_users
+    def billed_shared_project_user?(user, exclude_guests: false)
+      billed_invited_group_to_project_users(exclude_guests: exclude_guests).exists?(id: user.id)
+    end
+
     def parent_epic_ids_in_ancestor_groups
       ids = Set.new
       epics.has_parent.each_batch(of: EPIC_BATCH_SIZE, column: :iid) do |batch|
