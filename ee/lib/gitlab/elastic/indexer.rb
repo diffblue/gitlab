@@ -189,6 +189,11 @@ module Gitlab
                      "--traversal-ids=#{group.elastic_namespace_ancestry}"
                    end
 
+        if ::Elastic::DataMigrationService.migration_has_finished?(:add_archived_to_commits) &&
+            ::Elastic::DataMigrationService.migration_has_finished?(:add_archived_to_main_index) && !index_wiki?
+          command << "--archived=#{project.archived}"
+        end
+
         command << repository_path
       end
 

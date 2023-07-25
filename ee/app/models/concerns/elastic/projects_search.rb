@@ -28,8 +28,8 @@ module Elastic
         # So we have to check the previous_changes on project_feature
         updated_attributes.concat(project_feature.previous_changes.keys.map(&:to_sym))
 
-        if (updated_attributes & %i[visibility_level repository_access_level wiki_access_level]).any?
-          maintain_elasticsearch_permissions
+        if (updated_attributes & %i[visibility_level repository_access_level wiki_access_level archived]).any?
+          maintain_elasticsearch_values
         end
 
         super
@@ -46,7 +46,7 @@ module Elastic
 
       private
 
-      def maintain_elasticsearch_permissions
+      def maintain_elasticsearch_values
         ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(self)
       end
     end
