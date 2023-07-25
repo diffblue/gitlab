@@ -1,7 +1,8 @@
 <script>
 import { GlCollapsibleListbox, GlFormInput } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import { ANY_OPERATOR, NUMBER_RANGE_I18N_MAP } from '../constants';
+import { ANY_OPERATOR } from '../constants';
+import { enforceIntValue } from '../utils';
 
 export default {
   components: {
@@ -34,16 +35,10 @@ export default {
   },
   data() {
     return {
-      operator: this.selected || this.operators[0],
+      operator: this.selected || this.operators[0]?.value,
     };
   },
   computed: {
-    listBoxItems() {
-      return this.operators.map((operator) => ({
-        value: operator,
-        text: NUMBER_RANGE_I18N_MAP[operator],
-      }));
-    },
     showNumberInput() {
       return this.operator !== ANY_OPERATOR;
     },
@@ -56,6 +51,9 @@ export default {
       this.operator = item;
       this.$emit('operator-change', item);
     },
+    onValueChange(value) {
+      this.$emit('input', enforceIntValue(value));
+    },
   },
   i18n: {
     headerText: s__('ScanResultPolicy|Choose an option'),
@@ -66,7 +64,7 @@ export default {
 <template>
   <div class="gl-display-flex gl-gap-3">
     <gl-collapsible-listbox
-      :items="listBoxItems"
+      :items="operators"
       :header-text="$options.i18n.headerText"
       :selected="operator"
       :data-testid="`${id}-operator`"
@@ -85,7 +83,7 @@ export default {
         class="gl-w-11!"
         :min="0"
         :data-testid="`${id}-input`"
-        @input="$emit('input', $event)"
+        @input="onValueChange"
       />
     </template>
   </div>

@@ -5857,6 +5857,9 @@ msgstr ""
 msgid "ApprovalRule|Examples: QA, Security."
 msgstr ""
 
+msgid "ApprovalRule|Greater than"
+msgstr ""
+
 msgid "ApprovalRule|Improve your organization's code review with required approvals."
 msgstr ""
 
@@ -5864,6 +5867,9 @@ msgid "ApprovalRule|Increase quality and maintain standards."
 msgstr ""
 
 msgid "ApprovalRule|Learn more about merge request approval rules."
+msgstr ""
+
+msgid "ApprovalRule|Less than"
 msgstr ""
 
 msgid "ApprovalRule|More than"
@@ -5911,7 +5917,19 @@ msgstr ""
 msgid "ApprovalRule|all groups"
 msgstr ""
 
+msgid "ApprovalRule|day(s)"
+msgstr ""
+
+msgid "ApprovalRule|month(s)"
+msgstr ""
+
 msgid "ApprovalRule|project groups"
+msgstr ""
+
+msgid "ApprovalRule|week(s)"
+msgstr ""
+
+msgid "ApprovalRule||year(s)"
 msgstr ""
 
 msgid "ApprovalSettings|Keep approvals"
@@ -40938,6 +40956,12 @@ msgstr ""
 msgid "ScanResultPolicy|Add new criteria"
 msgstr ""
 
+msgid "ScanResultPolicy|Age criteria can only be added for pre-existing vulnerabilities"
+msgstr ""
+
+msgid "ScanResultPolicy|Age is:"
+msgstr ""
+
 msgid "ScanResultPolicy|Choose an option"
 msgstr ""
 
@@ -40962,10 +40986,7 @@ msgstr ""
 msgid "ScanResultPolicy|Matching"
 msgstr ""
 
-msgid "ScanResultPolicy|Maximum number of severity-criteria is one"
-msgstr ""
-
-msgid "ScanResultPolicy|Maximum number of status-criteria is two"
+msgid "ScanResultPolicy|New age"
 msgstr ""
 
 msgid "ScanResultPolicy|New severity"
@@ -40975,6 +40996,15 @@ msgid "ScanResultPolicy|New status"
 msgstr ""
 
 msgid "ScanResultPolicy|Newly Detected"
+msgstr ""
+
+msgid "ScanResultPolicy|Only 1 age criteria is allowed"
+msgstr ""
+
+msgid "ScanResultPolicy|Only 1 severity is allowed"
+msgstr ""
+
+msgid "ScanResultPolicy|Only 2 status criteria are allowed"
 msgstr ""
 
 msgid "ScanResultPolicy|Pre-existing"

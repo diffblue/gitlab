@@ -40,6 +40,18 @@ describe('ScanFilterSelector', () => {
       createComponent({ tooltipTitle });
       expect(findListbox().attributes('title')).toBe(tooltipTitle);
     });
+
+    it('can render custom filter tooltip based on callback', () => {
+      const customFilterTooltip = () => 'Custom';
+      createComponent({ filters: FILTERS, selected: { [GOOD_FILTER]: [] }, customFilterTooltip });
+      expect(findDisabledBadge().attributes('title')).toEqual('Custom');
+    });
+
+    it('can set filter disabled on callback', () => {
+      const shouldDisableFilter = () => true;
+      createComponent({ filters: FILTERS, shouldDisableFilter });
+      expect(findDisabledBadge().exists()).toBe(true);
+    });
   });
 
   describe('when filter is unselected', () => {

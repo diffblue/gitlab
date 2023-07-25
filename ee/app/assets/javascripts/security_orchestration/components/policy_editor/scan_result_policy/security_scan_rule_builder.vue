@@ -3,11 +3,17 @@ import { GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { REPORT_TYPES_DEFAULT, SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import PolicyRuleMultiSelect from '../../policy_rule_multi_select.vue';
-import { ANY_OPERATOR, MORE_THAN_OPERATOR, SCAN_RESULT_BRANCH_TYPE_OPTIONS } from '../constants';
+import {
+  ANY_OPERATOR,
+  GREATER_THAN_OPERATOR,
+  VULNERABILITIES_ALLOWED_OPERATORS,
+  SCAN_RESULT_BRANCH_TYPE_OPTIONS,
+} from '../constants';
 import { enforceIntValue } from '../utils';
 import ScanFilterSelector from '../scan_filter_selector.vue';
 import { getDefaultRule, groupSelectedVulnerabilityStates } from './lib';
 import SeverityFilter from './scan_filters/severity_filter.vue';
+import AgeFilter from './scan_filters/age_filter.vue';
 import StatusFilters from './scan_filters/status_filters.vue';
 import BaseLayoutComponent from './base_layout/base_layout_component.vue';
 import PolicyRuleBranchSelection from './policy_rule_branch_selection.vue';
@@ -17,6 +23,9 @@ import {
   PREVIOUSLY_EXISTING,
   SEVERITY,
   STATUS,
+  AGE,
+  AGE_TOOLTIP_NO_PREVIOUSLY_EXISTING_VULNERABILITY,
+  AGE_TOOLTIP_MAXIMUM_REACHED,
 } from './scan_filters/constants';
 import NumberRangeSelect from './number_range_select.vue';
 import ScanTypeSelect from './base_layout/scan_type_select.vue';
@@ -25,6 +34,7 @@ export default {
   FILTERS,
   SEVERITY,
   STATUS,
+  AGE,
   NEWLY_DETECTED,
   PREVIOUSLY_EXISTING,
   scanResultRuleCopy: s__(
@@ -38,6 +48,7 @@ export default {
     ScanFilterSelector,
     ScanTypeSelect,
     SeverityFilter,
+    AgeFilter,
     StatusFilters,
     NumberRangeSelect,
   },
@@ -52,9 +63,11 @@ export default {
     const vulnerabilityStateGroups = groupSelectedVulnerabilityStates(
       this.initRule.vulnerability_states,
     );
+    const { vulnerability_age: vulnerabilityAge, severity_levels: severityLevels } = this.initRule;
 
     const filters = {
-      [SEVERITY]: this.initRule.severity_levels.length ? this.initRule.severity_levels : null,
+      [SEVERITY]: severityLevels.length ? severityLevels : null,
+      [AGE]: Object.keys(vulnerabilityAge || {}).length ? vulnerabilityAge : null,
       [NEWLY_DETECTED]: vulnerabilityStateGroups[NEWLY_DETECTED],
       [PREVIOUSLY_EXISTING]: vulnerabilityStateGroups[PREVIOUSLY_EXISTING],
     };
@@ -65,11 +78,13 @@ export default {
     };
   },
   computed: {
-    severityLevelsToAdd() {
-      return this.initRule.severity_levels;
-    },
-    vulnerabilityStates() {
-      return this.initRule.vulnerability_states;
+    severityLevelsToAdd: {
+      get() {
+        return this.initRule.severity_levels;
+      },
+      set(value) {
+        this.triggerChanged({ severity_levels: value });
+      },
     },
     branchTypes() {
       return SCAN_RESULT_BRANCH_TYPE_OPTIONS(this.namespaceType);
@@ -91,11 +106,28 @@ export default {
         return enforceIntValue(this.initRule.vulnerabilities_allowed);
       },
       set(value) {
-        this.triggerChanged({ vulnerabilities_allowed: enforceIntValue(value) });
+        this.triggerChanged({ vulnerabilities_allowed: value });
+      },
+    },
+    vulnerabilityAge: {
+      get() {
+        return this.initRule.vulnerability_age || {};
+      },
+      set(value) {
+        if (!Object.keys(value).length) {
+          this.removeFilterFromRule('vulnerability_age');
+        } else {
+          this.triggerChanged({ vulnerability_age: value });
+        }
       },
     },
     isSeverityFilterSelected() {
       return this.isFilterSelected(this.$options.SEVERITY) || this.severityLevelsToAdd.length > 0;
+    },
+    isAgeFilterSelected() {
+      return (
+        this.isFilterSelected(this.$options.AGE) || Object.keys(this.vulnerabilityAge).length > 0
+      );
     },
     isStatusFilterSelected() {
       return (
@@ -104,7 +136,17 @@ export default {
       );
     },
     selectedVulnerabilitiesOperator() {
-      return this.vulnerabilitiesAllowed === 0 ? ANY_OPERATOR : MORE_THAN_OPERATOR;
+      return this.vulnerabilitiesAllowed === 0 ? ANY_OPERATOR : GREATER_THAN_OPERATOR;
+    },
+  },
+  watch: {
+    filters: {
+      handler(value) {
+        if (!value[PREVIOUSLY_EXISTING]?.length && this.isFilterSelected(AGE)) {
+          this.removeAgeFilter();
+        }
+      },
+      deep: true,
     },
   },
   methods: {
@@ -135,6 +177,10 @@ export default {
       this.filters[SEVERITY] = null;
       this.emitSeverityFilterChanges();
     },
+    removeAgeFilter() {
+      this.filters[AGE] = null;
+      this.vulnerabilityAge = {};
+    },
     removeStatusFilter(filter) {
       this.filters[filter] = null;
       this.updateCombinedFilters();
@@ -144,10 +190,21 @@ export default {
       this.filters[STATUS] =
         this.filters[NEWLY_DETECTED] && this.filters[PREVIOUSLY_EXISTING] ? [] : null;
     },
+    removeFilterFromRule(filter) {
+      const { [filter]: deletedFilter, ...otherFilters } = this.initRule;
+      this.$emit('changed', otherFilters);
+    },
     handleVulnerabilitiesAllowedOperatorChange(value) {
       if (value === ANY_OPERATOR) {
         this.vulnerabilitiesAllowed = 0;
       }
+    },
+    handleVulnerabilityAgeChanges(ageValues) {
+      if (ageValues.operator === ANY_OPERATOR) {
+        this.vulnerabilityAge = {};
+        return;
+      }
+      this.vulnerabilityAge = { ...this.vulnerabilityAge, ...ageValues };
     },
     setStatus(updatedFilters) {
       this.filters = updatedFilters;
@@ -165,11 +222,29 @@ export default {
       const states = [...(this.filters[SEVERITY] || [])];
       this.triggerChanged({ severity_levels: states });
     },
+    shouldDisableFilterSelector(filter) {
+      if (filter !== AGE) {
+        return false;
+      }
+
+      return !this.filters[PREVIOUSLY_EXISTING]?.length;
+    },
+    customFilterSelectorTooltip(filter) {
+      switch (filter.value) {
+        case AGE:
+          if (!this.filters[PREVIOUSLY_EXISTING]?.length) {
+            return filter.tooltip[AGE_TOOLTIP_NO_PREVIOUSLY_EXISTING_VULNERABILITY];
+          }
+          return filter.tooltip[AGE_TOOLTIP_MAXIMUM_REACHED];
+        default:
+          return '';
+      }
+    },
   },
   REPORT_TYPES_DEFAULT_KEYS: Object.keys(REPORT_TYPES_DEFAULT),
   REPORT_TYPES_DEFAULT,
   SEVERITY_LEVELS,
-  VULNERABILITIES_ALLOWED_OPERATORS: [ANY_OPERATOR, MORE_THAN_OPERATOR],
+  VULNERABILITIES_ALLOWED_OPERATORS,
   i18n: {
     severityLevels: s__('ScanResultPolicy|severity levels'),
     scanners: s__('ScanResultPolicy|scanners'),
@@ -243,7 +318,7 @@ export default {
           :selected="severityLevelsToAdd"
           class="gl-bg-white!"
           @remove="removeSeverityFilter"
-          @input="triggerChanged({ severity_levels: $event })"
+          @input="severityLevelsToAdd = $event"
         />
 
         <status-filters
@@ -253,10 +328,19 @@ export default {
           @input="setStatus"
         />
 
+        <age-filter
+          v-if="isAgeFilterSelected"
+          :selected="vulnerabilityAge"
+          @remove="removeAgeFilter"
+          @input="handleVulnerabilityAgeChanges"
+        />
+
         <scan-filter-selector
           class="gl-bg-white! gl-w-full"
           :filters="$options.FILTERS"
           :selected="filters"
+          :should-disable-filter="shouldDisableFilterSelector"
+          :custom-filter-tooltip="customFilterSelectorTooltip"
           @select="selectFilter"
         />
       </template>

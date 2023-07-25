@@ -3,7 +3,8 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 import NumberRangeSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/number_range_select.vue';
 import {
   ANY_OPERATOR,
-  MORE_THAN_OPERATOR,
+  GREATER_THAN_OPERATOR,
+  VULNERABILITIES_ALLOWED_OPERATORS,
 } from 'ee/security_orchestration/components/policy_editor/constants';
 
 describe('NumberRangeSelect', () => {
@@ -13,7 +14,7 @@ describe('NumberRangeSelect', () => {
     id: 'test-dropdown',
     value: 0,
     label: 'Test dropdown',
-    operators: [ANY_OPERATOR, MORE_THAN_OPERATOR],
+    operators: VULNERABILITIES_ALLOWED_OPERATORS,
   };
 
   const createComponent = (propsData = {}) => {
@@ -30,9 +31,9 @@ describe('NumberRangeSelect', () => {
 
   describe('initial rendering', () => {
     it.each`
-      selected              | inputExists
-      ${ANY_OPERATOR}       | ${false}
-      ${MORE_THAN_OPERATOR} | ${true}
+      selected                 | inputExists
+      ${ANY_OPERATOR}          | ${false}
+      ${GREATER_THAN_OPERATOR} | ${true}
     `('renders input based on operator with', ({ selected, inputExists }) => {
       createComponent({ selected });
 
@@ -51,17 +52,17 @@ describe('NumberRangeSelect', () => {
         .props('items')
         .map(({ value }) => value);
 
-      expect(itemValues).toEqual([ANY_OPERATOR, MORE_THAN_OPERATOR]);
+      expect(itemValues).toEqual([ANY_OPERATOR, GREATER_THAN_OPERATOR]);
     });
 
     it('can renders only the required operators', () => {
-      createComponent({ operators: [MORE_THAN_OPERATOR] });
+      createComponent({ operators: [{ value: GREATER_THAN_OPERATOR, text: 'greater than' }] });
 
       const itemValues = findOperator()
         .props('items')
         .map(({ value }) => value);
 
-      expect(itemValues).toEqual([MORE_THAN_OPERATOR]);
+      expect(itemValues).toEqual([GREATER_THAN_OPERATOR]);
     });
   });
 
@@ -71,22 +72,22 @@ describe('NumberRangeSelect', () => {
 
       expect(wrapper.emitted('operator-change')).toBeUndefined();
 
-      findOperator().vm.$emit('select', MORE_THAN_OPERATOR);
+      findOperator().vm.$emit('select', GREATER_THAN_OPERATOR);
 
-      expect(wrapper.emitted('operator-change')).toEqual([[MORE_THAN_OPERATOR]]);
+      expect(wrapper.emitted('operator-change')).toEqual([[GREATER_THAN_OPERATOR]]);
     });
 
-    it('shows the number input when changing to MORE_THAN_OPERATOR', async () => {
+    it('shows the number input when changing to GREATER_THAN_OPERATOR', async () => {
       createComponent({ selected: ANY_OPERATOR });
 
-      await findOperator().vm.$emit('select', MORE_THAN_OPERATOR);
+      await findOperator().vm.$emit('select', GREATER_THAN_OPERATOR);
 
       expect(findInput().exists()).toBe(true);
       expect(findInput().element.value).toEqual('0');
     });
 
     it('hides the number input when changing to ANY_OPERATOR', async () => {
-      createComponent({ selected: MORE_THAN_OPERATOR, value: 2 });
+      createComponent({ selected: GREATER_THAN_OPERATOR, value: 2 });
 
       await findOperator().vm.$emit('select', ANY_OPERATOR);
 
@@ -95,10 +96,10 @@ describe('NumberRangeSelect', () => {
   });
 
   it('emits underlying input changes', async () => {
-    createComponent({ selected: MORE_THAN_OPERATOR, value: 2 });
+    createComponent({ selected: GREATER_THAN_OPERATOR, value: 2 });
 
     await findInput().vm.$emit('input', '3');
 
-    expect(wrapper.emitted('input')).toEqual([['3']]);
+    expect(wrapper.emitted('input')).toEqual([[3]]);
   });
 });
