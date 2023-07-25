@@ -39,4 +39,12 @@ RSpec.describe Gitlab::Analytics::ValueStreamDashboard::NamespaceCursor, feature
       expect(namespace_ids).to eq([subgroup2.id, subsubgroup.id])
     end
   end
+
+  context 'when top_level_namespace_id is missing' do
+    let(:cursor_data) { {} }
+
+    it 'raises error on initialize' do
+      expect { cursor }.to raise_error(KeyError)
+    end
+  end
 end
