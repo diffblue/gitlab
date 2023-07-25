@@ -667,22 +667,6 @@ class Group < Namespace
       .reorder(nil)
   end
 
-  # Returns all users that are related to this group because:
-  # 1. They are members of this group, its sub-groups, or its ancestor groups
-  # 2. They are members of a group that is invited to this group, its sub-groups, or its ancestors
-  # 3. They are members of a project that belongs to this group
-  # 4. They are members of a group that is invited to this group's descendant projects
-  def users_from_hierarchy_with_projects
-    members = Member.from_union([
-      hierarchy_members.select(:user_id),
-      members_from_hierarchy_group_shares.reselect(:user_id),
-      members_from_descendant_projects.select(:user_id),
-      members_from_descendant_project_shares.select(:user_id)
-    ], remove_duplicates: false)
-
-    User.where(id: members.select(:user_id)).reorder(nil)
-  end
-
   def users_count
     members.count
   end
@@ -948,6 +932,42 @@ class Group < Namespace
   end
   strong_memoize_attr :group_readme
 
+  def members_from_self_and_ancestor_group_shares
+    group_group_link_table = GroupGroupLink.arel_table
+    group_member_table = GroupMember.arel_table
+
+    source_ids =
+      if has_parent?
+        self_and_ancestors.reorder(nil).select(:id)
+      else
+        id
+      end
+
+    group_group_links_query = GroupGroupLink.where(shared_group_id: source_ids)
+    cte = Gitlab::SQL::CTE.new(:group_group_links_cte, group_group_links_query)
+    cte_alias = cte.table.alias(GroupGroupLink.table_name)
+
+    # Instead of members.access_level, we need to maximize that access_level at
+    # the respective group_group_links.group_access.
+    member_columns = GroupMember.attribute_names.map do |column_name|
+      if column_name == 'access_level'
+        smallest_value_arel([cte_alias[:group_access], group_member_table[:access_level]], 'access_level')
+      else
+        group_member_table[column_name]
+      end
+    end
+
+    GroupMember
+      .with(cte.to_arel)
+      .select(*member_columns)
+      .from([group_member_table, cte.alias_to(group_group_link_table)])
+      .where(group_member_table[:requested_at].eq(nil))
+      .where(group_member_table[:source_id].eq(group_group_link_table[:shared_with_group_id]))
+      .where(group_member_table[:source_type].eq('Namespace'))
+      .where(group_member_table[:state].eq(::Member::STATE_ACTIVE))
+      .non_minimal_access
+  end
+
   private
 
   def feature_flag_enabled_for_self_or_ancestor?(feature_flag)
@@ -1006,65 +1026,6 @@ class Group < Namespace
     return if parent_allows_two_factor_authentication?
 
     errors.add(:require_two_factor_authentication, _('is forbidden by a top-level group'))
-  end
-
-  def members_from_self_and_ancestor_group_shares
-    group_group_link_table = GroupGroupLink.arel_table
-    group_member_table = GroupMember.arel_table
-
-    source_ids =
-      if has_parent?
-        self_and_ancestors.reorder(nil).select(:id)
-      else
-        id
-      end
-
-    group_group_links_query = GroupGroupLink.where(shared_group_id: source_ids)
-    cte = Gitlab::SQL::CTE.new(:group_group_links_cte, group_group_links_query)
-    cte_alias = cte.table.alias(GroupGroupLink.table_name)
-
-    # Instead of members.access_level, we need to maximize that access_level at
-    # the respective group_group_links.group_access.
-    member_columns = GroupMember.attribute_names.map do |column_name|
-      if column_name == 'access_level'
-        smallest_value_arel([cte_alias[:group_access], group_member_table[:access_level]], 'access_level')
-      else
-        group_member_table[column_name]
-      end
-    end
-
-    GroupMember
-      .with(cte.to_arel)
-      .select(*member_columns)
-      .from([group_member_table, cte.alias_to(group_group_link_table)])
-      .where(group_member_table[:requested_at].eq(nil))
-      .where(group_member_table[:source_id].eq(group_group_link_table[:shared_with_group_id]))
-      .where(group_member_table[:source_type].eq('Namespace'))
-      .where(group_member_table[:state].eq(::Member::STATE_ACTIVE))
-      .non_minimal_access
-  end
-
-  def members_from_hierarchy_group_shares
-    source_ids = self_and_hierarchy.reorder(nil).select(:id)
-    invited_groups = GroupGroupLink.where(shared_group_id: source_ids).select(:shared_with_group_id)
-
-    GroupMember
-      .with_source_id(invited_groups)
-      .without_invites_and_requests
-  end
-
-  def members_from_descendant_projects
-    ProjectMember
-      .with_source_id(all_projects)
-      .without_invites_and_requests
-  end
-
-  def members_from_descendant_project_shares
-    descendant_project_invited_groups = ProjectGroupLink.where(project: all_projects).select(:group_id)
-
-    GroupMember
-      .with_source_id(descendant_project_invited_groups)
-      .without_invites_and_requests
   end
 
   def smallest_value_arel(args, column_alias)

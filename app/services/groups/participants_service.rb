@@ -29,7 +29,7 @@ module Groups
     def group_hierarchy_users
       return [] unless group
 
-      sorted(group.users_from_hierarchy_with_projects)
+      sorted(Autocomplete::GroupUsersFinder.new(group: group).execute)
     end
   end
 end
