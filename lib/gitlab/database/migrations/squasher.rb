@@ -6,6 +6,8 @@ module Gitlab
   module Database
     module Migrations
       class Squasher
+        RSPEC_FILENAME_REGEXP = /\A([0-9]+_)?([_a-z0-9]*)\.rb\z/
+
         def initialize(git_output)
           @migration_data = migration_files_from_git(git_output).filter_map do |mf|
             basename = Pathname(mf).basename.to_s
@@ -33,8 +35,8 @@ module Gitlab
         end
 
         def find_migration_specs
-          file_slugs = Set.new @migration_data.pluck(:slug)
-          (migration_specs + ee_migration_specs).each.select { |f| file_has_slug?(file_slugs, f) }
+          @file_slugs = Set.new @migration_data.pluck(:slug)
+          (migration_specs + ee_migration_specs).select { |f| file_has_slug?(f) }
         end
 
         def migration_files_from_git(body)
@@ -43,11 +45,18 @@ module Gitlab
               .select { |fn| fn.end_with?('.rb') }
         end
 
-        def file_has_slug?(file_slugs, filename)
-          file_slugs.each do |slug|
-            return true if filename.include? "#{slug}_spec.rb"
-          end
-          false
+        def match_file_slug(filename)
+          m = RSPEC_FILENAME_REGEXP.match(filename)
+          return if m.nil?
+
+          m[2].sub(/_spec$/, '')
+        end
+
+        def file_has_slug?(filename)
+          spec_slug = match_file_slug(Pathname(filename).basename.to_s)
+          return false if spec_slug.nil?
+
+          @file_slugs.include?(spec_slug)
         end
 
         def migration_specs

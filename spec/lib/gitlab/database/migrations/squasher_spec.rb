@@ -17,7 +17,7 @@ RSpec.describe Gitlab::Database::Migrations::Squasher, feature_category: :databa
   let(:spec_files) do
     [
       'spec/migrations/add_name_to_widgets_spec.rb',
-      'spec/migrations/foo_migrate_spec.rb',
+      'spec/migrations/20221003041800_foo_migrate_spec.rb',
       'spec/migrations/foo_migrate_three_spec.rb',
       'spec/migrations/foo_migrate_two_spec.rb',
       'spec/migrations/post_migrate_spec.rb'
@@ -36,7 +36,7 @@ RSpec.describe Gitlab::Database::Migrations::Squasher, feature_category: :databa
       'db/migrate/20221003041900_foo_migrate_two.rb',
       'db/migrate/20221003042000_add_name_to_widgets.rb',
       'spec/migrations/add_name_to_widgets_spec.rb',
-      'spec/migrations/foo_migrate_spec.rb',
+      'spec/migrations/20221003041800_foo_migrate_spec.rb',
       'spec/migrations/foo_migrate_two_spec.rb',
       'db/schema_migrations/20221003041800',
       'db/schema_migrations/20221003041900',
@@ -52,10 +52,8 @@ RSpec.describe Gitlab::Database::Migrations::Squasher, feature_category: :databa
 
   describe "#files_to_delete" do
     before do
-      # rubocop:disable RSpec/AnyInstanceOf
-      allow_any_instance_of(described_class).to receive(:migration_specs).and_return(spec_files)
-      allow_any_instance_of(described_class).to receive(:ee_migration_specs).and_return(ee_spec_files)
-      # rubocop:enable RSpec/AnyInstanceOf
+      allow(Dir).to receive(:glob).with(Rails.root.join('spec/migrations/*.rb')).and_return(spec_files)
+      allow(Dir).to receive(:glob).with(Rails.root.join('ee/spec/migrations/*.rb')).and_return(ee_spec_files)
     end
 
     let(:squasher) { described_class.new(git_output) }

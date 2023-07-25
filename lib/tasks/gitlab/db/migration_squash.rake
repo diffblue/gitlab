@@ -20,9 +20,7 @@ namespace :gitlab do
         puts "#{filename} is not in the current branch"
       end
       puts "\tOverwriting init_structure.sql..."
-      File.open('db/init_structure.sql', 'w') do |f|
-        f.write new_init_structure_sql
-      end
+      File.write('db/init_structure.sql', new_init_structure_sql)
       git.add('db/init_structure.sql')
       puts "\tDone!".white
     end
