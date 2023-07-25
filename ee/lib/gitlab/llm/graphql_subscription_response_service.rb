@@ -26,7 +26,8 @@ module Gitlab
 
         logger.debug(
           message: "Broadcasting AI response",
-          data: data
+          data: data,
+          options: options
         )
 
         response_data = data.slice(:request_id, :errors, :role).merge(content: data[:response_body])
