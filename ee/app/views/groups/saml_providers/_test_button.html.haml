@@ -1,5 +1,5 @@
 = return unless saml_provider.persisted?
 
-= saml_link_for_provider _('Verify SAML Configuration'), saml_provider, redirect: ::OmniAuth::Strategies::GroupSaml::VERIFY_SAML_RESPONSE, html_class: "gl-button btn btn-default", data: { qa_selector: 'saml_settings_test_button' }
+= saml_link_for_provider _('Verify SAML Configuration'), saml_provider, redirect: ::OmniAuth::Strategies::GroupSaml::VERIFY_SAML_RESPONSE, data: { qa_selector: 'saml_settings_test_button' }
 = render Pajamas::ButtonComponent.new(button_options: { class: 'gl-display-none', disabled: true }) do
   = _('Verify SAML Configuration')
