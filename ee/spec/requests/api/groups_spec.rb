@@ -94,6 +94,56 @@ RSpec.describe API::Groups, :aggregate_failures, feature_category: :groups_and_p
           end
         )
       end
+
+      context 'when repository storage name is specified' do
+        let_it_be(:group_with_wiki) { create(:group, :wiki_repo) }
+        let_it_be(:group_without_wiki) { create(:group) }
+        let_it_be(:storage) { group_with_wiki.repository_storage }
+
+        context 'for an admin' do
+          it 'filters by the repository storage name' do
+            stub_licensed_features(group_wikis: true)
+
+            get api("/groups", admin, admin_mode: true), params: { repository_storage: storage }
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response.size).to eq(1)
+            expect(json_response.first['repository_storage']).to eq(storage)
+          end
+
+          context 'when group wikis are not available' do
+            it 'does not include repository storage field' do
+              get api("/groups", admin, admin_mode: true), params: { repository_storage: storage }
+
+              expect(response).to have_gitlab_http_status(:ok)
+              expect(json_response.size).to eq(1)
+              expect(json_response.first).not_to have_key('repository_storage')
+            end
+          end
+
+          it 'does not return any group for unknown storage' do
+            get api("/groups", admin, admin_mode: true), params: { repository_storage: "#{storage}-unknown" }
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response.size).to eq(0)
+          end
+        end
+
+        context 'for a user' do
+          before do
+            group_with_wiki.add_developer(user)
+            group_without_wiki.add_developer(user)
+          end
+
+          it 'the repository storage filter is ignored' do
+            get api("/groups", user), params: { repository_storage: storage }
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response.size).to eq(3)
+            expect(json_response).to all exclude('repository_storage')
+          end
+        end
+      end
     end
   end
 

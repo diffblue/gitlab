@@ -170,6 +170,10 @@ module EE
         left_joins(:gitlab_subscription).where(gitlab_subscriptions: { trial: true, trial_starts_on: date })
       end
 
+      scope :by_repository_storage, ->(storage) do
+        joins(group_wiki_repository: :shard).where(shards: { name: storage })
+      end
+
       state_machine :ldap_sync_status, namespace: :ldap_sync, initial: :ready do
         state :ready
         state :started

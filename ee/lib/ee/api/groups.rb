@@ -14,7 +14,10 @@ module EE
           override :find_groups
           # rubocop: disable CodeReuse/ActiveRecord
           def find_groups(params, parent_id = nil)
-            super.preload(:ldap_group_links, :deletion_schedule, :saml_group_links)
+            params.delete(:repository_storage) unless can?(current_user, :change_repository_storage)
+
+            super(params, parent_id)
+              .preload(:ldap_group_links, :deletion_schedule, :saml_group_links)
           end
           # rubocop: enable CodeReuse/ActiveRecord
 
