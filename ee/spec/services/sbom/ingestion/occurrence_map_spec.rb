@@ -131,4 +131,14 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
       it { expect(occurrence_map.version_present?).to be(false) }
     end
   end
+
+  describe '#packager' do
+    context 'when report_source is nil' do
+      let(:report_source) { nil }
+
+      it 'does not raise error' do
+        expect(occurrence_map.packager).to be_nil
+      end
+    end
+  end
 end
