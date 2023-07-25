@@ -22,6 +22,10 @@ RSpec.describe AuditEvents::UserImpersonationGroupAuditEventService do
 
     it 'creates audit events for both the instance and group level' do
       freeze_time do
+        expect(::Gitlab::Audit::Auditor).to receive(:audit).twice.with(hash_including({
+          name: "user_impersonation"
+        })).and_call_original
+
         expect { service.execute }.to change { AuditEvent.count }.by(2)
 
         event = AuditEvent.first

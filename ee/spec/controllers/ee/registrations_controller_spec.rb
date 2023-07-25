@@ -132,6 +132,9 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
           end
 
           it 'logs the audit event info', :aggregate_failures do
+            # Stub .audit here so that only relevant audit events are received below
+            allow(::Gitlab::Audit::Auditor).to receive(:audit)
+
             expect(::Gitlab::Audit::Auditor).to receive(:audit).with(hash_including({
               name: "registration_created"
             })).and_call_original

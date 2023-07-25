@@ -17,6 +17,9 @@ RSpec.describe ProjectsController do
 
   shared_examples 'audit events with event type' do
     it 'logs the audit event' do
+      # Stub .audit here so that only relevant audit events are received below
+      allow(::Gitlab::Audit::Auditor).to receive(:audit)
+
       expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
         hash_including(name: audit_name)
       ).and_call_original

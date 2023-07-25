@@ -26,13 +26,13 @@ RSpec.describe Audit::MergeRequestDestroyAuditor, feature_category: :audit_event
 
     context 'when merge request is not merged' do
       it 'audits a delete_merge_request event' do
-        subject.execute
+        expect(Gitlab::Audit::Auditor).to receive(:audit).with(hash_including(
+          name: 'delete_merge_request',
+          message: "Removed MergeRequest(#{merge_request.title} with IID: " \
+                   "#{merge_request.iid} and ID: #{merge_request.id})"
+        ))
 
-        expect(Gitlab::Audit::Auditor).to have_received(:audit) do |args|
-          expect(args[:name]).to eq('delete_merge_request')
-          expect(args[:message]).to eq("Removed MergeRequest(#{merge_request.title} with IID: " \
-                                       "#{merge_request.iid} and ID: #{merge_request.id})")
-        end
+        subject.execute
       end
     end
 
@@ -42,12 +42,27 @@ RSpec.describe Audit::MergeRequestDestroyAuditor, feature_category: :audit_event
       end
 
       it 'audits a merged_merge_request_deleted event' do
-        subject.execute
+        expect(Gitlab::Audit::Auditor).to receive(:audit).with(hash_including(
+          name: 'merged_merge_request_deleted',
+          message: "Removed MergeRequest(#{merge_request.title} with IID: " \
+                   "#{merge_request.iid} and ID: #{merge_request.id})"
+        ))
 
-        expect(Gitlab::Audit::Auditor).to have_received(:audit) do |args|
-          expect(args[:name]).to eq('merged_merge_request_deleted')
-          expect(args[:message]).to eq("Removed MergeRequest(#{merge_request.title} with IID: " \
-                                       "#{merge_request.iid} and ID: #{merge_request.id})")
+        subject.execute
+      end
+
+      context 'when metrics is not present' do
+        before do
+          allow(merge_request).to receive(:metrics).and_return(nil)
+        end
+
+        it 'does not include merged_by_user_id in the message' do
+          expect(Gitlab::Audit::Auditor).to receive(:audit).with(hash_including(
+            message: "Removed MergeRequest(#{merge_request.title} with IID: " \
+                     "#{merge_request.iid} and ID: #{merge_request.id})"
+          ))
+
+          subject.execute
         end
       end
     end

@@ -102,6 +102,9 @@ RSpec.describe Projects::RestoreService do
 
   context 'audit events' do
     it 'saves audit event' do
+      # Stub .audit here so that only relevant audit events are received below
+      allow(::Gitlab::Audit::Auditor).to receive(:audit)
+
       expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
         hash_including(name: 'project_path_updated')
       ).and_call_original

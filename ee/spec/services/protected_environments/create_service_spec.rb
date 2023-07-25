@@ -49,7 +49,9 @@ RSpec.describe ProtectedEnvironments::CreateService, '#execute', feature_categor
     end
 
     it 'does not store or log the audit event' do
-      expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
+      expect(::Gitlab::Audit::Auditor).not_to receive(:audit).with(hash_including(
+        name: 'environment_protected'
+      ))
 
       subject
     end
