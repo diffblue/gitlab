@@ -333,7 +333,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           stub_feature_flags(purchase_code_suggestions: false)
         end
 
-        include_examples 'a not found response'
+        it_behaves_like 'code completions endpoint'
       end
     end
 

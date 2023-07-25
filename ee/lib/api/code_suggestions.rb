@@ -23,8 +23,8 @@ module API
       end
 
       def active_code_suggestions_purchase?(project_id)
-        return false unless project_id
         return true unless ::Feature.enabled?(:purchase_code_suggestions)
+        return false unless project_id
 
         cache_key = format(PROJECT_CODE_SUGGESTIONS_ADD_ON_CACHE_KEY, project_id: project_id)
         Rails.cache.fetch(cache_key, expires_in: 1.hour) do
