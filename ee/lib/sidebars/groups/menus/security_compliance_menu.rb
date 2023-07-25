@@ -101,7 +101,7 @@ module Sidebars
           end
 
           ::Sidebars::MenuItem.new(
-            title: _('Compliance report'),
+            title: _('Compliance center'),
             link: group_security_compliance_dashboard_path(context.group),
             super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::SecureMenu,
             active_routes: { path: 'compliance_dashboards#show' },

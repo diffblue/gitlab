@@ -72,9 +72,11 @@ describe('ComplianceReportsApp component', () => {
 
     it('passes the expected values to the header', () => {
       expect(findHeader().props()).toMatchObject({
-        heading: __('Compliance report'),
-        subheading: __('Compliance violations and compliance frameworks for the group.'),
-        documentationPath: '/help/user/compliance/compliance_report/index.md',
+        heading: __('Compliance center'),
+        subheading: __(
+          'Report and manage standards adherence, violations, and compliance frameworks for the group.',
+        ),
+        documentationPath: '/help/user/compliance/compliance_center/index.md',
       });
     });
 
@@ -120,9 +122,11 @@ describe('ComplianceReportsApp component', () => {
 
     it('passes the expected values to the header', () => {
       expect(findHeader().props()).toMatchObject({
-        heading: __('Compliance report'),
-        subheading: __('Compliance violations and compliance frameworks for the group.'),
-        documentationPath: '/help/user/compliance/compliance_report/index.md',
+        heading: __('Compliance center'),
+        subheading: __(
+          'Report and manage standards adherence, violations, and compliance frameworks for the group.',
+        ),
+        documentationPath: '/help/user/compliance/compliance_center/index.md',
       });
     });
 

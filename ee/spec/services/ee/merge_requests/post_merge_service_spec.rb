@@ -33,7 +33,7 @@ RSpec.describe MergeRequests::PostMergeService, feature_category: :code_review_w
         end
       end
 
-      context 'when the compliance report feature is unlicensed' do
+      context 'when the compliance center feature is unlicensed' do
         before do
           stub_licensed_features(group_level_compliance_dashboard: false)
         end
@@ -41,7 +41,7 @@ RSpec.describe MergeRequests::PostMergeService, feature_category: :code_review_w
         it_behaves_like 'does not call the compliance violations worker'
       end
 
-      context 'when the compliance report feature is licensed' do
+      context 'when the compliance center feature is licensed' do
         before do
           stub_licensed_features(group_level_compliance_dashboard: true)
         end

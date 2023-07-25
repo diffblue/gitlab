@@ -254,7 +254,7 @@ RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
           nav_sub_items: [
             _('Security dashboard'),
             _('Vulnerability report'),
-            _('Compliance report'),
+            _('Compliance center'),
             _('Audit events')
           ]
         }

@@ -69,22 +69,24 @@ export default {
   ROUTE_VIOLATIONS,
   ROUTE_FRAMEWORKS,
   i18n: {
-    export: s__('Compliance Report|Export full report as CSV'),
+    export: s__('Compliance Center|Export full report as CSV'),
     exportTitle: {
       frameworks: s__(
-        'Compliance Report|Export frameworks as CSV. You will be emailed after the export is processed.',
+        'Compliance Center|Export frameworks as CSV. You will be emailed after the export is processed.',
       ),
       violations: s__(
-        'Compliance Report|Export merge request violations as CSV. You will be emailed after the export is processed.',
+        'Compliance Center|Export merge request violations as CSV. You will be emailed after the export is processed.',
       ),
     },
-    frameworksTab: s__('Compliance Report|Frameworks'),
-    heading: __('Compliance report'),
-    standardsAdherenceTab: s__('Compliance Report|Standards Adherence'),
-    subheading: __('Compliance violations and compliance frameworks for the group.'),
-    violationsTab: s__('Compliance Report|Violations'),
+    frameworksTab: s__('Compliance Center|Frameworks'),
+    heading: __('Compliance center'),
+    standardsAdherenceTab: s__('Compliance Center|Standards Adherence'),
+    subheading: __(
+      'Report and manage standards adherence, violations, and compliance frameworks for the group.',
+    ),
+    violationsTab: s__('Compliance Center|Violations'),
   },
-  documentationPath: helpPagePath('user/compliance/compliance_report/index.md'),
+  documentationPath: helpPagePath('user/compliance/compliance_center/index.md'),
 };
 </script>
 <template>
