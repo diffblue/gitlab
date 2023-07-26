@@ -6,12 +6,41 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
   let_it_be(:project_1) { create(:project, :public, :repository) }
   let_it_be(:project_2) { create(:project, :public, :repository) }
   let_it_be(:project_3) { create(:project, :public, :repository) }
+  let(:client) { described_class.new }
+
+  shared_examples 'an authenticated zoekt request' do
+    context 'when basicauth username and password are present' do
+      let(:password_file) { Rails.root.join("tmp/tests/zoekt_password") }
+      let(:username_file) { Rails.root.join("tmp/tests/zoekt_username") }
+
+      before do
+        username_file = Rails.root.join("tmp/tests/zoekt_username")
+        File.write(username_file, "the-username\r") # Ensure trailing newline is ignored
+        password_file = Rails.root.join("tmp/tests/zoekt_password")
+        File.write(password_file, "the-password\r") # Ensure trailing newline is ignored
+        stub_config(zoekt: { username_file: username_file, password_file: password_file })
+      end
+
+      after do
+        File.delete(username_file)
+        File.delete(password_file)
+      end
+
+      it 'sets those in the request' do
+        expect(::Gitlab::HTTP).to receive(:post)
+          .with(anything, hash_including(basic_auth: { username: 'the-username', password: 'the-password' }))
+          .and_call_original
+
+        make_request
+      end
+    end
+  end
 
   describe '#search' do
     let(:project_ids) { [project_1.id, project_2.id] }
     let(:query) { 'use.*egex' }
 
-    subject { described_class.new.search(query, num: 10, project_ids: project_ids) }
+    subject { client.search(query, num: 10, project_ids: project_ids) }
 
     before do
       zoekt_ensure_project_indexed!(project_1)
@@ -50,16 +79,20 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
         expect(subject[:Error]).to include("error parsing regexp")
       end
     end
+
+    it_behaves_like 'an authenticated zoekt request' do
+      let(:make_request) { subject }
+    end
   end
 
   describe '#index' do
     it 'indexes the project to make it searchable' do
-      search_results = described_class.new.search('use.*egex', num: 10, project_ids: [project_1.id])
+      search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id])
       expect(search_results[:Result][:Files].to_a.size).to eq(0)
 
-      described_class.index(project_1)
+      client.index(project_1)
 
-      search_results = described_class.new.search('use.*egex', num: 10, project_ids: [project_1.id])
+      search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id])
       expect(search_results[:Result][:Files].to_a.size).to be > 0
     end
 
@@ -86,7 +119,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
       allow(::Gitlab::HTTP).to receive(:post).and_return({ 'Error' => 'command failed: exit status 128' })
 
       expect do
-        described_class.index(project_1)
+        client.index(project_1)
       end.to raise_error(RuntimeError, 'command failed: exit status 128')
     end
 
@@ -96,7 +129,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
 
       allow(::Gitlab::HTTP).to receive(:post).and_return(response)
 
-      expect { described_class.index(project_1) }.to raise_error(RuntimeError, /Request failed with/)
+      expect { client.index(project_1) }.to raise_error(RuntimeError, /Request failed with/)
     end
 
     it 'sets http the correct timeout' do
@@ -107,20 +140,28 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
                                 .with(anything, hash_including(timeout: described_class::INDEXING_TIMEOUT_S))
                                 .and_return(response)
 
-      described_class.index(project_1)
+      client.index(project_1)
+    end
+
+    it_behaves_like 'an authenticated zoekt request' do
+      let(:make_request) { client.index(project_1) }
     end
   end
 
-  describe '.truncate' do
+  describe '#truncate' do
     it 'removes all data from the Zoekt shard' do
-      described_class.index(project_1)
-      search_results = described_class.new.search('use.*egex', num: 10, project_ids: [project_1.id])
+      client.index(project_1)
+      search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id])
       expect(search_results[:Result][:Files].to_a.size).to be > 0
 
-      described_class.truncate
+      client.truncate
 
-      search_results = described_class.new.search('use.*egex', num: 10, project_ids: [project_1.id])
+      search_results = client.search('use.*egex', num: 10, project_ids: [project_1.id])
       expect(search_results[:Result][:Files].to_a.size).to eq(0)
+    end
+
+    it_behaves_like 'an authenticated zoekt request' do
+      let(:make_request) { client.truncate }
     end
   end
 end

@@ -23,6 +23,7 @@ module Vulnerabilities
     # TODO: find out why it fails
     # validates :fingerprint, presence: true, uniqueness: { scope: :project_id }
     validates :name, presence: true
+    validates :url, addressable_url: { schemes: %w[http https ftp], allow_nil: true }
 
     scope :with_fingerprint, -> (fingerprints) { where(fingerprint: fingerprints) }
     scope :with_external_type, -> (external_type) { where('LOWER(external_type) = LOWER(?)', external_type) }
