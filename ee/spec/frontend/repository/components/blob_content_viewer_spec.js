@@ -55,6 +55,8 @@ const createComponent = async (mockData = {}) => {
     explainCodeAvailable = true,
   } = mockData;
 
+  blob.fileType = 'podspec';
+
   const project = {
     ...projectMock,
     userPermissions: {
@@ -107,7 +109,6 @@ describe('Blob content viewer component', () => {
   const findBlobButtonGroup = () => wrapper.findComponent(BlobButtonGroup);
 
   beforeEach(() => {
-    gon.features = { highlightJs: true };
     isLoggedIn.mockReturnValue(true);
   });
 
