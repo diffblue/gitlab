@@ -3,7 +3,7 @@
     = _('Approval settings')
   %p
     = _("Define how approval rules are applied to merge requests.")
-    = link_to _("Learn more."), help_page_path("user/admin_area/merge_requests_approvals.md"), target: '_blank', rel: 'noopener noreferrer'
+    = link_to _("Learn more."), help_page_path("administration/merge_requests_approvals.md"), target: '_blank', rel: 'noopener noreferrer'
   .gl-form-checkbox-group
     = f.gitlab_ui_checkbox_component :prevent_merge_requests_author_approval,
         s_('ApprovalSettings|Prevent approval by author')
