@@ -1,6 +1,5 @@
 ---
 version: 1
-title: Browsers per Users
 type: DataTable
 data:
   type: cube_analytics

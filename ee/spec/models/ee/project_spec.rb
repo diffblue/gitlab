@@ -4207,7 +4207,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     it "returns project members' usernames among the users" do
       result = project.member_usernames_among(User.where(id: users.map(&:id)))
 
-      expect(result).to eq([users.first.username, users.last.username])
+      expect(result).to match_array([users.first.username, users.last.username])
     end
 
     it 'returns empty array if users is empty' do

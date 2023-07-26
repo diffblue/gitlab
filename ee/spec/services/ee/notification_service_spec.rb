@@ -910,6 +910,40 @@ RSpec.describe EE::NotificationService, :mailer, feature_category: :team_plannin
       # Make the watcher a subscriber to detect dupes
       issuable.subscriptions.create!(user: @watcher_and_subscriber, project: project, subscribed: true)
     end
+
+    describe '#review_requested_of_merge_request' do
+      let_it_be(:reviewer) { create(:user) }
+
+      let(:merge_request) { create(:merge_request, source_project: project, reviewers: [reviewer]) }
+      let(:current_user) { merge_request.author }
+      let(:mailer) { double }
+
+      before do
+        allow(::Llm::MergeRequests::SummarizeDiffService).to receive(:enabled?).and_return(summarize_diff_service_enabled)
+        allow(Notify).to receive(:request_review_merge_request_email)
+          .with(Integer, Integer, Integer, String).and_return(mailer)
+      end
+
+      context 'when SummarizeDiffService is disabled' do
+        let(:summarize_diff_service_enabled) { false }
+
+        it 'does not call the summarize worker' do
+          expect(mailer).to receive(:deliver_later).with({})
+
+          notification.review_requested_of_merge_request(merge_request, current_user, reviewer)
+        end
+      end
+
+      context 'when SummarizeDiffService is enabled' do
+        let(:summarize_diff_service_enabled) { true }
+
+        it 'does not call the summarize worker' do
+          expect(mailer).to receive(:deliver_later).with({ wait: 2.minutes })
+
+          notification.review_requested_of_merge_request(merge_request, current_user, reviewer)
+        end
+      end
+    end
   end
 
   context 'Members' do

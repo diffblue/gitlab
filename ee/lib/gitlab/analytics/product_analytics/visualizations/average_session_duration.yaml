@@ -1,6 +1,5 @@
 ---
 version: 1
-title: Average Session duration
 type: SingleStat
 data:
   type: cube_analytics

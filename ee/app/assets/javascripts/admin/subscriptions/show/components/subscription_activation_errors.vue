@@ -67,7 +67,7 @@ export const links = Object.freeze({
   supportLink,
   licenseSupportLink:
     'https://support.gitlab.com/hc/en-us/requests/new?ticket_form_id=360000071293',
-  subscriptionActivationHelpLink: helpPagePath('user/admin_area/license.html'),
+  subscriptionActivationHelpLink: helpPagePath('administration/license.html'),
   troubleshootingHelpLink: helpPagePath('/administration/license.html', {
     anchor: 'cannot-activate-instance-due-to-connectivity-error',
   }),

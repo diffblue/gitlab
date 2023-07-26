@@ -2,10 +2,7 @@
 import { GlAlert, GlSkeletonLoader } from '@gitlab/ui';
 import { joinPaths } from '~/lib/utils/url_utility';
 import { createAlert } from '~/alert';
-import { fetchMetricsData, toYmd } from '~/analytics/shared/utils';
-import { FLOW_METRICS } from '~/analytics/shared/constants';
-import { METRICS_REQUESTS } from '~/analytics/cycle_analytics/constants';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { toYmd } from '~/analytics/shared/utils';
 import GroupVulnerabilitiesQuery from '../graphql/group_vulnerabilities.query.graphql';
 import ProjectVulnerabilitiesQuery from '../graphql/project_vulnerabilities.query.graphql';
 import GroupMergeRequestsQuery from '../graphql/group_merge_requests.query.graphql';
@@ -20,7 +17,6 @@ import {
   fetchMetricsForTimePeriods,
   extractGraphqlVulnerabilitiesData,
   extractGraphqlDoraData,
-  extractDoraMetrics,
   extractGraphqlFlowData,
   extractGraphqlMergeRequestsData,
 } from '../api';
@@ -54,7 +50,6 @@ export default {
     GlSkeletonLoader,
     ComparisonTable,
   },
-  mixins: [glFeatureFlagsMixin()],
   props: {
     requestPath: {
       type: String,
@@ -83,12 +78,6 @@ export default {
     };
   },
   computed: {
-    useGraphqlEndpoint() {
-      return this.glFeatures.vsdGraphqlDoraAndFlowMetrics;
-    },
-    apiQueryFn() {
-      return this.useGraphqlEndpoint ? this.fetchGraphqlData : this.fetchDoraAndFlowMetrics;
-    },
     hasData() {
       return Boolean(this.allData.length);
     },
@@ -111,12 +100,6 @@ export default {
         isProject: this.isProject,
         fullPath: this.requestPath,
       };
-    },
-    excludedMetrics() {
-      return [
-        ...this.excludeMetrics,
-        ...(this.useGraphqlEndpoint ? [] : [FLOW_METRICS.ISSUES_COMPLETED]),
-      ];
     },
   },
   async mounted() {
@@ -183,38 +166,6 @@ export default {
       });
       return responseData?.nodes || [];
     },
-    async fetchDoraAndFlowMetrics({ startDate, endDate }, timePeriod) {
-      // request the dora and flow metrics from the REST endpoint
-      const rawData = await fetchMetricsData(METRICS_REQUESTS, this.namespaceRequestPath, {
-        created_after: startDate,
-        created_before: endDate,
-      });
-
-      // The vulnerabilities API request takes a date, so the timezone skews it outside the monthly range
-      // The vulnerabilites count returns cumulative data for each day
-      // we only want to use the value of the last day in the time period
-      // so we override the startDate and set it to the same value as the end date
-      const vulnerabilities = await this.fetchVulnerabilitiesQuery({
-        ...this.defaultQueryParams,
-        startDate: toYmd(endDate),
-        endDate: toYmd(endDate),
-      });
-
-      const mergeRequests = await this.fetchMergeRequestsQuery({
-        ...this.defaultQueryParams,
-        startDate: toYmd(startDate),
-        endDate: toYmd(endDate),
-        state: MERGE_REQUESTS_STATE_MERGED,
-      });
-
-      return {
-        ...timePeriod,
-        ...extractDoraMetrics(rawData),
-        ...extractGraphqlVulnerabilitiesData(vulnerabilities),
-        ...extractGraphqlMergeRequestsData(mergeRequests),
-      };
-    },
-
     async fetchGraphqlData({ startDate, endDate }, timePeriod) {
       const dora = await this.fetchDoraMetricsQuery({
         ...this.defaultQueryParams,
@@ -259,13 +210,13 @@ export default {
       try {
         const timePeriods = await fetchMetricsForTimePeriods(
           DASHBOARD_TIME_PERIODS,
-          this.apiQueryFn,
+          this.fetchGraphqlData,
         );
 
         this.tableData = hasDoraMetricValues(timePeriods)
           ? generateDoraTimePeriodComparisonTable({
               timePeriods,
-              excludeMetrics: this.excludedMetrics,
+              excludeMetrics: this.excludeMetrics,
             })
           : [];
       } catch (error) {
@@ -274,7 +225,10 @@ export default {
     },
     async fetchSparklineMetrics() {
       try {
-        const chartData = await fetchMetricsForTimePeriods(CHART_TIME_PERIODS, this.apiQueryFn);
+        const chartData = await fetchMetricsForTimePeriods(
+          CHART_TIME_PERIODS,
+          this.fetchGraphqlData,
+        );
 
         this.chartData = hasDoraMetricValues(chartData) ? generateSparklineCharts(chartData) : {};
       } catch (error) {

@@ -16,8 +16,7 @@ import GroupDoraMetricsQuery from 'ee/analytics/dashboards/graphql/group_dora_me
 import ProjectDoraMetricsQuery from 'ee/analytics/dashboards/graphql/project_dora_metrics.query.graphql';
 import GroupMergeRequestsQuery from 'ee/analytics/dashboards/graphql/group_merge_requests.query.graphql';
 import ProjectMergeRequestsQuery from 'ee/analytics/dashboards/graphql/project_merge_requests.query.graphql';
-import { DORA_METRICS, VULNERABILITY_METRICS, FLOW_METRICS } from '~/analytics/shared/constants';
-import * as utils from '~/analytics/shared/utils';
+import { VULNERABILITY_METRICS } from '~/analytics/shared/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
@@ -25,7 +24,6 @@ import {
   flowMetricsParamsHelper,
   vulnerabilityParamsHelper,
   mergeRequestsParamsHelper,
-  mockAllTimePeriodApiResponses,
   mockGraphqlFlowMetricsResponse,
   mockGraphqlDoraMetricsResponse,
   mockGraphqlVulnerabilityResponse,
@@ -35,7 +33,6 @@ import {
 import {
   MOCK_TABLE_TIME_PERIODS,
   MOCK_CHART_TIME_PERIODS,
-  mockMonthToDateApiResponse,
   mockComparativeTableData,
   mockLastVulnerabilityCountData,
   mockDoraMetricsResponseData,
@@ -54,13 +51,9 @@ const mockTypePolicy = {
 const mockProps = { requestPath: 'exec-group', isProject: false };
 const groupPath = 'exec-group';
 const allTimePeriods = [...MOCK_TABLE_TIME_PERIODS, ...MOCK_CHART_TIME_PERIODS];
-const defaultGlFeatures = {
-  vsdGraphqlDoraAndFlowMetrics: true,
-};
 
 jest.mock('~/alert');
 jest.mock('~/analytics/shared/utils', () => ({
-  fetchMetricsData: jest.fn(),
   toYmd: jest.requireActual('~/analytics/shared/utils').toYmd,
 }));
 
@@ -114,50 +107,22 @@ describe('Comparison chart', () => {
     );
   };
 
-  const createWrapper = async ({
-    props = {},
-    apolloProvider = null,
-    glFeatures = defaultGlFeatures,
-  } = {}) => {
+  const createWrapper = async ({ props = {}, apolloProvider = null } = {}) => {
     wrapper = shallowMount(ComparisonChart, {
       apolloProvider,
       propsData: {
         ...mockProps,
         ...props,
       },
-      provide: {
-        glFeatures,
-      },
     });
 
     await waitForPromises();
-  };
-
-  const createWrapperWithRESTApi = (params = {}) => {
-    return createWrapper({ ...params, glFeatures: { vsdGraphqlDoraAndFlowMetrics: false } });
   };
 
   const findComparisonTable = () => wrapper.findComponent(ComparisonTable);
   const getTableData = () => findComparisonTable().props('tableData');
   const getTableDataForMetric = (identifier) =>
     getTableData().filter(({ metric }) => metric.identifier === identifier)[0];
-
-  const expectDataRequests = (params, requestPath = '') => {
-    expect(utils.fetchMetricsData).toHaveBeenCalledWith(
-      [
-        expect.objectContaining({
-          endpoint: 'time_summary',
-          name: 'time summary',
-        }),
-        expect.objectContaining({
-          endpoint: 'summary',
-          name: 'recent activity',
-        }),
-      ],
-      requestPath,
-      params,
-    );
-  };
 
   const expectDoraMetricsRequests = (timePeriods, { fullPath = groupPath } = {}) =>
     expectTimePeriodRequests({
@@ -396,113 +361,6 @@ describe('Comparison chart', () => {
 
     it('will request project vulnerability metrics for the table and sparklines', () => {
       expectVulnerabilityRequests(allTimePeriods, { fullPath: fakeProjectPath });
-    });
-  });
-
-  describe('vsdGraphqlDoraAndFlowMetrics=false', () => {
-    beforeEach(() => {
-      // Vulnerability data graphql query is always sent with or without the feature flag
-      vulnerabilityRequestHandler = mockGraphqlVulnerabilityResponse(
-        mockLastVulnerabilityCountData,
-      );
-
-      // Without the feature flag, request flow / dora metrics from the REST api
-      flowMetricsRequestHandler = jest.fn();
-      doraMetricsRequestHandler = jest.fn();
-
-      mockApolloProvider = createMockApolloProvider({
-        vulnerabilityRequestHandler,
-        doraMetricsRequestHandler,
-        flowMetricsRequestHandler,
-      });
-    });
-
-    it('will request REST api flow metrics for the table', async () => {
-      utils.fetchMetricsData.mockReturnValueOnce({});
-      await createWrapperWithRESTApi({ apolloProvider: mockApolloProvider });
-
-      expect(utils.fetchMetricsData).toHaveBeenCalledTimes(MOCK_TABLE_TIME_PERIODS.length);
-      MOCK_TABLE_TIME_PERIODS.forEach((timePeriod) =>
-        expectDataRequests(
-          {
-            created_after: timePeriod.start.toISOString(),
-            created_before: timePeriod.end.toISOString(),
-          },
-          'groups/exec-group',
-        ),
-      );
-    });
-
-    it('will also request the REST api chart data metrics if there is table', async () => {
-      utils.fetchMetricsData.mockReturnValue(mockMonthToDateApiResponse);
-      await createWrapperWithRESTApi({ apolloProvider: mockApolloProvider });
-
-      const timePeriods = [...MOCK_TABLE_TIME_PERIODS, ...MOCK_CHART_TIME_PERIODS];
-      expect(utils.fetchMetricsData).toHaveBeenCalledTimes(timePeriods.length);
-      timePeriods.forEach((timePeriod) =>
-        expectDataRequests(
-          {
-            created_after: timePeriod.start.toISOString(),
-            created_before: timePeriod.end.toISOString(),
-          },
-          'groups/exec-group',
-        ),
-      );
-    });
-
-    it('renders a message when theres no data', async () => {
-      utils.fetchMetricsData.mockReturnValueOnce({});
-      await createWrapperWithRESTApi({ apolloProvider: mockApolloProvider });
-
-      expect(wrapper.text()).toContain('No data available');
-    });
-
-    it('renders each DORA metric when there is table data', async () => {
-      mockAllTimePeriodApiResponses();
-      await createWrapperWithRESTApi({ apolloProvider: mockApolloProvider });
-
-      const metricNames = getTableData().map(({ metric }) => metric);
-      expect(metricNames).toEqual(
-        mockComparativeTableData
-          .filter(({ metric }) => metric.identifier !== FLOW_METRICS.ISSUES_COMPLETED)
-          .map(({ metric }) => metric),
-      );
-    });
-
-    it('does not render DORA metrics that were in excludeMetrics', async () => {
-      const excludeMetrics = [
-        DORA_METRICS.DEPLOYMENT_FREQUENCY,
-        DORA_METRICS.LEAD_TIME_FOR_CHANGES,
-      ];
-
-      mockAllTimePeriodApiResponses();
-      await createWrapperWithRESTApi({
-        props: { excludeMetrics },
-        apolloProvider: mockApolloProvider,
-      });
-
-      const metricNames = getTableData().map(({ metric }) => metric.identifier);
-      expect(metricNames).not.toEqual(expect.arrayContaining(excludeMetrics));
-    });
-
-    it('selects the final data point in the vulnerability response for display', async () => {
-      mockAllTimePeriodApiResponses();
-      await createWrapperWithRESTApi({ apolloProvider: mockApolloProvider });
-
-      const critical = getTableDataForMetric(VULNERABILITY_METRICS.CRITICAL);
-      const high = getTableDataForMetric(VULNERABILITY_METRICS.HIGH);
-
-      ['thisMonth', 'lastMonth', 'twoMonthsAgo'].forEach((timePeriodKey) => {
-        expect(critical[timePeriodKey].value).toBe(mockLastVulnerabilityCountData.critical);
-        expect(high[timePeriodKey].value).toBe(mockLastVulnerabilityCountData.high);
-      });
-    });
-
-    it('renders a chart on each row', async () => {
-      utils.fetchMetricsData.mockReturnValue(mockMonthToDateApiResponse);
-      await createWrapperWithRESTApi({ apolloProvider: mockApolloProvider });
-
-      expect(getTableData().filter(({ chart }) => !chart)).toEqual([]);
     });
   });
 });

@@ -30,13 +30,11 @@ describe('DoraVisualization', () => {
     webUrl: 'gdk.test/group-10/project-20',
     __typename: TYPENAME_PROJECT,
   };
-  const defaultGlFeatures = { vsdGraphqlDoraAndFlowMetrics: true };
 
   const createWrapper = async ({
     props = {},
     group = null,
     project = null,
-    glFeatures = defaultGlFeatures,
     filterLabelsResolver = null,
   } = {}) => {
     const filterLabels = props.data?.filter_labels || [];
@@ -54,9 +52,6 @@ describe('DoraVisualization', () => {
       propsData: {
         data: { namespace: 'test/one' },
         ...props,
-      },
-      provide: {
-        glFeatures,
       },
     });
 
@@ -138,18 +133,6 @@ describe('DoraVisualization', () => {
         props: { data: { namespace, filter_labels: [] } },
         group: mockGroup,
       });
-      expect(findComparisonChartLabels().exists()).toBe(false);
-      expect(findComparisonChart().props('filterLabels')).toEqual([]);
-    });
-
-    it('does not show labels without `vsdGraphqlDoraAndFlowMetrics` enabled', async () => {
-      const testLabels = ['testA', 'testB'];
-      await createWrapper({
-        props: { data: { namespace, filter_labels: testLabels } },
-        glFeatures: { vsdGraphqlDoraAndFlowMetrics: false },
-        group: mockGroup,
-      });
-
       expect(findComparisonChartLabels().exists()).toBe(false);
       expect(findComparisonChart().props('filterLabels')).toEqual([]);
     });
