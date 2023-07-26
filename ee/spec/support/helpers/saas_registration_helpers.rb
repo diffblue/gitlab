@@ -588,7 +588,7 @@ module SaasRegistrationHelpers
   end
 
   def expect_to_send_iterable_request(invite: false)
-    allow_next_instance_of(Onboarding::CreateIterableTriggerService) do |instance|
+    allow_next_instance_of(::Onboarding::CreateIterableTriggerService) do |instance|
       allow(instance).to receive(:execute).and_return(ServiceResponse.success)
     end
 
@@ -598,7 +598,7 @@ module SaasRegistrationHelpers
                             'Personal SaaS Registration'
                           end
 
-    expect(Onboarding::CreateIterableTriggerWorker).to receive(:perform_async).with(
+    expect(::Onboarding::CreateIterableTriggerWorker).to receive(:perform_async).with(
       hash_including(
         provider: 'gitlab',
         work_email: user.email,
@@ -612,7 +612,7 @@ module SaasRegistrationHelpers
   end
 
   def expect_not_to_send_iterable_request
-    expect(Onboarding::CreateIterableTriggerWorker).not_to receive(:perform_async)
+    expect(::Onboarding::CreateIterableTriggerWorker).not_to receive(:perform_async)
   end
 end
 

@@ -19,8 +19,8 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
     let(:onboarding_project_data) { Gitlab::Json.parse(learn_gitlab_data[:project]).deep_symbolize_keys }
 
     before do
-      Onboarding::Progress.onboard(namespace)
-      Onboarding::Progress.register(namespace, :git_write)
+      ::Onboarding::Progress.onboard(namespace)
+      ::Onboarding::Progress.register(namespace, :git_write)
     end
 
     subject(:learn_gitlab_data) { helper.learn_gitlab_data(project) }

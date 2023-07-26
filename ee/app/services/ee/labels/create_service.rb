@@ -10,7 +10,7 @@ module EE
         label = super
 
         if label.respond_to?(:group) && label.persisted? && label.scoped_label?
-          Onboarding::ProgressService.new(label.group).execute(action: :scoped_label_created)
+          ::Onboarding::ProgressService.new(label.group).execute(action: :scoped_label_created)
         end
 
         label

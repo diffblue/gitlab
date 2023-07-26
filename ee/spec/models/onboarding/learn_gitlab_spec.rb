@@ -17,7 +17,7 @@ RSpec.describe Onboarding::LearnGitlab, feature_category: :onboarding do
 
     with_them do
       before do
-        allow(Onboarding::Progress).to receive(:onboarding?).with(namespace).and_return(onboarding)
+        allow(::Onboarding::Progress).to receive(:onboarding?).with(namespace).and_return(onboarding)
       end
 
       subject { described_class.available?(namespace, user) }

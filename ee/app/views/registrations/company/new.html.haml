@@ -7,7 +7,7 @@
 
 .row
   - experiment(:automatic_trial_registration, actor: current_user) do |e|
-    - e.exclude! if trial_selected?
+    - e.exclude! if onboarding_status.trial?
     - e.control do
       .col-md-6.m-sm-6
         %h2.gl-pb-5.gl-my-0

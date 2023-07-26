@@ -31,7 +31,7 @@ RSpec.describe Registrations::ImportNamespaceCreateService, :aggregate_failures,
       it 'creates a group' do
         expect do
           expect(execute).to be_success
-        end.to change { Group.count }.by(1).and change { Onboarding::Progress.count }.by(1)
+        end.to change { Group.count }.by(1).and change { ::Onboarding::Progress.count }.by(1)
       end
 
       it 'passes create_event: true to the Groups::CreateService' do
@@ -94,7 +94,7 @@ RSpec.describe Registrations::ImportNamespaceCreateService, :aggregate_failures,
       it 'does not create a group' do
         expect do
           expect(execute).to be_error
-        end.to change { Group.count }.by(0).and change { Onboarding::Progress.count }.by(0)
+        end.to change { Group.count }.by(0).and change { ::Onboarding::Progress.count }.by(0)
         expect(execute.payload[:group].errors).not_to be_blank
       end
 

@@ -4,7 +4,7 @@ module Registrations
   class GroupsController < ApplicationController
     include OneTrustCSP
     include GoogleAnalyticsCSP
-    include Onboarding::SetRedirect
+    include ::Onboarding::SetRedirect
 
     skip_before_action :set_confirm_warning
     before_action :check_if_gl_com_or_dev

@@ -17,7 +17,7 @@ module Onboarding
     feature_category :onboarding
 
     def perform(iterable_params)
-      result = Onboarding::CreateIterableTriggerService.new.execute(iterable_params)
+      result = ::Onboarding::CreateIterableTriggerService.new.execute(iterable_params)
       return if result.success?
 
       logger.error(

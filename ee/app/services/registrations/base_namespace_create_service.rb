@@ -16,7 +16,7 @@ module Registrations
 
     def after_successful_group_creation(group_track_action:)
       Gitlab::Tracking.event(self.class.name, group_track_action, namespace: group, user: user)
-      Onboarding::Progress.onboard(group)
+      ::Onboarding::Progress.onboard(group)
 
       if user.setup_for_company && !::Gitlab::Utils.to_boolean(params[:trial])
         experiment(:automatic_trial_registration, actor: user).track(:assignment,

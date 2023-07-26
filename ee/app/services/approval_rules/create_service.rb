@@ -64,7 +64,7 @@ module ApprovalRules
     end
 
     def track_onboarding_progress
-      Onboarding::ProgressService.new(rule.project.namespace).execute(action: :required_mr_approvals_enabled)
+      ::Onboarding::ProgressService.new(rule.project.namespace).execute(action: :required_mr_approvals_enabled)
     end
   end
 end

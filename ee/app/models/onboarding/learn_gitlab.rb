@@ -5,7 +5,7 @@ module Onboarding
     def self.available?(namespace, user)
       return false unless user
 
-      Onboarding::Progress.onboarding?(namespace)
+      ::Onboarding::Progress.onboarding?(namespace)
     end
   end
 end

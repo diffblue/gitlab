@@ -1,6 +1,6 @@
-- return unless Gitlab.com?
-- return if trial_selected?
-- return if user_has_memberships?
+- return unless onboarding_status.enabled?
+- return if onboarding_status.trial?
+- return if onboarding_status.invite?
 
 .row
   .form-group.col-sm-12

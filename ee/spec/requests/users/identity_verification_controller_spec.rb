@@ -532,7 +532,7 @@ feature_category: :system_access do
       expect(controller.stored_location_for(:user)).to be_nil
     end
 
-    context 'when user is in subscription onboarding' do
+    context 'when user is in subscription onboarding', :saas do
       let(:stored_user_return_to_path) { new_subscriptions_path(plan_id: 'bronze_id') }
 
       it 'does not empty out the stored location for user' do

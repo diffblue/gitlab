@@ -27,14 +27,14 @@ module Projects
     private
 
     def onboarding_actions_data(project)
-      onboarding_completion = Onboarding::Completion.new(project)
+      onboarding_completion = ::Onboarding::Completion.new(project)
 
       data = action_urls(project).to_h do |action, url|
         [
           action,
           {
             url: url,
-            completed: onboarding_completion.completed?(Onboarding::Progress.column_name(action)),
+            completed: onboarding_completion.completed?(::Onboarding::Progress.column_name(action)),
             enabled: true
           }
         ]

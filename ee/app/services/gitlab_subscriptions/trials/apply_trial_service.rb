@@ -48,7 +48,7 @@ module GitlabSubscriptions
       end
 
       def record_onboarding_progress
-        Onboarding::ProgressService.new(namespace).execute(action: :trial_started)
+        ::Onboarding::ProgressService.new(namespace).execute(action: :trial_started)
       end
 
       def namespace

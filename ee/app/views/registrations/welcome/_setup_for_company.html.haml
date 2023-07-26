@@ -1,8 +1,8 @@
-- return unless Gitlab.com?
+- return unless onboarding_status.enabled?
 
 = hidden_field_tag :trial, params[:trial]
 
-- if user_has_memberships?
+- if onboarding_status.invite?
   = f.hidden_field :setup_for_company, value: true
 - else
   .row

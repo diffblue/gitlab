@@ -130,10 +130,11 @@ module Users
     private
 
     def set_redirect_url
-      @redirect_url = if helpers.in_subscription_flow?
+      onboarding_status = ::Onboarding::Status.new(params.to_unsafe_h.deep_symbolize_keys, session, @user)
+      @redirect_url = if onboarding_status.subscription?
                         # Since we need this value to stay in the stored_location_for(user) in order for
                         # us to be properly redirected for subscription signups.
-                        session['user_return_to']
+                        onboarding_status.stored_user_location
                       else
                         after_sign_in_path_for(@user)
                       end

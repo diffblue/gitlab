@@ -68,7 +68,7 @@ RSpec.describe Sidebars::Projects::Menus::LearnGitlabMenu, feature_category: :on
 
   describe '#pill_count' do
     it 'returns pill count' do
-      expect_next_instance_of(Onboarding::Completion) do |onboarding|
+      expect_next_instance_of(::Onboarding::Completion) do |onboarding|
         expect(onboarding).to receive(:percentage).and_return(20)
       end
 
