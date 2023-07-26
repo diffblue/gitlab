@@ -10,6 +10,22 @@ module QA
       let(:dast_scan_example_vuln) { 'Flask debug mode identified on target:7777' }
       let(:sast_scan_fp_example_vuln) { "Possible unprotected redirect" }
       let(:sast_scan_fp_example_vuln_desc) { "Possible unprotected redirect near line 46" }
+      let(:secret_detection_vuln) { "Typeform API token" }
+
+      let!(:gitlab_ci_yaml_path) { File.join(EE::Runtime::Path.fixture('secure_premade_reports'), '.gitlab-ci.yml') }
+      let!(:ci_yaml_content) do
+        original_yaml = File.read(gitlab_ci_yaml_path)
+        original_yaml << "\n"
+        original_yaml << <<~YAML
+        secret_detection:
+          tags: [secure_report]
+          script:
+            - echo "Skipped"
+          artifacts:
+            reports:
+              secret_detection: gl-secret-detection-report.json
+        YAML
+      end
 
       let!(:project) do
         Resource::Project.fabricate_via_api! do |project|
@@ -54,6 +70,8 @@ module QA
       it 'displays security reports in the pipeline',
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348036' do
         push_security_reports
+        project.visit!
+        wait_for_pipeline_success
         Flow::Pipeline.visit_latest_pipeline
         Page::Project::Pipeline::Show.perform do |pipeline|
           pipeline.click_on_security
@@ -74,12 +92,18 @@ module QA
           filter_report_and_perform(page: pipeline, filter_report: "DAST", project_filter: false) do
             expect(pipeline).to have_vulnerability_info_content dast_scan_example_vuln
           end
+
+          filter_report_and_perform(page: pipeline, filter_report: "Secret Detection", project_filter: false) do
+            expect(pipeline).to have_vulnerability_info_content secret_detection_vuln
+          end
         end
       end
 
       it 'displays security reports in the project security dashboard',
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348037' do
         push_security_reports
+        project.visit!
+        wait_for_pipeline_success
         Page::Project::Menu.perform(&:click_project)
         Page::Project::Menu.perform(&:go_to_vulnerability_report)
 
@@ -101,12 +125,18 @@ module QA
           filter_report_and_perform(page: dashboard, filter_report: "DAST", project_filter: true) do
             expect(dashboard).to have_vulnerability dast_scan_example_vuln
           end
+
+          filter_report_and_perform(page: dashboard, filter_report: "Secret Detection", project_filter: true) do
+            expect(dashboard).to have_vulnerability secret_detection_vuln
+          end
         end
       end
 
       it 'displays security reports in the group security dashboard',
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348038' do
         push_security_reports
+        project.visit!
+        wait_for_pipeline_success
 
         project.group.visit!
 
@@ -136,17 +166,19 @@ module QA
           filter_report_and_perform(page: dashboard, filter_report: "DAST", project_filter: false) do
             expect(dashboard).to have_vulnerability dast_scan_example_vuln
           end
+
+          filter_report_and_perform(page: dashboard, filter_report: "Secret Detection", project_filter: false) do
+            expect(dashboard).to have_vulnerability secret_detection_vuln
+          end
         end
       end
 
       it 'displays false positives for the vulnerabilities',
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/350412' do
         push_security_reports
-        Page::Project::Menu.perform(&:click_project)
-        Support::Waiter.wait_until(sleep_interval: 3) do
-          pipelines = project.pipelines
-          !pipelines.empty? && pipelines.last[:status] == "success"
-        end
+        project.visit!
+        wait_for_pipeline_success
+
         Page::Project::Menu.perform(&:go_to_vulnerability_report)
 
         EE::Page::Project::Secure::Show.perform do |security_dashboard|
@@ -180,6 +212,8 @@ module QA
 
       it 'displays the Dependency List', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348035' do
         push_security_reports
+        project.visit!
+        wait_for_pipeline_success
         Page::Project::Menu.perform(&:go_to_dependency_list)
 
         EE::Page::Project::Secure::DependencyList.perform do |dependency_list|
@@ -197,12 +231,30 @@ module QA
         Resource::Repository::Commit.fabricate_via_api! do |commit|
           commit.project = project
           commit.commit_message = 'Create Secure compatible application to serve premade reports'
+          commit.add_directory(Pathname.new(EE::Runtime::Path.fixture('dismissed_security_findings_mr_widget')))
           commit.add_directory(Pathname.new(EE::Runtime::Path.fixture('secure_premade_reports')))
+          commit.update_files([ci_file])
         end
+      end
 
-        project.visit!
+      def wait_for_pipeline_success
+        Support::Waiter.wait_until(sleep_interval: 3, message: "Check for pipeline success") do
+          latest_pipeline.status == 'success'
+        end
+      end
 
-        Flow::Pipeline.wait_for_latest_pipeline(status: 'passed')
+      def latest_pipeline
+        Resource::Pipeline.fabricate_via_api! do |pipeline|
+          pipeline.project = project
+          pipeline.id = project.pipelines.first[:id]
+        end
+      end
+
+      def ci_file
+        {
+          file_path: '.gitlab-ci.yml',
+          content: ci_yaml_content
+        }
       end
     end
   end

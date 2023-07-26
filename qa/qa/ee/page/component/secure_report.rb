@@ -107,9 +107,9 @@ module QA
           end
 
           def has_vulnerability_info_content?(name)
-            retry_until(reload: true, sleep_interval: 2, max_attempts: 3) do
+            retry_until(reload: true, sleep_interval: 2, max_attempts: 2, message: 'Finding "Security Finding" text') do
               click_link('Security') unless has_element?(:security_report_content)
-              has_element?(:vulnerability_info_content, text: name)
+              has_element?(:vulnerability_info_content, text: name, wait: 1)
             end
           end
 
