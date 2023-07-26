@@ -2,7 +2,7 @@
 
 RSpec::Matchers.define :match_llm_tools do |expected_tools|
   match do |prompt|
-    zero_shot_prompt_action = 'the action to take, should be one from this list'
+    zero_shot_prompt_action = 'the action to take'
     actions = prompt[:prompt].scan(/Action: (?<action>.+?)(?=$)/)
     actions.reject! { |action| action.first.start_with?(zero_shot_prompt_action) }
     @tools = actions.flatten
