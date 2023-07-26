@@ -12,9 +12,9 @@ module Sbom
 
       case params[:sort_by]
       when 'name'
-        sbom_occurrences.order_by_component_name(params[:sort])
+        sbom_occurrences.order_by_component_name(sort_direction)
       when 'packager'
-        sbom_occurrences.order_by_package_name(params[:sort])
+        sbom_occurrences.order_by_package_name(sort_direction)
       else
         sbom_occurrences.order_by_id
       end
@@ -40,6 +40,10 @@ module Sbom
 
     def filter_by_component_names(sbom_occurrences)
       sbom_occurrences.filter_by_component_names(params[:component_names])
+    end
+
+    def sort_direction
+      params[:sort]&.downcase == 'desc' ? 'desc' : 'asc'
     end
   end
 end

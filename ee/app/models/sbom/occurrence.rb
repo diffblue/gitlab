@@ -20,17 +20,15 @@ module Sbom
     scope :order_by_id, -> { order(id: :asc) }
 
     scope :order_by_component_name, ->(direction) do
-      sort_direction = direction&.downcase == 'desc' ? 'desc' : 'asc'
-      joins(:component).order("sbom_components.name #{sort_direction}")
+      joins(:component).order("sbom_components.name" => direction)
     end
 
     scope :order_by_package_name, ->(direction) do
-      sort_direction = direction&.downcase == 'desc' ? 'desc' : 'asc'
-      joins(:source).order(Arel.sql("sbom_sources.source->'package_manager'->'name' #{sort_direction}"))
+      order(package_manager: direction)
     end
 
     scope :filter_by_package_managers, ->(package_managers) do
-      where(source_id: Sbom::Source.filter_by_package_managers(package_managers).select(:id))
+      where(package_manager: package_managers)
     end
 
     scope :filter_by_component_names, ->(component_names) do

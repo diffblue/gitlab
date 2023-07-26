@@ -55,12 +55,22 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     let_it_be(:occurrence_npm) { create(:sbom_occurrence, packager_name: 'npm') }
     let_it_be(:occurrence_null) { create(:sbom_occurrence, source: nil) }
 
-    it 'returns records sorted by package name asc' do
-      expect(described_class.order_by_package_name('asc').map(&:packager)).to eq(%w[npm nuget])
+    subject(:relation) { described_class.order_by_package_name(order) }
+
+    context 'when the sort order is ascending' do
+      let(:order) { 'asc' }
+
+      it 'returns records sorted by package name asc' do
+        expect(relation.map(&:packager)).to eq(['npm', 'nuget', nil])
+      end
     end
 
-    it 'returns records sorted by package name desc' do
-      expect(described_class.order_by_package_name('desc').map(&:packager)).to eq(%w[nuget npm])
+    context 'when the sort order is descending' do
+      let(:order) { 'desc' }
+
+      it 'returns records sorted by package name desc' do
+        expect(relation.map(&:packager)).to eq([nil, 'nuget', 'npm'])
+      end
     end
   end
 
