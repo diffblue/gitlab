@@ -92,11 +92,7 @@ module Gitlab
             end
 
             def prompt_version
-              if Feature.enabled?(:ai_chat_prompt_alternative, context.current_user)
-                ALTERNATIVE_PROMPT_TEMPLATE
-              else
-                PROMPT_TEMPLATE
-              end
+              PROMPT_TEMPLATE
             end
 
             def last_conversation
@@ -118,39 +114,6 @@ module Gitlab
             end
 
             PROMPT_TEMPLATE = [
-              Utils::Prompt.as_system(
-                <<~PROMPT
-                Answer the question as accurate as you can.
-                Start with identifying the resource first.
-                You have access to the following tools:
-                %<tools_definitions>s
-                Consider every tool before making decision.
-                Identifying resource mustn't be the last step.
-                Ensure that your answer is accurate and doesn’t contain any information not directly supported
-                by the information retrieved using provided tools.
-                Use the following format:
-
-                Question: the input question you must answer
-                Thought: you should always think about what to do
-                Action: the action to take, should be one from this list: %<tool_names>s
-                Action Input: the input to the action
-                Observation: the result of the actions
-
-                ... (this Thought/Action/Action Input/Observation sequence can repeat N times)
-
-                Thought: I know the final answer.
-                Final Answer: the final answer to the original input question.
-
-                REMEMBER to ALWAYS start a line with "Final Answer:" to give me the final answer.
-
-                Begin!
-              PROMPT
-              ),
-              Utils::Prompt.as_assistant("%<agent_scratchpad>s"),
-              Utils::Prompt.as_user("Question: %<user_input>s")
-            ].freeze
-
-            ALTERNATIVE_PROMPT_TEMPLATE = [
               Utils::Prompt.as_system(
                 <<~PROMPT
                 Answer the question as accurate as you can.
