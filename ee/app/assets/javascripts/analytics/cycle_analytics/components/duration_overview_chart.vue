@@ -1,7 +1,7 @@
 <script>
 import { GlAreaChart, GlChartSeriesLabel } from '@gitlab/ui/dist/charts';
 import { mapGetters, mapState } from 'vuex';
-import { GlAlert, GlIcon, GlTooltipDirective } from '@gitlab/ui';
+import { GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
 import dateFormat from '~/lib/dateformat';
 import { buildNullSeries, formatDurationOverviewTooltipMetric } from 'ee/analytics/shared/utils';
@@ -14,7 +14,6 @@ import {
   DURATION_OVERVIEW_CHART_X_AXIS_DATE_FORMAT,
   DURATION_OVERVIEW_CHART_X_AXIS_TOOLTIP_TITLE_DATE_FORMAT,
   DURATION_OVERVIEW_CHART_NO_DATA,
-  DURATION_TOTAL_TIME_NO_DATA,
   DURATION_OVERVIEW_CHART_NO_DATA_LEGEND_ITEM,
 } from '../constants';
 import {
@@ -22,6 +21,7 @@ import {
   STACKED_AREA_CHART_SERIES_OPTIONS,
   STACKED_AREA_CHART_NULL_SERIES_OPTIONS,
 } from '../../shared/constants';
+import NoDataAvailableState from './no_data_available_state.vue';
 
 export default {
   name: 'DurationOverviewChart',
@@ -29,7 +29,7 @@ export default {
     GlAreaChart,
     GlChartSeriesLabel,
     GlIcon,
-    GlAlert,
+    NoDataAvailableState,
     ChartSkeletonLoader,
   },
   directives: {
@@ -53,9 +53,6 @@ export default {
             data.some(([, metric]) => metric !== null),
           ),
       );
-    },
-    error() {
-      return this.errorMessage || DURATION_TOTAL_TIME_NO_DATA;
     },
     chartData() {
       const nonNullSeries = [];
@@ -219,8 +216,9 @@ export default {
         </div>
       </template>
     </gl-area-chart>
-    <gl-alert v-else variant="info" :dismissible="false" class="gl-mt-3">
-      {{ error }}
+    <gl-alert v-else-if="errorMessage" variant="info" :dismissible="false" class="gl-mt-3">
+      {{ errorMessage }}
     </gl-alert>
+    <no-data-available-state v-else />
   </div>
 </template>

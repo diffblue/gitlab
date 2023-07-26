@@ -129,7 +129,10 @@ RSpec.describe 'Value stream analytics charts', :js, feature_category: :value_st
         end
 
         it 'shows the no data available message' do
-          expect(page).to have_text(_('There is no data available. Please change your selection.'))
+          expect(page).to have_text(
+            _('No data available ' \
+              'Try adjusting the filters, or creating an issue or merge request to collect more data')
+          )
         end
       end
     end

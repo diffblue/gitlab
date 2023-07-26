@@ -13,13 +13,13 @@ import { n__, sprintf, __ } from '~/locale';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
 import {
   DURATION_STAGE_TIME_DESCRIPTION,
-  DURATION_STAGE_TIME_NO_DATA,
   DURATION_STAGE_TIME_LABEL,
   DURATION_CHART_X_AXIS_TITLE,
   DURATION_CHART_Y_AXIS_TITLE,
   DURATION_CHART_Y_AXIS_TOOLTIP_TITLE,
   DURATION_CHART_TOOLTIP_NO_DATA,
 } from '../constants';
+import NoDataAvailableState from './no_data_available_state.vue';
 
 const formatTooltipDate = (date) => dateFormat(date, dateFormats.defaultDate);
 
@@ -31,6 +31,7 @@ export default {
     GlLineChart,
     ChartSkeletonLoader,
     ChartTooltipText,
+    NoDataAvailableState,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -47,12 +48,6 @@ export default {
         !this.isLoading &&
           this.durationChartPlottableData.some((dataPoint) => dataPoint[1] !== null),
       );
-    },
-    error() {
-      if (this.errorMessage) {
-        return this.errorMessage;
-      }
-      return DURATION_STAGE_TIME_NO_DATA;
     },
     title() {
       return sprintf(DURATION_STAGE_TIME_LABEL, {
@@ -155,8 +150,9 @@ export default {
         />
       </template>
     </gl-line-chart>
-    <gl-alert v-else variant="info" :dismissible="false" class="gl-mt-3">
-      {{ error }}
+    <gl-alert v-else-if="errorMessage" variant="info" :dismissible="false" class="gl-mt-3">
+      {{ errorMessage }}
     </gl-alert>
+    <no-data-available-state v-else />
   </div>
 </template>

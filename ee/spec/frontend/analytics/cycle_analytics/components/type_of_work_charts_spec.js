@@ -4,6 +4,7 @@ import Vuex from 'vuex';
 import TasksByTypeChart from 'ee/analytics/cycle_analytics/components/tasks_by_type/tasks_by_type_chart.vue';
 import TasksByTypeFilters from 'ee/analytics/cycle_analytics/components/tasks_by_type/tasks_by_type_filters.vue';
 import TypeOfWorkCharts from 'ee/analytics/cycle_analytics/components/type_of_work_charts.vue';
+import NoDataAvailableState from 'ee/analytics/cycle_analytics/components/no_data_available_state.vue';
 import {
   TASKS_BY_TYPE_SUBJECT_MERGE_REQUEST,
   TASKS_BY_TYPE_FILTERS,
@@ -68,6 +69,7 @@ describe('TypeOfWorkCharts', () => {
   const findSubjectFilters = (_wrapper) => _wrapper.findComponent(TasksByTypeFilters);
   const findTasksByTypeChart = (_wrapper) => _wrapper.findComponent(TasksByTypeChart);
   const findLoader = (_wrapper) => _wrapper.findComponent(ChartSkeletonLoader);
+  const findNoDataAvailableState = (_wrapper) => _wrapper.findComponent(NoDataAvailableState);
 
   describe('with data', () => {
     beforeEach(() => {
@@ -141,7 +143,7 @@ describe('TypeOfWorkCharts', () => {
     });
 
     it('renders the no data available message', () => {
-      expect(wrapper.text()).toContain('There is no data available. Please change your selection.');
+      expect(findNoDataAvailableState(wrapper).exists()).toBe(true);
     });
   });
 

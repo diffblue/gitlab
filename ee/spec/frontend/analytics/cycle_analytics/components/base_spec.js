@@ -100,8 +100,10 @@ const mocks = {
   },
 };
 
-function mockRequiredRoutes(mockAdapter, { page = 1 } = {}) {
-  mockAdapter.onGet(endpoints.stageData).reply(HTTP_STATUS_OK, issueEvents, { 'x-page': page });
+function mockRequiredRoutes(mockAdapter, { selectedStageEvents = issueEvents, page = 1 } = {}) {
+  mockAdapter
+    .onGet(endpoints.stageData)
+    .reply(HTTP_STATUS_OK, selectedStageEvents, { 'x-page': page });
   mockAdapter.onGet(endpoints.tasksByTypeTopLabelsData).reply(HTTP_STATUS_OK, groupLabels);
   mockAdapter.onGet(endpoints.tasksByTypeData).reply(HTTP_STATUS_OK, { ...tasksByTypeData });
   mockAdapter
@@ -301,10 +303,10 @@ describe('EE Value Stream Analytics component', () => {
       expect(findOverviewMetrics().props('dashboardsPath')).toBeNull();
     });
 
-    describe('Without the overview stage selected', () => {
+    describe('without the overview stage selected', () => {
       beforeEach(async () => {
         mock = new MockAdapter(axios);
-        mockRequiredRoutes(mock);
+        mockRequiredRoutes(mock, { selectedStageEvents: [{}] });
         wrapper = await createComponent({ selectedStage: issueStage });
       });
 
@@ -324,6 +326,28 @@ describe('EE Value Stream Analytics component', () => {
 
       it('sets the `includeProjectName` prop on stage table', () => {
         expect(findStageTable().props('includeProjectName')).toBe(true);
+      });
+
+      describe('without issue events', () => {
+        beforeEach(async () => {
+          mock = new MockAdapter(axios);
+          mockRequiredRoutes(mock, { selectedStageEvents: [] });
+          wrapper = await createComponent({ selectedStage: issueStage });
+        });
+
+        it.each`
+          component                    | componentFinder              | exists   | result
+          ${'Filter bar'}              | ${findFilterBar}             | ${true}  | ${'render'}
+          ${'Aggregation status'}      | ${findAggregationStatus}     | ${true}  | ${'render'}
+          ${'Value stream select'}     | ${findValueStreamSelect}     | ${true}  | ${'render'}
+          ${'Stage table'}             | ${findStageTable}            | ${false} | ${'not render'}
+          ${'Stage duration chart'}    | ${findDurationChart}         | ${true}  | ${'render'}
+          ${'Overview metrics'}        | ${findOverviewMetrics}       | ${false} | ${'not render'}
+          ${'Type of work chart'}      | ${findTypeOfWorkCharts}      | ${false} | ${'not render'}
+          ${'Duration overview chart'} | ${findDurationOverviewChart} | ${false} | ${'not render'}
+        `(`will $result the $component`, ({ componentFinder, exists }) => {
+          expect(componentFinder().exists()).toBe(exists);
+        });
       });
     });
   });
@@ -417,20 +441,7 @@ describe('EE Value Stream Analytics component', () => {
 
       expect(createAlert).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_STAGE_MEDIAN });
     });
-
-    it('will display an error if the fetchStageData request is successful but has an embedded error', async () => {
-      const tooMuchDataError = 'There is too much data to calculate. Please change your selection.';
-      mock.onGet(endpoints.stageData).reply(HTTP_STATUS_OK, { error: tooMuchDataError });
-
-      wrapper = await createComponent({ selectedStage: issueStage });
-
-      expect(findStageTable().exists()).toBe(true);
-      expect(findStageTable().props('emptyStateMessage')).toBe(tooMuchDataError);
-      expect(findStageTable().props('stageEvents')).toEqual([]);
-      expect(findStageTable().props('pagination')).toEqual({});
-    });
   });
-
   describe('Path navigation', () => {
     const selectedStage = { id: 2, title: 'Plan' };
     const overviewStage = { id: OVERVIEW_STAGE_ID, title: 'Overview' };
