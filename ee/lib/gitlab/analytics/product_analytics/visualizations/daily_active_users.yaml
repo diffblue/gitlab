@@ -1,6 +1,5 @@
 ---
 version: 1
-title: Daily Active Users
 type: LineChart
 data:
   type: cube_analytics

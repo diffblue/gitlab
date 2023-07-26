@@ -1,5 +1,4 @@
 version: '1'
-title: "Daily Something"
 type: BarChart
 options:
   xAxis:

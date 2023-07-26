@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analytics do
-  let_it_be(:project) do
+  let_it_be(:project, reload: true) do
     create(:project, :with_product_analytics_dashboard,
       project_setting: build(:project_setting, product_analytics_instrumentation_key: 'test')
     )
@@ -22,10 +22,10 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
   end
 
   describe '#slug' do
-    subject { described_class.for_project(project).first.slug }
+    subject { described_class.for_project(project) }
 
-    it 'returns the slug' do
-      expect(subject).to eq('daily_something')
+    it 'returns the slugs' do
+      expect(subject.map(&:slug)).to include('cube_bar_chart', 'cube_line_chart')
     end
   end
 
@@ -41,15 +41,16 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
     end
 
     context 'when a custom dashboard pointer project is configured' do
+      let_it_be(:pointer_project) { create(:project, :with_product_analytics_custom_visualization) }
+
       before do
-        project.analytics_dashboards_configuration_project = create(:project,
-          :with_product_analytics_custom_visualization)
+        project.update!(analytics_dashboards_configuration_project: pointer_project)
       end
 
       it 'returns custom visualizations from pointer project' do
         num_custom_visualizations = 1
         expect(subject.count).to eq(num_builtin_visualizations + num_custom_visualizations)
-        expect(subject.map { |v| v.config['title'] }).to include('Example custom visualization')
+        expect(subject.map(&:slug)).to include('example_custom_visualization')
       end
 
       it 'does not return custom visualizations from self' do

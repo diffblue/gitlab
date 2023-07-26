@@ -1,6 +1,5 @@
 ---
 version: 1
-title: Returning Users Percentage
 type: SingleStat
 data:
   type: cube_analytics

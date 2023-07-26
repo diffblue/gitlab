@@ -1,6 +1,5 @@
 ---
 version: 1
-title: Top pages
 type: DataTable
 data:
   type: cube_analytics
