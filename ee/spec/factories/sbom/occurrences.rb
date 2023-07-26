@@ -17,9 +17,11 @@ FactoryBot.define do
       occurrence.uuid = Sbom::OccurrenceUUID.generate(
         project_id: occurrence.project.id,
         component_id: occurrence.component.id,
-        component_version_id: occurrence&.component_version&.id,
-        source_id: occurrence&.source&.id
+        component_version_id: occurrence.component_version&.id,
+        source_id: occurrence.source&.id
       )
+
+      occurrence.package_manager = occurrence.source&.source&.dig('package_manager', 'name')
     end
   end
 end

@@ -6,9 +6,24 @@ RSpec.describe Sbom::DependenciesFinder, feature_category: :dependency_managemen
   let_it_be(:group) { create(:group) }
   let_it_be(:subgroup) { create(:group, parent: group) }
   let_it_be(:project) { create(:project, group: subgroup) }
-  let_it_be(:occurrence_1) { create(:sbom_occurrence, packager_name: 'nuget', project: project) }
-  let_it_be(:occurrence_2) { create(:sbom_occurrence, packager_name: 'npm', project: project) }
-  let_it_be(:occurrence_3) { create(:sbom_occurrence, source: nil, project: project) }
+  let_it_be(:component_1) { create(:sbom_component, name: 'component-1') }
+  let_it_be(:component_2) { create(:sbom_component, name: 'component-2') }
+  let_it_be(:component_3) { create(:sbom_component, name: 'component-3') }
+  let_it_be(:component_version_1) { create(:sbom_component_version, component: component_1) }
+  let_it_be(:component_version_2) { create(:sbom_component_version, component: component_2) }
+  let_it_be(:component_version_3) { create(:sbom_component_version, component: component_3) }
+
+  let_it_be(:occurrence_1) do
+    create(:sbom_occurrence, component_version: component_version_1, packager_name: 'nuget', project: project)
+  end
+
+  let_it_be(:occurrence_2) do
+    create(:sbom_occurrence, component_version: component_version_2, packager_name: 'npm', project: project)
+  end
+
+  let_it_be(:occurrence_3) do
+    create(:sbom_occurrence, component_version: component_version_3, source: nil, project: project)
+  end
 
   shared_examples 'filter and sorting' do
     context 'without params' do
@@ -60,7 +75,7 @@ RSpec.describe Sbom::DependenciesFinder, feature_category: :dependency_managemen
         it 'returns array of data properly sorted' do
           packagers = dependencies.map(&:packager)
 
-          expect(packagers).to eq(%w[npm nuget])
+          expect(packagers).to eq(['npm', 'nuget', nil])
         end
       end
 
@@ -75,7 +90,7 @@ RSpec.describe Sbom::DependenciesFinder, feature_category: :dependency_managemen
         it 'returns array of data properly sorted' do
           packagers = dependencies.map(&:packager)
 
-          expect(packagers).to eq(%w[nuget npm])
+          expect(packagers).to eq([nil, 'nuget', 'npm'])
         end
       end
 
