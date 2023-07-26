@@ -1,8 +1,0 @@
----
-name: sign_up_on_sso
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/10338
-rollout_issue_url:
-milestone: '12.0'
-type: development
-group: group::authentication and authorization
-default_enabled: false

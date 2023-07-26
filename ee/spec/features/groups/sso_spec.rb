@@ -23,7 +23,7 @@ RSpec.describe 'Group SAML SSO', :js, :snowplow, feature_category: :system_acces
   end
 
   before do
-    stub_feature_flags(group_managed_accounts: true, sign_up_on_sso: true, convert_user_to_group_managed_accounts: true)
+    stub_feature_flags(group_managed_accounts: true, convert_user_to_group_managed_accounts: true)
     stub_licensed_features(group_saml: true)
     allow(Devise).to receive(:omniauth_providers).and_return(%i(group_saml))
 

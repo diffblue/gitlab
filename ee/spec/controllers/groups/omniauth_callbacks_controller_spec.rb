@@ -306,40 +306,16 @@ RSpec.describe Groups::OmniauthCallbacksController, feature_category: :system_ac
             expect(flash[:notice]).to eq 'Request to link SAML account must be authorized'
           end
         end
-
-        context 'with enforced_group_managed_accounts enabled' do
-          let!(:saml_provider) { create(:saml_provider, :enforced_group_managed_accounts, group: group) }
-
-          it 'redirects to group sign up' do
-            post provider, params: { group_id: group }
-
-            expect(response).to redirect_to(group_sign_up_path(group))
-          end
-        end
       end
     end
 
     context "when not signed in" do
       context "and identity hasn't been linked" do
-        let!(:saml_provider) { create(:saml_provider, :enforced_group_managed_accounts, group: group) }
-
-        context 'when sign_up_on_sso feature flag is disabled' do
-          before do
-            stub_feature_flags(sign_up_on_sso: false)
-          end
-
-          it "redirects to sign in page with flash notice" do
-            post provider, params: { group_id: group }
-
-            expect(response).to redirect_to(new_user_session_path)
-            expect(flash[:notice]).to eq(s_("SAML|There is already a GitLab account associated with this email address. Sign in with your existing credentials to connect your organization's account"))
-          end
-        end
-
-        it 'redirects to group sign up page' do
+        it "redirects to sign in page with flash notice" do
           post provider, params: { group_id: group }
 
-          expect(response).to redirect_to(group_sign_up_path(group))
+          expect(response).to redirect_to(new_user_session_path)
+          expect(flash[:notice]).to eq(s_("SAML|There is already a GitLab account associated with this email address. Sign in with your existing credentials to connect your organization's account"))
         end
       end
 
@@ -349,7 +325,7 @@ RSpec.describe Groups::OmniauthCallbacksController, feature_category: :system_ac
         let(:user) { build_stubbed(:user) }
 
         before do
-          stub_ee_application_setting(should_check_namespace_plan: true)
+          enable_namespace_license_check!
           stub_feature_flags(ensure_onboarding: true)
           stub_omniauth_setting(block_auto_created_users: false)
         end

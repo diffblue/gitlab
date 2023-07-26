@@ -1,12 +1,12 @@
 import { GlButton, GlForm, GlFormInput } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import SidebarWeightWidget from 'ee_component/sidebar/components/weight/sidebar_weight_widget.vue';
 import issueWeightQuery from 'ee_component/sidebar/queries/issue_weight.query.graphql';
 import updateIssueWeightMutation from 'ee_component/sidebar/queries/update_issue_weight.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { stubComponent, RENDER_ALL_SLOTS_TEMPLATE } from 'helpers/stub_component';
 import waitForPromises from 'helpers/wait_for_promises';
 import { preventDefault, stopPropagation } from 'ee_jest/admin/test_helpers';
 import { createAlert } from '~/alert';
@@ -47,19 +47,23 @@ describe('Sidebar Weight Widget', () => {
       [issueWeightSubscription, weightSubscriptionHandler],
     ]);
 
-    wrapper = extendedWrapper(
-      shallowMount(SidebarWeightWidget, {
-        apolloProvider: fakeApollo,
-        provide: {
-          canUpdate: true,
-        },
-        propsData: {
-          fullPath: 'group/project',
-          iid: '1',
-          issuableType: 'issue',
-        },
-      }),
-    );
+    wrapper = shallowMountExtended(SidebarWeightWidget, {
+      apolloProvider: fakeApollo,
+      provide: {
+        canUpdate: true,
+      },
+      propsData: {
+        fullPath: 'group/project',
+        iid: '1',
+        issuableType: 'issue',
+      },
+      stubs: {
+        SidebarEditableItem: stubComponent(SidebarEditableItem, {
+          methods: { collapse: jest.fn() },
+          template: RENDER_ALL_SLOTS_TEMPLATE,
+        }),
+      },
+    });
   };
 
   afterEach(() => {
@@ -75,7 +79,6 @@ describe('Sidebar Weight Widget', () => {
   describe('when issue has no weight', () => {
     beforeEach(() => {
       createComponent();
-      wrapper.vm.$refs.editable.collapse = jest.fn();
       return waitForPromises();
     });
 
