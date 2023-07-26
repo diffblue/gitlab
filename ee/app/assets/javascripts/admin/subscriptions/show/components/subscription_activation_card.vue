@@ -10,7 +10,7 @@ import {
 import SubscriptionActivationErrors from './subscription_activation_errors.vue';
 import SubscriptionActivationForm from './subscription_activation_form.vue';
 
-export const activateSubscriptionUrl = helpPagePath('user/admin_area/license.html', {
+export const activateSubscriptionUrl = helpPagePath('administration/license.html', {
   anchor: 'activate-gitlab-ee-with-an-activation-code',
 });
 

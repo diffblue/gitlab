@@ -12,11 +12,11 @@ export const VALIDATION_FIELD_KEYS = {
   MINIMUM_REVERIFICATION_INTERVAL: 'minimumReverificationInterval',
 };
 
-export const PRIMARY_SITE_SETTINGS = helpPagePath('user/admin_area/geo_sites.html', {
+export const PRIMARY_SITE_SETTINGS = helpPagePath('administration/geo_sites.html', {
   anchor: 'common-settings',
 });
 
-export const SECONDARY_SITE_SETTINGS = helpPagePath('user/admin_area/geo_sites.html', {
+export const SECONDARY_SITE_SETTINGS = helpPagePath('administration/geo_sites.html', {
   anchor: 'secondary-site-settings',
 });
 
@@ -34,6 +34,6 @@ export const REVERIFICATION_MORE_INFO = helpPagePath(
   { anchor: 'repository-re-verification' },
 );
 
-export const BACKFILL_MORE_INFO = helpPagePath('user/admin_area/geo_sites.html', {
+export const BACKFILL_MORE_INFO = helpPagePath('administration/geo_sites.html', {
   anchor: 'geo-backfill',
 });
