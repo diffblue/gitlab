@@ -26,12 +26,16 @@ Vue.use(VueApollo);
 
 describe('NamespaceStorageApp', () => {
   let wrapper;
+  let requestHandler;
 
-  function createMockApolloProvider(response = mockedNamespaceStorageResponse) {
-    const successHandler = jest.fn().mockResolvedValue(response);
+  function createMockApolloProvider(
+    response = mockedNamespaceStorageResponse,
+    proxyResponse = mockDependencyProxyResponse,
+  ) {
+    requestHandler = jest.fn().mockResolvedValue(response);
     const requestHandlers = [
-      [getNamespaceStorageQuery, successHandler],
-      [getDependencyProxyTotalSizeQuery, jest.fn().mockResolvedValue(mockDependencyProxyResponse)],
+      [getNamespaceStorageQuery, requestHandler],
+      [getDependencyProxyTotalSizeQuery, jest.fn().mockResolvedValue(proxyResponse)],
     ];
 
     return createMockApollo(requestHandlers);
@@ -67,21 +71,12 @@ describe('NamespaceStorageApp', () => {
   const findContainerRegistry = () => wrapper.findComponent(ContainerRegistryUsage);
   const findAlert = () => wrapper.findComponent(GlAlert);
 
-  const createComponent = ({
-    provide = {},
-    dependencyProxyTotalSizeInBytes = 0,
-    mockApollo = {},
-  } = {}) => {
+  const createComponent = ({ provide = {}, mockApollo = {} } = {}) => {
     wrapper = mountExtended(NamespaceStorageApp, {
       apolloProvider: mockApollo,
       provide: {
         ...defaultNamespaceProvideValues,
         ...provide,
-      },
-      data() {
-        return {
-          dependencyProxyTotalSizeInBytes,
-        };
       },
     });
   };
@@ -114,13 +109,16 @@ describe('NamespaceStorageApp', () => {
 
   describe('Dependency proxy usage', () => {
     beforeEach(() => {
-      mockApollo = createMockApolloProvider();
+      mockDependencyProxyResponse.data.group.dependencyProxyTotalSizeInBytes = 512;
+      mockApollo = createMockApolloProvider(
+        mockedNamespaceStorageResponse,
+        mockDependencyProxyResponse,
+      );
     });
 
     it('shows the dependency proxy usage component', async () => {
       createComponent({
         mockApollo,
-        dependencyProxyTotalSizeInBytes: 512,
         provide: { userNamespace: false },
       });
       await waitForPromises();
@@ -131,7 +129,6 @@ describe('NamespaceStorageApp', () => {
     it('does not display the dependency proxy for personal namespaces', () => {
       createComponent({
         mockApollo,
-        dependencyProxyTotalSizeInBytes: 512,
         provide: { userNamespace: true },
       });
 
@@ -141,10 +138,13 @@ describe('NamespaceStorageApp', () => {
 
   describe('Container registry usage', () => {
     beforeEach(async () => {
-      mockApollo = createMockApolloProvider();
+      mockDependencyProxyResponse.data.group.dependencyProxyTotalSizeInBytes = 512;
+      mockApollo = createMockApolloProvider(
+        mockedNamespaceStorageResponse,
+        mockDependencyProxyResponse,
+      );
       createComponent({
         mockApollo,
-        dependencyProxyTotalSizeInBytes: 512,
       });
       await waitForPromises();
     });
@@ -243,29 +243,46 @@ describe('NamespaceStorageApp', () => {
       searchAndSortBar = findSearchAndSortBar();
     });
 
-    it('triggers search if user enters search input', () => {
-      expect(wrapper.vm.searchTerm).toBe('');
-
+    it('triggers search if user enters search input', async () => {
+      expect(requestHandler).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({ searchTerm: '' }),
+      );
       findSearchAndSortBar().vm.$emit('onFilter', sampleSearchTerm);
+      await waitForPromises();
 
-      expect(wrapper.vm.searchTerm).toBe(sampleSearchTerm);
+      expect(requestHandler).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ searchTerm: sampleSearchTerm }),
+      );
     });
 
-    it('triggers search if user clears the entered search input', () => {
+    it('triggers search if user clears the entered search input', async () => {
       searchAndSortBar.vm.$emit('onFilter', sampleSearchTerm);
-      expect(wrapper.vm.searchTerm).toBe(sampleSearchTerm);
+      await waitForPromises();
+
+      expect(requestHandler).toHaveBeenCalledWith(
+        expect.objectContaining({ searchTerm: sampleSearchTerm }),
+      );
 
       searchAndSortBar.vm.$emit('onFilter', '');
-      expect(wrapper.vm.searchTerm).toBe('');
+      await waitForPromises();
+
+      expect(requestHandler).toHaveBeenCalledWith(expect.objectContaining({ searchTerm: '' }));
     });
 
-    it('triggers search with empty string if user enters short search input', () => {
+    it('triggers search with empty string if user enters short search input', async () => {
       searchAndSortBar.vm.$emit('onFilter', sampleSearchTerm);
-      expect(wrapper.vm.searchTerm).toBe(sampleSearchTerm);
+      await waitForPromises();
+      expect(requestHandler).toHaveBeenCalledWith(
+        expect.objectContaining({ searchTerm: sampleSearchTerm }),
+      );
 
       const sampleShortSearchTerm = 'Gi';
       findSearchAndSortBar().vm.$emit('onFilter', sampleShortSearchTerm);
-      expect(wrapper.vm.searchTerm).toBe('');
+      await waitForPromises();
+
+      expect(requestHandler).toHaveBeenCalledWith(expect.objectContaining({ searchTerm: '' }));
     });
   });
 
@@ -294,28 +311,24 @@ describe('NamespaceStorageApp', () => {
         mockApollo = createMockApolloProvider(namespaceWithPageInfo);
         createComponent({ mockApollo });
 
-        jest
-          .spyOn(wrapper.vm.$apollo.queries.namespace, 'fetchMore')
-          .mockImplementation(jest.fn().mockResolvedValue({}));
-
         await waitForPromises();
       });
 
       it('contains correct `first` and `last` values when clicking "Prev" button', () => {
         findPrevButton().trigger('click');
-        expect(wrapper.vm.$apollo.queries.namespace.fetchMore).toHaveBeenCalledWith(
-          expect.objectContaining({
-            variables: expect.objectContaining({ first: undefined, last: expect.any(Number) }),
-          }),
+        expect(requestHandler).toHaveBeenCalledTimes(2);
+        expect(requestHandler).toHaveBeenNthCalledWith(
+          2,
+          expect.objectContaining({ first: undefined, last: expect.any(Number) }),
         );
       });
 
       it('contains `first` value when clicking "Next" button', () => {
         findNextButton().trigger('click');
-        expect(wrapper.vm.$apollo.queries.namespace.fetchMore).toHaveBeenCalledWith(
-          expect.objectContaining({
-            variables: expect.objectContaining({ first: expect.any(Number) }),
-          }),
+        expect(requestHandler).toHaveBeenCalledTimes(2);
+        expect(requestHandler).toHaveBeenNthCalledWith(
+          2,
+          expect.objectContaining({ first: expect.any(Number) }),
         );
       });
     });
