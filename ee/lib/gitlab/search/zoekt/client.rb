@@ -17,7 +17,7 @@ module Gitlab
         def search(query, num:, project_ids:)
           start = Time.current
 
-          body = {
+          payload = {
             Q: query,
             Opts: {
               TotalMaxMatchCount: num,
@@ -29,15 +29,14 @@ module Gitlab
           # an empty array.
           raise "Not possible to search without at least one project specified" if project_ids == []
 
-          body[:RepoIDs] = project_ids unless project_ids == :any
+          payload[:RepoIDs] = project_ids unless project_ids == :any
 
           path = '/api/search'
-          request_body = body.to_json
-          response = ::Gitlab::HTTP.post(
+          response = post(
             URI.join(search_base_url, path),
-            headers: { "Content-Type" => "application/json" },
-            body: request_body,
-            allow_local_requests: true
+            payload,
+            allow_local_requests: true,
+            basic_auth: basic_auth_params
           )
 
           unless response.success?
@@ -46,7 +45,7 @@ module Gitlab
 
           ::Gitlab::Json.parse(response.body, symbolize_names: true)
         ensure
-          add_request_details(start_time: start, path: path, body: request_body)
+          add_request_details(start_time: start, path: path, body: payload)
         end
 
         def index(project)
@@ -54,22 +53,37 @@ module Gitlab
         end
 
         def truncate
-          ::Gitlab::HTTP.post(
-            URI.join(index_base_url, zoekt_indexer_truncate_path),
-            allow_local_requests: true
-          )
+          post(URI.join(index_base_url, zoekt_indexer_truncate_path))
         end
 
         private
 
-        def zoekt_indexer_post(path, payload)
-          ::Gitlab::HTTP.post(
-            URI.join(index_base_url, path),
+        def post(url, payload = {}, **options)
+          defaults = {
             headers: { "Content-Type" => "application/json" },
             body: payload.to_json,
             allow_local_requests: true,
+            basic_auth: basic_auth_params
+          }
+          ::Gitlab::HTTP.post(
+            url,
+            defaults.merge(options)
+          )
+        end
+
+        def zoekt_indexer_post(path, payload)
+          post(
+            URI.join(index_base_url, path),
+            payload,
             timeout: INDEXING_TIMEOUT_S
           )
+        end
+
+        def basic_auth_params
+          @basic_auth_params ||= {
+            username: username,
+            password: password
+          }.compact
         end
 
         def index_with_legacy_indexer(project)
@@ -152,6 +166,22 @@ module Gitlab
 
         def use_new_zoekt_indexer?
           ::Feature.enabled?(:use_new_zoekt_indexer)
+        end
+
+        def username
+          @username ||= File.exist?(username_file) ? File.read(username_file).chomp : nil
+        end
+
+        def password
+          @password ||= File.exist?(password_file) ? File.read(password_file).chomp : nil
+        end
+
+        def username_file
+          Gitlab.config.zoekt.username_file
+        end
+
+        def password_file
+          Gitlab.config.zoekt.password_file
         end
 
         def logger
