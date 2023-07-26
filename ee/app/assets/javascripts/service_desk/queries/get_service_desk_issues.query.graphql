@@ -1,0 +1,82 @@
+#import "~/graphql_shared/fragments/page_info.fragment.graphql"
+#import "~/service_desk/queries/issue.fragment.graphql"
+
+query getServiceDeskIssuesEE(
+  $hideUsers: Boolean = false
+  $isProject: Boolean = false
+  $isSignedIn: Boolean = false
+  $fullPath: ID!
+  $iid: String
+  $search: String
+  $sort: IssueSort
+  $state: IssuableState
+  $in: [IssuableSearchableField!]
+  $assigneeId: String
+  $assigneeUsernames: [String!]
+  $authorUsername: String
+  $confidential: Boolean
+  $labelName: [String]
+  $milestoneTitle: [String]
+  $milestoneWildcardId: MilestoneWildcardId
+  $myReactionEmoji: String
+  $releaseTag: [String!]
+  $releaseTagWildcardId: ReleaseTagWildcardId
+  $epicId: String
+  $iterationId: [ID]
+  $iterationWildcardId: IterationWildcardId
+  $weight: String
+  $healthStatusFilter: HealthStatusFilter
+  $crmContactId: String
+  $crmOrganizationId: String
+  $not: NegatedIssueFilterInput
+  $or: UnionedIssueFilterInput
+  $beforeCursor: String
+  $afterCursor: String
+  $firstPageSize: Int
+  $lastPageSize: Int
+) {
+  project(fullPath: $fullPath) @include(if: $isProject) @persist {
+    id
+    issues(
+      iid: $iid
+      search: $search
+      sort: $sort
+      state: $state
+      in: $in
+      assigneeId: $assigneeId
+      assigneeUsernames: $assigneeUsernames
+      authorUsername: $authorUsername
+      confidential: $confidential
+      labelName: $labelName
+      milestoneTitle: $milestoneTitle
+      milestoneWildcardId: $milestoneWildcardId
+      myReactionEmoji: $myReactionEmoji
+      releaseTag: $releaseTag
+      releaseTagWildcardId: $releaseTagWildcardId
+      epicId: $epicId
+      iterationId: $iterationId
+      iterationWildcardId: $iterationWildcardId
+      weight: $weight
+      healthStatusFilter: $healthStatusFilter
+      crmContactId: $crmContactId
+      crmOrganizationId: $crmOrganizationId
+      not: $not
+      or: $or
+      before: $beforeCursor
+      after: $afterCursor
+      first: $firstPageSize
+      last: $lastPageSize
+    ) {
+      __persist
+      pageInfo {
+        ...PageInfo
+      }
+      nodes {
+        __persist
+        ...IssueFragment
+        healthStatus
+        weight
+      }
+    }
+  }
+}
