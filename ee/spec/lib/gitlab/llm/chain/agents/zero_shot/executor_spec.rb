@@ -215,9 +215,9 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
 
       # rubocop: disable Layout/LineLength
       where(:input_template, :tools, :answer_match) do
-        'Can you list all labels on %{issue_identifier} issue?'                       | ['IssueIdentifier', 'Resource Reader'] | /ai-enablement/
-        'How many days ago was %<issue_identifier>s issue created?'                   | ['IssueIdentifier', 'Resource Reader'] | /2 days/
-        'For which milestone is %<issue_identifier>s issue? And how long until then?' | ['IssueIdentifier', 'Resource Reader'] | /milestone1.*3 days/
+        'Can you list all labels on %{issue_identifier} issue?'                       | %w[IssueIdentifier ResourceReader] | /ai-enablement/
+        'How many days ago was %<issue_identifier>s issue created?'                   | %w[IssueIdentifier ResourceReader] | /2 days/
+        'For which milestone is %<issue_identifier>s issue? And how long until then?' | %w[IssueIdentifier ResourceReader] | /milestone1.*3 days/
       end
       # rubocop: enable Layout/LineLength
 
@@ -263,8 +263,8 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
           # IssueIdentifider overrides context.resource
           # JsonReader takes resource from context
           # So JsonReader twice with different action input
-          # 'Is it duplicate of issue %<issue_identifier2>s issue?' | ['IssueIdentifier', 'Resource Reader'] | /no/i
-          'Can you provide more details about that issue?' | ['IssueIdentifier', 'Resource Reader'] | /(reliability|providers)/
+          # 'Is it duplicate of issue %<issue_identifier2>s issue?' | ['IssueIdentifier', 'ResourceReader'] | /no/i
+          'Can you provide more details about that issue?' | %w[IssueIdentifier ResourceReader] | /(reliability|providers)/
           # Translation would have to be explicitly allowed in protmp rules first
           # 'Can you translate your last answer to German?' | [] | /Anbieter/ # Anbieter == provider
           'Can you reword your answer?' | [] | /provider/i
