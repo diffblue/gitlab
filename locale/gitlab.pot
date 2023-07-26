@@ -16586,6 +16586,9 @@ msgstr ""
 msgid "DiscordService|Discord Notifications"
 msgstr ""
 
+msgid "DiscordService|Override the default webhook (e.g. https://discord.com/api/webhooks/…)"
+msgstr ""
+
 msgid "DiscordService|Send notifications about project events to a Discord channel."
 msgstr ""
 
