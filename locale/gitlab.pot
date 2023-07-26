@@ -42087,6 +42087,9 @@ msgstr ""
 msgid "SecurityReports|%{firstProject}, %{secondProject}, and %{rest}"
 msgstr ""
 
+msgid "SecurityReports|A comment is required when dismissing."
+msgstr ""
+
 msgid "SecurityReports|Activity"
 msgstr ""
 
@@ -42409,6 +42412,9 @@ msgid "SecurityReports|There was an error while generating the report."
 msgstr ""
 
 msgid "SecurityReports|These vulnerabilities were detected in external sources. They are not necessarily tied to your GitLab project. For example, running containers, URLs, and so on."
+msgstr ""
+
+msgid "SecurityReports|This selection is required."
 msgstr ""
 
 msgid "SecurityReports|To widen your search, change or remove filters above"
