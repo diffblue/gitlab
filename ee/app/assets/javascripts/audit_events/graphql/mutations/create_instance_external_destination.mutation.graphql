@@ -1,7 +1,9 @@
 #import "../fragments/instance_external_audit_event_destination.fragment.graphql"
 
-mutation createInstanceExternalDestination($destinationUrl: String!) {
-  instanceExternalAuditEventDestinationCreate(input: { destinationUrl: $destinationUrl }) {
+mutation createInstanceExternalDestination($destinationUrl: String!, $name: String!) {
+  instanceExternalAuditEventDestinationCreate(
+    input: { destinationUrl: $destinationUrl, name: $name }
+  ) {
     errors
     instanceExternalAuditEventDestination {
       ...InstanceExternalAuditEventDestinationFragment

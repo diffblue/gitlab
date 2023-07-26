@@ -65,7 +65,7 @@ export default {
           return this.item.googleProjectIdName;
         case DESTINATION_TYPE_HTTP:
         default:
-          return this.item.destinationUrl;
+          return this.item.name;
       }
     },
   },

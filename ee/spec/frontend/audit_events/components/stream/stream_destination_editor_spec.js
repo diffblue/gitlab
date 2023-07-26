@@ -13,6 +13,7 @@ import {
   extendedWrapper,
 } from 'helpers/vue_test_utils_helper';
 import externalAuditEventDestinationCreate from 'ee/audit_events/graphql/mutations/create_external_destination.mutation.graphql';
+import externalAuditEventDestinationUpdate from 'ee/audit_events/graphql/mutations/update_external_destination.mutation.graphql';
 import externalAuditEventDestinationHeaderCreate from 'ee/audit_events/graphql/mutations/create_external_destination_header.mutation.graphql';
 import externalAuditEventDestinationHeaderUpdate from 'ee/audit_events/graphql/mutations/update_external_destination_header.mutation.graphql';
 import externalAuditEventDestinationHeaderDelete from 'ee/audit_events/graphql/mutations/delete_external_destination_header.mutation.graphql';
@@ -20,6 +21,7 @@ import deleteExternalDestination from 'ee/audit_events/graphql/mutations/delete_
 import deleteExternalDestinationFilters from 'ee/audit_events/graphql/mutations/delete_external_destination_filters.mutation.graphql';
 import addExternalDestinationFilters from 'ee/audit_events/graphql/mutations/add_external_destination_filters.mutation.graphql';
 import instanceExternalAuditEventDestinationCreate from 'ee/audit_events/graphql/mutations/create_instance_external_destination.mutation.graphql';
+import instanceExternalAuditEventDestinationUpdate from 'ee/audit_events/graphql/mutations/update_instance_external_destination.mutation.graphql';
 import deleteInstanceExternalDestination from 'ee/audit_events/graphql/mutations/delete_instance_external_destination.mutation.graphql';
 import externalInstanceAuditEventDestinationHeaderCreate from 'ee/audit_events/graphql/mutations/create_instance_external_destination_header.mutation.graphql';
 import externalInstanceAuditEventDestinationHeaderUpdate from 'ee/audit_events/graphql/mutations/update_instance_external_destination_header.mutation.graphql';
@@ -31,6 +33,7 @@ import { AUDIT_STREAMS_NETWORK_ERRORS, ADD_STREAM_EDITOR_I18N } from 'ee/audit_e
 import {
   destinationCreateMutationPopulator,
   destinationDeleteMutationPopulator,
+  destinationUpdateMutationPopulator,
   destinationHeaderCreateMutationPopulator,
   destinationHeaderUpdateMutationPopulator,
   destinationHeaderDeleteMutationPopulator,
@@ -52,6 +55,7 @@ import {
   destinationInstanceHeaderCreateMutationPopulator,
   destinationInstanceHeaderUpdateMutationPopulator,
   destinationInstanceHeaderDeleteMutationPopulator,
+  destinationInstanceUpdateMutationPopulator,
 } from '../../mock_data';
 
 jest.mock('~/alert');
@@ -104,6 +108,9 @@ describe('StreamDestinationEditor', () => {
   const findDestinationUrlFormGroup = () => wrapper.findByTestId('destination-url-form-group');
   const findDestinationUrl = () => wrapper.findByTestId('destination-url');
 
+  const findDestinationNameFormGroup = () => wrapper.findByTestId('destination-name-form-group');
+  const findDestinationName = () => wrapper.findByTestId('destination-name');
+
   const findVerificationTokenFormGroup = () =>
     wrapper.findByTestId('verification-token-form-group');
   const findVerificationToken = () => wrapper.findByTestId('verification-token');
@@ -131,6 +138,24 @@ describe('StreamDestinationEditor', () => {
     await setHeaderValueInput(trIdx, value);
   };
 
+  const submitForm = async () => {
+    findDestinationName().vm.$emit('input', 'Name');
+    findDestinationUrl().vm.$emit('input', 'https://example.test');
+    findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+    await waitForPromises();
+  };
+
+  const submitFormWithHeaders = async () => {
+    findDestinationName().vm.$emit('input', 'Name');
+    findDestinationUrl().vm.$emit('input', 'https://example.test');
+    await findAddHeaderBtn().trigger('click');
+    await setHeadersRowData(0, { name: 'row header', value: 'row value' });
+    await findAddHeaderBtn().trigger('click');
+    await setHeadersRowData(1, { name: 'row header 1', value: 'row value 1' });
+    findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+    await waitForPromises();
+  };
+
   afterEach(() => {
     createAlert.mockClear();
   });
@@ -153,6 +178,10 @@ describe('StreamDestinationEditor', () => {
           expect(findDestinationUrl().attributes('placeholder')).toBe(
             ADD_STREAM_EDITOR_I18N.DESTINATION_URL_PLACEHOLDER,
           );
+        });
+
+        it('should render the destination name input', () => {
+          expect(findDestinationNameFormGroup().exists()).toBe(true);
         });
       });
 
@@ -206,9 +235,7 @@ describe('StreamDestinationEditor', () => {
       it('should emit add event after destination added', async () => {
         createComponent();
 
-        findDestinationUrl().vm.$emit('input', 'https://example.test');
-        findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
-        await waitForPromises();
+        await submitForm();
 
         expect(findAlertErrors()).toHaveLength(0);
         expect(wrapper.emitted('error')).toBeUndefined();
@@ -226,9 +253,7 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findDestinationUrl().vm.$emit('input', 'https://example.test');
-        findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
-        await waitForPromises();
+        await submitForm();
 
         expect(findAlertErrors()).toHaveLength(1);
         expect(findAlertErrors().at(0).text()).toBe(AUDIT_STREAMS_NETWORK_ERRORS.CREATING_ERROR);
@@ -245,9 +270,7 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findDestinationUrl().vm.$emit('input', 'https://example.test');
-        findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
-        await waitForPromises();
+        await submitForm();
 
         expect(findAlertErrors()).toHaveLength(1);
         expect(findAlertErrors().at(0).text()).toBe(AUDIT_STREAMS_NETWORK_ERRORS.CREATING_ERROR);
@@ -273,13 +296,7 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findDestinationUrl().vm.$emit('input', 'https://example.test');
-        await findAddHeaderBtn().trigger('click');
-        await setHeadersRowData(0, { name: 'row header', value: 'row value' });
-        await findAddHeaderBtn().trigger('click');
-        await setHeadersRowData(1, { name: 'row header 1', value: 'row value 1' });
-        findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
-        await waitForPromises();
+        await submitFormWithHeaders();
 
         expect(findAlertErrors()).toHaveLength(0);
         expect(wrapper.emitted('error')).toBeUndefined();
@@ -306,13 +323,7 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findDestinationUrl().vm.$emit('input', 'https://example.test');
-        await findAddHeaderBtn().trigger('click');
-        await setHeadersRowData(0, { name: 'row header', value: 'row value' });
-        await findAddHeaderBtn().trigger('click');
-        await setHeadersRowData(1, { name: 'row header 1', value: 'row value 1' });
-        findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
-        await waitForPromises();
+        await submitFormWithHeaders();
 
         expect(findAlertErrors()).toHaveLength(1);
         expect(findAlertErrors().at(0).text()).toBe(errorMsg);
@@ -341,13 +352,7 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findDestinationUrl().vm.$emit('input', 'https://example.test');
-        await findAddHeaderBtn().trigger('click');
-        await setHeadersRowData(0, { name: 'row header', value: 'row value' });
-        await findAddHeaderBtn().trigger('click');
-        await setHeadersRowData(1, { name: 'row header 1', value: 'row value 1' });
-        findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
-        await waitForPromises();
+        await submitFormWithHeaders();
 
         expect(findAlertErrors()).toHaveLength(1);
         expect(findAlertErrors().at(0).text()).toBe(AUDIT_STREAMS_NETWORK_ERRORS.CREATING_ERROR);
@@ -391,6 +396,7 @@ describe('StreamDestinationEditor', () => {
       `(
         'should enable the add button only when both the name and value are filled',
         async ({ name, value, disabled }) => {
+          await findDestinationName().setValue('Name');
           await findDestinationUrl().setValue('https://example.test');
           await findAddHeaderBtn().trigger('click');
           await setHeadersRowData(0, { name, value });
@@ -400,6 +406,7 @@ describe('StreamDestinationEditor', () => {
       );
 
       it('disables add button when there are headers with the same name', async () => {
+        await findDestinationName().setValue('Name');
         await findDestinationUrl().setValue('https://example.test');
         await findAddHeaderBtn().trigger('click');
         await setHeadersRowData(0, { name: 'a', value: 'b' });
@@ -505,6 +512,7 @@ describe('StreamDestinationEditor', () => {
         const addedHeader = mockExternalDestinationHeader();
 
         const setupUpdatedHeaders = async (updated, added) => {
+          findDestinationName().vm.$emit('input', 'Name');
           findDestinationUrl().vm.$emit('input', 'https://example.test');
           await setHeadersRowData(0, { name: updated.key, value: updated.newValue });
           await findHeaderDeleteBtn(1).trigger('click');
@@ -516,6 +524,9 @@ describe('StreamDestinationEditor', () => {
         };
 
         it('emits the updated event when the headers are added, updated, and deleted', async () => {
+          const destinationUpdateSpy = jest
+            .fn()
+            .mockResolvedValue(destinationUpdateMutationPopulator());
           const headerCreateSpy = jest
             .fn()
             .mockResolvedValue(destinationHeaderCreateMutationPopulator());
@@ -530,6 +541,7 @@ describe('StreamDestinationEditor', () => {
             mountFn: mountExtended,
             props: { item },
             apolloHandlers: [
+              [externalAuditEventDestinationUpdate, destinationUpdateSpy],
               [externalAuditEventDestinationHeaderCreate, headerCreateSpy],
               [externalAuditEventDestinationHeaderUpdate, headerUpdateSpy],
               [externalAuditEventDestinationHeaderDelete, headerDeleteSpy],
@@ -537,6 +549,8 @@ describe('StreamDestinationEditor', () => {
           });
 
           await setupUpdatedHeaders(updatedHeader, addedHeader);
+
+          expect(destinationUpdateSpy).toHaveBeenCalledTimes(1);
 
           expect(headerDeleteSpy).toHaveBeenCalledTimes(1);
           expect(headerDeleteSpy).toHaveBeenCalledWith({
@@ -570,6 +584,10 @@ describe('StreamDestinationEditor', () => {
             props: { item },
             apolloHandlers: [
               [
+                externalAuditEventDestinationUpdate,
+                jest.fn().mockResolvedValue(destinationUpdateMutationPopulator()),
+              ],
+              [
                 externalAuditEventDestinationHeaderCreate,
                 jest.fn().mockResolvedValue(destinationHeaderCreateMutationPopulator([errorMsg])),
               ],
@@ -601,8 +619,8 @@ describe('StreamDestinationEditor', () => {
             props: { item },
             apolloHandlers: [
               [
-                externalAuditEventDestinationHeaderCreate,
-                jest.fn().mockResolvedValue(destinationHeaderUpdateMutationPopulator()),
+                externalAuditEventDestinationUpdate,
+                jest.fn().mockResolvedValue(destinationUpdateMutationPopulator()),
               ],
               [externalAuditEventDestinationHeaderUpdate, jest.fn().mockRejectedValue(sentryError)],
               [
@@ -675,6 +693,10 @@ describe('StreamDestinationEditor', () => {
 
       describe('on change filters', () => {
         it('removes the deselected filters from a destination', async () => {
+          const destinationUpdateSpy = jest
+            .fn()
+            .mockResolvedValue(destinationUpdateMutationPopulator());
+
           const filterRemoveSpy = jest
             .fn()
             .mockResolvedValue(destinationFilterRemoveMutationPopulator());
@@ -682,7 +704,10 @@ describe('StreamDestinationEditor', () => {
           createComponent({
             mountFn: mountExtended,
             props: { item: mockExternalDestinations[1] },
-            apolloHandlers: [[deleteExternalDestinationFilters, filterRemoveSpy]],
+            apolloHandlers: [
+              [externalAuditEventDestinationUpdate, destinationUpdateSpy],
+              [deleteExternalDestinationFilters, filterRemoveSpy],
+            ],
           });
 
           await findFilters().vm.$emit('input', mockRemoveFilterSelect);
@@ -703,6 +728,10 @@ describe('StreamDestinationEditor', () => {
         });
 
         it('adds the selected filters for a destination', async () => {
+          const destinationUpdateSpy = jest
+            .fn()
+            .mockResolvedValue(destinationUpdateMutationPopulator());
+
           const filterAddSpy = jest
             .fn()
             .mockResolvedValue(destinationFilterUpdateMutationPopulator());
@@ -710,7 +739,10 @@ describe('StreamDestinationEditor', () => {
           createComponent({
             mountFn: mountExtended,
             props: { item: mockExternalDestinations[1] },
-            apolloHandlers: [[addExternalDestinationFilters, filterAddSpy]],
+            apolloHandlers: [
+              [externalAuditEventDestinationUpdate, destinationUpdateSpy],
+              [addExternalDestinationFilters, filterAddSpy],
+            ],
           });
 
           await findFilters().vm.$emit('input', mockAddFilterSelect);
@@ -733,12 +765,18 @@ describe('StreamDestinationEditor', () => {
         it('should not emit updated event and reports error when network error occurs while saving', async () => {
           const sentryError = new Error('Network error');
           const sentryCaptureExceptionSpy = jest.spyOn(Sentry, 'captureException');
+          const destinationUpdateSpy = jest
+            .fn()
+            .mockResolvedValue(destinationUpdateMutationPopulator());
           const filterRemoveSpy = jest.fn().mockRejectedValue(sentryError);
 
           createComponent({
             mountFn: mountExtended,
             props: { item: mockExternalDestinations[1] },
-            apolloHandlers: [[deleteExternalDestinationFilters, filterRemoveSpy]],
+            apolloHandlers: [
+              [externalAuditEventDestinationUpdate, destinationUpdateSpy],
+              [deleteExternalDestinationFilters, filterRemoveSpy],
+            ],
           });
 
           findFilters().vm.$emit('input', mockRemoveFilterSelect);
@@ -836,9 +874,7 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findDestinationUrl().vm.$emit('input', 'https://example.test');
-        findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
-        await waitForPromises();
+        await submitForm();
 
         expect(findAlertErrors()).toHaveLength(0);
         expect(wrapper.emitted('error')).toBeUndefined();
@@ -856,9 +892,7 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findDestinationUrl().vm.$emit('input', 'https://example.test');
-        findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
-        await waitForPromises();
+        await submitForm();
 
         expect(findAlertErrors()).toHaveLength(1);
         expect(findAlertErrors().at(0).text()).toBe(errorMsg);
@@ -875,9 +909,7 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findDestinationUrl().vm.$emit('input', 'https://example.test');
-        findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
-        await waitForPromises();
+        await submitForm();
 
         expect(findAlertErrors()).toHaveLength(1);
         expect(findAlertErrors().at(0).text()).toBe(AUDIT_STREAMS_NETWORK_ERRORS.CREATING_ERROR);
@@ -903,13 +935,7 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findDestinationUrl().vm.$emit('input', 'https://example.test');
-        await findAddHeaderBtn().trigger('click');
-        await setHeadersRowData(0, { name: 'row header', value: 'row value' });
-        await findAddHeaderBtn().trigger('click');
-        await setHeadersRowData(1, { name: 'row header 1', value: 'row value 1' });
-        findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
-        await waitForPromises();
+        await submitFormWithHeaders();
 
         expect(findAlertErrors()).toHaveLength(0);
         expect(wrapper.emitted('error')).toBeUndefined();
@@ -939,13 +965,7 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findDestinationUrl().vm.$emit('input', 'https://example.test');
-        await findAddHeaderBtn().trigger('click');
-        await setHeadersRowData(0, { name: 'row header', value: 'row value' });
-        await findAddHeaderBtn().trigger('click');
-        await setHeadersRowData(1, { name: 'row header 1', value: 'row value 1' });
-        findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
-        await waitForPromises();
+        await submitFormWithHeaders();
 
         expect(findAlertErrors()).toHaveLength(1);
         expect(findAlertErrors().at(0).text()).toBe(errorMsg);
@@ -977,13 +997,7 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findDestinationUrl().vm.$emit('input', 'https://example.test');
-        await findAddHeaderBtn().trigger('click');
-        await setHeadersRowData(0, { name: 'row header', value: 'row value' });
-        await findAddHeaderBtn().trigger('click');
-        await setHeadersRowData(1, { name: 'row header 1', value: 'row value 1' });
-        findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
-        await waitForPromises();
+        await submitFormWithHeaders();
 
         expect(findAlertErrors()).toHaveLength(1);
         expect(findAlertErrors().at(0).text()).toBe(AUDIT_STREAMS_NETWORK_ERRORS.CREATING_ERROR);
@@ -1027,6 +1041,7 @@ describe('StreamDestinationEditor', () => {
       `(
         'should enable the add button only when both the name and value are filled',
         async ({ name, value, disabled }) => {
+          await findDestinationName().setValue('Name');
           await findDestinationUrl().setValue('https://example.test');
           await findAddHeaderBtn().trigger('click');
           await setHeadersRowData(0, { name, value });
@@ -1036,6 +1051,7 @@ describe('StreamDestinationEditor', () => {
       );
 
       it('disables add button when there are headers with the same name', async () => {
+        await findDestinationName().setValue('Name');
         await findDestinationUrl().setValue('https://example.test');
         await findAddHeaderBtn().trigger('click');
         await setHeadersRowData(0, { name: 'a', value: 'b' });
@@ -1143,6 +1159,7 @@ describe('StreamDestinationEditor', () => {
         const addedHeader = mockInstanceExternalDestinationHeader();
 
         const setupUpdatedHeaders = async (updated, added) => {
+          findDestinationName().vm.$emit('input', 'Name');
           findDestinationUrl().vm.$emit('input', 'https://example.test');
           await setHeadersRowData(0, { name: updated.key, value: updated.newValue });
           await findHeaderDeleteBtn(1).trigger('click');
@@ -1154,6 +1171,9 @@ describe('StreamDestinationEditor', () => {
         };
 
         it('emits the updated event when the headers are added, updated, and deleted', async () => {
+          const destinationUpdateSpy = jest
+            .fn()
+            .mockResolvedValue(destinationInstanceUpdateMutationPopulator());
           const headerCreateSpy = jest
             .fn()
             .mockResolvedValue(destinationInstanceHeaderCreateMutationPopulator());
@@ -1168,6 +1188,7 @@ describe('StreamDestinationEditor', () => {
             mountFn: mountExtended,
             props: { item },
             apolloHandlers: [
+              [instanceExternalAuditEventDestinationUpdate, destinationUpdateSpy],
               [externalInstanceAuditEventDestinationHeaderCreate, headerCreateSpy],
               [externalInstanceAuditEventDestinationHeaderUpdate, headerUpdateSpy],
               [externalInstanceAuditEventDestinationHeaderDelete, headerDeleteSpy],
@@ -1175,6 +1196,8 @@ describe('StreamDestinationEditor', () => {
           });
 
           await setupUpdatedHeaders(updatedHeader, addedHeader);
+
+          expect(destinationUpdateSpy).toHaveBeenCalledTimes(1);
 
           expect(headerDeleteSpy).toHaveBeenCalledTimes(1);
           expect(headerDeleteSpy).toHaveBeenCalledWith({
@@ -1209,6 +1232,10 @@ describe('StreamDestinationEditor', () => {
             props: { item },
             apolloHandlers: [
               [
+                instanceExternalAuditEventDestinationUpdate,
+                jest.fn().mockResolvedValue(destinationInstanceUpdateMutationPopulator()),
+              ],
+              [
                 externalInstanceAuditEventDestinationHeaderCreate,
                 jest
                   .fn()
@@ -1242,8 +1269,8 @@ describe('StreamDestinationEditor', () => {
             props: { item },
             apolloHandlers: [
               [
-                externalInstanceAuditEventDestinationHeaderCreate,
-                jest.fn().mockResolvedValue(destinationInstanceHeaderUpdateMutationPopulator()),
+                instanceExternalAuditEventDestinationUpdate,
+                jest.fn().mockResolvedValue(destinationInstanceUpdateMutationPopulator()),
               ],
               [
                 externalInstanceAuditEventDestinationHeaderUpdate,
