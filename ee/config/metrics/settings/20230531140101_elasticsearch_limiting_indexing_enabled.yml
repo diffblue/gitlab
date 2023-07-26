@@ -1,0 +1,18 @@
+---
+data_category: optional
+key_path: elasticsearch_limited_indexing_enabled
+description: Whether Elasticsearch limiting is enabled
+product_section: enablement
+product_stage: data_stores
+product_group: global_search
+value_type: boolean
+status: active
+time_frame: none
+data_source: system
+instrumentation_class: AdvancedSearch::LimitedIndexingMetric
+distribution:
+- ee
+tier:
+- premium
+- ultimate
+milestone: "16.3"
