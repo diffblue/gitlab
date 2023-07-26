@@ -24,8 +24,7 @@ RSpec.describe Projects::Settings::RepositoryController, feature_category: :sour
 
       it 'is connected to project_settings' do
         get :show, params: { namespace_id: project.namespace, project_id: project }
-
-        expect(project.project_setting.push_rule).to eq(subject)
+        expect(project.reload.project_setting.push_rule).to eq(subject)
       end
 
       context 'unlicensed' do
