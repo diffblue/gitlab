@@ -247,6 +247,7 @@ RSpec.describe GroupsHelper do
       {
         namespace_id: group.id,
         namespace_name: group.name,
+        full_path: group.full_path,
         seat_usage_export_path: group_seat_usage_path(group, format: :csv),
         pending_members_page_path: pending_members_group_usage_quotas_path(group),
         pending_members_count: ::Member.in_hierarchy(group).with_state("awaiting").count,

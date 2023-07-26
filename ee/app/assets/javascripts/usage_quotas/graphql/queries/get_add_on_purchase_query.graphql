@@ -1,0 +1,11 @@
+query getAddOnPurchase($fullPath: ID!, $addOnName: String!) {
+  namespace(fullPath: $fullPath) {
+    id
+    addOnPurchase(addOnName: $addOnName) {
+      id
+      name
+      assignedQuantity
+      purchasedQuantity
+    }
+  }
+}
