@@ -8,7 +8,7 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountSecurityScansMetri
 
     before_all do
       ::Security::Scan.scan_types.except('cluster_image_scanning').each do |name, _|
-        create(:security_scan, scan_type: name, created_at: 30.days.ago)
+        create(:security_scan, scan_type: name, created_at: 45.days.ago)
         create(:security_scan, scan_type: name, created_at: 3.days.ago)
       end
     end
