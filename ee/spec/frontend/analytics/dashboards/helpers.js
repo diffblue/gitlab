@@ -8,10 +8,6 @@ import {
   mockFlowMetricsResponseData,
   mockLastVulnerabilityCountData,
   mockMergeRequestsResponseData,
-  mockMonthToDateApiResponse,
-  mockPreviousMonthApiResponse,
-  mockTwoMonthsAgoApiResponse,
-  mockThreeMonthsAgoApiResponse,
   mockDoraPerformersScoreResponseData,
 } from './mock_data';
 
@@ -48,13 +44,6 @@ export const mergeRequestsParamsHelper = ({ start, end, fullPath = '', labelName
   state: MERGE_REQUESTS_STATE_MERGED,
   labelNames,
 });
-
-export const mockAllTimePeriodApiResponses = () =>
-  utils.fetchMetricsData
-    .mockReturnValueOnce(mockMonthToDateApiResponse)
-    .mockReturnValueOnce(mockPreviousMonthApiResponse)
-    .mockReturnValueOnce(mockTwoMonthsAgoApiResponse)
-    .mockReturnValueOnce(mockThreeMonthsAgoApiResponse);
 
 export const mockGraphqlVulnerabilityResponse = (
   mockDataResponse = mockLastVulnerabilityCountData,
