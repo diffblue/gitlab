@@ -49,6 +49,7 @@ export default {
   <div class="requirements-empty-state-container">
     <gl-empty-state
       :svg-path="emptyStatePath"
+      :svg-height="150"
       :title="emptyStateTitle"
       :description="emptyStateDescription"
     >
