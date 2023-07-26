@@ -1,6 +1,5 @@
 ---
 version: 1
-title: Page views over time
 type: LineChart
 data:
   type: cube_analytics

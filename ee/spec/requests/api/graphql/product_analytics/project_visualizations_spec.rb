@@ -31,7 +31,7 @@ RSpec.describe 'Query.project(id).visualizations', feature_category: :product_an
       query {
         project(fullPath: "#{project.full_path}") {
           name
-          productAnalyticsVisualizations(slug: "daily_something") {
+          productAnalyticsVisualizations(slug: "cube_bar_chart") {
             nodes {
                type
                options
@@ -67,7 +67,7 @@ RSpec.describe 'Query.project(id).visualizations', feature_category: :product_an
         ).to eq('BarChart')
         expect(
           graphql_data_at(:project, :product_analytics_visualizations, :nodes, 0, :slug)
-        ).to eq('daily_something')
+        ).to eq('cube_bar_chart')
       end
     end
 
@@ -79,13 +79,13 @@ RSpec.describe 'Query.project(id).visualizations', feature_category: :product_an
       ).to eq('BarChart')
       expect(
         graphql_data_at(:project, :product_analytics_visualizations, :nodes, 0, :slug)
-      ).to eq('daily_something')
+      ).to eq('cube_bar_chart')
       expect(
         graphql_data_at(:project, :product_analytics_visualizations, :nodes, 1, :type)
       ).to eq('LineChart')
       expect(
         graphql_data_at(:project, :product_analytics_visualizations, :nodes, 1, :slug)
-      ).to eq('example_title')
+      ).to eq('cube_line_chart')
     end
   end
 

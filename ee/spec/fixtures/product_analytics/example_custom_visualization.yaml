@@ -1,6 +1,5 @@
 ---
 version: 1
-title: Example custom visualization
 type: SingleStat
 data:
   type: cube_analytics

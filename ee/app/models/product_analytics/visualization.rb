@@ -14,7 +14,7 @@ module ProductAnalytics
       trees.entries.map do |entry|
         config = config_project.repository.blob_data_at(config_project.repository.root_ref_sha, entry.path)
 
-        new(config: config)
+        new(config: config, slug: File.basename(entry.name, File.extname(entry.name)))
       end.append(*builtin_visualizations)
     end
 
@@ -24,22 +24,22 @@ module ProductAnalytics
         visualization_config_path(data)
       )
 
-      return new(config: config) if config
+      return new(config: config, slug: data) if config
 
       file = Rails.root.join('ee/lib/gitlab/analytics/product_analytics/visualizations', "#{data}.yaml")
       Gitlab::PathTraversal.check_path_traversal!(data)
       Gitlab::PathTraversal.check_allowed_absolute_path!(
         file.to_s, [Rails.root.join('ee/lib/gitlab/analytics/product_analytics/visualizations').to_s]
       )
-      new(config: File.read(file))
+      new(config: File.read(file), slug: data)
     end
 
-    def initialize(config:)
+    def initialize(config:, slug:)
       @config = YAML.safe_load(config)
       @type = @config['type']
       @options = @config['options']
       @data = @config['data']
-      @slug = @config['title'].parameterize.underscore
+      @slug = slug.parameterize.underscore
     end
 
     def self.visualization_config_path(data)
@@ -66,7 +66,7 @@ module ProductAnalytics
       visualization_names.map do |name|
         config = File.read(Rails.root.join('ee/lib/gitlab/analytics/product_analytics/visualizations', "#{name}.yaml"))
 
-        new(config: config)
+        new(config: config, slug: name)
       end
     end
   end
