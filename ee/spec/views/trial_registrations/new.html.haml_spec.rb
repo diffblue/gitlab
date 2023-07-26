@@ -21,4 +21,7 @@ RSpec.describe 'trial_registrations/new.html.haml' do
 
   it { is_expected.to have_content(s_('InProductMarketing|Want to host GitLab on your servers?')) }
   it { is_expected.to have_link(s_('InProductMarketing|Start a Self-Managed trial'), href: 'https://about.gitlab.com/free-trial/#selfmanaged/') }
+  it { is_expected.to have_link(_('Terms'), href: terms_path) }
+  it { is_expected.to have_link(_('Privacy'), href: 'https://about.gitlab.com/privacy') }
+  it { is_expected.to have_css('.js-language-switcher') }
 end
