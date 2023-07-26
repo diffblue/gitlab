@@ -53,6 +53,7 @@ module Vulnerabilities
     scope :with_scanner_external_ids, -> (scanner_external_ids) { joins(:scanner).merge(::Vulnerabilities::Scanner.with_external_id(scanner_external_ids)) }
     scope :with_findings_scanner_and_identifiers, -> { includes(vulnerability: { findings: [:scanner, :identifiers, finding_identifiers: :identifier] }) }
     scope :resolved_on_default_branch, -> { where('resolved_on_default_branch IS TRUE') }
+    scope :with_dismissal_reason, -> (dismissal_reason) { where(dismissal_reason: dismissal_reason) }
 
     scope :as_vulnerabilities, -> do
       preload(vulnerability: { project: [:route] }).current_scope.tap do |relation|
