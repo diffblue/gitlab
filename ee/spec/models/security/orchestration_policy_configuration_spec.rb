@@ -1074,21 +1074,22 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
   end
 
   describe '#policy_last_updated_by' do
-    let(:commit) { create(:commit, author: security_policy_management_project.first_owner) }
+    let(:merged_merge_request) do
+      create(:merge_request, :merged, author: security_policy_management_project.first_owner)
+    end
 
     subject(:policy_last_updated_by) { security_orchestration_policy_configuration.policy_last_updated_by }
 
     before do
-      allow(security_policy_management_project).to receive(:repository).and_return(repository)
-      allow(repository).to receive(:last_commit_for_path).with(default_branch, Security::OrchestrationPolicyConfiguration::POLICY_PATH).and_return(commit)
+      allow(security_policy_management_project).to receive(:merge_requests).and_return(MergeRequest.where(id: merged_merge_request&.id))
     end
 
-    context 'when last commit to policy file exists' do
+    context 'when last merged merge request to policy file exists' do
       it { is_expected.to eq(security_policy_management_project.first_owner) }
     end
 
-    context 'when last commit to policy file does not exist' do
-      let(:commit) {}
+    context 'when last merge request to policy file does not exist' do
+      let(:merged_merge_request) {}
 
       it { is_expected.to be_nil }
     end

@@ -75,7 +75,7 @@ module Security
 
     def policy_last_updated_by
       strong_memoize(:policy_last_updated_by) do
-        policy_repo.last_commit_for_path(default_branch_or_main, POLICY_PATH)&.author
+        last_merge_request&.author
       end
     end
 
@@ -117,6 +117,10 @@ module Security
       strong_memoize(:policy_blob) do
         policy_repo.blob_data_at(default_branch_or_main, POLICY_PATH)
       end
+    end
+
+    def last_merge_request
+      security_policy_management_project.merge_requests.merged.order_merged_at_desc.first
     end
   end
 end
