@@ -105,7 +105,6 @@ export const mockMonthToDate = mockMetrics({
 });
 
 export const mockMonthToDateTimePeriod = { ...THIS_MONTH, ...mockMonthToDate };
-export const mockMonthToDateApiResponse = Object.values(mockMonthToDate);
 
 export const mockPreviousMonth = mockMetrics({
   lead_time_for_changes: 3.6,

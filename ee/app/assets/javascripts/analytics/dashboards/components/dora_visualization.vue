@@ -3,7 +3,6 @@ import { uniq, flatten, uniqBy } from 'lodash';
 import { GlSkeletonLoader, GlAlert } from '@gitlab/ui';
 import { sprintf } from '~/locale';
 import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import getGroupOrProject from '../graphql/get_group_or_project.query.graphql';
 import filterLabelsQueryBuilder, { LABEL_PREFIX } from '../graphql/filter_labels_query_builder';
 import {
@@ -24,7 +23,6 @@ export default {
     GlAlert,
     GlSkeletonLoader,
   },
-  mixins: [glFeatureFlagsMixin()],
   props: {
     title: {
       type: String,
@@ -87,11 +85,7 @@ export default {
     fullPath() {
       return this.data?.namespace;
     },
-    allowLabelFiltering() {
-      return this.glFeatures.vsdGraphqlDoraAndFlowMetrics;
-    },
     rawFilterLabels() {
-      if (!this.allowLabelFiltering) return [];
       return this.data?.filter_labels || [];
     },
     hasFilterLabels() {

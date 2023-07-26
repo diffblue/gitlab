@@ -2,8 +2,6 @@ import { parse } from 'yaml';
 import Api from '~/api';
 import { formatAsPercentageWithoutSymbol, secondsToDays } from 'ee/dora/components/util';
 import { VULNERABILITY_METRICS } from '~/analytics/shared/constants';
-import { fetchMetricsData } from '~/analytics/shared/utils';
-import { METRICS_REQUESTS } from '~/analytics/cycle_analytics/constants';
 import { groupDoraPerformanceScoreCountsByCategory } from './utils';
 import {
   TABLE_METRICS,
@@ -11,27 +9,6 @@ import {
   YAML_CONFIG_PATH,
   DORA_PERFORMERS_SCORE_CATEGORIES,
 } from './constants';
-
-/**
- * Takes a flat array of metrics and extracts only the DORA metrics,
- * returning and key value object of the resulting metrics
- *
- * Currently DORA metrics are spread across 2 API endpoints, we fetch the data from
- * both then flatten it into a single array. This function takes that single array and
- * extracts the DORA specific metrics into a key value object.
- *
- * @param {Array} metrics - array of all the time / summary metrics
- * @returns {Object} an object with each of the 4 DORA metrics as a key and their relevant data
- */
-export const extractDoraMetrics = (metrics = []) =>
-  metrics
-    .filter(({ identifier }) => Object.keys(TABLE_METRICS).includes(identifier))
-    .reduce((acc, curr) => {
-      return {
-        ...acc,
-        [curr.identifier]: curr,
-      };
-    }, {});
 
 /**
  * @typedef {Object} ValueStreamDashboardTableMetric
@@ -208,28 +185,6 @@ export const extractGraphqlMergeRequestsData = (data = {}) =>
         : acc,
     {},
   );
-
-/**
- * Fetches and merges DORA metrics into the given timePeriod objects.
- *
- * @param {Array} timePeriods - array of objects containing DORA metric values
- * @param {String} requestPath - URL path to use for the DORA metric API requests
- * @returns {Array} The original timePeriods array, with DORA metrics included
- */
-export const fetchDoraMetrics = async ({ timePeriods, requestPath }) => {
-  const promises = timePeriods.map((period) =>
-    fetchMetricsData(METRICS_REQUESTS, requestPath, {
-      created_after: period.start.toISOString(),
-      created_before: period.end.toISOString(),
-    }),
-  );
-
-  const results = await Promise.all(promises);
-  return timePeriods.map((period, index) => ({
-    ...period,
-    ...extractDoraMetrics(results[index]),
-  }));
-};
 
 /**
  * Takes an array of timePeriods, a query function to execute and query parameters
