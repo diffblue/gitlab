@@ -1,10 +1,16 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import VueApollo from 'vue-apollo';
+import createDefaultClient from '~/lib/graphql';
 import { parseBoolean } from '~/lib/utils/common_utils';
-import SubscriptionSeats from './components/subscription_seats.vue';
+import SubscriptionSeats from 'ee/usage_quotas/seats/components/subscription_seats.vue';
 import initialStore from './store';
 
 Vue.use(Vuex);
+
+const apolloProvider = new VueApollo({
+  defaultClient: createDefaultClient(),
+});
 
 export default (containerId = 'js-seat-usage-app') => {
   const el = document.getElementById(containerId);
@@ -14,6 +20,7 @@ export default (containerId = 'js-seat-usage-app') => {
   }
 
   const {
+    fullPath,
     namespaceId,
     namespaceName,
     seatUsageExportPath,
@@ -28,8 +35,11 @@ export default (containerId = 'js-seat-usage-app') => {
 
   return new Vue({
     el,
-    apolloProvider: {},
     name: 'SeatsUsageApp',
+    apolloProvider,
+    provide: {
+      fullPath,
+    },
     store: new Vuex.Store(
       initialStore({
         namespaceId,
