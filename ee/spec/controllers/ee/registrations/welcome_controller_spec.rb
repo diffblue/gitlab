@@ -29,7 +29,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
 
     context 'when in invitation flow' do
       before do
-        allow(controller.helpers).to receive(:user_has_memberships?).and_return(true)
+        create(:group_member, source: group, user: user)
       end
 
       it 'tracks render event' do
@@ -44,7 +44,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
       end
     end
 
-    context 'when in trial flow' do
+    context 'when in trial flow', :saas do
       let(:show_params) { { trial: 'true' } }
 
       it 'tracks render event' do
@@ -195,11 +195,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
       end
 
       describe 'redirection' do
-        context 'when signup_onboarding is not enabled' do
-          before do
-            allow(controller.helpers).to receive(:signup_onboarding_enabled?).and_return(false)
-          end
-
+        context 'when onboarding is not enabled' do
           it { is_expected.to redirect_to dashboard_projects_path }
 
           it 'tracks successful submission event' do
@@ -214,7 +210,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
           end
         end
 
-        context 'when signup_onboarding is enabled' do
+        context 'when onboarding is enabled', :saas do
           let(:user) do
             create(:user, onboarding_in_progress: true).tap do |record|
               create(:user_detail, user: record, onboarding_step_url: '_url_')
@@ -253,8 +249,38 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
             end
           end
 
+          context 'when eligible for iterable trigger' do
+            before do
+              allow_next_instance_of(::Onboarding::Status) do |instance|
+                allow(instance).to receive(:eligible_for_iterable_trigger?).and_return(true)
+              end
+            end
+
+            it 'initiates iterable trigger creation' do
+              expect(::Onboarding::CreateIterableTriggerWorker).to receive(:perform_async)
+
+              patch_update
+            end
+          end
+
+          context 'when not eligible for iterable trigger' do
+            before do
+              allow_next_instance_of(::Onboarding::Status) do |instance|
+                allow(instance).to receive(:eligible_for_iterable_trigger?).and_return(false)
+              end
+            end
+
+            it 'does not initiate iterable trigger creation' do
+              expect(::Onboarding::CreateIterableTriggerWorker).not_to receive(:perform_async)
+
+              patch_update
+            end
+          end
+
           context 'when setup_for_company is "true"' do
             let(:setup_for_company) { 'true' }
+            let(:trial_concerns) { {} }
+            let(:redirect_path) { new_users_sign_up_company_path(expected_params) }
             let(:expected_params) do
               {
                 registration_objective: 'code_storage',
@@ -262,17 +288,38 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
                 jobs_to_be_done_other: '_jobs_to_be_done_other_',
                 glm_source: 'some_source',
                 glm_content: 'some_content'
-              }
+              }.merge(trial_concerns)
             end
 
-            specify do
+            before do
               patch_update
+            end
+
+            it 'redirects to the company path and stores the url' do
               user.reload
-              path = new_users_sign_up_company_path(expected_params)
 
               expect(user.onboarding_in_progress).to be_truthy
-              expect(user.user_detail.onboarding_step_url).to eq(path)
-              expect(response).to redirect_to path
+              expect(user.user_detail.onboarding_step_url).to eq(redirect_path)
+              expect(response).to redirect_to redirect_path
+            end
+
+            context 'with trial param sent with update' do
+              context 'with trial as true' do
+                let(:extra_params) { { trial: 'true' } }
+                let(:trial_concerns) { extra_params  }
+
+                it 'redirects to the company path with trial param' do
+                  expect(response).to redirect_to redirect_path
+                end
+              end
+
+              context 'with trial as not true' do
+                let(:extra_params) { { trial: 'false' } }
+
+                it 'does not include the trial param in the redirect path' do
+                  expect(response).to redirect_to redirect_path
+                end
+              end
             end
           end
 
@@ -289,7 +336,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
               expect(response).to redirect_to path
             end
 
-            context 'when trial is true', :saas do
+            context 'when trial is true' do
               let(:extra_params) { { trial: 'true' } }
               let(:expected_params) do
                 {
@@ -312,19 +359,41 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
                 expect(response).to redirect_to path
               end
             end
+
+            context 'when trial is false' do
+              let(:extra_params) { { trial: 'false' } }
+              let(:expected_params) do
+                {
+                  registration_objective: 'code_storage',
+                  role: 'software_developer',
+                  jobs_to_be_done_other: '_jobs_to_be_done_other_',
+                  glm_source: 'some_source',
+                  glm_content: 'some_content',
+                  trial: 'false'
+                }
+              end
+
+              specify do
+                patch_update
+                user.reload
+                path = new_users_sign_up_group_path
+
+                expect(user.onboarding_in_progress).to be_truthy
+                expect(user.user_detail.onboarding_step_url).to eq(path)
+                expect(response).to redirect_to path
+              end
+            end
           end
 
           context 'when in subscription flow' do
-            before do
-              allow(controller.helpers).to receive(:in_subscription_flow?).and_return(true)
-            end
+            subject { patch :update, params: update_params, session: { user_return_to: new_subscriptions_path } }
 
             it { is_expected.not_to redirect_to new_users_sign_up_group_path }
           end
 
           context 'when in invitation flow' do
             before do
-              allow(controller.helpers).to receive(:user_has_memberships?).and_return(true)
+              create(:group_member, source: group, user: user)
             end
 
             it { is_expected.not_to redirect_to new_users_sign_up_group_path }
@@ -375,7 +444,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
                     jobs_to_be_done_other: '_jobs_to_be_done_other_',
                     registration_objective: 'code_storage',
                     role: 'software_developer'
-                  }
+                  }.merge(extra_params)
                 )
 
                 expect(user.onboarding_in_progress).to be_truthy

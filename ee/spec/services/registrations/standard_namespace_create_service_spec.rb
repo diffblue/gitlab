@@ -42,7 +42,7 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
           expect(execute).to be_success
         end
           .to change { Group.count }
-                .by(1).and change { Project.count }.by(1).and change { Onboarding::Progress.count }.by(1)
+                .by(1).and change { Project.count }.by(1).and change { ::Onboarding::Progress.count }.by(1)
       end
 
       it 'passes create_event: true to the Groups::CreateService' do
@@ -167,7 +167,7 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
       it 'does not create a project' do
         expect do
           expect(execute).to be_error
-        end.to change { Group.count }.and change { Onboarding::Progress.count }.and change { Project.count }.by(0)
+        end.to change { Group.count }.and change { ::Onboarding::Progress.count }.and change { Project.count }.by(0)
         expect(execute.payload[:project].errors).not_to be_blank
       end
 
@@ -190,7 +190,8 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
       it 'creates a project and not another group' do
         expect do
           expect(execute).to be_success
-        end.to change { Group.count }.by(0).and change { Onboarding::Progress.count }.by(0).and change { Project.count }
+        end.to change { Group.count }.by(0)
+                                     .and change { ::Onboarding::Progress.count }.by(0).and change { Project.count }
       end
 
       it 'selectively tracks events group and project creation' do

@@ -4,9 +4,12 @@ require 'spec_helper'
 
 RSpec.describe 'registrations/company/new', feature_category: :onboarding do
   let(:user) { build_stubbed(:user) }
+  let(:trial?) { false }
+  let(:onboarding_status) { instance_double(::Onboarding::Status, trial?: trial?) }
 
   before do
     allow(view).to receive(:current_user).and_return(user)
+    allow(view).to receive(:onboarding_status).and_return(onboarding_status)
   end
 
   describe 'Google Tag Manager' do
@@ -37,15 +40,6 @@ RSpec.describe 'registrations/company/new', feature_category: :onboarding do
   end
 
   describe 'automatic_trial_registration experiment' do
-    it "when user is coming from trial registration, it renders the control experience" do
-      stub_experiments(automatic_trial_registration: true)
-      allow(view).to receive(:trial_selected?).and_return(true)
-
-      render
-
-      expect_to_see_control
-    end
-
     it 'renders the control experience' do
       stub_experiments(automatic_trial_registration: :control)
 
@@ -62,6 +56,18 @@ RSpec.describe 'registrations/company/new', feature_category: :onboarding do
       expect(rendered).to have_content('About your company')
       expect(rendered).to have_content('Invite unlimited colleagues')
       expect(rendered).to have_content('Used by more than 100,000 organizations from around the globe:')
+    end
+
+    context 'when a user is coming from a trial registration' do
+      let(:trial?) { true }
+
+      it 'renders the control experience' do
+        stub_experiments(automatic_trial_registration: true)
+
+        render
+
+        expect_to_see_control
+      end
     end
   end
 

@@ -5,11 +5,12 @@ module EE
     module WelcomeController
       extend ActiveSupport::Concern
       extend ::Gitlab::Utils::Override
+      include ::Gitlab::Utils::StrongMemoize
 
       prepended do
         include OneTrustCSP
         include GoogleAnalyticsCSP
-        include Onboarding::SetRedirect
+        include ::Onboarding::SetRedirect
         include RegistrationsTracking
 
         before_action only: :show do
@@ -19,17 +20,13 @@ module EE
 
       private
 
-      def redirect_to_company_form?
-        update_params[:setup_for_company] == 'true' || helpers.trial_selected?
-      end
-
       override :update_params
       def update_params
         clean_params = super.merge(params.require(:user).permit(:email_opted_in, :registration_objective))
 
-        return clean_params unless ::Gitlab.com?
+        return clean_params unless onboarding_status.enabled?
 
-        clean_params[:email_opted_in] = '1' if clean_params[:setup_for_company] == 'true'
+        clean_params[:email_opted_in] = '1' if ::Gitlab::Utils.to_boolean(clean_params[:setup_for_company])
 
         if clean_params[:email_opted_in] == '1'
           clean_params[:email_opted_in_ip] = request.remote_ip
@@ -40,20 +37,12 @@ module EE
         clean_params
       end
 
-      override :complete_signup_onboarding?
-      def complete_signup_onboarding?
-        !helpers.in_subscription_flow? &&
-          !helpers.user_has_memberships? &&
-          !helpers.in_oauth_flow? &&
-          helpers.signup_onboarding_enabled?
-      end
-
       def passed_through_params
         pass_through = update_params.slice(:role, :registration_objective)
                      .merge(params.permit(:jobs_to_be_done_other))
                      .merge(glm_tracking_params)
 
-        pass_through[:trial] = params[:trial] if ::Gitlab.com?
+        pass_through[:trial] = params[:trial] if onboarding_status.trial?
 
         pass_through
       end
@@ -65,35 +54,17 @@ module EE
           uid: current_user.id,
           comment: params[:jobs_to_be_done_other],
           jtbd: update_params[:registration_objective],
-          product_interaction: iterable_product_interaction
+          product_interaction: onboarding_status.iterable_product_interaction
         }.merge(update_params.slice(:setup_for_company, :role).to_h.symbolize_keys)
-      end
-
-      def iterable_product_interaction
-        if helpers.user_has_memberships?
-          'Invited User'
-        else
-          'Personal SaaS Registration'
-        end
-      end
-
-      def free_personal_registration_or_invite?
-        return false if helpers.trial_selected? # skip trial
-        return true if helpers.user_has_memberships? # invited
-        # skip company page because it already sends request to CustomersDot
-        return false if redirect_to_company_form?
-
-        # regular registration on .com
-        complete_signup_onboarding?
       end
 
       override :successful_update_hooks
       def successful_update_hooks
-        finish_onboarding(current_user) unless complete_signup_onboarding?
+        finish_onboarding(current_user) unless onboarding_status.continue_full_onboarding?
 
-        return unless free_personal_registration_or_invite?
+        return unless onboarding_status.eligible_for_iterable_trigger?
 
-        Onboarding::CreateIterableTriggerWorker.perform_async(iterable_params)
+        ::Onboarding::CreateIterableTriggerWorker.perform_async(iterable_params)
       end
 
       override :signup_onboarding_path
@@ -101,7 +72,7 @@ module EE
         if params[:joining_project] == 'true'
           finish_onboarding(current_user)
           path_for_signed_in_user(current_user)
-        elsif redirect_to_company_form?
+        elsif onboarding_status.redirect_to_company_form?
           path = new_users_sign_up_company_path(passed_through_params)
           save_onboarding_step_url(path, current_user)
           path
@@ -123,8 +94,8 @@ module EE
       end
 
       def tracking_label
-        return 'trial_registration' if helpers.trial_selected?
-        return 'invite_registration' if helpers.user_has_memberships?
+        return 'trial_registration' if onboarding_status.trial?
+        return 'invite_registration' if onboarding_status.invite?
 
         'free_registration'
       end

@@ -3,62 +3,38 @@
 require 'spec_helper'
 
 RSpec.describe 'registrations/welcome/show', :saas, feature_category: :onboarding do
-  using RSpec::Parameterized::TableSyntax
+  let(:onboarding_status) do
+    instance_double(
+      ::Onboarding::Status, invite?: false, enabled?: true, subscription?: false, trial?: false, oauth?: false
+    )
+  end
 
   before do
+    allow(view).to receive(:onboarding_status).and_return(onboarding_status)
     allow(view).to receive(:current_user).and_return(build_stubbed(:user))
     allow(view).to receive(:welcome_update_params).and_return({})
   end
 
-  describe 'forms and progress bar', :experiments do
-    let(:experiments) { {} }
-
+  context 'with basic form items' do
     before do
-      allow(view).to receive(:redirect_path).and_return(redirect_path)
-      allow(view).to receive(:signup_onboarding_enabled?).and_return(signup_onboarding_enabled)
-      stub_experiments(experiments)
-
       render
     end
 
     subject { rendered }
 
-    where(:redirect_path, :signup_onboarding_enabled, :flow, :continue?, :show_joining_question) do
-      '/-/subscriptions/new'    | false | :subscription | true  | true
-      '/-/subscriptions/new'    | true  | :subscription | true  | true
-      '/oauth/authorize/abc123' | false | nil           | false | true
-      '/oauth/authorize/abc123' | true  | nil           | false | true
-      nil                       | false | nil           | false | true
-      nil                       | true  | nil           | true  | true
+    it 'the text for the :setup_for_company label' do
+      is_expected.to have_selector('label[for="user_setup_for_company"]', text: _('Who will be using GitLab?'))
     end
 
-    with_them do
-      it 'shows the correct text for the :setup_for_company label' do
-        expected_text = "Who will be using #{flow.nil? ? 'GitLab' : "this GitLab #{flow}"}?"
-
-        is_expected.to have_selector('label[for="user_setup_for_company"]', text: expected_text)
-      end
-
-      it 'shows the correct text for the submit button' do
-        expected_text = continue? ? 'Continue' : 'Get started!'
-
-        is_expected.to have_button(expected_text)
-      end
-
-      it { is_expected_to_show_joining_question(show_joining_question) }
-
-      it 'renders a select and text field for additional information' do
-        is_expected.to have_selector('select[name="user[registration_objective]"]')
-        is_expected.to have_selector('input[name="jobs_to_be_done_other"]', visible: false)
-      end
+    it 'shows the correct text for the submit button' do
+      is_expected.to have_button('Continue')
     end
-  end
 
-  def is_expected_to_show_joining_question(status)
-    if status
-      is_expected.to have_selector('#joining_project_true')
-    else
-      is_expected.not_to have_selector('#joining_project_true')
+    it { is_expected.to have_selector('#joining_project_true') }
+
+    it 'renders a select and text field for additional information' do
+      is_expected.to have_selector('select[name="user[registration_objective]"]')
+      is_expected.to have_selector('input[name="jobs_to_be_done_other"]', visible: false)
     end
   end
 

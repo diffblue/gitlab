@@ -5,7 +5,7 @@ module Registrations
     include OneTrustCSP
     include GoogleAnalyticsCSP
     include RegistrationsTracking
-    include Onboarding::SetRedirect
+    include ::Onboarding::SetRedirect
 
     layout 'minimal'
 
@@ -15,6 +15,8 @@ module Registrations
     before_action only: [:new] do
       push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
     end
+
+    helper_method :onboarding_status
 
     def new
       track_event('render')
@@ -26,7 +28,7 @@ module Registrations
       if result.success?
         track_event('successfully_submitted_form')
 
-        unless params[:trial] == 'true'
+        unless onboarding_status.trial?
           experiment(:automatic_trial_registration, actor: current_user).track(:successfully_submitted_form,
             label: tracking_label)
         end
@@ -75,9 +77,14 @@ module Registrations
     end
 
     def tracking_label
-      return 'trial_registration' if Gitlab::Utils.to_boolean(params[:trial])
+      return 'trial_registration' if onboarding_status.trial?
 
       'free_registration'
     end
+
+    def onboarding_status
+      ::Onboarding::Status.new(params.to_unsafe_h.deep_symbolize_keys, session, current_user)
+    end
+    strong_memoize_attr :onboarding_status
   end
 end

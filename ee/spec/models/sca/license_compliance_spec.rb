@@ -505,7 +505,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
       end
 
       it 'records an onboarding progress action for license scanning' do
-        expect(Onboarding::Progress).to receive(:register).with(pipeline.project.root_namespace, :license_scanning_run).and_call_original
+        expect(::Onboarding::Progress).to receive(:register).with(pipeline.project.root_namespace, :license_scanning_run).and_call_original
 
         license_compliance.find_policies
       end
@@ -514,7 +514,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
         let!(:pipeline) { nil }
 
         it 'records an onboarding progress action for license scanning' do
-          expect(Onboarding::Progress).not_to receive(:register).with(anything)
+          expect(::Onboarding::Progress).not_to receive(:register).with(anything)
 
           license_compliance.find_policies
         end
@@ -678,7 +678,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
         end
 
         it 'records an onboarding progress action for license scanning' do
-          expect(Onboarding::Progress).to receive(:register).with(pipeline.project.root_namespace, :license_scanning_run).and_call_original
+          expect(::Onboarding::Progress).to receive(:register).with(pipeline.project.root_namespace, :license_scanning_run).and_call_original
 
           license_compliance.find_policies
         end
@@ -687,7 +687,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
           let!(:pipeline) { nil }
 
           it 'records an onboarding progress action for license scanning' do
-            expect(Onboarding::Progress).not_to receive(:register).with(anything)
+            expect(::Onboarding::Progress).not_to receive(:register).with(anything)
 
             license_compliance.find_policies
           end
@@ -862,7 +862,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
         end
 
         it 'records an onboarding progress action for license scanning' do
-          expect(Onboarding::Progress).to receive(:register).with(pipeline.project.root_namespace, :license_scanning_run).and_call_original
+          expect(::Onboarding::Progress).to receive(:register).with(pipeline.project.root_namespace, :license_scanning_run).and_call_original
 
           license_compliance.find_policies
         end
@@ -871,7 +871,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
           let!(:pipeline) { nil }
 
           it 'records an onboarding progress action for license scanning' do
-            expect(Onboarding::Progress).not_to receive(:register).with(anything)
+            expect(::Onboarding::Progress).not_to receive(:register).with(anything)
 
             license_compliance.find_policies
           end

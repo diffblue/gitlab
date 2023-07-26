@@ -6,7 +6,7 @@ module EE
     extend ::Gitlab::Utils::Override
 
     prepended do
-      include Onboarding::SetRedirect
+      include ::Onboarding::SetRedirect
     end
 
     override :openid_connect
@@ -44,7 +44,7 @@ module EE
       # that was set on initial redirect from the SubscriptionsController#new and super will wipe that out.
       # Then the IdentityVerificationController#success will get whatever is set in super instead of the subscription
       # path we desire.
-      super unless helpers.in_subscription_flow?
+      super unless ::Onboarding::Status.new(params.to_unsafe_h.deep_symbolize_keys, session, user).subscription?
 
       # This also protects the sub classes group saml and ldap from staring onboarding
       # as we don't want those to onboard.

@@ -68,7 +68,7 @@ module EE
         return if project_or_group.is_a?(Group) # Group-level MVC does not support this currently
         return unless protected_branch.code_owner_approval_required
 
-        Onboarding::ProgressService.new(project_or_group.namespace).execute(action: :code_owners_enabled)
+        ::Onboarding::ProgressService.new(project_or_group.namespace).execute(action: :code_owners_enabled)
       end
     end
   end

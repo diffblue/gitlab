@@ -28,7 +28,7 @@ module Sidebars
 
         override :pill_count
         def pill_count
-          percentage = Onboarding::Completion.new(
+          percentage = ::Onboarding::Completion.new(
             context.project,
             context.current_user
           ).percentage

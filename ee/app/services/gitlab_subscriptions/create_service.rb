@@ -27,7 +27,7 @@ module GitlabSubscriptions
       customer_data = response.with_indifferent_access[:data][:customer]
       response = create_subscription(customer_data)
 
-      Onboarding::ProgressService.new(@group).execute(action: :subscription_created) if response[:success]
+      ::Onboarding::ProgressService.new(@group).execute(action: :subscription_created) if response[:success]
 
       response
     end

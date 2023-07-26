@@ -9,7 +9,7 @@ module EE
     prepended do
       include Arkose::ContentSecurityPolicy
       include RegistrationsTracking
-      include Onboarding::SetRedirect
+      include ::Onboarding::SetRedirect
 
       skip_before_action :check_captcha, if: -> { arkose_labs_enabled? }
       before_action only: [:new, :create] do

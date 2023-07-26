@@ -176,7 +176,7 @@ RSpec.describe ProtectedBranches::CreateService, feature_category: :compliance_m
 
     it 'return early in `track_onboarding_progress`' do
       expect(service).to receive(:track_onboarding_progress)
-      expect(Onboarding::ProgressService).not_to receive(:new)
+      expect(::Onboarding::ProgressService).not_to receive(:new)
 
       service.execute
     end
