@@ -1,0 +1,13 @@
+#import "../fragments/instance_external_audit_event_destination.fragment.graphql"
+
+mutation updateInstanceExternalAuditEventDestination(
+  $id: AuditEventsInstanceExternalAuditEventDestinationID!
+  $name: String!
+) {
+  instanceExternalAuditEventDestinationUpdate(input: { name: $name, id: $id }) {
+    errors
+    instanceExternalAuditEventDestination {
+      ...InstanceExternalAuditEventDestinationFragment
+    }
+  }
+}

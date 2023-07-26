@@ -2,6 +2,7 @@
 
 fragment ExternalAuditEventDestinationFragment on ExternalAuditEventDestination {
   id
+  name
   destinationUrl
   verificationToken
   eventTypeFilters

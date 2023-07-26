@@ -29,7 +29,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic, feature
       }
     end
 
-    let(:prompt_text) { "Answer the question as accurate as you can.\nStart with identifying the resource first." }
+    let(:prompt_text) { "Answer the question as accurate as you can." }
 
     subject { described_class.prompt(options)[:prompt] }
 

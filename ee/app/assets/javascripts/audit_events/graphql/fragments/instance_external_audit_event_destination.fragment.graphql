@@ -2,6 +2,7 @@
 
 fragment InstanceExternalAuditEventDestinationFragment on InstanceExternalAuditEventDestination {
   id
+  name
   destinationUrl
   verificationToken
   headers {

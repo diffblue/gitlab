@@ -45,6 +45,8 @@ export const mockHttpType = 'http';
 export const mockGcpLoggingType = 'gcpLogging';
 
 export const mockExternalDestinationUrl = 'https://api.gitlab.com';
+export const mockExternalDestinationName = 'Name';
+export const mockExternalDestinationNameChange = 'Name change';
 export const mockExternalDestinationHeader = () => ({
   id: uniqueId('gid://gitlab/AuditEvents::Streaming::Header/'),
   key: uniqueId('header-key-'),
@@ -75,6 +77,7 @@ export const mockExternalDestinations = [
   {
     __typename: 'ExternalAuditEventDestination',
     id: 'test_id1',
+    name: mockExternalDestinationName,
     destinationUrl: mockExternalDestinationUrl,
     verificationToken: verification[0],
     headers: {
@@ -85,6 +88,7 @@ export const mockExternalDestinations = [
   {
     __typename: 'ExternalAuditEventDestination',
     id: 'test_id2',
+    name: mockExternalDestinationName,
     destinationUrl: 'https://apiv2.gitlab.com',
     verificationToken: verification[1],
     eventTypeFilters: ['add_gpg_key', 'user_created'],
@@ -98,6 +102,7 @@ export const mockInstanceExternalDestinations = [
   {
     __typename: 'InstanceExternalAuditEventDestination',
     id: 'test_id1',
+    name: mockExternalDestinationName,
     destinationUrl: mockExternalDestinationUrl,
     verificationToken: verification[0],
     headers: {
@@ -107,6 +112,7 @@ export const mockInstanceExternalDestinations = [
   {
     __typename: 'InstanceExternalAuditEventDestination',
     id: 'test_id2',
+    name: mockExternalDestinationName,
     destinationUrl: 'https://apiv2.gitlab.com',
     verificationToken: verification[1],
     headers: {
@@ -157,6 +163,7 @@ export const destinationCreateMutationPopulator = (errors = []) => {
     externalAuditEventDestination: {
       __typename: 'ExternalAuditEventDestination',
       id: 'test-create-id',
+      name: mockExternalDestinationName,
       destinationUrl: mockExternalDestinationUrl,
       verificationToken: verification[2],
       group: {
@@ -178,6 +185,38 @@ export const destinationCreateMutationPopulator = (errors = []) => {
   return {
     data: {
       externalAuditEventDestinationCreate: errors.length > 0 ? errorData : correctData,
+    },
+  };
+};
+
+export const destinationUpdateMutationPopulator = (errors = []) => {
+  const correctData = {
+    errors,
+    externalAuditEventDestination: {
+      __typename: 'ExternalAuditEventDestination',
+      id: 'test-create-id',
+      name: mockExternalDestinationName,
+      destinationUrl: mockExternalDestinationUrl,
+      verificationToken: verification[2],
+      group: {
+        name: groupPath,
+        id: testGroupId,
+      },
+      eventTypeFilters: null,
+      headers: {
+        nodes: [],
+      },
+    },
+  };
+
+  const errorData = {
+    errors,
+    googleCloudLoggingConfiguration: null,
+  };
+
+  return {
+    data: {
+      externalAuditEventDestinationUpdate: errors.length > 0 ? errorData : correctData,
     },
   };
 };
@@ -332,6 +371,7 @@ export const destinationInstanceCreateMutationPopulator = (errors = []) => {
     instanceExternalAuditEventDestination: {
       __typename: 'InstanceExternalAuditEventDestination',
       id: 'test-create-id',
+      name: mockExternalDestinationName,
       destinationUrl: mockExternalDestinationUrl,
       verificationToken: verification[2],
       group: {
@@ -352,6 +392,37 @@ export const destinationInstanceCreateMutationPopulator = (errors = []) => {
   return {
     data: {
       instanceExternalAuditEventDestinationCreate: errors.length > 0 ? errorData : correctData,
+    },
+  };
+};
+
+export const destinationInstanceUpdateMutationPopulator = (errors = []) => {
+  const correctData = {
+    errors,
+    instanceExternalAuditEventDestination: {
+      __typename: 'InstanceExternalAuditEventDestination',
+      id: 'test-create-id',
+      name: mockExternalDestinationName,
+      destinationUrl: mockExternalDestinationUrl,
+      verificationToken: verification[2],
+      group: {
+        name: groupPath,
+        id: testGroupId,
+      },
+      headers: {
+        nodes: [],
+      },
+    },
+  };
+
+  const errorData = {
+    errors,
+    instanceExternalAuditEventDestination: null,
+  };
+
+  return {
+    data: {
+      instanceExternalAuditEventDestinationUpdate: errors.length > 0 ? errorData : correctData,
     },
   };
 };
