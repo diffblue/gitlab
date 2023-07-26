@@ -51,11 +51,7 @@ class Groups::OmniauthCallbacksController < OmniauthCallbacksController
       message: error_message
     )
 
-    if ::Feature.enabled?(:sign_up_on_sso, @unauthenticated_group) && @saml_provider.enforced_group_managed_accounts?
-      redirect_to_group_sign_up
-    else
-      redirect_to root_path
-    end
+    redirect_to root_path
   end
 
   override :sign_in_and_redirect
@@ -110,8 +106,6 @@ class Groups::OmniauthCallbacksController < OmniauthCallbacksController
   def fail_login(user)
     if user
       super
-    elsif ::Feature.enabled?(:sign_up_on_sso, @unauthenticated_group) && @saml_provider.enforced_group_managed_accounts?
-      redirect_to_group_sign_up
     else
       redirect_to_login_or_register
     end
@@ -125,13 +119,6 @@ class Groups::OmniauthCallbacksController < OmniauthCallbacksController
     store_location_for(:redirect, after_gitlab_sign_in)
 
     redirect_to new_user_session_path, notice: notice
-  end
-
-  def redirect_to_group_sign_up
-    session['oauth_data'] = oauth
-    session['oauth_group_id'] = @unauthenticated_group.id
-
-    redirect_to group_sign_up_path(@unauthenticated_group)
   end
 
   def saml_redirect_path
