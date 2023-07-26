@@ -40,6 +40,7 @@ feature_category: :security_policy_management do
       context 'when user is an owner of the container' do
         before do
           container.add_owner(owner)
+          policy_project.add_owner(owner)
         end
 
         it 'assigns the security policy project', :aggregate_failures do

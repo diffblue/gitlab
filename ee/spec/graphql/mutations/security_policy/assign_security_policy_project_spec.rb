@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Mutations::SecurityPolicy::AssignSecurityPolicyProject do
+RSpec.describe Mutations::SecurityPolicy::AssignSecurityPolicyProject, feature_category: :security_policy_management do
   let(:mutation) { described_class.new(object: nil, context: { current_user: current_user }, field: nil) }
 
   describe '#resolve' do
@@ -26,6 +26,10 @@ RSpec.describe Mutations::SecurityPolicy::AssignSecurityPolicyProject do
         context 'when user is an owner of the container' do
           before do
             container.add_owner(owner)
+          end
+
+          before_all do
+            policy_project.add_owner(owner)
           end
 
           it 'assigns the security policy project' do

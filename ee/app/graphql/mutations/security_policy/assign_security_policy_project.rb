@@ -30,6 +30,7 @@ module Mutations
 
         policy_project = find_policy_project(args[:security_policy_project_id])
         raise_resource_not_available_error! unless policy_project.present?
+        authorize!(policy_project)
 
         result = assign_project(project_or_group, policy_project)
         {
