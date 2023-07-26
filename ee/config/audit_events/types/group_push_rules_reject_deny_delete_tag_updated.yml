@@ -1,6 +1,6 @@
 ---
 name: group_push_rules_reject_deny_delete_tag_updated
-description: Triggered when group push rule setting is updated to deny deletion of tags using git push.
+description: Triggered when group push rule setting is updated to deny deletion of tags using Git push.
 introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/227629
 introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/86046
 feature_category: source_code_management
