@@ -1,26 +1,26 @@
 - return if @user.new_record?
 
-.gl-border-b.gl-pb-6.gl-mb-6
-  .row
-    .col-lg-4
-      %h4.gl-mt-0
+.settings-section
+  .settings-sticky-header
+    .settings-sticky-header-inner
+      %h4.gl-my-0
         = _('Custom Attributes')
-    .col-lg-8
-      = f.fields_for :custom_attributes do |ff|
-        - if ff.object.key == UserCustomAttribute::ARKOSE_RISK_BAND
-          .gl-form-group{ role: 'group' }
-            = ff.label :value, ff.object.key.humanize, class: 'gl-display-block col-form-label'
-            = ff.select :value, Arkose::VerifyResponse::ARKOSE_RISK_BANDS, { allow_blank: false }, class: 'form-control'
 
-      - if @user.persisted? && has_medium_or_high_risk_band?(@user)
-        .gl-form-group{ role: 'group' }
-          = render Pajamas::AlertComponent.new(variant: :info, dismissible: false, alert_options: { class: 'gl-mb-5' }, title: _('Phone verification exemption')) do |c|
-            - c.with_body do
-              - if @user.exempt_from_phone_number_verification?
-                %p= s_('This user is currently exempt from phone verification. Remove the exemption using the button below.')
-                = render Pajamas::ButtonComponent.new(variant: :danger, href: destroy_identity_verification_phone_exemption_admin_user_path(@user), method: :delete) do
-                  = s_('Remove phone verification exemption')
-              - else
-                %p= s_('To replace phone verification with credit card verification, create a phone verification exemption using the button below.')
-                = render Pajamas::ButtonComponent.new(variant: :confirm, href: identity_verification_phone_exemption_admin_user_path(@user), method: :post) do
-                  = s_('Create phone verification exemption')
+  = f.fields_for :custom_attributes do |ff|
+    - if ff.object.key == UserCustomAttribute::ARKOSE_RISK_BAND
+      .gl-form-group{ role: 'group' }
+        = ff.label :value, ff.object.key.humanize, class: 'gl-display-block col-form-label'
+        = ff.select :value, Arkose::VerifyResponse::ARKOSE_RISK_BANDS, { allow_blank: false }, class: 'form-control'
+
+  - if @user.persisted? && has_medium_or_high_risk_band?(@user)
+    .gl-form-group{ role: 'group' }
+      = render Pajamas::AlertComponent.new(variant: :info, dismissible: false, alert_options: { class: 'gl-mb-5' }, title: _('Phone verification exemption')) do |c|
+        - c.with_body do
+          - if @user.exempt_from_phone_number_verification?
+            %p= s_('This user is currently exempt from phone verification. Remove the exemption using the button below.')
+            = render Pajamas::ButtonComponent.new(variant: :danger, href: destroy_identity_verification_phone_exemption_admin_user_path(@user), method: :delete) do
+              = s_('Remove phone verification exemption')
+          - else
+            %p= s_('To replace phone verification with credit card verification, create a phone verification exemption using the button below.')
+            = render Pajamas::ButtonComponent.new(variant: :confirm, href: identity_verification_phone_exemption_admin_user_path(@user), method: :post) do
+              = s_('Create phone verification exemption')

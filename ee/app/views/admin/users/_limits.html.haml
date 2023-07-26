@@ -1,13 +1,13 @@
 - return unless @user.persisted?
 
-.gl-border-b.gl-pb-3.gl-mb-6
-  .row
-    .col-lg-4
-      %h4.gl-mt-0
+.settings-section
+  .settings-sticky-header
+    .settings-sticky-header-inner
+      %h4.gl-my-0
         = s_('AdminUsers|Limits')
-    .col-lg-8
-      = f.fields_for :namespace do |namespace_form|
-        = namespace_form.hidden_field :id
-        = render 'namespaces/shared_runners_minutes_setting', form: namespace_form
-        #js-pipeline-minutes-vue{ data: { reset_minutes_path: reset_runners_minutes_admin_user_path(@user) } }
+
+  = f.fields_for :namespace do |namespace_form|
+    = namespace_form.hidden_field :id
+    = render 'namespaces/shared_runners_minutes_setting', form: namespace_form
+    #js-pipeline-minutes-vue{ data: { reset_minutes_path: reset_runners_minutes_admin_user_path(@user) } }
 
