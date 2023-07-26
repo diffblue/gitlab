@@ -1,6 +1,6 @@
 ---
 name: google_cloud_logging_configuration_created
-description: Triggered when google cloud logging configuration is created
+description: Triggered when Google Cloud Logging configuration is created
 introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/409422
 introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/122025
 milestone: '16.1'
