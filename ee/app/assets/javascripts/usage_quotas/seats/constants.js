@@ -8,6 +8,7 @@ export const HEADER_TOTAL_ENTRIES = 'x-total';
 export const HEADER_PAGE_NUMBER = 'x-page';
 export const HEADER_ITEMS_PER_PAGE = 'x-per-page';
 export const PLAN_CODE_FREE = 'free';
+export const ADD_ON_CODE_SUGGESTIONS = 'CODE_SUGGESTIONS';
 export const FIELDS = [
   {
     key: 'disclosure',
@@ -133,9 +134,12 @@ export const addSeatsText = s__('Billing|Add seats');
 export const subscriptionEndDateText = s__('Billing|Subscription end');
 export const subscriptionStartDateText = s__('Billing|Subscription start');
 export const seatsUsedDescriptionText = s__('Billing|%{plan} SaaS Plan seats used');
-export const codeSuggestionIntroDescriptionText = __('Introducing the Code Suggestions add-on');
+export const codeSuggestionsIntroDescriptionText = __('Introducing the Code Suggestions add-on');
+export const codeSuggestionsAssignedDescriptionText = s__(
+  'Billing|Code Suggestions add-on assigned',
+);
 export const codeSuggestionsInfoText = __(
-  `Enhance your coding experience with intelligent recommendations. %{linkStart}Code Suggestions%{linkEnd} uses generative AI to suggest code while you're developing. Not available for Guest roles.`,
+  `Enhance your coding experience with intelligent recommendations. %{linkStart}Code Suggestions%{linkEnd} uses generative AI to suggest code while you're developing. Not available for users with the Guest role.`,
 );
 export const learnMoreText = __('Learn more');
 export const codeSuggestionsLearnMoreLink = `${PROMO_URL}/solutions/code-suggestions/`;

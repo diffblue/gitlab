@@ -1,4 +1,5 @@
 import {
+  ADD_ON_CODE_SUGGESTIONS,
   HEADER_TOTAL_ENTRIES,
   HEADER_PAGE_NUMBER,
   HEADER_ITEMS_PER_PAGE,
@@ -226,5 +227,46 @@ export const mockUserSubscription = {
     subscription_start_date: '2022-03-08',
     subscription_end_date: null,
     trial_ends_on: null,
+  },
+};
+
+export const assignedAddonData = {
+  data: {
+    namespace: {
+      id: 'gid://gitlab/Group/13',
+      addOnPurchase: {
+        id: 'gid://gitlab/GitlabSubscriptions::AddOnPurchase/3',
+        name: ADD_ON_CODE_SUGGESTIONS,
+        assignedQuantity: 5,
+        purchasedQuantity: 20,
+        __typename: 'AddOnPurchase',
+      },
+      __typename: 'Namespace',
+    },
+  },
+};
+
+export const noAssignedAddonData = {
+  data: {
+    namespace: {
+      id: 'gid://gitlab/Group/13',
+      addOnPurchase: {
+        id: 'gid://gitlab/GitlabSubscriptions::AddOnPurchase/3',
+        name: ADD_ON_CODE_SUGGESTIONS,
+        assignedQuantity: 0,
+        purchasedQuantity: 20,
+        __typename: 'AddOnPurchase',
+      },
+      __typename: 'Namespace',
+    },
+  },
+};
+
+export const noPurchasedAddonData = {
+  data: {
+    namespace: {
+      id: 'gid://gitlab/Group/13',
+      addOnPurchase: null,
+    },
   },
 };
