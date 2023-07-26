@@ -11,12 +11,13 @@ import {
   GlSprintf,
   GlTableLite,
 } from '@gitlab/ui';
-import { isEmpty, isEqual } from 'lodash';
+import { isEqual } from 'lodash';
 import * as Sentry from '@sentry/browser';
 import { GlTooltipDirective as GlTooltip } from '@gitlab/ui/dist/directives/tooltip';
 import { createAlert } from '~/alert';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import externalAuditEventDestinationCreate from '../../graphql/mutations/create_external_destination.mutation.graphql';
+import externalAuditEventDestinationUpdate from '../../graphql/mutations/update_external_destination.mutation.graphql';
 import deleteExternalDestination from '../../graphql/mutations/delete_external_destination.mutation.graphql';
 import externalAuditEventDestinationHeaderCreate from '../../graphql/mutations/create_external_destination_header.mutation.graphql';
 import externalAuditEventDestinationHeaderUpdate from '../../graphql/mutations/update_external_destination_header.mutation.graphql';
@@ -24,6 +25,7 @@ import externalAuditEventDestinationHeaderDelete from '../../graphql/mutations/d
 import deleteExternalDestinationFilters from '../../graphql/mutations/delete_external_destination_filters.mutation.graphql';
 import addExternalDestinationFilters from '../../graphql/mutations/add_external_destination_filters.mutation.graphql';
 import instanceExternalAuditEventDestinationCreate from '../../graphql/mutations/create_instance_external_destination.mutation.graphql';
+import instanceExternalAuditEventDestinationUpdate from '../../graphql/mutations/update_instance_external_destination.mutation.graphql';
 import deleteInstanceExternalDestination from '../../graphql/mutations/delete_instance_external_destination.mutation.graphql';
 import externalInstanceAuditEventDestinationHeaderCreate from '../../graphql/mutations/create_instance_external_destination_header.mutation.graphql';
 import externalInstanceAuditEventDestinationHeaderUpdate from '../../graphql/mutations/update_instance_external_destination_header.mutation.graphql';
@@ -83,6 +85,7 @@ export default {
   data() {
     return {
       destinationUrl: '',
+      destinationName: '',
       errors: [],
       loading: false,
       headers: [createBlankHeader()],
@@ -103,7 +106,12 @@ export default {
       return this.headers.some((header) => !header.name || !header.value);
     },
     isSubmitButtonDisabled() {
-      if (!this.destinationUrl || this.hasHeaderValidationErrors || this.hasEmptyHeaders) {
+      if (
+        !this.destinationUrl ||
+        !this.destinationName ||
+        this.hasHeaderValidationErrors ||
+        this.hasEmptyHeaders
+      ) {
         return true;
       }
 
@@ -115,11 +123,15 @@ export default {
         !this.headersToUpdate.length &&
         !this.headersToDelete.length &&
         !this.isEventTypeUpdated &&
-        this.item?.destinationUrl === this.destinationUrl
+        this.item?.destinationUrl === this.destinationUrl &&
+        this.item?.name === this.destinationName
       );
     },
     isEditing() {
-      return !isEmpty(this.item);
+      return (
+        Boolean(this.item?.destinationUrl) ||
+        (this.item?.name !== this.destinationName && Boolean(this.item?.destinationUrl))
+      );
     },
     addButtonName() {
       return this.isEditing
@@ -138,6 +150,11 @@ export default {
       return this.isInstance
         ? instanceExternalAuditEventDestinationCreate
         : externalAuditEventDestinationCreate;
+    },
+    destinationUpdateMutation() {
+      return this.isInstance
+        ? instanceExternalAuditEventDestinationUpdate
+        : externalAuditEventDestinationUpdate;
     },
     destinationDestroyMutation() {
       return this.isInstance ? deleteInstanceExternalDestination : deleteExternalDestination;
@@ -204,6 +221,7 @@ export default {
   mounted() {
     this.headers = mapItemHeadersToFormData(this.item);
     this.destinationUrl = this.item.destinationUrl;
+    this.destinationName = this.item.name;
     this.filters = this.item.eventTypeFilters || [];
   },
   methods: {
@@ -231,6 +249,11 @@ export default {
         ? data.instanceExternalAuditEventDestinationCreate.errors
         : data.externalAuditEventDestinationCreate.errors;
     },
+    getDestinationUpdateErrors(data) {
+      return this.isInstance
+        ? data.instanceExternalAuditEventDestinationUpdate.errors
+        : data.externalAuditEventDestinationUpdate.errors;
+    },
     getCreateDestination(data) {
       return this.isInstance
         ? data.instanceExternalAuditEventDestinationCreate.instanceExternalAuditEventDestination
@@ -242,6 +265,7 @@ export default {
         variables: {
           destinationUrl: this.destinationUrl,
           fullPath: this.groupPath,
+          name: this.destinationName,
           isInstance: this.isInstance,
         },
         context: {
@@ -275,6 +299,23 @@ export default {
         errors,
         externalAuditEventDestination,
       };
+    },
+    async updateDestinationUrl(destinationId) {
+      const { data } = await this.$apollo.mutate({
+        mutation: this.destinationUpdateMutation,
+        variables: {
+          fullPath: this.groupPath,
+          id: destinationId,
+          name: this.destinationName,
+          isInstance: this.isInstance,
+        },
+        context: {
+          isSingleRequest: true,
+        },
+      });
+
+      const errors = this.getDestinationUpdateErrors(data);
+      return { errors };
     },
     async addDestinationHeaders(destinationId, headers) {
       const { groupPath: fullPath } = this;
@@ -489,6 +530,9 @@ export default {
       try {
         const errors = [];
 
+        const { errors: destinationErrors = [] } = await this.updateDestinationUrl(this.item.id);
+        errors.push(...destinationErrors);
+
         if (this.existingHeaders.length > 0) {
           errors.push(...(await this.deleteDestinationHeaders(this.headersToDelete)));
           errors.push(...(await this.updateDestinationHeaders(this.headersToUpdate)));
@@ -629,6 +673,13 @@ export default {
     </gl-alert>
 
     <gl-form @submit.prevent="formSubmission">
+      <gl-form-group
+        :label="$options.i18n.DESTINATION_NAME_LABEL"
+        data-testid="destination-name-form-group"
+      >
+        <gl-form-input v-model="destinationName" data-testid="destination-name" />
+      </gl-form-group>
+
       <gl-form-group
         :label="$options.i18n.DESTINATION_URL_LABEL"
         data-testid="destination-url-form-group"

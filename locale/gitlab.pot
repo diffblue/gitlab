@@ -6649,6 +6649,9 @@ msgstr ""
 msgid "AuditStreams|Deleting the streaming destination %{destination} will stop audit events being streamed"
 msgstr ""
 
+msgid "AuditStreams|Destination Name"
+msgstr ""
+
 msgid "AuditStreams|Destination URL"
 msgstr ""
 

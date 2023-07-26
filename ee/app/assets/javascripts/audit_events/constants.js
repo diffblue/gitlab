@@ -96,6 +96,7 @@ export const ADD_STREAM_EDITOR_I18N = {
   ),
   DESTINATION_URL_LABEL: s__('AuditStreams|Destination URL'),
   DESTINATION_URL_PLACEHOLDER: 'https://api.gitlab.com',
+  DESTINATION_NAME_LABEL: s__('AuditStreams|Destination Name'),
   VERIFICATION_TOKEN_LABEL: s__('AuditStreams|Verification token'),
   HEADERS_LABEL: s__('AuditStreams|Custom HTTP headers (optional)'),
   TABLE_COLUMN_NAME_LABEL: s__('AuditStreams|Header'),
