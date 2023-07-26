@@ -8,7 +8,7 @@ module Types
 
       authorize :admin_instance_external_audit_events
 
-      implements(ExternalAuditEventDestinationInterface)
+      implements ExternalAuditEventDestinationInterface
 
       field :headers, ::Types::AuditEvents::Streaming::InstanceHeaderType.connection_type,
         null: false,

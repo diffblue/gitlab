@@ -7,7 +7,7 @@ module Types
       description 'Represents an external resource to send audit events to'
       authorize :admin_external_audit_events
 
-      implements(ExternalAuditEventDestinationInterface)
+      implements ExternalAuditEventDestinationInterface
 
       field :group, ::Types::GroupType,
             null: false,

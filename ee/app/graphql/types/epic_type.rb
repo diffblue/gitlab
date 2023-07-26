@@ -16,10 +16,10 @@ module Types
 
     present_using EpicPresenter
 
-    implements(Types::Notes::NoteableInterface)
-    implements(Types::CurrentUserTodos)
-    implements(Types::EventableType)
-    implements(Types::TodoableInterface)
+    implements Types::Notes::NoteableInterface
+    implements Types::CurrentUserTodos
+    implements Types::EventableType
+    implements Types::TodoableInterface
 
     field :confidential, GraphQL::Types::Boolean,
       null: true, description: 'Indicates if the epic is confidential.'
