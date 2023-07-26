@@ -132,33 +132,12 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       end
     end
 
-    context 'with ai_chat_prompt_alternative feature flag' do
-      context 'with feature flag off' do
-        before do
-          stub_feature_flags(ai_chat_prompt_alternative: false)
-        end
+    it 'includes the prompt' do
+      expect(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
+        .to receive(:prompt).once.with(a_hash_including(prompt_version:
+                                                          described_class::PROMPT_TEMPLATE))
 
-        it 'includes an older version of the prompt' do
-          expect(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
-            .to receive(:prompt).once.with(a_hash_including(prompt_version: described_class::PROMPT_TEMPLATE))
-
-          agent.prompt
-        end
-      end
-
-      context 'with feature flag on' do
-        before do
-          stub_feature_flags(ai_chat_prompt_alternative: true)
-        end
-
-        it 'includes a newer version of the prompt' do
-          expect(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
-            .to receive(:prompt).once.with(a_hash_including(prompt_version:
-              described_class::ALTERNATIVE_PROMPT_TEMPLATE))
-
-          agent.prompt
-        end
-      end
+      agent.prompt
     end
   end
 
