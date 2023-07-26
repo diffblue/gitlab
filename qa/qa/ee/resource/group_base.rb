@@ -4,6 +4,8 @@ module QA
   module EE
     module Resource
       module GroupBase
+        include DoraMetrics
+
         # Get group epics
         #
         # @return [Array<QA::EE::Resource::Epic>]

@@ -4,6 +4,8 @@ module QA
   module EE
     module Resource
       module Project
+        include DoraMetrics
+
         # Get project push rules
         #
         # @return [Hash]
