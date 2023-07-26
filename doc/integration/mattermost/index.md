@@ -254,13 +254,13 @@ For local connections, the `mmctl` binary and Mattermost must be run from the sa
    sudo gitlab-ctl restart mattermost
    ```
 
-You can then use `/opt/gitlab/embedded/bin/mmctl --local` to run `mmctl` commands
+You can then use `sudo /opt/gitlab/embedded/bin/mmctl --local` to run `mmctl` commands
 on your Mattermost instance.
 
 For example, to show the list of users:
 
 ```shell
-$ /opt/gitlab/embedded/bin/mmctl --local user list
+$ sudo /opt/gitlab/embedded/bin/mmctl --local user list
 
 13dzo5bmg7fu8rdox347hbfxde: appsbot (appsbot@localhost)
 tbnkwjdug3dejcoddboo4yuomr: boards (boards@localhost)
