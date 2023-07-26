@@ -5,6 +5,7 @@ require "spec_helper"
 RSpec.describe "User creates a merge request", :js, feature_category: :code_review_workflow do
   include ProjectForksHelper
   include CookieHelper
+  include ListboxHelpers
 
   let(:approver) { create(:user) }
   let(:project) do
@@ -32,10 +33,10 @@ RSpec.describe "User creates a merge request", :js, feature_category: :code_revi
   context 'when the user has branches in an SSO enforced group' do
     let_it_be(:saml_provider) { create(:saml_provider, enabled: true, enforced_sso: true) }
     let_it_be(:restricted_group) { create(:group, saml_provider: saml_provider) }
-    let_it_be(:canonical_project) { create(:project, :public, :repository, group: restricted_group) }
+    let_it_be(:canonical_project) { create(:project, :private, :repository, group: restricted_group) }
     let_it_be(:user) { create(:user) }
 
-    let(:source_project) do
+    let(:target_project) do
       fork_project(canonical_project, user,
         repository: true,
         namespace: user.namespace)
@@ -58,15 +59,43 @@ RSpec.describe "User creates a merge request", :js, feature_category: :code_revi
 
     context 'and the session is not active' do
       it 'shows the user an alert', :aggregate_failures do
-        visit project_new_merge_request_path(source_project)
+        visit project_new_merge_request_path(target_project)
 
         expect(page).to have_content(s_(message))
       end
 
       it 'lets the user click the alert to sign in', :aggregate_failures, :js do
-        visit project_new_merge_request_path(source_project)
+        visit project_new_merge_request_path(target_project)
 
         expect(page).to have_link(href: %r{/groups/#{restricted_group.name}/-/saml})
+      end
+
+      context 'with the `hide_unaccessible_saml_branches` feature flag on' do
+        it 'will not show any inaccessible branches in the dropdown', :aggregate_failures, :js do
+          visit project_new_merge_request_path(target_project)
+
+          find(".js-target-project").click
+
+          wait_for_requests
+
+          expect_no_listbox_item(canonical_project.full_path.to_s)
+        end
+      end
+
+      context 'with the `hide_unaccessible_saml_branches` feature flag off' do
+        before do
+          stub_feature_flags(hide_unaccessible_saml_branches: false)
+        end
+
+        it 'will not show any inaccessible branches in the dropdown', :aggregate_failures, :js do
+          visit project_new_merge_request_path(target_project)
+
+          find(".js-target-project").click
+
+          wait_for_requests
+
+          expect_listbox_item(canonical_project.full_path.to_s)
+        end
       end
     end
 
@@ -75,7 +104,7 @@ RSpec.describe "User creates a merge request", :js, feature_category: :code_revi
         dummy_session = { active_group_sso_sign_ins: { saml_provider.id => DateTime.now } }
         allow(Gitlab::Session).to receive(:current).and_return(dummy_session)
 
-        visit project_new_merge_request_path(source_project)
+        visit project_new_merge_request_path(target_project)
 
         expect(page).not_to have_content(s_(message))
       end
