@@ -24,17 +24,23 @@ module AuditEvents
         end
 
         def log_audit_event(name:, message:)
-          return if destination.is_a?(AuditEvents::InstanceExternalAuditEventDestination)
-
           audit_context = {
             name: name,
             author: current_user,
-            scope: destination.group,
+            scope: get_audit_scope,
             target: destination,
             message: "#{message}: #{event_type_filters.to_sentence}"
           }
 
           ::Gitlab::Audit::Auditor.audit(audit_context)
+        end
+
+        def get_audit_scope
+          if destination.is_a?(AuditEvents::InstanceExternalAuditEventDestination)
+            Gitlab::Audit::InstanceScope.new
+          else
+            destination.group
+          end
         end
       end
     end

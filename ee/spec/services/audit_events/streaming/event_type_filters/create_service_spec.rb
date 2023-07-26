@@ -17,31 +17,7 @@ RSpec.describe AuditEvents::Streaming::EventTypeFilters::CreateService, feature_
 
   describe '#execute' do
     context 'when event type filter is not already present' do
-      it 'creates event type filter', :aggregate_failures do
-        expect { subject }.to change { destination.event_type_filters.count }.by 1
-        expect(destination.event_type_filters.last.audit_event_type).to eq(event_type_filters.first)
-        expect(response).to be_success
-        expect(response.errors).to match_array(expected_error)
-      end
-
-      it 'creates audit event', :aggregate_failures do
-        audit_context = {
-          name: 'event_type_filters_created',
-          author: user,
-          scope: destination.group,
-          target: destination,
-          message: "Created audit event type filter(s): filter_1"
-        }
-
-        expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
-                                                           .and_call_original
-
-        expect { subject }.to change { AuditEvent.count }.by(1)
-      end
-
-      context 'when destination is instance level destination' do
-        let_it_be(:destination) { create(:instance_external_audit_event_destination) }
-
+      shared_examples 'creates event filter' do
         it 'creates event type filter', :aggregate_failures do
           expect { subject }.to change { destination.event_type_filters.count }.by 1
           expect(destination.event_type_filters.last.audit_event_type).to eq(event_type_filters.first)
@@ -49,10 +25,33 @@ RSpec.describe AuditEvents::Streaming::EventTypeFilters::CreateService, feature_
           expect(response.errors).to match_array(expected_error)
         end
 
-        it 'does not create any audit event', :aggregate_failures do
-          expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
+        it 'creates audit event', :aggregate_failures do
+          audit_context = {
+            name: 'event_type_filters_created',
+            author: user,
+            scope: scope,
+            target: destination,
+            message: "Created audit event type filter(s): filter_1"
+          }
 
-          expect { subject }.not_to change { AuditEvent.count }
+          expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
+                                                             .and_call_original
+
+          expect { subject }.to change { AuditEvent.count }.by(1)
+        end
+      end
+
+      context 'when destination is group level destination' do
+        it_behaves_like 'creates event filter' do
+          let(:scope) { destination.group }
+        end
+      end
+
+      context 'when destination is instance level destination' do
+        let_it_be(:destination) { create(:instance_external_audit_event_destination) }
+
+        it_behaves_like 'creates event filter' do
+          let(:scope) { be_an_instance_of(Gitlab::Audit::InstanceScope) }
         end
       end
     end
