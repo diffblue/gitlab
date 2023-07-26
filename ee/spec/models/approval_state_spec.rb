@@ -86,14 +86,34 @@ RSpec.describe ApprovalState do
       it 'includes committers' do
         expect(results).to include(*committers)
       end
-    end
 
-    context 'when committers approval is disabled on project' do
-      let(:merge_requests_author_approval) { true }
-      let(:merge_requests_disable_committers_approval) { true }
+      context 'when committers approval is disabled on project' do
+        let(:merge_requests_author_approval) { true }
+        let(:merge_requests_disable_committers_approval) { true }
 
-      it 'excludes committers' do
-        expect(results).not_to include(*committers)
+        it 'excludes committers' do
+          expect(results).not_to include(*committers)
+        end
+
+        context 'when keep_merge_commits_for_approvals is on' do
+          it 'passes the expected parameter to committers method' do
+            expect(merge_request).to receive(:committers).with(with_merge_commits: true).and_return(User.where(id: committers))
+
+            results
+          end
+        end
+
+        context 'when keep_merge_commits_for_approvals is off' do
+          before do
+            stub_feature_flags(keep_merge_commits_for_approvals: false)
+          end
+
+          it 'passes the expected parameter to committers method' do
+            expect(merge_request).to receive(:committers).with(with_merge_commits: false).and_return(User.where(id: committers))
+
+            results
+          end
+        end
       end
     end
   end
