@@ -78,7 +78,9 @@ module Namespaces
         [size, 0].max
       end
 
-      def changes_will_exceed_size_limit?(change_size)
+      def changes_will_exceed_size_limit?(change_size, project)
+        change_size *= ::Namespaces::Storage::CostFactor.cost_factor_for(project)
+
         limit != 0 && exceeded_size(change_size) > 0
       end
 

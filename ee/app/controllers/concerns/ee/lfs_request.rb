@@ -22,7 +22,7 @@ module EE
     override :limit_exceeded?
     def limit_exceeded?
       strong_memoize(:limit_exceeded) do
-        size_checker.changes_will_exceed_size_limit?(lfs_push_size)
+        size_checker.changes_will_exceed_size_limit?(lfs_push_size, project)
       end
     end
 

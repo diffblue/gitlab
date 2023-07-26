@@ -17,6 +17,7 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
 
   let_it_be(:ultimate_plan, reload: true) { create(:ultimate_plan) }
   let_it_be(:plan_limits, reload: true) { create(:plan_limits, plan: ultimate_plan) }
+  let_it_be(:free_plan) { create(:free_plan) }
 
   before do
     create_statistics
@@ -400,12 +401,19 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
   end
 
   describe '#changes_will_exceed_size_limit?' do
+    let(:project) { build_stubbed(:project, group: namespace) }
+
+    before do
+      stub_ee_application_setting(check_namespace_plan: true)
+      stub_ee_application_setting(namespace_storage_forks_cost_factor: 0.1)
+    end
+
     context 'when the changes will exceed the size limit' do
       where(:change_size) { [51.megabytes, 60.megabytes, 100.megabytes] }
 
       with_them do
         it 'returns true' do
-          expect(model.changes_will_exceed_size_limit?(change_size)).to eq(true)
+          expect(model.changes_will_exceed_size_limit?(change_size, project)).to eq(true)
         end
       end
     end
@@ -415,7 +423,7 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
 
       with_them do
         it 'returns false' do
-          expect(model.changes_will_exceed_size_limit?(change_size)).to eq(false)
+          expect(model.changes_will_exceed_size_limit?(change_size, project)).to eq(false)
         end
       end
     end
@@ -427,7 +435,7 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
 
       with_them do
         it 'returns true regardless of change_size' do
-          expect(model.changes_will_exceed_size_limit?(change_size)).to eq(true)
+          expect(model.changes_will_exceed_size_limit?(change_size, project)).to eq(true)
         end
       end
     end
@@ -438,7 +446,41 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
       end
 
       it 'returns false' do
-        expect(model.changes_will_exceed_size_limit?(120.megabytes)).to eq(false)
+        expect(model.changes_will_exceed_size_limit?(120.megabytes, project)).to eq(false)
+      end
+    end
+
+    context 'with a project fork' do
+      context 'in a paid namespace' do
+        where(:visibility_level) { [:public, :internal, :private] }
+
+        with_them do
+          it 'applies a cost factor for forks to the changes size' do
+            project_fork = build_fork(visibility_level)
+
+            expect(model.changes_will_exceed_size_limit?(100.megabytes, project_fork)).to eq(false)
+          end
+        end
+      end
+
+      context 'in a free namespace' do
+        let!(:subscription) { create(:gitlab_subscription, namespace: namespace, hosted_plan: free_plan) }
+
+        where(:visibility_level) { [:public, :internal] }
+
+        with_them do
+          it 'applies a cost factor for forks to the changes size' do
+            project_fork = build_fork(visibility_level)
+
+            expect(model.changes_will_exceed_size_limit?(100.megabytes, project_fork)).to eq(false)
+          end
+        end
+
+        it 'does not apply a cost factor for forks to the changes size for a private fork' do
+          project_fork = build_fork(:private)
+
+          expect(model.changes_will_exceed_size_limit?(100.megabytes, project_fork)).to eq(true)
+        end
       end
     end
   end
@@ -447,5 +489,15 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
     it 'returns :namespace_storage_limit' do
       expect(model.enforcement_type).to eq(:namespace_storage_limit)
     end
+  end
+
+  def build_fork(visibility_level)
+    project = build_stubbed(:project, group: namespace)
+    fork_network = build_stubbed(:fork_network, root_project: project)
+    project_fork = build_stubbed(:project, visibility_level, group: namespace, fork_network: fork_network)
+    build_stubbed(:fork_network_member, project: project_fork,
+      fork_network: fork_network, forked_from_project: project)
+
+    project_fork
   end
 end

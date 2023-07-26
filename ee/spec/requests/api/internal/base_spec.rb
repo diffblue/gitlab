@@ -302,6 +302,49 @@ RSpec.describe API::Internal::Base do
       end
     end
 
+    context 'with excess repository size limits', :saas do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:project) { create(:project, :repository, group: group) }
+
+      let(:sha_with_2_mb_file) { 'bf12d2567099e26f59692896f73ac819bae45b00' }
+
+      context 'with a public fork of a project' do
+        let_it_be(:project_fork, refind: true) { create(:project, :public, :repository, group: group) }
+        let_it_be(:fork_network) { create(:fork_network, root_project: project) }
+        let_it_be(:fork_network_member) do
+          create(:fork_network_member, project: project_fork,
+                 fork_network: fork_network, forked_from_project: project)
+        end
+
+        before_all do
+          project_fork.add_developer(user)
+        end
+
+        context 'when the push size would exceed the size limit' do
+          before do
+            stub_ee_application_setting(check_namespace_plan: true)
+            stub_ee_application_setting(namespace_storage_forks_cost_factor: 0.25)
+
+            project_fork.update!(repository_size_limit: 4.megabytes)
+            project_fork.statistics.update!(repository_size: 3.megabytes)
+            project_fork.repository.delete_branch('2-mb-file')
+          end
+
+          it 'does not apply a cost factor to the push size and rejects the push' do
+            push(key, project_fork, changes: "#{Gitlab::Git::BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
+
+            expect(response).to have_gitlab_http_status(:unauthorized)
+            expect(json_response["status"]).to eq(false)
+            expect(json_response["message"]).to eq(
+              "Your push to this repository would cause it to exceed " \
+              "the size limit of 4 MiB so it has been rejected. " \
+              "Please contact your GitLab administrator for more information."
+            )
+          end
+        end
+      end
+    end
+
     context 'with a namespace storage size limit', :saas do
       let_it_be(:group, refind: true) { create(:group) }
       let_it_be(:project) { create(:project, :repository, :wiki_repo, group: group) }
@@ -317,6 +360,7 @@ RSpec.describe API::Internal::Base do
 
       before do
         enforce_namespace_storage_limit(group)
+        stub_ee_application_setting(namespace_storage_forks_cost_factor: 0.25)
       end
 
       context 'with a project' do
@@ -379,6 +423,29 @@ RSpec.describe API::Internal::Base do
             expect(response).to have_gitlab_http_status(:ok)
             expect(json_response["status"]).to eq(true)
           end
+        end
+      end
+
+      context 'with a public fork of a project' do
+        let_it_be(:project_fork) { create(:project, :public, :repository, group: group) }
+        let_it_be(:fork_network) { create(:fork_network, root_project: project) }
+        let_it_be(:fork_network_member) do
+          create(:fork_network_member, project: project_fork,
+                 fork_network: fork_network, forked_from_project: project)
+        end
+
+        before do
+          project_fork.add_developer(user)
+          project_fork.repository.delete_branch('2-mb-file')
+        end
+
+        it 'accepts git push to a fork when the push size with the cost factor applied is under the limit' do
+          set_used_storage(group, megabytes: 3)
+
+          push(key, project_fork, changes: "#{Gitlab::Git::BLANK_SHA} #{sha_with_2_mb_file} refs/heads/my_branch_2")
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response["status"]).to eq(true)
         end
       end
 
