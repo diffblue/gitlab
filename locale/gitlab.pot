@@ -6923,7 +6923,7 @@ msgstr ""
 msgid "Available group runners: %{runners}"
 msgstr ""
 
-msgid "Available on-demand"
+msgid "Available on demand"
 msgstr ""
 
 msgid "Avatar for %{assigneeName}"
