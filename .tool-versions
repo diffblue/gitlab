@@ -6,3 +6,4 @@ redis 7.0.12
 ruby 3.1.4
 rust 1.65.0
 yarn 1.22.19
+vale 2.27.0
