@@ -24,6 +24,44 @@ RSpec.describe Vulnerabilities::Identifier, feature_category: :vulnerability_man
     # it { is_expected.to validate_uniqueness_of(:fingerprint).scoped_to(:project_id) }
   end
 
+  describe "#url" do
+    context "with allowed schemas" do
+      let(:identifier_http) { build(:vulnerabilities_identifier, url: "http://example.org") }
+      let(:identifier_https) { build(:vulnerabilities_identifier, url: "https://example.org") }
+      let(:identifier_ftp) { build(:vulnerabilities_identifier, url: "ftp://example.org") }
+
+      it 'is valid', :aggregate_failures do
+        expect(identifier_http.valid?).to be_truthy
+        expect(identifier_https.valid?).to be_truthy
+        expect(identifier_ftp.valid?).to be_truthy
+      end
+    end
+
+    context "with scheme other than HTTP(S)" do
+      let(:identifier) { build(:vulnerabilities_identifier, url: "gopher://example.org") }
+
+      it "is not valid" do
+        expect(identifier.valid?).to be_falsey
+      end
+    end
+
+    context "with invalid url" do
+      let(:identifier) { build(:vulnerabilities_identifier, url: "invalid:example.org") }
+
+      it "is not valid" do
+        expect(identifier.valid?).to be_falsey
+      end
+    end
+
+    context "without URL" do
+      let(:identifier) { build(:vulnerabilities_identifier, url: nil) }
+
+      it "is valid" do
+        expect(identifier.valid?).to be_truthy
+      end
+    end
+  end
+
   describe '.with_fingerprint' do
     let(:fingerprint) { 'f5724386167705667ae25a1390c0a516020690ba' }
 
