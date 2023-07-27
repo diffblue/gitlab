@@ -26324,6 +26324,7 @@ Geo registry class.
 | <a id="georegistryclassdependency_proxy_blob_registry"></a>`DEPENDENCY_PROXY_BLOB_REGISTRY` | Geo::DependencyProxyBlobRegistry registry class. |
 | <a id="georegistryclassdependency_proxy_manifest_registry"></a>`DEPENDENCY_PROXY_MANIFEST_REGISTRY` | Geo::DependencyProxyManifestRegistry registry class. |
 | <a id="georegistryclassdesign_management_repository_registry"></a>`DESIGN_MANAGEMENT_REPOSITORY_REGISTRY` | Geo::DesignManagementRepositoryRegistry registry class. |
+| <a id="georegistryclassgroup_wiki_repository_registry"></a>`GROUP_WIKI_REPOSITORY_REGISTRY` | Geo::GroupWikiRepositoryRegistry registry class. |
 | <a id="georegistryclassjob_artifact_registry"></a>`JOB_ARTIFACT_REGISTRY` | Geo::JobArtifactRegistry registry class. |
 | <a id="georegistryclasslfs_object_registry"></a>`LFS_OBJECT_REGISTRY` | Geo::LfsObjectRegistry registry class. |
 | <a id="georegistryclassmerge_request_diff_registry"></a>`MERGE_REQUEST_DIFF_REGISTRY` | Geo::MergeRequestDiffRegistry registry class. |
@@ -28627,6 +28628,7 @@ One of:
 - [`DependencyProxyBlobRegistry`](#dependencyproxyblobregistry)
 - [`DependencyProxyManifestRegistry`](#dependencyproxymanifestregistry)
 - [`DesignManagementRepositoryRegistry`](#designmanagementrepositoryregistry)
+- [`GroupWikiRepositoryRegistry`](#groupwikirepositoryregistry)
 - [`JobArtifactRegistry`](#jobartifactregistry)
 - [`LfsObjectRegistry`](#lfsobjectregistry)
 - [`MergeRequestDiffRegistry`](#mergerequestdiffregistry)

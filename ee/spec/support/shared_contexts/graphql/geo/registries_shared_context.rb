@@ -20,6 +20,7 @@ RSpec.shared_context 'with geo registries shared context' do
     Geo::SnippetRepositoryRegistry          | Types::Geo::SnippetRepositoryRegistryType          | :geo_snippet_repository_registry
     Geo::TerraformStateVersionRegistry      | Types::Geo::TerraformStateVersionRegistryType      | :geo_terraform_state_version_registry
     Geo::UploadRegistry                     | Types::Geo::UploadRegistryType                     | :geo_upload_registry
+    Geo::GroupWikiRepositoryRegistry        | Types::Geo::GroupWikiRepositoryRegistryType        | :geo_group_wiki_repository_registry
     # rubocop:enable Layout/LineLength
   end
 end

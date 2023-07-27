@@ -21,6 +21,7 @@ RSpec.describe GitlabSchema.types['GeoRegistryClass'], feature_category: :geo_re
       PROJECT_WIKI_REPOSITORY_REGISTRY
       DESIGN_MANAGEMENT_REPOSITORY_REGISTRY
       PROJECT_REPOSITORY_REGISTRY
+      GROUP_WIKI_REPOSITORY_REGISTRY
     ]
   end
 
