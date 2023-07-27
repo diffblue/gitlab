@@ -6,8 +6,8 @@ module Geo
 
     idempotent!
     data_consistency :always
+    deduplicate :until_executed, ttl: 20.minutes
 
-    include ExclusiveLeaseGuard
     include Gitlab::Geo::LogHelpers
     # rubocop:disable Scalability/CronWorkerContext
     # This worker does not perform work scoped to a context
@@ -16,14 +16,8 @@ module Geo
 
     feature_category :geo_replication
 
-    LEASE_TIMEOUT = 1.hour
-
     def perform
-      try_obtain_lease { Geo::MetricsUpdateService.new.execute }
-    end
-
-    def lease_timeout
-      LEASE_TIMEOUT
+      Geo::MetricsUpdateService.new.execute
     end
   end
 end
