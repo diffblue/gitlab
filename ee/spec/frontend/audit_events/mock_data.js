@@ -108,6 +108,7 @@ export const mockInstanceExternalDestinations = [
     headers: {
       nodes: [],
     },
+    eventTypeFilters: [],
   },
   {
     __typename: 'InstanceExternalAuditEventDestination',
@@ -118,6 +119,7 @@ export const mockInstanceExternalDestinations = [
     headers: {
       nodes: [makeInstanceHeader(), makeInstanceHeader()],
     },
+    eventTypeFilters: ['add_gpg_key', 'user_created'],
   },
 ];
 
@@ -378,6 +380,7 @@ export const destinationInstanceCreateMutationPopulator = (errors = []) => {
         name: groupPath,
         id: testGroupId,
       },
+      eventTypeFilters: null,
       headers: {
         nodes: [],
       },
@@ -409,6 +412,7 @@ export const destinationInstanceUpdateMutationPopulator = (errors = []) => {
         name: groupPath,
         id: testGroupId,
       },
+      eventTypeFilters: null,
       headers: {
         nodes: [],
       },
@@ -439,6 +443,26 @@ export const destinationGcpLoggingDeleteMutationPopulator = (errors = []) => ({
   data: {
     googleCloudLoggingConfigurationDestroy: {
       errors,
+    },
+  },
+});
+
+export const destinationInstanceFilterRemoveMutationPopulator = (errors = []) => ({
+  data: {
+    auditEventsStreamingDestinationInstanceEventsRemove: {
+      errors,
+    },
+  },
+});
+
+export const destinationInstanceFilterUpdateMutationPopulator = (
+  errors = [],
+  eventTypeFilters = [],
+) => ({
+  data: {
+    auditEventsStreamingDestinationInstanceEventsAdd: {
+      errors,
+      eventTypeFilters,
     },
   },
 });

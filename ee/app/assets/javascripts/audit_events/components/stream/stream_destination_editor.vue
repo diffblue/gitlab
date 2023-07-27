@@ -30,6 +30,8 @@ import deleteInstanceExternalDestination from '../../graphql/mutations/delete_in
 import externalInstanceAuditEventDestinationHeaderCreate from '../../graphql/mutations/create_instance_external_destination_header.mutation.graphql';
 import externalInstanceAuditEventDestinationHeaderUpdate from '../../graphql/mutations/update_instance_external_destination_header.mutation.graphql';
 import externalInstanceAuditEventDestinationHeaderDelete from '../../graphql/mutations/delete_instance_external_destination_header.mutation.graphql';
+import deleteInstanceExternalDestinationFilters from '../../graphql/mutations/delete_instance_external_destination_filters.mutation.graphql';
+import addInstanceExternalDestinationFilters from '../../graphql/mutations/add_instance_external_destination_filters.mutation.graphql';
 import {
   ADD_STREAM_EDITOR_I18N,
   AUDIT_STREAMS_NETWORK_ERRORS,
@@ -212,6 +214,16 @@ export default {
     isEventTypeUpdated() {
       return !isEqual(this.item?.eventTypeFilters || [], this.filters);
     },
+    filterAddMutation() {
+      return this.isInstance
+        ? addInstanceExternalDestinationFilters
+        : addExternalDestinationFilters;
+    },
+    filterDestroyMutation() {
+      return this.isInstance
+        ? deleteInstanceExternalDestinationFilters
+        : deleteExternalDestinationFilters;
+    },
   },
   watch: {
     item() {
@@ -260,33 +272,33 @@ export default {
         : data.externalAuditEventDestinationCreate.externalAuditEventDestination;
     },
     async addDestinationUrl() {
+      const { groupPath: fullPath, isInstance } = this;
       const { data } = await this.$apollo.mutate({
         mutation: this.destinationCreateMutation,
         variables: {
           destinationUrl: this.destinationUrl,
           fullPath: this.groupPath,
           name: this.destinationName,
-          isInstance: this.isInstance,
         },
         context: {
           isSingleRequest: true,
         },
-        update(cache, { data: updateData }, args) {
-          const errors = args.variables.isInstance
+        update(cache, { data: updateData }) {
+          const errors = isInstance
             ? updateData.instanceExternalAuditEventDestinationCreate.errors
             : updateData.externalAuditEventDestinationCreate.errors;
           if (errors.length) {
             return;
           }
 
-          const newDestination = args.variables.isInstance
+          const newDestination = isInstance
             ? updateData.instanceExternalAuditEventDestinationCreate
                 .instanceExternalAuditEventDestination
             : updateData.externalAuditEventDestinationCreate.externalAuditEventDestination;
 
           addAuditEventsStreamingDestination({
             store: cache,
-            fullPath: args.variables.fullPath,
+            fullPath,
             newDestination,
           });
         },
@@ -307,7 +319,6 @@ export default {
           fullPath: this.groupPath,
           id: destinationId,
           name: this.destinationName,
-          isInstance: this.isInstance,
         },
         context: {
           isSingleRequest: true,
@@ -318,7 +329,7 @@ export default {
       return { errors };
     },
     async addDestinationHeaders(destinationId, headers) {
-      const { groupPath: fullPath } = this;
+      const { groupPath: fullPath, isInstance } = this;
       const mutations = headers.map((header) => {
         return this.$apollo.mutate({
           mutation: this.headersCreateMutation,
@@ -326,10 +337,9 @@ export default {
             destinationId,
             key: header.name,
             value: header.value,
-            isInstance: this.isInstance,
           },
-          update(cache, { data }, args) {
-            const errors = args.variables.isInstance
+          update(cache, { data }) {
+            const errors = isInstance
               ? data.auditEventsStreamingInstanceHeadersCreate.errors
               : data.auditEventsStreamingHeadersCreate.errors;
 
@@ -337,7 +347,7 @@ export default {
               return;
             }
 
-            const newHeader = args.variables.isInstance
+            const newHeader = isInstance
               ? data.auditEventsStreamingInstanceHeadersCreate.header
               : data.auditEventsStreamingHeadersCreate.header;
 
@@ -361,7 +371,6 @@ export default {
             headerId: header.id,
             key: header.name,
             value: header.value,
-            isInstance: this.isInstance,
           },
         });
       });
@@ -370,16 +379,15 @@ export default {
     },
     async deleteDestinationHeaders(headers) {
       const { id: destinationId } = this.item;
-      const { groupPath: fullPath } = this;
+      const { groupPath: fullPath, isInstance } = this;
       const mutations = headers.map((header) => {
         return this.$apollo.mutate({
           mutation: this.headersDestroyMutation,
           variables: {
             headerId: header.id,
-            isInstance: this.isInstance,
           },
-          update(cache, { data }, args) {
-            const errors = args.variables.isInstance
+          update(cache, { data }) {
+            const errors = isInstance
               ? data.auditEventsStreamingInstanceHeadersDestroy.errors
               : data.auditEventsStreamingHeadersDestroy.errors;
 
@@ -400,18 +408,17 @@ export default {
       return mapAllMutationErrors(mutations, this.headersDestroyString);
     },
     async deleteCreatedDestination(destinationId) {
-      const { groupPath: fullPath } = this;
+      const { groupPath: fullPath, isInstance } = this;
       return this.$apollo.mutate({
         mutation: this.destinationDestroyMutation,
         variables: {
           id: destinationId,
-          isInstance: this.isInstance,
         },
         context: {
           isSingleRequest: true,
         },
-        update(cache, { data }, args) {
-          const errors = args.variables.isInstance
+        update(cache, { data }) {
+          const errors = isInstance
             ? data.instanceExternalAuditEventDestinationDestroy.errors
             : data.externalAuditEventDestinationDestroy.errors;
           if (errors.length) {
@@ -427,49 +434,66 @@ export default {
       });
     },
     async removeDestinationFilters(destinationId, filters) {
+      const { isInstance } = this;
       const { data } = await this.$apollo.mutate({
-        mutation: deleteExternalDestinationFilters,
+        mutation: this.filterDestroyMutation,
         variables: {
           destinationId,
           eventTypeFilters: filters,
         },
         update(cache, { data: updateData }) {
-          if (updateData.auditEventsStreamingDestinationEventsRemove.errors.length) {
+          const errors = isInstance
+            ? updateData.auditEventsStreamingDestinationInstanceEventsRemove.errors
+            : updateData.auditEventsStreamingDestinationEventsRemove.errors;
+
+          if (errors.length) {
             return;
           }
 
           removeEventTypeFilters({
             store: cache,
+            isInstance,
             destinationId,
             filtersToRemove: filters,
           });
         },
       });
-      const error = data.auditEventsStreamingDestinationEventsRemove.errors || [];
+      const errorReturned = this.isInstance
+        ? data.auditEventsStreamingDestinationInstanceEventsRemove.errors
+        : data.auditEventsStreamingDestinationEventsRemove.errors;
+      const error = errorReturned || [];
 
       return error;
     },
     async addDestinationFilters(destinationId, filters) {
+      const { isInstance } = this;
       const { data } = await this.$apollo.mutate({
-        mutation: addExternalDestinationFilters,
+        mutation: this.filterAddMutation,
         variables: {
           destinationId,
           eventTypeFilters: filters,
         },
         update(cache, { data: updateData }) {
-          const { errors, eventTypeFilters } = updateData.auditEventsStreamingDestinationEventsAdd;
+          const { errors, eventTypeFilters } = isInstance
+            ? updateData.auditEventsStreamingDestinationInstanceEventsAdd
+            : updateData.auditEventsStreamingDestinationEventsAdd;
+
           if (errors.length) {
             return;
           }
 
           updateEventTypeFilters({
             store: cache,
+            isInstance,
             destinationId,
             filters: eventTypeFilters,
           });
         },
       });
-      const error = data.auditEventsStreamingDestinationEventsAdd.errors || [];
+      const errorReturned = this.isInstance
+        ? data.auditEventsStreamingDestinationInstanceEventsAdd.errors
+        : data.auditEventsStreamingDestinationEventsAdd.errors;
+      const error = errorReturned || [];
 
       return error;
     },
@@ -497,7 +521,7 @@ export default {
           }
         }
 
-        if (!this.isInstance && this.filters?.length > 0 && destinationId) {
+        if (this.filters?.length > 0 && destinationId) {
           const addDestinationFiltersErrors = await this.addDestinationFilters(
             destinationId,
             this.filters,
@@ -530,9 +554,6 @@ export default {
       try {
         const errors = [];
 
-        const { errors: destinationErrors = [] } = await this.updateDestinationUrl(this.item.id);
-        errors.push(...destinationErrors);
-
         if (this.existingHeaders.length > 0) {
           errors.push(...(await this.deleteDestinationHeaders(this.headersToDelete)));
           errors.push(...(await this.updateDestinationHeaders(this.headersToUpdate)));
@@ -540,7 +561,10 @@ export default {
 
         errors.push(...(await this.addDestinationHeaders(this.item.id, this.headersToAdd)));
 
-        if (!this.isInstance && this.isEventTypeUpdated) {
+        const { errors: destinationErrors = [] } = await this.updateDestinationUrl(this.item.id);
+        errors.push(...destinationErrors);
+
+        if (this.isEventTypeUpdated) {
           const removeFilters = this.item.eventTypeFilters.filter((f) => !this.filters.includes(f));
           const addFilters = this.filters.filter((f) => !this.item.eventTypeFilters.includes(f));
           if (removeFilters?.length) {
@@ -555,7 +579,7 @@ export default {
               this.item.id,
               addFilters,
             );
-            errors.push(...addDestinationFiltersErrors);
+            if (addDestinationFiltersErrors?.length) errors.push(...addDestinationFiltersErrors);
           }
         }
 
@@ -807,7 +831,7 @@ export default {
         </gl-button>
       </div>
 
-      <div v-if="!isInstance" class="gl-mb-5">
+      <div class="gl-mb-5">
         <label class="gl-display-block gl-font-lg" data-testid="filtering-header">{{
           $options.i18n.HEADER_FILTERING
         }}</label>

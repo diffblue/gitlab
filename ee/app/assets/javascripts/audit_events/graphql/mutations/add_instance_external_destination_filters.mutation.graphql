@@ -1,0 +1,11 @@
+mutation addInstanceExternalDestinationFilters(
+  $destinationId: AuditEventsInstanceExternalAuditEventDestinationID!
+  $eventTypeFilters: [String!]!
+) {
+  auditEventsStreamingDestinationInstanceEventsAdd(
+    input: { destinationId: $destinationId, eventTypeFilters: $eventTypeFilters }
+  ) {
+    errors
+    eventTypeFilters
+  }
+}

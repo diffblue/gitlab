@@ -1,15 +1,18 @@
-.protected-branches-list.js-protected-environments-list
-  - unless @protected_environments.empty?
-    .flash-container
-    %table.table.table-bordered
-      %colgroup
-        %col{ width: '30%' }
-        %col
-        %col{ width: '10%' }
-      %thead
-        %tr
-          %th= s_('ProtectedEnvironment|Protected Environment (%{protected_environments_count})') % { protected_environments_count: limited_counter_with_delimiter(@protected_environments) }
-          %th= s_('ProtectedEnvironment|Allowed to deploy')
-          %th
-      %tbody
+= render Pajamas::CardComponent.new(card_options: { class: 'gl-new-card protected-branches-list js-protected-environments-list js-toggle-container' }, header_options: { class: 'gl-new-card-header' }, body_options: { class: 'gl-new-card-body' }) do |c|
+  - c.with_header do
+    .gl-new-card-title-wrapper
+      %h3.gl-new-card-title
+        = s_('ProtectedEnvironment|Protected Environments')
+      .gl-new-card-count
+        = sprite_icon('environment', css_class: 'gl-mr-2')
+        = limited_counter_with_delimiter(@protected_environments)
+    .gl-new-card-actions
+      = render Pajamas::ButtonComponent.new(size: :small, button_options: { class: "js-toggle-button js-toggle-content" }) do
+        = s_("ProtectedEnvironment|Protect an environment")
+  - c.with_body do
+    = render 'groups/protected_environments/form'
+    - if @protected_environments.empty?
+      .gl-p-4= s_('ProtectedEnvironment|There are currently no protected environments.')
+    - else
+      %ul.content-list
         = render partial: 'groups/protected_environments/protected_environment', collection: @protected_environments

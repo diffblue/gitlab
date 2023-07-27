@@ -24,6 +24,7 @@ class Admin::AuditLogsController < Admin::ApplicationController
   def index
     @is_last_page = events.last_page?
     @events = AuditEventSerializer.new.represent(events)
+    @audit_event_definitions = Gitlab::Audit::Type::Definition.names_with_category
 
     @entity = case audit_events_params[:entity_type]
               when 'User'

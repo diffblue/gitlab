@@ -23,6 +23,7 @@ module EE
         mount_mutation ::Mutations::Geo::Registries::Update, alpha: { milestone: '16.1' }
         mount_mutation ::Mutations::GitlabSubscriptions::Activate
         mount_mutation ::Mutations::GitlabSubscriptions::UserAddOnAssignments::Create, alpha: { milestone: '16.3' }
+        mount_mutation ::Mutations::GitlabSubscriptions::UserAddOnAssignments::Remove, alpha: { milestone: '16.3' }
         mount_mutation ::Mutations::Projects::SetLocked
         mount_mutation ::Mutations::Iterations::Create
         mount_mutation ::Mutations::Iterations::Update

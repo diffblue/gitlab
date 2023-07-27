@@ -161,6 +161,12 @@ RSpec.describe AuditEventsHelper, feature_category: :audit_events do
   describe '#audit_log_app_data' do
     let_it_be(:group) { build_stubbed(:group, :private) }
     let_it_be(:events) { build_list(:group_audit_event, 5, entity_id: group.id) }
+    let_it_be(:audit_event_definitions) do
+      [
+        { event_name: :add_gpg_key, feature_category: "compliance_management" },
+        { event_name: :allow_author_approval_updated, feature_category: "compliance_management" }
+      ]
+    end
 
     context 'when compliance_pipeline_configuration is off' do
       before do
@@ -168,7 +174,7 @@ RSpec.describe AuditEventsHelper, feature_category: :audit_events do
       end
 
       it 'returns the correct data' do
-        expect(helper.audit_log_app_data(true, events)).to contain_exactly(
+        expect(helper.audit_log_app_data(true, events, audit_event_definitions)).to contain_exactly(
           [:form_path, "/admin/audit_logs"],
           [:events, events.to_json],
           [:is_last_page, "true"],
@@ -184,7 +190,7 @@ RSpec.describe AuditEventsHelper, feature_category: :audit_events do
       end
 
       it 'returns the correct data' do
-        expect(helper.audit_log_app_data(true, events)).to contain_exactly(
+        expect(helper.audit_log_app_data(true, events, audit_event_definitions)).to contain_exactly(
           [:form_path, "/admin/audit_logs"],
           [:events, events.to_json],
           [:is_last_page, "true"],
@@ -192,7 +198,8 @@ RSpec.describe AuditEventsHelper, feature_category: :audit_events do
           [:export_url, export_url],
           [:empty_state_svg_path, ActionController::Base.helpers.image_path('illustrations/cloud.svg')],
           [:group_path, "instance"],
-          [:show_streams, "true"]
+          [:show_streams, "true"],
+          [:audit_event_definitions, audit_event_definitions.to_json]
         )
       end
     end
