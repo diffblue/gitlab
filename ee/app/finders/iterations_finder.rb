@@ -81,6 +81,9 @@ class IterationsFinder
   def by_search(items)
     return items unless params[:search].present? && params[:in].present?
 
+    unknown_in_values = params[:in] - SEARCHABLE_FIELDS
+    raise ArgumentError, "Unknown in param value(s): #{unknown_in_values.join(', ')}" if unknown_in_values.present?
+
     query = params[:search]
     in_title = params[:in].include?(:title)
     in_cadence_title = params[:in].include?(:cadence_title)
