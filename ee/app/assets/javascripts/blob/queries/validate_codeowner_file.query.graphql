@@ -1,0 +1,14 @@
+query validateCodeownerFile($projectPath: ID!, $filePath: String!, $ref: String!) {
+  project(fullPath: $projectPath) {
+    id
+    repository {
+      validateCodeownerFile(ref: $ref, path: $filePath) {
+        total
+        validationErrors {
+          code
+          lines
+        }
+      }
+    }
+  }
+}

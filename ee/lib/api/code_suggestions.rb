@@ -38,7 +38,8 @@ module API
         {
           'X-Gitlab-Authentication-Type' => 'oidc',
           'Authorization' => "Bearer #{headers['X-Gitlab-Oidc-Token']}",
-          'Content-Type' => 'application/json'
+          'Content-Type' => 'application/json',
+          'User-Agent' => headers["User-Agent"] # Forward the User-Agent on to the model gateway
         }.merge(telemetry_headers).transform_values { |v| Array(v) }
       end
 

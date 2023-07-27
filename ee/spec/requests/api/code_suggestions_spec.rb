@@ -229,7 +229,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             'Header' => {
               'X-Gitlab-Authentication-Type' => ['oidc'],
               'Authorization' => ["Bearer #{token}"],
-              'Content-Type' => ['application/json']
+              'Content-Type' => ['application/json'],
+              'User-Agent' => ['Super Awesome Browser 43.144.12']
             },
             'Method' => 'POST'
           })
@@ -260,7 +261,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
               'X-GitLab-CS-Requests' => "requests",
               'X-GitLab-CS-Errors' => 'errors',
               'X-GitLab-CS-Custom' => 'helloworld',
-              'X-GitLab-NO-Ignore' => 'ignoreme'
+              'X-GitLab-NO-Ignore' => 'ignoreme',
+              'User-Agent' => 'Super Cool Browser 14.5.2'
             }
           end
 
@@ -276,7 +278,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
                 'X-Gitlab-Cs-Accepts' => ['accepts'],
                 'X-Gitlab-Cs-Requests' => ['requests'],
                 'X-Gitlab-Cs-Errors' => ['errors'],
-                'X-Gitlab-Cs-Custom' => ['helloworld']
+                'X-Gitlab-Cs-Custom' => ['helloworld'],
+                'User-Agent' => ['Super Cool Browser 14.5.2']
               }
             })
           end
@@ -293,7 +296,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
         {
           'X-Gitlab-Authentication-Type' => 'oidc',
           'X-Gitlab-Oidc-Token' => token,
-          'Content-Type' => 'application/json'
+          'Content-Type' => 'application/json',
+          'User-Agent' => 'Super Awesome Browser 43.144.12'
         }
       end
 
@@ -345,7 +349,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       let(:headers) do
         {
           'X-Gitlab-Authentication-Type' => 'oidc',
-          'Content-Type' => 'application/json'
+          'Content-Type' => 'application/json',
+          'User-Agent' => 'Super Awesome Browser 43.144.12'
         }
       end
 
