@@ -112,7 +112,7 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig, feature_category: :continuous_integr
       it_behaves_like 'does not include compliance pipeline configuration content'
     end
 
-    context 'when project has security_policies_enforced' do
+    context 'when project has active scan_execution policies' do
       let(:security_policies) { { enabled: true, policies: [security_policy_configuration] } }
       let!(:security_policy_configuration) do
         create(:security_orchestration_policy_configuration, project: project)
@@ -120,7 +120,6 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig, feature_category: :continuous_integr
 
       let(:policy) { build(:scan_execution_policy, enabled: true, rules: [rule]) }
       let(:branches) { %w[master production] }
-      let(:rule) { { type: 'schedule', branches: branches, cadence: '*/20 * * * *' } }
 
       before do
         allow(project).to receive(:all_security_orchestration_policy_configurations)
@@ -129,26 +128,38 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig, feature_category: :continuous_integr
         allow(security_policy_configuration).to receive(:active_scan_execution_policies).and_return([policy])
       end
 
-      context 'when security_orchestration_policies feature is available' do
-        before do
-          stub_licensed_features(security_orchestration_policies: true)
-        end
-
-        let(:security_policy_default_content) { YAML.dump(nil) }
-
-        context 'when auto devops is not enabled' do
+      context 'when policies should be enforced' do
+        context 'when security_orchestration_policies feature is available' do
           before do
-            Gitlab::CurrentSettings.update!(auto_devops_enabled: false)
+            stub_licensed_features(security_orchestration_policies: true)
           end
 
-          it 'includes security policies default pipeline configuration content' do
-            expect(config.source).to eq(:security_policies_default_source)
-            expect(config.content).to eq(security_policy_default_content)
-          end
+          let(:security_policy_default_content) { YAML.dump(nil) }
 
-          context 'when scan_execution_policy_pipelines feature is disabled' do
+          context 'when auto devops is not enabled' do
             before do
-              stub_feature_flags(scan_execution_policy_pipelines: false)
+              stub_application_setting(auto_devops_enabled: false)
+            end
+
+            context 'when active policies includes a rule with pipeline type' do
+              let(:rule) { { type: 'pipeline', branches: branches } }
+
+              it 'includes security policies default pipeline configuration content' do
+                expect(config.source).to eq(:security_policies_default_source)
+                expect(config.content).to eq(security_policy_default_content)
+              end
+            end
+          end
+        end
+      end
+
+      context 'when policies should not be enforced' do
+        let(:rule) { { type: 'schedule', branches: branches, cadence: '*/20 * * * *' } }
+
+        context 'when security_orchestration_policies feature is not available' do
+          context 'when auto devops is not enabled' do
+            before do
+              stub_application_setting(auto_devops_enabled: false)
             end
 
             it 'does not includes security policies default pipeline configuration content' do
@@ -162,16 +173,28 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig, feature_category: :continuous_integr
             expect(config.source).to eq(:auto_devops_source)
           end
         end
-      end
 
-      context 'when security_orchestration_policies feature is not available' do
         context 'when auto devops is not enabled' do
           before do
-            Gitlab::CurrentSettings.update!(auto_devops_enabled: false)
+            stub_application_setting(auto_devops_enabled: false)
           end
 
-          it 'does not includes security policies default pipeline configuration content' do
-            expect(config.source).to eq(nil)
+          context 'when scan_execution_policy_pipelines feature is disabled' do
+            before do
+              stub_feature_flags(scan_execution_policy_pipelines: false)
+            end
+
+            it 'does not includes security policies default pipeline configuration content' do
+              expect(config.source).to eq(nil)
+            end
+          end
+
+          context 'when active policies does not includes a rule with pipeline type' do
+            let(:rule) { { type: 'pipeline', branches: branches } }
+
+            it 'includes security policies default pipeline configuration content' do
+              expect(config.source).to eq(nil)
+            end
           end
         end
       end

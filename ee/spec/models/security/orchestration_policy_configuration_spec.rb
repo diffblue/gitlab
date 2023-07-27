@@ -1032,6 +1032,27 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
     end
   end
 
+  describe '#active_scan_execution_policies_for_pipelines' do
+    let(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy_pipeline_1, policy_pipeline_2, policy_schedule]) }
+
+    let(:policy_pipeline_1) { build(:scan_execution_policy, name: 'Run DAST in every pipeline', rules: [{ type: 'pipeline', branches: %w[production] }]) }
+    let(:policy_pipeline_2) { build(:scan_execution_policy, name: 'Run DAST in every pipeline_v1', rules: [{ type: 'pipeline', branches: %w[master] }]) }
+    let(:policy_schedule) { build(:scan_execution_policy, name: 'Run DAST every 20 mins', rules: [{ type: 'schedule', branches: %w[production], cadence: '*/20 * * * *' }]) }
+
+    let(:expected_active_scan_execution_policies_for_pipelines) { [policy_pipeline_1, policy_pipeline_2] }
+
+    subject(:active_scan_execution_policies_for_pipelines) { security_orchestration_policy_configuration.active_scan_execution_policies_for_pipelines }
+
+    before do
+      allow(security_policy_management_project).to receive(:repository).and_return(repository)
+      allow(repository).to receive(:blob_data_at).with(default_branch, Security::OrchestrationPolicyConfiguration::POLICY_PATH).and_return(policy_yaml)
+    end
+
+    it 'returns only active scan execution policies for pipelines' do
+      expect(active_scan_execution_policies_for_pipelines).to eq(expected_active_scan_execution_policies_for_pipelines)
+    end
+  end
+
   describe '#active_policy_names_with_dast_site_profile' do
     let(:policy_yaml) do
       build(:orchestration_policy_yaml, scan_execution_policy: [
