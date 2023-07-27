@@ -47,6 +47,7 @@ RSpec.describe 'AiAction for Fill In Merge Request Template', :saas, feature_cat
       :fill_in_merge_request_template,
       {
         markup_format: :raw,
+        skip_cache: true,
         request_id: an_instance_of(String),
         source_project_id: project.id.to_s,
         source_branch: 'feature',
