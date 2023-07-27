@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Audit::Auditor do
+RSpec.describe Gitlab::Audit::Auditor, feature_category: :audit_events do
   let(:name) { 'play_with_project_settings' }
   let(:author) { build_stubbed(:user) }
   let(:scope) { build_stubbed(:group) }
@@ -21,7 +21,15 @@ RSpec.describe Gitlab::Audit::Auditor do
 
   subject(:auditor) { described_class }
 
+  before do
+    allow(Gitlab::Audit::Type::Definition).to receive(:defined?).with(name).and_return(true)
+  end
+
   shared_examples 'only streamed' do
+    before do
+      allow(Gitlab::Audit::Type::Definition).to receive(:stream_only?).with(name).and_return(true)
+    end
+
     it 'enqueues an event' do
       expect_any_instance_of(AuditEvent) do |event|
         expect(event).to receive(:stream_to_external_destinations).with(use_json: true, event_name: name)
