@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require File.expand_path('ee/elastic/migrate/20230719094700_remove_projects_from_main_index.rb')
+require File.expand_path('ee/elastic/migrate/20230726094700_remove_projects_from_main_index.rb')
 
 RSpec.describe RemoveProjectsFromMainIndex, feature_category: :global_search do
-  let(:version) { 20230719094700 }
+  let(:version) { 20230726094700 }
   let(:migration) { described_class.new(version) }
   let(:helper) { Gitlab::Elastic::Helper.new }
 
@@ -17,6 +17,7 @@ RSpec.describe RemoveProjectsFromMainIndex, feature_category: :global_search do
     it 'has migration options set', :aggregate_failures do
       expect(migration.batched?).to be_truthy
       expect(migration).to be_retry_on_failure
+      expect(migration.batch_size).to eq(2000)
     end
   end
 
@@ -45,6 +46,7 @@ RSpec.describe RemoveProjectsFromMainIndex, feature_category: :global_search do
           sleep 0.01
         end
 
+        migration.migrate # To set a pristine state
         expect(migration.completed?).to be_truthy
         expect(migration.migration_state).to match(task_id: nil, documents_remaining: 0)
       end

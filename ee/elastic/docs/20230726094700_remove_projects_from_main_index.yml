@@ -1,6 +1,6 @@
 ---
 name: RemoveProjectsFromMainIndex
-version: '20230719094700'
+version: '20230726094700'
 description: Remove Project documents from main index.
 group: group::global search
 milestone: 16.3

@@ -3,6 +3,7 @@
 class RemoveProjectsFromMainIndex < Elastic::Migration
   include Elastic::MigrationHelper
 
+  batch_size 2000
   batched!
   retry_on_failure
 
@@ -16,7 +17,7 @@ class RemoveProjectsFromMainIndex < Elastic::Migration
 
       if task_status['completed']
         log 'Removing projects from the original index is completed for a specific task', task_id: task_id
-        set_migration_state(task_id: nil, documents_remaining: 0)
+        set_migration_state(task_id: nil, documents_remaining: original_documents_count)
       else
         log 'Removing projects from the original index is still in progress for a specific task', task_id: task_id
       end
@@ -26,13 +27,14 @@ class RemoveProjectsFromMainIndex < Elastic::Migration
 
     if completed?
       log 'There are no projects to remove from original index'
+      set_migration_state(task_id: nil, documents_remaining: original_documents_count)
       return
     end
 
     log 'Launching delete by query'
-    response = client.delete_by_query(index: helper.target_name, conflicts: 'proceed', wait_for_completion: false,
-      body: { query: { bool: { filter: { term: { type: 'project' } } } } },
-      slices: get_number_of_shards(index_name: helper.target_name)
+    response = client.delete_by_query(
+      index: helper.target_name, conflicts: 'proceed', wait_for_completion: false, max_docs: batch_size,
+      body: { query: { bool: { filter: { term: { type: 'project' } } } } }
     )
 
     if response['failures'].present?
