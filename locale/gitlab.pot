@@ -46678,6 +46678,9 @@ msgstr ""
 msgid "The project size exceeds the export limit."
 msgstr ""
 
+msgid "The project visibility may have been made more restrictive if the parent group's visibility changed while the deletion was scheduled."
+msgstr ""
+
 msgid "The project was successfully forked."
 msgstr ""
 
@@ -47771,6 +47774,9 @@ msgid "This project path either does not exist or you do not have access."
 msgstr ""
 
 msgid "This project reached the limit of custom domains. (Max %d)"
+msgstr ""
+
+msgid "This project was scheduled for deletion, but failed with the following message:"
 msgstr ""
 
 msgid "This project will be deleted on %{date}"
