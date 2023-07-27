@@ -46,7 +46,6 @@ RSpec.describe 'Project > Settings > Access Tokens', :js, :saas, feature_categor
     it 'shows access token creation form but no alert when there is no token' do
       visit project_settings_access_tokens_path(project)
 
-      click_button 'Add new token'
       expect(page).to have_selector('#js-new-access-token-form')
       expect(page).not_to have_content(expected_notice)
     end
@@ -56,7 +55,6 @@ RSpec.describe 'Project > Settings > Access Tokens', :js, :saas, feature_categor
 
       visit project_settings_access_tokens_path(project)
 
-      click_button 'Add new token'
       expect(page).to have_content(expected_notice)
       expect(page).not_to have_selector('#js-new-access-token-form')
     end
