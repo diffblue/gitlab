@@ -7,5 +7,7 @@ module GitlabSubscriptions
 
     validates :user, :add_on_purchase, presence: true
     validates :add_on_purchase_id, uniqueness: { scope: :user_id }
+
+    scope :by_user, ->(user) { where(user: user) }
   end
 end
