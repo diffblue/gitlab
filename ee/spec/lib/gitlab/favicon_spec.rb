@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Favicon, :request_store do
-  include RailsHelpers
-
   describe '.main' do
     it 'has green favicon for development' do
       stub_rails_env('development')

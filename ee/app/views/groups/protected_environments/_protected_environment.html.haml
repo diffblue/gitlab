@@ -1,8 +1,8 @@
-%tr.js-protected-environment-edit-form{ data: { url: group_protected_environment_path(@group, protected_environment) } }
-  %td
-    %span.ref-name= protected_environment.name
-  %td
-    = render partial: 'groups/protected_environments/update_deploy_access_level_dropdown', locals: { protected_environment: protected_environment, access_levels: protected_environment.deploy_access_levels }
-  %td
-    = render Pajamas::ButtonComponent.new(href: [@group, protected_environment], method: :delete, variant: :danger, button_options: { data: { confirm: s_('ProtectedEnvironment|%{environment_name} will be writable for developers. Are you sure?') % { environment_name: protected_environment.name } } }) do
-      = s_('ProtectedEnvironment|Unprotect')
+%li{ class: 'gl-px-3!' }
+  .js-protected-environment-edit-form.gl-display-flex.gl-justify-content-space-between.gl-align-items-center{ data: { url: group_protected_environment_path(@group, protected_environment) } }
+    .gl-display-flex.gl-gap-3.gl-align-items-center
+      .ref-name.gl-min-w-20= protected_environment.name
+      = render partial: 'groups/protected_environments/update_deploy_access_level_dropdown', locals: { protected_environment: protected_environment, access_levels: protected_environment.deploy_access_levels }
+    %div
+      = render Pajamas::ButtonComponent.new(href: [@group, protected_environment], method: :delete, size: :small, button_options: { data: { confirm: s_('ProtectedEnvironment|%{environment_name} will be writable for developers. Are you sure?') % { environment_name: protected_environment.name }, confirm_btn_variant: 'danger' }, aria: { label: s_('ProtectedEnvironment|Unprotect environment') } }) do
+        = s_('ProtectedEnvironment|Unprotect')

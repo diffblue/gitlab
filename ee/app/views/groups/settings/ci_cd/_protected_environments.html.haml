@@ -10,12 +10,4 @@
       %p
         = s_('ProtectedEnvironment|Only specified groups can execute deployments in protected environments.')
     .settings-content
-      - if @protected_environments.empty?
-        = render Pajamas::AlertComponent.new(variant: :warning, show_icon: false, dismissible: false,
-          alert_options: { class: 'gl-mb-5'}) do |c|
-          - c.with_body do
-            = s_('ProtectedEnvironment|There are currently no protected environments. Protect an environment with this form.')
-
-      = render 'groups/protected_environments/form'
-
       = render partial: 'groups/protected_environments/environments_list'

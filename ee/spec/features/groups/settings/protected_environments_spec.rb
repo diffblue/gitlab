@@ -24,6 +24,7 @@ RSpec.describe 'Protected Environments', :js, feature_category: :environment_man
   end
 
   it 'shows all subgroups of the organization in the creation form' do
+    click_button('Protect an environment')
     within('.js-new-protected-environment') do
       click_button('Select groups')
 
@@ -34,6 +35,7 @@ RSpec.describe 'Protected Environments', :js, feature_category: :environment_man
   end
 
   it 'allows to create a group-level protected environment' do
+    click_button('Protect an environment')
     within('.js-new-protected-environment') do
       select('staging')
       click_button('Select groups')
@@ -42,6 +44,7 @@ RSpec.describe 'Protected Environments', :js, feature_category: :environment_man
       click_on('Protect')
     end
 
+    click_button('Protect an environment')
     within('.js-protected-environments-list') do
       expect(page).to have_content('staging')
       click_button('1 group')
@@ -66,7 +69,7 @@ RSpec.describe 'Protected Environments', :js, feature_category: :environment_man
 
     it 'shows search box without throwing an error' do
       visit group_settings_ci_cd_path(public_organization)
-
+      click_button('Protect an environment')
       click_button('Select groups')
 
       within('.gl-dropdown-inner') { find('.gl-search-box-by-type') }

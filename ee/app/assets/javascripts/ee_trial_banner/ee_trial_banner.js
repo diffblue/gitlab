@@ -4,8 +4,6 @@ export default class EETrialBanner {
   constructor($trialBanner) {
     this.COOKIE_KEY = 'show_ee_trial_banner';
     this.$trialBanner = $trialBanner;
-    this.$mainNavbar = this.$trialBanner.siblings('.js-navbar-gitlab');
-    this.$secondaryNavbar = this.$mainNavbar.siblings('.js-page-with-sidebar');
 
     this.licenseExpiresOn = new Date(this.$trialBanner.data('licenseExpiry'));
   }
@@ -74,22 +72,8 @@ export default class EETrialBanner {
     }
   }
 
-  toggleMainNavbarMargin(state) {
-    if (this.$mainNavbar.length) {
-      this.$mainNavbar.toggleClass('has-trial-banner', state);
-    }
-  }
-
-  toggleSecondaryNavbarMargin(state) {
-    if (this.$secondaryNavbar.length) {
-      this.$secondaryNavbar.toggleClass('has-trial-banner', state);
-    }
-  }
-
   toggleBanner(state) {
     this.$trialBanner.toggleClass('hidden', !state);
-    this.toggleMainNavbarMargin(state);
-    this.toggleSecondaryNavbarMargin(state);
   }
 
   handleTrialBannerDismiss(element) {
@@ -100,8 +84,6 @@ export default class EETrialBanner {
 
     // A closed button has been clicked, dismiss the banner and handle setting the cookie
     this.toggleBanner(false);
-    this.toggleMainNavbarMargin(false);
-    this.toggleSecondaryNavbarMargin(false);
     if (getCookie(this.COOKIE_KEY)) {
       setCookie(this.COOKIE_KEY, 'false');
     }
