@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ProductAnalytics::CubeDataQueryService, feature_category: :product_analytics do
+RSpec.describe ProductAnalytics::CubeDataQueryService, feature_category: :product_analytics_data_management do
   let_it_be(:project) { create(:project) }
 
   let(:current_user) { project.owner }

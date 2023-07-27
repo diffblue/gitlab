@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Query.project(id).dashboards', feature_category: :product_analytics do
+RSpec.describe 'Query.project(id).dashboards', feature_category: :product_analytics_data_management do
   include GraphqlHelpers
 
   let_it_be(:user) { create(:user) }

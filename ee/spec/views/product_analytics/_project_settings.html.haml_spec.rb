@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'product_analytics/_project_settings', feature_category: :product_analytics do
+RSpec.describe 'product_analytics/_project_settings', feature_category: :product_analytics_data_management do
   let_it_be(:project) { build(:project, :with_product_analytics_dashboard) }
 
   before do

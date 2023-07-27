@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_shared_state,
-  feature_category: :product_analytics do
+  feature_category: :product_analytics_data_management do
   let_it_be(:project) { create(:project) }
   let_it_be(:user) { create(:user) }
 

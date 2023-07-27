@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::Analytics::DashboardsController, type: :request, feature_category: :product_analytics do
+RSpec.describe Projects::Analytics::DashboardsController, type: :request, feature_category: :product_analytics_data_management do
   using RSpec::Parameterized::TableSyntax
 
   describe 'GET /:namespace/:project/-/analytics/dashboards' do

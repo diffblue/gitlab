@@ -233,7 +233,7 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
   end
 end
 
-RSpec.describe Groups::Analytics::DashboardsController, type: :controller, feature_category: :product_analytics do
+RSpec.describe Groups::Analytics::DashboardsController, type: :controller, feature_category: :product_analytics_data_management do
   let_it_be(:group) { create(:group) }
   let_it_be(:user) do
     create(:user).tap do |user|

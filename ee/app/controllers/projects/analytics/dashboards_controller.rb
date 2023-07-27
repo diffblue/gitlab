@@ -5,7 +5,7 @@ module Projects
     class DashboardsController < Projects::ApplicationController
       include ProductAnalyticsTracking
 
-      feature_category :product_analytics
+      feature_category :product_analytics_data_management
 
       before_action :dashboards_enabled!, only: [:index]
       before_action :authorize_read_product_analytics!
