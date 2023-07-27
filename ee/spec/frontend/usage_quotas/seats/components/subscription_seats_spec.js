@@ -1,13 +1,4 @@
-import {
-  GlPagination,
-  GlButton,
-  GlTable,
-  GlAvatarLink,
-  GlAvatarLabeled,
-  GlBadge,
-  GlModal,
-} from '@gitlab/ui';
-import { mount, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import CodeSuggestionsUsageStatisticsCard from 'ee/usage_quotas/seats/components/code_suggestions_usage_statistics_card.vue';
@@ -16,29 +7,18 @@ import StatisticsSeatsCard from 'ee/usage_quotas/seats/components/statistics_sea
 import SubscriptionUpgradeInfoCard from 'ee/usage_quotas/seats/components/subscription_upgrade_info_card.vue';
 import SubscriptionUsageStatisticsCard from 'ee/usage_quotas/seats/components/subscription_usage_statistics_card.vue';
 import SubscriptionSeats from 'ee/usage_quotas/seats/components/subscription_seats.vue';
-import {
-  CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT,
-  SORT_OPTIONS,
-} from 'ee/usage_quotas/seats/constants';
-
+import SubscriptionUserList from 'ee/usage_quotas/seats/components/subscription_user_list.vue';
 import { mockDataSeats, mockTableItems } from 'ee_jest/usage_quotas/seats/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import SearchAndSortBar from 'ee/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
 
 Vue.use(Vuex);
 
 const actionSpies = {
   fetchBillableMembersList: jest.fn(),
   fetchGitlabSubscription: jest.fn(),
-  setBillableMemberToRemove: jest.fn(),
-  setSearchQuery: jest.fn(),
-  changeMembershipState: jest.fn(),
 };
 
 const providedFields = {
-  namespaceName: 'Test Group Name',
-  namespaceId: '1000',
-  seatUsageExportPath: '/groups/test_group/-/seat_usage.csv',
   maxFreeNamespaceSeats: 5,
   explorePlansPath: '/groups/test_group/-/billings',
   hasNoSubscription: false,
@@ -72,14 +52,9 @@ const fakeStore = ({ initialState, initialGetters }) =>
 describe('Subscription Seats', () => {
   let wrapper;
 
-  const createComponent = ({
-    initialState = {},
-    mountFn = shallowMount,
-    initialGetters = {},
-    provide = {},
-  } = {}) => {
+  const createComponent = ({ initialState = {}, initialGetters = {}, provide = {} } = {}) => {
     return extendedWrapper(
-      mountFn(SubscriptionSeats, {
+      shallowMount(SubscriptionSeats, {
         store: fakeStore({ initialState, initialGetters }),
         provide: {
           glFeatures: {
@@ -91,57 +66,15 @@ describe('Subscription Seats', () => {
     );
   };
 
-  const findTable = () => wrapper.findComponent(GlTable);
-
-  const findExportButton = () => wrapper.findByTestId('export-button');
-
-  const findSearchAndSortBar = () => wrapper.findComponent(SearchAndSortBar);
-  const findPagination = () => wrapper.findComponent(GlPagination);
-
-  const findAllRemoveUserItems = () => wrapper.findAllByTestId('remove-user');
   const findCodeSuggestionsStatisticsCard = () =>
     wrapper.findComponent(CodeSuggestionsUsageStatisticsCard);
-  const findErrorModal = () => wrapper.findComponent(GlModal);
   const findStatisticsCard = () => wrapper.findComponent(StatisticsCard);
   const findStatisticsSeatsCard = () => wrapper.findComponent(StatisticsSeatsCard);
   const findSubscriptionUpgradeCard = () => wrapper.findComponent(SubscriptionUpgradeInfoCard);
   const findSkeletonLoaderCards = () => wrapper.findByTestId('skeleton-loader-cards');
   const findSubscriptionUsageStatisticsCard = () =>
     wrapper.findComponent(SubscriptionUsageStatisticsCard);
-
-  const serializeUser = (rowWrapper) => {
-    const avatarLink = rowWrapper.findComponent(GlAvatarLink);
-    const avatarLabeled = rowWrapper.findComponent(GlAvatarLabeled);
-
-    return {
-      avatarLink: {
-        href: avatarLink.attributes('href'),
-        alt: avatarLink.attributes('alt'),
-      },
-      avatarLabeled: {
-        src: avatarLabeled.attributes('src'),
-        size: avatarLabeled.attributes('size'),
-        text: avatarLabeled.text(),
-      },
-    };
-  };
-
-  const serializeTableRow = (rowWrapper) => {
-    const emailWrapper = rowWrapper.find('[data-testid="email"]');
-
-    return {
-      user: serializeUser(rowWrapper),
-      email: emailWrapper.text(),
-      tooltip: emailWrapper.find('span').attributes('title'),
-      removeUserButtonExists: rowWrapper.findComponent(GlButton).exists(),
-      lastActivityOn: rowWrapper.find('[data-testid="last_activity_on"]').text(),
-      lastLoginAt: rowWrapper.find('[data-testid="last_login_at"]').text(),
-    };
-  };
-
-  const findSerializedTable = (tableWrapper) => {
-    return tableWrapper.findAll('tbody tr').wrappers.map(serializeTableRow);
-  };
+  const findSubscriptionUserList = () => wrapper.findComponent(SubscriptionUserList);
 
   describe('actions', () => {
     beforeEach(() => {
@@ -150,104 +83,6 @@ describe('Subscription Seats', () => {
 
     it('correct actions are called on create', () => {
       expect(actionSpies.fetchBillableMembersList).toHaveBeenCalled();
-    });
-  });
-
-  describe('renders', () => {
-    beforeEach(() => {
-      wrapper = createComponent({
-        mountFn: mount,
-        initialGetters: {
-          tableItems: () => mockTableItems,
-        },
-      });
-    });
-
-    describe('export button', () => {
-      it('has the correct href', () => {
-        expect(findExportButton().attributes().href).toBe(providedFields.seatUsageExportPath);
-      });
-    });
-
-    describe('table content', () => {
-      it('renders the correct data', () => {
-        const serializedTable = findSerializedTable(findTable());
-
-        expect(serializedTable).toMatchSnapshot();
-      });
-    });
-
-    it('pagination is rendered and passed correct values', () => {
-      const pagination = findPagination();
-
-      expect(pagination.props()).toMatchObject({
-        perPage: 5,
-        totalItems: 300,
-      });
-    });
-
-    describe('with error modal', () => {
-      it('does not render the model if the user is not removable', async () => {
-        await findAllRemoveUserItems().at(0).trigger('click');
-
-        expect(findErrorModal().html()).toBe('');
-      });
-
-      it('renders the error modal if the user is removable', async () => {
-        await findAllRemoveUserItems().at(2).trigger('click');
-
-        expect(findErrorModal().text()).toContain(CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT);
-      });
-    });
-
-    describe('members avatar', () => {
-      it('shows the correct avatarLinks length', () => {
-        const avatarLinks = findTable().findAllComponents(GlAvatarLink);
-        expect(avatarLinks.length).toBe(6);
-      });
-
-      it.each(['group_invite', 'project_invite'])(
-        'shows the correct badge for membership_type %s',
-        (membershipType) => {
-          const avatarLinks = findTable().findAllComponents(GlAvatarLink);
-          const badgeText = (
-            membershipType.charAt(0).toUpperCase() + membershipType.slice(1)
-          ).replace('_', ' ');
-
-          avatarLinks.wrappers.forEach((avatarLinkWrapper) => {
-            const currentMember = mockTableItems.find(
-              (item) => item.user.name === avatarLinkWrapper.attributes().alt,
-            );
-
-            if (membershipType === currentMember.user.membership_type) {
-              expect(avatarLinkWrapper.findComponent(GlBadge).text()).toBe(badgeText);
-            }
-          });
-        },
-      );
-    });
-
-    describe('members details', () => {
-      it.each`
-        membershipType      | shouldShowDetails
-        ${'project_invite'} | ${false}
-        ${'group_invite'}   | ${false}
-        ${'project_member'} | ${true}
-        ${'group_member'}   | ${true}
-      `(
-        'when membershipType is $membershipType, shouldShowDetails should be $shouldShowDetails',
-        ({ membershipType, shouldShowDetails }) => {
-          mockTableItems.forEach((item) => {
-            const detailsExpandButtons = findTable().find(
-              `[data-testid="toggle-seat-usage-details-${item.user.id}"]`,
-            );
-
-            if (membershipType === item.user.membership_type) {
-              expect(detailsExpandButtons.exists()).toBe(shouldShowDetails);
-            }
-          });
-        },
-      );
     });
   });
 
@@ -467,16 +302,6 @@ describe('Subscription Seats', () => {
   });
 
   describe('Loading state', () => {
-    describe('When nothing is loading', () => {
-      beforeEach(() => {
-        wrapper = createComponent();
-      });
-
-      it('displays the table in a non-busy state', () => {
-        expect(findTable().attributes('busy')).toBe(undefined);
-      });
-    });
-
     describe.each([
       [true, false],
       [false, true],
@@ -493,29 +318,6 @@ describe('Subscription Seats', () => {
         expect(findStatisticsCard().exists()).toBe(false);
         expect(findStatisticsSeatsCard().exists()).toBe(false);
       });
-
-      it('displays table in busy state', () => {
-        expect(findTable().attributes('busy')).toBe('true');
-      });
-    });
-  });
-
-  describe('search box', () => {
-    beforeEach(() => {
-      wrapper = createComponent();
-    });
-
-    it('input event triggers the setSearchQuery action', () => {
-      const SEARCH_STRING = 'search string';
-
-      findSearchAndSortBar().vm.$emit('onFilter', SEARCH_STRING);
-
-      expect(actionSpies.setSearchQuery).toHaveBeenCalledTimes(1);
-      expect(actionSpies.setSearchQuery).toHaveBeenCalledWith(expect.any(Object), SEARCH_STRING);
-    });
-
-    it('contains the correct sort options', () => {
-      expect(findSearchAndSortBar().props('sortOptions')).toMatchObject(SORT_OPTIONS);
     });
   });
 
@@ -543,5 +345,13 @@ describe('Subscription Seats', () => {
         );
       },
     );
+  });
+
+  describe('subscription user list', () => {
+    it('renders subscription users', () => {
+      wrapper = createComponent();
+
+      expect(findSubscriptionUserList().exists()).toBe(true);
+    });
   });
 });
