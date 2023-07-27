@@ -61,6 +61,14 @@ module ApprovalRuleLike
     super.loaded? ? super : super.allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417457")
   end
 
+  def vulnerability_attribute_false_positive
+    nil
+  end
+
+  def vulnerability_attribute_fix_available
+    nil
+  end
+
   def audit_add
     raise NotImplementedError
   end
