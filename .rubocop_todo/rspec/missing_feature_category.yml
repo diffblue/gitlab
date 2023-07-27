@@ -3335,7 +3335,6 @@ RSpec/MissingFeatureCategory:
     - 'spec/lib/gitlab/conflict/file_spec.rb'
     - 'spec/lib/gitlab/consul/internal_spec.rb'
     - 'spec/lib/gitlab/container_repository/tags/cache_spec.rb'
-    - 'spec/lib/gitlab/content_security_policy/config_loader_spec.rb'
     - 'spec/lib/gitlab/counters/buffered_counter_spec.rb'
     - 'spec/lib/gitlab/counters/legacy_counter_spec.rb'
     - 'spec/lib/gitlab/cross_project_access/check_collection_spec.rb'
