@@ -30,6 +30,12 @@ module Security
       scan_execution_policy.select { |config| config[:enabled] }.first(POLICY_LIMIT)
     end
 
+    def active_scan_execution_policies_for_pipelines
+      active_scan_execution_policies.select do |policy|
+        policy&.[](:rules)&.any? { |rule| rule&.[](:type) == RULE_TYPES[:pipeline] }
+      end
+    end
+
     def active_policy_names_with_dast_site_profile(profile_name)
       active_policy_names_with_dast_profiles.dig(:site_profiles, profile_name)
     end

@@ -26,10 +26,11 @@ module Gitlab
         end
 
         def active_scan_execution_policies?
-          ::Gitlab::Security::Orchestration::ProjectPolicyConfigurations.new(@project).all
-                                                                        .to_a
-                                                                        .flat_map(&:active_scan_execution_policies)
-                                                                        .any?
+          ::Gitlab::Security::Orchestration::ProjectPolicyConfigurations
+            .new(@project).all
+            .to_a
+            .flat_map(&:active_scan_execution_policies_for_pipelines)
+            .any?
         end
       end
     end

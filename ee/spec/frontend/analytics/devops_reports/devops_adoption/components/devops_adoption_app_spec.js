@@ -367,14 +367,14 @@ describe('DevopsAdoptionApp', () => {
     const eventTrackingBehaviour = (testId, event) => {
       describe('event tracking', () => {
         it(`tracks the ${event} event when clicked`, () => {
-          jest.spyOn(API, 'trackRedisHllUserEvent');
+          jest.spyOn(API, 'trackInternalEvent');
           const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
 
-          expect(API.trackRedisHllUserEvent).not.toHaveBeenCalled();
+          expect(API.trackInternalEvent).not.toHaveBeenCalled();
 
           wrapper.findByTestId(testId).vm.$emit('click');
 
-          expect(API.trackRedisHllUserEvent).toHaveBeenCalledWith(event);
+          expect(API.trackInternalEvent).toHaveBeenCalledWith(event);
           expect(trackingSpy).toHaveBeenCalledWith(GITLAB_INTERNAL_EVENT_CATEGORY, event, {
             context: {
               schema: 'iglu:com.gitlab/gitlab_service_ping/jsonschema/1-0-0',
@@ -387,15 +387,15 @@ describe('DevopsAdoptionApp', () => {
         });
 
         it('only tracks the event once', () => {
-          jest.spyOn(API, 'trackRedisHllUserEvent');
+          jest.spyOn(API, 'trackInternalEvent');
 
-          expect(API.trackRedisHllUserEvent).not.toHaveBeenCalled();
+          expect(API.trackInternalEvent).not.toHaveBeenCalled();
 
           const { vm } = wrapper.findByTestId(testId);
           vm.$emit('click');
           vm.$emit('click');
 
-          expect(API.trackRedisHllUserEvent).toHaveBeenCalledTimes(1);
+          expect(API.trackInternalEvent).toHaveBeenCalledTimes(1);
         });
       });
     };
