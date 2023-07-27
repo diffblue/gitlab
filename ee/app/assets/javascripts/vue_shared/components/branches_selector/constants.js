@@ -1,6 +1,7 @@
 import { __ } from '~/locale';
 
 export const BRANCH_FETCH_DELAY = 250;
+export const BRANCHES_PER_PAGE = 10;
 export const ALL_BRANCHES = {
   id: 'ALL_BRANCHES',
   name: __('All branches'),
