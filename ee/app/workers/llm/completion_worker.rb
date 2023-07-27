@@ -6,7 +6,7 @@ module Llm
 
     idempotent!
     data_consistency :delayed
-    feature_category :team_planning
+    feature_category :ai_abstraction_layer
     urgency :low
     deduplicate :until_executed
 

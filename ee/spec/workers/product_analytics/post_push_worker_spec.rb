@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ProductAnalytics::PostPushWorker, feature_category: :product_analytics do
+RSpec.describe ProductAnalytics::PostPushWorker, feature_category: :product_analytics_data_management do
   include RepoHelpers
 
   let_it_be(:project) { create(:project, :repository) }

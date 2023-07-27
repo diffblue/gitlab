@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics do
+RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics_data_management do
   let_it_be(:project) { create(:project, :with_product_analytics_dashboard) }
   let_it_be(:user) { create(:user) }
 

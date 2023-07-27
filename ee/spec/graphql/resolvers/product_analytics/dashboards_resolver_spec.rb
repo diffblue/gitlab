@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Resolvers::ProductAnalytics::DashboardsResolver, feature_category: :product_analytics do
+RSpec.describe Resolvers::ProductAnalytics::DashboardsResolver, feature_category: :product_analytics_data_management do
   include GraphqlHelpers
 
   describe '#resolve' do

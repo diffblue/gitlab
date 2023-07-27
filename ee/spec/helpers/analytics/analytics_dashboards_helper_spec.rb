@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_analytics do
+RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_analytics_data_management do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:group) { create(:group) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
