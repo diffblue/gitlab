@@ -55660,6 +55660,9 @@ msgstr ""
 msgid "must have a repository"
 msgstr ""
 
+msgid "must have a valid format and be greater than or equal to zero."
+msgstr ""
+
 msgid "must match %{association}.project_id"
 msgstr ""
 
