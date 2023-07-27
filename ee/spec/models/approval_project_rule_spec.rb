@@ -146,6 +146,74 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
     end
   end
 
+  describe '#vulnerability_attribute_false_positive' do
+    let(:rule) { build(:approval_project_rule, scan_result_policy_read: scan_result_policy) }
+
+    subject { rule.vulnerability_attribute_false_positive }
+
+    context 'when false_positive is true' do
+      let(:scan_result_policy) { create(:scan_result_policy_read, vulnerability_attributes: { false_positive: true }) }
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when false_positive is false' do
+      let(:scan_result_policy) { create(:scan_result_policy_read, vulnerability_attributes: { false_positive: false }) }
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when vulnerability_attributes is empty' do
+      let(:scan_result_policy) { create(:scan_result_policy_read) }
+
+      it { is_expected.to be_nil }
+    end
+
+    context 'when feature flag "enforce_vulnerability_attributes_rules" is disabled' do
+      let(:scan_result_policy) { create(:scan_result_policy_read, vulnerability_attributes: { false_positive: true }) }
+
+      before do
+        stub_feature_flags(enforce_vulnerability_attributes_rules: false)
+      end
+
+      it { is_expected.to be_nil }
+    end
+  end
+
+  describe '#vulnerability_attribute_fix_available' do
+    let(:rule) { build(:approval_project_rule, scan_result_policy_read: scan_result_policy) }
+
+    subject { rule.vulnerability_attribute_fix_available }
+
+    context 'when fix_available is true' do
+      let(:scan_result_policy) { create(:scan_result_policy_read, vulnerability_attributes: { fix_available: true }) }
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when fix_available is false' do
+      let(:scan_result_policy) { create(:scan_result_policy_read, vulnerability_attributes: { fix_available: false }) }
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when vulnerability_attributes is empty' do
+      let(:scan_result_policy) { create(:scan_result_policy_read) }
+
+      it { is_expected.to be_nil }
+    end
+
+    context 'when feature flag "enforce_vulnerability_attributes_rules" is disabled' do
+      let(:scan_result_policy) { create(:scan_result_policy_read, vulnerability_attributes: { fix_available: true }) }
+
+      before do
+        stub_feature_flags(enforce_vulnerability_attributes_rules: false)
+      end
+
+      it { is_expected.to be_nil }
+    end
+  end
+
   describe '#protected_branches' do
     let_it_be(:group) { create(:group) }
     let_it_be(:project) { create(:project, group: group) }

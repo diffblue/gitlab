@@ -14,6 +14,8 @@
 #     check_dismissed:      Boolean
 #     vulnerability_states: Array<String>
 #     related_pipeline_ids: Array<Integer>
+#     false_positive:       Boolean
+#     fix_available:        Boolean
 module Security
   module ScanResultPolicies
     class FindingsFinder
@@ -33,6 +35,13 @@ module Security
         findings = undismissed_security_findings(findings) if only_new_undismissed_findings?
         findings = findings.by_state(:dismissed) if only_new_dismissed_findings?
 
+        if Feature.enabled?(:enforce_vulnerability_attributes_rules)
+          findings = findings.false_positives if params[:false_positive] == true
+          findings = findings.non_false_positives if params[:false_positive] == false
+          findings = findings.fix_available if params[:fix_available] == true
+          findings = findings.no_fix_available if params[:fix_available] == false
+        end
+
         findings
       end
 
@@ -45,7 +54,11 @@ module Security
           return Security::Finding.by_project_id_and_pipeline_ids(project.id, params[:related_pipeline_ids])
         end
 
-        pipeline.security_findings
+        if Feature.enabled?(:enforce_vulnerability_attributes_rules)
+          pipeline.security_findings.by_partition_number(pipeline.security_findings_partition_number)
+        else
+          pipeline.security_findings
+        end
       end
 
       def only_new_dismissed_findings?
