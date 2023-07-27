@@ -5,7 +5,7 @@ import ProjectList from 'ee/usage_quotas/storage/components/project_list.vue';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import StorageTypeHelpLink from 'ee/usage_quotas/storage/components/storage_type_help_link.vue';
 import StorageTypeWarning from 'ee/usage_quotas/storage/components/storage_type_warning.vue';
-import { projectHelpLinks } from 'jest/usage_quotas/storage/mock_data';
+import { storageTypeHelpPaths } from '~/usage_quotas/storage/constants';
 import { projects } from '../mock_data';
 
 let wrapper;
@@ -14,7 +14,7 @@ const createComponent = ({ props = {} } = {}) => {
   wrapper = mountExtended(ProjectList, {
     propsData: {
       projects,
-      helpLinks: projectHelpLinks,
+      helpLinks: storageTypeHelpPaths,
       isLoading: false,
       sortBy: 'storage',
       sortDesc: true,
@@ -75,7 +75,7 @@ describe('ProjectList', () => {
 
     it.each(storageTypes)('$key', ({ key }) => {
       const th = wrapper.findByTestId(`th-${key}`);
-      const hasHelpLink = Boolean(projectHelpLinks[key]);
+      const hasHelpLink = Boolean(storageTypeHelpPaths[key]);
 
       expect(th.findComponent(StorageTypeHelpLink).exists()).toBe(hasHelpLink);
     });

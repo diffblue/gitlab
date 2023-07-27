@@ -1,5 +1,5 @@
 import mockGetNamespaceStorageStatisticsGraphQLResponse from 'test_fixtures/graphql/usage_quotas/storage/namespace_storage.query.graphql.json';
-import { projectHelpLinks } from 'jest/usage_quotas/storage/mock_data';
+import { storageTypeHelpPaths } from '~/usage_quotas/storage/constants';
 
 export { mockGetNamespaceStorageStatisticsGraphQLResponse };
 
@@ -16,7 +16,7 @@ export const defaultNamespaceProvideValues = {
   namespacePlanName: 'Free',
   namespacePlanStorageIncluded: 1002321,
   enforcementType: 'project_repository_limit',
-  helpLinks: projectHelpLinks,
+  helpLinks: storageTypeHelpPaths,
 };
 
 export const namespaceData = {

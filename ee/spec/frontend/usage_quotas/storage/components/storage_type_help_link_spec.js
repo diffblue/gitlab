@@ -1,14 +1,14 @@
 import { GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import StorageTypeHelpLink from 'ee/usage_quotas/storage/components/storage_type_help_link.vue';
-import { projectHelpLinks } from 'jest/usage_quotas/storage/mock_data';
+import { storageTypeHelpPaths } from '~/usage_quotas/storage/constants';
 
 let wrapper;
 
 const createComponent = ({ props = {} } = {}) => {
   wrapper = shallowMount(StorageTypeHelpLink, {
     propsData: {
-      helpLinks: projectHelpLinks,
+      helpLinks: storageTypeHelpPaths,
       ...props,
     },
   });
@@ -18,7 +18,7 @@ const findLink = () => wrapper.findComponent(GlLink);
 
 describe('StorageTypeHelpLink', () => {
   describe('Storage type w/ link', () => {
-    describe.each(Object.entries(projectHelpLinks))('%s', (storageType, url) => {
+    describe.each(Object.entries(storageTypeHelpPaths))('%s', (storageType, url) => {
       beforeEach(() => {
         createComponent({
           props: {

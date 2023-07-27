@@ -2,7 +2,7 @@
 import { GlSprintf, GlIcon, GlLink, GlButton, GlCard, GlSkeletonLoader } from '@gitlab/ui';
 import { sprintf } from '~/locale';
 import StorageStatisticsCard from 'ee/usage_quotas/storage/components/storage_statistics_card.vue';
-import { projectHelpPaths } from '~/usage_quotas/storage/constants';
+import { usageQuotasHelpPaths } from '~/usage_quotas/storage/constants';
 import { formatSizeAndSplit } from 'ee/usage_quotas/storage/utils';
 import {
   BUY_STORAGE,
@@ -52,9 +52,9 @@ export default {
     },
   },
   i18n: {
-    purchasedUsageHelpLink: projectHelpPaths.usageQuotasNamespaceStorageLimit,
+    purchasedUsageHelpLink: usageQuotasHelpPaths.usageQuotasNamespaceStorageLimit,
     purchasedUsageHelpText: STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE,
-    usedUsageHelpLink: projectHelpPaths.usageQuotas,
+    usedUsageHelpLink: usageQuotasHelpPaths.usageQuotas,
     usedUsageHelpText: STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE,
     purchaseButtonText: BUY_STORAGE,
     totalUsageDescription: STORAGE_STATISTICS_NAMESPACE_STORAGE_USED,
@@ -65,8 +65,8 @@ export default {
   computed: {
     enforcementTypeLearnMoreUrl() {
       return this.enforcementType === PROJECT_ENFORCEMENT_TYPE
-        ? projectHelpPaths.usageQuotasProjectStorageLimit
-        : projectHelpPaths.usageQuotasNamespaceStorageLimit;
+        ? usageQuotasHelpPaths.usageQuotasProjectStorageLimit
+        : usageQuotasHelpPaths.usageQuotasNamespaceStorageLimit;
     },
     enforcementTypeSubtitle() {
       const subtitle =
