@@ -174,6 +174,13 @@ RSpec.describe IterationsFinder, feature_category: :team_planning do
             it_behaves_like "search returns correct items"
           end
         end
+
+        it 'raises an error when `in` contains an invalid value' do
+          params[:search] = "foobar"
+          params[:in] = [:foo, :bar]
+
+          expect { subject }.to raise_error(ArgumentError, "Unknown in param value(s): foo, bar")
+        end
       end
 
       it 'filters by ID' do

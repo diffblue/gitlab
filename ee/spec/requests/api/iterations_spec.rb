@@ -23,10 +23,11 @@ RSpec.describe API::Iterations, feature_category: :team_planning do
   end
 
   let_it_be(:ancestor_iteration) do
-    create(:iteration, group: parent_group, updated_at: 10.days.ago)
+    create(:iteration, :with_due_date, group: parent_group, start_date: 2.weeks.from_now, updated_at: 10.days.ago)
   end
 
   before_all do
+    current_iteration.iterations_cadence.update!(title: "abc")
     parent_group.add_guest(user)
   end
 
@@ -118,7 +119,29 @@ RSpec.describe API::Iterations, feature_category: :team_planning do
         expect(json_response.first['id']).to eq(current_iteration.id)
       end
 
-      it 'returns 400 when param is invalid' do
+      it 'returns iterations filtered by title with `in` parameter' do
+        get api(api_path, user), params: { search: 'search_', in: %w[title] }
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response.size).to eq(1)
+        expect(json_response.first['id']).to eq(current_iteration.id)
+      end
+
+      it 'returns iterations filtered by cadence title' do
+        get api(api_path, user), params: { search: 'abc', in: %w[cadence_title] }
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response.size).to eq(1)
+        expect(json_response.first['id']).to eq(current_iteration.id)
+      end
+
+      it 'returns 400 when `in` param is invalid' do
+        get api(api_path, user), params: { search: 'search_', in: %w[foobar] }
+
+        expect(response).to have_gitlab_http_status(:bad_request)
+      end
+
+      it 'returns 400 when `state` param is invalid' do
         get api(api_path, user), params: { state: 'non-existent-state' }
 
         expect(response).to have_gitlab_http_status(:bad_request)
