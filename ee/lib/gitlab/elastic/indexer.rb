@@ -173,13 +173,9 @@ module Gitlab
         command << "--full-path=#{container.full_path}"
 
         command += if index_wiki?
-                     %W[--blob-type=wiki_blob --skip-commits --wiki-access-level=#{container.wiki_access_level}]
+                     build_wiki_specific_flags
                    else
-                     %W[--repository-access-level=#{container.repository_access_level}].tap do |c|
-                       migration_done = migration_finished?(:add_hashed_root_namespace_id_to_commits)
-                       c << "--hashed-root-namespace-id=#{project.namespace.hashed_root_namespace_id}" if migration_done
-                       c << '--schema-version-commits=true' if migration_finished?(:add_schema_version_to_commits)
-                     end
+                     build_blob_specific_flags
                    end
 
         command << case container
@@ -189,12 +185,23 @@ module Gitlab
                      "--traversal-ids=#{group.elastic_namespace_ancestry}"
                    end
 
-        if ::Elastic::DataMigrationService.migration_has_finished?(:add_archived_to_commits) &&
-            ::Elastic::DataMigrationService.migration_has_finished?(:add_archived_to_main_index) && !index_wiki?
-          command << "--archived=#{project.archived}"
-        end
-
         command << repository_path
+      end
+
+      def build_wiki_specific_flags
+        %W[--blob-type=wiki_blob --skip-commits --wiki-access-level=#{container.wiki_access_level}].tap do |c|
+          c << "--archived=#{project.archived}" if project && migration_finished?(:add_archived_to_wikis)
+        end
+      end
+
+      def build_blob_specific_flags
+        %W[--repository-access-level=#{container.repository_access_level}].tap do |c|
+          migration_done = migration_finished?(:add_hashed_root_namespace_id_to_commits)
+          c << "--hashed-root-namespace-id=#{project.namespace.hashed_root_namespace_id}" if migration_done
+          c << '--schema-version-commits=true' if migration_finished?(:add_schema_version_to_commits)
+          c << "--archived=#{project.archived}" if migration_finished?(:add_archived_to_commits) &&
+            migration_finished?(:add_archived_to_main_index)
+        end
       end
 
       def build_aws_credentials_env(vars)
