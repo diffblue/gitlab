@@ -24,9 +24,5 @@ module EE
 
       ::Gitlab::Auth::GroupSaml::SsoEnforcer.access_restricted_groups(groups, user: current_user)
     end
-
-    def diff_llm_summary(todo)
-      todo.target.latest_merge_request_diff&.merge_request_diff_llm_summary
-    end
   end
 end

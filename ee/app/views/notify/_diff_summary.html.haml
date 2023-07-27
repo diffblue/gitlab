@@ -1,5 +1,5 @@
 - if summarize_llm_enabled?(@merge_request.project, @recipient)
-  - diff_llm_summary = @merge_request.latest_merge_request_diff&.merge_request_diff_llm_summary
+  - diff_llm_summary = diff_llm_summary(@merge_request)
   - if diff_llm_summary.present?
     .md{ style: 'border-bottom:1px solid #ededed; padding-bottom: 1em; padding-top: 1em;' }
       %h4= _('Summary')

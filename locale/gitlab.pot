@@ -48908,6 +48908,9 @@ msgstr ""
 msgid "TotalRefCountIndicator|1000+"
 msgstr ""
 
+msgid "Trace Details"
+msgstr ""
+
 msgid "Traces"
 msgstr ""
 
