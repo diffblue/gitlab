@@ -115,8 +115,11 @@ export function removeAuditEventStreamingHeader({ store, fullPath, destinationId
   store.writeFragment({ ...destinationIdRecord, data: destination });
 }
 
-export function updateEventTypeFilters({ store, destinationId, filters }) {
-  const destinationIdRecord = makeDestinationIdRecord(store, destinationId);
+export function updateEventTypeFilters({ store, isInstance, destinationId, filters }) {
+  const destinationIdRecord = isInstance
+    ? makeInstanceDestinationIdRecord(store, destinationId)
+    : makeDestinationIdRecord(store, destinationId);
+
   const sourceDestination = store.readFragment(destinationIdRecord);
 
   if (!sourceDestination) {
@@ -129,8 +132,11 @@ export function updateEventTypeFilters({ store, destinationId, filters }) {
   store.writeFragment({ ...destinationIdRecord, data: destination });
 }
 
-export function removeEventTypeFilters({ store, destinationId, filtersToRemove = [] }) {
-  const destinationIdRecord = makeDestinationIdRecord(store, destinationId);
+export function removeEventTypeFilters({ store, isInstance, destinationId, filtersToRemove = [] }) {
+  const destinationIdRecord = isInstance
+    ? makeInstanceDestinationIdRecord(store, destinationId)
+    : makeDestinationIdRecord(store, destinationId);
+
   const sourceDestination = store.readFragment(destinationIdRecord);
 
   if (!sourceDestination) {

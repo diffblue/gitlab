@@ -26,6 +26,8 @@ import deleteInstanceExternalDestination from 'ee/audit_events/graphql/mutations
 import externalInstanceAuditEventDestinationHeaderCreate from 'ee/audit_events/graphql/mutations/create_instance_external_destination_header.mutation.graphql';
 import externalInstanceAuditEventDestinationHeaderUpdate from 'ee/audit_events/graphql/mutations/update_instance_external_destination_header.mutation.graphql';
 import externalInstanceAuditEventDestinationHeaderDelete from 'ee/audit_events/graphql/mutations/delete_instance_external_destination_header.mutation.graphql';
+import deleteInstanceExternalDestinationFilters from 'ee/audit_events/graphql/mutations/delete_instance_external_destination_filters.mutation.graphql';
+import addInstanceExternalDestinationFilters from 'ee/audit_events/graphql/mutations/add_instance_external_destination_filters.mutation.graphql';
 import StreamDestinationEditor from 'ee/audit_events/components/stream/stream_destination_editor.vue';
 import StreamFilters from 'ee/audit_events/components/stream/stream_filters.vue';
 import StreamDeleteModal from 'ee/audit_events/components/stream/stream_delete_modal.vue';
@@ -55,6 +57,8 @@ import {
   destinationInstanceHeaderCreateMutationPopulator,
   destinationInstanceHeaderUpdateMutationPopulator,
   destinationInstanceHeaderDeleteMutationPopulator,
+  destinationInstanceFilterRemoveMutationPopulator,
+  destinationInstanceFilterUpdateMutationPopulator,
   destinationInstanceUpdateMutationPopulator,
 } from '../../mock_data';
 
@@ -555,19 +559,16 @@ describe('StreamDestinationEditor', () => {
           expect(headerDeleteSpy).toHaveBeenCalledTimes(1);
           expect(headerDeleteSpy).toHaveBeenCalledWith({
             headerId: deletedHeader.id,
-            isInstance: false,
           });
           expect(headerUpdateSpy).toHaveBeenCalledTimes(1);
           expect(headerUpdateSpy).toHaveBeenCalledWith({
             headerId: updatedHeader.id,
-            isInstance: false,
             key: updatedHeader.key,
             value: updatedHeader.newValue,
           });
           expect(headerCreateSpy).toHaveBeenCalledTimes(1);
           expect(headerCreateSpy).toHaveBeenCalledWith({
             destinationId: item.id,
-            isInstance: false,
             key: addedHeader.key,
             value: addedHeader.value,
           });
@@ -1202,22 +1203,20 @@ describe('StreamDestinationEditor', () => {
           expect(headerDeleteSpy).toHaveBeenCalledTimes(1);
           expect(headerDeleteSpy).toHaveBeenCalledWith({
             headerId: deletedHeader.id,
-            isInstance: true,
           });
           expect(headerUpdateSpy).toHaveBeenCalledTimes(1);
           expect(headerUpdateSpy).toHaveBeenCalledWith({
             headerId: updatedHeader.id,
-            isInstance: true,
             key: updatedHeader.key,
             value: updatedHeader.newValue,
           });
           expect(headerCreateSpy).toHaveBeenCalledTimes(1);
           expect(headerCreateSpy).toHaveBeenCalledWith({
             destinationId: item.id,
-            isInstance: true,
             key: addedHeader.key,
             value: addedHeader.value,
           });
+
           expect(findAlertErrors()).toHaveLength(0);
           expect(wrapper.emitted('error')).toBeUndefined();
           expect(wrapper.emitted('updated')).toBeDefined();
@@ -1320,6 +1319,131 @@ describe('StreamDestinationEditor', () => {
             captureError: true,
             error: errorMsg,
           });
+        });
+      });
+    });
+
+    describe('destination event filters', () => {
+      describe('renders', () => {
+        beforeEach(() => {
+          createComponent({
+            mountFn: mountExtended,
+            props: { item: mockInstanceExternalDestinations[1] },
+          });
+        });
+
+        it('displays the correct text', () => {
+          expect(findFilteringHeader().text()).toBe(ADD_STREAM_EDITOR_I18N.HEADER_FILTERING);
+          expect(findEventTypeFilteringHeader().text()).toBe(
+            ADD_STREAM_EDITOR_I18N.FILTER_BY_AUDIT_EVENT_TYPE,
+          );
+        });
+
+        it('passes selected audit event types to StreamFilters', () => {
+          expect(findFilters().props()).toStrictEqual({
+            value: mockInstanceExternalDestinations[1].eventTypeFilters,
+          });
+        });
+      });
+
+      describe('on change filters', () => {
+        it('removes the deselected filters from a destination', async () => {
+          const destinationUpdateSpy = jest
+            .fn()
+            .mockResolvedValue(destinationInstanceUpdateMutationPopulator());
+
+          const filterRemoveSpy = jest
+            .fn()
+            .mockResolvedValue(destinationInstanceFilterRemoveMutationPopulator());
+
+          createComponent({
+            mountFn: mountExtended,
+            props: { item: mockInstanceExternalDestinations[1] },
+            apolloHandlers: [
+              [instanceExternalAuditEventDestinationUpdate, destinationUpdateSpy],
+              [deleteInstanceExternalDestinationFilters, filterRemoveSpy],
+            ],
+          });
+
+          await findFilters().vm.$emit('input', mockRemoveFilterSelect);
+
+          expect(findAddStreamBtn().props('disabled')).toBe(false);
+
+          findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+          await waitForPromises();
+
+          expect(filterRemoveSpy).toHaveBeenCalledWith({
+            destinationId: mockInstanceExternalDestinations[1].id,
+            eventTypeFilters: mockRemoveFilterRemaining,
+          });
+
+          expect(findAlertErrors()).toHaveLength(0);
+          expect(wrapper.emitted('error')).toBeUndefined();
+          expect(wrapper.emitted('updated')).toBeDefined();
+        });
+
+        it('adds the selected filters for a destination', async () => {
+          const destinationUpdateSpy = jest
+            .fn()
+            .mockResolvedValue(destinationInstanceUpdateMutationPopulator());
+
+          const filterAddSpy = jest
+            .fn()
+            .mockResolvedValue(destinationInstanceFilterUpdateMutationPopulator());
+
+          createComponent({
+            mountFn: mountExtended,
+            props: { item: mockInstanceExternalDestinations[1] },
+            apolloHandlers: [
+              [instanceExternalAuditEventDestinationUpdate, destinationUpdateSpy],
+              [addInstanceExternalDestinationFilters, filterAddSpy],
+            ],
+          });
+
+          await findFilters().vm.$emit('input', mockAddFilterSelect);
+
+          expect(findAddStreamBtn().props('disabled')).toBe(false);
+
+          findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+          await waitForPromises();
+
+          expect(filterAddSpy).toHaveBeenCalledWith({
+            destinationId: mockInstanceExternalDestinations[1].id,
+            eventTypeFilters: mockAddFilterRemaining,
+          });
+
+          expect(findAlertErrors()).toHaveLength(0);
+          expect(wrapper.emitted('error')).toBeUndefined();
+          expect(wrapper.emitted('updated')).toBeDefined();
+        });
+
+        it('should not emit updated event and reports error when network error occurs while saving', async () => {
+          const sentryError = new Error('Network error');
+          const sentryCaptureExceptionSpy = jest.spyOn(Sentry, 'captureException');
+          const destinationUpdateSpy = jest
+            .fn()
+            .mockResolvedValue(destinationInstanceUpdateMutationPopulator());
+          const filterRemoveSpy = jest.fn().mockRejectedValue(sentryError);
+
+          createComponent({
+            mountFn: mountExtended,
+            props: { item: mockInstanceExternalDestinations[1] },
+            apolloHandlers: [
+              [instanceExternalAuditEventDestinationUpdate, destinationUpdateSpy],
+              [deleteInstanceExternalDestinationFilters, filterRemoveSpy],
+            ],
+          });
+
+          findFilters().vm.$emit('input', mockRemoveFilterSelect);
+
+          findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+          await waitForPromises();
+
+          expect(findAlertErrors()).toHaveLength(1);
+          expect(findAlertErrors().at(0).text()).toBe(AUDIT_STREAMS_NETWORK_ERRORS.UPDATING_ERROR);
+          expect(sentryCaptureExceptionSpy).toHaveBeenCalledWith(sentryError);
+          expect(wrapper.emitted('error')).toBeDefined();
+          expect(wrapper.emitted('updated')).toBeUndefined();
         });
       });
     });

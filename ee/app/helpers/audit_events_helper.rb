@@ -48,7 +48,7 @@ module AuditEventsHelper
     can?(current_user, :admin_external_audit_events, group)
   end
 
-  def audit_log_app_data(is_last_page, events)
+  def audit_log_app_data(is_last_page, events, audit_event_definitions)
     {
       form_path: admin_audit_logs_path,
       events: events.to_json,
@@ -61,7 +61,8 @@ module AuditEventsHelper
       data.merge!({
         empty_state_svg_path: image_path('illustrations/cloud.svg'),
         group_path: 'instance',
-        show_streams: 'true'
+        show_streams: 'true',
+        audit_event_definitions: audit_event_definitions.to_json
       })
     end
   end

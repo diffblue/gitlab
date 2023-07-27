@@ -369,4 +369,63 @@ describe('Audit Events GraphQL cache updates', () => {
       ).not.toThrow();
     });
   });
+
+  describe('updateInstanceEventTypeFilters', () => {
+    it('updates event type filters on specified destination', () => {
+      const [, secondDestination] = getInstanceDestinations();
+
+      const newFilters = ['add_gpg_key', 'user_created'];
+
+      updateEventTypeFilters({
+        store: cache,
+        isInstance: true,
+        destinationId: secondDestination.id,
+        filters: newFilters,
+      });
+
+      const [, secondDestinationAfterUpdate] = getInstanceDestinations();
+
+      expect(secondDestinationAfterUpdate.eventTypeFilters).toStrictEqual(newFilters);
+    });
+
+    it('does not throw on non-existing destination', () => {
+      expect(() =>
+        updateEventTypeFilters({
+          store: cache,
+          isInstance: true,
+          destinationId: 'non-existing-id',
+          filters: [],
+        }),
+      ).not.toThrow();
+    });
+  });
+
+  describe('removeInstanceEventTypeFilters', () => {
+    it('removes event type filters on specified destination', () => {
+      const [firstDestination] = getInstanceDestinations();
+      const [firstFilter, ...restFilters] = firstDestination.eventTypeFilters;
+
+      removeEventTypeFilters({
+        store: cache,
+        fullPath: 'instance',
+        destinationId: firstDestination.id,
+        filtersToRemove: [firstFilter],
+      });
+
+      const [firstDestinationAfterUpdate] = getInstanceDestinations();
+
+      expect(firstDestinationAfterUpdate.eventTypeFilters).toStrictEqual(restFilters);
+    });
+
+    it('does not throw on non-existing destination', () => {
+      expect(() =>
+        removeEventTypeFilters({
+          store: cache,
+          fullPath: 'instance',
+          destinationId: 'non-existing-id',
+          filtersToRemove: [],
+        }),
+      ).not.toThrow();
+    });
+  });
 });
