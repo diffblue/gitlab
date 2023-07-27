@@ -1,19 +1,20 @@
-= gitlab_ui_form_for [@group, @protected_environment], html: { class: 'new-protected-environment js-new-protected-environment' } do |f|
-  = render Pajamas::CardComponent.new do |c|
-    - c.with_header do
-      = s_('ProtectedEnvironment|Protect an environment')
-    - c.with_body do
-      = form_errors(@protected_environment)
-      .form-group
-        = f.label :name, s_('ProtectedEnvironment|Environment'), class: 'label-bold gl-display-block'
-        .dropdown.b-dropdown.gl-dropdown.gl-min-w-20.btn-group
-          = f.select :name, @tiers.keys.map { |tier| [tier.to_s, tier] }, {}, class: 'dropdown-menu-toggle select-control'
-          = sprite_icon('chevron-down', css_class: 'gl-absolute gl-top-3 gl-right-3 gl-text-gray-500')
+.gl-new-card-add-form.gl-m-3.gl-mb-4.gl-display-none.js-toggle-content
+  %h4.gl-mt-0
+    = s_('ProtectedEnvironment|Protect an environment')
+  = gitlab_ui_form_for [@group, @protected_environment], html: { class: 'new-protected-environment js-new-protected-environment' } do |f|
+    = form_errors(@protected_environment)
+    .form-group
+      = f.label :name, s_('ProtectedEnvironment|Environment'), class: 'label-bold gl-display-block'
+      .dropdown.b-dropdown.gl-dropdown.gl-min-w-20.btn-group
+        = f.select :name, @tiers.keys.map { |tier| [tier.to_s, tier] }, {}, class: 'dropdown-menu-toggle select-control'
+        = sprite_icon('chevron-down', css_class: 'gl-absolute gl-top-3 gl-right-3 gl-text-gray-500')
 
-      .form-group
-        %label#allowed-users-label.label-bold.gl-display-block
-          = s_('ProtectedEnvironment|Allowed to deploy')
-        .js-allowed-to-deploy-dropdown
+    .form-group
+      %label#allowed-users-label.label-bold.gl-display-block
+        = s_('ProtectedEnvironment|Allowed to deploy')
+      .js-allowed-to-deploy-dropdown
 
-    - c.with_footer do
+    .gl-mt-3
       = f.submit s_('ProtectedEnvironment|Protect'), pajamas_button: true, disabled: true
+      = render Pajamas::ButtonComponent.new(button_options: { type: 'reset', class: 'gl-ml-2 js-toggle-button' }) do
+        = _('Cancel')
