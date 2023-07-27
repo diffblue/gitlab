@@ -15,6 +15,7 @@ module QA
         EE::Resource::License.fabricate! do |resource|
           resource.license = QA::Runtime::Env.ee_license
         end
+        QA::Page::Main::Menu.perform(&:sign_out_if_signed_in)
       end
     end
   end
