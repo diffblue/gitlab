@@ -24910,7 +24910,8 @@ CREATE TABLE x509_certificates (
     email character varying(255) NOT NULL,
     serial_number bytea NOT NULL,
     certificate_status smallint DEFAULT 0 NOT NULL,
-    x509_issuer_id bigint NOT NULL
+    x509_issuer_id bigint NOT NULL,
+    emails character varying[] DEFAULT '{}'::character varying[] NOT NULL
 );
 
 CREATE SEQUENCE x509_certificates_id_seq
