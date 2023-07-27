@@ -141,8 +141,12 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
           select_stage("Issue")
         end
 
-        it 'displays the stage table' do
-          expect(page).to have_selector('[data-testid="vsa-stage-table"]')
+        it 'displays an empty state and hide stage table' do
+          expect(page).to have_text(
+            _('No data available ' \
+              'Try adjusting the filters, or creating an issue or merge request to collect more data')
+          )
+          expect(page).not_to have_selector('[data-testid="vsa-stage-table"]')
         end
       end
 
@@ -209,10 +213,10 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
         end
 
         it 'displays an empty state' do
-          element = page.find('.empty-state')
-
-          expect(element).to have_content(_("There are 0 items to show in this stage, for these filters, within this time range."))
-          expect(element.find('.svg-content img')['src']).to have_content('illustrations/analytics/cycle-analytics-empty-chart')
+          expect(page).to have_text(
+            _('No data available ' \
+              'Try adjusting the filters, or creating an issue or merge request to collect more data')
+          )
         end
       end
     end
@@ -393,10 +397,16 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
       it 'will filter the data' do
         duration_overview_chart = page.find('[data-testid="vsa-duration-overview-chart"]')
         expect(duration_overview_chart).not_to have_text(s_('CycleAnalytics|Average time to completion (days)'))
-        expect(duration_overview_chart).to have_text(s_("CycleAnalytics|There is no data for 'Total time' available. Adjust the current filters."))
+        expect(duration_overview_chart).to have_text(
+          _('No data available ' \
+            'Try adjusting the filters, or creating an issue or merge request to collect more data')
+        )
 
         tasks_by_type_chart_content = page.find('.js-tasks-by-type-chart')
-        expect(tasks_by_type_chart_content).to have_text(_("There is no data available. Please change your selection."))
+        expect(tasks_by_type_chart_content).to have_text(
+          _('No data available ' \
+            'Try adjusting the filters, or creating an issue or merge request to collect more data')
+        )
       end
     end
   end

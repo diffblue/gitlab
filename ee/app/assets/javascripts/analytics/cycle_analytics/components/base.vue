@@ -96,6 +96,9 @@ export default {
     shouldRenderTasksByType() {
       return this.enableTasksByTypeChart && this.isOverviewStageSelected;
     },
+    shouldRenderStageTable() {
+      return !this.isOverviewStageSelected && this.selectedStageEvents.length;
+    },
     selectedStageReady() {
       return !this.hasNoAccessError && this.selectedStage;
     },
@@ -270,7 +273,7 @@ export default {
           <type-of-work-charts v-if="shouldRenderTasksByType" class="gl-mb-6" />
         </div>
         <stage-table
-          v-if="!isOverviewStageSelected"
+          v-if="shouldRenderStageTable"
           :is-loading="isLoading || isLoadingStage"
           :stage-events="selectedStageEvents"
           :selected-stage="selectedStage"
