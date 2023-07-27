@@ -146,26 +146,4 @@ RSpec.describe ::TodosHelper do
       helper.todo_groups_requiring_saml_reauth(todos)
     end
   end
-
-  describe '#diff_llm_summary' do
-    let_it_be(:merge_request) { create(:merge_request_with_diffs) }
-    let(:summary) { instance_double('MergeRequestDiff', merge_request_diff_llm_summary: 'summary') }
-    let_it_be(:todo) do
-      create(:todo, project: merge_request.project, target: merge_request)
-    end
-
-    before do
-      allow(merge_request).to receive(:latest_merge_request_diff).and_return(summary)
-    end
-
-    context 'when merge request has summary' do
-      it { expect(helper.diff_llm_summary(todo)).to eq('summary') }
-    end
-
-    context 'when merge request has does not have summary' do
-      let(:summary) { nil }
-
-      it { expect(helper.diff_llm_summary(todo)).to eq(nil) }
-    end
-  end
 end

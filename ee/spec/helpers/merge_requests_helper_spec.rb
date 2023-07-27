@@ -89,4 +89,23 @@ RSpec.describe EE::MergeRequestsHelper, feature_category: :code_review_workflow 
       summarize_llm_enabled?(project, user)
     end
   end
+
+  describe '#diff_llm_summary' do
+    let(:merge_request) { instance_double('MergeRequest') }
+    let(:summary) { instance_double('MergeRequestDiff', merge_request_diff_llm_summary: 'summary') }
+
+    before do
+      allow(merge_request).to receive(:latest_merge_request_diff).and_return(summary)
+    end
+
+    context 'when merge request has summary' do
+      it { expect(helper.diff_llm_summary(merge_request)).to eq('summary') }
+    end
+
+    context 'when merge request has does not have summary' do
+      let(:summary) { nil }
+
+      it { expect(helper.diff_llm_summary(merge_request)).to eq(nil) }
+    end
+  end
 end
