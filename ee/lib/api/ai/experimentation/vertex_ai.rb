@@ -4,7 +4,7 @@ module API
   module Ai
     module Experimentation
       class VertexAi < ::API::Base
-        feature_category :not_owned # rubocop:todo Gitlab/AvoidFeatureCategoryNotOwned
+        feature_category :ai_abstraction_layer
         urgency :low
 
         before do

@@ -406,7 +406,7 @@ RSpec.describe ApplicationSetting do
       end
     end
 
-    describe 'when validating product analytics settings', feature_category: :product_analytics do
+    describe 'when validating product analytics settings', feature_category: :product_analytics_data_management do
       context 'when product analytics is enabled' do
         before do
           setting.product_analytics_enabled = true

@@ -5,7 +5,7 @@ module ProductAnalytics
     include ApplicationWorker
 
     data_consistency :sticky
-    feature_category :product_analytics
+    feature_category :product_analytics_data_management
     idempotent!
 
     def perform(project_id, newrev, user_id)

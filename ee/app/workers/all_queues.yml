@@ -1517,7 +1517,7 @@
   :tags: []
 - :name: llm_completion
   :worker_name: Llm::CompletionWorker
-  :feature_category: :team_planning
+  :feature_category: :ai_abstraction_layer
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
@@ -1643,7 +1643,7 @@
   :tags: []
 - :name: product_analytics_initialize_analytics
   :worker_name: ProductAnalytics::InitializeAnalyticsWorker
-  :feature_category: :product_analytics
+  :feature_category: :product_analytics_data_management
   :has_external_dependencies: true
   :urgency: :low
   :resource_boundary: :unknown
@@ -1652,7 +1652,7 @@
   :tags: []
 - :name: product_analytics_initialize_snowplow_product_analytics
   :worker_name: ProductAnalytics::InitializeSnowplowProductAnalyticsWorker
-  :feature_category: :product_analytics
+  :feature_category: :product_analytics_data_management
   :has_external_dependencies: true
   :urgency: :low
   :resource_boundary: :unknown
@@ -1661,7 +1661,7 @@
   :tags: []
 - :name: product_analytics_post_push
   :worker_name: ProductAnalytics::PostPushWorker
-  :feature_category: :product_analytics
+  :feature_category: :product_analytics_data_management
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analytics do
+RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analytics_visualization do
   let_it_be(:project, reload: true) do
     create(:project, :with_product_analytics_dashboard,
       project_setting: build(:project_setting, product_analytics_instrumentation_key: 'test')
