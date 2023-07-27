@@ -3,11 +3,9 @@ import { GlLineChart } from '@gitlab/ui/dist/charts';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
-import {
-  DURATION_STAGE_TIME_DESCRIPTION,
-  DURATION_STAGE_TIME_NO_DATA,
-} from 'ee/analytics/cycle_analytics/constants';
+import { DURATION_STAGE_TIME_DESCRIPTION } from 'ee/analytics/cycle_analytics/constants';
 import DurationChart from 'ee/analytics/cycle_analytics/components/duration_chart.vue';
+import NoDataAvailableState from 'ee/analytics/cycle_analytics/components/no_data_available_state.vue';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
 import {
   allowedStages as stages,
@@ -64,10 +62,10 @@ function createComponent({
 describe('DurationChart', () => {
   let wrapper;
 
-  const findContainer = (_wrapper) => _wrapper.find('[data-testid="vsa-duration-chart"]');
   const findChartDescription = (_wrapper) => _wrapper.findComponent(GlIcon);
   const findDurationChart = (_wrapper) => _wrapper.findComponent(GlLineChart);
   const findLoader = (_wrapper) => _wrapper.findComponent(ChartSkeletonLoader);
+  const findNoDataAvailableState = (_wrapper) => _wrapper.findComponent(NoDataAvailableState);
 
   describe('default', () => {
     const [selectedStage] = stages;
@@ -114,7 +112,7 @@ describe('DurationChart', () => {
       });
 
       it('renders the no data available message', () => {
-        expect(findContainer(wrapper).text()).toContain(DURATION_STAGE_TIME_NO_DATA);
+        expect(findNoDataAvailableState(wrapper).exists()).toBe(true);
       });
     });
   });

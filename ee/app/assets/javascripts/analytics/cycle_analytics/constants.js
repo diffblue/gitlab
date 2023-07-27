@@ -54,6 +54,10 @@ export const DURATION_CHART_Y_AXIS_TITLE = s__('CycleAnalytics|Average time to c
 export const DURATION_CHART_Y_AXIS_TOOLTIP_TITLE = s__('CycleAnalytics|Average time to completion');
 export const DURATION_CHART_TOOLTIP_NO_DATA = __('No data available');
 export const DURATION_TOTAL_TIME_LABEL = s__('CycleAnalytics|Total time');
+export const NO_DATA_AVAILABLE_TITLE = __('No data available');
+export const NO_DATA_AVAILABLE_DESCRIPTION = __(
+  'Try adjusting the filters, or creating an issue or merge request to collect more data',
+);
 export const DURATION_TOTAL_TIME_NO_DATA = s__(
   "CycleAnalytics|There is no data for 'Total time' available. Adjust the current filters.",
 );

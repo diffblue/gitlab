@@ -160,7 +160,10 @@ RSpec.describe 'Project > Value stream analytics', :js, feature_category: :value
           it 'renders empty state' do
             visit_custom_value_stream
 
-            expect(page).to have_content("There is no data for 'Total time' available. Adjust the current filters.")
+            expect(page).to have_content(
+              _('No data available ' \
+                'Try adjusting the filters, or creating an issue or merge request to collect more data')
+            )
           end
         end
 
@@ -176,7 +179,10 @@ RSpec.describe 'Project > Value stream analytics', :js, feature_category: :value
           end
 
           it 'displays data on chart' do
-            expect(page).not_to have_content("There is no data for 'Total time' available. Adjust the current filters.")
+            expect(page).not_to have_content(
+              _('No data available ' \
+                'Try adjusting the filters, or creating an issue or merge request to collect more data')
+            )
             page.within(duration_chart_selector) do
               expect(page).to have_content('Average time to completion (days)')
             end

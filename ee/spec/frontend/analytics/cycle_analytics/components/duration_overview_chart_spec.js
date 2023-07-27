@@ -4,10 +4,10 @@ import Vuex from 'vuex';
 import { GlAreaChart } from '@gitlab/ui/dist/charts';
 import { GlIcon } from '@gitlab/ui';
 import DurationOverviewChart from 'ee/analytics/cycle_analytics/components/duration_overview_chart.vue';
+import NoDataAvailableState from 'ee/analytics/cycle_analytics/components/no_data_available_state.vue';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
 import {
   DURATION_TOTAL_TIME_DESCRIPTION,
-  DURATION_TOTAL_TIME_NO_DATA,
   DURATION_OVERVIEW_CHART_NO_DATA_LEGEND_ITEM,
 } from 'ee/analytics/cycle_analytics/constants';
 import {
@@ -47,10 +47,10 @@ describe('DurationOverviewChart', () => {
   let wrapper;
   let mockEChartInstance;
 
-  const findContainer = () => wrapper.find('[data-testid="vsa-duration-overview-chart"]');
   const findChartDescription = () => wrapper.findComponent(GlIcon);
   const findDurationOverviewChart = () => wrapper.findComponent(GlAreaChart);
   const findLoader = () => wrapper.findComponent(ChartSkeletonLoader);
+  const findNoDataAvailableState = (_wrapper) => _wrapper.findComponent(NoDataAvailableState);
 
   const emitChartCreated = () =>
     findDurationOverviewChart().vm.$emit('created', mockEChartInstance);
@@ -130,7 +130,7 @@ describe('DurationOverviewChart', () => {
     });
 
     it('renders the no data available message', () => {
-      expect(findContainer().text()).toContain(DURATION_TOTAL_TIME_NO_DATA);
+      expect(findNoDataAvailableState(wrapper).exists()).toBe(true);
     });
   });
 
