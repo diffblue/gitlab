@@ -25,6 +25,13 @@ module API
           type: String,
           desc: 'The search criteria for the title of the iteration',
           documentation: { example: 'version' }
+        optional :in,
+          type: Array[String], values: %w[title cadence_title],
+          default: ['title'],
+          desc: 'Fields in which fuzzy search should be performed with the query given in the argument `search`. ' \
+                'The available options are `title` and `cadence_title`. ' \
+                'Defaults to `[title]`',
+          documentation: { example: '[title, cadence_title]' }
         optional :include_ancestors,
           type: Grape::API::Boolean,
           default: true,
@@ -66,7 +73,7 @@ module API
       def search_params
         {
           search: params[:search],
-          in: [::Resolvers::IterationsResolver::DEFAULT_IN_FIELD]
+          in: params[:in].map(&:to_sym)
         }
       end
     end
