@@ -6,6 +6,12 @@ RSpec.describe Geo::GroupWikiRepositoryReplicator, feature_category: :geo_replic
   let(:model_record) { build(:group_wiki_repository, group: create(:group)) }
 
   include_examples 'a repository replicator'
+  include_examples 'a verifiable replicator' do
+    def handle_model_record_before_example
+      model_record.save!
+      model_record.repository.create_if_not_exists
+    end
+  end
 
   describe '.no_repo_message' do
     it 'returns the proper error message for group-level wikis' do

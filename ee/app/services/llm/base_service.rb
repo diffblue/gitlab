@@ -49,7 +49,8 @@ module Llm
         resource_id: resource&.id,
         resource_class: resource&.class&.name,
         request_id: request_id,
-        action_name: action_name
+        action_name: action_name,
+        options: options
       )
 
       if options[:sync] == true

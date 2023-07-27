@@ -27,7 +27,7 @@ module Llm
     def execute
       return error('Unknown method') unless METHODS.key?(method)
 
-      result = METHODS[method].new(user, resource, options).execute
+      result = METHODS[method].new(user, resource, options.merge(skip_cache: true)).execute
 
       track_snowplow_event(result)
       return success(result.payload) if result.success?

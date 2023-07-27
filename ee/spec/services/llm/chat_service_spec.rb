@@ -11,7 +11,7 @@ RSpec.describe Llm::ChatService, :saas, feature_category: :shared do
   let(:resource) { issue }
   let(:stage_check_available) { true }
   let(:content) { "Summarize issue" }
-  let(:options) { { content: content } }
+  let(:options) { { content: content, skip_cache: false } }
 
   subject { described_class.new(user, resource, options) }
 

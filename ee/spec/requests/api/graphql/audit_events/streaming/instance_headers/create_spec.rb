@@ -24,6 +24,10 @@ RSpec.describe 'Create an instance external audit event destination header', fea
 
   subject { post_graphql_mutation(mutation, current_user: current_user) }
 
+  before do
+    allow(Gitlab::Audit::Type::Definition).to receive(:defined?).and_return(true)
+  end
+
   shared_examples 'a mutation that does not create a header' do
     it 'does not create a header' do
       expect { post_graphql_mutation(mutation, current_user: current_user) }

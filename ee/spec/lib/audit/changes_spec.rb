@@ -14,8 +14,8 @@ RSpec.describe Audit::Changes do
 
     before do
       stub_licensed_features(extended_audit_events: true)
-
       foo_instance.instance_variable_set(:@current_user, current_user)
+      allow(Gitlab::Audit::Type::Definition).to receive(:defined?).and_return(true)
     end
 
     describe 'non audit changes' do

@@ -9,7 +9,7 @@ RSpec.describe Llm::ExecuteMethodService, feature_category: :no_category do # ru
   let(:method) { :summarize_comments }
   let(:resource) { nil }
   let(:params) { {} }
-  let(:options) { { request_id: 'uuid' }.merge(params) }
+  let(:options) { { request_id: 'uuid', skip_cache: true }.merge(params) }
 
   subject { described_class.new(user, resource, method, options).execute }
 

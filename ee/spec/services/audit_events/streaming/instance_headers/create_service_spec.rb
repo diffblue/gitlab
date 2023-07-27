@@ -16,6 +16,10 @@ RSpec.describe AuditEvents::Streaming::InstanceHeaders::CreateService, feature_c
   end
 
   describe '#execute' do
+    before do
+      allow(Gitlab::Audit::Type::Definition).to receive(:defined?).with(event_type).and_return(true)
+    end
+
     subject(:response) { service.execute }
 
     it_behaves_like 'header creation validation errors'
