@@ -24535,6 +24535,7 @@ CREATE TABLE vulnerability_reads (
     casted_cluster_agent_id bigint,
     namespace_id bigint,
     dismissal_reason smallint,
+    has_merge_request boolean DEFAULT false,
     CONSTRAINT check_380451bdbe CHECK ((char_length(location_image) <= 2048)),
     CONSTRAINT check_a105eb825a CHECK ((char_length(cluster_agent_id) <= 10))
 );
