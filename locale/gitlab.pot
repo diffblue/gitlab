@@ -51542,6 +51542,9 @@ msgstr ""
 msgid "Vulnerability|Project:"
 msgstr ""
 
+msgid "Vulnerability|Providing the source code improves the response quality. If security is a concern, you can send basic vulnerability info for a generic example."
+msgstr ""
+
 msgid "Vulnerability|Remove identifier row"
 msgstr ""
 
@@ -51567,6 +51570,12 @@ msgid "Vulnerability|Security Audit"
 msgstr ""
 
 msgid "Vulnerability|Select a severity"
+msgstr ""
+
+msgid "Vulnerability|Send code with prompt"
+msgstr ""
+
+msgid "Vulnerability|Sending code to AI"
 msgstr ""
 
 msgid "Vulnerability|Sent request:"
