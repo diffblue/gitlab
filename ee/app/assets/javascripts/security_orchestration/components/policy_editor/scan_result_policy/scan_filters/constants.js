@@ -49,6 +49,8 @@ export const AGE_INTERVALS = [
   { value: 'year', text: s__('ApprovalRule||year(s)') },
 ];
 
+export const VULNERABILITY_AGE_ALLOWED_KEYS = ['value', 'interval', 'operator'];
+
 export const FILTERS_STATUS_INDEX = FILTERS.findIndex(({ value }) => value === STATUS);
 
 export const NEWLY_DETECTED = 'newly_detected';

@@ -111,10 +111,10 @@ export default {
     },
     vulnerabilityAge: {
       get() {
-        return this.initRule.vulnerability_age || {};
+        return this.initRule.vulnerability_age;
       },
       set(value) {
-        if (!Object.keys(value).length) {
+        if (!value) {
           this.removeFilterFromRule('vulnerability_age');
         } else {
           this.triggerChanged({ vulnerability_age: value });
@@ -125,9 +125,7 @@ export default {
       return this.isFilterSelected(this.$options.SEVERITY) || this.severityLevelsToAdd.length > 0;
     },
     isAgeFilterSelected() {
-      return (
-        this.isFilterSelected(this.$options.AGE) || Object.keys(this.vulnerabilityAge).length > 0
-      );
+      return this.isFilterSelected(this.$options.AGE) || this.vulnerabilityAge;
     },
     isStatusFilterSelected() {
       return (
@@ -179,7 +177,7 @@ export default {
     },
     removeAgeFilter() {
       this.filters[AGE] = null;
-      this.vulnerabilityAge = {};
+      this.vulnerabilityAge = null;
     },
     removeStatusFilter(filter) {
       this.filters[filter] = null;
@@ -201,7 +199,7 @@ export default {
     },
     handleVulnerabilityAgeChanges(ageValues) {
       if (ageValues.operator === ANY_OPERATOR) {
-        this.vulnerabilityAge = {};
+        this.vulnerabilityAge = null;
         return;
       }
       this.vulnerabilityAge = { ...this.vulnerabilityAge, ...ageValues };

@@ -4,6 +4,7 @@ import { s__ } from '~/locale';
 import BaseLayoutComponent from '../base_layout/base_layout_component.vue';
 import NumberRangeSelect from '../number_range_select.vue';
 import { ANY_OPERATOR, VULNERABILITY_AGE_OPERATORS } from '../../constants';
+import { enforceIntValue } from '../../utils';
 import { AGE, AGE_DAY, AGE_INTERVALS } from './constants';
 
 export default {
@@ -21,7 +22,7 @@ export default {
     selected: {
       type: Object,
       required: false,
-      default: () => ({}),
+      default: () => ({ operator: ANY_OPERATOR, value: 0, interval: AGE_DAY }),
     },
     showRemoveButton: {
       type: Boolean,
@@ -31,16 +32,10 @@ export default {
   },
   computed: {
     showInterval() {
-      return this.operator !== ANY_OPERATOR;
+      return this.selected.operator !== ANY_OPERATOR;
     },
     value() {
-      return this.selected.value || 0;
-    },
-    operator() {
-      return this.selected.operator || ANY_OPERATOR;
-    },
-    interval() {
-      return this.selected.interval || AGE_DAY;
+      return enforceIntValue(this.selected.value || 0);
     },
   },
   methods: {
@@ -49,9 +44,9 @@ export default {
     },
     emitChange(data) {
       this.$emit('input', {
-        operator: this.operator,
+        operator: this.selected.operator,
         value: this.value,
-        interval: this.interval,
+        interval: this.selected.interval,
         ...data,
       });
     },
@@ -75,14 +70,14 @@ export default {
         id="vulnerability-age-select"
         :value="value"
         :label="$options.i18n.headerText"
-        :selected="operator"
+        :selected="selected.operator"
         :operators="$options.VULNERABILITY_AGE_OPERATORS"
         @input="emitChange({ value: $event })"
         @operator-change="emitChange({ operator: $event })"
       />
       <gl-collapsible-listbox
         v-if="showInterval"
-        :selected="interval"
+        :selected="selected.interval"
         :header-text="$options.i18n.headerText"
         :items="$options.AGE_INTERVALS"
         @select="emitChange({ interval: $event })"
