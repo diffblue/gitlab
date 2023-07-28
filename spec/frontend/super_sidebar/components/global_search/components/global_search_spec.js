@@ -69,6 +69,7 @@ describe('GlobalSearchModal', () => {
     mockGetters = defaultMockGetters,
     stubs,
     glFeatures = { commandPalette: false },
+    ...mountOptions
   } = {}) => {
     const store = new Vuex.Store({
       state: {
@@ -88,6 +89,7 @@ describe('GlobalSearchModal', () => {
       store,
       stubs,
       provide: { glFeatures },
+      ...mountOptions,
     });
   };
 
@@ -412,6 +414,102 @@ describe('GlobalSearchModal', () => {
         findGlobalSearchModal().vm.$emit('hide');
         expect(wrapper.emitted('hidden')).toHaveLength(1);
         expect(actionSpies.setSearch).toHaveBeenCalledWith(expect.any(Object), '');
+      });
+    });
+  });
+
+  describe('Navigating results', () => {
+    const findSearchInput = () => wrapper.findByRole('searchbox');
+    const triggerKeydownEvent = (target, code) => {
+      const event = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, code });
+      target.dispatchEvent(event);
+      return event;
+    };
+
+    beforeEach(() => {
+      createComponent({
+        stubs: {
+          GlSearchBoxByType: {
+            inheritAttrs: false,
+            template: '<div><input v-bind="$attrs" v-on="$listeners"></div>',
+          },
+          GlobalSearchDefaultItems: {
+            template: `
+              <ul>
+                <li
+                  v-for="n in 5"
+                  class="gl-new-dropdown-item"
+                  tabindex="0"
+                  :data-testid="'test-result-' + n"
+                >Result {{ n }}</li>
+              </ul>`,
+          },
+        },
+        attachTo: document.body,
+      });
+    });
+
+    describe('when the search input has focus', () => {
+      beforeEach(() => {
+        findSearchInput().element.focus();
+      });
+
+      it('Home key focuses first item', () => {
+        const event = triggerKeydownEvent(findSearchInput().element, 'Home');
+        expect(document.activeElement).toBe(wrapper.findByTestId('test-result-1').element);
+        expect(event.defaultPrevented).toBe(true);
+      });
+
+      it('End key focuses last item', () => {
+        const event = triggerKeydownEvent(findSearchInput().element, 'End');
+        expect(document.activeElement).toBe(wrapper.findByTestId('test-result-5').element);
+        expect(event.defaultPrevented).toBe(true);
+      });
+
+      it('ArrowUp keeps focus on input', () => {
+        const event = triggerKeydownEvent(findSearchInput().element, 'ArrowUp');
+        expect(document.activeElement).toBe(findSearchInput().element);
+        expect(event.defaultPrevented).toBe(false);
+      });
+
+      it('ArrowDown focuses the first item', () => {
+        const event = triggerKeydownEvent(findSearchInput().element, 'ArrowDown');
+        expect(document.activeElement).toBe(wrapper.findByTestId('test-result-1').element);
+        expect(event.defaultPrevented).toBe(true);
+      });
+    });
+
+    describe('when search result item has focus', () => {
+      beforeEach(() => {
+        wrapper.findByTestId('test-result-2').element.focus();
+      });
+
+      it('Home key focuses first item', () => {
+        const event = triggerKeydownEvent(document.activeElement, 'Home');
+        expect(document.activeElement).toBe(wrapper.findByTestId('test-result-1').element);
+        expect(event.defaultPrevented).toBe(true);
+      });
+
+      it('End key focuses last item', () => {
+        const event = triggerKeydownEvent(document.activeElement, 'End');
+        expect(document.activeElement).toBe(wrapper.findByTestId('test-result-5').element);
+        expect(event.defaultPrevented).toBe(true);
+      });
+
+      it('ArrowUp focuses previous item if any, else input', () => {
+        let event = triggerKeydownEvent(document.activeElement, 'ArrowUp');
+        expect(document.activeElement).toBe(wrapper.findByTestId('test-result-1').element);
+        expect(event.defaultPrevented).toBe(true);
+
+        event = triggerKeydownEvent(document.activeElement, 'ArrowUp');
+        expect(document.activeElement).toBe(findSearchInput().element);
+        expect(event.defaultPrevented).toBe(false);
+      });
+
+      it('ArrowDown focuses next item', () => {
+        const event = triggerKeydownEvent(document.activeElement, 'ArrowDown');
+        expect(document.activeElement).toBe(wrapper.findByTestId('test-result-3').element);
+        expect(event.defaultPrevented).toBe(true);
       });
     });
   });
