@@ -128,6 +128,7 @@ describe('DevopsAdoptionApp', () => {
     });
   }
 
+  const findAlert = () => wrapper.findComponent(GlAlert);
   const findDevopsScoreTab = () => wrapper.findByTestId('devops-score-tab');
   const findOverviewTab = () => wrapper.findByTestId('devops-overview-tab');
 
@@ -170,7 +171,7 @@ describe('DevopsAdoptionApp', () => {
       });
 
       it('displays the error message and calls Sentry', () => {
-        const alert = wrapper.findComponent(GlAlert);
+        const alert = findAlert();
         expect(alert.exists()).toBe(true);
         expect(alert.text()).toBe(I18N_GROUPS_QUERY_ERROR);
         expect(Sentry.captureException.mock.calls[0][0].networkError).toBe(NETWORK_ERROR);
@@ -290,7 +291,7 @@ describe('DevopsAdoptionApp', () => {
             });
 
             it('displays the error message', () => {
-              const alert = wrapper.findComponent(GlAlert);
+              const alert = findAlert();
               expect(alert.exists()).toBe(true);
               expect(alert.text()).toBe(I18N_ENABLE_NAMESPACE_MUTATION_ERROR);
             });
@@ -321,7 +322,7 @@ describe('DevopsAdoptionApp', () => {
       });
 
       it('displays the error message', () => {
-        const alert = wrapper.findComponent(GlAlert);
+        const alert = findAlert();
         expect(alert.exists()).toBe(true);
         expect(alert.text()).toBe(I18N_ENABLED_NAMESPACE_QUERY_ERROR);
       });
