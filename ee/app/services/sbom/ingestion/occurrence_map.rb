@@ -16,7 +16,7 @@ module Sbom
           component_id: component_id,
           component_version_id: component_version_id,
           component_type: report_component.component_type,
-          name: component_name,
+          name: report_component.name,
           purl_type: purl_type,
           source_id: source_id,
           source_type: report_source&.source_type,
@@ -36,10 +36,6 @@ module Sbom
 
       def purl_type
         report_component.purl&.type
-      end
-
-      def component_name
-        ::Sbom::PackageUrl::Normalizer.new(type: purl_type, text: report_component.name).normalize_name
       end
     end
   end

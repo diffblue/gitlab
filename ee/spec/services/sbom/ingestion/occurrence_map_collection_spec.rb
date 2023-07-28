@@ -37,15 +37,15 @@ RSpec.describe Sbom::Ingestion::OccurrenceMapCollection, feature_category: :depe
         purl: "pkg:deb/debian/liblz4-1@1.9.3-2?distro=debian-11.4" },
       { name: "libreadline8", version: "8.1-1", type: "library",
         purl: "pkg:deb/debian/libreadline8@8.1-1?distro=debian-11.4" },
-      { name: "readline-common", version: "8.1-1", type: "library", purl: nil },
-      { name: "readline-common", version: "8.1-1", type: "library",
-        purl: "pkg:npm/readline-common@8.1-1" },
       { name: "readline-common", version: nil, type: "library",
         purl: "pkg:deb/debian/readline-common@8.1-1?distro=debian-11.4" },
       { name: "readline-common", version: "8.1-1", type: "library",
         purl: "pkg:deb/debian/readline-common@8.1-1?distro=debian-11.4" },
       { name: "readline-common", version: "9.1-1", type: "library",
-        purl: "pkg:deb/debian/readline-common@8.1-1?distro=debian-11.4" }
+        purl: "pkg:deb/debian/readline-common@8.1-1?distro=debian-11.4" },
+      { name: "readline-common", version: "8.1-1", type: "library", purl: nil },
+      { name: "readline-common", version: "8.1-1", type: "library",
+        purl: "pkg:npm/readline-common@8.1-1" }
     ].map do |attributes|
       component = Gitlab::Ci::Reports::Sbom::Component.new(**attributes)
       an_occurrence_map(Sbom::Ingestion::OccurrenceMap.new(component, sbom_report.source))
