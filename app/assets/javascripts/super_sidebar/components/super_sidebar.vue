@@ -8,6 +8,7 @@ import { sidebarState } from '../constants';
 import { isCollapsed, toggleSuperSidebarCollapsed } from '../super_sidebar_collapsed_state_manager';
 import UserBar from './user_bar.vue';
 import SidebarPortalTarget from './sidebar_portal_target.vue';
+import ContextHeader from './context_header.vue';
 import ContextSwitcher from './context_switcher.vue';
 import HelpCenter from './help_center.vue';
 import SidebarMenu from './sidebar_menu.vue';
@@ -17,6 +18,7 @@ export default {
   components: {
     GlButton,
     UserBar,
+    ContextHeader,
     ContextSwitcher,
     HelpCenter,
     SidebarMenu,
@@ -58,7 +60,7 @@ export default {
   },
   watch: {
     'sidebarState.isCollapsed': function isCollapsedWatcher(newIsCollapsed) {
-      if (newIsCollapsed) {
+      if (newIsCollapsed && this.$refs['context-switcher']) {
         this.$refs['context-switcher'].close();
       }
     },
@@ -136,6 +138,7 @@ export default {
           data-testid="nav-container"
         >
           <context-switcher
+            v-if="sidebarData.is_logged_in"
             ref="context-switcher"
             :persistent-links="sidebarData.context_switcher_links"
             :username="sidebarData.username"
@@ -145,9 +148,11 @@ export default {
             :context-header="sidebarData.current_context_header"
             @toggle="onContextSwitcherToggled"
           />
+          <context-header v-else :context="sidebarData.current_context_header" />
           <sidebar-menu
             v-if="menuItems.length"
             :items="menuItems"
+            :is-logged-in="sidebarData.is_logged_in"
             :panel-type="sidebarData.panel_type"
             :pinned-item-ids="sidebarData.pinned_items"
             :update-pins-url="sidebarData.update_pins_url"
