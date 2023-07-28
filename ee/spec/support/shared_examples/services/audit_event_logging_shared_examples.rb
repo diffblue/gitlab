@@ -41,7 +41,7 @@ RSpec.shared_examples 'audit event logging' do
     it 'does not log audit event if operation fails' do
       fail_condition!
 
-      expect { operation }.not_to change(AuditEvent, :count)
+      expect { operation }.not_to change { AuditEvent.count }
     end
 
     it 'does not log audit event if operation results in no change' do
