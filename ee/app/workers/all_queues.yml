@@ -1526,7 +1526,7 @@
   :tags: []
 - :name: llm_tanuki_bot_update
   :worker_name: Llm::TanukiBot::UpdateWorker
-  :feature_category: :global_search
+  :feature_category: :ai_abstraction_layer
   :has_external_dependencies: false
   :urgency: :throttled
   :resource_boundary: :unknown
