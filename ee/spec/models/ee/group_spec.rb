@@ -251,6 +251,16 @@ RSpec.describe Group, feature_category: :groups_and_projects do
         expect(described_class.with_trial_started_on(ten_days_ago)).to match_array([group])
       end
     end
+
+    describe '.by_repository_storage' do
+      let_it_be(:group_with_wiki) { create(:group, :wiki_repo) }
+      let_it_be(:group_without_wiki) { create(:group) }
+
+      it 'filters group by repository storage name' do
+        groups = described_class.by_repository_storage(group_with_wiki.repository_storage)
+        expect(groups).to eq([group_with_wiki])
+      end
+    end
   end
 
   describe 'validations' do
