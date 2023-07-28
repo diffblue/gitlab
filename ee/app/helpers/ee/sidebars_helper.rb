@@ -32,6 +32,8 @@ module EE
 
     override :super_sidebar_context
     def super_sidebar_context(user, group:, project:, panel:, panel_type:)
+      return super unless user
+
       context = super
       root_namespace = (project || group)&.root_ancestor
 

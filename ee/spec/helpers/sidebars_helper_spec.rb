@@ -28,6 +28,10 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
       allow(user).to receive(:total_merge_requests_count).and_return(4)
     end
 
+    # Tests for logged-out sidebar context,
+    # because EE/CE should have the same attributes for logged-out users
+    it_behaves_like 'logged-out super-sidebar context'
+
     shared_examples 'pipeline minutes attributes' do
       it 'returns sidebar values from user', :use_clean_rails_memory_store_caching do
         expect(subject).to have_key(:pipeline_minutes)
