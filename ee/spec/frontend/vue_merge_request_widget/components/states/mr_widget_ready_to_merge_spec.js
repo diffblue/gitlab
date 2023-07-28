@@ -7,6 +7,7 @@ import { stubComponent } from 'helpers/stub_component';
 import ReadyToMerge from '~/vue_merge_request_widget/components/states/ready_to_merge.vue';
 import {
   MWPS_MERGE_STRATEGY,
+  MWCP_MERGE_STRATEGY,
   MT_MERGE_STRATEGY,
   MTWPS_MERGE_STRATEGY,
 } from '~/vue_merge_request_widget/constants';
@@ -129,6 +130,7 @@ describe('ReadyToMerge', () => {
       ${MT_MERGE_STRATEGY}    | ${false}         | ${false}
       ${MTWPS_MERGE_STRATEGY} | ${true}          | ${false}
       ${MWPS_MERGE_STRATEGY}  | ${true}          | ${false}
+      ${MWCP_MERGE_STRATEGY}  | ${true}          | ${false}
     `(
       'with merge stragtegy $mergeStrategy and pipeline failed status of $isPipelineFailed we should show the modal: $isVisible',
       async ({ mergeStrategy, isPipelineFailed, isVisible }) => {
@@ -208,6 +210,7 @@ describe('ReadyToMerge', () => {
       availableAutoMergeStrategies | mergeTrainsCount | expectedText
       ${[]}                        | ${0}             | ${'Merge'}
       ${[MWPS_MERGE_STRATEGY]}     | ${0}             | ${'Set to auto-merge'}
+      ${[MWCP_MERGE_STRATEGY]}     | ${0}             | ${'Set to auto-merge'}
       ${[MT_MERGE_STRATEGY]}       | ${0}             | ${'Merge'}
       ${[MT_MERGE_STRATEGY]}       | ${1}             | ${'Merge'}
       ${[MTWPS_MERGE_STRATEGY]}    | ${0}             | ${'Set to auto-merge'}
@@ -225,6 +228,20 @@ describe('ReadyToMerge', () => {
       createComponent({}, shallowMountExtended, { isMergingImmediately: true });
 
       expect(findMergeButton().text()).toBe('Merge in progress');
+    });
+  });
+
+  describe('merge button disabled state', () => {
+    it('should be disabled if preventMerge is set', () => {
+      createComponent({ preventMerge: true });
+
+      expect(findMergeButton().props('disabled')).toBe(true);
+    });
+
+    it('should not be disabled if preventMerge is false', () => {
+      createComponent({ preventMerge: false });
+
+      expect(findMergeButton().props('disabled')).toBe(false);
     });
   });
 });

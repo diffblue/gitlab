@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils';
 import MRWidgetAutoMergeEnabled from '~/vue_merge_request_widget/components/states/mr_widget_auto_merge_enabled.vue';
 import {
   MWPS_MERGE_STRATEGY,
+  MWCP_MERGE_STRATEGY,
   MT_MERGE_STRATEGY,
   MTWPS_MERGE_STRATEGY,
 } from '~/vue_merge_request_widget/constants';
@@ -105,6 +106,12 @@ describe('MRWidgetAutoMergeEnabled', () => {
         factory({ autoMergeStrategy: MWPS_MERGE_STRATEGY });
 
         expect(getStatusText()).toContain('to be merged automatically when the pipeline succeeds');
+      });
+
+      it('should return "to be merged automatically..." if MWCP is selected', () => {
+        factory({ autoMergeStrategy: MWCP_MERGE_STRATEGY });
+
+        expect(getStatusText()).toContain('to be merged automatically when all merge checks pass');
       });
     });
 

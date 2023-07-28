@@ -3,6 +3,7 @@ import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { __, s__ } from '~/locale';
 import {
+  MWCP_MERGE_STRATEGY,
   MTWPS_MERGE_STRATEGY,
   MT_MERGE_STRATEGY,
   PIPELINE_FAILED_STATE,
@@ -22,20 +23,20 @@ export const MERGE_DISABLED_DEPENDENCIES_TEXT = __(
 const MERGE_WHEN_PIPELINE_SUCCEEDS_HELP = helpPagePath(
   '/user/project/merge_requests/merge_when_pipeline_succeeds.html',
 );
+// TODO: Add documentation
+const MERGE_WHEN_CHECKS_PASS_HELP = helpPagePath(
+  '/user/project/merge_requests/merge_when_checks_pass.html',
+);
 const MERGE_TRAINS_HELP = helpPagePath('ci/pipelines/merge_trains.html');
 
 export default {
   computed: {
-    isApprovalNeeded() {
-      return this.mr.hasApprovalsAvailable ? !this.mr.isApproved : false;
-    },
     isMergeButtonDisabled() {
       const { commitMessage } = this;
       return Boolean(
         !commitMessage.length ||
           !this.shouldShowMergeControls ||
           this.isMakingRequest ||
-          this.isApprovalNeeded ||
           this.mr.preventMerge,
       );
     },
@@ -46,7 +47,7 @@ export default {
       );
     },
     mergeDisabledText() {
-      if (this.isApprovalNeeded) {
+      if (this.mr.isApprovalNeeded) {
         return MERGE_DISABLED_TEXT_UNAPPROVED;
       } else if (this.hasBlockingMergeRequests) {
         return MERGE_DISABLED_DEPENDENCIES_TEXT;
@@ -71,6 +72,9 @@ export default {
       if (this.preferredAutoMergeStrategy === MT_MERGE_STRATEGY) {
         return __('Add to merge train');
       }
+      if (this.preferredAutoMergeStrategy === MWCP_MERGE_STRATEGY) {
+        return __('Merge when all merge checks pass');
+      }
 
       return __('Merge when pipeline succeeds');
     },
@@ -85,6 +89,15 @@ export default {
             'A %{linkStart}merge train%{linkEnd} is a queued list of merge requests, each waiting to be merged into the target branch.',
           ),
           title: __('Merge trains'),
+        };
+      }
+      if (this.preferredAutoMergeStrategy === MWCP_MERGE_STRATEGY) {
+        return {
+          helpLink: MERGE_WHEN_CHECKS_PASS_HELP,
+          bodyText: __(
+            'When all the merge checks for this merge request pass, it will %{linkStart}automatically merge%{linkEnd}.',
+          ),
+          title: __('Merge when checks pass'),
         };
       }
 

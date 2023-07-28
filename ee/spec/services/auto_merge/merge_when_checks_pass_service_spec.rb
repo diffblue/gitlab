@@ -89,7 +89,7 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
     it_behaves_like 'auto_merge service #execute' do
       let(:auto_merge_strategy) { AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS }
       let(:expected_note) do
-        "enabled an automatic merge when all pipeline checks for #{pipeline.sha} pass"
+        "enabled an automatic merge when all merge checks for #{pipeline.sha} pass"
       end
     end
   end

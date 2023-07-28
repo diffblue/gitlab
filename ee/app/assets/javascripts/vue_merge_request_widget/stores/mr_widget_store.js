@@ -1,7 +1,7 @@
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { s__ } from '~/locale';
 import CEMergeRequestStore from '~/vue_merge_request_widget/stores/mr_widget_store';
-import { DETAILED_MERGE_STATUS } from '~/vue_merge_request_widget/constants';
+import { DETAILED_MERGE_STATUS, MWCP_MERGE_STRATEGY } from '~/vue_merge_request_widget/constants';
 
 export default class MergeRequestStore extends CEMergeRequestStore {
   constructor(data) {
@@ -87,13 +87,16 @@ export default class MergeRequestStore extends CEMergeRequestStore {
     super.setApprovals(data);
 
     this.approvalsLeft = data.approvalsLeft;
-    this.preventMerge = !this.isApproved;
 
     this.setState();
   }
 
   get hasMergeChecksFailed() {
-    if (this.hasApprovalsAvailable && this.approvalsLeft) {
+    if (
+      this.hasApprovalsAvailable &&
+      this.approvalsLeft &&
+      this.preferredAutoMergeStrategy !== MWCP_MERGE_STRATEGY
+    ) {
       return this.detailedMergeStatus === DETAILED_MERGE_STATUS.NOT_APPROVED;
     }
 
@@ -101,6 +104,10 @@ export default class MergeRequestStore extends CEMergeRequestStore {
     if (this.detailedMergeStatus === DETAILED_MERGE_STATUS.EXTERNAL_STATUS_CHECKS) return true;
 
     return super.hasMergeChecksFailed;
+  }
+
+  get preventMerge() {
+    return this.isApprovalNeeded && this.preferredAutoMergeStrategy !== MWCP_MERGE_STRATEGY;
   }
 
   initBrowserPerformanceReport(data) {
