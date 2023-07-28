@@ -40,6 +40,8 @@ module Gitlab
           eager_load(milestones, page, per_page, preload_method, project: [:route, :namespace])
         when 'notes'
           eager_load(notes, page, per_page, preload_method, project: [:route, :namespace])
+        when 'epics'
+          eager_load(epics, page, per_page, preload_method, nil)
         when 'blobs'
           blobs(page: page, per_page: per_page, preload_method: preload_method)
         when 'wiki_blobs'
@@ -88,6 +90,8 @@ module Gitlab
           elastic_search_limited_counter_with_delimiter(issues_count)
         when 'merge_requests'
           elastic_search_limited_counter_with_delimiter(merge_requests_count)
+        when 'epics'
+          elastic_search_limited_counter_with_delimiter(epics_count)
         when 'milestones'
           elastic_search_limited_counter_with_delimiter(milestones_count)
         when 'users'
@@ -157,6 +161,14 @@ module Gitlab
                                   else
                                     merge_requests(count_only: true).total_count
                                   end
+      end
+
+      def epics_count
+        @epics_count ||= if strong_memoized?(:epics)
+                           epics.total_count
+                         else
+                           epics(count_only: true).total_count
+                         end
       end
 
       def milestones_count
@@ -337,6 +349,10 @@ module Gitlab
 
       def notes(count_only: false)
         scope_results :notes, Note, count_only: count_only
+      end
+
+      def epics(count_only: false)
+        scope_results :epics, Epic, count_only: count_only
       end
 
       def users(page: 1, per_page: DEFAULT_PER_PAGE, count_only: false, preload_method: nil)

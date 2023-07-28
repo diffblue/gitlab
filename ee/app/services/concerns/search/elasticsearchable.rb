@@ -2,12 +2,11 @@
 
 module Search
   module Elasticsearchable
-    SCOPES_ONLY_BASIC_SEARCH = %w(epics).freeze
     SCOPES_ADVANCED_SEARCH_ALWAYS_ENABLED = %w[users].freeze
 
     def use_elasticsearch?
       return false if params[:basic_search]
-      return false if SCOPES_ONLY_BASIC_SEARCH.include?(params[:scope])
+      return false unless advanced_epic_search?
 
       ::Gitlab::CurrentSettings.search_using_elasticsearch?(scope: elasticsearchable_scope)
     end
@@ -18,6 +17,14 @@ module Search
 
     def global_elasticsearchable_scope?
       SCOPES_ADVANCED_SEARCH_ALWAYS_ENABLED.include?(params[:scope])
+    end
+
+    def advanced_epic_search?
+      return true unless params[:scope] == 'epics'
+      return false unless ::Feature.enabled?(:advanced_epic_search, current_user)
+
+      ::Elastic::DataMigrationService.migration_has_finished?(:create_epic_index) &&
+        ::Elastic::DataMigrationService.migration_has_finished?(:backfill_epics)
     end
   end
 end

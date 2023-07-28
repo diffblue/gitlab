@@ -14,6 +14,7 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
 
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+    stub_licensed_features(epics: true)
   end
 
   context 'issues search', :sidekiq_inline do
@@ -76,6 +77,117 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
     end
   end
 
+  context 'epics search', :sidekiq_inline do
+    let(:query) { 'foo' }
+    let(:scope) { 'epics' }
+
+    let_it_be(:public_parent_group) { create(:group, :public) }
+    let_it_be(:group) { create(:group, :private, parent: public_parent_group) }
+    let_it_be(:child_group) { create(:group, :private, parent: group) }
+    let_it_be(:child_of_child_group) { create(:group, :private, parent: child_group) }
+    let_it_be(:another_group) { create(:group, :private, parent: public_parent_group) }
+
+    let!(:parent_group_epic) { create(:epic, group: public_parent_group, title: query) }
+    let!(:group_epic) { create(:epic, group: group, title: query) }
+    let!(:child_group_epic) { create(:epic, group: child_group, title: query) }
+    let!(:confidential_child_group_epic) { create(:epic, :confidential, group: child_group, title: query) }
+    let!(:confidential_child_of_child_epic) { create(:epic, :confidential, group: child_of_child_group, title: query) }
+    let!(:another_group_epic) { create(:epic, group: another_group, title: query) }
+
+    before do
+      ensure_elasticsearch_index!
+    end
+
+    it 'returns no epics' do
+      expect(results.objects('epics')).to be_empty
+    end
+
+    context 'when the user is a developer on the group' do
+      before_all do
+        group.add_developer(user)
+      end
+
+      it 'returns matching epics belonging to the group or its descendants, including confidential epics' do
+        epics = results.objects('epics')
+
+        expect(epics).to include(group_epic)
+        expect(epics).to include(child_group_epic)
+        expect(epics).to include(confidential_child_group_epic)
+
+        expect(epics).not_to include(parent_group_epic)
+        expect(epics).not_to include(another_group_epic)
+
+        assert_named_queries(
+          'epic:match:search_terms',
+          'doc:is_a:epic',
+          'namespace:ancestry_filter:descendants'
+        )
+      end
+
+      context 'when searching from the child group' do
+        it 'returns matching epics belonging to the child group, including confidential epics' do
+          epics = described_class.new(user, query, [], group: child_group, filters: filters).objects('epics')
+
+          expect(epics).to include(child_group_epic)
+          expect(epics).to include(confidential_child_group_epic)
+
+          expect(epics).not_to include(group_epic)
+          expect(epics).not_to include(parent_group_epic)
+          expect(epics).not_to include(another_group_epic)
+
+          assert_named_queries(
+            'epic:match:search_terms',
+            'doc:is_a:epic',
+            'namespace:ancestry_filter:descendants'
+          )
+        end
+      end
+    end
+
+    context 'when the user is a guest of the child group and an owner of its child group' do
+      before_all do
+        child_group.add_guest(user)
+      end
+
+      it 'only returns non-confidential epics' do
+        epics = described_class.new(user, query, [], group: child_group, filters: filters).objects('epics')
+
+        expect(epics).to include(child_group_epic)
+        expect(epics).not_to include(confidential_child_group_epic)
+
+        assert_named_queries(
+          'epic:match:search_terms',
+          'doc:is_a:epic',
+          'namespace:ancestry_filter:descendants',
+          'confidential:false'
+        )
+      end
+
+      context 'when the user is an owner of its child group' do
+        before_all do
+          child_of_child_group.add_owner(user)
+        end
+
+        it 'returns confidential epics from the child group' do
+          epics = described_class.new(user, query, [], group: child_group, filters: filters).objects('epics')
+
+          expect(epics).to include(child_group_epic)
+          expect(epics).to include(confidential_child_of_child_epic)
+
+          expect(epics).not_to include(confidential_child_group_epic)
+
+          assert_named_queries(
+            'epic:match:search_terms',
+            'doc:is_a:epic',
+            'namespace:ancestry_filter:descendants',
+            'confidential:true',
+            'groups:can:read_confidential_epics'
+          )
+        end
+      end
+    end
+  end
+
   describe 'users' do
     let(:query) { 'john' }
     let(:scope) { 'users' }
@@ -124,7 +236,9 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
   end
 
   context 'query performance' do
-    include_examples 'does not hit Elasticsearch twice for objects and counts', %w[projects notes blobs wiki_blobs commits issues merge_requests milestones users]
-    include_examples 'does not load results for count only queries', %w[projects notes blobs wiki_blobs commits issues merge_requests milestones users]
+    include_examples 'does not hit Elasticsearch twice for objects and counts',
+      %w[projects notes blobs wiki_blobs commits issues merge_requests epics milestones users]
+    include_examples 'does not load results for count only queries',
+      %w[projects notes blobs wiki_blobs commits issues merge_requests epics milestones users]
   end
 end
