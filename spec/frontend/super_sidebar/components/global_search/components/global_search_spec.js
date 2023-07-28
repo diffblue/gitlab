@@ -361,7 +361,10 @@ describe('GlobalSearchModal', () => {
 
       describe('Submitting a search', () => {
         const submitSearch = () =>
-          findGlobalSearchInput().vm.$emit('keydown', new KeyboardEvent({ key: ENTER_KEY }));
+          findGlobalSearchInput().vm.$emit(
+            'keydown',
+            new KeyboardEvent('keydown', { key: ENTER_KEY }),
+          );
 
         describe('in command mode', () => {
           beforeEach(() => {
