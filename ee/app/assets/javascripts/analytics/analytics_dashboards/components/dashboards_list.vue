@@ -42,6 +42,9 @@ export default {
       type: Object,
       default: null,
     },
+    canConfigureDashboardsProject: {
+      type: Boolean,
+    },
     namespaceFullPath: {
       type: String,
     },
@@ -75,6 +78,9 @@ export default {
           .filter(this.featureEnabled)
           .filter(this.featureRequiresOnboarding),
       );
+    },
+    showCustomDashboardSetupBanner() {
+      return !this.customDashboardsProject && this.canConfigureDashboardsProject;
     },
     unavailableFeatures() {
       return this.features.filter(this.featureDisabled).filter(this.featureRequiresOnboarding);
@@ -175,7 +181,7 @@ export default {
     >
       <div>
         <h2 class="gl-mt-0" data-testid="title">{{ $options.I18N_DASHBOARD_LIST_TITLE }}</h2>
-        <p data-testid="description">
+        <p data-testid="description" class="gl-mb-0">
           {{
             isProject
               ? $options.I18N_DASHBOARD_LIST_PROJECT_DESCRIPTION
@@ -201,7 +207,7 @@ export default {
       </div>
     </header>
     <gl-alert
-      v-if="!customDashboardsProject"
+      v-if="showCustomDashboardSetupBanner"
       :dismissible="false"
       :primary-button-text="$options.I18N_ALERT_NO_POINTER_BUTTON"
       :title="$options.I18N_ALERT_NO_POINTER_TITLE"
