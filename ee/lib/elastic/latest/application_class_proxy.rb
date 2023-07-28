@@ -472,11 +472,15 @@ module Elastic
           query_hash[:query][:bool][:must_not] << rejected_project_filter(namespaces, options)
         end
 
+        traversal_ids_ancestry_filter(query_hash, namespace_ancestry, options)
+      end
+
+      def traversal_ids_ancestry_filter(query_hash, namespace_ancestry, options)
         context.name(:namespace) do
           query_hash[:query][:bool][:filter] ||= []
           query_hash[:query][:bool][:filter] << ancestry_filter(options[:current_user],
             namespace_ancestry,
-            prefix: options[:traversal_ids_prefix]
+            prefix: options.fetch(:traversal_ids_prefix, :traversal_ids)
           )
         end
 

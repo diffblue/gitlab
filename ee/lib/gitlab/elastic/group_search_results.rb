@@ -24,7 +24,7 @@ module Gitlab
       def scope_options(scope)
         # group_ids to options for traversal_ids filtering
         case scope
-        when :issues, :blobs, :wiki_blobs
+        when :issues, :blobs, :wiki_blobs, :epics
           super.merge(group_ids: [group.id])
         when :users
           super.merge(group_id: group.id)
