@@ -1,0 +1,6 @@
+- todo = local_assigns.fetch(:todo)
+
+- if todo.review_submitted? && review_llm_summary_allowed?(todo.target, todo.user)
+  - review_summary = review_llm_summary(todo.target, todo.author)
+  - if review_summary
+    = render 'llm_summary', local_assigns: { content: review_summary.content }

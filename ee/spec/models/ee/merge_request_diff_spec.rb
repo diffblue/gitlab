@@ -323,4 +323,24 @@ RSpec.describe MergeRequestDiff, feature_category: :geo_replication do
       end
     end
   end
+
+  describe '#latest_review_summary_from_reviewer' do
+    let(:merge_request) { create(:merge_request, :skip_diff_creation) }
+    let(:merge_request_2) { create(:merge_request, :skip_diff_creation) }
+    let(:reviewer) { merge_request.author }
+    let(:mr_diff_1) { create(:merge_request_diff, merge_request: merge_request) }
+    let(:mr_diff_2) { create(:merge_request_diff, merge_request: merge_request_2) }
+    let(:review_1) { create(:review, merge_request: merge_request, author: reviewer) }
+    let(:review_2) { create(:review, merge_request: merge_request, author: reviewer) }
+    let(:review_3) { create(:review, merge_request: merge_request) }
+    let(:review_4) { create(:review, merge_request: merge_request_2, author: reviewer) }
+    let!(:review_summary_1) { create(:merge_request_review_llm_summary, merge_request_diff: mr_diff_1, review: review_1) }
+    let!(:review_summary_2) { create(:merge_request_review_llm_summary, merge_request_diff: mr_diff_1, review: review_2) }
+    let!(:review_summary_3) { create(:merge_request_review_llm_summary, merge_request_diff: mr_diff_1, review: review_3) }
+    let!(:review_summary_4) { create(:merge_request_review_llm_summary, merge_request_diff: mr_diff_2, review: review_4) }
+
+    it 'returns the latest review summary from reviewer' do
+      expect(mr_diff_1.latest_review_summary_from_reviewer(reviewer)).to eq(review_summary_2)
+    end
+  end
 end
