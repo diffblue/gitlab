@@ -12,7 +12,13 @@ import {
   INVALID_RULE_MESSAGE,
   NO_RULE_MESSAGE,
   PROJECT_DEFAULT_BRANCH,
+  GREATER_THAN_OPERATOR,
+  LESS_THAN_OPERATOR,
 } from 'ee/security_orchestration/components/policy_editor/constants';
+import {
+  AGE_MONTH,
+  AGE_WEEK,
+} from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/constants';
 
 jest.mock('~/locale', () => ({
   getPreferredLocales: jest.fn().mockReturnValue(['en']),
@@ -56,11 +62,12 @@ const noVulnerabilityStatesSecurityScannerRule = {
     branches: ['main'],
     scanners: ['sast'],
     severity_levels: ['critical'],
+    vulnerability_age: { operator: LESS_THAN_OPERATOR, value: 1, interval: AGE_WEEK },
   },
   humanized: {
     summary:
       'When SAST scanner finds any vulnerabilities in an open merge request targeting the main branch and all the following apply:',
-    criteriaList: ['Severity is critical.'],
+    criteriaList: ['Severity is critical.', 'Vulnerability age is less than 1 week.'],
   },
 };
 
@@ -72,6 +79,7 @@ const multipleValuedSecurityScannerRule = {
     vulnerabilities_allowed: 2,
     severity_levels: ['info', 'critical'],
     vulnerability_states: ['resolved'],
+    vulnerability_age: { operator: GREATER_THAN_OPERATOR, value: 2, interval: AGE_MONTH },
   },
   humanized: {
     summary:
@@ -79,6 +87,7 @@ const multipleValuedSecurityScannerRule = {
     criteriaList: [
       'Severity is info or critical.',
       'Vulnerabilities are previously existing and resolved.',
+      'Vulnerability age is greater than 2 months.',
     ],
   },
 };

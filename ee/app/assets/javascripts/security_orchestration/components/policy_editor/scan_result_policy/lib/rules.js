@@ -6,11 +6,14 @@ import {
   ALL_PROTECTED_BRANCHES,
   BRANCH_TYPE_KEY,
   VALID_SCAN_RESULT_BRANCH_TYPE_OPTIONS,
+  VULNERABILITY_AGE_OPERATORS,
 } from 'ee/security_orchestration/components/policy_editor/constants';
 import {
   APPROVAL_VULNERABILITY_STATES,
   NEWLY_DETECTED,
   PREVIOUSLY_EXISTING,
+  AGE_INTERVALS,
+  VULNERABILITY_AGE_ALLOWED_KEYS,
 } from '../scan_filters/constants';
 
 const REPORT_TYPES_KEYS = Object.keys(REPORT_TYPES_DEFAULT);
@@ -91,6 +94,36 @@ export const invalidVulnerabilitiesAllowed = (rules) => {
     .map((rule) => rule.vulnerabilities_allowed)
     .some((value) => !isPositiveInteger(value));
 };
+
+export const invalidVulnerabilityAge = (rules) => {
+  if (!rules) {
+    return false;
+  }
+
+  const validOperators = VULNERABILITY_AGE_OPERATORS.map(({ value }) => value);
+  const validIntervals = AGE_INTERVALS.map(({ value }) => value);
+  const validVulnerabilityStates = Object.keys(APPROVAL_VULNERABILITY_STATES[PREVIOUSLY_EXISTING]);
+
+  return rules
+    .filter((rule) => rule.vulnerability_age)
+    .some((rule) => {
+      const {
+        vulnerability_age: { value, operator, interval },
+        vulnerability_states: states,
+      } = rule;
+      return (
+        !validOperators.includes(operator) ||
+        !isPositiveInteger(value) ||
+        !validIntervals.includes(interval) ||
+        !states?.length ||
+        !states?.some((state) => validVulnerabilityStates.includes(state)) ||
+        !Object.keys(rule.vulnerability_age).every((key) =>
+          VULNERABILITY_AGE_ALLOWED_KEYS.includes(key),
+        )
+      );
+    });
+};
+
 /*
   Returns the config for a particular rule type
 */

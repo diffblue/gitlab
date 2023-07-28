@@ -66,7 +66,9 @@ describe('AgeFilter', () => {
   });
 
   it('emits change when setting a value', async () => {
-    createComponent({ selected: { operator: GREATER_THAN_OPERATOR } });
+    createComponent({
+      selected: { operator: GREATER_THAN_OPERATOR, interval: intervalDay, value: 1 },
+    });
 
     await findNumberRangeSelect().vm.$emit('input', 2);
 

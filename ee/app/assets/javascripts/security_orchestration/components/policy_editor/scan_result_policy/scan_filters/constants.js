@@ -38,6 +38,9 @@ export const FILTERS = [
 ];
 
 export const AGE_DAY = 'day';
+export const AGE_WEEK = 'week';
+export const AGE_MONTH = 'month';
+export const AGE_YEAR = 'year';
 
 export const AGE_INTERVALS = [
   { value: AGE_DAY, text: s__('ApprovalRule|day(s)') },
@@ -45,6 +48,8 @@ export const AGE_INTERVALS = [
   { value: 'month', text: s__('ApprovalRule|month(s)') },
   { value: 'year', text: s__('ApprovalRule||year(s)') },
 ];
+
+export const VULNERABILITY_AGE_ALLOWED_KEYS = ['value', 'interval', 'operator'];
 
 export const FILTERS_STATUS_INDEX = FILTERS.findIndex(({ value }) => value === STATUS);
 
