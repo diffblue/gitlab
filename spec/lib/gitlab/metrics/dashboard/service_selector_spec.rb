@@ -82,17 +82,6 @@ RSpec.describe Gitlab::Metrics::Dashboard::ServiceSelector do
         it { is_expected.to be Metrics::Dashboard::CustomMetricEmbedService }
       end
 
-      context 'with the embed defined in the arguments' do
-        let(:arguments) do
-          {
-            embedded: true,
-            embed_json: '{}'
-          }
-        end
-
-        it { is_expected.to be Metrics::Dashboard::TransientEmbedService }
-      end
-
       context 'when metrics embed is for an alert' do
         let(:arguments) { { embedded: true, prometheus_alert_id: 5 } }
 
