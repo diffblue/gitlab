@@ -34,28 +34,11 @@ module Gitlab
             end
           end
 
-          def apply_license(license)
-            dependencies.each do |dependency|
-              next unless license_includes_dependency(license, dependency)
-              next if dependency[:licenses].find { |license_hash| license_hash[:name] == license.name }
-
-              dependency[:licenses].push(name: license.name, url: license.url)
-            end
-          end
-
           def dependencies_with_licenses
             dependencies.select { |dependency| dependency[:licenses].any? }
           end
 
           private
-
-          def license_includes_dependency(license, dependency)
-            license.dependencies.find do |license_dependency|
-              dependency_name = ::Sbom::PackageUrl::Normalizer.new(type: license_dependency.purl_type, text: dependency[:name]).normalize_name
-
-              license_dependency.name == dependency_name
-            end
-          end
 
           def augment_ancestors!
             @dependencies.each_value do |dep|

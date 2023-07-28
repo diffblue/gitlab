@@ -41,7 +41,7 @@ module Projects
     end
 
     def dependencies
-      @dependencies ||= ::Gitlab::ItemsCollection.new(collect_dependencies)
+      @dependencies ||= collect_dependencies
     end
 
     def pipeline
@@ -49,7 +49,7 @@ module Projects
     end
 
     def dependency_list_params
-      params.permit(:sort_by, :sort, :filter)
+      params.permit(:sort_by, :sort, :filter, :page, :per_page)
     end
 
     def report_service

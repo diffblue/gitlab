@@ -30,9 +30,9 @@ RSpec.describe Security::DependencyListService, feature_category: :vulnerability
       end
 
       it 'is sorted by names by default' do
-        expect(subject.size).to eq(21)
+        expect(subject.total_count).to eq(21)
         expect(subject.first[:name]).to eq('async')
-        expect(subject.last[:name]).to eq('xpath.js')
+        expect(subject.per(subject.total_count).last[:name]).to eq('xpath.js')
       end
     end
 
@@ -158,7 +158,7 @@ RSpec.describe Security::DependencyListService, feature_category: :vulnerability
           end
 
           it 'returns array of data sorted by package severity level in ascending order' do
-            dependencies = subject.last(2).map do |dependency|
+            dependencies = subject.per(subject.total_count).last(2).map do |dependency|
               {
                 name: dependency[:name],
                 vulnerabilities: dependency[:vulnerabilities].pluck(:severity)
@@ -168,6 +168,130 @@ RSpec.describe Security::DependencyListService, feature_category: :vulnerability
             expect(dependencies).to eq([{ name: "nokogiri", vulnerabilities: ["high"] },
                                         { name: "saml2-js", vulnerabilities: %w(critical medium unknown) }])
           end
+        end
+      end
+
+      context 'add licenses' do
+        let_it_be(:pipeline) { create(:ee_ci_pipeline) }
+        let(:params) { { page: '2', per_page: '3' } }
+
+        context 'testing permutations of dependency_scanning and license_scanning licensed features' do
+          using RSpec::Parameterized::TableSyntax
+
+          where(:dependency_scanning_feature, :license_scanning_feature, :licenses_applied) do
+            true  | true  | true
+            true  | false | false
+            false | true  | false
+            false | false | false
+          end
+
+          let(:license_scanner) do
+            instance_double(::Gitlab::LicenseScanning::SbomScanner, has_data?: true, add_licenses: true)
+          end
+
+          with_them do
+            before do
+              stub_licensed_features(dependency_scanning: dependency_scanning_feature,
+                license_scanning: license_scanning_feature)
+              allow(::Gitlab::LicenseScanning).to receive(:scanner_for_pipeline).and_return(license_scanner)
+            end
+
+            it "checks whether licenses should be applied" do
+              if licenses_applied
+                expect(license_scanner).to receive(:add_licenses)
+              else
+                expect(license_scanner).not_to receive(:add_licenses)
+              end
+
+              subject
+            end
+          end
+        end
+
+        context 'when license and dependency scanning features are available' do
+          before do
+            stub_licensed_features(dependency_scanning: true, license_scanning: true)
+          end
+
+          shared_examples 'paginate license application' do
+            it 'returns the requested number of dependencies' do
+              expect(subject.length).to eq(3)
+            end
+
+            it 'add licenses only to current page' do
+              expect(subject.total_count).to eq(56)
+              expect(::Gitlab::LicenseScanning.scanner_for_pipeline(pipeline.project, pipeline)).to be_a scanner_type
+
+              expect(found_licenses_on_page(2)).to be_truthy
+              expect(found_licenses_on_page(1)).to be_falsey
+            end
+
+            context 'when license scanner does not have data' do
+              before do
+                allow(pipeline).to receive(:has_reports?).and_return(false)
+              end
+
+              it 'does not add licenses' do
+                expect(found_licenses_on_page(2)).to be_falsey
+              end
+            end
+          end
+
+          context 'when the pipeline has a build with a license scanning report' do
+            let(:scanner_type) { ::Gitlab::LicenseScanning::ArtifactScanner }
+
+            before do
+              pipeline.builds << create(:ee_ci_build, :success, :dependency_scanning_with_matching_licenses, pipeline: pipeline)
+            end
+
+            it_behaves_like 'paginate license application'
+          end
+
+          context 'when the pipeline has a build with a cyclonedx sbom scanning report' do
+            let(:scanner_type) { ::Gitlab::LicenseScanning::SbomScanner }
+
+            before do
+              pipeline.builds << create(:ee_ci_build, :success, :cyclonedx_with_matching_dependency_files, pipeline: pipeline)
+            end
+
+            it_behaves_like 'paginate license application'
+
+            context 'with dependency with non-canonical representation' do
+              let(:params) { { page: '1', per_page: '3' } }
+              let(:capitalized_name) { 'Django' }
+              let(:normalized_name) { 'django' }
+
+              before do
+                create(:pm_package, name: normalized_name, purl_type: "pypi",
+                  other_licenses: [{ license_names: ["MIT"], versions: ["1.11.4"] }])
+              end
+
+              it 'matches the normalized name to add licenses' do
+                expect(subject.pluck(:name)).to include(capitalized_name)
+                expect(subject.pluck(:licenses)).to include(
+                  [name: "MIT", url: "https://spdx.org/licenses/MIT.html"])
+              end
+            end
+          end
+
+          context 'when skip pagination is true' do
+            subject(:dependency_list) do
+              described_class.new(pipeline: pipeline, params: params).execute(skip_pagination: true)
+            end
+
+            before do
+              pipeline.builds << create(:ee_ci_build, :success, :cyclonedx_with_matching_dependency_files, pipeline: pipeline)
+            end
+
+            it 'add licenses to all records' do
+              expect(dependency_list.count).to be 56
+              expect(dependency_list.pluck(:licenses).all?(&:any?)).to be_truthy
+            end
+          end
+        end
+
+        def found_licenses_on_page(number)
+          subject.page(number).pluck(:licenses).all?(&:any?)
         end
       end
     end
