@@ -26874,9 +26874,6 @@ msgstr ""
 msgid "Just me"
 msgstr ""
 
-msgid "K8s pod health"
-msgstr ""
-
 msgid "KEY"
 msgstr ""
 
