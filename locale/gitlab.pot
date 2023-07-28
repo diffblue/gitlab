@@ -15528,6 +15528,9 @@ msgstr ""
 msgid "Dependencies|Vulnerable components"
 msgstr ""
 
+msgid "Dependencies|unknown"
+msgstr ""
+
 msgid "Dependency List has no entries"
 msgstr ""
 

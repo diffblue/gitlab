@@ -7,6 +7,7 @@ import DependencyVulnerabilities from 'ee/dependencies/components/dependency_vul
 import DependencyLocationCount from 'ee/dependencies/components/dependency_location_count.vue';
 import DependencyProjectCount from 'ee/dependencies/components/dependency_project_count.vue';
 import DependencyLocation from 'ee/dependencies/components/dependency_location.vue';
+import { DEPENDENCIES_TABLE_I18N } from 'ee/dependencies/constants';
 import stubChildren from 'helpers/stub_children';
 import { makeDependency } from './utils';
 
@@ -311,6 +312,32 @@ describe('DependenciesTable component', () => {
       // dependencies[1] not tested because it is duplicated
       expectGroupDependencyRow(rows.at(0), dependencies[0]);
       expectGroupDependencyRow(rows.at(1), dependencies[2]);
+    });
+  });
+
+  describe('when packager is not set', () => {
+    beforeEach(() => {
+      createComponent({
+        propsData: {
+          dependencies: [
+            makeDependency({
+              componentId: 1,
+              occurrenceCount: 1,
+              project: { full_path: 'full_path', name: 'name' },
+              projectCount: 1,
+              packager: null,
+            }),
+          ],
+          isLoading: false,
+        },
+      });
+    });
+
+    it('displays unknown', () => {
+      const rows = findTableRows();
+      const packagerCell = rows.at(0).findAll('td').at(1);
+
+      expect(packagerCell.text()).toBe(DEPENDENCIES_TABLE_I18N.unknown);
     });
   });
 });

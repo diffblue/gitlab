@@ -9,9 +9,8 @@ import {
   GlLink,
 } from '@gitlab/ui';
 import { cloneDeep, uniqBy } from 'lodash';
-import { s__ } from '~/locale';
 import { DOCS_URL_IN_EE_DIR } from 'jh_else_ce/lib/utils/url_utility';
-import { NAMESPACE_PROJECT } from '../constants';
+import { NAMESPACE_PROJECT, DEPENDENCIES_TABLE_I18N } from '../constants';
 import DependencyLicenseLinks from './dependency_license_links.vue';
 import DependencyLocation from './dependency_location.vue';
 import DependencyLocationCount from './dependency_location_count.vue';
@@ -31,9 +30,13 @@ const tdClass = (defaultClasses = []) => (value, key, item) => {
 };
 
 const sharedFields = [
-  { key: 'component', label: s__('Dependencies|Component'), tdClass: tdClass() },
-  { key: 'packager', label: s__('Dependencies|Packager'), tdClass: tdClass() },
-  { key: 'location', label: s__('Dependencies|Location'), tdClass: tdClass(['gl-md-max-w-26']) },
+  { key: 'component', label: DEPENDENCIES_TABLE_I18N.component, tdClass: tdClass() },
+  { key: 'packager', label: DEPENDENCIES_TABLE_I18N.packager, tdClass: tdClass() },
+  {
+    key: 'location',
+    label: DEPENDENCIES_TABLE_I18N.location,
+    tdClass: tdClass(['gl-md-max-w-26']),
+  },
 ];
 
 export default {
@@ -98,24 +101,22 @@ export default {
     displayLocation(item) {
       return this.isProjectNamespace || item.occurrenceCount < 2;
     },
+    packager(dependency) {
+      return dependency.packager || this.$options.i18n.unknown;
+    },
   },
   projectFields: [
     ...sharedFields,
-    { key: 'license', label: s__('Dependencies|License'), tdClass: tdClass() },
+    { key: 'license', label: DEPENDENCIES_TABLE_I18N.license, tdClass: tdClass() },
     { key: 'isVulnerable', label: '', tdClass: tdClass(['gl-text-right']) },
   ],
   groupFields: [
     ...sharedFields,
-    { key: 'projects', label: s__('Dependencies|Projects'), tdClass: tdClass() },
+    { key: 'projects', label: DEPENDENCIES_TABLE_I18N.projects, tdClass: tdClass() },
   ],
   DEPENDENCIES_PER_PAGE: 20,
   DEPENDENCY_PATH_LINK: `${DOCS_URL_IN_EE_DIR}/user/application_security/dependency_list/#dependency-paths`,
-  i18n: {
-    tooltipText: s__(
-      'Dependencies|The component dependency path is based on the lock file. There may be several paths. In these cases, the longest path is displayed.',
-    ),
-    tooltipMoreText: s__('Dependencies|Learn more about dependency paths'),
-  },
+  i18n: DEPENDENCIES_TABLE_I18N,
 };
 </script>
 
@@ -134,7 +135,7 @@ export default {
       <gl-popover
         target="location-info"
         placement="top"
-        :title="s__('Dependencies|Location and dependency path')"
+        :title="$options.i18n.locationDependencyTitle"
       >
         {{ $options.i18n.tooltipText }}
         <div class="gl-mt-4">
@@ -158,12 +159,16 @@ export default {
         :class="{ invisible: !item.vulnerabilities.length }"
         category="tertiary"
         size="small"
-        :aria-label="s__('Dependencies|Toggle vulnerability list')"
+        :aria-label="$options.i18n.toggleVulnerabilityList"
         :icon="detailsShowing ? 'chevron-up' : 'chevron-down'"
         @click="toggleDetails"
       />
       <span class="bold">{{ item.name }}</span
       >&nbsp;{{ item.version }}
+    </template>
+
+    <template #cell(packager)="{ item }">
+      <span>{{ packager(item) }}</span>
     </template>
 
     <template #cell(location)="{ item }">

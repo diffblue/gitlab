@@ -2,6 +2,7 @@ import { GlLink, GlIcon, GlIntersperse, GlPopover } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import DependencyLocation from 'ee/dependencies/components/dependency_location.vue';
 import DependencyPathViewer from 'ee/dependencies/components/dependency_path_viewer.vue';
+import { DEPENDENCIES_TABLE_I18N } from 'ee/dependencies/constants';
 import { trimText } from 'helpers/text_helper';
 import * as Paths from './mock_data';
 
@@ -23,6 +24,8 @@ describe('Dependency Location component', () => {
 
   it.each`
     name                      | location                    | path
+    ${'without path'}         | ${Paths.withoutPath}        | ${DEPENDENCIES_TABLE_I18N.unknown}
+    ${'without path to file'} | ${Paths.withoutFilePath}    | ${DEPENDENCIES_TABLE_I18N.unknown}
     ${'container image path'} | ${Paths.containerImagePath} | ${Paths.containerImagePath.image}
     ${'no path'}              | ${Paths.noPath}             | ${Paths.noPath.path}
     ${'top level path'}       | ${Paths.topLevelPath}       | ${'package.json (top level)'}
