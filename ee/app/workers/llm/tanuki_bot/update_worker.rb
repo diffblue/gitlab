@@ -8,7 +8,7 @@ module Llm
 
       idempotent!
       data_consistency :delayed
-      feature_category :global_search
+      feature_category :ai_abstraction_layer
       urgency :throttled
 
       sidekiq_options retry: 1
