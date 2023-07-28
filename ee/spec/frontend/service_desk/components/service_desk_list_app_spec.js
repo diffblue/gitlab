@@ -53,6 +53,7 @@ describe('EE ServiceDeskListApp', () => {
     canAdminIssues: true,
     canEditProjectSettings: true,
     serviceDeskEmailAddress: 'service@email.com',
+    initialSort: '',
   };
 
   const defaultQueryResponse = cloneDeep(getServiceDeskIssuesQueryResponse);
