@@ -6,6 +6,20 @@ export const containerImagePath = {
   image: 'nginx:1.17',
 };
 
+export const withoutPath = {
+  ancestors: null,
+  topLevel: null,
+  blobPath: 'test.link',
+  path: null,
+};
+
+export const withoutFilePath = {
+  ancestors: null,
+  topLevel: null,
+  blobPath: null,
+  path: 'package.json',
+};
+
 export const longPath = {
   ancestors: [
     {
