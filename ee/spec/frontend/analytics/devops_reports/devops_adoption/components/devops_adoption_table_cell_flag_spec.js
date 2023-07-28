@@ -52,10 +52,8 @@ describe('DevopsAdoptionTableCellFlag', () => {
     });
 
     describe('with a variant specified', () => {
-      beforeEach(async () => {
-        wrapper.setProps({ variant: 'primary' });
-
-        await nextTick();
+      beforeEach(() => {
+        createComponent({ variant: 'primary' });
       });
 
       it('matches the snapshot', () => {
