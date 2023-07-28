@@ -230,6 +230,15 @@ describe('SuperSidebar component', () => {
         expect(findSidebar().classes()).not.toContain(peekHintClass);
       },
     );
+
+    it('keeps track of if sidebar has mouseover or not', async () => {
+      createWrapper({ sidebarState: { isCollapsed: false, isPeekable: true } });
+      expect(findPeekBehavior().props('isMouseOverSidebar')).toBe(false);
+      await findSidebar().trigger('mouseenter');
+      expect(findPeekBehavior().props('isMouseOverSidebar')).toBe(true);
+      await findSidebar().trigger('mouseleave');
+      expect(findPeekBehavior().props('isMouseOverSidebar')).toBe(false);
+    });
   });
 
   describe('nav container', () => {

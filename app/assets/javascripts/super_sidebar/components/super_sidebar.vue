@@ -42,6 +42,7 @@ export default {
     return {
       sidebarState,
       showPeekHint: false,
+      isMouseover: false,
     };
   },
   computed: {
@@ -118,6 +119,8 @@ export default {
       data-testid="super-sidebar"
       data-qa-selector="navbar"
       :inert="sidebarState.isCollapsed"
+      @mouseenter="isMouseover = true"
+      @mouseleave="isMouseover = false"
     >
       <user-bar :has-collapse-button="!sidebarState.isPeek" :sidebar-data="sidebarData" />
       <div v-if="showTrialStatusWidget" class="gl-px-2 gl-py-2">
@@ -170,6 +173,10 @@ export default {
       Only mount SidebarPeekBehavior if the sidebar is peekable, to avoid
       setting up event listeners unnecessarily.
     -->
-    <sidebar-peek-behavior v-if="sidebarState.isPeekable" @change="onPeekChange" />
+    <sidebar-peek-behavior
+      v-if="sidebarState.isPeekable"
+      :is-mouse-over-sidebar="isMouseover"
+      @change="onPeekChange"
+    />
   </div>
 </template>
