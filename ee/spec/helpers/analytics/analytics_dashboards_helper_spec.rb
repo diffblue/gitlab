@@ -31,13 +31,15 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
         :feature_flag_enabled,
         :licensed_feature_enabled,
         :user_has_permission,
+        :user_can_admin_project,
         :enabled
       ) do
-        true  | true | true | true | true
-        false | true | true | true | false
-        true  | false | true | true | false
-        true  | true | false | true | false
-        true  | true | true | false | false
+        true  | true | true | true | true | true
+        true  | true | true | true | false | true
+        false | true | true | true | true | false
+        true  | false | true | true | true | false
+        true  | true | false | true | true | false
+        true  | true | true | false | true | false
       end
 
       with_them do
@@ -51,6 +53,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           stub_licensed_features(product_analytics: licensed_feature_enabled)
 
           allow(helper).to receive(:can?).with(user, :read_product_analytics, project).and_return(user_has_permission)
+          allow(helper).to receive(:can?).with(user, :admin_project, project).and_return(user_can_admin_project)
         end
 
         subject(:data) { helper.analytics_dashboards_list_app_data(project) }
@@ -64,6 +67,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
               full_path: pointer.target_project.full_path,
               name: pointer.target_project.name
             }.to_json,
+            can_configure_dashboards_project: user_can_admin_project.to_s,
             tracking_key: user_has_permission ? product_analytics_instrumentation_key : nil,
             collector_host: user_has_permission ? 'https://new-collector.example.com' : nil,
             chart_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
@@ -108,6 +112,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
             full_path: group_pointer.target_project.full_path,
             name: group_pointer.target_project.name
           }.to_json,
+          can_configure_dashboards_project: 'false',
           tracking_key: nil,
           collector_host: collector_host ? 'https://new-collector.example.com' : nil,
           chart_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
@@ -160,6 +165,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           stub_licensed_features(product_analytics: can_read_product_analytics)
           allow(helper).to receive(:can?).with(user, :read_product_analytics,
             project).and_return(can_read_product_analytics)
+          allow(helper).to receive(:can?).with(user, :admin_project, project).and_return(true)
         end
 
         subject(:data) { helper.analytics_dashboards_list_app_data(project) }

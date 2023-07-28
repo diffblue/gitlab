@@ -52,6 +52,7 @@ export default () => {
 
   const {
     dashboardProject: analyticsDashboardPointerJSON = '',
+    canConfigureDashboardsProject,
     trackingKey,
     namespaceId,
     namespaceFullPath,
@@ -109,6 +110,7 @@ export default () => {
     provide: {
       breadcrumbState,
       customDashboardsProject: analyticsDashboardPointer,
+      canConfigureDashboardsProject: parseBoolean(canConfigureDashboardsProject),
       trackingKey,
       namespaceFullPath,
       namespaceId,
