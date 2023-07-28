@@ -33274,9 +33274,6 @@ msgstr ""
 msgid "Parent"
 msgstr ""
 
-msgid "Parsing error for param :embed_json. %{message}"
-msgstr ""
-
 msgid "Part of merge request changes"
 msgstr ""
 
