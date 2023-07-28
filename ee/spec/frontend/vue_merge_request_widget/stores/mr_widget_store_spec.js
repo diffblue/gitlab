@@ -2,7 +2,11 @@ import MergeRequestStore from 'ee/vue_merge_request_widget/stores/mr_widget_stor
 import mockData from 'ee_jest/vue_merge_request_widget/mock_data';
 import { convertToCamelCase } from '~/lib/utils/text_utility';
 import { stateKey } from '~/vue_merge_request_widget/stores/state_maps';
-import { DETAILED_MERGE_STATUS } from '~/vue_merge_request_widget/constants';
+import {
+  MWPS_MERGE_STRATEGY,
+  MWCP_MERGE_STRATEGY,
+  DETAILED_MERGE_STATUS,
+} from '~/vue_merge_request_widget/constants';
 
 describe('MergeRequestStore', () => {
   let store;
@@ -90,11 +94,59 @@ describe('MergeRequestStore', () => {
     });
   });
 
+  describe('preventMerge', () => {
+    beforeEach(() => {
+      store.hasApprovalsAvailable = true;
+    });
+
+    it('is false when MR is approved', () => {
+      store.setApprovals({ approved: true });
+
+      expect(store.preventMerge).toBe(false);
+    });
+
+    it('is true when MR is not approved', () => {
+      store.setApprovals({ approved: false });
+
+      expect(store.preventMerge).toBe(true);
+    });
+
+    it('is true when MR is not approved and preferredAutoMergeStrategy is MWPS', () => {
+      store.setData({
+        ...mockData,
+        available_auto_merge_strategies: [MWPS_MERGE_STRATEGY],
+      });
+
+      store.setApprovals({ approved: false });
+
+      expect(store.preventMerge).toBe(true);
+    });
+
+    it('is false when MR is not approved and preferredAutoMergeStrategy is MWCP', () => {
+      store.setData({ ...mockData, available_auto_merge_strategies: [MWCP_MERGE_STRATEGY] });
+
+      store.setApprovals({ approved: false });
+
+      expect(store.preventMerge).toBe(false);
+    });
+  });
+
   describe('hasMergeChecksFailed', () => {
     it('should be true when detailed merge status is EXTERNAL_STATUS_CHECKS', () => {
       store.detailedMergeStatus = DETAILED_MERGE_STATUS.EXTERNAL_STATUS_CHECKS;
 
       expect(store.hasMergeChecksFailed).toBe(true);
+    });
+
+    it('should be false when preferredAutoMergeStrategy is MWCP and MR is not approved', () => {
+      store.hasApprovalsAvailable = true;
+      store.detailedMergeStatus = DETAILED_MERGE_STATUS.NOT_APPROVED;
+
+      store.setData({ ...mockData, available_auto_merge_strategies: [MWCP_MERGE_STRATEGY] });
+
+      store.setApprovals({ isApproved: false, approvalsLeft: 1 });
+
+      expect(store.hasMergeChecksFailed).toBe(false);
     });
   });
 });

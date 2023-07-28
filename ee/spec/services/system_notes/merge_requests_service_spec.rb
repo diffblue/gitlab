@@ -24,7 +24,7 @@ RSpec.describe SystemNotes::MergeRequestsService, feature_category: :code_review
 
     it "posts the 'merge when checks pass' system note" do
       expect(subject.note).to(
-        match("enabled an automatic merge when all pipeline checks for #{pipeline.sha} pass")
+        match("enabled an automatic merge when all merge checks for #{pipeline.sha} pass")
       )
     end
   end

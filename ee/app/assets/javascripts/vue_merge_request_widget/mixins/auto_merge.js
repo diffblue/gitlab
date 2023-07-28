@@ -1,5 +1,9 @@
 import { s__ } from '~/locale';
-import { MT_MERGE_STRATEGY, MTWPS_MERGE_STRATEGY } from '~/vue_merge_request_widget/constants';
+import {
+  MT_MERGE_STRATEGY,
+  MTWPS_MERGE_STRATEGY,
+  MWCP_MERGE_STRATEGY,
+} from '~/vue_merge_request_widget/constants';
 
 export default {
   computed: {
@@ -15,6 +19,10 @@ export default {
       } else if (autoMergeStrategy === MTWPS_MERGE_STRATEGY && mergeTrainsCount !== 0) {
         return s__(
           'mrWidget|Set by %{merge_author} to be added to the merge train when the pipeline succeeds',
+        );
+      } else if (autoMergeStrategy === MWCP_MERGE_STRATEGY) {
+        return s__(
+          'mrWidget|Set by %{merge_author} to be merged automatically when all merge checks pass',
         );
       }
 

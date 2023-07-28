@@ -45,11 +45,21 @@ RSpec.describe 'User adds to merge train when pipeline succeeds', :js, feature_c
       stub_licensed_features(merge_trains: false)
     end
 
+    # rubocop:disable RSpec/AvoidConditionalStatements
+    def mr_auto_merge_text
+      if Gitlab.ee?
+        'Merge when all merge checks pass'
+      else
+        'Merge when pipeline succeeds'
+      end
+    end
+    # rubocop:enable RSpec/AvoidConditionalStatements
+
     it 'does not show Start merge train when pipeline succeeds button' do
       visit project_merge_request_path(project, merge_request)
 
       expect(page).to have_button('Set to auto-merge')
-      expect(page).to have_content('Merge when pipeline succeeds')
+      expect(page).to have_content(mr_auto_merge_text)
     end
   end
 
