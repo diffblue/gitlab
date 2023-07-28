@@ -20,10 +20,10 @@ module Boards
         fields = super
 
         if required_fields&.include?(:total_weight)
-          fields[:total_weight] = 'COALESCE(SUM(total_opened_issue_weight+total_closed_issue_weight), 0)'
+          fields[:total_weight] = Arel.sql('COALESCE(SUM(total_opened_issue_weight+total_closed_issue_weight), 0)')
         end
 
-        fields[:epics_count] = 'COUNT(distinct epics.id)' if required_fields&.include?(:epics_count)
+        fields[:epics_count] = Arel.sql('COUNT(distinct epics.id)') if required_fields&.include?(:epics_count)
         fields
       end
 
