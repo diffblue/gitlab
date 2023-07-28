@@ -24,7 +24,7 @@ module Dependencies
       def dependencies_list
         return [] unless report_fetch_service.able_to_fetch?
 
-        ::Security::DependencyListService.new(pipeline: report_fetch_service.pipeline).execute
+        ::Security::DependencyListService.new(pipeline: report_fetch_service.pipeline).execute(skip_pagination: true)
       end
 
       def report_fetch_service

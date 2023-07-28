@@ -26,6 +26,15 @@ RSpec.describe Gitlab::Ci::Reports::DependencyList::Report, feature_category: :s
       end
     end
 
+    context 'when a dependency has an indirect invalid ancestor' do
+      it 'produces idempotent results' do
+        indirect_dependency = build(:dependency, :indirect_with_invalid_ancestor, :with_vulnerabilities)
+        report.add_dependency(indirect_dependency)
+
+        expect(report.dependencies).to eq(report.dependencies)
+      end
+    end
+
     context 'with dependency path information' do
       let(:indirect) { build :dependency, :with_vulnerabilities, iid: 32 }
       let(:direct) { build :dependency, :direct, :with_vulnerabilities }
@@ -154,58 +163,6 @@ RSpec.describe Gitlab::Ci::Reports::DependencyList::Report, feature_category: :s
       expect(report.dependencies.size).to eq(1)
       expect(report.dependencies.first[:packager]).to eq('Ruby (Bundler)')
       expect(report.dependencies.first[:vulnerabilities]).to eq([{ name: 'abc', severity: 'high', id: 5, url: 'some_url_5' }])
-    end
-  end
-
-  describe '#apply_license' do
-    subject { report.dependencies.last[:licenses].size }
-
-    let(:license) { build(:ci_reports_license_scanning_report, :mit).licenses.first }
-
-    let(:purl_type_of_dependency_with_license) { dependency[:purl_type] }
-
-    before do
-      license.add_dependency(name: name_of_dependency_with_license, purl_type: purl_type_of_dependency_with_license)
-      report.add_dependency(dependency)
-      report.apply_license(license)
-    end
-
-    context 'with matching dependency' do
-      let(:name_of_dependency_with_license) { dependency[:name] }
-
-      context 'with empty license list' do
-        let(:dependency) { build :dependency }
-
-        it 'applies license' do
-          is_expected.to eq(1)
-        end
-      end
-
-      context 'with dependency with non-canonical representation' do
-        let(:dependency) { build :dependency, name: 'Irigokon', purl_type: 'pypi' }
-        let(:name_of_dependency_with_license) { dependency[:name].downcase }
-
-        it 'applies license' do
-          is_expected.to eq(1)
-        end
-      end
-
-      context 'with full license list' do
-        let(:dependency) { build :dependency, :with_licenses }
-
-        it 'does not apply the license a second time' do
-          is_expected.to eq(1)
-        end
-      end
-    end
-
-    context 'without matching dependency' do
-      let(:dependency) { build :dependency, name: 'irigokon' }
-      let(:name_of_dependency_with_license) { dependency[:name].reverse }
-
-      it 'does not apply the license at all' do
-        is_expected.to eq(0)
-      end
     end
   end
 

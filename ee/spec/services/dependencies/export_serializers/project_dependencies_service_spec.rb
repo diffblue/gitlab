@@ -38,7 +38,9 @@ RSpec.describe Dependencies::ExportSerializers::ProjectDependenciesService, feat
         create(:ee_ci_pipeline, :with_dependency_list_report, project: project)
       end
 
-      it { is_expected.not_to be_empty }
+      it 'returns all the dependencies' do
+        expect(dependencies.count).to be 21
+      end
     end
   end
 end

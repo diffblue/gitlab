@@ -16,22 +16,45 @@ module Security
     def initialize(pipeline:, params: {})
       @pipeline = pipeline
       @params = params
+      @project = pipeline.project
     end
 
-    # @return [Array<Hash>] collection of found dependencies
-    def execute
-      collection = init_collection
-      collection = filter_by_package_manager(collection)
-      collection = filter_by_vulnerable(collection)
-      sort(collection)
+    # @return ::Gitlab::ItemsCollection of found dependencies
+    # skip_pagination is used when the execute is called from Dependencies::ExportSerializers::ProjectDependenciesService
+    # to build the full dependencies_list. This is currently used in background job to generate json file with all the dependencies
+    def execute(skip_pagination: false)
+      dependencies = pipeline.dependency_list_report.dependencies
+      dependencies = filter_by_package_manager(dependencies)
+      dependencies = filter_by_vulnerable(dependencies)
+      dependencies = sort(dependencies)
+
+      dependencies_collection = ::Gitlab::ItemsCollection.new(dependencies)
+
+      dependencies_collection = apply_pagination(dependencies_collection) unless skip_pagination
+
+      add_licenses!(dependencies_collection)
     end
 
     private
 
-    attr_accessor :params, :pipeline
+    attr_accessor :params, :pipeline, :project
 
-    def init_collection
-      pipeline.dependency_list_report.dependencies
+    def add_licenses!(paginated_dependencies)
+      unless %i[dependency_scanning license_scanning].all? { |f| project.licensed_feature_available?(f) }
+        return paginated_dependencies
+      end
+
+      license_scanner = ::Gitlab::LicenseScanning.scanner_for_pipeline(project, pipeline)
+
+      return paginated_dependencies unless license_scanner.has_data?
+
+      license_scanner.add_licenses(paginated_dependencies)
+
+      paginated_dependencies
+    end
+
+    def apply_pagination(dependencies_collection)
+      dependencies_collection.page(params[:page]).per(params[:per_page])
     end
 
     def filter_by_package_manager(collection)

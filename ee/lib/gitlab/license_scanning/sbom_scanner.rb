@@ -52,6 +52,57 @@ module Gitlab
         pipeline.builds.latest.sbom_generation.last
       end
       strong_memoize_attr :latest_build_for_default_branch
+
+      # dependencies is an array of dependency objects which come from the dependency_files section
+      # of the dependency scanning report. These entries do not include license information. For example:
+      # [
+      #   {
+      #     :name=>"Django", :packager=>"Python (pip)", :package_manager=>"pip",
+      #     :version=>"1.11.4", :licenses=>[], :vulnerabilities=>[],
+      #     :location=> { :blob_path=>"/some/path", :path=>"requirements.txt" }
+      #   },
+      #   {
+      #     :name=>"actioncable", :packager=>"Ruby (Bundler)", :package_manager=>"bundler",
+      #     :version=>"5.0.0", :licenses=>[], :vulnerabilities=>[]
+      #     :location=> { :blob_path=>"/some/path", :path=>"Gemfile.lock" }
+      #   }
+      # ]
+      #
+      # components is an array of Hashie::Mash items which contain purl_type, name, and version fields
+      # For example:
+      # [
+      #   { name: "django", purl_type: "pypi",  version: "1.11.4" },
+      #   { name: "actioncable", purl_type: "gem", version: "5.0.0" },
+      #   { name: "actionmailer",  purl_type: "gem", version: "5.0.0" }
+      # ]
+      #
+      # this method obtains the licenses for each of the entries in the components array, then
+      # adds them to the licenses field of each dependency
+      def add_licenses(dependencies)
+        package_licenses = PackageLicenses.new(project: project, components: build_components(dependencies)).fetch
+
+        dependencies.each_with_index do |dependency, idx|
+          dependency[:licenses] = package_licenses[idx].licenses.map do |license|
+            {
+              name: license.name,
+              url: ::Gitlab::Ci::Reports::LicenseScanning::License.spdx_url(license.spdx_identifier)
+            }
+          end
+        end
+      end
+
+      private
+
+      def build_components(dependencies)
+        dependencies.map do |dependency|
+          purl_type = ::Sbom::PurlType::Converter.purl_type_for_pkg_manager(dependency[:package_manager])
+
+          Hashie::Mash.new(
+            name: ::Sbom::PackageUrl::Normalizer.new(type: purl_type, text: dependency[:name]).normalize_name,
+            purl_type: purl_type,
+            version: dependency[:version])
+        end
+      end
     end
   end
 end

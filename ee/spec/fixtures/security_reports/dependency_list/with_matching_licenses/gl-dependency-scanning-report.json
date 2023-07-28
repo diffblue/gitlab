@@ -1,0 +1,783 @@
+{
+  "version": "15.0.0",
+  "vulnerabilities": [
+    {
+      "id": "928403bf64817af190f2fa418ccbca12000312e7a4b18c3b51c76d0be9e6481b",
+      "name": "Path Traversal",
+      "description": "The gem rubyzip contains a Directory Traversal vulnerability in `Zip::File` component that can result in write arbitrary files to the filesystem. This attack appear to be exploitable via If a site allows uploading of `.zip` files, an attacker can upload a malicious file that contains symlinks or files with absolute pathnames `..` to write arbitrary files to the filesystem.",
+      "cve": "",
+      "severity": "Critical",
+      "solution": "Upgrade to version 1.2.2 or above.",
+      "location": {
+        "file": "Gemfile.lock",
+        "dependency": {
+          "package": {
+            "name": "rubyzip"
+          },
+          "version": "1.2.1"
+        }
+      },
+      "identifiers": [
+        {
+          "type": "gemnasium",
+          "name": "Gemnasium-99f8ccec-097c-4147-9cd0-2a8cd3a354a4",
+          "value": "99f8ccec-097c-4147-9cd0-2a8cd3a354a4",
+          "url": "https://gitlab.com/gitlab-org/security-products/gemnasium-db/-/blob/master/gem/rubyzip/CVE-2018-1000544.yml"
+        },
+        {
+          "type": "cve",
+          "name": "CVE-2018-1000544",
+          "value": "CVE-2018-1000544",
+          "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-1000544"
+        }
+      ],
+      "links": [
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2018-1000544"
+        }
+      ],
+      "details": {
+        "vulnerable_package": {
+          "type": "text",
+          "name": "Vulnerable Package",
+          "value": "rubyzip:1.2.1"
+        }
+      }
+    },
+    {
+      "id": "00729d4c81c8abc513fb9dadfddbb03557bc5c4d66856a46cc761af456b64bff",
+      "name": "Bypass of a protection mechanism in libxslt",
+      "description": "The libxslt binary, which is included in nokogiri, allows bypass of a protection mechanism because callers of `xsltCheckRead` and `xsltCheckWrite` permit access even upon receiving a -1 error code. `xsltCheckRead` can return -1 for a crafted URL that is not actually invalid and is subsequently loaded.",
+      "cve": "",
+      "severity": "Critical",
+      "solution": "Upgrade to version 1.2.0 or above.",
+      "location": {
+        "file": "Gemfile.lock",
+        "dependency": {
+          "package": {
+            "name": "nokogiri"
+          },
+          "version": "1.8.2"
+        }
+      },
+      "identifiers": [
+        {
+          "type": "gemnasium",
+          "name": "Gemnasium-1a2e2e6e-67ba-4142-bfa1-3391f5416e4c",
+          "value": "1a2e2e6e-67ba-4142-bfa1-3391f5416e4c",
+          "url": "https://gitlab.com/gitlab-org/security-products/gemnasium-db/-/blob/master/gem/nokogiri/CVE-2019-11068.yml"
+        },
+        {
+          "type": "cve",
+          "name": "CVE-2019-11068",
+          "value": "CVE-2019-11068",
+          "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11068"
+        }
+      ],
+      "links": [
+        {
+          "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-11068"
+        },
+        {
+          "url": "https://github.com/sparklemotion/nokogiri/issues/1892"
+        },
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-11068"
+        },
+        {
+          "url": "https://people.canonical.com/~ubuntu-security/cve/CVE-2019-11068"
+        },
+        {
+          "url": "https://security-tracker.debian.org/tracker/CVE-2019-11068"
+        }
+      ],
+      "details": {
+        "vulnerable_package": {
+          "type": "text",
+          "name": "Vulnerable Package",
+          "value": "nokogiri:1.8.2"
+        }
+      }
+    },
+    {
+      "id": "151d69ddf8947ca525680265585594b516cdac8d8b68286d44f355c6ac6d0563",
+      "name": "Command Injection",
+      "description": "A command injection vulnerability in Nokogiri allows commands to be executed in a subprocess via Ruby's `Kernel.open` method. Processes are vulnerable only if the undocumented method `Nokogiri::CSS::Tokenizer#load_file` is being called with unsafe user input as the filename.",
+      "cve": "",
+      "severity": "Critical",
+      "solution": "Upgrade to version 1.10.4 or above.",
+      "location": {
+        "file": "Gemfile.lock",
+        "dependency": {
+          "package": {
+            "name": "nokogiri"
+          },
+          "version": "1.8.2"
+        }
+      },
+      "identifiers": [
+        {
+          "type": "gemnasium",
+          "name": "Gemnasium-7e9c16eb-d4ee-4c0a-a3b7-ed88f1ea7125",
+          "value": "7e9c16eb-d4ee-4c0a-a3b7-ed88f1ea7125",
+          "url": "https://gitlab.com/gitlab-org/security-products/gemnasium-db/-/blob/master/gem/nokogiri/CVE-2019-5477.yml"
+        },
+        {
+          "type": "cve",
+          "name": "CVE-2019-5477",
+          "value": "CVE-2019-5477",
+          "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5477"
+        }
+      ],
+      "links": [
+        {
+          "url": "https://github.com/sparklemotion/nokogiri/issues/1915"
+        },
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2019-5477"
+        }
+      ],
+      "details": {
+        "vulnerable_package": {
+          "type": "text",
+          "name": "Vulnerable Package",
+          "value": "nokogiri:1.8.2"
+        }
+      }
+    },
+    {
+      "id": "b0617ed01f15c4c52d4d1cd76295f1d8477fff3ad662f6584da8cb91e6480b64",
+      "name": "Improper Neutralization of Escape, Meta, or Control Sequences",
+      "description": "A sequence injection vulnerability exists in Rack \u003c2.0.9.1, \u003c2.1.4.1 and \u003c2.2.3.1 which could allow is a possible shell escape in the Lint and CommonLogger components of Rack.",
+      "cve": "",
+      "severity": "Critical",
+      "solution": "Upgrade to versions 2.0.9.1, 2.1.4.1, 2.2.3.1 or above.",
+      "location": {
+        "file": "Gemfile.lock",
+        "dependency": {
+          "package": {
+            "name": "rack"
+          },
+          "version": "2.0.4"
+        }
+      },
+      "identifiers": [
+        {
+          "type": "gemnasium",
+          "name": "Gemnasium-cd1f3f9e-a685-4106-8dff-125e7cf1ea8d",
+          "value": "cd1f3f9e-a685-4106-8dff-125e7cf1ea8d",
+          "url": "https://gitlab.com/gitlab-org/security-products/gemnasium-db/-/blob/master/gem/rack/CVE-2022-30123.yml"
+        },
+        {
+          "type": "cve",
+          "name": "CVE-2022-30123",
+          "value": "CVE-2022-30123",
+          "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-30123"
+        },
+        {
+          "type": "ghsa",
+          "name": "GHSA-wq4h-7r42-5hrr",
+          "value": "GHSA-wq4h-7r42-5hrr",
+          "url": "https://github.com/advisories/GHSA-wq4h-7r42-5hrr"
+        }
+      ],
+      "links": [
+        {
+          "url": "https://discuss.rubyonrails.org/t/cve-2022-30123-possible-shell-escape-sequence-injection-vulnerability-in-rack/80728"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-wq4h-7r42-5hrr"
+        },
+        {
+          "url": "https://github.com/rubysec/ruby-advisory-db/blob/master/gems/rack/CVE-2022-30123.yml"
+        },
+        {
+          "url": "https://groups.google.com/g/ruby-security-ann/c/LWB10kWzag8"
+        },
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-30123"
+        }
+      ],
+      "details": {
+        "vulnerable_package": {
+          "type": "text",
+          "name": "Vulnerable Package",
+          "value": "rack:2.0.4"
+        }
+      }
+    },
+    {
+      "id": "bd91ebcc8340a19877b33986864591c9158f53b4fbfb4b69169c445e2b96741f",
+      "name": "Deserialization of Untrusted Data",
+      "description": "A possible escalation to RCE vulnerability exists when using YAML serialized columns in Active Record \u003c 7.0.3.1, \u003c6.1.6.1, \u003c6.0.5.1 and \u003c5.2.8.1 which could allow an attacker, that can manipulate data in the database (via means like SQL injection), the ability to escalate to an RCE.",
+      "cve": "",
+      "severity": "Critical",
+      "solution": "Upgrade to versions 5.2.8.1, 6.0.5.1, 6.1.6.1, 7.0.3.1 or above.",
+      "location": {
+        "file": "Gemfile.lock",
+        "dependency": {
+          "package": {
+            "name": "activerecord"
+          },
+          "version": "5.0.0"
+        }
+      },
+      "identifiers": [
+        {
+          "type": "gemnasium",
+          "name": "Gemnasium-b60c2d6b-9083-4a97-a1b2-f7dc79bff74c",
+          "value": "b60c2d6b-9083-4a97-a1b2-f7dc79bff74c",
+          "url": "https://gitlab.com/gitlab-org/security-products/gemnasium-db/-/blob/master/gem/activerecord/CVE-2022-32224.yml"
+        },
+        {
+          "type": "cve",
+          "name": "CVE-2022-32224",
+          "value": "CVE-2022-32224",
+          "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-32224"
+        },
+        {
+          "type": "ghsa",
+          "name": "GHSA-3hhc-qp5v-9p2j",
+          "value": "GHSA-3hhc-qp5v-9p2j",
+          "url": "https://github.com/advisories/GHSA-3hhc-qp5v-9p2j"
+        }
+      ],
+      "links": [
+        {
+          "url": "https://discuss.rubyonrails.org/t/cve-2022-32224-possible-rce-escalation-bug-with-serialized-columns-in-active-record/81017"
+        },
+        {
+          "url": "https://github.com/advisories/GHSA-3hhc-qp5v-9p2j"
+        },
+        {
+          "url": "https://github.com/rails/rails/commit/611990f1a6c137c2d56b1ba06b27e5d2434dcd6a"
+        },
+        {
+          "url": "https://github.com/rubysec/ruby-advisory-db/blob/master/gems/activerecord/CVE-2022-32224.yml"
+        },
+        {
+          "url": "https://groups.google.com/g/rubyonrails-security/c/MmFO3LYQE8U"
+        },
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2022-32224"
+        }
+      ],
+      "details": {
+        "vulnerable_package": {
+          "type": "text",
+          "name": "Vulnerable Package",
+          "value": "activerecord:5.0.0"
+        }
+      }
+    },
+    {
+      "id": "bce603780de687ec2d42b2c2e6b26ea7ee6122096147d08d629adf1a82870d0c",
+      "name": "Deserialization of Untrusted Data",
+      "description": "A deserialization of untrusted data vulnernerability exists in rails, rails that can allow an attacker to unmarshal user-provided objects in MemCacheStore and RedisCacheStore potentially resulting in an RCE.",
+      "cve": "",
+      "severity": "Critical",
+      "solution": "Upgrade to versions 5.2.4.3, 6.0.3.1 or above.",
+      "location": {
+        "file": "Gemfile.lock",
+        "dependency": {
+          "package": {
+            "name": "activesupport"
+          },
+          "version": "5.0.0"
+        }
+      },
+      "identifiers": [
+        {
+          "type": "gemnasium",
+          "name": "Gemnasium-0bd86a75-852d-40b6-93a4-adbdeeca6f04",
+          "value": "0bd86a75-852d-40b6-93a4-adbdeeca6f04",
+          "url": "https://gitlab.com/gitlab-org/security-products/gemnasium-db/-/blob/master/gem/activesupport/CVE-2020-8165.yml"
+        },
+        {
+          "type": "cve",
+          "name": "CVE-2020-8165",
+          "value": "CVE-2020-8165",
+          "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-8165"
+        }
+      ],
+      "links": [
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-8165"
+        }
+      ],
+      "details": {
+        "vulnerable_package": {
+          "type": "text",
+          "name": "Vulnerable Package",
+          "value": "activesupport:5.0.0"
+        }
+      }
+    },
+    {
+      "id": "fa0602ccc4bab42b4efa4cc56690d8b806bec89fcfb34007cb6766aa634e5ad5",
+      "name": "Deserialization of Untrusted Data",
+      "description": "A deserialization of untrusted data vulnernerability exists in rails that can allow an attacker to unmarshal user-provided objects in `MemCacheStore` and `RedisCacheStore` potentially resulting in an RCE.",
+      "cve": "",
+      "severity": "Critical",
+      "solution": "Upgrade to versions 5.2.4.3, 6.0.3.1 or above.",
+      "location": {
+        "file": "Gemfile.lock",
+        "dependency": {
+          "package": {
+            "name": "rails"
+          },
+          "version": "5.0.0"
+        }
+      },
+      "identifiers": [
+        {
+          "type": "gemnasium",
+          "name": "Gemnasium-b2dd3d82-1177-482e-8103-e75e76cb819a",
+          "value": "b2dd3d82-1177-482e-8103-e75e76cb819a",
+          "url": "https://gitlab.com/gitlab-org/security-products/gemnasium-db/-/blob/master/gem/rails/CVE-2020-8165.yml"
+        },
+        {
+          "type": "cve",
+          "name": "CVE-2020-8165",
+          "value": "CVE-2020-8165",
+          "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-8165"
+        }
+      ],
+      "links": [
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-8165"
+        }
+      ],
+      "details": {
+        "vulnerable_package": {
+          "type": "text",
+          "name": "Vulnerable Package",
+          "value": "rails:5.0.0"
+        }
+      }
+    },
+    {
+      "id": "5d8a934cf1d4cba22adae9daf7932a2e7accfbaa2080d284c7d68474904b2c50",
+      "name": "Uncontrolled Resource Consumption",
+      "description": "websocket-extensions ruby module allows Denial of Service (DoS) via Regex Backtracking. The extension parser may take quadratic time when parsing a header containing an unclosed string parameter value whose content is a repeating two-byte sequence of a backslash and some other character. This could be abused by an attacker to conduct Regex Denial Of Service (ReDoS) on a single-threaded server by providing a malicious payload with the `Sec-WebSocket-Extensions` header.",
+      "cve": "",
+      "severity": "High",
+      "solution": "Upgrade to version 0.1.5 or above.",
+      "location": {
+        "file": "Gemfile.lock",
+        "dependency": {
+          "package": {
+            "name": "websocket-extensions"
+          },
+          "version": "0.1.3"
+        }
+      },
+      "identifiers": [
+        {
+          "type": "gemnasium",
+          "name": "Gemnasium-cfd3a6ba-c9fa-49a4-ab69-1357c45a77f3",
+          "value": "cfd3a6ba-c9fa-49a4-ab69-1357c45a77f3",
+          "url": "https://gitlab.com/gitlab-org/security-products/gemnasium-db/-/blob/master/gem/websocket-extensions/CVE-2020-7663.yml"
+        },
+        {
+          "type": "cve",
+          "name": "CVE-2020-7663",
+          "value": "CVE-2020-7663",
+          "url": "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-7663"
+        },
+        {
+          "type": "ghsa",
+          "name": "GHSA-g6wq-qcwm-j5g2",
+          "value": "GHSA-g6wq-qcwm-j5g2",
+          "url": "https://github.com/advisories/GHSA-g6wq-qcwm-j5g2"
+        }
+      ],
+      "links": [
+        {
+          "url": "https://nvd.nist.gov/vuln/detail/CVE-2020-7663"
+        }
+      ],
+      "details": {
+        "vulnerable_package": {
+          "type": "text",
+          "name": "Vulnerable Package",
+          "value": "websocket-extensions:0.1.3"
+        }
+      }
+    }
+  ],
+  "dependency_files": [
+    {
+      "path": "requirements.txt",
+      "package_manager": "pip",
+      "dependencies": [
+        {
+          "package": {
+            "name": "Django"
+          },
+          "version": "1.11.4"
+        }
+      ]
+    },
+    {
+      "path": "Gemfile.lock",
+      "package_manager": "bundler",
+      "dependencies": [
+        {
+          "package": {
+            "name": "actioncable"
+          },
+          "version": "5.0.0"
+        },
+        {
+          "package": {
+            "name": "actionmailer"
+          },
+          "version": "5.0.0"
+        },
+        {
+          "package": {
+            "name": "actionpack"
+          },
+          "version": "5.0.0"
+        },
+        {
+          "package": {
+            "name": "actionview"
+          },
+          "version": "5.0.0"
+        },
+        {
+          "package": {
+            "name": "activejob"
+          },
+          "version": "5.0.0"
+        },
+        {
+          "package": {
+            "name": "activemodel"
+          },
+          "version": "5.0.0"
+        },
+        {
+          "package": {
+            "name": "activerecord"
+          },
+          "version": "5.0.0"
+        },
+        {
+          "package": {
+            "name": "activesupport"
+          },
+          "version": "5.0.0"
+        },
+        {
+          "package": {
+            "name": "arel"
+          },
+          "version": "7.1.4"
+        },
+        {
+          "package": {
+            "name": "builder"
+          },
+          "version": "3.2.3"
+        },
+        {
+          "package": {
+            "name": "coffee-rails"
+          },
+          "version": "4.2.2"
+        },
+        {
+          "package": {
+            "name": "coffee-script"
+          },
+          "version": "2.4.1"
+        },
+        {
+          "package": {
+            "name": "coffee-script-source"
+          },
+          "version": "1.12.2"
+        },
+        {
+          "package": {
+            "name": "concurrent-ruby"
+          },
+          "version": "1.0.5"
+        },
+        {
+          "package": {
+            "name": "crass"
+          },
+          "version": "1.0.3"
+        },
+        {
+          "package": {
+            "name": "erubis"
+          },
+          "version": "2.7.0"
+        },
+        {
+          "package": {
+            "name": "execjs"
+          },
+          "version": "2.7.0"
+        },
+        {
+          "package": {
+            "name": "ffi"
+          },
+          "version": "1.9.21"
+        },
+        {
+          "package": {
+            "name": "globalid"
+          },
+          "version": "0.4.1"
+        },
+        {
+          "package": {
+            "name": "i18n"
+          },
+          "version": "0.9.5"
+        },
+        {
+          "package": {
+            "name": "jbuilder"
+          },
+          "version": "2.7.0"
+        },
+        {
+          "package": {
+            "name": "loofah"
+          },
+          "version": "2.2.0"
+        },
+        {
+          "package": {
+            "name": "mail"
+          },
+          "version": "2.7.0"
+        },
+        {
+          "package": {
+            "name": "method_source"
+          },
+          "version": "0.9.0"
+        },
+        {
+          "package": {
+            "name": "mini_mime"
+          },
+          "version": "1.0.0"
+        },
+        {
+          "package": {
+            "name": "mini_portile2"
+          },
+          "version": "2.3.0"
+        },
+        {
+          "package": {
+            "name": "minitest"
+          },
+          "version": "5.11.3"
+        },
+        {
+          "package": {
+            "name": "multi_json"
+          },
+          "version": "1.13.1"
+        },
+        {
+          "package": {
+            "name": "nio4r"
+          },
+          "version": "1.2.1"
+        },
+        {
+          "package": {
+            "name": "nokogiri"
+          },
+          "version": "1.8.2"
+        },
+        {
+          "package": {
+            "name": "puma"
+          },
+          "version": "3.11.2"
+        },
+        {
+          "package": {
+            "name": "rack"
+          },
+          "version": "2.0.4"
+        },
+        {
+          "package": {
+            "name": "rack-test"
+          },
+          "version": "0.6.3"
+        },
+        {
+          "package": {
+            "name": "rails"
+          },
+          "version": "5.0.0"
+        },
+        {
+          "package": {
+            "name": "rails-dom-testing"
+          },
+          "version": "2.0.3"
+        },
+        {
+          "package": {
+            "name": "rails-html-sanitizer"
+          },
+          "version": "1.0.3"
+        },
+        {
+          "package": {
+            "name": "railties"
+          },
+          "version": "5.0.0"
+        },
+        {
+          "package": {
+            "name": "rake"
+          },
+          "version": "12.3.0"
+        },
+        {
+          "package": {
+            "name": "rb-fsevent"
+          },
+          "version": "0.10.2"
+        },
+        {
+          "package": {
+            "name": "rb-inotify"
+          },
+          "version": "0.9.10"
+        },
+        {
+          "package": {
+            "name": "sass"
+          },
+          "version": "3.5.5"
+        },
+        {
+          "package": {
+            "name": "sass-listen"
+          },
+          "version": "4.0.0"
+        },
+        {
+          "package": {
+            "name": "sass-rails"
+          },
+          "version": "5.0.7"
+        },
+        {
+          "package": {
+            "name": "sprockets"
+          },
+          "version": "3.7.1"
+        },
+        {
+          "package": {
+            "name": "sprockets-rails"
+          },
+          "version": "3.2.1"
+        },
+        {
+          "package": {
+            "name": "sqlite3"
+          },
+          "version": "1.3.13"
+        },
+        {
+          "package": {
+            "name": "thor"
+          },
+          "version": "0.20.0"
+        },
+        {
+          "package": {
+            "name": "thread_safe"
+          },
+          "version": "0.3.6"
+        },
+        {
+          "package": {
+            "name": "tilt"
+          },
+          "version": "2.0.8"
+        },
+        {
+          "package": {
+            "name": "turbolinks"
+          },
+          "version": "5.1.0"
+        },
+        {
+          "package": {
+            "name": "turbolinks-source"
+          },
+          "version": "5.1.0"
+        },
+        {
+          "package": {
+            "name": "tzinfo"
+          },
+          "version": "1.2.5"
+        },
+        {
+          "package": {
+            "name": "uglifier"
+          },
+          "version": "4.1.6"
+        },
+        {
+          "package": {
+            "name": "websocket-driver"
+          },
+          "version": "0.6.5"
+        },
+        {
+          "package": {
+            "name": "websocket-extensions"
+          },
+          "version": "0.1.3"
+        }
+      ]
+    }
+  ],
+  "scan": {
+    "analyzer": {
+      "id": "gemnasium",
+      "name": "Gemnasium",
+      "url": "https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium",
+      "vendor": {
+        "name": "GitLab"
+      },
+      "version": "4.1.0"
+    },
+    "scanner": {
+      "id": "gemnasium",
+      "name": "Gemnasium",
+      "url": "https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium",
+      "vendor": {
+        "name": "GitLab"
+      },
+      "version": "4.1.0"
+    },
+    "type": "dependency_scanning",
+    "start_time": "2023-07-07T07:45:23",
+    "end_time": "2023-07-07T07:45:25",
+    "status": "success"
+  }
+}

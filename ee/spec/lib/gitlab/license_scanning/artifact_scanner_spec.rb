@@ -122,4 +122,55 @@ RSpec.describe ::Gitlab::LicenseScanning::ArtifactScanner, feature_category: :so
       end
     end
   end
+
+  describe '#add_licenses' do
+    let(:mit) { { name: "MIT", url: "http://opensource.org/licenses/mit-license" } }
+    let(:bsd) { { name: "New BSD", url: "http://opensource.org/licenses/BSD-3-Clause" } }
+    let(:pipeline) { create(:ee_ci_pipeline, :with_license_scanning_report, project: project) }
+    let(:dependencies) do
+      [
+        { name: "actioncable", licenses: [] },
+        { name: "ffi", licenses: [] },
+        { name: "no-match-in-license-scanning-report", licenses: [] }
+      ]
+    end
+
+    subject(:dependencies_with_licenses) do
+      described_class.new(project, pipeline).add_licenses(dependencies)
+    end
+
+    it 'adds licenses to dependencies whose name matches a dependency in the license scanning report' do
+      expect(dependencies_with_licenses).to eq([
+        { name: "actioncable", licenses: [mit] },
+        { name: "ffi", licenses: [bsd] },
+        { name: "no-match-in-license-scanning-report", licenses: [] }
+      ])
+    end
+
+    context 'when license already exists' do
+      before do
+        dependencies[0][:licenses] << mit
+      end
+
+      it 'does not apply the license a second time' do
+        expect(dependencies_with_licenses).to eq([
+          { name: "actioncable", licenses: [mit] },
+          { name: "ffi", licenses: [bsd] },
+          { name: "no-match-in-license-scanning-report", licenses: [] }
+        ])
+      end
+    end
+
+    context 'with empty license list' do
+      let(:pipeline) { create(:ee_ci_pipeline, project: project) }
+
+      it 'does not apply any licenses' do
+        expect(dependencies_with_licenses).to eq([
+          { name: "actioncable", licenses: [] },
+          { name: "ffi", licenses: [] },
+          { name: "no-match-in-license-scanning-report", licenses: [] }
+        ])
+      end
+    end
+  end
 end

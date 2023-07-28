@@ -52,6 +52,24 @@ FactoryBot.define do
       end
     end
 
+    trait :dependency_scanning_with_matching_licenses do
+      name { :dependency_scanning }
+
+      after(:build) do |build|
+        build.job_artifacts << build(:ee_ci_job_artifact, :dependency_scanning_with_matching_licenses_data, job: build)
+        build.job_artifacts << build(:ee_ci_job_artifact, :license_scanning, job: build)
+      end
+    end
+
+    trait :cyclonedx_with_matching_dependency_files do
+      name { :dependency_scanning }
+
+      after(:build) do |build|
+        build.job_artifacts << build(:ee_ci_job_artifact, :dependency_scanning_with_matching_licenses_data, job: build)
+        build.job_artifacts << build(:ee_ci_job_artifact, :cyclonedx, job: build)
+      end
+    end
+
     trait :metrics do
       after(:build) do |build|
         build.job_artifacts << build(:ee_ci_job_artifact, :metrics, job: build)

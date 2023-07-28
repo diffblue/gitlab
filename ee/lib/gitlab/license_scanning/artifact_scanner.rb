@@ -33,6 +33,37 @@ module Gitlab
         pipeline.builds.latest.license_scan.last
       end
       strong_memoize_attr :latest_build_for_default_branch
+
+      def add_licenses(dependencies)
+        report.licenses.each do |license|
+          apply_license(license, dependencies)
+        end
+
+        dependencies
+      end
+
+      private
+
+      def apply_license(license, dependencies)
+        dependencies.each do |component|
+          next unless license_includes_component?(license, component)
+          next if component[:licenses].find { |license_hash| license_hash[:name] == license.name }
+
+          component[:licenses].push(name: license.name, url: license.url)
+        end
+      end
+
+      def license_includes_component?(license, component)
+        license.dependencies.find do |license_dependency|
+          # TODO: normalization doesn't currently do anything because license scanning reports
+          # do not have a purl_type value.
+          # See https://gitlab.com/gitlab-org/security/gitlab/-/issues/921 for more details.
+          dependency_name = ::Sbom::PackageUrl::Normalizer.new(
+            type: license_dependency.purl_type, text: component[:name]).normalize_name
+
+          license_dependency.name == dependency_name
+        end
+      end
     end
   end
 end

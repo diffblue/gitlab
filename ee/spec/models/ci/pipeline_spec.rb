@@ -375,7 +375,7 @@ RSpec.describe Ci::Pipeline do
 
           expect(subject.dependencies.count).to eq(21)
           expect(mini_portile2[:name]).not_to be_empty
-          expect(mini_portile2[:licenses]).not_to be_empty
+          expect(mini_portile2[:licenses]).to be_empty
         end
       end
 

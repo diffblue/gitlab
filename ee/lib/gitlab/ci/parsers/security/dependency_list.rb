@@ -54,12 +54,6 @@ module Gitlab
             "#{CONTAINER_IMAGE_PATH_PREFIX}#{finding.image}"
           end
 
-          def apply_licenses!(license_report, report)
-            license_report.licenses.each do |license|
-              report.apply_license(license)
-            end
-          end
-
           private
 
           attr_reader :formatter, :pipeline, :project

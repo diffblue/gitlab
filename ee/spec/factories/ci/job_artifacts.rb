@@ -338,6 +338,16 @@ FactoryBot.define do
       end
     end
 
+    trait :dependency_scanning_with_matching_licenses_data do
+      file_format { :raw }
+      file_type { :dependency_scanning }
+
+      after(:build) do |artifact, _|
+        artifact.file = fixture_file_upload(
+          Rails.root.join('ee/spec/fixtures/security_reports/dependency_list/with_matching_licenses/gl-dependency-scanning-report.json'), 'application/json')
+      end
+    end
+
     trait :license_scan do
       file_type { :license_scanning }
       file_format { :raw }
