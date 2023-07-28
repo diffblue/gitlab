@@ -64,12 +64,12 @@ describe('GlobalSearchModal', () => {
     scopedSearchOptions: () => MOCK_SCOPED_SEARCH_OPTIONS,
   };
 
-  const createComponent = (
+  const createComponent = ({
     initialState = deafaultMockState,
     mockGetters = defaultMockGetters,
     stubs,
     glFeatures = { commandPalette: false },
-  ) => {
+  } = {}) => {
     const store = new Vuex.Store({
       state: {
         ...deafaultMockState,
@@ -148,7 +148,7 @@ describe('GlobalSearchModal', () => {
       describe(`when search is ${search}`, () => {
         beforeEach(() => {
           window.gon.current_username = MOCK_USERNAME;
-          createComponent({ search }, {});
+          createComponent({ initialState: { search }, mockGetters: {} });
           findGlobalSearchInput().vm.$emit('click');
         });
 
@@ -180,15 +180,15 @@ describe('GlobalSearchModal', () => {
         describe(`search is "${search}" and loading is ${loading}`, () => {
           beforeEach(() => {
             window.gon.current_username = username;
-            createComponent(
-              {
+            createComponent({
+              initialState: {
                 search,
                 loading,
               },
-              {
+              mockGetters: {
                 searchOptions: () => searchOptions,
               },
-            );
+            });
           });
 
           it(`sets description to ${expectedDesc}`, () => {
@@ -208,7 +208,7 @@ describe('GlobalSearchModal', () => {
       `('token', ({ search, hasToken }) => {
         beforeEach(() => {
           window.gon.current_username = MOCK_USERNAME;
-          createComponent({ search });
+          createComponent({ initialState: { search } });
           findGlobalSearchInput().vm.$emit('click');
         });
 
@@ -220,12 +220,12 @@ describe('GlobalSearchModal', () => {
       describe.each(MOCK_SCOPED_SEARCH_OPTIONS)('token content', (searchOption) => {
         beforeEach(() => {
           window.gon.current_username = MOCK_USERNAME;
-          createComponent(
-            { search: MOCK_SEARCH },
-            {
+          createComponent({
+            initialState: { search: MOCK_SEARCH },
+            mockGetters: {
               searchOptions: () => [searchOption],
             },
-          );
+          });
           findGlobalSearchInput().vm.$emit('click');
         });
 
@@ -247,12 +247,12 @@ describe('GlobalSearchModal', () => {
       `('token', ({ searchOptions, iconName }) => {
         beforeEach(() => {
           window.gon.current_username = MOCK_USERNAME;
-          createComponent(
-            { search: MOCK_SEARCH },
-            {
+          createComponent({
+            initialState: { search: MOCK_SEARCH },
+            mockGetters: {
               searchOptions: () => searchOptions,
             },
-          );
+          });
           findGlobalSearchInput().vm.$emit('click');
         });
 
@@ -287,8 +287,11 @@ describe('GlobalSearchModal', () => {
         'when FF `command_palette` is enabled and search handle is %s',
         (handle) => {
           beforeEach(() => {
-            createComponent({ search: handle }, undefined, undefined, {
-              commandPalette: true,
+            createComponent({
+              initialState: { search: handle },
+              glFeatures: {
+                commandPalette: true,
+              },
             });
           });
 
@@ -362,8 +365,11 @@ describe('GlobalSearchModal', () => {
 
         describe('in command mode', () => {
           beforeEach(() => {
-            createComponent({ search: '>' }, undefined, undefined, {
-              commandPalette: true,
+            createComponent({
+              initialState: { search: '>' },
+              glFeatures: {
+                commandPalette: true,
+              },
             });
             submitSearch();
           });
@@ -375,7 +381,7 @@ describe('GlobalSearchModal', () => {
 
         describe('in search mode', () => {
           it('will NOT submit a search with less than min characters', () => {
-            createComponent({ search: 'x' });
+            createComponent({ initialState: { search: 'x' } });
             submitSearch();
             expect(visitUrl).not.toHaveBeenCalledWith(MOCK_SEARCH_QUERY);
           });
@@ -391,7 +397,7 @@ describe('GlobalSearchModal', () => {
 
     describe('Modal events', () => {
       beforeEach(() => {
-        createComponent({ search: 'searchQuery' });
+        createComponent({ initialState: { search: 'searchQuery' } });
       });
 
       it('should emit `shown` event when modal shown`', () => {
