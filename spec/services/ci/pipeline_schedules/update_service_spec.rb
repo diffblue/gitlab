@@ -7,13 +7,6 @@ RSpec.describe Ci::PipelineSchedules::UpdateService, feature_category: :continuo
   let_it_be_with_reload(:project) { create(:project, :public, :repository) }
   let_it_be_with_reload(:pipeline_schedule) { create(:ci_pipeline_schedule, project: project, owner: user) }
   let_it_be(:reporter) { create(:user) }
-<<<<<<< HEAD
-  let_it_be(:project) { create(:project, :public, :repository) }
-  let_it_be(:pipeline_schedule) do
-    create(:ci_pipeline_schedule, project: project, owner: user, ref: 'master')
-  end
-=======
->>>>>>> source-project/master
 
   let_it_be(:pipeline_schedule_variable) do
     create(:ci_pipeline_schedule_variable,
