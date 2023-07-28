@@ -107,6 +107,8 @@ module QA
         Page::Project::Menu.perform(&:click_project)
         Page::Project::Menu.perform(&:go_to_vulnerability_report)
 
+        EE::Page::Project::Secure::SecurityDashboard.perform(&:wait_for_vuln_report_to_load)
+
         EE::Page::Project::Secure::Show.perform do |dashboard|
           filter_report_and_perform(page: dashboard, filter_report: "Dependency Scanning", project_filter: true) do
             expect(dashboard).to have_vulnerability dependency_scan_example_vuln
@@ -180,6 +182,8 @@ module QA
         wait_for_pipeline_success
 
         Page::Project::Menu.perform(&:go_to_vulnerability_report)
+
+        EE::Page::Project::Secure::SecurityDashboard.perform(&:wait_for_vuln_report_to_load)
 
         EE::Page::Project::Secure::Show.perform do |security_dashboard|
           security_dashboard.filter_report_type("SAST") do
