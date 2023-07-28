@@ -59,11 +59,11 @@ module QA
 
           it 'closes and reopens an epic', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347984' do
             EE::Page::Group::Epic::Show.perform do |show|
-              show.close_reopen_epic
+              show.close_epic
 
               expect(show).to have_system_note('closed')
 
-              show.close_reopen_epic
+              show.reopen_epic
 
               expect(show).to have_system_note('opened')
             end
