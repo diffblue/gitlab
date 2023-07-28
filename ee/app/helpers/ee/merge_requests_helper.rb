@@ -42,5 +42,13 @@ module EE
     def diff_llm_summary(merge_request)
       merge_request.latest_merge_request_diff&.merge_request_diff_llm_summary
     end
+
+    def review_llm_summary_allowed?(merge_request, user)
+      Ability.allowed?(user, :summarize_submitted_review, merge_request)
+    end
+
+    def review_llm_summary(merge_request, reviewer)
+      merge_request.latest_merge_request_diff&.latest_review_summary_from_reviewer(reviewer)
+    end
   end
 end
