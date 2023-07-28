@@ -42,6 +42,12 @@ module Gitlab
               provider: MergeRequest::ReviewLlmSummary.providers[:vertex_ai],
               content: response_modifier.response_body
             )
+
+            create_todo(review)
+          end
+
+          def create_todo(review)
+            TodoService.new.review_submitted(review)
           end
         end
       end

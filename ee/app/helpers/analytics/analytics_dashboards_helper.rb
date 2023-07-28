@@ -10,6 +10,7 @@ module Analytics
         namespace_id: namespace.id,
         is_project: is_project.to_s,
         dashboard_project: analytics_dashboard_pointer_project(namespace)&.to_json,
+        can_configure_dashboards_project: can_configure_dashboards_project?(namespace).to_s,
         tracking_key: can_read_product_analytics && is_project ? tracking_key(namespace) : nil,
         collector_host: can_read_product_analytics ? collector_host : nil,
         chart_empty_state_illustration_path: image_path('illustrations/chart-empty-state.svg'),
@@ -55,6 +56,12 @@ module Analytics
         ::Feature.enabled?(:product_analytics_dashboards, project) &&
         project.licensed_feature_available?(:product_analytics) &&
         can?(current_user, :read_product_analytics, project)
+    end
+
+    def can_configure_dashboards_project?(namespace)
+      return false unless project?(namespace)
+
+      can?(current_user, :admin_project, namespace)
     end
 
     def analytics_dashboard_pointer_project(namespace)

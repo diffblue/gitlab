@@ -6,6 +6,7 @@ RSpec.describe Issues::UpdateService, feature_category: :team_planning do
   let_it_be(:group) { create(:group) }
   let_it_be_with_reload(:project) { create(:project, group: group) }
   let_it_be_with_reload(:issue) { create(:issue, project: project) }
+  let_it_be(:namespace) { project.namespace }
   let_it_be(:epic) { create(:epic, group: group) }
   let_it_be(:non_member) { create(:user) }
 
@@ -392,8 +393,8 @@ RSpec.describe Issues::UpdateService, feature_category: :team_planning do
               subject
             end
 
-            it_behaves_like 'issue_edit snowplow tracking' do
-              let(:property) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_ADDED_TO_EPIC }
+            it_behaves_like 'internal event tracking' do
+              let(:action) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_ADDED_TO_EPIC }
             end
           end
 
@@ -431,8 +432,8 @@ RSpec.describe Issues::UpdateService, feature_category: :team_planning do
               subject
             end
 
-            it_behaves_like 'issue_edit snowplow tracking' do
-              let(:property) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_CHANGED_EPIC }
+            it_behaves_like 'internal event tracking' do
+              let(:action) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_CHANGED_EPIC }
             end
           end
 
@@ -548,8 +549,8 @@ RSpec.describe Issues::UpdateService, feature_category: :team_planning do
               subject
             end
 
-            it_behaves_like 'issue_edit snowplow tracking' do
-              let(:property) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_REMOVED_FROM_EPIC }
+            it_behaves_like 'internal event tracking' do
+              let(:action) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_REMOVED_FROM_EPIC }
             end
           end
 

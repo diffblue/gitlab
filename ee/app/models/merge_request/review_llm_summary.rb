@@ -11,6 +11,8 @@ class MergeRequest::ReviewLlmSummary < ApplicationRecord
 
   enum provider: { open_ai: 0, vertex_ai: 1 }
 
+  scope :from_reviewer, ->(reviewer) { joins(:review).where(review: { author_id: reviewer.id }) }
+
   def reviewer
     review.author
   end

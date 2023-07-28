@@ -120,9 +120,10 @@ RSpec.describe Issues::MoveService, feature_category: :team_planning do
           subject
         end
 
-        it_behaves_like 'issue_edit snowplow tracking' do
-          let(:property) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_CHANGED_EPIC }
+        it_behaves_like 'internal event tracking' do
+          let(:action) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_CHANGED_EPIC }
           let(:project) { new_project }
+          let(:namespace) { project.namespace }
         end
       end
 

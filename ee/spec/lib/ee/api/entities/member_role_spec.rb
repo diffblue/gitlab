@@ -14,6 +14,8 @@ RSpec.describe EE::API::Entities::MemberRole do
 
     it 'exposes the attributes' do
       expect(subject[:id]).to eq member_role.id
+      expect(subject[:name]).to eq member_role.name
+      expect(subject[:description]).to eq member_role.description
       expect(subject[:base_access_level]).to eq member_role.base_access_level
       expect(subject[:read_code]).to eq member_role.read_code
       expect(subject[:read_vulnerability]).to eq member_role.read_vulnerability
