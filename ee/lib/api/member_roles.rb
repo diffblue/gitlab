@@ -42,6 +42,9 @@ module API
           documentation: { example: 10 }
         )
 
+        optional :name, type: String, desc: "Name for role (default: 'Custom')"
+        optional :description, type: String, desc: "Description of role usage"
+
         ::MemberRole::ALL_CUSTOMIZABLE_PERMISSIONS.each do |permission_name, permission_params|
           optional permission_name.to_s, type: Boolean, desc: permission_params[:description], default: false
         end
@@ -49,8 +52,9 @@ module API
 
       post ":id/member_roles" do
         group = find_group(params[:id])
+        name = declared_params[:name].presence || "#{Gitlab::Access.human_access(params[:base_access_level])} - custom"
 
-        member_role = group.member_roles.new(declared_params)
+        member_role = group.member_roles.new(declared_params.merge(name: name))
 
         if member_role.save
           present member_role, with: EE::API::Entities::MemberRole

@@ -95,6 +95,8 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
               [
                 {
                   "id" => member_role_1.id,
+                  "name" => member_role_1.name,
+                  "description" => member_role_1.description,
                   "base_access_level" => ::Gitlab::Access::REPORTER,
                   "read_code" => false,
                   "read_dependency" => false,
@@ -104,6 +106,8 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
                 },
                 {
                   "id" => member_role_2.id,
+                  "name" => member_role_2.name,
+                  "description" => member_role_2.description,
                   "base_access_level" => ::Gitlab::Access::REPORTER,
                   "read_code" => true,
                   "read_dependency" => true,
@@ -139,7 +143,12 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
 
   describe "POST /groups/:id/member_roles" do
     let_it_be(:params) do
-      { base_access_level: ::Gitlab::Access::GUEST, read_code: true }
+      {
+        base_access_level: ::Gitlab::Access::GUEST,
+        read_code: true,
+        name: 'Guest + read_code',
+        description: 'My custom guest role'
+      }
     end
 
     subject { post api("/groups/#{group_id}/member_roles", current_user), params: params }
@@ -183,6 +192,32 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
             expect(response).to have_gitlab_http_status(:created)
             expect(json_response['base_access_level']).to eq(::Gitlab::Access::GUEST)
             expect(json_response['read_code']).to eq(true)
+            expect(json_response['name']).to eq('Guest + read_code')
+            expect(json_response['description']).to eq('My custom guest role')
+          end
+        end
+
+        context "when no name param is passed" do
+          let_it_be(:params) do
+            {
+              base_access_level: ::Gitlab::Access::REPORTER,
+              read_vulnerability: true,
+              name: nil
+            }
+          end
+
+          it "populates a default name based on the access level passed in" do
+            expect do
+              subject
+            end.to change { group_with_member_roles.member_roles.count }.by(1)
+
+            aggregate_failures "testing response" do
+              expect(response).to have_gitlab_http_status(:created)
+              expect(json_response['base_access_level']).to eq(::Gitlab::Access::REPORTER)
+              expect(json_response['read_vulnerability']).to eq(true)
+              expect(json_response['name']).to eq('Reporter - custom')
+              expect(json_response['description']).to eq(nil)
+            end
           end
         end
 
