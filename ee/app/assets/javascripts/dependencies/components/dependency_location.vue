@@ -1,6 +1,7 @@
 <script>
 import { GlIcon, GlIntersperse, GlLink, GlPopover, GlTruncate } from '@gitlab/ui';
 import { n__ } from '~/locale';
+import { DEPENDENCIES_TABLE_I18N } from '../constants';
 import DependencyPathViewer from './dependency_path_viewer.vue';
 
 export const VISIBLE_DEPENDENCY_COUNT = 2;
@@ -57,7 +58,11 @@ export default {
     nMoreMessage() {
       return n__('Dependencies|%d more', 'Dependencies|%d more', this.remainingDependenciesCount);
     },
+    hasPaths() {
+      return this.location.path && this.location.blobPath;
+    },
   },
+  i18n: DEPENDENCIES_TABLE_I18N,
 };
 </script>
 
@@ -67,6 +72,7 @@ export default {
     <span>
       <component
         :is="locationComponent"
+        v-if="hasPaths"
         class="gl-md-white-space-nowrap"
         data-testid="dependency-path"
         :href="location.blobPath"
@@ -81,6 +87,7 @@ export default {
         />
         <span class="gl-md-display-none">{{ locationPath }}</span>
       </component>
+      <span v-else>{{ $options.i18n.unknown }}</span>
       <span v-if="isTopLevelDependency">{{ s__('Dependencies|(top level)') }}</span>
     </span>
 
