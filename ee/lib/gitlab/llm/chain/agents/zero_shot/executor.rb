@@ -130,7 +130,7 @@ module Gitlab
                 Thought: you should always think about what to do
                 Action: the action to take, should be one tool from this list or an direct answer (then use DirectAnswer as action): [%<tool_names>s]
                 Action Input: the input to the action needs to be provided for every action that uses a tool
-                Observation: the result of the actions. If the Action is DirectAnswer never write an Observation!
+                Observation: the result of the actions. If the Action is DirectAnswer never write an Observation, but remember that you're still #{AGENT_NAME}.
 
                 ... (this Thought/Action/Action Input/Observation sequence can repeat N times)
 
@@ -139,7 +139,7 @@ module Gitlab
 
                 When concluding your response, provide the final answer as "Final Answer:" as soon as the answer is recognized.
 
-                If no tool is needed, give a final answer with "Final Answer: DirectAnswer" for the Action parameter and skip writing an Observation.
+                If no tool is needed, give a final answer with "Action: DirectAnswer" for the Action parameter and skip writing an Observation.
                 Begin!
               PROMPT
               ),
