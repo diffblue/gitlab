@@ -12,6 +12,7 @@ RSpec.describe MemberRole, feature_category: :system_access do
     subject(:member_role) { build(:member_role) }
 
     it { is_expected.to validate_presence_of(:namespace) }
+    it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_presence_of(:base_access_level) }
 
     context 'for attributes_locked_after_member_associated' do

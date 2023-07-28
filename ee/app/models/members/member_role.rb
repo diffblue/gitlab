@@ -24,6 +24,7 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   belongs_to :namespace
 
   validates :namespace, presence: true
+  validates :name, presence: true
   validates :base_access_level, presence: true
   validate :belongs_to_top_level_namespace
   validate :max_count_per_group_hierarchy, on: :create
