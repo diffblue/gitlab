@@ -390,6 +390,29 @@ RSpec.describe Search::GroupService, feature_category: :global_search,
         let(:results_updated) { described_class.new(nil, group, search: 'updated', sort: sort).execute }
       end
     end
+
+    context 'epics' do
+      let(:scope) { 'epics' }
+      let_it_be(:member) { create(:group_member, :owner, group: group, user: user) }
+
+      let!(:old_result) { create(:epic, group: group, title: 'sorted old', created_at: 1.month.ago) }
+      let!(:new_result) { create(:epic, group: group, title: 'sorted recent', created_at: 1.day.ago) }
+      let!(:very_old_result) { create(:epic, group: group, title: 'sorted very old', created_at: 1.year.ago) }
+
+      let!(:old_updated) { create(:epic, group: group, title: 'updated old', updated_at: 1.month.ago) }
+      let!(:new_updated) { create(:epic, group: group, title: 'updated recent', updated_at: 1.day.ago) }
+      let!(:very_old_updated) { create(:epic, group: group, title: 'updated very old', updated_at: 1.year.ago) }
+
+      let(:results_created) { described_class.new(user, group, search: 'sorted', sort: sort).execute }
+      let(:results_updated) { described_class.new(user, group, search: 'updated', sort: sort).execute }
+
+      before do
+        stub_licensed_features(epics: true)
+        ensure_elasticsearch_index!
+      end
+
+      include_examples 'search results sorted'
+    end
   end
 
   describe '#allowed_scopes' do

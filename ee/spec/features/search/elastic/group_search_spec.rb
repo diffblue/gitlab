@@ -87,6 +87,23 @@ RSpec.describe 'Group elastic search', :js, :elastic, :sidekiq_inline, :disable_
     end
   end
 
+  describe 'epic search' do
+    before do
+      stub_licensed_features(epics: true)
+
+      create(:epic, group: group, title: 'chosen epic title')
+
+      ensure_elasticsearch_index!
+    end
+
+    it 'finds the epic' do
+      submit_search('chosen')
+      select_search_scope('Epics')
+
+      expect(page).to have_content('chosen epic title')
+    end
+  end
+
   describe 'commit search' do
     before do
       project.repository.index_commits_and_blobs

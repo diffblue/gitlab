@@ -28,7 +28,9 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
       'blobs'          | nil             | nil
       'wiki_blobs'     | nil             | nil
       'commits'        | nil             | nil
+      'epics'          | nil             | nil
       'users'          | nil             | nil
+      'epics'          | nil             | nil
       'unknown'        | nil             | nil
     end
 
@@ -54,7 +56,9 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
       'issues'         | :issues_count         | 10000 | '10,000+'
       'merge_requests' | :merge_requests_count | 20000 | '10,000+'
       'milestones'     | :milestones_count     | nil   | '0'
+      'epics'          | :epics_count          | 200   | '200'
       'users'          | :users_count          | 100   | '100'
+      'epics'          | :epics_count          | 100   | '100'
       'unknown'        | nil                   | nil   | nil
     end
 

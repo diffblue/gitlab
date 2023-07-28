@@ -36,6 +36,21 @@ RSpec.describe Elastic::Latest::EpicInstanceProxy, feature_category: :global_sea
       )
     end
 
+    it 'does not have an N+1 for building the document' do
+      epic = create(:epic, group: group)
+
+      control = ActiveRecord::QueryRecorder.new do
+        epic.__elasticsearch__.as_indexed_json
+      end
+
+      group_with_parent = create(:group, :private, parent: group)
+      epic.update!(group_id: group_with_parent.id)
+
+      expect do
+        epic.__elasticsearch__.as_indexed_json
+      end.not_to exceed_query_limit(control.count)
+    end
+
     context 'with start date inherited date from child epic and due date inherited from milestone' do
       let_it_be(:epic) { create(:epic) }
       let_it_be(:child_epic) { create(:epic, :use_fixed_dates) }
