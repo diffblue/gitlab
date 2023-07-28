@@ -80,9 +80,10 @@ RSpec.describe ResourceEvents::ChangeWeightService, feature_category: :team_plan
       end
     end
 
-    it_behaves_like 'issue_edit snowplow tracking' do
-      let(:property) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_WEIGHT_CHANGED }
+    it_behaves_like 'internal event tracking' do
+      let(:action) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_WEIGHT_CHANGED }
       let(:project) { issue.project }
+      let(:namespace) { project.namespace }
     end
   end
 
