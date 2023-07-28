@@ -109,26 +109,7 @@ RSpec.describe Gitlab::Checks::TagCheck, feature_category: :source_code_manageme
             let(:ref) { "refs/tags/#{project.default_branch}" }
 
             it 'is prevented' do
-              expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, /Tag names cannot match the default branch, or any protected branch./)
-            end
-          end
-
-          context 'when tag name is the same as a protected branch' do
-            let(:protected_name) { 'protected' }
-            let!(:protected_branch) { create(:protected_branch, project: project, name: protected_name) }
-            let(:ref) { "refs/tags/#{protected_name}" }
-
-            it 'is prevented' do
-              expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, /Tag names cannot match the default branch, or any protected branch./)
-            end
-          end
-
-          context 'when tag name matches a wild card protected branch' do
-            let!(:protected_branch) { create(:protected_branch, project: project, name: 'protected*') }
-            let(:ref) { "refs/tags/protected.matching" }
-
-            it 'is prevented' do
-              expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, /Tag names cannot match the default branch, or any protected branch./)
+              expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, /cannot use default branch name to create a tag/)
             end
           end
         end
