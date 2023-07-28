@@ -15,33 +15,27 @@ module EE
 
         class_methods do
           def track_issue_health_status_changed_action(author:, project:)
-            track_snowplow_action(ISSUE_HEALTH_STATUS_CHANGED, author, project)
-            track_unique_action(ISSUE_HEALTH_STATUS_CHANGED, author)
+            track_internal_action(ISSUE_HEALTH_STATUS_CHANGED, author, project)
           end
 
           def track_issue_iteration_changed_action(author:, project:)
-            track_snowplow_action(ISSUE_ITERATION_CHANGED, author, project)
-            track_unique_action(ISSUE_ITERATION_CHANGED, author)
+            track_internal_action(ISSUE_ITERATION_CHANGED, author, project)
           end
 
           def track_issue_weight_changed_action(author:, project:)
-            track_snowplow_action(ISSUE_WEIGHT_CHANGED, author, project)
-            track_unique_action(ISSUE_WEIGHT_CHANGED, author)
+            track_internal_action(ISSUE_WEIGHT_CHANGED, author, project)
           end
 
           def track_issue_added_to_epic_action(author:, project:)
-            track_snowplow_action(ISSUE_ADDED_TO_EPIC, author, project)
-            track_unique_action(ISSUE_ADDED_TO_EPIC, author)
+            track_internal_action(ISSUE_ADDED_TO_EPIC, author, project)
           end
 
           def track_issue_removed_from_epic_action(author:, project:)
-            track_snowplow_action(ISSUE_REMOVED_FROM_EPIC, author, project)
-            track_unique_action(ISSUE_REMOVED_FROM_EPIC, author)
+            track_internal_action(ISSUE_REMOVED_FROM_EPIC, author, project)
           end
 
           def track_issue_changed_epic_action(author:, project:)
-            track_snowplow_action(ISSUE_CHANGED_EPIC, author, project)
-            track_unique_action(ISSUE_CHANGED_EPIC, author)
+            track_internal_action(ISSUE_CHANGED_EPIC, author, project)
           end
         end
       end

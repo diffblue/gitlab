@@ -104,5 +104,9 @@ module EE
       # Keep empty for now. Should be addressed in future
       # by https://gitlab.com/gitlab-org/gitlab/issues/33817
     end
+
+    def latest_review_summary_from_reviewer(reviewer)
+      merge_request_review_llm_summaries.from_reviewer(reviewer).last
+    end
   end
 end

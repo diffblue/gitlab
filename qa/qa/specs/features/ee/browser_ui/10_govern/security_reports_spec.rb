@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Govern', :runner, product_group: :threat_insights do
+  RSpec.describe 'Govern', :runner, product_group: :threat_insights, quarantine: {
+    type: :investigating,
+    issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/420136'
+  } do
     describe 'Security Reports' do
       let(:number_of_dependencies_in_fixture) { 13 }
       let(:dependency_scan_example_vuln) { 'Prototype pollution attack in mixin-deep' }

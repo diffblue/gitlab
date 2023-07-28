@@ -77,6 +77,7 @@ describe('DashboardsList', () => {
         collectorHost: TEST_COLLECTOR_HOST,
         trackingKey: TEST_TRACKING_KEY,
         customDashboardsProject: TEST_CUSTOM_DASHBOARDS_PROJECT,
+        canConfigureDashboardsProject: true,
         namespaceFullPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
         ...provided,
       },
@@ -136,21 +137,45 @@ describe('DashboardsList', () => {
     });
   });
 
-  describe.each`
-    isProject | relativeUrlRoot | url
-    ${true}   | ${'/'}          | ${'/test/test-dashboards/edit#js-analytics-dashboards-settings'}
-    ${true}   | ${'/path'}      | ${'/path/test/test-dashboards/edit#js-analytics-dashboards-settings'}
-    ${false}  | ${'/'}          | ${'/groups/test/test-dashboards/-/edit#js-analytics-dashboards-settings'}
-    ${false}  | ${'/path'}      | ${'/path/groups/test/test-dashboards/-/edit#js-analytics-dashboards-settings'}
-  `('configure dashboard project button', ({ isProject, relativeUrlRoot, url }) => {
-    beforeEach(() => {
-      gon.relative_url_root = relativeUrlRoot;
-      createWrapper({ isProject, customDashboardsProject: null });
+  describe('configure custom dashboards project', () => {
+    describe('when user has permission', () => {
+      it('shows the custom dashboard setup alert', () => {
+        createWrapper({ customDashboardsProject: null, canConfigureDashboardsProject: true });
+
+        expect(findConfigureAlert().exists()).toBe(true);
+      });
+
+      describe.each`
+        isProject | relativeUrlRoot | url
+        ${true}   | ${'/'}          | ${'/test/test-dashboards/edit#js-analytics-dashboards-settings'}
+        ${true}   | ${'/path'}      | ${'/path/test/test-dashboards/edit#js-analytics-dashboards-settings'}
+        ${false}  | ${'/'}          | ${'/groups/test/test-dashboards/-/edit#js-analytics-dashboards-settings'}
+        ${false}  | ${'/path'}      | ${'/path/groups/test/test-dashboards/-/edit#js-analytics-dashboards-settings'}
+      `('configure dashboard project button', ({ isProject, relativeUrlRoot, url }) => {
+        beforeEach(() => {
+          gon.relative_url_root = relativeUrlRoot;
+          createWrapper({
+            isProject,
+            customDashboardsProject: null,
+            canConfigureDashboardsProject: true,
+          });
+        });
+
+        it('redirects to the settings page', () => {
+          clickConfigureButton();
+          expect(visitUrl).toHaveBeenCalledWith(url);
+        });
+      });
     });
 
-    it('redirects to the settings page', () => {
-      clickConfigureButton();
-      expect(visitUrl).toHaveBeenCalledWith(url);
+    describe('when user does not have permission', () => {
+      beforeEach(() => {
+        createWrapper({ customDashboardsProject: null, canConfigureDashboardsProject: false });
+      });
+
+      it('does not show the custom dashboard setup alert', () => {
+        expect(findConfigureAlert().exists()).toBe(false);
+      });
     });
   });
 

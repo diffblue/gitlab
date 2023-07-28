@@ -87,6 +87,29 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
       end
     end
 
+    context 'when component has namespace' do
+      let_it_be(:report_component) do
+        build_stubbed(:ci_reports_sbom_component, namespace: 'org.apache.tomcat',
+          name: 'tomcat-catalina', purl_type: 'maven')
+      end
+
+      it 'returns a hash with name attribute having both namespace and name' do
+        expect(occurrence_map.to_h).to eq(
+          {
+            component_id: nil,
+            component_type: report_component.component_type,
+            component_version_id: nil,
+            name: 'org.apache.tomcat/tomcat-catalina',
+            purl_type: 'maven',
+            source: report_source.data,
+            source_id: nil,
+            source_type: report_source.source_type,
+            version: report_component.version
+          }
+        )
+      end
+    end
+
     describe 'normalization' do
       using RSpec::Parameterized::TableSyntax
 

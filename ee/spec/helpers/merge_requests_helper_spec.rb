@@ -108,4 +108,49 @@ RSpec.describe EE::MergeRequestsHelper, feature_category: :code_review_workflow 
       it { expect(helper.diff_llm_summary(merge_request)).to eq(nil) }
     end
   end
+
+  describe '#review_llm_summary_allowed?' do
+    let(:user) { build_stubbed(:user) }
+    let(:merge_request) { build_stubbed(:merge_request) }
+
+    it 'calls Ability.allowed? with summarize_submitted_review' do
+      expect(Ability)
+        .to receive(:allowed?)
+        .with(user, :summarize_submitted_review, merge_request)
+        .and_return(true)
+
+      expect(review_llm_summary_allowed?(merge_request, user)).to eq(true)
+    end
+  end
+
+  describe '#review_llm_summary' do
+    let_it_be(:merge_request) { build_stubbed(:merge_request) }
+    let_it_be(:reviewer) { build_stubbed(:user) }
+    let(:latest_merge_request_diff) { instance_double(MergeRequestDiff) }
+
+    before do
+      allow(merge_request)
+        .to receive(:latest_merge_request_diff)
+        .and_return(latest_merge_request_diff)
+    end
+
+    it 'returns latest review summary from reviewer' do
+      latest_review_summary = instance_double(MergeRequest::ReviewLlmSummary)
+
+      expect(latest_merge_request_diff)
+        .to receive(:latest_review_summary_from_reviewer)
+        .with(reviewer)
+        .and_return(latest_review_summary)
+
+      expect(review_llm_summary(merge_request, reviewer)).to eq(latest_review_summary)
+    end
+
+    context 'when merge request has no latest merge request diff' do
+      let(:latest_merge_request_diff) { nil }
+
+      it 'returns nil' do
+        expect(review_llm_summary(merge_request, reviewer)).to be_nil
+      end
+    end
+  end
 end
