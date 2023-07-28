@@ -176,7 +176,7 @@ module EE
       return if group_saml_identity(root_ancestor: true).present?
       return if group.root_ancestor.scim_identities.for_user(user).exists?
 
-      errors.add(:user, email_not_verified)
+      errors.add(:user, _('is not verified.'))
     end
 
     def email_does_not_match_any_allowed_domains(email)
@@ -191,10 +191,6 @@ module EE
       group_allowed_email_domains.any? do |allowed_email_domain|
         allowed_email_domain.email_matches_domain?(email)
       end
-    end
-
-    def email_not_verified
-      _("email '%{email}' is not a verified email." % { email: user.email })
     end
 
     def set_membership_activation
