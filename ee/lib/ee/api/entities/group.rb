@@ -28,6 +28,14 @@ module EE
           expose :wiki_access_level do |group|
             group.group_feature.string_access_level(:wiki)
           end
+
+          expose :repository_storage,
+            if: ->(group, options) {
+              group.licensed_feature_available?(:group_wikis) &&
+                Ability.allowed?(options[:current_user], :change_repository_storage)
+            } do |group|
+            group.group_wiki_repository&.shard_name
+          end
         end
       end
     end

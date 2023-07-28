@@ -107,6 +107,8 @@ module QA
         Page::Project::Menu.perform(&:click_project)
         Page::Project::Menu.perform(&:go_to_vulnerability_report)
 
+        EE::Page::Project::Secure::SecurityDashboard.perform(&:wait_for_vuln_report_to_load)
+
         EE::Page::Project::Secure::Show.perform do |dashboard|
           filter_report_and_perform(page: dashboard, filter_report: "Dependency Scanning", project_filter: true) do
             expect(dashboard).to have_vulnerability dependency_scan_example_vuln
@@ -181,6 +183,8 @@ module QA
 
         Page::Project::Menu.perform(&:go_to_vulnerability_report)
 
+        EE::Page::Project::Secure::SecurityDashboard.perform(&:wait_for_vuln_report_to_load)
+
         EE::Page::Project::Secure::Show.perform do |security_dashboard|
           security_dashboard.filter_report_type("SAST") do
             expect(security_dashboard).to have_vulnerability sast_scan_fp_example_vuln
@@ -238,7 +242,7 @@ module QA
       end
 
       def wait_for_pipeline_success
-        Support::Waiter.wait_until(sleep_interval: 3, message: "Check for pipeline success") do
+        Support::Waiter.wait_until(sleep_interval: 10, message: "Check for pipeline success") do
           latest_pipeline.status == 'success'
         end
       end
@@ -246,7 +250,7 @@ module QA
       def latest_pipeline
         Resource::Pipeline.fabricate_via_api! do |pipeline|
           pipeline.project = project
-          pipeline.id = project.pipelines.first[:id]
+          pipeline.id = project.pipelines.first&.fetch(:id)
         end
       end
 

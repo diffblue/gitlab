@@ -2638,19 +2638,13 @@ msgstr ""
 msgid "Active"
 msgstr ""
 
+msgid "Active %{accessTokenTypePlural} (%{totalAccessTokens})"
+msgstr ""
+
 msgid "Active Sessions"
 msgstr ""
 
 msgid "Active chat names (%{count})"
-msgstr ""
-
-msgid "Active group access tokens"
-msgstr ""
-
-msgid "Active personal access tokens"
-msgstr ""
-
-msgid "Active project access tokens"
 msgstr ""
 
 msgid "Activity"
@@ -2870,9 +2864,6 @@ msgid "Add new emoji"
 msgstr ""
 
 msgid "Add new key"
-msgstr ""
-
-msgid "Add new token"
 msgstr ""
 
 msgid "Add new webhook"
@@ -14468,9 +14459,6 @@ msgstr ""
 msgid "Dashboard"
 msgstr ""
 
-msgid "Dashboard uid not found"
-msgstr ""
-
 msgid "DashboardProjects|All"
 msgstr ""
 
@@ -14993,9 +14981,6 @@ msgid "DatadogIntegration|Trace your GitLab pipelines with Datadog."
 msgstr ""
 
 msgid "DatadogIntegration|have an invalid format"
-msgstr ""
-
-msgid "Datasource name not found"
 msgstr ""
 
 msgid "Date"
@@ -17740,9 +17725,6 @@ msgid "EnterpriseUsers|The user is already an enterprise user of the group"
 msgstr ""
 
 msgid "Environment"
-msgstr ""
-
-msgid "Environment is required for Stages::MetricEndpointInserter"
 msgstr ""
 
 msgid "Environment is required for Stages::VariableEndpointInserter"
@@ -21752,9 +21734,6 @@ msgstr ""
 msgid "Grafana URL"
 msgstr ""
 
-msgid "Grafana response contains invalid json"
-msgstr ""
-
 msgid "Grant access"
 msgstr ""
 
@@ -23592,9 +23571,6 @@ msgid "Impersonation Tokens"
 msgstr ""
 
 msgid "Impersonation has been disabled"
-msgstr ""
-
-msgid "Impersonation tokens"
 msgstr ""
 
 msgid "Import"
@@ -33298,9 +33274,6 @@ msgstr ""
 msgid "Parent"
 msgstr ""
 
-msgid "Parsing error for param :embed_json. %{message}"
-msgstr ""
-
 msgid "Part of merge request changes"
 msgstr ""
 
@@ -42482,8 +42455,10 @@ msgstr ""
 msgid "SecurityReports|Severity"
 msgstr ""
 
-msgid "SecurityReports|Show %{pageSize} items"
-msgstr ""
+msgid "SecurityReports|Show %d item"
+msgid_plural "SecurityReports|Show %d items"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "SecurityReports|Sometimes a scanner can't determine a finding's severity. Those findings may still be a potential source of risk though. Please review these manually."
 msgstr ""
@@ -51652,6 +51627,9 @@ msgstr ""
 msgid "Vulnerability|Project:"
 msgstr ""
 
+msgid "Vulnerability|Providing the source code improves the response quality. If security is a concern, you can send basic vulnerability info for a generic example."
+msgstr ""
+
 msgid "Vulnerability|Remove identifier row"
 msgstr ""
 
@@ -51677,6 +51655,12 @@ msgid "Vulnerability|Security Audit"
 msgstr ""
 
 msgid "Vulnerability|Select a severity"
+msgstr ""
+
+msgid "Vulnerability|Send code with prompt"
+msgstr ""
+
+msgid "Vulnerability|Sending code to AI"
 msgstr ""
 
 msgid "Vulnerability|Sent request:"

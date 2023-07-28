@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Llm::TanukiBot::UpdateWorker, feature_category: :global_search do
+RSpec.describe Llm::TanukiBot::UpdateWorker, feature_category: :ai_abstraction_layer do
   let(:logger) { described_class.new.send(:logger) }
   let(:class_instance) { described_class.new }
   let(:openai_client) { ::Gitlab::Llm::OpenAi::Client.new(nil) }

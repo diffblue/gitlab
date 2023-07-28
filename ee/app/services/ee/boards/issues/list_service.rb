@@ -90,7 +90,7 @@ module EE
         def metadata_fields(required_fields)
           fields = super
 
-          fields[:total_weight] = 'COALESCE(SUM(weight), 0)' if required_fields.include?(:total_issue_weight)
+          fields[:total_weight] = Arel.sql('COALESCE(SUM(weight), 0)') if required_fields.include?(:total_issue_weight)
 
           fields
         end

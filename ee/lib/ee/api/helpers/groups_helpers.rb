@@ -47,6 +47,10 @@ module EE
           params :optional_projects_params_ee do
             optional :with_security_reports, type: ::Grape::API::Boolean, default: false, desc: 'Return only projects having security report artifacts present'
           end
+
+          params :optional_group_list_params_ee do
+            optional :repository_storage, type: String, desc: 'Filter by repository storage used by the group'
+          end
         end
       end
     end
