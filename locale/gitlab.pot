@@ -28856,6 +28856,12 @@ msgstr ""
 msgid "Merge unverified changes?"
 msgstr ""
 
+msgid "Merge when all merge checks pass"
+msgstr ""
+
+msgid "Merge when checks pass"
+msgstr ""
+
 msgid "Merge when pipeline succeeds"
 msgstr ""
 
@@ -51954,6 +51960,9 @@ msgstr ""
 msgid "When a runner is locked, it cannot be assigned to other projects"
 msgstr ""
 
+msgid "When all the merge checks for this merge request pass, it will %{linkStart}automatically merge%{linkEnd}."
+msgstr ""
+
 msgid "When enabled, SSH keys with no expiry date or an invalid expiration date are no longer accepted. Leave blank for no limit."
 msgstr ""
 
@@ -55365,6 +55374,9 @@ msgid "mrWidget|Revoke approval"
 msgstr ""
 
 msgid "mrWidget|Set by %{merge_author} to be added to the merge train when the pipeline succeeds"
+msgstr ""
+
+msgid "mrWidget|Set by %{merge_author} to be merged automatically when all merge checks pass"
 msgstr ""
 
 msgid "mrWidget|Set by %{merge_author} to be merged automatically when the pipeline succeeds"
