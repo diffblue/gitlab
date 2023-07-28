@@ -7,13 +7,19 @@ import {
   invalidVulnerabilitiesAllowed,
   invalidVulnerabilityStates,
   invalidBranchType,
+  invalidVulnerabilityAge,
   VULNERABILITY_STATE_KEYS,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/rules';
 import {
   APPROVAL_VULNERABILITY_STATES,
   NEWLY_DETECTED,
   PREVIOUSLY_EXISTING,
+  AGE_DAY,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/constants';
+import {
+  ANY_OPERATOR,
+  GREATER_THAN_OPERATOR,
+} from 'ee/security_orchestration/components/policy_editor/constants';
 
 describe('invalidScanners', () => {
   describe('with undefined rules', () => {
@@ -145,5 +151,35 @@ describe('invalidVulnerabilityStates', () => {
     `('returns $expectedResult with $rules', ({ rules, expectedResult }) => {
       expect(invalidBranchType(rules)).toBe(expectedResult);
     });
+  });
+});
+
+describe('invalidVulnerabilityAge', () => {
+  const validStates = { vulnerability_states: ['detected'] };
+  const validAge = {
+    vulnerability_age: { operator: GREATER_THAN_OPERATOR, value: 1, interval: AGE_DAY },
+  };
+
+  it.each`
+    rules                                                                                                                         | expectedResult
+    ${null}                                                                                                                       | ${false}
+    ${[]}                                                                                                                         | ${false}
+    ${[{}]}                                                                                                                       | ${false}
+    ${[{ ...validStates, ...validAge }]}                                                                                          | ${false}
+    ${[{ vulnerability_states: ['new_needs_triage', 'detected'], ...validAge }]}                                                  | ${false}
+    ${[{ vulnerability_states: ['new_needs_triage'], ...validAge }]}                                                              | ${true}
+    ${[{ vulnerability_states: [], ...validAge }]}                                                                                | ${true}
+    ${[{ ...validAge }]}                                                                                                          | ${true}
+    ${[{ ...validStates, vulnerability_age: {} }]}                                                                                | ${true}
+    ${[{ ...validStates, vulnerability_age: { operator: ANY_OPERATOR } }]}                                                        | ${true}
+    ${[{ ...validStates, vulnerability_age: { value: 1 } }]}                                                                      | ${true}
+    ${[{ ...validStates, vulnerability_age: { interval: AGE_DAY } }]}                                                             | ${true}
+    ${[{ ...validStates, vulnerability_age: { operator: 'invalid', value: 1, interval: AGE_DAY } }]}                              | ${true}
+    ${[{ ...validStates, vulnerability_age: { operator: GREATER_THAN_OPERATOR, value: -1, interval: AGE_DAY } }]}                 | ${true}
+    ${[{ ...validStates, vulnerability_age: { operator: GREATER_THAN_OPERATOR, value: 'invalid', interval: AGE_DAY } }]}          | ${true}
+    ${[{ ...validStates, vulnerability_age: { operator: GREATER_THAN_OPERATOR, value: 1, interval: 'invalid' } }]}                | ${true}
+    ${[{ ...validStates, vulnerability_age: { operator: GREATER_THAN_OPERATOR, value: 1, interval: AGE_DAY, invalidKey: 'a' } }]} | ${true}
+  `('returns $expectedResult with $rules', ({ rules, expectedResult }) => {
+    expect(invalidVulnerabilityAge(rules)).toStrictEqual(expectedResult);
   });
 });

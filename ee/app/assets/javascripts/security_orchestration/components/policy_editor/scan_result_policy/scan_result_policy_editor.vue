@@ -33,6 +33,7 @@ import {
   invalidScanners,
   invalidVulnerabilitiesAllowed,
   invalidVulnerabilityStates,
+  invalidVulnerabilityAge,
   humanizeInvalidBranchesError,
   invalidBranchType,
 } from './lib';
@@ -271,13 +272,15 @@ export default {
     },
     invalidForRuleMode() {
       const invalidApprovers = approversOutOfSync(this.policy.actions[0], this.existingApprovers);
+      const { rules } = this.policy;
 
       return (
         invalidApprovers ||
-        invalidScanners(this.policy.rules) ||
-        invalidVulnerabilitiesAllowed(this.policy.rules) ||
-        invalidVulnerabilityStates(this.policy.rules) ||
-        invalidBranchType(this.policy.rules)
+        invalidScanners(rules) ||
+        invalidVulnerabilitiesAllowed(rules) ||
+        invalidVulnerabilityStates(rules) ||
+        invalidBranchType(rules) ||
+        invalidVulnerabilityAge(rules)
       );
     },
   },
