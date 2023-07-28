@@ -54,7 +54,10 @@ By default this feature is not available. To make it available, an administrator
 The [DORA metrics](dora_metrics.md) Performers score panel is a bar chart that visualizes the status of the organization's DevOps performance levels across different projects.
 
 The chart is a breakdown of your project's DORA scores, categorized as high, medium, or low.
-Each bar on the chart displays the sum of total projects per score category, calculated monthly. To exclude data from the chart (for example, "Not Included"), in the legend select the series you want to exclude.
+It aggregates all the child projects in the group.
+
+Each bar on the chart displays the sum of total projects per score category, calculated monthly.
+To exclude data from the chart (for example, "Not Included"), in the legend select the series you want to exclude.
 Hovering over each bar reveals a dialog that explains the score's definition.
 
 For example, if a project has a high score for Deployment Frequency (Velocity), it means that the project has one or more deploys to production per day.
