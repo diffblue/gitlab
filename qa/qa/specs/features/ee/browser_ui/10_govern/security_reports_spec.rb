@@ -238,7 +238,7 @@ module QA
       end
 
       def wait_for_pipeline_success
-        Support::Waiter.wait_until(sleep_interval: 3, message: "Check for pipeline success") do
+        Support::Waiter.wait_until(sleep_interval: 10, message: "Check for pipeline success") do
           latest_pipeline.status == 'success'
         end
       end
@@ -246,7 +246,7 @@ module QA
       def latest_pipeline
         Resource::Pipeline.fabricate_via_api! do |pipeline|
           pipeline.project = project
-          pipeline.id = project.pipelines.first[:id]
+          pipeline.id = project.pipelines.first&.fetch(:id)
         end
       end
 
