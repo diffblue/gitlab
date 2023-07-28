@@ -6,6 +6,8 @@ import {
   BRANCH_TYPE_KEY,
   HUMANIZED_BRANCH_TYPE_TEXT_DICT,
   SCAN_RESULT_BRANCH_TYPE_OPTIONS,
+  GREATER_THAN_OPERATOR,
+  LESS_THAN_OPERATOR,
 } from '../../constants';
 import { createHumanizedScanners } from '../../utils';
 import {
@@ -137,6 +139,35 @@ const humanizeVulnerabilityStates = (vulnerabilitiesStates) => {
 };
 
 /**
+ * Create a human-readable version of vulnerability age
+ * @param {Object} vulnerabilityAge
+ * @returns {String}
+ */
+const humanizeVulnerabilityAge = (vulnerabilityAge) => {
+  const { value, operator } = vulnerabilityAge;
+
+  const strMap = {
+    day: (number) => n__('%d day', '%d days', number),
+    week: (number) => n__('%d week', '%d weeks', number),
+    month: (number) => n__('%d month', '%d months', number),
+    year: (number) => n__('%d year', '%d years', number),
+  };
+
+  const baseStr = {
+    [GREATER_THAN_OPERATOR]: sprintf(
+      s__('SecurityOrchestration|Vulnerability age is greater than %{vulnerabilityAge}.'),
+      { vulnerabilityAge: strMap[vulnerabilityAge.interval](value) },
+    ),
+    [LESS_THAN_OPERATOR]: sprintf(
+      s__('SecurityOrchestration|Vulnerability age is less than %{vulnerabilityAge}.'),
+      { vulnerabilityAge: strMap[vulnerabilityAge.interval](value) },
+    ),
+  };
+
+  return baseStr[operator];
+};
+
+/**
  * Create a human-readable version of the scanners
  * @param {Array} scanners
  * @returns {String}
@@ -232,20 +263,31 @@ const humanizeRule = (rule) => {
     };
   }
 
-  const criteriaList = [
-    rule.severity_levels.length
-      ? sprintf(s__('SecurityOrchestration|Severity is %{severity}.'), {
-          severity: humanizeItems({
-            items: rule.severity_levels,
-          }),
-        })
-      : null,
-    rule.vulnerability_states.length
-      ? sprintf(s__('SecurityOrchestration|Vulnerabilities are %{vulnerabilityStates}.'), {
-          vulnerabilityStates: humanizeVulnerabilityStates(rule.vulnerability_states),
-        })
-      : null,
-  ].filter((criteria) => Boolean(criteria));
+  const criteriaList = [];
+
+  const addCriteria = (predicate, compileCriteria) => {
+    if (predicate) {
+      criteriaList.push(compileCriteria());
+    }
+  };
+
+  addCriteria(rule.severity_levels.length, () =>
+    sprintf(s__('SecurityOrchestration|Severity is %{severity}.'), {
+      severity: humanizeItems({
+        items: rule.severity_levels,
+      }),
+    }),
+  );
+
+  addCriteria(rule.vulnerability_states.length, () =>
+    sprintf(s__('SecurityOrchestration|Vulnerabilities are %{vulnerabilityStates}.'), {
+      vulnerabilityStates: humanizeVulnerabilityStates(rule.vulnerability_states),
+    }),
+  );
+
+  addCriteria(Object.keys(rule.vulnerability_age || {}).length, () =>
+    humanizeVulnerabilityAge(rule.vulnerability_age),
+  );
 
   return {
     summary: sprintf(
