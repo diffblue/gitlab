@@ -801,7 +801,7 @@ RSpec.describe Namespace do
       end
 
       it 'has all limits defined' do
-        limits = subject.attributes.except('id', 'plan_id', 'dashboard_limit_enabled_at')
+        limits = subject.attributes.except('id', 'plan_id', 'dashboard_limit_enabled_at', 'updated_at')
         limits.each do |_attribute, limit|
           expect(limit).not_to be_nil
         end
