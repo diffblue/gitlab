@@ -139,7 +139,7 @@ export default {
       :class="actionButtonClass"
       category="secondary"
       class="gl-display-none gl-sm-display-block gl-sm-ml-3"
-      data-qa-selector="close_reopen_epic_button"
+      data-testid="toggle-status-button"
       @click="toggleEpicStatus(isEpicOpen)"
     >
       {{ actionButtonText }}
@@ -155,6 +155,7 @@ export default {
       text-sr-only
       :title="$options.i18n.dropdownText"
       :aria-label="$options.i18n.dropdownText"
+      data-testid="desktop-dropdown"
       no-caret
       right
     >
@@ -168,7 +169,6 @@ export default {
       </template>
       <gl-dropdown-item
         v-if="canUpdate && glFeatures.moveCloseIntoDropdown"
-        data-qa-selector="close_reopen_epic_button"
         data-testid="toggle-status-button"
         @click="toggleEpicStatus(isEpicOpen)"
       >
