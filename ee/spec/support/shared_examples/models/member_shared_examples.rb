@@ -72,7 +72,7 @@ RSpec.shared_examples 'member group domain validations' do |source_type|
       create(:allowed_email_domain, group: group, domain: 'acme.com')
     end
 
-    context 'when project parent has email domain feature switched on' do
+    context 'when group_allowed_email_domains is turned on' do
       before do
         stub_licensed_features(group_allowed_email_domains: true)
       end
@@ -113,11 +113,11 @@ RSpec.shared_examples 'member group domain validations' do |source_type|
         expect(build(member_type, source: source, user: nil, invite_email: 'invite@acme.com')).to be_valid
       end
 
-      it 'user emails matching allowed domain must be verified' do
-        project_member = build(member_type, source: source, user: unconfirmed_gitlab_user)
+      it 'user email must be verified' do
+        member = build(member_type, source: source, user: unconfirmed_gitlab_user)
 
-        expect(project_member).to be_invalid
-        expect(project_member.errors[:user]).to include("email 'unverified@gitlab.com' is not a verified email.")
+        expect(member).to be_invalid
+        expect(member.errors[:user]).to include('is not verified.')
       end
 
       context 'with project bot users' do
@@ -167,11 +167,11 @@ RSpec.shared_examples 'member group domain validations' do |source_type|
           expect(build(member_type, source: nested_source, user: nil, invite_email: 'invite@acme.com')).to be_valid
         end
 
-        it 'user emails matching allowed domain must be verified' do
+        it 'user email must be verified' do
           member = build(member_type, source: nested_source, user: unconfirmed_gitlab_user)
 
           expect(member).to be_invalid
-          expect(member.errors[:user]).to include("email 'unverified@gitlab.com' is not a verified email.")
+          expect(member.errors[:user]).to include('is not verified.')
         end
 
         context 'with group SCIM users' do
@@ -198,7 +198,7 @@ RSpec.shared_examples 'member group domain validations' do |source_type|
       end
     end
 
-    context 'when project parent group has email domain feature switched off' do
+    context 'when group_allowed_email_domains is turned off' do
       before do
         stub_licensed_features(group_allowed_email_domains: false)
       end
