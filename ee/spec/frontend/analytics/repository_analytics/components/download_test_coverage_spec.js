@@ -1,6 +1,7 @@
 import { GlAlert, GlDropdown, GlDropdownItem, GlModal } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+
 import DownloadTestCoverage from 'ee/analytics/repository_analytics/components/download_test_coverage.vue';
 import SelectProjectsDropdown from 'ee/analytics/repository_analytics/components/select_projects_dropdown.vue';
 
@@ -8,16 +9,14 @@ describe('Download test coverage component', () => {
   let wrapper;
 
   const findCodeCoverageModalButton = () =>
-    wrapper.find('[data-testid="group-code-coverage-modal-button"]');
+    wrapper.findByTestId('group-code-coverage-modal-button');
   const openCodeCoverageModal = () => {
     findCodeCoverageModalButton().vm.$emit('click');
   };
   const findCodeCoverageDownloadButton = () =>
-    wrapper.find('[data-testid="group-code-coverage-download-button"]');
+    wrapper.findByTestId('group-code-coverage-download-button');
   const clickSelectAllProjectsButton = () =>
-    wrapper
-      .find('[data-testid="group-code-coverage-select-all-projects-button"]')
-      .vm.$emit('click');
+    wrapper.findByTestId('group-code-coverage-select-all-projects-button').vm.$emit('click');
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findSelectProjectsDropdown = () => wrapper.findComponent(SelectProjectsDropdown);
 
@@ -26,7 +25,7 @@ describe('Download test coverage component', () => {
   };
 
   const createComponent = () => {
-    wrapper = shallowMount(DownloadTestCoverage, {
+    wrapper = shallowMountExtended(DownloadTestCoverage, {
       data() {
         return {
           hasError: false,
@@ -37,7 +36,12 @@ describe('Download test coverage component', () => {
       provide: {
         ...injectedProperties,
       },
-      stubs: { GlDropdown, GlDropdownItem, GlModal, SelectProjectsDropdown },
+      stubs: {
+        GlDropdown,
+        GlDropdownItem,
+        GlModal,
+        SelectProjectsDropdown,
+      },
     });
   };
 
@@ -137,7 +141,7 @@ describe('Download test coverage component', () => {
         'updates CSV path to have the start date be $date days before today',
         async ({ date, expected }) => {
           wrapper
-            .find(`[data-testid="group-code-coverage-download-select-date-${date}"]`)
+            .findByTestId(`group-code-coverage-download-select-date-${date}`)
             .vm.$emit('click');
 
           await nextTick();

@@ -34,6 +34,9 @@ describe('DevopsAdoptionOverviewChart', () => {
     });
   };
 
+  const findChartSkeletonLoader = () => wrapper.findComponent(ChartSkeletonLoader);
+  const findGlStackedColumnChart = () => wrapper.findComponent(GlStackedColumnChart);
+
   describe('default state', () => {
     beforeEach(async () => {
       createComponent();
@@ -41,27 +44,27 @@ describe('DevopsAdoptionOverviewChart', () => {
     });
 
     it('does not display the chart loader', () => {
-      expect(wrapper.findComponent(ChartSkeletonLoader).exists()).toBe(false);
+      expect(findChartSkeletonLoader().exists()).toBe(false);
     });
 
     it('displays the chart', () => {
-      expect(wrapper.findComponent(GlStackedColumnChart).exists()).toBe(true);
+      expect(findGlStackedColumnChart().exists()).toBe(true);
     });
 
     it('computes the correct series data', () => {
-      expect(wrapper.findComponent(GlStackedColumnChart).props('bars')).toMatchSnapshot();
+      expect(findGlStackedColumnChart().props('bars')).toMatchSnapshot();
     });
   });
 
   describe('loading', () => {
     it('displays the chart loader', () => {
-      createComponent({});
-      expect(wrapper.findComponent(ChartSkeletonLoader).exists()).toBe(true);
+      createComponent();
+      expect(findChartSkeletonLoader().exists()).toBe(true);
     });
 
     it('does not display the chart', () => {
-      createComponent({});
-      expect(wrapper.findComponent(GlStackedColumnChart).exists()).toBe(false);
+      createComponent();
+      expect(findGlStackedColumnChart().exists()).toBe(false);
     });
   });
 

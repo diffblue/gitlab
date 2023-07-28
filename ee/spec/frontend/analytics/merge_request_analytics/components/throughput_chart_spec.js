@@ -57,6 +57,8 @@ describe('ThroughputChart', () => {
     });
   }
 
+  const findAlert = () => wrapper.findComponent(GlAlert);
+
   describe('default state', () => {
     beforeEach(async () => {
       createWrapper();
@@ -80,7 +82,7 @@ describe('ThroughputChart', () => {
     });
 
     it('displays an empty state message when there is no data', () => {
-      const alert = wrapper.findComponent(GlAlert);
+      const alert = findAlert();
       expect(alert.exists()).toBe(true);
       expect(alert.text()).toBe(THROUGHPUT_CHART_STRINGS.NO_DATA);
     });
@@ -150,7 +152,7 @@ describe('ThroughputChart', () => {
     });
 
     it('displays an empty state message when there is no data', () => {
-      const alert = wrapper.findComponent(GlAlert);
+      const alert = findAlert();
 
       expect(alert.exists()).toBe(true);
       expect(alert.text()).toBe(THROUGHPUT_CHART_STRINGS.NO_DATA);
@@ -173,7 +175,7 @@ describe('ThroughputChart', () => {
     });
 
     it('displays an error message', () => {
-      const alert = wrapper.findComponent(GlAlert);
+      const alert = findAlert();
 
       expect(alert.exists()).toBe(true);
       expect(alert.text()).toBe(THROUGHPUT_CHART_STRINGS.ERROR_FETCHING_DATA);
