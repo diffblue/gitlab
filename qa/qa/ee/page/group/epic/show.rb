@@ -11,7 +11,8 @@ module QA
             include QA::Page::Component::RichTextPopover
 
             view 'ee/app/assets/javascripts/epic/components/epic_header_actions.vue' do
-              element :close_reopen_epic_button
+              element 'desktop-dropdown'
+              element 'toggle-status-button'
             end
 
             view 'app/assets/javascripts/related_issues/components/add_issuable_form.vue' do
@@ -50,8 +51,14 @@ module QA
               find('#item-remove-confirmation___BV_modal_footer_ .btn-danger').click
             end
 
-            def close_reopen_epic
-              click_element :close_reopen_epic_button
+            def close_epic
+              open_actions_dropdown
+              click_element('toggle-status-button', text: 'Close epic')
+            end
+
+            def reopen_epic
+              open_actions_dropdown
+              click_element('toggle-status-button', text: 'Reopen epic')
             end
 
             def has_related_issue_item?
@@ -60,6 +67,11 @@ module QA
 
             def has_no_related_issue_item?
               has_no_element?(:related_issue_item)
+            end
+
+            def open_actions_dropdown
+              # We use find here because these are gitlab-ui elements
+              find('[data-testid="desktop-dropdown"] > button').click
             end
           end
         end
