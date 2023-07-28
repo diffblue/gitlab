@@ -27,6 +27,10 @@ module EE
           update_elasticsearch_containers(ElasticsearchIndexedNamespace, elasticsearch_namespace_ids)
           update_elasticsearch_containers(ElasticsearchIndexedProject, elasticsearch_project_ids)
           update_elasticsearch_index_settings(number_of_replicas: elasticsearch_replicas, number_of_shards: elasticsearch_shards)
+
+          # There are cases when current user is passed as nil like in elastic.rake
+          # we should not log audit events in such cases
+          log_audit_events if current_user
         end
 
         result
@@ -77,6 +81,10 @@ module EE
 
       def should_auto_approve_blocked_users?
         super || user_cap_increased?
+      end
+
+      def log_audit_events
+        Audit::ApplicationSettingChangesAuditor.new(current_user, application_setting).execute
       end
 
       def user_cap_increased?

@@ -3,19 +3,48 @@
 require 'spec_helper'
 
 RSpec.describe ApplicationSettings::UpdateService do
-  let(:user)    { create(:user) }
+  let!(:user) { create(:user) }
   let(:setting) { ApplicationSetting.create_from_defaults }
   let(:service) { described_class.new(setting, user, opts) }
+
+  shared_examples 'application_setting_audit_events_from_to' do
+    it 'calls auditor' do
+      expect { service.execute }.to change { AuditEvent.count }.by(1)
+      service.execute
+
+      event = AuditEvent.last
+      expect(event.details[:from]).to eq change_from
+      expect(event.details[:to]).to eq change_to
+      expect(event.details[:change]).to eq change_field
+    end
+
+    context 'when user is nil' do
+      let(:user) { nil }
+
+      it "does not log an event" do
+        expect { service.execute }.to change { AuditEvent.count }.by(0)
+      end
+    end
+  end
 
   describe '#execute' do
     context 'common params' do
       let(:opts) { { home_page_url: 'http://foo.bar' } }
+      let(:change_field) { 'home_page_url' }
+      let(:change_to) { 'http://foo.bar' }
+      let(:change_from) { nil }
+
+      before do
+        stub_licensed_features(extended_audit_events: true, admin_audit_log: true, code_owner_approval_required: true)
+      end
 
       it 'properly updates settings with given params' do
         service.execute
 
         expect(setting.home_page_url).to eql(opts[:home_page_url])
       end
+
+      it_behaves_like 'application_setting_audit_events_from_to'
     end
 
     context 'with valid params' do
