@@ -1,4 +1,4 @@
-import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { GlDisclosureDropdown, GlDisclosureDropdownItem } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import component from 'ee/environments_dashboard/components/dashboard/project_header.vue';
@@ -22,8 +22,8 @@ describe('Project Header', () => {
 
   const findRemoveButton = () =>
     wrapper
-      .findComponent(GlDropdown)
-      .findAllComponents(GlDropdownItem)
+      .findComponent(GlDisclosureDropdown)
+      .findAllComponents(GlDisclosureDropdownItem)
       .filter((w) => w.text() === 'Remove');
 
   beforeEach(() => {
@@ -77,7 +77,7 @@ describe('Project Header', () => {
     });
 
     it('should emit a "remove" event when "remove" is clicked', async () => {
-      findRemoveButton().at(0).vm.$emit('click');
+      findRemoveButton().at(0).vm.$emit('action');
       await nextTick();
 
       expect(wrapper.emitted('remove')).toContainEqual([mockProject.remove_path]);

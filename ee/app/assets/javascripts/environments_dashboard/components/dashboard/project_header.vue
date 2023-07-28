@@ -1,13 +1,17 @@
 <script>
-import { GlDropdown, GlDropdownItem, GlTooltipDirective, GlLink, GlIcon } from '@gitlab/ui';
+import {
+  GlDisclosureDropdown,
+  GlDisclosureDropdownItem,
+  GlTooltipDirective,
+  GlLink,
+} from '@gitlab/ui';
 import { s__ } from '~/locale';
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 
 export default {
   components: {
-    GlDropdown,
-    GlDropdownItem,
-    GlIcon,
+    GlDisclosureDropdown,
+    GlDisclosureDropdownItem,
     ProjectAvatar,
     GlLink,
   },
@@ -66,22 +70,22 @@ export default {
       </gl-link>
     </div>
     <div class="gl-display-flex">
-      <gl-dropdown
+      <gl-disclosure-dropdown
+        v-gl-tooltip
+        :toggle-text="$options.moreActionsText"
+        text-sr-only
+        :title="$options.moreActionsText"
+        icon="ellipsis_v"
+        class="gl-text-gray-500"
         toggle-class="gl-display-flex gl-align-items-center gl-px-3! gl-bg-transparent gl-shadow-none!"
-        right
+        no-caret
       >
-        <template #button-content>
-          <gl-icon
-            v-gl-tooltip
-            :title="$options.moreActionsText"
-            name="ellipsis_v"
-            class="gl-text-gray-500"
-          />
-        </template>
-        <gl-dropdown-item variant="link" data-testid="remove-project-button" @click="onRemove()">
-          <span class="gl-text-red-500"> {{ $options.removeProjectText }} </span>
-        </gl-dropdown-item>
-      </gl-dropdown>
+        <gl-disclosure-dropdown-item data-testid="remove-project-button" @action="onRemove()">
+          <template #list-item>
+            <span class="gl-text-red-500"> {{ $options.removeProjectText }} </span>
+          </template>
+        </gl-disclosure-dropdown-item>
+      </gl-disclosure-dropdown>
     </div>
   </div>
 </template>

@@ -52,38 +52,33 @@ exports[`Project Header matches the snapshot 1`] = `
   <div
     class="gl-display-flex"
   >
-    <gl-dropdown-stub
+    <gl-disclosure-dropdown-stub
+      autoclose="true"
       category="primary"
-      clearalltext="Clear all"
-      clearalltextclass="gl-px-5"
-      headertext=""
-      hideheaderborder="true"
-      highlighteditemstitle="Selected"
-      highlighteditemstitleclass="gl-px-5"
-      right="true"
+      class="gl-text-gray-500"
+      icon="ellipsis_v"
+      items=""
+      nocaret="true"
+      placement="left"
+      positioningstrategy="absolute"
       size="medium"
-      text=""
+      textsronly="true"
+      title="More actions"
       toggleclass="gl-display-flex gl-align-items-center gl-px-3! gl-bg-transparent gl-shadow-none!"
+      toggleid="dropdown-toggle-btn-2"
+      toggletext="More actions"
       variant="default"
     >
-       
-      <gl-dropdown-item-stub
-        avatarurl=""
+      <gl-disclosure-dropdown-item-stub
         data-testid="remove-project-button"
-        iconcolor=""
-        iconname=""
-        iconrightarialabel=""
-        iconrightname=""
-        secondarytext=""
-        variant="link"
       >
         <span
           class="gl-text-red-500"
         >
            Remove 
         </span>
-      </gl-dropdown-item-stub>
-    </gl-dropdown-stub>
+      </gl-disclosure-dropdown-item-stub>
+    </gl-disclosure-dropdown-stub>
   </div>
 </div>
 `;
