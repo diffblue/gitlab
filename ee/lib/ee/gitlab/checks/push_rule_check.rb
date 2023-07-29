@@ -94,7 +94,7 @@ module EE
               t.report_on_exception = false
             end
 
-            ::Gitlab::WithRequestStore.with_request_store do
+            ::Gitlab::SafeRequestStore.ensure_request_store do
               ::Gitlab::Git::HookEnv.set(project.repository.gl_repository, git_env)
 
               yield
