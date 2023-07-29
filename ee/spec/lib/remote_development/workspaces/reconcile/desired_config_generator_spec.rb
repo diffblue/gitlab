@@ -12,6 +12,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::DesiredConfigGenerator,
     let(:actual_state) { RemoteDevelopment::Workspaces::States::STOPPED }
     let(:deployment_resource_version_from_agent) { workspace.deployment_resource_version }
     let(:owning_inventory) { "#{workspace.name}-workspace-inventory" }
+    let(:network_policy_enabled) { true }
 
     let(:workspace) do
       create(
@@ -30,13 +31,20 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::DesiredConfigGenerator,
           owning_inventory: owning_inventory,
           started: started,
           user_name: user.name,
-          user_email: user.email
+          user_email: user.email,
+          include_network_policy: network_policy_enabled
         )
       )
     end
 
     subject do
       described_class.new
+    end
+
+    before do
+      allow(agent.remote_development_agent_config).to receive(:network_policy_enabled) do
+        network_policy_enabled
+      end
     end
 
     context 'when desired_state results in started=true' do
@@ -54,6 +62,17 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::DesiredConfigGenerator,
       let(:started) { false }
 
       it 'returns expected config' do
+        workspace_resources = subject.generate_desired_config(workspace: workspace)
+
+        expect(workspace_resources).to eq(expected_config)
+      end
+    end
+
+    context 'when network policy is disabled for agent' do
+      let(:started) { true }
+      let(:network_policy_enabled) { false }
+
+      it 'returns expected config without network policy' do
         workspace_resources = subject.generate_desired_config(workspace: workspace)
 
         expect(workspace_resources).to eq(expected_config)

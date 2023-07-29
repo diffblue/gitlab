@@ -23,6 +23,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::DevfileParser, feature_
           owning_inventory: owning_inventory,
           started: true,
           include_inventory: false,
+          include_network_policy: false,
           user_name: user.name,
           user_email: user.email
         )
