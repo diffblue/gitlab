@@ -479,5 +479,58 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
         ).to be(expected_actual_state)
       end
     end
+
+    context 'when latest_error_details is present' do
+      let(:latest_error_details) do
+        {
+          "error_details" => {
+            "error_type" => RemoteDevelopment::Workspaces::Reconcile::ErrorType::APPLIER,
+            "error_details" => "error encountered while applying k8s configs"
+          }
+        }
+      end
+
+      context "and termination_progress is missing" do
+        let(:termination_progress) { nil }
+        let(:expected_actual_state) { RemoteDevelopment::Workspaces::States::ERROR }
+
+        it 'returns the expected actual state' do
+          expect(
+            subject.calculate_actual_state(
+              latest_k8s_deployment_info: nil,
+              latest_error_details: latest_error_details
+            )
+          ).to be(expected_actual_state)
+        end
+      end
+
+      context "and termination_progress is Terminated" do
+        let(:expected_actual_state) { RemoteDevelopment::Workspaces::States::TERMINATED }
+
+        it 'returns the expected actual state' do
+          expect(
+            subject.calculate_actual_state(
+              latest_k8s_deployment_info: nil,
+              termination_progress: RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator::TERMINATED,
+              latest_error_details: latest_error_details
+            )
+          ).to be(expected_actual_state)
+        end
+      end
+
+      context "and termination_progress is Terminating" do
+        let(:expected_actual_state) { RemoteDevelopment::Workspaces::States::ERROR }
+
+        it 'returns the expected actual state' do
+          expect(
+            subject.calculate_actual_state(
+              latest_k8s_deployment_info: nil,
+              termination_progress: RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator::TERMINATING,
+              latest_error_details: latest_error_details
+            )
+          ).to be(expected_actual_state)
+        end
+      end
+    end
   end
 end

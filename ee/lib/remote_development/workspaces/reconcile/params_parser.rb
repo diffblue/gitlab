@@ -36,7 +36,29 @@ module RemoteDevelopment
         # @param [Hash] params
         # @return [void, String]
         def validate_params(params)
-          schema = JSONSchemer.schema({
+          workspace_error_details_schema = {
+            "required" => %w[error_type],
+            "properties" => {
+              "error_type" => {
+                "type" => "string",
+                "enum" => [ErrorType::APPLIER]
+              },
+              "error_message" => {
+                "type" => "string"
+              }
+            }
+          }
+          workspace_agent_info_schema = {
+            "properties" => {
+              "termination_progress" => {
+                "type" => "string",
+                "enum" => [TerminationProgress::TERMINATING, TerminationProgress::TERMINATED]
+              },
+              "error_details" => workspace_error_details_schema
+            }
+          }
+
+          schema = {
             "type" => "object",
             "required" => %w[update_type workspace_agent_infos],
             "properties" => {
@@ -45,12 +67,14 @@ module RemoteDevelopment
                 "enum" => [PARTIAL, FULL]
               },
               "workspace_agent_infos" => {
-                "type" => "array"
+                "type" => "array",
+                "items" => workspace_agent_info_schema
               }
             }
-          })
+          }
+          schemer = JSONSchemer.schema(schema)
 
-          errs = schema.validate(params)
+          errs = schemer.validate(params)
           return if errs.none?
 
           errs.map { |err| JSONSchemer::Errors.pretty(err) }.join(". ")
