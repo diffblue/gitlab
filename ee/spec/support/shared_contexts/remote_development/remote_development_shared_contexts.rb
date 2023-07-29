@@ -446,6 +446,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
     user_name:,
     user_email:,
     include_inventory: true,
+    include_network_policy: true,
     dns_zone: 'workspaces.localdev.me'
   )
     spec_replicas = started == true ? "1" : "0"
@@ -659,6 +660,53 @@ RSpec.shared_context 'with remote development shared fixtures' do
             storage: 15Gi
       status: {}
     RESOURCES_YAML
+
+    if include_network_policy
+      resources += <<~RESOURCE_YAML
+        ---
+        apiVersion: networking.k8s.io/v1
+        kind: NetworkPolicy
+        metadata:
+          annotations:
+            config.k8s.io/owning-inventory: #{owning_inventory}
+            workspaces.gitlab.com/host-template: #{host_template_annotation}
+            workspaces.gitlab.com/id: \'#{workspace_id}\'
+          labels:
+            agent.gitlab.com/id: \'#{agent_id}\'
+          name: #{workspace_name}
+          namespace: #{workspace_namespace}
+        spec:
+          egress:
+          - to:
+            - ipBlock:
+                cidr: 0.0.0.0/0
+                except:
+                - 10.0.0.0/8
+                - 172.16.0.0/12
+                - 192.168.0.0/16
+          - ports:
+            - port: 53
+              protocol: TCP
+            - port: 53
+              protocol: UDP
+            to:
+            - namespaceSelector:
+                matchLabels:
+                  kubernetes.io/metadata.name: kube-system
+          ingress:
+          - from:
+            - namespaceSelector:
+                matchLabels:
+                  kubernetes.io/metadata.name: gitlab-workspaces
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: gitlab-workspaces-proxy
+          podSelector: {}
+          policyTypes:
+          - Ingress
+          - Egress
+      RESOURCE_YAML
+    end
 
     unless include_inventory
       return YAML.load_stream(resources).map do |resource|

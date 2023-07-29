@@ -42,6 +42,19 @@ module RemoteDevelopment
           )
           workspace_resources.insert(0, workspace_inventory_config_map)
 
+          remote_development_agent_config = workspace.agent.remote_development_agent_config
+          if remote_development_agent_config.network_policy_enabled
+            gitlab_workspaces_proxy_namespace = remote_development_agent_config.gitlab_workspaces_proxy_namespace
+            network_policy = get_network_policy(
+              name: name,
+              namespace: namespace,
+              labels: labels,
+              annotations: annotations,
+              gitlab_workspaces_proxy_namespace: gitlab_workspaces_proxy_namespace
+            )
+            workspace_resources.append(network_policy)
+          end
+
           workspace_resources
         end
 
@@ -86,7 +99,7 @@ module RemoteDevelopment
         # @return [Array<(Hash, Hash)>]
         def get_labels_and_annotations(agent_id:, owning_inventory:, domain_template:, workspace_id:)
           labels = {
-            'agent.gitlab.com/id' => agent_id
+            'agent.gitlab.com/id' => agent_id.to_s
           }
           annotations = {
             'config.k8s.io/owning-inventory' => owning_inventory.to_s,
@@ -94,6 +107,66 @@ module RemoteDevelopment
             'workspaces.gitlab.com/id' => workspace_id.to_s
           }
           [labels, annotations]
+        end
+
+        # @param [String] name
+        # @param [String] namespace
+        # @param [Hash] labels
+        # @param [Hash] annotations
+        # @param [string] gitlab_workspaces_proxy_namespace
+        # @return [Hash]
+        def get_network_policy(name:, namespace:, labels:, annotations:, gitlab_workspaces_proxy_namespace:)
+          policy_types = [
+            - "Ingress",
+            - "Egress"
+          ]
+
+          proxy_namespace_selector = {
+            matchLabels: {
+              "kubernetes.io/metadata.name": gitlab_workspaces_proxy_namespace
+            }
+          }
+          proxy_pod_selector = {
+            matchLabels: {
+              "app.kubernetes.io/name": "gitlab-workspaces-proxy"
+            }
+          }
+          ingress = [{ from: [{ namespaceSelector: proxy_namespace_selector, podSelector: proxy_pod_selector }] }]
+
+          kube_system_namespace_selector = {
+            matchLabels: {
+              "kubernetes.io/metadata.name": "kube-system"
+            }
+          }
+          egress_except_cidr = [
+            - "10.0.0.0/8",
+            - "172.16.0.0/12",
+            - "192.168.0.0/16"
+          ]
+          egress = [
+            { to: [{ ipBlock: { cidr: "0.0.0.0/0", except: egress_except_cidr } }] },
+            {
+              ports: [{ port: 53, protocol: "TCP" }, { port: 53, protocol: "UDP" }],
+              to: [{ namespaceSelector: kube_system_namespace_selector }]
+            }
+          ]
+
+          {
+            apiVersion: "networking.k8s.io/v1",
+            kind: "NetworkPolicy",
+            metadata: {
+              annotations: annotations,
+              labels: labels,
+              name: name,
+              namespace: namespace
+            },
+            spec: {
+              egress: egress,
+              ingress: ingress,
+              podSelector: {},
+              policyTypes: policy_types
+            }
+          }.deep_stringify_keys.to_h
         end
       end
     end
