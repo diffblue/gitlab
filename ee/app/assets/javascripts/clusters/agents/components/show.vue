@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { GlTab } from '@gitlab/ui';
 import { s__ } from '~/locale';

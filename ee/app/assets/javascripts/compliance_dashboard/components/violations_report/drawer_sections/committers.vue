@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { __, n__ } from '~/locale';
 import DrawerAvatarsList from '../shared/drawer_avatars_list.vue';

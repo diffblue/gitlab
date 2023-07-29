@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { MERGE_REQUEST_VIOLATION_MESSAGES } from '../../../constants';
 import UserAvatar from '../shared/user_avatar.vue';

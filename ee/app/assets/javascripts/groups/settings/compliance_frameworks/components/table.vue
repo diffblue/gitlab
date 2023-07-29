@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import Vue from 'vue';
 import { GlAlert, GlButton, GlLoadingIcon, GlTableLite, GlLabel, GlToast } from '@gitlab/ui';

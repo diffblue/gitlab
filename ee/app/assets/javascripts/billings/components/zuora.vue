@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { GlLoadingIcon, GlAlert } from '@gitlab/ui';
 import { __ } from '~/locale';

@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { GlButton, GlFilteredSearch, GlPopover } from '@gitlab/ui';
 

@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { __, n__ } from '~/locale';
 import { DRAWER_AVATAR_SIZE, DRAWER_MAXIMUM_AVATARS } from '../../../constants';

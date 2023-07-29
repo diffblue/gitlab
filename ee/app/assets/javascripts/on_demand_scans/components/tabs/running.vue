@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { __, s__ } from '~/locale';
 import onDemandScansQuery from '../../graphql/on_demand_scans.query.graphql';
