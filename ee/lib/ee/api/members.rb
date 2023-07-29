@@ -129,7 +129,9 @@ module EE
 
             result = BilledUsersFinder.new(group, search_term: params[:search], order_by: sorting).execute
 
-            present paginate(result[:users]),
+            users = result[:users].with_emails
+
+            present paginate(users),
               with: ::EE::API::Entities::BillableMember,
               current_user: current_user,
               group: group,
