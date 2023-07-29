@@ -48,13 +48,14 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, :
         let(:actual_state) { current_actual_state }
         let(:previous_actual_state) { RemoteDevelopment::Workspaces::States::STOPPING }
         let(:current_actual_state) { RemoteDevelopment::Workspaces::States::STOPPED }
-        let(:workspace_exists) { false }
+        let(:workspace_exists) { false } # todo: why is this false
         let(:deployment_resource_version_from_agent) { '2' }
         let(:expected_desired_state) { desired_state }
         let(:expected_actual_state) { actual_state }
         let(:expected_deployment_resource_version) { deployment_resource_version_from_agent }
         let(:expected_config_to_apply) { nil }
         let(:owning_inventory) { "#{workspace.name}-workspace-inventory" }
+        let(:error_from_agent) { nil }
 
         let(:workspace_agent_info) do
           create_workspace_agent_info(
@@ -68,7 +69,8 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, :
             current_actual_state: current_actual_state,
             workspace_exists: workspace_exists,
             user_name: user.name,
-            user_email: user.email
+            user_email: user.email,
+            error_details: error_from_agent
           )
         end
 
@@ -123,6 +125,58 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, :
             let(:actual_state) { RemoteDevelopment::Workspaces::States::STOPPED }
 
             it_behaves_like 'max_hours_before_termination handling'
+          end
+        end
+
+        context "when the agent encounters an error while starting the workspace" do
+          let(:actual_state) { RemoteDevelopment::Workspaces::States::STARTING }
+          let(:desired_state) { RemoteDevelopment::Workspaces::States::RUNNING }
+          let(:expected_actual_state) { RemoteDevelopment::Workspaces::States::ERROR }
+          let(:error_from_agent) do
+            {
+              "error_type" => RemoteDevelopment::Workspaces::Reconcile::ErrorType::APPLIER,
+              "error_message" => "some applier error"
+            }
+          end
+
+          let(:workspace) do
+            create(
+              :workspace,
+              :after_initial_reconciliation,
+              agent: agent,
+              user: user,
+              desired_state: desired_state,
+              actual_state: actual_state
+            )
+          end
+
+          it 'returns proper workspace_rails_info entry with no config to apply' do
+            # verify initial states in db (sanity check of match between factory and fixtures)
+            expect(workspace.desired_state).to eq(desired_state)
+            expect(workspace.actual_state).to eq(actual_state)
+
+            payload, error = subject.process(
+              agent: agent,
+              workspace_agent_infos: workspace_agent_infos,
+              update_type: update_type
+            )
+            expect(error).to be_nil
+            workspace_rails_infos = payload.fetch(:workspace_rails_infos)
+            expect(workspace_rails_infos.length).to eq(1)
+
+            workspace.reload
+
+            expect(workspace.deployment_resource_version)
+              .to eq(expected_deployment_resource_version)
+
+            # test the config to apply first to get a more specific diff if it fails
+            provisioned_workspace_rails_info =
+              workspace_rails_infos.detect { |info| info.fetch(:name) == workspace.name }
+            # Since the workspace is now in Error state, the config should not be returned to the agent
+            expect(provisioned_workspace_rails_info.fetch(:config_to_apply)).to be_nil
+
+            # then test everything in the infos
+            expect(workspace_rails_infos).to eq(expected_workspace_rails_infos)
           end
         end
 

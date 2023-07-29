@@ -7,12 +7,13 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::AgentInfoParser, featur
 
   let(:user) { create(:user) }
   let(:workspace) { create(:workspace) }
+  let(:namespace) { workspace.namespace }
 
   let(:workspace_agent_info) do
     create_workspace_agent_info(
       workspace_id: workspace.id,
       workspace_name: workspace.name,
-      workspace_namespace: workspace.namespace,
+      workspace_namespace: namespace,
       agent_id: workspace.agent.id,
       owning_inventory: "#{workspace.name}-workspace-inventory",
       resource_version: '1',
@@ -45,7 +46,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::AgentInfoParser, featur
       # rubocop:disable RSpec/ExpectInHook
       expect(instance).to receive(:calculate_actual_state).with(
         latest_k8s_deployment_info: workspace_agent_info['latest_k8s_deployment_info'],
-        termination_progress: termination_progress
+        termination_progress: termination_progress,
+        latest_error_details: nil
       ) { current_actual_state }
       # rubocop:enable RSpec/ExpectInHook
     end
@@ -66,10 +68,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::AgentInfoParser, featur
       let(:previous_actual_state) { ::RemoteDevelopment::Workspaces::States::RUNNING }
       let(:current_actual_state) { ::RemoteDevelopment::Workspaces::States::TERMINATING }
       let(:termination_progress) { RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator::TERMINATING }
-      let(:expected_namespace) { nil }
       let(:expected_deployment_resource_version) { nil }
 
-      it 'returns an AgentInfo object without namespace and deployment_resource_version populated' do
+      it 'returns an AgentInfo object without deployment_resource_version populated' do
         expect(subject).to eq(expected_agent_info)
       end
     end
@@ -78,10 +79,21 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::AgentInfoParser, featur
       let(:previous_actual_state) { ::RemoteDevelopment::Workspaces::States::TERMINATING }
       let(:current_actual_state) { ::RemoteDevelopment::Workspaces::States::TERMINATED }
       let(:termination_progress) { RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator::TERMINATED }
-      let(:expected_namespace) { nil }
       let(:expected_deployment_resource_version) { nil }
 
-      it 'returns an AgentInfo object without namespace and deployment_resource_version populated' do
+      it 'returns an AgentInfo object without deployment_resource_version populated' do
+        expect(subject).to eq(expected_agent_info)
+      end
+    end
+
+    context "when namespace is missing in the payload" do
+      let(:previous_actual_state) { ::RemoteDevelopment::Workspaces::States::STARTING }
+      let(:current_actual_state) { ::RemoteDevelopment::Workspaces::States::RUNNING }
+      let(:termination_progress) { nil }
+      let(:namespace) { nil }
+      let(:expected_namespace) { nil }
+
+      it 'returns an AgentInfo object without namespace populated' do
         expect(subject).to eq(expected_agent_info)
       end
     end

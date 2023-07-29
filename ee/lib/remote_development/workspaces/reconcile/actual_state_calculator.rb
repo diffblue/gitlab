@@ -7,9 +7,6 @@ module RemoteDevelopment
       class ActualStateCalculator
         include States
 
-        TERMINATION_PROGRESS_TERMINATING = 'Terminating'
-        TERMINATION_PROGRESS_TERMINATED = 'Terminated'
-
         CONDITION_TYPE_PROGRESSING = 'Progressing'
         CONDITION_TYPE_AVAILABLE = 'Available'
         PROGRESSING_CONDITION_REASON_NEW_REPLICA_SET_CREATED = 'NewReplicaSetCreated'
@@ -34,13 +31,18 @@ module RemoteDevelopment
           PROGRESSING_CONDITION_REASON_PROGRESS_DEADLINE_EXCEEDED
         ].freeze
 
-        # rubocop: disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+        # rubocop: disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/AbcSize
         # @param [Hash] latest_k8s_deployment_info
         # @param [String (frozen)] termination_progress
+        # @param [Hash] latest_error_details
         # @return [String (frozen)]
-        def calculate_actual_state(latest_k8s_deployment_info:, termination_progress: nil)
-          return TERMINATING if termination_progress == TERMINATION_PROGRESS_TERMINATING
-          return TERMINATED if termination_progress == TERMINATION_PROGRESS_TERMINATED
+        def calculate_actual_state(latest_k8s_deployment_info:, termination_progress: nil, latest_error_details: nil)
+          # The workspace can be marked as TERMINATED even if latest_error_details are present for the workspace as
+          # nothing further can be done for the workspace as it no longer exists in the cluster
+          # In every other case, the existence of latest_error_details should transition the workspace to ERROR state
+          return TERMINATED if termination_progress == TerminationProgress::TERMINATED
+          return ERROR if latest_error_details
+          return TERMINATING if termination_progress == TerminationProgress::TERMINATING
 
           # if latest_k8s_deployment_info is missing, but workspace isn't Terminated or Terminating, this is an Unknown
           # state and should likely be accompanied by a value in the Error field, as this should be detectable by
@@ -177,7 +179,7 @@ module RemoteDevelopment
           UNKNOWN
         end
 
-        # rubocop: enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+        # rubocop: enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/AbcSize
       end
     end
   end
