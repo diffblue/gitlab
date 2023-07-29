@@ -22,7 +22,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
     workspace_exists:,
     user_name:,
     user_email:,
-    dns_zone: 'workspaces.localdev.me'
+    dns_zone: 'workspaces.localdev.me',
+    error_details: nil
   )
     # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409787
     #       Default some of the parameters which can be derived from others: e.g. owning_inventory, workspace_namespace
@@ -407,6 +408,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
     RESOURCES_YAML
 
     info['latest_k8s_deployment_info'] = YAML.safe_load(latest_k8s_deployment_info)
+    info['error_details'] = error_details
     info
   end
   # rubocop:enable Metrics/ParameterLists
