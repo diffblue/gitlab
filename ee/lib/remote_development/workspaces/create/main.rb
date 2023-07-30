@@ -45,7 +45,6 @@ module RemoteDevelopment
           in { err: WorkspaceCreateFailed => message }
             generate_error_response_from_message(message: message, reason: :bad_request)
           in { ok: WorkspaceCreateSuccessful => message }
-            message.context => { workspace: Workspace } # Type-check the payload before returning it
             { status: :success, payload: message.context }
           else
             raise UnmatchedResultError.new(result: result)

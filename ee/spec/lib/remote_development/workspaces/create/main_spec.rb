@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
+require_relative '../../fast_spec_helper'
 
 RSpec.describe RemoteDevelopment::Workspaces::Create::Main, feature_category: :remote_development do
   include RemoteDevelopment::RailwayOrientedProgrammingHelpers
 
-  let(:initial_value) { {} }
+  let(:value) { {} }
   let(:error_details) { 'some error details' }
   let(:err_message_context) { { details: error_details } }
 
@@ -39,7 +39,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::Main, feature_category: :r
 
   # Subject
 
-  subject(:response) { described_class.main(initial_value) }
+  subject(:response) { described_class.main(value) }
 
   before do
     allow(authorizer_class).to receive(:method) { authorizer_method }
@@ -55,10 +55,13 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::Main, feature_category: :r
   end
 
   context 'when the Authorizer returns an err Result' do
-    it 'returns an unauthorized error response' do
-      expect(authorizer_method).to receive(:call).with(initial_value) do
+    before do
+      allow(authorizer_method).to receive(:call).with(value) do
         Result.err(RemoteDevelopment::Messages::Unauthorized.new)
       end
+    end
+
+    it 'returns an unauthorized error response' do
       expect(response).to eq({ status: :error, message: 'Unauthorized', reason: :unauthorized })
     end
   end
@@ -189,7 +192,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::Main, feature_category: :r
   end
 
   context 'when the Creator returns an ok Result' do
-    let(:workspace) { build_stubbed(:workspace) }
+    let(:workspace) { instance_double("RemoteDevelopment::Workspace") }
 
     before do
       stub_methods_to_return_ok_result(
@@ -206,13 +209,12 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::Main, feature_category: :r
         editor_component_injector_method,
         project_cloner_component_injector_method
       )
+      allow(creator_method).to receive(:call).with(value) do
+        Result.ok(RemoteDevelopment::Messages::WorkspaceCreateSuccessful.new({ workspace: workspace }))
+      end
     end
 
     it 'returns a workspace create success response with the workspace as the payload' do
-      expect(creator_method).to receive(:call).with(initial_value) do
-        Result.ok(RemoteDevelopment::Messages::WorkspaceCreateSuccessful.new({ workspace: workspace }))
-      end
-
       expect(response).to eq({
         status: :success,
         payload: { workspace: workspace }
@@ -238,13 +240,12 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::Main, feature_category: :r
         editor_component_injector_method,
         project_cloner_component_injector_method
       )
-    end
-
-    it 'returns a workspace create failed error response' do
-      expect(creator_method).to receive(:call).with(initial_value) do
+      allow(creator_method).to receive(:call).with(value) do
         Result.err(RemoteDevelopment::Messages::WorkspaceCreateSuccessful.new)
       end
+    end
 
+    it 'raises an UnmatchedResultError' do
       expect { response }.to raise_error(RemoteDevelopment::UnmatchedResultError)
     end
   end
