@@ -7,7 +7,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
   # rubocop:disable Layout/LineLength
   # noinspection RubyInstanceMethodNamingConvention, RubyLocalVariableNamingConvention, RubyParameterNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
   # rubocop:enable Layout/LineLength
-  def create_workspace_agent_info(
+  def create_workspace_agent_info_hash(
     workspace_id:,
     workspace_name:,
     workspace_namespace:,
@@ -29,16 +29,18 @@ RSpec.shared_context 'with remote development shared fixtures' do
     #       Default some of the parameters which can be derived from others: e.g. owning_inventory, workspace_namespace
 
     info = {
-      'name' => workspace_name,
-      'namespace' => workspace_namespace
+      name: workspace_name,
+      namespace: workspace_namespace
     }
 
     if current_actual_state == RemoteDevelopment::Workspaces::States::TERMINATED
-      info['termination_progress'] = RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator::TERMINATED
+      info[:termination_progress] =
+        RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalculator::TERMINATED
     end
 
     if current_actual_state == RemoteDevelopment::Workspaces::States::TERMINATING
-      info['termination_progress'] = RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator::TERMINATING
+      info[:termination_progress] =
+        RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalculator::TERMINATING
     end
 
     if [
@@ -54,7 +56,6 @@ RSpec.shared_context 'with remote development shared fixtures' do
     ].include?(current_actual_state) ? 0 : 1
     host_template_annotation = get_workspace_host_template_annotation(workspace_name, dns_zone)
     host_template_environment_variable = get_workspace_host_template_env_var(workspace_name, dns_zone)
-    root_url = Gitlab::Routing.url_helpers.root_url
 
     # rubocop:disable Lint/DuplicateBranch
     status =
@@ -248,7 +249,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
         #     updatedReplicas: 1
         # STATUS_YAML
       else
-        msg = 'Unsupported state transition passed for create_workspace_agent_info fixture creation: ' \
+        msg = 'Unsupported state transition passed for create_workspace_agent_info_hash fixture creation: ' \
               "actual_state: #{previous_actual_state} -> #{current_actual_state}, " \
               "existing_workspace: #{workspace_exists}"
         raise RemoteDevelopment::AgentInfoStatusFixtureNotImplementedError, msg
@@ -407,10 +408,11 @@ RSpec.shared_context 'with remote development shared fixtures' do
       #{status.indent(2)}
     RESOURCES_YAML
 
-    info['latest_k8s_deployment_info'] = YAML.safe_load(latest_k8s_deployment_info)
-    info['error_details'] = error_details
-    info
+    info[:latest_k8s_deployment_info] = YAML.safe_load(latest_k8s_deployment_info)
+    info[:error_details] = error_details
+    info.deep_symbolize_keys.to_h
   end
+
   # rubocop:enable Metrics/ParameterLists
   # rubocop:enable Metrics/CyclomaticComplexity
   # rubocop:enable Metrics/PerceivedComplexity
@@ -435,7 +437,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
   end
 
   # rubocop:disable Metrics/ParameterLists
-  # noinspection RubyLocalVariableNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
+  # noinspection RubyLocalVariableNamingConvention,RubyParameterNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
   def create_config_to_apply(
     workspace_id:,
     workspace_name:,
@@ -452,7 +454,6 @@ RSpec.shared_context 'with remote development shared fixtures' do
     spec_replicas = started == true ? "1" : "0"
     host_template_annotation = get_workspace_host_template_annotation(workspace_name, dns_zone)
     host_template_environment_variable = get_workspace_host_template_env_var(workspace_name, dns_zone)
-    root_url = Gitlab::Routing.url_helpers.root_url
     inventory_config = <<~RESOURCES_YAML
       ---
       kind: ConfigMap
@@ -718,6 +719,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
       YAML.dump(resource)
     end.join
   end
+
   # rubocop:enable Metrics/ParameterLists
 
   # noinspection RubyInstanceMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
@@ -740,7 +742,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
 
   def example_processed_devfile
     devfile_contents = read_devfile('example.processed-devfile.yaml')
-    devfile_contents.gsub!('http://localhost/', Gitlab::Routing.url_helpers.root_url)
+    devfile_contents.gsub!('http://localhost/', root_url)
     devfile_contents
   end
 
@@ -748,5 +750,11 @@ RSpec.shared_context 'with remote development shared fixtures' do
   #       a String YAML representation of a devfile, and a devfile which has been converted to a Hash.
   def read_devfile(filename)
     File.read(Rails.root.join('ee/spec/fixtures/remote_development', filename).to_s)
+  end
+
+  def root_url
+    # NOTE: Default to http://example.com/ if GitLab::Application is not defined. This allows this helper to be used
+    #       from ee/spec/remote_development/fast_spec_helper.rb
+    defined?(Gitlab::Application) ? Gitlab::Routing.url_helpers.root_url : 'https://example.com/'
   end
 end

@@ -3,7 +3,7 @@
 module RemoteDevelopment
   module Workspaces
     module Reconcile
-      module UpdateType
+      module UpdateTypes
         PARTIAL = 'partial'
         FULL = 'full'
       end

@@ -68,11 +68,12 @@ FactoryBot.define do
     end
 
     after(:create) do |workspace, evaluator|
-      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-25400
       if evaluator.skip_realistic_after_create_timestamp_updates
         # Set responded_to_agent_at to a non-nil value unless it has already been set
+        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         workspace.update!(responded_to_agent_at: workspace.updated_at) unless workspace.responded_to_agent_at
-      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-25400
       elsif evaluator.is_after_reconciliation_finish
         # The most recent activity was reconciliation where info for the workspace was reported to the agent
         # This DOES NOT necessarily mean that the actual and desired states for the workspace are now the same

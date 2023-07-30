@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
+require_relative '../../../fast_spec_helper'
 
-RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, feature_category: :remote_development do
+RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalculator, feature_category: :remote_development do
   include_context 'with remote development shared fixtures'
 
   describe '.calculate_actual_state' do
     subject do
-      described_class.new
+      described_class
     end
 
     context 'with cases parameterized from shared fixtures' do
@@ -15,7 +15,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
         [
           # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409783
           #       These are currently taken from only the currently supported cases in
-          #       remote_development_shared_contexts.rb#create_workspace_agent_info,
+          #       remote_development_shared_contexts.rb#create_workspace_agent_info_hash,
           #       but we should ensure they are providing full and
           #       realistic coverage of all possible relevant states.
           #       Note that `nil` is passed when the argument will not be used by
@@ -43,7 +43,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
 
       with_them do
         let(:latest_k8s_deployment_info) do
-          workspace_agent_info = create_workspace_agent_info(
+          workspace_agent_info_hash = create_workspace_agent_info_hash(
             workspace_id: 1,
             workspace_name: 'name',
             workspace_namespace: 'namespace',
@@ -56,7 +56,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
             user_name: "does not matter",
             user_email: "does@not.matter"
           )
-          workspace_agent_info.fetch('latest_k8s_deployment_info')
+          workspace_agent_info_hash.fetch(:latest_k8s_deployment_info)
         end
 
         it 'calculates correct actual state' do
@@ -77,7 +77,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
     end
 
     # NOTE: The remaining examples below in this file existed before we added the RSpec parameterized
-    #       section above with tests based on create_workspace_agent_info. Some of them may be
+    #       section above with tests based on create_workspace_agent_info_hash. Some of them may be
     #       redundant now.
 
     context 'when the deployment is completed successfully' do
@@ -95,8 +95,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
                   type: Available
                 - reason: NewReplicaSetAvailable
                   type: Progressing
-          WORKSPACE_STATUS_YAML
-          )
+            WORKSPACE_STATUS_YAML
+          ).deep_symbolize_keys
         end
 
         it 'returns the expected actual state' do
@@ -118,8 +118,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
                   type: Available
                 - reason: NewReplicaSetAvailable
                   type: Progressing
-          WORKSPACE_STATUS_YAML
-          )
+            WORKSPACE_STATUS_YAML
+          ).deep_symbolize_keys
         end
 
         it 'returns the expected actual state' do
@@ -141,8 +141,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
                   type: Available
                 - reason: NewReplicaSetAvailable
                   type: Progressing
-          WORKSPACE_STATUS_YAML
-          )
+            WORKSPACE_STATUS_YAML
+          ).deep_symbolize_keys
         end
 
         it 'returns the expected actual state' do
@@ -164,8 +164,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
                 conditions:
                 - reason: NewReplicaSetCreated
                   type: Progressing
-          WORKSPACE_STATUS_YAML
-          )
+            WORKSPACE_STATUS_YAML
+          ).deep_symbolize_keys
         end
 
         it 'returns the expected actual state' do
@@ -185,8 +185,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
                 conditions:
                 - reason: FoundNewReplicaSet
                   type: Progressing
-          WORKSPACE_STATUS_YAML
-          )
+            WORKSPACE_STATUS_YAML
+          ).deep_symbolize_keys
         end
 
         it 'returns the expected actual state' do
@@ -206,8 +206,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
                 conditions:
                 - reason: ReplicaSetUpdated
                   type: Progressing
-          WORKSPACE_STATUS_YAML
-          )
+            WORKSPACE_STATUS_YAML
+          ).deep_symbolize_keys
         end
 
         it 'returns the expected actual state' do
@@ -227,8 +227,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
                 conditions:
                 - reason: ReplicaSetUpdated
                   type: Progressing
-          WORKSPACE_STATUS_YAML
-          )
+            WORKSPACE_STATUS_YAML
+          ).deep_symbolize_keys
         end
 
         it 'returns the expected actual state' do
@@ -248,8 +248,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
                 conditions:
                 - reason: ReplicaSetUpdated
                   type: Progressing
-          WORKSPACE_STATUS_YAML
-          )
+            WORKSPACE_STATUS_YAML
+          ).deep_symbolize_keys
         end
 
         it 'returns the expected actual state' do
@@ -269,8 +269,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
                 conditions:
                 - reason: test
                   type: test
-          WORKSPACE_STATUS_YAML
-          )
+            WORKSPACE_STATUS_YAML
+          ).deep_symbolize_keys
         end
 
         it 'returns the expected actual state' do
@@ -295,8 +295,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
                 - reason: ProgressDeadlineExceeded
                   type: Progressing
                 unavailableReplicas: 1
-          WORKSPACE_STATUS_YAML
-          )
+            WORKSPACE_STATUS_YAML
+          ).deep_symbolize_keys
         end
 
         it 'returns the expected actual state' do
@@ -319,8 +319,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
                 - reason: NewReplicaSetAvailable
                   type: Progressing
                 unavailableReplicas: 1
-          WORKSPACE_STATUS_YAML
-          )
+            WORKSPACE_STATUS_YAML
+          ).deep_symbolize_keys
         end
 
         it 'returns the expected actual state' do
@@ -344,8 +344,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
                 conditions:
                 - reason: ReplicaSetUpdated
                   type: Progressing
-          WORKSPACE_STATUS_YAML
-          )
+            WORKSPACE_STATUS_YAML
+          ).deep_symbolize_keys
         end
 
         it 'returns the expected actual state' do
@@ -364,8 +364,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
                 conditions:
                 - reason: ReplicaSetUpdated
                   type: Progressing
-          WORKSPACE_STATUS_YAML
-          )
+            WORKSPACE_STATUS_YAML
+          ).deep_symbolize_keys
         end
 
         it 'returns the expected actual state' do
@@ -380,8 +380,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
             <<~WORKSPACE_STATUS_YAML
               spec:
                 replicas: 0
-          WORKSPACE_STATUS_YAML
-          )
+            WORKSPACE_STATUS_YAML
+          ).deep_symbolize_keys
         end
 
         it 'returns the expected actual state' do
@@ -400,8 +400,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
                 test:
                 - reason: ReplicaSetUpdated
                   type: Progressing
-          WORKSPACE_STATUS_YAML
-          )
+            WORKSPACE_STATUS_YAML
+          ).deep_symbolize_keys
         end
 
         it 'returns the expected actual state' do
@@ -419,8 +419,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
               status:
                 conditions:
                 - type: Progressing
-          WORKSPACE_STATUS_YAML
-          )
+            WORKSPACE_STATUS_YAML
+          ).deep_symbolize_keys
         end
 
         it 'returns the expected actual state' do
@@ -441,8 +441,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
                   type: Available
                 - reason: unrecognized
                   type: Progressing
-          WORKSPACE_STATUS_YAML
-          )
+            WORKSPACE_STATUS_YAML
+          ).deep_symbolize_keys
         end
 
         it 'returns the expected actual state' do
@@ -454,7 +454,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
 
     context 'when termination_progress is Terminating' do
       let(:expected_actual_state) { RemoteDevelopment::Workspaces::States::TERMINATING }
-      let(:termination_progress) { RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator::TERMINATING }
+      let(:termination_progress) do
+        RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalculator::TERMINATING
+      end
 
       it 'returns the expected actual state' do
         expect(
@@ -468,7 +470,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
 
     context 'when termination_progress is Terminated' do
       let(:expected_actual_state) { RemoteDevelopment::Workspaces::States::TERMINATED }
-      let(:termination_progress) { RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator::TERMINATED }
+      let(:termination_progress) do
+        RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalculator::TERMINATED
+      end
 
       it 'returns the expected actual state' do
         expect(
@@ -483,9 +487,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
     context 'when latest_error_details is present' do
       let(:latest_error_details) do
         {
-          "error_details" => {
-            "error_type" => RemoteDevelopment::Workspaces::Reconcile::ErrorType::APPLIER,
-            "error_details" => "error encountered while applying k8s configs"
+          error_details: {
+            error_type: RemoteDevelopment::Workspaces::Reconcile::ErrorType::APPLIER,
+            error_details: "error encountered while applying k8s configs"
           }
         }
       end
@@ -511,7 +515,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
           expect(
             subject.calculate_actual_state(
               latest_k8s_deployment_info: nil,
-              termination_progress: RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator::TERMINATED,
+              termination_progress:
+                RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalculator::TERMINATED,
               latest_error_details: latest_error_details
             )
           ).to be(expected_actual_state)
@@ -525,7 +530,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
           expect(
             subject.calculate_actual_state(
               latest_k8s_deployment_info: nil,
-              termination_progress: RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator::TERMINATING,
+              termination_progress:
+                RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalculator::TERMINATING,
               latest_error_details: latest_error_details
             )
           ).to be(expected_actual_state)

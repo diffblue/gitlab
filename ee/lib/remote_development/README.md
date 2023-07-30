@@ -66,6 +66,7 @@ This layered approach also implies that we avoid directly referring to classes w
 If possible, we prefer to inject instances of these classes, or the classes themselves, into the Domain Logic layer from the Service layer.
 
 This also means that we can use `ee/spec/lib/remote_development/fast_spec_helper.rb` in most places in the Domain Logic layer. However, we may use the normal `spec_helper` for Domain Logic classes which make direct use of Rails. For example, classes which directly use ActiveRecord models and/or associations, where the usage of `fast_spec_helper` would require significant mocking, and not provide as much coverage of the ActiveRecord interactions.
+See [this thread](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/126785#note_1494395384) for a more detailed discussion of when/why to use `fast_spec_helper` or not.
 
 ## Type safety
 
@@ -111,6 +112,10 @@ x => {y: Integer => i} #  {:y=>"Not an Integer"}: Integer === "Not an integer" d
 - But even if the experimental support for types in rightward assignment was removed, it would be straightforward to change all occurrences to remove the types and go back to regular rightward assignment. We would just lose the type safety.
 
 Also note that `#deconstruct_keys` must be implemented in order to use these pattern matching features.
+
+However, note that sometimes we will avoid using this type of hardcoded type checking, if it means that
+we will be able to use `fast_spec_helper`, and there is otherwise sufficient test coverage to ensure
+that the types are correct. See [this comment thread](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/126785#note_1494395384) for a more detailed discussion.
 
 #### Pattern matching and destructuring without types
 
@@ -252,7 +257,10 @@ class UpdateService
 end
 ```
 
-Next, you see the `ee/lib/remote_development/workspaces/update/main.rb` class, which implements an ROP chain with two steps, `authorize` and `update`:
+Next, you see the `ee/lib/remote_development/workspaces/update/main.rb` class, which implements an ROP chain with two steps, `authorize` and `update`.
+
+Note that the `Main` class also has no domain logic in it itself other than invoking the steps and matching the the domain messages and transforming them into a response hash. We want to avoid that coupling, because all domain logic should live in the cohesive classes that are called by `Main` via the ROP pattern:
+
 
 ```ruby
 class Main
@@ -277,7 +285,9 @@ class Main
 end
 ```
 
-...and here is an example of the `ee/lib/remote_development/workspaces/update/updater.rb` class implementing the business logic in the "chain":
+...and here is an example of the `ee/lib/remote_development/workspaces/update/updater.rb` class implementing the business logic in the "chain".
+In this case, it contains the cohesive logic to update a workspace, and no other
+unrelated domain logic:
 
 ```ruby
 class Updater

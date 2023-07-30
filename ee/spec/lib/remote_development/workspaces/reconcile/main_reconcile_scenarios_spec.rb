@@ -7,10 +7,15 @@ require 'spec_helper'
 #       https://gitlab.com/gitlab-org/remote-development/gitlab-remote-development-docs/-/blob/main/doc/workspace-updates.md
 #       are not yet implemented - most or all are related to ERROR or FAILURE states, because the fixtures are not yet
 #       implemented.
-RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, 'Partial Update Scenarios', feature_category: :remote_development do
+RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, 'Partial Update Scenarios', feature_category: :remote_development do
   include_context 'with remote development shared fixtures'
 
+  let(:logger) { instance_double(::Logger) }
   let_it_be(:user) { create(:user) }
+
+  before do
+    allow(logger).to receive(:debug)
+  end
 
   # See following documentation for details on all scenarios:
   #
@@ -26,7 +31,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, '
   #
   # agent_actual_state_updates: Array of actual state updates from agent. nil if agent reports no info for workspace,
   #   otherwise an array of [previous_actual_state, current_actual_state, workspace_exists]
-  #   to be used as args when calling #create_workspace_agent_info to generate the workspace agent info fixture.
+  #   to be used as args when calling #create_workspace_agent_info_hash to generate the workspace agent info fixture.
   #
   # response_expectations: Array corresponding to entries in agent_actual_state_updates, representing
   #   expected rails_info hash response to agent for the workspace. Array is a 2-tuple of booleans for
@@ -142,6 +147,9 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, '
     # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31544
     # noinspection RubyInstanceMethodNamingConvention,RubyLocalVariableNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
     it 'behaves as expected' do
+      expect(logger).not_to receive(:warn)
+      expect(logger).not_to receive(:error)
+
       # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31544
       expected_db_expectations_length =
         (initial_db_state ? 1 : 0) + (user_desired_state_update ? 1 : 0) + agent_actual_state_updates.length
@@ -189,7 +197,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, '
       # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31544
       # noinspection RubyLocalVariableNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
       agent_actual_state_updates.each_with_index do |actual_state_update_fixture_args, response_expectations_index|
-        update_type = RemoteDevelopment::Workspaces::Reconcile::UpdateType::PARTIAL
+        update_type = RemoteDevelopment::Workspaces::Reconcile::UpdateTypes::PARTIAL
         deployment_resource_version_from_agent ||= initial_resource_version
 
         workspace_agent_infos =
@@ -199,7 +207,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, '
             workspace_exists = actual_state_update_fixture_args[2]
             deployment_resource_version_from_agent = (deployment_resource_version_from_agent.to_i + 1).to_s
             [
-              create_workspace_agent_info(
+              create_workspace_agent_info_hash(
                 workspace_id: workspace.id,
                 workspace_name: workspace.name,
                 workspace_namespace: workspace.namespace,
@@ -217,12 +225,17 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, '
             []
           end
 
-        result = described_class.new.process(
+        response = described_class.main(
           agent: workspace.agent,
-          workspace_agent_infos: workspace_agent_infos,
-          update_type: update_type
+          original_params: {
+            "workspace_agent_infos" => workspace_agent_infos,
+            "update_type" => update_type
+          },
+          logger: logger
         )
-        workspace_rails_infos = result[0].fetch(:workspace_rails_infos)
+
+        expect(response[:message]).to be_nil # assert there is not an error, if there is this will display the message
+        workspace_rails_infos = response.fetch(:payload).fetch(:workspace_rails_infos)
 
         # assert on the rails_info response to the agent
         expect(workspace_rails_infos.size).to eq(1)
