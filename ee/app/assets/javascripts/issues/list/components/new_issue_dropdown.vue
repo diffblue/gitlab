@@ -1,64 +1,53 @@
 <script>
-import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
-import { TYPE_ISSUE } from '~/issues/constants';
-import { visitUrl } from '~/lib/utils/url_utility';
+import { GlButtonGroup, GlButton, GlDisclosureDropdown } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 
 export default {
-  TYPE_ISSUE,
   i18n: {
     newIssueLabel: __('New issue'),
     newObjectiveLabel: s__('WorkItem|New objective'),
+    toggleSrText: __('Issue type'),
   },
   components: {
-    GlDropdown,
-    GlDropdownItem,
+    GlDisclosureDropdown,
+    GlButton,
+    GlButtonGroup,
   },
   inject: ['newIssuePath'],
-  data() {
-    return {
-      selectedOption: TYPE_ISSUE,
-    };
-  },
   computed: {
-    dropdownText() {
-      if (this.selectedOption === TYPE_ISSUE) {
-        return this.$options.i18n.newIssueLabel;
-      } else if (this.selectedOption === 'objective') {
-        return this.$options.i18n.newObjectiveLabel;
-      }
-
-      return undefined;
-    },
-  },
-  methods: {
-    handleDropdownButtonClick() {
-      if (this.selectedOption === TYPE_ISSUE) {
-        visitUrl(this.newIssuePath);
-      } else if (this.selectedOption === 'objective') {
-        this.$emit('new-objective-clicked');
-      }
-    },
-    handleDropdownItemClick(option) {
-      this.selectedOption = option;
+    items() {
+      return [
+        {
+          text: this.$options.i18n.newIssueLabel,
+          href: this.newIssuePath,
+        },
+        {
+          text: this.$options.i18n.newObjectiveLabel,
+          action: () => {
+            this.$emit('new-objective-clicked');
+          },
+        },
+      ];
     },
   },
 };
 </script>
 
 <template>
-  <gl-dropdown
-    right
-    split
-    :text="dropdownText"
-    variant="confirm"
-    @click="handleDropdownButtonClick()"
-  >
-    <gl-dropdown-item @click="handleDropdownItemClick($options.TYPE_ISSUE)">
+  <!--TODO: Replace button-group workaround once `split` option for new dropdowns is implemented.-->
+  <!-- See issue at https://gitlab.com/gitlab-org/gitlab-ui/-/issues/2263-->
+  <gl-button-group>
+    <gl-button variant="confirm" :href="newIssuePath">
       {{ $options.i18n.newIssueLabel }}
-    </gl-dropdown-item>
-    <gl-dropdown-item @click="handleDropdownItemClick('objective')">
-      {{ $options.i18n.newObjectiveLabel }}
-    </gl-dropdown-item>
-  </gl-dropdown>
+    </gl-button>
+    <gl-disclosure-dropdown
+      :toggle-text="$options.i18n.toggleSrText"
+      placement="right"
+      class="split"
+      toggle-class="gl-rounded-top-left-none! gl-rounded-bottom-left-none! gl-pl-2!"
+      text-sr-only
+      variant="confirm"
+      :items="items"
+    />
+  </gl-button-group>
 </template>
