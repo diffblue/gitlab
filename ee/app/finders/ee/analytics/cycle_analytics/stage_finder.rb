@@ -6,7 +6,7 @@ module EE
       module StageFinder
         extend ::Gitlab::Utils::Override
 
-        NUMBERS_ONLY = /\A\d+\z/.freeze
+        NUMBERS_ONLY = /\A\d+\z/
 
         def initialize(parent:, stage_id:)
           @parent = parent

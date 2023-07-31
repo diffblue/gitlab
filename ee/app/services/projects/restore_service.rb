@@ -4,7 +4,7 @@ module Projects
   class RestoreService < BaseService
     include Gitlab::Utils::StrongMemoize
 
-    DELETED_SUFFIX_REGEX = /-deleted-[a-zA-Z0-9]+\z/.freeze
+    DELETED_SUFFIX_REGEX = /-deleted-[a-zA-Z0-9]+\z/
 
     def execute
       return error(_('Project already deleted')) if project.pending_delete?

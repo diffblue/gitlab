@@ -35,7 +35,7 @@ class EpicsFinder < IssuableFinder
   include Gitlab::Utils::StrongMemoize
   extend ::Gitlab::Utils::Override
 
-  IID_STARTS_WITH_PATTERN = %r{\A(\d)+\z}.freeze
+  IID_STARTS_WITH_PATTERN = %r{\A(\d)+\z}
 
   def self.valid_iid_query?(query)
     query.match?(IID_STARTS_WITH_PATTERN)

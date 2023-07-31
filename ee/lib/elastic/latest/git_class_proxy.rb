@@ -4,7 +4,7 @@ module Elastic
   module Latest
     module GitClassProxy
       extend ::Gitlab::Utils::Override
-      SHA_REGEX = /\A[0-9a-f]{5,40}\z/i.freeze
+      SHA_REGEX = /\A[0-9a-f]{5,40}\z/i
       HIGHLIGHT_START_TAG = 'gitlabelasticsearch→'
       HIGHLIGHT_END_TAG = '←gitlabelasticsearch'
       MAX_LANGUAGES = 100
