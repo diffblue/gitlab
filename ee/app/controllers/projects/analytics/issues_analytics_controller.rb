@@ -5,6 +5,9 @@ class Projects::Analytics::IssuesAnalyticsController < Projects::ApplicationCont
   include ProductAnalyticsTracking
 
   before_action :authorize_read_issue_analytics!
+  before_action do
+    push_frontend_feature_flag(:issues_completed_analytics_feature_flag, project)
+  end
 
   track_event :show,
     name: 'p_analytics_issues',

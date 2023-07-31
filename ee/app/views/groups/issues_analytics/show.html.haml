@@ -5,4 +5,4 @@
   %h3
     = _('Issue Analytics')
 = render 'shared/issuable/search_bar', type: :issues_analytics, show_sorting_dropdown: false, placeholder: _('Filter results...')
-#js-issues-analytics{ data: {type: 'group', full_path: @group.full_path, endpoint: group_issues_analytics_path(@group), no_data_empty_state_svg_path: image_path('illustrations/empty-state/empty-issues-md.svg'), filters_empty_state_svg_path: image_path('illustrations/empty-state/empty-issues-md.svg'), issues_api_endpoint: expose_url(api_v4_groups_issues_path(id: @group.id)), issues_page_endpoint: issues_group_path(@group) } }
+#js-issues-analytics{ data: {type: 'group', full_path: @group.full_path, endpoint: group_issues_analytics_path(@group), no_data_empty_state_svg_path: image_path('illustrations/empty-state/empty-issues-md.svg'), filters_empty_state_svg_path: image_path('illustrations/empty-state/empty-issues-md.svg'), issues_api_endpoint: expose_url(api_v4_groups_issues_path(id: @group.id)), issues_page_endpoint: issues_group_path(@group), has_issues_completed_feature: @group.licensed_feature_available?(:issues_completed_analytics).to_s } }

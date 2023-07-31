@@ -6,6 +6,9 @@ class Groups::IssuesAnalyticsController < Groups::ApplicationController
 
   before_action :authorize_read_group!
   before_action :authorize_read_issue_analytics!
+  before_action do
+    push_frontend_feature_flag(:issues_completed_analytics_feature_flag, @group)
+  end
 
   track_event :show,
     name: 'g_analytics_issues',
