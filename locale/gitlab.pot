@@ -17391,6 +17391,9 @@ msgstr ""
 msgid "Embed"
 msgstr ""
 
+msgid "Emoji"
+msgstr ""
+
 msgid "Empty file"
 msgstr ""
 
@@ -23559,6 +23562,9 @@ msgid "Ignore"
 msgstr ""
 
 msgid "Ignored"
+msgstr ""
+
+msgid "Image"
 msgstr ""
 
 msgid "ImageDiffViewer|2-up"
@@ -30667,6 +30673,9 @@ msgid "New confidential epic title "
 msgstr ""
 
 msgid "New confidential issue title"
+msgstr ""
+
+msgid "New custom emoji"
 msgstr ""
 
 msgid "New deploy key"
