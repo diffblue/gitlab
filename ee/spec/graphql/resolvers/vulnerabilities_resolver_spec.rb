@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Resolvers::VulnerabilitiesResolver do
+RSpec.describe Resolvers::VulnerabilitiesResolver, feature_category: :vulnerability_management do
   include GraphqlHelpers
 
   describe '#resolve' do
@@ -66,6 +66,20 @@ RSpec.describe Resolvers::VulnerabilitiesResolver do
 
       it 'only returns vulnerabilities of the given states' do
         is_expected.to contain_exactly(high_vulnerability)
+      end
+
+      context 'when dismissal reason and state other than dismissed is given' do
+        let(:params) { { state: %w[detected], dismissal_reason: %w[USED_IN_TESTS FALSE_POSITIVE] } }
+
+        let_it_be(:dismissed_vulnerability_1) { create(:vulnerability, :dismissed, project: project) }
+        let_it_be(:vulnerability_read_1) { create(:vulnerability_read, :used_in_tests, vulnerability: dismissed_vulnerability_1, project: project) }
+
+        let_it_be(:dismissed_vulnerability_2) { create(:vulnerability, :dismissed, project: project) }
+        let_it_be(:vulnerability_read_2) { create(:vulnerability_read, :false_positive, vulnerability: dismissed_vulnerability_2, project: project) }
+
+        it 'returns only dissmissed Vulnerabilities with matching dismissal reason' do
+          is_expected.to match_array([low_vulnerability, critical_vulnerability, dismissed_vulnerability_1, dismissed_vulnerability_2])
+        end
       end
     end
 
@@ -208,20 +222,6 @@ RSpec.describe Resolvers::VulnerabilitiesResolver do
         it 'returns empty list' do
           is_expected.to be_empty
         end
-      end
-    end
-
-    context 'when dismissal reason is given' do
-      let(:params) { { dismissal_reason: %w[USED_IN_TESTS FALSE_POSITIVE] } }
-
-      let_it_be(:dismissed_vulnerability_1) { create(:vulnerability, :dismissed, project: project) }
-      let_it_be(:vulnerability_read_1) { create(:vulnerability_read, :used_in_tests, vulnerability: dismissed_vulnerability_1, project: project) }
-
-      let_it_be(:dismissed_vulnerability_2) { create(:vulnerability, :dismissed, project: project) }
-      let_it_be(:vulnerability_read_2) { create(:vulnerability_read, :false_positive, vulnerability: dismissed_vulnerability_2, project: project) }
-
-      it 'returns only dissmissed Vulnerabilities with matching dismissal reason' do
-        is_expected.to match_array([dismissed_vulnerability_1, dismissed_vulnerability_2])
       end
     end
 
