@@ -206,6 +206,24 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         it_behaves_like 'successful prompt processing'
       end
 
+      context 'with issue as resource' do
+        let(:resource) { issue }
+
+        # rubocop: disable Layout/LineLength
+        where(:input_template, :tools, :answer_match) do
+          'Can you list all labels on this issue?'                      | %w[IssueIdentifier ResourceReader] | /ai-enablement/
+          'How many days ago was current issue created?'                | %w[IssueIdentifier ResourceReader] | /2 days/
+          'For which milestone is this issue? And how long until then?' | %w[IssueIdentifier ResourceReader] | /milestone1.*3 days/
+        end
+        # rubocop: enable Layout/LineLength
+
+        with_them do
+          let(:input) { input_template }
+
+          it_behaves_like 'successful prompt processing'
+        end
+      end
+
       context 'with chat history' do
         let_it_be(:issue2) do
           create(

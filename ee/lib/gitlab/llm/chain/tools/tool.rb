@@ -45,8 +45,8 @@ module Gitlab
             raise NotImplementedError
           end
 
-          def current_resource?(resource_identifier, resource_name)
-            resource_identifier == 'current' && context.resource.class.name.downcase == resource_name
+          def current_resource?(resource_identifier_type, resource_name)
+            resource_identifier_type == 'current' && context.resource.class.name.downcase == resource_name
           end
 
           def projects_from_context
