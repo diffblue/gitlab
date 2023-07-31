@@ -10,6 +10,7 @@ module EE
         before_action :elasticsearch_reindexing_task, only: [:advanced_search]
         before_action :elasticsearch_index_settings, only: [:advanced_search]
         before_action :elasticsearch_warn_if_not_using_aliases, only: [:advanced_search]
+        before_action :elasticsearch_pending_obsolete_migrations, only: [:advanced_search]
         before_action :search_error_if_version_incompatible, only: [:advanced_search]
         before_action :search_outdated_code_analyzer_detected, only: [:advanced_search]
         before_action :push_password_complexity_feature, only: [:general]
@@ -37,6 +38,11 @@ module EE
           @elasticsearch_warn_if_not_using_aliases = ::Gitlab::Elastic::Helper.default.alias_missing?
         rescue StandardError => e
           log_exception(e)
+        end
+
+        def elasticsearch_pending_obsolete_migrations
+          @elasticsearch_pending_obsolete_migrations =
+            Elastic::DataMigrationService.pending_migrations.select(&:obsolete?)
         end
 
         def search_error_if_version_incompatible
