@@ -54360,6 +54360,9 @@ msgstr ""
 msgid "can't reference a branch that does not exist"
 msgstr ""
 
+msgid "cannot assign a linked work item as a parent"
+msgstr ""
+
 msgid "cannot assign a non-confidential work item to a confidential parent. Make the work item confidential and try again."
 msgstr ""
 
@@ -55122,6 +55125,9 @@ msgid "invalidated"
 msgstr ""
 
 msgid "is"
+msgstr ""
+
+msgid "is a parent or child of this %{item}"
 msgstr ""
 
 msgid "is already associated to a GitLab Issue. New issue will not be associated."
