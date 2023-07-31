@@ -54334,6 +54334,9 @@ msgstr ""
 msgid "banned user already exists"
 msgstr ""
 
+msgid "before"
+msgstr ""
+
 msgid "beta"
 msgstr ""
 
@@ -55866,6 +55869,9 @@ msgid "nounSeries|%{item}, %{nextItem}"
 msgstr ""
 
 msgid "nounSeries|%{item}, and %{lastItem}"
+msgstr ""
+
+msgid "on or after"
 msgstr ""
 
 msgid "only available on top-level groups."
