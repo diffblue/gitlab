@@ -33829,6 +33829,10 @@ CREATE INDEX tmp_idx_for_feedback_comment_processing ON vulnerability_feedback U
 
 CREATE INDEX tmp_idx_for_vulnerability_feedback_migration ON vulnerability_feedback USING btree (id) WHERE ((migrated_to_state_transition = false) AND (feedback_type = 0));
 
+CREATE INDEX tmp_idx_orphaned_approval_merge_request_rules ON approval_merge_request_rules USING btree (id) WHERE ((report_type = ANY (ARRAY[2, 4])) AND (security_orchestration_policy_configuration_id IS NULL));
+
+CREATE INDEX tmp_idx_orphaned_approval_project_rules ON approval_project_rules USING btree (id) WHERE ((report_type = ANY (ARRAY[2, 4])) AND (security_orchestration_policy_configuration_id IS NULL));
+
 CREATE INDEX tmp_idx_packages_on_project_id_when_npm_not_pending_destruction ON packages_packages USING btree (project_id) WHERE ((package_type = 2) AND (status <> 4));
 
 CREATE INDEX tmp_idx_vuln_reads_where_dismissal_reason_null ON vulnerability_reads USING btree (id) WHERE ((state = 2) AND (dismissal_reason IS NULL));
