@@ -114,6 +114,10 @@ module Elastic
           query_hash = context.name(:commit, :authorized) { project_ids_filter(query_hash, options) }
         end
 
+        if archived_filter_applicable_for_commit_search?(options)
+          query_hash = context.name(:archived) { archived_filter(query_hash) }
+        end
+
         bool_expr = apply_simple_query_string(
           name: context.name(:commit, :match, :search_terms),
           fields: fields,
@@ -155,6 +159,12 @@ module Elastic
           results: res.results,
           total_count: res.size
         }
+      end
+
+      def archived_filter_applicable_for_commit_search?(options)
+        !options[:include_archived] && options[:search_scope] != 'project' &&
+          Feature.enabled?(:search_commits_hide_archived_projects) &&
+          ::Elastic::DataMigrationService.migration_has_finished?(:backfill_archived_field_in_commits)
       end
 
       def search_blob(query, type: 'blob', page: 1, per: 20, options: {})
