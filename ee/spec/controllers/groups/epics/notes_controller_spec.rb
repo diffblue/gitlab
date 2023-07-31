@@ -28,6 +28,8 @@ RSpec.describe Groups::Epics::NotesController, feature_category: :portfolio_mana
       group.add_developer(user)
       sign_in(user)
       note
+
+      request.headers['X-Last-Fetched-At'] = 0
     end
 
     it 'responds with array of notes' do
