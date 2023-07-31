@@ -186,6 +186,19 @@ RSpec.describe ProductAnalytics::CubeDataQueryService, feature_category: :produc
         let(:query) { { query: { measures: ['TrackedEvents.count'] }, queryType: 'multi', include_token: true } }
       end
     end
+
+    context 'when querying a long running query' do
+      before do
+        stub_cube_load_continue_wait
+      end
+
+      it 'returns success and continue wait' do
+        response = request_load(false)
+
+        expect(response.success?).to be_truthy
+        expect(response.message).to eq('Continue wait')
+      end
+    end
   end
 
   describe 'POST projects/:id/product_analytics/request/dry-run' do
@@ -262,6 +275,11 @@ RSpec.describe ProductAnalytics::CubeDataQueryService, feature_category: :produc
   def stub_cube_load_invalid_query
     stub_request(:post, cube_api_load_url)
       .to_return(status: 200, body: '{"error": "Query is invalid"}', headers: {})
+  end
+
+  def stub_cube_load_continue_wait
+    stub_request(:post, cube_api_load_url)
+      .to_return(status: 200, body: '{"error": "Continue wait"}', headers: {})
   end
 
   def stub_cube_dry_run

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Subscription Seats renders table content renders the correct data 1`] = `
+exports[`Subscription User List renders table content renders the correct data 1`] = `
 Array [
   Object {
     "email": "administrator@email.com",

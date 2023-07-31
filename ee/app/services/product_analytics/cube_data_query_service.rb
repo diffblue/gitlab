@@ -47,6 +47,8 @@ module ProductAnalytics
 
       if database_missing?(body)
         ServiceResponse.error(message: '404 Clickhouse Database Not Found', reason: :not_found)
+      elsif body['error'] == 'Continue wait'
+        ServiceResponse.success(message: body['error'], payload: body)
       elsif body['error'].present?
         ServiceResponse.error(message: body['error'], reason: :bad_request)
       elsif params[:path] == 'meta'
