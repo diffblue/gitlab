@@ -36,6 +36,8 @@ import {
   TOKEN_TYPE_TYPE,
   TOKEN_TYPE_SEARCH_WITHIN,
   TOKEN_TYPE_WEIGHT,
+  TOKEN_TYPE_CREATED,
+  TOKEN_TYPE_CLOSED,
 } from 'ee/vue_shared/components/filtered_search_bar/constants';
 import BlockingIssuesCount from 'ee/issues/components/blocking_issues_count.vue';
 import IssuesListApp from 'ee/issues/list/components/issues_list_app.vue';
@@ -59,6 +61,7 @@ describe('EE IssuesListApp component', () => {
     hasAnyIssues: true,
     hasAnyProjects: true,
     hasBlockedIssuesFeature: true,
+    hasIssueDateFilterFeature: true,
     hasIssuableHealthStatusFeature: true,
     hasIssueWeightsFeature: true,
     hasIterationsFeature: true,
@@ -256,8 +259,10 @@ describe('EE IssuesListApp component', () => {
         expect(findIssuableList().props('searchTokens')).toMatchObject([
           { type: TOKEN_TYPE_ASSIGNEE, preloadedUsers },
           { type: TOKEN_TYPE_AUTHOR, preloadedUsers },
+          { type: TOKEN_TYPE_CLOSED },
           { type: TOKEN_TYPE_CONFIDENTIAL },
           { type: TOKEN_TYPE_CONTACT },
+          { type: TOKEN_TYPE_CREATED },
           { type: TOKEN_TYPE_EPIC },
           { type: TOKEN_TYPE_HEALTH },
           { type: TOKEN_TYPE_ITERATION },

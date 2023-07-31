@@ -35,6 +35,10 @@ query getIssuesEE(
   $afterCursor: String
   $firstPageSize: Int
   $lastPageSize: Int
+  $createdAfter: Time
+  $createdBefore: Time
+  $closedAfter: Time
+  $closedBefore: Time
 ) {
   group(fullPath: $fullPath) @skip(if: $isProject) @persist {
     id
@@ -68,6 +72,10 @@ query getIssuesEE(
       after: $afterCursor
       first: $firstPageSize
       last: $lastPageSize
+      createdAfter: $createdAfter
+      createdBefore: $createdBefore
+      closedAfter: $closedAfter
+      closedBefore: $closedBefore
     ) {
       __persist
       pageInfo {
@@ -116,6 +124,10 @@ query getIssuesEE(
       after: $afterCursor
       first: $firstPageSize
       last: $lastPageSize
+      createdAfter: $createdAfter
+      createdBefore: $createdBefore
+      closedAfter: $closedAfter
+      closedBefore: $closedBefore
     ) {
       __persist
       pageInfo {
