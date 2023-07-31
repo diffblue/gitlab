@@ -29,7 +29,7 @@ const createComplianceFrameworksTableApp = (el) => {
     el,
     apolloProvider,
     provide: {
-      canAddEdit,
+      canAddEdit: parseBoolean(canAddEdit),
       graphqlFieldName,
       groupPath,
       pipelineConfigurationFullPathEnabled: parseBoolean(pipelineConfigurationFullPathEnabled),
