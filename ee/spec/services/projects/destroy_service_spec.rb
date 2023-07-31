@@ -169,8 +169,8 @@ RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects 
         let(:attributes) do
           {
             author_id: user.id,
-            entity_id: project.parent.id,
-            entity_type: 'Namespaces::UserNamespace',
+            entity_id: user.id,
+            entity_type: 'User',
             details: {
               remove: 'project',
               author_name: user.name,
@@ -249,6 +249,7 @@ RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects 
   context 'system hooks exception' do
     before do
       allow_any_instance_of(SystemHooksService).to receive(:execute_hooks_for).and_raise('something went wrong')
+      stub_licensed_features(extended_audit_events: true)
     end
 
     it 'logs an audit event' do
