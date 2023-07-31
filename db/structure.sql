@@ -32228,6 +32228,8 @@ CREATE INDEX index_notes_on_id_where_internal ON notes USING btree (id) WHERE (i
 
 CREATE INDEX index_notes_on_line_code ON notes USING btree (line_code);
 
+CREATE INDEX index_notes_on_namespace_id ON notes USING btree (namespace_id);
+
 CREATE INDEX index_notes_on_noteable_id_and_noteable_type_and_system ON notes USING btree (noteable_id, noteable_type, system);
 
 CREATE INDEX index_notes_on_project_id_and_id_and_system_false ON notes USING btree (project_id, id) WHERE (NOT system);
@@ -35944,6 +35946,9 @@ ALTER TABLE ONLY environments
 
 ALTER TABLE ONLY vulnerabilities
     ADD CONSTRAINT fk_76bc5f5455 FOREIGN KEY (resolved_by_id) REFERENCES users(id) ON DELETE SET NULL;
+
+ALTER TABLE ONLY notes
+    ADD CONSTRAINT fk_76db6d50c6 FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY oauth_openid_requests
     ADD CONSTRAINT fk_77114b3b09 FOREIGN KEY (access_grant_id) REFERENCES oauth_access_grants(id) ON DELETE CASCADE;
