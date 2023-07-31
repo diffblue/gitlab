@@ -1795,9 +1795,6 @@ msgstr ""
 msgid "A file was not found."
 msgstr ""
 
-msgid "A file with '%{file_name}' already exists in %{branch} branch"
-msgstr ""
-
 msgid "A file with this name already exists."
 msgstr ""
 
@@ -39396,9 +39393,6 @@ msgstr ""
 msgid "Request details"
 msgstr ""
 
-msgid "Request parameter %{param} is missing."
-msgstr ""
-
 msgid "Request review from"
 msgstr ""
 
@@ -47159,12 +47153,6 @@ msgstr ""
 msgid "There was a problem updating the keep latest artifacts setting."
 msgstr ""
 
-msgid "There was an error creating the dashboard, branch name is invalid."
-msgstr ""
-
-msgid "There was an error creating the dashboard, branch named: %{branch} already exists."
-msgstr ""
-
 msgid "There was an error creating the issue"
 msgstr ""
 
@@ -54006,12 +53994,6 @@ msgid "Your current password is required to register a new device."
 msgstr ""
 
 msgid "Your current password is required to register a two-factor authenticator app."
-msgstr ""
-
-msgid "Your dashboard has been copied. You can %{web_ide_link_start}edit it here%{web_ide_link_end}."
-msgstr ""
-
-msgid "Your dashboard has been updated. You can %{web_ide_link_start}edit it here%{web_ide_link_end}."
 msgstr ""
 
 msgid "Your deployment services will be broken, you will need to manually fix the services after renaming."
