@@ -82,7 +82,7 @@ module Gitlab
                 tools_definitions: tools.map.with_index do |tool_class, idx|
                   "#{idx + 1}. #{tool_class::Executor::NAME}: #{tool_class::Executor::DESCRIPTION}" \
                     "\n" \
-                    "#{tool_class::Executor.full_example}" \
+                    "Example of usage: #{tool_class::Executor.full_example}" \
                 end.join("\n"),
                 user_input: user_input,
                 agent_scratchpad: +"",
