@@ -118,14 +118,14 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
 
         context 'when issue is the current issue in context' do
           let(:identifier) { 'current' }
-          let(:ai_response) { "{\"ResourceIdentifierType\": \"current\", \"ResourceIdentifier\": \"#{identifier}\"}" }
+          let(:ai_response) { "current\", \"ResourceIdentifier\": \"#{identifier}\"}" }
 
           it_behaves_like 'success response'
         end
 
         context 'when issue is identified by iid' do
           let(:identifier) { issue2.iid }
-          let(:ai_response) { "{\"ResourceIdentifierType\": \"iid\", \"ResourceIdentifier\": #{identifier}}" }
+          let(:ai_response) { "iid\", \"ResourceIdentifier\": #{identifier}}" }
 
           it_behaves_like 'success response'
         end
@@ -133,7 +133,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
         context 'when is issue identified with reference' do
           let(:identifier) { issue2.to_reference(full: true) }
           let(:ai_response) do
-            "{\"ResourceIdentifierType\": \"reference\", \"ResourceIdentifier\": \"#{identifier}\"}"
+            "reference\", \"ResourceIdentifier\": \"#{identifier}\"}"
           end
 
           it_behaves_like 'success response'
@@ -150,7 +150,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
         context 'when issue mistaken with an MR' do
           let_it_be(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
 
-          let(:ai_response) { "{\"ResourceIdentifierType\": \"current\", \"ResourceIdentifier\": \"current\"}" }
+          let(:ai_response) { "current\", \"ResourceIdentifier\": \"current\"}" }
 
           before do
             context.resource = merge_request
@@ -165,7 +165,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
           end
 
           let(:identifier) { issue2.iid }
-          let(:ai_response) { "{\"ResourceIdentifierType\": \"iid\", \"ResourceIdentifier\": #{identifier}}" }
+          let(:ai_response) { "iid\", \"ResourceIdentifier\": #{identifier}}" }
 
           it_behaves_like 'success response'
 
@@ -174,7 +174,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
             let_it_be(:issue3) { create(:issue, iid: issue2.iid, project: project) }
 
             let(:identifier) { issue2.iid }
-            let(:ai_response) { "{\"ResourceIdentifierType\": \"iid\", \"ResourceIdentifier\": #{identifier}}" }
+            let(:ai_response) { "iid\", \"ResourceIdentifier\": #{identifier}}" }
 
             it_behaves_like 'issue not found response'
           end
@@ -187,7 +187,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
 
           context 'when issue is the current issue in context' do
             let(:identifier) { issue2.iid }
-            let(:ai_response) { "{\"ResourceIdentifierType\": \"iid\", \"ResourceIdentifier\": #{identifier}}" }
+            let(:ai_response) { "iid\", \"ResourceIdentifier\": #{identifier}}" }
 
             it_behaves_like 'success response'
           end
@@ -200,14 +200,14 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
 
           context 'when issue is identified by iid' do
             let(:identifier) { issue2.iid }
-            let(:ai_response) { "{\"ResourceIdentifierType\": \"iid\", \"ResourceIdentifier\": #{identifier}}" }
+            let(:ai_response) { "iid\", \"ResourceIdentifier\": #{identifier}}" }
 
             it_behaves_like 'issue not found response'
           end
 
           context 'when issue is the current issue in context' do
             let(:identifier) { 'current' }
-            let(:ai_response) { "{\"ResourceIdentifierType\": \"current\", \"ResourceIdentifier\": \"#{identifier}\"}" }
+            let(:ai_response) { "current\", \"ResourceIdentifier\": \"#{identifier}\"}" }
 
             it_behaves_like 'success response'
           end
@@ -215,7 +215,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
           context 'when is issue identified with reference' do
             let(:identifier) { issue2.to_reference(full: true) }
             let(:ai_response) do
-              "{\"ResourceIdentifierType\": \"reference\", \"ResourceIdentifier\": \"#{identifier}\"}"
+              "reference\", \"ResourceIdentifier\": \"#{identifier}\"}"
             end
 
             it_behaves_like 'success response'
@@ -224,7 +224,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
           context 'when is issue identified with not-full reference' do
             let(:identifier) { issue2.to_reference(full: false) }
             let(:ai_response) do
-              "{\"ResourceIdentifierType\": \"reference\", \"ResourceIdentifier\": \"#{identifier}\"}"
+              "reference\", \"ResourceIdentifier\": \"#{identifier}\"}"
             end
 
             it_behaves_like 'issue not found response'
@@ -232,7 +232,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
 
           xcontext 'when is issue identified with url' do
             let(:identifier) { Gitlab::Saas.com_url + Gitlab::Routing.url_helpers.project_issue_path(project, issue2) }
-            let(:ai_response) { "{\"ResourceIdentifierType\": \"url\", \"ResourceIdentifier\": \"#{identifier}\"}" }
+            let(:ai_response) { "url\", \"ResourceIdentifier\": \"#{identifier}\"}" }
 
             it_behaves_like 'success response'
           end
@@ -240,7 +240,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
 
         context 'when issue was already identified' do
           let(:resource_iid) { issue1.iid }
-          let(:ai_response) { "{\"ResourceIdentifierType\": \"iid\", \"ResourceIdentifier\": #{issue1.iid}}" }
+          let(:ai_response) { "iid\", \"ResourceIdentifier\": #{issue1.iid}}" }
 
           before do
             context.tools_used << described_class.name

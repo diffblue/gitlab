@@ -16,12 +16,12 @@ module Gitlab
             DESCRIPTION = 'Useful tool when you need to identify a specific issue. ' \
                           'Do not use this tool if you have already identified the issue.' \
                           'In this context, word `issue` means core building block in GitLab that enable ' \
-                          'collaboration, discussions, planning and tracking of work.
+                          'collaboration, discussions, planning and tracking of work.' \
+                          'Action Input for this tool should be the original question or issue identifier.'
 
-'
             EXAMPLE =
               <<~PROMPT
-                Question: Please identify the author of http://gitlab.example/ai/test/-/issues/1 issue
+                Question: Please identify the author of #issue_identifier issue
                 Picked tools: First: "IssueIdentifier" tool, second: "ResourceReader" tool.
                 Reason: You have access to the same resources as user who asks a question.
                   There is issue identifier in the question, so you need to use "IssueIdentifier" tool.
@@ -45,14 +45,18 @@ module Gitlab
                 <<~PROMPT
                 You can fetch information about a resource called: an issue.
                 An issue can be referenced by url or numeric IDs preceded by symbol.
+                An issue can also be referenced by a GitLab reference.
+                A GitLab reference ends with a number preceded by the delimiter # and contains one or more /.
                 ResourceIdentifierType can only be one of [current, iid, url, reference]
-                ResourceIdentifier can be "current", number, url. If ResourceIdentifier is not a number or a url
+                ResourceIdentifier can be number, url. If ResourceIdentifier is not a number or a url
                 use "current".
+                When you see a GitLab reference, ResourceIdentifierType should be reference.
 
-                Provide your answer in JSON form! The answer should be just the JSON without any other commentary!
-                Make sure the response is a valid JSON. Follow the exact JSON format:
-                Question: the user question
-                Response:
+                Make sure the response is a valid JSON. The answer should be just the JSON without any other commentary!
+                References in the given question to the current issue can be also for example "this issue" or "that issue",
+                referencing the issue that the user currently sees.
+                Question: (the user question)
+                Response (follow the exact JSON response):
                 ```json
                 {
                   "ResourceIdentifierType": <ResourceIdentifierType>
@@ -94,7 +98,7 @@ module Gitlab
                 ```json
                 {
                   "ResourceIdentifierType": "current",
-                  "ResourceIdentifier": "issue"
+                  "ResourceIdentifier": "current"
                 }
                 ```
 
@@ -102,8 +106,7 @@ module Gitlab
                 PROMPT
               ),
               Utils::Prompt.as_assistant("%<suggestions>s"),
-              Utils::Prompt.as_user("Question: %<input>s"),
-              Utils::Prompt.as_user("Response:")
+              Utils::Prompt.as_user("Question: %<input>s")
             ].freeze
 
             def initialize(context:, options:)
@@ -117,6 +120,7 @@ module Gitlab
                 issue = identify_issue(json[:ResourceIdentifierType], json[:ResourceIdentifier])
 
                 # if issue not found then return an error as the answer.
+                logger.error(message: "Error finding issue", content: json) unless issue
                 return not_found unless issue
 
                 # now the issue in context is being referenced in user input.
@@ -148,6 +152,9 @@ module Gitlab
             end
 
             def extract_json(response)
+              response = "```json
+                    \{
+                      \"ResourceIdentifierType\": \"" + response
               response = (Utils::TextProcessing.text_before_stop_word(response, /Question:/) || response).to_s.strip
               content_after_ticks = response.split(/```json/, 2).last
               content_between_ticks = content_after_ticks&.split(/```/, 2)&.first
@@ -156,7 +163,7 @@ module Gitlab
             end
 
             def identify_issue(resource_identifier_type, resource_identifier)
-              return context.resource if current_resource?(resource_identifier, resource_name)
+              return context.resource if current_resource?(resource_identifier_type, resource_name)
 
               issue = case resource_identifier_type
                       when 'iid'

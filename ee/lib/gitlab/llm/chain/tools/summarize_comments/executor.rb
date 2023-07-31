@@ -89,6 +89,8 @@ module Gitlab
             end
 
             def can_summarize?
+              logger.debug(message: "Supported Issuable Typees Ability Allowed",
+                content: Ability.allowed?(context.current_user, :summarize_notes, context.resource))
               ::Llm::GenerateSummaryService::SUPPORTED_ISSUABLE_TYPES.include?(resource.to_ability_name) &&
                 Ability.allowed?(context.current_user, :summarize_notes, context.resource)
             end

@@ -14,7 +14,9 @@ module Gitlab
                 )
 
                 {
-                  prompt: "\n\nHuman: #{base_prompt}\n\nAssistant:",
+                  prompt: "\n\nHuman: #{base_prompt}\n\nAssistant: ```json
+                    \{
+                      \"ResourceIdentifierType\": \"",
                   options: { model: MODEL }
                 }
               end
