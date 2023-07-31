@@ -17,4 +17,14 @@ RSpec.describe ::Zoekt::Shard, feature_category: :global_search do
     expect(shard.indexed_namespaces.count).to eq(2)
     expect(shard.indexed_namespaces.map(&:namespace)).to contain_exactly(indexed_namespace1, indexed_namespace2)
   end
+
+  describe '.for_namespace' do
+    it 'returns associated shard' do
+      expect(described_class.for_namespace(root_namespace_id: indexed_namespace1.id)).to eq(shard)
+    end
+
+    it 'returns nil when no shard is associated' do
+      expect(described_class.for_namespace(root_namespace_id: unindexed_namespace.id)).to be_nil
+    end
+  end
 end

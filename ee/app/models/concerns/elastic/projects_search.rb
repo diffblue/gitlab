@@ -38,6 +38,7 @@ module Elastic
       override :maintain_elasticsearch_destroy
       def maintain_elasticsearch_destroy
         ElasticDeleteProjectWorker.perform_async(self.id, self.es_id)
+        Search::Zoekt::DeleteProjectWorker.perform_async(self.root_namespace&.id, self.id)
       end
 
       def invalidate_elasticsearch_indexes_cache!
