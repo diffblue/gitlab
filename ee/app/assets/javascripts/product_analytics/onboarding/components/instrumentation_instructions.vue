@@ -31,16 +31,6 @@ export default {
       required: true,
     },
   },
-  computed: {
-    instructions() {
-      return {
-        install: INSTALL_NPM_PACKAGE,
-        import: IMPORT_NPM_PACKAGE,
-        init: INIT_TRACKING,
-        htmlSetup: HTML_SCRIPT_SETUP,
-      };
-    },
-  },
   i18n: {
     sdkClientsTitle: s__('ProductAnalytics|SDK clients'),
     sdkHost: s__('ProductAnalytics|SDK host'),
@@ -68,6 +58,10 @@ export default {
     ),
   },
   BROWSER_SDK_DOCS_URL,
+  INSTALL_NPM_PACKAGE,
+  IMPORT_NPM_PACKAGE,
+  INIT_TRACKING,
+  HTML_SCRIPT_SETUP,
 };
 </script>
 
@@ -80,13 +74,13 @@ export default {
         <h5 class="gl-mb-5">{{ $options.i18n.jsModuleTitle }}</h5>
 
         <strong class="gl-display-block gl-mb-3">{{ $options.i18n.addNpmPackage }}</strong>
-        <pre class="gl-mb-5">{{ instructions.install }}</pre>
+        <pre class="gl-mb-5">{{ $options.INSTALL_NPM_PACKAGE }}</pre>
         <strong class="gl-display-block gl-mt-5 gl-mb-3">{{
           $options.i18n.importNpmPackage
         }}</strong>
-        <pre class="gl-mb-5">{{ instructions.import }}</pre>
+        <pre class="gl-mb-5">{{ $options.IMPORT_NPM_PACKAGE }}</pre>
         <strong class="gl-display-block gl-mt-5 gl-mb-3">{{ $options.i18n.initNpmPackage }}</strong>
-        <pre class="gl-mb-5"><gl-sprintf :message="instructions.init">
+        <pre class="gl-mb-5"><gl-sprintf :message="$options.INIT_TRACKING">
           <template #appId><span>{{ trackingKey }}</span></template>
           <template #host><span>{{ collectorHost }}</span></template>
         </gl-sprintf></pre>
@@ -97,7 +91,7 @@ export default {
         <strong class="gl-display-block gl-mb-3">{{
           $options.i18n.htmlScriptTagDescription
         }}</strong>
-        <pre class="gl-mb-5"><gl-sprintf :message="instructions.htmlSetup">
+        <pre class="gl-mb-5"><gl-sprintf :message="$options.HTML_SCRIPT_SETUP">
           <template #appId><span>{{ trackingKey }}</span></template>
           <template #host><span>{{ collectorHost }}</span></template>
         </gl-sprintf></pre>

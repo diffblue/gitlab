@@ -1,7 +1,12 @@
 import { CubejsApi, HttpTransport, __setMockLoad } from '@cubejs-client/core';
 import { fetch } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import { pikadayToString } from '~/lib/utils/datetime_utility';
-import { mockResultSet, mockFilters, mockTableWithLinksResultSet } from '../../mock_data';
+import {
+  mockResultSet,
+  mockFilters,
+  mockTableWithLinksResultSet,
+  mockResultSetWithNullValues,
+} from '../../mock_data';
 
 const mockLoad = jest.fn().mockImplementation(() => mockResultSet);
 
@@ -48,97 +53,103 @@ describe('Cube Analytics Data Source', () => {
     });
 
     describe('formats the data', () => {
-      it('returns the expected data format for line charts', async () => {
-        const result = await fetch({ projectId, visualizationType, query });
+      describe('charts', () => {
+        it('returns the expected data format for line charts', async () => {
+          const result = await fetch({ projectId, visualizationType, query });
 
-        expect(result[0]).toMatchObject({
-          data: [
-            ['2022-11-09T00:00:00.000', 55],
-            ['2022-11-10T00:00:00.000', 14],
-          ],
-          name: 'pageview, SnowplowTrackedEvents Count',
-        });
-      });
-
-      it('returns the expected data format for column charts', async () => {
-        const result = await fetch({ projectId, visualizationType: 'ColumnChart', query });
-
-        expect(result[0]).toMatchObject({
-          data: [
-            ['2022-11-09T00:00:00.000', 55],
-            ['2022-11-10T00:00:00.000', 14],
-          ],
-          name: 'pageview, SnowplowTrackedEvents Count',
-        });
-      });
-
-      it('returns the expected data format for data tables', async () => {
-        const result = await fetch({ projectId, visualizationType: 'DataTable', query });
-
-        expect(result[0]).toMatchObject({
-          count: '55',
-          event_type: 'pageview',
-          utc_time: '2022-11-09T00:00:00.000',
-        });
-      });
-
-      it('returns the expected data format for data tables when links config is defined', async () => {
-        mockLoad.mockImplementationOnce(() => mockTableWithLinksResultSet);
-
-        const result = await fetch({
-          projectId,
-          visualizationType: 'DataTable',
-          query: {
-            measures: ['SnowplowTrackedEvents.pageViewsCount'],
-            dimensions: ['SnowplowTrackedEvents.docPath', 'SnowplowTrackedEvents.url'],
-          },
-          visualizationOptions: {
-            links: [
-              {
-                text: 'SnowplowTrackedEvents.docPath',
-                href: 'SnowplowTrackedEvents.url',
-              },
+          expect(result[0]).toMatchObject({
+            data: [
+              ['2022-11-09T00:00:00.000', 55],
+              ['2022-11-10T00:00:00.000', 14],
             ],
-          },
+            name: 'pageview, SnowplowTrackedEvents Count',
+          });
         });
 
-        expect(result[0]).toMatchObject({
-          page_views_count: '1',
-          doc_path: {
-            text: '/foo',
-            href: 'https://example.com/foo',
-          },
+        it('returns the expected data format for column charts', async () => {
+          const result = await fetch({ projectId, visualizationType: 'ColumnChart', query });
+
+          expect(result[0]).toMatchObject({
+            data: [
+              ['2022-11-09T00:00:00.000', 55],
+              ['2022-11-10T00:00:00.000', 14],
+            ],
+            name: 'pageview, SnowplowTrackedEvents Count',
+          });
         });
       });
 
-      it('returns the expected data format for single stats', async () => {
-        const result = await fetch({ projectId, visualizationType: 'SingleStat', query });
+      describe('data tables', () => {
+        it('returns the expected data format for', async () => {
+          const result = await fetch({ projectId, visualizationType: 'DataTable', query });
 
-        expect(result).toBe('36');
-      });
-
-      it('returns the expected data format for single stats with custom measure', async () => {
-        const override = { measures: ['SnowplowTrackedEvents.url'] };
-        const result = await fetch({
-          projectId,
-          visualizationType: 'SingleStat',
-          query,
-          queryOverrides: override,
+          expect(result[0]).toMatchObject({
+            count: '55',
+            event_type: 'pageview',
+            utc_time: '2022-11-09T00:00:00.000',
+          });
         });
 
-        expect(result).toBe('https://example.com/us');
+        it('returns the expected data format when links config is defined', async () => {
+          mockLoad.mockImplementationOnce(() => mockTableWithLinksResultSet);
+
+          const result = await fetch({
+            projectId,
+            visualizationType: 'DataTable',
+            query: {
+              measures: ['SnowplowTrackedEvents.pageViewsCount'],
+              dimensions: ['SnowplowTrackedEvents.docPath', 'SnowplowTrackedEvents.url'],
+            },
+            visualizationOptions: {
+              links: [
+                {
+                  text: 'SnowplowTrackedEvents.docPath',
+                  href: 'SnowplowTrackedEvents.url',
+                },
+              ],
+            },
+          });
+
+          expect(result[0]).toMatchObject({
+            page_views_count: '1',
+            doc_path: {
+              text: '/foo',
+              href: 'https://example.com/foo',
+            },
+          });
+        });
       });
 
-      it('returns the expected data format for single stats when the measure is unknown', async () => {
-        const override = { measures: ['unknown'] };
-        const result = await fetch({
-          projectId,
-          visualizationType: 'SingleStat',
-          query,
-          queryOverrides: override,
+      describe('single stats', () => {
+        it('returns the expected data format', async () => {
+          const result = await fetch({ projectId, visualizationType: 'SingleStat', query });
+
+          expect(result).toBe('36');
         });
 
-        expect(result).toBe('en-US');
+        it('returns the expected data format with custom measure', async () => {
+          const override = { measures: ['SnowplowTrackedEvents.url'] };
+          const result = await fetch({
+            projectId,
+            visualizationType: 'SingleStat',
+            query,
+            queryOverrides: override,
+          });
+
+          expect(result).toBe('https://example.com/us');
+        });
+
+        it('returns 0 when the measure is null', async () => {
+          mockLoad.mockImplementationOnce(() => mockResultSetWithNullValues);
+
+          const result = await fetch({
+            projectId,
+            visualizationType: 'SingleStat',
+            query,
+          });
+
+          expect(result).toBe(0);
+        });
       });
     });
   });
