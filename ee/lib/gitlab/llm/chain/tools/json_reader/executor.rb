@@ -24,11 +24,7 @@ module Gitlab
                   about the resource. Based on this information you can present final answer.
               PROMPT
 
-            # anthropic token limit:
-            # https://www.anthropic.com/index/100k-context-windows#:~:text=context%20window%20from%209K
             MAX_RETRIES = 3
-            MAX_TOKENS = 9000
-            AVERAGE_TOKEN_LENGTH = 4
 
             PROVIDER_PROMPT_CLASSES = {
               anthropic: ::Gitlab::Llm::Chain::Tools::JsonReader::Prompts::Anthropic,
@@ -42,13 +38,16 @@ module Gitlab
 
             def execute
               # We need to implement it on all models we want to take into considerations
-              unless resource.respond_to?(:serialize_instance)
+              unless resource.respond_to?(:serialize_for_ai)
                 return Answer.error_answer(context: context,
                   content: _("Unexpected error: Cannot serialize resource", resource_class: resource.class)
                 )
               end
 
-              resource_json = resource.serialize_instance(user: context.current_user).to_json
+              resource_json = resource.serialize_for_ai(
+                user: context.current_user,
+                content_limit: provider_prompt_class::MAX_CHARACTERS
+              ).to_json
               # todo: not ideal as we load the entire json into memory,
               # todo: follow-up: https://gitlab.com/gitlab-org/gitlab/-/issues/414848
               @data = Gitlab::Json.parse(resource_json)
@@ -56,7 +55,7 @@ module Gitlab
               options[:suggestions] = options[:suggestions].to_s
               prompt_length = resource_json.length + options[:suggestions].length
 
-              if (prompt_length / AVERAGE_TOKEN_LENGTH) < MAX_TOKENS
+              if prompt_length < provider_prompt_class::MAX_CHARACTERS
                 process_short_path(resource_json)
               else
                 process_long_path

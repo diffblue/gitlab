@@ -31,7 +31,9 @@ RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failu
   before do
     allow(ai_request).to receive(:request).and_return(ai_response)
     allow(reader).to receive(:request).and_return(ai_response)
-    stub_const("#{described_class.name}::MAX_TOKENS", 4)
+    allow(reader).to receive(:provider_prompt_class)
+      .and_return(::Gitlab::Llm::Chain::Tools::JsonReader::Prompts::Anthropic)
+    stub_const("::Gitlab::Llm::Chain::Tools::JsonReader::Prompts::Anthropic::MAX_CHARACTERS", 4)
   end
 
   describe '#name' do
@@ -61,7 +63,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failu
 
       context 'when resource length does not exceed max tokens' do
         before do
-          stub_const("#{described_class.name}::MAX_TOKENS", 999999)
+          stub_const("::Gitlab::Llm::Chain::Tools::JsonReader::Prompts::Anthropic::MAX_CHARACTERS", 999999)
         end
 
         it 'processes the short path' do
@@ -72,8 +74,9 @@ RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failu
 
         describe 'processing answer' do
           let(:ai_response) do
-            "Please use this information about this resource: #{issue
-              .serialize_instance(user: context.current_user).to_json}"
+            "Please use this information about this resource: #{issue.serialize_for_ai(
+              user: context.current_user,
+              content_limit: ::Gitlab::Llm::Chain::Tools::JsonReader::Prompts::Anthropic::MAX_CHARACTERS).to_json}"
           end
 
           it "returns a final answer even if the response doesn't contain a 'final answer' token" do
