@@ -1,0 +1,71 @@
+{
+  "$id": "#/properties/versions",
+  "type": "array",
+  "title": "Version Meta Information",
+  "minItems": 0,
+  "maxItems": 32,
+  "items": {
+    "$id": "#/properties/versions/items",
+    "type": "object",
+    "required": [
+      "number",
+      "commit"
+    ],
+    "properties": {
+      "number": {
+        "$id": "#/properties/versions/items/properties/number",
+        "type": "string",
+        "title": "Version Information.",
+        "pattern": "^([\\d\\.a-zA-Z_\\-]{1,32})$",
+        "examples": [
+          "1.2.3"
+        ]
+      },
+      "commit": {
+        "$id": "#/properties/versions/items/properties/commit",
+        "type": "object",
+        "title": "Git commit meta information.",
+        "required": [
+          "tags",
+          "sha",
+          "timestamp"
+        ],
+        "properties": {
+          "tags": {
+            "$id": "#/properties/versions/items/properties/commit/tags",
+            "type": "array",
+            "title": "Array of Git Tags associated with this particular version.",
+            "minItems": 0,
+            "maxItems": 16,
+            "items": {
+              "$id": "#/properties/versions/items/properties/commit/tags/items",
+              "type": "string",
+              "examples": [
+                "v1.2.3-tag"
+              ],
+              "pattern": "^[a-zA-Z0-9_\\-\\./]{0,32}$"
+            }
+          },
+          "sha": {
+            "$id": "#/properties/versions/items/properties/commit/sha",
+            "type": "string",
+            "title": "Git commit sha.",
+            "pattern": "^[0-9a-f]{5,40}$",
+            "examples": [
+              "295cf0778821bf08681e2bd0ef0e6cad04fc3001"
+            ]
+          },
+          "timestamp": {
+            "$id": "#/properties/versions/items/properties/commit/timestamp",
+            "type": "string",
+            "title": "Timestamp of the format YYYYMMDDHHMMSS.",
+            "pattern": "^\\d{14,14}$",
+            "examples": [
+              "20190626162700"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

@@ -20427,6 +20427,7 @@ CREATE TABLE pm_affected_packages (
     affected_range text NOT NULL,
     fixed_versions text[] DEFAULT '{}'::text[],
     overridden_advisory_fields jsonb DEFAULT '{}'::jsonb NOT NULL,
+    versions jsonb DEFAULT '[]'::jsonb NOT NULL,
     CONSTRAINT check_5dd528a2be CHECK ((char_length(package_name) <= 256)),
     CONSTRAINT check_80dea16c7b CHECK ((char_length(affected_range) <= 512)),
     CONSTRAINT check_d1d4646298 CHECK ((char_length(solution) <= 2048)),
