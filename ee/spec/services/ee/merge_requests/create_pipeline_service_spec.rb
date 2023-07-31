@@ -47,7 +47,7 @@ RSpec.describe MergeRequests::CreatePipelineService, :clean_gitlab_redis_shared_
     end
 
     shared_examples_for 'detached merge request pipeline' do
-      it 'creates a detached merge request pipeline', :sidekiq_might_not_need_inline do
+      it 'creates a detached merge request pipeline' do
         subject
 
         expect(merge_request.all_pipelines.count).to eq(1)
@@ -55,7 +55,7 @@ RSpec.describe MergeRequests::CreatePipelineService, :clean_gitlab_redis_shared_
         expect(merge_request.all_pipelines.last).to be_detached_merge_request_pipeline
       end
 
-      it 'responds with success', :sidekiq_might_not_need_inline, :aggregate_failures do
+      it 'responds with success', :aggregate_failures do
         expect(subject).to be_success
         expect(subject.payload).to eq(Ci::Pipeline.last)
       end
@@ -71,7 +71,7 @@ RSpec.describe MergeRequests::CreatePipelineService, :clean_gitlab_redis_shared_
       end
     end
 
-    it 'responds with success', :sidekiq_might_not_need_inline, :aggregate_failures do
+    it 'responds with success', :aggregate_failures do
       expect(subject).to be_success
       expect(subject.payload).to eq(Ci::Pipeline.last)
     end
