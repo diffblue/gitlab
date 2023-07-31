@@ -54,14 +54,14 @@ class ApprovalProjectRule < ApplicationRecord
 
   override :vulnerability_attribute_false_positive
   def vulnerability_attribute_false_positive
-    return if Feature.disabled?(:enforce_vulnerability_attributes_rules)
+    return if Feature.disabled?(:enforce_vulnerability_attributes_rules, project)
 
     vulnerability_attributes&.dig('false_positive')
   end
 
   override :vulnerability_attribute_fix_available
   def vulnerability_attribute_fix_available
-    return if Feature.disabled?(:enforce_vulnerability_attributes_rules)
+    return if Feature.disabled?(:enforce_vulnerability_attributes_rules, project)
 
     vulnerability_attributes&.dig('fix_available')
   end

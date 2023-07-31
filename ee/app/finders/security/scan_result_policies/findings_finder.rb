@@ -35,7 +35,7 @@ module Security
         findings = undismissed_security_findings(findings) if only_new_undismissed_findings?
         findings = findings.by_state(:dismissed) if only_new_dismissed_findings?
 
-        if Feature.enabled?(:enforce_vulnerability_attributes_rules)
+        if Feature.enabled?(:enforce_vulnerability_attributes_rules, project)
           findings = findings.false_positives if params[:false_positive] == true
           findings = findings.non_false_positives if params[:false_positive] == false
           findings = findings.fix_available if params[:fix_available] == true
@@ -54,7 +54,7 @@ module Security
           return Security::Finding.by_project_id_and_pipeline_ids(project.id, params[:related_pipeline_ids])
         end
 
-        if Feature.enabled?(:enforce_vulnerability_attributes_rules)
+        if Feature.enabled?(:enforce_vulnerability_attributes_rules, project)
           pipeline.security_findings.by_partition_number(pipeline.security_findings_partition_number)
         else
           pipeline.security_findings
