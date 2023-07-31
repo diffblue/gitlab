@@ -23,9 +23,11 @@ explain_code:
     answer: []
 issue_analysis:
   - question: 'Please summarize the %<issue_identifier>s issue'
-    answer: ['IssueIdentifier', 'SummarizeComments']
+    answer: ['IssueIdentifier', 'ResourceReader']
   - question: 'Summarize the %<issue_identifier>s issue with bullet points'
-    answer: ['IssueIdentifier', 'SummarizeComments']
+    answer: ['IssueIdentifier', 'ResourceReader']
+  - question: 'Summarize the %<issue_identifier>s issue comments with bullet points'
+    answer: ['IssueIdentifier', 'ResourceReader']
   - question: 'Can you list all the labels on %<issue_identifier>s issue?'
     answer: ['IssueIdentifier', 'ResourceReader']
   - question: 'How old is the %<issue_identifier>s issue?'
@@ -33,7 +35,7 @@ issue_analysis:
   - question: 'For which milestone is the %<issue_identifier>s issue? And how long until then'
     answer: ['IssueIdentifier', 'ResourceReader']
   - question: 'Summarize the comments into bullet points on current issue'
-    answer: ['IssueIdentifier', 'SummarizeComments']
+    answer: ['IssueIdentifier', 'ResourceReader']
 documentation:
   - question: 'How do I change my password in GitLab'
     answer: ['GitlabDocumentation']
