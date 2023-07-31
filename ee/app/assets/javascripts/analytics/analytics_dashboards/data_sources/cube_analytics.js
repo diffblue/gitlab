@@ -2,18 +2,19 @@ import { CubejsApi, HttpTransport } from '@cubejs-client/core';
 import { convertToSnakeCase } from '~/lib/utils/text_utility';
 import { pikadayToString } from '~/lib/utils/datetime_utility';
 import csrf from '~/lib/utils/csrf';
+import {
+  EVENTS_TABLE_NAME,
+  SESSIONS_TABLE_NAME,
+} from 'ee/analytics/analytics_dashboards/constants';
 
 // This can be any value because the cube proxy adds the real API token.
 const CUBE_API_TOKEN = '1';
 const PRODUCT_ANALYTICS_CUBE_PROXY = '/api/v4/projects/:id/product_analytics/request';
-const DEFAULT_COUNT_KEY = 'TrackedEvents.count';
 
 // Filter measurement types must be lowercase
 export const DATE_RANGE_FILTER_DIMENSIONS = {
-  sessions: 'Sessions.startAt',
-  trackedevents: 'TrackedEvents.utcTime',
-  snowplowtrackedevents: 'SnowplowTrackedEvents.derivedTstamp',
-  snowplowsessions: 'SnowplowSessions.startAt',
+  snowplowtrackedevents: `${EVENTS_TABLE_NAME}.derivedTstamp`,
+  snowplowsessions: `${SESSIONS_TABLE_NAME}.startAt`,
 };
 
 const convertToCommonChartFormat = (resultSet) => {
@@ -68,11 +69,7 @@ const convertToSingleValue = (resultSet, query) => {
   const [measure] = query?.measures ?? [];
   const [row] = resultSet.rawData();
 
-  if (!row) {
-    return 0;
-  }
-
-  return row[measure ?? DEFAULT_COUNT_KEY] ?? Object.values(row)[0] ?? 0;
+  return row[measure] ?? 0;
 };
 
 const buildDateRangeFilter = (query, queryOverrides, { startDate, endDate }) => {

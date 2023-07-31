@@ -306,6 +306,16 @@ export const mockTableWithLinksResultSet = {
   ],
 };
 
+export const mockResultSetWithNullValues = {
+  rawData: () => [
+    {
+      'SnowplowTrackedEvents.userLanguage': null,
+      'SnowplowTrackedEvents.count': null,
+      'SnowplowTrackedEvents.url': null,
+    },
+  ],
+};
+
 export const mockFilters = {
   startDate: new Date('2015-01-01'),
   endDate: new Date('2016-01-01'),
