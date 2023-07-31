@@ -25,6 +25,9 @@ export const NAMESPACE_STORAGE_ERROR_MESSAGE = s__(
 );
 
 export const STORAGE_STATISTICS_NAMESPACE_STORAGE_USED = s__('UsageQuota|Namespace storage used');
+export const STORAGE_STATISTICS_PERCENTAGE_REMAINING = s__(
+  'UsageQuota|%{percentageRemaining}%% namespace storage remaining.',
+);
 
 export const STORAGE_STATISTICS_TOTAL_STORAGE = s__('UsageQuota|Total storage');
 export const STORAGE_INCLUDED_IN_PLAN_PROJECT_ENFORCEMENT = s__(

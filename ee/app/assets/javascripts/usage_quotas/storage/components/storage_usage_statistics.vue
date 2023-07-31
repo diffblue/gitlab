@@ -1,13 +1,12 @@
 <script>
 import { GlSprintf, GlIcon, GlLink, GlButton, GlCard, GlSkeletonLoader } from '@gitlab/ui';
 import { sprintf } from '~/locale';
+import { numberToHumanSize } from '~/lib/utils/number_utils';
 import StorageStatisticsCard from 'ee/usage_quotas/storage/components/storage_statistics_card.vue';
 import { usageQuotasHelpPaths } from '~/usage_quotas/storage/constants';
-import { formatSizeAndSplit } from 'ee/usage_quotas/storage/utils';
 import {
   BUY_STORAGE,
   STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE,
-  STORAGE_STATISTICS_NAMESPACE_STORAGE_USED,
   STORAGE_INCLUDED_IN_PLAN_PROJECT_ENFORCEMENT,
   STORAGE_INCLUDED_IN_PLAN_NAMESPACE_ENFORCEMENT,
   PROJECT_ENFORCEMENT_TYPE,
@@ -17,6 +16,7 @@ import {
   PROJECT_ENFORCEMENT_TYPE_SUBTITLE,
   NAMESPACE_ENFORCEMENT_TYPE_SUBTITLE,
 } from '../constants';
+import NumberToHumanSize from './number_to_human_size.vue';
 
 export default {
   components: {
@@ -27,6 +27,7 @@ export default {
     GlCard,
     GlSkeletonLoader,
     StorageStatisticsCard,
+    NumberToHumanSize,
   },
   inject: [
     'purchaseStorageUrl',
@@ -57,7 +58,6 @@ export default {
     usedUsageHelpLink: usageQuotasHelpPaths.usageQuotas,
     usedUsageHelpText: STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE,
     purchaseButtonText: BUY_STORAGE,
-    totalUsageDescription: STORAGE_STATISTICS_NAMESPACE_STORAGE_USED,
     namespaceStorageOverviewSubtitle: NAMESPACE_STORAGE_OVERVIEW_SUBTITLE,
     storageStatisticsPurchasedStorage: STORAGE_STATISTICS_PURCHASED_STORAGE,
     storageStatisticsTotalStorage: STORAGE_STATISTICS_TOTAL_STORAGE,
@@ -93,24 +93,20 @@ export default {
       });
     },
     includedStorage() {
-      const formatted = formatSizeAndSplit(this.namespacePlanStorageIncluded || 0);
-
-      return `${formatted.value} ${formatted.unit}`;
+      return numberToHumanSize(this.namespacePlanStorageIncluded || 0, 1);
     },
     purchasedTotalStorage() {
-      const formatted = formatSizeAndSplit(this.additionalPurchasedStorageSize || 0);
+      if (!this.additionalPurchasedStorageSize) {
+        return 0;
+      }
 
-      return `${formatted.value} ${formatted.unit}`;
+      return numberToHumanSize(this.additionalPurchasedStorageSize || 0, 1);
     },
     totalStorage() {
       return (
         Number(this.namespacePlanStorageIncluded || 0) +
         Number(this.additionalPurchasedStorageSize || 0)
       );
-    },
-    totalStorageFormatted() {
-      const formatted = formatSizeAndSplit(this.totalStorage);
-      return `${formatted.value} ${formatted.unit}`;
     },
   },
 };
@@ -131,7 +127,7 @@ export default {
         {{ $options.i18n.purchaseButtonText }}
       </gl-button>
     </div>
-    <p>
+    <p class="gl-mb-0">
       <gl-sprintf :message="enforcementTypeSubtitle">
         <template #link="{ content }">
           <gl-link :href="enforcementTypeLearnMoreUrl">{{ content }}</gl-link>
@@ -143,23 +139,9 @@ export default {
         :used-storage="usedStorage"
         :total-storage="totalStorage"
         :loading="loading"
-        data-testid="namespace-usage-card"
         data-qa-selector="namespace_usage_total"
         class="gl-w-full"
-      >
-        <template #description>
-          {{ $options.i18n.totalUsageDescription }}
-
-          <gl-link
-            :href="$options.i18n.usedUsageHelpLink"
-            target="_blank"
-            class="gl-ml-2"
-            :aria-label="$options.i18n.usedUsageHelpText"
-          >
-            <gl-icon name="question-o" />
-          </gl-link>
-        </template>
-      </storage-statistics-card>
+      />
       <gl-card v-if="namespacePlanName" class="gl-w-full" data-testid="storage-detail-card">
         <gl-skeleton-loader v-if="loading" :height="64">
           <rect width="140" height="30" x="5" y="0" rx="4" />
@@ -178,13 +160,23 @@ export default {
             class="gl-display-flex gl-justify-content-space-between"
             data-testid="storage-purchased"
           >
-            <div class="gl-w-80p">{{ $options.i18n.storageStatisticsPurchasedStorage }}</div>
+            <div class="gl-w-80p">
+              {{ $options.i18n.storageStatisticsPurchasedStorage }}
+              <gl-link
+                :href="$options.i18n.purchasedUsageHelpLink"
+                target="_blank"
+                class="gl-ml-2"
+                :aria-label="$options.i18n.purchasedUsageHelpText"
+              >
+                <gl-icon name="question-o" />
+              </gl-link>
+            </div>
             <div class="gl-white-space-nowrap">{{ purchasedTotalStorage }}</div>
           </div>
           <hr />
           <div class="gl-display-flex gl-justify-content-space-between" data-testid="total-storage">
             <div class="gl-w-80p">{{ $options.i18n.storageStatisticsTotalStorage }}</div>
-            <div class="gl-white-space-nowrap">{{ totalStorageFormatted }}</div>
+            <number-to-human-size class="gl-white-space-nowrap" :value="totalStorage" />
           </div>
         </div>
       </gl-card>

@@ -2,6 +2,7 @@
 import { GlAlert, GlKeysetPagination } from '@gitlab/ui';
 import { captureException } from '~/ci/runner/sentry_utils';
 import { convertToSnakeCase } from '~/lib/utils/text_utility';
+import { __ } from '~/locale';
 import NamespaceStorageQuery from '../queries/namespace_storage.query.graphql';
 import GetDependencyProxyTotalSizeQuery from '../queries/dependency_proxy_usage.query.graphql';
 import { parseGetStorageResults } from '../utils';
@@ -65,6 +66,7 @@ export default {
   i18n: {
     NAMESPACE_STORAGE_ERROR_MESSAGE,
     NAMESPACE_STORAGE_BREAKDOWN_SUBTITLE,
+    search: __('Search'),
   },
   data() {
     return {
@@ -186,7 +188,7 @@ export default {
       <div class="gl-bg-gray-10 gl-p-5 gl-display-flex">
         <search-and-sort-bar
           :namespace="namespaceId"
-          :search-input-placeholder="s__('UsageQuota|Search')"
+          :search-input-placeholder="$options.i18n.search"
           @onFilter="onSearch"
         />
       </div>
