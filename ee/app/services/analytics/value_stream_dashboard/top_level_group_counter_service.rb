@@ -105,6 +105,8 @@ module Analytics
       end
 
       def metrics_to_count
+        return COUNTS_TO_COLLECT.values unless cursor
+
         # Skip count configs before the provided metric
         COUNTS_TO_COLLECT.values.drop_while { |v| v[:metric] != cursor[:metric] }
       end

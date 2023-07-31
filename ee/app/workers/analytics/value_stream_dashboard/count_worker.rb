@@ -15,7 +15,7 @@ module Analytics
       data_consistency :sticky
       feature_category :value_stream_management
 
-      CACHE_KEY = 'value_stream_dasboard_count_cursor'
+      CURSOR_KEY = 'value_stream_dashboard_count_cursor'
       CUTOFF_DAYS = 5
 
       def perform
@@ -23,19 +23,32 @@ module Analytics
 
         runtime_limiter = Analytics::CycleAnalytics::RuntimeLimiter.new
 
-        batch = Analytics::ValueStreamDashboard::Aggregation.load_batch
-        return if batch.empty?
+        cursor = load_cursor
+        batch = Analytics::ValueStreamDashboard::Aggregation.load_batch(cursor)
+
+        if batch.empty?
+          persist_cursor(nil)
+          return
+        end
 
         batch.each do |aggregation|
-          cursor = Analytics::ValueStreamDashboard::TopLevelGroupCounterService
-            .load_cursor(raw_cursor: { top_level_namespace_id: aggregation.id })
+          next unless feature_flag_enabled_for_aggregation?(aggregation)
 
-          Analytics::ValueStreamDashboard::TopLevelGroupCounterService
+          unless licensed?(aggregation)
+            aggregation.update!(enabled: false)
+            next
+          end
+
+          service_response = Analytics::ValueStreamDashboard::TopLevelGroupCounterService
             .new(aggregation: aggregation, cursor: cursor, runtime_limiter: runtime_limiter)
             .execute
 
-          break if runtime_limiter.over_time?
+          cursor = service_response[:cursor]
+
+          break if service_response[:result] == :interrupted || runtime_limiter.over_time?
         end
+
+        persist_cursor(cursor)
       end
 
       private
@@ -43,6 +56,30 @@ module Analytics
       def should_perform?
         Time.current.day >= (Time.current.end_of_month.day - CUTOFF_DAYS) &&
           License.feature_available?(:group_level_analytics_dashboard)
+      end
+
+      def load_cursor
+        value = Gitlab::Redis::SharedState.with { |redis| redis.get(CURSOR_KEY) }
+        return if value.nil?
+
+        raw_cursor = Gitlab::Json.parse(value).symbolize_keys
+        Analytics::ValueStreamDashboard::TopLevelGroupCounterService.load_cursor(raw_cursor: raw_cursor)
+      end
+
+      def persist_cursor(cursor)
+        if cursor.nil?
+          Gitlab::Redis::SharedState.with { |redis| redis.del(CURSOR_KEY) }
+        else
+          Gitlab::Redis::SharedState.with { |redis| redis.set(CURSOR_KEY, Gitlab::Json.dump(cursor.dump)) }
+        end
+      end
+
+      def feature_flag_enabled_for_aggregation?(aggregation)
+        Feature.enabled?(:value_stream_dashboard_on_off_setting, aggregation.namespace)
+      end
+
+      def licensed?(aggregation)
+        aggregation.namespace.licensed_feature_available?(:group_level_analytics_dashboard)
       end
     end
   end
