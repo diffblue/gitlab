@@ -7,22 +7,11 @@ description: 'Writing styles, markup, formatting, and other standards for GitLab
 
 # Documentation Style Guide
 
-This document defines the standards for GitLab documentation, including grammar, formatting, word use, and more.
+This document defines the standards for GitLab documentation, including grammar, formatting, and more.
+For guidelines on specific words, see [the word list](word_list.md).
 
 For style questions, mention `@tw-style` in an issue or merge request. If you have access to the GitLab Slack workspace,
 use the `#docs-processes` channel.
-
-In addition to this page, the following resources can help you craft and contribute to documentation:
-
-- [Doc contribution guidelines](../index.md)
-- [Recommended word list](word_list.md)
-- [Doc style and consistency testing](../testing.md)
-- [Guidelines for UI error messages](https://design.gitlab.com/content/voice-and-tone#clear-error-messages)
-- [Documentation global navigation](../site_architecture/global_nav.md)
-- [GitLab Handbook style guidelines](https://about.gitlab.com/handbook/communication/#writing-style-guidelines)
-- [Microsoft Style Guide](https://learn.microsoft.com/en-us/style-guide/welcome/)
-- [Google Developer Documentation Style Guide](https://developers.google.com/style)
-- [Recent updates to this guide](https://gitlab.com/dashboard/merge_requests?scope=all&state=merged&label_name[]=tw-style&not[label_name][]=docs%3A%3Afix)
 
 ## The GitLab voice
 
@@ -34,47 +23,15 @@ direct, and precise. The goal is to provide information that's easy to search an
 
 The voice in the documentation should be conversational but brief, friendly but succinct.
 
-## Documentation is the single source of truth (SSOT)
+## Documentation is the single source of truth (SSoT)
 
-The GitLab documentation is the SSOT for all
-information related to GitLab implementation, usage, and troubleshooting. It evolves
-continuously, in keeping with new products and features, and with improvements
-for clarity, accuracy, and completeness.
+The GitLab documentation is the SSoT for all information related to implementation,
+use, and troubleshooting. The documentation evolves continuously. It is updated with
+new products and features, and with improvements for clarity, accuracy, and completeness.
 
 This policy prevents information silos, making it easier to find information
-about GitLab products.
-
-It also informs decisions about the kinds of content we include in our
-documentation.
-
-### The documentation includes all information
-
-Include problem-solving actions that may address rare cases or be considered
-risky, but provide proper context through fully detailed
-warnings and caveats. This kind of content should be included as it could be
-helpful to others and, when properly explained, its benefits outweigh the risks.
-If you think you have found an exception to this rule, contact the
-Technical Writing team.
-
-GitLab adds all troubleshooting information to the documentation, no matter how
-unlikely a user is to encounter a situation.
-
-GitLab Support maintains their own
-[troubleshooting content](../../../administration/troubleshooting/index.md)
-in the GitLab documentation.
-
-### The documentation includes all media types
-
-Include any media types/sources if the content is relevant to readers. You can
-freely include or link presentations, diagrams, and videos. No matter who
-it was originally composed for, if it is helpful to any of our audiences, we can
-include it.
-
-- If you use an image that has a separate source file (for example, a vector or
-  diagram format), link the image to the source file so that anyone can update or reuse it.
-- Do not copy and paste content from other sources unless it is a limited
-  quotation with the source cited. Typically it is better to either rephrase
-  relevant information in your own words or link out to the other source.
+about GitLab products. It also informs decisions about the kinds of content that
+is included in the documentation.
 
 ### Topic types
 
@@ -1657,6 +1614,12 @@ Until we implement automated testing for broken links to tabs ([Issue 1355](http
 
 See [Pajamas](https://design.gitlab.com/components/tabs/#guidelines) for more
 details on tabs.
+
+## Plagiarism
+
+Do not copy and paste content from other sources unless it is a limited
+quotation with the source cited. Typically it is better to rephrase
+relevant information in your own words or link out to the other source.
 
 ## Terms
 
