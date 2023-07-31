@@ -23239,7 +23239,7 @@ CREATE TABLE subscription_add_on_purchases (
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     subscription_add_on_id bigint NOT NULL,
-    namespace_id bigint NOT NULL,
+    namespace_id bigint,
     quantity integer NOT NULL,
     expires_on date NOT NULL,
     purchase_xid text NOT NULL,
