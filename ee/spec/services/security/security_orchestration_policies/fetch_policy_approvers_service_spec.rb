@@ -24,10 +24,11 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
       let(:unrelated_group) { create(:group, :private) }
       let(:action) { { type: "require_approval", approvals_required: 1, group_approvers_ids: [unrelated_group.id, group.id] } }
 
-      it 'does not return the unrelated group' do
+      specify do
         response = service.execute
 
         expect(response[:groups]).to contain_exactly(group)
+        expect(response[:all_groups]).to contain_exactly(group, unrelated_group)
       end
     end
 
@@ -40,6 +41,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
         expect(response[:status]).to eq(:success)
         expect(response[:users]).to match_array([user])
         expect(response[:groups]).to be_empty
+        expect(response[:all_groups]).to be_empty
       end
 
       context 'with container of a group type' do
@@ -51,6 +53,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
           expect(response[:status]).to eq(:success)
           expect(response[:users]).to match_array([user])
           expect(response[:groups]).to be_empty
+          expect(response[:all_groups]).to be_empty
         end
 
         context 'with user approvers inherited from parent group' do
@@ -65,6 +68,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
             expect(response[:status]).to eq(:success)
             expect(response[:users]).to match_array([user])
             expect(response[:groups]).to be_empty
+            expect(response[:all_groups]).to be_empty
           end
         end
       end
@@ -78,6 +82,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
           expect(response[:status]).to eq(:success)
           expect(response[:users]).to be_empty
           expect(response[:groups]).to be_empty
+          expect(response[:all_groups]).to be_empty
         end
       end
     end
@@ -90,6 +95,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
 
         expect(response[:status]).to eq(:success)
         expect(response[:groups]).to match_array([group])
+        expect(response[:all_groups]).to match_array([group])
         expect(response[:users]).to be_empty
       end
 
@@ -99,7 +105,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
 
         let(:action) { { type: "require_approval", approvals_required: 1, group_approvers: [group.name] } }
 
-        subject { service.execute[:groups] }
+        subject { service.execute }
 
         context 'with security_policy_global_group_approvers_enabled setting disabled' do
           before do
@@ -107,7 +113,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
           end
 
           it 'excludes groups outside the container' do
-            expect(subject).not_to include(other_group)
+            expect(subject[:groups]).not_to include(other_group)
+            expect(subject[:all_groups]).not_to include(other_group)
           end
         end
 
@@ -117,7 +124,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
           end
 
           it 'includes groups outside the container' do
-            expect(subject).to include(other_group)
+            expect(subject[:groups]).to include(other_group)
+            expect(subject[:all_groups]).to include(other_group)
           end
         end
       end
@@ -172,6 +180,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
         expect(response[:status]).to eq(:success)
         expect(response[:users]).to match_array([user])
         expect(response[:groups]).to match_array([group])
+        expect(response[:all_groups]).to match_array([group])
       end
     end
 
@@ -184,6 +193,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
         expect(response[:status]).to eq(:success)
         expect(response[:users]).to be_empty
         expect(response[:groups]).to be_empty
+        expect(response[:all_groups]).to be_empty
       end
     end
 
@@ -196,6 +206,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
         expect(response[:status]).to eq(:success)
         expect(response[:users]).to be_empty
         expect(response[:groups]).to be_empty
+        expect(response[:all_groups]).to be_empty
       end
     end
 
@@ -208,6 +219,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
         expect(response[:status]).to eq(:success)
         expect(response[:users]).to be_empty
         expect(response[:groups]).to be_empty
+        expect(response[:all_groups]).to be_empty
       end
     end
 
@@ -255,6 +267,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
         expect(response[:status]).to eq(:success)
         expect(response[:users]).to be_empty
         expect(response[:groups].count).not_to be > Security::ScanResultPolicy::APPROVERS_LIMIT
+        expect(response[:all_groups].count).not_to be > Security::ScanResultPolicy::APPROVERS_LIMIT
       end
     end
   end

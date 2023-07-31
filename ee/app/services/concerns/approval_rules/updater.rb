@@ -56,7 +56,13 @@ module ApprovalRules
     def filter_eligible_groups!
       return unless params.key?(:group_ids)
 
-      params[:groups] = Group.id_in(params.delete(:group_ids)).accessible_to_user(current_user)
+      group_ids = params.delete(:group_ids)
+
+      params[:groups] = if params.delete(:permit_inaccessible_groups)
+                          Group.id_in(group_ids)
+                        else
+                          Group.id_in(group_ids).accessible_to_user(current_user)
+                        end
     end
 
     def filter_eligible_protected_branches!

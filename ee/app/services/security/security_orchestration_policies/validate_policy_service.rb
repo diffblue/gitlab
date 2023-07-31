@@ -91,7 +91,7 @@ module Security
         ).execute
 
         eligible_user_ids = Set.new
-        users, groups, roles = result.values_at(:users, :groups, :roles)
+        users, groups, roles = result.values_at(:users, :all_groups, :roles)
 
         eligible_user_ids.merge(users.pluck(:id)) # rubocop:disable CodeReuse/ActiveRecord
         return false if eligible_user_ids.size >= approvals_required
