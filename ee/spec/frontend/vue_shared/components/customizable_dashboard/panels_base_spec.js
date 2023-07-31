@@ -1,11 +1,16 @@
-import { GlLoadingIcon } from '@gitlab/ui';
+import * as Sentry from '@sentry/browser';
+import { GlLoadingIcon, GlPopover } from '@gitlab/ui';
 import LineChart from 'ee/analytics/analytics_dashboards/components/visualizations/line_chart.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';
 import dataSources from 'ee/analytics/analytics_dashboards/data_sources';
 import waitForPromises from 'helpers/wait_for_promises';
 import TooltipOnTruncate from '~/vue_shared/components/tooltip_on_truncate/tooltip_on_truncate.vue';
-import { I18N_PANEL_EMPTY_STATE_MESSAGE } from 'ee/vue_shared/components/customizable_dashboard/constants';
+import {
+  I18N_PANEL_EMPTY_STATE_MESSAGE,
+  I18N_PANEL_ERROR_POPOVER_TITLE,
+  I18N_PANEL_ERROR_STATE_MESSAGE,
+} from 'ee/vue_shared/components/customizable_dashboard/constants';
 import { dashboard } from './mock_data';
 
 jest.mock('ee/analytics/analytics_dashboards/data_sources', () => ({
@@ -34,6 +39,7 @@ describe('PanelsBase', () => {
   const findVisualization = () => wrapper.findComponent(LineChart);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findPanelTitle = () => wrapper.findComponent(TooltipOnTruncate);
+  const findPanelErrorPopover = () => wrapper.findComponent(GlPopover);
 
   describe('default behaviour', () => {
     beforeEach(() => {
@@ -116,11 +122,18 @@ describe('PanelsBase', () => {
 
   describe('when there was an error while fetching the data', () => {
     const mockError = new Error('foo');
+    let captureExceptionSpy;
 
     beforeEach(() => {
       jest.spyOn(dataSources.cube_analytics(), 'fetch').mockRejectedValue(mockError);
+      captureExceptionSpy = jest.spyOn(Sentry, 'captureException');
+
       createWrapper();
       return waitForPromises();
+    });
+
+    afterEach(() => {
+      captureExceptionSpy.mockRestore();
     });
 
     it('should not render the loading icon', () => {
@@ -135,8 +148,18 @@ describe('PanelsBase', () => {
       expect(findVisualization().exists()).toBe(false);
     });
 
-    it('should emit an error event', () => {
-      expect(wrapper.emitted('error')[0]).toStrictEqual([mockError]);
+    it('should render the error state', () => {
+      expect(wrapper.text()).toContain(I18N_PANEL_ERROR_STATE_MESSAGE);
+    });
+
+    it('should render a popover with more information on the error', () => {
+      const popover = findPanelErrorPopover();
+      expect(popover.exists()).toBe(true);
+      expect(popover.props('title')).toBe(I18N_PANEL_ERROR_POPOVER_TITLE);
+    });
+
+    it('should log the error to Sentry', () => {
+      expect(captureExceptionSpy).toHaveBeenCalledWith(mockError);
     });
   });
 

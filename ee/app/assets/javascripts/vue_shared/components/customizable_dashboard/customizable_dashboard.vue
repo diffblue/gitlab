@@ -5,8 +5,6 @@ import cloneDeep from 'lodash/cloneDeep';
 import { GlButton, GlFormInput, GlForm } from '@gitlab/ui';
 import { loadCSSFile } from '~/lib/utils/css_utils';
 import { slugify } from '~/lib/utils/text_utility';
-import { createAlert } from '~/alert';
-import { s__, sprintf } from '~/locale';
 import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/url_sync.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { createNewVisualizationPanel } from 'ee/analytics/analytics_dashboards/utils';
@@ -250,16 +248,6 @@ export default {
         updatedPanel.gridAttributes = this.convertToGridAttributes(item);
       }
     },
-    handlePanelError(panelTitle, error) {
-      this.alert = createAlert({
-        message: sprintf(
-          s__('ProductAnalytics|An error occurred while loading the %{panelTitle} panel.'),
-          { panelTitle },
-        ),
-        error,
-        captureError: true,
-      });
-    },
     setDateRangeFilter({ dateRangeOption, startDate, endDate }) {
       this.filters = {
         ...this.filters,
@@ -381,7 +369,6 @@ export default {
                 :visualization="panel.visualization"
                 :query-overrides="panel.queryOverrides || undefined"
                 :filters="filters"
-                @error="handlePanelError(panel.title, $event)"
               />
             </div>
           </div>
