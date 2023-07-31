@@ -7,7 +7,6 @@ module Gitlab
         TOOLS = [
           ::Gitlab::Llm::Chain::Tools::JsonReader,
           ::Gitlab::Llm::Chain::Tools::IssueIdentifier,
-          ::Gitlab::Llm::Chain::Tools::SummarizeComments,
           ::Gitlab::Llm::Chain::Tools::GitlabDocumentation
         ].freeze
 

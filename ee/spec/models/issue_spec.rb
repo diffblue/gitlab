@@ -1316,4 +1316,15 @@ RSpec.describe Issue, feature_category: :team_planning do
       end
     end
   end
+
+  describe '#serialize_for_ai' do
+    let(:issue) { build(:issue) }
+    let(:user) { build(:user) }
+
+    it 'calls the serializations class' do
+      expect(::Gitlab::Llm::Serializers::IssueSerializer).to receive(:serialize)
+                                                               .with(user: user, issue: issue, content_limit: 100).once
+      issue.serialize_for_ai(user: user, content_limit: 100)
+    end
+  end
 end
