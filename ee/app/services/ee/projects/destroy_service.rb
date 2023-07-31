@@ -81,10 +81,12 @@ module EE
       end
 
       def log_audit_event(project)
+        audit_scope = project.parent.instance_of?(::Namespaces::UserNamespace) ? project.parent.owner : project.parent
+
         audit_context = {
           name: 'project_destroyed',
           author: current_user,
-          scope: project.parent,
+          scope: audit_scope,
           target: project,
           message: 'Project destroyed',
           target_details: project.full_path,
