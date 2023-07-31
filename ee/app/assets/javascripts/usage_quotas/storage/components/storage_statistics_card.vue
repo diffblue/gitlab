@@ -1,10 +1,17 @@
 <script>
-import { GlCard, GlProgressBar, GlSkeletonLoader } from '@gitlab/ui';
-import { formatSizeAndSplit } from 'ee/usage_quotas/storage/utils';
+import { GlCard, GlProgressBar, GlSkeletonLoader, GlIcon, GlLink } from '@gitlab/ui';
+import { sprintf } from '~/locale';
+import { numberToHumanSizeSplit } from '~/lib/utils/number_utils';
+import { usageQuotasHelpPaths } from '~/usage_quotas/storage/constants';
+import {
+  STORAGE_STATISTICS_PERCENTAGE_REMAINING,
+  STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE,
+  STORAGE_STATISTICS_NAMESPACE_STORAGE_USED,
+} from '../constants';
 
 export default {
   name: 'StorageStatisticsCard',
-  components: { GlCard, GlProgressBar, GlSkeletonLoader },
+  components: { GlCard, GlProgressBar, GlSkeletonLoader, GlIcon, GlLink },
   props: {
     totalStorage: {
       type: Number,
@@ -22,45 +29,44 @@ export default {
     },
   },
   computed: {
-    formattedUsage() {
-      return this.formatSizeAndSplit(this.usedStorage);
+    storageUsed() {
+      if (!this.usedStorage) {
+        // if there is no used storage, we want
+        // to show `0` instead of the formatted `0.0`
+        return '0';
+      }
+      return numberToHumanSizeSplit(this.usedStorage, 1);
     },
-    formattedTotal() {
-      return this.formatSizeAndSplit(this.totalStorage);
+    storageTotal() {
+      if (!this.totalStorage) {
+        return null;
+      }
+      return numberToHumanSizeSplit(this.totalStorage, 1);
     },
-    percentage() {
+    percentageUsed() {
       // don't show the progress bar if there's no total storage
       if (!this.totalStorage || this.usedStorage === null) {
         return null;
       }
-      return Math.min(Math.round((this.usedStorage / this.totalStorage) * 100), 100);
+      const usedRatio = Math.max(Math.round((this.usedStorage / this.totalStorage) * 100), 0);
+      return Math.min(usedRatio, 100);
     },
-    usageValue() {
-      if (!this.totalStorage && !this.usedStorage) {
-        // if there is no total storage and no used storage, we want
-        // to show `0` instead of the formatted `0.0`
-        return '0';
+    percentageRemaining() {
+      if (this.percentageUsed === null) {
+        return null;
       }
-      return this.formattedUsage?.value;
-    },
-    usageUnit() {
-      return this.formattedUsage?.unit;
-    },
-    totalValue() {
-      return this.formattedTotal?.value;
-    },
-    totalUnit() {
-      return this.formattedTotal?.unit;
-    },
-    shouldRenderTotalBlock() {
-      return this.totalStorage && this.usedStorage !== null;
-    },
-    shouldShowProgressBar() {
-      return this.percentage !== null;
+
+      const percentageRemaining = Math.max(100 - this.percentageUsed, 0);
+
+      return sprintf(STORAGE_STATISTICS_PERCENTAGE_REMAINING, {
+        percentageRemaining,
+      });
     },
   },
-  methods: {
-    formatSizeAndSplit,
+  i18n: {
+    USED_STORAGE_HELP_LINK: usageQuotasHelpPaths.usageQuotas,
+    STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE,
+    STORAGE_STATISTICS_NAMESPACE_STORAGE_USED,
   },
 };
 </script>
@@ -74,21 +80,33 @@ export default {
     </gl-skeleton-loader>
 
     <div v-else>
-      <div class="gl-display-flex gl-justify-content-space-between">
-        <p class="gl-font-size-h-display gl-font-weight-bold gl-mb-3" data-testid="denominator">
-          {{ usageValue }}
-          <span class="gl-font-lg">{{ usageUnit }}</span>
-          <span v-if="shouldRenderTotalBlock" data-testid="denominator-total">
-            /
-            {{ totalValue }}
-            <span class="gl-font-lg">{{ totalUnit }}</span>
-          </span>
-        </p>
+      <div class="gl-font-weight-bold" data-testid="namespace-storage-card-title">
+        {{ $options.i18n.STORAGE_STATISTICS_NAMESPACE_STORAGE_USED }}
+
+        <gl-link
+          :href="$options.i18n.USED_STORAGE_HELP_LINK"
+          target="_blank"
+          class="gl-ml-2"
+          :aria-label="$options.i18n.STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE"
+        >
+          <gl-icon name="question-o" />
+        </gl-link>
       </div>
-      <p class="gl-font-weight-bold gl-mb-0" data-testid="description">
-        <slot name="description"></slot>
-      </p>
-      <gl-progress-bar v-if="shouldShowProgressBar" :value="percentage" class="gl-mt-4" />
+      <div class="gl-font-size-h-display gl-font-weight-bold gl-line-height-ratio-1000 gl-my-3">
+        {{ storageUsed[0] }}
+        <span v-if="storageUsed[1]" class="gl-font-lg">{{ storageUsed[1] }}</span>
+        <span v-if="storageTotal">
+          /
+          {{ storageTotal[0] }}
+          <span class="gl-font-lg">{{ storageTotal[1] }}</span>
+        </span>
+      </div>
+      <template v-if="percentageUsed !== null">
+        <gl-progress-bar :value="percentageUsed" class="gl-my-4" />
+        <div data-testid="namespace-storage-percentage-remaining">
+          {{ percentageRemaining }}
+        </div>
+      </template>
     </div>
   </gl-card>
 </template>

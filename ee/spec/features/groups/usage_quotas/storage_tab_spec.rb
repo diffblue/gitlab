@@ -101,7 +101,7 @@ RSpec.describe 'Groups > Usage Quotas > Storage tab', :js, :saas, feature_catego
 
       # A cost factor for forks of 0.1 means that forks consume only 10% of their storage size.
       # So this is the total storage_size (300 MB) - 90% of the public_forks_storage_size (90 MB).
-      expect(page).to have_css('[data-testid="denominator"]', text: "210.0 MiB")
+      expect(page).to have_text('Namespace storage used 210.0 MiB')
     end
   end
 

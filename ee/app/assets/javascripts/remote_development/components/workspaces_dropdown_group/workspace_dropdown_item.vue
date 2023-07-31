@@ -1,5 +1,6 @@
 <script>
 import { GlDisclosureDropdownItem } from '@gitlab/ui';
+import Tracking from '~/tracking';
 import WorkspaceStateIndicator from '../common/workspace_state_indicator.vue';
 import WorkspaceActions from '../common/workspace_actions.vue';
 
@@ -9,6 +10,7 @@ export default {
     WorkspaceStateIndicator,
     WorkspaceActions,
   },
+  mixins: [Tracking.mixin()],
   props: {
     workspace: {
       type: Object,
@@ -23,10 +25,15 @@ export default {
       };
     },
   },
+  methods: {
+    trackOpenWorkspace() {
+      this.track('click_consolidated_edit', { label: 'workspace' });
+    },
+  },
 };
 </script>
 <template>
-  <gl-disclosure-dropdown-item class="gl-my-0" :item="dropdownItem">
+  <gl-disclosure-dropdown-item class="gl-my-0" :item="dropdownItem" @action="trackOpenWorkspace">
     <template #list-item>
       <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
         <span class="gl-display-inline-flex gl-align-items-center">

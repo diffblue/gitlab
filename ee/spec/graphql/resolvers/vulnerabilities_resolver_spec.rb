@@ -211,6 +211,20 @@ RSpec.describe Resolvers::VulnerabilitiesResolver do
       end
     end
 
+    context 'when dismissal reason is given' do
+      let(:params) { { dismissal_reason: %w[USED_IN_TESTS FALSE_POSITIVE] } }
+
+      let_it_be(:dismissed_vulnerability_1) { create(:vulnerability, :dismissed, project: project) }
+      let_it_be(:vulnerability_read_1) { create(:vulnerability_read, :used_in_tests, vulnerability: dismissed_vulnerability_1, project: project) }
+
+      let_it_be(:dismissed_vulnerability_2) { create(:vulnerability, :dismissed, project: project) }
+      let_it_be(:vulnerability_read_2) { create(:vulnerability_read, :false_positive, vulnerability: dismissed_vulnerability_2, project: project) }
+
+      it 'returns only dissmissed Vulnerabilities with matching dismissal reason' do
+        is_expected.to match_array([dismissed_vulnerability_1, dismissed_vulnerability_2])
+      end
+    end
+
     context 'when cluster_id is given' do
       let_it_be(:cluster_agent) { create(:cluster_agent, project: project) }
       let_it_be(:cluster_vulnerability) { create(:vulnerability, :cluster_image_scanning, project: project) }

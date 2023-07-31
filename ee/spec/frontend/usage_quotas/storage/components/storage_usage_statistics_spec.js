@@ -1,5 +1,6 @@
 import { GlButton, GlLink, GlSprintf, GlProgressBar } from '@gitlab/ui';
 import StorageStatisticsCard from 'ee/usage_quotas/storage/components/storage_statistics_card.vue';
+import numberToHumanSize from 'ee/usage_quotas/storage/components/number_to_human_size.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import {
   NAMESPACE_STORAGE_OVERVIEW_SUBTITLE,
@@ -26,6 +27,7 @@ describe('StorageUsageStatistics', () => {
       },
       stubs: {
         StorageStatisticsCard,
+        numberToHumanSize,
         GlSprintf,
         GlButton,
         GlLink,
@@ -34,7 +36,7 @@ describe('StorageUsageStatistics', () => {
     });
   };
 
-  const findNamespaceStorageCard = () => wrapper.findByTestId('namespace-usage-card');
+  const findNamespaceStorageCard = () => wrapper.findComponent(StorageStatisticsCard);
   const findStorageDetailCard = () => wrapper.findByTestId('storage-detail-card');
   const findStorageIncludedInPlan = () => wrapper.findByTestId('storage-included-in-plan');
   const findStoragePurchased = () => wrapper.findByTestId('storage-purchased');
@@ -90,16 +92,9 @@ describe('StorageUsageStatistics', () => {
   });
 
   describe('StorageStatisticsCard', () => {
-    beforeEach(() => {
-      createComponent();
-    });
-
-    it('renders card description with help link', () => {
-      expect(findNamespaceStorageCard().text()).toContain('Namespace storage used');
-      expect(findNamespaceStorageCard().findComponent(GlLink).exists()).toBe(true);
-    });
-
     it('passes the correct props to StorageStatisticsCard', () => {
+      createComponent();
+
       expect(findNamespaceStorageCard().props()).toEqual({
         usedStorage: withRootStorageStatistics.rootStorageStatistics.storageSize,
         totalStorage:
@@ -136,7 +131,7 @@ describe('StorageUsageStatistics', () => {
     });
 
     it('renders purchased storage', () => {
-      expect(findStoragePurchased().text()).toContain('0.3 KiB');
+      expect(findStoragePurchased().text()).toContain('321 B');
     });
 
     it('renders total storage', () => {

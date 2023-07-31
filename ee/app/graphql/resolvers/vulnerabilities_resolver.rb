@@ -62,6 +62,10 @@ module Resolvers
              description: "Filter vulnerabilities by `cluster_agent_id`. Vulnerabilities with a `reportType` "\
                           "of `cluster_image_scanning` are only included with this filter."
 
+    argument :dismissal_reason, [Types::Vulnerabilities::DismissalReasonEnum],
+      required: false,
+      description: "Filter by dismissal reason. Only dismissed Vulnerabilities will be included with the filter."
+
     def resolve_with_lookahead(**args)
       return Vulnerability.none unless vulnerable
 
