@@ -55274,9 +55274,6 @@ msgstr ""
 msgid "is read-only"
 msgstr ""
 
-msgid "is required to enable Code Suggestions"
-msgstr ""
-
 msgid "is too long (%{current_value}). The maximum size is %{max_size}."
 msgstr ""
 
