@@ -3,7 +3,7 @@
 module Sbom
   module Ingestion
     class IngestReportService
-      BATCH_SIZE = 100
+      BATCH_SIZE = 10
 
       def self.execute(pipeline, sbom_report)
         new(pipeline, sbom_report).execute
