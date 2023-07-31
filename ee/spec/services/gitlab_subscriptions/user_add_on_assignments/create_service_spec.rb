@@ -100,5 +100,48 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignments::CreateService, feature
 
       it_behaves_like 'success response'
     end
+
+    context 'with resource locking' do
+      before do
+        add_on_purchase.update!(quantity: 1)
+      end
+
+      it 'prevents from double booking assignment' do
+        users = create_list(:user, 3)
+
+        expect(add_on_purchase.assigned_users.count).to eq(0)
+
+        users.map do |user|
+          namespace.add_developer(user)
+
+          Thread.new do
+            described_class.new(
+              add_on_purchase: add_on_purchase,
+              user: user
+            ).execute
+          end
+        end.each(&:join)
+
+        expect(add_on_purchase.assigned_users.count).to eq(1)
+      end
+
+      context 'when NoSeatsAvailableError is raised' do
+        let(:service_instance) { described_class.new(add_on_purchase: add_on_purchase, user: user) }
+
+        subject(:response) { service_instance.execute }
+
+        it 'handes the error correctly' do
+          # fill up the available seats
+          create(:gitlab_subscription_user_add_on_assignment, add_on_purchase: add_on_purchase)
+
+          # Mock first call to return true to pass the validate phase
+          expect(service_instance).to receive(:seats_available?).and_return(true)
+          expect(service_instance).to receive(:seats_available?).and_call_original
+
+          expect { subject }.not_to raise_error
+          expect(response.errors).to include('NO_SEATS_AVAILABLE')
+        end
+      end
+    end
   end
 end
