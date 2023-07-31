@@ -21383,6 +21383,9 @@ msgstr ""
 msgid "GlobalSearch|Aggregations load error."
 msgstr ""
 
+msgid "GlobalSearch|Archived"
+msgstr ""
+
 msgid "GlobalSearch|Close"
 msgstr ""
 
@@ -21399,6 +21402,9 @@ msgid "GlobalSearch|Help"
 msgstr ""
 
 msgid "GlobalSearch|In this project"
+msgstr ""
+
+msgid "GlobalSearch|Include archived"
 msgstr ""
 
 msgid "GlobalSearch|Issues I've created"
@@ -35932,6 +35938,9 @@ msgstr ""
 msgid "Project \"%{name}\" is no longer available. Select another project to continue."
 msgstr ""
 
+msgid "Project %{code_open}%{source_project}%{code_close} has more restricted access settings than %{code_open}%{target_project}%{code_close}. To avoid exposing private changes, make sure you're submitting changes to the correct project."
+msgstr ""
+
 msgid "Project %{project_repo} could not be found"
 msgstr ""
 
@@ -43339,6 +43348,9 @@ msgid "Shimo|You've enabled the Shimo Workspace integration. You can view your w
 msgstr ""
 
 msgid "Short name"
+msgstr ""
+
+msgid "Should these changes be private?"
 msgstr ""
 
 msgid "Should you ever lose your phone or access to your one time password secret, each of these recovery codes can be used one time each to regain access to your account. Please save them in a safe place, or you %{boldStart}will%{boldEnd} lose access to your account."
