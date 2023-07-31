@@ -75,7 +75,11 @@ class Groups::OmniauthCallbacksController < OmniauthCallbacksController
 
   override :locked_user_redirect
   def locked_user_redirect(user)
-    flash[:alert] = locked_user_redirect_alert(user)
+    redirect_to_group_sso(alert: locked_user_redirect_alert(user))
+  end
+
+  def redirect_to_group_sso(alert: nil)
+    flash[:alert] = alert if alert
 
     redirect_to sso_group_saml_providers_path(@unauthenticated_group, token: @unauthenticated_group.saml_discovery_token)
   end
@@ -104,11 +108,20 @@ class Groups::OmniauthCallbacksController < OmniauthCallbacksController
 
   override :fail_login
   def fail_login(user)
+    return new_fail_login(user) if ::Feature.enabled?(:group_saml_jit_errors, @unauthenticated_group)
+
     if user
       super
     else
       redirect_to_login_or_register
     end
+  end
+
+  def new_fail_login(user)
+    return redirect_to_login_or_register if email_already_taken?(user)
+
+    error_message = email_blank?(user) ? email_blank_error_message : user.errors.full_messages.to_sentence
+    redirect_to_group_sso(alert: error_message)
   end
 
   def redirect_to_login_or_register
@@ -162,6 +175,22 @@ class Groups::OmniauthCallbacksController < OmniauthCallbacksController
     else
       sso_group_saml_providers_path(group)
     end
+  end
+
+  def email_already_taken?(user)
+    email_error?(user, _('has already been taken'))
+  end
+
+  def email_blank?(user)
+    email_error?(user, _("can't be blank"))
+  end
+
+  def email_error?(user, error_text)
+    user && user.errors['email'].any?(error_text)
+  end
+
+  def email_blank_error_message
+    s_('SAML|The SAML response did not contain an email address. Either the SAML identity provider is not configured to send the attribute, or the identity provider directory does not have an email address value for your user.')
   end
 
   override :log_audit_event

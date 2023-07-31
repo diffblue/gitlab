@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Gitlab::Auth::GroupSaml::User do
+RSpec.describe Gitlab::Auth::GroupSaml::User, :aggregate_failures, feature_category: :system_access do
   let(:uid) { 1234 }
   let(:saml_provider) { create(:saml_provider) }
   let(:group) { saml_provider.group }
@@ -153,8 +153,11 @@ RSpec.describe Gitlab::Auth::GroupSaml::User do
           expect { find_and_update }.not_to change { group.members.count }
         end
 
-        it 'does not return a user' do
-          expect(find_and_update).to eq nil
+        it 'returns a user with errors' do
+          response = find_and_update
+
+          expect(response).to be_a(User)
+          expect(response.errors['email']).to include(_('has already been taken'))
         end
 
         context 'when user was provisioned by this group' do
@@ -193,7 +196,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::User do
             end
           end
 
-          context 'without feature flag turned on' do
+          context 'with block_password_auth_for_saml_users feature flag disabled' do
             before do
               stub_feature_flags(block_password_auth_for_saml_users: false)
             end
@@ -202,8 +205,11 @@ RSpec.describe Gitlab::Auth::GroupSaml::User do
               expect { find_and_update }.not_to change { group.members.count }
             end
 
-            it 'does not return a user' do
-              expect(find_and_update).to eq nil
+            it 'returns a user with errors' do
+              response = find_and_update
+
+              expect(response).to be_a(User)
+              expect(response.errors['email']).to include(_('has already been taken'))
             end
 
             it 'does not update identity' do
@@ -221,8 +227,11 @@ RSpec.describe Gitlab::Auth::GroupSaml::User do
             expect { find_and_update }.not_to change { group.members.count }
           end
 
-          it 'does not return a user' do
-            expect(find_and_update).to eq nil
+          it 'returns a user with errors' do
+            response = find_and_update
+
+            expect(response).to be_a(User)
+            expect(response.errors['email']).to include(_('has already been taken'))
           end
 
           it 'does not update identity' do

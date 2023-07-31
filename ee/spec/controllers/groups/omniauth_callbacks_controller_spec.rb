@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::OmniauthCallbacksController, feature_category: :system_access do
+RSpec.describe Groups::OmniauthCallbacksController, :aggregate_failures, feature_category: :system_access do
   include LoginHelpers
   include ForgeryProtection
 
@@ -38,6 +38,67 @@ RSpec.describe Groups::OmniauthCallbacksController, feature_category: :system_ac
       expect do
         post provider, params: { group_id: group }
       end.to raise_error(AbstractController::ActionNotFound)
+    end
+  end
+
+  context 'when the user is invalid' do
+    let(:user) { build_stubbed(:user) }
+
+    before do
+      group.saml_discovery_token # ensure discovery token is initialized
+    end
+
+    context 'when the email is blank' do
+      before do
+        @original_env_config_omniauth_auth = mock_auth_hash(provider, uid, nil, response_object: saml_response)
+        stub_omniauth_provider(provider, context: request)
+        stub_last_request_id(last_request_id)
+      end
+
+      after do
+        Rails.application.env_config['omniauth.auth'] = @original_env_config_omniauth_auth
+      end
+
+      it "redirects to the Group SAML sign in page with flash alert" do
+        post provider, params: { group_id: group }
+
+        expect(response).to redirect_to(sso_group_saml_providers_path(group, token: group.saml_discovery_token))
+        expect(flash[:alert]).to eq(s_('SAML|The SAML response did not contain an email address. Either the SAML identity provider is not configured to send the attribute, or the identity provider directory does not have an email address value for your user.'))
+      end
+
+      context 'when group_saml_jit_errors feature is disabled' do
+        before do
+          stub_feature_flags(group_saml_jit_errors: false)
+        end
+
+        it "redirects to sign in page with flash alert" do
+          post provider, params: { group_id: group }
+
+          expect(response).to redirect_to(new_user_session_path)
+          expect(flash[:notice]).to eq(s_("SAML|There is already a GitLab account associated with this email address. Sign in with your existing credentials to connect your organization's account"))
+        end
+      end
+    end
+
+    context 'when any other validation error occurs' do
+      before do
+        bad_name = Devise.friendly_token(150)
+        @original_env_config_omniauth_auth =
+          mock_auth_hash(provider, uid, user.email, response_object: saml_response, name: bad_name)
+        stub_omniauth_provider(provider, context: request)
+        stub_last_request_id(last_request_id)
+      end
+
+      after do
+        Rails.application.env_config['omniauth.auth'] = @original_env_config_omniauth_auth
+      end
+
+      it "redirects to the Group SAML sign in page with flash alert" do
+        post provider, params: { group_id: group }
+
+        expect(response).to redirect_to(sso_group_saml_providers_path(group, token: group.saml_discovery_token))
+        expect(flash[:alert]).to eq("First name is too long (maximum is 127 characters)")
+      end
     end
   end
 

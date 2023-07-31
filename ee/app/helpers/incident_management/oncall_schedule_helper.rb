@@ -5,7 +5,7 @@ module IncidentManagement
     def oncall_schedule_data(project)
       {
         'project-path' => project.full_path,
-        'empty-oncall-schedules-svg-path' => image_path('illustrations/empty-state/empty-on-call.svg'),
+        'empty-oncall-schedules-svg-path' => image_path('illustrations/empty-state/empty-schedule-md.svg'),
         'timezones' => timezone_data(format: :full).to_json,
         'escalation-policies-path' => project_incident_management_escalation_policies_path(project),
         'user_can_create_schedule' => can?(current_user, :admin_incident_management_oncall_schedule, project).to_s,
