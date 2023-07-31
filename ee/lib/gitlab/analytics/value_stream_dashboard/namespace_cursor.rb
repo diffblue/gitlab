@@ -7,10 +7,10 @@ module Gitlab
         NAMESPACE_BATCH_SIZE = 300
 
         def initialize(namespace_scope:, inner_namespace_query:, cursor_data:)
-          @top_level_namespace_id = cursor_data.fetch(:top_level_namespace_id)
           @namespace_scope = namespace_scope
           @inner_namespace_query = inner_namespace_query
           @cursor_data = cursor_data
+          @top_level_namespace_id = cursor_data.fetch(:top_level_namespace_id)
         end
 
         def next
@@ -35,7 +35,7 @@ module Gitlab
 
         private
 
-        attr_reader :top_level_namespace_id, :namespace_scope, :inner_namespace_query, :cursor_data
+        attr_reader :namespace_scope, :inner_namespace_query, :cursor_data, :top_level_namespace_id
 
         # rubocop: disable CodeReuse/ActiveRecord
         def enumerator

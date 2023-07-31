@@ -21,18 +21,18 @@ module Analytics
         order(arel_table[:namespace_id].not_eq(namespace_id))
       }
 
-      def self.load_batch(cursor = {}, batch_size = 100)
+      def self.load_batch(cursor = nil, batch_size = 100)
+        top_level_namespace_id = cursor && cursor[:top_level_namespace_id]
+
         unions = [
           enabled.not_aggregated.latest_first_order.limit(batch_size),
           enabled.outdated.latest_first_order.limit(batch_size)
         ].compact
 
-        unions.unshift(primary_key_in(cursor[:top_level_namespace_id])) if cursor[:top_level_namespace_id]
+        unions.unshift(primary_key_in(top_level_namespace_id)) if top_level_namespace_id
 
         query = from_union(unions, remove_order: false)
-        if cursor[:top_level_namespace_id]
-          query = query.specific_namespace_id_first_order(cursor[:top_level_namespace_id])
-        end
+        query = query.specific_namespace_id_first_order(top_level_namespace_id) if top_level_namespace_id
 
         query.latest_first_order.limit(batch_size).to_a
       end

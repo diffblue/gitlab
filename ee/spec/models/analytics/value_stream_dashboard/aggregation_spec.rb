@@ -48,6 +48,16 @@ RSpec.describe Analytics::ValueStreamDashboard::Aggregation, type: :model, featu
           ])
         end
       end
+
+      context 'when a cursor is a Gitlab::Analytics::ValueStreamDashboard::NamespaceCursor' do
+        it 'returns correct data' do
+          cursor = Analytics::ValueStreamDashboard::TopLevelGroupCounterService
+            .load_cursor(raw_cursor: { top_level_namespace_id: aggregation3.id })
+
+          expect(load_batch(cursor)).to eq([aggregation3, aggregation1,
+            aggregation4, aggregation2])
+        end
+      end
     end
   end
 end
