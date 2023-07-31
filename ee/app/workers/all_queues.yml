@@ -1641,15 +1641,6 @@
   :weight: 1
   :idempotent: true
   :tags: []
-- :name: product_analytics_initialize_analytics
-  :worker_name: ProductAnalytics::InitializeAnalyticsWorker
-  :feature_category: :product_analytics_data_management
-  :has_external_dependencies: true
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: true
-  :tags: []
 - :name: product_analytics_initialize_snowplow_product_analytics
   :worker_name: ProductAnalytics::InitializeSnowplowProductAnalyticsWorker
   :feature_category: :product_analytics_data_management

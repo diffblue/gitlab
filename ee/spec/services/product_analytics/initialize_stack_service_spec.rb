@@ -12,9 +12,9 @@ RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_sha
     stub_feature_flags(product_analytics_snowplow_support: false)
   end
 
-  shared_examples 'no ::ProductAnalytics::InitializeAnalyticsWorker job is enqueued' do
+  shared_examples 'no ::ProductAnalytics::InitializeSnowplowProductAnalyticsWorker job is enqueued' do
     it 'does not enqueue a job' do
-      expect(::ProductAnalytics::InitializeAnalyticsWorker).not_to receive(:perform_async)
+      expect(::ProductAnalytics::InitializeSnowplowProductAnalyticsWorker).not_to receive(:perform_async)
 
       subject
     end
@@ -85,7 +85,7 @@ RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_sha
         project.project_setting.update!(product_analytics_instrumentation_key: nil)
       end
 
-      it_behaves_like 'no ::ProductAnalytics::InitializeAnalyticsWorker job is enqueued'
+      it_behaves_like 'no ::ProductAnalytics::InitializeSnowplowProductAnalyticsWorker job is enqueued'
 
       it 'returns a failure response' do
         expect(subject).to be_error
@@ -112,7 +112,7 @@ RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_sha
         allow(project).to receive(:product_analytics_enabled?).and_return(false)
       end
 
-      it_behaves_like 'no ::ProductAnalytics::InitializeAnalyticsWorker job is enqueued'
+      it_behaves_like 'no ::ProductAnalytics::InitializeSnowplowProductAnalyticsWorker job is enqueued'
 
       it 'returns an error' do
         expect(subject.message).to eq "Product analytics is disabled for this project"
@@ -124,7 +124,7 @@ RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_sha
         allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(false)
       end
 
-      it_behaves_like 'no ::ProductAnalytics::InitializeAnalyticsWorker job is enqueued'
+      it_behaves_like 'no ::ProductAnalytics::InitializeSnowplowProductAnalyticsWorker job is enqueued'
 
       it 'returns an error' do
         expect(subject.message).to eq "Product analytics is disabled"
@@ -136,7 +136,7 @@ RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_sha
         project.add_guest(user)
       end
 
-      it_behaves_like 'no ::ProductAnalytics::InitializeAnalyticsWorker job is enqueued'
+      it_behaves_like 'no ::ProductAnalytics::InitializeSnowplowProductAnalyticsWorker job is enqueued'
     end
 
     context 'when enable_product_analytics application setting is false' do
@@ -144,7 +144,7 @@ RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_sha
         stub_ee_application_setting(product_analytics_enabled: false)
       end
 
-      it_behaves_like 'no ::ProductAnalytics::InitializeAnalyticsWorker job is enqueued'
+      it_behaves_like 'no ::ProductAnalytics::InitializeSnowplowProductAnalyticsWorker job is enqueued'
     end
   end
 end
