@@ -29,16 +29,22 @@ describe('Comparison table', () => {
     });
   };
 
-  const findMetricTableCell = (identifier) => wrapper.findByTestId(`${identifier}_metric_cell`);
-  const findChart = () => wrapper.findByTestId('metric_chart');
-  const findChartSkeleton = () => wrapper.findByTestId('metric_chart_skeleton');
-  const findTrendIndicator = () => wrapper.findByTestId('metric_trend_indicator');
-  const findValueLimitInfoIcon = () => wrapper.findByTestId('metric_max_value_info_icon');
+  const findMetricTableCell = (identifier) => wrapper.findByTestId(`${identifier}-metric-cell`);
+  const findMetricComparisonSkeletons = () => wrapper.findAllByTestId('metric-comparison-skeleton');
+  const findChart = () => wrapper.findByTestId('metric-chart');
+  const findChartSkeleton = () => wrapper.findByTestId('metric-chart-skeleton');
+  const findTrendIndicator = () => wrapper.findByTestId('metric-trend-indicator');
+  const findValueLimitInfoIcon = () => wrapper.findByTestId('metric-max-value-info-icon');
 
   it.each(Object.keys(TABLE_METRICS))('renders table cell for %s metric', (identifier) => {
     createWrapper();
     expect(findMetricTableCell(identifier).exists()).toBe(true);
     expect(findMetricTableCell(identifier).props('identifier')).toBe(identifier);
+  });
+
+  it('shows loading skeletons for each metric comparison cell', () => {
+    createWrapper({ tableData: [{ metric: mockMetric }] });
+    expect(findMetricComparisonSkeletons().length).toBe(3);
   });
 
   describe('date range table cell', () => {

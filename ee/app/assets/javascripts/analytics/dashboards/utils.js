@@ -1,5 +1,4 @@
 import { s__, __ } from '~/locale';
-import { isNumeric } from '~/lib/utils/number_utils';
 import {
   formatDate,
   getStartOfDay,
@@ -88,51 +87,49 @@ export const percentChange = ({ current, previous }) =>
   previous > 0 && current > 0 ? (current - previous) / previous : 0;
 
 /**
- * Takes an array of timePeriod objects containing DORA metrics, and returns
- * true if any of the timePeriods contain metric values > 0.
+ * Creates the table rows filled with blank data for the comparison table. Once the data
+ * has loaded, it can be filled into the returned skeleton using `mergeTableData`.
  *
- * @param {Array} timePeriods - array of objects containing DORA metric values
- * @returns {Boolean} true if there is any metric data, otherwise false.
+ * @param {Array} excludeMetrics - Array of DORA metric identifiers to remove from the table
+ * @returns {Array} array of data-less table rows
  */
-export const hasDoraMetricValues = (timePeriods) =>
-  timePeriods.some((timePeriod) => {
-    // timePeriod may contain more attributes than just the DORA metrics,
-    // so filter out non-metrics before making a list of the raw values
-    const metricValues = Object.entries(timePeriod)
-      .filter(([k]) => Object.keys(TABLE_METRICS).includes(k))
-      .map(([, v]) => v.value);
+export const generateSkeletonTableData = (excludeMetrics = []) =>
+  Object.entries(TABLE_METRICS)
+    .filter(([identifier]) => !excludeMetrics.includes(identifier))
+    .map(([identifier, { label, invertTrendColor, valueLimit }]) => ({
+      invertTrendColor,
+      metric: { identifier, value: label },
+      valueLimit,
+    }));
 
-    return metricValues.some((value) => isNumeric(value) && Number(value) > 0);
+/**
+ * Fills the provided table rows with the matching metric data, returning a copy
+ * of the original table data.
+ *
+ * @param {Array} tableData - Table rows created by `generateSkeletonTableData`
+ * @param {Object} newData - New data to enter into the table rows. Object keys match the metric ID
+ * @returns {Array} A copy of `tableData` with the new data merged into each row
+ */
+export const mergeTableData = (tableData, newData) =>
+  tableData.map((row) => {
+    const data = newData[row.metric.identifier];
+    return data ? { ...row, ...data } : row;
   });
 
 /**
  * Takes N time periods for a metric and generates the row for the comparison table.
  *
  * @param {String} identifier - ID of the metric to create a table row for.
- * @param {String} label - User friendly name of the metric to show in the table row.
  * @param {String} units - The type of units used for this metric (ex. days, /day, count)
- * @param {Boolean} invertTrendColor - Inverts the color indicator used for metric trends.
  * @param {Array} timePeriods - Array of the metrics for different time periods
  * @param {Object} valueLimit - Object representing the maximum value of a metric, mask that replaces the value if the limit is reached and a description to be used in a tooltip.
  * @returns {Object} The metric data formatted for the comparison table.
  */
-const buildMetricComparisonTableRow = ({
-  identifier,
-  label,
-  units,
-  invertTrendColor,
-  timePeriods,
-  valueLimit,
-}) => {
-  const data = {
-    invertTrendColor,
-    metric: { identifier, value: label },
-    valueLimit,
-  };
-  timePeriods.forEach((timePeriod, index) => {
+const buildMetricComparisonTableRow = ({ identifier, units, timePeriods, valueLimit }) =>
+  timePeriods.reduce((acc, timePeriod, index) => {
     // The last timePeriod is not rendered, we just use it
     // to determine the % change for the 2nd last timePeriod
-    if (index === timePeriods.length - 1) return;
+    if (index === timePeriods.length - 1) return acc;
 
     const current = timePeriod[identifier];
     const previous = timePeriods[index + 1][identifier];
@@ -149,36 +146,35 @@ const buildMetricComparisonTableRow = ({
     const formattedMetric = hasCurrentValue ? formatMetric(current.value, units) : '-';
     const value = valueLimitMessage ? valueLimit?.mask : formattedMetric;
 
-    data[timePeriod.key] = {
-      value,
-      change,
-      valueLimitMessage,
-    };
-  });
-  return data;
-};
+    return Object.assign(acc, {
+      [timePeriod.key]: {
+        value,
+        change,
+        valueLimitMessage,
+      },
+    });
+  }, {});
 
 /**
- * Takes N time periods of DORA metrics and generates the data rows
- * for the comparison table.
+ * Takes N time periods of DORA metrics and sorts the data into an
+ * object of metric comparisons, per metric.
  *
  * @param {Array} timePeriods - Array of the DORA metrics for different time periods
- * @param {Array} excludeMetrics - Array of DORA metric identifiers to remove from the table
- * @returns {Array} array comparing each DORA metric between the different time periods
+ * @returns {Object} object containing a comparisons of values for each metric
  */
-export const generateDoraTimePeriodComparisonTable = ({ timePeriods, excludeMetrics = [] }) =>
-  Object.entries(TABLE_METRICS)
-    .filter(([identifier]) => !excludeMetrics.includes(identifier))
-    .map(([identifier, { label, units, invertTrendColor, valueLimit }]) =>
-      buildMetricComparisonTableRow({
-        identifier,
-        label,
-        units,
-        invertTrendColor,
-        timePeriods,
-        valueLimit,
+export const generateMetricComparisons = (timePeriods) =>
+  Object.entries(TABLE_METRICS).reduce(
+    (acc, [identifier, { units, valueLimit }]) =>
+      Object.assign(acc, {
+        [identifier]: buildMetricComparisonTableRow({
+          identifier,
+          units,
+          timePeriods,
+          valueLimit,
+        }),
       }),
-    );
+    {},
+  );
 
 /**
  * @param {Number|'-'|null|undefined} value
@@ -206,29 +202,17 @@ export const generateSparklineCharts = (timePeriods) =>
     (acc, [identifier, { units }]) =>
       Object.assign(acc, {
         [identifier]: {
-          tooltipLabel: CHART_TOOLTIP_UNITS[units],
-          data: timePeriods.map((timePeriod) => [
-            `${formatDate(timePeriod.start, 'mmm d')} - ${formatDate(timePeriod.end, 'mmm d')}`,
-            sanitizeSparklineData(timePeriod[identifier]?.value),
-          ]),
+          chart: {
+            tooltipLabel: CHART_TOOLTIP_UNITS[units],
+            data: timePeriods.map((timePeriod) => [
+              `${formatDate(timePeriod.start, 'mmm d')} - ${formatDate(timePeriod.end, 'mmm d')}`,
+              sanitizeSparklineData(timePeriod[identifier]?.value),
+            ]),
+          },
         },
       }),
     {},
   );
-
-/**
- * Merges the results of `generateDoraTimePeriodComparisonTable` and `generateSparklineCharts`
- * into a new array for the comparison table.
- *
- * @param {Array} tableData - Table rows created by `generateDoraTimePeriodComparisonTable`
- * @param {Object} chartData - Charts object created by `generateSparklineCharts`
- * @returns {Array} A copy of tableData with `chart` added in each row
- */
-export const mergeSparklineCharts = (tableData, chartData) =>
-  tableData.map((row) => {
-    const chart = chartData[row.metric.identifier];
-    return chart ? { ...row, chart } : row;
-  });
 
 /**
  * Generate the dashboard time periods

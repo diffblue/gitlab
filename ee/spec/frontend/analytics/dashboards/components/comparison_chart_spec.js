@@ -6,6 +6,7 @@ import {
   DASHBOARD_LOADING_FAILURE,
   CHART_LOADING_FAILURE,
 } from 'ee/analytics/dashboards/constants';
+import { generateSkeletonTableData } from 'ee/analytics/dashboards/utils';
 import ComparisonChart from 'ee/analytics/dashboards/components/comparison_chart.vue';
 import ComparisonTable from 'ee/analytics/dashboards/components/comparison_table.vue';
 import GroupVulnerabilitiesQuery from 'ee/analytics/dashboards/graphql/group_vulnerabilities.query.graphql';
@@ -39,10 +40,6 @@ import {
   mockFlowMetricsResponseData,
   mockMergeRequestsResponseData,
   mockExcludeMetrics,
-  mockEmptyVulnerabilityResponse,
-  mockEmptyDoraResponse,
-  mockEmptyFlowMetricsResponse,
-  mockEmptyMergeRequestsResponse,
 } from '../mock_data';
 
 const mockTypePolicy = {
@@ -165,6 +162,17 @@ describe('Comparison chart', () => {
     createAlert.mockClear();
   });
 
+  describe('loading table and chart data', () => {
+    beforeEach(() => {
+      setGraphqlQueryHandlerResponses();
+      createWrapper();
+    });
+
+    it('will pass skeleton data to the comparison table', () => {
+      expect(getTableData()).toEqual(generateSkeletonTableData());
+    });
+  });
+
   describe('with table and chart data available', () => {
     beforeEach(async () => {
       setGraphqlQueryHandlerResponses();
@@ -265,10 +273,6 @@ describe('Comparison chart', () => {
         error: expect.anything(),
       });
     });
-
-    it('renders no data message', () => {
-      expect(wrapper.text()).toContain('No data available');
-    });
   });
 
   describe('failed chart request', () => {
@@ -299,42 +303,6 @@ describe('Comparison chart', () => {
         captureError: true,
         error: expect.anything(),
       });
-    });
-  });
-
-  describe('no table data available', () => {
-    // When there is no table data available the chart data requests are skipped
-
-    beforeEach(async () => {
-      setGraphqlQueryHandlerResponses({
-        doraMetricsResponse: mockEmptyDoraResponse,
-        flowMetricsResponse: mockEmptyFlowMetricsResponse,
-        vulnerabilityResponse: mockEmptyVulnerabilityResponse,
-        mergeRequestsResponse: mockEmptyMergeRequestsResponse,
-      });
-      mockApolloProvider = createMockApolloProvider();
-
-      await createWrapper({ apolloProvider: mockApolloProvider });
-    });
-
-    it('will only request dora metrics for the table', () => {
-      expectDoraMetricsRequests(MOCK_TABLE_TIME_PERIODS);
-    });
-
-    it('will only request flow metrics for the table', () => {
-      expectFlowMetricsRequests(MOCK_TABLE_TIME_PERIODS);
-    });
-
-    it('will only request vulnerability metrics for the table', () => {
-      expectVulnerabilityRequests(MOCK_TABLE_TIME_PERIODS);
-    });
-
-    it('will only merge request metrics for the table', () => {
-      expectMergeRequestsRequests(MOCK_TABLE_TIME_PERIODS);
-    });
-
-    it('renders a message when theres no table data available', () => {
-      expect(wrapper.text()).toContain('No data available');
     });
   });
 

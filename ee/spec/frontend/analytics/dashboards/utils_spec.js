@@ -5,10 +5,10 @@ import { useFakeDate } from 'helpers/fake_date';
 import {
   percentChange,
   formatMetric,
-  hasDoraMetricValues,
-  generateDoraTimePeriodComparisonTable,
+  generateSkeletonTableData,
+  generateMetricComparisons,
   generateSparklineCharts,
-  mergeSparklineCharts,
+  mergeTableData,
   hasTrailingDecimalZero,
   generateDateRanges,
   generateChartTimePeriods,
@@ -16,14 +16,13 @@ import {
   generateValueStreamDashboardStartDate,
   groupDoraPerformanceScoreCountsByCategory,
 } from 'ee/analytics/dashboards/utils';
-import { CHANGE_FAILURE_RATE, LEAD_TIME_FOR_CHANGES } from 'ee/api/dora_api';
 import { LEAD_TIME_METRIC_TYPE, CYCLE_TIME_METRIC_TYPE } from '~/api/analytics_api';
 import {
   mockMonthToDateTimePeriod,
   mockPreviousMonthTimePeriod,
   mockTwoMonthsAgoTimePeriod,
   mockThreeMonthsAgoTimePeriod,
-  mockComparativeTableData,
+  mockGeneratedMetricComparisons,
   mockChartsTimePeriods,
   mockChartData,
   mockSubsetChartsTimePeriods,
@@ -93,7 +92,24 @@ describe('Analytics Dashboards utils', () => {
     });
   });
 
-  describe('generateDoraTimePeriodComparisonTable', () => {
+  describe('generateSkeletonTableData', () => {
+    it('returns blank row data for each metric', () => {
+      const tableData = generateSkeletonTableData();
+      tableData.forEach((data) =>
+        expect(Object.keys(data)).toEqual(['invertTrendColor', 'metric', 'valueLimit']),
+      );
+    });
+
+    it('does not include metrics that were in excludeMetrics', () => {
+      const excludeMetrics = [LEAD_TIME_METRIC_TYPE, CYCLE_TIME_METRIC_TYPE];
+      const tableData = generateSkeletonTableData(excludeMetrics);
+
+      const metrics = tableData.map(({ metric }) => metric.identifier);
+      expect(metrics).not.toEqual(expect.arrayContaining(excludeMetrics));
+    });
+  });
+
+  describe('generateMetricComparisons', () => {
     const timePeriods = [
       mockMonthToDateTimePeriod,
       mockPreviousMonthTimePeriod,
@@ -102,29 +118,18 @@ describe('Analytics Dashboards utils', () => {
     ];
 
     it('calculates the changes between the 2 time periods', () => {
-      const tableData = generateDoraTimePeriodComparisonTable({ timePeriods });
-      expect(tableData).toEqual(mockComparativeTableData);
+      const tableData = generateMetricComparisons(timePeriods);
+      expect(tableData).toEqual(mockGeneratedMetricComparisons());
     });
 
     it('returns the comparison table fields + metadata for each row', () => {
-      generateDoraTimePeriodComparisonTable({ timePeriods }).forEach((row) => {
-        expect(Object.keys(row)).toEqual([
-          'invertTrendColor',
-          'metric',
-          'valueLimit',
-          'thisMonth',
-          'lastMonth',
-          'twoMonthsAgo',
-        ]);
+      Object.values(generateMetricComparisons(timePeriods)).forEach((row) => {
+        expect(row).toMatchObject({
+          thisMonth: expect.any(Object),
+          lastMonth: expect.any(Object),
+          twoMonthsAgo: expect.any(Object),
+        });
       });
-    });
-
-    it('does not include metrics that were in excludeMetrics', () => {
-      const excludeMetrics = [LEAD_TIME_METRIC_TYPE, CYCLE_TIME_METRIC_TYPE];
-      const tableData = generateDoraTimePeriodComparisonTable({ timePeriods, excludeMetrics });
-
-      const metrics = tableData.map(({ metric }) => metric.identifier);
-      expect(metrics).not.toEqual(expect.arrayContaining(excludeMetrics));
     });
   });
 
@@ -150,43 +155,16 @@ describe('Analytics Dashboards utils', () => {
     });
   });
 
-  describe('mergeSparklineCharts', () => {
-    it('returns the table data with the additive chart data', () => {
-      const chart = { data: [1, 2, 3] };
-      const rowNoChart = { metric: { identifier: 'noChart' } };
-      const rowWithChart = { metric: { identifier: 'withChart' } };
+  describe('mergeTableData', () => {
+    it('correctly integrates existing and new data', () => {
+      const newData = { chart: { data: [1, 2, 3] }, lastMonth: { test: 'test' } };
+      const rowNoData = { metric: { identifier: 'noData' } };
+      const rowWithData = { metric: { identifier: 'withData' } };
 
-      expect(mergeSparklineCharts([rowNoChart, rowWithChart], { withChart: chart })).toEqual([
-        rowNoChart,
-        { ...rowWithChart, chart },
+      expect(mergeTableData([rowNoData, rowWithData], { withData: newData })).toEqual([
+        rowNoData,
+        { ...rowWithData, ...newData },
       ]);
-    });
-  });
-
-  describe('hasDoraMetricValues', () => {
-    it('returns false if only non-DORA metrics contain a value > 0', () => {
-      const timePeriods = [{ nonDoraMetric: { value: 100 } }];
-      expect(hasDoraMetricValues(timePeriods)).toBe(false);
-    });
-
-    it('returns false if all DORA metrics contain a non-numerical value', () => {
-      const timePeriods = [{ [LEAD_TIME_FOR_CHANGES]: { value: 'YEET' } }];
-      expect(hasDoraMetricValues(timePeriods)).toBe(false);
-    });
-
-    it('returns false if all DORA metrics contain a value == 0', () => {
-      const timePeriods = [{ [LEAD_TIME_FOR_CHANGES]: { value: 0 } }];
-      expect(hasDoraMetricValues(timePeriods)).toBe(false);
-    });
-
-    it('returns true if any DORA metrics contain a value > 0', () => {
-      const timePeriods = [
-        {
-          [LEAD_TIME_FOR_CHANGES]: { value: 0 },
-          [CHANGE_FAILURE_RATE]: { value: 100 },
-        },
-      ];
-      expect(hasDoraMetricValues(timePeriods)).toBe(true);
     });
   });
 
@@ -235,7 +213,7 @@ describe('Analytics Dashboards utils', () => {
       useFakeDate(2020, 4, 4);
 
       it('will return the correct day', () => {
-        expect(generateValueStreamDashboardStartDate().toISOString()).toEqual(
+        expect(generateValueStreamDashboardStartDate().toISOString()).toBe(
           '2020-05-04T00:00:00.000Z',
         );
       });
@@ -245,7 +223,7 @@ describe('Analytics Dashboards utils', () => {
       useFakeDate(2023, 6, 1);
 
       it('will return the previous day', () => {
-        expect(generateValueStreamDashboardStartDate().toISOString()).toEqual(
+        expect(generateValueStreamDashboardStartDate().toISOString()).toBe(
           '2023-06-30T00:00:00.000Z',
         );
       });

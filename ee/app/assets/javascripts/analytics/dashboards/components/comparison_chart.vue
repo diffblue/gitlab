@@ -1,5 +1,4 @@
 <script>
-import { GlAlert, GlSkeletonLoader } from '@gitlab/ui';
 import { joinPaths } from '~/lib/utils/url_utility';
 import { createAlert } from '~/alert';
 import { toYmd } from '~/analytics/shared/utils';
@@ -12,7 +11,7 @@ import ProjectFlowMetricsQuery from '../graphql/project_flow_metrics.query.graph
 import GroupDoraMetricsQuery from '../graphql/group_dora_metrics.query.graphql';
 import ProjectDoraMetricsQuery from '../graphql/project_dora_metrics.query.graphql';
 import { BUCKETING_INTERVAL_ALL, MERGE_REQUESTS_STATE_MERGED } from '../graphql/constants';
-import { DASHBOARD_LOADING_FAILURE, DASHBOARD_NO_DATA, CHART_LOADING_FAILURE } from '../constants';
+import { DASHBOARD_LOADING_FAILURE, CHART_LOADING_FAILURE } from '../constants';
 import {
   fetchMetricsForTimePeriods,
   extractGraphqlVulnerabilitiesData,
@@ -21,10 +20,10 @@ import {
   extractGraphqlMergeRequestsData,
 } from '../api';
 import {
-  hasDoraMetricValues,
-  generateDoraTimePeriodComparisonTable,
+  generateSkeletonTableData,
+  generateMetricComparisons,
   generateSparklineCharts,
-  mergeSparklineCharts,
+  mergeTableData,
   generateDateRanges,
   generateChartTimePeriods,
   generateValueStreamDashboardStartDate,
@@ -46,8 +45,6 @@ const extractQueryResponseFromNamespace = ({ result, resultKey }) => {
 export default {
   name: 'ComparisonChart',
   components: {
-    GlAlert,
-    GlSkeletonLoader,
     ComparisonTable,
   },
   props: {
@@ -72,25 +69,19 @@ export default {
   },
   data() {
     return {
-      tableData: [],
+      tableData: {},
       chartData: {},
-      loadingTable: false,
     };
   },
   computed: {
-    hasData() {
-      return Boolean(this.allData.length);
+    skeletonData() {
+      return generateSkeletonTableData(this.excludeMetrics);
     },
-    hasTableData() {
-      return Boolean(this.tableData.length);
-    },
-    hasChartData() {
-      return Boolean(Object.keys(this.chartData).length);
-    },
-    allData() {
-      return this.hasChartData
-        ? mergeSparklineCharts(this.tableData, this.chartData)
-        : this.tableData;
+    combinedData() {
+      let data = this.skeletonData;
+      data = mergeTableData(data, this.tableData);
+      data = mergeTableData(data, this.chartData);
+      return data;
     },
     namespaceRequestPath() {
       return this.isProject ? this.requestPath : joinPaths('groups', this.requestPath);
@@ -103,15 +94,8 @@ export default {
     },
   },
   async mounted() {
-    this.loadingTable = true;
-    try {
-      await this.fetchTableMetrics();
-      if (this.hasTableData) {
-        await this.fetchSparklineMetrics();
-      }
-    } finally {
-      this.loadingTable = false;
-    }
+    await this.fetchTableMetrics();
+    await this.fetchSparklineMetrics();
   },
   methods: {
     async fetchFlowMetricsQuery({ isProject, ...variables }) {
@@ -213,12 +197,7 @@ export default {
           this.fetchGraphqlData,
         );
 
-        this.tableData = hasDoraMetricValues(timePeriods)
-          ? generateDoraTimePeriodComparisonTable({
-              timePeriods,
-              excludeMetrics: this.excludeMetrics,
-            })
-          : [];
+        this.tableData = generateMetricComparisons(timePeriods);
       } catch (error) {
         createAlert({ message: DASHBOARD_LOADING_FAILURE, error, captureError: true });
       }
@@ -230,30 +209,20 @@ export default {
           this.fetchGraphqlData,
         );
 
-        this.chartData = hasDoraMetricValues(chartData) ? generateSparklineCharts(chartData) : {};
+        this.chartData = generateSparklineCharts(chartData);
       } catch (error) {
         createAlert({ message: CHART_LOADING_FAILURE, error, captureError: true });
       }
     },
   },
-  i18n: {
-    noData: DASHBOARD_NO_DATA,
-  },
   now,
 };
 </script>
 <template>
-  <div>
-    <gl-skeleton-loader v-if="loadingTable" />
-    <gl-alert v-else-if="!hasData" variant="info" :dismissible="false">{{
-      $options.i18n.noData
-    }}</gl-alert>
-    <comparison-table
-      v-else
-      :table-data="allData"
-      :request-path="namespaceRequestPath"
-      :is-project="isProject"
-      :now="$options.now"
-    />
-  </div>
+  <comparison-table
+    :table-data="combinedData"
+    :request-path="namespaceRequestPath"
+    :is-project="isProject"
+    :now="$options.now"
+  />
 </template>
