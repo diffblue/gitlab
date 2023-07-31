@@ -11,12 +11,6 @@
       %p
         = s_('ProtectedEnvironment|Only specified users can execute deployments in a protected environment.')
     .settings-content
-      - if @protected_environments.empty?
-        = render Pajamas::AlertComponent.new(variant: :warning, show_icon: false, dismissible: false,
-          alert_options: { class: 'gl-mb-5'}) do |c|
-          - c.with_body do
-            = s_('ProtectedEnvironment|No environments in this project are protected.')
-
       #js-protected-environments{ data: { project_id: @project.id,
                                       api_link: help_page_path('api/protected_environments.md'),
                                       docs_link: help_page_path('ci/environments/deployment_approvals.md', anchor: 'multiple-approval-rules') } }

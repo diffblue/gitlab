@@ -2,7 +2,6 @@
 import {
   GlAlert,
   GlButton,
-  GlCard,
   GlForm,
   GlFormGroup,
   GlCollapse,
@@ -22,7 +21,6 @@ export default {
   components: {
     GlAlert,
     GlButton,
-    GlCard,
     GlCollapse,
     GlForm,
     GlFormGroup,
@@ -104,7 +102,7 @@ export default {
       };
       Api.createProtectedEnvironment(this.projectId, protectedEnvironment)
         .then(() => {
-          this.$emit('reload');
+          this.$emit('success');
           this.deployers = [];
           this.approvers = [];
           this.environment = '';
@@ -120,6 +118,7 @@ export default {
   },
   i18n: {
     header: s__('ProtectedEnvironment|Protect an environment'),
+    addText: s__('ProtectedEnvironment|Add new protected environment'),
     environmentLabel: s__('ProtectedEnvironment|Select environment'),
     environmentText: s__('ProtectedEnvironment|Select an environment'),
     approvalLabel: s__('ProtectedEnvironment|Required approvals'),
@@ -128,74 +127,83 @@ export default {
       'ProtectedEnvironments|Set which groups, access levels or users that are allowed to deploy to this environment',
     ),
     buttonText: s__('ProtectedEnvironment|Protect'),
+    buttonTextCancel: __('Cancel'),
   },
 };
 </script>
 <template>
-  <gl-form @submit.prevent="submitForm">
-    <gl-card data-testid="new-protected-environment">
-      <template #header>
-        {{ $options.i18n.header }}
-      </template>
-      <template #default>
-        <gl-alert v-if="errorMessage" variant="danger" class="gl-mb-5" @dismiss="errorMessage = ''">
-          {{ errorMessage }}
-        </gl-alert>
+  <gl-form class="gl-new-card-add-form gl-m-4" @submit.prevent="submitForm">
+    <div data-testid="new-protected-environment">
+      <gl-alert v-if="errorMessage" variant="danger" class="gl-mb-5" @dismiss="errorMessage = ''">
+        {{ errorMessage }}
+      </gl-alert>
+
+      <h4 class="gl-mt-0">{{ $options.i18n.addText }}</h4>
+
+      <gl-form-group
+        label-for="environment"
+        data-testid="create-environment"
+        :label="$options.i18n.environmentLabel"
+      >
+        <gl-collapsible-listbox
+          id="create-environment"
+          v-model="environment"
+          :toggle-text="environmentText"
+          :items="environments"
+          :searching="environmentsLoading"
+          searchable
+          @shown="fetchEnvironments"
+          @search="getProtectedEnvironments"
+        />
+      </gl-form-group>
+
+      <gl-collapse :visible="hasSelectedEnvironment">
         <gl-form-group
-          label-for="environment"
-          data-testid="create-environment"
-          :label="$options.i18n.environmentLabel"
+          data-testid="create-deployer-dropdown"
+          label-for="create-deployer-dropdown"
+          :label="$options.i18n.deployerLabel"
         >
-          <gl-collapsible-listbox
-            id="create-environment"
-            v-model="environment"
-            :toggle-text="environmentText"
-            :items="environments"
-            :searching="environmentsLoading"
-            searchable
-            @shown="fetchEnvironments"
-            @search="getProtectedEnvironments"
+          <template #label-description>
+            {{ $options.i18n.deployerHelp }}
+          </template>
+          <access-dropdown
+            id="create-deployer-dropdown"
+            :access-levels-data="accessLevelsData"
+            :access-level="$options.ACCESS_LEVELS.DEPLOY"
+            :disabled="disabled"
+            :items="deployers"
+            @select="updateDeployers"
           />
         </gl-form-group>
+        <add-approvers
+          :project-id="projectId"
+          :approval-rules="approvers"
+          @change="updateApprovers"
+          @error="errorMessage = $event"
+        />
+      </gl-collapse>
 
-        <gl-collapse :visible="hasSelectedEnvironment">
-          <gl-form-group
-            data-testid="create-deployer-dropdown"
-            label-for="create-deployer-dropdown"
-            :label="$options.i18n.deployerLabel"
-          >
-            <template #label-description>
-              {{ $options.i18n.deployerHelp }}
-            </template>
-            <access-dropdown
-              id="create-deployer-dropdown"
-              :access-levels-data="accessLevelsData"
-              :access-level="$options.ACCESS_LEVELS.DEPLOY"
-              :disabled="disabled"
-              :items="deployers"
-              @select="updateDeployers"
-            />
-          </gl-form-group>
-          <add-approvers
-            :project-id="projectId"
-            :approval-rules="approvers"
-            @change="updateApprovers"
-            @error="errorMessage = $event"
-          />
-        </gl-collapse>
-      </template>
-      <template #footer>
+      <div class="gl-display-flex gl-mt-5">
         <gl-button
           type="submit"
           category="primary"
           variant="confirm"
           :loading="loading"
           :disabled="isFormInvalid"
-          class="js-no-auto-disable"
+          class="js-no-auto-disable gl-mr-3"
         >
           {{ $options.i18n.buttonText }}
         </gl-button>
-      </template>
-    </gl-card>
+        <gl-button
+          type="button"
+          category="secondary"
+          variant="default"
+          data-testid="cancel-button"
+          @click="$emit('cancel')"
+        >
+          {{ $options.i18n.buttonTextCancel }}
+        </gl-button>
+      </div>
+    </div>
   </gl-form>
 </template>

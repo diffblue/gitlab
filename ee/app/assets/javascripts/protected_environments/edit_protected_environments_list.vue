@@ -4,7 +4,6 @@ import {
   GlButton,
   GlFormGroup,
   GlFormInput,
-  GlSprintf,
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
 import { mapState, mapActions, mapGetters } from 'vuex';
@@ -23,7 +22,6 @@ export default {
     GlButton,
     GlFormGroup,
     GlFormInput,
-    GlSprintf,
     AccessDropdown,
     ProtectedEnvironments,
     EditProtectedEnvironmentRulesCard,
@@ -39,7 +37,7 @@ export default {
     return { isAddingRule: false, addingEnvironment: null, addingRule: '' };
   },
   computed: {
-    ...mapState(['projectId', 'loading', 'protectedEnvironments', 'editingRules', 'pageInfo']),
+    ...mapState(['projectId', 'loading', 'protectedEnvironments', 'editingRules']),
     ...mapGetters(['getUsersForRule']),
     isAddingDeploymentRule() {
       return this.addingRule === DEPLOYER_RULE_KEY;
@@ -48,9 +46,6 @@ export default {
       return this.isAddingDeploymentRule
         ? this.$options.i18n.addDeploymentRuleModalTitle
         : this.$options.i18n.addApprovalRuleModalTitle;
-    },
-    protectedEnvironmentsCount() {
-      return this.pageInfo?.total || this.protectedEnvironments?.length;
     },
   },
   mounted() {
@@ -79,9 +74,6 @@ export default {
     },
   },
   i18n: {
-    title: s__(
-      'ProtectedEnvironments|List of protected environments (%{protectedEnvironmentsCount})',
-    ),
     deployersHeader: s__('ProtectedEnvironments|Allowed to deploy'),
     approversHeader: s__('ProtectedEnvironments|Allowed to approve'),
     approvalsHeader: s__('ProtectedEnvironments|Approvals required'),
@@ -106,11 +98,6 @@ export default {
 </script>
 <template>
   <div data-testid="protected-environments-list">
-    <h5>
-      <gl-sprintf :message="$options.i18n.title">
-        <template #protectedEnvironmentsCount>{{ protectedEnvironmentsCount }}</template>
-      </gl-sprintf>
-    </h5>
     <add-rule-modal
       v-model="isAddingRule"
       :title="addRuleModalTitle"
@@ -139,6 +126,7 @@ export default {
         />
       </template>
     </add-rule-modal>
+
     <protected-environments :environments="protectedEnvironments" @unprotect="unprotectEnvironment">
       <template #default="{ environment }">
         <edit-protected-environment-rules-card
