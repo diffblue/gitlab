@@ -26,8 +26,7 @@ module QA
       end
 
       it 'merge request assigns code owners as approvers',
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347776',
-        quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/416217', type: :bug } do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347776' do
         # Commit CODEOWNERS to default branch
         Resource::Repository::Commit.fabricate_via_api! do |commit|
           commit.project = project
