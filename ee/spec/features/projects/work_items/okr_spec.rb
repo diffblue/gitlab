@@ -99,7 +99,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
 
     let(:work_item) { objective }
 
-    it_behaves_like 'work items status'
+    it_behaves_like 'work items toggle status button'
     it_behaves_like 'work items assignees'
     it_behaves_like 'work items labels'
     it_behaves_like 'work items progress'
@@ -295,7 +295,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
 
     let(:work_item) { key_result }
 
-    it_behaves_like 'work items status'
+    it_behaves_like 'work items toggle status button'
     it_behaves_like 'work items assignees'
     it_behaves_like 'work items labels'
     it_behaves_like 'work items progress'
