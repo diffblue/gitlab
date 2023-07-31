@@ -11,7 +11,7 @@ module Gitlab
             @instance ||= new
           end
 
-          delegate :search, :index, :truncate, to: :instance
+          delegate :search, :index, :delete, :truncate, to: :instance
         end
 
         def search(query, num:, project_ids:)
@@ -52,6 +52,21 @@ module Gitlab
           use_new_zoekt_indexer? ? index_with_new_indexer(project) : index_with_legacy_indexer(project)
         end
 
+        def delete(root_namespace_id:, project_id:)
+          return false unless use_new_zoekt_indexer?
+
+          shard = ::Zoekt::Shard.for_namespace(root_namespace_id: root_namespace_id)
+
+          return false unless shard
+
+          response = delete_request(URI.join(shard.index_base_url, "/indexer/index/#{project_id}"))
+
+          raise "Request failed with: #{response.inspect}" unless response.success?
+          raise response['Error'] if response['Error']
+
+          response
+        end
+
         def truncate
           post(URI.join(index_base_url, zoekt_indexer_truncate_path))
         end
@@ -66,6 +81,17 @@ module Gitlab
             basic_auth: basic_auth_params
           }
           ::Gitlab::HTTP.post(
+            url,
+            defaults.merge(options)
+          )
+        end
+
+        def delete_request(url, **options)
+          defaults = {
+            allow_local_requests: true,
+            basic_auth: basic_auth_params
+          }
+          ::Gitlab::HTTP.delete(
             url,
             defaults.merge(options)
           )

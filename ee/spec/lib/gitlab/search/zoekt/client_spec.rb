@@ -148,6 +148,50 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
     end
   end
 
+  describe '#delete' do
+    subject { described_class.delete(root_namespace_id: project_1.root_namespace.id, project_id: project_1.id) }
+
+    context 'when project is indexed' do
+      before do
+        zoekt_ensure_project_indexed!(project_1)
+      end
+
+      it 'removes project data from the Zoekt shard' do
+        search_results = described_class.new.search('use.*egex', num: 10, project_ids: [project_1.id])
+        expect(search_results[:Result][:Files].to_a.size).to eq(2)
+
+        subject
+
+        search_results = described_class.new.search('use.*egex', num: 10, project_ids: [project_1.id])
+        expect(search_results[:Result][:Files].to_a).to be_empty
+      end
+    end
+
+    context 'when use_new_zoekt_indexer is disabled' do
+      before do
+        stub_feature_flags(use_new_zoekt_indexer: false)
+      end
+
+      it 'returns false' do
+        expect(subject).to eq(false)
+      end
+    end
+
+    context 'when request fails' do
+      let(:response) { {} }
+
+      before do
+        zoekt_ensure_project_indexed!(project_1)
+        allow(response).to receive(:success?).and_return(false)
+        allow(::Gitlab::HTTP).to receive(:delete).and_return(response)
+      end
+
+      it 'raises and exception' do
+        expect { subject }.to raise_error(StandardError, /Request failed/)
+      end
+    end
+  end
+
   describe '#truncate' do
     it 'removes all data from the Zoekt shard' do
       client.index(project_1)
