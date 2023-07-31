@@ -78,5 +78,41 @@ RSpec.describe PackageMetadata::AffectedPackage, type: :model, feature_category:
         end
       end
     end
+
+    describe 'versions' do
+      subject { build(:pm_affected_package, versions: versions).valid? }
+
+      let(:valid_sha) { '295cf0778821bf08681e2bd0ef0e6cad04fc3001' }
+      let(:valid_timestamp) { '20190626162700' }
+      let(:valid_number) { '1.2.3' }
+      let(:valid_tags) { ['v1.2.3-tag'] }
+      let(:valid_num_versions) { 1 }
+
+      # rubocop:disable Layout/LineLength
+      where(:number, :tags, :sha, :timestamp, :num_versions, :is_valid) do
+        ref(:valid_number) | ref(:valid_tags) | ref(:valid_sha) | ref(:valid_timestamp) | 0                        | true
+        ref(:valid_number) | ref(:valid_tags) | ref(:valid_sha) | ref(:valid_timestamp) | 32                       | true
+        ref(:valid_number) | ref(:valid_tags) | ref(:valid_sha) | ref(:valid_timestamp) | 33                       | false
+        ref(:valid_number) | ['']             | ref(:valid_sha) | ref(:valid_timestamp) | ref(:valid_num_versions) | true
+        ref(:valid_number) | [('a' * 32)]     | ref(:valid_sha) | ref(:valid_timestamp) | ref(:valid_num_versions) | true
+        ref(:valid_number) | []               | ref(:valid_sha) | ref(:valid_timestamp) | ref(:valid_num_versions) | true
+        ref(:valid_number) | (['a'] * 16)     | ref(:valid_sha) | ref(:valid_timestamp) | ref(:valid_num_versions) | true
+        ref(:valid_number) | (['a'] * 17)     | ref(:valid_sha) | ref(:valid_timestamp) | ref(:valid_num_versions) | false
+        ref(:valid_number) | [('a' * 33)]     | ref(:valid_sha) | ref(:valid_timestamp) | ref(:valid_num_versions) | false
+        ''                 | ref(:valid_tags) | ref(:valid_sha) | ref(:valid_timestamp) | ref(:valid_num_versions) | false
+        ref(:valid_number) | ref(:valid_tags) | ('a' * 4)       | ref(:valid_timestamp) | ref(:valid_num_versions) | false
+        ref(:valid_number) | ref(:valid_tags) | ('a' * 41)      | ref(:valid_timestamp) | ref(:valid_num_versions) | false
+        ref(:valid_number) | ref(:valid_tags) | ref(:valid_sha) | '2019062616270'       | ref(:valid_num_versions) | false
+        ref(:valid_number) | ref(:valid_tags) | ref(:valid_sha) | '2019062616270a'      | ref(:valid_num_versions) | false
+        ref(:valid_number) | ref(:valid_tags) | ref(:valid_sha) | '201906261627001'     | ref(:valid_num_versions) | false
+      end
+      # rubocop:enable Layout/LineLength
+
+      with_them do
+        let(:versions) { [{ number: number, commit: { tags: tags, sha: sha, timestamp: timestamp } }] * num_versions }
+
+        it { is_expected.to eq(is_valid) }
+      end
+    end
   end
 end

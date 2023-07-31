@@ -17,5 +17,6 @@ module PackageMetadata
     validates :affected_range, presence: true, length: { maximum: 512 }
     validates :overridden_advisory_fields, json_schema: { filename: 'pm_affected_package_overridden_advisory_fields' }
     validates :fixed_versions, length: { maximum: 10 }
+    validates :versions, json_schema: { filename: 'pm_affected_package_versions' }
   end
 end
