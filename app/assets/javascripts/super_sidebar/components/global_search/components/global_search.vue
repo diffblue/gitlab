@@ -200,8 +200,12 @@ export default {
       const isSearchInput = target.matches(SEARCH_INPUT_SELECTOR);
 
       if (code === HOME_KEY) {
+        if (isSearchInput) return;
+
         this.focusItem(0, elements);
       } else if (code === END_KEY) {
+        if (isSearchInput) return;
+
         this.focusItem(elements.length - 1, elements);
       } else if (code === ARROW_UP_KEY) {
         if (isSearchInput) return;

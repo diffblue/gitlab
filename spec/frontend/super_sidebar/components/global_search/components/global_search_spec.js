@@ -454,16 +454,17 @@ describe('GlobalSearchModal', () => {
         findSearchInput().element.focus();
       });
 
-      it('Home key focuses first item', () => {
+      it('Home key keeps focus in input', () => {
         const event = triggerKeydownEvent(findSearchInput().element, 'Home');
-        expect(document.activeElement).toBe(wrapper.findByTestId('test-result-1').element);
-        expect(event.defaultPrevented).toBe(true);
+        expect(document.activeElement).toBe(findSearchInput().element);
+        expect(event.defaultPrevented).toBe(false);
       });
 
-      it('End key focuses last item', () => {
+      it('End key keeps focus on input', () => {
         const event = triggerKeydownEvent(findSearchInput().element, 'End');
-        expect(document.activeElement).toBe(wrapper.findByTestId('test-result-5').element);
-        expect(event.defaultPrevented).toBe(true);
+        findSearchInput().trigger('keydown', { code: 'End' });
+        expect(document.activeElement).toBe(findSearchInput().element);
+        expect(event.defaultPrevented).toBe(false);
       });
 
       it('ArrowUp keeps focus on input', () => {
