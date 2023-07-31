@@ -165,6 +165,7 @@ export default {
       v-else
       :title="$options.i18n.emptyState.title"
       :svg-path="emptyOncallSchedulesSvgPath"
+      :svg-height="150"
     >
       <template #description>
         <p v-if="userCanCreateSchedule">
