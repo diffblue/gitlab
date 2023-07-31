@@ -1,14 +1,25 @@
 <script>
-import { GlLoadingIcon } from '@gitlab/ui';
+import * as Sentry from '@sentry/browser';
+import { GlIcon, GlLink, GlLoadingIcon, GlPopover, GlSprintf } from '@gitlab/ui';
 import dataSources from 'ee/analytics/analytics_dashboards/data_sources';
 import TooltipOnTruncate from '~/vue_shared/components/tooltip_on_truncate/tooltip_on_truncate.vue';
 import { isEmptyPanelData } from 'ee/vue_shared/components/customizable_dashboard/utils';
-import { I18N_PANEL_EMPTY_STATE_MESSAGE } from './constants';
+import {
+  I18N_PANEL_EMPTY_STATE_MESSAGE,
+  I18N_PANEL_ERROR_POPOVER_MESSAGE,
+  I18N_PANEL_ERROR_POPOVER_TITLE,
+  I18N_PANEL_ERROR_STATE_MESSAGE,
+  PANEL_TROUBLESHOOTING_URL,
+} from './constants';
 
 export default {
   name: 'AnalyticsDashboardPanel',
   components: {
+    GlIcon,
+    GlLink,
     GlLoadingIcon,
+    GlPopover,
+    GlSprintf,
     TooltipOnTruncate,
     LineChart: () =>
       import('ee/analytics/analytics_dashboards/components/visualizations/line_chart.vue'),
@@ -52,6 +63,9 @@ export default {
     showEmptyState() {
       return !this.error && isEmptyPanelData(this.visualization.type, this.data);
     },
+    showErrorState() {
+      return Boolean(this.error);
+    },
   },
   watch: {
     visualization: {
@@ -80,19 +94,25 @@ export default {
         });
       } catch (error) {
         this.error = error;
-        this.$emit('error', error);
+        Sentry.captureException(error);
       } finally {
         this.loading = false;
       }
     },
   },
   I18N_PANEL_EMPTY_STATE_MESSAGE,
+  I18N_PANEL_ERROR_STATE_MESSAGE,
+  I18N_PANEL_ERROR_POPOVER_TITLE,
+  I18N_PANEL_ERROR_POPOVER_MESSAGE,
+  PANEL_TROUBLESHOOTING_URL,
 };
 </script>
 
 <template>
   <div
+    ref="panelWrapper"
     class="grid-stack-item-content gl-shadow-sm gl-rounded-base gl-p-4 gl-display-flex gl-flex-direction-column gl-bg-white"
+    :class="{ 'gl-border-t-2 gl-border-t-solid gl-border-red-500': showErrorState }"
   >
     <tooltip-on-truncate
       v-if="title"
@@ -101,16 +121,18 @@ export default {
       boundary="viewport"
       class="gl-pb-3 gl-text-truncate"
     >
+      <gl-icon v-if="showErrorState" name="warning" class="gl-text-red-500" />
       <strong>{{ title }}</strong>
     </tooltip-on-truncate>
-    <div
-      class="gl-overflow-y-auto gl-h-full"
-      :class="{ 'gl--flex-center': loading || showEmptyState }"
-    >
+    <div class="gl-overflow-y-auto gl-h-full" :class="{ 'gl--flex-center': loading }">
       <gl-loading-icon v-if="loading" size="lg" />
 
-      <div v-else-if="showEmptyState" class="gl-text-center gl-text-secondary">
+      <div v-else-if="showEmptyState" class="gl-text-secondary">
         {{ $options.I18N_PANEL_EMPTY_STATE_MESSAGE }}
+      </div>
+
+      <div v-else-if="showErrorState" class="gl-text-secondary">
+        {{ $options.I18N_PANEL_ERROR_STATE_MESSAGE }}
       </div>
 
       <component
@@ -120,5 +142,22 @@ export default {
         :options="visualization.options"
       />
     </div>
+
+    <gl-popover
+      v-if="showErrorState"
+      triggers="hover focus"
+      :title="$options.I18N_PANEL_ERROR_POPOVER_TITLE"
+      :show-close-button="false"
+      placement="top"
+      :target="$refs.panelWrapper"
+    >
+      <gl-sprintf :message="$options.I18N_PANEL_ERROR_POPOVER_MESSAGE">
+        <template #link="{ content }">
+          <gl-link :href="$options.PANEL_TROUBLESHOOTING_URL" class="gl-font-sm">{{
+            content
+          }}</gl-link>
+        </template>
+      </gl-sprintf>
+    </gl-popover>
   </div>
 </template>
