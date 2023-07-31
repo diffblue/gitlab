@@ -15,6 +15,8 @@ RSpec.describe Projects::Security::Vulnerabilities::NotesController, feature_cat
 
   describe 'GET index' do
     subject(:view_all_notes) do
+      request.headers['X-Last-Fetched-At'] = 0
+
       get :index, params: { namespace_id: project.namespace, project_id: project, vulnerability_id: vulnerability }
     end
 
