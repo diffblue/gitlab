@@ -444,6 +444,33 @@ RSpec.describe Admin::ApplicationSettingsController do
       end
     end
 
+    context 'alerting for pending obsolete migrations' do
+      let_it_be(:migration_1) { Elastic::MigrationRecord.new(name: '1', version: Time.now.to_i, filename: nil) }
+      let_it_be(:migration_2) { Elastic::MigrationRecord.new(name: '2', version: Time.now.to_i, filename: nil) }
+
+      before do
+        allow(migration_1).to receive(:load_migration).and_return(Class.new)
+        allow(migration_2).to receive(:load_migration).and_return(Class.new)
+        allow(Elastic::DataMigrationService).to receive(:pending_migrations).and_return([migration_1, migration_2])
+      end
+
+      it 'alerts when there are pending obsolete migrations' do
+        allow(migration_1).to receive(:obsolete?).and_return(true)
+        allow(migration_2).to receive(:obsolete?).and_return(false)
+
+        get :advanced_search
+        expect(assigns[:elasticsearch_pending_obsolete_migrations]).to eq([migration_1])
+      end
+
+      it 'does not alert when there are pending non-obsolete migrations' do
+        allow(migration_1).to receive(:obsolete?).and_return(false)
+        allow(migration_2).to receive(:obsolete?).and_return(false)
+
+        get :advanced_search
+        expect(assigns[:elasticsearch_pending_obsolete_migrations]).to eq([])
+      end
+    end
+
     context 'advanced search settings' do
       it 'updates the advanced search settings' do
         settings = {

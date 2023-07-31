@@ -4258,6 +4258,12 @@ msgstr ""
 msgid "AdvancedSearch|You are using outdated code search mappings. To improve code search quality, we recommend you use %{reindexing_link_start}zero-downtime reindexing%{link_end} or %{recreate_link_start}re-create your index%{link_end}."
 msgstr ""
 
+msgid "AdvancedSearch|You have %{count} pending %{migrations_link_start}advanced search migrations%{link_end} that are obsolete. These migrations might affect your search experience. To resolve the issue, you must %{recreate_link_start}recreate your index%{link_end}."
+msgstr ""
+
+msgid "AdvancedSearch|You have pending obsolete migrations"
+msgstr ""
+
 msgid "After a successful password update you will be redirected to login screen."
 msgstr ""
 
