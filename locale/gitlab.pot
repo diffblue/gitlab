@@ -21374,6 +21374,9 @@ msgstr ""
 msgid "GlobalSearch|Aggregations load error."
 msgstr ""
 
+msgid "GlobalSearch|Archived"
+msgstr ""
+
 msgid "GlobalSearch|Close"
 msgstr ""
 
@@ -21390,6 +21393,9 @@ msgid "GlobalSearch|Help"
 msgstr ""
 
 msgid "GlobalSearch|In this project"
+msgstr ""
+
+msgid "GlobalSearch|Include archived"
 msgstr ""
 
 msgid "GlobalSearch|Issues I've created"
