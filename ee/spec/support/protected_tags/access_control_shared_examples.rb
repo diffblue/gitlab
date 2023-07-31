@@ -76,7 +76,7 @@ RSpec.shared_examples "protected tags > access control > EE" do
     expect(access_levels).to be_empty
   end
 
-  it "prepends selected users that can create", quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/9205' do
+  it "prepends selected users that can create" do
     users = create_list(:user, 21)
     users.each { |user| project.add_developer(user) }
 
