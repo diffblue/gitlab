@@ -3,8 +3,16 @@
 module GitlabSubscriptions
   module UserAddOnAssignments
     class CreateService < BaseService
+      include Gitlab::Utils::StrongMemoize
+
       ERROR_NO_SEATS_AVAILABLE = 'NO_SEATS_AVAILABLE'
       ERROR_INVALID_USER_MEMBERSHIP = 'INVALID_USER_MEMBERSHIP'
+
+      NoSeatsAvailableError = Class.new(StandardError) do
+        def initialize(message = ERROR_NO_SEATS_AVAILABLE)
+          super(message)
+        end
+      end
 
       def initialize(add_on_purchase:, user:)
         @add_on_purchase = add_on_purchase
@@ -17,14 +25,18 @@ module GitlabSubscriptions
         errors = validate
 
         if errors.blank?
-          # TODO: implement resource locking to avoid race condition
-          # https://gitlab.com/gitlab-org/gitlab/-/issues/415584#race-condition
-          add_on_purchase.assigned_users.create!(user: user)
+          add_on_purchase.with_lock do
+            raise NoSeatsAvailableError unless seats_available?
+
+            add_on_purchase.assigned_users.create!(user: user)
+          end
 
           ServiceResponse.success
         else
           ServiceResponse.error(message: errors)
         end
+      rescue NoSeatsAvailableError => error
+        ServiceResponse.error(message: error.message)
       end
 
       private
@@ -41,7 +53,7 @@ module GitlabSubscriptions
       end
 
       def assigned_seats
-        @assigned_seats ||= add_on_purchase.assigned_users.count
+        add_on_purchase.assigned_users.count
       end
 
       def user_already_assigned?
@@ -54,6 +66,7 @@ module GitlabSubscriptions
           namespace.billed_shared_group_user?(user, exclude_guests: true) ||
           namespace.billed_shared_project_user?(user, exclude_guests: true)
       end
+      strong_memoize_attr :billed_member_of_namespace?
 
       def namespace
         @namespace ||= add_on_purchase.namespace
