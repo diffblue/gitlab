@@ -5375,6 +5375,9 @@ msgstr ""
 msgid "Analytics|Error while saving visualization."
 msgstr ""
 
+msgid "Analytics|Failed to fetch data"
+msgstr ""
+
 msgid "Analytics|Host"
 msgstr ""
 
@@ -5393,7 +5396,7 @@ msgstr ""
 msgid "Analytics|No dashboard matches the specified URL path."
 msgstr ""
 
-msgid "Analytics|No results match your query or filter"
+msgid "Analytics|No results match your query or filter."
 msgstr ""
 
 msgid "Analytics|OS"
@@ -5436,6 +5439,12 @@ msgid "Analytics|Select a visualization type"
 msgstr ""
 
 msgid "Analytics|Single Statistic"
+msgstr ""
+
+msgid "Analytics|Something went wrong while connecting to your data source. See %{linkStart}troubleshooting documentation%{linkEnd}."
+msgstr ""
+
+msgid "Analytics|Something went wrong."
 msgstr ""
 
 msgid "Analytics|To create your own dashboards, first configure a project to store your dashboards."
@@ -35234,9 +35243,6 @@ msgid "ProductAnalytics|All Sessions Compared"
 msgstr ""
 
 msgid "ProductAnalytics|An error occurred while fetching data. Refresh the page to try again."
-msgstr ""
-
-msgid "ProductAnalytics|An error occurred while loading the %{panelTitle} panel."
 msgstr ""
 
 msgid "ProductAnalytics|Analyze your product with Product Analytics"

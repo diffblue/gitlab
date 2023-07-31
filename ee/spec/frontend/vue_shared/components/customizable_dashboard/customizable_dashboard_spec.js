@@ -15,7 +15,6 @@ import {
   NEW_DASHBOARD_SLUG,
 } from 'ee/vue_shared/components/customizable_dashboard/constants';
 import { loadCSSFile } from '~/lib/utils/css_utils';
-import { createAlert } from '~/alert';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
   filtersToQueryParams,
@@ -26,13 +25,6 @@ import VisualizationSelector from 'ee/vue_shared/components/customizable_dashboa
 import { NEW_DASHBOARD } from 'ee/analytics/analytics_dashboards/constants';
 import { TEST_VISUALIZATION } from 'ee_jest/analytics/analytics_dashboards/mock_data';
 import { dashboard, builtinDashboard, mockDateRangeFilterChangePayload } from './mock_data';
-
-const mockAlertDismiss = jest.fn();
-jest.mock('~/alert', () => ({
-  createAlert: jest.fn().mockImplementation(() => ({
-    dismiss: mockAlertDismiss,
-  })),
-}));
 
 jest.mock('gridstack', () => ({
   GridStack: {
@@ -187,18 +179,6 @@ describe('CustomizableDashboard', () => {
       },
     );
 
-    it('calls createAlert when a panel emits an error', () => {
-      const error = new Error('foo');
-
-      findPanels().at(0).vm.$emit('error', error);
-
-      expect(createAlert).toHaveBeenCalledWith({
-        message: `An error occurred while loading the ${dashboard.panels[0].title} panel.`,
-        captureError: true,
-        error,
-      });
-    });
-
     it('does not show the Edit Button for a custom dashboard', () => {
       expect(findEditButton().exists()).toBe(false);
     });
@@ -215,16 +195,6 @@ describe('CustomizableDashboard', () => {
   describe('beforeDestroy', () => {
     beforeEach(() => {
       createWrapper();
-    });
-
-    it('should dismiss the alert', async () => {
-      findPanels().at(0).vm.$emit('error', new Error());
-
-      wrapper.destroy();
-
-      await nextTick();
-
-      expect(mockAlertDismiss).toHaveBeenCalled();
     });
   });
 
