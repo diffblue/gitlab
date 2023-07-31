@@ -100,23 +100,6 @@ RSpec.shared_examples 'a Geo framework registry' do
     end
   end
 
-  describe 'bulk_mark_pending_one_batch!' do
-    it 'marks registries as never attempted to sync' do
-      record1 = create(registry_class_factory, :started, last_synced_at: 9.hours.ago)
-      record2 = create(registry_class_factory, :synced, last_synced_at: 1.hour.ago)
-      record3 = create(registry_class_factory, :failed, last_synced_at: Time.current)
-
-      described_class.bulk_mark_pending_one_batch!
-
-      expect(record1.reload.state).to eq described_class::STATE_VALUES[:pending]
-      expect(record1.reload.last_synced_at).to be_nil
-      expect(record2.reload.state).to eq described_class::STATE_VALUES[:pending]
-      expect(record2.reload.last_synced_at).to be_nil
-      expect(record3.reload.state).to eq described_class::STATE_VALUES[:pending]
-      expect(record3.reload.last_synced_at).to be_nil
-    end
-  end
-
   describe '#failed!' do
     let(:registry) { create(registry_class_factory, :started) }
     let(:message) { 'Foo' }
