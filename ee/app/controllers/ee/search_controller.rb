@@ -82,10 +82,6 @@ module EE
       end
     end
 
-    def search_type
-      track_search_advanced? ? 'advanced' : super
-    end
-
     # rubocop:disable Gitlab/ModuleWithInstanceVariables
     def no_results_for_group_or_project_blobs_advanced_search?
       return false unless ::Feature.enabled?(:search_index_integrity)

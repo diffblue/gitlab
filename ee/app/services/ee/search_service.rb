@@ -5,8 +5,6 @@ module EE
     include ::Gitlab::Utils::StrongMemoize
     extend ::Gitlab::Utils::Override
 
-    delegate :use_zoekt?, to: :search_service
-
     # This is a proper method instead of a `delegate` in order to
     # avoid adding unnecessary methods to Search::SnippetService
     def use_elasticsearch?
@@ -19,6 +17,14 @@ module EE
 
     def show_elasticsearch_tabs?
       ::Gitlab::CurrentSettings.search_using_elasticsearch?(scope: search_service.elasticsearchable_scope)
+    end
+
+    override :search_type
+    def search_type
+      return 'zoekt' if scope == 'blobs' && use_zoekt?
+      return 'advanced' if use_elasticsearch?
+
+      super
     end
 
     # rubocop: disable CodeReuse/ActiveRecord
@@ -37,6 +43,10 @@ module EE
     end
     # rubocop: enable Gitlab/ModuleWithInstanceVariables
     # rubocop: enable CodeReuse/ActiveRecord
+
+    def use_zoekt?
+      search_service.try(:use_zoekt?)
+    end
 
     private
 
