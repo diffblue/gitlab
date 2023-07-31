@@ -5,7 +5,7 @@ module EE
     extend ActiveSupport::Concern
 
     SCOPED_LABEL_SEPARATOR = '::'
-    SCOPED_LABEL_PATTERN = /^.*#{SCOPED_LABEL_SEPARATOR}/.freeze
+    SCOPED_LABEL_PATTERN = /^.*#{SCOPED_LABEL_SEPARATOR}/
 
     prepended do
       has_many :epic_board_labels, class_name: 'Boards::EpicBoardLabel', inverse_of: :label

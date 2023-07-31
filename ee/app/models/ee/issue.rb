@@ -6,7 +6,7 @@ module EE
     extend ::Gitlab::Utils::Override
 
     prepended do
-      WEIGHT_RANGE = (0..20).freeze
+      WEIGHT_RANGE = (0..20)
       WEIGHT_ALL = 'Everything'
       WEIGHT_ANY = 'Any'
       WEIGHT_NONE = 'None'

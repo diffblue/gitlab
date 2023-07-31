@@ -7,7 +7,7 @@ module Gitlab
     module Filter
       class ImageFilter < HTML::Pipeline::Filter
         # Part of FileUploader::MARKDOWN_PATTERN but with a non-greedy file name matcher (?<file>.*) vs (?<file>.*?)
-        NON_GREEDY_UPLOAD_FILE_PATH_PATTERN = %r{/uploads/(?<secret>[0-9a-f]{32})/(?<file>.*)}.freeze
+        NON_GREEDY_UPLOAD_FILE_PATH_PATTERN = %r{/uploads/(?<secret>[0-9a-f]{32})/(?<file>.*)}
 
         CSS   = 'img'
         XPATH = Gitlab::Utils::Nokogiri.css_to_xpath(CSS).freeze

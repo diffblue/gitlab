@@ -5,7 +5,7 @@ module Mutations
     module OncallRotation
       class Base < BaseMutation
         MAXIMUM_PARTICIPANTS = 100
-        TIME_FORMAT = /^(0\d|1\d|2[0-3]):[0-5]\d$/.freeze
+        TIME_FORMAT = /^(0\d|1\d|2[0-3]):[0-5]\d$/
 
         field :oncall_rotation,
               ::Types::IncidentManagement::OncallRotationType,

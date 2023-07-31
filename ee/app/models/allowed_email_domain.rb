@@ -27,10 +27,10 @@ class AllowedEmailDomain < ApplicationRecord
   VALID_DOMAIN_BASE = '(?=.*\.)[0-9a-zA-Z.-]+'
 
   # VALID_DOMAIN_REGEX is the regex we should be using to validate email domains in ruby
-  VALID_DOMAIN_REGEX = /\A#{VALID_DOMAIN_BASE}\z/.freeze
+  VALID_DOMAIN_REGEX = /\A#{VALID_DOMAIN_BASE}\z/
 
   # JS_VALID_DOMAIN_REGEX is only for use on the frontend in javascript/vue
-  JS_VALID_DOMAIN_REGEX = /^#{VALID_DOMAIN_BASE}$/.freeze
+  JS_VALID_DOMAIN_REGEX = /^#{VALID_DOMAIN_BASE}$/
 
   validates :group_id, presence: true
   validates :domain, presence: true

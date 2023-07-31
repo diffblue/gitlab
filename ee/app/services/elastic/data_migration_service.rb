@@ -3,7 +3,7 @@
 module Elastic
   class DataMigrationService
     MIGRATIONS_PATH = 'ee/elastic/migrate'
-    MIGRATION_REGEXP = /\A([0-9]+)_([_a-z0-9]*)\.rb\z/.freeze
+    MIGRATION_REGEXP = /\A([0-9]+)_([_a-z0-9]*)\.rb\z/
     CACHE_TIMEOUT = 30.minutes
 
     class << self

@@ -3,9 +3,9 @@
 module IncidentManagement
   module IssuableResourceLinks
     class CreateService < IssuableResourceLinks::BaseService
-      ZOOM_REGEXP = %r{https://(?:[\w-]+\.)?zoom\.us/(?:s|j|my)/\S+}.freeze
-      SLACK_REGEXP = %r{https://[a-zA-Z0-9]+.slack\.com/[a-z][a-zA-Z0-9_]+}.freeze
-      PAGERDUTY_REGEXP = %r{https://[a-zA-Z0-9]+.pagerduty\.com/incidents/[a-zA-Z0-9]+}.freeze
+      ZOOM_REGEXP = %r{https://(?:[\w-]+\.)?zoom\.us/(?:s|j|my)/\S+}
+      SLACK_REGEXP = %r{https://[a-zA-Z0-9]+.slack\.com/[a-z][a-zA-Z0-9_]+}
+      PAGERDUTY_REGEXP = %r{https://[a-zA-Z0-9]+.pagerduty\.com/incidents/[a-zA-Z0-9]+}
 
       def initialize(incident, user, params)
         @incident = incident

@@ -3,9 +3,9 @@
 module StatusPage
   class ProjectSetting < ApplicationRecord
     # AWS validations. See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/25863#note_295772553
-    AWS_BUCKET_NAME_REGEXP = /\A[a-z0-9][a-z0-9\-.]*\z/.freeze
-    AWS_ACCESS_KEY_REGEXP  = /\A[A-Z0-9]{20}\z/.freeze
-    AWS_SECRET_KEY_REGEXP  = %r{\A[A-Za-z0-9/+=]{40}\z}.freeze
+    AWS_BUCKET_NAME_REGEXP = /\A[a-z0-9][a-z0-9\-.]*\z/
+    AWS_ACCESS_KEY_REGEXP  = /\A[A-Z0-9]{20}\z/
+    AWS_SECRET_KEY_REGEXP  = %r{\A[A-Za-z0-9/+=]{40}\z}
 
     self.table_name = 'status_page_settings'
 
