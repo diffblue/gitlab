@@ -66,26 +66,31 @@ export default {
     </template>
 
     <template #cell()="{ value: { value, change, valueLimitMessage }, item: { invertTrendColor } }">
-      {{ value }}
-      <gl-icon
-        v-if="valueLimitMessage"
-        v-gl-tooltip.hover
-        class="gl-text-blue-600"
-        name="information-o"
-        :title="valueLimitMessage"
-        data-testid="metric_max_value_info_icon"
-      />
-      <trend-indicator
-        v-else-if="change"
-        :change="change"
-        :invert-color="invertTrendColor"
-        data-testid="metric_trend_indicator"
-      />
+      <span v-if="value === undefined" data-testid="metric-comparison-skeleton">
+        <gl-skeleton-loader :lines="1" :width="100" />
+      </span>
+      <template v-else>
+        {{ value }}
+        <gl-icon
+          v-if="valueLimitMessage"
+          v-gl-tooltip.hover
+          class="gl-text-blue-600"
+          name="information-o"
+          :title="valueLimitMessage"
+          data-testid="metric-max-value-info-icon"
+        />
+        <trend-indicator
+          v-else-if="change"
+          :change="change"
+          :invert-color="invertTrendColor"
+          data-testid="metric-trend-indicator"
+        />
+      </template>
     </template>
 
     <template #cell(metric)="{ value: { identifier } }">
       <metric-table-cell
-        :data-testid="`${identifier}_metric_cell`"
+        :data-testid="`${identifier}-metric-cell`"
         :identifier="identifier"
         :request-path="requestPath"
         :is-project="isProject"
@@ -101,9 +106,9 @@ export default {
         :data="data"
         :smooth="0.2"
         :gradient="chartGradient(invertTrendColor)"
-        data-testid="metric_chart"
+        data-testid="metric-chart"
       />
-      <div v-else class="gl-py-4" data-testid="metric_chart_skeleton">
+      <div v-else class="gl-py-4" data-testid="metric-chart-skeleton">
         <gl-skeleton-loader :lines="1" :width="100" />
       </div>
     </template>

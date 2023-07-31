@@ -103,7 +103,6 @@ export const DASHBOARD_DESCRIPTION_GROUP = s__('DORA4Metrics|Metrics comparison 
 export const DASHBOARD_DESCRIPTION_PROJECT = s__(
   'DORA4Metrics|Metrics comparison for %{name} project',
 );
-export const DASHBOARD_NO_DATA = __('No data available');
 export const DASHBOARD_LOADING_FAILURE = __('Failed to load');
 export const DASHBOARD_NAMESPACE_LOAD_ERROR = s__(
   'DORA4Metrics|Failed to load comparison chart for Namespace: %{fullPath}',

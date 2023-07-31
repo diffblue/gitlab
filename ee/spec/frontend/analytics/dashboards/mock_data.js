@@ -416,6 +416,13 @@ export const mockComparativeTableData = [
   },
 ];
 
+export const mockGeneratedMetricComparisons = () =>
+  mockComparativeTableData.reduce(
+    (acc, { metric, lastMonth, thisMonth, twoMonthsAgo }) =>
+      Object.assign(acc, { [metric.identifier]: { lastMonth, thisMonth, twoMonthsAgo } }),
+    {},
+  );
+
 const mockChartDataValues = (values) => values.map((v) => [expect.anything(), v]);
 
 const mockChartDataWithSameValue = (count, value) =>
@@ -423,91 +430,139 @@ const mockChartDataWithSameValue = (count, value) =>
 
 export const mockSubsetChartData = {
   change_failure_rate: {
-    data: mockChartDataWithSameValue(2, 0),
-    tooltipLabel: '%',
+    chart: {
+      data: mockChartDataWithSameValue(2, 0),
+      tooltipLabel: '%',
+    },
   },
   cycle_time: {
-    data: mockChartDataWithSameValue(2, 0),
-    tooltipLabel: 'days',
+    chart: {
+      data: mockChartDataWithSameValue(2, 0),
+      tooltipLabel: 'days',
+    },
   },
   deployment_frequency: {
-    data: mockChartDataWithSameValue(2, 0),
-    tooltipLabel: '/day',
+    chart: {
+      data: mockChartDataWithSameValue(2, 0),
+      tooltipLabel: '/day',
+    },
   },
   deploys: {
-    data: mockChartDataWithSameValue(2, 0),
+    chart: {
+      data: mockChartDataWithSameValue(2, 0),
+    },
   },
   issues: {
-    data: mockChartDataWithSameValue(2, 0),
+    chart: {
+      data: mockChartDataWithSameValue(2, 0),
+    },
   },
   issues_completed: {
-    data: mockChartDataWithSameValue(2, 0),
+    chart: {
+      data: mockChartDataWithSameValue(2, 0),
+    },
   },
   lead_time: {
-    data: mockChartDataWithSameValue(2, 0),
-    tooltipLabel: 'days',
+    chart: {
+      data: mockChartDataWithSameValue(2, 0),
+      tooltipLabel: 'days',
+    },
   },
   lead_time_for_changes: {
-    data: mockChartDataValues([1, 2]),
-    tooltipLabel: 'days',
+    chart: {
+      data: mockChartDataValues([1, 2]),
+      tooltipLabel: 'days',
+    },
   },
   time_to_restore_service: {
-    data: mockChartDataValues([100, 99]),
-    tooltipLabel: 'days',
+    chart: {
+      data: mockChartDataValues([100, 99]),
+      tooltipLabel: 'days',
+    },
   },
   vulnerability_critical: {
-    data: mockChartDataWithSameValue(2, 0),
+    chart: {
+      data: mockChartDataWithSameValue(2, 0),
+    },
   },
   vulnerability_high: {
-    data: mockChartDataWithSameValue(2, 0),
+    chart: {
+      data: mockChartDataWithSameValue(2, 0),
+    },
   },
   merge_request_throughput: {
-    data: mockChartDataWithSameValue(2, 0),
+    chart: {
+      data: mockChartDataWithSameValue(2, 0),
+    },
   },
 };
 
 export const mockChartData = {
   lead_time_for_changes: {
-    tooltipLabel: 'days',
-    data: mockChartDataWithSameValue(6, null),
+    chart: {
+      tooltipLabel: 'days',
+      data: mockChartDataWithSameValue(6, null),
+    },
   },
   time_to_restore_service: {
-    tooltipLabel: 'days',
-    data: mockChartDataWithSameValue(6, 0),
+    chart: {
+      tooltipLabel: 'days',
+      data: mockChartDataWithSameValue(6, 0),
+    },
   },
   change_failure_rate: {
-    tooltipLabel: '%',
-    data: mockChartDataWithSameValue(6, 0),
+    chart: {
+      tooltipLabel: '%',
+      data: mockChartDataWithSameValue(6, 0),
+    },
   },
   deployment_frequency: {
-    tooltipLabel: '/day',
-    data: mockChartDataValues([0, 1, 2, 3, 4, 5]),
+    chart: {
+      tooltipLabel: '/day',
+      data: mockChartDataValues([0, 1, 2, 3, 4, 5]),
+    },
   },
   lead_time: {
-    tooltipLabel: 'days',
-    data: mockChartDataValues([1, 2, 3, 4, 5, 6]),
+    chart: {
+      tooltipLabel: 'days',
+      data: mockChartDataValues([1, 2, 3, 4, 5, 6]),
+    },
   },
   cycle_time: {
-    tooltipLabel: 'days',
-    data: mockChartDataValues([0, 2, 4, 6, 8, 10]),
+    chart: {
+      tooltipLabel: 'days',
+      data: mockChartDataValues([0, 2, 4, 6, 8, 10]),
+    },
   },
   issues: {
-    data: mockChartDataValues([100, 98, 96, 94, 92, 90]),
+    chart: {
+      data: mockChartDataValues([100, 98, 96, 94, 92, 90]),
+    },
   },
   issues_completed: {
-    data: mockChartDataValues([200, 198, 196, 194, 192, 190]),
+    chart: {
+      data: mockChartDataValues([200, 198, 196, 194, 192, 190]),
+    },
   },
   deploys: {
-    data: mockChartDataValues([0, 1, 4, 9, 16, 25]),
+    chart: {
+      data: mockChartDataValues([0, 1, 4, 9, 16, 25]),
+    },
   },
   vulnerability_critical: {
-    data: mockChartDataValues([0, 1, 2, 3, 0, 1]),
+    chart: {
+      data: mockChartDataValues([0, 1, 2, 3, 0, 1]),
+    },
   },
   vulnerability_high: {
-    data: mockChartDataValues([0, 1, 0, 1, 0, 1]),
+    chart: {
+      data: mockChartDataValues([0, 1, 0, 1, 0, 1]),
+    },
   },
   merge_request_throughput: {
-    data: mockChartDataValues([0, 1, 2, 3, 4, 5]),
+    chart: {
+      data: mockChartDataValues([0, 1, 2, 3, 4, 5]),
+    },
   },
 };
 
@@ -616,17 +671,6 @@ export const mockExcludeMetrics = [
   DORA_METRICS.DEPLOYMENT_FREQUENCY,
   DORA_METRICS.LEAD_TIME_FOR_CHANGES,
 ];
-
-export const mockEmptyVulnerabilityResponse = [{ date: null, critical: null, high: null }];
-export const mockEmptyDoraResponse = { metrics: [] };
-export const mockEmptyMergeRequestsResponse = { mergeRequests: {} };
-export const mockEmptyFlowMetricsResponse = {
-  issues: null,
-  issues_completed: null,
-  deploys: null,
-  cycle_time: null,
-  lead_time: null,
-};
 
 export const MOCK_LABELS = [
   { id: 1, title: 'one', color: '#FFFFFF' },
