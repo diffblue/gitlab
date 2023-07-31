@@ -12,6 +12,8 @@ jest.mock('~/mr_notes/stores', () => jest.requireActual('helpers/mocks/mr_notes/
 Vue.config.ignoredElements = ['copy-code'];
 
 describe('diffs/components/app', () => {
+  let mockDispatch;
+
   const createComponent = (props = {}, baseConfig = {}) => {
     store.reset();
 
@@ -41,6 +43,8 @@ describe('diffs/components/app', () => {
       ...baseConfig,
     });
 
+    mockDispatch = jest.spyOn(store, 'dispatch');
+
     return shallowMount(App, {
       propsData: {
         endpointCoverage: `${TEST_HOST}/diff/endpointCoverage`,
@@ -58,20 +62,14 @@ describe('diffs/components/app', () => {
   describe('EE codequality diff', () => {
     it('fetches code quality data when endpoint is provided', () => {
       createComponent({ shouldShow: true });
-      jest.spyOn(store, 'dispatch');
 
-      expect(store.dispatch.mock.calls.some(([name]) => name === 'diffs/fetchCodequality')).toBe(
-        true,
-      );
+      expect(mockDispatch).toHaveBeenCalledWith('diffs/fetchCodequality');
     });
 
     it('does not fetch code quality data when endpoint is blank', () => {
       createComponent({ shouldShow: true, endpointCodequality: '' });
-      jest.spyOn(store, 'dispatch');
 
-      expect(store.dispatch.mock.calls.some(([name]) => name === 'diffs/fetchCodequality')).toBe(
-        false,
-      );
+      expect(mockDispatch).not.toHaveBeenCalledWith('diffs/fetchCodequality');
     });
   });
 });
