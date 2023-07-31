@@ -132,6 +132,28 @@ RSpec.describe 'Create a work item', feature_category: :team_planning do
         end
       end
     end
+
+    context 'when group_webhooks feature is available', :aggregate_failures do
+      let(:input) do
+        {
+          title: 'new title',
+          workItemTypeId: WorkItems::Type.default_by_type(:task).to_global_id.to_s
+        }
+      end
+
+      before do
+        stub_licensed_features(group_webhooks: true)
+        create(:group_hook, issues_events: true, group: group)
+      end
+
+      it 'creates a work item' do
+        expect do
+          post_graphql_mutation(mutation, current_user: current_user)
+        end.to change { WorkItem.count }.by(1)
+
+        expect(response).to have_gitlab_http_status(:success)
+      end
+    end
   end
 
   context 'when user has permissions to create a work item' do
