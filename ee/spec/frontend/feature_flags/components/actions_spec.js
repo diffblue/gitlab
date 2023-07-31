@@ -1,4 +1,4 @@
-import { GlDropdown } from '@gitlab/ui';
+import { GlDisclosureDropdown } from '@gitlab/ui';
 import FeatureFlagsActions from 'ee/feature_flags/components/actions.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { s__ } from '~/locale';
@@ -11,7 +11,7 @@ describe('ee/feature_flags/components/actions.vue', () => {
 
   it('shows a link to search for code references if provided', () => {
     wrapper = createWrapper();
-    const link = wrapper.findByRole('menuitem', {
+    const link = wrapper.findByRole('link', {
       name: s__('FeatureFlags|Search code references'),
     });
 
@@ -22,6 +22,6 @@ describe('ee/feature_flags/components/actions.vue', () => {
   it('shows nothing if no path is provided', () => {
     wrapper = createWrapper({ searchPath: null });
 
-    expect(wrapper.findComponent(GlDropdown).exists()).toBe(false);
+    expect(wrapper.findComponent(GlDisclosureDropdown).exists()).toBe(false);
   });
 });
