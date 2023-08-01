@@ -50,7 +50,7 @@ module Gitlab
 
       def notes(count_only: false)
         strong_memoize(memoize_key(:notes, count_only: count_only)) do
-          Note.elastic_search(query, options: base_options.merge(count_only: count_only))
+          Note.elastic_search(query, options: base_options.merge(filters.slice(:include_archived), count_only: count_only))
         end
       end
 

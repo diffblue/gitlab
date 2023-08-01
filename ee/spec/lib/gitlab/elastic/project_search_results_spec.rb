@@ -6,7 +6,7 @@ RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic, feature_category
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :public, :repository) }
 
-  let(:query) { 'hello world' }
+  let_it_be(:query) { 'hello world' }
   let(:repository_ref) { nil }
   let(:filters) { {} }
 
@@ -161,6 +161,81 @@ RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic, feature_category
 
         expect(results.objects('users')).to contain_exactly(users[0], users[4], users[5])
         expect(results.users_count).to eq 3
+      end
+    end
+  end
+
+  describe 'notes' do
+    before do
+      Elastic::ProcessBookkeepingService.track!(note)
+      ensure_elasticsearch_index!
+    end
+
+    context 'when project is archived' do
+      let_it_be(:project) { create(:project, :archived, :public) }
+      let_it_be(:note) { create(:note, note: query, project: project) }
+
+      context 'feature flag search_notes_hide_archived_projects is disabled' do
+        before do
+          stub_feature_flags(search_notes_hide_archived_projects: false)
+        end
+
+        it 'includes the notes from the archived project' do
+          expect(results.objects('notes')).to contain_exactly note
+        end
+      end
+
+      context 'when migration backfill_archived_on_notes is not finished' do
+        before do
+          set_elasticsearch_migration_to(:backfill_archived_on_notes, including: false)
+        end
+
+        it 'includes the notes from the archived project' do
+          expect(results.objects('notes')).to contain_exactly note
+        end
+      end
+
+      context 'when filters contains include_archived as true' do
+        let(:filters) do
+          { include_archived: true }
+        end
+
+        it 'includes the archived notes in the search results' do
+          expect(results.objects('notes')).to contain_exactly note
+        end
+      end
+
+      it 'does not includes the archived notes in the search results' do
+        expect(results.objects('notes')).to be_empty
+      end
+    end
+
+    context 'when project is not archived' do
+      let_it_be(:project) { create(:project, :public) }
+      let_it_be(:note) { create(:note, note: query, project: project) }
+
+      context 'feature flag search_notes_hide_archived_projects is disabled' do
+        before do
+          stub_feature_flags(search_notes_hide_archived_projects: false)
+        end
+
+        it 'includes the notes from the project' do
+          expect(results.objects('notes')).to contain_exactly note
+        end
+      end
+
+      context 'when migration backfill_archived_on_notes is not finished' do
+        before do
+          set_elasticsearch_migration_to(:backfill_archived_on_notes, including: false)
+        end
+
+        it 'includes the notes from the project' do
+          expect(results.objects('notes')).to contain_exactly note
+        end
+      end
+
+      it 'includes the notes from the project' do
+        expect(results.objects('notes')).to contain_exactly note
       end
     end
   end

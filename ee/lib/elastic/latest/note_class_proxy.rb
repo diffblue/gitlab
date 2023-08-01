@@ -19,6 +19,7 @@ module Elastic
         context.name(:note) do
           query_hash = context.name(:authorized) { project_ids_filter(query_hash, options) }
           query_hash = context.name(:confidentiality) { confidentiality_filter(query_hash, options) }
+          query_hash = context.name(:archived) { archived_filter(query_hash) } if archived_filter_applicable?(options)
         end
 
         query_hash[:highlight] = highlight_options(options[:in]) unless options[:count_only]
@@ -134,6 +135,11 @@ module Elastic
           'Snippet': :snippets,
           'Commit': :repository
         }
+      end
+
+      def archived_filter_applicable?(options)
+        !options[:include_archived] && Feature.enabled?(:search_notes_hide_archived_projects) &&
+          ::Elastic::DataMigrationService.migration_has_finished?(:backfill_archived_on_notes)
       end
 
       override :project_ids_filter
