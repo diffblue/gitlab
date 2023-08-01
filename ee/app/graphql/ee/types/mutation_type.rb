@@ -39,7 +39,7 @@ module EE
         mount_mutation ::Mutations::Security::Finding::Dismiss
         mount_mutation ::Mutations::Security::Finding::RevertToDetected
         mount_mutation ::Mutations::Vulnerabilities::Create
-        mount_mutation ::Mutations::Vulnerabilities::BulkDismiss, alpha: { milestone: '16.2' }
+        mount_mutation ::Mutations::Vulnerabilities::BulkDismiss
         mount_mutation ::Mutations::Vulnerabilities::Dismiss
         mount_mutation ::Mutations::Vulnerabilities::Resolve
         mount_mutation ::Mutations::Vulnerabilities::Confirm

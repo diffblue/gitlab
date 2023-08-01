@@ -1,8 +1,0 @@
----
-name: dismiss_multiple_vulnerabilities
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/122815
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/415405
-milestone: '16.2'
-type: development
-group: group::threat insights
-default_enabled: true
