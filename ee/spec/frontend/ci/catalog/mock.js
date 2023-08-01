@@ -1,4 +1,4 @@
-export const catalogDetailsMock = {
+export const catalogSharedDataMock = {
   data: {
     ciCatalogResource: {
       __typename: 'CiCatalogResource',
@@ -6,16 +6,26 @@ export const catalogDetailsMock = {
       icon: null,
       description: 'This is the description of the repo',
       name: 'Ruby',
-      openIssuesCount: 4,
-      openMergeRequestsCount: 10,
-      readmeHtml: '<h1>Hello world</h1>',
       rootNamespace: { id: 1, fullPath: '/group/project', name: 'my-dumb-project' },
       starCount: 1,
       forksCount: 2,
+      latestVersion: null,
+      webPath: 'path/to/project',
+    },
+  },
+};
+
+export const catalogAdditionalDetailsMock = {
+  data: {
+    ciCatalogResource: {
+      __typename: 'CiCatalogResource',
+      id: `gid://gitlab/CiCatalogResource/1`,
+      openIssuesCount: 4,
+      openMergeRequestsCount: 10,
+      readmeHtml: '<h1>Hello world</h1>',
       versions: {
         nodes: [{ id: 1, tagName: 'v1.0.2', releasedAt: '2022-08-23T17:19:09Z' }],
       },
-      webPath: 'path/to/project',
     },
   },
 };

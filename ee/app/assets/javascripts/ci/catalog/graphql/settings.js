@@ -6,6 +6,12 @@ export const cacheConfig = {
     typePolicies: {
       Query: {
         fields: {
+          ciCatalogResource(_, { args, toReference }) {
+            return toReference({
+              __typename: 'CiCatalogResource',
+              id: args.id,
+            });
+          },
           ciCatalogResources: {
             keyArgs: false,
           },

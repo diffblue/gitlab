@@ -3,28 +3,36 @@ import VueApollo from 'vue-apollo';
 import VueRouter from 'vue-router';
 import { GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { cacheConfig } from 'ee/ci/catalog/graphql/settings';
-import getCatalogCiResourceDetails from 'ee/ci/catalog/graphql/queries/get_ci_catalog_resource_details.query.graphql';
+
+import getCiCatalogResourceSharedData from 'ee/ci/catalog/graphql/queries/get_ci_catalog_resource_shared_data.query.graphql';
+import getCiCatalogResourceDetails from 'ee/ci/catalog/graphql/queries/get_ci_catalog_resource_details.query.graphql';
+
 import CiResourceAbout from 'ee/ci/catalog/components/details/ci_resource_about.vue';
 import CiResourceDetails from 'ee/ci/catalog/components/details/ci_resource_details.vue';
 import CiResourceDetailsPage from 'ee/ci/catalog/components/pages/ci_resource_details_page.vue';
 import CiResourceHeader from 'ee/ci/catalog/components/details/ci_resource_header.vue';
+import CiResourceHeaderSkeletonLoader from 'ee/ci/catalog/components/details/ci_resource_header_skeleton_loader.vue';
+
 import { createRouter } from 'ee/ci/catalog/router/index';
 import { CI_RESOURCE_DETAILS_PAGE_NAME } from 'ee/ci/catalog/router/constants';
-import { catalogDetailsMock } from '../../mock';
+import { catalogSharedDataMock, catalogAdditionalDetailsMock } from '../../mock';
 
 Vue.use(VueApollo);
 Vue.use(VueRouter);
 
 let router;
 
-const defaultDetailsValues = { ...catalogDetailsMock.data.ciCatalogResource };
+const defaultSharedData = { ...catalogSharedDataMock.data.ciCatalogResource };
+const defaultAdditionalData = { ...catalogAdditionalDetailsMock.data.ciCatalogResource };
 
 describe('CiResourceDetailsPage', () => {
   let wrapper;
-  let detailsResponse;
+  let sharedDataResponse;
+  let additionalDataResponse;
 
   const defaultProps = {};
 
@@ -32,9 +40,13 @@ describe('CiResourceDetailsPage', () => {
   const findDetailsComponent = () => wrapper.findComponent(CiResourceDetails);
   const findHeaderComponent = () => wrapper.findComponent(CiResourceHeader);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findHeaderSkeletonLoader = () => wrapper.findComponent(CiResourceHeaderSkeletonLoader);
 
   const createComponent = ({ props = {} } = {}) => {
-    const handlers = [[getCatalogCiResourceDetails, detailsResponse]];
+    const handlers = [
+      [getCiCatalogResourceSharedData, sharedDataResponse],
+      [getCiCatalogResourceDetails, additionalDataResponse],
+    ];
 
     const mockApollo = createMockApollo(handlers, undefined, cacheConfig);
 
@@ -52,26 +64,68 @@ describe('CiResourceDetailsPage', () => {
   };
 
   beforeEach(async () => {
-    detailsResponse = jest.fn();
+    sharedDataResponse = jest.fn();
+    additionalDataResponse = jest.fn();
 
     router = createRouter();
     await router.push({
       name: CI_RESOURCE_DETAILS_PAGE_NAME,
-      params: { id: defaultDetailsValues.id },
+      params: { id: defaultSharedData.id },
     });
-
-    detailsResponse.mockResolvedValue(catalogDetailsMock);
-    createComponent();
   });
 
-  describe('when loading', () => {
-    it('renders a loading icon', () => {
-      expect(findLoadingIcon().exists()).toBe(true);
+  describe('when the app is loading', () => {
+    describe('and shared data is pre-fetched', () => {
+      beforeEach(() => {
+        // By mocking a return value and not a promise, we skip the loading
+        // to simulate having the pre-fetched query
+        sharedDataResponse.mockReturnValueOnce(catalogSharedDataMock);
+        additionalDataResponse.mockResolvedValue(catalogAdditionalDetailsMock);
+        createComponent();
+      });
+
+      it('renders only the details loading state', () => {
+        expect(findLoadingIcon().exists()).toBe(true);
+        expect(findHeaderSkeletonLoader().exists()).toBe(false);
+      });
+
+      it('passes down the loading state to the about component', () => {
+        sharedDataResponse.mockReturnValueOnce(catalogSharedDataMock);
+
+        expect(findAboutComponent().props()).toMatchObject({
+          isLoadingDetails: true,
+          isLoadingSharedData: false,
+        });
+      });
+    });
+
+    describe('and shared data is not pre-fetched', () => {
+      beforeEach(() => {
+        sharedDataResponse.mockResolvedValue(catalogSharedDataMock);
+        additionalDataResponse.mockResolvedValue(catalogAdditionalDetailsMock);
+        createComponent();
+      });
+
+      it('renders all loading states', () => {
+        expect(findLoadingIcon().exists()).toBe(true);
+        expect(findHeaderSkeletonLoader().exists()).toBe(true);
+      });
+
+      it('passes down the loading state to the about component', () => {
+        expect(findAboutComponent().props()).toMatchObject({
+          isLoadingDetails: true,
+          isLoadingSharedData: true,
+        });
+      });
     });
   });
 
   describe('when data has loaded', () => {
     beforeEach(async () => {
+      sharedDataResponse.mockResolvedValue(catalogSharedDataMock);
+      additionalDataResponse.mockResolvedValue(catalogAdditionalDetailsMock);
+      createComponent();
+
       await waitForPromises();
     });
 
@@ -86,12 +140,12 @@ describe('CiResourceDetailsPage', () => {
 
       it('passes expected props', () => {
         expect(findHeaderComponent().props()).toEqual({
-          description: defaultDetailsValues.description,
-          icon: defaultDetailsValues.icon,
-          name: defaultDetailsValues.name,
-          resourceId: defaultDetailsValues.id,
-          rootNamespace: defaultDetailsValues.rootNamespace,
-          webPath: defaultDetailsValues.webPath,
+          description: defaultSharedData.description,
+          icon: defaultSharedData.icon,
+          name: defaultSharedData.name,
+          resourceId: defaultSharedData.id,
+          rootNamespace: defaultSharedData.rootNamespace,
+          webPath: defaultSharedData.webPath,
         });
       });
     });
@@ -103,10 +157,12 @@ describe('CiResourceDetailsPage', () => {
 
       it('passes expected props', () => {
         expect(findAboutComponent().props()).toEqual({
-          openIssuesCount: defaultDetailsValues.openIssuesCount,
-          openMergeRequestsCount: defaultDetailsValues.openMergeRequestsCount,
-          versions: defaultDetailsValues.versions.nodes,
-          webPath: defaultDetailsValues.webPath,
+          isLoadingDetails: false,
+          isLoadingSharedData: false,
+          openIssuesCount: defaultAdditionalData.openIssuesCount,
+          openMergeRequestsCount: defaultAdditionalData.openMergeRequestsCount,
+          latestVersion: defaultSharedData.latestVersion,
+          webPath: defaultSharedData.webPath,
         });
       });
     });
@@ -118,7 +174,7 @@ describe('CiResourceDetailsPage', () => {
 
       it('passes expected props', () => {
         expect(findDetailsComponent().props()).toEqual({
-          readmeHtml: defaultDetailsValues.readmeHtml,
+          readmeHtml: defaultAdditionalData.readmeHtml,
         });
       });
     });

@@ -64,7 +64,7 @@ export default {
       return getTimeago().format(this.latestVersion?.releasedAt);
     },
     resourcePath() {
-      return `${this.resource.rootNamespace?.name} / ${this.resource.rootNamespace?.path} / `;
+      return `${this.resource.rootNamespace?.name} / ${this.resource.rootNamespace?.fullPath} / `;
     },
     tagName() {
       return this.latestVersion?.tagName || this.$options.i18n.unreleased;

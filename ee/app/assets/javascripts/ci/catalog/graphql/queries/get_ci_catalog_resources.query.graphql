@@ -1,3 +1,5 @@
+#import "../fragments/catalog_resource.fragment.graphql"
+
 query getCiCatalogResources(
   $after: String
   $before: String
@@ -20,28 +22,7 @@ query getCiCatalogResources(
     }
     count
     nodes {
-      id
-      description
-      forksCount
-      icon
-      name
-      rootNamespace {
-        id
-        name
-        path
-      }
-      starCount
-      latestVersion {
-        id
-        tagName
-        releasedAt
-        author {
-          id
-          name
-          webUrl
-        }
-      }
-      webPath
+      ...CatalogResourceFields
     }
   }
 }
