@@ -42,7 +42,7 @@ class InstanceSecurityDashboard
   end
 
   def vulnerability_historical_statistics
-    return Vulnerabilities::Scanner.none if projects.empty?
+    return Vulnerabilities::HistoricalStatistic.none if projects.empty?
 
     Vulnerabilities::HistoricalStatistic.for_project(projects)
   end

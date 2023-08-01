@@ -6,7 +6,6 @@ module Resolvers
 
     type Types::VulnerabilitiesCountByDayType, null: true
     authorize :read_security_resource
-    authorizes_object!
 
     argument :start_date, GraphQL::Types::ISO8601Date,
       required: true,
@@ -17,6 +16,9 @@ module Resolvers
       description: 'Last day for which to fetch vulnerability history.'
 
     def resolve(**args)
+      # Instance security dashboard does not have an object to authorize against.
+      authorize!(object) unless resolve_vulnerabilities_for_instance_security_dashboard?
+
       return [] unless vulnerable
 
       vulnerable
