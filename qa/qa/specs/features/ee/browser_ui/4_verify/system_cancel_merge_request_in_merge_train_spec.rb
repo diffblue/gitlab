@@ -33,7 +33,7 @@ module QA
           end
 
           Page::Main::Menu.perform do |main|
-            main.go_to_page_by_shortcut(:todos_shortcut_button)
+            main.go_to_page_by_shortcut('todos-shortcut-button')
           end
 
           Page::Dashboard::Todos.perform do |todos|

@@ -9,29 +9,29 @@ module QA
             include ::QA::Page::Component::Dropdown
 
             view 'ee/app/assets/javascripts/license_compliance/components/app.vue' do
-              element :license_compliance_empty_state_description_content
+              element 'license-compliance-empty-state-description-content'
             end
 
             view 'ee/app/assets/javascripts/vue_shared/license_compliance/license_management.vue' do
-              element :license_add_button
+              element 'license-add-button'
             end
             view 'ee/app/assets/javascripts/vue_shared/license_compliance/components/add_license_form.vue' do
-              element :license_radio
-              element :add_license_submit_button
+              element 'license-radio'
+              element 'add-license-submit-button'
             end
 
             view 'ee/app/assets/javascripts/vue_shared/license_compliance/components/admin_license_management_row.vue' do
-              element :admin_license_compliance_row
+              element 'admin-license-compliance-row'
             end
 
             def has_empty_state_description?(text)
-              within_element(:license_compliance_empty_state_description_content) do
+              within_element('license-compliance-empty-state-description-content') do
                 has_text?(text)
               end
             end
 
             def add_and_enter_license(license)
-              click_element(:license_add_button)
+              click_element('license-add-button')
 
               # The digit after token-input- can vary, find by prefix
               find_input_by_prefix_and_set('token-input-', license)
@@ -39,8 +39,8 @@ module QA
 
             def approve_license(license)
               add_and_enter_license(license)
-              choose_element(:license_radio, true, option: "allowed")
-              click_element(:add_license_submit_button)
+              choose_element('license-radio', true, option: "allowed")
+              click_element('add-license-submit-button')
 
               has_approved_license?(license)
             end
@@ -55,7 +55,7 @@ module QA
             def deny_license(license)
               add_and_enter_license(license)
               choose_element(:denied_license_radio, true)
-              click_element(:add_license_submit_button)
+              click_element('add-license-submit-button')
 
               has_denied_license?(license)
             end

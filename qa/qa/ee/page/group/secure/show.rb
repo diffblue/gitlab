@@ -9,15 +9,19 @@ module QA
             include Page::Component::SecureReport
 
             view 'ee/app/assets/javascripts/security_dashboard/components/pipeline/security_dashboard_table.vue' do
-              element :security_report_content, required: true
+              element 'security-report-content', required: true
             end
 
             view 'ee/app/assets/javascripts/security_dashboard/components/shared/project_security_status_chart.vue' do
-              element :project_name_text, required: true
+              element 'project-name-text', required: true
+            end
+
+            view 'ee/app/assets/javascripts/security_dashboard/components/shared/filters/project_filter.vue' do
+              element 'filter-project-dropdown'
             end
 
             def filter_project(project_id)
-              click_element(:filter_project_dropdown)
+              click_element('filter-project-dropdown')
               find("[data-testid='listbox-item-#{project_id}']").click
             end
 
@@ -25,7 +29,7 @@ module QA
               within_element("severity_accordion_item_#{severity}") do
                 click_on severity
               end
-              has_element?(:project_name_text, text: "#{project.group.sandbox.path} / #{project.group.path} / #{project.name}", wait: 5)
+              has_element?('project-name-text', text: "#{project.group.sandbox.path} / #{project.group.path} / #{project.name}", wait: 5)
             end
           end
         end

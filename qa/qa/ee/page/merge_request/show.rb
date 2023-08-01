@@ -47,8 +47,12 @@ module QA
                 element :merge_immediately_button
               end
 
+              view 'ee/app/assets/javascripts/security_dashboard/components/pipeline/vulnerability_finding_modal.vue' do
+                element 'vulnerability-modal-content'
+              end
+
               view 'ee/app/assets/javascripts/vue_shared/security_reports/components/modal.vue' do
-                element :vulnerability_modal_content
+                element 'vulnerability-modal-content'
               end
 
               view 'ee/app/assets/javascripts/vue_shared/security_reports/components/event_item.vue' do
@@ -57,8 +61,8 @@ module QA
 
               view 'ee/app/assets/javascripts/vue_shared/security_reports/components/modal_footer.vue' do
                 element :resolve_split_button
-                element :create_issue_button
-                element :cancel_button
+                element 'create-issue-button'
+                element 'cancel-button'
               end
 
               view 'ee/app/assets/javascripts/vue_shared/security_reports/components/dismiss_button.vue' do
@@ -123,7 +127,7 @@ module QA
             end
 
             wait_until(reload: false) do
-              find_element(:vulnerability_modal_content)
+              find_element('vulnerability-modal-content')
             end
           end
 
@@ -139,7 +143,7 @@ module QA
             click_element :add_and_dismiss_button
 
             wait_until(reload: false) do
-              has_no_element?(:vulnerability_modal_content)
+              has_no_element?('vulnerability-modal-content')
             end
           end
 
@@ -160,7 +164,7 @@ module QA
             click_vulnerability(name)
 
             previous_page = page.current_url
-            click_element(:create_issue_button)
+            click_element('create-issue-button')
 
             wait_until(max_duration: 15, reload: false) do
               page.current_url != previous_page
@@ -168,7 +172,7 @@ module QA
           end
 
           def cancel_vulnerability_modal
-            click_element(:cancel_button)
+            click_element('cancel-button')
           end
 
           def has_vulnerability_report?(timeout: 60)
@@ -208,14 +212,14 @@ module QA
           end
 
           def has_security_finding_dismissed_on_mr_widget?(reason)
-            within_element(:vulnerability_modal_content) do
+            within_element('vulnerability-modal-content') do
               has_element?(:event_item_content, text: /Dismissed.*/) &&
                 has_element?(:event_item_content, text: reason)
             end
           end
 
           def has_security_finding_dismissed?(reason, project_path)
-            within_element(:vulnerability_modal_content) do
+            within_element('vulnerability-modal-content') do
               has_element?(:event_item_content, text: "Dismissed at #{project_path.gsub('/', ' / ')}") &&
                 has_element?(:event_item_content, text: reason)
             end

@@ -104,7 +104,7 @@ export default {
       :title="$options.i18n.modalTitle"
       :action-primary="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
         text: $options.i18n.actionPrimary,
-        attributes: { variant: 'confirm', 'data-qa-selector': 'confirm_ok_button' },
+        attributes: { variant: 'confirm', 'data-testid': 'confirm-ok-button' },
       } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
       :action-cancel="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
         text: $options.i18n.actionCancel,

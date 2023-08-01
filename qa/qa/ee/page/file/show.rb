@@ -25,7 +25,7 @@ module QA
               end
 
               view 'ee/app/assets/javascripts/vue_shared/components/code_owners/code_owners.vue' do
-                element :collapse_toggle
+                element 'collapse-toggle'
               end
             end
           end
@@ -53,7 +53,7 @@ module QA
           end
 
           def reveal_code_owners
-            click_element(:collapse_toggle) if has_element?(:collapse_toggle, text: 'Show all')
+            click_element('collapse-toggle') if has_element?('collapse-toggle', text: 'Show all')
           end
         end
       end
