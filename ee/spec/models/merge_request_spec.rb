@@ -1665,8 +1665,20 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
   describe '#merge_train' do
     subject { merge_request.merge_train }
 
-    it 'returns a MergeTrains::Train object' do
-      expect(subject).to be_a(MergeTrains::Train)
+    before do
+      allow(project).to receive(:merge_trains_enabled?).and_return(setting)
+    end
+
+    context 'with MergeTrains disabled' do
+      let(:setting) { false }
+
+      it { is_expected.to be_nil }
+    end
+
+    context 'with MergeTrains enabled' do
+      let(:setting) { true }
+
+      it { is_expected.to be_a(MergeTrains::Train) }
     end
   end
 end

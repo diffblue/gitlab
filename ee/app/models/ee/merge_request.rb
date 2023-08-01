@@ -421,7 +421,7 @@ module EE
     end
 
     def merge_train
-      MergeTrains::Train.new(target_project.id, target_branch)
+      target_project.merge_train_for(target_branch)
     end
 
     private
