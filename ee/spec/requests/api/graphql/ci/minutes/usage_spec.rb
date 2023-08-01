@@ -9,7 +9,7 @@ RSpec.describe 'Query.ciMinutesUsage', feature_category: :purchase do
   let_it_be(:user_project) { create(:project, name: 'Project 1', namespace: user.namespace) }
   let_it_be_with_refind(:group) { create(:group, :public, name: 'test') }
 
-  before(:all) do
+  before_all do
     create(:ci_namespace_monthly_usage,
       namespace: user.namespace,
       amount_used: 50,

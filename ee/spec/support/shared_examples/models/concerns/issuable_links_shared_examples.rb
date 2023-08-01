@@ -36,7 +36,7 @@ RSpec.shared_examples 'issuables that can block or be blocked' do
   end
 
   context 'blocking issuables count' do
-    before :all do
+    before_all do
       create(factory_class, source: blocking_issuable_1, target: blocked_issuable_1, link_type: ::IssuableLink::TYPE_BLOCKS)
       create(factory_class, source: blocking_issuable_1, target: blocked_issuable_2, link_type: ::IssuableLink::TYPE_BLOCKS)
       create(factory_class, source: blocking_issuable_2, target: blocked_issuable_3, link_type: ::IssuableLink::TYPE_BLOCKS)

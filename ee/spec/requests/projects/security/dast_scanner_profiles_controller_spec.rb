@@ -14,7 +14,7 @@ RSpec.describe Projects::Security::DastScannerProfilesController, type: :request
   end
 
   shared_context 'user authorized' do
-    before(:all) do
+    before_all do
       project.add_developer(user)
     end
 

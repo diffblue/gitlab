@@ -11,7 +11,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyBranchesService, f
   let_it_be(:unprotected_branch) { "feature" }
   let(:rules) { [rule] }
 
-  before(:all) do
+  before_all do
     sha = project.repository.create_file(
       project.creator,
       "README.md",

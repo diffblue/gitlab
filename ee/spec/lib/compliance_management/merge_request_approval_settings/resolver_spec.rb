@@ -10,7 +10,7 @@ RSpec.describe ::ComplianceManagement::MergeRequestApprovalSettings::Resolver do
   let(:project) { build(:project, group: group) }
   let(:namespace_project) { build(:project) }
 
-  before(:all) do
+  before_all do
     group.create_group_merge_request_approval_setting
   end
 

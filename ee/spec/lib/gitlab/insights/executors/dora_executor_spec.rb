@@ -39,7 +39,7 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor, time_travel_to: '2021-
     stub_licensed_features(dora4_analytics: true)
   end
 
-  before(:all) do
+  before_all do
     create(:dora_daily_metrics,
            deployment_frequency: 5,
            lead_time_for_changes_in_seconds: 100,

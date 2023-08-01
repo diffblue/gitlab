@@ -10,7 +10,7 @@ RSpec.describe Geo::VerificationState, feature_category: :geo_replication do
 
   context 'for Model classes' do
     context 'when verification state is stored in the model table' do
-      before(:all) do
+      before_all do
         create_dummy_model_table
       end
 
@@ -437,7 +437,7 @@ RSpec.describe Geo::VerificationState, feature_category: :geo_replication do
     end
 
     context 'when verification state is stored in a separate table' do
-      before(:all) do
+      before_all do
         create_dummy_model_with_separate_state_table
       end
 
