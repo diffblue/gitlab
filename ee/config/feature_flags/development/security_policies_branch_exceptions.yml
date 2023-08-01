@@ -1,0 +1,8 @@
+---
+name: security_policies_branch_exceptions
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/126963
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/419074
+milestone: '16.3'
+type: development
+group: group::security policies
+default_enabled: false
