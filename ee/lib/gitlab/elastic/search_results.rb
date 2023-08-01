@@ -296,7 +296,7 @@ module Gitlab
 
       def scope_options(scope)
         case scope
-        when :projects
+        when :projects, :notes
           base_options.merge(filters.slice(:include_archived))
         when :merge_requests
           base_options.merge(filters.slice(:order_by, :sort, :state, :include_archived))
