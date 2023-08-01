@@ -32,12 +32,12 @@ module API
         end
       end
 
-      def model_gateway_headers(headers)
+      def model_gateway_headers(headers, gateway_token)
         telemetry_headers = headers.select { |k| /\Ax-gitlab-cs-/i.match?(k) }
 
         {
           'X-Gitlab-Authentication-Type' => 'oidc',
-          'Authorization' => "Bearer #{headers['X-Gitlab-Oidc-Token']}",
+          'Authorization' => "Bearer #{gateway_token}",
           'Content-Type' => 'application/json',
           'User-Agent' => headers["User-Agent"] # Forward the User-Agent on to the model gateway
         }.merge(telemetry_headers).transform_values { |v| Array(v) }
@@ -99,22 +99,27 @@ module API
       resources :completions do
         post do
           if Gitlab.org_or_com?
-            not_found! unless ::Feature.enabled?(:code_suggestions_completion_api, current_user)
+            forbidden! unless ::Feature.enabled?(:code_suggestions_completion_api, current_user)
             not_found! unless active_code_suggestions_purchase?(params['project_id'])
+
+            token = Gitlab::CodeSuggestions::AccessToken.new(
+              current_user,
+              gitlab_realm: gitlab_realm
+            ).encoded
           else
-            not_found! unless ::Feature.enabled?(:self_managed_code_suggestions_completion_api)
+            forbidden! unless ::Feature.enabled?(:self_managed_code_suggestions_completion_api)
 
             code_suggestions_token = ::Ai::ServiceAccessToken.code_suggestions.active.last
             unauthorized! if code_suggestions_token.nil?
 
-            headers['X-Gitlab-Oidc-Token'] = code_suggestions_token.token
+            token = code_suggestions_token.token
           end
 
           workhorse_headers =
             Gitlab::Workhorse.send_url(
               completions_endpoint,
               body: params.except(:private_token).to_json,
-              headers: model_gateway_headers(headers),
+              headers: model_gateway_headers(headers, token),
               method: "POST"
             )
 

@@ -54,6 +54,15 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     end
   end
 
+  shared_examples 'a forbidden response' do
+    include_examples 'a response', 'unauthorized' do
+      let(:result) { :forbidden }
+      let(:body) do
+        { "message" => "403 Forbidden" }
+      end
+    end
+  end
+
   shared_examples 'a not found response' do
     include_examples 'a response', 'not found' do
       let(:result) { :not_found }
@@ -169,7 +178,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
   end
 
   describe 'POST /code_suggestions/completions' do
-    let_it_be(:token) { 'JWTTOKEN' }
     let(:access_code_suggestions) { true }
 
     let(:body) do
@@ -190,6 +198,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     end
 
     before do
+      allow(Gitlab).to receive(:org_or_com?).and_return(is_saas)
       allow(Ability).to receive(:allowed?).and_call_original
       allow(Ability).to receive(:allowed?).with(current_user, :access_code_suggestions, :global)
                                           .and_return(access_code_suggestions)
@@ -215,7 +224,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           stub_env('CODE_SUGGESTIONS_BASE_URL', nil)
         end
 
-        it 'delegates downstream service call to Workhorse with auth token from the DB' do
+        it 'delegates downstream service call to Workhorse with correct auth token' do
           post_api
 
           expect(response.status).to be(200)
@@ -288,9 +297,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     end
 
     context 'when the instance is Gitlab.org_or_com' do
-      before do
-        allow(Gitlab).to receive(:org_or_com?).and_return(true)
-      end
+      let(:is_saas) { true }
+      let_it_be(:token) { 'generated-jwt' }
 
       let(:headers) do
         {
@@ -299,6 +307,12 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           'Content-Type' => 'application/json',
           'User-Agent' => 'Super Awesome Browser 43.144.12'
         }
+      end
+
+      before do
+        allow_next_instance_of(Gitlab::CodeSuggestions::AccessToken) do |instance|
+          allow(instance).to receive(:encoded).and_return(token)
+        end
       end
 
       context 'when project does not have active code suggestions purchase' do
@@ -327,7 +341,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           stub_feature_flags(code_suggestions_completion_api: false)
         end
 
-        include_examples 'a not found response'
+        include_examples 'a forbidden response'
       end
 
       context 'when purchase_code_suggestions feature flag is disabled' do
@@ -342,9 +356,9 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     end
 
     context 'when the instance is Gitlab self-managed' do
-      before do
-        allow(Gitlab).to receive(:org_or_com?).and_return(false)
-      end
+      let(:is_saas) { false }
+      let_it_be(:token) { 'stored-token' }
+      let_it_be(:service_access_token) { create(:service_access_token, :code_suggestions, :active, token: token) }
 
       let(:headers) do
         {
@@ -353,8 +367,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           'User-Agent' => 'Super Awesome Browser 43.144.12'
         }
       end
-
-      let_it_be(:service_access_token) { create(:service_access_token, :code_suggestions, :active, token: token) }
 
       it_behaves_like 'code completions endpoint'
 
@@ -378,7 +390,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           stub_feature_flags(self_managed_code_suggestions_completion_api: false)
         end
 
-        include_examples 'a not found response'
+        include_examples 'a forbidden response'
       end
     end
   end
