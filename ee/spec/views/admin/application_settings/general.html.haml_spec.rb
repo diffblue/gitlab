@@ -135,4 +135,55 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
       it_behaves_like params[:examples_to_run]
     end
   end
+
+  describe 'instance-level code suggestions settings', feature_category: :code_suggestions do
+    before do
+      allow(::Gitlab).to receive(:org_or_com?).and_return(gitlab_org_or_com?)
+      stub_licensed_features(code_suggestions: false)
+    end
+
+    shared_examples 'does not render the form' do
+      it 'does not render the form' do
+        render
+        expect(rendered).not_to have_field('application_setting_instance_level_code_suggestions_enabled')
+        expect(rendered).not_to have_field('application_setting_ai_access_token')
+      end
+    end
+
+    context 'when on .com or .org' do
+      let(:gitlab_org_or_com?) { true }
+
+      it_behaves_like 'does not render the form'
+    end
+
+    context 'when not on .com and not on .org' do
+      let(:gitlab_org_or_com?) { false }
+
+      context 'with license', :with_license do
+        context 'with :code_suggestions feature available' do
+          before do
+            stub_licensed_features(code_suggestions: true)
+          end
+
+          it 'renders the form' do
+            render
+            expect(rendered).to have_field('application_setting_instance_level_code_suggestions_enabled')
+            expect(rendered).to have_field('application_setting_ai_access_token')
+          end
+        end
+
+        context 'with :code_suggestions feature not available' do
+          before do
+            stub_licensed_features(code_suggestions: false)
+          end
+
+          it_behaves_like 'does not render the form'
+        end
+      end
+
+      context 'with no license', :without_license do
+        it_behaves_like 'does not render the form'
+      end
+    end
+  end
 end

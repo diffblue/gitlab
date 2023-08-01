@@ -1,9 +1,10 @@
 - return if Gitlab.org_or_com?
+- return unless License.feature_available?(:code_suggestions)
 
 - expanded = integration_expanded?('ai_access')
 - token_is_present = @application_setting.ai_access_token.present?
 - token_label = token_is_present ? s_('CodeSuggestionsSM|Enter new personal access token') : s_('CodeSuggestionsSM|Personal access token')
-- token_value = token_is_present ? ApplicationSettingMaskedAttrs::MASK : ''
+- token_value = token_is_present ? ApplicationSetting::MASK_PASSWORD : ''
 
 %section.settings.no-animate#js-ai-access-settings{ class: ('expanded' if expanded) }
   .settings-header
