@@ -17,6 +17,10 @@ RSpec.describe Ci::Bridge do
 
   it_behaves_like 'has secrets', :ci_bridge
 
+  it_behaves_like 'a deployable job in EE' do
+    let(:job) { bridge }
+  end
+
   it 'belongs to an upstream pipeline' do
     expect(bridge).to belong_to(:upstream_pipeline)
   end

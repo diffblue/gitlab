@@ -60,6 +60,10 @@ module EE
           options&.dig(:bridge_needs, :pipeline)
         end
       end
+
+      def playable?
+        super && !waiting_for_deployment_approval?
+      end
     end
   end
 end
