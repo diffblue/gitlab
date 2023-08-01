@@ -49,7 +49,7 @@ RSpec.describe Resolvers::VulnerabilitiesCountPerDayResolver, feature_category: 
 
     context 'when the current user does not have access' do
       it 'returns an empty response' do
-        expect(ordered_history).to be_blank
+        expect(ordered_history).to be_a(Gitlab::Graphql::Errors::ResourceNotAvailable)
       end
     end
   end
