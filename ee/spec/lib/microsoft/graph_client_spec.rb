@@ -47,6 +47,18 @@ RSpec.describe Microsoft::GraphClient, :aggregate_failures, feature_category: :s
         expect(client.user_group_membership_object_ids('user_id'))
           .to match_array(['1ae25d00-68e2-4116-8e52-1013675c9ffd'])
       end
+
+      context 'when the user does not exist in Azure' do
+        it 'returns an empty array' do
+          stub_get_request(
+            url: client.user_group_membership_endpoint('user_id'),
+            response_body: File.read('ee/spec/fixtures/lib/microsoft/graph_client_responses/error.json'),
+            response_status: 404
+          )
+
+          expect(client.user_group_membership_object_ids('user_id')).to match_array([])
+        end
+      end
     end
 
     context 'when the stored access token is expired' do
