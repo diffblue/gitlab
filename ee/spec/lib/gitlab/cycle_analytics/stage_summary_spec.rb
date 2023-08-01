@@ -9,7 +9,7 @@ RSpec.describe Gitlab::CycleAnalytics::StageSummary, feature_category: :devops_r
   let(:options) { { from: 1.day.ago } }
   let(:args) { { options: options, current_user: user } }
 
-  before(:all) do
+  before_all do
     project.add_maintainer(user)
   end
 

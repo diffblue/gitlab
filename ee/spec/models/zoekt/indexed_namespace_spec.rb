@@ -14,7 +14,7 @@ RSpec.describe ::Zoekt::IndexedNamespace, feature_category: :global_search do
   let_it_be(:indexed_project_of_child_namespace) { create(:project, namespace: indexed_child_namespace) }
   let_it_be(:shard) { Zoekt::Shard.create!(index_base_url: 'http://example.com:1234/', search_base_url: 'http://example.com:4567/') }
 
-  before :all do
+  before_all do
     described_class.create!(shard: shard, namespace: indexed_namespace1)
     described_class.create!(shard: shard, namespace: indexed_namespace2)
     described_class.create!(shard: shard, namespace: indexed_parent_namespace)

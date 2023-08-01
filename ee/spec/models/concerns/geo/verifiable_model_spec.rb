@@ -6,7 +6,7 @@ RSpec.describe Geo::VerifiableModel, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   context 'when separate table is used for verification state' do
-    before(:all) do
+    before_all do
       create_dummy_model_with_separate_state_table
     end
 
@@ -29,7 +29,7 @@ RSpec.describe Geo::VerifiableModel, feature_category: :geo_replication do
   end
 
   context 'when separate table is not used for verification state' do
-    before(:all) do
+    before_all do
       create_dummy_model_table
     end
 

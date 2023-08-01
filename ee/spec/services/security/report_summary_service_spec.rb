@@ -25,7 +25,7 @@ RSpec.describe Security::ReportSummaryService, '#execute', feature_category: :vu
   let_it_be(:report_cs) { create(:ci_reports_security_report, type: :container_scanning) }
   let_it_be(:scan_cs) { create(:security_scan, scan_type: :container_scanning, build: build_cs) }
 
-  before(:all) do
+  before_all do
     ds_content = File.read(artifact_ds.file.path)
     Gitlab::Ci::Parsers::Security::DependencyScanning.parse!(ds_content, report_ds)
     report_ds.merge!(report_ds)

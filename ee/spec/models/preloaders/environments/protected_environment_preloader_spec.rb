@@ -58,7 +58,7 @@ RSpec.describe Preloaders::Environments::ProtectedEnvironmentPreloader, :aggrega
     end
 
     context 'with project-level protected environments' do
-      before(:all) do
+      before_all do
         create(
           :protected_environment,
           project: project, name: production.name, authorize_user_to_deploy: production_operator
@@ -73,7 +73,7 @@ RSpec.describe Preloaders::Environments::ProtectedEnvironmentPreloader, :aggrega
     end
 
     context 'with group-level protected environments' do
-      before(:all) do
+      before_all do
         create(
           :protected_environment, :group_level,
           group: root_group, name: production.name, authorize_user_to_deploy: production_operator

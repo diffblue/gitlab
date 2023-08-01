@@ -60,7 +60,7 @@ RSpec.describe GitlabSchema.types['Pipeline'] do
     end
 
     context 'when security findings exist for the pipeline' do
-      before :all do
+      before_all do
         content = File.read(artifact.file.path)
         Gitlab::Ci::Parsers::Security::Sast.parse!(content, report)
         report.merge!(report)

@@ -14,7 +14,7 @@ RSpec.describe Geo::ReplicableModel, feature_category: :geo_replication do
   let_it_be(:primary_node) { create(:geo_node, :primary) }
   let_it_be(:secondary_node) { create(:geo_node) }
 
-  before(:all) do
+  before_all do
     create_dummy_model_table
   end
 

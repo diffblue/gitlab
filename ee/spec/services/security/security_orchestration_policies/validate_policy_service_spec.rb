@@ -558,7 +558,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
       context 'when project has a default protected branch' do
         let_it_be(:container) { create(:project, :repository) }
 
-        before(:all) do
+        before_all do
           container.protected_branches.create!(name: 'master')
         end
 
@@ -583,7 +583,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
       context 'when project has a non-default protected branch' do
         let_it_be(:container) { create(:project, :empty_repo) }
 
-        before(:all) do
+        before_all do
           setup_repository(container, [default_branch, protected_branch])
           container.protected_branches.create!(name: protected_branch)
         end
@@ -609,7 +609,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
       context 'when project has only a default unprotected branch' do
         let_it_be(:container) { create(:project, :empty_repo) }
 
-        before(:all) do
+        before_all do
           setup_repository(container, [unprotected_branch])
         end
 
