@@ -1,10 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Govern', :runner, product_group: :threat_insights, quarantine: {
-    type: :investigating,
-    issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/420136'
-  } do
+  RSpec.describe 'Govern', :runner, product_group: :threat_insights do
     describe 'Security Reports' do
       let(:number_of_dependencies_in_fixture) { 13 }
       let(:dependency_scan_example_vuln) { 'Prototype pollution attack in mixin-deep' }
@@ -20,21 +17,27 @@ module QA
         original_yaml = File.read(gitlab_ci_yaml_path)
         original_yaml << "\n"
         original_yaml << <<~YAML
-        secret_detection:
-          tags: [secure_report]
-          script:
-            - echo "Skipped"
-          artifacts:
-            reports:
-              secret_detection: gl-secret-detection-report.json
+          secret_detection:
+            tags: [secure_report]
+            script:
+              - echo "Skipped"
+            artifacts:
+              reports:
+                secret_detection: gl-secret-detection-report.json
         YAML
+      end
+
+      let(:group) do
+        Resource::Group.fabricate_via_api! do |group|
+          group.path = "govern-security-reports-#{Faker::Alphanumeric.alphanumeric(number: 6)}"
+        end
       end
 
       let!(:project) do
         Resource::Project.fabricate_via_api! do |project|
           project.name = 'project-with-secure'
           project.description = 'Project with Secure'
-          project.group = Resource::Group.fabricate_via_api!
+          project.group = group
         end
       end
 
@@ -148,7 +151,13 @@ module QA
         Page::Group::Menu.perform(&:click_group_security_link)
 
         EE::Page::Group::Secure::Show.perform do |dashboard|
-          expect(dashboard).to have_security_status_project_for_severity('F', project)
+          Support::Retrier.retry_on_exception(
+            max_attempts: 2,
+            reload_page: page,
+            message: "Retry project security status in security dashboard"
+          ) do
+            expect(dashboard).to have_security_status_project_for_severity('F', project)
+          end
         end
 
         Page::Group::Menu.perform(&:click_group_vulnerability_link)
@@ -253,7 +262,7 @@ module QA
       def latest_pipeline
         Resource::Pipeline.fabricate_via_api! do |pipeline|
           pipeline.project = project
-          pipeline.id = project.pipelines.first&.fetch(:id)
+          pipeline.id = project.pipelines.first[:id] unless project.pipelines.empty?
         end
       end
 
