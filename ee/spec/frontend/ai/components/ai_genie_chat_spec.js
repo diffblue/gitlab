@@ -18,6 +18,8 @@ describe('AiGenieChat', () => {
     slots = {},
     glFeatures = { aiChatHistoryContext: true },
   } = {}) => {
+    jest.spyOn(AiGenieLoader.methods, 'computeTransitionWidth').mockImplementation();
+
     wrapper = shallowMountExtended(AiGenieChat, {
       propsData,
       data() {

@@ -44,15 +44,40 @@
   }
 }
 
-// Let's make this a GitLab UI component afterwards.
 .ai-genie-loader {
-  max-width: unset;
+  .transition {
+    transition: width 0.5s ease;
+  }
+
+  .text-enter {
+    opacity: 0;
+  }
+
+  .text-enter-active {
+    transition: opacity 1s ease-in; // we intentionally overlap this transition with .text-leave-active by 200ms
+  }
+
+  .text-enter-to {
+    opacity: 1;
+  }
+
+  .text-leave {
+    opacity: 1;
+  }
+
+  .text-leave-active {
+    transition: opacity 0.7s linear;
+  }
+
+  .text-leave-to {
+    opacity: 0;
+  }
 
   &__dot {
     display: inline-block;
-    width: 0.5rem;
-    height: 0.5rem;
-    background-color: $gray-400;
+    width: 0.3rem;
+    height: 0.3rem;
+    background-color: $gray-200;
     border-radius: 100%;
     animation: AIGenieLoading 1400ms ease-in-out infinite;
     animation-fill-mode: both;

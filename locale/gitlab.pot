@@ -1966,6 +1966,9 @@ msgstr ""
 msgid "AI|Generate issue description"
 msgstr ""
 
+msgid "AI|GitLab Duo is %{transition} an answer"
+msgstr ""
+
 msgid "AI|Helpful"
 msgstr ""
 
@@ -2033,6 +2036,18 @@ msgid "AI|You are not allowed to copy any part of this output into issues, comme
 msgstr ""
 
 msgid "AI|You can ask AI for more information."
+msgstr ""
+
+msgid "AI|finding"
+msgstr ""
+
+msgid "AI|generating"
+msgstr ""
+
+msgid "AI|producing"
+msgstr ""
+
+msgid "AI|working on"
 msgstr ""
 
 msgid "API"

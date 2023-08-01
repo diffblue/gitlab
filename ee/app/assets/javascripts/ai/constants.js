@@ -29,7 +29,15 @@ export const i18n = {
     "AI|May provide inappropriate responses not representative of GitLab's views. Do not input personal data.",
   ),
   GENIE_CHAT_NEW_CHAT: s__('AI|New chat'),
+  GENIE_CHAT_LOADING_MESSAGE: s__('AI|GitLab Duo is %{transition} an answer'),
+  GENIE_CHAT_LOADING_TRANSITIONS: [
+    s__('AI|finding'),
+    s__('AI|working on'),
+    s__('AI|generating'),
+    s__('AI|producing'),
+  ],
 };
+export const GENIE_CHAT_LOADING_TRANSITION_DURATION = 7500;
 export const TOO_LONG_ERROR_TYPE = 'too-long';
 export const AI_GENIE_DEBOUNCE = 300;
 export const GENIE_CHAT_MODEL_ROLES = {
