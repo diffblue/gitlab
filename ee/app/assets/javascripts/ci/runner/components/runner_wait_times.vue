@@ -3,6 +3,7 @@ import { GlSprintf, GlLink, GlLoadingIcon } from '@gitlab/ui';
 import { GlSingleStat } from '@gitlab/ui/dist/charts';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import HelpPopover from '~/vue_shared/components/help_popover.vue';
+import { formatNumber } from '~/locale';
 
 import runnerWaitTimes from 'ee/ci/runner/graphql/performance/runner_wait_times.query.graphql';
 
@@ -21,10 +22,10 @@ export default {
   data() {
     return {
       queuedDuration: {
-        p50: EMPTY_PLACEHOLDER,
-        p75: EMPTY_PLACEHOLDER,
-        p90: EMPTY_PLACEHOLDER,
-        p99: EMPTY_PLACEHOLDER,
+        p50: null,
+        p75: null,
+        p90: null,
+        p99: null,
       },
     };
   },
@@ -47,24 +48,32 @@ export default {
         {
           key: 'p50',
           title: I18N_MEDIAN,
-          value: p50,
+          value: this.formatSeconds(p50),
         },
         {
           key: 'p75',
           title: I18N_P75,
-          value: p75,
+          value: this.formatSeconds(p75),
         },
         {
           key: 'p90',
           title: I18N_P90,
-          value: p90,
+          value: this.formatSeconds(p90),
         },
         {
           key: 'p99',
           title: I18N_P99,
-          value: p99,
+          value: this.formatSeconds(p99),
         },
       ];
+    },
+  },
+  methods: {
+    formatSeconds(value) {
+      if (value === null) {
+        return EMPTY_PLACEHOLDER;
+      }
+      return formatNumber(value, { maximumFractionDigits: 2 });
     },
   },
   jobDurationHelpPagePath: helpPagePath('ci/runners/runners_scope', {
