@@ -124,6 +124,27 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       context 'when scan type matches the approval rule scanners' do
         it_behaves_like 'does not update approvals_required'
         it_behaves_like 'triggers policy bot comment', :scan_finding, true
+
+        it 'logs update' do
+          expect(::Gitlab::AppJsonLogger)
+            .to receive(:info).once.ordered
+            .with(
+              merge_request_id: merge_request.id,
+              message: 'Evaluating MR approval rules from scan result policies',
+              pipeline_ids: [pipeline.id],
+              target_pipeline_ids: [target_pipeline.id]
+            ).and_call_original
+
+          expect(::Gitlab::AppJsonLogger)
+            .to receive(:info).once.ordered
+            .with(
+              approval_rule_id: report_approver_rule.id,
+              message: 'Updating MR approval rule',
+              reason: 'Scanner removed by MR'
+            ).and_call_original
+
+          execute
+        end
       end
 
       context 'when scan type does not match the approval rule scanners' do
@@ -182,6 +203,27 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
         before do
           finding = pipeline_findings.last
           finding.update_column(:uuid, new_finding_uuid)
+        end
+
+        it 'logs update' do
+          expect(::Gitlab::AppJsonLogger)
+            .to receive(:info).once.ordered
+            .with(
+              merge_request_id: merge_request.id,
+              message: 'Evaluating MR approval rules from scan result policies',
+              pipeline_ids: [pipeline.id],
+              target_pipeline_ids: [target_pipeline.id]
+            ).and_call_original
+
+          expect(::Gitlab::AppJsonLogger)
+            .to receive(:info).once.ordered
+            .with(
+              approval_rule_id: report_approver_rule.id,
+              message: 'Updating MR approval rule',
+              reason: 'scan_finding rule violated'
+            ).and_call_original
+
+          execute
         end
 
         it_behaves_like 'does not update approvals_required'
