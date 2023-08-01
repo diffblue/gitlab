@@ -147,8 +147,8 @@ describe('DashboardsList', () => {
 
       describe.each`
         isProject | relativeUrlRoot | url
-        ${true}   | ${'/'}          | ${'/test/test-dashboards/edit#js-analytics-dashboards-settings'}
-        ${true}   | ${'/path'}      | ${'/path/test/test-dashboards/edit#js-analytics-dashboards-settings'}
+        ${true}   | ${'/'}          | ${'/test/test-dashboards/-/settings/analytics#js-analytics-dashboards-settings'}
+        ${true}   | ${'/path'}      | ${'/path/test/test-dashboards/-/settings/analytics#js-analytics-dashboards-settings'}
         ${false}  | ${'/'}          | ${'/groups/test/test-dashboards/-/edit#js-analytics-dashboards-settings'}
         ${false}  | ${'/path'}      | ${'/path/groups/test/test-dashboards/-/edit#js-analytics-dashboards-settings'}
       `('configure dashboard project button', ({ isProject, relativeUrlRoot, url }) => {

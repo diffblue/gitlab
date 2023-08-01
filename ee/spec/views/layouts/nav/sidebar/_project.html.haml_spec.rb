@@ -349,6 +349,14 @@ RSpec.describe 'layouts/nav/sidebar/_project', feature_category: :navigation do
       allow(view).to receive(:current_user).and_return(user)
     end
 
+    describe 'Analytics' do
+      it 'has a link to the Analytics settings' do
+        render
+
+        expect(rendered).to have_link('Analytics', href: project_settings_analytics_path(project))
+      end
+    end
+
     describe 'Monitor' do
       it 'links to settings page' do
         render

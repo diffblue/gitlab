@@ -14,7 +14,8 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
 
   let(:context) do
     Gitlab::Llm::Chain::GitlabContext.new(
-      current_user: user, container: nil, resource: user, ai_request: ai_request_double
+      current_user: user, container: nil, resource: user, ai_request: ai_request_double,
+      tools_used: [Gitlab::Llm::Chain::Tools::IssueIdentifier, Gitlab::Llm::Chain::Tools::IssueIdentifier]
     )
   end
 
@@ -39,6 +40,20 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
 
       expect(answer.is_final).to eq(true)
       expect(answer.content).to include('FooBar')
+    end
+
+    it 'executes associated tools and adds observations during the execution' do
+      # just limiting the number of iterations here from 10 to 2
+      stub_const("#{described_class.name}::MAX_ITERATIONS", 2)
+
+      logger = instance_double(Gitlab::Llm::Logger)
+
+      expect(Gitlab::Llm::Logger).to receive(:build).at_least(:once).and_return(logger)
+      expect(logger).to receive(:debug).at_least(:once)
+      expect(logger).to receive(:info).with(hash_including(message: "Tool cycling detected")).exactly(2)
+      allow(agent).to receive(:request).and_return("Action: IssueIdentifier\nAction Input: #3")
+
+      agent.execute
     end
 
     context 'when max iterations reached' do

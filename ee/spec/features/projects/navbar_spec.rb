@@ -18,7 +18,6 @@ RSpec.describe 'Project navbar', feature_category: :navigation do
     stub_config(registry: { enabled: false })
     stub_feature_flags(harbor_registry_integration: false)
     stub_feature_flags(ml_experiment_tracking: false)
-    stub_feature_flags(combined_analytics_dashboards: false)
     stub_feature_flags(remove_monitor_metrics: false)
     insert_package_nav(_('Deployments'))
     insert_infrastructure_registry_nav
