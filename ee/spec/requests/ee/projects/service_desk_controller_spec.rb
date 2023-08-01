@@ -27,7 +27,7 @@ RSpec.describe Projects::ServiceDeskController, feature_category: :service_desk 
         format: :json
       }
 
-      put namespace_project_service_desk_refresh_path(params)
+      put namespace_project_service_desk_path(params)
 
       settings = project.service_desk_setting
       expect(settings).to be_present
