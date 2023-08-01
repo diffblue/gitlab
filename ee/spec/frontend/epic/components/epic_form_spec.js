@@ -184,10 +184,9 @@ describe('ee/epic/components/epic_form.vue', () => {
 
       findForm().vm.$emit('submit', { preventDefault: () => {} });
 
-      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'editor_type_used', {
-        context: 'Epic',
-        editorType: 'editor_type_plain_text_editor',
-        label: 'editor_tracking',
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'save_markdown', {
+        label: 'markdown_editor',
+        property: 'Epic',
       });
     });
 
