@@ -41,8 +41,30 @@ module Types
           null: true,
           description: 'IID of the pipeline.'
 
+        field :location,
+          type: VulnerabilityLocationType,
+          null: true,
+          alpha: { milestone: '16.3' },
+          description: 'Location of the vulnerability finding. Returns `null` ' \
+                       'if `sast_reports_in_inline_diff` feature flag is disabled.'
+
+        field :identifiers,
+          type: [VulnerabilityIdentifierType],
+          null: true,
+          alpha: { milestone: '16.3' },
+          description: 'Identifiers of the vulnerability finding. Returns `null` ' \
+                       'if `sast_reports_in_inline_diff` feature flag is disabled.'
+
         def found_by_pipeline_iid
           object.dig('found_by_pipeline', 'iid')
+        end
+
+        def location
+          object['location'].merge(report_type: object['report_type']) if Feature.enabled?(:sast_reports_in_inline_diff)
+        end
+
+        def identifiers
+          object['identifiers'] if Feature.enabled?(:sast_reports_in_inline_diff)
         end
       end
       # rubocop: enable Graphql/AuthorizeTypes
