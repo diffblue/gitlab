@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'admin/application_settings/_ai_access.html.haml', feature_category: :code_suggestions do
+RSpec.describe 'admin/application_settings/_ai_access.html.haml', :with_license, feature_category: :code_suggestions do
   let_it_be(:admin) { build_stubbed(:admin) }
   let(:page) { Capybara::Node::Simple.new(rendered) }
 
@@ -11,6 +11,7 @@ RSpec.describe 'admin/application_settings/_ai_access.html.haml', feature_catego
     assign(:application_setting, application_setting)
     allow(view).to receive(:current_user) { admin }
     allow(view).to receive(:expanded).and_return(true)
+    stub_licensed_features(code_suggestions: true)
   end
 
   context 'when ai_access_token is not set' do
@@ -32,7 +33,7 @@ RSpec.describe 'admin/application_settings/_ai_access.html.haml', feature_catego
     it 'renders masked password field' do
       render
       expect(rendered).to have_field('Enter new personal access token', type: 'password')
-      expect(page.find_field('Enter new personal access token').value).to eq(ApplicationSettingMaskedAttrs::MASK)
+      expect(page.find_field('Enter new personal access token').value).to eq(ApplicationSetting::MASK_PASSWORD)
     end
   end
 end

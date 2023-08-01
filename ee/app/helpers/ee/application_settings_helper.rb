@@ -7,6 +7,7 @@ module EE
     override :visible_attributes
     def visible_attributes
       super + [
+        :ai_access_token,
         :allow_group_owners_to_manage_ldap,
         :automatic_purchased_storage_allocation,
         :check_namespace_plan,
@@ -44,6 +45,7 @@ module EE
         :geo_node_allowed_ips,
         :geo_status_timeout,
         :help_text,
+        :instance_level_code_suggestions_enabled,
         :lock_memberships_to_ldap,
         :lock_memberships_to_saml,
         :max_personal_access_token_lifetime,
