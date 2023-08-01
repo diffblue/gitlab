@@ -47900,6 +47900,9 @@ msgstr ""
 msgid "This project is archived and read-only. To resume pull mirroring, unarchive the project."
 msgstr ""
 
+msgid "This project is hidden because its creator has been banned"
+msgstr ""
+
 msgid "This project is licensed under the %{strong_start}%{license_name}%{strong_end}."
 msgstr ""
 
