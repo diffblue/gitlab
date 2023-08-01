@@ -17,6 +17,15 @@ module Types
 
         field :updated_at, Types::TimeType,
           null: true, description: 'Timestamp of last progress update.'
+
+        field :current_value, GraphQL::Types::Int,
+          null: true, description: 'Current value of the work item.'
+
+        field :start_value, GraphQL::Types::Int,
+          null: true, description: 'Start value of the work item.'
+
+        field :end_value, GraphQL::Types::Int,
+          null: true, description: 'End value of the work item.'
       end
       # rubocop:enable Graphql/AuthorizeTypes
     end

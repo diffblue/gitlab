@@ -94,6 +94,9 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
               ... on WorkItemWidgetProgress {
                 progress
                 updatedAt
+                currentValue
+                startValue
+                endValue
               }
             }
           GRAPHQL
@@ -113,8 +116,11 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
               'widgets' => include(
                 hash_including(
                   'type' => 'PROGRESS',
-                  'progress' => objective&.progress&.progress,
-                  'updatedAt' => objective.progress.updated_at.iso8601
+                  'progress' => objective.progress.progress,
+                  'updatedAt' => objective.progress.updated_at&.iso8601,
+                  'currentValue' => objective.progress.current_value,
+                  'startValue' => objective.progress.start_value,
+                  'endValue' => objective.progress.end_value
                 )
               )
             )

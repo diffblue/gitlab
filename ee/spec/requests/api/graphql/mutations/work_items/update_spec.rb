@@ -35,23 +35,6 @@ RSpec.describe 'Update a work item' do
     end
   end
 
-  shared_examples 'update work item progress widget' do
-    it 'updates the progress widget' do
-      expect do
-        post_graphql_mutation(mutation, current_user: current_user)
-        work_item.reload
-      end.to change { work_item_progress }.from(nil).to(new_progress)
-
-      expect(response).to have_gitlab_http_status(:success)
-      expect(mutation_response['workItem']['widgets']).to include(
-        {
-          'progress' => new_progress,
-          'type' => 'PROGRESS'
-        }
-      )
-    end
-  end
-
   context 'with iteration widget input' do
     let_it_be(:cadence) { create(:iterations_cadence, group: group) }
     let_it_be(:old_iteration) { create(:iteration, iterations_cadence: cadence) }
@@ -241,8 +224,14 @@ RSpec.describe 'Update a work item' do
   end
 
   context 'with progress widget input' do
-    let(:new_progress) { 30 }
-    let(:input) { { 'progressWidget' => { 'current_value' => new_progress } } }
+    let(:new_progress) { 50 }
+    let(:new_current_value) { 30 }
+    let(:new_start_value) { 10 }
+    let(:new_end_value) { 50 }
+    let(:input) do
+      { 'progressWidget' => { 'current_value' => new_current_value, 'start_value' => new_start_value,
+                              'end_value' => new_end_value } }
+    end
 
     let_it_be_with_refind(:work_item) { create(:work_item, :objective, project: project) }
 
@@ -253,6 +242,9 @@ RSpec.describe 'Update a work item' do
             type
             ... on WorkItemWidgetProgress {
               progress
+              currentValue
+              startValue
+              endValue
             }
           }
         }
@@ -282,7 +274,23 @@ RSpec.describe 'Update a work item' do
       context 'when user has permissions to admin a work item' do
         let(:current_user) { reporter }
 
-        it_behaves_like 'update work item progress widget'
+        it 'updates the progress widget' do
+          expect do
+            post_graphql_mutation(mutation, current_user: current_user)
+            work_item.reload
+          end.to change { work_item_progress }.from(nil).to(new_progress)
+
+          expect(response).to have_gitlab_http_status(:success)
+          expect(mutation_response['workItem']['widgets']).to include(
+            {
+              'progress' => new_progress,
+              'type' => 'PROGRESS',
+              'currentValue' => new_current_value,
+              'startValue' => new_start_value,
+              'endValue' => new_end_value
+            }
+          )
+        end
       end
 
       it_behaves_like 'user without permission to admin work item cannot update the attribute'
