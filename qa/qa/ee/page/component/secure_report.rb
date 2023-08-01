@@ -36,6 +36,9 @@ module QA
           end
 
           def filter_report_type(report, project_filter = true)
+            wait_until(max_duration: 20, sleep_interval: 3, message: "Wait for tool dropdown to appear") do
+              has_element?(:filter_tool_dropdown)
+            end
             click_element(:filter_tool_dropdown)
 
             if project_filter
