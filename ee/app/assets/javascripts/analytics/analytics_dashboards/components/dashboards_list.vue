@@ -144,8 +144,8 @@ export default {
         gon.relative_url_root || '/',
         this.isProject ? '' : 'groups',
         this.namespaceFullPath,
-        this.isProject ? '' : '-',
-        'edit',
+        '-',
+        this.isProject ? 'settings/analytics' : 'edit',
       );
 
       visitUrl(`${url}#js-analytics-dashboards-settings`);

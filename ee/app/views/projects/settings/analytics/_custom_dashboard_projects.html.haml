@@ -1,0 +1,31 @@
+- can_see_analytics_dashboards = project_analytics_dashboard_available?(@project)
+- return unless can_see_analytics_dashboards
+
+%section.settings.no-animate#js-analytics-dashboards-settings{ class: ('expanded' if expanded) }
+  .settings-header
+    %h3.settings-title.js-settings-toggle.js-settings-toggle-trigger-only= s_('ProjectSettings|Custom dashboard projects')
+    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
+      = expanded ? _('Collapse') : _('Expand')
+    %p= s_('ProjectSettings|Store custom configuration files.')
+  .settings-content
+    %h4= s_('ProjectSettings|Analytics Dashboards')
+    %p= s_('ProjectSettings|Select the project containing Analytics Dashboards configuration files.')
+    = gitlab_ui_form_for @project, url: project_settings_analytics_path(@project, anchor: 'js-analytics-dashboards-settings'), html: { class: 'fieldset-form', data: { testid: 'analytics-dashboards-settings' } } do |form|
+      = form_errors(@project)
+
+      %fieldset
+        .form-group
+          - pointer = @project.analytics_dashboards_pointer || @project.build_analytics_dashboards_pointer
+          = form.fields_for :analytics_dashboards_pointer_attributes, pointer do |pointer_form|
+            = pointer_form.hidden_field :id
+            .js-vue-project-select{ data: { label: s_('ProjectSettings|Select a project'),
+                input_name: 'project[analytics_dashboards_pointer_attributes][target_project_id]',
+                input_id: 'project_analytics_dashboards_pointer_attributes_project_id',
+                group_id: @project.root_namespace.id,
+                order_by: 'last_activity_at',
+                with_shared: true.to_s,
+                include_subgroups: true.to_s,
+                clearable: true.to_s,
+                selected: pointer.target_project_id } }
+
+      = form.submit _('Save changes'), pajamas_button: true
