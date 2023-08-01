@@ -16,6 +16,13 @@ module Security
         approval_rules = merge_request.approval_rules.scan_finding
         return if approval_rules.empty?
 
+        log_update_approval_rule('Evaluating MR approval rules from scan result policies',
+          merge_request_id: merge_request.id,
+          pipeline_ids: multi_pipeline_scan_result_policies_enabled? ? related_pipeline_ids : pipeline.id,
+          target_pipeline_ids:
+            multi_pipeline_scan_result_policies_enabled? ? related_target_pipeline_ids : target_pipeline.id
+        )
+
         violated_rules, unviolated_rules = partition_rules(approval_rules)
 
         ApprovalMergeRequestRule.remove_required_approved(unviolated_rules) if unviolated_rules.any?
@@ -30,10 +37,29 @@ module Security
         approval_rules.partition do |approval_rule|
           approval_rule = approval_rule.source_rule if approval_rule.source_rule
 
-          next true if scan_removed?(approval_rule)
+          if scan_removed?(approval_rule)
+            log_update_approval_rule(
+              'Updating MR approval rule',
+              reason: 'Scanner removed by MR', approval_rule_id: approval_rule.id
+            )
 
-          violates_approval_rule?(approval_rule)
+            next true
+          end
+
+          approval_rule_violated = violates_approval_rule?(approval_rule)
+          if approval_rule_violated
+            log_update_approval_rule(
+              'Updating MR approval rule',
+              reason: 'scan_finding rule violated', approval_rule_id: approval_rule.id
+            )
+          end
+
+          approval_rule_violated
         end
+      end
+
+      def log_update_approval_rule(message, **attributes)
+        Gitlab::AppJsonLogger.info(message: message, **attributes)
       end
 
       def violates_approval_rule?(approval_rule)
