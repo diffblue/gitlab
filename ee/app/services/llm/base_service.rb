@@ -13,7 +13,7 @@ module Llm
 
     def execute
       unless valid?
-        logger.debug(message: "Returning from Service due to validation")
+        logger.info(message: "Returning from Service due to validation")
         return error(INVALID_MESSAGE)
       end
 

@@ -19,7 +19,7 @@ module Gitlab
         def complete(prompt:, **options)
           return unless enabled?
 
-          logger.debug(message: "Performing request to Anthropic", options: options)
+          logger.info(message: "Performing request to Anthropic", options: options)
 
           response = Gitlab::HTTP.post(
             URI.join(URL, '/v1/complete'),
