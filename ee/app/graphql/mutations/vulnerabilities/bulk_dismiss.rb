@@ -25,7 +25,6 @@ module Mutations
         description: 'Reason why vulnerability should be dismissed.'
 
       field :vulnerabilities, [Types::VulnerabilityType],
-        alpha: { milestone: '16.2' },
         null: false,
         description: 'Vulnerabilities after state change.'
 

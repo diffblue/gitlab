@@ -43,8 +43,7 @@ module Vulnerabilities
         .with_namespace
         .include_project_feature
         .all? do |project|
-          Feature.enabled?(:dismiss_multiple_vulnerabilities, project) &&
-            can?(user, :admin_vulnerability, project)
+          can?(user, :admin_vulnerability, project)
         end
     end
 

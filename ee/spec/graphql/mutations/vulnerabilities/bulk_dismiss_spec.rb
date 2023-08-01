@@ -15,7 +15,6 @@ RSpec.describe Mutations::Vulnerabilities::BulkDismiss, feature_category: :vulne
   let(:dismissal_reason) { 'used_in_tests' }
 
   before do
-    stub_feature_flags(dismiss_multiple_vulnerabilities: [project])
     stub_licensed_features(security_dashboard: true)
   end
 
