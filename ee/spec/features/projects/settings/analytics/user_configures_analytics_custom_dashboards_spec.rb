@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Project > Settings > Analytics Dashboards', :js, feature_category: :value_stream_management do
+RSpec.describe 'Project > Settings > Analytics -> Custom dashboard projects', :js, feature_category: :value_stream_management do
   include ListboxHelpers
 
   let_it_be(:user) { create(:user) }
@@ -19,19 +19,20 @@ RSpec.describe 'Project > Settings > Analytics Dashboards', :js, feature_categor
     before do
       stub_licensed_features(project_level_analytics_dashboard: false)
 
-      visit edit_project_path(project)
+      visit project_settings_analytics_path(project)
     end
 
-    it 'does not show the Analytics Dashboards config' do
-      expect(project).not_to have_content s_('ProjectSettings|Analytics')
+    it 'does not show the custom dashboard projects config' do
+      expect(page).not_to have_content s_('Custom dashboard projects')
     end
   end
 
   context 'with correct license' do
     before do
-      stub_licensed_features(project_level_analytics_dashboard: true)
+      stub_licensed_features(project_level_analytics_dashboard: true, product_analytics: true)
+      stub_feature_flags(product_analytics_admin_settings: true, product_analytics_dashboards: true)
 
-      visit edit_project_path(project)
+      visit project_settings_analytics_path(project)
     end
 
     it 'allows to select a project for the Analytics Dashboards config' do

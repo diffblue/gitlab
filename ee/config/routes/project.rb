@@ -144,6 +144,10 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
           resources :oncall_schedules, only: [:index], path: 'oncall_schedules'
           resources :escalation_policies, only: [:index], path: 'escalation_policies'
         end
+
+        namespace :settings do
+          resource :analytics, only: [:show, :update]
+        end
       end
       # End of the /-/ scope.
 

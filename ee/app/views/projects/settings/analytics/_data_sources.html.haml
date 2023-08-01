@@ -1,0 +1,10 @@
+- return unless @project.licensed_feature_available?(:product_analytics) && Feature.enabled?(:product_analytics_admin_settings) && current_user.can?(:modify_product_analytics_settings, @project) && Feature.enabled?(:product_analytics_dashboards, @project)
+
+%section.settings.no-animate#js-analytics-data-sources{ class: ('expanded' if expanded) }
+  .settings-header
+    %h3.settings-title.js-settings-toggle.js-settings-toggle-trigger-only= s_('ProjectSettings|Data sources')
+    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
+      = expanded ? _('Collapse') : _('Expand')
+    %p= s_('ProjectSettings|All your dashboard data sources.')
+  .settings-content
+    = render_if_exists 'projects/settings/analytics/product_analytics'
