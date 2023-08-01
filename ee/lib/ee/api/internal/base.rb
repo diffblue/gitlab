@@ -23,22 +23,6 @@ module EE
               end
             end
 
-            override :send_git_audit_streaming_event
-            def send_git_audit_streaming_event(msg)
-              return if actor.user.blank? || @project.blank?
-
-              audit_context = {
-                name: 'repository_git_operation',
-                stream_only: true,
-                author: actor.deploy_key_or_user,
-                scope: @project,
-                target: @project,
-                message: msg
-              }
-
-              ::Gitlab::Audit::Auditor.audit(audit_context)
-            end
-
             override :two_factor_manual_otp_check
             def two_factor_manual_otp_check
               return { success: false, message: 'Feature is not available' } unless ::License.feature_available?(:git_two_factor_enforcement)
