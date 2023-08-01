@@ -6,6 +6,7 @@ import {
   GlButton,
   GlLink,
   GlFormInput,
+  GlSprintf,
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
@@ -58,10 +59,16 @@ export default {
     GlButton,
     GlLink,
     GlFormInput,
+    GlSprintf,
     AccessDropdown,
   },
   directives: { GlTooltip },
-  inject: { accessLevelsData: { default: [] } },
+  inject: {
+    accessLevelsData: { default: [] },
+
+    apiLink: {},
+    docsLink: {},
+  },
   props: {
     disabled: {
       type: Boolean,
@@ -172,6 +179,9 @@ export default {
     approvalRulesLabel: s__('ProtectedEnvironments|Approval rules'),
     approvalsInvalid: s__('ProtectedEnvironments|Number of approvals must be between 1 and 5'),
     removeApprover: s__('ProtectedEnvironments|Remove approval rule'),
+    unifiedRulesHelpText: s__(
+      'ProtectedEnvironments|To configure unified approval rules, use the %{apiLinkStart}API%{apiLinkEnd}. Consider using %{docsLinkStart}multiple approval rules%{docsLinkEnd} instead.',
+    ),
   },
 };
 </script>
@@ -193,6 +203,16 @@ export default {
         :items="approvers"
         @select="updateApprovers"
       />
+      <template #description>
+        <gl-sprintf :message="$options.i18n.unifiedRulesHelpText">
+          <template #apiLink="{ content }">
+            <gl-link :href="apiLink">{{ content }}</gl-link>
+          </template>
+          <template #docsLink="{ content }">
+            <gl-link :href="docsLink">{{ content }}</gl-link>
+          </template>
+        </gl-sprintf>
+      </template>
     </gl-form-group>
     <gl-collapse :visible="hasSelectedApprovers">
       <span class="gl-font-weight-bold">{{ $options.i18n.approvalRulesLabel }}</span>

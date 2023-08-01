@@ -5,6 +5,7 @@ import Vuex from 'vuex';
 import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { mountExtended, extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { TEST_HOST } from 'helpers/test_constants';
 import axios from '~/lib/utils/axios_utils';
 import { sprintf, s__ } from '~/locale';
 import AccessDropdown from '~/projects/settings/components/access_dropdown.vue';
@@ -88,6 +89,9 @@ const DEFAULT_ACCESS_LEVELS_DATA = [
   },
 ];
 
+const API_LINK = `${TEST_HOST}/docs/api.md`;
+const DOCS_LINK = `${TEST_HOST}/docs/protected_environments.md`;
+
 Vue.use(Vuex);
 
 describe('ee/protected_environments/edit_protected_environments_list.vue', () => {
@@ -102,6 +106,8 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
       store,
       provide: {
         accessLevelsData: DEFAULT_ACCESS_LEVELS_DATA,
+        apiLink: API_LINK,
+        docsLink: DOCS_LINK,
       },
     });
 
