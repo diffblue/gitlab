@@ -351,10 +351,10 @@ RSpec.shared_context 'with remote development shared fixtures' do
               resources:
                 limits:
                   cpu: 500m
-                  memory: 128Mi
+                  memory: 256Mi
                 requests:
-                  cpu: 30m
-                  memory: 32Mi
+                  cpu: 100m
+                  memory: 128Mi
               volumeMounts:
               - mountPath: "/projects"
                 name: gl-workspace-data
@@ -382,10 +382,10 @@ RSpec.shared_context 'with remote development shared fixtures' do
               resources:
                 limits:
                   cpu: 500m
-                  memory: 128Mi
+                  memory: 256Mi
                 requests:
-                  cpu: 30m
-                  memory: 32Mi
+                  cpu: 100m
+                  memory: 128Mi
               volumeMounts:
               - mountPath: "/projects"
                 name: gl-workspace-data
@@ -561,10 +561,10 @@ RSpec.shared_context 'with remote development shared fixtures' do
               resources:
                 limits:
                   cpu: 500m
-                  memory: 128Mi
+                  memory: 256Mi
                 requests:
-                  cpu: 30m
-                  memory: 32Mi
+                  cpu: 100m
+                  memory: 128Mi
               volumeMounts:
               - mountPath: "/projects"
                 name: gl-workspace-data
@@ -592,10 +592,10 @@ RSpec.shared_context 'with remote development shared fixtures' do
               resources:
                 limits:
                   cpu: 500m
-                  memory: 128Mi
+                  memory: 256Mi
                 requests:
-                  cpu: 30m
-                  memory: 32Mi
+                  cpu: 100m
+                  memory: 128Mi
               volumeMounts:
               - mountPath: "/projects"
                 name: gl-workspace-data

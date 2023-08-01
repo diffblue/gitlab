@@ -49,10 +49,10 @@ module RemoteDevelopment
                     'value' => ssh_port.to_s
                   }
                 ],
-                'memoryLimit' => '128Mi',
-                'memoryRequest' => '32Mi',
+                'memoryLimit' => '256Mi',
+                'memoryRequest' => '128Mi',
                 'cpuLimit' => '500m',
-                'cpuRequest' => '30m'
+                'cpuRequest' => '100m'
               }
             }
           ]
