@@ -17,7 +17,7 @@ query groupScanResultPolicies(
           name
           webUrl
         }
-        groupApprovers {
+        allGroupApprovers {
           id
           fullPath
           webUrl

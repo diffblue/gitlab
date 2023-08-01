@@ -51,6 +51,7 @@ export const mockProjectScanResultPolicy = {
   enabled: false,
   userApprovers: [],
   groupApprovers: [],
+  allGroupApprovers: [],
   roleApprovers: [],
   source: {
     __typename: 'ProjectSecurityPolicySource',
@@ -68,6 +69,7 @@ export const mockGroupScanResultPolicy = {
   enabled: mockDefaultBranchesScanResultObject.enabled,
   userApprovers: [],
   groupApprovers: [],
+  allGroupApprovers: [],
   roleApprovers: [],
   source: {
     __typename: 'GroupSecurityPolicySource',
@@ -181,6 +183,7 @@ export const mockProjectWithBranchesScanResultPolicy = {
   enabled: true,
   userApprovers: [{ name: 'the.one' }],
   groupApprovers: [],
+  allGroupApprovers: [],
   roleApprovers: [],
   source: {
     __typename: 'ProjectSecurityPolicySource',
@@ -198,6 +201,7 @@ export const mockProjectWithAllApproverTypesScanResultPolicy = {
   enabled: false,
   userApprovers: [{ name: 'the.one' }],
   groupApprovers: [{ fullPath: 'the.one.group' }],
+  allGroupApprovers: [{ fullPath: 'the.one.group' }],
   roleApprovers: ['OWNER'],
   source: {
     __typename: 'ProjectSecurityPolicySource',
