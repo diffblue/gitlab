@@ -249,6 +249,23 @@ custom: true }
       end
     end
 
+    context 'when stage names are not unique' do
+      let(:stage_params) do
+        [
+          { start_event_identifier: :issue_created, end_event_identifier: :issue_closed, name: 'foo', custom: true },
+          { start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_closed, name: 'foo',
+            custom: true }
+        ]
+      end
+
+      it 'returns 422 unprocessable entity' do
+        request
+
+        expect(response).to have_gitlab_http_status(:unprocessable_entity)
+        expect(json_response.dig('payload', 'errors', 'stages')).to include("has already been taken")
+      end
+    end
+
     it_behaves_like 'authorization examples'
   end
 
