@@ -33,5 +33,6 @@
       - else
         = link_button_to nil, update_now_project_mirror_path(@project), method: :post, class: 'js-force-update-mirror', data: { container: 'body', toggle: 'tooltip', qa_selector: 'update_now_button', testid: 'update-now-button' }, title: _('Update now'), icon: 'retry'
       = render Pajamas::ButtonComponent.new(variant: :danger,
+        category: :secondary,
         icon: 'remove',
         button_options: { class: 'js-delete-mirror js-delete-pull-mirror', title: _('Remove'), data: { toggle: 'tooltip', container: 'body' } })

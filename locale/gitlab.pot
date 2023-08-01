@@ -35848,6 +35848,9 @@ msgstr ""
 msgid "Profiles|Add new email"
 msgstr ""
 
+msgid "Profiles|Add new mirror repository"
+msgstr ""
+
 msgid "Profiles|An error occurred while updating your username, please try again."
 msgstr ""
 
