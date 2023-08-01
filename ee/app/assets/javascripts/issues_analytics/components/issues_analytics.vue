@@ -226,6 +226,7 @@ export default {
         )
       "
       :svg-path="noDataEmptyStateSvgPath"
+      :svg-height="150"
     />
   </div>
 </template>

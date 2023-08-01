@@ -1,8 +1,9 @@
 <script>
 import * as Sentry from '@sentry/browser';
 import { GlToggle, GlBadge, GlAlert, GlSprintf, GlLink } from '@gitlab/ui';
-import { DATA_VIZ_BLUE_500 } from '@gitlab/ui/dist/tokens/js/tokens';
+import { DATA_VIZ_BLUE_500, GRAY_50 } from '@gitlab/ui/dist/tokens/js/tokens';
 import * as DoraApi from 'ee/api/dora_api';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
 import { toYmd } from '~/analytics/shared/utils';
 import { createAlert } from '~/alert';
@@ -14,6 +15,7 @@ import CiCdAnalyticsCharts from '~/vue_shared/components/ci_cd_analytics/ci_cd_a
 import { DEFAULT_SELECTED_CHART } from '~/vue_shared/components/ci_cd_analytics/constants';
 import glFeaturesFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { PROMO_URL } from 'jh_else_ce/lib/utils/url_utility';
+import { ERROR_FORECAST_FAILED, ERROR_FORECAST_UNAVAILABLE } from '../graphql/constants';
 import DoraChartHeader from './dora_chart_header.vue';
 import {
   allChartDefinitions,
@@ -54,6 +56,9 @@ export default {
     GlSprintf,
     GlLink,
   },
+  directives: {
+    SafeHtml,
+  },
   mixins: [glFeaturesFlagMixin()],
   inject: {
     projectPath: {
@@ -61,6 +66,10 @@ export default {
       default: '',
     },
     groupPath: {
+      type: String,
+      default: '',
+    },
+    contextId: {
       type: String,
       default: '',
     },
@@ -80,6 +89,12 @@ export default {
   i18n: {
     showForecast: s__('DORA4Metrics|Show forecast'),
     forecast: s__('DORA4Metrics|Forecast'),
+    forecastUnavailable: s__(
+      'DORA4Metrics|The forecast might be inaccurate. To improve it, select a wider time frame or try again when more data is available',
+    ),
+    forecastFailed: s__(
+      'DORA4Metrics|Failed to generate forecast. Try again later. If the problem persists, consider %{linkStart}creating an issue%{linkEnd}.',
+    ),
     badgeTitle: __('Experiment'),
     confirmationTitle: s__('DORA4Metrics|Accept testing terms of use?'),
     confirmationBtnText: s__('DORA4Metrics|Accept testing terms'),
@@ -110,12 +125,21 @@ export default {
       showForecast: false,
       forecastConfirmed: false,
       forecastChartData: {
-        [LAST_WEEK]: {},
-        [LAST_MONTH]: {},
-        [LAST_90_DAYS]: {},
-        [LAST_180_DAYS]: {},
+        [LAST_WEEK]: [],
+        [LAST_MONTH]: [],
+        [LAST_90_DAYS]: [],
+        [LAST_180_DAYS]: [],
+      },
+      rawApiData: {
+        [LAST_WEEK]: [],
+        [LAST_MONTH]: [],
+        [LAST_90_DAYS]: [],
+        [LAST_180_DAYS]: [],
       },
       selectedChartIndex: DEFAULT_SELECTED_CHART,
+      forecastRequestErrorMessage: '',
+      forecastError: null,
+      isLoading: false,
     };
   },
   computed: {
@@ -130,6 +154,33 @@ export default {
     },
     metricsRequestPath() {
       return this.projectPath ? this.projectPath : `groups/${this.groupPath}`;
+    },
+    selectedChartDefinition() {
+      return allChartDefinitions[this.selectedChartIndex];
+    },
+    selectedChartId() {
+      return this.selectedChartDefinition.id;
+    },
+    selectedForecast() {
+      return this.forecastChartData[this.selectedChartId];
+    },
+    selectedDataSeries() {
+      return this.chartData[this.selectedChartId][0];
+    },
+    shouldFetchForecast() {
+      return this.showForecast && this.forecastConfirmed && !this.selectedForecast?.data.length;
+    },
+    forecastHorizon() {
+      return this.$options.forecastDays[this.selectedChartId];
+    },
+    useHoltWintersForecast() {
+      return Boolean(this.glFeatures.useHoltWintersForecastForDeploymentFrequency);
+    },
+    isForecastUnavailableError() {
+      return Boolean(this.forecastError === ERROR_FORECAST_UNAVAILABLE);
+    },
+    alertVariant() {
+      return this.isForecastUnavailableError ? 'tip' : 'warning';
     },
   },
   async mounted() {
@@ -172,30 +223,13 @@ export default {
           },
         ];
 
+        this.rawApiData[id] = apiData;
         this.forecastChartData[id] = {
           name: this.$options.i18n.forecast,
           data: [],
           lineStyle: { type: 'dashed', color: DATA_VIZ_BLUE_500 },
-          areaStyle: { opacity: 0 },
+          areaStyle: { opacity: 1, color: GRAY_50 },
         };
-
-        if (apiData?.length > 0) {
-          const forecastDataSeries = forecastDataToSeries({
-            forecastData: calculateForecast({
-              rawApiData: apiData,
-              forecastHorizon: this.$options.forecastDays[id],
-            }),
-            forecastHorizon: this.$options.forecastDays[id],
-            forecastSeriesLabel: this.$options.i18n.forecast,
-            dataSeries: seriesData[0].data,
-            endDate,
-          });
-
-          this.forecastChartData[id] = {
-            ...this.forecastChartData[id],
-            data: forecastDataSeries,
-          };
-        }
       }),
     );
 
@@ -217,6 +251,7 @@ export default {
   methods: {
     async onSelectChart(selectedChartIndex) {
       this.selectedChartIndex = selectedChartIndex;
+      await this.fetchForecast();
     },
     getMetricsRequestParams(selectedChartIndex) {
       const {
@@ -227,15 +262,56 @@ export default {
         created_after: toYmd(start_date),
       };
     },
+    async fetchForecast() {
+      if (this.shouldFetchForecast) {
+        this.isLoading = true;
+        this.forecastError = null;
+        const { endDate } = this.selectedChartDefinition;
+        const { selectedChartId: id, forecastHorizon, useHoltWintersForecast, contextId } = this;
+
+        try {
+          this.forecastRequestErrorMessage = '';
+
+          const forecastData = await calculateForecast({
+            contextId,
+            forecastHorizon,
+            useHoltWintersForecast,
+            rawApiData: this.rawApiData[id],
+          });
+
+          this.forecastChartData[id].data = forecastDataToSeries({
+            forecastData,
+            forecastHorizon,
+            endDate,
+            dataSeries: this.selectedDataSeries.data,
+            forecastSeriesLabel: this.$options.i18n.forecast,
+          });
+        } catch (error) {
+          if (error?.message === ERROR_FORECAST_UNAVAILABLE) {
+            this.forecastError = ERROR_FORECAST_UNAVAILABLE;
+            this.forecastRequestErrorMessage = this.$options.i18n.forecastUnavailable;
+          } else {
+            this.forecastError = ERROR_FORECAST_FAILED;
+            this.forecastRequestErrorMessage = this.$options.i18n.forecastFailed;
+          }
+        } finally {
+          this.isLoading = false;
+        }
+      }
+    },
     async onToggleForecast(toggleValue) {
       if (toggleValue) {
         await this.confirmForecastTerms();
         if (this.forecastConfirmed) {
           this.showForecast = toggleValue;
+          await this.fetchForecast();
         }
       } else {
         this.showForecast = toggleValue;
       }
+    },
+    onDismissAlert() {
+      this.forecastRequestErrorMessage = '';
     },
     async confirmForecastTerms() {
       if (this.forecastConfirmed) return;
@@ -254,7 +330,6 @@ export default {
       });
     },
   },
-
   areaChartOptions,
   chartDescriptionText,
   chartDocumentationHref,
@@ -271,6 +346,7 @@ export default {
       :chart-documentation-href="$options.chartDocumentationHref"
     />
     <ci-cd-analytics-charts
+      :loading="isLoading"
       :charts="charts"
       :chart-options="$options.areaChartOptions"
       @select-chart="onSelectChart"
@@ -284,7 +360,7 @@ export default {
             data-testid="data-forecast-toggle"
             @change="onToggleForecast"
           />
-          <gl-badge size="md" variant="info" class="gl-ml-3">{{
+          <gl-badge size="md" variant="neutral" class="gl-ml-3">{{
             $options.i18n.badgeTitle
           }}</gl-badge>
         </div>
@@ -310,12 +386,34 @@ export default {
         </gl-alert>
       </template>
       <template #metrics="{ selectedChart }">
-        <value-stream-metrics
-          :request-path="metricsRequestPath"
-          :requests="$options.metricsRequest"
-          :request-params="getMetricsRequestParams(selectedChart)"
-          :filter-fn="$options.filterFn"
-        />
+        <div>
+          <gl-alert
+            v-if="forecastRequestErrorMessage.length"
+            data-testid="forecast-error"
+            :variant="alertVariant"
+            @dismiss="onDismissAlert"
+          >
+            <gl-sprintf v-if="!isForecastUnavailableError" :message="forecastRequestErrorMessage">
+              <template #link="{ content }">
+                <gl-link
+                  class="gl-display-inline-block"
+                  :href="$options.FORECAST_FEEDBACK_ISSUE_URL"
+                  target="_blank"
+                  >{{ content }}</gl-link
+                >
+              </template>
+            </gl-sprintf>
+            <template v-else>
+              {{ forecastRequestErrorMessage }}
+            </template>
+          </gl-alert>
+          <value-stream-metrics
+            :request-path="metricsRequestPath"
+            :requests="$options.metricsRequest"
+            :request-params="getMetricsRequestParams(selectedChart)"
+            :filter-fn="$options.filterFn"
+          />
+        </div>
       </template>
     </ci-cd-analytics-charts>
   </div>

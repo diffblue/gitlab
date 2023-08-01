@@ -1,0 +1,13 @@
+mutation buildForecast($forecastType: String!, $contextId: GlobalID!, $forecastHorizon: Int!) {
+  buildForecast(input: { type: $forecastType, contextId: $contextId, horizon: $forecastHorizon }) {
+    forecast {
+      status
+      values {
+        nodes {
+          date: datapoint
+          value
+        }
+      }
+    }
+  }
+}
