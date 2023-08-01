@@ -60,10 +60,10 @@ module RemoteDevelopment
               # command has been overridden here as the default command in the alpine/git
               # container invokes git directly
               'command' => %w[/bin/sh -c],
-              'memoryLimit' => '128Mi',
-              'memoryRequest' => '32Mi',
+              'memoryLimit' => '256Mi',
+              'memoryRequest' => '128Mi',
               'cpuLimit' => '500m',
-              'cpuRequest' => '30m'
+              'cpuRequest' => '100m'
             }
           }
 

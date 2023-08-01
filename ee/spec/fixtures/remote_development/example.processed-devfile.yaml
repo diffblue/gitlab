@@ -47,10 +47,10 @@ components:
           value: "60001"
         - name: SSH_PORT
           value: "60022"
-      memoryLimit: 128Mi
-      memoryRequest: 32Mi
+      memoryLimit: 256Mi
+      memoryRequest: 128Mi
       cpuLimit: 500m
-      cpuRequest: 30m
+      cpuRequest: 100m
   - name: gl-cloner-injector
     container:
       image: alpine/git:2.36.3
@@ -69,10 +69,10 @@ components:
       command:
         - "/bin/sh"
         - "-c"
-      memoryLimit: 128Mi
-      memoryRequest: 32Mi
+      memoryLimit: 256Mi
+      memoryRequest: 128Mi
       cpuLimit: 500m
-      cpuRequest: 30m
+      cpuRequest: 100m
 events:
   preStart:
     - gl-editor-injector-command
