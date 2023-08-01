@@ -25,7 +25,7 @@ module QA
               within_element("severity_accordion_item_#{severity}") do
                 click_on severity
               end
-              has_element?(:project_name_text, text: "#{project.group.sandbox.path} / #{project.group.path} / #{project.name}")
+              has_element?(:project_name_text, text: "#{project.group.sandbox.path} / #{project.group.path} / #{project.name}", wait: 5)
             end
           end
         end
