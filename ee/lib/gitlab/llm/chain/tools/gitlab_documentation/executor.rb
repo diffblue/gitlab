@@ -26,7 +26,7 @@ module Gitlab
             def perform
               # We can't reuse the injected client here but need to call TanukiBot as it uses the
               # embedding database and calls the OpenAI API internally.
-              logger.debug(message: "Calling TanukiBot", class: self.class.to_s)
+              logger.info(message: "Calling TanukiBot", class: self.class.to_s)
               response = Gitlab::Llm::TanukiBot.new(
                 current_user: context.current_user,
                 question: options[:input]

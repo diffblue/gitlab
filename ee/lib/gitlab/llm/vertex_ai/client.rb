@@ -84,7 +84,7 @@ module Gitlab
         retry_methods_with_exponential_backoff :chat, :text, :code, :messages_chat, :code_completion
 
         def request(content:, config:, **options)
-          logger.debug(message: "Performing request to Vertex", config: config)
+          logger.info(message: "Performing request to Vertex", config: config)
 
           response = Gitlab::HTTP.post(
             config.url,

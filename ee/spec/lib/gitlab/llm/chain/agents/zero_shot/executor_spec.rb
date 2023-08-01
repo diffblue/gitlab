@@ -49,8 +49,9 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       logger = instance_double(Gitlab::Llm::Logger)
 
       expect(Gitlab::Llm::Logger).to receive(:build).at_least(:once).and_return(logger)
-      expect(logger).to receive(:debug).at_least(:once)
       expect(logger).to receive(:info).with(hash_including(message: "Tool cycling detected")).exactly(2)
+      expect(logger).to receive(:info).at_least(:once)
+      expect(logger).to receive(:debug).at_least(:once)
       allow(agent).to receive(:request).and_return("Action: IssueIdentifier\nAction Input: #3")
 
       agent.execute

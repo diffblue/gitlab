@@ -41,7 +41,7 @@ module Gitlab
                 options[:agent_scratchpad] << answer.content.to_s
 
                 tool_class = answer.tool
-                logger.debug(message: "Picked tool", tool: tool_class.to_s)
+                logger.info(message: "Picked tool", tool: tool_class.to_s)
 
                 tool = tool_class.new(
                   context: context,
@@ -56,7 +56,7 @@ module Gitlab
                 context.tools_used << tool_class
 
                 # detect tool cycling for specific types of questions
-                logger.info(message: "Tool cycling detected", question: user_input) if tools_cycle?
+                logger.info(message: "Tool cycling detected") if tools_cycle?
 
                 return tool_answer if tool_answer.is_final?
 

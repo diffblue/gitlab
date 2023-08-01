@@ -15,8 +15,7 @@ import {
   gcpLoggingDestinationCreateMutationPopulator,
   gcpLoggingDestinationUpdateMutationPopulator,
   groupPath,
-  mockGcpLoggingDestination,
-  mockNewGcpLoggingDestination,
+  mockGcpLoggingDestinations,
 } from '../../mock_data';
 
 jest.mock('~/alert');
@@ -126,10 +125,10 @@ describe('StreamDestinationEditor', () => {
       it('should emit add event after destination added', async () => {
         createComponent();
 
-        await findProjectId().vm.$emit('input', mockGcpLoggingDestination.googleProjectIdName);
-        await findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestination.clientEmail);
-        await findLogId().vm.$emit('input', mockGcpLoggingDestination.logIdName);
-        await findPrivateKey().vm.$emit('input', mockGcpLoggingDestination.privateKey);
+        await findProjectId().vm.$emit('input', mockGcpLoggingDestinations[0].googleProjectIdName);
+        await findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestinations[0].clientEmail);
+        await findLogId().vm.$emit('input', mockGcpLoggingDestinations[0].logIdName);
+        await findPrivateKey().vm.$emit('input', mockGcpLoggingDestinations[0].privateKey);
 
         expect(findAddStreamBtn().props('disabled')).toBe(false);
 
@@ -152,10 +151,10 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findProjectId().vm.$emit('input', mockGcpLoggingDestination.googleProjectIdName);
-        findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestination.clientEmail);
-        findLogId().vm.$emit('input', mockGcpLoggingDestination.logIdName);
-        findPrivateKey().vm.$emit('input', mockGcpLoggingDestination.privateKey);
+        findProjectId().vm.$emit('input', mockGcpLoggingDestinations[0].googleProjectIdName);
+        findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestinations[0].clientEmail);
+        findLogId().vm.$emit('input', mockGcpLoggingDestinations[0].logIdName);
+        findPrivateKey().vm.$emit('input', mockGcpLoggingDestinations[0].privateKey);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -174,10 +173,10 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findProjectId().vm.$emit('input', mockGcpLoggingDestination.googleProjectIdName);
-        findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestination.clientEmail);
-        findLogId().vm.$emit('input', mockGcpLoggingDestination.logIdName);
-        findPrivateKey().vm.$emit('input', mockGcpLoggingDestination.privateKey);
+        findProjectId().vm.$emit('input', mockGcpLoggingDestinations[0].googleProjectIdName);
+        findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestinations[0].clientEmail);
+        findLogId().vm.$emit('input', mockGcpLoggingDestinations[0].logIdName);
+        findPrivateKey().vm.$emit('input', mockGcpLoggingDestinations[0].privateKey);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -204,18 +203,22 @@ describe('StreamDestinationEditor', () => {
     describe('when editing an existing destination', () => {
       describe('renders', () => {
         beforeEach(() => {
-          createComponent({ props: { item: mockGcpLoggingDestination } });
+          createComponent({ props: { item: mockGcpLoggingDestinations[0] } });
         });
 
         it('the destination fields', () => {
           expect(findProjectId().exists()).toBe(true);
-          expect(findProjectId().element.value).toBe(mockGcpLoggingDestination.googleProjectIdName);
+          expect(findProjectId().element.value).toBe(
+            mockGcpLoggingDestinations[0].googleProjectIdName,
+          );
           expect(findClientEmailUrl().exists()).toBe(true);
-          expect(findClientEmailUrl().element.value).toBe(mockGcpLoggingDestination.clientEmail);
+          expect(findClientEmailUrl().element.value).toBe(
+            mockGcpLoggingDestinations[0].clientEmail,
+          );
           expect(findLogId().exists()).toBe(true);
-          expect(findLogId().element.value).toBe(mockGcpLoggingDestination.logIdName);
+          expect(findLogId().element.value).toBe(mockGcpLoggingDestinations[0].logIdName);
           expect(findPrivateKey().exists()).toBe(true);
-          expect(findPrivateKey().element.value).toBe(mockGcpLoggingDestination.privateKey);
+          expect(findPrivateKey().element.value).toBe(mockGcpLoggingDestinations[0].privateKey);
         });
 
         it('the delete button', () => {
@@ -241,7 +244,7 @@ describe('StreamDestinationEditor', () => {
         ${'Log ID'}       | ${findLogId}
         ${'Private Key'}  | ${findPrivateKey}
       `('enable the save button when $name is edited', async ({ findInputFn }) => {
-        createComponent({ props: { item: mockGcpLoggingDestination } });
+        createComponent({ props: { item: mockGcpLoggingDestinations[0] } });
 
         expect(findAddStreamBtn().props('disabled')).toBe(true);
 
@@ -252,7 +255,7 @@ describe('StreamDestinationEditor', () => {
 
       it('should emit updated event after destination updated', async () => {
         createComponent({
-          props: { item: mockGcpLoggingDestination },
+          props: { item: mockGcpLoggingDestinations[0] },
           apolloHandlers: [
             [
               googleCloudLoggingConfigurationUpdate,
@@ -261,10 +264,10 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findProjectId().vm.$emit('input', mockNewGcpLoggingDestination.googleProjectIdName);
-        findClientEmailUrl().vm.$emit('input', mockNewGcpLoggingDestination.clientEmail);
-        findLogId().vm.$emit('input', mockNewGcpLoggingDestination.logIdName);
-        findPrivateKey().vm.$emit('input', mockNewGcpLoggingDestination.privateKey);
+        findProjectId().vm.$emit('input', mockGcpLoggingDestinations[1].googleProjectIdName);
+        findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestinations[1].clientEmail);
+        findLogId().vm.$emit('input', mockGcpLoggingDestinations[1].logIdName);
+        findPrivateKey().vm.$emit('input', mockGcpLoggingDestinations[1].privateKey);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -276,7 +279,7 @@ describe('StreamDestinationEditor', () => {
       it('should not emit add destination event and reports error when server returns error', async () => {
         const errorMsg = 'Destination hosts limit exceeded';
         createComponent({
-          props: { item: mockGcpLoggingDestination },
+          props: { item: mockGcpLoggingDestinations[0] },
           apolloHandlers: [
             [
               googleCloudLoggingConfigurationUpdate,
@@ -285,10 +288,10 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
-        findProjectId().vm.$emit('input', mockGcpLoggingDestination.googleProjectIdName);
-        findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestination.clientEmail);
-        findLogId().vm.$emit('input', mockGcpLoggingDestination.logIdName);
-        findPrivateKey().vm.$emit('input', mockGcpLoggingDestination.privateKey);
+        findProjectId().vm.$emit('input', mockGcpLoggingDestinations[0].googleProjectIdName);
+        findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestinations[0].clientEmail);
+        findLogId().vm.$emit('input', mockGcpLoggingDestinations[0].logIdName);
+        findPrivateKey().vm.$emit('input', mockGcpLoggingDestinations[0].privateKey);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -302,16 +305,16 @@ describe('StreamDestinationEditor', () => {
         const sentryError = new Error('Network error');
         const sentryCaptureExceptionSpy = jest.spyOn(Sentry, 'captureException');
         createComponent({
-          props: { item: mockGcpLoggingDestination },
+          props: { item: mockGcpLoggingDestinations[0] },
           apolloHandlers: [
             [googleCloudLoggingConfigurationUpdate, jest.fn().mockRejectedValue(sentryError)],
           ],
         });
 
-        findProjectId().vm.$emit('input', mockGcpLoggingDestination.googleProjectIdName);
-        findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestination.clientEmail);
-        findLogId().vm.$emit('input', mockGcpLoggingDestination.logIdName);
-        findPrivateKey().vm.$emit('input', mockGcpLoggingDestination.privateKey);
+        findProjectId().vm.$emit('input', mockGcpLoggingDestinations[0].googleProjectIdName);
+        findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestinations[0].clientEmail);
+        findLogId().vm.$emit('input', mockGcpLoggingDestinations[0].logIdName);
+        findPrivateKey().vm.$emit('input', mockGcpLoggingDestinations[0].privateKey);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -325,7 +328,7 @@ describe('StreamDestinationEditor', () => {
 
     describe('deleting', () => {
       beforeEach(() => {
-        createComponent({ props: { item: mockGcpLoggingDestination } });
+        createComponent({ props: { item: mockGcpLoggingDestinations[0] } });
       });
 
       it('should emit deleted on success operation', async () => {
@@ -338,7 +341,7 @@ describe('StreamDestinationEditor', () => {
         await findDeleteModal().vm.$emit('delete');
 
         expect(deleteButton.props('loading')).toBe(false);
-        expect(wrapper.emitted('deleted')).toEqual([[mockGcpLoggingDestination.id]]);
+        expect(wrapper.emitted('deleted')).toEqual([[mockGcpLoggingDestinations[0].id]]);
       });
 
       it('shows the alert for the error', () => {

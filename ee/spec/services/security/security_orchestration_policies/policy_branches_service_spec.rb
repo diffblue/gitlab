@@ -37,26 +37,38 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyBranchesService, f
       end
 
       describe "branches" do
-        # rubocop: disable Performance/CollectionLiteralInLoop
-        where(:branches, :branch_type, :result) do
+        # rubocop: disable Performance/CollectionLiteralInLoop, Layout/LineLength
+        where(:branches, :branch_type, :branch_exceptions, :result) do
           # branches
-          ([]            | nil | [])                   if method == :scan_execution_branches
-          ([]            | nil | %w[master protected]) if method == :scan_result_branches
-          %w[foobar]     | nil | []
-          %w[master]     | nil | %w[master]
-          %w[mas* pro*]  | nil | %w[master protected]
+          ([]            | nil | nil | [])                   if method == :scan_execution_branches
+          ([]            | nil | nil | %w[master protected]) if method == :scan_result_branches
+          %w[foobar]     | nil | nil | []
+          %w[master]     | nil | nil | %w[master]
+          %w[mas* pro*]  | nil | nil | %w[master protected]
 
           # branch_type
-          (nil | "all"       | %w[master protected feature]) if method == :scan_execution_branches
-          (nil | "all"       | %w[master protected])         if method == :scan_result_branches
-          nil | "protected"  | %w[master protected]
-          nil | "default"    | %w[master]
-          nil | "invalid"    | []
+          (nil | "all"        | nil | %w[master protected feature]) if method == :scan_execution_branches
+          (nil | "all"        | nil | %w[master protected])         if method == :scan_result_branches
+          nil  | "protected"  | nil | %w[master protected]
+          nil  | "default"    | nil | %w[master]
+          nil  | "invalid"    | nil | []
+
+          # branch_exceptions
+          %w[mas* pro*]    | nil     | %w[master]                                                  | %w[protected]
+          %w[mas* pro*]    | nil     | %w[pro*]                                                    | %w[master]
+          %w[mas* pro*]    | nil     | [{ name: "master", full_path: lazy { project.full_path } }] | %w[protected]
+          %w[mas* pro*]    | nil     | [{ name: "master", full_path: "other" }]                    | %w[master protected]
+          nil              | "all"   | %w[*]                                                       | []
+
+          # invalid branch_exceptions
+          nil | "protected" | [{}] | %w[master protected]
+          nil | "protected" | [{ name: "master" }] | %w[master protected]
+          nil | "protected" | [{ full_path: lazy { project.full_path } }] | %w[master protected]
         end
-        # rubocop: enable Performance/CollectionLiteralInLoop
+        # rubocop: enable Performance/CollectionLiteralInLoop, Layout/LineLength
 
         with_them do
-          let(:rule) { { branch_type: branch_type, branches: branches }.compact }
+          let(:rule) { { branch_type: branch_type, branches: branches, branch_exceptions: branch_exceptions }.compact }
 
           specify do
             expect(execute).to eq(result.to_set)

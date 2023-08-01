@@ -109,7 +109,7 @@ module Gitlab
         def request(endpoint:, moderated:, **options)
           return unless enabled?
 
-          logger.debug(message: "Performing request to OpenAI", endpoint: endpoint)
+          logger.info(message: "Performing request to OpenAI", endpoint: endpoint)
 
           moderate!(:input, moderation_input(endpoint, options)) if should_moderate?(:input, moderated)
 

@@ -235,6 +235,53 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
     end
   end
 
+  describe '#notes' do
+    let_it_be(:query) { 'foo' }
+    let_it_be(:project) { create(:project, :public, namespace: group) }
+    let_it_be(:archived_project) { create(:project, :public, :archived, namespace: group) }
+    let_it_be(:note) { create(:note, project: project, note: query) }
+    let_it_be(:note_on_archived_project) { create(:note, project: archived_project, note: query) }
+
+    before do
+      Elastic::ProcessBookkeepingService.track!(note, note_on_archived_project)
+      ensure_elasticsearch_index!
+    end
+
+    context 'when migration backfill_archived_on_notes is not finished' do
+      before do
+        set_elasticsearch_migration_to(:backfill_archived_on_notes, including: false)
+      end
+
+      it 'includes the archived notes in the search results' do
+        expect(subject.objects('notes')).to match_array([note, note_on_archived_project])
+      end
+    end
+
+    context 'when feature_flag search_notes_hide_archived_projects is disabled' do
+      before do
+        stub_feature_flags(search_notes_hide_archived_projects: false)
+      end
+
+      it 'includes the archived notes in the search results' do
+        expect(subject.objects('notes')).to match_array([note, note_on_archived_project])
+      end
+    end
+
+    context 'when filters contains include_archived as true' do
+      let(:filters) do
+        { include_archived: true }
+      end
+
+      it 'includes the archived notes in the search results' do
+        expect(subject.objects('notes')).to match_array([note, note_on_archived_project])
+      end
+    end
+
+    it 'does not includes the archived notes in the search results' do
+      expect(subject.objects('notes')).to match_array([note])
+    end
+  end
+
   context 'query performance' do
     include_examples 'does not hit Elasticsearch twice for objects and counts',
       %w[projects notes blobs wiki_blobs commits issues merge_requests epics milestones users]
