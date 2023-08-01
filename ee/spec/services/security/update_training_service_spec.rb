@@ -118,6 +118,13 @@ RSpec.describe Security::UpdateTrainingService, feature_category: :security_poli
           end
         end
       end
+
+      context 'when `is_primary` parameter is omitted' do
+        it 'defaults to false' do
+          params.delete(:is_primary)
+          expect { update_training }.to change { project.security_trainings.where(is_primary: false).count }.by(1)
+        end
+      end
     end
   end
 end
