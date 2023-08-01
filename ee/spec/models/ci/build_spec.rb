@@ -35,6 +35,10 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
 
   it_behaves_like 'has secrets', :ci_build
 
+  it_behaves_like 'a deployable job in EE' do
+    let(:job) { job }
+  end
+
   describe '.license_scan' do
     subject(:build) { described_class.license_scan.first }
 
@@ -733,33 +737,6 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
 
         it { is_expected.not_to include(:vault_secrets) }
       end
-    end
-  end
-
-  describe 'when the build is waiting for deployment approval' do
-    let(:build) { create(:ci_build, :manual, environment: 'production', pipeline: pipeline) }
-    let!(:deployment) { create(:deployment, :blocked, deployable: build) }
-
-    before do
-      allow(deployment).to receive(:waiting_for_approval?) { true }
-    end
-
-    it 'does not allow the build to be enqueued' do
-      expect { build.enqueue! }.to raise_error(StateMachines::InvalidTransition)
-    end
-  end
-
-  describe '#playable?' do
-    context 'when build is waiting for deployment approval' do
-      subject { build_stubbed(:ci_build, :manual, environment: 'production', pipeline: pipeline) }
-
-      let!(:deployment) { create(:deployment, :blocked, deployable: subject) }
-
-      before do
-        allow(deployment).to receive(:waiting_for_approval?) { true }
-      end
-
-      it { is_expected.not_to be_playable }
     end
   end
 
