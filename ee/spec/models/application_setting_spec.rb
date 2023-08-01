@@ -1240,22 +1240,6 @@ RSpec.describe ApplicationSetting do
   end
 
   describe '#ai_access_token', feature_category: :code_suggestions do
-    context 'when `instance_level_code_suggestions_enabled` is true' do
-      before do
-        setting.instance_level_code_suggestions_enabled = true
-      end
-
-      it { is_expected.not_to allow_value(nil).for(:ai_access_token) }
-    end
-
-    context 'when `instance_level_code_suggestions_enabled` is false' do
-      before do
-        setting.instance_level_code_suggestions_enabled = false
-      end
-
-      it { is_expected.to allow_value(nil).for(:ai_access_token) }
-    end
-
     it 'does not modify the token if it is unchanged in the form' do
       setting.ai_access_token = 'foo'
       setting.ai_access_token = ApplicationSetting::MASK_PASSWORD

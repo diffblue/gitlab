@@ -3158,6 +3158,8 @@ class Project < ApplicationRecord
   end
 
   def created_and_owned_by_banned_user?
+    return false unless creator
+
     creator.banned? && team.max_member_access(creator.id) == Gitlab::Access::OWNER
   end
 

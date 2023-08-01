@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe ProjectMember do
+RSpec.describe ProjectMember, feature_category: :groups_and_projects do
   it { is_expected.to include_module(EE::ProjectMember) }
 
   it_behaves_like 'member validations' do
