@@ -111,12 +111,6 @@ module Gitlab
       def empty_response
         {}
       end
-
-      def info(payload)
-        return unless logger
-
-        logger.info(build_structured_payload(**payload.merge(correlation_id: correlation_id)))
-      end
     end
   end
 end
