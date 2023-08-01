@@ -208,9 +208,9 @@ export default {
 
         if (elements.indexOf(target) === 0) {
           this.focusSearchInput();
-          return;
+        } else {
+          this.focusNextItem(event, elements, -1);
         }
-        this.focusNextItem(event, elements, -1);
       } else if (code === ARROW_DOWN_KEY) {
         this.focusNextItem(event, elements, 1);
       } else if (code === ESC_KEY) {

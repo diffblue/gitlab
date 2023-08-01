@@ -503,7 +503,7 @@ describe('GlobalSearchModal', () => {
 
         event = triggerKeydownEvent(document.activeElement, 'ArrowUp');
         expect(document.activeElement).toBe(findSearchInput().element);
-        expect(event.defaultPrevented).toBe(false);
+        expect(event.defaultPrevented).toBe(true);
       });
 
       it('ArrowDown focuses next item', () => {
