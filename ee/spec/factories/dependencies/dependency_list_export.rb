@@ -5,6 +5,7 @@ FactoryBot.define do
     project
     author
     status { 0 }
+    export_type { :json }
 
     trait :with_file do
       file { fixture_file_upload('ee/spec/fixtures/dependencies/dependencies.json') }

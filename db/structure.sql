@@ -15161,6 +15161,8 @@ CREATE TABLE dependency_list_exports (
     status smallint DEFAULT 0 NOT NULL,
     file text,
     group_id bigint,
+    pipeline_id bigint,
+    export_type smallint DEFAULT 0 NOT NULL,
     CONSTRAINT check_fff6fc9b2f CHECK ((char_length(file) <= 255))
 );
 
@@ -19988,6 +19990,8 @@ CREATE TABLE packages_nuget_metadata (
     icon_url text,
     authors text,
     description text,
+    normalized_version text,
+    CONSTRAINT check_9973c0cc33 CHECK ((char_length(normalized_version) <= 255)),
     CONSTRAINT check_d39a5fe9ee CHECK ((char_length(description) <= 4000)),
     CONSTRAINT check_e2fc129ebd CHECK ((char_length(authors) <= 255)),
     CONSTRAINT packages_nuget_metadata_icon_url_constraint CHECK ((char_length(icon_url) <= 255)),
@@ -22517,7 +22521,11 @@ CREATE TABLE sbom_occurrences (
     component_id bigint NOT NULL,
     uuid uuid NOT NULL,
     package_manager text,
-    CONSTRAINT check_3f2d2c7ffc CHECK ((char_length(package_manager) <= 255))
+    component_name text,
+    input_file_path text,
+    CONSTRAINT check_3f2d2c7ffc CHECK ((char_length(package_manager) <= 255)),
+    CONSTRAINT check_9b29021fa8 CHECK ((char_length(component_name) <= 255)),
+    CONSTRAINT check_bd1367d4c1 CHECK ((char_length(input_file_path) <= 255))
 );
 
 CREATE SEQUENCE sbom_occurrences_id_seq
@@ -30280,6 +30288,8 @@ CREATE INDEX idx_packages_debian_group_component_files_on_architecture_id ON pac
 
 CREATE INDEX idx_packages_debian_project_component_files_on_architecture_id ON packages_debian_project_component_files USING btree (architecture_id);
 
+CREATE INDEX idx_packages_nuget_metadata_on_pkg_id_and_normalized_version ON packages_nuget_metadata USING btree (package_id, normalized_version);
+
 CREATE INDEX idx_packages_on_project_id_name_id_version_when_installable_npm ON packages_packages USING btree (project_id, name, id, version) WHERE ((package_type = 2) AND (status = ANY (ARRAY[0, 1])));
 
 CREATE UNIQUE INDEX idx_packages_on_project_id_name_version_unique_when_generic ON packages_packages USING btree (project_id, name, version) WHERE ((package_type = 7) AND (status <> 4));
@@ -31257,6 +31267,8 @@ CREATE UNIQUE INDEX index_dast_sites_on_project_id_and_url ON dast_sites USING b
 CREATE UNIQUE INDEX index_dep_prox_manifests_on_group_id_file_name_and_status ON dependency_proxy_manifests USING btree (group_id, file_name, status);
 
 CREATE INDEX index_dependency_list_exports_on_group_id ON dependency_list_exports USING btree (group_id);
+
+CREATE INDEX index_dependency_list_exports_on_pipeline_id ON dependency_list_exports USING btree (pipeline_id);
 
 CREATE INDEX index_dependency_list_exports_on_project_id ON dependency_list_exports USING btree (project_id);
 
@@ -32610,6 +32622,8 @@ CREATE INDEX index_packages_packages_on_name_trigram ON packages_packages USING 
 
 CREATE INDEX index_packages_packages_on_project_id_and_created_at ON packages_packages USING btree (project_id, created_at);
 
+CREATE INDEX index_packages_packages_on_project_id_and_lower_name ON packages_packages USING btree (project_id, lower((name)::text)) WHERE (package_type = 4);
+
 CREATE INDEX index_packages_packages_on_project_id_and_lower_version ON packages_packages USING btree (project_id, lower((version)::text)) WHERE (package_type = 4);
 
 CREATE INDEX index_packages_packages_on_project_id_and_package_type ON packages_packages USING btree (project_id, package_type);
@@ -33487,6 +33501,8 @@ CREATE UNIQUE INDEX index_uniq_projects_on_runners_token_encrypted ON projects U
 CREATE UNIQUE INDEX index_unique_ci_runner_projects_on_runner_id_and_project_id ON ci_runner_projects USING btree (runner_id, project_id);
 
 CREATE UNIQUE INDEX index_unique_issue_metrics_issue_id ON issue_metrics USING btree (issue_id);
+
+CREATE UNIQUE INDEX index_unique_project_authorizations_on_unique_project_user ON project_authorizations USING btree (project_id, user_id) WHERE is_unique;
 
 CREATE INDEX index_unit_test_failures_failed_at ON ci_unit_test_failures USING btree (failed_at DESC);
 
