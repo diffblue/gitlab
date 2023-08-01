@@ -1,0 +1,6 @@
+// Forecast error states
+export const ERROR_FORECAST_FAILED = 'ERROR_FORECAST_FAILED';
+export const ERROR_FORECAST_UNAVAILABLE = 'ERROR_FORECAST_UNAVAILABLE';
+
+// Forecast response statuses
+export const FORECAST_RESPONSE_STATUS_UNAVAILABLE = 'UNAVAILABLE';
