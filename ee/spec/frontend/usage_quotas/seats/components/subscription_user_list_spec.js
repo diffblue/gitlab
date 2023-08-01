@@ -27,6 +27,7 @@ import {
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import SearchAndSortBar from 'ee/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
 import addOnPurchaseQuery from 'ee/usage_quotas/graphql/queries/get_add_on_purchase_query.graphql';
+import CodeSuggestionsAddOnAssignment from 'ee/usage_quotas/seats/components/code_suggestions_addon_assignment.vue';
 
 Vue.use(Vuex);
 Vue.use(VueApollo);
@@ -101,7 +102,7 @@ describe('Subscription User List', () => {
   const findAllRemoveUserItems = () => wrapper.findAllByTestId('remove-user');
   const findErrorModal = () => wrapper.findComponent(GlModal);
   const findAllCodeSuggestionsAddonComponents = () =>
-    wrapper.findAllByTestId('code-suggestions-addon-field');
+    wrapper.findAllComponents(CodeSuggestionsAddOnAssignment);
   const findAddonPurchaseError = () => wrapper.findByTestId('addon-purchase-fetch-error');
 
   const serializeUser = (rowWrapper) => {

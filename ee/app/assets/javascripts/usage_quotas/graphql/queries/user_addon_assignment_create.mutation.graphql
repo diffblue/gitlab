@@ -1,0 +1,6 @@
+mutation userAddOnAssignmentCreate($input: UserAddOnAssignmentCreateInput!) {
+  userAddOnAssignmentCreate(input: $input) {
+    errors
+    clientMutationId
+  }
+}
