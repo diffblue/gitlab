@@ -15,7 +15,7 @@ RSpec.describe API::GoProxy, feature_category: :package_registry do
   let(:module_name) { "#{Settings.build_gitlab_go_url}/#{project.full_path}" }
   let(:resource) { "#{version}.mod" }
 
-  before :all do
+  before_all do
     project.add_developer(user)
     group.add_owner(user)
 

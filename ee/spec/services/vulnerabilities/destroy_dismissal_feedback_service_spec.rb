@@ -7,7 +7,7 @@ RSpec.describe Vulnerabilities::DestroyDismissalFeedbackService, feature_categor
   let_it_be(:project) { create(:project) }
   let_it_be(:vulnerability) { create(:vulnerability, project: project) }
 
-  before(:all) do
+  before_all do
     finding_1 = create(:vulnerabilities_finding, project: project)
     finding_2 = create(:vulnerabilities_finding, project: project)
 

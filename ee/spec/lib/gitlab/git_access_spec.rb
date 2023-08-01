@@ -43,7 +43,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
     let(:changes)   { "#{start_sha} #{end_sha} refs/heads/master" }
     let(:push_error_message) { Gitlab::GitAccess::ERROR_MESSAGES[:upload] }
 
-    before(:all) do
+    before_all do
       project.add_developer(user)
       deploy_key.deploy_keys_projects.create!(project: project, can_push: true)
     end

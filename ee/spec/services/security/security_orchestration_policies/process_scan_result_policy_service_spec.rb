@@ -25,7 +25,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       end
     end
 
-    before(:all) do
+    before_all do
       group.add_maintainer(approver)
 
       sha = project.repository.create_file(

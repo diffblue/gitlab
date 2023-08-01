@@ -18,7 +18,7 @@ RSpec.describe 'Environment detail page', feature_category: :environment_managem
     let_it_be(:operator_group) { create(:group) }
     let_it_be(:operator_user) { create(:user).tap { |u| operator_group.add_reporter(u) } }
 
-    before(:all) do
+    before_all do
       create(:project_group_link, :reporter, project: project, group: operator_group)
       create(
         :protected_environment,

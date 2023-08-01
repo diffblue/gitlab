@@ -74,7 +74,7 @@ RSpec.describe Gitlab::Geo::SignedData, feature_category: :geo_replication do
     end
 
     context 'for disabled nodes' do
-      before(:all) do
+      before_all do
         geo_node.update_attribute(:enabled, false)
       end
 

@@ -1032,7 +1032,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
       context 'with an expired trial license' do
         let(:license) { create(:license, trial: true, expired: true) }
 
-        before(:all) do
+        before_all do
           described_class.delete_all
         end
 
@@ -1447,7 +1447,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
   end
 
   describe '.history' do
-    before(:all) do
+    before_all do
       described_class.delete_all
     end
 

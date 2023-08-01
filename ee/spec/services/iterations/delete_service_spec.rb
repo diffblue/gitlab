@@ -75,7 +75,7 @@ RSpec.describe Iterations::DeleteService, feature_category: :team_planning do
     end
   end
 
-  before(:all) do
+  before_all do
     create(:iteration_list, iteration: past_iteration)
     create(:resource_iteration_event, iteration: past_iteration)
     create(:iteration_list, iteration: last_future_iteration)

@@ -12,7 +12,7 @@ RSpec.describe 'Delete an instance level audit event type filter', feature_categ
   let(:mutation_response) { graphql_mutation_response(mutation_name) }
   let(:input) { { destinationId: destination.to_gid, eventTypeFilters: ['filter_1'] } }
 
-  before :all do
+  before_all do
     create(:audit_events_streaming_instance_event_type_filter, instance_external_audit_event_destination: destination,
       audit_event_type: 'filter_1')
     create(:audit_events_streaming_instance_event_type_filter, instance_external_audit_event_destination: destination,

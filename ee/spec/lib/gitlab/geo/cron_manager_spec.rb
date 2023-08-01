@@ -46,7 +46,7 @@ RSpec.describe Gitlab::Geo::CronManager, :geo, feature_category: :geo_replicatio
       ]
     end
 
-    before(:all) do
+    before_all do
       jobs.each { |name| init_cron_job(name, name.camelize) }
     end
 
