@@ -7,10 +7,12 @@ import ComplianceReportsApp from 'ee/compliance_dashboard/components/reports_app
 import ReportHeader from 'ee/compliance_dashboard/components/shared/report_header.vue';
 import MergeCommitsExportButton from 'ee/compliance_dashboard/components/violations_report/shared/merge_commits_export_button.vue';
 import { stubComponent } from 'helpers/stub_component';
+import { mockTracking } from 'helpers/tracking_helper';
 import { ROUTE_FRAMEWORKS, ROUTE_VIOLATIONS, TABS } from 'ee/compliance_dashboard/constants';
 
 describe('ComplianceReportsApp component', () => {
   let wrapper;
+  let trackingSpy;
   const defaultProps = {
     groupPath: 'group-path',
     mergeCommitsCsvExportPath: '/csv',
@@ -35,6 +37,7 @@ describe('ComplianceReportsApp component', () => {
           ...props,
         },
         mocks: {
+          $router: { push: jest.fn() },
           $route: {
             name: ROUTE_VIOLATIONS,
           },
@@ -146,6 +149,56 @@ describe('ComplianceReportsApp component', () => {
       });
 
       expect(findFrameworkExportButton().exists()).toBe(false);
+    });
+  });
+
+  describe('tracking', () => {
+    beforeEach(() => {
+      wrapper = createComponent(
+        defaultProps,
+        mount,
+        {
+          $route: {
+            name: ROUTE_VIOLATIONS,
+          },
+        },
+        {
+          adherenceReportUiEnabled: true,
+        },
+      );
+      trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+    });
+
+    it('tracks clicks on framework tab', async () => {
+      await findFrameworksTab().vm.$emit('click');
+
+      expect(trackingSpy).toHaveBeenCalledTimes(1);
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_report_tab', {
+        label: 'frameworks',
+      });
+    });
+    it('tracks clicks on adherence tab', async () => {
+      await findStandardsAdherenceTab().vm.$emit('click');
+
+      expect(trackingSpy).toHaveBeenCalledTimes(1);
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_report_tab', {
+        label: 'standards_adherence',
+      });
+    });
+    it('tracks clicks on violations tab', async () => {
+      // Can't navigate to a page we are already on so use a different tab to start with
+      wrapper = createComponent(defaultProps, mount, {
+        $route: {
+          name: ROUTE_FRAMEWORKS,
+        },
+      });
+      trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+      await findViolationsTab().vm.$emit('click');
+
+      expect(trackingSpy).toHaveBeenCalledTimes(1);
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_report_tab', {
+        label: 'violations',
+      });
     });
   });
 });

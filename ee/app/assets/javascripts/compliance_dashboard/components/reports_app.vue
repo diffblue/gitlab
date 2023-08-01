@@ -4,6 +4,7 @@ import { GlTab, GlTabs, GlButton, GlTooltipDirective } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 
+import Tracking from '~/tracking';
 import { ROUTE_STANDARDS_ADHERENCE, ROUTE_FRAMEWORKS, ROUTE_VIOLATIONS, TABS } from '../constants';
 import MergeCommitsExportButton from './violations_report/shared/merge_commits_export_button.vue';
 import ReportHeader from './shared/report_header.vue';
@@ -20,6 +21,7 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
+  mixins: [Tracking.mixin()],
   inject: ['adherenceReportUiEnabled'],
   props: {
     mergeCommitsCsvExportPath: {
@@ -62,6 +64,7 @@ export default {
     goTo(name) {
       if (this.$route.name !== name) {
         this.$router.push({ name });
+        this.track('click_report_tab', { label: name });
       }
     },
   },
@@ -109,6 +112,8 @@ export default {
             :aria-label="$options.i18n.export"
             icon="export"
             data-testid="violations-export"
+            data-track-action="click_export"
+            data-track-label="export_all_violations"
             class="gl-mt-3"
             :href="violationsCsvExportPath"
           >
@@ -121,6 +126,8 @@ export default {
             :aria-label="$options.i18n.export"
             icon="export"
             data-testid="framework-export"
+            data-track-action="click_export"
+            data-track-label="export_all_frameworks"
             :href="frameworksCsvExportPath"
           >
             {{ $options.i18n.export }}

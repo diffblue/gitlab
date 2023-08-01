@@ -74,6 +74,8 @@ export default {
           category="tertiary"
           icon="export"
           :href="mergeCommitsCsvExportPath"
+          data-track-action="click_export"
+          data-track-label="export_merge_commits"
         >
           {{ $options.strings.listMergeCommitsButtonText }}
         </gl-button>
@@ -100,6 +102,8 @@ export default {
             variant="confirm"
             data-testid="merge-commit-submit-button"
             class="disable-hover"
+            data-track-action="click_export"
+            data-track-label="export_custody_report"
             >{{ $options.strings.mergeCommitButtonText }}</gl-button
           >
         </gl-form>
