@@ -19,14 +19,18 @@ module Analytics
 
           value_stream.assign_attributes(params)
 
-          if value_stream.save
-            ServiceResponse.success(message: nil, payload: { value_stream: value_stream }, http_status: success_http_status)
-          else
+          begin
             # workaround to properly index nested stage errors
             # More info: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/51623#note_490919557
-            value_stream.valid?(:create)
-            ServiceResponse.error(message: 'Invalid parameters', payload: { errors: value_stream.errors, value_stream: value_stream }, http_status: :unprocessable_entity)
+            value_stream.save!(context: [:create, :context_to_validate_all_stages])
+            return ServiceResponse.success(message: nil, payload: { value_stream: value_stream }, http_status: success_http_status)
+          rescue ActiveRecord::RecordInvalid
+            # NOOP
+          rescue ActiveRecord::RecordNotUnique
+            value_stream.errors.add(:stages, :taken)
           end
+
+          ServiceResponse.error(message: 'Invalid parameters', payload: { errors: value_stream.errors, value_stream: value_stream }, http_status: :unprocessable_entity)
         end
 
         private
