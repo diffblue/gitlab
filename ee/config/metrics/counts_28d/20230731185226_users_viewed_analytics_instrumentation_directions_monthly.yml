@@ -1,0 +1,22 @@
+---
+key_path: redis_hll_counters.optional.users_viewed_analytics_instrumentation_directions_monthly
+description: Count of users who have viewed analytics instrumentation directions in the last 28 days
+product_section: analytics
+product_stage: analytics
+product_group: product_analytics
+value_type: number
+status: active
+milestone: "16.3"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/128029
+time_frame: 28d
+data_source: redis_hll
+data_category: optional
+instrumentation_class: RedisHLLMetric
+performance_indicator_type: []
+distribution:
+  - ee
+tier:
+  - ultimate
+options:
+  events:
+    - user_viewed_instrumentation_directions

@@ -1,11 +1,13 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { GlAlert, GlSkeletonLoader } from '@gitlab/ui';
+import { mockTracking } from 'helpers/tracking_helper';
 import ProductAnalyticsOnboarding from 'ee/product_analytics/onboarding/components/onboarding_list_item.vue';
 import DashboardsList from 'ee/analytics/analytics_dashboards/components/dashboards_list.vue';
 import DashboardListItem from 'ee/analytics/analytics_dashboards/components/list/dashboard_list_item.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { VALUE_STREAMS_DASHBOARD_CONFIG } from 'ee/analytics/dashboards/constants';
+import { InternalEvents } from '~/tracking';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { createAlert } from '~/alert';
 import { visitUrl } from '~/lib/utils/url_utility';
@@ -35,6 +37,7 @@ Vue.use(VueApollo);
 
 describe('DashboardsList', () => {
   let wrapper;
+  let trackingSpy;
 
   const findListItems = () => wrapper.findAllComponents(DashboardListItem);
   const findListLoadingSkeletons = () => wrapper.findAllComponents(GlSkeletonLoader);
@@ -56,6 +59,8 @@ describe('DashboardsList', () => {
   let mockAnalyticsDashboardsHandler = jest.fn();
 
   const createWrapper = (provided = {}) => {
+    trackingSpy = mockTracking(undefined, window.document, jest.spyOn);
+
     const mockApollo = createMockApollo([
       [getAllProductAnalyticsDashboardsQuery, mockAnalyticsDashboardsHandler],
     ]);
@@ -110,6 +115,14 @@ describe('DashboardsList', () => {
 
     it('does not render any feature or custom dashboards', () => {
       expect(findListItems()).toHaveLength(0);
+    });
+
+    it('should track the dashboard list has been viewed', () => {
+      expect(trackingSpy).toHaveBeenCalledWith(
+        expect.any(String),
+        'user_viewed_dashboard_list',
+        expect.any(Object),
+      );
     });
   });
 
@@ -261,8 +274,22 @@ describe('DashboardsList', () => {
 
           expect(findListItems()).toHaveLength(expectedDashboards.length);
 
-          expectedDashboards.forEach((dashboard, idx) => {
-            expect(findListItems().at(idx).props('dashboard')).toEqual(dashboard);
+          expectedDashboards.forEach(async (dashboard, idx) => {
+            const dashboardItem = findListItems().at(idx);
+            expect(dashboardItem.props('dashboard')).toEqual(dashboard);
+            expect(dashboardItem.attributes()['data-event-tracking']).toBe(
+              'user_visited_dashboard',
+            );
+
+            InternalEvents.bindInternalEventDocument(dashboardItem.element);
+            await dashboardItem.trigger('click');
+            await nextTick();
+
+            expect(trackingSpy).toHaveBeenCalledWith(
+              expect.any(String),
+              'user_visited_dashboard',
+              expect.any(Object),
+            );
           });
         });
       });
