@@ -77,6 +77,70 @@ RSpec.describe Analytics::CycleAnalytics::ValueStreams::CreateService, feature_c
         end
       end
 
+      context 'when stage names are not unique' do
+        let(:params) do
+          {
+            name: 'my value stream',
+            stages: [
+              {
+                name: 'stagename',
+                start_event_identifier: 'merge_request_created',
+                end_event_identifier: 'merge_request_closed',
+                custom: true
+              },
+              {
+                name: 'stagename',
+                start_event_identifier: 'issue_created',
+                end_event_identifier: 'issue_closed',
+                custom: true
+              }
+            ]
+          }
+        end
+
+        it 'validates that stages have unique names' do
+          result = subject
+
+          expect(result).not_to be_success
+          stream = result.payload[:value_stream]
+          expect(stream.errors.added?(:stages, :taken)).to eq(true)
+        end
+      end
+
+      context 'when stage names are not present' do
+        let(:params) do
+          {
+            name: 'my value stream',
+            stages: [
+              {
+                name: '',
+                start_event_identifier: 'merge_request_created',
+                end_event_identifier: 'merge_request_closed',
+                custom: true
+              },
+              {
+                name: '',
+                start_event_identifier: 'issue_created',
+                end_event_identifier: 'issue_closed',
+                custom: true
+              }
+            ]
+          }
+        end
+
+        it 'invalidates the stream object' do
+          result = subject
+
+          expect(result).not_to be_success
+          stream = result.payload[:value_stream]
+          expect(stream).not_to be_valid
+          expect(stream.stages.map(&:valid?)).to eq([false, false])
+          expect(stream.errors.messages).to match(
+            "stages[0].name": ["can't be blank"],
+            "stages[1].name": ["can't be blank"])
+        end
+      end
+
       context 'when creating a default stage' do
         before do
           params[:stages] = [{ id: 'plan', name: 'plan', custom: false }]
