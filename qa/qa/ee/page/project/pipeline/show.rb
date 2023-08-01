@@ -28,7 +28,7 @@ module QA
             def click_on_security
               retry_until(sleep_interval: 3, message: "Security report didn't open") do
                 click_link('Security')
-                has_element?(:security_report_content)
+                has_element?('security-report-content')
               end
             end
 

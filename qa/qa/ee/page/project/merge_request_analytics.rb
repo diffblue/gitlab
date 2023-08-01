@@ -6,15 +6,15 @@ module QA
       module Project
         class MergeRequestAnalytics < QA::Page::Base
           view "ee/app/assets/javascripts/analytics/merge_request_analytics/components/throughput_stats.vue" do
-            element :throughput_stats
+            element 'throughput-stats'
           end
 
           view "ee/app/assets/javascripts/analytics/merge_request_analytics/components/throughput_chart.vue" do
-            element :throughput_chart
+            element 'throughput-chart'
           end
 
           view "ee/app/assets/javascripts/analytics/merge_request_analytics/components/throughput_table.vue" do
-            element :mr_table
+            element 'mr-table'
           end
 
           # Throughput chart
@@ -22,15 +22,15 @@ module QA
           # @param [Integer] wait
           # @return [Capybara::Node::Element]
           def throughput_chart(wait: 5)
-            find_element(:throughput_chart, wait: wait)
+            find_element('throughput-chart', wait: wait)
           end
 
           # Mean time to merge stat
           #
           # @return [String]
           def mean_time_to_merge
-            within_element(:throughput_chart) do
-              within_element(:throughput_stats) do
+            within_element('throughput-chart') do
+              within_element('throughput-stats') do
                 value = find_element("displayValue").text
                 unit = find_element("unit").text
 
@@ -43,7 +43,7 @@ module QA
           #
           # @return [Array<Hash>]
           def merged_mrs(expected_count:)
-            within_element(:mr_table) do
+            within_element('mr-table') do
               all_elements("detailsCol", count: expected_count).map do |el|
                 {
                   title: el.find("a").text,

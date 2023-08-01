@@ -17,7 +17,7 @@ module QA
               end
 
               view 'ee/app/assets/javascripts/security_dashboard/components/security_dashboard_table.vue' do
-                element :security_report_content
+                element 'security-report-content'
               end
 
               view 'ee/app/assets/javascripts/security_dashboard/components/shared/filters/activity_filter.vue' do
@@ -25,21 +25,21 @@ module QA
               end
 
               view 'ee/app/assets/javascripts/security_dashboard/components/shared/filters/status_filter.vue' do
-                element :filter_status_dropdown
+                element 'filter-status-dropdown'
               end
 
               view 'ee/app/assets/javascripts/security_dashboard/components/
                     shared/vulnerability_report/vulnerability_list.vue' do
-                element :vulnerability_status_content
+                element 'vulnerability-status-content'
               end
             end
           end
 
           def filter_report_type(report, project_filter = true)
             wait_until(max_duration: 20, sleep_interval: 3, message: "Wait for tool dropdown to appear") do
-              has_element?(:filter_tool_dropdown)
+              has_element?('filter-tool-dropdown')
             end
-            click_element(:filter_tool_dropdown)
+            click_element('filter-tool-dropdown')
 
             if project_filter
               find("[data-testid='listbox-item-GitLab.#{report.upcase.tr(" ", "_")}']").click
@@ -47,12 +47,12 @@ module QA
               find("[data-testid='listbox-item-#{report.upcase.tr(" ", "_")}']").click
             end
             # Click the dropdown to close the modal and ensure it isn't open if this function is called again
-            click_element(:filter_tool_dropdown)
+            click_element('filter-tool-dropdown')
           end
 
           def filter_by_status(statuses)
             wait_until(max_duration: 30, message: "Waiting for status dropdown element to appear") do
-              has_element?(:filter_status_dropdown)
+              has_element?('filter-status-dropdown')
             end
 
             # Retry on exception to avoid ElementNotFound errors when clicks are sent too fast for the UI to update
@@ -111,8 +111,8 @@ module QA
 
           def has_vulnerability_info_content?(name)
             retry_until(reload: true, sleep_interval: 2, max_attempts: 2, message: 'Finding "Security Finding" text') do
-              click_link('Security') unless has_element?(:security_report_content)
-              has_element?(:vulnerability_info_content, text: name, wait: 1)
+              click_link('Security') unless has_element?('security-report-content')
+              has_element?('vulnerability-info-content', text: name, wait: 1)
             end
           end
 
@@ -120,7 +120,7 @@ module QA
             retry_until(reload: true, sleep_interval: 3, raise_on_failure: false) do
               # Capitalizing first letter in each word to account for "Needs Triage" state
               has_element?(
-                :vulnerability_status_content,
+                'vulnerability-status-content',
                 status_description: vulnerability_name,
                 text: "#{status.split.map(&:capitalize).join(' ')}"
               )

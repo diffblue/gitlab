@@ -13,7 +13,7 @@ module QA
 
               base.class_eval do
                 view 'app/assets/javascripts/sidebar/components/sidebar_editable_item.vue' do
-                  element :edit_button
+                  element 'edit-button'
                 end
 
                 view 'ee/app/assets/javascripts/sidebar/components/iteration/sidebar_iteration_widget.vue' do
@@ -25,14 +25,14 @@ module QA
                 end
 
                 view 'ee/app/assets/javascripts/sidebar/components/weight/sidebar_weight_widget.vue' do
-                  element :sidebar_weight_value
+                  element 'sidebar-weight-value'
                 end
               end
             end
 
             def assign_iteration(iteration_period)
               within_element(:iteration_container) do
-                click_element(:edit_button)
+                click_element('edit-button')
                 click_on("#{iteration_period}")
               end
 
@@ -69,7 +69,7 @@ module QA
             end
 
             def weight_label_value
-              find_element(:sidebar_weight_value)
+              find_element('sidebar-weight-value')
             end
 
             private

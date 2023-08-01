@@ -8,16 +8,16 @@ module QA
         include QA::Page::Component::CiBadgeLink
 
         view 'ee/app/assets/javascripts/operations/components/dashboard/dashboard.vue' do
-          element :add_projects_button
-          element :add_projects_modal
+          element 'add-projects-button'
+          element 'add-projects-modal'
         end
 
         view 'ee/app/assets/javascripts/operations/components/dashboard/project.vue' do
-          element :dashboard_project_card
+          element 'dashboard-project-card'
         end
 
         view 'ee/app/assets/javascripts/operations/components/dashboard/project_header.vue' do
-          element :remove_project_button
+          element 'remove-project-button'
         end
 
         def add_project(project_name)
@@ -31,7 +31,7 @@ module QA
         end
 
         def has_project_card?
-          has_element? :dashboard_project_card
+          has_element? 'dashboard-project-card'
         end
 
         def find_project_card_by_name(name)
@@ -48,19 +48,19 @@ module QA
         private
 
         def project_cards
-          all_elements(:dashboard_project_card, minimum: 1)
+          all_elements('dashboard-project-card', minimum: 1)
         end
 
         def remove_project_buttons
-          all_elements(:remove_project_button, minimum: 1)
+          all_elements('remove-project-button', minimum: 1)
         end
 
         def within_add_projects_modal(&block)
-          within_element(:add_projects_modal, &block)
+          within_element('add-projects-modal', &block)
         end
 
         def open_add_project_modal
-          click_element :add_projects_button
+          click_element 'add-projects-button'
         end
       end
     end

@@ -66,11 +66,11 @@ module QA
 
         EE::Page::Project::Secure::VulnerabilityDetails.perform do |vulnerability_details|
           aggregate_failures "testing vulnerability details" do
-            expect(vulnerability_details).to have_component(component_name: :vulnerability_header)
-            expect(vulnerability_details).to have_component(component_name: :vulnerability_details)
+            expect(vulnerability_details).to have_component(component_name: 'vulnerability-header')
+            expect(vulnerability_details).to have_component(component_name: 'vulnerability-details')
             expect(vulnerability_details).to have_vulnerability_title(title: vulnerability_name)
             expect(vulnerability_details).to have_vulnerability_description(description: vulnerability_description)
-            expect(vulnerability_details).to have_component(component_name: :vulnerability_footer)
+            expect(vulnerability_details).to have_component(component_name: 'vulnerability-footer')
           end
         end
       end

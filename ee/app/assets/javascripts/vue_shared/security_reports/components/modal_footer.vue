@@ -108,7 +108,7 @@ export default {
 
 <template>
   <div>
-    <gl-button data-qa-selector="cancel_button" :disabled="disabled" @click="$emit('cancel')">
+    <gl-button data-testid="cancel-button" :disabled="disabled" @click="$emit('cancel')">
       {{ __('Cancel') }}
     </gl-button>
 

@@ -13,13 +13,13 @@ module QA
 
               base.class_eval do
                 view 'ee/app/assets/javascripts/security_configuration/sast/components/configuration_form.vue' do
-                  element :submit_button
+                  element 'submit-button'
                 end
               end
             end
 
             def click_submit_button
-              click_element(:submit_button)
+              click_element('submit-button')
             end
 
             def fill_dynamic_field(field_name, content)
