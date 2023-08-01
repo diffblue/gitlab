@@ -17,6 +17,10 @@ module Security
 
     private
 
+    def primary?
+      params[:is_primary] == true
+    end
+
     def delete?
       params[:is_enabled] == false
     end
@@ -27,9 +31,9 @@ module Security
 
     def upsert_training
       training.transaction do
-        project.security_trainings.update_all(is_primary: false) if params[:is_primary]
+        project.security_trainings.update_all(is_primary: false) if primary?
 
-        training.update(is_primary: params[:is_primary])
+        training.update(is_primary: primary?)
       end
     end
 

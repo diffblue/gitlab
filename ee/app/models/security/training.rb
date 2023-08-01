@@ -9,6 +9,7 @@ module Security
 
     # There can be only one primary training per project
     validates :is_primary, uniqueness: { scope: :project_id }, if: :is_primary?
+    validates :is_primary, exclusion: { in: [nil] }
 
     before_destroy :prevent_deleting_primary
 

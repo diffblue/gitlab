@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::Training do
+RSpec.describe Security::Training, feature_category: :vulnerability_management do
   describe 'associations' do
     it { is_expected.to belong_to(:project).required }
     it { is_expected.to belong_to(:provider).required }
@@ -22,6 +22,8 @@ RSpec.describe Security::Training do
         it { is_expected.not_to validate_uniqueness_of(:is_primary) }
       end
     end
+
+    it { is_expected.not_to allow_value(nil).for(:is_primary) }
   end
 
   describe '.not_including scope' do
