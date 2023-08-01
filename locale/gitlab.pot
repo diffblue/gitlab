@@ -46576,9 +46576,6 @@ msgstr ""
 msgid "The file has been successfully deleted."
 msgstr ""
 
-msgid "The file name should have a .yml extension"
-msgstr ""
-
 msgid "The finding is not a vulnerability because it is part of a test or is test data."
 msgstr ""
 
@@ -47274,12 +47271,6 @@ msgid "There was an error trying to validate your query"
 msgstr ""
 
 msgid "There was an error updating the Maintenance Mode Settings"
-msgstr ""
-
-msgid "There was an error updating the dashboard, branch name is invalid."
-msgstr ""
-
-msgid "There was an error updating the dashboard, branch named: %{branch} already exists."
 msgstr ""
 
 msgid "There was an error when reseting email token."
@@ -53174,9 +53165,6 @@ msgid "You are not allowed to import projects in this namespace."
 msgstr ""
 
 msgid "You are not allowed to log in using password"
-msgstr ""
-
-msgid "You are not allowed to push into this branch. Create another branch or open a merge request."
 msgstr ""
 
 msgid "You are not allowed to reject a user"
