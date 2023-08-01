@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Search::GroupService, feature_category: :global_search do
+RSpec.describe Search::GroupService, feature_category: :global_search,
+  quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/418757' do
   include SearchResultHelpers
   include ProjectHelpers
   include UserHelpers
@@ -167,8 +168,8 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
   context 'visibility', :elastic_delete_by_query, :sidekiq_inline do
     include_context 'ProjectPolicyTable context'
 
-    let_it_be_with_refind(:project) { create(:project, namespace: group) }
-    let_it_be_with_refind(:project2) { create(:project) }
+    let_it_be_with_reload(:project) { create(:project, namespace: group) }
+    let_it_be_with_reload(:project2) { create(:project) }
 
     let(:user) { create_user_from_membership(project, membership) }
     let(:projects) { [project, project2] }
