@@ -53,36 +53,52 @@ module Gitlab
       end
       strong_memoize_attr :latest_build_for_default_branch
 
-      # dependencies is an array of dependency objects which come from the dependency_files section
-      # of the dependency scanning report. These entries do not include license information. For example:
-      # [
-      #   {
-      #     :name=>"Django", :packager=>"Python (pip)", :package_manager=>"pip",
-      #     :version=>"1.11.4", :licenses=>[], :vulnerabilities=>[],
-      #     :location=> { :blob_path=>"/some/path", :path=>"requirements.txt" }
-      #   },
-      #   {
-      #     :name=>"actioncable", :packager=>"Ruby (Bundler)", :package_manager=>"bundler",
-      #     :version=>"5.0.0", :licenses=>[], :vulnerabilities=>[]
-      #     :location=> { :blob_path=>"/some/path", :path=>"Gemfile.lock" }
-      #   }
-      # ]
+      # add_licenses obtains the licenses for each dependency in the dependencies array, then
+      # adds them to the licenses array of each dependency.
       #
-      # components is an array of Hashie::Mash items which contain purl_type, name, and version fields
-      # For example:
-      # [
-      #   { name: "django", purl_type: "pypi",  version: "1.11.4" },
-      #   { name: "actioncable", purl_type: "gem", version: "5.0.0" },
-      #   { name: "actionmailer",  purl_type: "gem", version: "5.0.0" }
-      # ]
+      # @param dependencies [Array<Hash>] An array of hashes containing a `purl_type`, `version` and
+      # non-normalized `name` attribute, which come from the dependency_files section of the dependency
+      # scanning report. These entries do not include license information.
       #
-      # this method obtains the licenses for each of the entries in the components array, then
-      # adds them to the licenses field of each dependency
+      # @return [void] This method does not return anything. It modifies the `licenses` field of the
+      # input `dependencies` array in-place.
+      #
+      # @example
+      #   dependencies = [
+      #     {
+      #       :name=>"Django", :packager=>"Python (pip)", :package_manager=>"pip",
+      #       :version=>"1.11.4", :licenses=>[], :vulnerabilities=>[], :id=>1,
+      #       :location=> { :path=>"requirements.txt" }
+      #     },
+      #     {
+      #       :name=>"actioncable", :packager=>"Ruby (Bundler)", :package_manager=>"bundler",
+      #       :version=>"5.0.0", :licenses=>[], :vulnerabilities=>[], :id=>2,
+      #       :location=> { :path=>"Gemfile.lock" }
+      #     },
+      #     {
+      #       :name=>"actioncable", :packager=>"Ruby (Bundler)", :package_manager=>"bundler",
+      #       :version=>"5.0.0", :licenses=>[], :vulnerabilities=>[], :id=>3,
+      #       :location=> { :path=>"proj2/Gemfile.lock" }
+      #     }
+      #   ]
+      #   add_licenses(dependencies)
+      #   # The `licenses` field of each hash in the `dependencies` array will be updated with appropriate license
+      #   # information for each dependency.
       def add_licenses(dependencies)
         package_licenses = PackageLicenses.new(project: project, components: build_components(dependencies)).fetch
 
-        dependencies.each_with_index do |dependency, idx|
-          dependency[:licenses] = package_licenses[idx].licenses.map do |license|
+        dependencies.each do |dependency|
+          # convert from package_manager (ie bundler, pip, etc) to purl_type (ie gem, pypi, etc)
+          purl_type = ::Sbom::PurlType::Converter.purl_type_for_pkg_manager(dependency[:package_manager])
+
+          normalized_dependency_name = ::Sbom::PackageUrl::Normalizer.new(
+            type: purl_type, text: dependency[:name]).normalize_name
+
+          found_package = package_licenses.find do |pl|
+            pl.name == normalized_dependency_name && pl.purl_type == purl_type && pl.version == dependency[:version]
+          end
+
+          dependency[:licenses] = found_package.licenses.map do |license|
             {
               name: license.name,
               url: ::Gitlab::Ci::Reports::LicenseScanning::License.spdx_url(license.spdx_identifier)
@@ -93,6 +109,22 @@ module Gitlab
 
       private
 
+      # @param dependencies [Array<Hash>] An array of hashes containing a `package_manager`, `version` and
+      # non-normalized `name` attribute.
+      #
+      # @return [Array<Hashie::Mash>] An array of Hashie::Mash objects containing a `purl_type`, `version`
+      # and normalized `name` attribute.
+      #
+      # @example
+      #   dependencies = [
+      #     { :name=>"Django", :package_manager=>"pip", :version=>"1.11.4" },
+      #     { :name=>"actioncable", :package_manager=>"bundler", :version=>"5.0.0" }
+      #   ]
+      #   # Output:
+      #   # [
+      #   #   <Hashie::Mash name="django" purl_type="pypi" version="1.11.4">,
+      #   #   <Hashie::Mash name="actioncable" purl_type="gem" version="5.0.0">
+      #   # ]
       def build_components(dependencies)
         dependencies.map do |dependency|
           purl_type = ::Sbom::PurlType::Converter.purl_type_for_pkg_manager(dependency[:package_manager])
