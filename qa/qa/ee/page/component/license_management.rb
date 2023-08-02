@@ -12,7 +12,7 @@ module QA
 
             base.class_eval do
               view 'app/assets/javascripts/ci/reports/components/report_item.vue' do
-                element :report_item_row
+                element 'report-item-row'
               end
 
               view 'app/assets/javascripts/ci/reports/components/issue_status_icon.vue' do

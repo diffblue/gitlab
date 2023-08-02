@@ -66,6 +66,29 @@ module QA
                 has_element?(:status_failed_icon)
               end
             end
+
+            def has_licenses_on_paginated_table?(licenses)
+              # Iterate over the rows until we find one that contains the name
+              row_texts = []
+              loop do
+                # Targeting Staging, use CSS to find table and rows
+                table = find('#content-body')
+                row_texts.concat(table.all('div.table-mobile-content').map(&:text))
+
+                # If we've reached the end of the table break
+                # Use exact_text so it doesn't match GitLab Next
+                break unless has_link?(exact_text: 'Next')
+
+                # Click the "Next" button to go to the next page
+                click_on(exact_text: 'Next')
+              end
+
+              licenses.each do |license|
+                return false unless row_texts.include?(license)
+              end
+
+              true
+            end
           end
         end
       end

@@ -1,0 +1,6 @@
+
+include:
+  template: Jobs/Dependency-Scanning.gitlab-ci.yml
+
+dependency_scanning:
+  tags: [secure_license_scanning]
