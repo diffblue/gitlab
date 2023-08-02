@@ -19,9 +19,10 @@ module Gitlab
           request_id: options[:request_id],
           model_name: resource&.class&.name,
           # todo: do we need to sanitize/refine this response in any ways?
-          response_body: generate_response_body(response_modifier.response_body),
+          content: generate_response_body(response_modifier.response_body),
           errors: response_modifier.errors,
-          role: Cache::ROLE_ASSISTANT
+          role: Cache::ROLE_ASSISTANT,
+          timestamp: Time.current
         }
 
         logger.debug(
@@ -30,7 +31,7 @@ module Gitlab
           options: options
         )
 
-        response_data = data.slice(:request_id, :errors, :role).merge(content: data[:response_body])
+        response_data = data.slice(:request_id, :errors, :role, :content, :timestamp)
 
         unless options[:internal_request]
           Gitlab::Llm::Cache.new(user).add(response_data) unless options[:skip_cache]

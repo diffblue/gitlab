@@ -33,7 +33,7 @@ module Gitlab
         data = {
           id: SecureRandom.uuid,
           request_id: payload[:request_id],
-          timestamp: Time.current.to_s,
+          timestamp: payload.fetch(:timestamp, Time.current).to_s,
           role: payload[:role]
         }
         data[:content] = payload[:content][0, MAX_TEXT_LIMIT] if payload[:content]

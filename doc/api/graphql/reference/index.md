@@ -12323,6 +12323,8 @@ Information about a connected Agent.
 | <a id="airesponseerrors"></a>`errors` | [`[String!]`](#string) | Errors return by AI API as response. |
 | <a id="airesponserequestid"></a>`requestId` | [`String`](#string) | ID of the original request. |
 | <a id="airesponseresponsebody"></a>`responseBody` | [`String`](#string) | Response body from AI API. |
+| <a id="airesponserole"></a>`role` | [`AiCachedMessageRole!`](#aicachedmessagerole) | Message role. |
+| <a id="airesponsetimestamp"></a>`timestamp` | [`Time!`](#time) | Message timestamp. |
 
 ### `AlertManagementAlert`
 

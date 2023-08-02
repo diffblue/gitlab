@@ -15,6 +15,7 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :not_own
   let(:subscribe) { get_subscription(resource, requested_user, current_user) }
   let(:ai_completion_response) { graphql_dig_at(graphql_data(response[:result]), :ai_completion_response) }
   let(:request_id) { 'uuid' }
+  let(:content) { 'Some AI response' }
 
   before do
     stub_const('GitlabSchema', Graphql::Subscriptions::ActionCable::MockGitlabSchema)
@@ -28,7 +29,8 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :not_own
         id: SecureRandom.uuid,
         model_name: resource.class.name,
         request_id: request_id,
-        response_body: "Some AI response",
+        content: content,
+        role: ::Gitlab::Llm::Cache::ROLE_ASSISTANT,
         errors: []
       }
 
@@ -63,7 +65,8 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :not_own
     let(:current_user) { guest }
 
     it 'receives data' do
-      expect(ai_completion_response['responseBody']).to eq("Some AI response")
+      expect(ai_completion_response['responseBody']).to eq(content)
+      expect(ai_completion_response['role']).to eq('ASSISTANT')
       expect(ai_completion_response['requestId']).to eq(request_id)
       expect(ai_completion_response['errors']).to eq([])
     end
@@ -83,6 +86,7 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :not_own
       subscription {
         aiCompletionResponse(userId:\"#{user&.to_gid}\", resourceId: \"#{resource.to_gid}\") {
           responseBody
+          role
           requestId
           errors
         }

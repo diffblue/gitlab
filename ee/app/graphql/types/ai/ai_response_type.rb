@@ -14,6 +14,16 @@ module Types
         null: true,
         description: 'ID of the original request.'
 
+      field :role,
+        Types::Ai::CachedMessageRoleEnum,
+        null: false,
+        description: 'Message role.'
+
+      field :timestamp,
+        Types::TimeType,
+        null: false,
+        description: 'Message timestamp.'
+
       field :errors, [GraphQL::Types::String],
         null: true,
         description: 'Errors return by AI API as response.'

@@ -3,9 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Llm::GenerateTestFileService, :saas, feature_category: :code_review_workflow do
-  let_it_be_with_reload(:group) { create(:group_with_plan, :public, plan: :ultimate_plan) }
+  let_it_be_with_refind(:group) { create(:group_with_plan, :public, plan: :ultimate_plan) }
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, :public, group: group) }
+  let_it_be_with_refind(:project) { create(:project, :public, group: group) }
   let_it_be(:merge_request) { create(:merge_request, source_project: project) }
   let_it_be(:options) { {} }
 
