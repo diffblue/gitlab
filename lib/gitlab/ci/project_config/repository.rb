@@ -33,7 +33,7 @@ module Gitlab
           return unless project
           return unless sha
 
-          !project.repository.blob_at(sha, ci_config_path).blank?
+          project.repository.blob_at(sha, ci_config_path).present?
         rescue GRPC::NotFound, GRPC::Internal
           nil
         end
