@@ -27,7 +27,8 @@ module Mutations
             header = find_header(header_id)
 
             response = ::AuditEvents::Streaming::InstanceHeaders::UpdateService.new(
-              params: { header: header, key: key, value: value }
+              params: { header: header, key: key, value: value },
+              current_user: current_user
             ).execute
 
             if response.success?

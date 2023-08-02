@@ -5,8 +5,7 @@ module AuditEvents
     module InstanceHeaders
       class UpdateService < BaseService
         def execute
-          _, response = update_header(params[:header], params[:key], params[:value])
-          response
+          update_header(params[:header], params[:key], params[:value])
         end
       end
     end

@@ -18,16 +18,39 @@ module AuditEvents
 
       def update_header(header, key, value)
         if header.update(key: key, value: value)
-          [true, ServiceResponse.success(payload: { header: header, errors: [] })]
+          log_update_audit_event(header)
+          ServiceResponse.success(payload: { header: header, errors: [] })
         else
-          [false, ServiceResponse.error(message: Array(header.errors))]
+          ServiceResponse.error(message: Array(header.errors))
         end
       end
 
       def destroy_header(header)
-        return true, ServiceResponse.success if header.destroy
+        if header.destroy
+          audit_message = "Destroyed a custom HTTP header with key #{header.key}."
+          audit(action: :destroy, header: header, message: audit_message)
 
-        [false, ServiceResponse.error(message: Array(header.errors))]
+          ServiceResponse.success
+        else
+          ServiceResponse.error(message: Array(header.errors))
+        end
+      end
+
+      private
+
+      def log_update_audit_event(header)
+        return if header.previous_changes.except(:updated_at).empty?
+
+        audit(action: :update, header: header, message: update_audit_message(header))
+      end
+
+      def update_audit_message(header)
+        changes = header.previous_changes.except(:updated_at)
+        if changes.key?(:key)
+          "Updated a custom HTTP header from key #{changes[:key].first} to have a key #{changes[:key].last}."
+        else
+          "Updated a custom HTTP header with key #{header.key} to have a new value."
+        end
       end
     end
   end

@@ -9,26 +9,13 @@ module AuditEvents
           header = params[:header]
           return header_error if header.blank?
 
-          audit_message = audit_message(header.key, params[:key])
-
-          success, response = update_header(header, params[:key], params[:value])
-
-          audit(action: :update, header: header, message: audit_message) if success
-          response
+          update_header(header, params[:key], params[:value])
         end
 
         private
 
         def header_error
           ServiceResponse.error(message: "missing header param")
-        end
-
-        def audit_message(old_key, new_key)
-          if old_key == new_key
-            "Updated a custom HTTP header with key #{new_key} to have a new value."
-          else
-            "Updated a custom HTTP header from key #{old_key} to have a key #{new_key}."
-          end
         end
       end
     end
