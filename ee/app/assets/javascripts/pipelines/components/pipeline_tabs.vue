@@ -105,9 +105,7 @@ export default {
     >
       <template #title>
         <span class="gl-mr-2">{{ $options.i18n.tabs.licensesTitle }}</span>
-        <gl-badge size="sm" data-testid="license-counter" data-qa-selector="licenses_counter">{{
-          licenseCount
-        }}</gl-badge>
+        <gl-badge size="sm" data-testid="license-counter">{{ licenseCount }}</gl-badge>
       </template>
 
       <router-view
