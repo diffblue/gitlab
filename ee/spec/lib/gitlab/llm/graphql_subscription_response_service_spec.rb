@@ -7,7 +7,8 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:project) { create(:project, :public, group: group) }
   let(:response_body) { 'Some response' }
-  let(:options) { { request_id: 'uuid' } }
+  let(:cache_response) { false }
+  let(:options) { { request_id: 'uuid', cache_response: cache_response } }
 
   let(:ai_response_json) do
     '{
@@ -59,18 +60,32 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
       subject
     end
 
-    it 'caches response' do
-      expect_next_instance_of(::Gitlab::Llm::Cache) do |cache|
-        expect(cache).to receive(:add)
-          .with(payload.slice(:request_id, :errors, :role, :timestamp).merge(content: payload[:content]))
-      end
+    context 'when cache_response: true' do
+      let(:cache_response) { true }
 
-      subject
+      it 'caches response' do
+        expect_next_instance_of(::Gitlab::Llm::Cache) do |cache|
+          expect(cache).to receive(:add)
+            .with(payload.slice(:request_id, :errors, :role, :timestamp).merge(content: payload[:content]))
+        end
+
+        subject
+      end
+    end
+
+    context 'when cache_response: false' do
+      let(:cache_response) { false }
+
+      it 'does not cache the response' do
+        expect(Gitlab::Llm::Cache).not_to receive(:new)
+
+        subject
+      end
     end
   end
 
   shared_examples 'with a markup format option' do
-    let(:options) { { markup_format: :html, request_id: 'uuid' } }
+    let(:options) { { markup_format: :html, request_id: 'uuid', cache_response: cache_response } }
 
     it_behaves_like 'graphql subscription response' do
       let(:response_body) { '<p data-sourcepos="1:1-1:13" dir="auto">Some response</p>' }
@@ -122,7 +137,7 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
     end
 
     context 'for internal request' do
-      let(:options) { { request_id: 'uuid', internal_request: true } }
+      let(:options) { { request_id: 'uuid', internal_request: true, cache_response: cache_response } }
 
       it 'returns response but does not cache or broadcast' do
         expect(GraphqlTriggers).not_to receive(:ai_completion_response)

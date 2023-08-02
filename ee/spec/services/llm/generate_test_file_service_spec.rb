@@ -25,15 +25,16 @@ RSpec.describe Llm::GenerateTestFileService, :saas, feature_category: :code_revi
     end
 
     context 'when member of the group' do
+      let(:resource) { merge_request }
+      let(:action_name) { :generate_test_file }
+      let(:content) { 'Generate test file' }
+
       before do
         group.add_developer(user)
       end
 
-      it_behaves_like 'completion worker sync and async' do
-        let(:resource) { merge_request }
-        let(:action_name) { :generate_test_file }
-        let(:content) { 'Generate test file' }
-      end
+      it_behaves_like 'completion worker sync and async'
+      it_behaves_like 'llm service does not cache user request'
 
       context 'when feature flag is disabled' do
         before do

@@ -28,7 +28,8 @@ module Llm
       resource = find_resource(resource_id, resource_class)
       return if resource && !user.can?("read_#{resource.to_ability_name}", resource)
 
-      params = options.extract!(:request_id, :internal_request, :skip_cache)
+      params = options.extract!(:request_id, :internal_request, :cache_response)
+      logger.debug(message: "Params", params: params)
       ai_completion = ::Gitlab::Llm::CompletionsFactory.completion(ai_action_name.to_sym, params)
       logger.debug(message: "Getting Completion Service from factory", class_name: ai_completion.class.name)
 

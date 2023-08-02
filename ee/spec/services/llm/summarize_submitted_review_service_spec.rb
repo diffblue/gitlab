@@ -13,6 +13,9 @@ RSpec.describe Llm::SummarizeSubmittedReviewService, feature_category: :code_rev
   let(:options) { {} }
 
   describe '#perform' do
+    let(:action_name) { :summarize_submitted_review }
+    let(:content) { 'Summarize submitted review' }
+
     before_all do
       group.add_guest(user)
     end
@@ -29,9 +32,10 @@ RSpec.describe Llm::SummarizeSubmittedReviewService, feature_category: :code_rev
 
     it_behaves_like 'completion worker sync and async' do
       subject { described_class.new(current_user, resource, options) }
+    end
 
-      let(:action_name) { :summarize_submitted_review }
-      let(:content) { 'Summarize submitted review' }
+    it_behaves_like 'llm service does not cache user request' do
+      subject { described_class.new(current_user, resource, options) }
     end
 
     context 'when user is not member of project group' do

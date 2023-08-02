@@ -11,7 +11,7 @@ RSpec.describe Llm::ChatService, :saas, feature_category: :shared do
   let(:resource) { issue }
   let(:stage_check_available) { true }
   let(:content) { "Summarize issue" }
-  let(:options) { { content: content, skip_cache: false } }
+  let(:options) { { content: content, cache_response: true } }
 
   subject { described_class.new(user, resource, options) }
 
@@ -25,6 +25,7 @@ RSpec.describe Llm::ChatService, :saas, feature_category: :shared do
 
       before do
         stub_feature_flags(gitlab_duo: user)
+        allow(SecureRandom).to receive(:uuid).and_return('uuid')
         allow(Gitlab::Llm::StageCheck).to receive(:available?).with(group, :chat).and_return(stage_check_available)
       end
 
@@ -34,19 +35,21 @@ RSpec.describe Llm::ChatService, :saas, feature_category: :shared do
         end
 
         context 'when resource is an issue' do
-          it_behaves_like 'completion worker sync and async' do
-            let(:resource) { issue }
-            let(:action_name) { :chat }
-            let(:content) { 'Summarize issue' }
-          end
+          let(:resource) { issue }
+          let(:action_name) { :chat }
+          let(:content) { 'Summarize issue' }
+
+          it_behaves_like 'completion worker sync and async'
+          it_behaves_like 'llm service caches user request'
         end
 
         context 'when resource is a user' do
-          it_behaves_like 'completion worker sync and async' do
-            let(:resource) { user }
-            let(:action_name) { :chat }
-            let(:content) { 'How to reset the password' }
-          end
+          let(:resource) { user }
+          let(:action_name) { :chat }
+          let(:content) { 'How to reset the password' }
+
+          it_behaves_like 'completion worker sync and async'
+          it_behaves_like 'llm service caches user request'
         end
 
         context 'when gitlab_duo feature flag is disabled' do
