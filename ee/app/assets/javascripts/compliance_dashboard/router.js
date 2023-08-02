@@ -22,6 +22,9 @@ export function createRouter(basePath, props) {
       path: '/standards_adherence',
       name: ROUTE_STANDARDS_ADHERENCE,
       component: StandardsReport,
+      props: {
+        groupPath,
+      },
     },
     {
       path: '/violations',

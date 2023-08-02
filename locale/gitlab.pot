@@ -12020,6 +12020,9 @@ msgstr ""
 msgid "ComplianceReport|No projects found that match filters"
 msgstr ""
 
+msgid "ComplianceReport|No standards adherences found"
+msgstr ""
+
 msgid "ComplianceReport|No violations found"
 msgstr ""
 
@@ -12048,6 +12051,27 @@ msgid "ComplianceReport|Update filtered results?"
 msgstr ""
 
 msgid "ComplianceReport|Update result"
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|Have a valid rule that prevents author approved merge requests"
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|Have a valid rule that prevents merge requests approved by committers"
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|Have a valid rule that requires any merge request to have more than two approvals"
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|Prevent authors as approvers"
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|Prevent committers as approvers"
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|Two approvals"
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|View details"
 msgstr ""
 
 msgid "Component"
@@ -19074,6 +19098,9 @@ msgid "ExternalWikiService|https://example.com/xxx/wiki/..."
 msgstr ""
 
 msgid "Facebook"
+msgstr ""
+
+msgid "Fail"
 msgstr ""
 
 msgid "Failed"
@@ -45214,6 +45241,9 @@ msgid "Subtracts"
 msgstr ""
 
 msgid "Succeeded"
+msgstr ""
+
+msgid "Success"
 msgstr ""
 
 msgid "Successfully activated"
