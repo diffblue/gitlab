@@ -123,7 +123,7 @@ export default {
       :tbody-tr-class="rowClass"
       responsive
       stacked="sm"
-      data-qa-selector="subscription_history"
+      data-testid="subscription-history"
     >
       <template #cell(name)="{ item }">
         <span>

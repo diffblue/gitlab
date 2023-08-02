@@ -49,8 +49,7 @@ describe('Subscription Breakdown', () => {
   const findDetailsCardFooter = () => wrapper.find('.gl-card-footer');
   const findDetailsHistory = () => wrapper.findComponent(SubscriptionDetailsHistory);
   const findDetailsUserInfo = () => wrapper.findComponent(SubscriptionDetailsUserInfo);
-  const findLicenseUploadAction = () => wrapper.findByTestId('license-upload-action');
-  const findLicenseRemoveAction = () => wrapper.findByTestId('license-remove-action');
+  const findRemoveLicenseAction = () => wrapper.findByTestId('remove-license');
   const findActivateSubscriptionAction = () =>
     wrapper.findByTestId('subscription-activate-subscription-action');
   const findSubscriptionActivationBanner = () =>
@@ -191,12 +190,6 @@ describe('Subscription Breakdown', () => {
     });
 
     describe('footer buttons', () => {
-      it('does not show upload legacy license button', () => {
-        createComponent();
-
-        expect(findLicenseUploadAction().exists()).toBe(false);
-      });
-
       it.each`
         url                  | type                                | shouldShow
         ${licenseRemovePath} | ${subscriptionTypes.LEGACY_LICENSE} | ${true}
@@ -220,7 +213,7 @@ describe('Subscription Breakdown', () => {
           const stubs = { GlCard, SubscriptionDetailsCard };
           createComponent({ props, provide, stubs });
 
-          expect(findLicenseRemoveAction().exists()).toBe(shouldShow);
+          expect(findRemoveLicenseAction().exists()).toBe(shouldShow);
         },
       );
 

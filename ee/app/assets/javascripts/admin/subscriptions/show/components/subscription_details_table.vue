@@ -1,7 +1,7 @@
 <script>
 import { GlSkeletonLoader, GlTableLite } from '@gitlab/ui';
 import { mapGetters } from 'vuex';
-import { slugifyWithUnderscore } from '~/lib/utils/text_utility';
+import { slugify, slugifyWithUnderscore } from '~/lib/utils/text_utility';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import SubscriptionSyncButton from 'ee/admin/subscriptions/show/components/subscription_sync_button.vue';
 import { copySubscriptionIdButtonText, detailsLabels, subscriptionTypes } from '../constants';
@@ -9,6 +9,7 @@ import { copySubscriptionIdButtonText, detailsLabels, subscriptionTypes } from '
 const placeholderHeightFactor = 32;
 const placeholderWidth = 180;
 const DEFAULT_TD_CLASSES = 'gl-border-none! gl-h-7 gl-line-height-normal! gl-p-0!';
+const itemDetailTestId = (v, k, item) => ({ 'data-testid': `${slugify(item.detail || '')}` });
 
 export default {
   detailsLabels,
@@ -25,6 +26,7 @@ export default {
       key: 'value',
       formatter: (v, k, item) => item.value?.toString() || '-',
       label: '',
+      tdAttr: itemDetailTestId,
       tdClass: DEFAULT_TD_CLASSES,
     },
   ],
@@ -63,9 +65,6 @@ export default {
   methods: {
     placeHolderPosition(index) {
       return (index - 1) * placeholderHeightFactor;
-    },
-    qaSelectorValue({ detail }) {
-      return slugifyWithUnderscore(detail);
     },
     rowAttr({ detail }, type) {
       return {
@@ -107,11 +106,7 @@ export default {
     </template>
 
     <template #cell(value)="{ item, value }">
-      <p
-        class="gl-relative"
-        data-testid="details-content"
-        :data-qa-selector="qaSelectorValue(item)"
-      >
+      <p class="gl-relative" data-testid="details-content">
         {{ value }}
         <clipboard-button
           v-if="item.detail === 'id'"

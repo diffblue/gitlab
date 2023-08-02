@@ -12,8 +12,7 @@ describe('Subscription Details User Info', () => {
   let wrapper;
 
   const itif = (condition) => (condition ? it : it.skip);
-  const findSubscriptionText = () =>
-    wrapper.findByTestId('users-in-subscription').find('h2').text();
+  const findSubscriptionText = () => wrapper.findByTestId('users-in-subscription').text();
 
   const createComponent = (props = {}, stubGlSprintf = false) => {
     wrapper = extendedWrapper(
@@ -30,11 +29,8 @@ describe('Subscription Details User Info', () => {
     );
   };
 
-  const findUsersInSubscriptionCard = () =>
-    wrapper.findComponent('[data-testid="users-in-subscription"]');
-
   const findUsersInSubscriptionDesc = () =>
-    findUsersInSubscriptionCard().findComponent('[data-testid="users-in-subscription-desc"]');
+    wrapper.findComponent('[data-testid="users-in-subscription-desc"]');
 
   describe.each`
     testId                  | info   | title                              | text                              | link

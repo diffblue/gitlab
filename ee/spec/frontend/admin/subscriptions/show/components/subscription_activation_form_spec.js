@@ -32,7 +32,7 @@ describe('SubscriptionActivationForm', () => {
     return createMockApollo([[activateSubscriptionMutation, resolverMock]]);
   };
 
-  const findActivateButton = () => wrapper.findByTestId('activate-button');
+  const findActivateButton = () => wrapper.findByTestId('activate');
   const findAgreementCheckbox = () => wrapper.findComponent(GlFormCheckbox);
   const findAgreementCheckboxFormGroup = () => wrapper.findByTestId('form-group-terms');
   const findAgreementCheckboxFormGroupSpan = () => findAgreementCheckboxFormGroup().find('span');
