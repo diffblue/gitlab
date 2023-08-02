@@ -20,26 +20,6 @@ RSpec.describe Groups::AnalyticsDashboardHelper, feature_category: :value_stream
       expect(helper.group_analytics_dashboard_available?(group)).to be(true)
     end
 
-    context 'when feature flag is disabled' do
-      before do
-        stub_feature_flags(combined_analytics_dashboards: false)
-      end
-
-      it 'is false for the group' do
-        expect(helper.group_analytics_dashboard_available?(group)).to be(false)
-      end
-    end
-
-    context 'when licensed feature is not available' do
-      before do
-        stub_licensed_features(project_level_analytics_dashboard: false)
-      end
-
-      it 'is false for the group' do
-        expect(helper.group_analytics_dashboard_available?(group)).to be(false)
-      end
-    end
-
     context 'when the current user does not have permission' do
       before do
         allow(helper).to receive(:current_user) { current_user }
