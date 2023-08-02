@@ -39,44 +39,21 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
   end
 
   describe '.known_events' do
-    context 'when use_metric_definitions_for_events_list is disabled' do
-      let(:ce_temp_dir) { Dir.mktmpdir }
-      let(:ee_temp_dir) { Dir.mktmpdir }
-      let(:ce_temp_file) { Tempfile.new(%w[common .yml], ce_temp_dir) }
-      let(:ee_temp_file) { Tempfile.new(%w[common .yml], ee_temp_dir) }
-      let(:ce_event) do
-        {
-          "name" => "ce_event",
-          "expiry" => 84
-        }
-      end
+    it 'uses Gitlab::Usage::MetricDefinition.all' do
+      expect(Gitlab::Usage::MetricDefinition).to receive(:all).and_call_original
 
-      let(:ee_event) do
-        {
-          "name" => "ee_event",
-          "expiry" => 84
-        }
-      end
+      described_class.known_events
+    end
 
-      before do
-        stub_feature_flags(use_metric_definitions_for_events_list: false)
+    it 'returns the list of available events' do
+      allow(Gitlab::Usage::MetricDefinition).to receive(:all).and_return([
+        instance_double(Gitlab::Usage::MetricDefinition, available?: true, attributes: { options: { events: %w[event1 event2] } }),
+        instance_double(Gitlab::Usage::MetricDefinition, available?: true, attributes: { options: { events: ['event3'] } }),
+        instance_double(Gitlab::Usage::MetricDefinition, available?: false, attributes: { options: { events: ['event4'] } })
+      ])
 
-        stub_const("#{described_class}::KNOWN_EVENTS_PATH", File.expand_path('*.yml', ce_temp_dir))
-        stub_const("EE::#{described_class}::EE_KNOWN_EVENTS_PATH", File.expand_path('*.yml', ee_temp_dir))
-        File.open(ce_temp_file.path, "w+b") { |f| f.write [ce_event].to_yaml }
-        File.open(ee_temp_file.path, "w+b") { |f| f.write [ee_event].to_yaml }
-      end
-
-      it 'returns both ee and ce events' do
-        expect(described_class.known_events).to match_array [ce_event, ee_event]
-      end
-
-      after do
-        ce_temp_file.unlink
-        ee_temp_file.unlink
-        FileUtils.remove_entry(ce_temp_dir) if Dir.exist?(ce_temp_dir)
-        FileUtils.remove_entry(ee_temp_dir) if Dir.exist?(ee_temp_dir)
-      end
+      event_names = described_class.known_events.pluck(:name) # events are returned as { name => event_name }
+      expect(event_names).to match_array(%w[event1 event2 event3]) # event4 is not available
     end
   end
 
