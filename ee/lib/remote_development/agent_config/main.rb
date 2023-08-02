@@ -32,7 +32,6 @@ module RemoteDevelopment
           message.context => { skipped_reason: Symbol } # Type-check the payload before returning it
           { status: :success, payload: message.context }
         in { ok: AgentConfigUpdateSuccessful => message }
-          message.context => { remote_development_agent_config: RemoteDevelopmentAgentConfig } # Type-check the payload
           { status: :success, payload: message.context }
         else
           raise UnmatchedResultError.new(result: result)

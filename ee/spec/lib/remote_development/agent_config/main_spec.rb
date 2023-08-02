@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
+require_relative '../fast_spec_helper'
 
 RSpec.describe RemoteDevelopment::AgentConfig::Main, feature_category: :remote_development do
   include RemoteDevelopment::RailwayOrientedProgrammingHelpers
 
-  let(:initial_value) { {} }
+  let(:value) { {} }
   let(:error_details) { 'some error details' }
   let(:err_message_context) { { details: error_details } }
 
@@ -21,7 +21,7 @@ RSpec.describe RemoteDevelopment::AgentConfig::Main, feature_category: :remote_d
 
   # Subject
 
-  subject(:response) { described_class.main(initial_value) }
+  subject(:response) { described_class.main(value) }
 
   before do
     allow(license_checker_class).to receive(:method) { license_checker_method }
@@ -78,7 +78,7 @@ RSpec.describe RemoteDevelopment::AgentConfig::Main, feature_category: :remote_d
       stub_methods_to_return_ok_result(
         license_checker_method
       )
-      allow(updater_method).to receive(:call).with(initial_value) do
+      allow(updater_method).to receive(:call).with(value) do
         Result.ok(
           RemoteDevelopment::Messages::AgentConfigUpdateSkippedBecauseNoConfigFileEntryFound.new(skip_updater_context)
         )
@@ -94,13 +94,13 @@ RSpec.describe RemoteDevelopment::AgentConfig::Main, feature_category: :remote_d
   end
 
   context 'when the Updater returns an AgentConfigUpdateSuccessful Result' do
-    let(:agent_config) { build_stubbed(:remote_development_agent_config) }
+    let(:agent_config) { instance_double("RemoteDevelopment::RemoteDevelopmentAgentConfig") }
 
     before do
       stub_methods_to_return_ok_result(
         license_checker_method
       )
-      allow(updater_method).to receive(:call).with(initial_value) do
+      allow(updater_method).to receive(:call).with(value) do
         Result.ok(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
           { remote_development_agent_config: agent_config }
         ))
@@ -123,7 +123,7 @@ RSpec.describe RemoteDevelopment::AgentConfig::Main, feature_category: :remote_d
       stub_methods_to_return_ok_result(
         license_checker_method
       )
-      allow(updater_method).to receive(:call).with(initial_value) do
+      allow(updater_method).to receive(:call).with(value) do
         Result.err(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new)
       end
     end

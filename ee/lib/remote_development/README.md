@@ -18,6 +18,7 @@
 - All the domain logic lives under `ee/lib/remote_development`. Unless you are changing the DB schema or API structure, your changes will probably be made here.
 - The `Main` class is the entry point for each sub-module, and is found at `ee/lib/remote_development/**/main.rb`
 - Have a look through the ["Railway Oriented Programming"](https://fsharpforfunandprofit.com/rop/) presentation slides (middle of that page) to understand the patterns used in the Domain Logic layer.
+- Prefer `ee/spec/lib/remote_development/fast_spec_helper.rb` instead of `spec_helper` where possible. See [Avoid coupling Domain Logic layer to Rails application](#avoid-coupling-domain-logic-layer-to-rails-application).
 - Use `scripts/remote_development/run-smoke-test-suite.sh` locally, to get a faster feedback than pushing to CI and waiting for a build.
 - Use `scripts/remote_development/run-e2e-tests.sh` to easily run the QA E2E tests.
 - If you use [RubyMine](https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/rubymine/), you will get a lot of extra help, because we try to keep the `Inspect Code` clean and green for all Remote Development files, and also maintain YARD annotations, which means you will get fast in-IDE feedback about many errors such as type violations, etc, which are not caught by the standard Gitlab static linters such as RuboCop, ESLint, etc.
@@ -52,6 +53,14 @@ An example of this is how we avoid coupling the Domain Logic layer to the Servic
 
 This overall approach is aligned with [our direction towards a more modular monolith](https://docs.gitlab.com/ee/architecture/blueprints/modular_monolith/). See that document for more information on
 the motivations and patterns. Specifically, see the `References` sub-page and reference to the the [`hexagonal architecture ports and adapters`](https://www.google.com/search?q=hexagonal+architecture+ports+and+adapters&tbm=isch) pattern, which includes [this article with an example of this architecture](https://herbertograca.com/2017/11/16/explicit-architecture-01-ddd-hexagonal-onion-clean-cqrs-how-i-put-it-all-together/)
+
+### Avoid coupling Domain Logic layer to Rails application
+
+This layered approach also implies that we avoid directly referring to classes which are part of the Rails application from within the Domain Logic layer.
+
+If possible, we prefer to inject instances of these classes, or the classes themselves, into the Domain Logic layer from the Service layer.
+
+This also means that we can use `ee/spec/lib/remote_development/fast_spec_helper.rb` in most places in the Domain Logic layer. However, we may use the normal `spec_helper` for Domain Logic classes which make direct use of Rails. For example, classes which directly use ActiveRecord models and/or associations, where the usage of `fast_spec_helper` would require significant mocking, and not provide as much coverage of the ActiveRecord interactions.
 
 ## Type safety
 
