@@ -2,4 +2,8 @@
 - breadcrumb_title s_("Analytics|Analytics dashboards")
 
 #js-analytics-dashboards-list-app{ data: analytics_dashboards_list_app_data(@project) }
-  = gl_loading_icon(size: 'lg', css_class: 'gl-my-7')
+  -# TODO replace deprecated skeleton styles with ViewComponent: https://gitlab.com/gitlab-org/gitlab/-/issues/363777
+  .animation-container.gl-mt-7
+    .skeleton-line-1.rounded-pill
+    .skeleton-line-2.rounded-pill
+    .skeleton-line-3.rounded-pill
