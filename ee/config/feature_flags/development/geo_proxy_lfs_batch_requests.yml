@@ -1,0 +1,8 @@
+---
+name: geo_proxy_lfs_batch_requests
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/122258
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/419587
+milestone: '16.3'
+type: development
+group: group::geo
+default_enabled: false
