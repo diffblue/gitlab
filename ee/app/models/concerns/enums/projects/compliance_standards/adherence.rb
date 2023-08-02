@@ -9,7 +9,10 @@ module Enums
         end
 
         def self.check_name
-          { ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorService::CHECK_NAME => 0 }
+          {
+            ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorService::CHECK_NAME => 0,
+            ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterService::CHECK_NAME => 1
+          }
         end
 
         def self.standard

@@ -51,6 +51,8 @@ RSpec.describe MergeRequestApprovalSettings::UpdateService, feature_category: :c
       end
 
       context 'run_compliance_standard_checks' do
+        let(:params) { { allow_author_approval: false, allow_committer_approval: false } }
+
         before do
           stub_licensed_features(group_level_compliance_dashboard: true)
         end
@@ -60,8 +62,11 @@ RSpec.describe MergeRequestApprovalSettings::UpdateService, feature_category: :c
             stub_feature_flags(compliance_adherence_report: true)
           end
 
-          it 'invokes PreventApprovalByAuthorWorker', :sidekiq_inline, :aggregate_failures do
+          it 'invokes prevent approval by author and committer workers', :sidekiq_inline, :aggregate_failures do
             expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorWorker)
+              .to receive(:perform_async).with({ 'project_id' => project.id, 'user_id' => user.id }).and_call_original
+
+            expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterWorker)
               .to receive(:perform_async).with({ 'project_id' => project.id, 'user_id' => user.id }).and_call_original
 
             response = subject.execute
@@ -71,7 +76,11 @@ RSpec.describe MergeRequestApprovalSettings::UpdateService, feature_category: :c
             project_adherence = project.reload.compliance_standards_adherence
                                   .for_check_name(:prevent_approval_by_merge_request_author).first
 
+            project_adherence_2 = project.reload.compliance_standards_adherence
+                                  .for_check_name(:prevent_approval_by_merge_request_committers).first
+
             expect(project_adherence.status).to eq("success")
+            expect(project_adherence_2.status).to eq("success")
           end
         end
 
@@ -80,8 +89,10 @@ RSpec.describe MergeRequestApprovalSettings::UpdateService, feature_category: :c
             stub_feature_flags(compliance_adherence_report: false)
           end
 
-          it 'does not invoke PreventApprovalByAuthorWorker' do
+          it 'does not invoke PreventApprovalByAuthorWorker and PreventApprovalByCommitterWorker' do
             expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorWorker)
+              .not_to receive(:perform_async).with({ 'project_id' => project.id, 'user_id' => user.id })
+            expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterWorker)
               .not_to receive(:perform_async).with({ 'project_id' => project.id, 'user_id' => user.id })
           end
         end
@@ -134,6 +145,8 @@ RSpec.describe MergeRequestApprovalSettings::UpdateService, feature_category: :c
       end
 
       context 'run_compliance_standard_checks' do
+        let(:params) { { allow_author_approval: false, allow_committer_approval: false } }
+
         before do
           stub_licensed_features(group_level_compliance_dashboard: true)
         end
@@ -143,8 +156,11 @@ RSpec.describe MergeRequestApprovalSettings::UpdateService, feature_category: :c
             stub_feature_flags(compliance_adherence_report: true)
           end
 
-          it 'invokes PreventApprovalByAuthorGroupWorker', :sidekiq_inline do
+          it 'invokes GroupWorkers', :sidekiq_inline do
             expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorGroupWorker)
+              .to receive(:perform_async).with({ 'group_id' => group.id, 'user_id' => user.id }).and_call_original
+
+            expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterGroupWorker)
               .to receive(:perform_async).with({ 'group_id' => group.id, 'user_id' => user.id }).and_call_original
 
             response = subject.execute
@@ -158,8 +174,10 @@ RSpec.describe MergeRequestApprovalSettings::UpdateService, feature_category: :c
             stub_feature_flags(compliance_adherence_report: false)
           end
 
-          it 'does not invoke PreventApprovalByAuthorGroupWorker' do
+          it 'does not invoke GroupWorkers' do
             expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorGroupWorker)
+              .not_to receive(:perform_async).with({ 'group_id' => group.id, 'user_id' => user.id })
+            expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterGroupWorker)
               .not_to receive(:perform_async).with({ 'group_id' => group.id, 'user_id' => user.id })
           end
         end
