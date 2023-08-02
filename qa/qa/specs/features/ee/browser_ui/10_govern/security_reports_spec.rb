@@ -226,7 +226,14 @@ module QA
         end
       end
 
-      it 'displays the Dependency List', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348035' do
+      it(
+        'displays the Dependency List',
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348035',
+        quarantine: {
+          type: :investigating,
+          issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/419860"
+        }
+      ) do
         push_security_reports
         project.visit!
         wait_for_pipeline_success
