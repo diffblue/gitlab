@@ -680,6 +680,49 @@ RSpec.describe Project, feature_category: :groups_and_projects do
         end
       end
     end
+
+    describe '.elastic_index_dependant_association' do
+      it 'contains the correct array for elastic_index_dependants' do
+        expect(described_class.elastic_index_dependants).to contain_exactly(
+          {
+            association_name: :issues,
+            on_change: :visibility_level
+          },
+          {
+            association_name: :issues,
+            on_change: :archived,
+            depends_on_finished_migration: :add_archived_to_issues
+          },
+          {
+            association_name: :work_items,
+            on_change: :archived,
+            depends_on_finished_migration: :add_archived_to_issues
+          },
+          {
+            association_name: :merge_requests,
+            on_change: :visibility_level
+          },
+          {
+            association_name: :merge_requests,
+            on_change: :archived,
+            depends_on_finished_migration: :add_archived_to_merge_requests
+          },
+          {
+            association_name: :notes,
+            on_change: :visibility_level
+          },
+          {
+            association_name: :notes,
+            on_change: :archived,
+            depends_on_finished_migration: :add_archived_to_notes
+          },
+          {
+            association_name: :milestones,
+            on_change: :visibility_level
+          }
+        )
+      end
+    end
   end
 
   describe 'setting up a mirror' do
