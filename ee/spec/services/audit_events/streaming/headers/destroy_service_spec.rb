@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AuditEvents::Streaming::Headers::DestroyService do
+RSpec.describe AuditEvents::Streaming::Headers::DestroyService, feature_category: :audit_events do
   let_it_be(:user) { create(:user) }
   let_it_be(:header) { create(:audit_events_streaming_header) }
   let_it_be(:event_type) { "audit_events_streaming_headers_destroy" }
@@ -36,34 +36,9 @@ RSpec.describe AuditEvents::Streaming::Headers::DestroyService do
       end
     end
 
-    it_behaves_like 'header deletion'
-
-    context 'when the header is destroyed successfully' do
-      it 'sends the audit streaming event' do
-        audit_context = {
-          name: 'audit_events_streaming_headers_destroy',
-          stream_only: false,
-          author: user,
-          scope: destination.group,
-          target: header,
-          message: "Destroyed a custom HTTP header with key #{header.key}."
-        }
-
-        expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context).and_call_original
-        expect { response }.to change { AuditEvent.count }.from(0).to(1)
-      end
-
-      context "with license feature external_audit_events" do
-        before do
-          stub_licensed_features(external_audit_events: true)
-        end
-
-        it 'sends correct event type in audit event stream' do
-          expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).with(event_type, nil, anything)
-
-          response
-        end
-      end
+    it_behaves_like 'header deletion' do
+      let(:audit_scope) { destination.group }
+      let(:extra_audit_context) { { stream_only: false } }
     end
   end
 end

@@ -5,8 +5,7 @@ module AuditEvents
     module InstanceHeaders
       class DestroyService < BaseService
         def execute
-          _, response = destroy_header(params[:header])
-          response
+          destroy_header(params[:header])
         end
       end
     end

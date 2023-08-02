@@ -15,7 +15,8 @@ module Mutations
             header = authorized_find!(id: header_id)
 
             response = ::AuditEvents::Streaming::InstanceHeaders::DestroyService.new(
-              params: { header: header }
+              params: { header: header },
+              current_user: current_user
             ).execute
 
             if response.success?
