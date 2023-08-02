@@ -7,15 +7,6 @@ module Gitlab
         attr_accessor :status, :content, :context, :tool, :suggestions, :is_final
         alias_method :is_final?, :is_final
 
-        def initialize(status:, context:, content:, tool:, suggestions: nil, is_final: false)
-          @status = status
-          @context = context
-          @content = content
-          @tool = tool
-          @suggestions = suggestions
-          @is_final = is_final
-        end
-
         def self.from_response(response_body:, tools:, context:)
           parser = Parsers::ChainOfThoughtParser.new(output: response_body)
           parser.parse
@@ -80,6 +71,22 @@ module Gitlab
             tool: nil,
             is_final: true
           )
+        end
+
+        def initialize(status:, context:, content:, tool:, suggestions: nil, is_final: false)
+          @status = status
+          @context = context
+          @content = content
+          @tool = tool
+          @suggestions = suggestions
+          @is_final = is_final
+        end
+
+        def last_tool_name
+          cls = context&.tools_used&.last
+          return unless cls
+
+          cls::NAME
         end
 
         private_class_method def self.logger
