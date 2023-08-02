@@ -16,6 +16,13 @@ RSpec.describe Analytics::ValueStreamDashboard::TopLevelGroupCounterService, fea
   let_it_be(:another_issue_in_group) { create(:issue, project: project_in_group) }
   let_it_be(:issue_in_subsubgroup) { create(:issue, project: project_in_subsubgroup) }
 
+  let_it_be(:mr_in_subsubgroup1) { create(:merge_request, :unique_branches, source_project: project_in_subsubgroup) }
+  let_it_be(:mr_in_subsubgroup2) { create(:merge_request, :unique_branches, source_project: project_in_subsubgroup) }
+
+  let_it_be(:ci_pipeline1) { create(:ci_pipeline, project: project_in_group) }
+  let_it_be(:ci_pipeline2) { create(:ci_pipeline, project: project_in_group) }
+  let_it_be(:ci_pipeline3) { create(:ci_pipeline, project: project_in_group) }
+
   let_it_be(:aggregation) { create(:value_stream_dashboard_aggregation, namespace: group, last_run_at: nil) }
 
   let(:raw_cursor) { { top_level_namespace_id: aggregation.id } }
@@ -38,7 +45,18 @@ RSpec.describe Analytics::ValueStreamDashboard::TopLevelGroupCounterService, fea
       { metric: 'issues', namespace_id: project_in_group.project_namespace.id, count: 2 },
       { metric: 'issues', namespace_id: project_in_subgroup.project_namespace.id, count: 0 },
       { metric: 'issues', namespace_id: another_project_in_subgroup.project_namespace.id, count: 0 },
-      { metric: 'issues', namespace_id: project_in_subsubgroup.project_namespace.id, count: 1 }
+      { metric: 'issues', namespace_id: project_in_subsubgroup.project_namespace.id, count: 1 },
+      { metric: 'groups', namespace_id: group.id, count: 1 },
+      { metric: 'groups', namespace_id: subgroup.id, count: 1 },
+      { metric: 'groups', namespace_id: subsubgroup.id, count: 0 },
+      { metric: 'merge_requests', namespace_id: project_in_group.project_namespace.id, count: 0 },
+      { metric: 'merge_requests', namespace_id: project_in_subgroup.project_namespace.id, count: 0 },
+      { metric: 'merge_requests', namespace_id: another_project_in_subgroup.project_namespace.id, count: 0 },
+      { metric: 'merge_requests', namespace_id: project_in_subsubgroup.project_namespace.id, count: 2 },
+      { metric: 'pipelines', namespace_id: project_in_group.project_namespace.id, count: 3 },
+      { metric: 'pipelines', namespace_id: project_in_subgroup.project_namespace.id, count: 0 },
+      { metric: 'pipelines', namespace_id: another_project_in_subgroup.project_namespace.id, count: 0 },
+      { metric: 'pipelines', namespace_id: project_in_subsubgroup.project_namespace.id, count: 0 }
     ]
   end
 
@@ -97,7 +115,8 @@ RSpec.describe Analytics::ValueStreamDashboard::TopLevelGroupCounterService, fea
     it 'continues the processing from the cursor' do
       run_service
 
-      expect(persisted_counts).to match(expected_counts.map { |a| have_attributes(a) })
+      issues_only = persisted_counts.select(&:issues?)
+      expect(issues_only).to match(expected_counts.map { |a| have_attributes(a) })
     end
   end
 

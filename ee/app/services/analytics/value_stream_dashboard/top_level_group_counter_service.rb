@@ -7,20 +7,26 @@ module Analytics
       INSERT_BATCH_SIZE = 100
       COUNT_BATCH_SIZE = 5000
 
+      # rubocop: disable CodeReuse/ActiveRecord
+      GROUP_SELECT_SCOPE = ->(scope) { scope.select(:id) }
+      PROJECT_SELECT_SCOPE = ->(scope) {
+        scope.joins(:project).select(:id, Project.arel_table[:id].as('tmp_project_id'))
+      }
+
       # - metric: metric value for the metrics enum in Analytics::ValueStreamDashboard::Count
-      # - namespace_scope: scope for iterating (EachBatch) over the namespaces (Group or ProjectNamespace)
-      # - inner_namespace_query: transform the yielded query provided by the namespace_scope
+      # - namespace_class: class to use for iterating (EachBatch) over specific namespaces (Group or ProjectNamespace)
+      # - inner_namespace_query: transform the yielded query provided by the namespace_class
       #
       #  Example:
       #
       #  Consider the following configuration:
       #  ```
-      #    namespace_scope = ->{ Group.where('traversal_ids[1] = ?', group_id) }
+      #    namespace_class = Group
       #    inner_namespace_query = ->(scope) { scope.select(:id) }
       #
       #    # the two configuration option will be used in EachBatch:
       #
-      #    namespace_scope.each_batch do |relation|
+      #    namespace_class.where("traversal_ids[1] = ?", 1).each_batch do |relation|
       #      # the `inner_namespace_query` lambda will modify the yielded relation, result:
       #      namespaces = relation.select(:id)
       #    end
@@ -28,23 +34,41 @@ module Analytics
       #
       # - count_scope: use this scope when counting items in batches
       # - count_batching_column: batch countable items by this column
-      # rubocop: disable CodeReuse/ActiveRecord
       COUNTS_TO_COLLECT = {
         projects: {
           metric: ::Analytics::ValueStreamDashboard::Count.metrics[:projects],
-          namespace_scope: ->(group_id) { Group.where('traversal_ids[1] = ?', group_id) },
-          inner_namespace_query: ->(scope) { scope.select(:id) },
+          namespace_class: Group,
+          inner_namespace_query: GROUP_SELECT_SCOPE,
           count_scope: Project.method(:in_namespace),
           count_batching_column: :id
         }.freeze,
         issues: {
           metric: ::Analytics::ValueStreamDashboard::Count.metrics[:issues],
-          namespace_scope: ->(group_id) { Namespaces::ProjectNamespace.where('traversal_ids[1] = ?', group_id) },
-          inner_namespace_query: ->(scope) {
-            scope.joins(:project).select(:id, Project.arel_table[:id].as('tmp_project_id'))
-          },
+          namespace_class: Namespaces::ProjectNamespace,
+          inner_namespace_query: PROJECT_SELECT_SCOPE,
           count_scope: ->(namespace) { Issue.in_projects(namespace.tmp_project_id) },
           count_batching_column: :iid
+        }.freeze,
+        groups: {
+          metric: ::Analytics::ValueStreamDashboard::Count.metrics[:groups],
+          namespace_class: Group,
+          inner_namespace_query: GROUP_SELECT_SCOPE,
+          count_batching_column: :id,
+          count_scope: ->(namespace) { Group.where(parent_id: namespace.id) }
+        }.freeze,
+        merge_requests: {
+          metric: ::Analytics::ValueStreamDashboard::Count.metrics[:merge_requests],
+          namespace_class: Namespaces::ProjectNamespace,
+          inner_namespace_query: PROJECT_SELECT_SCOPE,
+          count_batching_column: :iid,
+          count_scope: ->(namespace) { MergeRequest.where(target_project_id: namespace.tmp_project_id) }
+        }.freeze,
+        pipelines: {
+          metric: ::Analytics::ValueStreamDashboard::Count.metrics[:pipelines],
+          namespace_class: Namespaces::ProjectNamespace,
+          inner_namespace_query: PROJECT_SELECT_SCOPE,
+          count_batching_column: :id,
+          count_scope: ->(namespace) { Ci::Pipeline.where(project_id: namespace.tmp_project_id) }
         }.freeze
       }.freeze
       # rubocop: enable CodeReuse/ActiveRecord
@@ -89,7 +113,7 @@ module Analytics
         countable_config ||= COUNTS_TO_COLLECT.values.detect { |config| config[:metric] == raw_cursor[:metric] }
 
         Gitlab::Analytics::ValueStreamDashboard::NamespaceCursor.new(
-          namespace_scope: countable_config[:namespace_scope],
+          namespace_class: countable_config[:namespace_class],
           inner_namespace_query: countable_config[:inner_namespace_query],
           cursor_data: raw_cursor.merge({ metric: countable_config[:metric] })
         )

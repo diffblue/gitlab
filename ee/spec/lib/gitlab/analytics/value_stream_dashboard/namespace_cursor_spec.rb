@@ -12,7 +12,7 @@ RSpec.describe Gitlab::Analytics::ValueStreamDashboard::NamespaceCursor, feature
 
   let(:cursor) do
     described_class.new(
-      namespace_scope: ->(group_id) { Group.where('traversal_ids[1] = ?', group_id) },
+      namespace_class: Group,
       inner_namespace_query: ->(namespaces) { namespaces.select('id AS custom_column') },
       cursor_data: cursor_data
     )
