@@ -36,6 +36,39 @@ export const createDefaultProjectsResponse = (projects) => ({
   },
 });
 
+export const createComplianceAdherence = (id) => ({
+  id: `gid://gitlab/Projects::ComplianceStandards::Adherence/${id}`,
+  updatedAt: 'July 1, 2023',
+  status: 'SUCCESS',
+  checkName: 'PREVENT_APPROVAL_BY_MERGE_REQUEST_AUTHOR',
+  standard: 'GITLAB',
+  project: {
+    id: 'gid://gitlab/Project/1',
+    name: 'Example Project',
+    complianceFrameworks: {
+      nodes: {
+        id: 'gid://gitlab/ComplianceManagement::Framework/1',
+        name: 'Example Framework',
+        description: 'asds',
+        color: '#0000ff',
+        __typename: 'ComplianceFramework',
+      },
+    },
+  },
+});
+
+export const createComplianceAdherencesResponse = ({ count = 1 } = {}) => ({
+  data: {
+    group: {
+      projectComplianceStandardsAdherence: {
+        nodes: Array(count)
+          .fill(null)
+          .map((_, id) => createComplianceAdherence(id)),
+      },
+    },
+  },
+});
+
 export const createComplianceViolation = (id) => ({
   id: `gid://gitlab/MergeRequests::ComplianceViolation/${id}`,
   severityLevel: 'HIGH',

@@ -1,0 +1,27 @@
+query getProjectComplianceStandardsAdherence($fullPath: ID!) {
+  group(fullPath: $fullPath) {
+    id
+    projectComplianceStandardsAdherence {
+      nodes {
+        id
+        updatedAt
+        status
+        checkName
+        standard
+        project {
+          id
+          name
+          complianceFrameworks {
+            nodes {
+              id
+              name
+              description
+              color
+              default
+            }
+          }
+        }
+      }
+    }
+  }
+}
