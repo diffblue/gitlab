@@ -249,6 +249,21 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
         expect(helper.index_exists?(index_name: @index_name)).to eq(true)
         expect(helper.index_exists?).to eq(false)
       end
+
+      context 'with non-default number of shards' do
+        let(:number_of_shards) { 7 }
+
+        before do
+          Elastic::IndexSetting.default.update!(number_of_shards: number_of_shards)
+        end
+
+        it 'creates an index with correct number of shards' do
+          @index_name = helper.create_empty_index(with_alias: false).each_key.first
+
+          settings = helper.get_settings(index_name: @index_name)
+          expect(settings['number_of_shards'].to_i).to eq(number_of_shards)
+        end
+      end
     end
 
     context 'when there is an alias' do
