@@ -5,6 +5,9 @@ module EE
     module CreateService
       extend ::Gitlab::Utils::Override
 
+      AUDIT_EVENT_TYPE = 'group_created'
+      AUDIT_EVENT_MESSAGE = 'Added group'
+
       override :execute
       def execute
         super.tap do |group|
@@ -44,11 +47,16 @@ module EE
       end
 
       def log_audit_event
-        ::AuditEventService.new(
-          current_user,
-          group,
-          action: :create
-        ).for_group.security_event
+        audit_context = {
+          name: AUDIT_EVENT_TYPE,
+          author: current_user,
+          scope: group,
+          target: group,
+          message: AUDIT_EVENT_MESSAGE,
+          target_details: group.full_path
+        }
+
+        ::Gitlab::Audit::Auditor.audit(audit_context)
       end
     end
   end
