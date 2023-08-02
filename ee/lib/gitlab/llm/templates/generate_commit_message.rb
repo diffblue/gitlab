@@ -6,7 +6,6 @@ module Gitlab
       class GenerateCommitMessage
         include Gitlab::Utils::StrongMemoize
 
-        GIT_DIFF_PREFIX_REGEX = /\A@@( -\d+,\d+ \+\d+(,\d+)? )@@/
         MAX_TOKENS = 500
 
         def initialize(merge_request)
@@ -45,7 +44,12 @@ module Gitlab
         def extracted_diff
           diffs = merge_request.raw_diffs.to_a
 
-          diffs.map { |file| file.diff.sub(GIT_DIFF_PREFIX_REGEX, "Filename: #{file.new_path}") }.join("\n")
+          diffs.map do |file|
+            file.diff.sub(
+              Gitlab::Regex.generate_commit_message_git_diff_prefix,
+              "Filename: #{file.new_path}"
+            )
+          end.join("\n")
         end
       end
     end
