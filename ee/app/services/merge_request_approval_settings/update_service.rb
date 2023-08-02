@@ -62,19 +62,33 @@ module MergeRequestApprovalSettings
     end
 
     def run_compliance_standards_checks
-      return unless params.include?(:allow_author_approval)
+      return unless params.include?(:allow_author_approval) || params.include?(:allow_committer_approval)
 
       if group_container?
-        return unless Feature.enabled?(:compliance_adherence_report, container)
-
-        ::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorGroupWorker
-          .perform_async({ 'group_id' => container.id, 'user_id' => current_user&.id })
+        run_compliance_checks_for_group
       else
-        return unless Feature.enabled?(:compliance_adherence_report, container.root_ancestor)
-
-        ::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorWorker
-          .perform_async({ 'project_id' => container.id, 'user_id' => current_user&.id })
+        run_compliance_checks_for_project
       end
+    end
+
+    def run_compliance_checks_for_group
+      return unless Feature.enabled?(:compliance_adherence_report, container)
+
+      ::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorGroupWorker
+        .perform_async({ 'group_id' => container.id, 'user_id' => current_user&.id })
+
+      ::ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterGroupWorker
+        .perform_async({ 'group_id' => container.id, 'user_id' => current_user&.id })
+    end
+
+    def run_compliance_checks_for_project
+      return unless Feature.enabled?(:compliance_adherence_report, container.root_ancestor)
+
+      ::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorWorker
+        .perform_async({ 'project_id' => container.id, 'user_id' => current_user&.id })
+
+      ::ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterWorker
+        .perform_async({ 'project_id' => container.id, 'user_id' => current_user&.id })
     end
   end
 end

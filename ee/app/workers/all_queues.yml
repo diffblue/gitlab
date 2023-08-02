@@ -1218,6 +1218,24 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: compliance_management_standards_gitlab_base
+  :worker_name: ComplianceManagement::Standards::Gitlab::BaseWorker
+  :feature_category: :compliance_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: compliance_management_standards_gitlab_group_base
+  :worker_name: ComplianceManagement::Standards::Gitlab::GroupBaseWorker
+  :feature_category: :compliance_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: compliance_management_standards_gitlab_prevent_approval_by_author
   :worker_name: ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorWorker
   :feature_category: :compliance_management
@@ -1229,6 +1247,24 @@
   :tags: []
 - :name: compliance_management_standards_gitlab_prevent_approval_by_author_group
   :worker_name: ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorGroupWorker
+  :feature_category: :compliance_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: compliance_management_standards_gitlab_prevent_approval_by_committer
+  :worker_name: ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterWorker
+  :feature_category: :compliance_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: compliance_management_standards_gitlab_prevent_approval_by_committer_group
+  :worker_name: ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterGroupWorker
   :feature_category: :compliance_management
   :has_external_dependencies: false
   :urgency: :low

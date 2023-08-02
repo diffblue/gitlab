@@ -3,14 +3,15 @@
 module ComplianceManagement
   module Standards
     module Gitlab
-      class PreventApprovalByAuthorGroupWorker < GroupBaseWorker
+      class PreventApprovalByCommitterGroupWorker < GroupBaseWorker
         data_consistency :sticky
         idempotent!
         urgency :low
 
         feature_category :compliance_management
+
         def worker_class
-          ::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorWorker
+          ::ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterWorker
         end
       end
     end
