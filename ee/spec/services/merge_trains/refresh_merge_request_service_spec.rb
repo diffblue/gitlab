@@ -90,7 +90,7 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
         expect(merge_request.merge_train_car).to receive(:start_merge!).and_call_original
         expect(merge_request.merge_train_car).to receive(:finish_merge!).and_call_original
         expect_next_instance_of(MergeRequests::MergeService, project: project, current_user: maintainer, params: instance_of(HashWithIndifferentAccess)) do |service|
-          expect(service).to receive(:execute).with(merge_request, skip_discussions_check: true).and_call_original
+          expect(service).to receive(:execute).with(merge_request, skip_discussions_check: true, check_mergeability_retry_lease: true).and_call_original
         end
 
         expect { subject }.to change { merge_request.merge_train_car.status_name }.from(:fresh).to(:merged)
