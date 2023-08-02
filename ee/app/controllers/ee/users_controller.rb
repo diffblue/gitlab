@@ -33,7 +33,10 @@ module EE
 
       @groups_with_project_templates = # rubocop:disable Gitlab/ModuleWithInstanceVariables
         user.available_subgroups_with_custom_project_templates(params[:group_id])
-            .page(params[:page])
+          .page(params[:page])
+          # Workaround: to generate correct COUNT sql:
+          # https://gitlab.com/gitlab-org/gitlab/-/issues/381077
+          .tap { |t| t.total_count("#{::Namespace.table_name}.#{::Namespace.primary_key}") }
 
       render layout: false
     end
