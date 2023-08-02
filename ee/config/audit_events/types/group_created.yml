@@ -1,0 +1,9 @@
+---
+name: group_created
+description: Event triggered when a group is created.
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/411595
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/121005
+feature_category: groups_and_projects
+milestone: '16.3'
+saved_to_database: true
+streamed: true

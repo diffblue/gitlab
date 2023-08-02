@@ -14,6 +14,7 @@ RSpec.describe Groups::CreateService, '#execute', feature_category: :groups_and_
 
   context 'audit events' do
     include_examples 'audit event logging' do
+      let_it_be(:event_type) { Groups::CreateService::AUDIT_EVENT_TYPE }
       let(:operation) { create_group(user, group_params) }
       let(:fail_condition!) do
         allow(Gitlab::VisibilityLevel).to receive(:allowed_for?).and_return(false)
@@ -25,11 +26,12 @@ RSpec.describe Groups::CreateService, '#execute', feature_category: :groups_and_
            entity_id: @resource.id,
            entity_type: 'Group',
            details: {
-             add: 'group',
              author_name: user.name,
              target_id: @resource.id,
              target_type: 'Group',
-             target_details: @resource.full_path
+             target_details: @resource.full_path,
+             custom_message: Groups::CreateService::AUDIT_EVENT_MESSAGE,
+             author_class: user.class.name
            }
          }
       end
