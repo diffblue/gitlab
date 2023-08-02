@@ -1,11 +1,10 @@
 <script>
-import { GlDropdown, GlDropdownItem, GlTooltipDirective as GlTooltip } from '@gitlab/ui';
+import { GlDisclosureDropdown, GlTooltipDirective as GlTooltip } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 
 export default {
   components: {
-    GlDropdown,
-    GlDropdownItem,
+    GlDisclosureDropdown,
   },
   directives: { GlTooltip },
   inject: { searchPath: { default: '' } },
@@ -13,22 +12,29 @@ export default {
     moreActions: __('More actions'),
     searchLabel: s__('FeatureFlags|Search code references'),
   },
+  computed: {
+    items() {
+      return [
+        {
+          text: this.$options.i18n.searchLabel,
+          href: this.searchPath,
+        },
+      ];
+    },
+  },
 };
 </script>
 <template>
-  <gl-dropdown
+  <gl-disclosure-dropdown
     v-if="searchPath"
     v-gl-tooltip
     icon="ellipsis_v"
     text-sr-only
+    :items="items"
     :title="$options.i18n.moreActions"
-    :text="$options.i18n.moreActions"
+    :toggle-text="$options.i18n.moreActions"
     category="secondary"
     no-caret
-    right
-  >
-    <gl-dropdown-item :href="searchPath" target="_blank">
-      {{ $options.i18n.searchLabel }}
-    </gl-dropdown-item>
-  </gl-dropdown>
+    placement="right"
+  />
 </template>
