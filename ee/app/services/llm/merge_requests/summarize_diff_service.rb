@@ -3,8 +3,6 @@
 module Llm
   module MergeRequests
     class SummarizeDiffService
-      GIT_DIFF_PREFIX_REGEX = /\A@@( -\d+,\d+ \+\d+,\d+ )@@/
-
       def initialize(title:, user:, diff:)
         @title = title
         @user = user
@@ -68,7 +66,7 @@ module Llm
         # Ex: @@ -0,0 +1,58 @@\n+# frozen_string_literal: true\n+\n+module MergeRequests\n+
         #
         diff.raw_diffs.to_a.map do |diff|
-          diff_output(diff.old_path, diff.new_path, diff.diff.sub(GIT_DIFF_PREFIX_REGEX, ""))
+          diff_output(diff.old_path, diff.new_path, diff.diff.sub(Gitlab::Regex.git_diff_prefix, ""))
         end.join.truncate_words(2000)
       end
 

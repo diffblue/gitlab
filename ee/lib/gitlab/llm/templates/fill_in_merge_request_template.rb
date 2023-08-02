@@ -6,8 +6,6 @@ module Gitlab
       class FillInMergeRequestTemplate
         include Gitlab::Utils::StrongMemoize
 
-        GIT_DIFF_PREFIX_REGEX = /\A@@( -\d+,\d+ \+\d+,\d+ )@@/
-
         def initialize(user, project, params = {})
           @user = user
           @project = project
@@ -51,7 +49,7 @@ module Gitlab
             # bracketed by @@. Removing this saves us tokens.
             #
             # Ex: @@ -0,0 +1,58 @@\n+# frozen_string_literal: true\n+\n+module MergeRequests\n+
-            raw_diff.diff.sub(GIT_DIFF_PREFIX_REGEX, "")
+            raw_diff.diff.sub(Gitlab::Regex.git_diff_prefix, "")
           end.join.truncate_words(2000)
         end
 
