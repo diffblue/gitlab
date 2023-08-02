@@ -13,6 +13,7 @@ module Search
       feature_category :global_search
       urgency :throttled
       idempotent!
+      pause_control :zoekt
 
       def perform(root_namespace_id, project_id)
         return unless ::Feature.enabled?(:index_code_with_zoekt)

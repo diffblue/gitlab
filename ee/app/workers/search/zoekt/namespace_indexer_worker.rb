@@ -10,6 +10,7 @@ module Search
       data_consistency :always # rubocop:disable SidekiqLoadBalancing/WorkerDataConsistency
       feature_category :global_search
       idempotent!
+      pause_control :zoekt
 
       def perform(namespace_id, operation)
         return unless ::Feature.enabled?(:index_code_with_zoekt)

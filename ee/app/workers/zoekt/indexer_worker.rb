@@ -13,6 +13,7 @@ module Zoekt
     urgency :throttled
     sidekiq_options retry: 2
     idempotent!
+    pause_control :zoekt
 
     def perform(project_id)
       return unless ::Feature.enabled?(:index_code_with_zoekt)
