@@ -31,7 +31,7 @@ module Groups
     end
 
     def csv_builder
-      @csv_builder = CsvBuilders::Stream.new(data, header_to_value_hash)
+      @csv_builder = CsvBuilder::Stream.new(data, header_to_value_hash)
     end
 
     def data

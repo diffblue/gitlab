@@ -34,7 +34,7 @@ module Projects
       end
 
       def render_csv
-        CsvBuilders::SingleBatch.new(
+        CsvBuilder::SingleBatch.new(
           @scanned_resources,
           {
             'Method': 'request_method',

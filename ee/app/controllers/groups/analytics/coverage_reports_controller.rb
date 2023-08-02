@@ -19,7 +19,7 @@ class Groups::Analytics::CoverageReportsController < Groups::Analytics::Applicat
   private
 
   def render_csv(collection)
-    CsvBuilders::SingleBatch.new(
+    CsvBuilder::SingleBatch.new(
       collection,
       {
         date: 'date',
