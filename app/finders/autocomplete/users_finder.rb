@@ -12,7 +12,7 @@ module Autocomplete
 
     attr_reader :current_user, :project, :group, :search,
       :author_id, :todo_filter, :todo_state_filter,
-      :filter_by_current_user, :states
+      :filter_by_current_user, :states, :push_code
 
     def initialize(params:, current_user:, project:, group:)
       @current_user = current_user
@@ -24,6 +24,7 @@ module Autocomplete
       @todo_state_filter = params[:todo_state_filter]
       @filter_by_current_user = params[:current_user]
       @states = params[:states] || ['active']
+      @push_code = params[:push_code]
     end
 
     def execute
@@ -37,6 +38,8 @@ module Autocomplete
           items.unshift(author)
         end
       end
+
+      items = filter_users_by_push_ability(items)
 
       items.uniq.tap do |unique_items|
         preload_associations(unique_items)
@@ -94,6 +97,12 @@ module Autocomplete
       end
     end
 
+    def filter_users_by_push_ability(items)
+      return items unless project && push_code.present?
+
+      items.select { |user| user.can?(:push_code, project) }
+    end
+
     # rubocop: disable CodeReuse/ActiveRecord
     def preload_associations(items)
       ActiveRecord::Associations::Preloader.new(records: items, associations: :status).call
@@ -107,5 +116,3 @@ module Autocomplete
     end
   end
 end
-
-Autocomplete::UsersFinder.prepend_mod_with('Autocomplete::UsersFinder')
