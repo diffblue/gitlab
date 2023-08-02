@@ -68,6 +68,20 @@ RSpec.describe ::EE::API::Entities::BillableMember do
     end
   end
 
+  context 'when the current user is an admin' do
+    let(:admin) { create(:user, :admin) }
+    let(:options) { super().merge(current_user: admin) }
+
+    before do
+      allow(admin).to receive(:can_admin_all_resources?).and_return(true)
+    end
+
+    it 'exposes the email field' do
+      expect(entity_representation.keys).to include(:email)
+      expect(entity_representation[:email]).to eq user.email
+    end
+  end
+
   context 'with different group membership types' do
     using RSpec::Parameterized::TableSyntax
 

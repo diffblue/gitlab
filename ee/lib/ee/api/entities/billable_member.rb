@@ -12,6 +12,14 @@ module EE
         expose :last_owner?, as: :is_last_owner
         expose :current_sign_in_at, as: :last_login_at
 
+        expose :email do |instance, options|
+          if options[:current_user]&.can_admin_all_resources? || instance.managed_by?(options[:current_user])
+            instance.email
+          elsif instance.public_email.present?
+            instance.public_email
+          end
+        end
+
         private
 
         def membership_type
