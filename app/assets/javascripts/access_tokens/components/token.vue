@@ -21,6 +21,11 @@ export default {
       type: String,
       required: true,
     },
+    size: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
   computed: {
     formInputGroupProps() {
@@ -41,6 +46,7 @@ export default {
       :value="token"
       :copy-button-title="copyButtonTitle"
       readonly
+      :size="size"
     >
       <template #description>
         <slot name="input-description"></slot>

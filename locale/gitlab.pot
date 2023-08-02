@@ -2668,13 +2668,19 @@ msgstr ""
 msgid "Active"
 msgstr ""
 
-msgid "Active %{accessTokenTypePlural} (%{totalAccessTokens})"
-msgstr ""
-
 msgid "Active Sessions"
 msgstr ""
 
 msgid "Active chat names (%{count})"
+msgstr ""
+
+msgid "Active group access tokens"
+msgstr ""
+
+msgid "Active personal access tokens"
+msgstr ""
+
+msgid "Active project access tokens"
 msgstr ""
 
 msgid "Activity"
@@ -2894,6 +2900,9 @@ msgid "Add new emoji"
 msgstr ""
 
 msgid "Add new key"
+msgstr ""
+
+msgid "Add new token"
 msgstr ""
 
 msgid "Add new webhook"
@@ -23640,6 +23649,9 @@ msgid "Impersonation Tokens"
 msgstr ""
 
 msgid "Impersonation has been disabled"
+msgstr ""
+
+msgid "Impersonation tokens"
 msgstr ""
 
 msgid "Import"
