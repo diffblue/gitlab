@@ -10,7 +10,7 @@ module Autocomplete
     # ensure good performance.
     LIMIT = 20
 
-    attr_reader :current_user, :project, :group, :search, :skip_users,
+    attr_reader :current_user, :project, :group, :search,
       :author_id, :todo_filter, :todo_state_filter,
       :filter_by_current_user, :states
 
@@ -19,7 +19,6 @@ module Autocomplete
       @project = project
       @group = group
       @search = params[:search]
-      @skip_users = params[:skip_users]
       @author_id = params[:author_id]
       @todo_filter = params[:todo_filter]
       @todo_state_filter = params[:todo_state_filter]
@@ -65,7 +64,6 @@ module Autocomplete
         .non_internal
         .reorder_by_name
         .optionally_search(search, use_minimum_char_limit: use_minimum_char_limit)
-        .where_not_in(skip_users)
         .limit_to_todo_authors(
           user: current_user,
           with_todos: todo_filter,

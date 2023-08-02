@@ -5,22 +5,14 @@ module EE
     module UsersFinder
       extend ::Gitlab::Utils::Override
 
-      attr_reader :skip_ldap, :push_code_to_protected_branches, :push_code, :saml_provider_id
+      attr_reader :push_code_to_protected_branches, :push_code
 
       override :initialize
       def initialize(params:, current_user:, project:, group:)
         super
 
-        @skip_ldap = params[:skip_ldap]
         @push_code_to_protected_branches = params[:push_code_to_protected_branches]
         @push_code = params[:push_code]
-        @saml_provider_id = params[:saml_provider_id]
-      end
-
-      override :find_users
-      def find_users
-        users = super.limit_to_saml_provider(saml_provider_id)
-        skip_ldap == 'true' ? users.non_ldap : users
       end
 
       override :limited_users

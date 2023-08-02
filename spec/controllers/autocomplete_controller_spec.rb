@@ -207,20 +207,6 @@ RSpec.describe AutocompleteController do
       end
     end
 
-    context 'skip_users parameter included' do
-      before do
-        sign_in(user)
-      end
-
-      it 'skips the user IDs passed' do
-        get(:users, params: { skip_users: [user, user2].map(&:id) })
-
-        response_user_ids = json_response.map { |user| user['id'] }
-
-        expect(response_user_ids).to contain_exactly(non_member.id)
-      end
-    end
-
     context 'merge_request_iid parameter included' do
       before do
         sign_in(user)
