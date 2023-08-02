@@ -98,9 +98,9 @@ describe('ee/remote_development/components/common/workspace_actions', () => {
 
       expect(findButtonsAsData()).toEqual(buttonsData);
       expect(findTooltipsAsData()).toEqual(
-        buttonsData.map((buttonData, idx) => ({
+        buttonsData.map((buttonData) => ({
           text: buttonData.ariaLabel,
-          target: `action-wrapper-${idx}`,
+          target: expect.stringMatching(/action-wrapper-\w+\d{1}/),
         })),
       );
     },
