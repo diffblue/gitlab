@@ -6,7 +6,7 @@ import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import GenericBaseLayoutComponent from '../generic_base_layout_component.vue';
 import { ACTION_AND_LABEL, RULE_MODE_SCANNERS } from '../constants';
 import ScanFilterSelector from '../scan_filter_selector.vue';
-import { CI_VARIABLE, RUNNER_TAGS, FILTERS } from './scan_filters/constants';
+import { CI_VARIABLE, FILTERS } from './scan_filters/constants';
 import CiVariablesSelectors from './scan_filters/ci_variables_selectors.vue';
 import GroupDastProfileSelector from './scan_filters/group_dast_profile_selector.vue';
 import ProjectDastProfileSelector from './scan_filters/project_dast_profile_selector.vue';
@@ -52,7 +52,6 @@ export default {
   data() {
     return {
       filters: {
-        [RUNNER_TAGS]: this.initAction?.tags?.length ? [] : null,
         [CI_VARIABLE]: null,
       },
       selectedScanner: this.initAction.scan || DEFAULT_SCANNER,
@@ -75,9 +74,6 @@ export default {
     },
     isDast() {
       return this.selectedScanner === SCANNER_DAST;
-    },
-    isRunnerTagFilterSelected() {
-      return this.isFilterSelected(RUNNER_TAGS) || this.tags.length > 0;
     },
     selectedScannerText() {
       return RULE_MODE_SCANNERS[this.selectedScanner];
@@ -110,27 +106,19 @@ export default {
       delete updatedAction.variables;
       this.$emit('changed', updatedAction);
     },
-    emitRunnerTagsFilterChanges() {
-      const updatedAction = { ...this.initAction, tags: [] };
-      this.$emit('changed', updatedAction);
-    },
     removeCiFilter() {
       const newFilters = { ...this.filters };
       delete newFilters[CI_VARIABLE];
       this.filters = newFilters;
       this.emitCiVariableFilterChanges();
     },
-    removeRunnerFilter() {
-      const newFilters = { ...this.filters };
-      delete newFilters[RUNNER_TAGS];
-      this.filters = newFilters;
-      this.emitRunnerTagsFilterChanges();
+    removeYamlProperty(property) {
+      const updatedAction = { ...this.initAction };
+      delete updatedAction[property];
+      this.$emit('changed', updatedAction);
     },
     selectFilter(filter) {
       this.$set(this.filters, filter, []);
-      if (filter === RUNNER_TAGS) {
-        this.triggerChanged({ tags: [] });
-      }
       if (filter === CI_VARIABLE) {
         this.triggerChanged({ variables: { '': '' } });
       }
@@ -147,7 +135,11 @@ export default {
       });
 
       const { tags, variables } = this.initAction;
-      updatedAction.tags = [...tags];
+
+      if (tags) {
+        updatedAction.tags = [...tags];
+      }
+
       if (scanner !== this.selectedScanner) {
         this.selectedScanner = scanner;
         this.filters = {};
@@ -215,9 +207,8 @@ export default {
         />
 
         <runner-tags-filter
-          v-if="isRunnerTagFilterSelected"
           :selected="tags"
-          @remove="removeRunnerFilter"
+          @remove="removeYamlProperty('tags')"
           @input="triggerChanged"
           @error="$emit('parsing-error', $options.POLICY_ACTION_BUILDER_TAGS_ERROR_KEY)"
         />

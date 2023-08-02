@@ -23,7 +23,6 @@ actions:
   - scan: dast
     site_profile: required_site_profile
     scanner_profile: required_scanner_profile
-    tags: []
 `;
 
 export const mockDastScanExecutionObject = {
@@ -37,7 +36,6 @@ export const mockDastScanExecutionObject = {
       scan: 'dast',
       site_profile: 'required_site_profile',
       scanner_profile: 'required_scanner_profile',
-      tags: [],
     },
   ],
 };
@@ -90,6 +88,8 @@ rules:
   - staging
 actions:
 - scan: secret_detection
+  tags:
+  - linux,
 `;
 
 export const mockCiVariablesWithTagsScanExecutionManifest = `---

@@ -17,5 +17,4 @@ actions:
   - scan: dast
     site_profile: ''
     scanner_profile: ''
-    tags: []
 `;

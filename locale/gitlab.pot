@@ -41009,16 +41009,10 @@ msgstr ""
 msgid "ScanExecutionPolicy|Maximum number of CI-criteria is one"
 msgstr ""
 
-msgid "ScanExecutionPolicy|Maximum number of runner tags-criteria is one"
-msgstr ""
-
 msgid "ScanExecutionPolicy|Only one variable can be added at a time."
 msgstr ""
 
 msgid "ScanExecutionPolicy|Run a %{scan} scan with the following options:"
-msgstr ""
-
-msgid "ScanExecutionPolicy|Runner tags"
 msgstr ""
 
 msgid "ScanExecutionPolicy|Runner tags:"
@@ -41052,9 +41046,6 @@ msgid "ScanExecutionPolicy|Select site profile"
 msgstr ""
 
 msgid "ScanExecutionPolicy|Select timezone"
-msgstr ""
-
-msgid "ScanExecutionPolicy|Tags"
 msgstr ""
 
 msgid "ScanExecutionPolicy|Triggers:"
