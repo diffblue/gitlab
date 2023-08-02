@@ -39,9 +39,10 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
       {
         id: uuid,
         model_name: expected_resource_class_name,
-        response_body: response_body,
+        content: response_body,
         request_id: 'uuid',
         role: 'assistant',
+        timestamp: an_instance_of(ActiveSupport::TimeWithZone),
         errors: []
       }
     end
@@ -61,7 +62,7 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
     it 'caches response' do
       expect_next_instance_of(::Gitlab::Llm::Cache) do |cache|
         expect(cache).to receive(:add)
-          .with(payload.slice(:request_id, :errors, :role).merge(content: payload[:response_body]))
+          .with(payload.slice(:request_id, :errors, :role, :timestamp).merge(content: payload[:content]))
       end
 
       subject

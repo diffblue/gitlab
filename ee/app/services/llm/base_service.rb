@@ -38,9 +38,19 @@ module Llm
       request_id = SecureRandom.uuid
       options[:request_id] = request_id
       message = content(action_name)
-      payload = { request_id: request_id, role: ::Gitlab::Llm::Cache::ROLE_USER, content: message }
+      payload = {
+        request_id: request_id,
+        role: ::Gitlab::Llm::Cache::ROLE_USER,
+        content: message,
+        timestamp: Time.current
+      }
 
-      ::Gitlab::Llm::Cache.new(user).add(payload) unless options[:skip_cache]
+      ::Gitlab::Llm::Cache.new(user).add(payload) if cache_response?(options)
+
+      if emit_response?(options)
+        GraphqlTriggers.ai_completion_response(user.to_global_id, resource&.to_global_id, payload)
+      end
+
       return success(payload) if no_worker_message?(message)
 
       logger.debug(
@@ -90,6 +100,19 @@ module Llm
 
     def no_worker_message?(content)
       content == ::Gitlab::Llm::CachedMessage::RESET_MESSAGE
+    end
+
+    def emit_response?(options)
+      return false if options[:internal_request]
+
+      Feature.enabled?(:ai_chat_emit_user_messages, user)
+    end
+
+    def cache_response?(options)
+      return false if options[:internal_request]
+      return false if options[:skip_cache]
+
+      true
     end
   end
 end

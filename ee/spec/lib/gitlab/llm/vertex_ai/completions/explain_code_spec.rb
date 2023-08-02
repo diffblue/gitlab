@@ -81,7 +81,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::ExplainCode, feature_category
       expect(GraphqlTriggers).to receive(:ai_completion_response) do |user_id, resource_id, data|
         expect(user_id).to eq(user.to_global_id)
         expect(resource_id).to eq(project.to_global_id)
-        expect(data[:response_body]).to eq(response_body)
+        expect(data[:content]).to eq(response_body)
       end
 
       explain_code

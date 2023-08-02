@@ -55,9 +55,10 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateTestFile, feature_categ
         data = {
           id: uuid,
           model_name: 'MergeRequest',
-          response_body: content,
+          content: content,
           request_id: nil,
           role: 'assistant',
+          timestamp: an_instance_of(ActiveSupport::TimeWithZone),
           errors: []
         }
 

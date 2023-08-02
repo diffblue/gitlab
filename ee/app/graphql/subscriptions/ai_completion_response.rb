@@ -15,9 +15,11 @@ module Subscriptions
 
     def update(*_args)
       {
-        response_body: object[:response_body],
+        response_body: object[:content],
         request_id: object[:request_id],
-        errors: object[:errors]
+        role: object[:role],
+        errors: object[:errors],
+        timestamp: object[:timestamp]
       }
     end
 
