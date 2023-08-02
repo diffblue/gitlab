@@ -476,7 +476,13 @@
                       "type": "string",
                       "description": "Specify the interval to which the age value is compared to"
                     }
-                  }
+                  },
+                  "required": [
+                    "operator",
+                    "value",
+                    "interval"
+                  ],
+                  "additionalProperties": false
                 },
                 "match_on_inclusion": {
                   "type": "boolean",

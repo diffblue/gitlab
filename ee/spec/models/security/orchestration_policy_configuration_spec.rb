@@ -875,6 +875,48 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
               "property '/scan_result_policy/0/rules/0/vulnerability_states/0' is not one of")
           end
         end
+
+        describe "vulnerability_age" do
+          before do
+            rule[:vulnerability_age] = vulnerability_age
+          end
+
+          let(:valid_vulnerability_age) do
+            { value: 1, operator: 'greater_than', interval: 'week' }
+          end
+
+          context 'when vulnerability_age is valid' do
+            let(:vulnerability_age) { valid_vulnerability_age }
+
+            specify do
+              expect(errors).to be_none
+            end
+          end
+
+          %i[value operator interval].each do |key|
+            context "when vulnerability_age is missing key #{key}" do
+              let(:vulnerability_age) { valid_vulnerability_age.except(key) }
+
+              specify do
+                expect(errors.count).to eq(1)
+                expect(errors.first).to(
+                  match "property '/scan_result_policy/0/rules/0/vulnerability_age' is missing required keys: #{key}"
+                )
+              end
+            end
+          end
+
+          context "when vulnerability_age is contains additional key" do
+            let(:vulnerability_age) { valid_vulnerability_age.merge(additional: true) }
+
+            specify do
+              expect(errors.count).to eq(1)
+              expect(errors.first).to(
+                match "property '/scan_result_policy/0/rules/0/vulnerability_age/additional' is invalid"
+              )
+            end
+          end
+        end
       end
 
       context "with license_finding type" do
