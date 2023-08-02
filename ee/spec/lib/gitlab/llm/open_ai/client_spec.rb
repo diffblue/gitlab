@@ -107,6 +107,8 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
 
       counter = instance_double(Prometheus::Client::Counter, increment: true)
 
+      allow(Gitlab::Metrics::Sli::Apdex[:llm_client_request]).to receive(:increment)
+
       allow(Gitlab::Metrics)
         .to receive(:counter)
         .with(:gitlab_cloud_cost_spend_entry_total, anything)
@@ -301,6 +303,23 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
     include_examples 'cost tracking'
     include_examples 'input moderation'
     include_examples 'output moderation'
+
+    context 'when measuring request success' do
+      let(:client) { :open_ai }
+      let(:options) { { moderated: false } }
+
+      it_behaves_like 'measured Llm request'
+
+      context 'when request raises an exception' do
+        before do
+          allow_next_instance_of(OpenAI::Client) do |open_client|
+            allow(open_client).to receive(:chat).and_raise(StandardError)
+          end
+        end
+
+        it_behaves_like 'measured Llm request with error'
+      end
+    end
   end
 
   describe '#messages_chat' do

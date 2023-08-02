@@ -5,6 +5,7 @@ module Gitlab
     module VertexAi
       class Client
         include ::Gitlab::Llm::Concerns::ExponentialBackoff
+        include ::Gitlab::Llm::Concerns::MeasuredRequest
 
         def initialize(_user)
           @logger = Gitlab::Llm::Logger.build
@@ -94,8 +95,12 @@ module Gitlab
           )
 
           logger.debug(message: "Received response from Vertex", response: response)
+          increment_metric(client: :vertex_ai, response: response)
 
           response
+        rescue StandardError => e
+          increment_metric(client: :vertex_ai)
+          raise e
         end
 
         def service_name

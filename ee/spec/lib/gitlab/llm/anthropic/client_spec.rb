@@ -56,6 +56,20 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :shared do
   describe '#complete' do
     subject(:complete) { described_class.new(user).complete(prompt: 'anything', **options) }
 
+    context 'when measuring request success' do
+      let(:client) { :anthropic }
+
+      it_behaves_like 'measured Llm request'
+
+      context 'when request raises an exception' do
+        before do
+          allow(Gitlab::HTTP).to receive(:post).and_raise(StandardError)
+        end
+
+        it_behaves_like 'measured Llm request with error'
+      end
+    end
+
     context 'when feature flag and API key is set' do
       it 'returns response' do
         expect(complete.parsed_response).to eq(expected_response)

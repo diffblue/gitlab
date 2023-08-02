@@ -11,9 +11,15 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
   let(:expected_container) { group }
   let(:content) { 'Summarize issue' }
   let(:ai_request) { instance_double(Gitlab::Llm::Chain::Requests::Anthropic) }
-  let(:context) { instance_double(Gitlab::Llm::Chain::GitlabContext) }
   let(:options) { { request_id: 'uuid', content: content } }
   let(:container) { group }
+  let(:context) do
+    instance_double(
+      Gitlab::Llm::Chain::GitlabContext,
+      tools_used: [::Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor]
+    )
+  end
+
   let(:answer) do
     ::Gitlab::Llm::Chain::Answer.new(
       status: :ok, context: context, content: content, tool: nil, is_final: true
@@ -39,6 +45,9 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
         expect(instance).to receive(:execute).and_return(answer)
       end
 
+      expect(Gitlab::Metrics::Sli::Apdex[:llm_chat_answers])
+        .to receive(:increment)
+        .with(labels: { tool: "IssueIdentifier" }, success: true)
       expect(::Gitlab::Llm::Chain::GitlabContext).to receive(:new)
         .with(current_user: user, container: expected_container, resource: resource, ai_request: ai_request)
         .and_return(context)

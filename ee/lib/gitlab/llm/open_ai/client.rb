@@ -7,6 +7,7 @@ module Gitlab
     module OpenAi
       class Client
         include ::Gitlab::Llm::Concerns::ExponentialBackoff
+        include ::Gitlab::Llm::Concerns::MeasuredRequest
 
         InputModerationError = Class.new(StandardError)
         OutputModerationError = Class.new(StandardError)
@@ -118,12 +119,16 @@ module Gitlab
           logger.debug(message: "Received response from OpenAI", response: response)
 
           track_cost(endpoint, response.parsed_response&.dig('usage'))
+          increment_metric(client: :open_ai, response: response)
 
           if should_moderate?(:output, moderated)
             moderate!(:output, moderation_output(endpoint, response.parsed_response))
           end
 
           response
+        rescue StandardError => e
+          increment_metric(client: :open_ai)
+          raise e
         end
 
         def track_cost(endpoint, usage_data)

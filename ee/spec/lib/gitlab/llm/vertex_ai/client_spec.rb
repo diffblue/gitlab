@@ -147,4 +147,37 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :not_owned do # 
 
     it_behaves_like 'forwarding the request correctly'
   end
+
+  describe '#request' do
+    let(:url) { 'https://example.com/api' }
+    let(:config) do
+      instance_double(
+        ::Gitlab::Llm::VertexAi::Configuration,
+        headers: {},
+        payload: {},
+        url: url
+      )
+    end
+
+    subject { described_class.new(user).text(content: 'anything', **options) }
+
+    before do
+      allow(Gitlab::Llm::VertexAi::Configuration).to receive(:new).and_return(config)
+      stub_request(:post, url).to_return(status: 200, body: 'some response')
+    end
+
+    context 'when measuring request success' do
+      let(:client) { :vertex_ai }
+
+      it_behaves_like 'measured Llm request'
+
+      context 'when request raises an exception' do
+        before do
+          allow(Gitlab::HTTP).to receive(:post).and_raise(StandardError)
+        end
+
+        it_behaves_like 'measured Llm request with error'
+      end
+    end
+  end
 end

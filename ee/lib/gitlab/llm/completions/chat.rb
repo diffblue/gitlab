@@ -28,6 +28,11 @@ module Gitlab
             context: context
           ).execute
 
+          Gitlab::Metrics::Sli::Apdex[:llm_chat_answers].increment(
+            labels: { tool: response.last_tool_name || :unknown },
+            success: response.status == :ok
+          )
+
           response_modifier = Gitlab::Llm::Chain::ResponseModifier.new(response)
 
           ::Gitlab::Llm::GraphqlSubscriptionResponseService

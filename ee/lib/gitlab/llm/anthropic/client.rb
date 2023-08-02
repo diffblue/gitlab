@@ -4,7 +4,8 @@ module Gitlab
   module Llm
     module Anthropic
       class Client
-        include Gitlab::Llm::Concerns::ExponentialBackoff
+        include ::Gitlab::Llm::Concerns::ExponentialBackoff
+        include ::Gitlab::Llm::Concerns::MeasuredRequest
 
         URL = 'https://api.anthropic.com'
         DEFAULT_MODEL = 'claude-2'
@@ -28,8 +29,12 @@ module Gitlab
           )
 
           logger.debug(message: "Received response from Anthropic", response: response)
+          increment_metric(client: :anthropic, response: response)
 
           response
+        rescue StandardError => e
+          increment_metric(client: :anthropic)
+          raise e
         end
 
         private
