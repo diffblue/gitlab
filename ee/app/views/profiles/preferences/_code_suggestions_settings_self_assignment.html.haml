@@ -1,0 +1,15 @@
+- return unless should_show_code_suggestions_preferences?(@user)
+
+- link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_path('user/project/repository/code_suggestions.md') }
+- link_end = '</a>'.html_safe
+- br_tag = '<br/>'.html_safe
+
+.settings-section.js-preferences-form.js-search-settings-section#code-suggestions
+  .settings-sticky-header
+    .settings-sticky-header-inner
+      %h4.gl-my-0
+        = s_('Preferences|Code Suggestions')
+  %p.gl-text-secondary
+    = s_('Preferences|Enable %{link_start}Code Suggestions%{link_end} for the following groups.%{br_tag}Only groups that have purchased the Code Suggestion add-on and have available seats are listed here.%{br_tag} If you were expecting to see a group and it is missing from the list, please contact the group owner.').html_safe % { link_start: link_start, link_end: link_end, br_tag: br_tag }
+  .form-group
+    #js-profile-preferences-code-suggestions

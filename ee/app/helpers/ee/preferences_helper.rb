@@ -24,6 +24,10 @@ module EE
       group_view_choices.size > 1
     end
 
+    def should_show_code_suggestions_preferences?(user)
+      ::Feature.enabled?(:enable_hamilton_in_user_preferences, user)
+    end
+
     private
 
     def group_view_security_dashboard_enabled?
