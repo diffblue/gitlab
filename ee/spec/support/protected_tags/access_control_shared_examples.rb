@@ -18,6 +18,7 @@ RSpec.shared_examples "protected tags > access control > EE" do
 
   it "allows creating protected tags that roles, users, and groups can create" do
     visit project_protected_tags_path(project)
+    click_button('Add tag')
 
     set_protected_tag_name('v1.0')
     set_allowed_to('create', users.map(&:name))
@@ -36,6 +37,7 @@ RSpec.shared_examples "protected tags > access control > EE" do
 
   it "allows updating protected tags so that roles and users can create it" do
     visit project_protected_tags_path(project)
+    click_button('Add tag')
 
     set_protected_tag_name('v1.0')
     set_allowed_to('create')
@@ -57,6 +59,7 @@ RSpec.shared_examples "protected tags > access control > EE" do
 
   it "allows updating protected tags so that roles and users cannot create it" do
     visit project_protected_tags_path(project)
+    click_button('Add tag')
 
     set_protected_tag_name('v1.0')
 
@@ -81,6 +84,7 @@ RSpec.shared_examples "protected tags > access control > EE" do
     users.each { |user| project.add_developer(user) }
 
     visit project_protected_tags_path(project)
+    click_button('Add tag')
 
     # Create Protected Tag
     set_protected_tag_name('v1.0')
@@ -119,6 +123,7 @@ RSpec.shared_examples "protected tags > access control > EE" do
   context 'When updating a protected tag' do
     it 'discards other roles when choosing "No one"' do
       visit project_protected_tags_path(project)
+      click_button('Add tag')
 
       set_protected_tag_name('fix')
       set_allowed_to('create', roles.values)
@@ -148,6 +153,7 @@ RSpec.shared_examples "protected tags > access control > EE" do
   context 'When creating a protected tag' do
     it 'discards other roles when choosing "No one"' do
       visit project_protected_tags_path(project)
+      click_button('Add tag')
 
       set_protected_tag_name('v1.0')
       set_allowed_to('create', ProtectedRef::AccessLevel.human_access_levels.values)
