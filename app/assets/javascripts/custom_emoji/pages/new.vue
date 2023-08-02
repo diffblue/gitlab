@@ -1,5 +1,16 @@
 <script>
-export default {};
+import CreateForm from '../components/form.vue';
+
+export default {
+  components: {
+    CreateForm,
+  },
+  methods: {
+    redirectToIndex() {
+      this.$router.push('/');
+    },
+  },
+};
 </script>
 
 <template>
@@ -7,5 +18,6 @@ export default {};
     <h5 class="gl-mt-0 gl-font-lg">
       {{ __('Add new emoji') }}
     </h5>
+    <create-form @saved="redirectToIndex" />
   </div>
 </template>
