@@ -62,4 +62,20 @@ RSpec.describe PreferencesHelper do
       it { is_expected.to eq(false) }
     end
   end
+
+  describe '#should_show_code_suggestions_preferences?' do
+    subject { helper.should_show_code_suggestions_preferences?(user) }
+
+    let(:user) { create_default(:user) }
+
+    context 'when the feature flag is disabled' do
+      before do
+        stub_feature_flags(enable_hamilton_in_user_preferences: false)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+
+    it { is_expected.to eq(true) }
+  end
 end
