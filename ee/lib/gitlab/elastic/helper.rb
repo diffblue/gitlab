@@ -79,9 +79,7 @@ module Gitlab
       end
 
       def default_settings
-        ES_MAPPINGS_CLASSES.inject({}) do |settings, klass|
-          settings.deep_merge(klass.__elasticsearch__.settings.to_hash)
-        end
+        ::Elastic::Latest::Config.settings.to_hash
       end
 
       def default_mappings
