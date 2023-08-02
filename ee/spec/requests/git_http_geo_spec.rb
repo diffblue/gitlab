@@ -353,6 +353,12 @@ RSpec.describe "Git HTTP requests (Geo)", :geo, feature_category: :geo_replicati
 
             context 'when the repository exists' do
               let_it_be(:project) { project_with_repo }
+              let_it_be(:registry) { create(:geo_lfs_object_registry, :synced) }
+              let_it_be(:lfs_object) { registry.lfs_object }
+
+              before do
+                project.lfs_objects << lfs_object
+              end
 
               it 'is handled by the secondary' do
                 is_expected.to have_gitlab_http_status(:ok)
@@ -367,15 +373,72 @@ RSpec.describe "Git HTTP requests (Geo)", :geo, feature_category: :geo_replicati
               it_behaves_like 'a Geo 302 redirect to Primary'
             end
 
+            context 'batch requests' do
+              let_it_be(:project) { project_with_repo }
+
+              context 'objects are in sync' do
+                let_it_be(:registry) { create(:geo_lfs_object_registry, :synced) }
+                let_it_be(:lfs_object) { registry.lfs_object }
+
+                before do
+                  project.lfs_objects << lfs_object
+                end
+
+                it 'is handled by the secondary' do
+                  is_expected.to have_gitlab_http_status(:ok)
+                end
+              end
+
+              context 'objects are not in sync' do
+                let(:redirect_url) { redirected_primary_url }
+                let(:registry) { create(:geo_lfs_object_registry, :started) }
+                let(:lfs_object) { registry.lfs_object }
+
+                it_behaves_like 'a Geo 302 redirect to Primary'
+              end
+
+              context 'legacy behavior' do
+                let_it_be(:registry) { create(:geo_lfs_object_registry, :synced) }
+                let_it_be(:lfs_object) { registry.lfs_object }
+                let(:redirect_url) { redirected_primary_url }
+
+                before do
+                  stub_feature_flags(geo_proxy_lfs_batch_requests: false)
+                end
+
+                context 'out of sync' do
+                  before do
+                    allow(::Geo::ProjectRegistry).to receive(:repository_out_of_date?).with(project.id).and_return(true)
+                  end
+
+                  it_behaves_like 'a Geo 302 redirect to Primary'
+                end
+
+                context 'in sync' do
+                  before do
+                    allow(::Geo::ProjectRegistry).to receive(:repository_out_of_date?).with(project.id).and_return(false)
+                  end
+
+                  it 'is handled by the secondary' do
+                    is_expected.to have_gitlab_http_status(:ok)
+                  end
+                end
+              end
+            end
+
             where(:description, :version) do
               'outdated' | 'git-lfs/2.4.1'
               'unknown'  | 'git-lfs'
             end
 
             with_them do
+              let(:registry) { create(:geo_lfs_object_registry, :synced) }
+              let(:lfs_object) { registry.lfs_object }
+
               context "with an #{description} git-lfs version" do
                 before do
                   env['User-Agent'] = "#{version} (GitHub; darwin amd64; go 1.10.2)"
+                  project.lfs_objects << lfs_object
                 end
 
                 it 'is handled by the secondary' do

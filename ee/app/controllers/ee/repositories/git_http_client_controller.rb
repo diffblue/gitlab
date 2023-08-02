@@ -141,11 +141,16 @@ module EE
       class GeoGitLFSHelper
         MINIMUM_GIT_LFS_VERSION = '2.4.2'
 
-        def initialize(project, geo_route_helper, operation, current_version)
+        # param [String] operation the operation to perform
+        # param [Array] objects the objects to work with
+        # See the git-lfs docs for a detailed explanation
+        # https://github.com/git-lfs/git-lfs/blob/main/docs/api/batch.md#requests
+        def initialize(project, geo_route_helper, operation, current_version, objects = {})
           @project = project
           @geo_route_helper = geo_route_helper
           @operation = operation
           @current_version = current_version
+          @objects = objects
         end
 
         def incorrect_version_response
@@ -171,7 +176,7 @@ module EE
 
         private
 
-        attr_reader :project, :geo_route_helper, :operation, :current_version
+        attr_reader :project, :geo_route_helper, :operation, :current_version, :objects
 
         def incorrect_version_message
           translation = _("You need git-lfs version %{min_git_lfs_version} (or greater) to continue. Please visit https://git-lfs.github.com")
@@ -193,7 +198,17 @@ module EE
         def out_of_date_redirect?
           return false unless project
 
-          batch_download? && ::Geo::ProjectRegistry.repository_out_of_date?(project.id)
+          batch_download? && batch_out_of_date?
+        end
+
+        # Returns false if any of the objects in the batch request are not synced to the secondary
+        def batch_out_of_date?
+          if ::Feature.enabled?(:geo_proxy_lfs_batch_requests)
+            requested_oids = objects.pluck(:oid) # rubocop:disable CodeReuse/ActiveRecord
+            return !::Geo::LfsObjectRegistry.oids_synced?(requested_oids)
+          end
+
+          ::Geo::ProjectRegistry.repository_out_of_date?(project.id)
         end
 
         def wanted_version
@@ -207,7 +222,7 @@ module EE
 
       def geo_git_lfs_helper
         # params[:operation] explained: https://github.com/git-lfs/git-lfs/blob/master/docs/api/batch.md#requests
-        @geo_git_lfs_helper ||= GeoGitLFSHelper.new(project, geo_route_helper, params[:operation], request.headers['User-Agent'])
+        @geo_git_lfs_helper ||= GeoGitLFSHelper.new(project, geo_route_helper, params[:operation], request.headers['User-Agent'], params[:objects])
       end
 
       def geo_request_fullpath_for_primary
