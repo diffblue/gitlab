@@ -1,5 +1,6 @@
 <script>
 import { GlButton, GlTooltip } from '@gitlab/ui';
+import { uniqueId } from 'lodash';
 import { s__ } from '~/locale';
 import { WORKSPACE_DESIRED_STATES, WORKSPACE_STATES } from '../../constants';
 
@@ -108,6 +109,7 @@ export default {
             icon,
             isLoading,
             key,
+            id: uniqueId(`action-wrapper-${key}`),
             tooltip,
           };
         },
@@ -129,7 +131,7 @@ export default {
   <div class="gl-display-flex gl-justify-content-end">
     <span
       v-for="(action, idx) in actions"
-      :id="`action-wrapper-${idx}`"
+      :id="action.id"
       :key="action.key"
       :class="idx > 0 ? 'gl-ml-2' : ''"
     >
@@ -142,7 +144,7 @@ export default {
         :data-qa-selector="`workspace_${action.key}_button`"
         @click.stop.prevent="onClick(action.desiredState)"
       />
-      <gl-tooltip boundary="viewport" :target="`action-wrapper-${idx}`">
+      <gl-tooltip boundary="viewport" :target="action.id">
         {{ action.tooltip }}
       </gl-tooltip>
     </span>
