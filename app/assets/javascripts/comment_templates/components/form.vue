@@ -60,6 +60,13 @@ export default {
     },
   },
   methods: {
+    onCancel() {
+      if (this.id) {
+        this.$router.push({ path: '/' });
+      } else {
+        this.$emit('cancel');
+      }
+    },
     onSubmit() {
       this.showValidation = true;
 
@@ -177,6 +184,6 @@ export default {
     >
       {{ __('Save') }}
     </gl-button>
-    <gl-button v-if="id" :to="{ path: '/' }">{{ __('Cancel') }}</gl-button>
+    <gl-button @click="onCancel">{{ __('Cancel') }}</gl-button>
   </gl-form>
 </template>
