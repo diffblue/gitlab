@@ -16,7 +16,6 @@ import { SCANNER_HUMANIZED_TEMPLATE } from 'ee/security_orchestration/components
 import { createMockApolloProvider } from 'ee_jest/security_configuration/dast_profiles/graphql/create_mock_apollo_provider';
 import { RUNNER_TAG_LIST_MOCK } from 'ee_jest/vue_shared/components/runner_tags_dropdown/mocks/mocks';
 import {
-  RUNNER_TAGS,
   CI_VARIABLE,
   FILTERS,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/scan_filters/constants';
@@ -143,10 +142,10 @@ describe('PolicyActionBuilder', () => {
 
   describe('scan filters', () => {
     describe('runner tags filter', () => {
-      it('initially hides runner tags filter', () => {
+      it('shows runner tags filter', () => {
         factory();
 
-        expect(findTagsFilter().exists()).toBe(false);
+        expect(findTagsFilter().exists()).toBe(true);
       });
 
       it('emits the "changed" event when action tags are changed', async () => {
@@ -158,11 +157,18 @@ describe('PolicyActionBuilder', () => {
         expect(wrapper.emitted('changed')).toStrictEqual([[{ ...DEFAULT_ACTION, tags: NEW_TAGS }]]);
       });
 
-      it('emits an error when tags parsing happens', async () => {
+      it('emits an error when filter encounters a parsing error', async () => {
         factory({ propsData: { initAction: { ...DEFAULT_ACTION, tags: ['staging'] } } });
         await findTagsFilter().vm.$emit('error');
 
         expect(wrapper.emitted('parsing-error')).toHaveLength(1);
+      });
+
+      it('removes the "tags" property when the filter emits the "remove" event', async () => {
+        factory({ propsData: { initAction: { ...DEFAULT_ACTION, tags: ['staging'] } } });
+        await findTagsFilter().vm.$emit('remove');
+
+        expect(wrapper.emitted('changed')).toStrictEqual([[DEFAULT_ACTION]]);
       });
     });
 
@@ -201,13 +207,8 @@ describe('PolicyActionBuilder', () => {
       it('displays the scan filter selector', () => {
         expect(findScanFilterSelector().props()).toMatchObject({
           filters: FILTERS,
-          selected: { [RUNNER_TAGS]: null, [CI_VARIABLE]: null },
+          selected: { [CI_VARIABLE]: null },
         });
-      });
-
-      it('displays the runner tags filter when the scan filter selector selects it', async () => {
-        await findScanFilterSelector().vm.$emit('select', RUNNER_TAGS);
-        expect(findTagsFilter().exists()).toBe(true);
       });
 
       it('displays the ci variable filter when the scan filter selector selects it', async () => {

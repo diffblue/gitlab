@@ -6,8 +6,8 @@ import RunnerTagsDropdown from 'ee/vue_shared/components/runner_tags_dropdown/ru
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
   TAGS_MODE_SELECTED_ITEMS,
-  POLICY_ACTION_TAG_MODE_SPECIFIC_TAG_KEY,
-  POLICY_ACTION_TAG_MODE_SELECTED_AUTOMATICALLY_KEY,
+  ACTION_RUNNER_TAG_MODE_SPECIFIC_TAG_KEY,
+  ACTION_RUNNER_TAG_MODE_SELECTED_AUTOMATICALLY_KEY,
 } from '../constants';
 
 export default {
@@ -38,27 +38,25 @@ export default {
       required: false,
       default: '',
     },
-    value: {
+    selectedTags: {
       type: Array,
       required: false,
       default: () => [],
     },
   },
   data() {
+    const selectedTagsMode = this.selectedTags.length
+      ? ACTION_RUNNER_TAG_MODE_SPECIFIC_TAG_KEY
+      : ACTION_RUNNER_TAG_MODE_SELECTED_AUTOMATICALLY_KEY;
+
     return {
-      tags: [],
-      selected: [],
-      selectedTagsText: this.$options.TAGS_MODES[0].text,
-      selectedTagsMode: POLICY_ACTION_TAG_MODE_SPECIFIC_TAG_KEY,
-      isTagListEmpty: false,
+      selectedTagsMode,
+      areRunnersTagged: true,
     };
   },
   computed: {
     isSpecificTagMode() {
-      return this.selectedTagsMode === POLICY_ACTION_TAG_MODE_SPECIFIC_TAG_KEY;
-    },
-    isTagsListVisible() {
-      return this.isSpecificTagMode && !this.isTagListEmpty;
+      return this.selectedTagsMode === ACTION_RUNNER_TAG_MODE_SPECIFIC_TAG_KEY;
     },
     runnersTagLink() {
       if (this.namespaceType === NAMESPACE_TYPES.GROUP) {
@@ -70,23 +68,19 @@ export default {
   },
   methods: {
     setSelection(tags) {
-      this.selected = tags;
-      this.$emit('input', this.selected);
+      this.$emit('input', tags);
     },
     setSelectedTagsMode(key) {
-      this.selectedTagsText = this.$options.TAGS_MODES.find(({ value }) => value === key)?.text;
-      this.selectedTagsMode = key;
+      this.selectedTagsMode = TAGS_MODE_SELECTED_ITEMS.find(({ value }) => value === key).value;
 
-      if (key === POLICY_ACTION_TAG_MODE_SELECTED_AUTOMATICALLY_KEY) {
+      if (key === ACTION_RUNNER_TAG_MODE_SELECTED_AUTOMATICALLY_KEY) {
         this.setSelection([]);
       }
     },
     setTags(tags) {
-      this.tags = tags;
-      this.isTagListEmpty = this.tags.length === 0;
-
-      if (this.isTagListEmpty) {
-        this.setSelectedTagsMode(POLICY_ACTION_TAG_MODE_SELECTED_AUTOMATICALLY_KEY);
+      this.areRunnersTagged = Boolean(tags.length);
+      if (tags.length === 0) {
+        this.setSelectedTagsMode(ACTION_RUNNER_TAG_MODE_SELECTED_AUTOMATICALLY_KEY);
       }
     },
   },
@@ -98,15 +92,13 @@ export default {
     <gl-collapsible-listbox
       id="runner-tags-switcher-id"
       class="gl-mr-2 gl-xs-mb-3"
-      data-testid="runner-tags-switcher"
-      :disabled="isTagListEmpty"
+      :disabled="!areRunnersTagged"
       :items="$options.TAGS_MODES"
       :selected="selectedTagsMode"
-      :toggle-text="selectedTagsText"
       @select="setSelectedTagsMode"
     />
     <gl-popover
-      v-if="isTagListEmpty"
+      v-if="!areRunnersTagged"
       target="runner-tags-switcher-id"
       :title="$options.i18n.runnersDisabledStatePopoverTitle"
     >
@@ -118,12 +110,12 @@ export default {
     </gl-popover>
 
     <runner-tags-dropdown
-      v-if="isTagsListVisible"
+      v-if="isSpecificTagMode"
       toggle-class="gl-max-w-62"
       :empty-tags-list-placeholder="$options.i18n.noRunnerTagsText"
       :namespace-path="namespacePath"
       :namespace-type="namespaceType"
-      :value="value"
+      :value="selectedTags"
       @input="setSelection"
       @tags-loaded="setTags"
       @error="$emit('error')"

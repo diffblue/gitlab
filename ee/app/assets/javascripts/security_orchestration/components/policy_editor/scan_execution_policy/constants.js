@@ -32,16 +32,17 @@ export const SCAN_EXECUTION_RULE_PERIOD_TYPE = {
   [SCAN_EXECUTION_RULE_PERIOD_WEEKLY_KEY]: __('weekly'),
 };
 
-export const POLICY_ACTION_TAG_MODE_SPECIFIC_TAG_KEY = 'specific_tag';
-export const POLICY_ACTION_TAG_MODE_SELECTED_AUTOMATICALLY_KEY = 'selected_automatically';
+export const ACTION_RUNNER_TAG_MODE_SPECIFIC_TAG_KEY = 'specific_tag';
+export const ACTION_RUNNER_TAG_MODE_SELECTED_AUTOMATICALLY_KEY = 'selected_automatically';
+
 export const TAGS_MODE_SELECTED_ITEMS = [
   {
     text: s__('ScanExecutionPolicy|has specific tag'),
-    value: POLICY_ACTION_TAG_MODE_SPECIFIC_TAG_KEY,
+    value: ACTION_RUNNER_TAG_MODE_SPECIFIC_TAG_KEY,
   },
   {
     text: s__('ScanExecutionPolicy|selected automatically'),
-    value: POLICY_ACTION_TAG_MODE_SELECTED_AUTOMATICALLY_KEY,
+    value: ACTION_RUNNER_TAG_MODE_SELECTED_AUTOMATICALLY_KEY,
   },
 ];
 

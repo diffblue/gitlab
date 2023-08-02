@@ -8,7 +8,6 @@ describe('buildScannerAction', () => {
         scan: SCANNER_DAST,
         site_profile: '',
         scanner_profile: '',
-        tags: [],
       });
     });
 
@@ -20,7 +19,6 @@ describe('buildScannerAction', () => {
         scan: SCANNER_DAST,
         site_profile: siteProfile,
         scanner_profile: scannerProfile,
-        tags: [],
       });
     });
   });
@@ -30,7 +28,6 @@ describe('buildScannerAction', () => {
       const scanner = 'sast';
       expect(buildScannerAction({ scanner })).toEqual({
         scan: scanner,
-        tags: [],
       });
     });
   });

@@ -75,9 +75,7 @@ export default {
       newVariables[index] = [key, value];
 
       const variablesObject = this.reduceVariablesToObject(newVariables);
-      this.$emit('input', {
-        variables: variablesObject,
-      });
+      this.$emit('input', { variables: variablesObject });
     },
   },
 };
