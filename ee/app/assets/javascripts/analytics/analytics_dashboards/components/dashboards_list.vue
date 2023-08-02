@@ -1,5 +1,5 @@
 <script>
-import { GlLink, GlAlert, GlButton } from '@gitlab/ui';
+import { GlLink, GlAlert, GlButton, GlSkeletonLoader } from '@gitlab/ui';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { visitUrl, joinPaths } from '~/lib/utils/url_utility';
 import { createAlert } from '~/alert';
@@ -31,6 +31,7 @@ export default {
     GlButton,
     GlLink,
     GlAlert,
+    GlSkeletonLoader,
     DashboardListItem,
   },
   mixins: [glFeatureFlagsMixin()],
@@ -71,6 +72,9 @@ export default {
   computed: {
     dashboards() {
       return [...this.featureDashboards, ...this.userDashboards];
+    },
+    isLoading() {
+      return this.$apollo.queries.userDashboards.loading;
     },
     activeOnboardingComponents() {
       return Object.fromEntries(
@@ -224,8 +228,14 @@ export default {
         @error="onError"
       />
 
+      <template v-if="isLoading">
+        <li v-for="n in 2" :key="n" class="gl-px-5!">
+          <gl-skeleton-loader :lines="2" />
+        </li>
+      </template>
       <dashboard-list-item
         v-for="dashboard in dashboards"
+        v-else
         :key="dashboard.slug"
         :dashboard="dashboard"
       />

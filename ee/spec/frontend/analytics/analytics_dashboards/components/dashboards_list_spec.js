@@ -1,6 +1,6 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import { GlAlert } from '@gitlab/ui';
+import { GlAlert, GlSkeletonLoader } from '@gitlab/ui';
 import ProductAnalyticsOnboarding from 'ee/product_analytics/onboarding/components/onboarding_list_item.vue';
 import DashboardsList from 'ee/analytics/analytics_dashboards/components/dashboards_list.vue';
 import DashboardListItem from 'ee/analytics/analytics_dashboards/components/list/dashboard_list_item.vue';
@@ -42,6 +42,7 @@ describe('DashboardsList', () => {
   let wrapper;
 
   const findListItems = () => wrapper.findAllComponents(DashboardListItem);
+  const findListLoadingSkeletons = () => wrapper.findAllComponents(GlSkeletonLoader);
   const findProductAnalyticsOnboarding = () => wrapper.findComponent(ProductAnalyticsOnboarding);
   const findPageTitle = () => wrapper.findByTestId('title');
   const findPageDescription = () => wrapper.findByTestId('description');
@@ -192,36 +193,56 @@ describe('DashboardsList', () => {
       });
     });
 
-    it('renders the feature component', () => {
-      expect(findProductAnalyticsOnboarding().exists()).toBe(true);
-    });
+    describe('and the feature has not been set up', () => {
+      it('renders the feature component', () => {
+        expect(findProductAnalyticsOnboarding().exists()).toBe(true);
+      });
 
-    // TODO: Update when backend returns dashboards only for onboarded features
-    // https://gitlab.com/gitlab-org/gitlab/-/issues/411608
-    it('does not render any dashboards', () => {
-      expect(findListItems()).toHaveLength(0);
+      // TODO: Update when backend returns dashboards only for onboarded features
+      // https://gitlab.com/gitlab-org/gitlab/-/issues/411608
+      it('does not render any dashboards', () => {
+        expect(findListItems()).toHaveLength(0);
+      });
+
+      it('does not render a loading state', async () => {
+        await waitForPromises();
+
+        expect(findListLoadingSkeletons()).toHaveLength(0);
+      });
     });
 
     describe('and the feature has been set up', () => {
       beforeEach(() => {
         findProductAnalyticsOnboarding().vm.$emit('complete');
-
-        return waitForPromises();
       });
 
       it('does not render the feature component', () => {
         expect(findProductAnalyticsOnboarding().exists()).toBe(false);
       });
 
-      it('renders a list item for each custom and feature dashboard', () => {
-        const expectedDashboards =
-          TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE.data?.project?.productAnalyticsDashboards
-            ?.nodes;
+      it('renders a loading state', () => {
+        expect(findListLoadingSkeletons()).toHaveLength(2);
+      });
 
-        expect(findListItems()).toHaveLength(expectedDashboards.length);
+      describe('once loaded', () => {
+        beforeEach(() => {
+          return waitForPromises();
+        });
 
-        expectedDashboards.forEach((dashboard, idx) => {
-          expect(findListItems().at(idx).props('dashboard')).toEqual(dashboard);
+        it('does not render a loading state', () => {
+          expect(findListLoadingSkeletons()).toHaveLength(0);
+        });
+
+        it('renders a list item for each custom and feature dashboard', () => {
+          const expectedDashboards =
+            TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE.data?.project?.productAnalyticsDashboards
+              ?.nodes;
+
+          expect(findListItems()).toHaveLength(expectedDashboards.length);
+
+          expectedDashboards.forEach((dashboard, idx) => {
+            expect(findListItems().at(idx).props('dashboard')).toEqual(dashboard);
+          });
         });
       });
     });
