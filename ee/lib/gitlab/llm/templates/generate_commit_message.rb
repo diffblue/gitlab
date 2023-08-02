@@ -46,7 +46,7 @@ module Gitlab
 
           diffs.map do |file|
             file.diff.sub(
-              Gitlab::Regex.generate_commit_message_git_diff_prefix,
+              Gitlab::Regex.git_diff_prefix,
               "Filename: #{file.new_path}"
             )
           end.join("\n")
