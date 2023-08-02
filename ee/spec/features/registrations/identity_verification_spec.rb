@@ -181,7 +181,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
   end
 
   def saml_sign_up
-    click_link "oauth-login-#{provider}"
+    click_button "oauth-login-#{provider}"
     solve_arkose_verify_challenge(saml: true, risk: risk)
   end
 
