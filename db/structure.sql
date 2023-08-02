@@ -11793,6 +11793,8 @@ CREATE TABLE application_settings (
     relay_state_domain_allowlist text[] DEFAULT '{}'::text[] NOT NULL,
     namespace_storage_forks_cost_factor double precision DEFAULT 1.0 NOT NULL,
     package_registry_allow_anyone_to_pull_option boolean DEFAULT true NOT NULL,
+    bulk_import_max_download_file_size bigint DEFAULT 5120 NOT NULL,
+    max_import_remote_file_size bigint DEFAULT 10240 NOT NULL,
     CONSTRAINT app_settings_container_reg_cleanup_tags_max_list_size_positive CHECK ((container_registry_cleanup_tags_service_max_list_size >= 0)),
     CONSTRAINT app_settings_container_registry_pre_import_tags_rate_positive CHECK ((container_registry_pre_import_tags_rate >= (0)::numeric)),
     CONSTRAINT app_settings_dep_proxy_ttl_policies_worker_capacity_positive CHECK ((dependency_proxy_ttl_group_policy_worker_capacity >= 0)),
