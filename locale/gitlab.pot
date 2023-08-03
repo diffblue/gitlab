@@ -17739,6 +17739,9 @@ msgstr ""
 msgid "Enter %{weights_link_start}weights%{weights_link_end} for storages for new repositories. Configured storages appear below."
 msgstr ""
 
+msgid "Enter a URL for your custom emoji"
+msgstr ""
+
 msgid "Enter a name for your comment template"
 msgstr ""
 
@@ -34777,7 +34780,13 @@ msgstr ""
 msgid "Please enable and migrate to hashed storage to avoid security issues and ensure data integrity. %{migrate_link}"
 msgstr ""
 
+msgid "Please enter a URL for the custom emoji."
+msgstr ""
+
 msgid "Please enter a name for the comment template."
+msgstr ""
+
+msgid "Please enter a name for the custom emoji."
 msgstr ""
 
 msgid "Please enter a non-negative number"
@@ -55081,6 +55090,9 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "e.g. %{token}"
+msgstr ""
+
+msgid "eg party_tanuki"
 msgstr ""
 
 msgid "element is not a hierarchy"
