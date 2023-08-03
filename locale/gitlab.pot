@@ -33586,6 +33586,9 @@ msgstr ""
 msgid "PerformanceBar|Bullet notifications"
 msgstr ""
 
+msgid "PerformanceBar|ClickHouse queries"
+msgstr ""
+
 msgid "PerformanceBar|DOM Content Loaded"
 msgstr ""
 
