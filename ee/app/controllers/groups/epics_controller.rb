@@ -27,6 +27,10 @@ class Groups::EpicsController < Groups::ApplicationController
     push_frontend_feature_flag(:move_close_into_dropdown, @project)
   end
 
+  before_action only: :show do
+    push_frontend_feature_flag(:action_cable_notes, @group)
+  end
+
   feature_category :portfolio_management
   urgency :default, [:show, :new, :realtime_changes]
   urgency :low, [:discussions]
