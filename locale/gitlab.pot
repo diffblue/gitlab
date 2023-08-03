@@ -7809,6 +7809,12 @@ msgstr ""
 msgid "Blame for binary files is not supported."
 msgstr ""
 
+msgid "BlobViewer|If you delete the file, it will be removed from the branch %{branch}."
+msgstr ""
+
+msgid "BlobViewer|This file will still take up space in your LFS storage. %{linkStart}How do I remove tracked objects from Git LFS?%{linkEnd}"
+msgstr ""
+
 msgid "BlobViewer|View on %{environmentName}"
 msgstr ""
 
@@ -12840,6 +12846,9 @@ msgid "Continue to the next step"
 msgstr ""
 
 msgid "Continue with overages"
+msgstr ""
+
+msgid "Continue…"
 msgstr ""
 
 msgid "Continuous Integration and Deployment"
@@ -46712,6 +46721,9 @@ msgid "The file has been successfully created."
 msgstr ""
 
 msgid "The file has been successfully deleted."
+msgstr ""
+
+msgid "The file you're about to delete is tracked by LFS"
 msgstr ""
 
 msgid "The finding is not a vulnerability because it is part of a test or is test data."
