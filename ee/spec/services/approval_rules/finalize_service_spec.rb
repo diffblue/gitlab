@@ -48,19 +48,139 @@ RSpec.describe ApprovalRules::FinalizeService do
           merge_request.approval_rules.code_owner.create!(name: 'Code Owner', rule_type: :code_owner)
         end
 
-        it 'copies project rules to MR, keep snapshot of group member by including it as part of users association' do
-          expect do
-            subject.execute
-          end.to change { ApprovalMergeRequestRule.count }.by(1)
+        context 'when copying the rules' do
+          let!(:any_approver) { create(:approval_project_rule, project: project, name: 'hallo', approvals_required: 45, rule_type: :any_approver) }
+          let!(:protected_branch) { create(:approval_project_rules_protected_branch, approval_project_rule: protected_rule) }
+          let(:protected_rule) { create(:approval_project_rule, project: project, name: 'other_branch', approvals_required: 32) }
+          let!(:reporter_rule) { create(:approval_project_rule, :license_scanning, project: project, name: 'reporter_branch', approvals_required: 21) }
 
-          rule = merge_request.approval_rules.regular.first
+          let(:expected_rules) do
+            {
+              regular: {
+                required: 12,
+                name: "foo",
+                users: [user1, user2, group1_user],
+                groups: [group1],
+                approvers: [user1, group1_user],
+                rule_type: 'regular',
+                report_type: nil
+              },
+              code_owner: {
+                required: 0,
+                name: "Code Owner",
+                users: [],
+                groups: [],
+                approvers: [],
+                rule_type: 'code_owner',
+                report_type: nil
+              },
+              any_approver: {
+                required: 45,
+                name: "hallo",
+                users: [],
+                groups: [],
+                approvers: [user1, user3, group1_user, group2_user],
+                rule_type: 'any_approver',
+                report_type: nil
+              },
+              report_approver: {
+                required: 21,
+                name: "reporter_branch",
+                users: [],
+                groups: [],
+                approvers: [],
+                rule_type: 'report_approver',
+                report_type: 'license_scanning'
+              },
+              non_applicable: {
+                required: 32,
+                name: "other_branch",
+                users: [],
+                groups: [],
+                approvers: [],
+                rule_type: 'regular'
+              }
+            }
+          end
 
-          expect(rule.name).to eq('foo')
-          expect(rule.approvals_required).to eq(12)
-          expect(rule.users).to contain_exactly(user1, user2, group1_user)
-          expect(rule.groups).to contain_exactly(group1)
+          context 'when copy_additional_properties_approval_rules is on' do
+            context 'when one of the rules is invalid with the new attributes' do
+              it 'retries with simplified attributes' do
+                project.approval_rules.each(&:destroy!)
+                project_rule = create(:approval_project_rule, :license_scanning, project: project, name: 'reporter_branch', approvals_required: 21)
+                project.approval_rules.reload
+                rule_double = instance_double(
+                  ApprovalMergeRequestRule,
+                  valid?: false,
+                  errors: ActiveModel::Errors.new(project_rule))
 
-          expect(rule.approved_approvers).to contain_exactly(user1, group1_user)
+                rules = merge_request.approval_rules
+                allow(merge_request).to receive(:approval_rules).and_return(rules)
+                expect(rules).to receive(:new).with(hash_including('approvals_required', 'name', 'rule_type', 'report_type')).and_return(rule_double)
+                expect(rules).to receive(:create!).with(hash_not_including('rule_type', 'report_type')).and_call_original
+                expect(Gitlab::AppLogger).to receive(:debug)
+
+                expect do
+                  subject.execute
+                end.to change { ApprovalMergeRequestRule.count }.by(1)
+
+                rule = merge_request.approval_rules.find_by(name: 'reporter_branch')
+
+                expect(rule.approvals_required).to eq(21)
+                expect(rule.report_type).to eq(nil)
+                expect(rule.rule_type).to eq('regular')
+              end
+            end
+
+            it 'copies the expected rules with expected params' do
+              expect do
+                subject.execute
+              end.to change { ApprovalMergeRequestRule.count }.by(4)
+
+              expect(merge_request.approval_rules.size).to be(5)
+
+              expected_rules.each do |_key, hash|
+                rule = merge_request.approval_rules.find_by(name: hash[:name])
+
+                expect(rule).to be_truthy
+                expect(rule.rule_type).to eq(hash[:rule_type])
+                expect(rule.approvals_required).to eq(hash[:required])
+                expect(rule.report_type).to eq(hash[:report_type])
+                expect(rule.users).to contain_exactly(*hash[:users])
+                expect(rule.groups).to contain_exactly(*hash[:groups])
+                expect(rule.approved_approvers).to contain_exactly(*hash[:approvers])
+              end
+            end
+          end
+
+          context 'when copy_additional_properties_approval_rules is off' do
+            it 'copies the expected rules with expected params - including non-applicable' do
+              stub_feature_flags(copy_additional_properties_approval_rules: false)
+
+              expected_rules[:regular][:rule_type] = 'regular'
+              expected_rules[:any_approver][:rule_type] = 'regular'
+              expected_rules[:any_approver][:approvers] = []
+              expected_rules[:report_approver][:rule_type] = 'regular'
+
+              expect do
+                subject.execute
+              end.to change { ApprovalMergeRequestRule.count }.by(4)
+
+              expect(merge_request.approval_rules.size).to be(5)
+
+              expected_rules.each do |_key, hash|
+                rule = merge_request.approval_rules.find_by(name: hash[:name])
+
+                expect(rule).to be_truthy
+                expect(rule.rule_type).to eq(hash[:rule_type])
+                expect(rule.report_type).to be_nil
+                expect(rule.approvals_required).to eq(hash[:required])
+                expect(rule.users).to contain_exactly(*hash[:users])
+                expect(rule.groups).to contain_exactly(*hash[:groups])
+                expect(rule.approved_approvers).to contain_exactly(*hash[:approvers])
+              end
+            end
+          end
         end
 
         shared_examples 'idempotent approval tests' do |rule_type|
@@ -115,6 +235,7 @@ RSpec.describe ApprovalRules::FinalizeService do
           expect(rule.approvals_required).to eq(32)
           expect(rule.users).to contain_exactly(user2, user3, group2_user)
           expect(rule.groups).to contain_exactly(group2)
+          expect(rule.rule_type).not_to be_nil
 
           expect(rule.approved_approvers).to contain_exactly(user3, group2_user)
           expect(subject).not_to have_received(:copy_project_approval_rules)
