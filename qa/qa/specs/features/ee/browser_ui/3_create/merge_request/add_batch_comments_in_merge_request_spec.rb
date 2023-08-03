@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Create' do
-    describe 'batch comments in merge request', product_group: :code_review do
+    describe 'Batch comments in merge request', :reliable, product_group: :code_review do
       let(:project) do
         Resource::Project.fabricate_via_api! do |project|
           project.name = 'project-with-merge-request'

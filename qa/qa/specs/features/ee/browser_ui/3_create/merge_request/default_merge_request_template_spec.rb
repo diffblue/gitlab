@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Create' do
-    describe 'Default merge request templates', product_group: :code_review do
+    describe 'Default merge request templates', :reliable, product_group: :code_review do
       let(:default_template_project) do
         Resource::Project.fabricate_via_api! do |project|
           project.name = 'default-mr-template-project'
