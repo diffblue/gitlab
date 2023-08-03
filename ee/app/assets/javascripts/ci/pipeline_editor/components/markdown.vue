@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { marked } from 'marked';
 import CodeBlockHighlighted from '~/vue_shared/components/code_block_highlighted.vue';

@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { GlLink } from '@gitlab/ui';
 import { decimalBytes } from '~/lib/utils/unit_format';

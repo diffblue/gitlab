@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { GlAvatarLabeled, GlAvatarLink } from '@gitlab/ui';
 import { isEmpty } from 'lodash';

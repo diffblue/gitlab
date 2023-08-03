@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import Tracking from '~/tracking';
 import BillingAddress from 'ee/subscriptions/new/components/checkout/billing_address.vue';

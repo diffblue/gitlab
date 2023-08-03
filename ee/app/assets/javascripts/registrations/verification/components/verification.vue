@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { GlButton, GlPopover, GlLink, GlIcon } from '@gitlab/ui';
 import Tracking from '~/tracking';

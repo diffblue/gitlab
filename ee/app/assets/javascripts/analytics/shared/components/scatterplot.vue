@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { GlDiscreteScatterChart } from '@gitlab/ui/dist/charts';
 import { dateFormats } from '~/analytics/shared/constants';

@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { GlButton, GlIcon, GlLink, GlSprintf } from '@gitlab/ui';
 import { mapState } from 'vuex';

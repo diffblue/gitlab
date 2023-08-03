@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { GlAlert, GlBadge, GlButton, GlLink, GlSkeletonLoader } from '@gitlab/ui';
 import { logError } from '~/lib/logger';

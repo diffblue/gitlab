@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { GlToggle } from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';

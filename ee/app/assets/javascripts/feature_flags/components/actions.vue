@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { GlDisclosureDropdown, GlTooltipDirective as GlTooltip } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
