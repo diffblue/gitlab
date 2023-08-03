@@ -108,16 +108,6 @@ class Groups::OmniauthCallbacksController < OmniauthCallbacksController
 
   override :fail_login
   def fail_login(user)
-    return new_fail_login(user) if ::Feature.enabled?(:group_saml_jit_errors, @unauthenticated_group)
-
-    if user
-      super
-    else
-      redirect_to_login_or_register
-    end
-  end
-
-  def new_fail_login(user)
     return redirect_to_login_or_register if email_already_taken?(user)
 
     error_message = email_blank?(user) ? email_blank_error_message : user.errors.full_messages.to_sentence
