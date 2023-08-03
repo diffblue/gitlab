@@ -18,7 +18,8 @@ module QA
     end
 
     describe 'Instance', :requires_admin do
-      context 'for failed sign in', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347913' do
+      context 'for failed sign in', :reliable,
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347913' do
         before do
           Runtime::Browser.visit(:gitlab, Page::Main::Login)
           invalid_user = Resource::User.init do |user|
@@ -35,7 +36,8 @@ module QA
         it_behaves_like 'audit event', ["Failed to login with STANDARD authentication"]
       end
 
-      context 'for successful sign in', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347914' do
+      context 'for successful sign in', :reliable,
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347914' do
         before do
           sign_in
         end
@@ -43,7 +45,8 @@ module QA
         it_behaves_like 'audit event', ["Signed in with STANDARD authentication"]
       end
 
-      context 'for add SSH key', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347915' do
+      context 'for add SSH key', :reliable,
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347915' do
         key = nil
 
         before do
@@ -60,7 +63,7 @@ module QA
         it_behaves_like 'audit event', ["Added SSH key"]
       end
 
-      context 'for add and delete email',
+      context 'for add and delete email', :reliable,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347918' do
         before do
           sign_in
@@ -82,7 +85,7 @@ module QA
         it_behaves_like 'audit event', ["Added email", "Removed email"]
       end
 
-      context 'for change password', :skip_signup_disabled,
+      context 'for change password', :skip_signup_disabled, :reliable,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347917' do
         before do
           user = Resource::User.fabricate_via_api! do |user|
@@ -106,7 +109,7 @@ module QA
         it_behaves_like 'audit event', ["Changed password"]
       end
 
-      context 'for start and stop user impersonation',
+      context 'for start and stop user impersonation', :reliable,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347916' do
         let!(:user_for_impersonation) { Resource::User.fabricate_via_api! }
 

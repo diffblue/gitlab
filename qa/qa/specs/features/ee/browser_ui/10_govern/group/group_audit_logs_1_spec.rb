@@ -45,7 +45,8 @@ module QA
         @event_count = get_audit_event_count(group)
       end
 
-      context 'for add group', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347910' do
+      context 'for add group', :reliable,
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347910' do
         before do
           @event_count = 0
           sign_in
@@ -57,7 +58,7 @@ module QA
         it_behaves_like 'audit event', ['Added group']
       end
 
-      context 'for change repository size limit', :reliable, :requires_admin,
+      context 'for change repository size limit', :requires_admin,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347908' do
         before do
           sign_in(as_admin: true)

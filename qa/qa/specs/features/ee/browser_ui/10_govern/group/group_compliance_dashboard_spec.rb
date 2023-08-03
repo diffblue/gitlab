@@ -52,7 +52,7 @@ module QA
             merge_request.visit!
           end
 
-          it 'shows only "less than two approvers" violation',
+          it 'shows only "less than two approvers" violation', :reliable,
             testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/390949' do
             group.visit!
             Page::Group::Menu.perform(&:click_compliance_report_link)
@@ -75,7 +75,7 @@ module QA
             merge_request.visit!
           end
 
-          it 'shows only "author approved merge request" and "approved by committer" violations',
+          it 'shows only "author approved merge request" and "approved by committer" violations', :reliable,
             testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/390948' do
             group.visit!
             Page::Group::Menu.perform(&:click_compliance_report_link)
