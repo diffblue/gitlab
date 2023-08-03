@@ -7,6 +7,8 @@ import { __ } from '~/locale';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { BRANCHES_PER_PAGE } from './constants';
 
+const branchListboxMapper = ({ name }) => ({ value: name, text: name });
+
 export default {
   i18n: {
     defaultText: __('Select branches'),
@@ -56,7 +58,9 @@ export default {
       branches: [],
       loading: false,
       openedOnce: false,
-      limit: BRANCHES_PER_PAGE,
+      searchTerm: '',
+      searching: false,
+      page: 1,
       totalBranches: BRANCHES_PER_PAGE,
     };
   },
@@ -66,6 +70,9 @@ export default {
     },
     category() {
       return this.hasError ? 'secondary' : 'primary';
+    },
+    itemsLoadedLength() {
+      return this.page * BRANCHES_PER_PAGE;
     },
     variant() {
       return this.hasError ? 'danger' : 'default';
@@ -85,39 +92,51 @@ export default {
     },
   },
   created() {
-    this.handleSearch = debounce(this.fetchBranches, DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
+    this.search = debounce(this.fetchBranches, DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
   },
   methods: {
+    handleSearch(searchTerm) {
+      this.searchTerm = searchTerm;
+      this.searching = true;
+      this.page = 1;
+      this.branches = [];
+
+      this.search(searchTerm);
+    },
     handleSelect(value) {
       this.$emit('select', value);
     },
-    async fetchBranches(searchTerm) {
+    async fetchBranches() {
       this.loading = true;
 
       try {
-        const payload = await Api.branches(this.projectFullPath, searchTerm, {
-          per_page: this.limit,
+        const payload = await Api.branches(this.projectFullPath, this.searchTerm, {
+          per_page: BRANCHES_PER_PAGE,
+          page: this.page,
         });
 
         const totalBranches = payload.headers['x-total'];
-        this.branches = payload.data.map(({ name }) => ({ value: name, text: name }));
+        const items = payload.data.map(branchListboxMapper);
+
+        this.branches = [...this.branches, ...items];
         this.totalBranches = Number.parseInt(totalBranches, 10);
-        this.$emit('error', { hasErrored: false });
+        this.$emit('success');
       } catch (error) {
-        this.$emit('error', { hasErrored: true, error: this.customErrorMessage });
+        this.$emit('error', { error: this.customErrorMessage });
         this.branches = [];
         Sentry.captureException(error);
       } finally {
         this.loading = false;
         this.openedOnce = true;
+        this.searching = false;
       }
     },
     onBottomReached() {
-      if (this.limit >= this.totalBranches) {
+      if (this.itemsLoadedLength >= this.totalBranches) {
         return;
       }
 
-      this.limit += BRANCHES_PER_PAGE;
+      this.page += 1;
       this.fetchBranches();
     },
   },
@@ -138,6 +157,7 @@ export default {
     :items="branches"
     :reset-button-label="$options.i18n.resetLabel"
     :toggle-text="toggleText"
+    :searching="searching"
     :selected="selected"
     :show-select-all-button-label="$options.i18n.selectAllLabel"
     @bottom-reached="onBottomReached"
