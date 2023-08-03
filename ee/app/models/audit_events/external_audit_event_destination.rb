@@ -4,6 +4,7 @@ module AuditEvents
   class ExternalAuditEventDestination < ApplicationRecord
     include ExternallyDestinationable
     include Limitable
+    include ExternallyCommonDestinationable
 
     self.limit_name = 'external_audit_event_destinations'
     self.limit_scope = :group

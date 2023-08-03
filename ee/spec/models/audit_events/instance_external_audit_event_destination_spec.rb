@@ -33,6 +33,10 @@ RSpec.describe AuditEvents::InstanceExternalAuditEventDestination, feature_categ
 
   it_behaves_like 'includes Limitable concern'
 
+  it_behaves_like 'includes ExternallyCommonDestinationable concern' do
+    let(:model_factory_name) { :instance_external_audit_event_destination }
+  end
+
   describe 'Validations' do
     it { is_expected.to have_many(:headers).class_name('AuditEvents::Streaming::InstanceHeader') }
     it { is_expected.to have_many(:event_type_filters).class_name('AuditEvents::Streaming::InstanceEventTypeFilter') }

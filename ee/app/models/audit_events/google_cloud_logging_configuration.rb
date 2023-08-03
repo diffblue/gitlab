@@ -3,6 +3,7 @@
 module AuditEvents
   class GoogleCloudLoggingConfiguration < ApplicationRecord
     include Limitable
+    include ExternallyCommonDestinationable
 
     self.limit_name = 'google_cloud_logging_configurations'
     self.limit_scope = :group
@@ -32,6 +33,7 @@ module AuditEvents
 
     validates :client_email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }, length: { maximum: 254 }
     validates :private_key, presence: true
+    validates :name, uniqueness: { scope: :namespace_id }
 
     attr_encrypted :private_key,
       mode: :per_attribute_iv,

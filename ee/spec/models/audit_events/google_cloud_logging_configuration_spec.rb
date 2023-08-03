@@ -12,6 +12,8 @@ RSpec.describe AuditEvents::GoogleCloudLoggingConfiguration, feature_category: :
   end
 
   describe 'Validations' do
+    let_it_be(:group) { create(:group) }
+
     it { is_expected.to validate_presence_of(:google_project_id_name) }
     it { is_expected.to validate_presence_of(:client_email) }
     it { is_expected.to validate_presence_of(:log_id_name) }
@@ -46,7 +48,6 @@ RSpec.describe AuditEvents::GoogleCloudLoggingConfiguration, feature_category: :
     it { is_expected.not_to allow_value('%audit_events/123').for(:log_id_name) }
 
     context 'when the same google_project_id_name for the same namespace and log_id_name exists' do
-      let(:group) { create(:group) }
       let(:google_project_id_name) { 'valid-project-id' }
       let(:log_id_name) { 'audit_events' }
 
@@ -64,7 +65,6 @@ RSpec.describe AuditEvents::GoogleCloudLoggingConfiguration, feature_category: :
     end
 
     context 'when the group is a subgroup' do
-      let_it_be(:group) { create(:group) }
       let_it_be(:subgroup) { create(:group, parent: group) }
 
       before do
@@ -75,6 +75,14 @@ RSpec.describe AuditEvents::GoogleCloudLoggingConfiguration, feature_category: :
         expect(google_cloud_logging_config).not_to be_valid
         expect(google_cloud_logging_config.errors[:group]).to include('must not be a subgroup')
       end
+    end
+
+    it 'validates uniqueness of name scoped to namespace' do
+      create(:google_cloud_logging_configuration, name: 'Test Destination', group: group)
+      destination = build(:google_cloud_logging_configuration, name: 'Test Destination', group: group)
+
+      expect(destination).not_to be_valid
+      expect(destination.errors.full_messages).to include('Name has already been taken')
     end
   end
 
@@ -101,5 +109,9 @@ RSpec.describe AuditEvents::GoogleCloudLoggingConfiguration, feature_category: :
 
   it_behaves_like 'includes Limitable concern' do
     subject { build(:google_cloud_logging_configuration, group: create(:group)) }
+  end
+
+  it_behaves_like 'includes ExternallyCommonDestinationable concern' do
+    let(:model_factory_name) { :google_cloud_logging_configuration }
   end
 end
