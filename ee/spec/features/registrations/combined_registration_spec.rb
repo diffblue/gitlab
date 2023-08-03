@@ -9,7 +9,7 @@ RSpec.describe 'Registration group and project creation flow', :saas, :js, featu
 
   before do
     # https://gitlab.com/gitlab-org/gitlab/-/issues/340302
-    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(151)
+    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(152)
     # This feature flag is stubbed because this will add an additional query and break query budget,
     # but this will enabled for maxiumum of 10% percent of users for limited time, So this should be safe
     stub_feature_flags(compare_project_authorization_linear_cte: false)
