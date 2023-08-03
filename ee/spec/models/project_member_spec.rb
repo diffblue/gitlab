@@ -67,6 +67,23 @@ RSpec.describe ProjectMember, feature_category: :groups_and_projects do
     end
   end
 
+  describe 'only one security policy bot validation' do
+    let_it_be(:user1) { create(:user, :security_policy_bot) }
+    let_it_be(:user2) { create(:user, :security_policy_bot) }
+    let_it_be(:user3) { create(:user) }
+    let_it_be(:project) { create(:project) }
+
+    it 'allows only one member of type security_policy_bot' do
+      expect { create(:project_member, user: user1, project: project) }.not_to raise_error
+      expect { create(:project_member, user: user2, project: project) }.to raise_error(ActiveRecord::RecordInvalid)
+      expect { create(:project_member, user: user3, project: project) }.not_to raise_error
+    end
+
+    it 'does not throw an error if user is nil' do
+      expect { create(:project_member, :invited) }.not_to raise_error
+    end
+  end
+
   describe '#provisioned_by_this_group?' do
     let_it_be(:member) { build(:project_member) }
 

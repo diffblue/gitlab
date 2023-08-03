@@ -32558,6 +32558,9 @@ msgstr ""
 msgid "Only members of this group can access the wiki."
 msgstr ""
 
+msgid "Only one security policy bot is allowed per project"
+msgstr ""
+
 msgid "Only one source is required but both were provided"
 msgstr ""
 

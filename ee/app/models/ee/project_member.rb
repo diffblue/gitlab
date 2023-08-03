@@ -11,9 +11,17 @@ module EE
       validate :sso_enforcement, if: -> { group && user }
       validate :gma_enforcement, if: -> { group && user }
       validate :group_domain_limitations, if: -> { group && group_has_domain_limitations? }, on: :create
+      validate :validate_only_one_security_policy_bot_per_source, on: :create
 
       before_destroy :delete_member_branch_protection
       before_destroy :delete_protected_environment_acceses
+    end
+
+    def validate_only_one_security_policy_bot_per_source
+      return unless user&.security_policy_bot?
+      return unless source.security_policy_bot
+
+      errors.add(:member_user_type, _("Only one security policy bot is allowed per project"))
     end
 
     def group
