@@ -4,7 +4,7 @@ module EE
   module Gitlab
     module Ci
       module Status
-        module Build
+        module Bridge
           module WaitingForApproval
             extend ActiveSupport::Concern
 
