@@ -8,15 +8,18 @@ import ProjectBranchSelector from 'ee/vue_shared/components/branches_selector/pr
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
-const branches = Array.from({ length: 15 }, (_, index) => ({ id: index, name: `test-${index}` }));
+const branches = Array.from({ length: 30 }, (_, index) => ({ id: index, name: `test-${index}` }));
 const TEST_BRANCHES = [{ id: 16, name: 'main' }, ...branches];
+
+const TEST_BRANCHES_PAGE_ONE = TEST_BRANCHES.slice(0, 15);
+const TEST_BRANCHES_PAGE_TWO = TEST_BRANCHES.slice(15);
 
 const MOCKED_LISTBOX_ITEMS = TEST_BRANCHES.map(({ name }) => ({
   text: name,
   value: name,
 }));
 
-const TOTAL_BRANCHES = 30;
+const TOTAL_BRANCHES = 31;
 
 describe('ProjectBranchSelector', () => {
   const PROJECT_ID = '1';
@@ -108,7 +111,7 @@ describe('ProjectBranchSelector', () => {
       expect(findListBox().props('items')).toEqual(MOCKED_LISTBOX_ITEMS);
       expect(findAllListboxItems()).toHaveLength(MOCKED_LISTBOX_ITEMS.length);
 
-      expect(wrapper.emitted('error')).toEqual([[{ hasErrored: false }]]);
+      expect(wrapper.emitted('success')).toHaveLength(1);
       expect(findListBox().props('variant')).toEqual('default');
       expect(findListBox().props('category')).toEqual('primary');
     });
@@ -137,18 +140,6 @@ describe('ProjectBranchSelector', () => {
       expect(wrapper.emitted('select')).toEqual([[[]]]);
     });
 
-    it('should stop fetching branches when limit is reached', async () => {
-      createComponent();
-      await openDropdown();
-
-      expect(findListBox().props('items')).toHaveLength(TEST_BRANCHES.length);
-
-      findListBox().vm.$emit('bottom-reached');
-      await waitForPromises();
-
-      expect(findListBox().props('items')).toHaveLength(TEST_BRANCHES.length);
-    });
-
     it.each`
       selected                   | expectedSelected           | expectedResult
       ${['main', 'development']} | ${['main', 'development']} | ${['main', 'development'].join(', ')}
@@ -168,6 +159,48 @@ describe('ProjectBranchSelector', () => {
         expect(findListBox().props('toggleText')).toBe(expectedResult);
       },
     );
+  });
+
+  describe('infinite scroll', () => {
+    it('should stop fetching branches when limit is reached', async () => {
+      mockAxios.onGet(MOCKED_BRANCHES_URL).replyOnce(HTTP_STATUS_OK, TEST_BRANCHES_PAGE_ONE, {
+        'x-total': TOTAL_BRANCHES,
+      });
+
+      createComponent();
+      await openDropdown();
+
+      expect(findListBox().props('items')).toHaveLength(TEST_BRANCHES_PAGE_ONE.length);
+
+      mockAxios.onGet(MOCKED_BRANCHES_URL).replyOnce(HTTP_STATUS_OK, TEST_BRANCHES_PAGE_TWO, {
+        'x-total': TOTAL_BRANCHES,
+      });
+
+      findListBox().vm.$emit('bottom-reached');
+      await waitForPromises();
+
+      expect(findListBox().props('items')).toHaveLength(TEST_BRANCHES.length);
+    });
+
+    it('should reset branches when searched', async () => {
+      mockAxios.onGet(MOCKED_BRANCHES_URL).replyOnce(HTTP_STATUS_OK, TEST_BRANCHES_PAGE_ONE, {
+        'x-total': TOTAL_BRANCHES,
+      });
+
+      createComponent();
+      await openDropdown();
+
+      expect(findListBox().props('items')).toHaveLength(TEST_BRANCHES_PAGE_ONE.length);
+
+      mockAxios.onGet(MOCKED_BRANCHES_URL).replyOnce(HTTP_STATUS_OK, [TEST_BRANCHES_PAGE_ONE[0]], {
+        'x-total': TOTAL_BRANCHES,
+      });
+
+      findListBox().vm.$emit('search', 'main');
+      await waitForPromises();
+
+      expect(findListBox().props('items')).toHaveLength(1);
+    });
   });
 
   describe('has no protected branches', () => {
@@ -223,7 +256,6 @@ describe('ProjectBranchSelector', () => {
           [
             {
               error: expectedError,
-              hasErrored: true,
             },
           ],
         ]);
