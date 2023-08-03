@@ -2911,6 +2911,9 @@ msgstr ""
 msgid "Add new key"
 msgstr ""
 
+msgid "Add new pipeline subscription"
+msgstr ""
+
 msgid "Add new pipeline trigger token"
 msgstr ""
 
@@ -45473,6 +45476,9 @@ msgid "Subscription History"
 msgstr ""
 
 msgid "Subscription deletion failed."
+msgstr ""
+
+msgid "Subscription for %{subscription} will be removed. Do you want to continue?"
 msgstr ""
 
 msgid "Subscription service outage"

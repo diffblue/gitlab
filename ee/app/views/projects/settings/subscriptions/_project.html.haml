@@ -1,14 +1,12 @@
 - is_upstream_mode = mode == "upstream"
 - tooltip = _('Delete subscription')
 %tr
-  %td
+  %td{ data: { label: _('Project') }, class: 'gl-vertical-align-middle!' }
     = link_to project.name, project_path(project)
-  %td
+  %td{ data: { label: _('Namespace') } }
     .gl-display-flex.gl-align-items-center
       = avatar_without_link(project.namespace, size: 32)
       = project.namespace.name
   - if is_upstream_mode
-    %td.gl-text-right
-      = link_button_to nil, project_subscription_path(@project, subscription.id), method: :delete, data: { toggle: 'tooltip', title: tooltip, container: 'body', testid: 'delete-subscription' }, variant: :danger, icon: 'close'
-  - else
-    %td
+    %td.gl-text-right{ data: { label: _('Actions') }, class: 'gl-vertical-align-middle!' }
+      = render Pajamas::ButtonComponent.new(href: project_subscription_path(@project, subscription.id), category: :tertiary, size: :small, icon: 'remove', button_options: { data: { toggle: 'tooltip', title: tooltip, container: 'body', testid: 'delete-subscription', confirm: _("Subscription for %{subscription} will be removed. Do you want to continue?") % { subscription: project.name }, confirm_btn_variant: "danger", method: :delete } })
