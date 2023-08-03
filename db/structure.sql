@@ -23825,6 +23825,7 @@ CREATE TABLE user_details (
     discord text DEFAULT ''::text NOT NULL,
     enterprise_group_id bigint,
     enterprise_group_associated_at timestamp with time zone,
+    email_reset_offered_at timestamp with time zone,
     CONSTRAINT check_245664af82 CHECK ((char_length(webauthn_xid) <= 100)),
     CONSTRAINT check_444573ee52 CHECK ((char_length(skype) <= 500)),
     CONSTRAINT check_466a25be35 CHECK ((char_length(twitter) <= 500)),
