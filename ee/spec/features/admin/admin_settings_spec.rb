@@ -541,6 +541,10 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
   end
 
+  it_behaves_like 'Microsoft Azure integration form' do
+    let(:path) { general_admin_application_settings_path }
+  end
+
   describe 'Namespace storage cost factor for forks setting', feature_category: :consumables_cost_management do
     context 'when checking namespace plans' do
       before do

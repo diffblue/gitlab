@@ -29802,6 +29802,9 @@ msgstr ""
 msgid "Microsoft|Microsoft Azure integration settings were successfully updated."
 msgstr ""
 
+msgid "Microsoft|Sync group memberships from Microsoft Azure when SAML response includes an overage claim."
+msgstr ""
+
 msgid "Microsoft|Tenant ID"
 msgstr ""
 

@@ -5,6 +5,8 @@ module MicrosoftApplicationActions
   include SafeFormatHelper
 
   included do
+    feature_category :system_access, [:update_microsoft_application]
+
     before_action :check_microsoft_group_sync_available, only: [:update_microsoft_application]
   end
 
@@ -12,7 +14,7 @@ module MicrosoftApplicationActions
     application = ::SystemAccess::MicrosoftApplication.find_or_initialize_by(namespace: microsoft_application_namespace) # rubocop:disable CodeReuse/ActiveRecord
 
     params = microsoft_application_params.dup
-    params.delete(:client_secret) if params[:client_secret].empty?
+    params.delete(:client_secret) if params[:client_secret].blank?
 
     if application.update(params)
       flash[:notice] = s_('Microsoft|Microsoft Azure integration settings were successfully updated.')
