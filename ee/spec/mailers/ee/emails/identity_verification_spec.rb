@@ -2,17 +2,16 @@
 
 require 'spec_helper'
 
-RSpec.describe Emails::IdentityVerification do
+RSpec.describe Emails::IdentityVerification, feature_category: :instance_resiliency do
   include EmailSpec::Matchers
+
   include_context 'gitlab email notification'
 
   describe 'confirmation_instructions_email' do
     let_it_be(:user) { build_stubbed(:user) }
     let_it_be(:token) { '123456' }
 
-    subject do
-      Notify.confirmation_instructions_email(user.email, token: token)
-    end
+    subject(:mail) { Notify.confirmation_instructions_email(user.email, token: token) }
 
     it_behaves_like 'an email sent from GitLab'
 
@@ -38,5 +37,7 @@ RSpec.describe Emails::IdentityVerification do
       is_expected.to have_body_text format(s_('IdentityVerification|Your verification code expires after '\
         '%{expires_in_minutes} minutes.'), expires_in_minutes: expires_in_minutes)
     end
+
+    it_behaves_like 'an email with information about unconfirmed user settings'
   end
 end

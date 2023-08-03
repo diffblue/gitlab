@@ -1,0 +1,4 @@
+- if unconfirmed_email_feature_enabled?
+  = render Pajamas::AlertComponent.new(dismissible: false) do |c|
+    - c.with_body do
+      = unconfirmed_email_text
