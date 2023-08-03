@@ -14,6 +14,7 @@ import { boardObj } from 'jest/boards/mock_data';
 
 import searchIterationQuery from 'ee/issues/list/queries/search_iterations.query.graphql';
 import { ANY_ITERATION, CURRENT_ITERATION, IterationFilterType } from 'ee/boards/constants';
+import * as cacheUpdates from '~/boards/graphql/cache_updates';
 import { WORKSPACE_GROUP } from '~/issues/constants';
 import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
 import { mockIterationsResponse, mockIterations, mockIterationCadence } from './mock_data';
@@ -44,6 +45,8 @@ describe('Iteration select component', () => {
   const findDropdown = () => wrapper.findComponent(DropdownWidget);
 
   const iterationsQueryHandlerSuccess = jest.fn().mockResolvedValue(mockIterationsResponse);
+  const errorMessage = 'Failed to fetch iterations';
+  const iterationsQueryHandlerFailure = jest.fn().mockRejectedValue(new Error(errorMessage));
 
   const createStore = () => {
     return new Vuex.Store({
@@ -53,9 +56,12 @@ describe('Iteration select component', () => {
     });
   };
 
-  const createComponent = ({ props = {} } = {}) => {
+  const createComponent = ({
+    props = {},
+    iterationsQueryHandler = iterationsQueryHandlerSuccess,
+  } = {}) => {
     const store = createStore();
-    fakeApollo = createMockApollo([[searchIterationQuery, iterationsQueryHandlerSuccess]]);
+    fakeApollo = createMockApollo([[searchIterationQuery, iterationsQueryHandler]]);
     wrapper = shallowMountExtended(IterationSelect, {
       store,
       apolloProvider: fakeApollo,
@@ -79,6 +85,10 @@ describe('Iteration select component', () => {
       },
     });
   };
+
+  beforeEach(() => {
+    cacheUpdates.setError = jest.fn();
+  });
 
   afterEach(() => {
     fakeApollo = null;
@@ -141,6 +151,14 @@ describe('Iteration select component', () => {
       expect(iterationsQueryHandlerSuccess).toHaveBeenCalled();
 
       expect(findDropdown().isVisible()).toBe(true);
+    });
+
+    it('sets error when fetching iterations fails', async () => {
+      createComponent({ iterationsQueryHandler: iterationsQueryHandlerFailure });
+      await nextTick();
+      findEditButton().vm.$emit('click');
+      await waitForPromises();
+      expect(cacheUpdates.setError).toHaveBeenCalled();
     });
   });
 

@@ -5,6 +5,7 @@ import Draggable from 'vuedraggable';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import BoardListHeader from 'ee_else_ce/boards/components/board_list_header.vue';
 import { isListDraggable } from '~/boards/boards_util';
+import { setError } from '~/boards/graphql/cache_updates';
 import eventHub from '~/boards/eventhub';
 import { s__, __ } from '~/locale';
 import { defaultSortableOptions } from '~/sortable/constants';
@@ -85,6 +86,12 @@ export default {
       },
       update(data) {
         return data[this.boardType].board.epics;
+      },
+      error(error) {
+        setError({
+          error,
+          message: s__('Boards|An error occurred while fetching epics. Please try again.'),
+        });
       },
     },
   },

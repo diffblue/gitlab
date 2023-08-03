@@ -3,7 +3,6 @@ import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 
 import VueApollo from 'vue-apollo';
-import Vuex from 'vuex';
 import AssigneeSelect from 'ee/boards/components/assignee_select.vue';
 
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -13,18 +12,18 @@ import { stubComponent } from 'helpers/stub_component';
 import { boardObj } from 'jest/boards/mock_data';
 import { projectMembersResponse, groupMembersResponse, mockUser2 } from 'jest/sidebar/mock_data';
 
+import { BoardType } from '~/boards/constants';
+import * as cacheUpdates from '~/boards/graphql/cache_updates';
 import searchGroupUsersQuery from '~/graphql_shared/queries/group_users_search.query.graphql';
 import searchProjectUsersQuery from '~/graphql_shared/queries/users_search.query.graphql';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
 
 Vue.use(VueApollo);
-Vue.use(Vuex);
 
 describe('Assignee select component', () => {
   let wrapper;
   let fakeApollo;
-  let store;
 
   const selectedText = () => wrapper.find('[data-testid="selected-assignee"]').text();
   const findEditButton = () => wrapper.findComponent(GlButton);
@@ -32,27 +31,21 @@ describe('Assignee select component', () => {
 
   const usersQueryHandlerSuccess = jest.fn().mockResolvedValue(projectMembersResponse);
   const groupUsersQueryHandlerSuccess = jest.fn().mockResolvedValue(groupMembersResponse);
-
-  const createStore = () => {
-    store = new Vuex.Store({
-      actions: {
-        setError: jest.fn(),
-      },
-    });
-  };
+  const errorMessage = 'Failed to fetch users';
+  const usersQueryHandlerFailure = jest.fn().mockRejectedValue(new Error(errorMessage));
 
   const createComponent = ({
     props = {},
     usersQueryHandler = usersQueryHandlerSuccess,
+    groupUsersQueryHandler = groupUsersQueryHandlerSuccess,
     isGroupBoard = false,
     isProjectBoard = false,
   } = {}) => {
     fakeApollo = createMockApollo([
       [searchProjectUsersQuery, usersQueryHandler],
-      [searchGroupUsersQuery, groupUsersQueryHandlerSuccess],
+      [searchGroupUsersQuery, groupUsersQueryHandler],
     ]);
     wrapper = shallowMount(AssigneeSelect, {
-      store,
       apolloProvider: fakeApollo,
       propsData: {
         board: boardObj,
@@ -73,13 +66,12 @@ describe('Assignee select component', () => {
   };
 
   beforeEach(() => {
-    createStore();
+    cacheUpdates.setError = jest.fn();
     createComponent({ isProjectBoard: true });
   });
 
   afterEach(() => {
     fakeApollo = null;
-    store = null;
   });
 
   describe('when not editing', () => {
@@ -130,26 +122,41 @@ describe('Assignee select component', () => {
   });
 
   it.each`
-    boardType    | mockedResponse            | queryHandler                     | notCalledHandler
-    ${'group'}   | ${groupMembersResponse}   | ${groupUsersQueryHandlerSuccess} | ${usersQueryHandlerSuccess}
-    ${'project'} | ${projectMembersResponse} | ${usersQueryHandlerSuccess}      | ${groupUsersQueryHandlerSuccess}
-  `(
-    'fetches $boardType users',
-    async ({ boardType, mockedResponse, queryHandler, notCalledHandler }) => {
-      createStore();
-      createComponent({
-        [queryHandler]: jest.fn().mockResolvedValue(mockedResponse),
-        isProjectBoard: boardType === 'project',
-        isGroupBoard: boardType === 'group',
-      });
+    boardType            | queryHandler                     | notCalledHandler
+    ${BoardType.group}   | ${groupUsersQueryHandlerSuccess} | ${usersQueryHandlerSuccess}
+    ${BoardType.project} | ${usersQueryHandlerSuccess}      | ${groupUsersQueryHandlerSuccess}
+  `('fetches $boardType users', async ({ boardType, queryHandler, notCalledHandler }) => {
+    createComponent({
+      isProjectBoard: boardType === BoardType.project,
+      isGroupBoard: boardType === BoardType.group,
+    });
 
-      findEditButton().vm.$emit('click');
-      await waitForPromises();
-      jest.advanceTimersByTime(DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
-      await nextTick();
+    findEditButton().vm.$emit('click');
+    await waitForPromises();
+    jest.advanceTimersByTime(DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
+    await nextTick();
 
-      expect(queryHandler).toHaveBeenCalled();
-      expect(notCalledHandler).not.toHaveBeenCalled();
-    },
-  );
+    expect(queryHandler).toHaveBeenCalled();
+    expect(notCalledHandler).not.toHaveBeenCalled();
+  });
+
+  it.each`
+    boardType
+    ${BoardType.group}
+    ${BoardType.project}
+  `('sets error when fetch $boardType board query fails', async ({ boardType }) => {
+    createComponent({
+      usersQueryHandler: usersQueryHandlerFailure,
+      groupUsersQueryHandler: usersQueryHandlerFailure,
+      isProjectBoard: boardType === BoardType.project,
+      isGroupBoard: boardType === BoardType.group,
+    });
+
+    findEditButton().vm.$emit('click');
+    await waitForPromises();
+    jest.advanceTimersByTime(DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
+    await waitForPromises();
+
+    expect(cacheUpdates.setError).toHaveBeenCalled();
+  });
 });

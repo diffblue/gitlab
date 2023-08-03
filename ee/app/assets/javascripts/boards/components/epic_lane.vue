@@ -3,10 +3,11 @@ import { GlButton, GlIcon, GlLink, GlLoadingIcon, GlPopover, GlTooltipDirective 
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { STATUS_OPEN } from '~/issues/constants';
 import { formatDate } from '~/lib/utils/datetime_utility';
-import { __, n__, sprintf } from '~/locale';
+import { __, n__, sprintf, s__ } from '~/locale';
 import timeagoMixin from '~/vue_shared/mixins/timeago';
 import { formatListIssuesForLanes } from 'ee/boards/boards_util';
 import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
+import { setError } from '~/boards/graphql/cache_updates';
 import { BoardType } from 'ee_else_ce/boards/constants';
 import IssuesLaneList from './issues_lane_list.vue';
 
@@ -88,6 +89,12 @@ export default {
       update(data) {
         return data[this.boardType]?.board.lists.nodes;
       },
+      error(error) {
+        setError({
+          error,
+          message: s__('Boards|An error occurred while fetching issues. Please try again.'),
+        });
+      },
     },
   },
   computed: {
@@ -155,7 +162,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['updateBoardEpicUserPreferences', 'setError', 'fetchIssuesForEpic']),
+    ...mapActions(['updateBoardEpicUserPreferences', 'fetchIssuesForEpic']),
     toggleCollapsed() {
       this.isCollapsed = !this.isCollapsed;
 
@@ -163,7 +170,7 @@ export default {
         collapsed: this.isCollapsed,
         epicId: this.epic.id,
       }).catch(() => {
-        this.setError({ message: __('Unable to save your preference'), captureError: true });
+        setError({ message: __('Unable to save your preference'), captureError: true });
       });
     },
     getIssuesByList(listId) {

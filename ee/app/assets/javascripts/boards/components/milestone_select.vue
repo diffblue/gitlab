@@ -1,9 +1,9 @@
 <script>
 import { GlButton } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
-import { mapActions } from 'vuex';
 import { s__ } from '~/locale';
 
+import { setError } from '~/boards/graphql/cache_updates';
 import groupMilestonesQuery from '~/sidebar/queries/group_milestones.query.graphql';
 import projectMilestonesQuery from '~/sidebar/queries/project_milestones.query.graphql';
 
@@ -56,8 +56,8 @@ export default {
       update(data) {
         return data?.workspace?.attributes?.nodes || [];
       },
-      error() {
-        this.setError({ message: this.$options.i18n.errorSearchingMilestones });
+      error(error) {
+        setError({ error, message: this.$options.i18n.errorSearchingMilestones });
       },
     },
   },
@@ -81,7 +81,6 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['setError']),
     selectMilestone(milestone) {
       this.selected = milestone;
       this.toggleEdit();

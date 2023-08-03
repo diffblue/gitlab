@@ -1,13 +1,13 @@
 <script>
 import { GlButton } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
-import { mapActions } from 'vuex';
 import searchGroupUsers from '~/graphql_shared/queries/group_users_search.query.graphql';
 import searchProjectUsers from '~/graphql_shared/queries/users_search.query.graphql';
 import { s__ } from '~/locale';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
 import UserAvatarImage from '~/vue_shared/components/user_avatar/user_avatar_image.vue';
+import { setError } from '~/boards/graphql/cache_updates';
 
 import { AssigneesPreset, ANY_ASSIGNEE } from '../constants';
 
@@ -60,8 +60,8 @@ export default {
         return data.workspace?.users?.nodes.filter((x) => x?.user).map(({ user }) => user) || [];
       },
       debounce: DEFAULT_DEBOUNCE_AND_THROTTLE_MS,
-      error() {
-        this.setError({ message: this.$options.i18n.errorSearchingUsers });
+      error(error) {
+        setError({ error, message: this.$options.i18n.errorSearchingUsers });
       },
     },
   },
@@ -93,7 +93,6 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['setError']),
     selectAssignee(user) {
       this.selected = user;
       this.toggleEdit();

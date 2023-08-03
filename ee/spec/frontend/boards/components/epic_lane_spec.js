@@ -3,7 +3,9 @@ import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
+import * as cacheUpdates from '~/boards/graphql/cache_updates';
 import EpicLane from 'ee/boards/components/epic_lane.vue';
 import IssuesLaneList from 'ee/boards/components/issues_lane_list.vue';
 import getters from 'ee/boards/stores/getters';
@@ -50,15 +52,18 @@ describe('EpicLane', () => {
   };
 
   const listIssuesQueryHandlerSuccess = jest.fn().mockResolvedValue(mockGroupIssuesResponse());
+  const errorMessage = 'Failed to fetch issues';
+  const listIssuesQueryHandlerFailure = jest.fn().mockRejectedValue(new Error(errorMessage));
 
   const createComponent = ({
     props = {},
     boardItemsByListId = mockIssuesByListId,
+    listIssuesQueryHandler = listIssuesQueryHandlerSuccess,
     isLoading = false,
     isApolloBoard = false,
   } = {}) => {
     const store = createStore({ boardItemsByListId, isLoading });
-    mockApollo = createMockApollo([[listsIssuesQuery, listIssuesQueryHandlerSuccess]]);
+    mockApollo = createMockApollo([[listsIssuesQuery, listIssuesQueryHandler]]);
 
     const defaultProps = {
       epic: mockEpic,
@@ -81,6 +86,10 @@ describe('EpicLane', () => {
       },
     });
   };
+
+  beforeEach(() => {
+    cacheUpdates.setError = jest.fn();
+  });
 
   describe('mounted', () => {
     beforeEach(() => {
@@ -163,12 +172,21 @@ describe('EpicLane', () => {
   });
 
   describe('Apollo boards', () => {
-    beforeEach(() => {
+    it('fetches list issues', async () => {
       createComponent({ isApolloBoard: true });
+
+      await nextTick();
+      expect(listIssuesQueryHandlerSuccess).toHaveBeenCalled();
     });
 
-    it('fetches list issues', () => {
-      expect(listIssuesQueryHandlerSuccess).toHaveBeenCalled();
+    it('sets error when list issues query fails', async () => {
+      createComponent({
+        listIssuesQueryHandler: listIssuesQueryHandlerFailure,
+        isApolloBoard: true,
+      });
+
+      await waitForPromises();
+      expect(cacheUpdates.setError).toHaveBeenCalled();
     });
   });
 });

@@ -3,7 +3,9 @@ import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import BoardAddNewColumn, { listTypeInfo } from 'ee/boards/components/board_add_new_column.vue';
+import projectBoardMilestonesQuery from '~/boards/graphql/project_board_milestones.query.graphql';
 import searchIterationQuery from 'ee/issues/list/queries/search_iterations.query.graphql';
 import createBoardListMutation from 'ee_else_ce/boards/graphql/board_list_create.mutation.graphql';
 import boardLabelsQuery from '~/boards/graphql/board_labels.query.graphql';
@@ -13,12 +15,14 @@ import BoardAddNewColumnForm from '~/boards/components/board_add_new_column_form
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 import { ListType } from '~/boards/constants';
 import defaultState from '~/boards/stores/state';
+import * as cacheUpdates from '~/boards/graphql/cache_updates';
 import { getIterationPeriod } from 'ee/iterations/utils';
 import { mockLabelList, createBoardListResponse, labelsQueryResponse } from 'jest/boards/mock_data';
 import {
   mockAssignees,
   mockIterations,
   assigneesQueryResponse,
+  milestonesQueryResponse,
   iterationsQueryResponse,
 } from '../mock_data';
 
@@ -27,17 +31,25 @@ Vue.use(VueApollo);
 
 describe('BoardAddNewColumn', () => {
   let wrapper;
+  let mockApollo;
 
   const createBoardListQueryHandler = jest.fn().mockResolvedValue(createBoardListResponse);
   const labelsQueryHandler = jest.fn().mockResolvedValue(labelsQueryResponse);
+  const milestonesQueryHandler = jest.fn().mockResolvedValue(milestonesQueryResponse);
   const assigneesQueryHandler = jest.fn().mockResolvedValue(assigneesQueryResponse);
   const iterationQueryHandler = jest.fn().mockResolvedValue(iterationsQueryResponse);
-  const mockApollo = createMockApollo([
-    [boardLabelsQuery, labelsQueryHandler],
-    [projectBoardMembersQuery, assigneesQueryHandler],
-    [searchIterationQuery, iterationQueryHandler],
-    [createBoardListMutation, createBoardListQueryHandler],
-  ]);
+  const errorMessageMilestones = 'Failed to fetch milestones';
+  const milestonesQueryHandlerFailure = jest
+    .fn()
+    .mockRejectedValue(new Error(errorMessageMilestones));
+  const errorMessageAssignees = 'Failed to fetch assignees';
+  const assigneesQueryHandlerFailure = jest
+    .fn()
+    .mockRejectedValue(new Error(errorMessageAssignees));
+  const errorMessageIterations = 'Failed to fetch iterations';
+  const iterationsQueryHandlerFailure = jest
+    .fn()
+    .mockRejectedValue(new Error(errorMessageIterations));
 
   const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
   const selectItem = (id) => {
@@ -63,7 +75,19 @@ describe('BoardAddNewColumn', () => {
     getListByTypeId = jest.fn(),
     actions = {},
     provide = {},
+    labelsHandler = labelsQueryHandler,
+    milestonesHandler = milestonesQueryHandler,
+    assigneesHandler = assigneesQueryHandler,
+    iterationHandler = iterationQueryHandler,
   } = {}) => {
+    mockApollo = createMockApollo([
+      [boardLabelsQuery, labelsHandler],
+      [projectBoardMembersQuery, assigneesHandler],
+      [projectBoardMilestonesQuery, milestonesHandler],
+      [searchIterationQuery, iterationHandler],
+      [createBoardListMutation, createBoardListQueryHandler],
+    ]);
+
     wrapper = shallowMountExtended(BoardAddNewColumn, {
       apolloProvider: mockApollo,
       propsData: {
@@ -150,6 +174,10 @@ describe('BoardAddNewColumn', () => {
     expect(findIterationItemAt(0).text()).toContain(getIterationPeriod(mockIterations[0]));
     expect(findIterationItemAt(0).findComponent(IterationTitle).exists()).toBe(false);
   };
+
+  beforeEach(() => {
+    cacheUpdates.setError = jest.fn();
+  });
 
   it('clicking cancel hides the form', () => {
     mountComponent();
@@ -364,6 +392,61 @@ describe('BoardAddNewColumn', () => {
         expect(itemList).toHaveLength(mockIterations.length);
         expectIterationWithoutTitle();
         expectIterationWithTitle();
+      });
+    });
+
+    describe('when fetch milestones query fails', () => {
+      beforeEach(async () => {
+        mountComponent({
+          provide: { isApolloBoard: true },
+          milestonesHandler: milestonesQueryHandlerFailure,
+        });
+        listTypeSelect(ListType.milestone);
+
+        await nextTick();
+      });
+
+      it('sets error', async () => {
+        findDropdown().vm.$emit('show');
+
+        await waitForPromises();
+        expect(cacheUpdates.setError).toHaveBeenCalled();
+      });
+    });
+
+    describe('when fetch assignees query fails', () => {
+      beforeEach(async () => {
+        mountComponent({
+          provide: { isApolloBoard: true },
+          assigneesHandler: assigneesQueryHandlerFailure,
+        });
+        listTypeSelect(ListType.assignee);
+
+        await nextTick();
+      });
+
+      it('sets error', async () => {
+        findDropdown().vm.$emit('show');
+
+        await waitForPromises();
+        expect(cacheUpdates.setError).toHaveBeenCalled();
+      });
+    });
+
+    describe('when fetch iterations query fails', () => {
+      beforeEach(async () => {
+        mountComponent({
+          provide: { isApolloBoard: true },
+          iterationHandler: iterationsQueryHandlerFailure,
+        });
+        await selectIteration();
+      });
+
+      it('sets error', async () => {
+        findDropdown().vm.$emit('show');
+
+        await waitForPromises();
+        expect(cacheUpdates.setError).toHaveBeenCalled();
       });
     });
   });

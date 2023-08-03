@@ -14,6 +14,7 @@ import { ListType } from '~/boards/constants';
 import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 import issueCreateMutation from '~/boards/graphql/issue_create.mutation.graphql';
 import { createStore } from '~/boards/stores';
+import * as cacheUpdates from '~/boards/graphql/cache_updates';
 import issueMoveListMutation from 'ee/boards/graphql/issue_move_list.mutation.graphql';
 import { mockList, boardListQueryResponse } from 'jest/boards/mock_data';
 import {
@@ -38,6 +39,7 @@ describe('IssuesLaneList', () => {
   const createIssueMutationHandlerSuccess = jest
     .fn()
     .mockResolvedValue(createIssueMutationResponse);
+  const queryHandlerFailure = jest.fn().mockRejectedValue(new Error('error'));
 
   const createComponent = ({
     listType = ListType.backlog,
@@ -46,6 +48,9 @@ describe('IssuesLaneList', () => {
     isUnassignedIssuesLane = false,
     canAdminEpic = false,
     isApolloBoard = false,
+    listsIssuesQueryHandler = listIssuesQueryHandlerSuccess,
+    moveIssueMutationHandler = moveIssueMutationHandlerSuccess,
+    createIssueMutationHandler = createIssueMutationHandlerSuccess,
   } = {}) => {
     const listMock = {
       ...mockList,
@@ -60,9 +65,9 @@ describe('IssuesLaneList', () => {
     }
 
     mockApollo = createMockApollo([
-      [listsIssuesQuery, listIssuesQueryHandlerSuccess],
-      [issueMoveListMutation, moveIssueMutationHandlerSuccess],
-      [issueCreateMutation, createIssueMutationHandlerSuccess],
+      [listsIssuesQuery, listsIssuesQueryHandler],
+      [issueMoveListMutation, moveIssueMutationHandler],
+      [issueCreateMutation, createIssueMutationHandler],
     ]);
     const baseVariables = {
       fullPath: 'gitlab-org',
@@ -126,6 +131,10 @@ describe('IssuesLaneList', () => {
   const endDrag = (params) => {
     findDraggable().vm.$emit('end', params);
   };
+
+  beforeEach(() => {
+    cacheUpdates.setError = jest.fn();
+  });
 
   describe('if list is expanded', () => {
     beforeEach(() => {
@@ -286,6 +295,7 @@ describe('IssuesLaneList', () => {
       },
       from: { dataset: { listId: 'gid://gitlab/List/1' } },
     };
+
     it.each`
       isUnassignedIssuesLane | queryCalledTimes | performsQuery
       ${true}                | ${1}             | ${true}
@@ -301,6 +311,18 @@ describe('IssuesLaneList', () => {
       },
     );
 
+    it('sets error when fetching unassigned issues fails', async () => {
+      createComponent({
+        isUnassignedIssuesLane: true,
+        isApolloBoard: true,
+        listsIssuesQueryHandler: queryHandlerFailure,
+      });
+
+      await waitForPromises();
+
+      expect(cacheUpdates.setError).toHaveBeenCalled();
+    });
+
     it('calls moveIssue mutation on drag & drop card', async () => {
       createComponent({ isApolloBoard: true, canAdminEpic: true });
 
@@ -311,6 +333,22 @@ describe('IssuesLaneList', () => {
       await waitForPromises();
 
       expect(moveIssueMutationHandlerSuccess).toHaveBeenCalled();
+    });
+
+    it('sets error when moveIssue mutation fails', async () => {
+      createComponent({
+        isApolloBoard: true,
+        canAdminEpic: true,
+        moveIssueMutationHandler: queryHandlerFailure,
+      });
+
+      await waitForPromises();
+
+      endDrag(endDragVariables);
+
+      await waitForPromises();
+
+      expect(cacheUpdates.setError).toHaveBeenCalled();
     });
 
     it('creates issue in unassigned issues lane', async () => {
@@ -333,6 +371,29 @@ describe('IssuesLaneList', () => {
       await nextTick();
 
       expect(createIssueMutationHandlerSuccess).toHaveBeenCalled();
+    });
+
+    it('sets error when creating issue in unassigned issues lane fails', async () => {
+      createComponent({
+        listProps: {
+          id: mockList.id,
+        },
+        isUnassignedIssuesLane: true,
+        isApolloBoard: true,
+        canAdminEpic: true,
+        createIssueMutationHandler: queryHandlerFailure,
+      });
+
+      await waitForPromises();
+
+      eventHub.$emit(`toggle-issue-form-${mockList.id}`);
+      await nextTick();
+      expect(findNewIssueForm().exists()).toBe(true);
+      findNewIssueForm().vm.$emit('addNewIssue', { title: 'Foo' });
+
+      await waitForPromises();
+
+      expect(cacheUpdates.setError).toHaveBeenCalled();
     });
   });
 });

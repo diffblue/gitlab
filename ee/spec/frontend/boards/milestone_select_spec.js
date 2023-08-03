@@ -17,6 +17,8 @@ import {
   mockMilestone1,
 } from 'jest/sidebar/mock_data';
 
+import { BoardType } from '~/boards/constants';
+import * as cacheUpdates from '~/boards/graphql/cache_updates';
 import defaultStore from '~/boards/stores';
 import groupMilestonesQuery from '~/sidebar/queries/group_milestones.query.graphql';
 import projectMilestonesQuery from '~/sidebar/queries/project_milestones.query.graphql';
@@ -35,7 +37,11 @@ describe('Milestone select component', () => {
   const findDropdown = () => wrapper.findComponent(DropdownWidget);
 
   const milestonesQueryHandlerSuccess = jest.fn().mockResolvedValue(mockProjectMilestonesResponse);
-  const groupUsersQueryHandlerSuccess = jest.fn().mockResolvedValue(mockGroupMilestonesResponse);
+  const groupMilestonesQueryHandlerSuccess = jest
+    .fn()
+    .mockResolvedValue(mockGroupMilestonesResponse);
+  const errorMessage = 'Failed to fetch milestones';
+  const milestonesQueryHandlerFailure = jest.fn().mockRejectedValue(new Error(errorMessage));
 
   const createStore = () => {
     store = new Vuex.Store({
@@ -48,12 +54,13 @@ describe('Milestone select component', () => {
   const createComponent = ({
     props = {},
     milestonesQueryHandler = milestonesQueryHandlerSuccess,
+    groupMilestonesQueryHandler = groupMilestonesQueryHandlerSuccess,
     isGroupBoard = false,
     isProjectBoard = false,
   } = {}) => {
     fakeApollo = createMockApollo([
       [projectMilestonesQuery, milestonesQueryHandler],
-      [groupMilestonesQuery, groupUsersQueryHandlerSuccess],
+      [groupMilestonesQuery, groupMilestonesQueryHandler],
     ]);
     wrapper = shallowMount(MilestoneSelect, {
       store,
@@ -79,6 +86,7 @@ describe('Milestone select component', () => {
   };
 
   beforeEach(() => {
+    cacheUpdates.setError = jest.fn();
     createStore();
     createComponent({ isProjectBoard: true });
   });
@@ -134,25 +142,39 @@ describe('Milestone select component', () => {
   });
 
   it.each`
-    boardType    | mockedResponse                   | queryHandler                     | notCalledHandler
-    ${'group'}   | ${mockGroupMilestonesResponse}   | ${groupUsersQueryHandlerSuccess} | ${milestonesQueryHandlerSuccess}
-    ${'project'} | ${mockProjectMilestonesResponse} | ${milestonesQueryHandlerSuccess} | ${groupUsersQueryHandlerSuccess}
-  `(
-    'fetches $boardType milestones',
-    async ({ boardType, mockedResponse, queryHandler, notCalledHandler }) => {
-      createStore();
-      createComponent({
-        [queryHandler]: jest.fn().mockResolvedValue(mockedResponse),
-        isProjectBoard: boardType === 'project',
-        isGroupBoard: boardType === 'group',
-      });
+    boardType            | queryHandler                          | notCalledHandler
+    ${BoardType.group}   | ${groupMilestonesQueryHandlerSuccess} | ${milestonesQueryHandlerSuccess}
+    ${BoardType.project} | ${milestonesQueryHandlerSuccess}      | ${groupMilestonesQueryHandlerSuccess}
+  `('fetches $boardType milestones', async ({ boardType, queryHandler, notCalledHandler }) => {
+    createStore();
+    createComponent({
+      isProjectBoard: boardType === BoardType.project,
+      isGroupBoard: boardType === BoardType.group,
+    });
 
-      findEditButton().vm.$emit('click');
-      await waitForPromises();
-      await nextTick();
+    findEditButton().vm.$emit('click');
+    await waitForPromises();
 
-      expect(queryHandler).toHaveBeenCalled();
-      expect(notCalledHandler).not.toHaveBeenCalled();
-    },
-  );
+    expect(queryHandler).toHaveBeenCalled();
+    expect(notCalledHandler).not.toHaveBeenCalled();
+  });
+
+  it.each`
+    boardType
+    ${BoardType.group}
+    ${BoardType.project}
+  `('set error when fetching $boardType milestones fails', async ({ boardType }) => {
+    createStore();
+    createComponent({
+      isProjectBoard: boardType === BoardType.project,
+      isGroupBoard: boardType === BoardType.group,
+      groupMilestonesQueryHandler: milestonesQueryHandlerFailure,
+      milestonesQueryHandler: milestonesQueryHandlerFailure,
+    });
+
+    findEditButton().vm.$emit('click');
+    await waitForPromises();
+
+    expect(cacheUpdates.setError).toHaveBeenCalled();
+  });
 });

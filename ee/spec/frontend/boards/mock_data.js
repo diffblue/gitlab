@@ -937,6 +937,21 @@ export const assigneesQueryResponse = {
   },
 };
 
+export const milestonesQueryResponse = {
+  data: {
+    workspace: {
+      id: 'gid://gitlab/Project/33',
+      milestones: {
+        nodes: [
+          { id: 'gid://gitlab/Milestone/1', title: 'A milestone' },
+          { id: 'gid://gitlab/Milestone/2', title: 'B milestone' },
+        ],
+      },
+      __typename: 'Project',
+    },
+  },
+};
+
 export const iterationsQueryResponse = {
   data: {
     project: {

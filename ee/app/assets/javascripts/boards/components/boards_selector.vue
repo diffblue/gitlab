@@ -3,6 +3,7 @@ import { mapActions } from 'vuex';
 import BoardsSelectorFoss from '~/boards/components/boards_selector.vue';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import Tracking from '~/tracking';
+import { setError } from '~/boards/graphql/cache_updates';
 import epicBoardsQuery from '../graphql/epic_boards.query.graphql';
 import { fullBoardId, fullEpicBoardId } from '../boards_util';
 
@@ -53,6 +54,12 @@ export default {
           this.isEpicBoard ? this.epicBoardUpdate(data) : this.boardUpdate(data, 'boards'),
         watchLoading: (isLoading) => {
           this.loadingBoards = isLoading;
+        },
+        error(error) {
+          setError({
+            error,
+            message: this.$options.i18n.fetchBoardsError,
+          });
         },
       });
 

@@ -2,7 +2,7 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import Draggable from 'vuedraggable';
 import { mapState, mapActions } from 'vuex';
-import { __ } from '~/locale';
+import { __, s__ } from '~/locale';
 import BoardCard from '~/boards/components/board_card.vue';
 import BoardNewIssue from '~/boards/components/board_new_issue.vue';
 import eventHub from '~/boards/eventhub';
@@ -104,8 +104,18 @@ export default {
         return data[this.boardType]?.board.lists.nodes[0];
       },
       result({ data }) {
-        const list = data[this.boardType]?.board.lists.nodes[0];
-        this.$emit('updatePageInfo', list.issues.pageInfo, list.id);
+        if (data) {
+          const list = data[this.boardType]?.board.lists.nodes[0];
+          this.$emit('updatePageInfo', list.issues.pageInfo, list.id);
+        }
+      },
+      error(error) {
+        setError({
+          error,
+          message: s__(
+            'Boards|An error occurred while fetching unassigned issues. Please try again.',
+          ),
+        });
       },
     },
   },
@@ -350,8 +360,11 @@ export default {
             },
           },
         });
-      } catch {
-        // TODO: handle error
+      } catch (error) {
+        setError({
+          error,
+          message: s__('Boards|An error occurred while moving the issue. Please try again.'),
+        });
       }
     },
     updateCacheAfterMovingItem({

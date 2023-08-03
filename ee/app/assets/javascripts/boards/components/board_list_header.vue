@@ -2,6 +2,7 @@
 import { mapActions } from 'vuex';
 import BoardListHeaderFoss from '~/boards/components/board_list_header.vue';
 import { n__, __, sprintf } from '~/locale';
+import { setError } from '~/boards/graphql/cache_updates';
 import { listsDeferredQuery } from '../constants';
 
 // This is a false violation of @gitlab/no-runtime-template-compiler, since it
@@ -26,6 +27,12 @@ export default {
       },
       update(data) {
         return this.isEpicBoard ? data.epicBoardList : data.boardList;
+      },
+      error(error) {
+        setError({
+          error,
+          message: this.$options.i18n.fetchError,
+        });
       },
     },
   },

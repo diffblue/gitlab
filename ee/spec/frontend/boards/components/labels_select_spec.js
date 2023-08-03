@@ -17,6 +17,8 @@ import {
   mockLabel1,
 } from 'jest/boards/mock_data';
 
+import { BoardType } from '~/boards/constants';
+import * as cacheUpdates from '~/boards/graphql/cache_updates';
 import searchGroupLabels from '~/sidebar/components/labels/labels_select_widget/graphql/group_labels.query.graphql';
 import searchProjectLabels from '~/sidebar/components/labels/labels_select_widget/graphql/project_labels.query.graphql';
 import DropdownValue from '~/sidebar/components/labels/labels_select_widget/dropdown_value.vue';
@@ -37,6 +39,8 @@ describe('Labels select component', () => {
 
   const projectLabelsQueryHandlerSuccess = jest.fn().mockResolvedValue(mockProjectLabelsResponse);
   const groupLabelsQueryHandlerSuccess = jest.fn().mockResolvedValue(mockGroupLabelsResponse);
+  const errorMessage = 'Failed to fetch labels';
+  const labelsQueryHandlerFailure = jest.fn().mockRejectedValue(new Error(errorMessage));
 
   async function openLabelsDropdown() {
     findEditButton().vm.$emit('click');
@@ -51,10 +55,16 @@ describe('Labels select component', () => {
     });
   };
 
-  const createComponent = ({ props = {}, isGroupBoard = false, isProjectBoard = false } = {}) => {
+  const createComponent = ({
+    props = {},
+    isGroupBoard = false,
+    isProjectBoard = false,
+    projectLabelsQueryHandler = projectLabelsQueryHandlerSuccess,
+    groupLabelsQueryHandler = groupLabelsQueryHandlerSuccess,
+  } = {}) => {
     fakeApollo = createMockApollo([
-      [searchProjectLabels, projectLabelsQueryHandlerSuccess],
-      [searchGroupLabels, groupLabelsQueryHandlerSuccess],
+      [searchProjectLabels, projectLabelsQueryHandler],
+      [searchGroupLabels, groupLabelsQueryHandler],
     ]);
     wrapper = shallowMount(LabelsSelect, {
       store,
@@ -81,6 +91,7 @@ describe('Labels select component', () => {
   };
 
   beforeEach(() => {
+    cacheUpdates.setError = jest.fn();
     createStore();
     createComponent({ isProjectBoard: true });
   });
@@ -134,22 +145,35 @@ describe('Labels select component', () => {
   });
 
   it.each`
-    boardType    | mockedResponse               | queryHandler                        | notCalledHandler
-    ${'group'}   | ${mockGroupLabelsResponse}   | ${groupLabelsQueryHandlerSuccess}   | ${projectLabelsQueryHandlerSuccess}
-    ${'project'} | ${mockProjectLabelsResponse} | ${projectLabelsQueryHandlerSuccess} | ${groupLabelsQueryHandlerSuccess}
-  `(
-    'fetches $boardType labels',
-    async ({ boardType, mockedResponse, queryHandler, notCalledHandler }) => {
-      createStore();
-      createComponent({
-        [queryHandler]: jest.fn().mockResolvedValue(mockedResponse),
-        isGroupBoard: boardType === 'group',
-        isProjectBoard: boardType === 'project',
-      });
-      await openLabelsDropdown();
+    boardType            | queryHandler                        | notCalledHandler
+    ${BoardType.group}   | ${groupLabelsQueryHandlerSuccess}   | ${projectLabelsQueryHandlerSuccess}
+    ${BoardType.project} | ${projectLabelsQueryHandlerSuccess} | ${groupLabelsQueryHandlerSuccess}
+  `('fetches $boardType labels', async ({ boardType, queryHandler, notCalledHandler }) => {
+    createStore();
+    createComponent({
+      isGroupBoard: boardType === BoardType.group,
+      isProjectBoard: boardType === BoardType.project,
+    });
+    await openLabelsDropdown();
 
-      expect(queryHandler).toHaveBeenCalled();
-      expect(notCalledHandler).not.toHaveBeenCalled();
-    },
-  );
+    expect(queryHandler).toHaveBeenCalled();
+    expect(notCalledHandler).not.toHaveBeenCalled();
+  });
+
+  it.each`
+    boardType
+    ${BoardType.group}
+    ${BoardType.project}
+  `('sets error when fetching $boardType labels fails', async ({ boardType }) => {
+    createStore();
+    createComponent({
+      isGroupBoard: boardType === BoardType.group,
+      isProjectBoard: boardType === BoardType.project,
+      projectLabelsQueryHandler: labelsQueryHandlerFailure,
+      groupLabelsQueryHandler: labelsQueryHandlerFailure,
+    });
+    await openLabelsDropdown();
+
+    expect(cacheUpdates.setError).toHaveBeenCalled();
+  });
 });

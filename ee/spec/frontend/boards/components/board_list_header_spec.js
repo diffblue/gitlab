@@ -14,6 +14,7 @@ import {
 } from 'jest/boards/mock_data';
 import { ListType, inactiveId } from '~/boards/constants';
 import boardsEventHub from '~/boards/eventhub';
+import * as cacheUpdates from '~/boards/graphql/cache_updates';
 import listQuery from 'ee/boards/graphql/board_lists_deferred.query.graphql';
 import epicListQuery from 'ee/boards/graphql/epic_board_lists_deferred.query.graphql';
 import sidebarEventHub from '~/sidebar/event_hub';
@@ -56,6 +57,7 @@ describe('Board List Header Component', () => {
     weightFeatureAvailable = false,
     canCreateEpic = true,
     listQueryHandler = jest.fn().mockResolvedValue(boardListQueryResponse()),
+    epicListQueryHandler = jest.fn().mockResolvedValue(epicBoardListQueryResponse()),
     currentUserId = 1,
     state = { activeId: inactiveId },
     isEpicBoard = false,
@@ -80,7 +82,7 @@ describe('Board List Header Component', () => {
     fakeApollo = createMockApollo(
       [
         [listQuery, listQueryHandler],
-        [epicListQuery, jest.fn().mockResolvedValue(epicBoardListQueryResponse())],
+        [epicListQuery, epicListQueryHandler],
       ],
       {
         Mutation: {
@@ -131,6 +133,10 @@ describe('Board List Header Component', () => {
   const findNewEpicButton = () => wrapper.findByTestId(newEpicBtnTestId);
   const findSettingsButton = () => wrapper.findByTestId(listSettingsTestId);
   const findCaret = () => wrapper.findByTestId('board-title-caret');
+
+  beforeEach(() => {
+    cacheUpdates.setError = jest.fn();
+  });
 
   afterEach(() => {
     localStorage.clear();
@@ -316,5 +322,33 @@ describe('Board List Header Component', () => {
         expect(notCalledHandler).not.toHaveBeenCalled();
       },
     );
+
+    describe('when fetch list query fails', () => {
+      const errorMessage = 'Failed to fetch list';
+      const listQueryHandlerFailure = jest.fn().mockRejectedValue(new Error(errorMessage));
+
+      beforeEach(() => {
+        createComponent({
+          listQueryHandler: listQueryHandlerFailure,
+          injectedProps: { isApolloBoard: true },
+        });
+      });
+
+      it.each`
+        issuableType | isEpicBoard
+        ${'epic'}    | ${true}
+        ${'issue'}   | ${false}
+      `('sets error for $issuableType', async ({ issuableType, isEpicBoard }) => {
+        createComponent({
+          listQueryHandler: listQueryHandlerFailure,
+          epicListQueryHandler: listQueryHandlerFailure,
+          injectedProps: { isApolloBoard: true, issuableType, isEpicBoard },
+        });
+
+        await waitForPromises();
+
+        expect(cacheUpdates.setError).toHaveBeenCalled();
+      });
+    });
   });
 });
