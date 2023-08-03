@@ -9,8 +9,6 @@ module API
       before do
         authenticated_as_admin!
 
-        not_found!('REST API endpoint not found') unless Feature.enabled?(:purchase_code_suggestions)
-
         @namespace = find_namespace!(params[:id])
         @add_on = find_or_create_subscription_add_on!(params[:add_on_name])
       end
