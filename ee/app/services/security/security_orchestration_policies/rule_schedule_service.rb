@@ -6,13 +6,11 @@ module Security
       def execute(schedule)
         return ServiceResponse.error(message: "No rules") unless rules = schedule&.policy&.fetch(:rules, nil)
 
-        schedule_rules = rules.select do |rule|
-          rule[:type] == Security::ScanExecutionPolicy::RULE_TYPES[:schedule]
-        end
+        rule = rules[schedule.rule_index]
 
-        return ServiceResponse.error(message: "No scheduled rules") if schedule_rules.empty?
+        return ServiceResponse.error(message: "No scheduled rules") unless schedule_rule?(rule)
 
-        branches = branches_for(rules)
+        branches = branches_for(rule)
         actions = actions_for(schedule)
         schedule_errors = schedule_scan(actions, branches).select { |service_result| service_result[:status] == :error }
 
@@ -26,6 +24,10 @@ module Security
 
       private
 
+      def schedule_rule?(rule)
+        rule.present? && rule[:type] == Security::ScanExecutionPolicy::RULE_TYPES[:schedule]
+      end
+
       def actions_for(schedule)
         policy = schedule.policy
         return [] if policy.blank?
@@ -33,10 +35,10 @@ module Security
         policy[:actions]
       end
 
-      def branches_for(rules)
+      def branches_for(rule)
         ::Security::SecurityOrchestrationPolicies::PolicyBranchesService
           .new(project: project)
-          .scan_execution_branches(rules)
+          .scan_execution_branches([rule])
       end
 
       def schedule_scan(actions, branches)

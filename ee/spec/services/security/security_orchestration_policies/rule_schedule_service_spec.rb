@@ -10,9 +10,11 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, fea
     let(:schedule) { create(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: policy_configuration) }
     let!(:scanner_profile) { create(:dast_scanner_profile, name: 'Scanner Profile', project: project) }
     let!(:site_profile) { create(:dast_site_profile, name: 'Site Profile', project: project) }
-    let(:policy) { build(:scan_execution_policy, enabled: true, rules: [rule]) }
+    let(:policy) { build(:scan_execution_policy, enabled: true, rules: [rule, pipeline_rule, other_schedule_rule]) }
+    let(:pipeline_rule) { { type: 'pipeline', branches: ['develop'] } }
     let(:rule) { { type: 'schedule', branches: branches, cadence: '*/20 * * * *' } }
-    let(:branches) { %w[master production] }
+    let(:other_schedule_rule) { { type: 'schedule', branches: ['main'], cadence: '0 10 * * *' } }
+    let(:branches) { %w[master production non-existing-branch] }
 
     subject(:service) { described_class.new(project: project, current_user: current_user) }
 
@@ -40,8 +42,20 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, fea
     end
 
     context 'when scan type is dast' do
-      it 'invokes Security::SecurityOrchestrationPolicies::CreatePipelineService' do
-        expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to receive(:new).twice.and_call_original
+      before do
+        policy[:actions] = [{ scan: 'dast' }]
+      end
+
+      it 'invokes Security::SecurityOrchestrationPolicies::CreatePipelineService for branches existing for the project defined in the schedule rule' do
+        expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to(
+          receive(:new)
+          .with(project: project, current_user: current_user, params: { actions: [{ scan: 'dast' }], branch: 'production' })
+          .and_call_original)
+
+        expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to(
+          receive(:new)
+          .with(project: project, current_user: current_user, params: { actions: [{ scan: 'dast' }], branch: 'master' })
+          .and_call_original)
 
         service.execute(schedule)
       end
@@ -52,8 +66,16 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, fea
         policy[:actions] = [{ scan: 'secret_detection' }]
       end
 
-      it 'invokes Security::SecurityOrchestrationPolicies::CreatePipelineService' do
-        expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to receive(:new).twice.and_call_original
+      it 'invokes Security::SecurityOrchestrationPolicies::CreatePipelineService for branches existing for the project defined in the schedule rule' do
+        expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to(
+          receive(:new)
+          .with(project: project, current_user: current_user, params: { actions: [{ scan: 'secret_detection' }], branch: 'production' })
+          .and_call_original)
+
+        expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to(
+          receive(:new)
+          .with(project: project, current_user: current_user, params: { actions: [{ scan: 'secret_detection' }], branch: 'master' })
+          .and_call_original)
 
         service.execute(schedule)
       end
@@ -65,25 +87,29 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, fea
       end
 
       context 'when clusters are not defined in the rule' do
-        it 'invokes Security::SecurityOrchestrationPolicies::CreatePipelineService for both branches' do
+        it 'invokes Security::SecurityOrchestrationPolicies::CreatePipelineService for branches existing for the project defined in the schedule rule' do
           expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to(
             receive(:new)
-            .with(project: project, current_user: current_user, params: { actions: policy[:actions], branch: 'master' })
+            .with(project: project, current_user: current_user, params: { actions: [{ scan: 'container_scanning' }], branch: 'production' })
             .and_call_original)
 
           expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to(
             receive(:new)
-            .with(project: project, current_user: current_user, params: { actions: policy[:actions], branch: 'production' })
+            .with(project: project, current_user: current_user, params: { actions: [{ scan: 'container_scanning' }], branch: 'master' })
             .and_call_original)
 
           service.execute(schedule)
         end
       end
 
-      it 'invokes Security::SecurityOrchestrationPolicies::CreatePipelineService' do
-        expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to receive(:new).twice.and_call_original
+      context 'when agents are defined in the rule' do
+        let(:rule) { { type: 'schedule', agents: { kasagent: { namespaces: 'default' } }, cadence: '*/20 * * * *' } }
 
-        service.execute(schedule)
+        it 'does not invokes Security::SecurityOrchestrationPolicies::CreatePipelineService' do
+          expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).not_to receive(:new)
+
+          service.execute(schedule)
+        end
       end
     end
 
@@ -92,22 +118,16 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, fea
         policy[:actions] = [{ scan: 'sast' }]
       end
 
-      it 'invokes Security::SecurityOrchestrationPolicies::CreatePipelineService for both branches' do
+      it 'invokes Security::SecurityOrchestrationPolicies::CreatePipelineService for branches existing for the project defined in the schedule rule' do
         expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to(
           receive(:new)
-          .with(project: project, current_user: current_user, params: { actions: policy[:actions], branch: 'master' })
+          .with(project: project, current_user: current_user, params: { actions: [{ scan: 'sast' }], branch: 'production' })
           .and_call_original)
 
         expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to(
           receive(:new)
-          .with(project: project, current_user: current_user, params: { actions: policy[:actions], branch: 'production' })
+          .with(project: project, current_user: current_user, params: { actions: [{ scan: 'sast' }], branch: 'master' })
           .and_call_original)
-
-        service.execute(schedule)
-      end
-
-      it 'invokes Security::SecurityOrchestrationPolicies::CreatePipelineService' do
-        expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to receive(:new).twice.and_call_original
 
         service.execute(schedule)
       end
