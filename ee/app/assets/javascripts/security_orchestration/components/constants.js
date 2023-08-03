@@ -20,3 +20,16 @@ export const POLICY_TYPE_COMPONENT_OPTIONS = {
 };
 
 export const POLICIES_LIST_CONTAINER_CLASS = '.js-security-policies-container-wrapper';
+
+export const EXCEPTION_KEY = 'exception';
+export const NO_EXCEPTION_KEY = 'no_exception';
+export const EXCEPTION_TYPE_ITEMS = [
+  {
+    value: EXCEPTION_KEY,
+    text: s__('SecurityOrchestration|Exceptions'),
+  },
+  {
+    value: NO_EXCEPTION_KEY,
+    text: s__('SecurityOrchestration|No exceptions'),
+  },
+];

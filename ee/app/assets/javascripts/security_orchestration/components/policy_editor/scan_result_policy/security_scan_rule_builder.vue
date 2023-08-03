@@ -2,6 +2,9 @@
 import { GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { REPORT_TYPES_DEFAULT, SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+import BranchExceptionSelector from 'ee/security_orchestration/components/branch_exception_selector.vue';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import PolicyRuleMultiSelect from '../../policy_rule_multi_select.vue';
 import {
   ANY_OPERATOR,
@@ -38,10 +41,11 @@ export default {
   NEWLY_DETECTED,
   PREVIOUSLY_EXISTING,
   scanResultRuleCopy: s__(
-    'ScanResultPolicy|When %{scanType} %{scanners} runs against the %{branches} and find(s) %{vulnerabilitiesNumber} %{boldDescription} of the following criteria:',
+    'ScanResultPolicy|When %{scanType} %{scanners} runs against the %{branches} %{branchExceptions} and find(s) %{vulnerabilitiesNumber} %{boldDescription} of the following criteria:',
   ),
   components: {
     BaseLayoutComponent,
+    BranchExceptionSelector,
     GlSprintf,
     PolicyRuleBranchSelection,
     PolicyRuleMultiSelect,
@@ -52,6 +56,7 @@ export default {
     StatusFilters,
     NumberRangeSelect,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: ['namespaceType'],
   props: {
     initRule: {
@@ -78,6 +83,9 @@ export default {
     };
   },
   computed: {
+    isProject() {
+      return this.namespaceType === NAMESPACE_TYPES.PROJECT;
+    },
     severityLevelsToAdd: {
       get() {
         return this.initRule.severity_levels;
@@ -88,6 +96,9 @@ export default {
     },
     branchTypes() {
       return SCAN_RESULT_BRANCH_TYPE_OPTIONS(this.namespaceType);
+    },
+    branchExceptions() {
+      return this.initRule.branch_exceptions;
     },
     scannersToAdd: {
       get() {
@@ -286,6 +297,14 @@ export default {
                   :branch-types="branchTypes"
                   @changed="triggerChanged($event)"
                   @set-branch-type="setBranchType"
+                />
+              </template>
+
+              <template #branchExceptions>
+                <branch-exception-selector
+                  v-if="isProject && glFeatures.securityPoliciesBranchExceptions"
+                  :selected-exceptions="branchExceptions"
+                  @select="triggerChanged"
                 />
               </template>
 

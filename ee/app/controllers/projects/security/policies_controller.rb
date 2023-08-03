@@ -9,6 +9,10 @@ module Projects
       before_action :authorize_modify_security_policy!, only: :edit
       before_action :validate_policy_configuration, only: :edit
 
+      before_action do
+        push_frontend_feature_flag(:security_policies_branch_exceptions, @project)
+      end
+
       feature_category :security_policy_management
       urgency :default, [:edit]
       urgency :low, [:index, :new]

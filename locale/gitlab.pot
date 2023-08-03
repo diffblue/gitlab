@@ -41225,10 +41225,10 @@ msgstr ""
 msgid "ScanResultPolicy|Unknown"
 msgstr ""
 
-msgid "ScanResultPolicy|When %{scanType} %{scanners} runs against the %{branches} and find(s) %{vulnerabilitiesNumber} %{boldDescription} of the following criteria:"
+msgid "ScanResultPolicy|When %{scanType} %{scanners} runs against the %{branches} %{branchExceptions} and find(s) %{vulnerabilitiesNumber} %{boldDescription} of the following criteria:"
 msgstr ""
 
-msgid "ScanResultPolicy|When %{scanType} in an open merge request targeting %{branches} and the licenses match all of the following criteria:"
+msgid "ScanResultPolicy|When %{scanType} in an open merge request targeting %{branches} %{branchExceptions} and the licenses match all of the following criteria:"
 msgstr ""
 
 msgid "ScanResultPolicy|When %{scanners} find scanner specified conditions in an open merge request targeting the %{branches} and match %{boldDescription} of the following criteria"
@@ -41946,6 +41946,9 @@ msgstr ""
 msgid "SecurityOrchestration|Every time a pipeline runs for %{branches}"
 msgstr ""
 
+msgid "SecurityOrchestration|Exceptions"
+msgstr ""
+
 msgid "SecurityOrchestration|Failed to load cluster agents."
 msgstr ""
 
@@ -42001,6 +42004,9 @@ msgid "SecurityOrchestration|No actions defined - policy will not run."
 msgstr ""
 
 msgid "SecurityOrchestration|No description"
+msgstr ""
+
+msgid "SecurityOrchestration|No exceptions"
 msgstr ""
 
 msgid "SecurityOrchestration|No rules defined - policy will not run."
@@ -42120,6 +42126,9 @@ msgid "SecurityOrchestration|Security policy project was unlinked successfully"
 msgstr ""
 
 msgid "SecurityOrchestration|Select a project to store your security policies in. %{linkStart}More information.%{linkEnd}"
+msgstr ""
+
+msgid "SecurityOrchestration|Select exception branches"
 msgstr ""
 
 msgid "SecurityOrchestration|Select groups"
@@ -42312,6 +42321,12 @@ msgid "SecurityOrchestration|the %{namespaces} namespace"
 msgstr ""
 
 msgid "SecurityOrchestration|the default branch"
+msgstr ""
+
+msgid "SecurityOrchestration|with %{exceptionType}"
+msgstr ""
+
+msgid "SecurityOrchestration|with %{exceptionType} on %{branchSelector}"
 msgstr ""
 
 msgid "SecurityPolicies|Invalid or empty policy"

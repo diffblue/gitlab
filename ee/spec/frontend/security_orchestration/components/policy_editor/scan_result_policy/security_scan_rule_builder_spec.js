@@ -2,6 +2,7 @@ import { nextTick } from 'vue';
 import { GlBadge } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import Api from 'ee/api';
+import BranchExceptionSelector from 'ee/security_orchestration/components/branch_exception_selector.vue';
 import SecurityScanRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/security_scan_rule_builder.vue';
 import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_rule_multi_select.vue';
 import PolicyRuleBranchSelection from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_branch_selection.vue';
@@ -54,6 +55,10 @@ describe('SecurityScanRuleBuilder', () => {
       provide: {
         namespaceId: '1',
         namespaceType: NAMESPACE_TYPES.PROJECT,
+        namespacePath: 'gitlab-org/test',
+        glFeatures: {
+          securityPoliciesBranchExceptions: true,
+        },
         ...provide,
       },
       stubs: {
@@ -77,6 +82,7 @@ describe('SecurityScanRuleBuilder', () => {
   const findScanTypeSelect = () => wrapper.findComponent(ScanTypeSelect);
   const findAgeFilter = () => wrapper.findComponent(AgeFilter);
   const findScanFilterSelectorBadge = () => findScanFilterSelector().findComponent(GlBadge);
+  const findBranchExceptionSelector = () => wrapper.findComponent(BranchExceptionSelector);
 
   beforeEach(() => {
     jest
@@ -104,6 +110,53 @@ describe('SecurityScanRuleBuilder', () => {
 
       expect(props).toEqual(
         expect.arrayContaining([expect.objectContaining({ includeSelectAll: true })]),
+      );
+    });
+  });
+
+  describe('adding branch exceptions', () => {
+    const exceptions = { branch_exceptions: ['main', 'test'] };
+
+    it.each`
+      namespaceType              | expectedResult
+      ${NAMESPACE_TYPES.PROJECT} | ${true}
+      ${NAMESPACE_TYPES.GROUP}   | ${false}
+    `('should select exceptions only on project level', ({ namespaceType, expectedResult }) => {
+      factory(
+        {},
+        {
+          namespaceType,
+        },
+      );
+
+      expect(findBranchExceptionSelector().exists()).toBe(expectedResult);
+    });
+
+    it('should select exceptions', () => {
+      factory();
+
+      findBranchExceptionSelector().vm.$emit('select', exceptions);
+
+      expect(wrapper.emitted('changed')).toEqual([
+        [
+          {
+            ...securityScanBuildRule(),
+            ...exceptions,
+          },
+        ],
+      ]);
+    });
+
+    it('should display saved exceptions', () => {
+      factory({
+        initRule: {
+          ...securityScanBuildRule(),
+          ...exceptions,
+        },
+      });
+
+      expect(findBranchExceptionSelector().props('selectedExceptions')).toEqual(
+        exceptions.branch_exceptions,
       );
     });
   });
@@ -317,5 +370,20 @@ describe('SecurityScanRuleBuilder', () => {
     findScanTypeSelect().vm.$emit('select', SCAN_FINDING);
 
     expect(wrapper.emitted('set-scan-type')).toEqual([[getDefaultRule(SCAN_FINDING)]]);
+  });
+
+  describe('disabled feature flag', () => {
+    it('should not render branch exceptions when feature flag is disabled', () => {
+      factory(
+        {},
+        {
+          glFeatures: {
+            securityPoliciesBranchExceptions: false,
+          },
+        },
+      );
+
+      expect(findBranchExceptionSelector().exists()).toBe(false);
+    });
   });
 });

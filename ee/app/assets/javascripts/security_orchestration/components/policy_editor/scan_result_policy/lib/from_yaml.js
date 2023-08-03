@@ -19,6 +19,7 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
         'type',
         'branches',
         'branch_type',
+        'branch_exceptions',
         'license_states',
         'license_types',
         'match_on_inclusion',
