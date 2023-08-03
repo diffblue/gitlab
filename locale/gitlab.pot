@@ -8655,9 +8655,6 @@ msgstr ""
 msgid "BulkImport|Destination"
 msgstr ""
 
-msgid "BulkImport|Direct Transfer maximum download file size (MiB)"
-msgstr ""
-
 msgid "BulkImport|Direct transfer maximum download file size (MB)"
 msgstr ""
 
@@ -23925,9 +23922,6 @@ msgid "Import|GitHub import details"
 msgstr ""
 
 msgid "Import|Maximum import remote file size (MB)"
-msgstr ""
-
-msgid "Import|Maximum import remote file size (MiB)"
 msgstr ""
 
 msgid "Import|Maximum remote file size for imports from external object storages. For example, AWS S3."
