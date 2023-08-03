@@ -13025,6 +13025,39 @@ msgstr ""
 msgid "ContributionEvent|Approved merge request %{targetLink} in %{resourceParentLink}."
 msgstr ""
 
+msgid "ContributionEvent|Closed Epic %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Closed incident %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Closed issue %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Closed key result %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Closed merge request %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Closed milestone %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Closed objective %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Closed requirement %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Closed resource."
+msgstr ""
+
+msgid "ContributionEvent|Closed task %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Closed test case %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
 msgid "ContributionEvent|Created project %{resourceParentLink}."
 msgstr ""
 
