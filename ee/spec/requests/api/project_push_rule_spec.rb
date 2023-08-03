@@ -206,11 +206,11 @@ RSpec.describe API::ProjectPushRule, 'ProjectPushRule', api: true, feature_categ
         end
 
         context 'when regex is too long' do
-          let(:rules_params) { { commit_message_regex: 'a' * 256 } }
+          let(:rules_params) { { commit_message_regex: 'a' * 512 } }
 
           it 'returns an error' do
             expect(response).to have_gitlab_http_status(:bad_request)
-            expect(json_response['message']).to match('commit_message_regex' => ['is too long (maximum is 255 characters)'])
+            expect(json_response['message']).to match('commit_message_regex' => ['is too long (maximum is 511 characters)'])
           end
 
           context 'when feature flag "add_validation_for_push_rules" is disabled' do

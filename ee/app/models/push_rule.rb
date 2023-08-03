@@ -41,7 +41,7 @@ class PushRule < ApplicationRecord
   validates(*REGEX_COLUMNS, untrusted_regexp: true)
   validates(
     *REGEX_COLUMNS,
-    length: { maximum: 255 },
+    length: { maximum: 511 },
     if: ->(record) { ::Feature.enabled?(:add_validation_for_push_rules, record.project) }
   )
 

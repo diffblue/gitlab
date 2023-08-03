@@ -19,7 +19,7 @@ RSpec.describe PushRule, :saas, feature_category: :source_code_management do
     context 'when feature flag "add_validation_for_push_rules" is enabled' do
       described_class::REGEX_COLUMNS.each do |column|
         context "#{column}: length validation" do
-          it { is_expected.to validate_length_of(column).is_at_most(255) }
+          it { is_expected.to validate_length_of(column).is_at_most(511) }
         end
       end
     end
@@ -31,7 +31,7 @@ RSpec.describe PushRule, :saas, feature_category: :source_code_management do
 
       described_class::REGEX_COLUMNS.each do |column|
         context "#{column}: length validation" do
-          it { is_expected.not_to validate_length_of(column).is_at_most(255) }
+          it { is_expected.not_to validate_length_of(column).is_at_most(511) }
         end
       end
     end
