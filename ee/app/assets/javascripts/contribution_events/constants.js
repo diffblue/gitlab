@@ -1,5 +1,9 @@
 import { s__ } from '~/locale';
-import { EVENT_CREATED_I18N as CE_EVENT_CREATED_I18N } from '~/contribution_events/constants';
+import {
+  EVENT_CREATED_I18N as CE_EVENT_CREATED_I18N,
+  EVENT_CLOSED_I18N as CE_EVENT_CLOSED_I18N,
+  EVENT_CLOSED_ICONS as CE_EVENT_CLOSED_ICONS,
+} from '~/contribution_events/constants';
 
 // eslint-disable-next-line import/export
 export * from '~/contribution_events/constants';
@@ -28,4 +32,28 @@ export const EVENT_CREATED_I18N = {
   [WORK_ITEM_ISSUE_TYPE_KEY_RESULT]: s__(
     'ContributionEvent|Opened key result %{targetLink} in %{resourceParentLink}.',
   ),
+};
+
+// eslint-disable-next-line import/export
+export const EVENT_CLOSED_I18N = {
+  ...CE_EVENT_CLOSED_I18N,
+  [TARGET_TYPE_EPIC]: s__('ContributionEvent|Closed Epic %{targetLink} in %{resourceParentLink}.'),
+  [WORK_ITEM_ISSUE_TYPE_TEST_CASE]: s__(
+    'ContributionEvent|Closed test case %{targetLink} in %{resourceParentLink}.',
+  ),
+  [WORK_ITEM_ISSUE_TYPE_REQUIREMENT]: s__(
+    'ContributionEvent|Closed requirement %{targetLink} in %{resourceParentLink}.',
+  ),
+  [WORK_ITEM_ISSUE_TYPE_OBJECTIVE]: s__(
+    'ContributionEvent|Closed objective %{targetLink} in %{resourceParentLink}.',
+  ),
+  [WORK_ITEM_ISSUE_TYPE_KEY_RESULT]: s__(
+    'ContributionEvent|Closed key result %{targetLink} in %{resourceParentLink}.',
+  ),
+};
+
+// eslint-disable-next-line import/export
+export const EVENT_CLOSED_ICONS = {
+  ...CE_EVENT_CLOSED_ICONS,
+  [TARGET_TYPE_EPIC]: 'epic-closed',
 };

@@ -17,7 +17,22 @@ RSpec.shared_context '[EE] with user contribution events' do # rubocop:disable R
 
   # closed
   let_it_be(:closed_epic_event) { create(:event, :closed, author: user, project: nil, group: group, target: epic) }
-  let_it_be(:closed_test_case_event) { create(:event, :closed, author: user, project: project, target: test_case) }
+
+  let_it_be(:closed_test_case_event) do
+    create(:event, :closed, :for_work_item, author: user, project: project, target: test_case)
+  end
+
+  let_it_be(:closed_requirement_event) do
+    create(:event, :closed, :for_work_item, author: user, project: project, target: requirement)
+  end
+
+  let_it_be(:closed_objective_event) do
+    create(:event, :closed, :for_work_item, author: user, project: project, target: objective)
+  end
+
+  let_it_be(:closed_key_result_event) do
+    create(:event, :closed, :for_work_item, author: user, project: project, target: key_result)
+  end
 
   # created
   let_it_be(:created_epic_event) { create(:event, :created, author: user, project: nil, group: group, target: epic) }
