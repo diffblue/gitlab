@@ -282,7 +282,8 @@ export default {
             <gl-form-textarea
               v-model="prompt"
               data-testid="chat-prompt-input"
-              class="gl-absolute gl-h-full! gl-py-4! gl-bg-transparent! gl-rounded-top-right-none gl-rounded-bottom-right-none gl-shadow-none! gl-text-truncate"
+              class="gl-absolute gl-h-full! gl-py-4! gl-bg-transparent! gl-rounded-top-right-none gl-rounded-bottom-right-none gl-shadow-none!"
+              :class="{ 'gl-text-truncate': !prompt }"
               :placeholder="$options.i18n.GENIE_CHAT_PROMPT_PLACEHOLDER"
               :disabled="isLoading"
               autofocus
