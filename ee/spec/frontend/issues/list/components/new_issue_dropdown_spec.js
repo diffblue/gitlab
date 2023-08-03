@@ -1,67 +1,51 @@
-import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { GlButton, GlDisclosureDropdown, GlDisclosureDropdownItem } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import NewIssueDropdown from 'ee/issues/list/components/new_issue_dropdown.vue';
+
+const NEW_ISSUE_PATH = 'mushroom-kingdom/~/issues/new';
 
 describe('NewIssueDropdown component', () => {
   let wrapper;
 
-  const mountComponent = () => {
+  const createComponent = () => {
     return mount(NewIssueDropdown, {
       provide: {
         fullPath: 'mushroom-kingdom',
-        newIssuePath: 'mushroom-kingdom/~/issues/new',
+        newIssuePath: NEW_ISSUE_PATH,
       },
-      data() {
-        return { selectedOption: 'issue' };
+      stubs: {
+        GlDisclosureDropdown,
       },
     });
   };
 
-  const findDropdown = () => wrapper.findComponent(GlDropdown);
-
-  const showDropdown = () => {
-    findDropdown().vm.$emit('shown');
-  };
+  const findButton = () => wrapper.findComponent(GlButton);
+  const findDropdown = () => wrapper.findComponent(GlDisclosureDropdown);
+  const findDropdownItem = (index) =>
+    findDropdown().findAllComponents(GlDisclosureDropdownItem).at(index);
 
   beforeEach(() => {
-    wrapper = mountComponent();
+    wrapper = createComponent();
   });
 
   it('renders a split dropdown with newIssue label', () => {
-    expect(findDropdown().props('split')).toBe(true);
-    expect(findDropdown().props('text')).toBe(NewIssueDropdown.i18n.newIssueLabel);
+    expect(findButton().text()).toBe(NewIssueDropdown.i18n.newIssueLabel);
+    expect(findButton().props('href')).toBe(NewIssueDropdown.i18n.newIssuePath);
   });
 
-  it('renders types in dropdown options', () => {
-    showDropdown();
-    const listItems = wrapper.findAll('li');
-
-    expect(listItems.at(0).text()).toBe(NewIssueDropdown.i18n.newIssueLabel);
-    expect(listItems.at(1).text()).toBe(NewIssueDropdown.i18n.newObjectiveLabel);
+  it('renders dropdown with New Issue item', () => {
+    expect(findDropdownItem(0).props('item').text).toBe(NewIssueDropdown.i18n.newIssueLabel);
+    expect(findDropdownItem(0).props('item').href).toBe(NEW_ISSUE_PATH);
   });
 
-  describe('when New Issue is selected', () => {
-    beforeEach(() => {
-      showDropdown();
-
-      const listItems = wrapper.findAll('li');
-      listItems.at(0).vm.$emit('click');
-    });
-
-    it('displays newIssueLabel name on the dropdown button', () => {
-      expect(findDropdown().props('text')).toBe(NewIssueDropdown.i18n.newIssueLabel);
-    });
+  it('renders dropdown with New Objective item', () => {
+    expect(findDropdownItem(1).props('item').text).toBe(NewIssueDropdown.i18n.newObjectiveLabel);
   });
 
-  describe('when New Objective is selected', () => {
-    beforeEach(() => {
-      showDropdown(wrapper.findComponent(GlDropdownItem));
-      const listItems = wrapper.findAll('li');
-      listItems.at(1).vm.$emit('click');
-    });
-
-    it('displays newIssueLabel name on the dropdown button', () => {
-      expect(findDropdown().props('text')).toBe(NewIssueDropdown.i18n.newObjectiveLabel);
+  describe('when New Objective is clicked', () => {
+    it('emits `new-objective-clicked` event', async () => {
+      await findDropdownItem(1).find('button').trigger('click');
+      expect(wrapper.emitted()).toHaveProperty('new-objective-clicked');
     });
   });
 });

@@ -25779,6 +25779,9 @@ msgstr ""
 msgid "Issue title"
 msgstr ""
 
+msgid "Issue type"
+msgstr ""
+
 msgid "Issue types"
 msgstr ""
 
