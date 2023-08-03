@@ -1,6 +1,6 @@
 import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
-import { GlAvatar, GlFormInput } from '@gitlab/ui';
+import { GlAvatar, GlFormInput, GlFormGroup } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { TEST_HOST } from 'helpers/test_constants';
@@ -12,6 +12,9 @@ import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status
 import { __, s__ } from '~/locale';
 
 const PROJECT_ID = '0';
+
+const API_LINK = `${TEST_HOST}/docs/api.md`;
+const DOCS_LINK = `${TEST_HOST}/docs/protected_environments.md`;
 
 describe('ee/protected_environments/add_approvers.vue', () => {
   let wrapper;
@@ -36,6 +39,8 @@ describe('ee/protected_environments/add_approvers.vue', () => {
             before_divider: true,
           },
         ],
+        apiLink: API_LINK,
+        docsLink: DOCS_LINK,
       },
     });
   };
@@ -69,6 +74,26 @@ describe('ee/protected_environments/add_approvers.vue', () => {
       accessLevel: ACCESS_LEVELS.DEPLOY,
       label: __('Select users'),
     });
+  });
+
+  it('alerts users to the removal of unified approval rules', () => {
+    createComponent();
+    const formGroup = wrapper.findComponent(GlFormGroup);
+    expect(formGroup.text()).toContain(
+      'To configure unified approval rules, use the API. Consider using multiple approval rules instead.',
+    );
+  });
+
+  it('links to the API documentation', () => {
+    createComponent();
+    expect(wrapper.findByRole('link', { name: 'API' }).attributes('href')).toBe(API_LINK);
+  });
+
+  it('links to the feature documentation', () => {
+    createComponent();
+    expect(wrapper.findByRole('link', { name: 'multiple approval rules' }).attributes('href')).toBe(
+      DOCS_LINK,
+    );
   });
 
   it('emits an error if unable to fetch details for an approver', async () => {

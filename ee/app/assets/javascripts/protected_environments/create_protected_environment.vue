@@ -7,8 +7,6 @@ import {
   GlFormGroup,
   GlCollapse,
   GlCollapsibleListbox,
-  GlLink,
-  GlSprintf,
 } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import Api from 'ee/api';
@@ -29,8 +27,6 @@ export default {
     GlForm,
     GlFormGroup,
     GlCollapsibleListbox,
-    GlLink,
-    GlSprintf,
     AccessDropdown,
     AddApprovers,
   },
@@ -52,7 +48,6 @@ export default {
       environments: [],
       environmentsLoading: false,
       errorMessage: '',
-      alertDismissed: false,
       loading: false,
     };
   },
@@ -124,12 +119,6 @@ export default {
     },
   },
   i18n: {
-    unifiedRulesAlertHeader: s__(
-      'ProtectedEnvironments|Unified approval rules have been removed from the settings UI',
-    ),
-    unifiedRulesAlertText: s__(
-      'ProtectedEnvironments|You can still use the %{apiLinkStart}API%{apiLinkEnd} to configure unified approval rules. Consider using %{docsLinkStart}multiple approval rules%{docsLinkEnd} instead, because they provide greater flexibility.',
-    ),
     header: s__('ProtectedEnvironment|Protect an environment'),
     environmentLabel: s__('ProtectedEnvironment|Select environment'),
     environmentText: s__('ProtectedEnvironment|Select an environment'),
@@ -151,23 +140,6 @@ export default {
       <template #default>
         <gl-alert v-if="errorMessage" variant="danger" class="gl-mb-5" @dismiss="errorMessage = ''">
           {{ errorMessage }}
-        </gl-alert>
-        <gl-alert
-          v-if="!alertDismissed"
-          :title="$options.i18n.unifiedRulesAlertHeader"
-          class="gl-mb-5"
-          @dismiss="alertDismissed = false"
-        >
-          <p>
-            <gl-sprintf :message="$options.i18n.unifiedRulesAlertText">
-              <template #apiLink="{ content }">
-                <gl-link :href="apiLink">{{ content }}</gl-link>
-              </template>
-              <template #docsLink="{ content }">
-                <gl-link :href="docsLink">{{ content }}</gl-link>
-              </template>
-            </gl-sprintf>
-          </p>
         </gl-alert>
         <gl-form-group
           label-for="environment"

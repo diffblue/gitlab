@@ -12,7 +12,7 @@ import { ACCESS_LEVELS } from 'ee/protected_environments/constants';
 import AddApprovers from 'ee/protected_environments/add_approvers.vue';
 import CreateProtectedEnvironment from 'ee/protected_environments/create_protected_environment.vue';
 import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status';
-import { __, s__ } from '~/locale';
+import { __ } from '~/locale';
 
 const SEARCH_URL = '/search';
 const PROJECT_ID = '0';
@@ -20,7 +20,7 @@ const API_LINK = `${TEST_HOST}/docs/api.md`;
 const DOCS_LINK = `${TEST_HOST}/docs/protected_environments.md`;
 
 describe('ee/protected_environments/create_protected_environment.vue', () => {
-  const unmockLocation = useMockLocationHelper();
+  useMockLocationHelper();
 
   let wrapper;
   let mockAxios;
@@ -92,40 +92,6 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
     );
     await findForm().trigger('submit');
   };
-
-  describe('alert', () => {
-    let alert;
-
-    unmockLocation();
-
-    beforeEach(() => {
-      createComponent();
-
-      alert = findAlert();
-    });
-
-    it('alerts users to the removal of unified approval rules', () => {
-      expect(alert.exists()).toBe(true);
-      expect(alert.props('title')).toMatchInterpolatedText(
-        s__('ProtectedEnvironments|Unified approval rules have been removed from the settings UI'),
-      );
-      expect(alert.find('p').text()).toMatchInterpolatedText(
-        s__(
-          'ProtectedEnvironments|You can still use the %{apiLinkStart}API%{apiLinkEnd} to configure unified approval rules. Consider using %{docsLinkStart}multiple approval rules%{docsLinkEnd} instead, because they provide greater flexibility.',
-        ),
-      );
-    });
-
-    it('links to the API documentation', () => {
-      expect(wrapper.findByRole('link', { name: 'API' }).attributes('href')).toBe(API_LINK);
-    });
-
-    it('links to the feature documentation', () => {
-      expect(
-        wrapper.findByRole('link', { name: 'multiple approval rules' }).attributes('href'),
-      ).toBe(DOCS_LINK);
-    });
-  });
 
   it('renders AccessDropdown and passes down the props', () => {
     createComponent();

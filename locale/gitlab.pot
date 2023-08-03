@@ -37856,16 +37856,13 @@ msgstr ""
 msgid "ProtectedEnvironments|Set which groups, access levels or users that are allowed to deploy to this environment"
 msgstr ""
 
-msgid "ProtectedEnvironments|Unified approval rules have been removed from the settings UI"
+msgid "ProtectedEnvironments|To configure unified approval rules, use the %{apiLinkStart}API%{apiLinkEnd}. Consider using %{docsLinkStart}multiple approval rules%{docsLinkEnd} instead."
 msgstr ""
 
 msgid "ProtectedEnvironments|Unprotect"
 msgstr ""
 
 msgid "ProtectedEnvironments|Users"
-msgstr ""
-
-msgid "ProtectedEnvironments|You can still use the %{apiLinkStart}API%{apiLinkEnd} to configure unified approval rules. Consider using %{docsLinkStart}multiple approval rules%{docsLinkEnd} instead, because they provide greater flexibility."
 msgstr ""
 
 msgid "ProtectedEnvironment|%{environment_name} will be writable for developers. Are you sure?"
