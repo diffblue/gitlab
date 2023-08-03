@@ -13,8 +13,6 @@ export default {
       ),
     MrStatusChecksWidget: () =>
       import('ee/vue_merge_request_widget/extensions/status_checks/index.vue'),
-    MrCodeQualityWidget: () =>
-      import('~/vue_merge_request_widget/extensions/code_quality/index.vue'),
   },
 
   extends: CEWidgetApp,
@@ -28,10 +26,6 @@ export default {
 
     securityReportsWidget() {
       return this.mr.canReadVulnerabilities ? 'MrSecurityWidgetEE' : 'MrSecurityWidgetCE';
-    },
-
-    codeQualityWidget() {
-      return this.mr.codequalityReportsPath ? 'MrCodeQualityWidget' : undefined;
     },
 
     widgets() {
