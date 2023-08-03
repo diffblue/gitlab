@@ -309,39 +309,118 @@ RSpec.describe ::Gitlab::LicenseScanning::SbomScanner, feature_category: :softwa
           package_manager: "",
           version: "1.10.2",
           id: 6
+        },
+        {
+          name: "pytz",
+          package_manager: "Python (python-pkg)",
+          version: "2023.3",
+          id: 7
+        },
+        {
+          name: "github.com/google/uuid",
+          package_manager: "analyzer (gobinary)",
+          version: "v1.3.0",
+          id: 8
+        },
+        {
+          name: "adduser",
+          package_manager: "debian:12.1 (apt)",
+          version: "3.134",
+          id: 9
         }
       ]
     end
 
-    before_all do
-      create(:pm_package, name: "activesupport", purl_type: "gem",
-        other_licenses: [{ license_names: ["OLDAP-2.3"], versions: ["5.1.4"] }])
-      create(:pm_package, name: "acorn", purl_type: "npm",
-        other_licenses: [{ license_names: ["OLDAP-2.1", "OLDAP-2.2"], versions: ["5.7.3"] }])
-      create(:pm_package, name: "django", purl_type: "pypi",
-        other_licenses: [{ license_names: ["MIT"], versions: ["1.11.4"] }])
-    end
-
-    subject(:dependencies_with_license) do
+    subject(:dependencies_with_licenses) do
       described_class.new(project, create(:ee_ci_pipeline, project: project)).add_licenses(dependencies)
     end
 
-    it 'adds licenses to the dependencies' do
-      expect(dependencies_with_license).to eq([
-        { name: "activesupport", package_manager: "bundler", version: "5.1.4", id: 1,
-          licenses: [{ name: "Open LDAP Public License v2.3", url: "https://spdx.org/licenses/OLDAP-2.3.html" }] },
-        { name: "non-matching-package", package_manager: "bundler", version: "1.2.3", id: 2,
-          licenses: [{ name: "unknown", url: "https://spdx.org/licenses/unknown.html" }] },
-        { name: "acorn", package_manager: "yarn", version: "5.7.3", id: 3,
-          licenses: [{ name: "Open LDAP Public License v2.1", url: "https://spdx.org/licenses/OLDAP-2.1.html" },
-            { name: "Open LDAP Public License v2.2", url: "https://spdx.org/licenses/OLDAP-2.2.html" }] },
-        { name: "Django", package_manager: "pip", version: "1.11.4", id: 4,
-          licenses: [{ name: "MIT", url: "https://spdx.org/licenses/MIT.html" }] },
-        { name: "activesupport", package_manager: "bundler", version: "5.1.4", id: 5,
-          licenses: [{ name: "Open LDAP Public License v2.3", url: "https://spdx.org/licenses/OLDAP-2.3.html" }] },
-        { name: "jquery-ui", package_manager: "", version: "1.10.2", id: 6,
-          licenses: [{ name: "unknown", url: "https://spdx.org/licenses/unknown.html" }] }
-      ])
+    context 'when querying compressed package metadata' do
+      before_all do
+        create(:pm_package, name: "activesupport", purl_type: "gem",
+          other_licenses: [{ license_names: ["OLDAP-2.3"], versions: ["5.1.4"] }])
+        create(:pm_package, name: "acorn", purl_type: "npm",
+          other_licenses: [{ license_names: ["OLDAP-2.1", "OLDAP-2.2"], versions: ["5.7.3"] }])
+        create(:pm_package, name: "django", purl_type: "pypi",
+          other_licenses: [{ license_names: ["MIT"], versions: ["1.11.4"] }])
+        create(:pm_package, name: "pytz", purl_type: "pypi",
+          other_licenses: [{ license_names: ["BSD"], versions: ["2023.3"] }])
+        create(:pm_package, name: "github.com/google/uuid", purl_type: "golang",
+          other_licenses: [{ license_names: ["OLDAP-2.4"], versions: ["v1.3.0"] }])
+      end
+
+      it 'adds licenses to the dependencies' do
+        expect(dependencies_with_licenses).to match([
+          { name: "activesupport", package_manager: "bundler", version: "5.1.4", id: 1,
+            licenses: [{ name: "Open LDAP Public License v2.3", url: "https://spdx.org/licenses/OLDAP-2.3.html" }] },
+          { name: "non-matching-package", package_manager: "bundler", version: "1.2.3", id: 2,
+            licenses: [{ name: "unknown", url: "https://spdx.org/licenses/unknown.html" }] },
+          { name: "acorn", package_manager: "yarn", version: "5.7.3", id: 3,
+            licenses: match_array([
+              { name: "Open LDAP Public License v2.1", url: "https://spdx.org/licenses/OLDAP-2.1.html" },
+              { name: "Open LDAP Public License v2.2", url: "https://spdx.org/licenses/OLDAP-2.2.html" }
+            ]) },
+          { name: "Django", package_manager: "pip", version: "1.11.4", id: 4,
+            licenses: [{ name: "MIT", url: "https://spdx.org/licenses/MIT.html" }] },
+          { name: "activesupport", package_manager: "bundler", version: "5.1.4", id: 5,
+            licenses: [{ name: "Open LDAP Public License v2.3", url: "https://spdx.org/licenses/OLDAP-2.3.html" }] },
+          { name: "jquery-ui", package_manager: "", version: "1.10.2", id: 6,
+            licenses: [{ name: "unknown", url: "https://spdx.org/licenses/unknown.html" }] },
+          { name: "pytz", package_manager: "Python (python-pkg)", version: "2023.3", id: 7,
+            licenses: [{ name: "BSD-4-Clause", url: "https://spdx.org/licenses/BSD.html" }] },
+          { name: "github.com/google/uuid", package_manager: "analyzer (gobinary)", version: "v1.3.0", id: 8,
+            licenses: [{ name: "Open LDAP Public License v2.4", url: "https://spdx.org/licenses/OLDAP-2.4.html" }] },
+          { name: "adduser", package_manager: "debian:12.1 (apt)", version: "3.134", id: 9,
+            licenses: [{ name: "unknown", url: "https://spdx.org/licenses/unknown.html" }] }
+        ])
+      end
+    end
+
+    context 'when querying uncompressed package metadata' do
+      before do
+        stub_feature_flags(compressed_package_metadata_query: false)
+      end
+
+      before_all do
+        create(:pm_package_version_license, :with_all_relations, name: "activesupport",
+          purl_type: "gem", version: "5.1.4", license_name: "OLDAP-2.3")
+        create(:pm_package_version_license, :with_all_relations, name: "acorn",
+          purl_type: "npm", version: "5.7.3", license_name: "OLDAP-2.1")
+        create(:pm_package_version_license, :with_all_relations, name: "acorn",
+          purl_type: "npm", version: "5.7.3", license_name: "OLDAP-2.2")
+        create(:pm_package_version_license, :with_all_relations, name: "django",
+          purl_type: "pypi", version: "1.11.4", license_name: "MIT")
+        create(:pm_package_version_license, :with_all_relations, name: "pytz",
+          purl_type: "pypi", version: "2023.3", license_name: "BSD")
+        create(:pm_package_version_license, :with_all_relations, name: "github.com/google/uuid",
+          purl_type: "golang", version: "v1.3.0", license_name: "OLDAP-2.4")
+      end
+
+      it 'adds licenses to the dependencies' do
+        expect(dependencies_with_licenses).to match([
+          { name: "activesupport", package_manager: "bundler", version: "5.1.4", id: 1,
+            licenses: [{ name: "Open LDAP Public License v2.3", url: "https://spdx.org/licenses/OLDAP-2.3.html" }] },
+          { name: "non-matching-package", package_manager: "bundler", version: "1.2.3", id: 2,
+            licenses: [{ name: "unknown", url: "https://spdx.org/licenses/unknown.html" }] },
+          { name: "acorn", package_manager: "yarn", version: "5.7.3", id: 3,
+            licenses: match_array([
+              { name: "Open LDAP Public License v2.1", url: "https://spdx.org/licenses/OLDAP-2.1.html" },
+              { name: "Open LDAP Public License v2.2", url: "https://spdx.org/licenses/OLDAP-2.2.html" }
+            ]) },
+          { name: "Django", package_manager: "pip", version: "1.11.4", id: 4,
+            licenses: [{ name: "MIT", url: "https://spdx.org/licenses/MIT.html" }] },
+          { name: "activesupport", package_manager: "bundler", version: "5.1.4", id: 5,
+            licenses: [{ name: "Open LDAP Public License v2.3", url: "https://spdx.org/licenses/OLDAP-2.3.html" }] },
+          { name: "jquery-ui", package_manager: "", version: "1.10.2", id: 6,
+            licenses: [{ name: "unknown", url: "https://spdx.org/licenses/unknown.html" }] },
+          { name: "pytz", package_manager: "Python (python-pkg)", version: "2023.3", id: 7,
+            licenses: [{ name: "BSD-4-Clause", url: "https://spdx.org/licenses/BSD.html" }] },
+          { name: "github.com/google/uuid", package_manager: "analyzer (gobinary)", version: "v1.3.0", id: 8,
+            licenses: [{ name: "Open LDAP Public License v2.4", url: "https://spdx.org/licenses/OLDAP-2.4.html" }] },
+          { name: "adduser", package_manager: "debian:12.1 (apt)", version: "3.134", id: 9,
+            licenses: [{ name: "unknown", url: "https://spdx.org/licenses/unknown.html" }] }
+        ])
+      end
     end
   end
 end
