@@ -51,8 +51,6 @@ module EE
         elsif merge_request.target_project.project_setting.selective_code_owner_removals
           delete_code_owner_approvals(merge_request)
         end
-
-        create_new_approval_todos_for_all_approvers(merge_request)
       end
 
       def approved_code_owner_rules(merge_request)
@@ -92,13 +90,6 @@ module EE
 
       def all_approvers(merge_request)
         merge_request.overall_approvers(exclude_code_owners: true)
-      end
-
-      def create_new_approval_todos_for_all_approvers(merge_request)
-        return if merge_request.closed?
-        return if ::Feature.enabled?(:no_todo_for_approvers, merge_request.target_project)
-
-        todo_service.add_merge_request_approvers(merge_request, all_approvers(merge_request))
       end
 
       override :capture_suggested_reviewers_accepted

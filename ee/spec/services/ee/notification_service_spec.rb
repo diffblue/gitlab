@@ -12,7 +12,7 @@ RSpec.describe EE::NotificationService, :mailer, feature_category: :team_plannin
 
   describe '.permitted_actions' do
     it 'includes public methods' do
-      expect(NotificationService.permitted_actions).to include(:add_merge_request_approvers)
+      expect(NotificationService.permitted_actions).to include(:mirror_was_hard_failed)
     end
 
     it 'excludes protected and private methods' do

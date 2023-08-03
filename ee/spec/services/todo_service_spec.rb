@@ -274,11 +274,8 @@ RSpec.describe TodoService, feature_category: :team_planning do
     let(:approver_3) { create(:user) }
     let(:code_owner) { create(:user, username: 'codeowner') }
     let(:description) { 'FYI: ' + [john_doe, approver_1].map(&:to_reference).join(' ') }
-    let(:no_todo_for_approvers_ff_enabled) { false }
 
     before do
-      stub_feature_flags(no_todo_for_approvers: no_todo_for_approvers_ff_enabled)
-
       project.add_guest(guest)
       project.add_developer(author)
       project.add_developer(member)
@@ -321,35 +318,16 @@ RSpec.describe TodoService, feature_category: :team_planning do
 
     describe '#new_merge_request' do
       context 'when the merge request has approvers' do
-        context 'when no_todo_for_approvers feature flag is disabled' do
-          let(:no_todo_for_approvers_ff_enabled) { false }
-
-          it 'creates a approval required todo for added approvers', :aggregate_failures do
-            # for each approver
-            should_create_todo(user: approver_1, target: merge_request, action: Todo::APPROVAL_REQUIRED)
-            should_create_todo(user: approver_2, target: merge_request, action: Todo::APPROVAL_REQUIRED)
-            should_not_create_todo(user: approver_3, target: merge_request, action: Todo::APPROVAL_REQUIRED)
-          end
-
-          it_behaves_like 'when user is mentioned'
-          it_behaves_like 'when code owner is not mentioned'
-          it_behaves_like 'when code owner is mentioned'
+        it 'skips creating a approval required todo', :aggregate_failures do
+          # for each approver
+          should_not_create_todo(user: approver_1, target: merge_request, action: Todo::APPROVAL_REQUIRED)
+          should_not_create_todo(user: approver_2, target: merge_request, action: Todo::APPROVAL_REQUIRED)
+          should_not_create_todo(user: approver_3, target: merge_request, action: Todo::APPROVAL_REQUIRED)
         end
 
-        context 'when no_todo_for_approvers feature flag is enabled' do
-          let(:no_todo_for_approvers_ff_enabled) { true }
-
-          it 'skips creating a approval required todo', :aggregate_failures do
-            # for each approver
-            should_not_create_todo(user: approver_1, target: merge_request, action: Todo::APPROVAL_REQUIRED)
-            should_not_create_todo(user: approver_2, target: merge_request, action: Todo::APPROVAL_REQUIRED)
-            should_not_create_todo(user: approver_3, target: merge_request, action: Todo::APPROVAL_REQUIRED)
-          end
-
-          it_behaves_like 'when user is mentioned'
-          it_behaves_like 'when code owner is not mentioned'
-          it_behaves_like 'when code owner is mentioned'
-        end
+        it_behaves_like 'when user is mentioned'
+        it_behaves_like 'when code owner is not mentioned'
+        it_behaves_like 'when code owner is mentioned'
       end
     end
   end

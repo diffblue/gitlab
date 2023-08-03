@@ -9,10 +9,6 @@ module EE
 
       override :general_fallback
       def general_fallback(merge_request)
-        unless update_task_event?
-          old_approvers = merge_request.overall_approvers(exclude_code_owners: true)
-        end
-
         reset_approval_rules(merge_request) if params.delete(:reset_approval_rules_to_defaults)
 
         merge_request = super(merge_request)
@@ -20,13 +16,6 @@ module EE
         merge_request.reset_approval_cache!
 
         return merge_request if update_task_event?
-
-        new_approvers = all_approvers(merge_request) - old_approvers
-
-        if ::Feature.disabled?(:no_todo_for_approvers, merge_request.target_project) && new_approvers.any?
-          todo_service.add_merge_request_approvers(merge_request, new_approvers)
-          notification_service.add_merge_request_approvers(merge_request, new_approvers, current_user)
-        end
 
         ::MergeRequests::UpdateBlocksService
           .new(merge_request, current_user, blocking_merge_requests_params)
