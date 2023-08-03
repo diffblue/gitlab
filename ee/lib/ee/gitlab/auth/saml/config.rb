@@ -18,6 +18,10 @@ module EE
           def group_sync_enabled?
             self.class.enabled? && groups.present? && ::License.feature_available?(:saml_group_sync)
           end
+
+          def microsoft_group_sync_enabled?
+            self.class.enabled? && ::License.feature_available?(:microsoft_group_sync)
+          end
         end
       end
     end

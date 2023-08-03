@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module SystemAccess
-  class BaseGroupSyncWorker # rubocop:disable Scalability/IdempotentWorker
+  class BaseSaasGroupSyncWorker # rubocop:disable Scalability/IdempotentWorker
     include ::Gitlab::Utils::StrongMemoize
 
     private

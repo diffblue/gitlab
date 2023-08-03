@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class GroupSamlGroupSyncWorker < SystemAccess::BaseGroupSyncWorker
+class GroupSamlGroupSyncWorker < SystemAccess::BaseSaasGroupSyncWorker
   include ApplicationWorker
   include Gitlab::Utils::StrongMemoize
 
