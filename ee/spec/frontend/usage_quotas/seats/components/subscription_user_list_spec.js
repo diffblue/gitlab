@@ -10,17 +10,26 @@ import {
 import { mount, shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
+import VueApollo from 'vue-apollo';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import SubscriptionUserList from 'ee/usage_quotas/seats/components/subscription_user_list.vue';
 import {
   CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT,
   SORT_OPTIONS,
 } from 'ee/usage_quotas/seats/constants';
-
-import { mockDataSeats, mockTableItems } from 'ee_jest/usage_quotas/seats/mock_data';
+import waitForPromises from 'helpers/wait_for_promises';
+import {
+  mockTableItems,
+  assignedAddonData,
+  noPurchasedAddonData,
+  mockTableItemsWithCodeSuggestionsAddOn,
+} from 'ee_jest/usage_quotas/seats/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import SearchAndSortBar from 'ee/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
+import addOnPurchaseQuery from 'ee/usage_quotas/graphql/queries/get_add_on_purchase_query.graphql';
 
 Vue.use(Vuex);
+Vue.use(VueApollo);
 
 const actionSpies = {
   setBillableMemberToRemove: jest.fn(),
@@ -40,7 +49,6 @@ const fakeStore = ({ initialState, initialGetters }) =>
     state: {
       hasError: false,
       namespaceId: '1',
-      members: [...mockDataSeats.data],
       total: 300,
       page: 1,
       perPage: 5,
@@ -53,16 +61,37 @@ const fakeStore = ({ initialState, initialGetters }) =>
 describe('Subscription User List', () => {
   let wrapper;
 
+  const fullPath = 'namespace/full-path';
+
+  const assignedAddonDataHandler = jest.fn().mockResolvedValue(assignedAddonData);
+  const noPurchasedAddonDataHandler = jest.fn().mockResolvedValue(noPurchasedAddonData);
+  const addonPurchaseErrorDataHandler = jest.fn().mockRejectedValue(new Error('Error'));
+
+  const createMockApolloProvider = (handler = noPurchasedAddonDataHandler) =>
+    createMockApollo([[addOnPurchaseQuery, handler]]);
+
   const createComponent = ({
     initialState = {},
     mountFn = shallowMount,
     initialGetters = {},
+    provide = {},
+    handler,
   } = {}) => {
-    return extendedWrapper(
+    wrapper = extendedWrapper(
       mountFn(SubscriptionUserList, {
+        apolloProvider: createMockApolloProvider(handler),
         store: fakeStore({ initialState, initialGetters }),
+        provide: {
+          fullPath,
+          glFeatures: {
+            enableHamiltonInUsageQuotasUi: false,
+          },
+          ...provide,
+        },
       }),
     );
+
+    return waitForPromises();
   };
 
   const findTable = () => wrapper.findComponent(GlTable);
@@ -71,6 +100,9 @@ describe('Subscription User List', () => {
   const findPagination = () => wrapper.findComponent(GlPagination);
   const findAllRemoveUserItems = () => wrapper.findAllByTestId('remove-user');
   const findErrorModal = () => wrapper.findComponent(GlModal);
+  const findAllCodeSuggestionsAddonComponents = () =>
+    wrapper.findAllByTestId('code-suggestions-addon-field');
+  const findAddonPurchaseError = () => wrapper.findByTestId('addon-purchase-fetch-error');
 
   const serializeUser = (rowWrapper) => {
     const avatarLink = rowWrapper.findComponent(GlAvatarLink);
@@ -107,8 +139,8 @@ describe('Subscription User List', () => {
   };
 
   describe('renders', () => {
-    beforeEach(() => {
-      wrapper = createComponent({
+    beforeEach(async () => {
+      await createComponent({
         mountFn: mount,
         initialGetters: {
           tableItems: () => mockTableItems,
@@ -206,8 +238,8 @@ describe('Subscription User List', () => {
 
   describe('Loading state', () => {
     describe('When nothing is loading', () => {
-      beforeEach(() => {
-        wrapper = createComponent();
+      beforeEach(async () => {
+        await createComponent();
       });
 
       it('displays the table in a non-busy state', () => {
@@ -219,8 +251,8 @@ describe('Subscription User List', () => {
       [true, false],
       [false, true],
     ])('Busy when isLoading=%s and hasError=%s', (isLoading, hasError) => {
-      beforeEach(() => {
-        wrapper = createComponent({
+      beforeEach(async () => {
+        await createComponent({
           initialGetters: { isLoading: () => isLoading },
           initialState: { hasError },
         });
@@ -233,8 +265,8 @@ describe('Subscription User List', () => {
   });
 
   describe('search box', () => {
-    beforeEach(() => {
-      wrapper = createComponent();
+    beforeEach(async () => {
+      await createComponent();
     });
 
     it('input event triggers the setSearchQuery action', () => {
@@ -248,6 +280,146 @@ describe('Subscription User List', () => {
 
     it('contains the correct sort options', () => {
       expect(findSearchAndSortBar().props('sortOptions')).toMatchObject(SORT_OPTIONS);
+    });
+  });
+
+  describe('code suggestions addon', () => {
+    describe('with `enableHamiltonInUsageQuotasUi` enabled', () => {
+      const commonProps = {
+        mountFn: mount,
+        provide: {
+          glFeatures: {
+            enableHamiltonInUsageQuotasUi: true,
+          },
+        },
+      };
+
+      describe('when there is a paid subscription', () => {
+        describe('when there are purchased addons', () => {
+          beforeEach(async () => {
+            await createComponent({
+              ...commonProps,
+              initialState: {
+                hasNoSubscription: false,
+              },
+              initialGetters: {
+                tableItems: () => mockTableItemsWithCodeSuggestionsAddOn,
+              },
+              handler: assignedAddonDataHandler,
+            });
+          });
+
+          it('shows code suggestions addon field', () => {
+            const expectedProps = mockTableItemsWithCodeSuggestionsAddOn.map((item) => ({
+              userId: item.user.id,
+              addOns: item.user.add_ons,
+            }));
+            const actualProps = findAllCodeSuggestionsAddonComponents().wrappers.map((item) => ({
+              userId: item.props('userId'),
+              addOns: item.props('addOns'),
+            }));
+
+            expect(actualProps).toEqual(expectedProps);
+          });
+
+          it('calls addOnPurchaseQuery with appropriate params', () => {
+            expect(assignedAddonDataHandler).toHaveBeenCalledWith({
+              fullPath,
+              addOnName: 'CODE_SUGGESTIONS',
+            });
+          });
+        });
+
+        describe('when there are no purchased addons', () => {
+          beforeEach(async () => {
+            await createComponent({
+              ...commonProps,
+              initialState: {
+                hasNoSubscription: false,
+              },
+              handler: noPurchasedAddonDataHandler,
+            });
+          });
+
+          it('does not show code suggestions addon field', () => {
+            expect(findAllCodeSuggestionsAddonComponents().length).toBe(0);
+          });
+
+          it('calls addOnPurchaseQuery with appropriate params', () => {
+            expect(noPurchasedAddonDataHandler).toHaveBeenCalledWith({
+              fullPath,
+              addOnName: 'CODE_SUGGESTIONS',
+            });
+          });
+        });
+      });
+
+      describe('when there is no paid subscription', () => {
+        beforeEach(async () => {
+          await createComponent({
+            ...commonProps,
+            initialState: {
+              hasNoSubscription: true,
+            },
+            handler: assignedAddonDataHandler,
+          });
+        });
+
+        it('does not show code suggestions addon field', () => {
+          expect(findAllCodeSuggestionsAddonComponents().length).toBe(0);
+        });
+
+        it('does not call addOnPurchaseQuery', () => {
+          expect(assignedAddonDataHandler).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('when there is an error while fetching addon details', () => {
+        beforeEach(async () => {
+          await createComponent({
+            ...commonProps,
+            initialState: {
+              hasNoSubscription: false,
+            },
+            handler: addonPurchaseErrorDataHandler,
+          });
+        });
+
+        it('shows an error alert', () => {
+          expect(findAddonPurchaseError().text()).toBe(
+            'An error occurred while loading details for the Code Suggestions add-on.',
+          );
+        });
+
+        it('does not show code suggestions addon field', () => {
+          expect(findAllCodeSuggestionsAddonComponents().length).toBe(0);
+        });
+      });
+    });
+
+    describe('with `enableHamiltonInUsageQuotasUi` disabled', () => {
+      beforeEach(async () => {
+        await createComponent({
+          mountFn: mount,
+          provide: {
+            glFeatures: {
+              enableHamiltonInUsageQuotasUi: false,
+            },
+          },
+          initialState: {
+            hasNoSubscription: false,
+          },
+          handler: assignedAddonDataHandler,
+        });
+      });
+
+      it('does not show code suggestions addon field', () => {
+        expect(findAllCodeSuggestionsAddonComponents().length).toBe(0);
+      });
+
+      it('does not call addOnPurchaseQuery', () => {
+        expect(assignedAddonDataHandler).not.toHaveBeenCalled();
+      });
     });
   });
 });

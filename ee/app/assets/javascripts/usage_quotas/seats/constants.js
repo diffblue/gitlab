@@ -9,6 +9,7 @@ export const HEADER_PAGE_NUMBER = 'x-page';
 export const HEADER_ITEMS_PER_PAGE = 'x-per-page';
 export const PLAN_CODE_FREE = 'free';
 export const ADD_ON_CODE_SUGGESTIONS = 'CODE_SUGGESTIONS';
+export const FIELD_KEY_CODE_SUGGESTIONS_ADDON = 'codeSuggestionsAddon';
 export const FIELDS = [
   {
     key: 'disclosure',
@@ -26,6 +27,12 @@ export const FIELDS = [
   {
     key: 'email',
     label: __('Email'),
+    thClass: thWidthPercent(20),
+    tdClass: 'gl-vertical-align-middle!',
+  },
+  {
+    key: FIELD_KEY_CODE_SUGGESTIONS_ADDON,
+    label: __('Code Suggestions add-on'),
     thClass: thWidthPercent(20),
     tdClass: 'gl-vertical-align-middle!',
   },
@@ -71,6 +78,9 @@ export const REMOVE_BILLABLE_MEMBER_MODAL_CONTENT_TEXT_TEMPLATE = s__(
   `Billing|You are about to remove user %{username} from your subscription.
 If you continue, the user will be removed from the %{namespace}
 group and all its subgroups and projects. This action can't be undone.`,
+);
+export const CODE_SUGGESTIONS_ADDON_PURCHASE_FETCH_ERROR = s__(
+  'Billing|An error occurred while loading details for the Code Suggestions add-on.',
 );
 export const AVATAR_SIZE = 32;
 export const SORT_OPTIONS = [
