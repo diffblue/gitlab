@@ -12,7 +12,7 @@ module Integrations
     attribute :pipeline_events, default: true
 
     field :token,
-      type: 'password',
+      type: :password,
       required: true,
       placeholder: "8d3f016698e...",
       non_empty_password_title: -> { s_('ProjectService|Enter new token') },
@@ -26,7 +26,7 @@ module Integrations
       placeholder: 'https://github.com/owner/repository'
 
     field :static_context,
-      type: 'checkbox',
+      type: :checkbox,
       title: -> { s_('GithubIntegration|Static status check names (optional)') },
       checkbox_label: -> { s_('GithubIntegration|Enable static status check names') },
       help: -> { static_context_field_help }
