@@ -7108,10 +7108,16 @@ msgstr ""
 msgid "BackgroundMigrations|Started at"
 msgstr ""
 
+msgid "Badge"
+msgstr ""
+
 msgid "Badges"
 msgstr ""
 
 msgid "Badges|Add badge"
+msgstr ""
+
+msgid "Badges|Add new badge"
 msgstr ""
 
 msgid "Badges|Adding the badge failed, please check the entered URLs and try again."
@@ -7130,6 +7136,9 @@ msgid "Badges|Delete badge?"
 msgstr ""
 
 msgid "Badges|Deleting the badge failed, please try again."
+msgstr ""
+
+msgid "Badges|Edit badge"
 msgstr ""
 
 msgid "Badges|Enter a valid URL"
@@ -7174,10 +7183,10 @@ msgstr ""
 msgid "Badges|The badge was deleted."
 msgstr ""
 
-msgid "Badges|This group has no badges"
+msgid "Badges|This group has no badges, start by creating a new one above."
 msgstr ""
 
-msgid "Badges|This project has no badges"
+msgid "Badges|This project has no badges, start by creating a new one above."
 msgstr ""
 
 msgid "Badges|You are going to delete this badge. Deleted badges %{strongStart}cannot%{strongEnd} be restored."
