@@ -7,3 +7,4 @@
     = @token
   %p{ style: 'font-size:0.75em' }
     = s_('IdentityVerification|Your verification code expires after %{expires_in_minutes} minutes.') % { expires_in_minutes: @expires_in_minutes }
+  = render_if_exists 'devise/shared/delete_unconfirmed_users'
