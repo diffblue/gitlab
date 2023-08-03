@@ -5,16 +5,6 @@ module EE
     include ::Gitlab::Utils::UsageData
     extend ::Gitlab::Utils::Override
 
-    # When we add approvers to a merge request we should send an email to:
-    #
-    #  * the new approvers
-    #
-    def add_merge_request_approvers(merge_request, new_approvers, current_user)
-      return if merge_request.project.emails_disabled?
-
-      add_mr_approvers_email(merge_request, new_approvers, current_user)
-    end
-
     def mirror_was_hard_failed(project)
       return if project.emails_disabled?
 
@@ -120,12 +110,6 @@ module EE
         .execute
         .owners
         .map(&:user)
-    end
-
-    def add_mr_approvers_email(merge_request, approvers, current_user)
-      approvers.each do |approver|
-        mailer.add_merge_request_approver_email(approver.id, merge_request.id, current_user.id).deliver_later
-      end
     end
 
     def removed_iteration_resource_email(target, current_user)

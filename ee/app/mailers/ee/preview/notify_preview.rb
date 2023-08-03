@@ -9,10 +9,6 @@ module EE
       # We need to define the methods on the prepender directly because:
       # https://github.com/rails/rails/blob/3faf7485623da55215d6d7f3dcb2eed92c59c699/actionmailer/lib/action_mailer/preview.rb#L73
       prepended do
-        def add_merge_request_approver_email
-          ::Notify.add_merge_request_approver_email(user.id, merge_request.id, user.id).message
-        end
-
         def approved_merge_request_email
           ::Notify.approved_merge_request_email(user.id, merge_request.id, approver.id).message
         end
