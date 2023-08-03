@@ -61,7 +61,7 @@ module QA
       end
 
       it(
-        'shows the compliance framework for each project',
+        'shows the compliance framework for each project', :reliable,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/396600'
       ) do
         subgroup.sandbox.visit!

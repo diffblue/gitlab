@@ -114,7 +114,7 @@ module QA
         ]
       end
 
-      context 'for change project creation level',
+      context 'for change project creation level', :reliable,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347901' do
         before do
           sign_in
