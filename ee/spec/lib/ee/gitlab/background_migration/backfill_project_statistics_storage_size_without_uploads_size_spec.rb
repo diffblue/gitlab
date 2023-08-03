@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::BackgroundMigration::BackfillProjectStatisticsStorageSizeWithoutUploadsSize, :migration, schema: 20221104115712, feature_category: :consumables_cost_management do # rubocop:disable Layout/LineLength
+  include MigrationHelpers::ProjectStatisticsHelper
+
   let!(:namespace) { table(:namespaces) }
   let!(:project_statistics_table) { table(:project_statistics) }
   let!(:project) { table(:projects) }
@@ -116,9 +118,15 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillProjectStatisticsStorageSize
                           connection: ApplicationRecord.connection)
     end
 
+    let(:default_projects) do
+      [
+        proj1, proj2, proj3, proj4
+      ]
+    end
+
     describe '#filter_batch' do
       it 'filters out project_statistics out of scope' do
-        project_statistics = generate_records
+        project_statistics = generate_records(default_projects, project_statistics_table, default_stats)
         project_statistics_table.create!(
           project_id: proj5.id,
           namespace_id: proj5.namespace_id,
@@ -145,7 +153,7 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillProjectStatisticsStorageSize
 
       context 'when project_statistics backfill runs' do
         before do
-          generate_records
+          generate_records(default_projects, project_statistics_table, default_stats)
         end
 
         context 'when storage_size includes uploads_size' do
@@ -198,7 +206,7 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillProjectStatisticsStorageSize
 
   describe '#perform' do
     it 'coerces a null wiki_size to 0' do
-      project_statistics = create_project_stats({ wiki_size: nil })
+      project_statistics = create_project_stats(project, namespace, default_stats, { wiki_size: nil })
       allow(::Namespaces::ScheduleAggregationWorker).to receive(:perform_async)
       migration = create_migration(end_id: project_statistics.project_id)
 
@@ -209,7 +217,7 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillProjectStatisticsStorageSize
     end
 
     it 'coerces a null snippets_size to 0' do
-      project_statistics = create_project_stats({ snippets_size: nil })
+      project_statistics = create_project_stats(project, namespace, default_stats, { snippets_size: nil })
       allow(::Namespaces::ScheduleAggregationWorker).to receive(:perform_async)
       migration = create_migration(end_id: project_statistics.project_id)
 
@@ -217,40 +225,6 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillProjectStatisticsStorageSize
 
       project_statistics.reload
       expect(project_statistics.storage_size).to eq(6)
-    end
-  end
-
-  private
-
-  def create_project_stats(override_stats = {})
-    stats = default_stats.merge(override_stats)
-
-    group = namespace.create!(name: 'group_a', path: 'group-a', type: 'Group')
-    project_namespace = namespace.create!(name: 'project_a', path: 'project_a', type: 'Project', parent_id: group.id)
-    proj = project.create!(name: 'project_a', path: 'project-a', namespace_id: group.id,
-                           project_namespace_id: project_namespace.id)
-    project_statistics_table.create!(
-      project_id: proj.id,
-      namespace_id: group.id,
-      **stats
-    )
-  end
-
-  def create_migration(end_id:)
-    described_class.new(start_id: 1, end_id: end_id,
-                        batch_table: 'project_statistics', batch_column: 'project_id',
-                        sub_batch_size: 1_000, pause_ms: 0,
-                        connection: ApplicationRecord.connection)
-  end
-
-  def generate_records
-    [proj1, proj2, proj3, proj4].map do |proj|
-      project_statistics_table.create!(
-        default_stats.merge({
-                              project_id: proj.id,
-                              namespace_id: proj.namespace_id
-                            })
-      )
     end
   end
 end
