@@ -1,8 +1,11 @@
 <script>
 import { GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import BranchExceptionSelector from 'ee/security_orchestration/components/branch_exception_selector.vue';
 import PolicyRuleBranchSelection from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_branch_selection.vue';
 import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_rule_multi_select.vue';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import ScanFilterSelector from '../scan_filter_selector.vue';
 import { SCAN_RESULT_BRANCH_TYPE_OPTIONS } from '../constants';
 import ScanTypeSelect from './base_layout/scan_type_select.vue';
@@ -16,6 +19,7 @@ export default {
   FILTERS_ITEMS: [FILTERS[FILTERS_STATUS_INDEX]],
   STATUS,
   components: {
+    BranchExceptionSelector,
     BaseLayoutComponent,
     GlSprintf,
     LicenseFilter,
@@ -25,6 +29,7 @@ export default {
     ScanTypeSelect,
     StatusFilter,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: ['namespaceType'],
   props: {
     initRule: {
@@ -35,7 +40,7 @@ export default {
   i18n: {
     licenseStatuses: s__('ScanResultPolicy|license status'),
     licenseScanResultRuleCopy: s__(
-      'ScanResultPolicy|When %{scanType} in an open merge request targeting %{branches} and the licenses match all of the following criteria:',
+      'ScanResultPolicy|When %{scanType} in an open merge request targeting %{branches} %{branchExceptions} and the licenses match all of the following criteria:',
     ),
     tooltipFilterDisabledTitle: s__(
       'ScanResultPolicy|License scanning allows only one criteria: Status',
@@ -43,6 +48,12 @@ export default {
   },
   licenseStatuses: LICENSE_STATES,
   computed: {
+    isProject() {
+      return this.namespaceType === NAMESPACE_TYPES.PROJECT;
+    },
+    branchExceptions() {
+      return this.initRule.branch_exceptions;
+    },
     branchTypes() {
       return SCAN_RESULT_BRANCH_TYPE_OPTIONS(this.namespaceType);
     },
@@ -92,6 +103,14 @@ export default {
                   :branch-types="branchTypes"
                   @changed="triggerChanged"
                   @set-branch-type="setBranchType"
+                />
+              </template>
+
+              <template #branchExceptions>
+                <branch-exception-selector
+                  v-if="isProject && glFeatures.securityPoliciesBranchExceptions"
+                  :selected-exceptions="branchExceptions"
+                  @select="triggerChanged"
                 />
               </template>
             </gl-sprintf>

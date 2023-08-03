@@ -1,5 +1,6 @@
 import { GlSprintf } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import BranchExceptionSelector from 'ee/security_orchestration/components/branch_exception_selector.vue';
 import LicenseScanRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/license_scan_rule_builder.vue';
 import PolicyRuleBranchSelection from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_branch_selection.vue';
 import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_rule_multi_select.vue';
@@ -27,13 +28,18 @@ describe('LicenseScanRuleBuilder', () => {
     license_states: ['newly_detected', 'detected'],
   };
 
-  const factory = ({ stubs = {} } = {}) => {
+  const factory = ({ stubs = {}, props = {}, provide = {} } = {}) => {
     wrapper = shallowMountExtended(LicenseScanRuleBuilder, {
       propsData: {
         initRule: licenseScanBuildRule(),
+        ...props,
       },
       provide: {
         namespaceType: NAMESPACE_TYPES.GROUP,
+        glFeatures: {
+          securityPoliciesBranchExceptions: true,
+        },
+        ...provide,
       },
       stubs: {
         BaseLayoutComponent,
@@ -51,6 +57,7 @@ describe('LicenseScanRuleBuilder', () => {
   const findStatusFilter = () => wrapper.findComponent(StatusFilter);
   const findLicenseFilter = () => wrapper.findComponent(LicenseFilter);
   const findScanTypeSelect = () => wrapper.findComponent(ScanTypeSelect);
+  const findBranchExceptionSelector = () => wrapper.findComponent(BranchExceptionSelector);
 
   describe('initial rendering', () => {
     beforeEach(() => {
@@ -77,6 +84,61 @@ describe('LicenseScanRuleBuilder', () => {
     });
   });
 
+  describe('adding branch exceptions', () => {
+    const exceptions = { branch_exceptions: ['main', 'test'] };
+
+    it.each`
+      namespaceType              | expectedResult
+      ${NAMESPACE_TYPES.PROJECT} | ${true}
+      ${NAMESPACE_TYPES.GROUP}   | ${false}
+    `('should select exceptions only on project level', ({ namespaceType, expectedResult }) => {
+      factory({
+        provide: {
+          namespaceType,
+        },
+      });
+
+      expect(findBranchExceptionSelector().exists()).toBe(expectedResult);
+    });
+
+    it('should select exceptions', () => {
+      factory({
+        provide: {
+          namespaceType: NAMESPACE_TYPES.PROJECT,
+        },
+      });
+
+      findBranchExceptionSelector().vm.$emit('select', exceptions);
+
+      expect(wrapper.emitted('changed')).toEqual([
+        [
+          {
+            ...licenseScanBuildRule(),
+            ...exceptions,
+          },
+        ],
+      ]);
+    });
+
+    it('should display saved exceptions', () => {
+      factory({
+        props: {
+          initRule: {
+            ...licenseScanBuildRule(),
+            ...exceptions,
+          },
+        },
+        provide: {
+          namespaceType: NAMESPACE_TYPES.PROJECT,
+        },
+      });
+
+      expect(findBranchExceptionSelector().props('selectedExceptions')).toEqual(
+        exceptions.branch_exceptions,
+      );
+    });
+  });
+
   describe('when editing any attribute of the rule', () => {
     it.each`
       attribute               | currentComponent             | newValue                                                   | expected                                                   | event
@@ -92,5 +154,19 @@ describe('LicenseScanRuleBuilder', () => {
         expect(wrapper.emitted().changed).toEqual([[expect.objectContaining(expected)]]);
       },
     );
+  });
+
+  describe('disabled feature flag', () => {
+    it('should not render branch exceptions when feature flag is disabled', () => {
+      factory({
+        provide: {
+          glFeatures: {
+            securityPoliciesBranchExceptions: false,
+          },
+        },
+      });
+
+      expect(findBranchExceptionSelector().exists()).toBe(false);
+    });
   });
 });

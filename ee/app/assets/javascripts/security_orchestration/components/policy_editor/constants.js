@@ -157,6 +157,7 @@ export const VALID_SCAN_RESULT_BRANCH_TYPE_OPTIONS = [
 
 export const BRANCHES_KEY = 'branches';
 export const BRANCH_TYPE_KEY = 'branch_type';
+export const BRANCH_EXCEPTIONS_KEY = 'branch_exceptions';
 
 export const HUMANIZED_BRANCH_TYPE_TEXT_DICT = {
   [ALL_BRANCHES.value]: s__('SecurityOrchestration|any branch'),
