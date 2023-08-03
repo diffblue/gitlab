@@ -1,6 +1,6 @@
 <script>
 import * as Sentry from '@sentry/browser';
-import { GlIcon, GlLink, GlLoadingIcon, GlPopover, GlSprintf } from '@gitlab/ui';
+import { GlIcon, GlLink, GlLoadingIcon, GlPopover, GlSprintf, GlButton } from '@gitlab/ui';
 import dataSources from 'ee/analytics/analytics_dashboards/data_sources';
 import TooltipOnTruncate from '~/vue_shared/components/tooltip_on_truncate/tooltip_on_truncate.vue';
 import { isEmptyPanelData } from 'ee/vue_shared/components/customizable_dashboard/utils';
@@ -9,6 +9,7 @@ import {
   I18N_PANEL_ERROR_POPOVER_MESSAGE,
   I18N_PANEL_ERROR_POPOVER_TITLE,
   I18N_PANEL_ERROR_STATE_MESSAGE,
+  I18N_PANEL_ERROR_POPOVER_RETRY_BUTTON_TITLE,
   PANEL_TROUBLESHOOTING_URL,
   PANEL_POPOVER_DELAY,
 } from './constants';
@@ -21,6 +22,7 @@ export default {
     GlLoadingIcon,
     GlPopover,
     GlSprintf,
+    GlButton,
     TooltipOnTruncate,
     LineChart: () =>
       import('ee/analytics/analytics_dashboards/components/visualizations/line_chart.vue'),
@@ -105,6 +107,7 @@ export default {
   I18N_PANEL_ERROR_STATE_MESSAGE,
   I18N_PANEL_ERROR_POPOVER_TITLE,
   I18N_PANEL_ERROR_POPOVER_MESSAGE,
+  I18N_PANEL_ERROR_POPOVER_RETRY_BUTTON_TITLE,
   PANEL_TROUBLESHOOTING_URL,
   PANEL_POPOVER_DELAY,
 };
@@ -161,6 +164,9 @@ export default {
           }}</gl-link>
         </template>
       </gl-sprintf>
+      <gl-button class="gl-display-block gl-mt-3" @click="fetchData">{{
+        $options.I18N_PANEL_ERROR_POPOVER_RETRY_BUTTON_TITLE
+      }}</gl-button>
     </gl-popover>
   </div>
 </template>
