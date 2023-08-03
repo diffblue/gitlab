@@ -20985,7 +20985,8 @@ ALTER SEQUENCE project_aliases_id_seq OWNED BY project_aliases.id;
 CREATE TABLE project_authorizations (
     user_id integer NOT NULL,
     project_id integer NOT NULL,
-    access_level integer NOT NULL
+    access_level integer NOT NULL,
+    is_unique boolean
 );
 
 CREATE TABLE project_auto_devops (
