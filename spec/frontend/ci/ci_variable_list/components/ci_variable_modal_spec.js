@@ -28,10 +28,6 @@ describe('Ci variable modal', () => {
   const mockVariables = mockVariablesWithScopes(instanceString);
 
   const defaultProvide = {
-    awsLogoSvgPath: '/logo',
-    awsTipCommandsLink: '/tips',
-    awsTipDeployLink: '/deploy',
-    awsTipLearnLink: '/learn-link',
     containsVariableReferenceLink: '/reference',
     environmentScopeLink: '/help/environments',
     glFeatures: {
