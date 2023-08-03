@@ -65,7 +65,7 @@ module Security
 
         return { secret_detection: { 'SECRET_DETECTION_HISTORIC_SCAN' => 'true' } } unless last_scan_commit_sha.present?
 
-        { secret_detection: { 'SECRET_DETECTION_LOG_OPTS' => commit_range } }
+        { secret_detection: { 'SECRET_DETECTION_LOG_OPTIONS' => commit_range } }
       end
 
       def pipeline_ids

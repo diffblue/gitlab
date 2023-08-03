@@ -347,7 +347,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService, f
           let(:expected_variables) do
             [
               {
-                key: 'SECRET_DETECTION_LOG_OPTS',
+                key: 'SECRET_DETECTION_LOG_OPTIONS',
                 value: "#{last_scan_pipeline_sha}..#{most_recent_commit_sha}",
                 public: true,
                 masked: false
