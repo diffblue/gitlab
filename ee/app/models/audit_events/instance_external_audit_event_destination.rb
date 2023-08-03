@@ -2,6 +2,7 @@
 
 module AuditEvents
   class InstanceExternalAuditEventDestination < ApplicationRecord
+    include ExternallyCommonDestinationable
     include ExternallyDestinationable
     include Limitable
 

@@ -122,6 +122,10 @@ RSpec.describe AuditEvents::ExternalAuditEventDestination, feature_category: :au
     end
   end
 
+  it_behaves_like 'includes ExternallyCommonDestinationable concern' do
+    let(:model_factory_name) { :external_audit_event_destination }
+  end
+
   describe '#audit_details' do
     it "equals to the destination url" do
       expect(destination.audit_details).to eq(destination.destination_url)

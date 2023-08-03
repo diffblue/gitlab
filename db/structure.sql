@@ -12240,9 +12240,11 @@ CREATE TABLE audit_events_google_cloud_logging_configurations (
     log_id_name text DEFAULT 'audit_events'::text,
     encrypted_private_key bytea NOT NULL,
     encrypted_private_key_iv bytea NOT NULL,
+    name text,
     CONSTRAINT check_0ef835c61e CHECK ((char_length(client_email) <= 254)),
     CONSTRAINT check_55783c7c19 CHECK ((char_length(google_project_id_name) <= 30)),
-    CONSTRAINT check_898a76b005 CHECK ((char_length(log_id_name) <= 511))
+    CONSTRAINT check_898a76b005 CHECK ((char_length(log_id_name) <= 511)),
+    CONSTRAINT check_cdf6883cd6 CHECK ((char_length(name) <= 72))
 );
 
 CREATE SEQUENCE audit_events_google_cloud_logging_configurations_id_seq
@@ -34014,6 +34016,8 @@ CREATE INDEX tmp_index_vulnerability_dismissal_info ON vulnerabilities USING btr
 CREATE INDEX tmp_index_vulnerability_overlong_title_html ON vulnerabilities USING btree (id) WHERE (length(title_html) > 800);
 
 CREATE UNIQUE INDEX u_project_compliance_standards_adherence_for_reporting ON project_compliance_standards_adherence USING btree (project_id, check_name, standard);
+
+CREATE UNIQUE INDEX uniq_google_cloud_logging_configuration_namespace_id_and_name ON audit_events_google_cloud_logging_configurations USING btree (namespace_id, name);
 
 CREATE UNIQUE INDEX uniq_idx_packages_packages_on_project_id_name_version_ml_model ON packages_packages USING btree (project_id, name, version) WHERE (package_type = 14);
 
