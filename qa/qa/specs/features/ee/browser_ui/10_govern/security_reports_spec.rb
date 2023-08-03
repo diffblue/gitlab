@@ -228,11 +228,7 @@ module QA
 
       it(
         'displays the Dependency List',
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348035',
-        quarantine: {
-          type: :investigating,
-          issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/419860"
-        }
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348035'
       ) do
         push_security_reports
         project.visit!
@@ -240,7 +236,14 @@ module QA
         Page::Project::Menu.perform(&:go_to_dependency_list)
 
         EE::Page::Project::Secure::DependencyList.perform do |dependency_list|
-          expect(dependency_list).to have_dependency_count_of number_of_dependencies_in_fixture
+          Support::Retrier.retry_on_exception(
+            max_attempts: 3,
+            reload_page: page,
+            message: "Retrying for dependency list count",
+            sleep_interval: 2
+          ) do
+            expect(dependency_list).to have_dependency_count_of number_of_dependencies_in_fixture
+          end
         end
       end
 
