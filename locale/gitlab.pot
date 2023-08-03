@@ -23429,6 +23429,12 @@ msgstr ""
 msgid "IdentityVerification|%{linkStart}Enter a new phone number%{linkEnd}"
 msgstr ""
 
+msgid "IdentityVerification|A code has already been sent to this email address. Check your spam folder or enter another email address."
+msgstr ""
+
+msgid "IdentityVerification|A new code has been sent to your updated email address."
+msgstr ""
+
 msgid "IdentityVerification|A new code has been sent."
 msgstr ""
 
@@ -23448,6 +23454,9 @@ msgid "IdentityVerification|Didn't receive a code?"
 msgstr ""
 
 msgid "IdentityVerification|Didn't receive a code? %{linkStart}Send a new code%{linkEnd}"
+msgstr ""
+
+msgid "IdentityVerification|Email update is only offered once."
 msgstr ""
 
 msgid "IdentityVerification|Enter a code."
@@ -23504,6 +23513,9 @@ msgstr ""
 msgid "IdentityVerification|Please enter a valid code"
 msgstr ""
 
+msgid "IdentityVerification|Please enter a valid email address."
+msgstr ""
+
 msgid "IdentityVerification|Resend code"
 msgstr ""
 
@@ -23532,6 +23544,9 @@ msgid "IdentityVerification|The code is incorrect. Enter it again, or send a new
 msgstr ""
 
 msgid "IdentityVerification|There was a problem with the credit card details you entered. Use a different credit card and try again."
+msgstr ""
+
+msgid "IdentityVerification|Update email"
 msgstr ""
 
 msgid "IdentityVerification|Verification code"
