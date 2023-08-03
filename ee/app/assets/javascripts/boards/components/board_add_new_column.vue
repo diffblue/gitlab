@@ -17,7 +17,7 @@ import BoardAddNewColumnForm from '~/boards/components/board_add_new_column_form
 import { ListType, createListMutations, listsQuery, BoardType } from 'ee_else_ce/boards/constants';
 import { isScopedLabel } from '~/lib/utils/common_utils';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
-import { __ } from '~/locale';
+import { __, s__ } from '~/locale';
 import {
   groupOptionsByIterationCadences,
   groupByIterationCadences,
@@ -29,6 +29,7 @@ import groupBoardMilestonesQuery from '~/boards/graphql/group_board_milestones.q
 import projectBoardMilestonesQuery from '~/boards/graphql/project_board_milestones.query.graphql';
 import groupBoardMembersQuery from '~/boards/graphql/group_board_members.query.graphql';
 import projectBoardMembersQuery from '~/boards/graphql/project_board_members.query.graphql';
+import { setError } from '~/boards/graphql/cache_updates';
 import { getListByTypeId } from '~/boards//boards_util';
 import searchIterationQuery from 'ee/issues/list/queries/search_iterations.query.graphql';
 
@@ -137,6 +138,12 @@ export default {
       update(data) {
         return data[this.boardType].labels.nodes;
       },
+      error(error) {
+        setError({
+          error,
+          message: s__('Boards|An error occurred while fetching labels. Please try again.'),
+        });
+      },
     },
     milestonesApollo: {
       query() {
@@ -153,6 +160,12 @@ export default {
       },
       skip() {
         return !this.isApolloBoard || this.columnType !== ListType.milestone;
+      },
+      error(error) {
+        setError({
+          error,
+          message: s__('Boards|An error occurred while fetching milestones. Please try again.'),
+        });
       },
     },
     assigneesApollo: {
@@ -171,6 +184,12 @@ export default {
       skip() {
         return !this.isApolloBoard || this.columnType !== ListType.assignee;
       },
+      error(error) {
+        setError({
+          error,
+          message: s__('Boards|An error occurred while fetching users. Please try again.'),
+        });
+      },
     },
     iterationsApollo: {
       query: searchIterationQuery,
@@ -186,6 +205,12 @@ export default {
       },
       skip() {
         return !this.isApolloBoard || this.columnType !== ListType.iteration;
+      },
+      error(error) {
+        setError({
+          error,
+          message: s__('Boards|An error occurred while fetching iterations. Please try again.'),
+        });
       },
     },
   },
@@ -349,42 +374,46 @@ export default {
       'fetchMilestones',
     ]),
     async createListApollo({ backlog, labelId, milestoneId, assigneeId, iterationId }) {
-      const {
-        data: { boardListCreate },
-      } = await this.$apollo.mutate({
-        mutation: createListMutations[this.issuableType].mutation,
-        variables: {
-          labelId,
-          backlog,
-          milestoneId,
-          assigneeId,
-          iterationId,
-          boardId: this.boardId,
-        },
-        update: (
-          store,
-          {
-            data: {
-              boardListCreate: { list },
-            },
+      try {
+        await this.$apollo.mutate({
+          mutation: createListMutations[this.issuableType].mutation,
+          variables: {
+            labelId,
+            backlog,
+            milestoneId,
+            assigneeId,
+            iterationId,
+            boardId: this.boardId,
           },
-        ) => {
-          const sourceData = store.readQuery({
-            query: listsQuery[this.issuableType].query,
-            variables: this.listQueryVariables,
-          });
-          const data = produce(sourceData, (draftData) => {
-            draftData[this.boardType].board.lists.nodes.push(list);
-          });
-          store.writeQuery({
-            query: listsQuery[this.issuableType].query,
-            variables: this.listQueryVariables,
-            data,
-          });
-          this.$emit('highlight-list', list.id);
-        },
-      });
-      return boardListCreate;
+          update: (
+            store,
+            {
+              data: {
+                boardListCreate: { list },
+              },
+            },
+          ) => {
+            const sourceData = store.readQuery({
+              query: listsQuery[this.issuableType].query,
+              variables: this.listQueryVariables,
+            });
+            const data = produce(sourceData, (draftData) => {
+              draftData[this.boardType].board.lists.nodes.push(list);
+            });
+            store.writeQuery({
+              query: listsQuery[this.issuableType].query,
+              variables: this.listQueryVariables,
+              data,
+            });
+            this.$emit('highlight-list', list.id);
+          },
+        });
+      } catch (error) {
+        setError({
+          error,
+          message: s__('Boards|An error occurred while creating the list. Please try again.'),
+        });
+      }
     },
     async addList() {
       if (!this.selectedItem) {

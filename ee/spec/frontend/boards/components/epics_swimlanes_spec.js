@@ -15,6 +15,7 @@ import getters from 'ee/boards/stores/getters';
 import epicsSwimlanesQuery from 'ee/boards/graphql/epics_swimlanes.query.graphql';
 import BoardListHeader from 'ee_else_ce/boards/components/board_list_header.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import * as cacheUpdates from '~/boards/graphql/cache_updates';
 import {
   mockLists,
   mockEpics,
@@ -76,16 +77,19 @@ describe('EpicsSwimlanes', () => {
   };
 
   const epicsSwimlanesQueryHandlerSuccess = jest.fn().mockResolvedValue(mockEpicSwimlanesResponse);
+  const errorMessage = 'Failed to fetch issues';
+  const epicsSwimlanesQueryHandlerFailure = jest.fn().mockRejectedValue(new Error(errorMessage));
 
   const createComponent = ({
     canAdminList = false,
     epicLanesFetchInProgress = false,
     listItemsFetchInProgress = false,
     hasMoreEpics = false,
+    epicsSwimlanesQueryHandler = epicsSwimlanesQueryHandlerSuccess,
     isApolloBoard = false,
   } = {}) => {
     const store = createStore({ epicLanesFetchInProgress, listItemsFetchInProgress, hasMoreEpics });
-    mockApollo = createMockApollo([[epicsSwimlanesQuery, epicsSwimlanesQueryHandlerSuccess]]);
+    mockApollo = createMockApollo([[epicsSwimlanesQuery, epicsSwimlanesQueryHandler]]);
     const defaultProps = {
       lists: mockLists,
       boardId: 'gid://gitlab/Board/1',
@@ -106,6 +110,7 @@ describe('EpicsSwimlanes', () => {
 
   beforeEach(() => {
     jest.spyOn(BoardUtils, 'calculateSwimlanesBufferSize').mockReturnValue(bufferSize);
+    cacheUpdates.setError = jest.fn();
   });
 
   it('calls fetchIssuesForEpic on mounted', () => {
@@ -277,6 +282,17 @@ describe('EpicsSwimlanes', () => {
 
         expect(findLoadMoreIssuesButton().exists()).toBe(true);
       });
+    });
+
+    it('sets error when fetch epics swimlanes query fails', async () => {
+      createComponent({
+        isApolloBoard: true,
+        canAdminList: true,
+        epicsSwimlanesQueryHandler: epicsSwimlanesQueryHandlerFailure,
+      });
+      await waitForPromises();
+
+      expect(cacheUpdates.setError).toHaveBeenCalled();
     });
   });
 });

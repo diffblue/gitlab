@@ -7,12 +7,12 @@ import {
   GlDropdownSectionHeader,
 } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
-import { mapActions } from 'vuex';
 
 import searchIterationQuery from 'ee/issues/list/queries/search_iterations.query.graphql';
 import { getIterationPeriod } from 'ee/iterations/utils';
 import { n__, s__, __, sprintf } from '~/locale';
 import { TYPENAME_ITERATION } from '~/graphql_shared/constants';
+import { setError } from '~/boards/graphql/cache_updates';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
 import TooltipOnTruncate from '~/vue_shared/components/tooltip_on_truncate/tooltip_on_truncate.vue';
@@ -79,8 +79,8 @@ export default {
       update(data) {
         return data[this.boardType]?.iterations?.nodes || [];
       },
-      error() {
-        this.setError({ message: this.$options.i18n.errorSearchingIterations });
+      error(error) {
+        setError({ error, message: this.$options.i18n.errorSearchingIterations });
       },
     },
   },
@@ -156,7 +156,6 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['setError']),
     selectIteration(iteration) {
       this.selected = iteration;
       this.toggleEdit();

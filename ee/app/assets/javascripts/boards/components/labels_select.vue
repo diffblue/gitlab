@@ -1,8 +1,8 @@
 <script>
 import { GlButton } from '@gitlab/ui';
 import { debounce } from 'lodash';
-import { mapActions } from 'vuex';
 import { __, s__, sprintf } from '~/locale';
+import { setError } from '~/boards/graphql/cache_updates';
 import LabelItem from '~/sidebar/components/labels/labels_select_widget/label_item.vue';
 import searchGroupLabels from '~/sidebar/components/labels/labels_select_widget/graphql/group_labels.query.graphql';
 import searchProjectLabels from '~/sidebar/components/labels/labels_select_widget/graphql/project_labels.query.graphql';
@@ -61,8 +61,8 @@ export default {
       update(data) {
         return data.workspace?.labels?.nodes;
       },
-      error() {
-        this.setError({ message: this.$options.i18n.errorSearchingLabels });
+      error(error) {
+        setError({ error, message: this.$options.i18n.errorSearchingLabels });
       },
     },
   },
@@ -102,7 +102,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setError']),
     isLabelSelected(label) {
       return this.selectedLabelsIds.includes(label.id);
     },

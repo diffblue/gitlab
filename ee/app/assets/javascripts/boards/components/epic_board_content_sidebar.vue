@@ -5,7 +5,9 @@ import { mapState, mapActions, mapGetters } from 'vuex';
 import activeBoardItemQuery from 'ee_else_ce/boards/graphql/client/active_board_item.query.graphql';
 import setActiveBoardItemMutation from 'ee_else_ce/boards/graphql/client/set_active_board_item.mutation.graphql';
 import SidebarAncestorsWidget from 'ee_component/sidebar/components/ancestors_tree/sidebar_ancestors_widget.vue';
+import { s__ } from '~/locale';
 import BoardSidebarTitle from '~/boards/components/sidebar/board_sidebar_title.vue';
+import { setError } from '~/boards/graphql/cache_updates';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import SidebarConfidentialityWidget from '~/sidebar/components/confidential/sidebar_confidentiality_widget.vue';
 import SidebarDateWidget from '~/sidebar/components/date/sidebar_date_widget.vue';
@@ -47,6 +49,12 @@ export default {
       },
       skip() {
         return !this.isApolloBoard;
+      },
+      error(error) {
+        setError({
+          error,
+          message: s__('Boards|An error occurred while selecting the card. Please try again.'),
+        });
       },
     },
   },
