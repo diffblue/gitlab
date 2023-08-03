@@ -8190,6 +8190,9 @@ msgstr ""
 msgid "Branch %{branch_name} was created. To set up auto deploy, choose a GitLab CI Yaml template and commit your changes. %{link_to_autodeploy_doc}"
 msgstr ""
 
+msgid "Branch Rules"
+msgstr ""
+
 msgid "Branch already exists"
 msgstr ""
 
@@ -8295,9 +8298,6 @@ msgstr ""
 msgid "BranchRules|Create wildcard: %{searchTerm}"
 msgstr ""
 
-msgid "BranchRules|Details"
-msgstr ""
-
 msgid "BranchRules|Does not allow force push"
 msgstr ""
 
@@ -8365,6 +8365,9 @@ msgid "BranchRules|To create a branch rule, you first need to create a protected
 msgstr ""
 
 msgid "BranchRules|Users"
+msgstr ""
+
+msgid "BranchRules|View details"
 msgstr ""
 
 msgid "BranchRules|default"
