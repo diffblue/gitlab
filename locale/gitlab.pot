@@ -7708,6 +7708,9 @@ msgstr ""
 msgid "Billing|An error occurred while loading billable members list."
 msgstr ""
 
+msgid "Billing|An error occurred while loading details for the Code Suggestions add-on."
+msgstr ""
+
 msgid "Billing|An error occurred while loading pending members list"
 msgstr ""
 
@@ -11330,6 +11333,12 @@ msgid "Code Review"
 msgstr ""
 
 msgid "Code Review Analytics displays a table of open merge requests considered to be in code review. There are currently no merge requests in review for this project and/or filters."
+msgstr ""
+
+msgid "Code Suggestions add-on"
+msgstr ""
+
+msgid "Code Suggestions add-on status"
 msgstr ""
 
 msgid "Code block"
@@ -46517,6 +46526,9 @@ msgid "The API key used by GitLab for accessing the Spam Check service endpoint.
 msgstr ""
 
 msgid "The CSV export will be created in the background. Once finished, it will be sent to %{email} in an attachment."
+msgstr ""
+
+msgid "The Code Suggestions add-on is not available."
 msgstr ""
 
 msgid "The GitLab subscription service (customers.gitlab.com) is currently experiencing an outage. You can monitor the status and get updates at %{linkStart}status.gitlab.com%{linkEnd}."

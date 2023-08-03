@@ -209,6 +209,70 @@ export const mockTableItems = [
   },
 ];
 
+export const mockTableItemsWithCodeSuggestionsAddOn = [
+  {
+    email: 'administrator@email.com',
+    user: {
+      add_ons: {
+        assignable: [{ name: ADD_ON_CODE_SUGGESTIONS }],
+        assigned: [{ name: ADD_ON_CODE_SUGGESTIONS }],
+      },
+      id: 2,
+      avatar_url: 'path/to/img_administrator',
+      name: 'Administrator',
+      username: '@root',
+      web_url: 'path/to/administrator',
+      last_activity_on: '2020-03-01',
+      last_login_at: '2022-11-10T10:58:05.492Z',
+      membership_type: 'group_member',
+      membership_state: 'active',
+      removable: true,
+      is_last_owner: true,
+    },
+  },
+  {
+    email: 'agustin_walker@email.com',
+    user: {
+      add_ons: {
+        assignable: [{ name: ADD_ON_CODE_SUGGESTIONS }],
+        assigned: [],
+      },
+      id: 3,
+      avatar_url: 'path/to/img_agustin_walker',
+      name: 'Agustin Walker',
+      username: '@lester.orn',
+      web_url: 'path/to/agustin_walker',
+      last_activity_on: '2020-03-01',
+      last_login_at: '2021-01-20T10:58:05.492Z',
+      membership_type: 'project_member',
+      membership_state: 'active',
+
+      removable: true,
+      is_last_owner: false,
+    },
+  },
+  {
+    email: null,
+    user: {
+      add_ons: {
+        assignable: [],
+        assigned: [],
+      },
+      id: 4,
+      avatar_url: 'path/to/img_joella_miller',
+      name: 'Joella Miller',
+      username: '@era',
+      web_url: 'path/to/joella_miller',
+      last_activity_on: null,
+      last_login_at: null,
+      membership_type: 'group_invite',
+      membership_state: 'active',
+      removable: false,
+      is_last_owner: false,
+    },
+  },
+];
+
 export const mockUserSubscription = {
   plan: {
     code: null,
