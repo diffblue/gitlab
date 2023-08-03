@@ -34,8 +34,10 @@ class ApprovalState
   def self.filter_committers(users, merge_request)
     return users unless merge_request.target_project.merge_requests_disable_committers_approval?
 
+    with_merge_commits = Feature.enabled?(:keep_merge_commits_for_approvals, merge_request.target_project)
+
     if users.is_a?(ActiveRecord::Relation) && !users.loaded?
-      users.where.not(id: merge_request.committers.select(:id)).allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417459")
+      users.where.not(id: merge_request.committers(with_merge_commits: with_merge_commits).select(:id)).allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417459")
     else
       users - merge_request.committers
     end
