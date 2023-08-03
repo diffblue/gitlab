@@ -87,7 +87,12 @@ export default {
     @updateSucceed="$emit('updateSucceed')"
   >
     <template #default="{ update }">
-      <gl-table-lite :items="sortedWorkspaces" stacked="sm" :fields="$options.fields">
+      <gl-table-lite
+        :items="sortedWorkspaces"
+        stacked="sm"
+        :fields="$options.fields"
+        :tbody-tr-attr="(item) => ({ 'data-testid': item.name })"
+      >
         <template #cell(status)="{ item }">
           <workspace-state-indicator
             :workspace-state="item.actualState"
@@ -107,6 +112,7 @@ export default {
             :href="item.url"
             class="workspace-preview-link"
             target="_blank"
+            data-testid="`${item.name}_link`"
             >{{ item.url }}</gl-link
           >
         </template>
