@@ -30916,6 +30916,8 @@ CREATE INDEX index_ci_pipeline_schedules_on_project_id ON ci_pipeline_schedules 
 
 CREATE UNIQUE INDEX index_ci_pipeline_variables_on_pipeline_id_and_key ON ci_pipeline_variables USING btree (pipeline_id, key);
 
+CREATE UNIQUE INDEX index_ci_pipeline_variables_on_pipeline_id_bigint_and_key ON ci_pipeline_variables USING btree (pipeline_id_convert_to_bigint, key);
+
 CREATE INDEX index_ci_pipelines_config_on_pipeline_id ON ci_pipelines_config USING btree (pipeline_id);
 
 CREATE INDEX index_ci_pipelines_for_ondemand_dast_scans ON ci_pipelines USING btree (id) WHERE (source = 13);
