@@ -1,11 +1,11 @@
 # frozen_string_literal: true
+
 module EE
   module Ci
-    module BuildPolicy
+    module DeployablePolicy
       extend ActiveSupport::Concern
 
       prepended do
-        # overriding
         condition(:protected_environment) do
           @subject.persisted_environment.try(:protected_from?, user)
         end
@@ -22,6 +22,15 @@ module EE
           enable :jailbreak
           enable :update_commit_status
           enable :update_build
+        end
+
+        # Authorizing the user to access to protected entities.
+        # There is a "jailbreak" mode to exceptionally bypass the authorization,
+        # however, you should NEVER allow it, rather suspect it's a wrong feature/product design.
+        rule { ~can?(:jailbreak) & protected_environment }.policy do
+          prevent :update_commit_status
+          prevent :update_build
+          prevent :erase_build
         end
       end
     end
