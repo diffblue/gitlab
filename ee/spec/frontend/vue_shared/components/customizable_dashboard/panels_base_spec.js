@@ -10,6 +10,7 @@ import {
   I18N_PANEL_EMPTY_STATE_MESSAGE,
   I18N_PANEL_ERROR_POPOVER_TITLE,
   I18N_PANEL_ERROR_STATE_MESSAGE,
+  PANEL_POPOVER_DELAY,
 } from 'ee/vue_shared/components/customizable_dashboard/constants';
 import { dashboard } from './mock_data';
 
@@ -156,6 +157,9 @@ describe('PanelsBase', () => {
       const popover = findPanelErrorPopover();
       expect(popover.exists()).toBe(true);
       expect(popover.props('title')).toBe(I18N_PANEL_ERROR_POPOVER_TITLE);
+      // TODO: Replace with .props() once GitLab-UI adds all supported props.
+      // https://gitlab.com/gitlab-org/gitlab-ui/-/issues/428
+      expect(popover.vm.$attrs.delay).toStrictEqual(PANEL_POPOVER_DELAY);
     });
 
     it('should log the error to Sentry', () => {

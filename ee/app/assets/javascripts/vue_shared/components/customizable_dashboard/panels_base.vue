@@ -10,6 +10,7 @@ import {
   I18N_PANEL_ERROR_POPOVER_TITLE,
   I18N_PANEL_ERROR_STATE_MESSAGE,
   PANEL_TROUBLESHOOTING_URL,
+  PANEL_POPOVER_DELAY,
 } from './constants';
 
 export default {
@@ -105,6 +106,7 @@ export default {
   I18N_PANEL_ERROR_POPOVER_TITLE,
   I18N_PANEL_ERROR_POPOVER_MESSAGE,
   PANEL_TROUBLESHOOTING_URL,
+  PANEL_POPOVER_DELAY,
 };
 </script>
 
@@ -150,6 +152,7 @@ export default {
       :show-close-button="false"
       placement="top"
       :target="$refs.panelWrapper"
+      :delay="$options.PANEL_POPOVER_DELAY"
     >
       <gl-sprintf :message="$options.I18N_PANEL_ERROR_POPOVER_MESSAGE">
         <template #link="{ content }">

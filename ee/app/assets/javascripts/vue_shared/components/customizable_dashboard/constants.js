@@ -18,6 +18,12 @@ export const PANEL_TROUBLESHOOTING_URL = helpPagePath(
   '/user/analytics/analytics_dashboards#troubleshooting',
 );
 
+// TODO: Remove once the GitLab-UI issue is resolved.
+// https://gitlab.com/gitlab-org/gitlab-ui/-/issues/2278
+export const PANEL_POPOVER_DELAY = {
+  hide: 500,
+};
+
 export const CURSOR_GRABBING_CLASS = 'gl-cursor-grabbing!';
 
 export const I18N_VISUALIZATION_SELECTOR_NEW = s__('ProductAnalytics|Create a visualization');
