@@ -79,6 +79,7 @@ export default {
         action: this.closeDropdownAfterAction.bind(this, this.copyReference),
         extraAttrs: {
           'data-clipboard-text': this.reference,
+          class: 'js-copy-reference',
         },
       };
     },

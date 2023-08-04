@@ -21722,7 +21722,13 @@ msgstr ""
 msgid "GlobalSearch|in %{scope}"
 msgstr ""
 
+msgid "GlobalShortcuts|Copied reference to clipboard."
+msgstr ""
+
 msgid "GlobalShortcuts|Copied source branch name to clipboard."
+msgstr ""
+
+msgid "GlobalShortcuts|Unable to copy the reference at this time."
 msgstr ""
 
 msgid "GlobalShortcuts|Unable to copy the source branch name at this time."
