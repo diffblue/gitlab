@@ -7,6 +7,7 @@ class RepositoryUpdateMirrorWorker
 
   idempotent!
   data_consistency :sticky
+  worker_has_external_dependencies!
   include ProjectStartImport
 
   feature_category :source_code_management
