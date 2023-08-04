@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/browser';
-import { GlLoadingIcon, GlPopover } from '@gitlab/ui';
+import { GlLoadingIcon, GlPopover, GlButton } from '@gitlab/ui';
 import LineChart from 'ee/analytics/analytics_dashboards/components/visualizations/line_chart.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';
@@ -10,6 +10,7 @@ import {
   I18N_PANEL_EMPTY_STATE_MESSAGE,
   I18N_PANEL_ERROR_POPOVER_TITLE,
   I18N_PANEL_ERROR_STATE_MESSAGE,
+  I18N_PANEL_ERROR_POPOVER_RETRY_BUTTON_TITLE,
   PANEL_POPOVER_DELAY,
 } from 'ee/vue_shared/components/customizable_dashboard/constants';
 import { dashboard } from './mock_data';
@@ -41,6 +42,7 @@ describe('PanelsBase', () => {
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findPanelTitle = () => wrapper.findComponent(TooltipOnTruncate);
   const findPanelErrorPopover = () => wrapper.findComponent(GlPopover);
+  const findPanelRetryButton = () => wrapper.findComponent(GlButton);
 
   describe('default behaviour', () => {
     beforeEach(() => {
@@ -164,6 +166,18 @@ describe('PanelsBase', () => {
 
     it('should log the error to Sentry', () => {
       expect(captureExceptionSpy).toHaveBeenCalledWith(mockError);
+    });
+
+    it('renders a retry button', () => {
+      expect(findPanelRetryButton().text()).toBe(I18N_PANEL_ERROR_POPOVER_RETRY_BUTTON_TITLE);
+    });
+
+    it('refetches the visualization data when the retry button is clicked', async () => {
+      findPanelRetryButton().vm.$emit('click');
+
+      await waitForPromises();
+
+      expect(dataSources.cube_analytics().fetch).toHaveBeenCalledTimes(2);
     });
   });
 

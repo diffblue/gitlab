@@ -1,4 +1,4 @@
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 
 export const GRIDSTACK_MARGIN = 10;
@@ -17,6 +17,7 @@ export const I18N_PANEL_ERROR_POPOVER_MESSAGE = s__(
 export const PANEL_TROUBLESHOOTING_URL = helpPagePath(
   '/user/analytics/analytics_dashboards#troubleshooting',
 );
+export const I18N_PANEL_ERROR_POPOVER_RETRY_BUTTON_TITLE = __('Retry');
 
 // TODO: Remove once the GitLab-UI issue is resolved.
 // https://gitlab.com/gitlab-org/gitlab-ui/-/issues/2278
