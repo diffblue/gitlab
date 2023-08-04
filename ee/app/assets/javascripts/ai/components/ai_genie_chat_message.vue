@@ -54,7 +54,9 @@ export default {
       'gl-ml-auto gl-bg-blue-100 gl-text-blue-900 gl-rounded-bottom-right-none': isUserMessage(
         message,
       ),
-      'gl-rounded-bottom-left-none gl-text-gray-900 gl-bg-gray-50': isAssistantMessage(message),
+      'gl-rounded-bottom-left-none gl-text-gray-900 gl-bg-white gl-border-1 gl-border-solid gl-border-gray-50': isAssistantMessage(
+        message,
+      ),
     }"
   >
     <div ref="content" v-safe-html="messageContent"></div>
