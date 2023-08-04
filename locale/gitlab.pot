@@ -34399,6 +34399,9 @@ msgstr ""
 msgid "Pipelines|Editor"
 msgstr ""
 
+msgid "Pipelines|Failed to update. Please reload page to update the list of artifacts."
+msgstr ""
+
 msgid "Pipelines|Follow these instructions to install GitLab Runner on macOS."
 msgstr ""
 
