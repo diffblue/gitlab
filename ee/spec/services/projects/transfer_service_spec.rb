@@ -76,6 +76,32 @@ RSpec.describe Projects::TransferService do
     end
   end
 
+  describe 'moving the vulnerability read records to new group', feature_category: :vulnerability_management do
+    before do
+      allow(Vulnerabilities::UpdateNamespaceIdsOfVulnerabilityReadsWorker).to receive(:perform_async)
+    end
+
+    context 'when the project does not have vulnerabilities' do
+      it 'does not schedule the update job' do
+        subject.execute(group)
+
+        expect(Vulnerabilities::UpdateNamespaceIdsOfVulnerabilityReadsWorker).not_to have_received(:perform_async)
+      end
+    end
+
+    context 'when the project has vulnerabilities' do
+      before do
+        create(:project_setting, project: project, has_vulnerabilities: true)
+      end
+
+      it 'schedules the update job' do
+        subject.execute(group)
+
+        expect(Vulnerabilities::UpdateNamespaceIdsOfVulnerabilityReadsWorker).to have_received(:perform_async).with(project.id)
+      end
+    end
+  end
+
   describe 'security policy project', feature_category: :security_policy_management do
     context 'when project has policy project' do
       let!(:configuration) { create(:security_orchestration_policy_configuration, project: project) }

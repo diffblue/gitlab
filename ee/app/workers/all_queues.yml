@@ -1974,6 +1974,15 @@
   :weight: 1
   :idempotent: false
   :tags: []
+- :name: vulnerabilities_update_namespace_ids_of_vulnerability_reads
+  :worker_name: Vulnerabilities::UpdateNamespaceIdsOfVulnerabilityReadsWorker
+  :feature_category: :vulnerability_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: vulnerability_exports_export
   :worker_name: VulnerabilityExports::ExportWorker
   :feature_category: :vulnerability_management
