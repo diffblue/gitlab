@@ -50,7 +50,7 @@ module EE
           where_exists(subquery)
         else
           where_not_exists(subquery)
-        end
+        end.allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/419933")
       end
     end
 

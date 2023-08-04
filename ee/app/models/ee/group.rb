@@ -828,28 +828,29 @@ module EE
 
     def sbom_occurrences
       Sbom::Occurrence.includes(project: :route).select('sbom_occurrences.*, agg_occurrences.occurrence_count, agg_occurrences.project_count')
-        .from('sbom_occurrences')
-        .joins(
-          <<-SQL
-            INNER JOIN (
-              SELECT component_id,
-                    COUNT(DISTINCT id) AS occurrence_count,
-                    COUNT(DISTINCT project_id) AS project_count
-              FROM sbom_occurrences
-              WHERE project_id IN (
-                SELECT "projects"."id" FROM "projects"
-                WHERE "projects"."namespace_id" IN (
-                  SELECT namespaces.traversal_ids[array_length(namespaces.traversal_ids, 1)] AS id
-                  FROM "namespaces"
-                  WHERE "namespaces"."type" = 'Group'
-                  AND (traversal_ids @> (\'{#{id}}\'))
-                )
+      .from('sbom_occurrences')
+      .joins(
+        <<-SQL
+          INNER JOIN (
+            SELECT component_id,
+                  COUNT(DISTINCT id) AS occurrence_count,
+                  COUNT(DISTINCT project_id) AS project_count
+            FROM sbom_occurrences
+            WHERE project_id IN (
+              SELECT "projects"."id" FROM "projects"
+              WHERE "projects"."namespace_id" IN (
+                SELECT namespaces.traversal_ids[array_length(namespaces.traversal_ids, 1)] AS id
+                FROM "namespaces"
+                WHERE "namespaces"."type" = 'Group'
+                AND (traversal_ids @> (\'{#{id}}\'))
               )
-              GROUP BY component_id
-            ) agg_occurrences ON sbom_occurrences.component_id = agg_occurrences.component_id
-          SQL
-        )
-        .where(project_id: all_projects.select(:id))
+            )
+            GROUP BY component_id
+          ) agg_occurrences ON sbom_occurrences.component_id = agg_occurrences.component_id
+        SQL
+      )
+      .where(project_id: all_projects.select(:id))
+      .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/420046")
     end
 
     override :reached_project_access_token_limit?
