@@ -15,6 +15,7 @@ module Groups
       before_action :redirect_to_value_streams_dashboard, only: :index
       before_action do
         push_frontend_feature_flag(:dora_performers_score_panel, @group)
+        push_frontend_feature_flag(:group_analytics_dashboards, @group)
       end
 
       layout 'group'
@@ -64,7 +65,7 @@ module Groups
       end
 
       def redirect_to_value_streams_dashboard
-        return if Feature.enabled?(:group_analytics_dashboards)
+        return if Feature.enabled?(:group_analytics_dashboards, @group)
 
         # Value streams dashboard has been moved into another action,
         # this is a temporary redirect to keep current bookmarks healthy.

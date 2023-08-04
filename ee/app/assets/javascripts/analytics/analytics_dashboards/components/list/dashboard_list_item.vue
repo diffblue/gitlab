@@ -1,5 +1,6 @@
 <script>
-import { GlAvatar, GlIcon, GlLabel } from '@gitlab/ui';
+import { GlAvatar, GlIcon, GlLabel, GlLink } from '@gitlab/ui';
+import { visitUrl, joinPaths } from '~/lib/utils/url_utility';
 import { I18N_BUILT_IN_DASHBOARD_LABEL } from '../../constants';
 
 export default {
@@ -8,6 +9,7 @@ export default {
     GlAvatar,
     GlIcon,
     GlLabel,
+    GlLink,
   },
   props: {
     dashboard: {
@@ -19,10 +21,17 @@ export default {
     isBuiltInDashboard() {
       return 'userDefined' in this.dashboard && !this.dashboard.userDefined;
     },
+    redirectHref() {
+      return joinPaths(window.location.pathname, this.dashboard.slug);
+    },
   },
   methods: {
     routeToDashboard() {
-      return this.$router.push(this.dashboard.slug);
+      if (this.dashboard.redirect) {
+        visitUrl(this.redirectHref);
+      } else {
+        this.$router.push(this.dashboard.slug);
+      }
     },
   },
   i18n: {
@@ -45,8 +54,16 @@ export default {
       class="gl-display-flex gl-align-items-center gl-justify-content-space-between gl-flex-grow-1"
     >
       <div class="gl-display-flex gl-flex-direction-column">
+        <gl-link
+          v-if="dashboard.redirect"
+          data-testid="dashboard-redirect-link"
+          :href="redirectHref"
+          class="gl-font-weight-bold gl-line-height-normal gl-text-decoration-none!"
+          >{{ dashboard.title }}</gl-link
+        >
         <router-link
-          data-testid="dashboard-link"
+          v-else
+          data-testid="dashboard-router-link"
           class="gl-font-weight-bold gl-line-height-normal"
           :to="dashboard.slug"
           >{{ dashboard.title }}</router-link
