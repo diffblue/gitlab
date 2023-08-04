@@ -9,7 +9,7 @@ module Search
       include ApplicationWorker
 
       data_consistency :delayed
-      prepend Elastic::IndexingControl
+      prepend ::Elastic::IndexingControl
 
       feature_category :global_search
       urgency :throttled
