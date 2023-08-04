@@ -32,6 +32,7 @@ describe('ExportRequirementsModal', () => {
       }
     });
   };
+  const emitModalPrimaryEvent = () => wrapper.findComponent(GlModal).vm.$emit('primary');
 
   beforeEach(() => {
     wrapper = createComponent();
@@ -40,10 +41,10 @@ describe('ExportRequirementsModal', () => {
   describe('field checkbox', () => {
     const field = FIELDS[TEST_INDEX];
 
-    it('is checked by default and the corresponding field key included in the emit', async () => {
+    it('is checked by default and the corresponding field key included in the emit', () => {
       expect(findFieldCheckbox(TEST_INDEX).attributes('checked')).toBe('true');
 
-      await wrapper.findComponent(GlModal).vm.$emit('primary');
+      emitModalPrimaryEvent();
       expect(wrapper.emitted('export')[0][0].includes(field.key)).toBe(true);
     });
 
@@ -51,7 +52,7 @@ describe('ExportRequirementsModal', () => {
       await toggleFieldCheckbox(TEST_INDEX);
       expect(findFieldCheckbox(TEST_INDEX).attributes('checked')).toBeUndefined();
 
-      await wrapper.findComponent(GlModal).vm.$emit('primary');
+      emitModalPrimaryEvent();
       expect(wrapper.emitted('export')[0][0].includes(field.key)).not.toBe(true);
     });
 
@@ -62,7 +63,7 @@ describe('ExportRequirementsModal', () => {
       await toggleFieldCheckbox(TEST_INDEX);
       expect(findFieldCheckbox(TEST_INDEX).attributes('checked')).toBe('true');
 
-      await wrapper.findComponent(GlModal).vm.$emit('primary');
+      emitModalPrimaryEvent();
       expect(wrapper.emitted('export')[0][0].includes(field.key)).toBe(true);
     });
   });
@@ -101,9 +102,9 @@ describe('ExportRequirementsModal', () => {
 
   describe('template', () => {
     it('GlModal open click emits export event', () => {
-      wrapper.findComponent(GlModal).vm.$emit('primary');
+      emitModalPrimaryEvent();
 
-      expect(wrapper.emitted('export')).toBeDefined();
+      expect(wrapper.emitted('export')).toHaveLength(1);
     });
 
     it('renders checkboxes for advanced exporting', () => {

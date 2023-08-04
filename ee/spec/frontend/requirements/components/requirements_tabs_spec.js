@@ -29,34 +29,38 @@ const createComponent = ({
 describe('RequirementsTabs', () => {
   let wrapper;
 
+  const findGlButton = () => wrapper.findComponent(GlButton);
+  const findGlDisclosureDropdown = () => wrapper.findComponent(GlDisclosureDropdown);
+  const findAllGlTabs = () => wrapper.findAllComponents(GlTab);
+
   beforeEach(() => {
     wrapper = createComponent();
   });
 
   describe('template', () => {
     it('renders "Open" tab', () => {
-      const tabEl = wrapper.findAllComponents(GlTab).at(0);
+      const tabEl = findAllGlTabs().at(0);
 
       expect(tabEl.text()).toContain('Open');
       expect(tabEl.findComponent(GlBadge).text()).toBe(`${mockRequirementsCount.OPENED}`);
     });
 
     it('renders "Archived" tab', () => {
-      const tabEl = wrapper.findAllComponents(GlTab).at(1);
+      const tabEl = findAllGlTabs().at(1);
 
       expect(tabEl.text()).toContain('Archived');
       expect(tabEl.findComponent(GlBadge).text()).toBe(`${mockRequirementsCount.ARCHIVED}`);
     });
 
     it('renders "All" tab', () => {
-      const tabEl = wrapper.findAllComponents(GlTab).at(2);
+      const tabEl = findAllGlTabs().at(2);
 
       expect(tabEl.text()).toContain('All');
       expect(tabEl.findComponent(GlBadge).text()).toBe(`${mockRequirementsCount.ALL}`);
     });
 
     it('renders class `active` on currently selected tab', () => {
-      const tabEl = wrapper.findAllComponents(GlTab).at(0);
+      const tabEl = findAllGlTabs().at(0);
 
       expect(tabEl.attributes('active')).toBeDefined();
     });
@@ -67,10 +71,9 @@ describe('RequirementsTabs', () => {
       });
 
       await nextTick();
-      const buttonEl = wrapper.findAllComponents(GlButton).at(0);
 
-      expect(buttonEl.exists()).toBe(true);
-      expect(buttonEl.text()).toBe('New requirement');
+      expect(findGlButton().exists()).toBe(true);
+      expect(findGlButton().text()).toBe('New requirement');
     });
 
     it('does not render "New requirement" button when current tab is not "Open" tab', async () => {
@@ -79,9 +82,8 @@ describe('RequirementsTabs', () => {
       });
 
       await nextTick();
-      const buttonEl = wrapper.findComponent(GlButton);
 
-      expect(buttonEl.exists()).toBe(false);
+      expect(findGlButton().exists()).toBe(false);
     });
 
     it('does not render "New requirement" button when `canCreateRequirement` prop is false', async () => {
@@ -91,9 +93,8 @@ describe('RequirementsTabs', () => {
       });
 
       await nextTick();
-      const buttonEl = wrapper.findComponent(GlButton);
 
-      expect(buttonEl.exists()).toBe(false);
+      expect(findGlButton().exists()).toBe(false);
     });
 
     it('disables "New requirement" button when `showCreateForm` is true', async () => {
@@ -102,11 +103,9 @@ describe('RequirementsTabs', () => {
       });
 
       await nextTick();
-      const buttonEl = wrapper.findAllComponents(GlButton);
-      const dropdownEl = wrapper.findAllComponents(GlDisclosureDropdown);
 
-      expect(buttonEl.at(0).props('disabled')).toBe(true);
-      expect(dropdownEl.at(0).props('disabled')).toBe(true);
+      expect(findGlButton().props('disabled')).toBe(true);
+      expect(findGlDisclosureDropdown().props('disabled')).toBe(true);
     });
   });
 });

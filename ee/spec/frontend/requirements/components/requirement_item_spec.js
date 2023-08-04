@@ -96,7 +96,7 @@ describe('RequirementItem', () => {
       const legacyReferencePopoverId = `legacy-reference-${mockRequirement.iid}`;
 
       expect(findLegacyReference().attributes('id')).toBe(legacyReferencePopoverId);
-      expect(wrapper.find('[data-testid="legacy-reference-popover"]').attributes('target')).toBe(
+      expect(wrapper.findByTestId('legacy-reference-popover').attributes('target')).toBe(
         legacyReferencePopoverId,
       );
     });

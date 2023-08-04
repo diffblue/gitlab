@@ -1,7 +1,7 @@
 import { GlDrawer, GlFormCheckbox, GlSprintf } from '@gitlab/ui';
 import { getByText } from '@testing-library/dom';
 import $ from 'jquery';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { extendedWrapper, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 import RequirementForm from 'ee/requirements/components/requirement_form.vue';
 import RequirementStatusBadge from 'ee/requirements/components/requirement_status_badge.vue';
@@ -210,7 +210,7 @@ describe('RequirementForm', () => {
       });
 
       it('renders issuable-body component', () => {
-        const issuableBody = wrapper.findComponent(IssuableBody);
+        const issuableBody = findIssuableBody();
 
         expect(issuableBody.exists()).toBe(true);
         expect(issuableBody.props()).toMatchObject({
@@ -229,15 +229,15 @@ describe('RequirementForm', () => {
           enableRequirementEdit: true,
         });
 
-        const issuableBody = wrapper.findComponent(IssuableBody);
+        const issuableBody = extendedWrapper(findIssuableBody());
 
         expect(findSaveButton(wrapper).exists()).toBe(true);
         expect(findSaveButton(wrapper).text()).toBe('Save changes');
-        expect(issuableBody.find('[data-testid="requirement-cancel"]').exists()).toBe(true);
+        expect(issuableBody.findByTestId('requirement-cancel').exists()).toBe(true);
       });
 
       it('renders secondary-content slot contents within issuable-body', () => {
-        const issuableBody = wrapper.findComponent(IssuableBody);
+        const issuableBody = findIssuableBody();
 
         expect(issuableBody.text()).toContain(`REQ-${mockRequirementsOpen[0].iid}`);
         expect(issuableBody.text()).toContain(`#${mockRequirementsOpen[0].workItemIid}`);
