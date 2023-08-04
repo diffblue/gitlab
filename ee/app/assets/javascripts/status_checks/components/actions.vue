@@ -15,22 +15,31 @@ export default {
   },
   i18n: {
     editButton: __('Edit'),
-    removeButton: __('Remove...'),
+    removeButton: __('Remove'),
   },
 };
 </script>
 
 <template>
-  <div class="gl-display-flex gl-justify-content-end">
-    <gl-button data-testid="edit-btn" @click="$emit('open-update-modal', statusCheck)">
-      {{ $options.i18n.editButton }}
-    </gl-button>
+  <div class="gl-display-flex gl-justify-content-end gl-mt-n2 gl-mb-n2">
     <gl-button
+      size="small"
+      icon="pencil"
+      :title="$options.i18n.editButton"
+      :aria-label="$options.i18n.editButton"
+      data-testid="edit-btn"
+      @click="$emit('open-update-modal', statusCheck)"
+    />
+    <gl-button
+      size="small"
+      category="secondary"
+      variant="danger"
+      icon="remove"
       class="gl-ml-3"
+      :title="$options.i18n.removeButton"
+      :aria-label="$options.i18n.removeButton"
       data-testid="remove-btn"
       @click="$emit('open-delete-modal', statusCheck)"
-    >
-      {{ $options.i18n.removeButton }}
-    </gl-button>
+    />
   </div>
 </template>
