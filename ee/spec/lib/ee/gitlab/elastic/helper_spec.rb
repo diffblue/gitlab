@@ -124,6 +124,12 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
   end
 
   describe '#default_mappings' do
+    it 'returns only mappings of the main index' do
+      expected = Elastic::Latest::Config.mappings.to_hash[:properties].keys
+
+      expect(helper.default_mappings[:properties].keys).to match_array(expected)
+    end
+
     context 'custom analyzers' do
       let(:custom_analyzers_mappings) do
         { properties: { title: { fields: { custom: true } } } }

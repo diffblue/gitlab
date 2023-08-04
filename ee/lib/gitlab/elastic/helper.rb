@@ -3,17 +3,6 @@
 module Gitlab
   module Elastic
     class Helper
-      ES_MAPPINGS_CLASSES = [
-        Project,
-        MergeRequest,
-        Snippet,
-        Note,
-        Milestone,
-        ProjectWiki,
-        Repository,
-        User
-      ].freeze
-
       ES_SEPARATE_CLASSES = [
         Issue,
         Note,
@@ -83,9 +72,8 @@ module Gitlab
       end
 
       def default_mappings
-        mappings = ES_MAPPINGS_CLASSES.inject({}) do |m, klass|
-          m.deep_merge(klass.__elasticsearch__.mappings.to_hash)
-        end
+        mappings = ::Elastic::Latest::Config.mappings.to_hash
+
         mappings.deep_merge(::Elastic::Latest::CustomLanguageAnalyzers.custom_analyzers_mappings)
       end
 
