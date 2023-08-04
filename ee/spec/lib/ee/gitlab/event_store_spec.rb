@@ -12,6 +12,7 @@ RSpec.describe Gitlab::EventStore do
         ::Ci::PipelineCreatedEvent,
         ::Repositories::KeepAroundRefsCreatedEvent,
         ::MergeRequests::ApprovedEvent,
+        ::MergeRequests::DraftStateChangeEvent,
         ::GitlabSubscriptions::RenewedEvent,
         ::Repositories::DefaultBranchChangedEvent
       )
