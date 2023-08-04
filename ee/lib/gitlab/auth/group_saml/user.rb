@@ -22,13 +22,8 @@ module Gitlab
 
           save("GroupSaml Provider ##{@saml_provider.id}")
 
-          if ::Feature.enabled?(:group_saml_jit_errors, @unauthenticated_group)
-            return gl_user unless valid_sign_in?
-          else
-            return unless valid_sign_in?
-          end
+          update_group_membership if valid_sign_in?
 
-          update_group_membership
           gl_user
         end
 
