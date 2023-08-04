@@ -4,6 +4,7 @@ import { helpPagePath } from '~/helpers/help_page_helper';
 import { visitUrl, joinPaths } from '~/lib/utils/url_utility';
 import { createAlert } from '~/alert';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { VALUE_STREAMS_DASHBOARD_CONFIG } from 'ee/analytics/dashboards/constants';
 import {
   PRODUCT_ANALYTICS_FEATURE_DASHBOARDS,
   I18N_DASHBOARD_LIST_TITLE,
@@ -70,8 +71,15 @@ export default {
     };
   },
   computed: {
+    showValueStreamsDashboard() {
+      return !this.isProject && this.glFeatures.groupAnalyticsDashboards;
+    },
     dashboards() {
-      return [...this.featureDashboards, ...this.userDashboards];
+      const dashboards = [...this.featureDashboards, ...this.userDashboards];
+      if (this.showValueStreamsDashboard) {
+        dashboards.push(VALUE_STREAMS_DASHBOARD_CONFIG);
+      }
+      return dashboards;
     },
     isLoading() {
       return this.$apollo.queries.userDashboards.loading;

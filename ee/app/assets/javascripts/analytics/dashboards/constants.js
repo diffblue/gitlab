@@ -110,6 +110,13 @@ export const DASHBOARD_NAMESPACE_LOAD_ERROR = s__(
 export const DASHBOARD_LABELS_LOAD_ERROR = s__(
   'DORA4Metrics|Failed to load labels matching the filter: %{labels}',
 );
+export const VALUE_STREAMS_DASHBOARD_CONFIG = {
+  title: DASHBOARD_TITLE,
+  description: DASHBOARD_DESCRIPTION,
+  slug: '/value_streams_dashboard',
+  redirect: true,
+  userDefined: false,
+};
 
 export const CHART_GRADIENT = ['#499767', '#5252B5'];
 export const CHART_GRADIENT_INVERTED = [...CHART_GRADIENT].reverse();

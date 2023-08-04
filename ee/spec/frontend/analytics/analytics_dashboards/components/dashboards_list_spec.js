@@ -5,6 +5,7 @@ import ProductAnalyticsOnboarding from 'ee/product_analytics/onboarding/componen
 import DashboardsList from 'ee/analytics/analytics_dashboards/components/dashboards_list.vue';
 import DashboardListItem from 'ee/analytics/analytics_dashboards/components/list/dashboard_list_item.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { VALUE_STREAMS_DASHBOARD_CONFIG } from 'ee/analytics/dashboards/constants';
 import {
   I18N_DASHBOARD_LIST_TITLE,
   I18N_DASHBOARD_LIST_PROJECT_DESCRIPTION,
@@ -129,12 +130,34 @@ describe('DashboardsList', () => {
   });
 
   describe('for groups', () => {
-    beforeEach(() => {
-      createWrapper({ isProject: false });
+    describe('when `groupAnalyticsDashboards` FF is disabled', () => {
+      beforeEach(() => {
+        createWrapper({ isProject: false });
+      });
+
+      it('should render the page description', () => {
+        expect(findPageDescription().text()).toContain(I18N_DASHBOARD_LIST_GROUP_DESCRIPTION);
+      });
+
+      it('should not render the Value streams dashboards link', () => {
+        expect(findListItems()).toHaveLength(0);
+      });
     });
 
-    it('should render the page description', () => {
-      expect(findPageDescription().text()).toContain(I18N_DASHBOARD_LIST_GROUP_DESCRIPTION);
+    describe('when `groupAnalyticsDashboards` FF is enabled', () => {
+      beforeEach(() => {
+        createWrapper({
+          isProject: false,
+          glFeatures: { groupAnalyticsDashboards: true },
+        });
+      });
+
+      it('should render the Value streams dashboards link', () => {
+        expect(findListItems()).toHaveLength(1);
+        expect(findListItems().at(0).props('dashboard')).toMatchObject(
+          VALUE_STREAMS_DASHBOARD_CONFIG,
+        );
+      });
     });
   });
 
