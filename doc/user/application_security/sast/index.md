@@ -98,8 +98,6 @@ and the [Maven wrapper](https://github.com/takari/maven-wrapper). However, SpotB
 
 ## Multi-project support
 
-> [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/4895) in GitLab 13.7.
-
 GitLab SAST can scan repositories that contain multiple projects.
 
 The following analyzers have multi-project support:
@@ -294,8 +292,6 @@ Pipelines now include a SAST job.
 
 #### Configure SAST with default settings only
 
-> [Introduced](https://about.gitlab.com/releases/2021/02/22/gitlab-13-9-released/#security-configuration-page-for-all-users) in GitLab 13.9
-
 NOTE:
 The configuration tool works best with no existing `.gitlab-ci.yml` file, or with a minimal
 configuration file. If you have a complex GitLab configuration file it may not be parsed
@@ -312,11 +308,7 @@ Pipelines now include a SAST job.
 
 ### Overriding SAST jobs
 
-WARNING:
-Beginning in GitLab 13.0, the use of [`only` and `except`](../../../ci/yaml/index.md#only--except)
-is no longer supported. When overriding the template, you must use [`rules`](../../../ci/yaml/index.md#rules) instead.
-
-To override a job definition, (for example, change properties like `variables` or `dependencies`),
+To override a job definition, (for example, change properties like `variables`, `dependencies`, or [`rules`](../../../ci/yaml/index.md#rules)),
 declare a job with the same name as the SAST job to override. Place this new job after the template
 inclusion and specify any additional keys under it. For example, this enables `FAIL_NEVER` for the
 `spotbugs` analyzer:
@@ -558,7 +550,6 @@ Some analyzers can be customized with CI/CD variables.
 | `FAIL_NEVER`                | SpotBugs   | Set to `1` to ignore compilation failure.                                                                                                                                                                                          |
 | `SAST_GOSEC_CONFIG`         | Gosec      | **{warning}** **[Removed](https://gitlab.com/gitlab-org/gitlab/-/issues/328301)** in GitLab 14.0 - use custom rulesets instead. Path to configuration for Gosec (optional).                                                                                                                                                                                        |
 | `PHPCS_SECURITY_AUDIT_PHP_EXTENSIONS` | phpcs-security-audit | Comma separated list of additional PHP Extensions.                                                                                                                                                             |
-| `SAST_DISABLE_BABEL`        | NodeJsScan | **{warning}** **[Removed](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/64025)** in GitLab 13.5 |
 | `SAST_SEMGREP_METRICS` | Semgrep | Set to `"false"` to disable sending anonymized scan metrics to [r2c](https://semgrep.dev). Default: `true`. Introduced in GitLab 14.0. GitLab team members can view more information in this confidential issue: `https://gitlab.com/gitlab-org/gitlab/-/issues/330565`.      |
 | `SAST_SCANNER_ALLOWED_CLI_OPTS`        | Semgrep | CLI options (arguments with value, or flags) that are passed to the underlying security scanner when running scan operation. Only a limited set of [options](#security-scanner-configuration) are accepted. Separate a CLI option and its value using either a blank space or equals (`=`) character. For example: `name1 value1` or `name1=value1`. Multiple options must be separated by blank spaces. For example: `name1 value1 name2 value2`. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/368565) in GitLab 15.3. |
 
@@ -587,12 +578,6 @@ In addition to the aforementioned SAST configuration CI/CD variables,
 all [custom variables](../../../ci/variables/index.md#define-a-cicd-variable-in-the-ui) are propagated
 to the underlying SAST analyzer images if
 [the SAST vendored template](#configuration) is used.
-
-NOTE:
-In [GitLab 13.3 and earlier](https://gitlab.com/gitlab-org/gitlab/-/issues/220540),
-variables whose names started with the following prefixes are **not** propagated to either the
-analyzer containers or SAST Docker container: `DOCKER_`, `CI`, `GITLAB_`, `FF_`, `HOME`, `PWD`,
-`OLDPWD`, `PATH`, `SHLVL`, `HOSTNAME`.
 
 ### Experimental features
 
