@@ -6,16 +6,6 @@ RSpec.describe PhoneVerification::TelesignCallbacksController, feature_category:
   describe 'POST #notify' do
     subject(:do_request) { post phone_verification_telesign_callback_path }
 
-    context 'when feature is disabled' do
-      it 'returns not found status', :aggregate_failures do
-        stub_feature_flags(telesign_callback: false)
-
-        do_request
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
-
     context 'when callback request is not valid (authentication failed)' do
       it 'returns not found status', :aggregate_failures do
         expect_next_instance_of(
