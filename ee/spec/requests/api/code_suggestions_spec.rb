@@ -179,6 +179,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
   describe 'POST /code_suggestions/completions' do
     let(:access_code_suggestions) { true }
+    let(:global_instance_id) { 'instance-ABC' }
+    let(:global_user_id) { 'user-ABC' }
 
     let(:body) do
       {
@@ -202,6 +204,10 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       allow(Ability).to receive(:allowed?).and_call_original
       allow(Ability).to receive(:allowed?).with(current_user, :access_code_suggestions, :global)
                                           .and_return(access_code_suggestions)
+
+      allow_next_instance_of(API::Helpers::GlobalIds::Generator) do |generator|
+        allow(generator).to receive(:generate).with(current_user).and_return([global_instance_id, global_user_id])
+      end
     end
 
     shared_examples 'code completions endpoint' do
@@ -237,6 +243,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             'Body' => body.to_json,
             'Header' => {
               'X-Gitlab-Authentication-Type' => ['oidc'],
+              'X-Gitlab-Instance-Id' => [global_instance_id],
+              'X-Gitlab-Global-User-Id' => [global_user_id],
               'Authorization' => ["Bearer #{token}"],
               'Content-Type' => ['application/json'],
               'User-Agent' => ['Super Awesome Browser 43.144.12']
@@ -284,6 +292,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
                 'X-Gitlab-Authentication-Type' => ['oidc'],
                 'Authorization' => ["Bearer #{token}"],
                 'Content-Type' => ['application/json'],
+                'X-Gitlab-Instance-Id' => [global_instance_id],
+                'X-Gitlab-Global-User-Id' => [global_user_id],
                 'X-Gitlab-Cs-Accepts' => ['accepts'],
                 'X-Gitlab-Cs-Requests' => ['requests'],
                 'X-Gitlab-Cs-Errors' => ['errors'],
