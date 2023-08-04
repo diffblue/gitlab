@@ -7,6 +7,7 @@ module API
     feature_category :code_suggestions
 
     helpers ::API::Helpers::AiProxyHelper
+    helpers ::API::Helpers::GlobalIds
 
     PROJECT_CODE_SUGGESTIONS_ADD_ON_CACHE_KEY = 'project-%{project_id}-code-suggestions-add-on-cache'
 
@@ -35,7 +36,10 @@ module API
       def model_gateway_headers(headers, gateway_token)
         telemetry_headers = headers.select { |k| /\Ax-gitlab-cs-/i.match?(k) }
 
+        instance_id, user_id = global_instance_and_user_id_for(current_user)
         {
+          'X-Gitlab-Instance-Id' => instance_id,
+          'X-Gitlab-Global-User-Id' => user_id,
           'X-Gitlab-Authentication-Type' => 'oidc',
           'Authorization' => "Bearer #{gateway_token}",
           'Content-Type' => 'application/json',
