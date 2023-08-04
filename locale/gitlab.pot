@@ -11679,12 +11679,6 @@ msgstr ""
 msgid "Comment"
 msgstr ""
 
-msgid "Comment & resolve thread"
-msgstr ""
-
-msgid "Comment & unresolve thread"
-msgstr ""
-
 msgid "Comment '%{label}' position"
 msgstr ""
 
