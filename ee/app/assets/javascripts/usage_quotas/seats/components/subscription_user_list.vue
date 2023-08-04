@@ -77,6 +77,7 @@ export default {
       },
       update({ namespace }) {
         return {
+          id: namespace?.addOnPurchase?.id,
           totalValue: namespace?.addOnPurchase?.purchasedQuantity ?? null,
         };
       },
@@ -278,9 +279,9 @@ export default {
 
       <template v-if="hasPurchasedCodeSuggestionsAddon" #cell(codeSuggestionsAddon)="{ item }">
         <code-suggestions-addon-assignment
-          data-testid="code-suggestions-addon-field"
           :user-id="item.user.id"
           :add-ons="item.user.add_ons"
+          :add-on-purchase-id="addOnPurchase.id"
         />
       </template>
 

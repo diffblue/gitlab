@@ -1,0 +1,6 @@
+mutation userAddOnAssignmentRemove($input: UserAddOnAssignmentRemoveInput!) {
+  userAddOnAssignmentRemove(input: $input) {
+    errors
+    clientMutationId
+  }
+}
