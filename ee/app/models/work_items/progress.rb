@@ -19,7 +19,7 @@ module WorkItems
     private
 
     def update_all_parent_objectives_progress
-      return unless work_item.project.okr_automatic_rollups_enabled?
+      return unless rollups_enabled?
       return unless saved_change_to_attribute?(:progress)
 
       ::WorkItems::UpdateParentObjectivesProgressWorker.perform_async(work_item.id)
@@ -27,6 +27,11 @@ module WorkItems
 
     def check_start_end_values_to_not_be_same
       errors.add(:start_value, "cannot be same as end value") if start_value == end_value
+    end
+
+    def rollups_enabled?
+      work_item.project.okr_automatic_rollups_enabled? &&
+        rollup_progress?
     end
   end
 end
