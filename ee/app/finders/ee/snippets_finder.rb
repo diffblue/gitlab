@@ -14,8 +14,8 @@ module EE
 
     private
 
-    override :init_collection
-    def init_collection
+    override :all_snippets
+    def all_snippets
       return snippets_of_authorized_projects_or_personal if authorized_and_user_personal.present?
 
       super
