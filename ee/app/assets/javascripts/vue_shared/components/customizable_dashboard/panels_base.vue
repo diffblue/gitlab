@@ -111,7 +111,7 @@ export default {
 <template>
   <div
     ref="panelWrapper"
-    class="grid-stack-item-content gl-shadow-sm gl-rounded-base gl-p-4 gl-display-flex gl-flex-direction-column gl-bg-white"
+    class="grid-stack-item-content gl-shadow-sm gl-rounded-small gl-p-4 gl-display-flex gl-flex-direction-column gl-bg-white"
     :class="{ 'gl-border-t-2 gl-border-t-solid gl-border-red-500': showErrorState }"
   >
     <tooltip-on-truncate
