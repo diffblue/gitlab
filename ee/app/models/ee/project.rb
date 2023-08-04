@@ -189,7 +189,11 @@ module EE
       scope :within_shards, -> (shard_names) { where(repository_storage: Array(shard_names)) }
       scope :verification_failed_repos, -> { joins(:repository_state).merge(ProjectRepositoryState.verification_failed_repos) }
       scope :verification_failed_wikis, -> { joins(:repository_state).merge(ProjectRepositoryState.verification_failed_wikis) }
-      scope :for_plan_name, -> (name) { joins(namespace: { gitlab_subscription: :hosted_plan }).where(plans: { name: name }) }
+      scope :for_plan_name, -> (name) do
+        joins(namespace: { gitlab_subscription: :hosted_plan }).where(plans: { name: name })
+        .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/419988")
+      end
+
       scope :with_feature_available, -> (name) do
         groups_of_these_projects = ::Group.id_in(select(:namespace_id))
         root_groups_of_these_projects = groups_of_these_projects.roots

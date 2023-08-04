@@ -59,11 +59,13 @@ module EE
         left_joins(gitlab_subscription: :hosted_plan)
           .where(gitlab_subscriptions: { trial: [nil, false] })
           .or(GitlabSubscription.where(trial_ends_on: ..Date.yesterday))
+           .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/419988")
       end
 
       scope :in_default_plan, -> do
         left_joins(gitlab_subscription: :hosted_plan)
           .where(plans: { name: [nil, *::Plan.default_plans] })
+          .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/419988")
       end
 
       scope :eligible_for_trial, -> do
@@ -72,7 +74,7 @@ module EE
             parent_id: nil,
             gitlab_subscriptions: { trial: [nil, false], trial_ends_on: [nil] },
             plans: { name: [nil, *::Plan::PLANS_ELIGIBLE_FOR_TRIAL] }
-          )
+          ).allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/419988")
       end
 
       scope :with_feature_available_in_plan, -> (feature) do
@@ -82,6 +84,7 @@ module EE
           .where("gitlab_subscriptions.namespace_id = namespaces.id")
           .select('1')
         where("EXISTS (?)", matcher)
+          .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/419988")
       end
 
       scope :namespace_settings_with_ai_enabled, -> do
@@ -96,7 +99,7 @@ module EE
           .joins("LEFT OUTER JOIN \"plans\" ON \"plans\".\"id\" = \"gitlab_subscriptions\".\"hosted_plan_id\"")
           .where(
             plans: { name: plan_names }
-          )
+          ).allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/419988")
       end
 
       delegate :eligible_additional_purchased_storage_size, :additional_purchased_storage_size=,

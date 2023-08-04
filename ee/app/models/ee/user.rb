@@ -356,6 +356,7 @@ module EE
         .from("(#{namespace_union_for_reporter_developer_maintainer_owned}) #{::Namespace.table_name}")
         .include_gitlab_subscription
         .where(gitlab_subscriptions: { hosted_plan: ::Plan.where(name: paid_hosted_plans) })
+        .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/419988")
 
       if exclude_trials
         return namespaces_with_plans
@@ -374,6 +375,7 @@ module EE
         .from("(#{namespace_union_for_owned}) #{::Namespace.table_name}")
         .include_gitlab_subscription
         .where(gitlab_subscriptions: { hosted_plan: ::Plan.where(name: plans) })
+        .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/419988")
         .any?
     end
 
