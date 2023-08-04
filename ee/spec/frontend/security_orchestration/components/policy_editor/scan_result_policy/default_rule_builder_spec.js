@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import { GlSprintf } from '@gitlab/ui';
+import BranchExceptionSelector from 'ee/security_orchestration/components/branch_exception_selector.vue';
 import BaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/scan_result_policy/base_layout/base_layout_component.vue';
 import DefaultRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/default_rule_builder.vue';
 import PolicyRuleBranchSelection from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_branch_selection.vue';
@@ -36,6 +37,7 @@ describe('DefaultRuleBuilder', () => {
   const findScanTypeSelect = () => wrapper.findComponent(ScanTypeSelect);
   const findScanFilterSelector = () => wrapper.findComponent(ScanFilterSelector);
   const findPolicyRuleBranchSelection = () => wrapper.findComponent(PolicyRuleBranchSelection);
+  const findBranchExceptionSelector = () => wrapper.findComponent(BranchExceptionSelector);
 
   beforeEach(() => {
     createComponent();
@@ -105,6 +107,41 @@ describe('DefaultRuleBuilder', () => {
           severity_levels: [],
           vulnerability_states: [],
           branch_type: 'protected',
+        },
+      ],
+    ]);
+  });
+
+  it('does not render branch exceptions selector on group level', () => {
+    expect(findBranchExceptionSelector().exists()).toBe(false);
+  });
+
+  it('selects branch exceptions', () => {
+    createComponent({
+      provide: {
+        glFeatures: {
+          securityPoliciesBranchExceptions: true,
+        },
+        namespaceType: NAMESPACE_TYPES.PROJECT,
+      },
+    });
+
+    findBranchExceptionSelector().vm.$emit('select', { branch_exceptions: ['main', 'test'] });
+
+    expect(wrapper.emitted('set-scan-type')).toBeUndefined();
+
+    findScanTypeSelect().vm.$emit('select', SCAN_FINDING);
+
+    expect(wrapper.emitted('set-scan-type')).toEqual([
+      [
+        {
+          type: SCAN_FINDING,
+          scanners: [],
+          vulnerabilities_allowed: 0,
+          severity_levels: [],
+          vulnerability_states: [],
+          branch_type: 'protected',
+          branch_exceptions: ['main', 'test'],
         },
       ],
     ]);

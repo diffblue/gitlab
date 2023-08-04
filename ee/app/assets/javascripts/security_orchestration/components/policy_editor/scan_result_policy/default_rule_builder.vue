@@ -1,6 +1,9 @@
 <script>
 import { GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import BranchExceptionSelector from 'ee/security_orchestration/components/branch_exception_selector.vue';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import ScanFilterSelector from '../scan_filter_selector.vue';
 import { SCAN_RESULT_BRANCH_TYPE_OPTIONS } from '../constants';
 import { getDefaultRule } from './lib';
@@ -10,19 +13,21 @@ import ScanTypeSelect from './base_layout/scan_type_select.vue';
 
 export default {
   emptyRuleCopy: s__(
-    'ScanResultPolicy|When %{scanners} find scanner specified conditions in an open merge request targeting the %{branches} and match %{boldDescription} of the following criteria',
+    'ScanResultPolicy|When %{scanners} find scanner specified conditions in an open merge request targeting the %{branches} %{branchExceptions} and match %{boldDescription} of the following criteria',
   ),
   i18n: {
     tooltipFilterDisabledTitle: s__('ScanResultPolicy|Select a scan type before adding criteria'),
   },
   name: 'DefaultRuleBuilder',
   components: {
+    BranchExceptionSelector,
     BaseLayoutComponent,
     GlSprintf,
     PolicyRuleBranchSelection,
     ScanTypeSelect,
     ScanFilterSelector,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: ['namespaceType'],
   props: {
     initRule: {
@@ -34,9 +39,16 @@ export default {
     return {
       selectedBranches: [],
       selectedBranchType: null,
+      selectedExceptions: [],
     };
   },
   computed: {
+    branchExceptions() {
+      return this.initRule.branch_exceptions;
+    },
+    isProject() {
+      return this.namespaceType === NAMESPACE_TYPES.PROJECT;
+    },
     ruleWithSelectedBranchesOnly() {
       return { branches: this.selectedBranches };
     },
@@ -58,6 +70,10 @@ export default {
         delete rule.branches;
       }
 
+      if (this.selectedExceptions.length > 0) {
+        rule.branch_exceptions = this.selectedExceptions;
+      }
+
       this.$emit('set-scan-type', rule);
     },
     setBranchType({ branch_type: branchType }) {
@@ -65,6 +81,9 @@ export default {
     },
     setSelectedBranches({ branches }) {
       this.selectedBranches = branches;
+    },
+    setSelectedExceptions({ branch_exceptions: branchExceptions }) {
+      this.selectedExceptions = branchExceptions;
     },
   },
 };
@@ -93,6 +112,14 @@ export default {
                   @changed="setSelectedBranches"
                   @set-branch-type="setBranchType"
                   @error="$emit('error', $event)"
+                />
+              </template>
+
+              <template #branchExceptions>
+                <branch-exception-selector
+                  v-if="isProject && glFeatures.securityPoliciesBranchExceptions"
+                  :selected-exceptions="selectedExceptions"
+                  @select="setSelectedExceptions"
                 />
               </template>
 

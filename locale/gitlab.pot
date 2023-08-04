@@ -41384,7 +41384,7 @@ msgstr ""
 msgid "ScanResultPolicy|When %{scanType} in an open merge request targeting %{branches} %{branchExceptions} and the licenses match all of the following criteria:"
 msgstr ""
 
-msgid "ScanResultPolicy|When %{scanners} find scanner specified conditions in an open merge request targeting the %{branches} and match %{boldDescription} of the following criteria"
+msgid "ScanResultPolicy|When %{scanners} find scanner specified conditions in an open merge request targeting the %{branches} %{branchExceptions} and match %{boldDescription} of the following criteria"
 msgstr ""
 
 msgid "ScanResultPolicy|license status"
