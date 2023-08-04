@@ -37,6 +37,7 @@ module EE
         unassign_policy_project
         sync_new_group_policies
         delete_compliance_framework_setting
+        schedule_vulnerability_reads_update
       end
 
       override :remove_paid_features
@@ -94,6 +95,12 @@ module EE
 
       def delete_compliance_framework_setting
         project.compliance_framework_setting&.delete
+      end
+
+      def schedule_vulnerability_reads_update
+        return unless project.project_setting&.has_vulnerabilities?
+
+        Vulnerabilities::UpdateNamespaceIdsOfVulnerabilityReadsWorker.perform_async(project.id)
       end
     end
   end
