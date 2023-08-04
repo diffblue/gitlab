@@ -4,6 +4,7 @@ import { GlButton, GlModal } from '@gitlab/ui';
 import { createMockSubscription } from 'mock-apollo-client';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { GENIE_CHAT_MODEL_ROLES } from 'ee/ai/constants';
 import AiCommitMessage from 'ee/vue_merge_request_widget/components/ai_commit_message.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import aiCommitMessageMutation from 'ee/vue_merge_request_widget/queries/ai_commit_message.mutation.graphql';
@@ -16,6 +17,12 @@ describe('Ai Commit Message component', () => {
   let aiResponseSubscriptionHandler;
   let aiCommitMessageMutationHandler;
   const userId = 99;
+
+  const subscriptionResponsePartial = {
+    requestId: '123',
+    role: GENIE_CHAT_MODEL_ROLES.assistant,
+    timestamp: '2021-05-26T14:00:00.000Z',
+  };
 
   const createComponent = () => {
     window.gon = { current_user_id: userId };
@@ -59,6 +66,7 @@ describe('Ai Commit Message component', () => {
         aiCompletionResponse: {
           responseBody: 'commit message',
           errors: [],
+          ...subscriptionResponsePartial,
         },
       },
     });

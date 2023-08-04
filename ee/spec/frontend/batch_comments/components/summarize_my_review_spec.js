@@ -7,6 +7,7 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 import SummarizeMyReview from 'ee/batch_comments/components/summarize_my_review.vue';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import summarizeReviewMutation from 'ee/batch_comments/graphql/summarize_review.mutation.graphql';
+import { GENIE_CHAT_MODEL_ROLES } from 'ee/ai/constants';
 
 jest.mock('~/alert');
 
@@ -30,6 +31,12 @@ function createComponent() {
   });
 }
 
+const subscriptionResponsePartial = {
+  requestId: '123',
+  role: GENIE_CHAT_MODEL_ROLES.assistant,
+  timestamp: '2021-05-26T14:00:00.000Z',
+};
+
 const findButton = () => wrapper.findByTestId('mutation-trigger');
 
 describe('Generate test file drawer component', () => {
@@ -43,6 +50,7 @@ describe('Generate test file drawer component', () => {
         aiCompletionResponse: {
           responseBody: 'This is a summary',
           errors: [],
+          ...subscriptionResponsePartial,
         },
       },
     });
@@ -80,6 +88,7 @@ describe('Generate test file drawer component', () => {
         aiCompletionResponse: {
           responseBody: null,
           errors: ['Error'],
+          ...subscriptionResponsePartial,
         },
       },
     });

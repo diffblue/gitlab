@@ -4,6 +4,7 @@ import { GlAlert } from '@gitlab/ui';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { GENIE_CHAT_MODEL_ROLES } from 'ee/ai/constants';
 import GenerateTestFileDrawer from 'ee/ai/components/generate_test_file_drawer.vue';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import testFileGeneratorMutation from 'ee/ai/graphql/test_file_generator.mutation.graphql';
@@ -30,6 +31,12 @@ function createComponent() {
   });
 }
 
+const subscriptionResponsePartial = {
+  requestId: '123',
+  role: GENIE_CHAT_MODEL_ROLES.assistant,
+  timestamp: '2021-05-26T14:00:00.000Z',
+};
+
 describe('Generate test file drawer component', () => {
   beforeEach(() => {
     window.gon.current_user_id = 1;
@@ -41,6 +48,7 @@ describe('Generate test file drawer component', () => {
         aiCompletionResponse: {
           responseBody: '<pre><code>This is test code</code></pre>',
           errors: [],
+          ...subscriptionResponsePartial,
         },
       },
     });
@@ -97,6 +105,7 @@ describe('Generate test file drawer component', () => {
         aiCompletionResponse: {
           responseBody: 'As the file does not contain any code',
           errors: [],
+          ...subscriptionResponsePartial,
         },
       },
     });

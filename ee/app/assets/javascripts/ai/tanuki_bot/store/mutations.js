@@ -1,41 +1,36 @@
 import { isObject } from 'lodash';
-import { MESSAGE_TYPES, ERROR_MESSAGE } from '../constants';
 import * as types from './mutation_types';
 
 export default {
-  [types.SET_LOADING](state, loading) {
-    state.loading = loading;
-  },
-  [types.ADD_USER_MESSAGE](state, msg) {
-    state.messages.push({
-      id: state.messages.length,
-      role: MESSAGE_TYPES.USER,
-      content: msg,
-    });
-  },
-  [types.ADD_TANUKI_MESSAGE](state, data) {
-    if (isObject(data)) {
-      const { msg, content, ...rest } = data;
-      state.messages.push({
-        id: state.messages.length,
-        role: MESSAGE_TYPES.TANUKI,
-        ...rest,
-        content: content || msg,
-      });
-    } else {
-      state.messages.push({
-        id: state.messages.length,
-        role: MESSAGE_TYPES.TANUKI,
-        content: data,
-      });
+  [types.ADD_MESSAGE](state, newMessageData) {
+    if (newMessageData && isObject(newMessageData) && Object.values(newMessageData).length) {
+      const index = state.messages.findIndex((msg) => msg.requestId === newMessageData.requestId);
+      const hasMsgWithRequestId = index > -1;
+      const msgWithRequestId = hasMsgWithRequestId && state.messages[index];
+      let isLastMessage = false;
+
+      if (hasMsgWithRequestId) {
+        if (msgWithRequestId.role.toLowerCase() === newMessageData.role.toLowerCase()) {
+          // We update the existing message object instead of pushing a new one
+          state.messages[index] = {
+            ...msgWithRequestId,
+            ...newMessageData,
+          };
+        } else {
+          // We add the new ASSISTANT message
+          isLastMessage = index === state.messages.length - 1;
+          state.messages.splice(index + 1, 0, newMessageData);
+        }
+      } else {
+        // It's the new message, so just push it to the end of the Array
+        state.messages.push(newMessageData);
+      }
+      if (isLastMessage) {
+        state.loading = false;
+      }
     }
   },
-  [types.ADD_ERROR_MESSAGE](state, msg) {
-    state.messages.push({
-      id: state.messages.length,
-      role: MESSAGE_TYPES.TANUKI,
-      content: msg ? msg.content || msg.errors.join(' ') : '',
-      errors: [ERROR_MESSAGE],
-    });
+  [types.SET_LOADING](state, loading) {
+    state.loading = loading;
   },
 };
