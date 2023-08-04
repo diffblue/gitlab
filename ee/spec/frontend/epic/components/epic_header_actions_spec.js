@@ -1,4 +1,4 @@
-import { GlDropdown } from '@gitlab/ui';
+import { GlDisclosureDropdown } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import EpicHeaderActions from 'ee/epic/components/epic_header_actions.vue';
 import createStore from 'ee/epic/store';
@@ -41,12 +41,12 @@ describe('EpicHeaderActions component', () => {
 
   const findCloseEpicButton = () => wrapper.findByRole('button', { name: 'Close epic' });
   const findCopyReferenceDropdownItem = () =>
-    wrapper.findByRole('menuitem', { name: 'Copy reference' });
-  const findDeleteEpicButton = () => wrapper.findByRole('menuitem', { name: 'Delete epic' });
+    wrapper.findByRole('button', { name: 'Copy reference' });
+  const findDeleteEpicButton = () => wrapper.findByRole('button', { name: 'Delete epic' });
   const findDeleteEpicModal = () => wrapper.findComponent(DeleteIssueModal);
-  const findDropdown = () => wrapper.findComponent(GlDropdown);
+  const findDropdown = () => wrapper.findComponent(GlDisclosureDropdown);
   const findEditButton = () => wrapper.findByRole('button', { name: 'Edit title and description' });
-  const findNewEpicButton = () => wrapper.findByRole('menuitem', { name: 'New epic' });
+  const findNewEpicButton = () => wrapper.findByRole('link', { name: 'New epic' });
   const findNotificationToggle = () => wrapper.findComponent(SidebarSubscriptionsWidget);
   const findReopenEpicButton = () => wrapper.findByRole('button', { name: 'Reopen epic' });
 
@@ -79,10 +79,6 @@ describe('EpicHeaderActions component', () => {
       it('renders `Close epic` text', () => {
         expect(findCloseEpicButton().text()).toBe('Close epic');
       });
-
-      it('has `btn-close` class', () => {
-        expect(findCloseEpicButton().classes()).toContain('btn-close');
-      });
     });
 
     describe('when epic is closed', () => {
@@ -92,10 +88,6 @@ describe('EpicHeaderActions component', () => {
 
       it('renders `Reopen epic` text', () => {
         expect(findReopenEpicButton().text()).toBe('Reopen epic');
-      });
-
-      it('has `btn-open` class', () => {
-        expect(findReopenEpicButton().classes()).toContain('btn-open');
       });
     });
   });

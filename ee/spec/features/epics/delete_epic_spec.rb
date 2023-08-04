@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Delete Epic', :js, feature_category: :portfolio_management do
+  include Spec::Support::Helpers::ModalHelpers
+
   let(:user) { create(:user) }
   let(:group) { create(:group, :public) }
   let(:epic) { create(:epic, group: group) }
@@ -35,8 +37,10 @@ RSpec.describe 'Delete Epic', :js, feature_category: :portfolio_management do
     end
 
     it 'deletes the issue and redirect to epic list' do
-      click_button _('Delete epic') # Click button in dropdown menu
-      click_button _('Delete epic') # Click button in confirmation modal
+      click_button _('Delete epic')
+      within_modal do
+        click_button _('Delete epic')
+      end
 
       expect(find('.issuable-list')).not_to have_content(epic.title)
       expect(find('.issuable-list')).to have_content(epic2.title)
