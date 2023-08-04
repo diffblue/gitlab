@@ -21,8 +21,8 @@ export default {
 </script>
 
 <template>
-  <table class="table m-0">
-    <thead class="thead-white text-nowrap">
+  <table class="table b-table gl-table b-table-stacked-md gl-m-0">
+    <thead class="text-nowrap">
       <slot name="thead" v-bind="$options.HEADERS"></slot>
     </thead>
     <tbody>

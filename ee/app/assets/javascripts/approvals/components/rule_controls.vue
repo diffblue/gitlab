@@ -22,12 +22,12 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div class="gl-py-4 gl-px-5">
     <gl-button @click="requestEditRule(rule)">
       <span>{{ __('Edit') }}</span>
     </gl-button>
     <gl-button
-      class="gl-ml-3 btn btn-inverted"
+      class="gl-ml-2 btn btn-inverted"
       variant="danger"
       category="primary"
       icon="remove"

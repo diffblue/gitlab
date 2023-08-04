@@ -110,7 +110,7 @@ export default {
           </th>
           <th v-if="settings.allowMultiRule">{{ branches }}</th>
           <th>{{ approvalsRequired }}</th>
-          <th></th>
+          <th class="gl-md-pl-0! gl-md-pr-0!"></th>
         </tr>
       </template>
       <template #tbody="{ rules }">
@@ -125,22 +125,26 @@ export default {
             :can-edit="canEdit(rule)"
           />
           <tr v-else :key="index">
-            <td class="js-name">
+            <td class="js-name gl-vertical-align-middle!" :data-label="__('Name')">
               <rule-name :name="rule.name" />
             </td>
-            <td
-              class="js-members"
-              :class="settings.allowMultiRule ? 'd-none d-sm-table-cell' : null"
-            >
+            <td class="js-members" :data-label="__('Approvers')">
               <user-avatar-list :items="rule.eligibleApprovers" :img-size="24" empty-text="" />
             </td>
-            <td v-if="settings.allowMultiRule" class="js-branches">
+            <td
+              v-if="settings.allowMultiRule"
+              class="js-branches gl-vertical-align-middle!"
+              :data-label="__('Target branch')"
+            >
               <rule-branches :rule="rule" />
             </td>
-            <td class="js-approvals-required">
+            <td class="js-approvals-required gl-text-right" :data-label="__('Approvals required')">
               <rule-input :rule="rule" />
             </td>
-            <td class="text-nowrap px-2 w-0 js-controls">
+            <td
+              class="text-nowrap js-controls gl-md-pt-0! gl-md-pb-0! gl-md-pl-0! gl-md-pr-0!"
+              :data-label="__('Actions')"
+            >
               <rule-controls v-if="canEdit(rule)" :rule="rule" />
             </td>
           </tr>

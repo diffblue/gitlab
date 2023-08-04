@@ -32,8 +32,8 @@ export default {
         </gl-sprintf>
       </div>
     </td>
-    <td class="gl-px-2! gl-text-right">
-      <gl-button @click="$emit('enable')">
+    <td class="gl-text-right">
+      <gl-button class="gl-mt-2" @click="$emit('enable')">
         {{ __('Enable') }}
       </gl-button>
     </td>

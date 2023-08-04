@@ -1,7 +1,7 @@
-import { GlLoadingIcon } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { GlCard, GlIcon, GlLoadingIcon } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import App from 'ee/approvals/components/app.vue';
 import ModalRuleCreate from 'ee/approvals/components/modal_rule_create.vue';
 import ModalRuleRemove from 'ee/approvals/components/modal_rule_remove.vue';
@@ -23,15 +23,21 @@ describe('EE Approvals App', () => {
 
   const targetBranchName = 'development';
   const factory = () => {
-    wrapper = shallowMount(App, {
+    wrapper = shallowMountExtended(App, {
       slots,
       store: new Vuex.Store(store),
+      stubs: {
+        GlCard,
+      },
     });
   };
+
   const findAddButton = () => wrapper.find('[data-testid="add-approval-rule"]');
   const findResetButton = () => wrapper.find('[data-testid="reset-to-defaults"]');
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findRules = () => wrapper.find(`.${TEST_RULES_CLASS}`);
+  const findRulesCount = () => wrapper.findByTestId('rules-count');
+  const findRulesCountIcon = () => wrapper.findComponent(GlIcon);
 
   beforeEach(() => {
     slots = {
@@ -141,6 +147,19 @@ describe('EE Approvals App', () => {
         };
       });
 
+      it('shows the empty rules count', () => {
+        factory();
+
+        expect(findRulesCount().text()).toBe('0');
+      });
+
+      it('shows the correct rules count icon', () => {
+        factory();
+
+        expect(findRulesCountIcon().exists()).toBe(true);
+        expect(findRulesCountIcon().props('name')).toBe('approval');
+      });
+
       it('does show Rules', () => {
         factory();
 
@@ -159,6 +178,12 @@ describe('EE Approvals App', () => {
       beforeEach(() => {
         store.modules.approvals.state.hasLoaded = true;
         store.modules.approvals.state.rules = [{ id: 1 }];
+      });
+
+      it('shows the correct rules count', () => {
+        factory();
+
+        expect(findRulesCount().text()).toBe('1');
       });
 
       it('shows rules', () => {

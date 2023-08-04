@@ -45,7 +45,7 @@ export default {
 
 <template>
   <div class="gl-display-flex gl-align-items-center">
-    <span class="gl-mt-n2">{{ name }}</span>
+    <span class="gl-mt-n1">{{ name }}</span>
     <span v-if="description" class="gl-ml-3">
       <gl-icon
         ref="helpIcon"

@@ -155,7 +155,7 @@ export default {
 
 <template>
   <div>
-    <gl-loading-icon v-if="!isLoaded" size="lg" />
+    <gl-loading-icon v-if="!isLoaded" size="md" />
     <gl-alert
       v-if="errorMessage"
       variant="danger"

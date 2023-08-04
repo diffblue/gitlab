@@ -49,16 +49,16 @@ export default {
 
 <template>
   <tr>
-    <td colspan="2">
+    <td colspan="2" :data-label="__('Approvers')">
       <empty-rule-name :eligible-approvers-docs-path="eligibleApproversDocsPath" />
     </td>
-    <td v-if="showProtectedBranch">
+    <td v-if="showProtectedBranch" :data-label="__('Target branch')">
       <rule-branches :rule="rule" />
     </td>
-    <td class="js-approvals-required">
+    <td class="js-approvals-required gl-text-right" :data-label="__('Approvals required')">
       <rule-input :rule="rule" :is-mr-edit="isMrEdit" />
     </td>
-    <td>
+    <td class="gl-md-pl-0! gl-md-pr-0!">
       <gl-button
         v-if="!allowMultiRule && canEdit"
         category="secondary"
