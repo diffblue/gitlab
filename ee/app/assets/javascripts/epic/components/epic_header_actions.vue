@@ -1,9 +1,9 @@
 <script>
 import {
   GlButton,
-  GlDropdown,
-  GlDropdownDivider,
-  GlDropdownItem,
+  GlDisclosureDropdown,
+  GlDisclosureDropdownItem,
+  GlDisclosureDropdownGroup,
   GlModalDirective,
   GlTooltipDirective,
 } from '@gitlab/ui';
@@ -35,9 +35,9 @@ export default {
   components: {
     DeleteIssueModal,
     GlButton,
-    GlDropdown,
-    GlDropdownItem,
-    GlDropdownDivider,
+    GlDisclosureDropdown,
+    GlDisclosureDropdownItem,
+    GlDisclosureDropdownGroup,
     SidebarSubscriptionsWidget,
   },
   mixins: [glFeatureFlagMixin()],
@@ -52,9 +52,6 @@ export default {
       'reference',
     ]),
     ...mapGetters(['isEpicOpen']),
-    actionButtonClass() {
-      return this.isEpicOpen ? 'btn-close' : 'btn-open';
-    },
     actionButtonText() {
       return this.isEpicOpen ? __('Close epic') : __('Reopen epic');
     },
@@ -70,14 +67,90 @@ export default {
     showNotificationToggle() {
       return this.isMrSidebarMoved && isLoggedIn();
     },
+    newEpicDropdownItem() {
+      return {
+        text: this.$options.i18n.newEpicText,
+        href: this.newEpicWebUrl,
+      };
+    },
+    copyReferenceDropdownItem() {
+      return {
+        text: this.$options.i18n.copyReferenceText,
+        action: this.closeDropdownAfterAction.bind(this, this.copyReference),
+        extraAttrs: {
+          'data-clipboard-text': this.reference,
+        },
+      };
+    },
+    toggleEpicStatusDropdownItem() {
+      return {
+        text: this.actionButtonText,
+        action: this.closeDropdownAfterAction.bind(
+          this,
+          this.toggleEpicStatus.bind(this, this.isEpicOpen),
+        ),
+        extraAttrs: {
+          'data-testid': 'toggle-status-button',
+        },
+      };
+    },
+    actionsDropdownGroupMobile() {
+      const items = [];
+
+      if (this.canUpdate) {
+        items.push({
+          text: this.$options.i18n.edit,
+          action: this.closeDropdownAfterAction.bind(this, this.editEpic),
+        });
+      }
+
+      if (this.canCreate) {
+        items.push(this.newEpicDropdownItem);
+      }
+
+      if (this.canUpdate) {
+        items.push(this.toggleEpicStatusDropdownItem);
+      }
+
+      if (this.isMrSidebarMoved) {
+        items.push(this.copyReferenceDropdownItem);
+      }
+
+      return { items };
+    },
+    actionsDropdownGroupDesktop() {
+      const items = [];
+
+      if (this.canUpdate && this.glFeatures.moveCloseIntoDropdown) {
+        items.push(this.toggleEpicStatusDropdownItem);
+      }
+
+      if (this.canCreate) {
+        items.push(this.newEpicDropdownItem);
+      }
+
+      if (this.isMrSidebarMoved) {
+        items.push(this.copyReferenceDropdownItem);
+      }
+
+      return { items };
+    },
   },
   methods: {
     ...mapActions(['toggleEpicStatus']),
+    closeDropdownAfterAction(action) {
+      action();
+      this.closeActionsDropdown();
+    },
     copyReference() {
       toast(__('Reference copied'));
     },
     editEpic() {
       issuesEventHub.$emit('open.form');
+    },
+    closeActionsDropdown() {
+      this.$refs.epicActionsDropdownMobile?.close();
+      this.$refs.epicActionsDropdownDesktop?.close();
     },
   },
 };
@@ -85,42 +158,35 @@ export default {
 
 <template>
   <div class="gl-display-contents">
-    <gl-dropdown
+    <gl-disclosure-dropdown
       v-if="showMobileDropdown"
-      class="gl-sm-display-none gl-w-full gl-mt-3"
+      ref="epicActionsDropdownMobile"
+      class="gl-w-full gl-mt-3"
+      category="secondary"
+      :auto-close="false"
+      :toggle-text="$options.i18n.dropdownText"
+      toggle-class="gl-display-flex gl-sm-display-none!"
       block
-      :text="$options.i18n.dropdownText"
     >
-      <template v-if="showNotificationToggle">
+      <gl-disclosure-dropdown-group v-if="showNotificationToggle">
         <sidebar-subscriptions-widget
           :iid="String(iid)"
           :full-path="fullPath"
           :issuable-type="$options.TYPE_EPIC"
         />
-        <gl-dropdown-divider />
-      </template>
-      <gl-dropdown-item v-if="canUpdate" @click="editEpic">
-        {{ $options.i18n.edit }}
-      </gl-dropdown-item>
-      <gl-dropdown-item v-if="canCreate" :href="newEpicWebUrl">
-        {{ $options.i18n.newEpicText }}
-      </gl-dropdown-item>
-      <gl-dropdown-item v-if="canUpdate" @click="toggleEpicStatus(isEpicOpen)">
-        {{ actionButtonText }}
-      </gl-dropdown-item>
-      <gl-dropdown-item
-        v-if="isMrSidebarMoved"
-        :data-clipboard-text="reference"
-        @click="copyReference"
-        >{{ $options.i18n.copyReferenceText }}
-      </gl-dropdown-item>
-      <template v-if="canDestroy">
-        <gl-dropdown-divider />
-        <gl-dropdown-item v-gl-modal="$options.deleteModalId" variant="danger">
-          {{ $options.i18n.deleteButtonText }}
-        </gl-dropdown-item>
-      </template>
-    </gl-dropdown>
+      </gl-disclosure-dropdown-group>
+
+      <gl-disclosure-dropdown-group :group="actionsDropdownGroupMobile" bordered />
+      <gl-disclosure-dropdown-group v-if="canDestroy" bordered>
+        <gl-disclosure-dropdown-item v-gl-modal="$options.deleteModalId">
+          <template #list-item>
+            <span class="gl-text-red-500">
+              {{ $options.i18n.deleteButtonText }}
+            </span>
+          </template>
+        </gl-disclosure-dropdown-item>
+      </gl-disclosure-dropdown-group>
+    </gl-disclosure-dropdown>
 
     <gl-button
       v-if="canUpdate"
@@ -136,7 +202,6 @@ export default {
     <gl-button
       v-if="canUpdate && !glFeatures.moveCloseIntoDropdown"
       :loading="epicStatusChangeInProgress"
-      :class="actionButtonClass"
       category="secondary"
       class="gl-display-none gl-sm-display-block gl-sm-ml-3"
       data-testid="toggle-status-button"
@@ -145,52 +210,39 @@ export default {
       {{ actionButtonText }}
     </gl-button>
 
-    <gl-dropdown
+    <gl-disclosure-dropdown
       v-if="showDesktopDropdown"
-      v-gl-tooltip.hover
-      class="gl-display-none gl-sm-display-inline-flex gl-sm-ml-3"
+      ref="epicActionsDropdownDesktop"
+      placement="right"
+      :auto-close="false"
+      data-testid="desktop-dropdown"
+      :toggle-text="$options.i18n.dropdownText"
+      toggle-class="gl-display-none gl-sm-display-flex! gl-ml-3"
+      text-sr-only
       icon="ellipsis_v"
       category="tertiary"
-      :text="$options.i18n.dropdownText"
-      text-sr-only
-      :title="$options.i18n.dropdownText"
-      :aria-label="$options.i18n.dropdownText"
-      data-testid="desktop-dropdown"
       no-caret
-      right
     >
-      <template v-if="showNotificationToggle">
+      <gl-disclosure-dropdown-group v-if="showNotificationToggle">
         <sidebar-subscriptions-widget
           :iid="String(iid)"
           :full-path="fullPath"
           :issuable-type="$options.TYPE_EPIC"
         />
-        <gl-dropdown-divider />
-      </template>
-      <gl-dropdown-item
-        v-if="canUpdate && glFeatures.moveCloseIntoDropdown"
-        data-testid="toggle-status-button"
-        @click="toggleEpicStatus(isEpicOpen)"
-      >
-        {{ actionButtonText }}
-      </gl-dropdown-item>
-      <gl-dropdown-item v-if="canCreate" :href="newEpicWebUrl">
-        {{ $options.i18n.newEpicText }}
-      </gl-dropdown-item>
+      </gl-disclosure-dropdown-group>
 
-      <template v-if="isMrSidebarMoved">
-        <gl-dropdown-item :data-clipboard-text="reference" @click="copyReference"
-          >{{ $options.i18n.copyReferenceText }}
-        </gl-dropdown-item>
-      </template>
+      <gl-disclosure-dropdown-group :group="actionsDropdownGroupDesktop" bordered />
 
-      <template v-if="canDestroy">
-        <gl-dropdown-divider />
-        <gl-dropdown-item v-gl-modal="$options.deleteModalId" variant="danger">
-          {{ $options.i18n.deleteButtonText }}
-        </gl-dropdown-item>
-      </template>
-    </gl-dropdown>
+      <gl-disclosure-dropdown-group v-if="canDestroy" bordered>
+        <gl-disclosure-dropdown-item v-gl-modal="$options.deleteModalId">
+          <template #list-item>
+            <span class="gl-text-red-500">
+              {{ $options.i18n.deleteButtonText }}
+            </span>
+          </template>
+        </gl-disclosure-dropdown-item>
+      </gl-disclosure-dropdown-group>
+    </gl-disclosure-dropdown>
 
     <delete-issue-modal
       :issue-type="$options.TYPE_EPIC"
