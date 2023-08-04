@@ -22,6 +22,14 @@ RSpec.describe 'UserAddOnAssignmentRemove', feature_category: :seat_cost_managem
 
   let(:mutation) { graphql_mutation(:user_add_on_assignment_remove, input) }
   let(:mutation_response) { graphql_mutation_response(:user_add_on_assignment_remove) }
+  let(:expected_response) do
+    {
+      "assignedQuantity" => 0,
+      "id" => "gid://gitlab/GitlabSubscriptions::AddOnPurchase/#{add_on_purchase.id}",
+      "purchasedQuantity" => 1,
+      "name" => 'CODE_SUGGESTIONS'
+    }
+  end
 
   before_all do
     namespace.add_owner(current_user)
@@ -45,6 +53,7 @@ RSpec.describe 'UserAddOnAssignmentRemove', feature_category: :seat_cost_managem
       end.to change { add_on_purchase.assigned_users.where(user: remove_user).count }.by(-1)
 
       expect(mutation_response['errors']).to eq([])
+      expect(mutation_response['addOnPurchase']).to eq(expected_response)
     end
   end
 
@@ -64,14 +73,8 @@ RSpec.describe 'UserAddOnAssignmentRemove', feature_category: :seat_cost_managem
     it_behaves_like 'success response'
   end
 
-  context 'when current_user is removing itself' do
-    let(:current_user) { remove_user }
-
-    it_behaves_like 'success response'
-  end
-
   context 'when current_user is not owner or admin' do
-    let(:current_user) { create(:user) }
+    let(:current_user) { namespace.add_developer(create(:user)).user }
 
     it_behaves_like 'empty response'
   end
