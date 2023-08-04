@@ -205,8 +205,8 @@ RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic, feature_category
         end
       end
 
-      it 'does not includes the archived notes in the search results' do
-        expect(results.objects('notes')).to be_empty
+      it 'includes the archived notes in the search results' do
+        expect(results.objects('notes')).to contain_exactly note
       end
     end
 

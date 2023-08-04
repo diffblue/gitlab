@@ -290,7 +290,8 @@ module Gitlab
           project_ids: limit_project_ids,
           public_and_internal_projects: public_and_internal_projects,
           order_by: order_by,
-          sort: sort
+          sort: sort,
+          search_scope: 'global'
         }
       end
 
