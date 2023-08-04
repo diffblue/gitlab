@@ -8,8 +8,6 @@ module PhoneVerification
     skip_before_action :authenticate_user!
     skip_before_action :verify_authenticity_token
 
-    before_action :ensure_feature_enabled!
-
     feature_category :instance_resiliency
     urgency :low
 
@@ -21,12 +19,6 @@ module PhoneVerification
       callback.log
 
       render json: {}
-    end
-
-    private
-
-    def ensure_feature_enabled!
-      render_404 unless Feature.enabled?(:telesign_callback)
     end
   end
 end
