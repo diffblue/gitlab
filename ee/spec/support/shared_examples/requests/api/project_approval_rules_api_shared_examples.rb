@@ -11,7 +11,7 @@ RSpec.shared_examples 'a restricted project approval rule API endpoint' do
         stub_application_setting(disable_overriding_approvers_per_merge_request: false)
       end
 
-      it_behaves_like 'a user without access'
+      it_behaves_like 'a user with access'
     end
 
     context 'when disable_overriding_approvers_per_merge_request app setting is true' do
@@ -19,7 +19,7 @@ RSpec.shared_examples 'a restricted project approval rule API endpoint' do
         stub_application_setting(disable_overriding_approvers_per_merge_request: true)
       end
 
-      it_behaves_like 'a user without access'
+      it_behaves_like 'a user with access'
     end
   end
 
@@ -81,7 +81,7 @@ RSpec.shared_examples 'an API endpoint for creating project approval rule' do
   it_behaves_like 'a restricted project approval rule API endpoint'
 
   before do
-    stub_licensed_features(admin_merge_request_approvers_rules: true)
+    stub_licensed_features(merge_request_approvers: true)
   end
 
   context 'when missing parameters' do
@@ -117,7 +117,7 @@ RSpec.shared_examples 'an API endpoint for creating project approval rule' do
       let(:protected_branches) { Array.new(2).map { create(:protected_branch, project: project) } }
 
       before do
-        stub_licensed_features(admin_merge_request_approvers_rules: true, multiple_approval_rules: true)
+        stub_licensed_features(merge_request_approvers: true, multiple_approval_rules: true)
         post api(url, current_user), params: params.merge(protected_branch_ids: protected_branches.map(&:id))
       end
 
@@ -135,7 +135,7 @@ RSpec.shared_examples 'an API endpoint for creating project approval rule' do
       let(:protected_branches) { create_list(:protected_branch, 2, project: project) }
 
       before do
-        stub_licensed_features(admin_merge_request_approvers_rules: true, multiple_approval_rules: true)
+        stub_licensed_features(merge_request_approvers: true, multiple_approval_rules: true)
         post api(url, current_user), params: params.merge(applies_to_all_protected_branches: true)
       end
 
@@ -314,7 +314,7 @@ RSpec.shared_examples 'an API endpoint for updating project approval rule' do
       let(:protected_branches) { create_list(:protected_branch, 2, project: project) }
 
       before do
-        stub_licensed_features(admin_merge_request_approvers_rules: true, multiple_approval_rules: true)
+        stub_licensed_features(merge_request_approvers: true, multiple_approval_rules: true)
         put api(url, current_user, admin_mode: current_user.admin?), params: params.merge(applies_to_all_protected_branches: true)
       end
 
@@ -330,7 +330,7 @@ RSpec.shared_examples 'an API endpoint for updating project approval rule' do
       let(:protected_branches) { Array.new(2).map { create(:protected_branch, project: project) } }
 
       before do
-        stub_licensed_features(admin_merge_request_approvers_rules: true, multiple_approval_rules: true)
+        stub_licensed_features(merge_request_approvers: true, multiple_approval_rules: true)
         put api(url, current_user, admin_mode: current_user.admin?), params: { protected_branch_ids: protected_branches.map(&:id) }
       end
 
@@ -508,7 +508,7 @@ RSpec.shared_examples 'an API endpoint for updating project approval rule' do
   end
 
   before do
-    stub_licensed_features(admin_merge_request_approvers_rules: true)
+    stub_licensed_features(merge_request_approvers: true)
   end
 
   it_behaves_like 'a restricted project approval rule API endpoint' do
@@ -558,7 +558,7 @@ RSpec.shared_examples 'an API endpoint for deleting project approval rule' do
   end
 
   before do
-    stub_licensed_features(admin_merge_request_approvers_rules: true)
+    stub_licensed_features(merge_request_approvers: true)
   end
 
   it_behaves_like 'a user with access'
