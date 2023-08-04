@@ -43,15 +43,19 @@ RSpec.describe 'Identity Verification', :clean_gitlab_redis_rate_limiting, :js,
     end
 
     describe 'verifying the code' do
-      it 'successfully confirms the user and shows the verification successful page' do
-        verify_code confirmation_code
+      shared_examples 'successfully confirms the user and shows the verification successful page' do
+        it 'successfully confirms the user and shows the verification successful page' do
+          verify_code confirmation_code
 
-        expect(page).to have_current_path(success_identity_verification_path)
-        expect(page).to have_content(s_('IdentityVerification|Verification successful'))
-        expect(page).to have_selector(
-          "meta[http-equiv='refresh'][content='3; url=#{users_sign_up_welcome_path}']", visible: :hidden
-        )
+          expect(page).to have_current_path(success_identity_verification_path)
+          expect(page).to have_content(s_('IdentityVerification|Verification successful'))
+          expect(page).to have_selector(
+            "meta[http-equiv='refresh'][content='3; url=#{users_sign_up_welcome_path}']", visible: :hidden
+          )
+        end
       end
+
+      it_behaves_like 'successfully confirms the user and shows the verification successful page'
 
       it 'shows client side empty eror message' do
         verify_code ''
@@ -59,7 +63,7 @@ RSpec.describe 'Identity Verification', :clean_gitlab_redis_rate_limiting, :js,
         expect(page).to have_content(s_('IdentityVerification|Enter a code.'))
       end
 
-      it 'shows client side invalid eror message' do
+      it 'shows client side invalid error message' do
         verify_code 'xxx'
 
         expect(page).to have_content(s_('IdentityVerification|Enter a valid code.'))
@@ -94,6 +98,12 @@ RSpec.describe 'Identity Verification', :clean_gitlab_redis_rate_limiting, :js,
         verify_code confirmation_code
 
         expect(page).to have_content(s_('IdentityVerification|The code has expired. Send a new code and try again.'))
+      end
+
+      context 'when user email is mixed case' do
+        let(:new_user) { build_stubbed(:user, email: 'testEmailAddress@example.com') }
+
+        it_behaves_like 'successfully confirms the user and shows the verification successful page'
       end
     end
 
@@ -164,8 +174,8 @@ RSpec.describe 'Identity Verification', :clean_gitlab_redis_rate_limiting, :js,
   end
 
   def confirmation_code
-    mail = find_email_for(new_user)
-    expect(mail.to).to match_array([new_user.email])
+    mail = find_email_for(user)
+    expect(mail.to).to match_array([user.email])
     expect(mail.subject).to eq(s_('IdentityVerification|Confirm your email address'))
     code = mail.body.parts.first.to_s[/\d{#{Users::EmailVerification::GenerateTokenService::TOKEN_LENGTH}}/o]
     reset_delivered_emails!
