@@ -78,6 +78,11 @@ module Gitlab
         end
       end
 
+      override :base_options
+      def base_options
+        super.merge(search_scope: 'project')
+      end
+
       override :scope_options
       def scope_options(scope)
         case scope

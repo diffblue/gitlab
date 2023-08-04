@@ -20,6 +20,11 @@ module Gitlab
       end
       # rubocop:enable Metrics/ParameterLists
 
+      override :base_options
+      def base_options
+        super.merge(search_scope: 'group')
+      end
+
       override :scope_options
       def scope_options(scope)
         # group_ids to options for traversal_ids filtering
