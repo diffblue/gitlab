@@ -233,7 +233,7 @@ export default {
           @click="toggleDetails"
         >
           <gl-icon
-            :name="detailsShowing ? 'chevron-lg-down' : 'chevron-lg-right'"
+            :name="detailsShowing ? 'chevron-down' : 'chevron-right'"
             class="gl-text-gray-900"
           />
         </gl-button>
