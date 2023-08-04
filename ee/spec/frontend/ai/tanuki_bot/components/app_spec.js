@@ -36,10 +36,9 @@ describe('GitLab Duo Chat', () => {
   let wrapper;
 
   const actionSpies = {
-    sendUserMessage: jest.fn(),
-    receiveTanukiBotMessage: jest.fn(),
-    tanukiBotMessageError: jest.fn(),
+    addDuoChatMessage: jest.fn(),
     setMessages: jest.fn(),
+    setLoading: jest.fn(),
   };
 
   const subscriptionHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_SUCCESS_RES);
@@ -158,13 +157,6 @@ describe('GitLab Duo Chat', () => {
         findGenieChat().vm.$emit('send-chat-prompt', MOCK_USER_MESSAGE.msg);
       });
 
-      it('calls sendUserMessage when input is submitted', () => {
-        expect(actionSpies.sendUserMessage).toHaveBeenCalledWith(
-          expect.any(Object),
-          MOCK_USER_MESSAGE.msg,
-        );
-      });
-
       describe.each`
         resourceId          | expectedResourceId
         ${MOCK_RESOURCE_ID} | ${MOCK_RESOURCE_ID}
@@ -189,16 +181,16 @@ describe('GitLab Duo Chat', () => {
           },
         );
 
-        it('once response arrives via GraphQL subscription with userId fallback calls receiveTanukiBotMessage', () => {
+        it('once response arrives via GraphQL subscription with userId fallback calls addDuoChatMessage', () => {
           createComponent({}, {}, { userId: MOCK_USER_ID, resourceId });
 
           expect(subscriptionHandlerMock).toHaveBeenCalledWith({
             resourceId: expectedResourceId,
             userId: MOCK_USER_ID,
           });
-          expect(actionSpies.receiveTanukiBotMessage).toHaveBeenCalledWith(
+          expect(actionSpies.addDuoChatMessage).toHaveBeenCalledWith(
             expect.any(Object),
-            MOCK_TANUKI_SUCCESS_RES.data,
+            MOCK_TANUKI_SUCCESS_RES.data.aiCompletionResponse,
           );
         });
       });
@@ -207,13 +199,14 @@ describe('GitLab Duo Chat', () => {
 
   describe('Error conditions', () => {
     describe('when subscription fails', () => {
+      const error = 'foo';
       describe.each`
         resourceId          | expectedResourceId
         ${MOCK_RESOURCE_ID} | ${MOCK_RESOURCE_ID}
         ${null}             | ${MOCK_USER_ID}
       `(`with resourceId = $resourceId`, ({ resourceId, expectedResourceId }) => {
         beforeEach(async () => {
-          subscriptionHandlerMock.mockRejectedValueOnce({ errors: [] });
+          subscriptionHandlerMock.mockRejectedValue(error);
           createComponent({}, { gitlabDuo: true }, { userId: MOCK_USER_ID, resourceId });
 
           helpCenterState.showTanukiBotChatDrawer = true;
@@ -222,19 +215,21 @@ describe('GitLab Duo Chat', () => {
           findGenieChat().vm.$emit('send-chat-prompt', MOCK_USER_MESSAGE.msg);
         });
 
-        it('once error arrives via GraphQL subscription calls tanukiBotMessageError', () => {
+        it('once error arrives via GraphQL subscription calls addDuoChatMessage', () => {
           expect(subscriptionHandlerMock).toHaveBeenCalledWith({
             resourceId: expectedResourceId,
             userId: MOCK_USER_ID,
           });
-          expect(actionSpies.tanukiBotMessageError).toHaveBeenCalled();
+          expect(actionSpies.addDuoChatMessage).toHaveBeenCalledWith(expect.any(Object), {
+            errors: [error],
+          });
         });
       });
     });
 
     describe('when mutation fails', () => {
       beforeEach(async () => {
-        chatMutationHandlerMock = jest.fn().mockRejectedValue();
+        chatMutationHandlerMock = jest.fn().mockRejectedValue('foo');
         createComponent();
 
         helpCenterState.showTanukiBotChatDrawer = true;
@@ -242,8 +237,10 @@ describe('GitLab Duo Chat', () => {
         findGenieChat().vm.$emit('send-chat-prompt', MOCK_USER_MESSAGE.msg);
       });
 
-      it('calls tanukiBotMessageError', () => {
-        expect(actionSpies.tanukiBotMessageError).toHaveBeenCalled();
+      it('calls addDuoChatMessage', () => {
+        expect(actionSpies.addDuoChatMessage).toHaveBeenCalledWith(expect.any(Object), {
+          errors: ['foo'],
+        });
       });
     });
   });

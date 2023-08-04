@@ -27,11 +27,17 @@ export const MOCK_TANUKI_MESSAGE = {
   content: 'Tanuki Bot message',
   role: MESSAGE_TYPES.TANUKI,
   sources: MOCK_SOURCES,
+  requestId: '987',
+  errors: [],
+  timestamp: '2021-04-21T12:00:00.000Z',
 };
 
 export const MOCK_USER_MESSAGE = {
   content: 'User message',
   role: MESSAGE_TYPES.USER,
+  requestId: '987',
+  errors: [],
+  timestamp: '2021-04-21T12:00:00.000Z',
 };
 
 export const GENERATE_MOCK_TANUKI_RES = (body = JSON.stringify(MOCK_TANUKI_MESSAGE)) => {
@@ -40,6 +46,9 @@ export const GENERATE_MOCK_TANUKI_RES = (body = JSON.stringify(MOCK_TANUKI_MESSA
       aiCompletionResponse: {
         responseBody: body,
         errors: [],
+        requestId: '987',
+        role: MOCK_TANUKI_MESSAGE.role,
+        timestamp: '2021-04-21T12:00:00.000Z',
       },
     },
   };

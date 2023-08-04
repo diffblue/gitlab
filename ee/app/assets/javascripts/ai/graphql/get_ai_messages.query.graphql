@@ -6,6 +6,7 @@ query getAiMessages {
       content
       errors
       role
+      timestamp
     }
   }
 }

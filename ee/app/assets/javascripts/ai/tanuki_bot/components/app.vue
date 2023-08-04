@@ -62,10 +62,12 @@ export default {
           };
         },
         result({ data }) {
-          this.receiveTanukiBotMessage(data);
+          this.addDuoChatMessage(data?.aiCompletionResponse);
         },
-        error() {
-          this.tanukiBotMessageError();
+        error(err) {
+          this.addDuoChatMessage({
+            errors: [err],
+          });
         },
       },
     },
@@ -76,8 +78,10 @@ export default {
           this.setMessages(data.aiMessages.nodes);
         }
       },
-      error() {
-        this.tanukiBotMessageError();
+      error(err) {
+        this.addDuoChatMessage({
+          errors: [err],
+        });
       },
     },
   },
@@ -90,15 +94,9 @@ export default {
     ...mapState(['loading', 'messages']),
   },
   methods: {
-    ...mapActions([
-      'sendUserMessage',
-      'receiveTanukiBotMessage',
-      'tanukiBotMessageError',
-      'receiveMutationResponse',
-      'setMessages',
-    ]),
+    ...mapActions(['addDuoChatMessage', 'setMessages', 'setLoading']),
     sendMessage(question) {
-      this.sendUserMessage(question);
+      this.setLoading();
       const mutation = this.glFeatures.gitlabDuo ? chatMutation : tanukiBotMutation;
       this.$apollo
         .mutate({
@@ -108,11 +106,17 @@ export default {
             resourceId: this.resourceId || this.userId,
           },
         })
-        .then(({ data }) => {
-          this.receiveMutationResponse({ data, message: question });
+        .then(({ data: { aiAction = {} } = {} }) => {
+          this.addDuoChatMessage({
+            ...aiAction,
+            content: question,
+          });
         })
-        .catch(() => {
-          this.tanukiBotMessageError();
+        .catch((err) => {
+          this.setLoading(false);
+          this.addDuoChatMessage({
+            errors: [err],
+          });
         });
     },
     closeDrawer() {
