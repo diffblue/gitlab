@@ -6,6 +6,7 @@
   - else
     - namespace_to_track = source.namespace
   - experiment(:tier_badge, actor: current_user, namespace: namespace_to_track) do |e|
+    - e.exclude! unless namespace_to_track.eligible_for_trial?
     - e.candidate do
       .js-tier-badge-trigger{ data: { primary_cta_link: new_trial_path(namespace_id: source.root_ancestor.id),
         secondary_cta_link: link_upgrade_path, source_type: source_type } }
