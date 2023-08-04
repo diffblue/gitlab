@@ -1,5 +1,5 @@
 import { GlFormInput, GlForm, GlFormGroup } from '@gitlab/ui';
-import { mount, shallowMount } from '@vue/test-utils';
+import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 import MergeCommitsExportButton from 'ee/compliance_dashboard/components/violations_report/shared/merge_commits_export_button.vue';
 import { INPUT_DEBOUNCE, CUSTODY_REPORT_PARAMETER } from 'ee/compliance_dashboard/constants';
@@ -13,10 +13,10 @@ describe('MergeCommitsExportButton component', () => {
   const findCommitInput = () => wrapper.findComponent(GlFormInput);
   const findCommitInputGroup = () => wrapper.findComponent(GlFormGroup);
   const findCommitInputFeedback = () => wrapper.find('.invalid-feedback');
-  const findCommitExportButton = () => wrapper.find('[data-test-id="merge-commit-submit-button"]');
+  const findCommitExportButton = () => wrapper.findByTestId('merge-commit-submit-button');
   const findCsvExportButton = () => wrapper.findComponent({ ref: 'listMergeCommitsButton' });
 
-  const createComponent = ({ mountFn = shallowMount, data = {}, provide = {} } = {}) => {
+  const createComponent = ({ mountFn = shallowMountExtended, data = {}, provide = {} } = {}) => {
     return mountFn(MergeCommitsExportButton, {
       propsData: {
         mergeCommitsCsvExportPath: CSV_EXPORT_PATH,
@@ -28,7 +28,7 @@ describe('MergeCommitsExportButton component', () => {
 
   describe('Merge commit CSV export all button', () => {
     beforeEach(() => {
-      wrapper = createComponent({ mountFn: mount });
+      wrapper = createComponent({ mountFn: mountExtended });
     });
 
     it('renders the button', () => {
@@ -70,7 +70,7 @@ describe('MergeCommitsExportButton component', () => {
     });
 
     it('sets the invalid input feedback message', () => {
-      wrapper = createComponent({ mountFn: mount });
+      wrapper = createComponent({ mountFn: mountExtended });
 
       expect(findCommitInputFeedback().text()).toBe('Invalid hash');
     });
@@ -78,7 +78,7 @@ describe('MergeCommitsExportButton component', () => {
     describe('when the commit input is valid', () => {
       beforeEach(() => {
         wrapper = createComponent({
-          mountFn: mount,
+          mountFn: mountExtended,
           data: { validMergeCommitHash: true },
         });
       });
@@ -95,7 +95,7 @@ describe('MergeCommitsExportButton component', () => {
     describe('when the commit input is invalid', () => {
       beforeEach(() => {
         wrapper = createComponent({
-          mountFn: mount,
+          mountFn: mountExtended,
           data: { validMergeCommitHash: false },
         });
       });
