@@ -128,7 +128,7 @@ RSpec.describe Issue, :elastic, feature_category: :global_search do
               'upvotes' => 1,
               'namespace_ancestry_ids' => "#{group.id}-#{subgroup.id}-",
               'label_ids' => [label.id.to_s],
-              'schema_version' => 23_03,
+              'schema_version' => Elastic::Latest::IssueInstanceProxy::SCHEMA_VERSION,
               'assignee_id' => [assignee.id],
               'issues_access_level' => ProjectFeature::ENABLED,
               'visibility_level' => Gitlab::VisibilityLevel::INTERNAL,

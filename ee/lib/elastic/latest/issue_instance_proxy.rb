@@ -3,6 +3,8 @@
 module Elastic
   module Latest
     class IssueInstanceProxy < ApplicationInstanceProxy
+      SCHEMA_VERSION = 23_08
+
       def as_indexed_json(options = {})
         data = {}
 
@@ -14,7 +16,7 @@ module Elastic
 
         # Schema version. The format is Date.today.strftime('%y_%m')
         # Please update if you're changing the schema of the document
-        data['schema_version'] = 23_03
+        data['schema_version'] = SCHEMA_VERSION
 
         # Load them through the issue_assignees table since calling
         # assignee_ids can't be easily preloaded and does

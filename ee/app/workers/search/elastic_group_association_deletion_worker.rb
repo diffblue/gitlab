@@ -3,7 +3,7 @@
 module Search
   class ElasticGroupAssociationDeletionWorker
     include ApplicationWorker
-    prepend Elastic::IndexingControl
+    prepend ::Elastic::IndexingControl
 
     MAX_JOBS_PER_HOUR = 3600
 
@@ -22,7 +22,7 @@ module Search
     def remove_epics(group_id, ancestor_id)
       Gitlab::Search::Client.new.delete_by_query(
         {
-          index: Elastic::Latest::EpicConfig.index_name,
+          index: ::Elastic::Latest::EpicConfig.index_name,
           routing: "group_#{ancestor_id}",
           conflicts: 'proceed',
           timeout: "10m",
