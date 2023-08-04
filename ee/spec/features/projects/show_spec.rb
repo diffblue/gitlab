@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Project show page', :js, feature_category: :groups_and_projects do
+RSpec.describe 'Project show page', :js, :saas, feature_category: :groups_and_projects do
   let_it_be(:user) { create(:user) }
 
   let(:path) { project_path(project) }
