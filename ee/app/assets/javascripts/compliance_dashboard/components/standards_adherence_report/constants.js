@@ -5,7 +5,9 @@ const PREVENT_APPROVAL_BY_MERGE_REQUEST_COMMITERS = 'PREVENT_APPROVAL_BY_MERGE_R
 const TWO_APPROVALS = 'TWO_APPROVALS';
 
 export const FAIL_STATUS = 'FAIL';
-export const NO_STANDARDS_ADHERENCES_FOUND = s__('ComplianceReport|No standards adherences found');
+export const NO_STANDARDS_ADHERENCES_FOUND = s__(
+  'ComplianceReport|No projects with standards adherence checks found',
+);
 
 export const STANDARDS_ADHERENCE_CHECK_LABELS = {
   [PREVENT_APPROVAL_BY_MERGE_REQUEST_AUTHOR]: s__(
