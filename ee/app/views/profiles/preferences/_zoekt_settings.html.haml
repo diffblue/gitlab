@@ -1,17 +1,15 @@
 - return unless @user.has_zoekt_indexed_namespace?
 
-.row.js-preferences-form.js-search-settings-section
-  .col-sm-12
-    %hr
-  .col-lg-4
-    %h4.gl-mt-0
-      = s_('Preferences|Enable Zoekt code search')
-      = gl_badge_tag _('beta'), variant: :info, size: :sm
-    %p
-      = s_('Preferences|Turns on or off the preference to search with Zoekt instead of Elasticsearch.')
-      = link_to _('Learn more'), help_page_path('user/profile/index', anchor: 'advanced-code-search-with-zoekt'), target: '_blank', rel: 'noopener noreferrer'
+.settings-section.js-preferences-form.js-search-settings-section
+  .settings-sticky-header
+    .settings-sticky-header-inner
+      %h4.gl-my-0
+        = s_('Preferences|Enable Zoekt code search')
+        = gl_badge_tag _('beta'), variant: :info, size: :sm
+  %p.gl-text-secondary
+    = s_('Preferences|Turns on or off the preference to search with Zoekt instead of Elasticsearch.')
+    = link_to _('Learn more.'), help_page_path('user/profile/index', anchor: 'advanced-code-search-with-zoekt'), target: '_blank', rel: 'noopener noreferrer'
 
-  .col-lg-8
-    .form-group
-      = form.gitlab_ui_checkbox_component :enabled_zoekt,
-        s_('Preferences|Enable Zoekt code search')
+  .form-group
+    = form.gitlab_ui_checkbox_component :enabled_zoekt,
+      s_('Preferences|Enable Zoekt code search')

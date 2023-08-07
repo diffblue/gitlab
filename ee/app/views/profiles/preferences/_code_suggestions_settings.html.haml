@@ -6,18 +6,16 @@
 - third_party_features_url = help_page_url('user/group/manage', anchor: 'enable-third-party-ai-features')
 - third_party_features_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: third_party_features_url }
 
-.row.js-preferences-form.js-search-settings-section
-  .col-sm-12#code-suggestions-settings
-    %hr
-  .col-lg-4
-    %h4.gl-mt-0
-      = s_('CodeSuggestions|Code Suggestions')
-      = gl_badge_tag _('beta'), variant: :info, size: :sm
-    %p
-      = s_('CodeSuggestions|Get code suggestions as you write code in your IDE. %{link_start}Learn more.%{link_end}').html_safe % { link_start: docs_link_start, link_end: '</a>'.html_safe }
+.settings-section.js-preferences-form.js-search-settings-section#code-suggestions-settings
+  .settings-sticky-header
+    .settings-sticky-header-inner
+      %h4.gl-my-0
+        = s_('CodeSuggestions|Code Suggestions')
+        = gl_badge_tag _('beta'), variant: :info, size: :sm
+  %p.gl-text-secondary
+    = s_('CodeSuggestions|Get code suggestions as you write code in your IDE. %{link_start}Learn more%{link_end}.').html_safe % { link_start: docs_link_start, link_end: '</a>'.html_safe }
 
-  .col-lg-8
-    .form-group
-      = form.gitlab_ui_checkbox_component :code_suggestions,
-        s_('CodeSuggestions|Enable Code Suggestions'),
-        help_text: s_('CodeSuggestions|Subject to the %{terms_link_start}Testing Terms of Use%{link_end}. Code Suggestions currently uses third-party AI services unless those are %{third_party_features_link_start}disabled%{link_end}.').html_safe % { terms_link_start: terms_link_start, link_end: '</a>'.html_safe, third_party_features_link_start: third_party_features_link_start }
+  .form-group
+    = form.gitlab_ui_checkbox_component :code_suggestions,
+      s_('CodeSuggestions|Enable Code Suggestions'),
+      help_text: s_('CodeSuggestions|Subject to the %{terms_link_start}Testing Terms of Use%{link_end}. Code Suggestions currently uses third-party AI services unless those are %{third_party_features_link_start}disabled%{link_end}.').html_safe % { terms_link_start: terms_link_start, link_end: '</a>'.html_safe, third_party_features_link_start: third_party_features_link_start }
