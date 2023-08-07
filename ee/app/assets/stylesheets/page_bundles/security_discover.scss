@@ -50,7 +50,7 @@
     width: $security-and-compliance-carousel-control-icon-width;
 
     @media (min-width: map-get($grid-breakpoints, md)) {
-      width: inherit;
+      width: $security-and-compliance-carousel-control-icon-middle-width;
     }
   }
 
