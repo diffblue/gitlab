@@ -4,7 +4,7 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 import Api from 'ee/api';
 import BranchExceptionSelector from 'ee/security_orchestration/components/branch_exception_selector.vue';
 import SecurityScanRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/security_scan_rule_builder.vue';
-import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_rule_multi_select.vue';
+import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_editor/policy_rule_multi_select.vue';
 import PolicyRuleBranchSelection from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_branch_selection.vue';
 import SeverityFilter from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/severity_filter.vue';
 import StatusFilter from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/status_filter.vue';

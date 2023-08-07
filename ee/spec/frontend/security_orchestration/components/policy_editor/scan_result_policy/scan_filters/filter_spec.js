@@ -2,7 +2,7 @@ import { GlCollapsibleListbox } from '@gitlab/ui';
 import StatusFilter from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/status_filter.vue';
 import SeverityFilter from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/severity_filter.vue';
 import BaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/scan_result_policy/base_layout/base_layout_component.vue';
-import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_rule_multi_select.vue';
+import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_editor/policy_rule_multi_select.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import { APPROVAL_VULNERABILITY_STATE_GROUPS } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/constants';

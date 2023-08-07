@@ -4,8 +4,8 @@ import { s__ } from '~/locale';
 import { getParameterByName, removeParams, visitUrl } from '~/lib/utils/url_utility';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
-import PolicySelection from './policy_selection.vue';
 import PolicyEditor from './policy_editor.vue';
+import PolicySelection from './policy_selection.vue';
 
 export default {
   components: {

@@ -1,7 +1,7 @@
 <script>
 import { GlCollapsibleListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import PolicyRuleMultiSelect from '../../../policy_rule_multi_select.vue';
+import PolicyRuleMultiSelect from '../../policy_rule_multi_select.vue';
 import BaseLayoutComponent from '../base_layout/base_layout_component.vue';
 import { groupSelectedVulnerabilityStates } from '../lib';
 import {

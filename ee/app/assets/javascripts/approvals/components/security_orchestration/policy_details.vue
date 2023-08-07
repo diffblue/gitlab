@@ -1,9 +1,8 @@
 <script>
 import { GlLink } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import { humanizeRules } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/humanize';
-
-import RequireApprovals from 'ee/security_orchestration/components/policy_drawer/require_approvals.vue';
+import { humanizeRules } from 'ee/security_orchestration/components/policy_drawer/scan_result/utils';
+import PolicyApprovals from 'ee/security_orchestration/components/policy_drawer/scan_result/policy_approvals.vue';
 
 export default {
   i18n: {
@@ -11,7 +10,7 @@ export default {
   },
   components: {
     GlLink,
-    RequireApprovals,
+    PolicyApprovals,
   },
   props: {
     policy: {
@@ -49,7 +48,7 @@ export default {
       <div
         class="gl-border-solid gl-border-1 gl-rounded-base gl-border-gray-100 gl-bg-gray-10 gl-py-4 gl-px-5"
       >
-        <require-approvals :action="policyAction" :approvers="approvers" />
+        <policy-approvals :action="policyAction" :approvers="approvers" />
         <div
           v-for="{ summary, criteriaList } in humanizedRules"
           :key="summary"

@@ -1,10 +1,11 @@
-import { s__ } from '~/locale';
+import { s__, sprintf } from '~/locale';
 import Api from 'ee/api';
 import { REPORT_TYPES_DEFAULT } from 'ee/security_dashboard/store/constants';
 import { isPositiveInteger } from '~/lib/utils/number_utils';
 import {
   ALL_PROTECTED_BRANCHES,
   BRANCH_TYPE_KEY,
+  INVALID_PROTECTED_BRANCHES,
   VALID_SCAN_RESULT_BRANCH_TYPE_OPTIONS,
   VULNERABILITY_AGE_OPERATORS,
 } from 'ee/security_orchestration/components/policy_editor/constants';
@@ -172,4 +173,15 @@ export const invalidBranchType = (rules) => {
     (rule) =>
       BRANCH_TYPE_KEY in rule && !VALID_SCAN_RESULT_BRANCH_TYPE_OPTIONS.includes(rule.branch_type),
   );
+};
+
+export const humanizeInvalidBranchesError = (branches) => {
+  const sentence = [];
+  if (branches.length > 1) {
+    const lastBranch = branches.pop();
+    sentence.push(branches.join(', '), s__('SecurityOrchestration| and '), lastBranch);
+  } else {
+    sentence.push(branches.join());
+  }
+  return sprintf(INVALID_PROTECTED_BRANCHES, { branches: sentence.join('') });
 };

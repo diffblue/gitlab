@@ -5,7 +5,6 @@ import { REPORT_TYPES_DEFAULT, SEVERITY_LEVELS } from 'ee/security_dashboard/sto
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import BranchExceptionSelector from 'ee/security_orchestration/components/branch_exception_selector.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import PolicyRuleMultiSelect from '../../policy_rule_multi_select.vue';
 import {
   ANY_OPERATOR,
   GREATER_THAN_OPERATOR,
@@ -14,6 +13,7 @@ import {
 } from '../constants';
 import { enforceIntValue } from '../utils';
 import ScanFilterSelector from '../scan_filter_selector.vue';
+import PolicyRuleMultiSelect from '../policy_rule_multi_select.vue';
 import { getDefaultRule, groupSelectedVulnerabilityStates } from './lib';
 import SeverityFilter from './scan_filters/severity_filter.vue';
 import AgeFilter from './scan_filters/age_filter.vue';

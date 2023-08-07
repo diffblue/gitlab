@@ -5,10 +5,10 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { stubComponent } from 'helpers/stub_component';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import PolicyProjectModal from 'ee/security_orchestration/components/policies/policy_project_modal.vue';
+import ProjectModal from 'ee/security_orchestration/components/policies/project_modal.vue';
 import linkSecurityPolicyProject from 'ee/security_orchestration/graphql/mutations/link_security_policy_project.mutation.graphql';
 import unlinkSecurityPolicyProject from 'ee/security_orchestration/graphql/mutations/unlink_security_policy_project.mutation.graphql';
-import InstanceProjectSelector from 'ee/security_orchestration/components/instance_project_selector.vue';
+import InstanceProjectSelector from 'ee/security_orchestration/components/policies/instance_project_selector.vue';
 import {
   POLICY_PROJECT_LINK_ERROR_MESSAGE,
   POLICY_PROJECT_LINK_SUCCESS_MESSAGE,
@@ -20,7 +20,7 @@ import {
 
 Vue.use(VueApollo);
 
-describe('PolicyProjectModal Component', () => {
+describe('ProjectModal Component', () => {
   let wrapper;
   let projectUpdatedListener;
   const sampleProject = {
@@ -49,7 +49,7 @@ describe('PolicyProjectModal Component', () => {
     mutationResult = mockLinkSecurityPolicyProjectResponses.success,
     provide = {},
   } = {}) => {
-    wrapper = mountExtended(PolicyProjectModal, {
+    wrapper = mountExtended(ProjectModal, {
       apolloProvider: createMockApollo([[mutationQuery, mutationResult]]),
       stubs: {
         GlModal: stubComponent(GlModal, {

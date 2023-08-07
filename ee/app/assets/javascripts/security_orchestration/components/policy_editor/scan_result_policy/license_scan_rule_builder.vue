@@ -2,12 +2,12 @@
 import { GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import BranchExceptionSelector from 'ee/security_orchestration/components/branch_exception_selector.vue';
-import PolicyRuleBranchSelection from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_branch_selection.vue';
-import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_rule_multi_select.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import ScanFilterSelector from '../scan_filter_selector.vue';
 import { SCAN_RESULT_BRANCH_TYPE_OPTIONS } from '../constants';
+import PolicyRuleMultiSelect from '../policy_rule_multi_select.vue';
+import PolicyRuleBranchSelection from './policy_rule_branch_selection.vue';
 import ScanTypeSelect from './base_layout/scan_type_select.vue';
 import StatusFilter from './scan_filters/status_filter.vue';
 import LicenseFilter from './scan_filters/license_filter.vue';

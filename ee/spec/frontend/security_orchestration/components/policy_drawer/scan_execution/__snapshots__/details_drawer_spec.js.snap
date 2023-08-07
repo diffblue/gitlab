@@ -1,0 +1,347 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DetailsDrawer component default policy renders the correct policy action message 1`] = `
+<div
+  data-testid="policy-summary"
+>
+  <div
+    data-testid="policy-summary"
+  >
+    <h5
+      class="gl-mt-6 gl-text-body"
+      data-testid="label"
+    >
+      Summary
+    </h5>
+     
+    <p
+      class="gl-text-body"
+      data-testid="content"
+    >
+      <!---->
+       
+      <div
+        class="gl-mb-3"
+      >
+        Run 
+        <strong>
+          DAST
+        </strong>
+         with the following options: 
+        <ul
+          class="gl-pl-6"
+        >
+          <li
+            class="gl-mt-3"
+          >
+            
+            Automatically selected runners
+            
+            <!---->
+          </li>
+        </ul>
+      </div>
+       
+      <div
+        class="gl-mb-3"
+      >
+        And scans to be performed:
+      </div>
+       
+      <ul>
+        <li>
+          
+          Every time a pipeline runs for the main branch
+        
+        </li>
+      </ul>
+    </p>
+  </div>
+</div>
+`;
+
+exports[`DetailsDrawer component multiple action policy renders the correct policy action message 1`] = `
+<div
+  data-testid="policy-summary"
+>
+  <div
+    data-testid="policy-summary"
+  >
+    <h5
+      class="gl-mt-6 gl-text-body"
+      data-testid="label"
+    >
+      Summary
+    </h5>
+     
+    <p
+      class="gl-text-body"
+      data-testid="content"
+    >
+      <!---->
+       
+      <div
+        class="gl-mb-3"
+      >
+        Run 
+        <strong>
+          Container Scanning
+        </strong>
+         with the following options: 
+        <ul
+          class="gl-pl-6"
+        >
+          <li
+            class="gl-mt-3"
+          >
+            
+            Automatically selected runners
+            
+            <!---->
+          </li>
+        </ul>
+      </div>
+      <div
+        class="gl-mb-3"
+      >
+        Run 
+        <strong>
+          Secret Detection
+        </strong>
+         with the following options: 
+        <ul
+          class="gl-pl-6"
+        >
+          <li
+            class="gl-mt-3"
+          >
+            
+            Automatically selected runners
+            
+            <!---->
+          </li>
+        </ul>
+      </div>
+      <div
+        class="gl-mb-3"
+      >
+        Run 
+        <strong>
+          SAST
+        </strong>
+         with the following options: 
+        <ul
+          class="gl-pl-6"
+        >
+          <li
+            class="gl-mt-3"
+          >
+            
+            Automatically selected runners
+            
+            <!---->
+          </li>
+        </ul>
+      </div>
+       
+      <div
+        class="gl-mb-3"
+      >
+        And scans to be performed:
+      </div>
+       
+      <ul>
+        <li>
+          
+          Every time a pipeline runs for the main branch
+        
+        </li>
+      </ul>
+    </p>
+  </div>
+</div>
+`;
+
+exports[`DetailsDrawer component no action policy renders the correct policy action message 1`] = `
+<div
+  data-testid="policy-summary"
+>
+  <div
+    data-testid="policy-summary"
+  >
+    <h5
+      class="gl-mt-6 gl-text-body"
+      data-testid="label"
+    >
+      Summary
+    </h5>
+     
+    <p
+      class="gl-text-body"
+      data-testid="content"
+    >
+      No actions defined - policy will not run.  
+      <div
+        class="gl-mb-3"
+      >
+        And scans to be performed:
+      </div>
+       
+      <ul>
+        <li>
+          
+          Every time a pipeline runs for the main branch
+        
+        </li>
+      </ul>
+    </p>
+  </div>
+</div>
+`;
+
+exports[`DetailsDrawer component policy with tags and CI variables renders the correct policy action message 1`] = `
+<div
+  data-testid="policy-summary"
+>
+  <div
+    data-testid="policy-summary"
+  >
+    <h5
+      class="gl-mt-6 gl-text-body"
+      data-testid="label"
+    >
+      Summary
+    </h5>
+     
+    <p
+      class="gl-text-body"
+      data-testid="content"
+    >
+      <!---->
+       
+      <div
+        class="gl-mb-3"
+      >
+        Run 
+        <strong>
+          Secret Detection
+        </strong>
+         with the following options: 
+        <ul
+          class="gl-pl-6"
+        >
+          <li
+            class="gl-mt-3"
+          >
+            
+            On runners with tag:
+            
+            <div
+              class="gl-mt-2 gl-display-flex gl-gap-2 gl-flex-wrap"
+            >
+              <span
+                class="badge badge-info badge-pill gl-badge sm"
+              >
+                <!---->
+                 
+    default
+  
+              </span>
+            </div>
+          </li>
+          <li
+            class="gl-mt-3"
+          >
+            
+            With the following customized CI variables:
+            
+            <ul
+              class="gl-list-style-none gl-pl-0 gl-mt-2"
+            >
+              <li>
+                
+    SECRET_DETECTION_HISTORIC_SCAN: true
+  
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+       
+      <div
+        class="gl-mb-3"
+      >
+        And scans to be performed:
+      </div>
+       
+      <ul>
+        <li>
+          
+          Every time a pipeline runs for the main branch
+        
+        </li>
+      </ul>
+    </p>
+  </div>
+</div>
+`;
+
+exports[`DetailsDrawer component policy with unsupported attributes renders the correct policy action message 1`] = `
+<div
+  data-testid="policy-summary"
+>
+  <div
+    data-testid="policy-summary"
+  >
+    <h5
+      class="gl-mt-6 gl-text-body"
+      data-testid="label"
+    >
+      Summary
+    </h5>
+     
+    <p
+      class="gl-text-body"
+      data-testid="content"
+    >
+      <!---->
+       
+      <div
+        class="gl-mb-3"
+      >
+        Run 
+        <strong>
+          SAST
+        </strong>
+         with the following options: 
+        <ul
+          class="gl-pl-6"
+        >
+          <li
+            class="gl-mt-3"
+          >
+            
+            Automatically selected runners
+            
+            <!---->
+          </li>
+        </ul>
+      </div>
+       
+      <div
+        class="gl-mb-3"
+      >
+        And scans to be performed:
+      </div>
+       
+      <ul>
+        <li>
+          
+          Every time a pipeline runs for the main branch
+        
+        </li>
+      </ul>
+    </p>
+  </div>
+</div>
+`;

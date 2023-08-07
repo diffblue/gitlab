@@ -9,6 +9,7 @@ import {
   invalidBranchType,
   invalidVulnerabilityAge,
   VULNERABILITY_STATE_KEYS,
+  humanizeInvalidBranchesError,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/rules';
 import {
   APPROVAL_VULNERABILITY_STATES,
@@ -181,5 +182,25 @@ describe('invalidVulnerabilityAge', () => {
     ${[{ ...validStates, vulnerability_age: { operator: GREATER_THAN_OPERATOR, value: 1, interval: AGE_DAY, invalidKey: 'a' } }]} | ${true}
   `('returns $expectedResult with $rules', ({ rules, expectedResult }) => {
     expect(invalidVulnerabilityAge(rules)).toStrictEqual(expectedResult);
+  });
+});
+
+describe('humanizeInvalidBranchesError', () => {
+  it('returns message without any branch name for an empty array', () => {
+    expect(humanizeInvalidBranchesError([])).toEqual(
+      'The following branches do not exist on this development project: . Please review all protected branches to ensure the values are accurate before updating this policy.',
+    );
+  });
+
+  it('returns message with a single branch name for an array with single element', () => {
+    expect(humanizeInvalidBranchesError(['main'])).toEqual(
+      'The following branches do not exist on this development project: main. Please review all protected branches to ensure the values are accurate before updating this policy.',
+    );
+  });
+
+  it('returns message with multiple branch names for array with multiple elements', () => {
+    expect(humanizeInvalidBranchesError(['main', 'protected', 'master'])).toEqual(
+      'The following branches do not exist on this development project: main, protected and master. Please review all protected branches to ensure the values are accurate before updating this policy.',
+    );
   });
 });
