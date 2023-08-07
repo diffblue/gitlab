@@ -172,7 +172,7 @@ module Gitlab
           print last_event&.id
           puts " (#{time_ago_in_words(last_event&.created_at)} ago)"
 
-          print 'Last event ID processed by cursor: '.rjust(GEO_STATUS_COLUMN_WIDTH)
+          print 'Last event ID processed: '.rjust(GEO_STATUS_COLUMN_WIDTH)
           cursor_last_event_id = ::Geo::EventLogState.last_processed&.event_id
 
           if cursor_last_event_id
