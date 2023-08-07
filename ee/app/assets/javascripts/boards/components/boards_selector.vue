@@ -18,6 +18,9 @@ export default {
     showCreate() {
       return this.isEpicBoard || this.multipleIssueBoardsAvailable;
     },
+    boardsQuery() {
+      return this.isEpicBoard ? epicBoardsQuery : this.issueBoardsQuery;
+    },
   },
   methods: {
     ...mapActions(['fetchEpicBoard']),
@@ -28,13 +31,10 @@ export default {
       if (!data?.group) {
         return [];
       }
-      return data.group.epicBoards.nodes.map((node) => ({
+      return data.group.boards.nodes.map((node) => ({
         id: getIdFromGraphQLId(node.id),
         name: node.name,
       }));
-    },
-    epicBoardQuery() {
-      return epicBoardsQuery;
     },
     loadBoards(toggleDropdown = true) {
       if (this.isEpicBoard) {
@@ -49,7 +49,7 @@ export default {
         variables() {
           return { fullPath: this.fullPath };
         },
-        query: this.isEpicBoard ? this.epicBoardQuery : this.boardQuery,
+        query: this.boardsQuery,
         update: (data) =>
           this.isEpicBoard ? this.epicBoardUpdate(data) : this.boardUpdate(data, 'boards'),
         watchLoading: (isLoading) => {
