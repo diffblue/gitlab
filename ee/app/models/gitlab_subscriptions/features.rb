@@ -83,6 +83,7 @@ module GitlabSubscriptions
       board_assignee_lists
       board_milestone_lists
       ci_cd_projects
+      ci_namespace_catalog
       ci_secrets_management
       cluster_agents_ci_impersonation
       cluster_agents_user_impersonation
@@ -188,7 +189,6 @@ module GitlabSubscriptions
       breach_and_attack_simulation
       fill_in_merge_request_template
       no_code_automation
-      ci_namespace_catalog
       cluster_image_scanning
       external_status_checks
       combined_project_analytics_dashboards
