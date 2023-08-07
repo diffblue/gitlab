@@ -74,7 +74,7 @@ module EE
         # CI job token authentication:
         # this method grants limited privileged for admin users
         # admin users can only access project if they are direct member
-        job_token_authentication? ? :build_read_project : :read_project
+        job_token_authentication? ? :build_read_project : super
       end
 
       override :find_group!
