@@ -98,7 +98,7 @@ class AddSuffixProjectInWikiRid < Elastic::Migration
     retry_attempt = migration_state[:retry_attempt] || 0
     slice = migration_state[:slice] || 0
     task_id = migration_state[:task_id]
-    max_slices = migration_state[:max_slices] || get_number_of_shards(index_name: index_name)
+    max_slices = migration_state[:max_slices] || get_max_slices(index_name: index_name)
     [retry_attempt, slice, task_id, max_slices]
   end
 
