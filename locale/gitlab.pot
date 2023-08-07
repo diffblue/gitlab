@@ -12176,7 +12176,7 @@ msgstr ""
 msgid "ComplianceReport|No projects found that match filters"
 msgstr ""
 
-msgid "ComplianceReport|No standards adherences found"
+msgid "ComplianceReport|No projects with standards adherence checks found"
 msgstr ""
 
 msgid "ComplianceReport|No violations found"
