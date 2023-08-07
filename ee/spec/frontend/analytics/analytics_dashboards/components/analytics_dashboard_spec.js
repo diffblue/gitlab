@@ -1,4 +1,4 @@
-import { GlLoadingIcon, GlEmptyState } from '@gitlab/ui';
+import { GlSkeletonLoader, GlEmptyState } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import {
@@ -63,7 +63,7 @@ describe('AnalyticsDashboard', () => {
   const namespaceId = '1';
 
   const findDashboard = () => wrapper.findComponent(CustomizableDashboard);
-  const findLoader = () => wrapper.findComponent(GlLoadingIcon);
+  const findLoader = () => wrapper.findComponent(GlSkeletonLoader);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
 
   const mockSaveDashboardImplementation = async (responseCallback) => {

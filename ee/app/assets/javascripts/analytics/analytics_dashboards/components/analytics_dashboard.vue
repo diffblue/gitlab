@@ -1,5 +1,5 @@
 <script>
-import { GlEmptyState, GlLoadingIcon } from '@gitlab/ui';
+import { GlEmptyState, GlSkeletonLoader } from '@gitlab/ui';
 import { createAlert } from '~/alert';
 import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
@@ -25,7 +25,7 @@ import getAvailableVisualizations from '../graphql/queries/get_all_product_analy
 export default {
   name: 'AnalyticsDashboard',
   components: {
-    GlLoadingIcon,
+    GlSkeletonLoader,
     CustomizableDashboard,
     GlEmptyState,
   },
@@ -237,6 +237,8 @@ export default {
       :primary-button-text="$options.i18n.emptyAction"
       :primary-button-link="backUrl"
     />
-    <gl-loading-icon v-else size="lg" class="gl-my-7" />
+    <div v-else class="gl-mt-7">
+      <gl-skeleton-loader :lines="3" />
+    </div>
   </div>
 </template>
