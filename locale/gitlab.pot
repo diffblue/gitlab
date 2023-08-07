@@ -16214,6 +16214,12 @@ msgstr ""
 msgid "Deployment|Triggerer"
 msgstr ""
 
+msgid "Deployment|Unavailable"
+msgstr ""
+
+msgid "Deployment|Unknown"
+msgstr ""
+
 msgid "Deployment|Waiting"
 msgstr ""
 
@@ -18210,6 +18216,12 @@ msgstr ""
 msgid "Environment|Ports"
 msgstr ""
 
+msgid "Environment|Reconciled"
+msgstr ""
+
+msgid "Environment|Reconciling"
+msgstr ""
+
 msgid "Environment|ReplicaSets"
 msgstr ""
 
@@ -18219,6 +18231,9 @@ msgstr ""
 msgid "Environment|Services"
 msgstr ""
 
+msgid "Environment|Stalled"
+msgstr ""
+
 msgid "Environment|StatefulSets"
 msgstr ""
 
@@ -18226,6 +18241,9 @@ msgid "Environment|Succeeded"
 msgstr ""
 
 msgid "Environment|Summary"
+msgstr ""
+
+msgid "Environment|Sync status"
 msgstr ""
 
 msgid "Environment|There was an error connecting to the cluster agent."
