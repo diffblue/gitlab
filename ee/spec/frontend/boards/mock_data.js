@@ -67,7 +67,7 @@ export const mockEpicBoardsResponse = {
   data: {
     group: {
       id: 'gid://gitlab/Group/114',
-      epicBoards: {
+      boards: {
         nodes: [
           {
             id: 'gid://gitlab/Boards::EpicBoard/1',
