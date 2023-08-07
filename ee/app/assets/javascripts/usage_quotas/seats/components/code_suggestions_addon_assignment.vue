@@ -106,6 +106,7 @@ export default {
       :label="$options.i18n.toggleLabel"
       :is-loading="isLoading"
       :disabled="!isAssignable"
+      class="gl-display-inline-block gl-vertical-align-middle"
       label-position="hidden"
       @change="onToggle"
     />
