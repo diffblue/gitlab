@@ -5,6 +5,10 @@ require 'spec_helper'
 RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerability_management do
   let_it_be(:project) { create(:project) }
 
+  it_behaves_like 'vulnerability and finding shared examples' do
+    let(:transformer_method) { :vulnerability_read }
+  end
+
   describe 'associations' do
     it { is_expected.to belong_to(:vulnerability) }
     it { is_expected.to belong_to(:project) }
@@ -269,21 +273,6 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
       result = described_class.by_scanner_ids(vulnerability1.finding_scanner_id)
 
       expect(result).to match_array([vulnerability1.vulnerability_read])
-    end
-  end
-
-  describe '.for_projects' do
-    let_it_be(:project_2) { create(:project) }
-    let_it_be(:vulnerability) { create(:vulnerability, :with_finding, project: project) }
-
-    before do
-      create(:vulnerability, :with_finding, project: project_2)
-    end
-
-    subject { described_class.for_projects([project.id]) }
-
-    it 'returns vulnerability_reads related to the given project IDs' do
-      is_expected.to contain_exactly(vulnerability.vulnerability_read)
     end
   end
 

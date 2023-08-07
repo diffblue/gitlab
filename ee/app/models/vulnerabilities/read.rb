@@ -2,6 +2,7 @@
 
 module Vulnerabilities
   class Read < ApplicationRecord
+    include VulnerabilityScopes
     include EachBatch
     include UnnestedInFilters::Dsl
 
@@ -40,7 +41,6 @@ module Vulnerabilities
 
     scope :by_scanner, -> (scanner) { where(scanner: scanner) }
     scope :by_scanner_ids, -> (scanner_ids) { where(scanner_id: scanner_ids) }
-    scope :for_projects, -> (project_ids) { where(project_id: project_ids) }
     scope :grouped_by_severity, -> { reorder(severity: :desc).group(:severity) }
     scope :with_report_types, -> (report_types) { where(report_type: report_types) }
     scope :with_severities, -> (severities) { where(severity: severities) }
