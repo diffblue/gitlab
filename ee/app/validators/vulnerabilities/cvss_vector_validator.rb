@@ -4,10 +4,8 @@
 # Works for CVSS 3.1, 3.0, and 2.0
 module Vulnerabilities
   class CvssVectorValidator < ActiveModel::EachValidator
-    VECTOR_MAX_LENGTH = 128
     VALIDATIONS = %i[
       validate_type
-      validate_length
       validate_vector
       validate_version
     ].freeze
@@ -26,14 +24,6 @@ module Vulnerabilities
       )
 
       record.errors.add(attribute, "cannot be validated due to an unexpected internal state")
-
-      false
-    end
-
-    def validate_length(record, attribute, value)
-      return true if record[attribute].length <= VECTOR_MAX_LENGTH
-
-      record.errors.add(attribute, "vector string may not be longer than #{VECTOR_MAX_LENGTH} characters")
 
       false
     end

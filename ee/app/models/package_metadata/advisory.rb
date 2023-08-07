@@ -13,6 +13,9 @@ module PackageMetadata
 
     enum source_xid: ::Enums::PackageMetadata.advisory_sources
 
+    attribute :cvss_v2, Gitlab::Database::Type::CvssVector.new
+    attribute :cvss_v3, Gitlab::Database::Type::CvssVector.new
+
     validates :advisory_xid, presence: true, length: { maximum: 36 }
     validates :source_xid, presence: true
     validates :published_date, presence: true
@@ -26,18 +29,6 @@ module PackageMetadata
       urls.each do |url|
         record.errors.add(url, "size is greater than #{MAX_URL_SIZE}") if url.size > MAX_URL_SIZE
       end
-    end
-
-    def cvss_v2
-      return unless super
-
-      ::CvssSuite.new(super)
-    end
-
-    def cvss_v3
-      return unless super
-
-      ::CvssSuite.new(super)
     end
   end
 end

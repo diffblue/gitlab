@@ -23,18 +23,6 @@ RSpec.shared_examples 'model with cvss generic cvss validation' do |attribute|
       expect(subject.errors[attribute]).to include('cannot be validated due to an unexpected internal state')
     end
   end
-
-  describe 'validating max length when length is invalid' do
-    let(:max_length) { Vulnerabilities::CvssVectorValidator::VECTOR_MAX_LENGTH }
-    let(:vector) { Array.new(max_length + 1).map { "x" } }
-
-    it { is_expected.to be_invalid }
-
-    it 'reports correct error' do
-      expect(subject.errors[attribute]).to include(
-        "vector string may not be longer than #{max_length} characters")
-    end
-  end
 end
 
 RSpec.shared_examples 'model with cvss v3 vector validation' do |attribute|
