@@ -6,11 +6,11 @@ module QA
       module Project
         module Policies
           class Index < QA::Page::Base
-            view 'ee/app/assets/javascripts/security_orchestration/components/policies/policies_list.vue' do
+            view 'ee/app/assets/javascripts/security_orchestration/components/policies/list_component.vue' do
               element 'policies-list'
             end
 
-            view 'ee/app/assets/javascripts/security_orchestration/components/policies/policies_header.vue' do
+            view 'ee/app/assets/javascripts/security_orchestration/components/policies/list_header.vue' do
               element 'new-policy-button'
             end
 

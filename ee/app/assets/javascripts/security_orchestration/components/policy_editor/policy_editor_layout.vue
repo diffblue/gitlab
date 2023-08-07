@@ -49,8 +49,7 @@ export default {
     GlIcon,
     GlModal,
     SegmentedControlButtonGroup,
-    PolicyYamlEditor: () =>
-      import(/* webpackChunkName: 'policy_yaml_editor' */ '../policy_yaml_editor.vue'),
+    YamlEditor: () => import(/* webpackChunkName: 'policy_yaml_editor' */ '../yaml_editor.vue'),
   },
   directives: { GlModal: GlModalDirective, GlTooltip: GlTooltipDirective },
   inject: ['namespaceType', 'policiesPath'],
@@ -249,7 +248,7 @@ export default {
             <slot name="rules"></slot>
             <slot name="actions"></slot>
           </div>
-          <policy-yaml-editor
+          <yaml-editor
             v-if="shouldShowYamlEditor"
             data-testid="policy-yaml-editor"
             :policy-type="policy.type"

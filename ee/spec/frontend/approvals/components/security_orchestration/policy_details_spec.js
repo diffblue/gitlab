@@ -1,7 +1,7 @@
 import { GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import PolicyDetails from 'ee/approvals/components/security_orchestration/policy_details.vue';
-import RequestApprovals from 'ee/security_orchestration/components/policy_drawer/require_approvals.vue';
+import PolicyApprovals from 'ee/security_orchestration/components/policy_drawer/scan_result/policy_approvals.vue';
 
 describe('PolicyDetails', () => {
   let wrapper;
@@ -40,7 +40,7 @@ describe('PolicyDetails', () => {
   };
 
   const findLink = () => wrapper.findComponent(GlLink);
-  const findRequiredApprovals = () => wrapper.findComponent(RequestApprovals);
+  const findPolicyApprovals = () => wrapper.findComponent(PolicyApprovals);
 
   describe('with isSelected set to true', () => {
     beforeEach(() => {
@@ -49,7 +49,7 @@ describe('PolicyDetails', () => {
 
     it('renders the text version of the related action and each of the rules', () => {
       const text = wrapper.text();
-      expect(findRequiredApprovals().exists()).toBe(true);
+      expect(findPolicyApprovals().exists()).toBe(true);
       expect(text).toContain('When any security scanner');
       expect(text).toContain('critical');
     });
@@ -84,7 +84,7 @@ describe('PolicyDetails', () => {
 
     it('does not render a text based on action and rules', () => {
       expect(wrapper.text()).toBe('');
-      expect(findRequiredApprovals().exists()).toBe(false);
+      expect(findPolicyApprovals().exists()).toBe(false);
     });
 
     it('does not render a link to the policy path', () => {

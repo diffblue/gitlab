@@ -1,7 +1,7 @@
 <script>
 import { s__ } from '~/locale';
 import { SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
-import PolicyRuleMultiSelect from '../../../policy_rule_multi_select.vue';
+import PolicyRuleMultiSelect from '../../policy_rule_multi_select.vue';
 import BaseLayoutComponent from '../base_layout/base_layout_component.vue';
 import { SEVERITY } from './constants';
 

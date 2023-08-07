@@ -45,7 +45,7 @@ describe('PolicyEditorLayout component', () => {
         namespaceType,
         ...provide,
       },
-      stubs: { PolicyYamlEditor: true },
+      stubs: { YamlEditor: true },
     });
   };
 

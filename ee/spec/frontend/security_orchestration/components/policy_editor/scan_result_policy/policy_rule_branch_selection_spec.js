@@ -2,7 +2,7 @@ import { nextTick } from 'vue';
 import { GlCollapsibleListbox, GlFormInput } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import PolicyRuleBranchSelection from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_branch_selection.vue';
-import ProtectedBranchesDropdown from 'ee/security_orchestration/components/protected_branches_dropdown.vue';
+import ProtectedBranchesDropdown from 'ee/security_orchestration/components/policy_editor/protected_branches_dropdown.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
   ALL_PROTECTED_BRANCHES,

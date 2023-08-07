@@ -1,6 +1,5 @@
 export { createPolicyObject, fromYaml } from './from_yaml';
 export { toYaml } from './to_yaml';
-export * from './humanize';
 export * from './rules';
 export * from './cron';
 export * from './actions';

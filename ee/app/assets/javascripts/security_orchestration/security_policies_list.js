@@ -2,7 +2,7 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
 import { parseBoolean } from '~/lib/utils/common_utils';
-import SecurityPoliciesApp from './components/policies/policies_app.vue';
+import SecurityPoliciesListApp from './components/policies/app.vue';
 
 Vue.use(VueApollo);
 
@@ -38,7 +38,7 @@ export default (el, namespaceType) => {
       namespaceType,
     },
     render(createElement) {
-      return createElement(SecurityPoliciesApp);
+      return createElement(SecurityPoliciesListApp);
     },
   });
 };

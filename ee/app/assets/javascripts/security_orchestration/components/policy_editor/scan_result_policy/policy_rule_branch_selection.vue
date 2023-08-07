@@ -1,7 +1,6 @@
 <script>
 import { GlCollapsibleListbox, GlFormInput } from '@gitlab/ui';
 import { n__, s__ } from '~/locale';
-import ProtectedBranchesDropdown from 'ee/security_orchestration/components/protected_branches_dropdown.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { slugifyToArray } from '../utils';
 import {
@@ -11,6 +10,7 @@ import {
   SCAN_EXECUTION_BRANCH_TYPE_OPTIONS,
   SPECIFIC_BRANCHES,
 } from '../constants';
+import ProtectedBranchesDropdown from '../protected_branches_dropdown.vue';
 
 export default {
   components: {
