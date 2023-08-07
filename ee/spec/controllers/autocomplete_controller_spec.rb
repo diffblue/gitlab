@@ -6,7 +6,7 @@ RSpec.describe AutocompleteController do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, namespace: user.namespace) }
 
-  context 'GET user_profile', feature_category: :user_profile do
+  context 'GET users', feature_category: :user_profile do
     let_it_be(:user2) { create(:user) }
     let_it_be(:non_member) { create(:user) }
 
@@ -14,45 +14,6 @@ RSpec.describe AutocompleteController do
       before do
         project.add_developer(user2)
         sign_in(user)
-      end
-
-      describe "GET #users that can push to protected branches" do
-        before do
-          get(:users, params: { project_id: project.id, push_code_to_protected_branches: 'true' })
-        end
-
-        it 'returns authorized users', :aggregate_failures do
-          expect(json_response).to be_kind_of(Array)
-          expect(json_response.size).to eq(1)
-          expect(json_response.map { |u| u["username"] }).to match_array([user.username])
-        end
-      end
-
-      describe "GET #users that can push code" do
-        let(:reporter_user) { create(:user) }
-
-        before do
-          project.add_reporter(reporter_user)
-          get(:users, params: { project_id: project.id, push_code: 'true' })
-        end
-
-        it 'returns authorized users', :aggregate_failures do
-          expect(json_response).to be_kind_of(Array)
-          expect(json_response.size).to eq(2)
-          expect(json_response.map { |user| user["username"] }).to match_array([user.username, user2.username])
-        end
-      end
-
-      describe "GET #users that can push to protected branches, including the current user" do
-        before do
-          get(:users, params: { project_id: project.id, push_code_to_protected_branches: true, current_user: true })
-        end
-
-        it 'returns authorized users', :aggregate_failures do
-          expect(json_response).to be_kind_of(Array)
-          expect(json_response.size).to eq(1)
-          expect(json_response.map { |u| u["username"] }).to match_array([user.username])
-        end
       end
 
       describe 'GET #users with suggested users' do
