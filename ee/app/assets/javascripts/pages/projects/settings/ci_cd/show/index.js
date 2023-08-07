@@ -3,11 +3,9 @@ import { initGroupProtectedEnvironmentList } from 'ee/protected_environments/gro
 import { initProtectedEnvironments } from 'ee/protected_environments/protected_environments';
 import LicenseManagement from 'ee/vue_shared/license_compliance/license_management.vue';
 import createStore from 'ee/vue_shared/license_compliance/store/index';
-import showToast from '~/vue_shared/plugins/global_toast';
 import '~/pages/projects/settings/ci_cd/show/index';
 
 const el = document.getElementById('js-managed-licenses');
-const toasts = document.querySelectorAll('.js-toast-message');
 
 if (el?.dataset?.apiUrl) {
   const store = createStore();
@@ -26,8 +24,6 @@ if (el?.dataset?.apiUrl) {
     },
   });
 }
-
-toasts.forEach((toast) => showToast(toast.dataset.message));
 
 initGroupProtectedEnvironmentList();
 initProtectedEnvironments();
