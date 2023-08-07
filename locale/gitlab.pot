@@ -34162,6 +34162,9 @@ msgstr ""
 msgid "PipelineSchedules|Next Run"
 msgstr ""
 
+msgid "PipelineSchedules|No pipeline schedules"
+msgstr ""
+
 msgid "PipelineSchedules|None"
 msgstr ""
 
