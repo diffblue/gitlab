@@ -53054,6 +53054,9 @@ msgstr ""
 msgid "WorkItem|Key Result"
 msgstr ""
 
+msgid "WorkItem|Key result"
+msgstr ""
+
 msgid "WorkItem|Mark as done"
 msgstr ""
 
