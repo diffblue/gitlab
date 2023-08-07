@@ -34,6 +34,14 @@ RSpec.describe AddSuffixProjectInWikiRid, :elastic_clean, :sidekiq_inline, featu
         expect(migration.migration_state['task_id']).not_to be nil
       end
 
+      it 'sets correct number of slices for 1 shard' do
+        allow(migration).to receive(:get_number_of_shards).and_return(1)
+
+        migration.migrate
+
+        expect(migration.migration_state).to include(slice: 0, max_slices: 2)
+      end
+
       it 'sets next slice and clears task_id after task check' do
         allow(migration).to receive(:reindexing_completed?).and_return(true)
 

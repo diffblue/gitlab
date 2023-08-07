@@ -2,6 +2,16 @@
 
 module Elastic
   module MigrationHelper
+    def get_number_of_shards(index_name: new_index_name)
+      helper.get_settings(index_name: index_name).dig('number_of_shards').to_i
+    end
+
+    def get_max_slices(index_name: new_index_name)
+      number_of_shards = get_number_of_shards(index_name: index_name)
+
+      number_of_shards.to_i <= 1 ? 2 : number_of_shards
+    end
+
     private
 
     def document_type
@@ -14,10 +24,6 @@ module Elastic
 
     def document_type_plural
       document_type.to_s.pluralize
-    end
-
-    def get_number_of_shards(index_name: new_index_name)
-      helper.get_settings(index_name: index_name).dig('number_of_shards').to_i
     end
 
     def default_index_name

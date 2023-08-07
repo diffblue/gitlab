@@ -38,6 +38,14 @@ RSpec.describe MigrateWikisToSeparateIndex, feature_category: :global_search do
 
         expect(migration.migration_state).to include(slice: 0, max_slices: 5)
       end
+
+      it 'sets correct number of slices for 1 shard' do
+        allow(migration).to receive(:get_number_of_shards).and_return(1)
+
+        migration.migrate
+
+        expect(migration.migration_state).to include(slice: 0, max_slices: 2)
+      end
     end
 
     context 'for batch run' do

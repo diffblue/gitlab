@@ -16,7 +16,7 @@ class MigrateWikisToSeparateIndex < Elastic::Migration
     # On initial batch we only create index
     if migration_state[:slice].blank?
       create_index_for_first_batch!([Wiki])
-      set_migration_state({ slice: 0, retry_attempt: 0, max_slices: get_number_of_shards })
+      set_migration_state({ slice: 0, retry_attempt: 0, max_slices: get_max_slices })
       return
     end
 
