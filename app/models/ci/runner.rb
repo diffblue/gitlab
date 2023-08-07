@@ -513,7 +513,10 @@ module Ci
     private
 
     scope :with_upgrade_status, ->(upgrade_status) do
-      joins(:runner_version).where(runner_version: { status: upgrade_status })
+      joins(:runner_managers)
+        .joins("INNER JOIN #{RunnerVersion.quoted_table_name} runner_version " \
+               "ON runner_version.version = #{RunnerManager.quoted_table_name}.version")
+        .where(runner_version: { status: upgrade_status })
     end
 
     EXECUTOR_NAME_TO_TYPES = {
