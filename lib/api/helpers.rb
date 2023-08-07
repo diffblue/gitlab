@@ -157,10 +157,14 @@ module API
 
       return forbidden! unless authorized_project_scope?(project)
 
-      return project if can?(current_user, :read_project, project)
+      return project if can?(current_user, read_project_ability, project)
       return unauthorized! if authenticate_non_public?
 
       not_found!('Project')
+    end
+
+    def read_project_ability
+      :read_project
     end
 
     def authorized_project_scope?(project)

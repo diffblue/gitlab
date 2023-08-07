@@ -69,21 +69,12 @@ module EE
               .allow_group_owners_to_manage_ldap
       end
 
-      override :find_project!
-      def find_project!(id)
-        project = find_project(id)
-
-        return forbidden! unless authorized_project_scope?(project)
-
+      override :read_project_ability
+      def read_project_ability
         # CI job token authentication:
         # this method grants limited privileged for admin users
         # admin users can only access project if they are direct member
-        ability = job_token_authentication? ? :build_read_project : :read_project
-
-        return project if can?(current_user, ability, project)
-        return unauthorized! if authenticate_non_public?
-
-        not_found!('Project')
+        job_token_authentication? ? :build_read_project : :read_project
       end
 
       override :find_group!
