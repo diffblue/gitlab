@@ -19,11 +19,8 @@ module Gitlab
                 base_prompt = Utils::Prompt.no_role_text(
                   ::Gitlab::Llm::Chain::Tools::JsonReader::Executor::PROMPT_TEMPLATE, options
                 ).concat("\nThought:")
-                prompt = "\n\nHuman: #{base_prompt}\n\nAssistant:"
-                {
-                  prompt: prompt,
-                  options: {}
-                }
+
+                Requests::Anthropic.prompt("\n\nHuman: #{base_prompt}\n\nAssistant:")
               end
             end
           end

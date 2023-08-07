@@ -4,7 +4,7 @@ module Gitlab
   module Llm
     module Chain
       module Requests
-        class Anthropic
+        class Anthropic < Base
           attr_reader :ai_client
 
           TEMPERATURE = 0.1

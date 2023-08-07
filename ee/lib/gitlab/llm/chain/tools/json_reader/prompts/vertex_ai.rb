@@ -18,10 +18,7 @@ module Gitlab
                   ::Gitlab::Llm::Chain::Tools::JsonReader::Executor::PROMPT_TEMPLATE, options
                 ).concat("\nThought:")
 
-                {
-                  prompt: prompt,
-                  options: {}
-                }
+                Requests::VertexAi.prompt(prompt)
               end
             end
           end

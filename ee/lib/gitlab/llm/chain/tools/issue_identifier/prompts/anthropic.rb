@@ -13,12 +13,12 @@ module Gitlab
                   ::Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor::PROMPT_TEMPLATE, options
                 )
 
-                {
-                  prompt: "\n\nHuman: #{base_prompt}\n\nAssistant: ```json
+                Requests::Anthropic.prompt(
+                  "\n\nHuman: #{base_prompt}\n\nAssistant: ```json
                     \{
                       \"ResourceIdentifierType\": \"",
                   options: { model: MODEL }
-                }
+                )
               end
             end
           end

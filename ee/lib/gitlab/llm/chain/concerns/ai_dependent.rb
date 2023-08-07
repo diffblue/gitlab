@@ -6,7 +6,7 @@ module Gitlab
       module Concerns
         module AiDependent
           def prompt
-            return base_prompt unless provider_prompt_class
+            return { prompt: base_prompt } unless provider_prompt_class
 
             provider_prompt_class.prompt(options)
           end
