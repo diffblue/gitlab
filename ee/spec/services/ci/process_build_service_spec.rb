@@ -105,14 +105,6 @@ RSpec.describe Ci::ProcessBuildService, '#execute', feature_category: :continuou
           end
 
           it_behaves_like 'blocking deployment job'
-
-          context 'when track_manual_deployments feature flag is disabled' do
-            before do
-              stub_feature_flags(track_manual_deployments: false)
-            end
-
-            it_behaves_like 'blocking deployment job'
-          end
         end
 
         context 'with multi access levels' do
@@ -121,14 +113,6 @@ RSpec.describe Ci::ProcessBuildService, '#execute', feature_category: :continuou
           end
 
           it_behaves_like 'blocking deployment job'
-
-          context 'when track_manual_deployments feature flag is disabled' do
-            before do
-              stub_feature_flags(track_manual_deployments: false)
-            end
-
-            it_behaves_like 'blocking deployment job'
-          end
         end
       end
     end

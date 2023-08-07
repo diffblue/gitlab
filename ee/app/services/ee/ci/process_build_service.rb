@@ -7,10 +7,6 @@ module EE
       override :process
       def process(processable)
         if processable.persisted_environment.try(:needs_approval?)
-          if ::Feature.disabled?(:track_manual_deployments, processable.project)
-            processable.run_after_commit { |processable| processable.deployment&.block! }
-          end
-
           # To populate the deployment job as manually executable (i.e. `Ci::Build#playable?`),
           # we have to set `manual` to `ci_builds.when` as well as `ci_builds.status`.
           processable.when = 'manual'
