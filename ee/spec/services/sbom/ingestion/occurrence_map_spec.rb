@@ -155,13 +155,9 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap, feature_category: :dependency_man
     end
   end
 
-  describe '#packager' do
-    context 'when report_source is nil' do
-      let(:report_source) { nil }
-
-      it 'does not raise error' do
-        expect(occurrence_map.packager).to be_nil
-      end
-    end
+  describe 'delegations' do
+    it { is_expected.to delegate_method(:packager).to(:report_source).allow_nil }
+    it { is_expected.to delegate_method(:input_file_path).to(:report_source).allow_nil }
+    it { is_expected.to delegate_method(:name).to(:report_component) }
   end
 end

@@ -29,10 +29,12 @@ module Sbom
         version.present?
       end
 
-      delegate :packager, to: :report_source, allow_nil: true
-      delegate :version, to: :report_component, private: true
+      delegate :packager, :input_file_path, to: :report_source, allow_nil: true
+      delegate :name, to: :report_component
 
       private
+
+      delegate :version, to: :report_component, private: true
 
       def purl_type
         report_component.purl&.type
