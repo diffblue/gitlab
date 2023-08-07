@@ -26,7 +26,21 @@ RSpec.describe 'Query.project.mergeRequest.findingReportsComparer', feature_cate
             state: 'confirmed',
             found_by_pipeline: {
               iid: 1
-            }
+            },
+            report_type: 'sast', # necessary for mocking location type correctly
+            location: {
+              file: 'foo.js',
+              start_line: '1',
+              end_line: nil
+            },
+            identifiers: [
+              {
+                external_type: 'semgrep_id',
+                external_id: 'eslint.detect-disable-mustache-escape',
+                name: 'eslint.detect-disable-mustache-escape',
+                url: 'https://semgrep.dev/r/gitlab.eslint.detect-disable-mustache-escape'
+              }
+            ]
           }
         ],
         fixed: []
@@ -50,6 +64,19 @@ RSpec.describe 'Query.project.mergeRequest.findingReportsComparer', feature_cate
             severity
             state
             foundByPipelineIid
+            location {
+              ...on VulnerabilityLocationSast {
+                file
+                startLine
+                endLine
+              }
+            }
+            identifiers {
+              externalType
+              externalId
+              name
+              url
+            }
           }
           fixed {
             uuid
@@ -58,6 +85,19 @@ RSpec.describe 'Query.project.mergeRequest.findingReportsComparer', feature_cate
             severity
             state
             foundByPipelineIid
+            location {
+              ...on VulnerabilityLocationSast {
+                file
+                startLine
+                endLine
+              }
+            }
+            identifiers {
+              externalType
+              externalId
+              name
+              url
+            }
           }
         }
       }
@@ -96,6 +136,38 @@ RSpec.describe 'Query.project.mergeRequest.findingReportsComparer', feature_cate
       post_graphql(query, current_user: user)
     end
 
+    context 'when sast_reports_in_inline_diff FF is disabled' do
+      before_all do
+        stub_feature_flags(sast_reports_in_inline_diff: false)
+      end
+
+      it 'returns null for identifiers and location fields' do
+        expect(result).to match(a_hash_including(
+          {
+            status: 'PARSED',
+            statusReason: 'An example reason',
+            report: {
+              baseReportOutOfDate: false,
+              baseReportCreatedAt: nil,
+              headReportCreatedAt: an_instance_of(String),
+              added: [
+                {
+                  uuid: an_instance_of(String),
+                  title: 'Test Vulnerability',
+                  description: 'Test description',
+                  severity: 'CRITICAL',
+                  location: nil,
+                  identifiers: nil,
+                  state: 'CONFIRMED',
+                  foundByPipelineIid: '1'
+                }
+              ],
+              fixed: []
+            }
+          }.deep_stringify_keys))
+      end
+    end
+
     it 'returns expected data' do
       expect(result).to match(a_hash_including(
         {
@@ -112,7 +184,20 @@ RSpec.describe 'Query.project.mergeRequest.findingReportsComparer', feature_cate
                 description: 'Test description',
                 severity: 'CRITICAL',
                 state: 'CONFIRMED',
-                foundByPipelineIid: '1'
+                foundByPipelineIid: '1',
+                location: {
+                  endLine: nil,
+                  file: 'foo.js',
+                  startLine: '1'
+                },
+                identifiers: [
+                  {
+                    externalId: 'eslint.detect-disable-mustache-escape',
+                    externalType: 'semgrep_id',
+                    name: 'eslint.detect-disable-mustache-escape',
+                    url: 'https://semgrep.dev/r/gitlab.eslint.detect-disable-mustache-escape'
+                  }
+                ]
               }
             ],
             fixed: []
