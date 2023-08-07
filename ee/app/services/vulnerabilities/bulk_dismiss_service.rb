@@ -17,7 +17,7 @@ module Vulnerabilities
       ensure_authorized_projects!
 
       vulnerability_ids.each_slice(MAX_BATCH).each do |ids|
-        dismiss(Vulnerability.id_in(ids).without_states(:dismissed))
+        dismiss(Vulnerability.id_in(ids))
       end
       refresh_statistics
 

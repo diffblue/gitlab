@@ -136,16 +136,32 @@ RSpec.describe Vulnerabilities::BulkDismissService, feature_category: :vulnerabi
         let_it_be(:dismissed_vulnerability) { create(:vulnerability, :with_findings, :dismissed, project: project) }
         let(:vulnerability_ids) { [dismissed_vulnerability.id] }
 
-        it 'does not update the vulnerability' do
-          expect { service.execute }.not_to change { dismissed_vulnerability.reload.dismissed_at }
+        it 'updates the vulnerability' do
+          expect { service.execute }.to change { dismissed_vulnerability.reload.dismissed_at }
         end
 
-        it 'does not insert a system note' do
-          expect { service.execute }.not_to change { Note.count }
+        it 'inserts a system note' do
+          expect { service.execute }.to change { Note.count }
         end
 
-        it 'does not insert a state transition' do
-          expect { service.execute }.not_to change { dismissed_vulnerability.state_transitions.count }
+        it 'inserts a state transition' do
+          expect { service.execute }.to change { dismissed_vulnerability.state_transitions.count }
+        end
+
+        it 'inserts a new vulnerabilities reads record' do
+          service.execute
+
+          reads = Vulnerabilities::Read.by_vulnerabilities(vulnerability_ids)
+          expect(reads.pluck(:dismissal_reason)).to match_array([dismissal_reason])
+        end
+
+        context 'when called twice with the same arguments' do
+          it 'creates 2 valid state transitions' do
+            service.execute
+            service.execute
+
+            expect(dismissed_vulnerability.reload.state_transitions).to all be_valid
+          end
         end
       end
     end

@@ -171,7 +171,13 @@ RSpec.describe Vulnerabilities::DismissService, feature_category: :vulnerability
       project.add_developer(user)
     end
 
-    it { expect { dismiss_vulnerability }.to raise_error Gitlab::Graphql::Errors::ArgumentError, 'To state must not be the same as from_state for the same dismissal_reason' }
+    it { expect { dismiss_vulnerability }.not_to raise_error }
+
+    it 'creates a valid state transition' do
+      dismiss_vulnerability
+
+      expect(vulnerability.reload.latest_state_transition).to be_valid
+    end
 
     context 'with a different dismissal reason' do
       before do
