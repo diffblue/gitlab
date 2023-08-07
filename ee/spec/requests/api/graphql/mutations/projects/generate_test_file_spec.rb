@@ -35,7 +35,7 @@ RSpec.describe 'AiAction for Generate Test File', :saas, feature_category: :code
   it 'successfully performs an explain code request' do
     expect(Llm::CompletionWorker).to receive(:perform_async).with(
       current_user.id, merge_request.id, "MergeRequest", :generate_test_file, {
-        file_path: file_path, markup_format: :raw, request_id: an_instance_of(String), skip_cache: true
+        file_path: file_path, markup_format: :raw, request_id: an_instance_of(String)
       }
     )
 

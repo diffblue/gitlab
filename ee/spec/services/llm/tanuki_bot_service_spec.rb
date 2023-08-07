@@ -14,15 +14,16 @@ RSpec.describe Llm::TanukiBotService, :saas, feature_category: :global_search do
   end
 
   describe '#perform' do
+    let(:resource) { user }
+    let(:action_name) { :tanuki_bot }
+    let(:content) { options[:question] }
+
     before do
       allow(user).to receive(:any_group_with_ai_available?).and_return(true)
     end
 
-    it_behaves_like 'completion worker sync and async' do
-      let(:resource) { user }
-      let(:action_name) { :tanuki_bot }
-      let(:content) { options[:question] }
-    end
+    it_behaves_like 'completion worker sync and async'
+    it_behaves_like 'llm service does not cache user request'
 
     context 'when openai_experimentation feature flag is disabled' do
       before do

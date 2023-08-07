@@ -54,17 +54,22 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :no_category do # 
       it_behaves_like "issuable without notes"
 
       context 'with notes' do
+        let(:action_name) { :summarize_comments }
+        let(:options) { { ai_provider: :vertex_ai } }
+        let(:content) { 'Summarize comments' }
+
         before do
           create_pair(:note_on_issue, project: resource.project, noteable: resource)
         end
 
         it_behaves_like "ensures feature flags and license"
         it_behaves_like "ensures user membership"
-        it_behaves_like 'completion worker sync and async' do
-          let(:action_name) { :summarize_comments }
-          let(:options) { { ai_provider: :vertex_ai } }
-          let(:content) { 'Summarize comments' }
 
+        it_behaves_like 'completion worker sync and async' do
+          subject { described_class.new(current_user, resource, options) }
+        end
+
+        it_behaves_like 'llm service does not cache user request' do
           subject { described_class.new(current_user, resource, options) }
         end
       end
@@ -76,23 +81,31 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :no_category do # 
       it_behaves_like "issuable without notes"
 
       context 'with notes' do
+        let(:action_name) { :summarize_comments }
+        let(:options) { { ai_provider: :vertex_ai } }
+        let(:content) { 'Summarize comments' }
+
         before do
           create_pair(:note_on_work_item, project: resource.project, noteable: resource)
         end
 
         it_behaves_like "ensures feature flags and license"
         it_behaves_like "ensures user membership"
-        it_behaves_like 'completion worker sync and async' do
-          let(:action_name) { :summarize_comments }
-          let(:options) { { ai_provider: :vertex_ai } }
-          let(:content) { 'Summarize comments' }
 
+        it_behaves_like 'completion worker sync and async' do
+          subject { described_class.new(current_user, resource, options) }
+        end
+
+        it_behaves_like 'llm service does not cache user request' do
           subject { described_class.new(current_user, resource, options) }
         end
       end
     end
 
     context 'for an epic' do
+      let(:action_name) { :summarize_comments }
+      let(:options) { { ai_provider: :vertex_ai } }
+      let(:content) { 'Summarize comments' }
       let_it_be(:resource) { create(:epic, group: group) }
 
       it_behaves_like "issuable without notes"
@@ -104,11 +117,12 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :no_category do # 
 
         it_behaves_like "ensures feature flags and license"
         it_behaves_like "ensures user membership"
-        it_behaves_like 'completion worker sync and async' do
-          let(:action_name) { :summarize_comments }
-          let(:options) { { ai_provider: :vertex_ai } }
-          let(:content) { 'Summarize comments' }
 
+        it_behaves_like 'completion worker sync and async' do
+          subject { described_class.new(current_user, resource, options) }
+        end
+
+        it_behaves_like 'llm service does not cache user request' do
           subject { described_class.new(current_user, resource, options) }
         end
       end

@@ -34,10 +34,13 @@ RSpec.describe Llm::ExplainCodeService, :saas, feature_category: :source_code_ma
         group.add_developer(user)
       end
 
-      it_behaves_like 'completion worker sync and async' do
+      context 'when feature flag is enabled' do
         let(:resource) { project }
         let(:action_name) { :explain_code }
         let(:content) { 'Explain code' }
+
+        it_behaves_like 'completion worker sync and async'
+        it_behaves_like 'llm service does not cache user request'
       end
 
       context 'when explain_code_vertex_ai feature flag is disabled' do
@@ -45,11 +48,12 @@ RSpec.describe Llm::ExplainCodeService, :saas, feature_category: :source_code_ma
           stub_feature_flags(explain_code_vertex_ai: false)
         end
 
-        it_behaves_like 'completion worker sync and async' do
-          let(:resource) { project }
-          let(:action_name) { :explain_code_open_ai }
-          let(:content) { 'Explain code' }
-        end
+        let(:resource) { project }
+        let(:action_name) { :explain_code_open_ai }
+        let(:content) { 'Explain code' }
+
+        it_behaves_like 'completion worker sync and async'
+        it_behaves_like 'llm service does not cache user request'
       end
 
       context 'when explain_code_snippet feature flag is disabled' do

@@ -30,16 +30,18 @@ RSpec.describe Llm::BaseService, :saas, feature_category: :no_category do # rubo
     subject do
       Class.new(described_class) do
         def perform
-          worker_perform(user, resource, :test, {})
+          worker_perform(user, resource, :test, options)
         end
       end.new(user, resource, options)
     end
 
     it 'runs the worker' do
-      expect(SecureRandom).to receive(:uuid).twice.and_return('uuid')
+      expected_options = [request_id: 'uuid']
+
+      expect(SecureRandom).to receive(:uuid).and_return('uuid')
       expect(::Llm::CompletionWorker)
         .to receive(:perform_async)
-        .with(user.id, expected_resource_id, expected_resource_class, :test, { request_id: 'uuid' })
+        .with(user.id, expected_resource_id, expected_resource_class, :test, *expected_options)
 
       expect(subject.execute).to be_success
     end

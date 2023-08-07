@@ -50,7 +50,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateTestFile, feature_categ
 
         uuid = 'uuid'
 
-        expect(SecureRandom).to receive(:uuid).twice.and_return(uuid)
+        expect(SecureRandom).to receive(:uuid).and_return(uuid)
 
         data = {
           id: uuid,

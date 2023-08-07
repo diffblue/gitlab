@@ -51,7 +51,7 @@ RSpec.describe 'AiAction for Explain Code', :saas, feature_category: :source_cod
     allow(SecureRandom).to receive(:uuid).and_return(uuid)
     expect(Llm::CompletionWorker).to receive(:perform_async).with(
       current_user.id, project.id, "Project", :explain_code,
-      { markup_format: :raw, messages: messages, request_id: uuid, skip_cache: true }
+      { markup_format: :raw, messages: messages, request_id: uuid }
     )
 
     post_graphql_mutation(mutation, current_user: current_user)

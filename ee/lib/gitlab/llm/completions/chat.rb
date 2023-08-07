@@ -36,7 +36,7 @@ module Gitlab
           response_modifier = Gitlab::Llm::Chain::ResponseModifier.new(response)
 
           ::Gitlab::Llm::GraphqlSubscriptionResponseService
-            .new(user, resource, response_modifier, options: { request_id: params[:request_id] })
+            .new(user, resource, response_modifier, options: response_options)
             .execute
         end
       end

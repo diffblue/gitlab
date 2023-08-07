@@ -53,14 +53,18 @@ RSpec.describe Llm::GenerateDescriptionService, feature_category: :team_planning
     end
 
     context 'for an issue' do
+      let(:action_name) { :generate_description }
+      let(:content) { 'Generate description' }
       let_it_be(:resource) { create(:issue, project: project) }
 
       it_behaves_like "ensures license and feature flag checks"
       it_behaves_like "ensures user membership"
-      it_behaves_like 'completion worker sync and async' do
-        let(:action_name) { :generate_description }
-        let(:content) { 'Generate description' }
 
+      it_behaves_like 'completion worker sync and async' do
+        subject { service }
+      end
+
+      it_behaves_like 'llm service does not cache user request' do
         subject { service }
       end
     end

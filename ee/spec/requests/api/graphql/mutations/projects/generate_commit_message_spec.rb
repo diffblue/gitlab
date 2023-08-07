@@ -34,7 +34,7 @@ RSpec.describe 'AiAction for Generate Commit Message', :saas, feature_category: 
   it 'successfully performs an generate commit message request' do
     expect(Llm::CompletionWorker).to receive(:perform_async).with(
       current_user.id, merge_request.id, "MergeRequest", :generate_commit_message, {
-        markup_format: :raw, request_id: an_instance_of(String), skip_cache: true
+        markup_format: :raw, request_id: an_instance_of(String)
       }
     )
 

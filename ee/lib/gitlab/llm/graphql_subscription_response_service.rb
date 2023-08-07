@@ -34,7 +34,7 @@ module Gitlab
         response_data = data.slice(:request_id, :errors, :role, :content, :timestamp)
 
         unless options[:internal_request]
-          Gitlab::Llm::Cache.new(user).add(response_data) unless options[:skip_cache]
+          Gitlab::Llm::Cache.new(user).add(response_data) if options[:cache_response]
           GraphqlTriggers.ai_completion_response(user.to_global_id, resource&.to_global_id, data)
         end
 

@@ -110,9 +110,8 @@ module Llm
 
     def cache_response?(options)
       return false if options[:internal_request]
-      return false if options[:skip_cache]
 
-      true
+      options.fetch(:cache_response, false)
     end
   end
 end
