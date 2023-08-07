@@ -10,7 +10,7 @@ export default {
     otherInfo: __('Other information'),
     dbReplicationLag: s__('Geo|Data replication lag'),
     lastEventId: s__('Geo|Last event ID from primary'),
-    lastCursorEventId: s__('Geo|Last event ID processed by cursor'),
+    lastCursorEventId: s__('Geo|Last event ID processed'),
     storageConfig: s__('Geo|Storage config'),
     shardsNotMatched: s__('Geo|Does not match the primary storage configuration'),
     unknown: __('Unknown'),
