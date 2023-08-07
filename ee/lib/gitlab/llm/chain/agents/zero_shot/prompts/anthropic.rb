@@ -13,15 +13,14 @@ module Gitlab
 
             class Anthropic < Base
               def self.prompt(options)
-                base_prompt = super(options)
                 text = <<~PROMPT
-                  #{ROLE_NAMES[Llm::Cache::ROLE_USER]}: #{base_prompt[:prompt]}
+                  #{ROLE_NAMES[Llm::Cache::ROLE_USER]}: #{base_prompt(options)}
                 PROMPT
 
                 history = truncated_conversation(options[:conversation], Requests::Anthropic::PROMPT_SIZE - text.size)
                 text = [history, text].join if history.present?
 
-                { prompt: text, options: base_prompt[:options] }
+                Requests::Anthropic.prompt(text)
               end
 
               # Returns messages from previous conversation. To assure that overall prompt size is not too big,

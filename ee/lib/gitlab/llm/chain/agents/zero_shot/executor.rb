@@ -76,11 +76,7 @@ module Gitlab
 
             # This method should not be memoized because the input variables change over time
             def base_prompt
-              {
-                prompt: Utils::Prompt.no_role_text(PROMPT_TEMPLATE, options),
-                agent_scratchpad: options[:agent_scratchpad],
-                options: {}
-              }
+              Utils::Prompt.no_role_text(PROMPT_TEMPLATE, options)
             end
 
             def options

@@ -7,13 +7,13 @@ module Gitlab
         module ZeroShot
           module Prompts
             class Base
-              def self.prompt(options)
+              def self.base_prompt(options)
                 base_prompt = Utils::Prompt.no_role_text(
                   options.fetch(:prompt_version),
                   options
                 )
 
-                { prompt: "#{Utils::Prompt.default_system_prompt}\n\n#{base_prompt}", options: {} }
+                "#{Utils::Prompt.default_system_prompt}\n\n#{base_prompt}"
               end
             end
           end

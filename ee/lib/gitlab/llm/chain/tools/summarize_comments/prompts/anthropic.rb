@@ -19,13 +19,13 @@ module Gitlab
                   ::Gitlab::Llm::Chain::Tools::SummarizeComments::Executor::PROMPT_TEMPLATE, options
                 )
 
-                {
-                  prompt: "\n\nHuman: #{base_prompt}\n\nAssistant:",
+                Requests::Anthropic.prompt(
+                  "\n\nHuman: #{base_prompt}\n\nAssistant:",
                   options: {
                     model: MODEL,
                     max_tokens_to_sample: OUTPUT_TOKEN_LIMIT
                   }
-                }
+                )
               end
             end
           end

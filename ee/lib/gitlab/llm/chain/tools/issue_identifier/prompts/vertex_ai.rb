@@ -12,10 +12,7 @@ module Gitlab
                   ::Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor::PROMPT_TEMPLATE, options
                 )
 
-                {
-                  prompt: prompt,
-                  options: {}
-                }
+                Requests::VertexAi.prompt(prompt)
               end
             end
           end
