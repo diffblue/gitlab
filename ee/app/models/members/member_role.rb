@@ -18,14 +18,23 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     }
   }.freeze
   CUSTOMIZABLE_PERMISSIONS_EXEMPT_FROM_CONSUMING_SEAT = [:read_code].freeze
-  NON_PERMISSION_COLUMNS = [:id, :namespace_id, :created_at, :updated_at, :base_access_level].freeze
+  NON_PERMISSION_COLUMNS = [
+    :base_access_level,
+    :created_at,
+    :description,
+    :id,
+    :name,
+    :namespace_id,
+    :updated_at
+  ].freeze
+  LEVELS = ::Gitlab::Access.options_with_owner.values.freeze
 
   has_many :members
   belongs_to :namespace
 
   validates :namespace, presence: true
   validates :name, presence: true
-  validates :base_access_level, presence: true
+  validates :base_access_level, presence: true, inclusion: { in: LEVELS }
   validate :belongs_to_top_level_namespace
   validate :max_count_per_group_hierarchy, on: :create
   validate :validate_namespace_locked, on: :update
@@ -45,6 +54,14 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   end
 
   before_destroy :prevent_delete_after_member_associated
+
+  def self.levels_sentence
+    ::Gitlab::Access
+      .options_with_owner
+      .map { |name, value| "#{value} (#{name})" }
+      .to_sentence
+  end
+
   class << self
     def elevating_permissions
       ALL_CUSTOMIZABLE_PERMISSIONS.keys - CUSTOMIZABLE_PERMISSIONS_EXEMPT_FROM_CONSUMING_SEAT
