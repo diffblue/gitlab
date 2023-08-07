@@ -11,8 +11,8 @@ module EE
         expose :base_access_level, documentation: {
           type: 'integer',
           example: 40,
-          description: 'Access level. Valid values are 10 (Guest), 20 (Reporter), 30 (Developer), 40 (Maintainer), and 50 (Owner).', # rubocop:disable Layout/LineLength
-          values: [10, 20, 30, 40, 50]
+          description: "Access level. Valid values #{::MemberRole.levels_sentence}.",
+          values: ::MemberRole::LEVELS
         }
 
         ::MemberRole::ALL_CUSTOMIZABLE_PERMISSIONS.each_key do |permission_name|

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MemberRole, feature_category: :system_access do
+RSpec.describe ::MemberRole, feature_category: :system_access do
   describe 'associations' do
     it { is_expected.to belong_to(:namespace) }
     it { is_expected.to have_many(:members) }
@@ -14,6 +14,7 @@ RSpec.describe MemberRole, feature_category: :system_access do
     it { is_expected.to validate_presence_of(:namespace) }
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_presence_of(:base_access_level) }
+    it { is_expected.to validate_inclusion_of(:base_access_level).in_array(described_class::LEVELS) }
 
     context 'for attributes_locked_after_member_associated' do
       context 'when assigned to member' do
@@ -83,15 +84,6 @@ RSpec.describe MemberRole, feature_category: :system_access do
         end
       end
 
-      context 'when namespace is not present' do
-        it 'is invalid with a different error message' do
-          member_role.namespace = nil
-
-          expect(member_role).to be_invalid
-          expect(member_role.errors[:namespace]).to include(_("can't be blank"))
-        end
-      end
-
       context 'when namespace is outside hierarchy of member' do
         it 'creates a validation error' do
           member_role.save!
@@ -110,6 +102,16 @@ RSpec.describe MemberRole, feature_category: :system_access do
           expect(member_role).not_to be_valid
           expect(member_role.errors[:base_access_level])
             .to include(s_("MemberRole|minimal base access level must be Guest (10)."))
+        end
+      end
+
+      context 'when base_access_level is invalid' do
+        it 'raises an error' do
+          member_role.base_access_level = 11
+
+          expect(member_role).not_to be_valid
+          expect(member_role.errors[:base_access_level])
+            .to include("is not included in the list")
         end
       end
 
@@ -198,10 +200,16 @@ RSpec.describe MemberRole, feature_category: :system_access do
     end
   end
 
-  # TODO: re-enable after read_vulnerability is re-introduced
-  # https://gitlab.com/gitlab-org/gitlab/-/merge_requests/120488
+  describe '.levels_sentence' do
+    it 'returns the list of access levels with names' do
+      expect(described_class.levels_sentence).to eq(
+        "10 (Guest), 20 (Reporter), 30 (Developer), 40 (Maintainer), and 50 (Owner)"
+      )
+    end
+  end
+
   describe 'covering all permissions columns' do
-    xit 'has all attributes listed in the member_roles table' do
+    it 'has all attributes listed in the member_roles table' do
       expect(described_class.attribute_names.map(&:to_sym))
         .to contain_exactly(*described_class::ALL_CUSTOMIZABLE_PERMISSIONS.keys,
           *described_class::NON_PERMISSION_COLUMNS)
