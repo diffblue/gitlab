@@ -68,4 +68,16 @@ RSpec.describe ::Zoekt::IndexedNamespace, feature_category: :global_search do
       described_class.create!(shard: shard, namespace: newly_indexed_namespace)
     end
   end
+
+  describe '#destroy!' do
+    let_it_be(:newly_indexed_namespace) { create(:namespace) }
+    let_it_be(:indexed_namespace_record) { described_class.create!(shard: shard, namespace: newly_indexed_namespace) }
+
+    it 'removes index for the namespace' do
+      expect(::Search::Zoekt::NamespaceIndexerWorker).to receive(:perform_async)
+        .with(newly_indexed_namespace.id, :delete, shard.id)
+
+      indexed_namespace_record.destroy!
+    end
+  end
 end

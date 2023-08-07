@@ -149,7 +149,7 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, feature_category: :globa
   end
 
   describe '#delete' do
-    subject { described_class.delete(root_namespace_id: project_1.root_namespace.id, project_id: project_1.id) }
+    subject { described_class.delete(shard_id: zoekt_shard.id, project_id: project_1.id) }
 
     context 'when project is indexed' do
       before do

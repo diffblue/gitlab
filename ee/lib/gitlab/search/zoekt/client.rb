@@ -52,12 +52,10 @@ module Gitlab
           use_new_zoekt_indexer? ? index_with_new_indexer(project) : index_with_legacy_indexer(project)
         end
 
-        def delete(root_namespace_id:, project_id:)
+        def delete(shard_id:, project_id:)
           return false unless use_new_zoekt_indexer?
 
-          shard = ::Zoekt::Shard.for_namespace(root_namespace_id: root_namespace_id)
-
-          return false unless shard
+          shard = ::Zoekt::Shard.find(shard_id)
 
           response = delete_request(URI.join(shard.index_base_url, "/indexer/index/#{project_id}"))
 
