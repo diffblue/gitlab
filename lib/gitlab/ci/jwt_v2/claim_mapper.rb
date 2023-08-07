@@ -17,6 +17,13 @@ module Gitlab
 
         delegate :ci_config_ref_uri, :ci_config_sha, to: :mapper, allow_nil: true
 
+        def to_h
+          {
+            ci_config_ref_uri: ci_config_ref_uri,
+            ci_config_sha: ci_config_sha
+          }
+        end
+
         private
 
         attr_reader :mapper

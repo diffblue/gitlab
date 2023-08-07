@@ -135,8 +135,10 @@ RSpec.describe Gitlab::Ci::JwtV2, feature_category: :continuous_integration do
 
         it 'delegates claims to Gitlab::Ci::JwtV2::ClaimMapper' do
           expect_next_instance_of(Gitlab::Ci::JwtV2::ClaimMapper, project_config, pipeline) do |mapper|
-            expect(mapper).to receive(:ci_config_ref_uri).and_return(ci_config_ref_uri)
-            expect(mapper).to receive(:ci_config_sha).and_return(ci_config_sha)
+            expect(mapper).to receive(:to_h).and_return({
+              ci_config_ref_uri: ci_config_ref_uri,
+              ci_config_sha: ci_config_sha
+            })
           end
 
           expect(payload[:ci_config_ref_uri]).to eq(ci_config_ref_uri)

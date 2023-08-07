@@ -50,10 +50,8 @@ module Gitlab
           runner_id: runner&.id,
           runner_environment: runner_environment,
           sha: pipeline.sha,
-          project_visibility: Gitlab::VisibilityLevel.string_level(project.visibility_level),
-          ci_config_ref_uri: mapper.ci_config_ref_uri,
-          ci_config_sha: mapper.ci_config_sha
-        })
+          project_visibility: Gitlab::VisibilityLevel.string_level(project.visibility_level)
+        }).merge(mapper.to_h)
       end
 
       def project_config
