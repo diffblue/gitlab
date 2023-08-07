@@ -14,17 +14,8 @@ db/fixtures/
 ee/db/fixtures/
 !ee/db/fixtures/development/10_license_file.rb
 
-qa/
-!qa/gdk
-
-rubocop/
-
 scripts/
 !scripts/frontend
 
-spec/
-# Required by ee/lib/tasks/contracts/merge_requests.rake
-!spec/contracts/provider/helpers/contract_source_helper.rb
-# Require by db/fixtures/development/01_admin.rb
-!spec/support/sidekiq_middleware.rb
-ee/spec/
+qa/
+!qa/gdk
