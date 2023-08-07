@@ -13,3 +13,4 @@ data:
     timeDimensions: []
 options:
   decimalPlaces: 1
+  unit: "%"
