@@ -15,12 +15,16 @@ module Search
       idempotent!
       pause_control :zoekt
 
-      def perform(root_namespace_id, project_id)
+      def perform(root_namespace_id, project_id, shard_id = nil)
         return unless ::Feature.enabled?(:index_code_with_zoekt)
         return unless ::License.feature_available?(:zoekt_code_search)
 
+        shard_id ||= ::Zoekt::Shard.for_namespace(root_namespace_id: root_namespace_id)&.id
+
+        return false unless shard_id
+
         in_lock("#{self.class.name}/#{project_id}", ttl: TIMEOUT, retries: 0) do
-          ::Gitlab::Search::Zoekt::Client.delete(root_namespace_id: root_namespace_id, project_id: project_id)
+          ::Gitlab::Search::Zoekt::Client.delete(shard_id: shard_id, project_id: project_id)
         end
       end
     end

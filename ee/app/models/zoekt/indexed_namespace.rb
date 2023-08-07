@@ -15,6 +15,7 @@ module Zoekt
     scope :with_limit, ->(maximum) { limit(maximum) }
 
     after_commit :index, on: :create
+    after_commit :delete_from_index, on: :destroy
 
     def self.for_shard_and_namespace!(shard:, namespace:)
       find_by!(shard: shard, namespace: namespace)
@@ -42,6 +43,10 @@ module Zoekt
 
     def index
       ::Search::Zoekt::NamespaceIndexerWorker.perform_async(namespace_id, :index)
+    end
+
+    def delete_from_index
+      ::Search::Zoekt::NamespaceIndexerWorker.perform_async(namespace_id, :delete, zoekt_shard_id)
     end
   end
 end
