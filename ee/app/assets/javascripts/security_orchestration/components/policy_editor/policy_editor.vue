@@ -3,7 +3,7 @@ import { GlAlert, GlFormGroup, GlFormSelect } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { NAMESPACE_TYPES } from '../../constants';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
-import ScanExecutionPolicyEditor from './scan_execution_policy/scan_execution_policy_editor.vue';
+import ScanExecutionPolicyEditor from './scan_execution/editor_component.vue';
 import ScanResultPolicyEditor from './scan_result_policy/scan_result_policy_editor.vue';
 
 export default {

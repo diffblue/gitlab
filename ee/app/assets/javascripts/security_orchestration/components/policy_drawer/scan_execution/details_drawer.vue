@@ -1,7 +1,7 @@
 <script>
 import { GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import { fromYaml } from '../../policy_editor/scan_execution_policy/lib';
+import { fromYaml } from '../../policy_editor/scan_execution/lib';
 import { ACTIONS } from '../../policy_editor/constants';
 import { SUMMARY_TITLE } from '../constants';
 import InfoRow from '../info_row.vue';
