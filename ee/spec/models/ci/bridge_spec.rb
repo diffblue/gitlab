@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Bridge do
+RSpec.describe Ci::Bridge, feature_category: :continuous_integration do
   let_it_be(:project) { create(:project) }
   let_it_be(:target_project) { create(:project, namespace: create(:namespace)) }
   let_it_be(:pipeline) { create(:ci_pipeline, project: project) }
