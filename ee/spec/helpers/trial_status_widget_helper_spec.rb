@@ -10,7 +10,6 @@ RSpec.describe TrialStatusWidgetHelper, :saas, feature_category: :experimentatio
     let(:trial_end_date) { Date.current.advance(days: trial_days_remaining) }
     let(:trial_start_date) { Date.current.advance(days: trial_days_remaining - trial_length) }
     let(:trial_percentage_complete) { (trial_length - trial_days_remaining) * 100 / trial_length }
-    let(:ultimate_plan_id) { 'ultimate-plan-id' }
     let(:trial_status) do
       subscription = build(
         :gitlab_subscription,
@@ -44,7 +43,7 @@ RSpec.describe TrialStatusWidgetHelper, :saas, feature_category: :experimentatio
         allow(helper).to receive(:current_user).and_return(user)
       end
 
-      subject(:data_attrs) { helper.trial_status_popover_data_attrs(group, trial_status, ultimate_plan_id) }
+      subject(:data_attrs) { helper.trial_status_popover_data_attrs(group, trial_status) }
 
       it 'returns the needed data attributes for mounting the popover Vue component' do
         expect(data_attrs).to match(
@@ -79,6 +78,30 @@ RSpec.describe TrialStatusWidgetHelper, :saas, feature_category: :experimentatio
           )
         )
       end
+    end
+  end
+
+  describe '#show_trial_status_widget?' do
+    let_it_be(:group) { build(:group) }
+    let_it_be(:gitlab_subscription) do
+      build(:gitlab_subscription, :active_trial, :free, namespace: group, trial_starts_on: Time.current,
+        trial_ends_on: 30.days.from_now)
+    end
+
+    subject(:show_widget?) { helper.show_trial_status_widget?(group) }
+
+    it 'returns true when a group is in active trial' do
+      expect(show_widget?).to eq true
+    end
+
+    it 'returns true when a free group is between day 1 and day 10 after trial ends',
+      time_travel_to: 35.days.from_now do
+      expect(show_widget?).to eq true
+    end
+
+    it 'returns false when a free group has passed day 10 after trial ends',
+      time_travel_to: 45.days.from_now do
+      expect(show_widget?).to eq false
     end
   end
 end

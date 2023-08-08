@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TrialStatusWidget component without the optional containerId prop matches the snapshot 1`] = `
+exports[`TrialStatusWidget component without the optional containerId prop matches the snapshot for namespace in active trial 1`] = `
 <gl-link-stub
   href="billing/path-for/group"
   title="Ultimate Trial"
@@ -9,43 +9,85 @@ exports[`TrialStatusWidget component without the optional containerId prop match
     class="gl-display-flex gl-flex-direction-column gl-align-items-stretch gl-w-full"
     data-testid="widget-menu"
   >
-    <div
-      class="gl-display-flex gl-w-full"
-    >
-      <span
-        class="nav-icon-container svg-container gl-mr-3"
+    <div>
+      <div
+        class="gl-display-flex gl-w-full"
       >
-        <img
-          class="svg"
-          src="illustrations/golden_tanuki.svg"
-          width="16"
+        <span
+          class="nav-icon-container svg-container gl-mr-3"
+        >
+          <img
+            class="svg"
+            src="illustrations/golden_tanuki.svg"
+            width="16"
+          />
+        </span>
+         
+        <span
+          class="nav-item-name gl-flex-grow-1"
+        >
+          
+          Ultimate Trial
+        
+        </span>
+         
+        <span
+          class="collapse-text gl-font-sm gl-mr-auto"
+        >
+          
+          Day 10/30
+        
+        </span>
+      </div>
+       
+      <div
+        class="gl-display-flex gl-align-items-stretch gl-mt-2"
+      >
+        <gl-progress-bar-stub
+          class="gl-flex-grow-1"
+          value="10"
         />
-      </span>
-       
-      <span
-        class="nav-item-name gl-flex-grow-1"
-      >
-        
-        Ultimate Trial
-      
-      </span>
-       
-      <span
-        class="collapse-text gl-font-sm gl-mr-auto"
-      >
-        
-        Day 10/30
-      
-      </span>
+      </div>
     </div>
-     
+  </div>
+</gl-link-stub>
+`;
+
+exports[`TrialStatusWidget component without the optional containerId prop matches the snapshot for namespace not in active trial 1`] = `
+<gl-link-stub
+  href="billing/path-for/group"
+  title="Your 30-day trial has ended"
+>
+  <div
+    class="gl-display-flex gl-flex-direction-column gl-align-items-stretch gl-w-full"
+    data-testid="widget-menu"
+  >
     <div
-      class="gl-display-flex gl-align-items-stretch gl-mt-2"
+      class="gl-display-flex gl-gap-5 gl-w-full gl-px-2"
     >
-      <gl-progress-bar-stub
-        class="gl-flex-grow-1"
-        value="10"
+      <gl-icon-stub
+        class="gl-text-blue-600!"
+        name="information-o"
+        size="16"
       />
+       
+      <div>
+        <div
+          class="gl-font-weight-bold"
+        >
+          
+          Your 30-day trial has ended
+        
+        </div>
+         
+        <div
+          class="gl-mt-3"
+        >
+          
+          Looking to do more with GitLab?
+        
+        </div>
+      </div>
     </div>
   </div>
 </gl-link-stub>

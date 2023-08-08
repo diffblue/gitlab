@@ -79,14 +79,13 @@ module EE
     def trial_data(root_namespace)
       if root_namespace.present? &&
           ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
-          root_namespace.trial_active? &&
+          show_trial_status_widget?(root_namespace) &&
           can?(current_user, :admin_namespace, root_namespace)
         trial_status = trial_status(root_namespace)
 
         return {
           trial_status_widget_data_attrs: trial_status_widget_data_attrs(root_namespace, trial_status),
-          trial_status_popover_data_attrs: trial_status_popover_data_attrs(root_namespace, trial_status,
-            ultimate_plan_id)
+          trial_status_popover_data_attrs: trial_status_popover_data_attrs(root_namespace, trial_status)
         }
       end
 
@@ -95,15 +94,6 @@ module EE
 
     def trial_status(group)
       GitlabSubscriptions::TrialStatus.new(group.trial_starts_on, group.trial_ends_on)
-    end
-
-    def ultimate_plan_id
-      # supplying plan here rejects any free plans so we won't get that data returned
-      plans = GitlabSubscriptions::FetchSubscriptionPlansService.new(plan: :free).execute
-
-      return unless plans
-
-      plans.find { |data| data['code'] == 'ultimate' }&.fetch('id', nil)
     end
 
     def super_sidebar_default_pins(panel_type)

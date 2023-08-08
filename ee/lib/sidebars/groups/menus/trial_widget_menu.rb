@@ -21,8 +21,7 @@ module Sidebars
         def menu_partial_options
           {
             root_group: root_group,
-            trial_status: trial_status,
-            ultimate_plan_id: ultimate_plan_id
+            trial_status: trial_status
           }
         end
 
@@ -34,15 +33,6 @@ module Sidebars
 
         def trial_status
           GitlabSubscriptions::TrialStatus.new(root_group.trial_starts_on, root_group.trial_ends_on)
-        end
-
-        def ultimate_plan_id
-          # supplying plan here rejects any free plans so we won't get that data returned
-          plans = GitlabSubscriptions::FetchSubscriptionPlansService.new(plan: :free).execute
-
-          return unless plans
-
-          plans.find { |data| data['code'] == 'ultimate' }&.fetch('id', nil)
         end
       end
     end

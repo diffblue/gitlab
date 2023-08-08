@@ -20,8 +20,8 @@ describe('TrialStatusPopover component', () => {
 
   const findGlPopover = () => wrapper.findComponent(GlPopover);
 
-  const expectTracking = ({ action, ...options } = {}) => {
-    return expect(trackingSpy).toHaveBeenCalledWith(undefined, action, { ...options });
+  const expectTracking = (category, { action, ...options } = {}) => {
+    return expect(trackingSpy).toHaveBeenCalledWith(category, action, { category, ...options });
   };
 
   const createComponent = ({ providers = {}, mountFn = shallowMount, stubs = {} } = {}) => {
@@ -78,18 +78,56 @@ describe('TrialStatusPopover component', () => {
 
       expect(wrapper.text()).toContain(__("You've got 30 days remaining on GitLab Ultimate!"));
     });
+
+    it('displays correct message when namespace is not in active trial', () => {
+      wrapper = createComponent({ providers: { daysRemaining: -5 }, mountFn: mount });
+
+      expect(wrapper.text()).toContain(POPOVER.i18n.popoverTitleExpiredTrial);
+    });
   });
 
-  it('tracks when the contact sales button is clicked', () => {
-    wrapper.findByTestId('contact-sales-btn').trigger('click');
+  describe('content', () => {
+    it('displays correct message when namespace is in active trial', () => {
+      wrapper = createComponent({ providers: { daysRemaining: 5 }, mountFn: mount });
 
-    expectTracking(trackingEvents.contactSalesBtnClick);
+      expect(wrapper.text()).toContain(__('To keep those features after your trial ends'));
+    });
+
+    it('displays correct message when namespace is not in active trial', () => {
+      wrapper = createComponent({ providers: { daysRemaining: -5 }, mountFn: mount });
+
+      expect(wrapper.text()).toContain(POPOVER.i18n.popoverContentExpiredTrial);
+    });
+  });
+
+  it('tracks when the contact sales button is clicked', async () => {
+    await wrapper.findByTestId('contact-sales-btn').trigger('click');
+
+    expectTracking(trackingEvents.activeTrialCategory, trackingEvents.contactSalesBtnClick);
   });
 
   it('tracks when the compare button is clicked', () => {
     wrapper.findByTestId('compare-btn').vm.$emit('click');
 
-    expectTracking(trackingEvents.compareBtnClick);
+    expectTracking(trackingEvents.activeTrialCategory, trackingEvents.compareBtnClick);
+  });
+
+  describe('CTA tracking for namespace not in an active trial', () => {
+    beforeEach(() => {
+      wrapper = createComponent({ providers: { daysRemaining: -5 } });
+    });
+
+    it('tracks when the contact sales button is clicked', async () => {
+      await wrapper.findByTestId('contact-sales-btn').trigger('click');
+
+      expectTracking(trackingEvents.trialEndedCategory, trackingEvents.contactSalesBtnClick);
+    });
+
+    it('tracks when the compare button is clicked', () => {
+      wrapper.findByTestId('compare-btn').vm.$emit('click');
+
+      expectTracking(trackingEvents.trialEndedCategory, trackingEvents.compareBtnClick);
+    });
   });
 
   it('does not include the word "Trial" if the plan name includes it', () => {
@@ -144,7 +182,15 @@ describe('TrialStatusPopover component', () => {
       it('dispatches tracking event', () => {
         findGlPopover().vm.$emit('shown');
 
-        expectTracking(trackingEvents.popoverShown);
+        expectTracking(trackingEvents.activeTrialCategory, trackingEvents.popoverShown);
+      });
+
+      it('dispatches tracking event when namespace is not in an active trial', () => {
+        wrapper = createComponent({ providers: { daysRemaining: -5 } });
+
+        findGlPopover().vm.$emit('shown');
+
+        expectTracking(trackingEvents.trialEndedCategory, trackingEvents.popoverShown);
       });
     });
   });
