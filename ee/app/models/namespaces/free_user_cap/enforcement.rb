@@ -13,14 +13,10 @@ module Namespaces
         enforceable_subscription?
       end
 
-      def over_limit?(update_database: true)
+      def over_limit?
         return false unless enforce_cap?
 
-        result = users_count > limit
-
-        update_database_fields(result) if update_database
-
-        result
+        users_count > limit
       end
 
       def reached_limit?
@@ -75,18 +71,6 @@ module Namespaces
       attr_reader :root_namespace
 
       CLOSE_TO_LIMIT_COUNT_DIFFERENCE = 2
-
-      def update_database_fields(result)
-        Rails.cache.fetch([self.class.name, root_namespace.id], expires_in: 1.day) do
-          value = result ? Time.current : nil
-          namespace_details = root_namespace.namespace_details
-          # check for presence sometimes in test the namespace_details record isn't created
-          next unless namespace_details.present?
-          next if value && namespace_details.dashboard_enforcement_at.present?
-
-          namespace_details.update(dashboard_enforcement_at: value)
-        end
-      end
 
       def full_user_counts(cache: true)
         return preloaded_users_count[root_namespace.id] if cache

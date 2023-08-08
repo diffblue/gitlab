@@ -25,7 +25,7 @@ RSpec.describe Namespaces::CombinedStorageUsers::NonOwnerAlertComponent, :saas, 
     allow(::Namespaces::Storage::Enforcement).to receive(:show_pre_enforcement_alert?)
       .with(namespace).and_return(over_storage_limit)
     allow_next_instance_of(::Namespaces::FreeUserCap::EnforcementWithoutStorage, namespace) do |instance|
-      allow(instance).to receive(:over_limit?).with(update_database: false).and_return(over_users_limit)
+      allow(instance).to receive(:over_limit?).and_return(over_users_limit)
     end
   end
 
