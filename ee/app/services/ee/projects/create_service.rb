@@ -79,6 +79,7 @@ module EE
 
         return unless project.group
 
+        run_compliance_standards_checks
         sync_group_scan_result_policies
         create_security_policy_project_bot
       end
@@ -153,6 +154,19 @@ module EE
           project.id,
           default_compliance_framework_id
         )
+      end
+
+      def run_compliance_standards_checks
+        return unless ::Feature.enabled?(:compliance_adherence_report, project.group)
+
+        ::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorWorker
+          .perform_async({ 'project_id' => project.id, 'user_id' => current_user.id })
+
+        ::ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterWorker
+          .perform_async({ 'project_id' => project.id, 'user_id' => current_user.id })
+
+        ::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker
+          .perform_async({ 'project_id' => project.id, 'user_id' => current_user.id })
       end
 
       # When using a project template from a Group, the new project can only be created

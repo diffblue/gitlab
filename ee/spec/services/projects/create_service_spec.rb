@@ -561,6 +561,106 @@ RSpec.describe Projects::CreateService, '#execute' do
       end
     end
 
+    describe 'run_compliance_standards_checks' do
+      let_it_be(:group, reload: true) { create(:group) }
+
+      context 'when feature flag is enabled' do
+        before do
+          stub_feature_flags(compliance_adherence_report: true)
+        end
+
+        context 'when project belongs to a group', :sidekiq_inline do
+          before do
+            group.add_maintainer(user)
+          end
+
+          it 'creates compliance standards adherence' do
+            stub_licensed_features(group_level_compliance_dashboard: true)
+
+            expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorWorker)
+              .to receive(:perform_async).and_call_original
+
+            expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterWorker)
+              .to receive(:perform_async).and_call_original
+
+            expect(::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker)
+              .to receive(:perform_async).and_call_original
+
+            project = create_project(user, { name: "GitLab", namespace_id: group.id })
+
+            expect(project.compliance_standards_adherence.count).to eq(3)
+          end
+        end
+
+        context 'when project belongs to a user namespace' do
+          it 'does not invoke the workers' do
+            stub_licensed_features(group_level_compliance_dashboard: true)
+
+            expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorWorker)
+              .not_to receive(:perform_async)
+
+            expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterWorker)
+              .not_to receive(:perform_async)
+
+            expect(::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker)
+              .not_to receive(:perform_async)
+
+            project = create_project(user, opts)
+
+            expect(project.compliance_standards_adherence).to be_empty
+          end
+        end
+      end
+
+      context 'when feature flag is disabled' do
+        before do
+          stub_feature_flags(compliance_adherence_report: false)
+        end
+
+        context 'when project belongs to a group', :sidekiq_inline do
+          before do
+            group.add_maintainer(user)
+          end
+
+          it 'does not create compliance standards adherence' do
+            stub_licensed_features(group_level_compliance_dashboard: true)
+
+            expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorWorker)
+              .not_to receive(:perform_async)
+
+            expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterWorker)
+              .not_to receive(:perform_async)
+
+            expect(::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker)
+              .not_to receive(:perform_async)
+
+            project = create_project(user, { name: "GitLab", namespace_id: group.id })
+
+            expect(project.compliance_standards_adherence).to be_empty
+          end
+        end
+
+        context 'when project belongs to a user namespace' do
+          it 'does not invoke the workers' do
+            stub_licensed_features(group_level_compliance_dashboard: true)
+
+            expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorWorker)
+              .not_to receive(:perform_async)
+
+            expect(::ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterWorker)
+              .not_to receive(:perform_async)
+
+            expect(::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker)
+              .not_to receive(:perform_async)
+
+            project = create_project(user, opts)
+
+            expect(project.compliance_standards_adherence).to be_empty
+          end
+        end
+      end
+    end
+
     describe 'sync scan result policies from group' do
       let_it_be(:group, reload: true) { create(:group) }
       let_it_be(:sub_group, reload: true) { create(:group, parent: group) }
