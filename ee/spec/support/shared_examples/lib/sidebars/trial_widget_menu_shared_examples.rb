@@ -34,20 +34,10 @@ RSpec.shared_examples 'trial widget menu items' do
 
     subject { menu.menu_partial_options }
 
-    before do
-      allow_next_instance_of(GitlabSubscriptions::FetchSubscriptionPlansService, plan: :free) do |instance|
-        allow(instance).to receive(:execute).and_return(
-          [
-            { 'code' => 'ultimate', 'id' => 'ultimate-plan-id' }
-          ])
-      end
-    end
-
     it 'provides expected options' do
       result = {
         root_group: group,
-        trial_status: an_instance_of(GitlabSubscriptions::TrialStatus),
-        ultimate_plan_id: 'ultimate-plan-id'
+        trial_status: an_instance_of(GitlabSubscriptions::TrialStatus)
       }
 
       is_expected.to match(result)

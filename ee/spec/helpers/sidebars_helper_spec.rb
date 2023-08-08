@@ -62,24 +62,18 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
         let_it_be(:root_group) { namespace.root_ancestor }
         let_it_be(:gitlab_subscription) { build(:gitlab_subscription, :active_trial, :free, namespace: root_group) }
 
-        before do
-          allow_next_instance_of(GitlabSubscriptions::FetchSubscriptionPlansService) do |instance|
-            allow(instance).to receive(:execute).and_return([{ 'code' => 'ultimate', 'id' => 'ultimate-plan-id' }])
-          end
-        end
-
         describe 'does not return trial status widget data' do
-          where(:description, :should_check_namespace_plan, :trial_active, :can_admin) do
-            'when instance does not check namespace plan' | false | true  | true
-            'when no trial is active'                     | true  | false | true
-            'when user cannot admin namespace'            | true  | true  | false
+          where(:description, :should_check_namespace_plan, :show_trial_status_widget?, :can_admin) do
+            'when instance does not check namespace plan' | false | true | true
+            'when namespace does not qualify for widget' | true | false | true
+            'when user cannot admin namespace' | true | true | false
           end
 
           with_them do
             before do
               allow(helper).to receive(:can?).with(user, :admin_namespace, root_group).and_return(can_admin)
               stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan)
-              allow(root_group).to receive(:trial_active?).and_return(trial_active)
+              allow(helper).to receive(:show_trial_status_widget?).and_return(show_trial_status_widget?)
             end
 
             it { is_expected.not_to include(:trial_status_widget_data_attrs) }
@@ -87,11 +81,11 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
           end
         end
 
-        context 'when a trial is in progress' do
+        context 'when a namespace is qualified for trial status widget' do
           before do
             allow(helper).to receive(:can?).with(user, :admin_namespace, root_group).and_return(true)
             stub_ee_application_setting(should_check_namespace_plan: true)
-            allow(root_group).to receive(:trial_active?).and_return(true)
+            allow(helper).to receive(:show_trial_status_widget?).and_return(true)
           end
 
           it 'returns trial status widget data' do

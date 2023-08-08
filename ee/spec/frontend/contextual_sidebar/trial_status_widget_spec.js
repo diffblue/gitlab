@@ -1,5 +1,5 @@
 import { GlLink } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { WIDGET } from 'ee/contextual_sidebar/components/constants';
 import TrialStatusWidget from 'ee/contextual_sidebar/components/trial_status_widget.vue';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
@@ -14,7 +14,7 @@ describe('TrialStatusWidget component', () => {
   const findGlLink = () => wrapper.findComponent(GlLink);
 
   const createComponent = (providers = {}) => {
-    return shallowMount(TrialStatusWidget, {
+    return shallowMountExtended(TrialStatusWidget, {
       provide: {
         trialDaysUsed,
         trialDuration,
@@ -40,7 +40,13 @@ describe('TrialStatusWidget component', () => {
       wrapper = createComponent();
     });
 
-    it('matches the snapshot', () => {
+    it('matches the snapshot for namespace in active trial', () => {
+      expect(wrapper.element).toMatchSnapshot();
+    });
+
+    it('matches the snapshot for namespace not in active trial', () => {
+      wrapper = createComponent({ percentageComplete: 110 });
+
       expect(wrapper.element).toMatchSnapshot();
     });
 
@@ -48,15 +54,38 @@ describe('TrialStatusWidget component', () => {
       expect(findGlLink().attributes('id')).toBe(undefined);
     });
 
-    it('tracks when the widget menu is clicked', () => {
-      const { action, ...options } = trackingEvents.widgetClick;
-      const trackingSpy = mockTracking(undefined, undefined, jest.spyOn);
+    describe('tracks when the widget menu is clicked', () => {
+      let trackingSpy;
 
-      wrapper.find('[data-testid="widget-menu"]').trigger('click');
+      beforeEach(() => {
+        trackingSpy = mockTracking(undefined, undefined, jest.spyOn);
+      });
 
-      expect(trackingSpy).toHaveBeenCalledWith(undefined, action, { ...options });
+      afterEach(() => {
+        unmockTracking();
+      });
 
-      unmockTracking();
+      it('tracks with correct information when namespace is in an active trial', async () => {
+        const { category, label } = trackingEvents.activeTrialOptions;
+        await wrapper.findByTestId('widget-menu').trigger('click');
+
+        expect(trackingSpy).toHaveBeenCalledWith(category, trackingEvents.action, {
+          category,
+          label,
+        });
+      });
+
+      it('tracks with correct information when namespace is not in an active trial', async () => {
+        wrapper = createComponent({ percentageComplete: 110 });
+
+        const { category, label } = trackingEvents.trialEndedOptions;
+        await wrapper.findByTestId('widget-menu').trigger('click');
+
+        expect(trackingSpy).toHaveBeenCalledWith(category, trackingEvents.action, {
+          category,
+          label,
+        });
+      });
     });
 
     it('does not render Trial twice if the plan name includes "Trial"', () => {

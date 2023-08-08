@@ -48,6 +48,9 @@ export default {
     href: '#',
   },
   computed: {
+    isTrialActive() {
+      return this.daysRemaining >= 0;
+    },
     formattedTrialEndDate() {
       return formatDate(this.trialEndDate, trialEndDateFormatString, true);
     },
@@ -55,6 +58,10 @@ export default {
       return removeTrialSuffix(this.planName);
     },
     popoverTitle() {
+      if (!this.isTrialActive) {
+        return i18n.popoverTitleExpiredTrial;
+      }
+
       const i18nPopoverTitle = n__(
         "Trials|You've got %{daysRemaining} day remaining on GitLab %{planName}!",
         "Trials|You've got %{daysRemaining} days remaining on GitLab %{planName}!",
@@ -80,7 +87,11 @@ export default {
   methods: {
     trackPageAction(eventName) {
       const { action, ...options } = trackingEvents[eventName];
-      this.track(action, { ...options });
+      const category = this.isTrialActive
+        ? trackingEvents.activeTrialCategory
+        : trackingEvents.trialEndedCategory;
+
+      this.track(action, { category, ...options });
     },
     updateDisabledState() {
       this.disabled = disabledBreakpoints.includes(bp.getBreakpointSize());
@@ -102,18 +113,25 @@ export default {
     :target="targetId"
     :disabled="disabled"
     :delay="{ hide: 400 } /* eslint-disable-line @gitlab/vue-no-new-non-primitive-in-template */"
+    :css-classes="['gl-p-2']"
     @shown="onShown"
   >
     <template #title>
-      {{ popoverTitle }}
+      <div :class="{ 'gl-font-size-h2': !isTrialActive }">
+        {{ popoverTitle }}
+      </div>
     </template>
 
-    <gl-sprintf :message="$options.i18n.popoverContent">
+    <gl-sprintf v-if="isTrialActive" :message="$options.i18n.popoverContent">
       <template #bold="{ content }">
         <b>{{ sprintf(content, { trialEndDate: formattedTrialEndDate }) }}</b>
       </template>
       <template #planName>{{ planNameWithoutTrial }}</template>
     </gl-sprintf>
+
+    <div v-else>
+      <p>{{ $options.i18n.popoverContentExpiredTrial }}</p>
+    </div>
 
     <div class="gl-mt-5">
       <div data-testid="contact-sales-btn" @click="trackPageAction('contactSalesBtnClick')">
