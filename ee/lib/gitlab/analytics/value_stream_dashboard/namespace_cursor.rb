@@ -6,8 +6,8 @@ module Gitlab
       class NamespaceCursor
         NAMESPACE_BATCH_SIZE = 300
 
-        def initialize(namespace_scope:, inner_namespace_query:, cursor_data:)
-          @namespace_scope = namespace_scope
+        def initialize(namespace_class:, inner_namespace_query:, cursor_data:)
+          @namespace_class = namespace_class
           @inner_namespace_query = inner_namespace_query
           @cursor_data = cursor_data
           @top_level_namespace_id = cursor_data.fetch(:top_level_namespace_id)
@@ -35,12 +35,12 @@ module Gitlab
 
         private
 
-        attr_reader :namespace_scope, :inner_namespace_query, :cursor_data, :top_level_namespace_id
+        attr_reader :namespace_class, :inner_namespace_query, :cursor_data, :top_level_namespace_id
 
         # rubocop: disable CodeReuse/ActiveRecord
         def enumerator
           @enumerator ||= begin
-            scope = namespace_scope.call(top_level_namespace_id)
+            scope = namespace_class.where('traversal_ids[1] = ?', top_level_namespace_id)
             if cursor_data[:namespace_id]
               scope = scope.where(Namespace.arel_table[:id].gteq(cursor_data[:namespace_id]))
             end
