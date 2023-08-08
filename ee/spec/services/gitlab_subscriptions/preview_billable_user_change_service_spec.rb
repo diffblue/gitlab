@@ -9,6 +9,17 @@ RSpec.describe ::GitlabSubscriptions::PreviewBillableUserChangeService, feature_
 
     shared_examples 'preview billable user change service' do
       context 'when target namespace exists', :saas do
+        let(:eligible_for_usage_alerts) { true }
+        let(:usage_alert_eligibility_service) do
+          instance_double(GitlabSubscriptions::Reconciliations::CheckSeatUsageAlertsEligibilityService,
+            execute: eligible_for_usage_alerts)
+        end
+
+        before do
+          allow(GitlabSubscriptions::Reconciliations::CheckSeatUsageAlertsEligibilityService)
+            .to receive(:new).and_return(usage_alert_eligibility_service)
+        end
+
         context 'when adding users' do
           context 'by group id' do
             subject(:execute) do
@@ -243,6 +254,21 @@ RSpec.describe ::GitlabSubscriptions::PreviewBillableUserChangeService, feature_
                 seats_in_subscription: 0
               }
             })
+          end
+
+          context 'when not eligible for for seat usage alerts' do
+            let(:eligible_for_usage_alerts) { false }
+
+            it 'sets will_increase_overage: false' do
+              expect(execute).to include({
+                success: true,
+                data: {
+                  will_increase_overage: false,
+                  new_billable_user_count: 11,
+                  seats_in_subscription: 0
+                }
+              })
+            end
           end
         end
       end
