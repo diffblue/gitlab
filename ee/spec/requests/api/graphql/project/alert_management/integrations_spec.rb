@@ -43,9 +43,7 @@ RSpec.describe 'getting Alert Management Integrations', feature_category: :incid
         post_graphql(query, current_user: current_user)
       end
 
-      it_behaves_like 'a working graphql query'
-
-      specify { expect(integrations).to be_nil }
+      it_behaves_like 'a working graphql query that returns no data'
     end
 
     context 'with project permissions' do
@@ -54,7 +52,7 @@ RSpec.describe 'getting Alert Management Integrations', feature_category: :incid
         post_graphql(query, current_user: current_user)
       end
 
-      it_behaves_like 'a working graphql query'
+      it_behaves_like 'a working graphql query that returns data'
 
       specify { expect(integrations.size).to eq(3) }
 
