@@ -181,7 +181,6 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category
 
     before do
       stub_ee_application_setting(dashboard_limit_enabled: true)
-      stub_feature_flags(free_user_cap: true)
 
       # group_seat_usage_path does some admin_group_member check then
       # redirects to the below path where we only check read.
@@ -221,7 +220,6 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category
   end
 
   context 'with free user limit' do
-    let(:free_user_cap) { false }
     let(:awaiting_user_names) { awaiting_members.map { |m| m.user.name } }
     let(:active_user_names) { active_members.map { |m| m.user.name } }
 
@@ -230,7 +228,6 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category
     let_it_be(:active_members) { create_list(:group_member, 1, source: group) }
 
     before do
-      stub_feature_flags(free_user_cap: free_user_cap)
       stub_ee_application_setting(dashboard_limit_enabled: true)
       stub_ee_application_setting(dashboard_limit: 5)
       allow_next_instance_of(GitlabSubscriptions::FetchSubscriptionPlansService) do |instance|
@@ -241,66 +238,53 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category
       wait_for_requests
     end
 
-    context 'when no feature flag enabled' do
+    context 'when on a free plan' do
+      it 'has correct seats in use and plans link' do
+        expect(page).to have_content("4 / 5 Seats in use / Seats available")
+        expect(page).to have_link("Explore paid plans")
+      end
+    end
+
+    context 'when on a paid plan' do
+      let_it_be(:gitlab_subscription) { create(:gitlab_subscription, seats_in_use: 4, seats: 10, namespace: group) }
+
       it 'shows active users' do
         expect(page.text).not_to include(*awaiting_user_names)
         expect(page.text).to include(*active_user_names)
         expect(page).to have_content("You have 3 pending members")
-        expect(page).to have_content("4 / Unlimited Seats in use")
+        expect(page).to have_content("4 / 10 Seats in use / Seats in subscription")
       end
     end
 
-    context 'when free_user_cap enabled' do
-      let(:free_user_cap) { true }
+    context 'when on a paid expired plan and over limit that is now free' do
+      let_it_be(:gitlab_subscription) { create(:gitlab_subscription, :expired, :free, namespace: group) }
 
-      context 'when on a free plan' do
-        it 'has correct seats in use and plans link' do
-          expect(page).to have_content("4 / 5 Seats in use / Seats available")
-          expect(page).to have_link("Explore paid plans")
-        end
+      let_it_be(:active_members) do
+        create_list(:group_member, 2, source: group)
       end
 
-      context 'when on a paid plan' do
-        let_it_be(:gitlab_subscription) { create(:gitlab_subscription, seats_in_use: 4, seats: 10, namespace: group) }
+      it 'shows usage quota alert' do
+        expect(page).to have_content('Your free group is now limited to')
+        expect(page).to have_link('upgrade')
 
-        it 'shows active users' do
-          expect(page.text).not_to include(*awaiting_user_names)
-          expect(page.text).to include(*active_user_names)
-          expect(page).to have_content("You have 3 pending members")
-          expect(page).to have_content("4 / 10 Seats in use / Seats in subscription")
-        end
+        page.find("[data-testid='free-group-limited-dismiss']").click
+        expect(page).not_to have_content('Your free group is now limited to')
+
+        page.refresh
+        expect(page).not_to have_content('Your free group is now limited to')
+      end
+    end
+
+    context 'when on a trial' do
+      let_it_be(:gitlab_subscription) do
+        create(:gitlab_subscription, :active_trial, seats_in_use: 4, seats: 10, namespace: group)
       end
 
-      context 'when on a paid expired plan and over limit that is now free' do
-        let_it_be(:gitlab_subscription) { create(:gitlab_subscription, :expired, :free, namespace: group) }
-
-        let_it_be(:active_members) do
-          create_list(:group_member, 2, source: group)
-        end
-
-        it 'shows usage quota alert' do
-          expect(page).to have_content('Your free group is now limited to')
-          expect(page).to have_link('upgrade')
-
-          page.find("[data-testid='free-group-limited-dismiss']").click
-          expect(page).not_to have_content('Your free group is now limited to')
-
-          page.refresh
-          expect(page).not_to have_content('Your free group is now limited to')
-        end
-      end
-
-      context 'when on a trial' do
-        let_it_be(:gitlab_subscription) do
-          create(:gitlab_subscription, :active_trial, seats_in_use: 4, seats: 10, namespace: group)
-        end
-
-        it 'shows active users' do
-          expect(page.text).not_to include(*awaiting_user_names)
-          expect(page.text).to include(*active_user_names)
-          expect(page).to have_content("You have 3 pending members")
-          expect(page).to have_content("4 / Unlimited Seats in use / Seats in subscription")
-        end
+      it 'shows active users' do
+        expect(page.text).not_to include(*awaiting_user_names)
+        expect(page.text).to include(*active_user_names)
+        expect(page).to have_content("You have 3 pending members")
+        expect(page).to have_content("4 / Unlimited Seats in use / Seats in subscription")
       end
     end
   end

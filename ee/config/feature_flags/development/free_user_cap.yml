@@ -1,8 +1,0 @@
----
-name: free_user_cap
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/80839
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/352633
-milestone: '14.9'
-type: development
-group: group::acquisition
-default_enabled: false

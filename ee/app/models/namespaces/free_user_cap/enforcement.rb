@@ -10,9 +10,7 @@ module Namespaces
       def enforce_cap?(cache: true)
         return preloaded_enforce_cap[root_namespace.id] if cache
 
-        return false unless enforceable_subscription?
-
-        feature_enabled?
+        enforceable_subscription?
       end
 
       def over_limit?(update_database: true)
@@ -134,10 +132,6 @@ module Namespaces
       def member_with_user_already_exists?(user)
         # it is possible for members to not have a user filled out in cases like being an invite
         user && ::Member.in_hierarchy(root_namespace).with_user(user).exists?
-      end
-
-      def feature_enabled?
-        ::Feature.enabled?(:free_user_cap, root_namespace)
       end
 
       def git_read_only_message

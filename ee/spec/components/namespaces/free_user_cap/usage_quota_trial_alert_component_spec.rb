@@ -8,7 +8,6 @@ RSpec.describe Namespaces::FreeUserCap::UsageQuotaTrialAlertComponent, :saas, :a
   let_it_be(:user, refind: true) { create(:user) }
   let(:content_class) { '_content_class_' }
   let(:trial_ends_on) { Date.parse('2022-06-01') }
-  let(:free_user_cap_enabled) { true }
   let!(:gitlab_subscription) do
     create(:gitlab_subscription, :active_trial, :free, namespace: namespace, trial_ends_on: trial_ends_on)
   end
@@ -32,7 +31,6 @@ RSpec.describe Namespaces::FreeUserCap::UsageQuotaTrialAlertComponent, :saas, :a
   before do
     stub_ee_application_setting(dashboard_limit_enabled: true)
     stub_ee_application_setting(dashboard_limit: 5)
-    stub_feature_flags(free_user_cap: free_user_cap_enabled)
     namespace.add_owner(user)
     travel_to(trial_ends_on)
   end
@@ -68,12 +66,6 @@ RSpec.describe Namespaces::FreeUserCap::UsageQuotaTrialAlertComponent, :saas, :a
       before do
         namespace.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
       end
-
-      include_examples 'does not render the banner'
-    end
-
-    context 'when the free_user_cap feature flag is not enabled' do
-      let(:free_user_cap_enabled) { false }
 
       include_examples 'does not render the banner'
     end

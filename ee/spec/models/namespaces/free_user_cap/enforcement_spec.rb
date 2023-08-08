@@ -20,140 +20,126 @@ RSpec.describe Namespaces::FreeUserCap::Enforcement, :saas, feature_category: :m
       allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return({ user_ids: free_plan_members_count })
     end
 
-    context 'when :free_user_cap is disabled' do
-      before do
-        stub_feature_flags(free_user_cap: false)
+    context 'with updating dashboard enforcement_at field', :use_clean_rails_redis_caching do
+      context 'when cache has expired or does not exist' do
+        context 'when under the limit' do
+          let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit - 1 }
+
+          it 'updates the database for non enforcement' do
+            time = Time.current
+            namespace.namespace_details.update!(dashboard_enforcement_at: time)
+
+            expect do
+              expect(over_limit?).to be(false)
+            end.to change { namespace.namespace_details.dashboard_enforcement_at }.from(time).to(nil)
+          end
+        end
+
+        context 'when over the limit' do
+          it 'updates the database for enforcement', :freeze_time do
+            expect do
+              expect(over_limit?).to be(true)
+            end.to change { namespace.namespace_details.dashboard_enforcement_at }.from(nil).to(Time.current)
+          end
+
+          context 'when dashboard_enforcement_at is already set' do
+            it 'does not update dashboard_enforcement_at field needlessly' do
+              namespace.namespace_details.update!(dashboard_enforcement_at: Time.current)
+
+              expect(namespace.namespace_details).not_to receive(:update)
+
+              expect do
+                expect(over_limit?).to be(true)
+              end.to not_change(namespace.namespace_details, :dashboard_enforcement_at)
+            end
+          end
+        end
       end
+
+      context 'when cache exists' do
+        before do
+          over_limit?
+        end
+
+        it 'does not update the database' do
+          namespace.namespace_details.update!(dashboard_enforcement_at: nil)
+
+          expect(namespace.namespace_details).not_to receive(:update)
+
+          expect do
+            expect(over_limit?).to be(true)
+          end.not_to change { namespace.namespace_details.dashboard_enforcement_at }
+        end
+      end
+    end
+
+    context 'when under the number of free users limit' do
+      let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit - 1 }
 
       it { is_expected.to be false }
     end
 
-    context 'when :free_user_cap is enabled' do
-      before do
-        stub_feature_flags(free_user_cap: true)
-      end
+    context 'when at the same number as the free users limit' do
+      let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit }
 
-      context 'with updating dashboard enforcement_at field', :use_clean_rails_redis_caching do
-        context 'when cache has expired or does not exist' do
-          context 'when under the limit' do
-            let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit - 1 }
+      it { is_expected.to be false }
+    end
 
-            it 'updates the database for non enforcement' do
-              time = Time.current
-              namespace.namespace_details.update!(dashboard_enforcement_at: time)
+    context 'when over the number of free users limit' do
+      context 'when it is a free plan' do
+        it { is_expected.to be true }
 
-              expect do
-                expect(over_limit?).to be(false)
-              end.to change { namespace.namespace_details.dashboard_enforcement_at }.from(time).to(nil)
-            end
+        context 'when the namespace is not a group' do
+          let_it_be(:namespace) do
+            namespace = create(:user).namespace
+            create(:gitlab_subscription, hosted_plan: create(:free_plan), namespace: namespace)
+            namespace
           end
 
-          context 'when over the limit' do
-            it 'updates the database for enforcement', :freeze_time do
-              expect do
-                expect(over_limit?).to be(true)
-              end.to change { namespace.namespace_details.dashboard_enforcement_at }.from(nil).to(Time.current)
-            end
-
-            context 'when dashboard_enforcement_at is already set' do
-              it 'does not update dashboard_enforcement_at field needlessly' do
-                namespace.namespace_details.update!(dashboard_enforcement_at: Time.current)
-
-                expect(namespace.namespace_details).not_to receive(:update)
-
-                expect do
-                  expect(over_limit?).to be(true)
-                end.to not_change(namespace.namespace_details, :dashboard_enforcement_at)
-              end
-            end
-          end
+          it { is_expected.to be false }
         end
 
-        context 'when cache exists' do
+        context 'when the namespace is public' do
           before do
-            over_limit?
+            namespace.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
           end
-
-          it 'does not update the database' do
-            namespace.namespace_details.update!(dashboard_enforcement_at: nil)
-
-            expect(namespace.namespace_details).not_to receive(:update)
-
-            expect do
-              expect(over_limit?).to be(true)
-            end.not_to change { namespace.namespace_details.dashboard_enforcement_at }
-          end
-        end
-      end
-
-      context 'when under the number of free users limit' do
-        let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit - 1 }
-
-        it { is_expected.to be false }
-      end
-
-      context 'when at the same number as the free users limit' do
-        let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit }
-
-        it { is_expected.to be false }
-      end
-
-      context 'when over the number of free users limit' do
-        context 'when it is a free plan' do
-          it { is_expected.to be true }
-
-          context 'when the namespace is not a group' do
-            let_it_be(:namespace) do
-              namespace = create(:user).namespace
-              create(:gitlab_subscription, hosted_plan: create(:free_plan), namespace: namespace)
-              namespace
-            end
-
-            it { is_expected.to be false }
-          end
-
-          context 'when the namespace is public' do
-            before do
-              namespace.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
-            end
-
-            it { is_expected.to be false }
-          end
-
-          context 'when the namespace is over storage limit' do
-            before do
-              allow_next_instance_of(::Namespaces::FreeUserCap::RootSize, namespace) do |instance|
-                allow(instance).to receive(:above_size_limit?).and_return(true)
-              end
-            end
-
-            it { is_expected.to be false }
-          end
-        end
-
-        context 'when it is a non free plan' do
-          let_it_be(:namespace) { create(:group_with_plan, plan: :ultimate_plan) }
 
           it { is_expected.to be false }
         end
 
-        context 'when no plan exists' do
-          let_it_be(:namespace) { create(:group, :private) }
-
-          it { is_expected.to be true }
-
-          context 'when namespace is public' do
-            let_it_be(:namespace) { create(:group, :public) }
-
-            it { is_expected.to be false }
+        context 'when the namespace is over storage limit' do
+          before do
+            allow_next_instance_of(::Namespaces::FreeUserCap::RootSize, namespace) do |instance|
+              allow(instance).to receive(:above_size_limit?).and_return(true)
+            end
           end
-        end
-
-        context 'when dashboard_limit_enabled is false' do
-          let(:dashboard_limit_enabled) { false }
 
           it { is_expected.to be false }
         end
+      end
+
+      context 'when it is a non free plan' do
+        let_it_be(:namespace) { create(:group_with_plan, plan: :ultimate_plan) }
+
+        it { is_expected.to be false }
+      end
+
+      context 'when no plan exists' do
+        let_it_be(:namespace) { create(:group, :private) }
+
+        it { is_expected.to be true }
+
+        context 'when namespace is public' do
+          let_it_be(:namespace) { create(:group, :public) }
+
+          it { is_expected.to be false }
+        end
+      end
+
+      context 'when dashboard_limit_enabled is false' do
+        let(:dashboard_limit_enabled) { false }
+
+        it { is_expected.to be false }
       end
     end
 
@@ -189,242 +175,28 @@ RSpec.describe Namespaces::FreeUserCap::Enforcement, :saas, feature_category: :m
       allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return({ user_ids: free_plan_members_count })
     end
 
-    context 'when :free_user_cap is disabled' do
-      before do
-        stub_feature_flags(free_user_cap: false)
-      end
+    context 'when under the number of free users limit' do
+      let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit - 1 }
 
       it { is_expected.to be false }
     end
 
-    context 'when :free_user_cap is enabled' do
-      before do
-        stub_feature_flags(free_user_cap: true)
-      end
-
-      context 'when under the number of free users limit' do
-        let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit - 1 }
-
-        it { is_expected.to be false }
-      end
-
-      context 'when at the same number as the free users limit' do
-        let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit }
-
-        it { is_expected.to be true }
-      end
-
-      context 'when over the number of free users limit' do
-        context 'when it is a free plan' do
-          it { is_expected.to be true }
-
-          context 'when the namespace is not a group' do
-            let_it_be(:namespace) do
-              namespace = create(:user).namespace
-              create(:gitlab_subscription, hosted_plan: create(:free_plan), namespace: namespace)
-              namespace
-            end
-
-            it { is_expected.to be false }
-          end
-        end
-
-        context 'when it is a non free plan' do
-          let_it_be(:namespace) { create(:group_with_plan, plan: :ultimate_plan) }
-
-          it { is_expected.to be false }
-        end
-
-        context 'when no plan exists' do
-          let_it_be(:namespace) { create(:group, :private) }
-
-          it { is_expected.to be true }
-
-          context 'when namespace is public' do
-            let_it_be(:namespace) { create(:group, :public) }
-
-            it { is_expected.to be false }
-          end
-        end
-
-        context 'when dashboard_limit_enabled is false' do
-          let(:dashboard_limit_enabled) { false }
-
-          it { is_expected.to be false }
-        end
-      end
-    end
-  end
-
-  describe '#at_limit?' do
-    let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit + 1 }
-
-    subject(:at_limit?) { described_class.new(namespace).at_limit? }
-
-    before do
-      allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return({ user_ids: free_plan_members_count })
-    end
-
-    context 'when :free_user_cap is disabled' do
-      before do
-        stub_feature_flags(free_user_cap: false)
-      end
-
-      it { is_expected.to be false }
-    end
-
-    context 'when :free_user_cap is enabled' do
+    context 'when at the same number as the free users limit' do
       let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit }
 
-      before do
-        stub_ee_application_setting(dashboard_limit: 3)
-      end
-
-      it { is_expected.to be false }
-
-      context 'when under the dashboard_limit' do
-        let(:free_plan_members_count) { 2 }
-
-        it { is_expected.to be false }
-      end
-
-      context 'when at the dashboard_limit' do
-        let(:free_plan_members_count) { 3 }
-
-        it { is_expected.to be true }
-      end
-
-      context 'when over the dashboard_limit' do
-        let(:free_plan_members_count) { 4 }
-
-        it { is_expected.to be false }
-      end
-    end
-  end
-
-  describe '#seat_available?' do
-    let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit + 1 }
-    let_it_be(:user) { create(:user) }
-
-    subject(:seat_available?) { described_class.new(namespace).seat_available?(user) }
-
-    before do
-      allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return({ user_ids: free_plan_members_count })
-    end
-
-    shared_examples 'user is an already existing member in the namespace' do
-      before do
-        build(:group_member, :owner, source: namespace, user: user).tap do |record|
-          record.save!(validate: false)
-        end
-      end
-
       it { is_expected.to be true }
     end
 
-    context 'when :free_user_cap is disabled' do
-      before do
-        stub_feature_flags(free_user_cap: false)
-      end
-
-      it { is_expected.to be true }
-    end
-
-    context 'when :free_user_cap is enabled' do
-      before do
-        stub_feature_flags(free_user_cap: true)
-      end
-
-      context 'when under the number of free users limit' do
-        let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit - 1 }
-
-        it { is_expected.to be true }
-
-        context 'when invoked with request cache', :request_store do
-          it 'responds correctly between calls when no seats are exhausted' do
-            expect(described_class.new(namespace).seat_available?(user)).to be(true)
-
-            allow(::Namespaces::FreeUserCap::UsersFinder)
-              .to receive(:count).and_return({ user_ids: Namespaces::FreeUserCap.dashboard_limit })
-
-            expect(described_class.new(namespace).seat_available?(user)).to be(false)
-          end
-        end
-      end
-
-      context 'when at the same number as the free users limit' do
-        let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit }
-
-        it { is_expected.to be false }
-
-        it_behaves_like 'user is an already existing member in the namespace'
-      end
-
-      context 'when over the number of free users limit' do
-        context 'when it is a free plan' do
-          it { is_expected.to be false }
-
-          it_behaves_like 'user is an already existing member in the namespace'
-
-          context 'when the namespace is not a group' do
-            let_it_be(:namespace) do
-              namespace = create(:user).namespace
-              create(:gitlab_subscription, hosted_plan: create(:free_plan), namespace: namespace)
-              namespace
-            end
-
-            it { is_expected.to be true }
-          end
-        end
-
-        context 'when it is a non free plan' do
-          let_it_be(:namespace) { create(:group_with_plan, plan: :ultimate_plan) }
-
-          it { is_expected.to be true }
-        end
-
-        context 'when no plan exists' do
-          let_it_be(:namespace) { create(:group, :private) }
-
-          it { is_expected.to be false }
-
-          context 'when namespace is public' do
-            let_it_be(:namespace) { create(:group, :public) }
-
-            it { is_expected.to be true }
-          end
-        end
-
-        context 'when dashboard_limit_enabled is false' do
-          let(:dashboard_limit_enabled) { false }
-
-          it { is_expected.to be true }
-        end
-      end
-    end
-  end
-
-  describe '#enforce_cap?' do
-    subject(:enforce_cap?) { described_class.new(namespace).enforce_cap? }
-
-    context 'when :free_user_cap is disabled' do
-      before do
-        stub_feature_flags(free_user_cap: false)
-      end
-
-      it { is_expected.to be false }
-    end
-
-    context 'when :free_user_cap is enabled' do
-      before do
-        stub_feature_flags(free_user_cap: true)
-      end
-
+    context 'when over the number of free users limit' do
       context 'when it is a free plan' do
         it { is_expected.to be true }
 
-        context 'when namespace is public' do
-          let_it_be(:namespace) { create(:group, :public) }
+        context 'when the namespace is not a group' do
+          let_it_be(:namespace) do
+            namespace = create(:user).namespace
+            create(:gitlab_subscription, hosted_plan: create(:free_plan), namespace: namespace)
+            namespace
+          end
 
           it { is_expected.to be false }
         end
@@ -453,92 +225,247 @@ RSpec.describe Namespaces::FreeUserCap::Enforcement, :saas, feature_category: :m
 
         it { is_expected.to be false }
       end
+    end
+  end
 
-      context 'with storage limit considerations' do
-        let(:disable_storage_check?) { false }
+  describe '#at_limit?' do
+    let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit }
 
-        subject(:test_class) do
-          Class.new(described_class) do
-            private
+    subject(:at_limit?) { described_class.new(namespace).at_limit? }
 
-            def feature_enabled?
-              true
-            end
-          end
+    before do
+      stub_ee_application_setting(dashboard_limit: 3)
+      allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return({ user_ids: free_plan_members_count })
+    end
+
+    context 'when under the dashboard_limit' do
+      let(:free_plan_members_count) { 2 }
+
+      it { is_expected.to be false }
+    end
+
+    context 'when at the dashboard_limit' do
+      let(:free_plan_members_count) { 3 }
+
+      it { is_expected.to be true }
+    end
+
+    context 'when over the dashboard_limit' do
+      let(:free_plan_members_count) { 4 }
+
+      it { is_expected.to be false }
+    end
+  end
+
+  describe '#seat_available?' do
+    let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit + 1 }
+    let_it_be(:user) { create(:user) }
+
+    subject(:seat_available?) { described_class.new(namespace).seat_available?(user) }
+
+    before do
+      allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return({ user_ids: free_plan_members_count })
+    end
+
+    shared_examples 'user is an already existing member in the namespace' do
+      before do
+        build(:group_member, :owner, source: namespace, user: user).tap do |record|
+          record.save!(validate: false)
         end
+      end
 
-        before do
-          stub_feature_flags(free_user_cap_without_storage_check: disable_storage_check?)
+      it { is_expected.to be true }
+    end
+
+    context 'when under the number of free users limit' do
+      let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit - 1 }
+
+      it { is_expected.to be true }
+
+      context 'when invoked with request cache', :request_store do
+        it 'responds correctly between calls when no seats are exhausted' do
+          expect(described_class.new(namespace).seat_available?(user)).to be(true)
+
+          allow(::Namespaces::FreeUserCap::UsersFinder)
+            .to receive(:count).and_return({ user_ids: Namespaces::FreeUserCap.dashboard_limit })
+
+          expect(described_class.new(namespace).seat_available?(user)).to be(false)
         end
+      end
+    end
 
-        it 'is enforced when below storage limit' do
-          expect(test_class.new(namespace)).to be_enforce_cap
-        end
+    context 'when at the same number as the free users limit' do
+      let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit }
 
-        context 'when above storage limit' do
-          before_all do
-            limit = 100
-            create(:plan_limits, plan: namespace.gitlab_subscription.hosted_plan, storage_size_limit: limit)
-            create(:namespace_root_storage_statistics, namespace: namespace, storage_size: (limit + 1).megabytes)
+      it { is_expected.to be false }
+
+      it_behaves_like 'user is an already existing member in the namespace'
+    end
+
+    context 'when over the number of free users limit' do
+      context 'when it is a free plan' do
+        it { is_expected.to be false }
+
+        it_behaves_like 'user is an already existing member in the namespace'
+
+        context 'when the namespace is not a group' do
+          let_it_be(:namespace) do
+            namespace = create(:user).namespace
+            create(:gitlab_subscription, hosted_plan: create(:free_plan), namespace: namespace)
+            namespace
           end
 
-          it 'is not enforced' do
-            expect(test_class.new(namespace)).not_to be_enforce_cap
-          end
+          it { is_expected.to be true }
+        end
+      end
 
-          context 'with storage check disabled' do
-            let(:disable_storage_check?) { true }
+      context 'when it is a non free plan' do
+        let_it_be(:namespace) { create(:group_with_plan, plan: :ultimate_plan) }
 
-            it 'is enforced' do
-              expect(test_class.new(namespace)).to be_enforce_cap
-            end
+        it { is_expected.to be true }
+      end
+
+      context 'when no plan exists' do
+        let_it_be(:namespace) { create(:group, :private) }
+
+        it { is_expected.to be false }
+
+        context 'when namespace is public' do
+          let_it_be(:namespace) { create(:group, :public) }
+
+          it { is_expected.to be true }
+        end
+      end
+
+      context 'when dashboard_limit_enabled is false' do
+        let(:dashboard_limit_enabled) { false }
+
+        it { is_expected.to be true }
+      end
+    end
+  end
+
+  describe '#enforce_cap?' do
+    subject(:enforce_cap?) { described_class.new(namespace).enforce_cap? }
+
+    context 'when it is a free plan' do
+      it { is_expected.to be true }
+
+      context 'when namespace is public' do
+        let_it_be(:namespace) { create(:group, :public) }
+
+        it { is_expected.to be false }
+      end
+    end
+
+    context 'when it is a non free plan' do
+      let_it_be(:namespace) { create(:group_with_plan, plan: :ultimate_plan) }
+
+      it { is_expected.to be false }
+    end
+
+    context 'when no plan exists' do
+      let_it_be(:namespace) { create(:group, :private) }
+
+      it { is_expected.to be true }
+
+      context 'when namespace is public' do
+        let_it_be(:namespace) { create(:group, :public) }
+
+        it { is_expected.to be false }
+      end
+    end
+
+    context 'when dashboard_limit_enabled is false' do
+      let(:dashboard_limit_enabled) { false }
+
+      it { is_expected.to be false }
+    end
+
+    context 'with storage limit considerations' do
+      let(:disable_storage_check?) { false }
+
+      subject(:test_class) do
+        Class.new(described_class) do
+          private
+
+          def feature_enabled?
+            true
           end
         end
       end
 
-      context 'when invoked with request cache', :request_store do
-        subject(:test_class) do
-          Class.new(described_class) do
-            private
+      before do
+        stub_feature_flags(free_user_cap_without_storage_check: disable_storage_check?)
+      end
 
-            def feature_enabled?
-              true
-            end
+      it 'is enforced when below storage limit' do
+        expect(test_class.new(namespace)).to be_enforce_cap
+      end
+
+      context 'when above storage limit' do
+        before_all do
+          limit = 100
+          create(:plan_limits, plan: namespace.gitlab_subscription.hosted_plan, storage_size_limit: limit)
+          create(:namespace_root_storage_statistics, namespace: namespace, storage_size: (limit + 1).megabytes)
+        end
+
+        it 'is not enforced' do
+          expect(test_class.new(namespace)).not_to be_enforce_cap
+        end
+
+        context 'with storage check disabled' do
+          let(:disable_storage_check?) { true }
+
+          it 'is enforced' do
+            expect(test_class.new(namespace)).to be_enforce_cap
           end
         end
+      end
+    end
 
-        before do
-          test_class.new(namespace).enforce_cap?
-        end
+    context 'when invoked with request cache', :request_store do
+      subject(:test_class) do
+        Class.new(described_class) do
+          private
 
-        it 'enforces cap' do
-          expect(test_class.new(namespace)).to be_enforce_cap
-        end
-
-        it 'does not perform extra work when enforce_cap has been invoked before' do
-          expect(::Gitlab::CurrentSettings).not_to receive(:dashboard_limit_enabled?)
-
-          test_class.new(namespace).enforce_cap?
-        end
-
-        it 'benchmarks with and without cache' do
-          # Run with:
-          #   BENCHMARK=1 rspec ee/spec/models/namespaces/free_user_cap/base_spec.rb
-          skip('Skipped. To run set env variable BENCHMARK=1') unless ENV.key?('BENCHMARK')
-
-          require 'benchmark/ips'
-
-          puts "\n--> Benchmarking enforce cap with request caching and without\n"
-
-          Benchmark.ips do |x|
-            x.report('without cache') do
-              test_class.new(namespace).enforce_cap?(cache: false)
-            end
-            x.report('with cache') do
-              test_class.new(namespace).enforce_cap?(cache: true)
-            end
-            x.compare!
+          def feature_enabled?
+            true
           end
+        end
+      end
+
+      before do
+        test_class.new(namespace).enforce_cap?
+      end
+
+      it 'enforces cap' do
+        expect(test_class.new(namespace)).to be_enforce_cap
+      end
+
+      it 'does not perform extra work when enforce_cap has been invoked before' do
+        expect(::Gitlab::CurrentSettings).not_to receive(:dashboard_limit_enabled?)
+
+        test_class.new(namespace).enforce_cap?
+      end
+
+      it 'benchmarks with and without cache' do
+        # Run with:
+        #   BENCHMARK=1 rspec ee/spec/models/namespaces/free_user_cap/enforcement_spec.rb
+        skip('Skipped. To run set env variable BENCHMARK=1') unless ENV.key?('BENCHMARK')
+
+        require 'benchmark/ips'
+
+        puts "\n--> Benchmarking enforce cap with request caching and without\n"
+
+        Benchmark.ips do |x|
+          x.report('without cache') do
+            test_class.new(namespace).enforce_cap?(cache: false)
+          end
+          x.report('with cache') do
+            test_class.new(namespace).enforce_cap?(cache: true)
+          end
+          x.compare!
         end
       end
     end
