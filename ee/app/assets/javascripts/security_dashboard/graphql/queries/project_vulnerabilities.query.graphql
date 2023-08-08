@@ -12,6 +12,7 @@ query projectVulnerabilities(
   $scanner: [String!]
   $scannerId: [VulnerabilitiesScannerID!]
   $state: [VulnerabilityState!]
+  $dismissalReason: [VulnerabilityDismissalReason!]
   $sort: VulnerabilitySort
   $hasIssues: Boolean
   $hasResolution: Boolean
@@ -32,6 +33,7 @@ query projectVulnerabilities(
       scanner: $scanner
       scannerId: $scannerId
       state: $state
+      dismissalReason: $dismissalReason
       sort: $sort
       hasIssues: $hasIssues
       hasResolution: $hasResolution
