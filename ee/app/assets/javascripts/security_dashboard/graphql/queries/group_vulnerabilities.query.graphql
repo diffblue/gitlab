@@ -13,6 +13,7 @@ query groupVulnerabilities(
   $scanner: [String!]
   $scannerId: [VulnerabilitiesScannerID!]
   $state: [VulnerabilityState!]
+  $dismissalReason: [VulnerabilityDismissalReason!]
   $sort: VulnerabilitySort
   $hasIssues: Boolean
   $hasResolution: Boolean
@@ -31,6 +32,7 @@ query groupVulnerabilities(
       scanner: $scanner
       scannerId: $scannerId
       state: $state
+      dismissalReason: $dismissalReason
       projectId: $projectId
       sort: $sort
       hasIssues: $hasIssues

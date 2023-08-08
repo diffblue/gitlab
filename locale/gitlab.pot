@@ -16965,6 +16965,11 @@ msgstr ""
 msgid "Dismissed"
 msgstr ""
 
+msgid "Dismissed (%d reason)"
+msgid_plural "Dismissed (%d reasons)"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "Display"
 msgstr ""
 
@@ -42581,6 +42586,9 @@ msgstr ""
 msgid "SecurityReports|All clusters"
 msgstr ""
 
+msgid "SecurityReports|All dismissal reasons"
+msgstr ""
+
 msgid "SecurityReports|All images"
 msgstr ""
 
@@ -42642,6 +42650,12 @@ msgid "SecurityReports|Dismissed '%{vulnerabilityName}'"
 msgstr ""
 
 msgid "SecurityReports|Dismissed '%{vulnerabilityName}'. Turn off the hide dismissed toggle to view."
+msgstr ""
+
+msgid "SecurityReports|Dismissed (all reasons)"
+msgstr ""
+
+msgid "SecurityReports|Dismissed as..."
 msgstr ""
 
 msgid "SecurityReports|Does not have issue"
