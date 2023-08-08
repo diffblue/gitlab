@@ -104,6 +104,14 @@ module EE
               alpha: { milestone: '16.1' },
               description: 'Find AI Duo Chat messages.'
 
+        field :ci_queueing_history,
+              ::Types::Ci::QueueingHistoryType,
+              null: true,
+              alpha: { milestone: '16.4' },
+              description: 'Time it took for ci job to be picked up by runner in percentiles.',
+              resolver: ::Resolvers::Ci::QueueingHistoryResolver,
+              extras: [:lookahead]
+
         field :ci_catalog_resources,
               ::Types::Ci::Catalog::ResourceType.connection_type,
               null: true,
