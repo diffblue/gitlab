@@ -8,15 +8,19 @@ import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import Tracking from '~/tracking';
 import { getSubscriptionData } from '../subscription_actions.customer.query.graphql';
 import SubscriptionTableRow from './subscription_table_row.vue';
 
-const createButtonProps = (text, href, testId) => ({
-  text,
-  href,
-  testId,
-  dataQaSelector: testId,
-});
+const createButtonProps = (text, href, testId, clickHandler = () => {}) => {
+  return {
+    text,
+    href,
+    testId,
+    dataQaSelector: testId,
+    clickHandler,
+  };
+};
 
 export default {
   name: 'SubscriptionTable',
@@ -26,7 +30,7 @@ export default {
     GlLoadingIcon,
     SubscriptionTableRow,
   },
-  mixins: [glFeatureFlagsMixin()],
+  mixins: [glFeatureFlagsMixin(), Tracking.mixin()],
   inject: {
     planRenewHref: {
       default: '',
@@ -98,6 +102,7 @@ export default {
             s__('SubscriptionTable|Add seats'),
             this.addSeatsHref,
             'add-seats-button',
+            this.trackClick,
           )
         : null;
     },
@@ -154,6 +159,9 @@ export default {
         });
       }
     },
+    trackClick() {
+      this.track('click_button', { label: 'add_seats_saas', property: 'billing_page' });
+    },
   },
 };
 </script>
@@ -180,6 +188,7 @@ export default {
             category="secondary"
             target="_blank"
             variant="confirm"
+            @click="button.clickHandler"
             >{{ button.text }}</gl-button
           >
           <gl-button

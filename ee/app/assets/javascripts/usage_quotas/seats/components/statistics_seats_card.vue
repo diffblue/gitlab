@@ -9,6 +9,7 @@ import {
   seatsUsedLink,
   seatsUsedText,
 } from 'ee/usage_quotas/seats/constants';
+import Tracking from '~/tracking';
 
 export default {
   name: 'StatisticsSeatsCard',
@@ -24,6 +25,7 @@ export default {
     seatsOwedHelpText,
     addSeatsText,
   },
+  mixins: [Tracking.mixin()],
   props: {
     /**
      * Number of seats used
@@ -64,6 +66,11 @@ export default {
     },
     shouldRenderSeatsOwedBlock() {
       return this.seatsOwed !== null;
+    },
+  },
+  methods: {
+    trackClick() {
+      this.track('click_button', { label: 'add_seats_saas', property: 'usage_quotas_page' });
     },
   },
 };
@@ -124,6 +131,7 @@ export default {
       class="gl-ml-3 gl-align-self-start"
       data-testid="purchase-button"
       data-qa-selector="add_seats"
+      @click="trackClick"
     >
       {{ $options.i18n.addSeatsText }}
     </gl-button>

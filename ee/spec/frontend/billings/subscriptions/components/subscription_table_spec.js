@@ -16,6 +16,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { getSubscriptionData } from 'ee/billings/subscriptions/subscription_actions.customer.query.graphql';
+import Tracking from '~/tracking';
 
 jest.mock('~/alert');
 
@@ -277,6 +278,28 @@ describe('SubscriptionTable component', () => {
         });
       },
     );
+
+    it('tracks event', async () => {
+      jest.spyOn(Tracking, 'event');
+      createComponentWithStore({
+        state: {
+          isLoadingSubscription: false,
+          plan: {
+            code: 'silver',
+            upgradable: true,
+          },
+        },
+        apolloMock: { subscription: { canAddSeats: true, canRenew: true } },
+      });
+      await waitForPromises();
+
+      findAddSeatsButton().vm.$emit('click');
+
+      expect(Tracking.event).toHaveBeenCalledWith(undefined, 'click_button', {
+        label: 'add_seats_saas',
+        property: 'billing_page',
+      });
+    });
   });
 
   describe('Refresh Seats feature flag is on', () => {
