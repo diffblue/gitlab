@@ -3,11 +3,11 @@
 module GitlabSubscriptions
   class AddOnPurchase < ApplicationRecord
     belongs_to :add_on, foreign_key: :subscription_add_on_id, inverse_of: :add_on_purchases
-    belongs_to :namespace
-
+    belongs_to :namespace, optional: true
     has_many :assigned_users, class_name: 'GitlabSubscriptions::UserAddOnAssignment', inverse_of: :add_on_purchase
 
-    validates :add_on, :namespace, :expires_on, presence: true
+    validates :add_on, :expires_on, presence: true
+    validates :namespace, presence: true, if: :gitlab_com?
     validates :subscription_add_on_id, uniqueness: { scope: :namespace_id }
     validates :quantity,
       presence: true,
@@ -27,6 +27,12 @@ module GitlabSubscriptions
 
     def active?
       expires_on >= Date.current
+    end
+
+    private
+
+    def gitlab_com?
+      ::Gitlab::CurrentSettings.should_check_namespace_plan?
     end
   end
 end
