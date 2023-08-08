@@ -132,7 +132,7 @@ describe('ProjectList', () => {
       });
       createComponent({ props: { projects: [project] } });
 
-      expect(findTable().find('tbody tr td[data-label="Total"]').text()).toBe('200 B');
+      expect(wrapper.findByText('200 B').exists()).toBe(true);
     });
 
     it('renders a fork when the storage size and the cost factored storage size differ', () => {
@@ -142,10 +142,22 @@ describe('ProjectList', () => {
       createComponent({ props: { projects: [project] } });
 
       const text = findTable()
-        .find('tbody tr td[data-label="Total"]')
         .text()
         .replace(/[\s\n]+/g, ' ');
-      expect(text).toBe('100 B (of 200 B)');
+      expect(text).toContain('100 B (of 200 B)');
+    });
+
+    it('renders a link to the cost factors for forks documentation', () => {
+      const project = createProject({
+        statistics: { storageSize: 200, costFactoredStorageSize: 100 },
+      });
+      createComponent({ props: { projects: [project] } });
+
+      const linkToDocumentation = wrapper.findByRole('link', {
+        href: '/help/user/usage_quotas.html#view-project-fork-storage-usage',
+      });
+
+      expect(linkToDocumentation.exists()).toBe(true);
     });
   });
 
