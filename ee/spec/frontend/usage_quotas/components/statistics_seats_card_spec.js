@@ -1,6 +1,7 @@
 import { GlLink } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import StatisticsSeatsCard from 'ee/usage_quotas/seats/components/statistics_seats_card.vue';
+import Tracking from '~/tracking';
 
 describe('StatisticsSeatsCard', () => {
   let wrapper;
@@ -72,6 +73,17 @@ describe('StatisticsSeatsCard', () => {
       createComponent({ purchaseButtonLink: null });
 
       expect(findPurchaseButton().exists()).toBe(false);
+    });
+
+    it('tracks event', () => {
+      jest.spyOn(Tracking, 'event');
+      createComponent();
+      findPurchaseButton().vm.$emit('click');
+
+      expect(Tracking.event).toHaveBeenCalledWith(undefined, 'click_button', {
+        label: 'add_seats_saas',
+        property: 'usage_quotas_page',
+      });
     });
   });
 });
