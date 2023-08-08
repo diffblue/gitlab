@@ -79,6 +79,7 @@ module EE
       has_many :path_locks
       has_many :requirements, inverse_of: :project, class_name: 'RequirementsManagement::Requirement'
       has_many :dast_scanner_profiles
+      has_many :target_branch_rules, inverse_of: :project, class_name: 'Projects::TargetBranchRule'
 
       # the rationale behind vulnerabilities and vulnerability_findings can be found here:
       # https://gitlab.com/gitlab-org/gitlab/issues/10252#terminology

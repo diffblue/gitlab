@@ -23442,6 +23442,25 @@ CREATE SEQUENCE tags_id_seq
 
 ALTER SEQUENCE tags_id_seq OWNED BY tags.id;
 
+CREATE TABLE target_branch_rules (
+    id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    project_id bigint NOT NULL,
+    name text NOT NULL,
+    target_branch text NOT NULL,
+    CONSTRAINT check_3a0b12cf8c CHECK ((char_length(name) <= 255))
+);
+
+CREATE SEQUENCE target_branch_rules_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE target_branch_rules_id_seq OWNED BY target_branch_rules.id;
+
 CREATE TABLE term_agreements (
     id integer NOT NULL,
     term_id integer NOT NULL,
@@ -26142,6 +26161,8 @@ ALTER TABLE ONLY taggings ALTER COLUMN id SET DEFAULT nextval('taggings_id_seq':
 
 ALTER TABLE ONLY tags ALTER COLUMN id SET DEFAULT nextval('tags_id_seq'::regclass);
 
+ALTER TABLE ONLY target_branch_rules ALTER COLUMN id SET DEFAULT nextval('target_branch_rules_id_seq'::regclass);
+
 ALTER TABLE ONLY term_agreements ALTER COLUMN id SET DEFAULT nextval('term_agreements_id_seq'::regclass);
 
 ALTER TABLE ONLY terraform_state_versions ALTER COLUMN id SET DEFAULT nextval('terraform_state_versions_id_seq'::regclass);
@@ -28660,6 +28681,9 @@ ALTER TABLE ONLY taggings
 
 ALTER TABLE ONLY tags
     ADD CONSTRAINT tags_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY target_branch_rules
+    ADD CONSTRAINT target_branch_rules_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY term_agreements
     ADD CONSTRAINT term_agreements_pkey PRIMARY KEY (id);
@@ -33410,6 +33434,8 @@ CREATE UNIQUE INDEX index_tags_on_name ON tags USING btree (name);
 
 CREATE INDEX index_tags_on_name_trigram ON tags USING gin (name gin_trgm_ops);
 
+CREATE INDEX index_target_branch_rules_on_project_id ON target_branch_rules USING btree (project_id);
+
 CREATE INDEX index_term_agreements_on_term_id ON term_agreements USING btree (term_id);
 
 CREATE INDEX index_term_agreements_on_user_id ON term_agreements USING btree (user_id);
@@ -37966,6 +37992,9 @@ ALTER TABLE ONLY badges
 
 ALTER TABLE ONLY vulnerability_finding_signatures
     ADD CONSTRAINT fk_rails_9e0baf9dcd FOREIGN KEY (finding_id) REFERENCES vulnerability_occurrences(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY target_branch_rules
+    ADD CONSTRAINT fk_rails_9e9cf81c8e FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY timelog_categories
     ADD CONSTRAINT fk_rails_9f27b821a8 FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
