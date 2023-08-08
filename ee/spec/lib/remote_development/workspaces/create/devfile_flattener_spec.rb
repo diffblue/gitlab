@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "spec_helper"
+require_relative "../../fast_spec_helper"
 
 RSpec.describe RemoteDevelopment::Workspaces::Create::DevfileFlattener, feature_category: :remote_development do
   include_context 'with remote development shared fixtures'
@@ -15,10 +15,12 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::DevfileFlattener, feature_
 
   it "merges flattened devfile to passed value" do
     expect(subject).to eq(
-      {
-        devfile_yaml: devfile_yaml,
-        processed_devfile: expected_processed_devfile
-      }
+      Result.ok(
+        {
+          devfile_yaml: devfile_yaml,
+          processed_devfile: expected_processed_devfile
+        }
+      )
     )
   end
 
@@ -29,7 +31,27 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::DevfileFlattener, feature_
     end
 
     it "adds an empty components entry" do
-      expect(subject.fetch(:processed_devfile)).to eq(expected_processed_devfile)
+      expect(subject).to eq(
+        Result.ok(
+          {
+            devfile_yaml: devfile_yaml,
+            processed_devfile: expected_processed_devfile
+          }
+        )
+      )
+    end
+  end
+
+  context "when flatten raises a Devfile::CliError" do
+    let(:devfile_yaml) { read_devfile('example.invalid-extra-field-devfile.yaml') }
+
+    it "returns the error message from the CLI" do
+      expected_error_message =
+        "failed to populateAndParseDevfile: invalid devfile schema. errors :\n" \
+        "- (root): Additional property random is not allowed\n"
+      message = subject.unwrap_err
+      expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreateDevfileFlattenFailed)
+      expect(message.context).to eq(details: expected_error_message)
     end
   end
 end

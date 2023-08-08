@@ -170,10 +170,80 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, :
               .to eq(expected_deployment_resource_version)
 
             # test the config to apply first to get a more specific diff if it fails
+            # noinspection RubyLocalVariableNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
             provisioned_workspace_rails_info =
               workspace_rails_infos.detect { |info| info.fetch(:name) == workspace.name }
             # Since the workspace is now in Error state, the config should not be returned to the agent
             expect(provisioned_workspace_rails_info.fetch(:config_to_apply)).to be_nil
+
+            # then test everything in the infos
+            expect(workspace_rails_infos).to eq(expected_workspace_rails_infos)
+          end
+        end
+
+        context 'when only some workspaces fail in devfile flattener' do
+          let(:workspace) { create(:workspace, name: "workspace1", agent: agent, user: user) }
+          let(:invalid_devfile_yaml) { read_devfile('example.invalid-extra-field-devfile.yaml') }
+          let(:workspace2) do
+            create(:workspace, devfile: invalid_devfile_yaml, name: "workspace-failing-flatten",
+              agent: agent, user: user)
+          end
+
+          let(:workspace2_agent_info) do
+            create_workspace_agent_info(
+              workspace_id: workspace2.id,
+              workspace_name: workspace2.name,
+              workspace_namespace: workspace2.namespace,
+              agent_id: workspace2.agent.id,
+              owning_inventory: owning_inventory,
+              resource_version: deployment_resource_version_from_agent,
+              previous_actual_state: previous_actual_state,
+              current_actual_state: current_actual_state,
+              workspace_exists: workspace_exists,
+              user_name: user.name,
+              user_email: user.email
+            )
+          end
+
+          # NOTE: Reverse the order so that the failing one is processed first and ensures that the second valid
+          #       one is still processed successfully.
+          let(:workspace_agent_infos) { [workspace2_agent_info, workspace_agent_info] }
+
+          let(:expected_workspace2_rails_info) do
+            {
+              name: workspace2.name,
+              namespace: workspace2.namespace,
+              desired_state: expected_desired_state,
+              actual_state: expected_actual_state,
+              deployment_resource_version: expected_deployment_resource_version,
+              config_to_apply: nil
+            }
+          end
+
+          let(:expected_workspace_rails_infos) { [expected_workspace2_rails_info, expected_workspace_rails_info] }
+
+          it 'returns proper workspace_rails_info entries' do
+            payload, error = subject.process(
+              agent: agent,
+              workspace_agent_infos: workspace_agent_infos,
+              update_type: update_type
+            )
+            expect(error).to be_nil
+            workspace_rails_infos = payload.fetch(:workspace_rails_infos)
+            expect(workspace_rails_infos.length).to eq(2)
+
+            workspace.reload
+            workspace2.reload
+
+            expect(workspace.deployment_resource_version)
+              .to eq(expected_deployment_resource_version)
+
+            expect(workspace2.deployment_resource_version)
+              .to eq(expected_deployment_resource_version)
+
+            workspace2_rails_info =
+              workspace_rails_infos.detect { |info| info.fetch(:name) == workspace2.name }
+            expect(workspace2_rails_info.fetch(:config_to_apply)).to be_nil
 
             # then test everything in the infos
             expect(workspace_rails_infos).to eq(expected_workspace_rails_infos)

@@ -1,0 +1,14 @@
+random: field
+schemaVersion: 2.1.0
+metadata:
+  name: go
+  language: go
+components:
+- name: runtime
+  container:
+    endpoints:
+      - name: http
+        targetPort: 8080
+    image: quay.io/devfile/golang:latest
+    memoryLimit: 1024Mi
+    mountSources: true

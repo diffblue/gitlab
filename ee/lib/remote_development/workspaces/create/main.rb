@@ -20,7 +20,7 @@ module RemoteDevelopment
               .and_then(Authorizer.method(:authorize))
               .and_then(DevfileFetcher.method(:fetch))
               .and_then(PreFlattenDevfileValidator.method(:validate))
-              .map(DevfileFlattener.method(:flatten))
+              .and_then(DevfileFlattener.method(:flatten))
               .and_then(PostFlattenDevfileValidator.method(:validate))
               .map(VolumeDefiner.method(:define))
               .map(VolumeComponentInjector.method(:inject))

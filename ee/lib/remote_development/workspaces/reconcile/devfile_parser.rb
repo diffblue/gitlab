@@ -17,16 +17,28 @@ module RemoteDevelopment
         # @param [User] user
         # @return [Array<Hash>]
         def get_all(processed_devfile:, name:, namespace:, replicas:, domain_template:, labels:, annotations:, user:)
-          workspace_resources_yaml = Devfile::Parser.get_all(
-            processed_devfile,
-            name,
-            namespace,
-            YAML.dump(labels.deep_stringify_keys),
-            YAML.dump(annotations.deep_stringify_keys),
-            replicas,
-            domain_template,
-            'none'
-          )
+          begin
+            workspace_resources_yaml = Devfile::Parser.get_all(
+              processed_devfile,
+              name,
+              namespace,
+              YAML.dump(labels.deep_stringify_keys),
+              YAML.dump(annotations.deep_stringify_keys),
+              replicas,
+              domain_template,
+              'none'
+            )
+          rescue Devfile::CliError => e
+            logger.warn(
+              message: 'Error parsing devfile with Devfile::Parser.get_all',
+              error_type: 'reconcile_devfile_parser_error',
+              workspace_name: name,
+              workspace_namespace: namespace,
+              devfile_parser_error: e.message
+            )
+            return []
+          end
+
           workspace_resources = YAML.load_stream(workspace_resources_yaml)
           workspace_resources = set_security_context(workspace_resources: workspace_resources)
           workspace_resources = set_git_configuration(workspace_resources: workspace_resources, user: user)
@@ -37,6 +49,11 @@ module RemoteDevelopment
         end
 
         private
+
+        # @return [RemoteDevelopment::Logger]
+        def logger
+          @logger ||= RemoteDevelopment::Logger.build
+        end
 
         # Devfile library allows specifying the security context of pods/containers as mentioned in
         # https://github.com/devfile/api/issues/920 through `pod-overrides` and `container-overrides` attributes.
