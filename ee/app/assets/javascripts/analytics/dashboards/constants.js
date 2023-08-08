@@ -17,6 +17,28 @@ export const UNITS = {
   PERCENT: 'PERCENT',
 };
 
+export const SUPPORTED_DORA_METRICS = [
+  DORA_METRICS.DEPLOYMENT_FREQUENCY,
+  DORA_METRICS.LEAD_TIME_FOR_CHANGES,
+  DORA_METRICS.TIME_TO_RESTORE_SERVICE,
+  DORA_METRICS.CHANGE_FAILURE_RATE,
+];
+
+export const SUPPORTED_FLOW_METRICS = [
+  FLOW_METRICS.LEAD_TIME,
+  FLOW_METRICS.CYCLE_TIME,
+  FLOW_METRICS.ISSUES,
+  FLOW_METRICS.ISSUES_COMPLETED,
+  FLOW_METRICS.DEPLOYS,
+];
+
+export const SUPPORTED_MERGE_REQUEST_METRICS = [MERGE_REQUEST_METRICS.THROUGHPUT];
+
+export const SUPPORTED_VULNERABILITY_METRICS = [
+  VULNERABILITY_METRICS.CRITICAL,
+  VULNERABILITY_METRICS.HIGH,
+];
+
 export const TABLE_METRICS = {
   [DORA_METRICS.DEPLOYMENT_FREQUENCY]: {
     label: s__('DORA4Metrics|Deployment Frequency'),
@@ -103,7 +125,7 @@ export const DASHBOARD_DESCRIPTION_GROUP = s__('DORA4Metrics|Metrics comparison 
 export const DASHBOARD_DESCRIPTION_PROJECT = s__(
   'DORA4Metrics|Metrics comparison for %{name} project',
 );
-export const DASHBOARD_LOADING_FAILURE = __('Failed to load');
+export const DASHBOARD_LOADING_FAILURE = s__('DORA4Metrics|Some metric comparisons failed to load');
 export const DASHBOARD_NAMESPACE_LOAD_ERROR = s__(
   'DORA4Metrics|Failed to load comparison chart for Namespace: %{fullPath}',
 );
@@ -120,7 +142,7 @@ export const VALUE_STREAMS_DASHBOARD_CONFIG = {
 
 export const CHART_GRADIENT = ['#499767', '#5252B5'];
 export const CHART_GRADIENT_INVERTED = [...CHART_GRADIENT].reverse();
-export const CHART_LOADING_FAILURE = s__('DORA4Metrics|Failed to load charts');
+export const CHART_LOADING_FAILURE = s__('DORA4Metrics|Some metric charts failed to load');
 
 export const CHART_TOOLTIP_UNITS = {
   [UNITS.COUNT]: undefined,

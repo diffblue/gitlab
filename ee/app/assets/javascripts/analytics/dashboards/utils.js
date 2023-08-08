@@ -156,6 +156,17 @@ const buildMetricComparisonTableRow = ({ identifier, units, timePeriods, valueLi
   }, {});
 
 /**
+ * Returns whether or not the `timePeriods` dataset contains any data pertaining
+ * to the given metric identifier.
+ *
+ * @param {String} identifier - ID of the metric
+ * @param {Array} timePeriods - Array of the DORA metrics for different time periods
+ * @returns {Boolean} true if the dataset contains the metric, false otherwise
+ */
+const isMetricInTimePeriods = (identifier, timePeriods) =>
+  timePeriods.some((timePeriod) => timePeriod[identifier] !== undefined);
+
+/**
  * Takes N time periods of DORA metrics and sorts the data into an
  * object of metric comparisons, per metric.
  *
@@ -163,18 +174,18 @@ const buildMetricComparisonTableRow = ({ identifier, units, timePeriods, valueLi
  * @returns {Object} object containing a comparisons of values for each metric
  */
 export const generateMetricComparisons = (timePeriods) =>
-  Object.entries(TABLE_METRICS).reduce(
-    (acc, [identifier, { units, valueLimit }]) =>
-      Object.assign(acc, {
-        [identifier]: buildMetricComparisonTableRow({
-          identifier,
-          units,
-          timePeriods,
-          valueLimit,
-        }),
+  Object.entries(TABLE_METRICS).reduce((acc, [identifier, { units, valueLimit }]) => {
+    if (!isMetricInTimePeriods(identifier, timePeriods)) return acc;
+
+    return Object.assign(acc, {
+      [identifier]: buildMetricComparisonTableRow({
+        identifier,
+        units,
+        timePeriods,
+        valueLimit,
       }),
-    {},
-  );
+    });
+  }, {});
 
 /**
  * @param {Number|'-'|null|undefined} value
@@ -198,21 +209,21 @@ const sanitizeSparklineData = (value) => {
  * @returns {Object} object containing a timeseries of values for each metric
  */
 export const generateSparklineCharts = (timePeriods) =>
-  Object.entries(TABLE_METRICS).reduce(
-    (acc, [identifier, { units }]) =>
-      Object.assign(acc, {
-        [identifier]: {
-          chart: {
-            tooltipLabel: CHART_TOOLTIP_UNITS[units],
-            data: timePeriods.map((timePeriod) => [
-              `${formatDate(timePeriod.start, 'mmm d')} - ${formatDate(timePeriod.end, 'mmm d')}`,
-              sanitizeSparklineData(timePeriod[identifier]?.value),
-            ]),
-          },
+  Object.entries(TABLE_METRICS).reduce((acc, [identifier, { units }]) => {
+    if (!isMetricInTimePeriods(identifier, timePeriods)) return acc;
+
+    return Object.assign(acc, {
+      [identifier]: {
+        chart: {
+          tooltipLabel: CHART_TOOLTIP_UNITS[units],
+          data: timePeriods.map((timePeriod) => [
+            `${formatDate(timePeriod.start, 'mmm d')} - ${formatDate(timePeriod.end, 'mmm d')}`,
+            sanitizeSparklineData(timePeriod[identifier]?.value),
+          ]),
         },
-      }),
-    {},
-  );
+      },
+    });
+  }, {});
 
 /**
  * Generate the dashboard time periods

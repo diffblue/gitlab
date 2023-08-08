@@ -1,10 +1,12 @@
-import { shallowMount } from '@vue/test-utils';
+import * as Sentry from '@sentry/browser';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { createAlert } from '~/alert';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import {
-  DASHBOARD_LOADING_FAILURE,
-  CHART_LOADING_FAILURE,
+  SUPPORTED_DORA_METRICS,
+  SUPPORTED_FLOW_METRICS,
+  SUPPORTED_MERGE_REQUEST_METRICS,
+  SUPPORTED_VULNERABILITY_METRICS,
 } from 'ee/analytics/dashboards/constants';
 import { generateSkeletonTableData } from 'ee/analytics/dashboards/utils';
 import ComparisonChart from 'ee/analytics/dashboards/components/comparison_chart.vue';
@@ -39,7 +41,6 @@ import {
   mockDoraMetricsResponseData,
   mockFlowMetricsResponseData,
   mockMergeRequestsResponseData,
-  mockExcludeMetrics,
 } from '../mock_data';
 
 const mockTypePolicy = {
@@ -49,6 +50,7 @@ const mockProps = { requestPath: 'exec-group', isProject: false };
 const groupPath = 'exec-group';
 const allTimePeriods = [...MOCK_TABLE_TIME_PERIODS, ...MOCK_CHART_TIME_PERIODS];
 
+jest.mock('@sentry/browser');
 jest.mock('~/alert');
 jest.mock('~/analytics/shared/utils', () => ({
   toYmd: jest.requireActual('~/analytics/shared/utils').toYmd,
@@ -105,7 +107,7 @@ describe('Comparison chart', () => {
   };
 
   const createWrapper = async ({ props = {}, apolloProvider = null } = {}) => {
-    wrapper = shallowMount(ComparisonChart, {
+    wrapper = shallowMountExtended(ComparisonChart, {
       apolloProvider,
       propsData: {
         ...mockProps,
@@ -117,6 +119,9 @@ describe('Comparison chart', () => {
   };
 
   const findComparisonTable = () => wrapper.findComponent(ComparisonTable);
+  const findTableErrorAlert = () => wrapper.findComponentByTestId('table-error-alert');
+  const findChartErrorAlert = () => wrapper.findComponentByTestId('chart-error-alert');
+
   const getTableData = () => findComparisonTable().props('tableData');
   const getTableDataForMetric = (identifier) =>
     getTableData().filter(({ metric }) => metric.identifier === identifier)[0];
@@ -159,7 +164,6 @@ describe('Comparison chart', () => {
     flowMetricsRequestHandler.mockClear();
     doraMetricsRequestHandler.mockClear();
     mergeRequestsRequestHandler.mockClear();
-    createAlert.mockClear();
   });
 
   describe('loading table and chart data', () => {
@@ -240,19 +244,90 @@ describe('Comparison chart', () => {
   });
 
   describe('excludeMetrics set', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       setGraphqlQueryHandlerResponses();
       mockApolloProvider = createMockApolloProvider();
-
-      await createWrapper({
-        props: { excludeMetrics: mockExcludeMetrics },
-        apolloProvider: mockApolloProvider,
-      });
     });
 
-    it('does not render DORA metrics that were in excludeMetrics', () => {
+    it('does not render DORA metrics that were in excludeMetrics', async () => {
+      const excludeMetrics = SUPPORTED_DORA_METRICS;
+      await createWrapper({
+        props: { excludeMetrics },
+        apolloProvider: mockApolloProvider,
+      });
+
       const metricNames = getTableData().map(({ metric }) => metric.identifier);
-      expect(metricNames).not.toEqual(expect.arrayContaining(mockExcludeMetrics));
+      expect(metricNames).not.toEqual(expect.arrayContaining(excludeMetrics));
+    });
+
+    it('does not request DORA metrics if they are all excluded', async () => {
+      const excludeMetrics = SUPPORTED_DORA_METRICS;
+      await createWrapper({
+        props: { excludeMetrics },
+        apolloProvider: mockApolloProvider,
+      });
+
+      expect(doraMetricsRequestHandler).not.toHaveBeenCalled();
+    });
+
+    it('requests DORA metrics if at least one is included', async () => {
+      const excludeMetrics = SUPPORTED_DORA_METRICS.splice(1);
+      await createWrapper({
+        props: { excludeMetrics },
+        apolloProvider: mockApolloProvider,
+      });
+
+      expect(doraMetricsRequestHandler).toHaveBeenCalled();
+    });
+
+    it('does not request flow metrics if they are all excluded', async () => {
+      const excludeMetrics = SUPPORTED_FLOW_METRICS;
+      await createWrapper({
+        props: { excludeMetrics },
+        apolloProvider: mockApolloProvider,
+      });
+
+      expect(flowMetricsRequestHandler).not.toHaveBeenCalled();
+    });
+
+    it('requests flow metrics if at least one is included', async () => {
+      const excludeMetrics = SUPPORTED_FLOW_METRICS.splice(1);
+      await createWrapper({
+        props: { excludeMetrics },
+        apolloProvider: mockApolloProvider,
+      });
+
+      expect(flowMetricsRequestHandler).toHaveBeenCalled();
+    });
+
+    it('does not request vulnerability metrics if they are all excluded', async () => {
+      const excludeMetrics = SUPPORTED_VULNERABILITY_METRICS;
+      await createWrapper({
+        props: { excludeMetrics },
+        apolloProvider: mockApolloProvider,
+      });
+
+      expect(vulnerabilityRequestHandler).not.toHaveBeenCalled();
+    });
+
+    it('requests vulnerability metrics if at least one is included', async () => {
+      const excludeMetrics = SUPPORTED_VULNERABILITY_METRICS.splice(1);
+      await createWrapper({
+        props: { excludeMetrics },
+        apolloProvider: mockApolloProvider,
+      });
+
+      expect(vulnerabilityRequestHandler).toHaveBeenCalled();
+    });
+
+    it('does not request MR metrics if throughput was excluded', async () => {
+      const excludeMetrics = SUPPORTED_MERGE_REQUEST_METRICS;
+      await createWrapper({
+        props: { excludeMetrics },
+        apolloProvider: mockApolloProvider,
+      });
+
+      expect(mergeRequestsRequestHandler).not.toHaveBeenCalled();
     });
   });
 
@@ -267,11 +342,9 @@ describe('Comparison chart', () => {
     });
 
     it('will show an alert if the table data failed to load', () => {
-      expect(createAlert).toHaveBeenCalledWith({
-        message: DASHBOARD_LOADING_FAILURE,
-        captureError: true,
-        error: expect.anything(),
-      });
+      expect(Sentry.captureException).toHaveBeenCalled();
+      expect(findTableErrorAlert().exists()).toBe(true);
+      expect(findTableErrorAlert().text()).toBe('Deployment Frequency');
     });
   });
 
@@ -298,11 +371,9 @@ describe('Comparison chart', () => {
     });
 
     it('will show an alert if the chart data failed to load', () => {
-      expect(createAlert).toHaveBeenCalledWith({
-        message: CHART_LOADING_FAILURE,
-        captureError: true,
-        error: expect.anything(),
-      });
+      expect(Sentry.captureException).toHaveBeenCalled();
+      expect(findChartErrorAlert().exists()).toBe(true);
+      expect(findChartErrorAlert().text()).toBe('Deployment Frequency');
     });
   });
 

@@ -115,6 +115,12 @@ describe('Analytics Dashboards api', () => {
       expect(extractGraphqlDoraData(mockDoraMetricsResponseData.metrics)).toEqual(doraResponse);
     });
 
+    it('replaces null values with 0.0', () => {
+      expect(extractGraphqlDoraData([{ change_failure_rate: null }])).toEqual({
+        change_failure_rate: { identifier: 'change_failure_rate', value: '0.0' },
+      });
+    });
+
     it('returns an empty object given an empty array', () => {
       expect(extractGraphqlDoraData([])).toEqual({});
     });
@@ -140,19 +146,15 @@ describe('Analytics Dashboards api', () => {
   });
 
   describe('extractGraphqlMergeRequestsData', () => {
-    const mergeRequestsResponse = {
-      merge_request_throughput: { identifier: 'merge_request_throughput', value: 10 },
-    };
-
     it('returns each merge request metric', () => {
       const keys = Object.keys(extractGraphqlMergeRequestsData(mockMergeRequestsResponseData));
       expect(keys).toEqual(['merge_request_throughput']);
     });
 
     it('replaces null values with `-`', () => {
-      expect(extractGraphqlMergeRequestsData(mockMergeRequestsResponseData)).toEqual(
-        mergeRequestsResponse,
-      );
+      expect(extractGraphqlMergeRequestsData({ merge_request_throughput: null })).toEqual({
+        merge_request_throughput: { identifier: 'merge_request_throughput', value: '-' },
+      });
     });
   });
 
