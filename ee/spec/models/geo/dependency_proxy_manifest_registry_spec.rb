@@ -10,5 +10,4 @@ RSpec.describe Geo::DependencyProxyManifestRegistry, :geo, type: :model, feature
   end
 
   include_examples 'a Geo framework registry'
-  include_examples 'a Geo verifiable registry'
 end

@@ -10,5 +10,4 @@ RSpec.describe Geo::ProjectWikiRepositoryRegistry, :geo, type: :model, feature_c
   end
 
   include_examples 'a Geo framework registry'
-  include_examples 'a Geo verifiable registry'
 end

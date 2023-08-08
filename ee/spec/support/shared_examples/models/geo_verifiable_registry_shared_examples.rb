@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# TODO: Include these examples in 'a Geo framework registry' when *all*
-# registries are verifiable https://gitlab.com/gitlab-org/gitlab/-/issues/280768
 RSpec.shared_examples 'a Geo verifiable registry' do
   let(:registry_class_factory) { described_class.underscore.tr('/', '_').to_sym }
 
