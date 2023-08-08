@@ -25,6 +25,11 @@ module Types
             type: GraphQL::Types::String,
             null: false,
             description: 'Slug of the visualization.'
+
+      field :errors,
+            type: [GraphQL::Types::String],
+            null: true,
+            description: 'Validation errors in the visualization.'
     end
   end
 end

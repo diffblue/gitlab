@@ -84,4 +84,36 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
       expect { dashboard.panels.first.visualization }.to raise_error(Gitlab::PathTraversal::PathTraversalAttackError)
     end
   end
+
+  context 'when visualization definition is invalid' do
+    let_it_be(:project) do
+      create(:project, :with_product_analytics_invalid_custom_visualization,
+        project_setting: build(:project_setting, product_analytics_instrumentation_key: 'test')
+      )
+    end
+
+    subject { described_class.for_project(project) }
+
+    it 'captures the error' do
+      vis = (subject.select { |v| v.slug == 'example_invalid_custom_visualization' }).first
+      expected = ["property '/type' is not one of: [\"LineChart\", \"ColumnChart\", \"DataTable\", \"SingleStat\"]"]
+      expect(vis&.errors).to match_array(expected)
+    end
+  end
+
+  context 'when the visualization has syntax errors' do
+    let_it_be(:invalid_yaml) do
+      <<-YAML
+---
+invalid yaml here not good
+other: okay1111
+      YAML
+    end
+
+    subject { described_class.new(config: invalid_yaml, slug: 'test') }
+
+    it 'captures the syntax error' do
+      expect(subject.errors).to match_array(['root is not of type: object'])
+    end
+  end
 end

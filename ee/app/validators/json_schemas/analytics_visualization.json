@@ -2,12 +2,12 @@
   "$schema": "http://json-schema.org/draft-06/schema#",
   "$ref": "#/definitions/AnalyticsVisualization",
   "definitions": {
-    "Welcome7": {
+    "AnalyticsVisualization": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "version": {
-          "const": "1"
+          "const": 1
         },
         "type": {
           "enum": [
@@ -37,7 +37,7 @@
       "additionalProperties": false,
       "properties": {
         "type": {
-          "const": "Cube"
+          "const": "cube_analytics"
         },
         "query": {
           "type": "object"
@@ -64,12 +64,11 @@
           "items": {
             "$ref": "#/definitions/Link"
           }
+        },
+        "decimalPlaces": {
+          "type": "integer"
         }
       },
-      "required": [
-        "xAxis",
-        "yAxis"
-      ],
       "title": "Options"
     },
     "XAxis": {

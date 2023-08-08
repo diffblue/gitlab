@@ -1,0 +1,14 @@
+---
+version: 1
+type: DoesNotExistType
+data:
+  type: cube_analytics
+  query:
+    measures:
+      - SnowplowTrackedEvents.uniqueUsersCount
+    limit: 100
+    timezone: UTC
+    filters: []
+    dimensions: []
+    timeDimensions: []
+options: {}

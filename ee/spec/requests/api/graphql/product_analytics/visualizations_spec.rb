@@ -25,6 +25,7 @@ RSpec.describe 'Query.project(id).dashboards.panels(id).visualization', feature_
                     type
                     options
                     data
+                    errors
                   }
                 }
               }
@@ -61,6 +62,20 @@ RSpec.describe 'Query.project(id).dashboards.panels(id).visualization', feature_
         get_graphql(query, current_user: user)
 
         expect(graphql_errors).to include(a_hash_including('message' => 'Visualization does not exist'))
+      end
+    end
+
+    context 'when the visualization has validation errors' do
+      let_it_be(:project) { create(:project, :with_product_analytics_invalid_custom_visualization) }
+      let_it_be(:user) { create(:user).tap { |u| project.add_developer(u) } }
+
+      it 'returns the visualization with a validation error' do
+        get_graphql(query, current_user: user)
+
+        expect(
+          graphql_data_at(:project, :product_analytics_dashboards, :nodes, 0,
+            :panels, :nodes, 0, :visualization, :errors, 0))
+          .to eq("property '/type' is not one of: [\"LineChart\", \"ColumnChart\", \"DataTable\", \"SingleStat\"]")
       end
     end
   end

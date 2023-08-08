@@ -1,0 +1,17 @@
+---
+version: '1'
+title: Dashboard Example With Invalid Visualization
+description: This visualization is not valid
+panels:
+  - title: Invalid Visualization Panel
+    gridAttributes:
+      yPos: 4
+      xPos: 1
+      width: 12
+      height: 2
+    visualization: example_invalid_custom_visualization
+    queryOverrides:
+      timeDimensions:
+        dateRange:
+          - '2016-01-01'
+          - '2016-01-30'

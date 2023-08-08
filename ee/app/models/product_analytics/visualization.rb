@@ -2,9 +2,10 @@
 
 module ProductAnalytics
   class Visualization
-    attr_reader :type, :project, :data, :options, :config, :slug
+    attr_reader :type, :project, :data, :options, :config, :slug, :errors
 
     VISUALIZATIONS_ROOT_LOCATION = '.gitlab/analytics/dashboards/visualizations'
+    SCHEMA_PATH = 'ee/app/validators/json_schemas/analytics_visualization.json'
 
     def self.for_project(project)
       config_project = project.analytics_dashboards_configuration_project || project
@@ -35,11 +36,22 @@ module ProductAnalytics
     end
 
     def initialize(config:, slug:)
-      @config = YAML.safe_load(config)
-      @type = @config['type']
-      @options = @config['options']
-      @data = @config['data']
+      begin
+        @config = YAML.safe_load(config)
+        @type = @config['type']
+        @options = @config['options']
+        @data = @config['data']
+      rescue Psych::Exception => e
+        @errors = [e.message]
+      end
       @slug = slug.parameterize.underscore
+      validate
+    end
+
+    def validate
+      validator = JSONSchemer.schema(Pathname.new(SCHEMA_PATH))
+      validator_errors = validator.validate(@config)
+      @errors = validator_errors.map { |e| JSONSchemer::Errors.pretty(e) } if validator_errors.any?
     end
 
     def self.visualization_config_path(data)
