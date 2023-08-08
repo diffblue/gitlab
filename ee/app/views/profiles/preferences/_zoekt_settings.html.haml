@@ -13,3 +13,6 @@
   .form-group
     = form.gitlab_ui_checkbox_component :enabled_zoekt,
       s_('Preferences|Enable Zoekt code search')
+
+  %p
+    = link_button_to _('Provide feedback'), "https://gitlab.com/gitlab-org/gitlab/-/issues/420920", target: '_blank'
