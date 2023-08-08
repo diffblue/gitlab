@@ -67,6 +67,18 @@
         },
         "decimalPlaces": {
           "type": "integer"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "metaText": {
+          "type": "string"
+        },
+        "metaIcon": {
+          "type": "string"
+        },
+        "titleIcon": {
+          "type": "string"
         }
       },
       "title": "Options"
@@ -80,6 +92,12 @@
         },
         "type": {
           "type": "string"
+        },
+        "min": {
+          "type": "integer"
+        },
+        "max": {
+          "type": "integer"
         }
       },
       "required": [
@@ -99,6 +117,9 @@
           "type": "string"
         },
         "min": {
+          "type": "integer"
+        },
+        "max": {
           "type": "integer"
         }
       },
