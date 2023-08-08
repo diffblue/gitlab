@@ -33,17 +33,17 @@ module QA
             end
 
             def has_license?(name)
-              has_element?(:report_item_row, text: name)
+              has_element?('report-item-row', text: name)
             end
 
             def has_approved_license?(name)
-              within_element(:report_item_row, text: name) do
+              within_element('report-item-row', text: name) do
                 has_element?(:status_success_icon, wait: 1)
               end
             end
 
             def has_denied_license?(name)
-              within_element(:report_item_row, text: name) do
+              within_element('report-item-row', text: name) do
                 has_element?(:status_failed_icon, wait: 1)
               end
             end
