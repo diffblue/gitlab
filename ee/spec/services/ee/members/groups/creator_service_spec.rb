@@ -9,7 +9,6 @@ RSpec.describe Members::Groups::CreatorService, feature_category: :groups_and_pr
       let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan) }
 
       before do
-        stub_ee_application_setting(dashboard_limit_new_namespace_creation_enforcement_date: 2.days.ago)
         stub_ee_application_setting(dashboard_limit: 1)
         stub_ee_application_setting(dashboard_limit_enabled: true)
         create(:group_member, source: group)

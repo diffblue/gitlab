@@ -78,7 +78,6 @@ RSpec.describe Groups::TransferService, '#execute', feature_category: :groups_an
 
     context 'with free user cap enforced', :saas do
       before do
-        stub_ee_application_setting(dashboard_limit_new_namespace_creation_enforcement_date: 2.days.ago)
         stub_ee_application_setting(dashboard_limit: 1)
       end
 

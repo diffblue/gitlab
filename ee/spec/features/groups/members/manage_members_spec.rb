@@ -404,7 +404,6 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js, feature_category
     context 'when close to free user limit on new top-level group' do
       it 'shows the alert notification in the modal' do
         stub_ee_application_setting(dashboard_limit: 4)
-        stub_ee_application_setting(dashboard_limit_new_namespace_creation_enforcement_date: 2.days.ago)
 
         sign_in(user)
 

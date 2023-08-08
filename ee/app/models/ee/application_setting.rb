@@ -147,13 +147,8 @@ module EE
         exclusion: { in: [true], message: -> (object, data) { _("can't be enabled when delayed group deletion is disabled") } },
         if: ->(setting) { !setting.delayed_group_deletion? }
 
-      with_options(presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }) do
-        validates :dashboard_limit
-        validates :dashboard_enforcement_limit
-      end
-
-      validates :dashboard_limit_enabled,
-        inclusion: { in: [true, false], message: 'must be a boolean value' }
+      validates :dashboard_limit, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+      validates :dashboard_limit_enabled, inclusion: { in: [true, false], message: 'must be a boolean value' }
 
       validates :cube_api_base_url,
         length: { maximum: 512 },
@@ -230,8 +225,6 @@ module EE
           custom_project_templates_group_id: nil,
           dashboard_limit_enabled: false,
           dashboard_limit: 0,
-          dashboard_enforcement_limit: 0,
-          dashboard_limit_new_namespace_creation_enforcement_date: nil,
           default_project_deletion_protection: false,
           deletion_adjourned_period: DEFAULT_NUMBER_OF_DAYS_BEFORE_REMOVAL,
           disable_personal_access_tokens: false,
