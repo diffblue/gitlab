@@ -96,6 +96,36 @@ RSpec.describe IssuablesHelper, feature_category: :team_planning do
           )
         end
       end
+
+      describe '#promotedToEpicUrl' do
+        let(:issue) { create(:issue, author: user) }
+        let(:epic) { create(:epic, author: user) }
+
+        before do
+          assign(:project, issue.project)
+        end
+
+        context 'when issue is promoted' do
+          before do
+            allow(issue).to receive(:promoted?).and_return(true)
+            allow(issue).to receive(:promoted_to_epic).and_return(epic)
+          end
+
+          it 'returns url' do
+            expect(helper.issuable_initial_data(issue)[:promotedToEpicUrl]).to be_truthy
+          end
+        end
+
+        context 'when issue is not promoted' do
+          before do
+            allow(issue).to receive(:promoted?).and_return(false)
+          end
+
+          it 'returns nil' do
+            expect(helper.issuable_initial_data(issue)[:promotedToEpicUrl]).to be_nil
+          end
+        end
+      end
     end
 
     context 'for an incident' do

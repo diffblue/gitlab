@@ -4,27 +4,22 @@ import { EVENT_ISSUABLE_VUE_APP_CHANGE } from '~/issuable/constants';
 import { STATUS_CLOSED, STATUS_OPEN, TYPE_EPIC, WORKSPACE_GROUP } from '~/issues/constants';
 import IssuableHeader from '~/vue_shared/issuable/show/components/issuable_header.vue';
 import epicUtils from '../utils/epic_utils';
-import EpicHeaderActions from './epic_header_actions.vue';
 
 export default {
   TYPE_EPIC,
   WORKSPACE_GROUP,
   components: {
-    EpicHeaderActions,
     IssuableHeader,
+  },
+  props: {
+    formattedAuthor: {
+      type: Object,
+      required: true,
+    },
   },
   computed: {
     ...mapState(['sidebarCollapsed', 'author', 'created', 'confidential', 'state']),
     ...mapGetters(['isEpicOpen']),
-    formattedAuthor() {
-      const { src, url, username } = this.author;
-      return {
-        ...this.author,
-        avatarUrl: src,
-        username: username.startsWith('@') ? username.substring(1) : username,
-        webUrl: url,
-      };
-    },
     statusIcon() {
       return this.isEpicOpen ? 'epic' : 'epic-closed';
     },
@@ -54,6 +49,7 @@ export default {
 
 <template>
   <issuable-header
+    class="gl-p-0 gl-mb-6 gl-mt-2 gl-sm-mt-0"
     :author="formattedAuthor"
     :confidential="confidential"
     :created-at="created"
@@ -62,9 +58,5 @@ export default {
     :status-icon="statusIcon"
     :workspace-type="$options.WORKSPACE_GROUP"
     @toggle="toggleSidebar({ sidebarCollapsed })"
-  >
-    <template #header-actions>
-      <epic-header-actions />
-    </template>
-  </issuable-header>
+  />
 </template>

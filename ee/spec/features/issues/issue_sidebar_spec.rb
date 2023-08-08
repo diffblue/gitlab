@@ -125,9 +125,7 @@ RSpec.describe 'Issue Sidebar', feature_category: :team_planning do
 
       context 'when user closes an issue' do
         it 'disables the edit button' do
-          page.within('.detail-page-header') do
-            click_button 'Close issue'
-          end
+          click_button 'Close issue', match: :first
 
           page.within('.health-status') do
             expect(page).not_to have_button('Edit')

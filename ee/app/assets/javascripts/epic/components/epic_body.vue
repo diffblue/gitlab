@@ -1,19 +1,23 @@
 <script>
 import { mapState } from 'vuex';
-
 import IssuableBody from '~/issues/show/components/app.vue';
 import { PathIdSeparator } from '~/related_issues/constants';
-
+import EpicHeader from './epic_header.vue';
+import EpicHeaderActions from './epic_header_actions.vue';
 import EpicSidebar from './epic_sidebar.vue';
 
 export default {
   PathIdSeparator,
   components: {
     IssuableBody,
+    EpicHeader,
+    EpicHeaderActions,
     EpicSidebar,
   },
   computed: {
     ...mapState([
+      'author',
+      'created',
       'endpoint',
       'updateEndpoint',
       'groupPath',
@@ -29,6 +33,14 @@ export default {
       'state',
       'confidential',
     ]),
+    formattedAuthor() {
+      const { url, username } = this.author;
+      return {
+        ...this.author,
+        username: username.startsWith('@') ? username.substring(1) : username,
+        webUrl: url,
+      };
+    },
   },
 };
 </script>
@@ -36,9 +48,11 @@ export default {
 <template>
   <div>
     <div
-      class="issuable-details detail-page-description content-block gl-pt-4 gl-pb-0 gl-border-none"
+      class="issuable-details detail-page-description content-block gl-pt-3 gl-pb-0 gl-border-none"
     >
       <issuable-body
+        :author="formattedAuthor"
+        :created-at="created"
         :endpoint="endpoint"
         :update-endpoint="updateEndpoint"
         :project-path="groupPath"
@@ -59,7 +73,14 @@ export default {
         project-namespace
         issuable-ref
         issuable-type="epic"
-      />
+      >
+        <template #actions>
+          <epic-header-actions />
+        </template>
+        <template #header>
+          <epic-header :formatted-author="formattedAuthor" />
+        </template>
+      </issuable-body>
     </div>
     <epic-sidebar />
   </div>

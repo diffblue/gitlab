@@ -38,12 +38,19 @@ module EE
     def issue_only_initial_data(issuable)
       return {} unless issuable.is_a?(Issue)
 
-      super.merge(
+      data = super.merge(
         publishedIncidentUrl: ::Gitlab::StatusPage::Storage.details_url(issuable),
         slaFeatureAvailable: issuable.sla_available?.to_s,
         uploadMetricsFeatureAvailable: issuable.metric_images_available?.to_s,
         projectId: issuable.project_id
       )
+
+      data.tap do |d|
+        if issuable.promoted? && can?(current_user, :read_epic, issuable.promoted_to_epic)
+          d[:promotedToEpicUrl] =
+            url_for([issuable.promoted_to_epic.group, issuable.promoted_to_epic, { only_path: false }])
+        end
+      end
     end
   end
 end

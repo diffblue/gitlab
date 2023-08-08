@@ -13898,6 +13898,9 @@ msgstr ""
 msgid "Created %{timeAgo} by %{author}"
 msgstr ""
 
+msgid "Created %{timeAgo} by %{email} via %{author}"
+msgstr ""
+
 msgid "Created %{time_ago}"
 msgstr ""
 
@@ -55263,6 +55266,9 @@ msgid "created %{timeAgo} by %{author}"
 msgstr ""
 
 msgid "created %{timeAgo} by %{author} in %{project_link}"
+msgstr ""
+
+msgid "created %{timeAgo} by %{email} via %{author}"
 msgstr ""
 
 msgid "created by"
