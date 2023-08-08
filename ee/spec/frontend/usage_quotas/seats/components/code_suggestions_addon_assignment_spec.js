@@ -18,7 +18,16 @@ describe('CodeSuggestionsAddonAssignment', () => {
   const globalUserId = `gid://gitlab/User/${userId}`;
   const addOnPurchaseId = 'gid://gitlab/GitlabSubscriptions::AddOnPurchase/2';
   const codeSuggestionsAddon = { name: ADD_ON_CODE_SUGGESTIONS };
-  const addOnAssignmentSuccess = { clientMutationId: '1', errors: [] };
+  const addOnAssignmentSuccess = {
+    clientMutationId: '1',
+    errors: [],
+    addOnPurchase: {
+      id: addOnPurchaseId,
+      name: ADD_ON_CODE_SUGGESTIONS,
+      purchasedQuantity: 3,
+      assignedQuantity: 2,
+    },
+  };
 
   const assignAddOnHandler = jest.fn().mockResolvedValue({
     data: { userAddOnAssignmentCreate: addOnAssignmentSuccess },
