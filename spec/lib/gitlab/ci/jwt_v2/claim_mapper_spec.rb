@@ -11,34 +11,29 @@ RSpec.describe Gitlab::Ci::JwtV2::ClaimMapper, feature_category: :continuous_int
 
   subject(:mapper) { described_class.new(project_config, pipeline) }
 
-  it 'returns nil for attributes when source is not implemented' do
-    expect(mapper.ci_config_ref_uri).to be_nil
-    expect(mapper.ci_config_sha).to be_nil
-    expect(mapper.to_h).to eq({
-      ci_config_ref_uri: nil,
-      ci_config_sha: nil
-    })
-  end
+  describe '#to_h' do
+    it 'returns an empty hash when source is not implemented' do
+      expect(mapper.to_h).to eq({})
+    end
 
-  context 'when mapper for source is implemented' do
-    where(:source) { described_class::MAPPER_FOR_CONFIG_SOURCE.keys }
-    let(:ci_config_ref_uri) { 'ci_config_ref_uri' }
-    let(:ci_config_sha) { 'ci_config_sha' }
+    context 'when mapper for source is implemented' do
+      where(:source) { described_class::MAPPER_FOR_CONFIG_SOURCE.keys }
+      let(:result) do
+        {
+          ci_config_ref_uri: 'ci_config_ref_uri',
+          ci_config_sha: 'ci_config_sha'
+        }
+      end
 
-    with_them do
-      it 'uses mapper' do
-        mapper_class = described_class::MAPPER_FOR_CONFIG_SOURCE[source]
-        expect_next_instance_of(mapper_class, project_config, pipeline) do |instance|
-          expect(instance).to receive(:ci_config_ref_uri).and_return(ci_config_ref_uri).twice
-          expect(instance).to receive(:ci_config_sha).and_return(ci_config_sha).twice
+      with_them do
+        it 'uses mapper' do
+          mapper_class = described_class::MAPPER_FOR_CONFIG_SOURCE[source]
+          expect_next_instance_of(mapper_class, project_config, pipeline) do |instance|
+            expect(instance).to receive(:to_h).and_return(result)
+          end
+
+          expect(mapper.to_h).to eq(result)
         end
-
-        expect(mapper.ci_config_ref_uri).to eq(ci_config_ref_uri)
-        expect(mapper.ci_config_sha).to eq(ci_config_sha)
-        expect(mapper.to_h).to eq({
-          ci_config_ref_uri: ci_config_ref_uri,
-          ci_config_sha: ci_config_sha
-        })
       end
     end
   end

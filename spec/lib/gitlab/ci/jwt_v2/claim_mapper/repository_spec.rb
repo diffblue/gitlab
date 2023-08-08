@@ -11,20 +11,24 @@ RSpec.describe Gitlab::Ci::JwtV2::ClaimMapper::Repository, feature_category: :co
 
   subject(:mapper) { described_class.new(project_config, pipeline) }
 
-  it 'returns expected claims' do
-    expect(mapper.ci_config_ref_uri).to eq(
-      'gitlab.com/gitlab-org/gitlab//.gitlab-ci.yml@refs/heads/test-branch-for-claim-mapper')
-    expect(mapper.ci_config_sha).to eq(sha)
-  end
-
-  context 'when ref is a tag' do
-    let_it_be(:tag) { 'test-tag-for-claim-mapper' }
-    let_it_be(:pipeline) { build_stubbed(:ci_pipeline, tag: tag, ref: tag, sha: sha) }
-
+  describe '#to_h' do
     it 'returns expected claims' do
-      expect(mapper.ci_config_ref_uri).to eq(
-        'gitlab.com/gitlab-org/gitlab//.gitlab-ci.yml@refs/tags/test-tag-for-claim-mapper')
-      expect(mapper.ci_config_sha).to eq(sha)
+      expect(mapper.to_h).to eq({
+        ci_config_ref_uri: 'gitlab.com/gitlab-org/gitlab//.gitlab-ci.yml@refs/heads/test-branch-for-claim-mapper',
+        ci_config_sha: sha
+      })
+    end
+
+    context 'when ref is a tag' do
+      let_it_be(:tag) { 'test-tag-for-claim-mapper' }
+      let_it_be(:pipeline) { build_stubbed(:ci_pipeline, tag: tag, ref: tag, sha: sha) }
+
+      it 'returns expected claims' do
+        expect(mapper.to_h).to eq({
+          ci_config_ref_uri: 'gitlab.com/gitlab-org/gitlab//.gitlab-ci.yml@refs/tags/test-tag-for-claim-mapper',
+          ci_config_sha: sha
+        })
+      end
     end
   end
 end

@@ -10,17 +10,20 @@ module Gitlab
             @pipeline = pipeline
           end
 
-          def ci_config_ref_uri
-            "#{project_config.url}@#{pipeline.source_ref_path}"
-          end
-
-          def ci_config_sha
-            pipeline.sha
+          def to_h
+            {
+              ci_config_ref_uri: ci_config_ref_uri,
+              ci_config_sha: pipeline.sha
+            }
           end
 
           private
 
           attr_reader :project_config, :pipeline
+
+          def ci_config_ref_uri
+            "#{project_config.url}@#{pipeline.source_ref_path}"
+          end
         end
       end
     end

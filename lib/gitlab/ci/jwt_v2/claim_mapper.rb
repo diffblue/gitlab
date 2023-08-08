@@ -15,13 +15,8 @@ module Gitlab
           @mapper = mapper_class&.new(project_config, pipeline)
         end
 
-        delegate :ci_config_ref_uri, :ci_config_sha, to: :mapper, allow_nil: true
-
         def to_h
-          {
-            ci_config_ref_uri: ci_config_ref_uri,
-            ci_config_sha: ci_config_sha
-          }
+          mapper&.to_h || {}
         end
 
         private
