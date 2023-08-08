@@ -18879,7 +18879,6 @@ CREATE TABLE namespace_details (
     cached_markdown_version integer,
     description text,
     description_html text,
-    free_user_cap_over_limt_notified_at timestamp with time zone,
     free_user_cap_over_limit_notified_at timestamp with time zone,
     dashboard_notification_at timestamp with time zone,
     dashboard_enforcement_at timestamp with time zone,
