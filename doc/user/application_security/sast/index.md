@@ -602,8 +602,11 @@ removed, or promoted to regular features at any time.
 Experimental features available are:
 
 - Enable scanning of iOS and Android apps using the [MobSF analyzer](https://gitlab.com/gitlab-org/security-products/analyzers/mobsf/).
-- Disable the following rules in the [Semgrep analyzer](https://gitlab.com/gitlab-org/security-products/analyzers/semgrep) that are known to cause a high rate of false positives:
-  - [`eslint.detect-object-injection`](https://gitlab.com/gitlab-org/security-products/analyzers/semgrep/-/blob/6c4764567d9854f5e4a4a35dacf5a68def7fb4c1/rules/eslint.yml#L751-773)
+
+These features were previously experimental, but are now generally available:
+
+- Disable the [`eslint.detect-object-injection`](https://gitlab.com/gitlab-org/security-products/analyzers/semgrep/-/blob/6c4764567d9854f5e4a4a35dacf5a68def7fb4c1/rules/eslint.yml#L751-773) in the [Semgrep analyzer](https://gitlab.com/gitlab-org/security-products/analyzers/semgrep) because it causes a high rate of false positives.
+  - This rule was [disabled by default](https://gitlab.com/gitlab-org/gitlab/-/issues/373920) in 15.10.
 
 #### Enable experimental features
 
