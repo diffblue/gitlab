@@ -10,6 +10,5 @@ RSpec.describe Geo::UploadRegistry, :geo, type: :model, feature_category: :geo_r
   end
 
   include_examples 'a Geo framework registry'
-  include_examples 'a Geo verifiable registry'
   include_examples 'a Geo searchable registry'
 end

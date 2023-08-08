@@ -10,6 +10,5 @@ RSpec.describe Geo::SnippetRepositoryRegistry, :geo, type: :model, feature_categ
   end
 
   include_examples 'a Geo framework registry'
-  include_examples 'a Geo verifiable registry'
   include_examples 'a Geo searchable registry'
 end

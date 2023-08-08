@@ -3,6 +3,8 @@
 RSpec.shared_examples 'a Geo framework registry' do
   let(:registry_class_factory) { described_class.underscore.tr('/', '_').to_sym }
 
+  it_behaves_like 'a Geo verifiable registry'
+
   context 'obligatory fields check' do
     it 'has expected fields or methods' do
       registry = create(registry_class_factory) # rubocop:disable Rails/SaveBang

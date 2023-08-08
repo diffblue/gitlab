@@ -10,7 +10,6 @@ RSpec.describe Geo::LfsObjectRegistry, :geo, type: :model, feature_category: :ge
   end
 
   include_examples 'a Geo framework registry'
-  include_examples 'a Geo verifiable registry'
   include_examples 'a Geo searchable registry'
 
   describe 'scopes' do

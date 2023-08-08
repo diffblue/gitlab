@@ -10,6 +10,5 @@ RSpec.describe Geo::PagesDeploymentRegistry, :geo, type: :model, feature_categor
   end
 
   include_examples 'a Geo framework registry'
-  include_examples 'a Geo verifiable registry'
   include_examples 'a Geo searchable registry'
 end
