@@ -1,8 +1,9 @@
 <script>
-import { GlTable, GlLink, GlSprintf } from '@gitlab/ui';
+import { GlTable, GlLink, GlSprintf, GlIcon } from '@gitlab/ui';
 import { __ } from '~/locale';
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 import { containerRegistryPopover } from '~/usage_quotas/storage/constants';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import NumberToHumanSize from './number_to_human_size.vue';
 import StorageTypeHelpLink from './storage_type_help_link.vue';
 import StorageTypeWarning from './storage_type_warning.vue';
@@ -13,6 +14,7 @@ export default {
     GlTable,
     GlLink,
     GlSprintf,
+    GlIcon,
     ProjectAvatar,
     NumberToHumanSize,
     StorageTypeHelpLink,
@@ -86,6 +88,9 @@ export default {
     tdClass: `${f.tdClass ?? ''} gl-px-3!`,
   })),
   containerRegistryPopover,
+  forksCostFactorHelpLink: helpPagePath('user/usage_quotas.html', {
+    anchor: 'view-project-fork-storage-usage',
+  }),
 };
 </script>
 
@@ -155,6 +160,13 @@ export default {
               <number-to-human-size :value="project.statistics.storageSize" />
             </template>
           </gl-sprintf>
+          <gl-link
+            :href="$options.forksCostFactorHelpLink"
+            target="_blank"
+            class="gl-reset-font-size"
+          >
+            <gl-icon name="question-o" :size="12" />
+          </gl-link>
         </div>
       </template>
       <template v-else>
