@@ -24,6 +24,7 @@ RSpec.shared_examples "protected branches > access control > EE" do
       it "allows creating protected branches that roles, users, and groups can #{git_operation} to" do
         visit project_protected_branches_path(project)
 
+        show_add_form
         set_protected_branch_name('master')
         set_allowed_to(git_operation, roles.values)
         set_allowed_to(git_operation, groups.map(&:name))
@@ -46,6 +47,8 @@ RSpec.shared_examples "protected branches > access control > EE" do
 
       it "allows updating protected branches so that roles and users can #{git_operation} to it" do
         visit project_protected_branches_path(project)
+
+        show_add_form
         set_protected_branch_name('master')
         set_allowed_to('merge')
         set_allowed_to('push')
@@ -72,6 +75,8 @@ RSpec.shared_examples "protected branches > access control > EE" do
 
       it "allows updating protected branches so that roles and users cannot #{git_operation} to it" do
         visit project_protected_branches_path(project)
+
+        show_add_form
         set_protected_branch_name('master')
 
         set_allowed_to(git_operation, roles.values)
@@ -100,6 +105,7 @@ RSpec.shared_examples "protected branches > access control > EE" do
         visit project_protected_branches_path(project)
 
         # Create Protected Branch
+        show_add_form
         set_protected_branch_name('master')
         set_allowed_to(git_operation, roles.values)
         set_allowed_to(other_git_operation)
@@ -142,6 +148,8 @@ RSpec.shared_examples "protected branches > access control > EE" do
   context 'When updating a protected branch' do
     it 'discards other roles when choosing "No one"' do
       visit project_protected_branches_path(project)
+
+      show_add_form
       set_protected_branch_name('fix')
       set_allowed_to('merge')
       set_allowed_to('push', roles.values)
@@ -163,6 +171,8 @@ RSpec.shared_examples "protected branches > access control > EE" do
   context 'When creating a protected branch' do
     it 'discards other roles when choosing "No one"' do
       visit project_protected_branches_path(project)
+
+      show_add_form
       set_protected_branch_name('master')
       set_allowed_to('merge')
       set_allowed_to('push', roles.values)
