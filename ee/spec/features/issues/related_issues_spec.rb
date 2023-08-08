@@ -40,10 +40,7 @@ RSpec.describe 'Related issues', :js, feature_category: :team_planning do
       wait_for_requests
 
       expect(page).not_to have_selector('.modal-content', visible: true)
-
-      within(first('.issuable-status-badge', visible: :all)) do
-        expect(page).to have_text 'Closed'
-      end
+      expect(page).to have_css('.gl-badge', text: 'Closed')
     end
   end
 
@@ -132,7 +129,7 @@ RSpec.describe 'Related issues', :js, feature_category: :team_planning do
         end
 
         context 'when clicking the top `Close issue` button in the issue header', :aggregate_failures do
-          it_behaves_like 'issue closed by modal', '.detail-page-header'
+          it_behaves_like 'issue closed by modal', '.detail-page-description'
         end
 
         context 'when clicking the bottom `Close issue` button below the comment textarea', :aggregate_failures do

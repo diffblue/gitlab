@@ -21,12 +21,9 @@ RSpec.describe 'Issue actions', :js, feature_category: :team_planning do
       end
 
       it 'does not show "Promote to epic" item in issue actions dropdown' do
-        page.within '.detail-page-header' do
-          # Click on ellipsis dropdown button
-          click_button 'Issue actions'
+        click_button 'Issue actions'
 
-          expect(page).not_to have_button('Promote to epic')
-        end
+        expect(page).not_to have_button('Promote to epic')
       end
     end
 
@@ -37,14 +34,8 @@ RSpec.describe 'Issue actions', :js, feature_category: :team_planning do
       end
 
       it 'clicking "Promote to epic" creates and redirects user to epic' do
-        page.within '.detail-page-header' do
-          # Click on ellipsis dropdown button
-          click_button 'Issue actions'
-
-          click_button 'Promote to epic'
-        end
-
-        wait_for_requests
+        click_button 'Issue actions'
+        click_button 'Promote to epic'
 
         expect(page).to have_current_path(group_epic_path(group, 1))
       end

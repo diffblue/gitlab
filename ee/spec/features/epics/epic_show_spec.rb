@@ -194,7 +194,7 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
 
     it 'shows epic title and description' do
       page.within('.epic-page-container .detail-page-description') do
-        expect(find('.title-container .title')).to have_content(epic_title)
+        expect(find('.title')).to have_content(epic_title)
         expect(find('.description .md')).to have_content('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nos commodius agimus. Ex rebus enim timiditas, non ex vocabulis nascitur. Ita prorsus, inquam; Duo Reges: constructio interrete.')
       end
     end

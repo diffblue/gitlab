@@ -1,6 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
 import EpicHeader from 'ee/epic/components/epic_header.vue';
-import EpicHeaderActions from 'ee/epic/components/epic_header_actions.vue';
 import createStore from 'ee/epic/store';
 import IssuableHeader from '~/vue_shared/issuable/show/components/issuable_header.vue';
 import { mockEpicMeta } from '../mock_data';
@@ -11,10 +10,14 @@ describe('EpicHeader component', () => {
   const createComponent = () => {
     const store = createStore();
     store.dispatch('setEpicMeta', mockEpicMeta);
-    wrapper = shallowMount(EpicHeader, { store });
+    wrapper = shallowMount(EpicHeader, {
+      propsData: {
+        formattedAuthor: { id: '1', name: 'Arthur', username: 'arthur' },
+      },
+      store,
+    });
   };
 
-  const findEpicHeaderActions = () => wrapper.findComponent(EpicHeaderActions);
   const findIssuableHeader = () => wrapper.findComponent(IssuableHeader);
 
   beforeEach(() => {
@@ -30,9 +33,5 @@ describe('EpicHeader component', () => {
       statusIcon: 'epic',
       workspaceType: 'group',
     });
-  });
-
-  it('renders actions dropdown', () => {
-    expect(findEpicHeaderActions().exists()).toBe(true);
   });
 });
