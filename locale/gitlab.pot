@@ -56149,6 +56149,9 @@ msgstr ""
 msgid "jigsaw is not defined"
 msgstr ""
 
+msgid "key result"
+msgstr ""
+
 msgid "kuromoji custom analyzer"
 msgstr ""
 
@@ -56720,6 +56723,9 @@ msgstr ""
 msgid "nounSeries|%{item}, and %{lastItem}"
 msgstr ""
 
+msgid "objective"
+msgstr ""
+
 msgid "on or after"
 msgstr ""
 
@@ -57061,6 +57067,9 @@ msgid "tag name"
 msgstr ""
 
 msgid "targeting "
+msgstr ""
+
+msgid "task"
 msgstr ""
 
 msgid "terraform states"
