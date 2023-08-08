@@ -47,7 +47,7 @@ module Llm
 
       ::Gitlab::Llm::Cache.new(user).add(payload) if cache_response?(options)
 
-      if emit_response?(options)
+      unless options[:internal_request]
         GraphqlTriggers.ai_completion_response(user.to_global_id, resource&.to_global_id, payload)
       end
 
@@ -100,12 +100,6 @@ module Llm
 
     def no_worker_message?(content)
       content == ::Gitlab::Llm::CachedMessage::RESET_MESSAGE
-    end
-
-    def emit_response?(options)
-      return false if options[:internal_request]
-
-      Feature.enabled?(:ai_chat_emit_user_messages, user)
     end
 
     def cache_response?(options)
