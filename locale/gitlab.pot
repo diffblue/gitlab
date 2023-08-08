@@ -53236,6 +53236,9 @@ msgstr ""
 msgid "WorkItem|Something went wrong when fetching work item types. Please try again"
 msgstr ""
 
+msgid "WorkItem|Something went wrong when fetching work items. Please try again."
+msgstr ""
+
 msgid "WorkItem|Something went wrong when trying to add a child. Please try again."
 msgstr ""
 
