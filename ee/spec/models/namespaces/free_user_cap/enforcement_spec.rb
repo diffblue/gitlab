@@ -20,59 +20,6 @@ RSpec.describe Namespaces::FreeUserCap::Enforcement, :saas, feature_category: :m
       allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return({ user_ids: free_plan_members_count })
     end
 
-    context 'with updating dashboard enforcement_at field', :use_clean_rails_redis_caching do
-      context 'when cache has expired or does not exist' do
-        context 'when under the limit' do
-          let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit - 1 }
-
-          it 'updates the database for non enforcement' do
-            time = Time.current
-            namespace.namespace_details.update!(dashboard_enforcement_at: time)
-
-            expect do
-              expect(over_limit?).to be(false)
-            end.to change { namespace.namespace_details.dashboard_enforcement_at }.from(time).to(nil)
-          end
-        end
-
-        context 'when over the limit' do
-          it 'updates the database for enforcement', :freeze_time do
-            expect do
-              expect(over_limit?).to be(true)
-            end.to change { namespace.namespace_details.dashboard_enforcement_at }.from(nil).to(Time.current)
-          end
-
-          context 'when dashboard_enforcement_at is already set' do
-            it 'does not update dashboard_enforcement_at field needlessly' do
-              namespace.namespace_details.update!(dashboard_enforcement_at: Time.current)
-
-              expect(namespace.namespace_details).not_to receive(:update)
-
-              expect do
-                expect(over_limit?).to be(true)
-              end.to not_change(namespace.namespace_details, :dashboard_enforcement_at)
-            end
-          end
-        end
-      end
-
-      context 'when cache exists' do
-        before do
-          over_limit?
-        end
-
-        it 'does not update the database' do
-          namespace.namespace_details.update!(dashboard_enforcement_at: nil)
-
-          expect(namespace.namespace_details).not_to receive(:update)
-
-          expect do
-            expect(over_limit?).to be(true)
-          end.not_to change { namespace.namespace_details.dashboard_enforcement_at }
-        end
-      end
-    end
-
     context 'when under the number of free users limit' do
       let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit - 1 }
 
@@ -140,28 +87,6 @@ RSpec.describe Namespaces::FreeUserCap::Enforcement, :saas, feature_category: :m
         let(:dashboard_limit_enabled) { false }
 
         it { is_expected.to be false }
-      end
-    end
-
-    context 'with benchmarks' do
-      it 'shows with and without database update' do
-        # Run with:
-        #   BENCHMARK=1 rspec ee/spec/models/namespaces/free_user_cap/enforcement_spec.rb
-        skip('Skipped. To run set env variable BENCHMARK=1') unless ENV.key?('BENCHMARK')
-
-        require 'benchmark/ips'
-
-        puts "\n--> Benchmarking over limit with database updating and without\n"
-
-        Benchmark.ips do |x|
-          x.report('with database update') do
-            ::Namespaces::FreeUserCap::Enforcement.new(namespace).over_limit?
-          end
-          x.report('without database update') do
-            ::Namespaces::FreeUserCap::Enforcement.new(namespace).over_limit?(update_database: false)
-          end
-          x.compare!
-        end
       end
     end
   end
