@@ -23,7 +23,6 @@ RSpec.shared_examples_for 'over the free user limit alert' do
 
   describe 'with enforcement concerns' do
     before do
-      stub_feature_flags(free_user_cap: true)
       stub_ee_application_setting(dashboard_limit: dashboard_limit)
     end
 

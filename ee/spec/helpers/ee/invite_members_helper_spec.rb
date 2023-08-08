@@ -56,46 +56,38 @@ RSpec.describe EE::InviteMembersHelper, feature_category: :onboarding do
         Gitlab::Json.parse(helper.common_invite_modal_dataset(project)[:users_limit_dataset])
       end
 
-      context 'with feature flag :free_user_cap enabled' do
+      context 'when not close to or over the free user cap limit' do
+        let(:expected_variant) { nil }
+        let(:expected_remaining_seats) { 5 }
+
         before do
-          stub_ee_application_setting(dashboard_limit_new_namespace_creation_enforcement_date: 2.days.ago)
-
-          stub_feature_flags(free_user_cap: true)
+          stub_ee_application_setting(dashboard_limit: 5)
         end
 
-        context 'when not close to or over the free user cap limit' do
-          let(:expected_variant) { nil }
-          let(:expected_remaining_seats) { 5 }
+        it 'includes correct users limit notification data' do
+          expect(users_limit_dataset).to eq(expected_alert_data)
+        end
+      end
 
-          before do
-            stub_ee_application_setting(dashboard_limit: 5)
-          end
+      context 'when close to the free user cap limit' do
+        let(:expected_variant) { 'close' }
+        let(:expected_remaining_seats) { 1 }
 
-          it 'includes correct users limit notification data' do
-            expect(users_limit_dataset).to eq(expected_alert_data)
-          end
+        before do
+          stub_ee_application_setting(dashboard_limit: 1)
         end
 
-        context 'when close to the free user cap limit' do
-          let(:expected_variant) { 'close' }
-          let(:expected_remaining_seats) { 1 }
-
-          before do
-            stub_ee_application_setting(dashboard_limit: 1)
-          end
-
-          it 'includes correct users limit notification data' do
-            expect(users_limit_dataset).to eq(expected_alert_data)
-          end
+        it 'includes correct users limit notification data' do
+          expect(users_limit_dataset).to eq(expected_alert_data)
         end
+      end
 
-        context 'when at the free user cap limit' do
-          let(:expected_variant) { 'reached' }
-          let(:expected_remaining_seats) { 0 }
+      context 'when at the free user cap limit' do
+        let(:expected_variant) { 'reached' }
+        let(:expected_remaining_seats) { 0 }
 
-          it 'includes correct users limit notification data' do
-            expect(users_limit_dataset).to eq(expected_alert_data)
-          end
+        it 'includes correct users limit notification data' do
+          expect(users_limit_dataset).to eq(expected_alert_data)
         end
       end
     end
