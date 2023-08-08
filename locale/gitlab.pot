@@ -30927,9 +30927,6 @@ msgstr ""
 msgid "New User"
 msgstr ""
 
-msgid "New application"
-msgstr ""
-
 msgid "New branch"
 msgstr ""
 
