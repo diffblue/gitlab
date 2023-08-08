@@ -374,6 +374,31 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
           expect(project.approval_rules.first.applies_to_all_protected_branches).to be_truthy
           expect(project.approval_rules.first.applies_to_branch?('random-branch')).to be_falsey
         end
+
+        context 'with branch exceptions' do
+          before do
+            rules.first[:branch_exceptions] = %w[main]
+          end
+
+          it 'sets applies_to_all_protected_branches to false' do
+            subject
+
+            expect(project.approval_rules.first.applies_to_all_protected_branches).to be_falsey
+            expect(project.approval_rules.first.applies_to_branch?('main')).to be_falsey
+          end
+
+          context 'when branch_exceptions are emtpy' do
+            before do
+              rules.first[:branch_exceptions] = []
+            end
+
+            it 'sets applies_to_all_protected_branches to true' do
+              subject
+
+              expect(project.approval_rules.first.applies_to_all_protected_branches).to be_truthy
+            end
+          end
+        end
       end
     end
 

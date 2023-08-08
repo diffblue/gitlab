@@ -110,7 +110,7 @@ module Security
       end
 
       def applies_to_all_protected_branches?(rule)
-        rule[:branches] == [] || rule[:branch_type] == "protected"
+        rule[:branches] == [] || (rule[:branch_type] == "protected" && rule[:branch_exceptions].blank?)
       end
 
       def rule_type_allowed?(rule_type)
