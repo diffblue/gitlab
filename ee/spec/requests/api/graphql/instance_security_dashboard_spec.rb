@@ -28,7 +28,7 @@ RSpec.describe 'Query.instanceSecurityDashboard.projects', feature_category: :vu
 
       subject(:projects) { graphql_data_at(:instance_security_dashboard, :projects, :nodes) }
 
-      it_behaves_like 'a working graphql query' do
+      it_behaves_like 'a working graphql query that returns data' do
         before do
           post_graphql(query, current_user: current_user)
         end
@@ -42,40 +42,40 @@ RSpec.describe 'Query.instanceSecurityDashboard.projects', feature_category: :vu
     context 'when loading vulnerabilityGrades alongside with Vulnerability.userNotesCount' do
       let(:fields) do
         <<~QUERY
-        allGrades: vulnerabilityGrades {
-          grade
-          count
-          projects {
-            nodes {
-              vulnerabilities {
-                nodes {
-                  id
-                  userNotesCount
+          allGrades: vulnerabilityGrades {
+            grade
+            count
+            projects {
+              nodes {
+                vulnerabilities {
+                  nodes {
+                    id
+                    userNotesCount
+                  }
                 }
               }
             }
           }
-        }
-        withVulnerabilitiesByState: vulnerabilityGrades {
-          grade
-          count
-          projects {
-            nodes {
-              confirmedVulnerabilities: vulnerabilities(state: CONFIRMED) {
-                nodes {
-                  id
-                  userNotesCount
+          withVulnerabilitiesByState: vulnerabilityGrades {
+            grade
+            count
+            projects {
+              nodes {
+                confirmedVulnerabilities: vulnerabilities(state: CONFIRMED) {
+                  nodes {
+                    id
+                    userNotesCount
+                  }
                 }
-              }
-              dismissedVulnerabilities: vulnerabilities(state: DISMISSED) {
-                nodes {
-                  id
-                  userNotesCount
+                dismissedVulnerabilities: vulnerabilities(state: DISMISSED) {
+                  nodes {
+                    id
+                    userNotesCount
+                  }
                 }
               }
             }
           }
-        }
         QUERY
       end
 
@@ -90,7 +90,7 @@ RSpec.describe 'Query.instanceSecurityDashboard.projects', feature_category: :vu
       let_it_be(:vulnerability_statistic_1) { create(:vulnerability_statistic, :grade_c, project: project) }
       let_it_be(:vulnerability_statistic_2) { create(:vulnerability_statistic, :grade_d, project: other_project) }
 
-      it_behaves_like 'a working graphql query' do
+      it_behaves_like 'a working graphql query that returns data' do
         let(:expected_response) do
           {
             'allGrades' => [
@@ -190,7 +190,7 @@ RSpec.describe 'Query.instanceSecurityDashboard.projects', feature_category: :vu
 
       subject(:cluster_agents) { graphql_data_at(:instance_security_dashboard, :cluster_agents, :nodes) }
 
-      it_behaves_like 'a working graphql query' do
+      it_behaves_like 'a working graphql query that returns data' do
         before do
           user.security_dashboard_projects << other_project_without_access
 
@@ -209,14 +209,10 @@ RSpec.describe 'Query.instanceSecurityDashboard.projects', feature_category: :vu
 
     let(:dashboard_fields) { nil }
 
-    subject { graphql_data_at(:instance_security_dashboard) }
-
-    it_behaves_like 'a working graphql query' do
+    it_behaves_like 'a working graphql query that returns no data' do
       before do
         post_graphql(query, current_user: current_user)
       end
-
-      it { is_expected.to be_nil }
     end
   end
 end
