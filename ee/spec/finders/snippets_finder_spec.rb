@@ -151,6 +151,29 @@ RSpec.describe SnippetsFinder do
           end
         end
       end
+
+      context 'when user is a an auditor' do
+        let_it_be(:auditor) { create(:user, :auditor) }
+        let(:finder_user) { auditor }
+        let(:finder_params) { { author: user, all_available: true } }
+
+        it 'returns all snippets (everything) for an auditor when all_available="true" passed in' do
+          expect(subject).to contain_exactly(
+            other_public_project_snippet,
+            other_internal_project_snippet,
+            other_private_project_snippet,
+            other_public_personal_snippet,
+            other_internal_personal_snippet,
+            other_private_personal_snippet,
+            public_personal_snippet,
+            internal_personal_snippet,
+            private_personal_snippet,
+            public_project_snippet,
+            internal_project_snippet,
+            private_project_snippet
+          )
+        end
+      end
     end
 
     context 'when only_personal is passed' do
