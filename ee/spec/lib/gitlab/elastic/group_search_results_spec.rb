@@ -64,6 +64,33 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
     it_behaves_like 'search results filtered by language'
   end
 
+  context 'for commits', :sidekiq_inline do
+    let_it_be(:owner) { create(:user) }
+    let_it_be(:unarchived_project) { create(:project, :public, :repository, group: group, creator: owner) }
+    let_it_be(:archived_project) { create(:project, :archived, :repository, :public, group: group, creator: owner) }
+
+    let_it_be(:unarchived_result_object) do
+      unarchived_project.repository.create_file(owner, 'test.rb', '# foo bar', message: 'foo bar', branch_name: 'master')
+    end
+
+    let_it_be(:archived_result_object) do
+      archived_project.repository.create_file(owner, 'test.rb', '# foo', message: 'foo', branch_name: 'master')
+    end
+
+    let(:unarchived_result) { unarchived_project.commit }
+    let(:archived_result) { archived_project.commit }
+    let(:scope) { 'commits' }
+    let(:query) { 'foo' }
+
+    before do
+      unarchived_project.repository.index_commits_and_blobs
+      archived_project.repository.index_commits_and_blobs
+      ensure_elasticsearch_index!
+    end
+
+    include_examples 'search results filtered by archived', 'search_commits_hide_archived_projects'
+  end
+
   context 'for projects' do
     let!(:unarchived_result) { create(:project, :public, group: group) }
     let!(:archived_result) { create(:project, :archived, :public, group: group) }
