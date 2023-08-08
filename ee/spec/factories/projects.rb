@@ -128,6 +128,30 @@ FactoryBot.modify do
       end
     end
 
+    trait :with_product_analytics_invalid_custom_visualization do
+      repository
+
+      after(:create) do |project|
+        project.repository.create_file(
+          project.creator,
+          '.gitlab/analytics/dashboards/dashboard_example_invalid_vis/dashboard_example_invalid_vis.yaml',
+          File.open(Rails.root.join('ee/spec/fixtures/product_analytics/dashboard_example_invalid_vis.yaml')).read,
+          message: 'test',
+          branch_name: 'master'
+        )
+
+        project.repository.create_file(
+          project.creator,
+          '.gitlab/analytics/dashboards/visualizations/example_invalid_custom_visualization.yaml',
+          File.open(
+            Rails.root.join('ee/spec/fixtures/product_analytics/example_invalid_custom_visualization.yaml')
+          ).read,
+          message: 'test',
+          branch_name: 'master'
+        )
+      end
+    end
+
     trait :with_dashboard_attempting_path_traversal do
       repository
 
