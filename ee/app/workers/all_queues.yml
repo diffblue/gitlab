@@ -1956,6 +1956,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: system_access_saml_microsoft_group_sync
+  :worker_name: SystemAccess::SamlMicrosoftGroupSyncWorker
+  :feature_category: :system_access
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: vulnerabilities_mark_dropped_as_resolved
   :worker_name: Vulnerabilities::MarkDroppedAsResolvedWorker
   :feature_category: :static_application_security_testing
