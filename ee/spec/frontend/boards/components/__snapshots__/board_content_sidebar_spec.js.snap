@@ -46,7 +46,108 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
     <!---->
   </div>
    
-  <boardsidebartimetracker-stub />
+  <div
+    class="time-tracker sidebar-help-wrap"
+    data-testid="time-tracker"
+  >
+    <!---->
+     
+    <div
+      class="hide-collapsed gl-line-height-20 gl-text-gray-900 gl-display-flex gl-align-items-center gl-font-weight-bold"
+    >
+      
+    Time tracking
+    
+      <!---->
+       
+      <div
+        class="gl-ml-auto gl-display-flex"
+      >
+        <button
+          aria-label="Set estimate"
+          class="btn btn-default btn-sm gl-button btn-default-tertiary"
+          data-testid="set-time-estimate-button"
+          title="Set estimate"
+          type="button"
+        >
+          <!---->
+           
+          <!---->
+            
+          <span
+            class="gl-button-text"
+          >
+            <svg
+              aria-hidden="true"
+              class="gl-text-gray-900! gl-icon s16"
+              data-testid="timer-icon"
+              role="img"
+            >
+              <use
+                href="file-mock#timer"
+              />
+            </svg>
+          </span>
+        </button>
+         
+        <button
+          class="btn btn-default btn-sm gl-button btn-default-tertiary"
+          data-testid="add-time-entry-button"
+          title="Add time entry"
+          type="button"
+        >
+          <!---->
+           
+          <!---->
+            
+          <span
+            class="gl-button-text"
+          >
+            <svg
+              aria-hidden="true"
+              class="gl-text-gray-900! gl-icon s16"
+              data-testid="plus-icon"
+              role="img"
+            >
+              <use
+                href="file-mock#plus"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+    </div>
+     
+    <div
+      class="hide-collapsed"
+    >
+      <!---->
+       
+      <!---->
+       
+      <div
+        data-testid="noTrackingPane"
+      >
+        <span
+          class="gl-text-gray-500"
+        >
+          No estimate or time spent
+        </span>
+      </div>
+       
+      <!---->
+       
+      <div>
+        <!---->
+         
+        <!---->
+      </div>
+       
+      <!---->
+       
+      <!---->
+    </div>
+  </div>
    
   <sidebardatewidget-stub
     data-testid="sidebar-due-date"
@@ -630,7 +731,108 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
     />
   </div>
    
-  <boardsidebartimetracker-stub />
+  <div
+    class="time-tracker sidebar-help-wrap"
+    data-testid="time-tracker"
+  >
+    <!---->
+     
+    <div
+      class="hide-collapsed gl-line-height-20 gl-text-gray-900 gl-display-flex gl-align-items-center gl-font-weight-bold"
+    >
+      
+    Time tracking
+    
+      <!---->
+       
+      <div
+        class="gl-ml-auto gl-display-flex"
+      >
+        <button
+          aria-label="Set estimate"
+          class="btn btn-default btn-sm gl-button btn-default-tertiary"
+          data-testid="set-time-estimate-button"
+          title="Set estimate"
+          type="button"
+        >
+          <!---->
+           
+          <!---->
+            
+          <span
+            class="gl-button-text"
+          >
+            <svg
+              aria-hidden="true"
+              class="gl-text-gray-900! gl-icon s16"
+              data-testid="timer-icon"
+              role="img"
+            >
+              <use
+                href="file-mock#timer"
+              />
+            </svg>
+          </span>
+        </button>
+         
+        <button
+          class="btn btn-default btn-sm gl-button btn-default-tertiary"
+          data-testid="add-time-entry-button"
+          title="Add time entry"
+          type="button"
+        >
+          <!---->
+           
+          <!---->
+            
+          <span
+            class="gl-button-text"
+          >
+            <svg
+              aria-hidden="true"
+              class="gl-text-gray-900! gl-icon s16"
+              data-testid="plus-icon"
+              role="img"
+            >
+              <use
+                href="file-mock#plus"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+    </div>
+     
+    <div
+      class="hide-collapsed"
+    >
+      <!---->
+       
+      <!---->
+       
+      <div
+        data-testid="noTrackingPane"
+      >
+        <span
+          class="gl-text-gray-500"
+        >
+          No estimate or time spent
+        </span>
+      </div>
+       
+      <!---->
+       
+      <div>
+        <!---->
+         
+        <!---->
+      </div>
+       
+      <!---->
+       
+      <!---->
+    </div>
+  </div>
    
   <sidebardatewidget-stub
     data-testid="sidebar-due-date"
