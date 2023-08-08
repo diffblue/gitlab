@@ -1,6 +1,7 @@
 <script>
+import { GlAlert } from '@gitlab/ui';
+import * as Sentry from '@sentry/browser';
 import { joinPaths } from '~/lib/utils/url_utility';
-import { createAlert } from '~/alert';
 import { toYmd } from '~/analytics/shared/utils';
 import GroupVulnerabilitiesQuery from '../graphql/group_vulnerabilities.query.graphql';
 import ProjectVulnerabilitiesQuery from '../graphql/project_vulnerabilities.query.graphql';
@@ -11,7 +12,15 @@ import ProjectFlowMetricsQuery from '../graphql/project_flow_metrics.query.graph
 import GroupDoraMetricsQuery from '../graphql/group_dora_metrics.query.graphql';
 import ProjectDoraMetricsQuery from '../graphql/project_dora_metrics.query.graphql';
 import { BUCKETING_INTERVAL_ALL, MERGE_REQUESTS_STATE_MERGED } from '../graphql/constants';
-import { DASHBOARD_LOADING_FAILURE, CHART_LOADING_FAILURE } from '../constants';
+import {
+  TABLE_METRICS,
+  DASHBOARD_LOADING_FAILURE,
+  CHART_LOADING_FAILURE,
+  SUPPORTED_DORA_METRICS,
+  SUPPORTED_FLOW_METRICS,
+  SUPPORTED_MERGE_REQUEST_METRICS,
+  SUPPORTED_VULNERABILITY_METRICS,
+} from '../constants';
 import {
   fetchMetricsForTimePeriods,
   extractGraphqlVulnerabilitiesData,
@@ -45,6 +54,7 @@ const extractQueryResponseFromNamespace = ({ result, resultKey }) => {
 export default {
   name: 'ComparisonChart',
   components: {
+    GlAlert,
     ComparisonTable,
   },
   props: {
@@ -69,160 +79,193 @@ export default {
   },
   data() {
     return {
-      tableData: {},
-      chartData: {},
+      tableData: generateSkeletonTableData(this.excludeMetrics),
+      failedTableMetrics: [],
+      failedChartMetrics: [],
     };
   },
   computed: {
-    skeletonData() {
-      return generateSkeletonTableData(this.excludeMetrics);
-    },
-    combinedData() {
-      let data = this.skeletonData;
-      data = mergeTableData(data, this.tableData);
-      data = mergeTableData(data, this.chartData);
-      return data;
-    },
     namespaceRequestPath() {
       return this.isProject ? this.requestPath : joinPaths('groups', this.requestPath);
     },
-    defaultQueryParams() {
-      return {
-        isProject: this.isProject,
-        fullPath: this.requestPath,
-      };
+    filteredQueries() {
+      return [
+        { metrics: SUPPORTED_DORA_METRICS, queryFn: this.fetchDoraMetricsQuery },
+        { metrics: SUPPORTED_FLOW_METRICS, queryFn: this.fetchFlowMetricsQuery },
+        { metrics: SUPPORTED_MERGE_REQUEST_METRICS, queryFn: this.fetchMergeRequestsMetricsQuery },
+        {
+          metrics: SUPPORTED_VULNERABILITY_METRICS,
+          queryFn: this.fetchVulnerabilitiesMetricsQuery,
+        },
+      ].filter(({ metrics }) => this.areAnyMetricsIncluded(metrics));
+    },
+    tableError() {
+      return this.failedTableMetrics.join(', ');
+    },
+    chartError() {
+      return this.failedChartMetrics.join(', ');
     },
   },
   async mounted() {
-    await this.fetchTableMetrics();
-    await this.fetchSparklineMetrics();
+    this.failedTableMetrics = await this.resolveQueries(this.fetchTableMetrics);
+    this.failedChartMetrics = await this.resolveQueries(this.fetchSparklineCharts);
   },
   methods: {
-    async fetchFlowMetricsQuery({ isProject, ...variables }) {
-      const result = await this.$apollo.query({
-        query: isProject ? ProjectFlowMetricsQuery : GroupFlowMetricsQuery,
-        variables,
-        context: {
-          // This is an expensive request that consistently exceeds our query complexity of 300 when grouped
-          isSingleRequest: true,
-        },
-      });
-
-      return extractQueryResponseFromNamespace({ result, resultKey: 'flowMetrics' });
+    areAnyMetricsIncluded(identifiers) {
+      return !identifiers.every((identifier) => this.excludeMetrics.includes(identifier));
     },
-    async fetchDoraMetricsQuery({
-      isProject,
-      interval = BUCKETING_INTERVAL_ALL,
-      ...queryVariables
-    }) {
+
+    async resolveQueries(handler) {
+      const result = await Promise.allSettled(this.filteredQueries.map((query) => handler(query)));
+
+      // Return an array of the failed metric IDs
+      return result
+        .reduce((acc, { reason = [] }) => acc.concat(reason), [])
+        .map((metric) => TABLE_METRICS[metric].label);
+    },
+
+    async fetchTableMetrics({ metrics, queryFn }) {
+      try {
+        const data = await fetchMetricsForTimePeriods(DASHBOARD_TIME_PERIODS, queryFn);
+        this.tableData = mergeTableData(this.tableData, generateMetricComparisons(data));
+      } catch (error) {
+        Sentry.captureException(error);
+        throw metrics;
+      }
+    },
+
+    async fetchSparklineCharts({ metrics, queryFn }) {
+      try {
+        const data = await fetchMetricsForTimePeriods(CHART_TIME_PERIODS, queryFn);
+        this.tableData = mergeTableData(this.tableData, generateSparklineCharts(data));
+      } catch (error) {
+        Sentry.captureException(error);
+        throw metrics;
+      }
+    },
+
+    async fetchDoraMetricsQuery({ startDate, endDate }, timePeriod) {
       const result = await this.$apollo.query({
-        query: isProject ? ProjectDoraMetricsQuery : GroupDoraMetricsQuery,
-        variables: { ...queryVariables, interval },
+        query: this.isProject ? ProjectDoraMetricsQuery : GroupDoraMetricsQuery,
+        variables: {
+          fullPath: this.requestPath,
+          interval: BUCKETING_INTERVAL_ALL,
+          startDate,
+          endDate,
+        },
       });
 
       const responseData = extractQueryResponseFromNamespace({
         result,
         resultKey: 'dora',
       });
-      return responseData?.metrics || {};
+      return {
+        ...timePeriod,
+        ...extractGraphqlDoraData(responseData?.metrics || {}),
+      };
     },
-    async fetchMergeRequestsQuery({ isProject, ...variables }) {
+
+    async fetchFlowMetricsQuery({ startDate, endDate }, timePeriod) {
       const result = await this.$apollo.query({
-        query: isProject ? ProjectMergeRequestsQuery : GroupMergeRequestsQuery,
-        variables,
+        query: this.isProject ? ProjectFlowMetricsQuery : GroupFlowMetricsQuery,
+        variables: {
+          fullPath: this.requestPath,
+          labelNames: this.filterLabels,
+          startDate,
+          endDate,
+        },
+        context: {
+          // This is an expensive request that consistently exceeds our query complexity of 300 when grouped
+          isSingleRequest: true,
+        },
       });
 
-      const responseData = extractQueryResponseFromNamespace({
+      const metrics = extractQueryResponseFromNamespace({ result, resultKey: 'flowMetrics' });
+      return {
+        ...timePeriod,
+        ...extractGraphqlFlowData(metrics || {}),
+      };
+    },
+
+    async fetchMergeRequestsMetricsQuery({ startDate, endDate }, timePeriod) {
+      const result = await this.$apollo.query({
+        query: this.isProject ? ProjectMergeRequestsQuery : GroupMergeRequestsQuery,
+        variables: {
+          fullPath: this.requestPath,
+          startDate: toYmd(startDate),
+          endDate: toYmd(endDate),
+          state: MERGE_REQUESTS_STATE_MERGED,
+          labelNames: this.filterLabels.length > 0 ? this.filterLabels : null,
+        },
+      });
+
+      const metrics = extractQueryResponseFromNamespace({
         result,
         resultKey: 'mergeRequests',
       });
-      return responseData || {};
+      return {
+        ...timePeriod,
+        ...extractGraphqlMergeRequestsData(metrics || {}),
+      };
     },
-    async fetchVulnerabilitiesQuery({ isProject, ...variables }) {
+
+    async fetchVulnerabilitiesMetricsQuery({ endDate }, timePeriod) {
       const result = await this.$apollo.query({
-        query: isProject ? ProjectVulnerabilitiesQuery : GroupVulnerabilitiesQuery,
-        variables,
+        query: this.isProject ? ProjectVulnerabilitiesQuery : GroupVulnerabilitiesQuery,
+        variables: {
+          fullPath: this.requestPath,
+
+          // The vulnerabilities API request takes a date, so the timezone skews it outside the monthly range
+          // The vulnerabilites count returns cumulative data for each day
+          // we only want to use the value of the last day in the time period
+          // so we override the startDate and set it to the same value as the end date
+          startDate: toYmd(endDate),
+          endDate: toYmd(endDate),
+        },
       });
 
       const responseData = extractQueryResponseFromNamespace({
         result,
         resultKey: 'vulnerabilitiesCountByDay',
       });
-      return responseData?.nodes || [];
-    },
-    async fetchGraphqlData({ startDate, endDate }, timePeriod) {
-      const dora = await this.fetchDoraMetricsQuery({
-        ...this.defaultQueryParams,
-        startDate,
-        endDate,
-      });
-
-      const flowMetrics = await this.fetchFlowMetricsQuery({
-        ...this.defaultQueryParams,
-        startDate,
-        endDate,
-        labelNames: this.filterLabels,
-      });
-
-      // The vulnerabilities API request takes a date, so the timezone skews it outside the monthly range
-      // The vulnerabilites count returns cumulative data for each day
-      // we only want to use the value of the last day in the time period
-      // so we override the startDate and set it to the same value as the end date
-      const vulnerabilities = await this.fetchVulnerabilitiesQuery({
-        ...this.defaultQueryParams,
-        startDate: toYmd(endDate),
-        endDate: toYmd(endDate),
-      });
-
-      const mergeRequests = await this.fetchMergeRequestsQuery({
-        ...this.defaultQueryParams,
-        startDate: toYmd(startDate),
-        endDate: toYmd(endDate),
-        state: MERGE_REQUESTS_STATE_MERGED,
-        labelNames: this.filterLabels.length > 0 ? this.filterLabels : null,
-      });
-
       return {
         ...timePeriod,
-        ...extractGraphqlFlowData(flowMetrics),
-        ...extractGraphqlDoraData(dora),
-        ...extractGraphqlVulnerabilitiesData(vulnerabilities),
-        ...extractGraphqlMergeRequestsData(mergeRequests),
+        ...extractGraphqlVulnerabilitiesData(responseData?.nodes || []),
       };
-    },
-    async fetchTableMetrics() {
-      try {
-        const timePeriods = await fetchMetricsForTimePeriods(
-          DASHBOARD_TIME_PERIODS,
-          this.fetchGraphqlData,
-        );
-
-        this.tableData = generateMetricComparisons(timePeriods);
-      } catch (error) {
-        createAlert({ message: DASHBOARD_LOADING_FAILURE, error, captureError: true });
-      }
-    },
-    async fetchSparklineMetrics() {
-      try {
-        const chartData = await fetchMetricsForTimePeriods(
-          CHART_TIME_PERIODS,
-          this.fetchGraphqlData,
-        );
-
-        this.chartData = generateSparklineCharts(chartData);
-      } catch (error) {
-        createAlert({ message: CHART_LOADING_FAILURE, error, captureError: true });
-      }
     },
   },
   now,
+  i18n: {
+    DASHBOARD_LOADING_FAILURE,
+    CHART_LOADING_FAILURE,
+  },
 };
 </script>
 <template>
-  <comparison-table
-    :table-data="combinedData"
-    :request-path="namespaceRequestPath"
-    :is-project="isProject"
-    :now="$options.now"
-  />
+  <div>
+    <gl-alert
+      v-if="tableError"
+      class="gl-mb-3"
+      data-testid="table-error-alert"
+      variant="danger"
+      :title="$options.i18n.DASHBOARD_LOADING_FAILURE"
+      :dismissible="false"
+      >{{ tableError }}</gl-alert
+    >
+    <gl-alert
+      v-if="chartError"
+      class="gl-mb-3"
+      data-testid="chart-error-alert"
+      variant="danger"
+      :title="$options.i18n.CHART_LOADING_FAILURE"
+      :dismissible="false"
+      >{{ chartError }}</gl-alert
+    >
+    <comparison-table
+      :table-data="tableData"
+      :request-path="namespaceRequestPath"
+      :is-project="isProject"
+      :now="$options.now"
+    />
+  </div>
 </template>

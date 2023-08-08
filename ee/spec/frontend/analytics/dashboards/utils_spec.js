@@ -149,7 +149,7 @@ describe('Analytics Dashboards utils', () => {
         res = generateSparklineCharts(mockSubsetChartsTimePeriods);
       });
 
-      it('returns 0 for each missing metric', () => {
+      it('excludes missing metrics from the result', () => {
         expect(res).toEqual(mockSubsetChartData);
       });
     });

@@ -1,6 +1,5 @@
 import { isUndefined } from 'lodash';
 import { nMonthsBefore } from '~/lib/utils/datetime_utility';
-import { DORA_METRICS } from '~/analytics/shared/constants';
 
 const METRIC_IDENTIFIERS = [
   'lead_time_for_changes',
@@ -161,7 +160,7 @@ export const mockChartsTimePeriods = MOCK_CHART_TIME_PERIODS.map((timePeriod, i)
   ...timePeriod,
   ...mockMetrics({
     lead_time_for_changes: '-',
-    time_to_restore_service: undefined,
+    time_to_restore_service: 0,
     change_failure_rate: 0,
     deployment_frequency: i,
     lead_time: i + 1,
@@ -429,45 +428,6 @@ const mockChartDataWithSameValue = (count, value) =>
   mockChartDataValues([...Array(count).keys()].map(() => value));
 
 export const mockSubsetChartData = {
-  change_failure_rate: {
-    chart: {
-      data: mockChartDataWithSameValue(2, 0),
-      tooltipLabel: '%',
-    },
-  },
-  cycle_time: {
-    chart: {
-      data: mockChartDataWithSameValue(2, 0),
-      tooltipLabel: 'days',
-    },
-  },
-  deployment_frequency: {
-    chart: {
-      data: mockChartDataWithSameValue(2, 0),
-      tooltipLabel: '/day',
-    },
-  },
-  deploys: {
-    chart: {
-      data: mockChartDataWithSameValue(2, 0),
-    },
-  },
-  issues: {
-    chart: {
-      data: mockChartDataWithSameValue(2, 0),
-    },
-  },
-  issues_completed: {
-    chart: {
-      data: mockChartDataWithSameValue(2, 0),
-    },
-  },
-  lead_time: {
-    chart: {
-      data: mockChartDataWithSameValue(2, 0),
-      tooltipLabel: 'days',
-    },
-  },
   lead_time_for_changes: {
     chart: {
       data: mockChartDataValues([1, 2]),
@@ -478,21 +438,6 @@ export const mockSubsetChartData = {
     chart: {
       data: mockChartDataValues([100, 99]),
       tooltipLabel: 'days',
-    },
-  },
-  vulnerability_critical: {
-    chart: {
-      data: mockChartDataWithSameValue(2, 0),
-    },
-  },
-  vulnerability_high: {
-    chart: {
-      data: mockChartDataWithSameValue(2, 0),
-    },
-  },
-  merge_request_throughput: {
-    chart: {
-      data: mockChartDataWithSameValue(2, 0),
     },
   },
 };
@@ -666,11 +611,6 @@ export const mockMergeRequestsResponseData = {
   merge_request_throughput: 10,
   __typename: 'MergeRequestConnection',
 };
-
-export const mockExcludeMetrics = [
-  DORA_METRICS.DEPLOYMENT_FREQUENCY,
-  DORA_METRICS.LEAD_TIME_FOR_CHANGES,
-];
 
 export const MOCK_LABELS = [
   { id: 1, title: 'one', color: '#FFFFFF' },

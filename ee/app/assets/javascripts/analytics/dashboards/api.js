@@ -94,7 +94,7 @@ export const extractGraphqlDoraData = (data = []) => {
 
   return Object.entries(TABLE_METRICS).reduce(
     (acc, [identifier, tmValue]) =>
-      bucketedData && bucketedData[identifier]
+      bucketedData && identifier in bucketedData
         ? {
             ...acc,
             [identifier]: {
@@ -174,7 +174,7 @@ export const extractGraphqlFlowData = (data = {}) =>
 export const extractGraphqlMergeRequestsData = (data = {}) =>
   Object.entries(TABLE_METRICS).reduce(
     (acc, [identifier]) =>
-      data && data[identifier]
+      data && identifier in data
         ? {
             ...acc,
             [identifier]: {
