@@ -9395,6 +9395,9 @@ msgstr ""
 msgid "Change branches"
 msgstr ""
 
+msgid "Change confidentiality"
+msgstr ""
+
 msgid "Change label"
 msgstr ""
 
@@ -43054,6 +43057,9 @@ msgid "Select branches"
 msgstr ""
 
 msgid "Select color"
+msgstr ""
+
+msgid "Select confidentiality"
 msgstr ""
 
 msgid "Select default branch"
