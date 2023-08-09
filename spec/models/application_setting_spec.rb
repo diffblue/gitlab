@@ -1335,6 +1335,15 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
         it { is_expected.to allow_value(20).for(:default_project_visibility) }
       end
     end
+
+    describe 'sentry_clientside_traces_sample_rate' do
+      it do
+        is_expected.to validate_numericality_of(:sentry_clientside_traces_sample_rate)
+          .is_greater_than_or_equal_to(0)
+          .is_less_than_or_equal_to(1)
+          .with_message("must be a value between 0 and 1")
+      end
+    end
   end
 
   context 'restrict creating duplicates' do
