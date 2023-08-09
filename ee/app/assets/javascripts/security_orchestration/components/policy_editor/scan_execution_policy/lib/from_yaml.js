@@ -42,7 +42,7 @@ export const hasRuleModeSupportedScanners = (policy) => {
 /*
   Construct a policy object expected by the policy editor from a yaml manifest.
 */
-export const fromYaml = ({ manifest, validateRuleMode = false }) => {
+export const fromYaml = ({ manifest, validateRuleMode = false, glFeatures = {} }) => {
   try {
     const policy = safeLoad(manifest, { json: true });
 
@@ -54,7 +54,15 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
        * schema. These values should not be retrieved from the backend schema because
        * the UI for new attributes may not be available.
        */
-      const rulesKeys = ['type', 'agents', 'branches', 'branch_type', 'cadence', 'timezone'];
+      const rulesKeys = [
+        'type',
+        'agents',
+        'branches',
+        'branch_type',
+        'cadence',
+        'timezone',
+        ...(glFeatures.securityPoliciesBranchExceptions ? ['branch_exceptions'] : []),
+      ];
       const actionsKeys = ['scan', 'site_profile', 'scanner_profile', 'variables', 'tags'];
 
       return isValidPolicy({ policy, rulesKeys, actionsKeys }) &&
@@ -77,10 +85,11 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
 /**
  * Converts a security policy from yaml to an object
  * @param {String} manifest a security policy in yaml form
+ * @param {Object} glFeatures check if flag is anbled
  * @returns {Object} security policy object and any errors
  */
-export const createPolicyObject = (manifest) => {
-  const policy = fromYaml({ manifest, validateRuleMode: true });
+export const createPolicyObject = (manifest, glFeatures = {}) => {
+  const policy = fromYaml({ manifest, validateRuleMode: true, glFeatures });
 
   return { policy, hasParsingError: Boolean(policy.error) };
 };

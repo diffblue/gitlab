@@ -12,6 +12,8 @@ import {
   mockDastScanExecutionObject,
   mockInvalidCadenceScanExecutionObject,
   mockInvalidYamlCadenceValue,
+  mockBranchExceptionsScanExecutionObject,
+  mockBranchExceptionsExecutionManifest,
 } from 'ee_jest/security_orchestration/mocks/mock_scan_execution_policy_data';
 
 describe('fromYaml', () => {
@@ -25,6 +27,25 @@ describe('fromYaml', () => {
   `('$title', ({ input, output }) => {
     expect(fromYaml(input)).toStrictEqual(output);
   });
+});
+
+describe('feature flag', () => {
+  it.each`
+    securityPoliciesBranchExceptions | output
+    ${true}                          | ${mockBranchExceptionsScanExecutionObject}
+    ${false}                         | ${{ error: true }}
+  `(
+    'returns the policy object for branch exceptions with feature flag',
+    ({ securityPoliciesBranchExceptions, output }) => {
+      expect(
+        fromYaml({
+          manifest: mockBranchExceptionsExecutionManifest,
+          validateRuleMode: true,
+          glFeatures: { securityPoliciesBranchExceptions },
+        }),
+      ).toStrictEqual(output);
+    },
+  );
 });
 
 describe('createPolicyObject', () => {

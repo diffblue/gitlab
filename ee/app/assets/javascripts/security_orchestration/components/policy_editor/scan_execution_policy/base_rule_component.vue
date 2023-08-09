@@ -5,6 +5,9 @@ import {
   ALL_PROTECTED_BRANCHES,
   SPECIFIC_BRANCHES,
 } from 'ee/security_orchestration/components/policy_editor/constants';
+import BranchExceptionSelector from 'ee/security_orchestration/components/branch_exception_selector.vue';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import BranchTypeSelector from './branch_type_selector.vue';
 import { SCAN_EXECUTION_RULES_LABELS, SCAN_EXECUTION_RULES_PIPELINE_KEY } from './constants';
 
@@ -12,20 +15,23 @@ export default {
   SCAN_EXECUTION_RULES_LABELS,
   i18n: {
     pipelineRule: s__(
-      'ScanExecutionPolicy|%{rules} every time a pipeline runs for %{scopes} %{branches} %{agents} %{namespaces}',
+      'ScanExecutionPolicy|%{rules} every time a pipeline runs for %{scopes} %{branches} %{branchExceptions} %{agents} %{namespaces}',
     ),
     scheduleRule: s__(
-      'ScanExecutionPolicy|%{rules} actions for %{scopes} %{branches} %{agents} %{namespaces} %{period}',
+      'ScanExecutionPolicy|%{rules} actions for %{scopes} %{branches} %{branchExceptions} %{agents} %{namespaces} %{period}',
     ),
     selectedBranchesPlaceholder: s__('ScanExecutionPolicy|Select branches'),
   },
   name: 'BaseRuleComponent',
   components: {
+    BranchExceptionSelector,
     BranchTypeSelector,
     GlButton,
     GlCollapsibleListbox,
     GlSprintf,
   },
+  mixins: [glFeatureFlagsMixin()],
+  inject: ['namespaceType'],
   props: {
     initRule: {
       type: Object,
@@ -69,6 +75,9 @@ export default {
         ? s__('SecurityOrchestration|branches')
         : n__('branch', 'branches', this.initRule.branches.length);
     },
+    branchExceptions() {
+      return this.initRule.branch_exceptions;
+    },
     rulesListBoxItems() {
       return Object.entries(this.$options.SCAN_EXECUTION_RULES_LABELS).map(([value, text]) => ({
         value,
@@ -84,6 +93,9 @@ export default {
       return this.initRule.type === SCAN_EXECUTION_RULES_PIPELINE_KEY
         ? this.$options.i18n.pipelineRule
         : this.$options.i18n.scheduleRule;
+    },
+    isProject() {
+      return this.namespaceType === NAMESPACE_TYPES.PROJECT;
     },
   },
   methods: {
@@ -130,6 +142,9 @@ export default {
 
       this.$emit('changed', updatedRule);
     },
+    setBranchException(value) {
+      this.$emit('changed', { ...this.initRule, ...value });
+    },
   },
 };
 </script>
@@ -169,6 +184,14 @@ export default {
               />
               <span data-testid="rule-branches-label"> {{ branchesLabel }} </span>
             </template>
+          </template>
+
+          <template #branchExceptions>
+            <branch-exception-selector
+              v-if="isProject && glFeatures.securityPoliciesBranchExceptions"
+              :selected-exceptions="branchExceptions"
+              @select="setBranchException"
+            />
           </template>
 
           <template #agents>

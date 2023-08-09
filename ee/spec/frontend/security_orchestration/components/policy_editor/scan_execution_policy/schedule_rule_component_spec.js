@@ -14,6 +14,7 @@ import {
   SCAN_EXECUTION_RULE_SCOPE_BRANCH_KEY,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/constants';
 import { CRON_DEFAULT_TIME } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 
 describe('ScheduleRuleComponent', () => {
   let wrapper;
@@ -32,6 +33,7 @@ describe('ScheduleRuleComponent', () => {
         ...options,
       },
       provide: {
+        namespaceType: NAMESPACE_TYPES.PROJECT,
         timezones: mockTimezones,
       },
       stubs: {
