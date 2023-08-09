@@ -5,8 +5,7 @@ module GitlabSubscriptions
     class BaseService
       ImplementationMissingError = Class.new(RuntimeError)
 
-      def initialize(current_user, namespace, add_on, params = {})
-        @current_user = current_user
+      def initialize(namespace, add_on, params = {})
         @namespace = namespace
         @add_on = add_on
         @quantity = params[:quantity]
@@ -15,21 +14,12 @@ module GitlabSubscriptions
       end
 
       def execute
-        authorize_current_user!
+        raise ImplementationMissingError, 'Override in derived class'
       end
 
       private
 
-      attr_reader :current_user, :namespace, :add_on, :quantity, :expires_on, :purchase_xid
-
-      # rubocop: disable Cop/UserAdmin
-      def authorize_current_user!
-        # Using #admin? is discouraged as it will bypass admin mode authorisation checks,
-        # however those checks are not in place in our REST API yet, and this service is only
-        # going to be used by the API for admin-only actions
-        raise Gitlab::Access::AccessDeniedError unless current_user&.admin?
-      end
-      # rubocop: enable Cop/UserAdmin
+      attr_reader :namespace, :add_on, :quantity, :expires_on, :purchase_xid
 
       # Override in derived class
       def add_on_purchase
