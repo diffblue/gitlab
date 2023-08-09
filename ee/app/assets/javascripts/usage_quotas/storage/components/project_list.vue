@@ -175,31 +175,49 @@ export default {
     </template>
 
     <template #cell(repository)="{ item: project }">
-      <number-to-human-size :value="project.statistics.repositorySize" />
+      <number-to-human-size
+        :value="project.statistics.repositorySize"
+        data-testid="project-repository-size"
+      />
     </template>
 
     <template #cell(lfsObjects)="{ item: project }">
-      <number-to-human-size :value="project.statistics.lfsObjectsSize" />
+      <number-to-human-size
+        :value="project.statistics.lfsObjectsSize"
+        data-testid="project-lfs-object-size"
+      />
     </template>
 
     <template #cell(buildArtifacts)="{ item: project }">
-      <number-to-human-size :value="project.statistics.buildArtifactsSize" />
+      <number-to-human-size
+        :value="project.statistics.buildArtifactsSize"
+        data-testid="project-build-artifact-size"
+      />
     </template>
 
     <template #cell(packages)="{ item: project }">
-      <number-to-human-size :value="project.statistics.packagesSize" />
+      <number-to-human-size
+        :value="project.statistics.packagesSize"
+        data-testid="project-packages-size"
+      />
     </template>
 
     <template #cell(wiki)="{ item: project }">
-      <number-to-human-size :value="project.statistics.wikiSize" />
+      <number-to-human-size :value="project.statistics.wikiSize" data-testid="project-wiki-size" />
     </template>
 
     <template #cell(snippets)="{ item: project }">
-      <number-to-human-size :value="project.statistics.snippetsSize" />
+      <number-to-human-size
+        :value="project.statistics.snippetsSize"
+        data-testid="project-snippets-size"
+      />
     </template>
 
     <template #cell(containerRegistry)="{ item: project }">
-      <number-to-human-size :value="project.statistics.containerRegistrySize" />
+      <number-to-human-size
+        :value="project.statistics.containerRegistrySize"
+        data-testid="project-containers-registry-size"
+      />
     </template>
   </gl-table>
 </template>
