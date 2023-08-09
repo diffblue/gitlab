@@ -23,22 +23,5 @@ RSpec.shared_examples_for 'page with unconfirmed user deletion information' do
         )
       )
     end
-
-    context 'when delete unconfirmed users frontend FF is not enabled' do
-      before do
-        stub_feature_flags(delete_unconfirmed_users_setting_frontend: false)
-      end
-
-      it "hides the unconfirmed users text" do
-        subject
-
-        expect(rendered).not_to have_text(
-          format(
-            _("You must confirm your email within %{cut_off_days} days of signing up."),
-            cut_off_days: delete_after_days
-          )
-        )
-      end
-    end
   end
 end

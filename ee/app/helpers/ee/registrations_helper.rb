@@ -24,11 +24,9 @@ module EE
     end
 
     def unconfirmed_email_feature_enabled?
-      ::Feature.enabled?(:delete_unconfirmed_users_setting_frontend) &&
-        ::Feature.enabled?(:delete_unconfirmed_users_setting) &&
-        ::Gitlab::CurrentSettings.delete_unconfirmed_users? &&
+      ::Gitlab::CurrentSettings.delete_unconfirmed_users? &&
         (::Gitlab::CurrentSettings.email_confirmation_setting_soft? ||
-           ::Gitlab::CurrentSettings.email_confirmation_setting_hard?) &&
+         ::Gitlab::CurrentSettings.email_confirmation_setting_hard?) &&
         ::License.feature_available?(:delete_unconfirmed_users)
     end
 

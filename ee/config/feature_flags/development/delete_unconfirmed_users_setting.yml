@@ -1,8 +1,0 @@
----
-name: delete_unconfirmed_users_setting
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/122600
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/414252
-milestone: '16.1'
-type: development
-group: group::authentication and authorization
-default_enabled: true
