@@ -13747,6 +13747,7 @@ CI/CD variables for a project.
 ##### `CiRunner.jobCount`
 
 Number of jobs processed by the runner (limited to 1000, plus one to indicate that more items exist).
+`jobCount` is an optimized version of `jobs { count }`, and can be requested for multiple runners on the same request.
 
 Returns [`Int`](#int).
 
