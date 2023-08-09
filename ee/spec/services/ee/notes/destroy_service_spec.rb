@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Notes::DestroyService do
+RSpec.describe Notes::DestroyService, feature_category: :team_planning do
   let_it_be(:project, refind: true) { create(:project) }
   let_it_be(:user) { create(:user) }
 
