@@ -5,6 +5,7 @@ import { initAdminDeletionProtectionSettings } from 'ee/admin/application_settin
 import { initMaintenanceModeSettings } from 'ee/maintenance_mode_settings';
 import { initServicePingSettingsClickTracking } from 'ee/registration_features_discovery_message';
 import initDatePicker from '~/behaviors/date_picker';
+import { initInputCopyToggleVisibility } from '~/vue_shared/components/form';
 
 initAdminDeletionProtectionSettings();
 initMaintenanceModeSettings();
@@ -13,3 +14,4 @@ initAddLicenseApp();
 initScimTokenApp();
 // Used for dashboard_limit_new_namespace_creation_enforcement_date field
 initDatePicker();
+initInputCopyToggleVisibility();

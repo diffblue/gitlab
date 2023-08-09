@@ -3370,9 +3370,6 @@ msgstr ""
 msgid "AdminSettings|CI/CD limits"
 msgstr ""
 
-msgid "AdminSettings|Clickhouse URL"
-msgstr ""
-
 msgid "AdminSettings|Collector host"
 msgstr ""
 
@@ -3389,9 +3386,6 @@ msgid "AdminSettings|Configure when inactive projects should be automatically de
 msgstr ""
 
 msgid "AdminSettings|Cube API URL"
-msgstr ""
-
-msgid "AdminSettings|Cube API key"
 msgstr ""
 
 msgid "AdminSettings|Delete inactive projects"
@@ -3568,9 +3562,6 @@ msgstr ""
 msgid "AdminSettings|Preview payload"
 msgstr ""
 
-msgid "AdminSettings|Product analytics configurator connection string"
-msgstr ""
-
 msgid "AdminSettings|Project export"
 msgstr ""
 
@@ -3661,9 +3652,6 @@ msgstr ""
 msgid "AdminSettings|The URL of your Cube instance."
 msgstr ""
 
-msgid "AdminSettings|The connection string of your product analytics configurator instance for Snowplow configuration."
-msgstr ""
-
 msgid "AdminSettings|The default domain to use for Auto Review Apps and Auto Deploy stages in all projects."
 msgstr ""
 
@@ -3701,12 +3689,6 @@ msgid "AdminSettings|Use AWS OpenSearch Service with IAM credentials"
 msgstr ""
 
 msgid "AdminSettings|Use for cluster and index migrations. When indexing is paused, GitLab still tracks changes."
-msgstr ""
-
-msgid "AdminSettings|Used to connect Snowplow to the Clickhouse instance."
-msgstr ""
-
-msgid "AdminSettings|Used to retrieve dashboard data from the Cube instance."
 msgstr ""
 
 msgid "AdminSettings|Users and groups must accept the invitation before they're added to a group or project."
@@ -35589,6 +35571,9 @@ msgstr ""
 msgid "ProductAnalytics|Click Events"
 msgstr ""
 
+msgid "ProductAnalytics|Clickhouse URL"
+msgstr ""
+
 msgid "ProductAnalytics|Compares all events against each other"
 msgstr ""
 
@@ -35604,10 +35589,16 @@ msgstr ""
 msgid "ProductAnalytics|Compares page views of all pages against each other"
 msgstr ""
 
+msgid "ProductAnalytics|Connection string"
+msgstr ""
+
 msgid "ProductAnalytics|Create a visualization"
 msgstr ""
 
 msgid "ProductAnalytics|Creating your product analytics instance..."
+msgstr ""
+
+msgid "ProductAnalytics|Cube API key"
 msgstr ""
 
 msgid "ProductAnalytics|Details on how to configure product analytics to collect data."
@@ -35700,6 +35691,9 @@ msgstr ""
 msgid "ProductAnalytics|Set up to track how your product is performing and optimize your product and development processes."
 msgstr ""
 
+msgid "ProductAnalytics|The connection string for your Snowplow configurator instance."
+msgstr ""
+
 msgid "ProductAnalytics|The host to send all tracking events to"
 msgstr ""
 
@@ -35719,6 +35713,12 @@ msgid "ProductAnalytics|Track specific features"
 msgstr ""
 
 msgid "ProductAnalytics|Unique Users"
+msgstr ""
+
+msgid "ProductAnalytics|Used to connect Snowplow to the Clickhouse instance."
+msgstr ""
+
+msgid "ProductAnalytics|Used to retrieve dashboard data from the Cube instance."
 msgstr ""
 
 msgid "ProductAnalytics|User Sessions"
@@ -36780,9 +36780,6 @@ msgstr ""
 msgid "ProjectSettings|Choose your merge method, options, checks, and squash options."
 msgstr ""
 
-msgid "ProjectSettings|Clickhouse URL"
-msgstr ""
-
 msgid "ProjectSettings|Collector host"
 msgstr ""
 
@@ -36802,9 +36799,6 @@ msgid "ProjectSettings|Container registry"
 msgstr ""
 
 msgid "ProjectSettings|Cube API URL"
-msgstr ""
-
-msgid "ProjectSettings|Cube API key"
 msgstr ""
 
 msgid "ProjectSettings|Custom dashboard projects"
@@ -37005,9 +36999,6 @@ msgstr ""
 msgid "ProjectSettings|Product analytics"
 msgstr ""
 
-msgid "ProjectSettings|Product analytics configurator connection string"
-msgstr ""
-
 msgid "ProjectSettings|Project visibility"
 msgstr ""
 
@@ -37110,9 +37101,6 @@ msgstr ""
 msgid "ProjectSettings|The commit message used when squashing commits."
 msgstr ""
 
-msgid "ProjectSettings|The connection string of your product analytics configurator instance for Snowplow configuration."
-msgstr ""
-
 msgid "ProjectSettings|The default target project for merge requests created in this fork project."
 msgstr ""
 
@@ -37153,12 +37141,6 @@ msgid "ProjectSettings|Upstream project"
 msgstr ""
 
 msgid "ProjectSettings|Used for every new merge request."
-msgstr ""
-
-msgid "ProjectSettings|Used to connect Snowplow to the Clickhouse instance."
-msgstr ""
-
-msgid "ProjectSettings|Used to retrieve dashboard data from the Cube instance."
 msgstr ""
 
 msgid "ProjectSettings|Users can copy the repository to a new project."

@@ -111,11 +111,11 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
         render
 
         expect(rendered).to have_css '#js-product-analytics-settings'
-        expect(rendered).to have_field s_('AdminSettings|Product analytics configurator connection string')
+        expect(rendered).to have_css "[data-name='application_setting[product_analytics_configurator_connection_string]']"
         expect(rendered).to have_field s_('AdminSettings|Collector host')
-        expect(rendered).to have_field s_('AdminSettings|Clickhouse URL')
+        expect(rendered).to have_css "[data-name='application_setting[product_analytics_clickhouse_connection_string]']"
         expect(rendered).to have_field s_('AdminSettings|Cube API URL')
-        expect(rendered).to have_field s_('AdminSettings|Cube API key')
+        expect(rendered).to have_css "[data-name='application_setting[cube_api_key]']"
       end
     end
 
