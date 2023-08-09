@@ -43,6 +43,14 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
         apdex_slo: {
           main: 0.99,
           ci: 0.98
+        },
+        wal_rate_sli_query: {
+          main: 'WAL rate query main',
+          ci: 'WAL rate query ci'
+        },
+        wal_rate_slo: {
+          main: 0.99,
+          ci: 0.98
         }
       }
     end
@@ -260,7 +268,7 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
     it { is_expected.to allow_value(true, false).for(:gitlab_dedicated_instance) }
     it { is_expected.not_to allow_value(nil).for(:gitlab_dedicated_instance) }
 
-    it { is_expected.not_to allow_value(random: :value).for(:prometheus_alert_db_indicators_settings) }
+    it { is_expected.not_to allow_value(apdex_slo: '10').for(:prometheus_alert_db_indicators_settings) }
     it { is_expected.to allow_value(nil).for(:prometheus_alert_db_indicators_settings) }
     it { is_expected.to allow_value(valid_prometheus_alert_db_indicators_settings).for(:prometheus_alert_db_indicators_settings) }
 
