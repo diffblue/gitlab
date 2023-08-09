@@ -238,7 +238,7 @@ export default {
       :primary-button-link="backUrl"
     />
     <div v-else class="gl-mt-7">
-      <gl-skeleton-loader :lines="3" />
+      <gl-skeleton-loader />
     </div>
   </div>
 </template>
