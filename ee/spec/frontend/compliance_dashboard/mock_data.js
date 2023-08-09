@@ -36,11 +36,11 @@ export const createDefaultProjectsResponse = (projects) => ({
   },
 });
 
-export const createComplianceAdherence = (id) => ({
+export const createComplianceAdherence = (id, checkName) => ({
   id: `gid://gitlab/Projects::ComplianceStandards::Adherence/${id}`,
   updatedAt: 'July 1, 2023',
   status: 'SUCCESS',
-  checkName: 'PREVENT_APPROVAL_BY_MERGE_REQUEST_AUTHOR',
+  checkName,
   standard: 'GITLAB',
   project: {
     id: 'gid://gitlab/Project/1',
@@ -57,13 +57,16 @@ export const createComplianceAdherence = (id) => ({
   },
 });
 
-export const createComplianceAdherencesResponse = ({ count = 1 } = {}) => ({
+export const createComplianceAdherencesResponse = ({
+  count = 1,
+  checkName = 'PREVENT_APPROVAL_BY_MERGE_REQUEST_AUTHOR',
+} = {}) => ({
   data: {
     group: {
       projectComplianceStandardsAdherence: {
         nodes: Array(count)
           .fill(null)
-          .map((_, id) => createComplianceAdherence(id)),
+          .map((_, id) => createComplianceAdherence(id, checkName)),
       },
     },
   },
