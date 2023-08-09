@@ -345,18 +345,6 @@ module Gitlab
         ::Elastic::Latest::ApplicationClassProxy.new(klass, use_separate_indices: true).index_name
       end
 
-      def healthy?
-        Rails.cache.fetch([self.class.name, :healthy?], expires_in: 5.minutes) do
-          uncached_healthy?
-        end
-      end
-
-      def uncached_healthy?
-        client.cluster.health['status'] != 'red'
-      rescue StandardError
-        false
-      end
-
       # handles unreachable hosts and any other exceptions that may be raised
       def ping?
         client.ping
