@@ -24,7 +24,13 @@ module Namespaces
                       "%{strong_start}before%{strong_end} you manage your storage usage. Otherwise, " \
                       "your Free top-level group will become read-only immediately because the " \
                       "5-user limit applies. For more information, " \
-                      "see our %{faq_link_start}FAQ%{link_end}."), alert_body_params)
+                      "see our %{faq_link_start}FAQ%{link_end}.%{br_tag}%{br_tag}" \
+                      "To minimize the impact of storage limits to Free top-level groups, " \
+                      "for a limited time, GitLab is offering a " \
+                      "%{promotion_link_start}one-time 70 percent discount%{link_end} " \
+                      "off the list price for %{offer_availability_link_start}qualifying top-level groups%{link_end} " \
+                      "when you purchase a new, one year subscription of GitLab Premium SaaS. " \
+                      "This offer is valid until 2023-10-31."), alert_body_params)
       end
 
       def namespace_primary_cta

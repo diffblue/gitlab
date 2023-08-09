@@ -9,11 +9,11 @@ module Namespaces
         text_args = {
           used_storage: storage_counter(root_namespace.root_storage_statistics&.storage_size || 0),
           usage_quotas_nav_instruction: usage_quotas_nav_instruction,
-          docs_link_start: Kernel.format('<a href="%{url}" >', { url: learn_more_link }),
-          link_end: "</a>"
+          docs_link_start: Kernel.format('<a href="%{url}" >', { url: learn_more_link }).html_safe,
+          link_end: "</a>".html_safe
         }.merge(strong_tags)
 
-        Kernel.format(
+        safe_format(
           s_(
             "UsageQuota|The namespace is currently using %{strong_start}%{used_storage}%{strong_end} " \
             "of namespace storage. View and manage your usage from " \
@@ -21,7 +21,7 @@ module Namespaces
             "%{docs_link_start}Learn more%{link_end} about how to reduce your storage." \
           ),
           text_args
-        ).html_safe
+        )
       end
 
       def user_allowed?
