@@ -25,6 +25,8 @@ RSpec.shared_examples 'a blob replicator' do
     let_it_be(:event_name) { ::Geo::BlobReplicatorStrategy::EVENT_CREATED }
   end
 
+  it_behaves_like 'a verifiable replicator'
+
   # This could be included in each model's spec, but including it here is DRYer.
   include_examples 'a replicable model' do
     let(:replicator_class) { described_class }

@@ -25,6 +25,4 @@ RSpec.describe Geo::ProjectRepositoryReplicator, feature_category: :geo_replicat
       end
     end
   end
-
-  include_examples 'a verifiable replicator'
 end

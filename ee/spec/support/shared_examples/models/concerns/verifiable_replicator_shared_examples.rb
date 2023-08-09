@@ -803,7 +803,14 @@ RSpec.shared_examples 'a verifiable replicator' do
 
   context 'integration tests' do
     before do
-      handle_model_record_before_example
+      if defined?(handle_model_record_before_verification_integration_examples)
+        # This method can be redefined when including
+        # these examples, to add additional steps required
+        # before running integration tests for a replicator
+        handle_model_record_before_verification_integration_examples
+      else
+        model_record.save!
+      end
     end
 
     context 'on a primary' do
@@ -865,12 +872,5 @@ RSpec.shared_examples 'a verifiable replicator' do
 
   def verification_state_value(state_name)
     model_record.class.verification_state_value(state_name)
-  end
-
-  # This method can be redefined when including
-  # these examples, to add additional steps required
-  # before running integration tests for a replicator
-  def handle_model_record_before_example
-    model_record.save!
   end
 end

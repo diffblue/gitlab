@@ -7,5 +7,4 @@ RSpec.describe Geo::CiSecureFileReplicator, feature_category: :geo_replication d
   let(:model_record) { create(:ci_secure_file, project: project) }
 
   include_examples 'a blob replicator'
-  include_examples 'a verifiable replicator'
 end

@@ -6,5 +6,4 @@ RSpec.describe Geo::PagesDeploymentReplicator, feature_category: :geo_replicatio
   let(:model_record) { create(:pages_deployment) }
 
   include_examples 'a blob replicator'
-  include_examples 'a verifiable replicator'
 end
