@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Processable do
+RSpec.describe Ci::Processable, feature_category: :continuous_integration do
   describe 'delegations' do
     subject { described_class.new }
 

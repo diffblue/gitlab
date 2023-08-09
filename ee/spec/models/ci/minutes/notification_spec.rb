@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::Notification do
+RSpec.describe Ci::Minutes::Notification, feature_category: :continuous_integration do
   include ::Ci::MinutesHelpers
 
   let_it_be(:user) { create(:user) }

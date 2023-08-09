@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Pipeline do
+RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
   using RSpec::Parameterized::TableSyntax
 
   let(:user) { create(:user) }

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::Usage do
+RSpec.describe Ci::Minutes::Usage, feature_category: :continuous_integration do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be_with_reload(:namespace) do
