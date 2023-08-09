@@ -29,7 +29,7 @@ module Namespaces
 
       def current_size
         @current_size ||= Rails.cache.fetch(current_size_cache_key, expires_in: EXPIRATION_TIME) do
-          root_namespace.root_storage_statistics&.cost_factored_storage_size || 0
+          root_storage_statistics&.cost_factored_storage_size || 0
         end
       end
 
@@ -92,10 +92,16 @@ module Namespaces
 
       attr_reader :root_namespace
 
-      delegate :gitlab_subscription, to: :root_namespace
+      delegate :gitlab_subscription, :root_storage_statistics, to: :root_namespace
 
       def current_size_cache_key
-        ['namespaces', root_namespace.id, CURRENT_SIZE_CACHE_KEY]
+        version = root_storage_statistics&.cache_key_with_version
+
+        [
+          CURRENT_SIZE_CACHE_KEY
+        ].tap do |key|
+          version ? key.prepend(version) : key.prepend('namespaces', root_namespace.id)
+        end
       end
 
       def limit_cache_key

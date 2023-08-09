@@ -86,7 +86,8 @@ RSpec.describe Namespaces::Storage::ProjectPreEnforcementAlertComponent, :saas, 
         storage_size: 5.gigabytes,
         cost_factored_storage_size: 5.gigabytes,
         public_forks_storage_size: 0,
-        internal_forks_storage_size: 0
+        internal_forks_storage_size: 0,
+        cache_key_with_version: 'namespace/root_storage_statistics/01-20230601080953661909'
       )
 
       allow(project.root_ancestor)
