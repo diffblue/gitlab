@@ -2299,41 +2299,78 @@ RSpec.describe User, feature_category: :system_access do
 
   describe '#custom_permission_for?', :request_store do
     let_it_be(:project) { create(:project, :in_group) }
+    let_it_be(:group) { project.group }
     let_it_be(:user) { create(:user) }
 
     before do
       stub_licensed_features(custom_roles: true)
     end
 
-    before_all do
-      project_member = create(:project_member, :guest, user: user, source: project)
-      create(
-        :member_role,
-        :guest,
-        read_code: true,
-        read_vulnerability: false,
-        members: [project_member],
-        namespace: project.group
-      )
+    context 'when membership is for a group' do
+      before_all do
+        group_member = create(:group_member, :guest, user: user, source: group)
+        create(
+          :member_role,
+          :guest,
+          admin_vulnerability: false,
+          read_code: false,
+          read_vulnerability: true,
+          members: [group_member],
+          namespace: group
+        )
+      end
+
+      context 'when custom role present for group membership' do
+        it 'returns custom role information on the group' do
+          expect(user.custom_permission_for?(group, :read_vulnerability)).to be true
+          expect(user.custom_permission_for?(group, :admin_vulnerability)).to be false
+          expect(user.custom_permission_for?(group, :read_code)).to be false
+        end
+
+        it 'returns inherited custom role information on the projects within the group' do
+          expect(user.custom_permission_for?(project, :read_vulnerability)).to be true
+          expect(user.custom_permission_for?(project, :admin_vulnerability)).to be false
+          expect(user.custom_permission_for?(project, :read_code)).to be false
+        end
+
+        it 'does not perform extra queries when asked for groups have already been preloaded' do
+          user.custom_permission_for?(group, :read_vulnerability)
+          expect { user.custom_permission_for?(group, :read_vulnerability) }.not_to exceed_query_limit(0)
+        end
+      end
     end
 
-    context 'when read_code present in preloaded custom roles' do
-      before do
-        user.custom_permission_for?(project, :read_code)
+    context 'when custom role present for project membership' do
+      before_all do
+        project_member = create(:project_member, :guest, user: user, source: project)
+        create(
+          :member_role,
+          :guest,
+          admin_vulnerability: false,
+          read_code: true,
+          read_vulnerability: false,
+          members: [project_member],
+          namespace: project.group
+        )
       end
 
-      it 'returns true' do
-        expect(user.custom_permission_for?(project, :read_code)).to be true
-      end
+      context 'when read_code present in preloaded custom roles' do
+        it 'returns custom role information on the the project' do
+          expect(user.custom_permission_for?(project, :read_vulnerability)).to be false
+          expect(user.custom_permission_for?(project, :admin_vulnerability)).to be false
+          expect(user.custom_permission_for?(project, :read_code)).to be true
+        end
 
-      it 'does not perform extra queries when asked for projects have already been preloaded' do
-        expect { user.custom_permission_for?(project, :read_code) }.not_to exceed_query_limit(0)
-      end
-    end
+        it "returns false for all custom permissions on the project's parent group" do
+          expect(user.custom_permission_for?(group, :read_vulnerability)).to be false
+          expect(user.custom_permission_for?(group, :admin_vulnerability)).to be false
+          expect(user.custom_permission_for?(group, :read_code)).to be false
+        end
 
-    context 'when project not present in preloaded custom roles' do
-      it 'loads the custom role' do
-        expect(user.custom_permission_for?(project, :read_code)).to be true
+        it 'does not perform extra queries when asked for projects have already been preloaded' do
+          user.custom_permission_for?(project, :read_code)
+          expect { user.custom_permission_for?(project, :read_code) }.not_to exceed_query_limit(0)
+        end
       end
     end
   end

@@ -216,21 +216,21 @@ module EE
       condition(:role_enables_read_code) do
         next unless @user.is_a?(User)
 
-        @user.custom_permission_for?(project, :read_code)
+        @user.custom_permission_for?(@subject, :read_code)
       end
 
       desc "Custom role on project that enables read vulnerability"
       condition(:role_enables_read_vulnerability) do
         next unless @user.is_a?(User)
 
-        @user.custom_permission_for?(project, :read_vulnerability)
+        @user.custom_permission_for?(@subject, :read_vulnerability)
       end
 
       desc "Custom role on project that enables admin vulnerability"
       condition(:role_enables_admin_vulnerability) do
         next unless @user.is_a?(User)
 
-        @user.custom_permission_for?(project, :admin_vulnerability)
+        @user.custom_permission_for?(@subject, :admin_vulnerability)
       end
 
       desc "Custom role on project that enables read dependency"
@@ -605,11 +605,13 @@ module EE
       end
 
       rule { custom_roles_allowed & role_enables_read_code }.enable :read_code
+
       rule { custom_roles_allowed & role_enables_read_vulnerability }.policy do
         enable :read_vulnerability
         enable :read_security_resource
         enable :create_vulnerability_export
       end
+
       rule { custom_roles_allowed & role_enables_admin_vulnerability }.policy do
         enable :admin_vulnerability
       end

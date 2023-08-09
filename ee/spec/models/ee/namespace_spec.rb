@@ -1942,7 +1942,7 @@ RSpec.describe Namespace do
 
       subject { subgroup.custom_roles_enabled? }
 
-      it { is_expected.to eq false }
+      it { is_expected.to eq true }
     end
   end
 

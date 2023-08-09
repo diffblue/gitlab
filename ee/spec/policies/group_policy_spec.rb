@@ -2897,4 +2897,142 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
       end
     end
   end
+
+  context 'custom role' do
+    let_it_be(:guest) { create(:user) }
+    let_it_be(:parent_group) { create(:group) }
+    let_it_be(:group) { create(:group, parent: parent_group) }
+
+    let_it_be(:parent_group_member_guest) do
+      create(
+        :group_member,
+        user: guest,
+        source: parent_group,
+        access_level: Gitlab::Access::GUEST
+      )
+    end
+
+    let_it_be(:group_member_guest) do
+      create(
+        :group_member,
+        user: guest,
+        source: group,
+        access_level: Gitlab::Access::GUEST
+      )
+    end
+
+    let(:member_role_abilities) { {} }
+    let(:allowed_abilities) { [] }
+    let(:current_user) { guest }
+
+    def create_member_role(member, abilities = member_role_abilities)
+      params = abilities.merge(namespace: parent_group)
+
+      create(:member_role, :guest, params).tap do |role|
+        role.members << member
+      end
+    end
+
+    shared_examples 'custom roles abilities' do
+      subject { described_class.new(current_user, group) }
+
+      context 'without custom_roles license enabled' do
+        before do
+          create_member_role(group_member_guest)
+
+          stub_licensed_features(custom_roles: false)
+        end
+
+        it { is_expected.to be_disallowed(*allowed_abilities) }
+      end
+
+      context 'with custom_roles license enabled' do
+        before do
+          stub_licensed_features(custom_roles: true)
+        end
+
+        context 'custom role for parent group membership' do
+          context 'when a role enables the abilities' do
+            before do
+              create_member_role(parent_group_member_guest)
+            end
+
+            it { is_expected.to be_allowed(*allowed_abilities) }
+          end
+
+          context 'when a role does not enable the abilities' do
+            it { is_expected.to be_disallowed(*allowed_abilities) }
+          end
+        end
+
+        context 'custom role on group membership' do
+          context 'when a role enables the abilities' do
+            before do
+              create_member_role(group_member_guest)
+            end
+
+            it { is_expected.to be_allowed(*allowed_abilities) }
+          end
+
+          context 'when a role does not enable the abilities' do
+            it { is_expected.to be_disallowed(*allowed_abilities) }
+          end
+        end
+      end
+    end
+
+    context 'for a member role with read_vulnerability true' do
+      context 'with custom_roles_on_groups FF enabled' do
+        before do
+          stub_feature_flags(custom_roles_on_groups: [parent_group])
+        end
+
+        let(:member_role_abilities) { { read_vulnerability: true } }
+        let(:allowed_abilities) { [:read_group_security_dashboard] }
+
+        it_behaves_like 'custom roles abilities'
+
+        it 'does not enable to admin_vulnerability' do
+          expect(subject).to be_disallowed(:admin_vulnerability)
+        end
+      end
+
+      context 'with custom_roles_on_groups FF disabled' do
+        before do
+          stub_feature_flags(custom_roles_on_groups: false)
+          create_member_role(group_member_guest)
+        end
+
+        let(:disallowed_abilities) do
+          [:read_vulnerability]
+        end
+
+        it { is_expected.to be_disallowed(*disallowed_abilities) }
+      end
+    end
+
+    context 'for a member role with admin_vulnerability true' do
+      context 'with custom_roles_on_groups FF enabled' do
+        before do
+          stub_feature_flags(custom_roles_on_groups: [parent_group])
+        end
+
+        let(:member_role_abilities) { { read_vulnerability: true, admin_vulnerability: true } }
+        let(:allowed_abilities) { [:read_group_security_dashboard, :admin_vulnerability] }
+
+        it_behaves_like 'custom roles abilities'
+      end
+
+      context 'with custom_roles_on_groups FF disabled' do
+        before do
+          stub_feature_flags(custom_roles_on_groups: false)
+          create_member_role(group_member_guest)
+        end
+
+        let(:disallowed_abilities) { [:admin_vulnerability] }
+
+        it { is_expected.to be_disallowed(*disallowed_abilities) }
+      end
+    end
+  end
 end
