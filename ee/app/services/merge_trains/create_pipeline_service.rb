@@ -25,11 +25,34 @@ module MergeTrains
 
       commit_message = commit_message(merge_request, previous_ref)
 
-      ::MergeRequests::MergeToRefService.new(project: merge_request.target_project, current_user: merge_request.merge_user,
-                                             params: { target_ref: merge_request.train_ref_path,
-                                                       first_parent_ref: previous_ref,
-                                                       commit_message: commit_message })
-                                        .execute(merge_request)
+      if Feature.enabled?(:merge_trains_create_ref_service, merge_request.target_project)
+        ::MergeRequests::CreateRefService.new(
+          current_user: merge_request.merge_user,
+          merge_request: merge_request,
+          target_ref: merge_request.train_ref_path,
+          source_sha: merge_request.diff_head_sha,
+          first_parent_ref: previous_ref,
+          merge_commit_message: commit_message
+        ).execute.to_h.transform_keys do |key|
+          # TODO: Remove this transformation with FF merge_trains_create_ref_service
+          case key
+          when :commit_sha then :commit_id
+          when :source_sha then :source_id
+          when :target_sha then :target_id
+          else key
+          end
+        end
+      else
+        ::MergeRequests::MergeToRefService.new(
+          project: merge_request.target_project,
+          current_user: merge_request.merge_user,
+          params: {
+            target_ref: merge_request.train_ref_path,
+            first_parent_ref: previous_ref,
+            commit_message: commit_message
+          }
+        ).execute(merge_request)
+      end
     end
 
     def commit_message(merge_request, previous_ref)
