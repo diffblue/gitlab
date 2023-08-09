@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Notes::QuickActionsService do
+RSpec.describe Notes::QuickActionsService, feature_category: :team_planning do
   let_it_be(:group) { create(:group) }
   let_it_be(:private_group) { create(:group, :private) }
   let_it_be(:project) { create(:project, group: group) }
