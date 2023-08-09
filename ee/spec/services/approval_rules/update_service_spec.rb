@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ApprovalRules::UpdateService do
+RSpec.describe ApprovalRules::UpdateService, feature_category: :code_review_workflow do
   let(:project) { create(:project) }
   let(:user) { project.creator }
   let(:approval_rule) { target.approval_rules.create!(name: 'foo', approvals_required: 2) }
@@ -37,6 +37,33 @@ RSpec.describe ApprovalRules::UpdateService do
           .to receive(:track_approval_rule_edited_action).once.with(user: user)
 
         result
+      end
+
+      context 'when feature flag compliance_adherence_report is enabled' do
+        before do
+          stub_feature_flags(compliance_adherence_report: true)
+        end
+
+        it 'invokes ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker' do
+          expect(::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker)
+            .to receive(:perform_async).with({ 'project_id' => approval_rule.project.id, 'user_id' => user.id })
+                                       .and_call_original
+
+          result
+        end
+      end
+
+      context 'when feature flag compliance_adherence_report is disabled' do
+        before do
+          stub_feature_flags(compliance_adherence_report: false)
+        end
+
+        it 'does not invoke ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker' do
+          expect(::ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsWorker)
+            .not_to receive(:perform_async)
+
+          result
+        end
       end
     end
 
