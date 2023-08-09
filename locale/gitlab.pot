@@ -28199,9 +28199,6 @@ msgstr ""
 msgid "Loading the GitLab IDE"
 msgstr ""
 
-msgid "Loading, please wait."
-msgstr ""
-
 msgid "Loading..."
 msgstr ""
 
@@ -34744,6 +34741,9 @@ msgid "Pipeline|Pipelines"
 msgstr ""
 
 msgid "Pipeline|Raw text search is not currently supported. Please use the available search tokens."
+msgstr ""
+
+msgid "Pipeline|Run again"
 msgstr ""
 
 msgid "Pipeline|Run for branch name or tag"
@@ -47474,6 +47474,9 @@ msgid "There was a problem fetching the keep latest artifacts setting."
 msgstr ""
 
 msgid "There was a problem fetching the latest pipeline status."
+msgstr ""
+
+msgid "There was a problem fetching the pipeline stage."
 msgstr ""
 
 msgid "There was a problem fetching the pipeline stages."
