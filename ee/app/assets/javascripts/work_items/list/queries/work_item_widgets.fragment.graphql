@@ -1,0 +1,13 @@
+#import "~/work_items/list/queries/base_work_item_widgets.fragment.graphql"
+
+fragment WorkItemWidgets on WorkItemWidget {
+  ...BaseWorkItemWidgets
+  ... on WorkItemWidgetHealthStatus {
+    type
+    healthStatus
+  }
+  ... on WorkItemWidgetWeight {
+    type
+    weight
+  }
+}

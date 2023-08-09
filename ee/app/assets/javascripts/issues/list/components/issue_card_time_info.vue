@@ -2,6 +2,7 @@
 import IssueCardTimeInfo from '~/issues/list/components/issue_card_time_info.vue';
 import WeightCount from 'ee/issues/components/weight_count.vue';
 import IssueHealthStatus from 'ee/related_items_tree/components/issue_health_status.vue';
+import { isHealthStatusWidget, isWeightWidget } from '~/work_items/utils';
 
 export default {
   components: {
@@ -17,8 +18,16 @@ export default {
     },
   },
   computed: {
+    healthStatus() {
+      return (
+        this.issue.healthStatus || this.issue.widgets?.find(isHealthStatusWidget)?.healthStatus
+      );
+    },
     showHealthStatus() {
-      return this.hasIssuableHealthStatusFeature && this.issue.healthStatus;
+      return this.hasIssuableHealthStatusFeature && this.healthStatus;
+    },
+    weight() {
+      return this.issue.weight || this.issue.widgets?.find(isWeightWidget)?.weight;
     },
   },
 };
@@ -28,9 +37,9 @@ export default {
   <issue-card-time-info :issue="issue">
     <weight-count
       class="issuable-weight gl-mr-3"
-      :weight="issue.weight"
+      :weight="weight"
       data-qa-selector="issuable_weight_content"
     />
-    <issue-health-status v-if="showHealthStatus" :health-status="issue.healthStatus" />
+    <issue-health-status v-if="showHealthStatus" :health-status="healthStatus" />
   </issue-card-time-info>
 </template>
