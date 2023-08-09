@@ -2,6 +2,7 @@ import { nextTick } from 'vue';
 import { GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import BaseRuleComponent from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/base_rule_component.vue';
+import BranchExceptionSelector from 'ee/security_orchestration/components/branch_exception_selector.vue';
 import BranchTypeSelector from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/branch_type_selector.vue';
 import {
   SCAN_EXECUTION_SCHEDULE_RULE,
@@ -13,6 +14,7 @@ import {
   SPECIFIC_BRANCHES,
   VALID_SCAN_EXECUTION_BRANCH_TYPE_OPTIONS,
 } from 'ee/security_orchestration/components/policy_editor/constants';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 
 describe('BaseRuleComponent', () => {
   let wrapper;
@@ -21,11 +23,18 @@ describe('BaseRuleComponent', () => {
     branches: [],
   };
 
-  const createComponent = (options = {}) => {
+  const createComponent = ({ props = {}, provide = {} } = {}) => {
     wrapper = shallowMountExtended(BaseRuleComponent, {
       propsData: {
         initRule,
-        ...options,
+        ...props,
+      },
+      provide: {
+        namespaceType: NAMESPACE_TYPES.PROJECT,
+        glFeatures: {
+          securityPoliciesBranchExceptions: false,
+        },
+        ...provide,
       },
       stubs: {
         GlSprintf,
@@ -37,6 +46,7 @@ describe('BaseRuleComponent', () => {
   const findRuleTypeDropDown = () => wrapper.findComponent(GlCollapsibleListbox);
   const findBranchesLabel = () => wrapper.findByTestId('rule-branches-label');
   const findBranchTypeSelector = () => wrapper.findComponent(BranchTypeSelector);
+  const findBranchExceptionSelector = () => wrapper.findComponent(BranchExceptionSelector);
 
   const selectBranches = async (branches) => {
     findBranchTypeSelector().vm.$emit('input', branches);
@@ -82,7 +92,9 @@ describe('BaseRuleComponent', () => {
       ${true}       | ${true}
       ${false}      | ${false}
     `('renders branches input', ({ isBranchScope, expectedResult }) => {
-      createComponent({ isBranchScope });
+      createComponent({
+        props: { isBranchScope },
+      });
 
       expect(findBranchTypeSelector().exists()).toBe(expectedResult);
     });
@@ -129,9 +141,11 @@ describe('BaseRuleComponent', () => {
   describe('branches label', () => {
     it('displays "branches" if a branch has the wildcard operator', async () => {
       createComponent({
-        initRule: {
-          type: SCAN_EXECUTION_SCHEDULE_RULE,
-          branches: ['releases/*'],
+        props: {
+          initRule: {
+            type: SCAN_EXECUTION_SCHEDULE_RULE,
+            branches: ['releases/*'],
+          },
         },
       });
       await nextTick();
@@ -140,9 +154,11 @@ describe('BaseRuleComponent', () => {
 
     it('displays "branch" if a branch does not have the wildcard operator', async () => {
       createComponent({
-        initRule: {
-          type: SCAN_EXECUTION_SCHEDULE_RULE,
-          branches: ['main'],
+        props: {
+          initRule: {
+            type: SCAN_EXECUTION_SCHEDULE_RULE,
+            branches: ['main'],
+          },
         },
       });
       await nextTick();
@@ -172,9 +188,11 @@ describe('BaseRuleComponent', () => {
       ${SCAN_EXECUTION_SCHEDULE_RULE} | ${[]}
     `('should select branches for specific branch type', ({ type, emittedValue }) => {
       createComponent({
-        initRule: {
-          type,
-          branch_type: ALL_PROTECTED_BRANCHES.value,
+        props: {
+          initRule: {
+            type,
+            branch_type: ALL_PROTECTED_BRANCHES.value,
+          },
         },
       });
 
@@ -192,6 +210,68 @@ describe('BaseRuleComponent', () => {
           },
         ],
       ]);
+    });
+  });
+
+  describe('branch exceptions', () => {
+    const exceptions = { branch_exceptions: ['main', 'test'] };
+
+    it.each`
+      title                                                             | namespaceType              | expectedResult
+      ${'renders branch exception selector on the project level'}       | ${NAMESPACE_TYPES.PROJECT} | ${true}
+      ${'does not render branch exception selector on the group level'} | ${NAMESPACE_TYPES.GROUP}   | ${false}
+    `('$title', ({ namespaceType, expectedResult }) => {
+      createComponent({
+        provide: {
+          namespaceType,
+          glFeatures: {
+            securityPoliciesBranchExceptions: true,
+          },
+        },
+      });
+
+      expect(findBranchExceptionSelector().exists()).toBe(expectedResult);
+    });
+
+    it('selects exceptions', () => {
+      createComponent({
+        provide: {
+          glFeatures: {
+            securityPoliciesBranchExceptions: true,
+          },
+        },
+      });
+
+      findBranchExceptionSelector().vm.$emit('select', exceptions);
+
+      expect(wrapper.emitted('changed')).toEqual([
+        [
+          {
+            ...initRule,
+            ...exceptions,
+          },
+        ],
+      ]);
+    });
+
+    it('displays saved exceptions', () => {
+      createComponent({
+        props: {
+          initRule: {
+            ...initRule,
+            ...exceptions,
+          },
+        },
+        provide: {
+          glFeatures: {
+            securityPoliciesBranchExceptions: true,
+          },
+        },
+      });
+
+      expect(findBranchExceptionSelector().props('selectedExceptions')).toEqual(
+        exceptions.branch_exceptions,
+      );
     });
   });
 });

@@ -25,12 +25,44 @@ actions:
     scanner_profile: required_scanner_profile
 `;
 
+export const mockBranchExceptionsExecutionManifest = `type: scan_execution_policy
+name: Branch exceptions
+description: This policy enforces pipeline configuration to have branch exceptions
+enabled: false
+rules:
+  - type: pipeline
+    branches:
+      - main
+    branch_exceptions:
+      - main
+      - test
+actions:
+  - scan: dast
+    site_profile: required_site_profile
+    scanner_profile: required_scanner_profile
+`;
+
 export const mockDastScanExecutionObject = {
   type: 'scan_execution_policy',
   name: 'Scheduled Dast/SAST scan',
   description: 'This policy enforces pipeline configuration to have a job with DAST scan',
   enabled: false,
   rules: [{ type: 'pipeline', branches: ['main'] }],
+  actions: [
+    {
+      scan: 'dast',
+      site_profile: 'required_site_profile',
+      scanner_profile: 'required_scanner_profile',
+    },
+  ],
+};
+
+export const mockBranchExceptionsScanExecutionObject = {
+  type: 'scan_execution_policy',
+  name: 'Branch exceptions',
+  description: 'This policy enforces pipeline configuration to have branch exceptions',
+  enabled: false,
+  rules: [{ type: 'pipeline', branches: ['main'], branch_exceptions: ['main', 'test'] }],
   actions: [
     {
       scan: 'dast',
