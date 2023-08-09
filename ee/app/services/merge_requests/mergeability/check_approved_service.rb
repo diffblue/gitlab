@@ -4,6 +4,8 @@ module MergeRequests
   module Mergeability
     class CheckApprovedService < CheckBaseService
       def execute
+        return success unless merge_request.approval_feature_available?
+
         if merge_request.approved? && !merge_request.approval_state.temporarily_unapproved?
           success
         else

@@ -107,7 +107,11 @@ export default class MergeRequestStore extends CEMergeRequestStore {
   }
 
   get preventMerge() {
-    return this.isApprovalNeeded && this.preferredAutoMergeStrategy !== MWCP_MERGE_STRATEGY;
+    return (
+      this.hasApprovalsAvailable &&
+      this.isApprovalNeeded &&
+      this.preferredAutoMergeStrategy !== MWCP_MERGE_STRATEGY
+    );
   }
 
   initBrowserPerformanceReport(data) {

@@ -10,7 +10,6 @@ module EE
 
     FORWARDABLE_METHODS = %i[
       approval_needed?
-      approved?
       approvals_left
       approvals_required
       authors_can_approve?
@@ -64,6 +63,13 @@ module EE
       ::Gitlab::Utils.ensure_array_from_string(value).each do |group_id|
         approver_groups.find_or_initialize_by(group_id: group_id, target_id: id)
       end
+    end
+
+    override :approved?
+    def approved?
+      return super unless approval_feature_available?
+
+      approval_state.approved?
     end
 
     override :eligible_for_approval_by?
