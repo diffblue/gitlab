@@ -1,5 +1,5 @@
 <script>
-import { GlFormGroup, GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { GlFormGroup, GlCollapsibleListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { POLICY_SOURCE_OPTIONS } from '../constants';
 
@@ -8,9 +8,8 @@ const POLICY_SOURCE_OPTIONS_VALUES = Object.values(POLICY_SOURCE_OPTIONS);
 export default {
   name: 'PolicySourceFilter',
   components: {
+    GlCollapsibleListbox,
     GlFormGroup,
-    GlDropdown,
-    GlDropdownItem,
   },
   props: {
     value: {
@@ -26,12 +25,12 @@ export default {
     },
   },
   methods: {
-    setPolicySource({ value }) {
+    setPolicySource(value) {
       this.$emit('input', value);
     },
   },
   policySourceFilterId: 'policy-source-filter',
-  POLICY_SOURCE_OPTIONS,
+  POLICY_SOURCE_OPTIONS_VALUES,
   i18n: {
     label: s__('SecurityOrchestration|Source'),
   },
@@ -44,20 +43,19 @@ export default {
     label-size="sm"
     :label-for="$options.policySourceFilterId"
   >
-    <gl-dropdown
+    <gl-collapsible-listbox
       :id="$options.policySourceFilterId"
+      block
       class="gl-display-flex"
       toggle-class="gl-truncate"
-      :text="selectedValueText"
+      :items="$options.POLICY_SOURCE_OPTIONS_VALUES"
+      :toggle-text="selectedValueText"
+      :selected="value"
+      @select="setPolicySource"
     >
-      <gl-dropdown-item
-        v-for="option in $options.POLICY_SOURCE_OPTIONS"
-        :key="option.value"
-        :data-testid="`policy-source-${option.value}-option`"
-        @click="setPolicySource(option)"
-      >
-        {{ option.text }}
-      </gl-dropdown-item>
-    </gl-dropdown>
+      <template #list-item="{ item }">
+        <span :data-testid="`policy-source-${item.value}-option`">{{ item.text }}</span>
+      </template>
+    </gl-collapsible-listbox>
   </gl-form-group>
 </template>
