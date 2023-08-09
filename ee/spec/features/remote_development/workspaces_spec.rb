@@ -160,7 +160,7 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
         # SIMULATE SECOND POLL REQUEST FROM AGENTK TO UPDATE WORKSPACE TO RUNNING STATE
 
         resource_version = '1'
-        workspace_agent_info = create_workspace_agent_info(
+        workspace_agent_info = create_workspace_agent_info_hash(
           workspace_id: id,
           workspace_name: name,
           workspace_namespace: namespace,
@@ -195,7 +195,7 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
         # SIMULATE THIRD POLL REQUEST FROM AGENTK TO UPDATE WORKSPACE TO STOPPING STATE
 
         resource_version = '1'
-        workspace_agent_info = create_workspace_agent_info(
+        workspace_agent_info = create_workspace_agent_info_hash(
           workspace_id: id,
           workspace_name: name,
           workspace_namespace: namespace,
@@ -243,7 +243,7 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
         # SIMULATE FOURTH POLL REQUEST FROM AGENTK TO UPDATE WORKSPACE TO STOPPED STATE
 
         resource_version = '2'
-        workspace_agent_info = create_workspace_agent_info(
+        workspace_agent_info = create_workspace_agent_info_hash(
           workspace_id: id,
           workspace_name: name,
           workspace_namespace: namespace,

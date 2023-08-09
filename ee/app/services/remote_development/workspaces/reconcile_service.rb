@@ -3,6 +3,8 @@
 module RemoteDevelopment
   module Workspaces
     class ReconcileService
+      include ServiceResponseFactory
+
       # NOTE: This constructor intentionally does not follow all of the conventions from
       #       https://docs.gitlab.com/ee/development/reusing_abstractions.html#service-classes
       #       suggesting that the dependencies be passed via the constructor.
@@ -17,48 +19,25 @@ module RemoteDevelopment
         #       additional authorization checks here.
         #       See https://gitlab.com/gitlab-org/gitlab/-/issues/409038
 
-        # TODO: https://gitlab.com/groups/gitlab-org/-/epics/10461
-        #       We need to perform all processing in an explicit transaction, so that any unexpected exceptions will
-        #       cause the transaction to be rolled back. This might not be necessary if we weren't having to rescue
-        #       all exceptions below due to another problem. See the to do comment below in rescue clause for more info
-        ApplicationRecord.transaction do
-          process(agent, params)
-        end
-      rescue => e # rubocop:disable Style:RescueStandardError
-        # TODO: https://gitlab.com/groups/gitlab-org/-/epics/10461
-        #       If anything in the service class throws an exception, it ends up calling
-        #       #handle_api_exception, in lib/api/helpers.rb, which tries to get current_user,
-        #       which ends up calling API::Helpers#unauthorized! in lib/api/helpers.rb,
-        #       when ends up setting @current_user to a Rack::Response, which blows up later
-        #       in API::Helpers#current_user (lib/api/helpers.rb#79), when we try to get
-        #       #preferred_language off of it.
-        #       So we have to catch all exceptions and handle as a ServiceResponse.error
-        #       in order to avoid this.
-        #       How do the other ga4k requests like starboard_vulnerability handle this?
-        #       UPDATE: See more context in https://gitlab.com/gitlab-org/gitlab/-/issues/402718#note_1343933650
+        # NOTE: We inject these dependencies which depend upon the main Rails monolith, so that the domain layer
+        #       does not directly depend on them, and also so that we can use fast_spec_helper in more places.
+        logger = RemoteDevelopment::Logger.build
 
-        Gitlab::ErrorTracking.track_exception(e, error_type: 'reconcile', agent_id: agent.id)
-        ServiceResponse.error(
-          message: "Unexpected reconcile error. Exception class: #{e.class}.",
-          reason: :internal_server_error
+        response_hash = Reconcile::Main.main(
+          # NOTE: We pass the original params in a separate key, so they can be separately and independently validated
+          #       against a JSON schema, then flattened and converted to have symbol keys instead of string keys.
+          #       We do not want to do any direct processing or manipulation of them here in the service layer,
+          #       because that would be introducing domain logic into the service layer and coupling it to the
+          #       shape and contents of the params payload.
+          original_params: params,
+          agent: agent,
+          logger: logger
         )
-      end
 
-      private
+        # Type-check payload using rightward assignment
+        response_hash[:payload] => { workspace_rails_infos: Array } if response_hash[:payload]
 
-      # @param [Clusters::Agent] agent
-      # @param [Hash] params
-      # @return [ServiceResponse]
-      def process(agent, params)
-        parsed_params, error = RemoteDevelopment::Workspaces::Reconcile::ParamsParser.new.parse(params: params)
-        return ServiceResponse.error(message: error.message, reason: error.reason) if error
-
-        reconcile_processor = Reconcile::ReconcileProcessor.new
-        payload, error = reconcile_processor.process(agent: agent, **parsed_params)
-
-        return ServiceResponse.error(message: error.message, reason: error.reason) if error
-
-        ServiceResponse.success(payload: payload)
+        create_service_response(response_hash)
       end
     end
   end

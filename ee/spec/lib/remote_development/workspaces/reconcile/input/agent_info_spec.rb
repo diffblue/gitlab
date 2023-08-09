@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'fast_spec_helper'
+require_relative '../../../fast_spec_helper'
 
-RSpec.describe RemoteDevelopment::Workspaces::Reconcile::AgentInfo, feature_category: :remote_development do
+RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfo, feature_category: :remote_development do
   let(:agent_info_constructor_args) do
     {
       name: 'name',

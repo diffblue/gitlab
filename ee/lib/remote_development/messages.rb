@@ -30,6 +30,9 @@ module RemoteDevelopment
     # Workspace update errors
     WorkspaceUpdateFailed = Class.new(Message)
 
+    # Workspace reconcile errors
+    WorkspaceReconcileParamsValidationFailed = Class.new(Message)
+
     #---------------------------------------------------------
     # Domain Events - message name should describe the outcome
     #---------------------------------------------------------
@@ -41,5 +44,6 @@ module RemoteDevelopment
     # Workspace domain events
     WorkspaceCreateSuccessful = Class.new(Message)
     WorkspaceUpdateSuccessful = Class.new(Message)
+    WorkspaceReconcileSuccessful = Class.new(Message)
   end
 end

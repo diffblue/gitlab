@@ -45,6 +45,8 @@ module RemoteDevelopment
     scope :by_project_ids, ->(ids) { where(project_id: ids) }
     scope :with_actual_states, ->(actual_states) { where(actual_state: actual_states) }
 
+    scope :ordered_by_id, -> { order(:id) }
+
     before_save :touch_desired_state_updated_at, if: ->(workspace) do
       workspace.new_record? || workspace.desired_state_changed?
     end

@@ -1,23 +1,45 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
+require_relative '../../../fast_spec_helper'
 
-RSpec.describe RemoteDevelopment::Workspaces::Reconcile::DesiredConfigGenerator, :freeze_time, feature_category: :remote_development do
+RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGenerator, :freeze_time, feature_category: :remote_development do
   include_context 'with remote development shared fixtures'
 
   describe '#generate_desired_config' do
-    let_it_be(:user) { create(:user) }
-    let_it_be(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
+    let(:logger) { instance_double(Logger) }
+    let(:user) { instance_double("User", name: "name", email: "name@example.com") }
+    let(:remote_development_agent_config) do
+      instance_double(
+        "RemoteDevelopment::RemoteDevelopmentAgentConfig",
+        network_policy_enabled: network_policy_enabled,
+        gitlab_workspaces_proxy_namespace: gitlab_workspaces_proxy_namespace
+      )
+    end
+
+    let(:agent) do
+      instance_double("Clusters::Agent", id: 1, remote_development_agent_config: remote_development_agent_config)
+    end
+
     let(:desired_state) { RemoteDevelopment::Workspaces::States::RUNNING }
     let(:actual_state) { RemoteDevelopment::Workspaces::States::STOPPED }
     let(:deployment_resource_version_from_agent) { workspace.deployment_resource_version }
     let(:owning_inventory) { "#{workspace.name}-workspace-inventory" }
     let(:network_policy_enabled) { true }
+    let(:gitlab_workspaces_proxy_namespace) { 'gitlab-workspaces' }
 
     let(:workspace) do
-      create(
-        :workspace, agent: agent, user: user,
-        desired_state: desired_state, actual_state: actual_state
+      instance_double(
+        "RemoteDevelopment::Workspace",
+        id: 1,
+        name: "name",
+        namespace: "namespace",
+        deployment_resource_version: "1",
+        desired_state: desired_state,
+        actual_state: actual_state,
+        dns_zone: "workspaces.localdev.me",
+        processed_devfile: example_processed_devfile,
+        user: user,
+        agent: agent
       )
     end
 
@@ -38,20 +60,14 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::DesiredConfigGenerator,
     end
 
     subject do
-      described_class.new
-    end
-
-    before do
-      allow(agent.remote_development_agent_config).to receive(:network_policy_enabled) do
-        network_policy_enabled
-      end
+      described_class
     end
 
     context 'when desired_state results in started=true' do
       let(:started) { true }
 
       it 'returns expected config' do
-        workspace_resources = subject.generate_desired_config(workspace: workspace)
+        workspace_resources = subject.generate_desired_config(workspace: workspace, logger: logger)
 
         expect(workspace_resources).to eq(expected_config)
       end
@@ -62,7 +78,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::DesiredConfigGenerator,
       let(:started) { false }
 
       it 'returns expected config' do
-        workspace_resources = subject.generate_desired_config(workspace: workspace)
+        workspace_resources = subject.generate_desired_config(workspace: workspace, logger: logger)
 
         expect(workspace_resources).to eq(expected_config)
       end
@@ -73,7 +89,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::DesiredConfigGenerator,
       let(:network_policy_enabled) { false }
 
       it 'returns expected config without network policy' do
-        workspace_resources = subject.generate_desired_config(workspace: workspace)
+        workspace_resources = subject.generate_desired_config(workspace: workspace, logger: logger)
 
         expect(workspace_resources).to eq(expected_config)
       end
@@ -81,13 +97,11 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::DesiredConfigGenerator,
 
     context 'when DevfileParser returns empty array' do
       before do
-        allow_next_instance_of(RemoteDevelopment::Workspaces::Reconcile::DevfileParser) do |instance|
-          allow(instance).to receive(:get_all).and_return([])
-        end
+        allow(RemoteDevelopment::Workspaces::Reconcile::Output::DevfileParser).to receive(:get_all).and_return([])
       end
 
       it 'returns an empty array' do
-        workspace_resources = subject.generate_desired_config(workspace: workspace)
+        workspace_resources = subject.generate_desired_config(workspace: workspace, logger: logger)
 
         expect(workspace_resources).to eq([])
       end
