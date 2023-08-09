@@ -49,7 +49,7 @@ export default {
   <input
     :value="rule.approvalsRequired"
     :disabled="!settings.canEdit"
-    class="form-control mw-6em"
+    class="form-control mw-6em gl-float-right gl-mt-n2 gl-mb-n2"
     type="number"
     :min="rule.minApprovalsRequired || 0"
     data-qa-selector="approvals_number_field"

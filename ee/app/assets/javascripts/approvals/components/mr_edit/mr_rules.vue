@@ -130,20 +130,20 @@ export default {
         />
         <tr v-else :key="index">
           <td>
-            <div class="js-name">{{ rule.name }}</div>
+            <div class="js-name" :data-label="__('Name')">{{ rule.name }}</div>
             <div ref="indicator" class="text-muted">{{ indicatorText(rule) }}</div>
           </td>
-          <td class="js-members" :class="settings.allowMultiRule ? 'd-none d-sm-table-cell' : null">
+          <td class="js-members" :data-label="__('Approvers')">
             <user-avatar-list
               :items="rule.approvers"
               :img-size="24"
               :empty-text="__('Approvers from private group(s) not shown')"
             />
           </td>
-          <td class="js-approvals-required">
+          <td class="js-approvals-required gl-text-right" :data-label="__('Approvals required')">
             <rule-input :rule="rule" />
           </td>
-          <td class="text-nowrap px-2 w-0 js-controls">
+          <td class="text-nowrap px-2 w-0 js-controls" :data-label="__('Actions')">
             <rule-controls v-if="canEdit" :rule="rule" />
           </td>
         </tr>
