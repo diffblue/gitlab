@@ -138,7 +138,8 @@ module Elastic
       end
 
       def archived_filter_applicable?(options)
-        !(options[:include_archived] || options[:search_scope] == 'project') && Feature.enabled?(:search_notes_hide_archived_projects) &&
+        !(options[:include_archived] || options[:search_scope] == 'project') &&
+          Feature.enabled?(:search_notes_hide_archived_projects, options[:current_user]) &&
           ::Elastic::DataMigrationService.migration_has_finished?(:backfill_archived_on_notes)
       end
 

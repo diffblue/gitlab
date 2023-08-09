@@ -163,7 +163,7 @@ module Elastic
 
       def archived_filter_applicable_for_commit_search?(options)
         !options[:include_archived] && options[:search_scope] != 'project' &&
-          Feature.enabled?(:search_commits_hide_archived_projects) &&
+          Feature.enabled?(:search_commits_hide_archived_projects, options[:current_user]) &&
           ::Elastic::DataMigrationService.migration_has_finished?(:backfill_archived_field_in_commits)
       end
 
