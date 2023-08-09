@@ -46,7 +46,7 @@ export default {
   <tr v-if="policy.isSelected">
     <td colspan="4" class="gl-border-top-0! gl-pt-0!">
       <div
-        class="gl-border-solid gl-border-1 gl-rounded-base gl-border-gray-100 gl-bg-gray-10 gl-py-4 gl-px-5"
+        class="gl-border-solid gl-border-1 gl-rounded-base gl-border-gray-100 gl-bg-white gl-py-4 gl-px-5"
       >
         <policy-approvals :action="policyAction" :approvers="approvers" />
         <div
