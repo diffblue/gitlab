@@ -194,6 +194,28 @@ module EE
         @subject.unique_project_download_limit_enabled?
       end
 
+      condition(:custom_roles_allowed) do
+        @subject.custom_roles_enabled?
+      end
+
+      condition(:custom_roles_on_groups_allowed) do
+        ::Feature.enabled?(:custom_roles_on_groups, @subject.root_ancestor)
+      end
+
+      desc "Custom role on group that enables read vulnerability"
+      condition(:role_enables_read_vulnerability) do
+        next unless @user.is_a?(User)
+
+        @user.custom_permission_for?(@subject, :read_vulnerability)
+      end
+
+      desc "Custom role on group that enables admin vulnerability"
+      condition(:role_enables_admin_vulnerability) do
+        next unless @user.is_a?(User)
+
+        @user.custom_permission_for?(@subject, :admin_vulnerability)
+      end
+
       rule { owner & unique_project_download_limit_enabled }.policy do
         enable :ban_group_member
       end
@@ -437,7 +459,15 @@ module EE
       rule { security_dashboard_enabled & developer }.policy do
         enable :read_group_security_dashboard
         enable :admin_vulnerability
-        enable :read_vulnerability
+      end
+
+      rule { custom_roles_allowed & custom_roles_on_groups_allowed & role_enables_read_vulnerability }.policy do
+        enable :read_group_security_dashboard
+      end
+
+      rule { custom_roles_allowed & custom_roles_on_groups_allowed & role_enables_admin_vulnerability }.policy do
+        enable :read_group_security_dashboard
+        enable :admin_vulnerability
       end
 
       rule { can?(:read_group_security_dashboard) }.policy do

@@ -539,7 +539,7 @@ module EE
     end
 
     def custom_roles_enabled?
-      root? && licensed_feature_available?(:custom_roles)
+      root_ancestor.licensed_feature_available?(:custom_roles)
     end
 
     def okrs_mvc_feature_flag_enabled?

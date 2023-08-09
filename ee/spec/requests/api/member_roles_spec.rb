@@ -243,6 +243,17 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
           end
         end
 
+        context 'when group is not a root group' do
+          let_it_be(:group_id) { child_group.id }
+
+          it "returns not found error" do
+            subject
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(json_response['message']).to match(/Namespace must be top-level namespace/)
+          end
+        end
+
         context "when errors during creation of new record" do
           before do
             allow_next_instance_of(MemberRole) do |instance|

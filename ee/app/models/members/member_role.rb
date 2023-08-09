@@ -3,20 +3,35 @@
 class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   MAX_COUNT_PER_GROUP_HIERARCHY = 10
   ALL_CUSTOMIZABLE_PERMISSIONS = {
-    read_code:
-      { description: 'Permission to read code', minimal_level: Gitlab::Access::GUEST },
+    admin_vulnerability: {
+      description: 'Permission to admin vulnerability',
+      minimal_level: Gitlab::Access::GUEST,
+      requirement: :read_vulnerability
+    },
+    read_code: {
+      description: 'Permission to read code',
+      minimal_level: Gitlab::Access::GUEST
+    },
     read_dependency: {
       description: 'Permission to read dependency',
       minimal_level: Gitlab::Access::GUEST
     },
-    read_vulnerability:
-      { descripition: 'Permission to read vulnerability', minimal_level: Gitlab::Access::GUEST },
-    admin_vulnerability: {
-      descripition: 'Permission to admin vulnerability',
-      minimal_level: Gitlab::Access::GUEST,
-      requirement: :read_vulnerability
+    read_vulnerability: {
+      description: 'Permission to read vulnerability',
+      minimal_level: Gitlab::Access::GUEST
     }
   }.freeze
+  ALL_CUSTOMIZABLE_PROJECT_PERMISSIONS = [
+    :read_code,
+    :read_dependency,
+    :read_vulnerability,
+    :admin_vulnerability
+  ].freeze
+  ALL_CUSTOMIZABLE_GROUP_PERMISSIONS = [
+    :read_vulnerability,
+    :admin_vulnerability
+  ].freeze
+
   CUSTOMIZABLE_PERMISSIONS_EXEMPT_FROM_CONSUMING_SEAT = [:read_code].freeze
   NON_PERMISSION_COLUMNS = [
     :base_access_level,
