@@ -12645,6 +12645,9 @@ msgstr ""
 msgid "ContainerRegistry|Created %{time}"
 msgstr ""
 
+msgid "ContainerRegistry|Delete image repository"
+msgstr ""
+
 msgid "ContainerRegistry|Delete image repository?"
 msgstr ""
 
@@ -15504,9 +15507,6 @@ msgid "Delete identity"
 msgstr ""
 
 msgid "Delete image"
-msgstr ""
-
-msgid "Delete image repository"
 msgstr ""
 
 msgid "Delete internal note"
