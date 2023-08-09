@@ -7,8 +7,12 @@ import OrderSummary from 'ee/subscriptions/new/components/order_summary.vue';
 import Checkout from 'ee/subscriptions/new/components/checkout.vue';
 import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
 import { PurchaseEvent } from 'ee/subscriptions/new/constants';
-import ErrorAlert from 'ee/vue_shared/purchase_flow/components/checkout/error_alert.vue';
+import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
 import initialStore from 'ee/subscriptions/new/store';
+import {
+  PURCHASE_ERROR_DICTIONARY,
+  CONTACT_SUPPORT_DEFAULT_MESSAGE,
+} from 'ee/vue_shared/purchase_flow/error_constants';
 
 Vue.use(Vuex);
 
@@ -95,7 +99,11 @@ describe('App component', () => {
       });
 
       it('passes the correct props', () => {
-        expect(findErrorAlert().props('error')).toStrictEqual(error);
+        expect(findErrorAlert().props()).toEqual({
+          error,
+          errorDictionary: PURCHASE_ERROR_DICTIONARY,
+          defaultError: CONTACT_SUPPORT_DEFAULT_MESSAGE,
+        });
       });
 
       it('captures the error', () => {

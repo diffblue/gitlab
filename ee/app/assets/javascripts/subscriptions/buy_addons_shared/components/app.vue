@@ -10,10 +10,14 @@ import Checkout from 'jh_else_ee/subscriptions/buy_addons_shared/components/chec
 import AddonPurchaseDetails from 'ee/subscriptions/buy_addons_shared/components/checkout/addon_purchase_details.vue';
 import { formatNumber, sprintf } from '~/locale';
 import { CUSTOMERSDOT_CLIENT } from 'ee/subscriptions/buy_addons_shared/constants';
-import ErrorAlert from 'ee/vue_shared/purchase_flow/components/checkout/error_alert.vue';
+import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
 
 import plansQuery from 'ee/subscriptions/graphql/queries/plans.customer.query.graphql';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
+import {
+  PURCHASE_ERROR_DICTIONARY,
+  CONTACT_SUPPORT_DEFAULT_MESSAGE,
+} from 'ee/vue_shared/purchase_flow/error_constants';
 
 export default {
   components: {
@@ -31,6 +35,8 @@ export default {
       error: null,
     };
   },
+  purchaseErrorDictionary: PURCHASE_ERROR_DICTIONARY,
+  defaultPurchaseError: CONTACT_SUPPORT_DEFAULT_MESSAGE,
   computed: {
     emptySvgPath() {
       return `data:image/svg+xml;utf8,${encodeURIComponent(emptySvg)}`;
@@ -122,7 +128,13 @@ export default {
   />
   <step-order-app v-else-if="!$apollo.loading" data-testid="buy-addons-shared">
     <template #alerts>
-      <error-alert v-if="error" class="checkout-alert gl-mb-5" :error="error" />
+      <error-alert
+        v-if="error"
+        class="checkout-alert gl-mb-5"
+        :error="error"
+        :error-dictionary="$options.purchaseErrorDictionary"
+        :default-error="$options.defaultPurchaseError"
+      />
     </template>
     <template #checkout>
       <checkout :plan="plan" @error="handleError">

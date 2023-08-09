@@ -7,7 +7,7 @@ import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line imp
 import { s__, sprintf } from '~/locale';
 import { trackCheckout, trackTransaction } from '~/google_tag_manager';
 import { isInvalidPromoCodeError } from 'ee/subscriptions/new/utils';
-import { ActiveModelError } from 'ee/vue_shared/purchase_flow/utils/purchase_errors';
+import { ActiveModelError } from '~/lib/utils/error_utils';
 import defaultClient from '../graphql';
 import * as types from './mutation_types';
 

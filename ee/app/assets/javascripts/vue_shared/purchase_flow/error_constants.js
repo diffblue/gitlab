@@ -1,5 +1,4 @@
-import { isEmpty, isString, isObject } from 'lodash';
-import { sprintf, s__ } from '~/locale';
+import { s__ } from '~/locale';
 import {
   GENERAL_ERROR_MESSAGE,
   linkCustomersPortalHelpLink,
@@ -8,22 +7,6 @@ import {
   userProfileLink,
 } from 'ee/vue_shared/purchase_flow/constants';
 import { convertObjectPropsToLowerCase } from '~/lib/utils/common_utils';
-
-export class ActiveModelError extends Error {
-  constructor(errorAttributeMap = {}, ...params) {
-    // Pass remaining arguments (including vendor specific ones) to parent constructor
-    super(...params);
-
-    // Maintains proper stack trace for where our error was thrown (only available on V8)
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, ActiveModelError);
-    }
-
-    this.name = 'ActiveModelError';
-    // Custom debugging information
-    this.errorAttributeMap = errorAttributeMap;
-  }
-}
 
 export const CONTACT_SUPPORT_DEFAULT_MESSAGE = {
   message: GENERAL_ERROR_MESSAGE,
@@ -99,7 +82,7 @@ export const LAST_NAME_BLANK_ERROR_VARIATION_1 = JSON.stringify({ last_name: [ca
 export const LAST_NAME_BLANK_ERROR_VARIATION_2 = `{${LAST_NAME_BLANK_ERROR}}`;
 /* eslint-enable @gitlab/require-i18n-strings */
 
-export const errorDictionary = convertObjectPropsToLowerCase({
+export const PURCHASE_ERROR_DICTIONARY = convertObjectPropsToLowerCase({
   [CONTRACT_EFFECTIVE_ERROR]: EXPIRED_SUBSCRIPTION_ERROR,
   [GENERIC_DECLINE_ERROR]: DECLINED_CARD_GENERIC_ERROR,
   [EMAIL_TAKEN_ERROR]: UNLINKED_ACCOUNT_ERROR,
@@ -111,113 +94,3 @@ export const errorDictionary = convertObjectPropsToLowerCase({
   [LAST_NAME_BLANK_ERROR_VARIATION_1]: FULL_NAME_REQUIRED_ERROR,
   [LAST_NAME_BLANK_ERROR_VARIATION_2]: FULL_NAME_REQUIRED_ERROR,
 });
-
-/**
- * @typedef {Object<ErrorAttribute,ErrorType[]>} ErrorAttributeMap - Map of attributes to error details
- * @typedef {string} ErrorAttribute - the error attribute https://api.rubyonrails.org/v7.0.4.2/classes/ActiveModel/Error.html
- * @typedef {string} ErrorType - the error type https://api.rubyonrails.org/v7.0.4.2/classes/ActiveModel/Error.html
- *
- * @example { "email": ["taken", ...] }
- * // returns `${UNLINKED_ACCOUNT_ERROR}`, i.e. the `EMAIL_TAKEN_ERROR_TYPE` error message
- *
- * @param {ErrorAttributeMap} errorAttributeMap
- * @returns {(null|string)} null or error message if found
- */
-function getMessageFromType(errorAttributeMap = {}) {
-  if (!isObject(errorAttributeMap)) {
-    return null;
-  }
-
-  return Object.keys(errorAttributeMap).reduce((_, attribute) => {
-    const errorType = errorAttributeMap[attribute].find(
-      (type) => errorDictionary[`${attribute}:${type}`.toLowerCase()],
-    );
-    if (errorType) {
-      return errorDictionary[`${attribute}:${errorType}`.toLowerCase()];
-    }
-
-    return null;
-  }, null);
-}
-
-/**
- * @example "Email has already been taken, Email is invalid"
- * // returns `${UNLINKED_ACCOUNT_ERROR}`, i.e. the `EMAIL_TAKEN_ERROR_TYPE` error message
- *
- * @param {string} errorString
- * @returns {(null|string)} null or error message if found
- */
-function getMessageFromErrorString(errorString) {
-  if (isEmpty(errorString) || !isString(errorString)) {
-    return null;
-  }
-
-  const messages = errorString.split(', ');
-  const errorMessage = messages.find((message) => errorDictionary[message.toLowerCase()]);
-  if (errorMessage) {
-    return errorDictionary[errorMessage.toLowerCase()];
-  }
-
-  return {
-    message: errorString,
-    links: {},
-  };
-}
-
-/**
- * Receives an Error and attempts to extract the `errorAttributeMap` in
- * case it is an `ActiveModelError` and return the message if it exists.
- * If a match is not found it will attempt to map a message from the
- * Error.message to be returned.
- * Otherwise, it will return a general error message
- *
- * @param {Error} systemError
- * @returns error message
- */
-export function mapSystemToFriendlyError(systemError) {
-  if (!(systemError instanceof Error)) {
-    return CONTACT_SUPPORT_DEFAULT_MESSAGE;
-  }
-
-  const { errorAttributeMap, message } = systemError;
-  const messageFromType = getMessageFromType(errorAttributeMap);
-  if (messageFromType) {
-    return messageFromType;
-  }
-
-  const messageFromErrorString = getMessageFromErrorString(message);
-  if (messageFromErrorString) {
-    return messageFromErrorString;
-  }
-
-  return CONTACT_SUPPORT_DEFAULT_MESSAGE;
-}
-
-function generateLinks(links) {
-  return Object.keys(links).reduce((allLinks, link) => {
-    /* eslint-disable-next-line @gitlab/require-i18n-strings */
-    const linkStart = `${link}Start`;
-    /* eslint-disable-next-line @gitlab/require-i18n-strings */
-    const linkEnd = `${link}End`;
-
-    return {
-      ...allLinks,
-      [linkStart]: `<a href="${links[link]}" target="_blank" rel=“noopener noreferrer”>`,
-      [linkEnd]: '</a>',
-    };
-  }, {});
-}
-
-export const generateHelpTextWithLinks = (error) => {
-  if (isString(error)) {
-    return error;
-  }
-
-  if (isEmpty(error)) {
-    /* eslint-disable-next-line @gitlab/require-i18n-strings */
-    throw new Error('The error cannot be empty.');
-  }
-
-  const links = generateLinks(error.links);
-  return sprintf(error.message, links, false);
-};
