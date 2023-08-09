@@ -1,6 +1,7 @@
 import { s__, sprintf } from '~/locale';
 
 export const i18n = {
+  GITLAB_DUO: s__('AI|GitLab Duo'),
   GENIE_TOOLTIP: s__('AI|What does the selected code mean?'),
   GENIE_NO_CONTAINER_ERROR: s__("AI|The container element wasn't found, stopping AI Genie."),
   GENIE_CHAT_TITLE: s__('AI|Code Explanation'),
@@ -29,7 +30,7 @@ export const i18n = {
     "AI|May provide inappropriate responses not representative of GitLab's views. Do not input personal data.",
   ),
   GENIE_CHAT_NEW_CHAT: s__('AI|New chat'),
-  GENIE_CHAT_LOADING_MESSAGE: s__('AI|GitLab Duo is %{transition} an answer'),
+  GENIE_CHAT_LOADING_MESSAGE: s__('AI|%{tool} is %{transition} an answer'),
   GENIE_CHAT_LOADING_TRANSITIONS: [
     s__('AI|finding'),
     s__('AI|working on'),
@@ -44,6 +45,7 @@ export const GENIE_CHAT_MODEL_ROLES = {
   user: 'user',
   system: 'system',
   assistant: 'assistant',
+  tool: 'tool_info',
 };
 
 export const FEEDBACK_OPTIONS = [

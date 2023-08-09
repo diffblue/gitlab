@@ -1921,6 +1921,9 @@ msgstr ""
 msgid "AI| %{link_start}What are Experiment features?%{link_end}"
 msgstr ""
 
+msgid "AI|%{tool} is %{transition} an answer"
+msgstr ""
+
 msgid "AI|AI generated explanations will appear here."
 msgstr ""
 
@@ -1969,7 +1972,7 @@ msgstr ""
 msgid "AI|Generate issue description"
 msgstr ""
 
-msgid "AI|GitLab Duo is %{transition} an answer"
+msgid "AI|GitLab Duo"
 msgstr ""
 
 msgid "AI|Helpful"

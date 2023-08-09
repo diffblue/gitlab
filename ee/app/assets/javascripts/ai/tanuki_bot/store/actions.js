@@ -23,7 +23,12 @@ export const addDuoChatMessage = async ({ commit }, messageData = { content: '' 
     } catch {
       parsedResponse = { content: msgContent };
     }
-    commit(types.ADD_MESSAGE, proxyMessageContent(messageData, parsedResponse));
+    const message = proxyMessageContent(messageData, parsedResponse);
+    if (message.role.toLowerCase() === GENIE_CHAT_MODEL_ROLES.tool) {
+      commit(types.ADD_TOOL_MESSAGE, message);
+    } else {
+      commit(types.ADD_MESSAGE, message);
+    }
   }
 };
 
