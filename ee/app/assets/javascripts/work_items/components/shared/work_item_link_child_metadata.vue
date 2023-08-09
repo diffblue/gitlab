@@ -1,6 +1,6 @@
 <script>
 import { GlIcon, GlBadge, GlTooltip, GlTooltipDirective } from '@gitlab/ui';
-import WorkItemLinkChildMetadata from '~/work_items/components/work_item_links/work_item_link_child_metadata.vue';
+import WorkItemLinkChildMetadata from '~/work_items/components/shared/work_item_link_child_metadata.vue';
 import { WIDGET_TYPE_PROGRESS, WIDGET_TYPE_HEALTH_STATUS } from '~/work_items/constants';
 import { healthStatusTextMap } from 'ee/sidebar/constants';
 import { issueHealthStatusVariantMapping } from 'ee/related_items_tree/constants';

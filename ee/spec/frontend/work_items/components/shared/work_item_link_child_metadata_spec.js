@@ -2,7 +2,7 @@ import { GlIcon, GlBadge, GlTooltip } from '@gitlab/ui';
 import { __ } from '~/locale';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { formatDate } from '~/lib/utils/datetime_utility';
-import WorkItemLinkChildMetadata from 'ee/work_items/components/work_item_links/work_item_link_child_metadata.vue';
+import WorkItemLinkChildMetadata from 'ee/work_items/components/shared/work_item_link_child_metadata.vue';
 import { healthStatusTextMap } from 'ee/sidebar/constants';
 import { issueHealthStatusVariantMapping } from 'ee/related_items_tree/constants';
 
