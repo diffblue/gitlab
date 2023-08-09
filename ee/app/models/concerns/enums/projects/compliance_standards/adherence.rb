@@ -11,7 +11,8 @@ module Enums
         def self.check_name
           {
             ComplianceManagement::Standards::Gitlab::PreventApprovalByAuthorService::CHECK_NAME => 0,
-            ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterService::CHECK_NAME => 1
+            ComplianceManagement::Standards::Gitlab::PreventApprovalByCommitterService::CHECK_NAME => 1,
+            ComplianceManagement::Standards::Gitlab::AtLeastTwoApprovalsService::CHECK_NAME => 2
           }
         end
 
