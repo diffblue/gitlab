@@ -1,5 +1,6 @@
 <script>
 import { GlButton, GlCard, GlIcon, GlLoadingIcon } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import { __ } from '~/locale';
 import showToast from '~/vue_shared/plugins/global_toast';

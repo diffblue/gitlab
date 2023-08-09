@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import GeoSiteFormCore from 'ee/geo_site_form/components/geo_site_form_core.vue';
 import { VALIDATION_FIELD_KEYS } from 'ee/geo_site_form/constants';

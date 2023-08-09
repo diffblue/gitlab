@@ -1,5 +1,6 @@
 <script>
 import { GlButton, GlLoadingIcon, GlIcon, GlPopover } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import { SYNC_BUTTON_ID, syncButtonTexts as i18n } from '../constants';
 

@@ -1,5 +1,6 @@
 <script>
 import { GlButtonGroup, GlButton } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapState } from 'vuex';
 
 import ToggleLabels from 'ee/boards/components/toggle_labels.vue';

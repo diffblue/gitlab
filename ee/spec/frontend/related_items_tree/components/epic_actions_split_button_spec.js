@@ -1,6 +1,7 @@
 import { GlDropdownSectionHeader, GlDropdownItem } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 
 import EpicActionsSplitButton from 'ee/related_items_tree/components/epic_issue_actions_split_button.vue';

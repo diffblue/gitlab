@@ -2,6 +2,7 @@ import { GlModal } from '@gitlab/ui';
 import { within } from '@testing-library/dom';
 import { mount, createWrapper } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import DisableTwoFactorModal from 'ee/members/components/modals/disable_two_factor_modal.vue';
 import { MEMBER_TYPES } from '~/members/constants';

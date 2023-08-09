@@ -10,6 +10,7 @@ import {
   GlAlert,
 } from '@gitlab/ui';
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions, mapGetters } from 'vuex';
 import { dateFormats } from '~/analytics/shared/constants';
 import { getDataZoomOption } from '~/analytics/shared/utils';

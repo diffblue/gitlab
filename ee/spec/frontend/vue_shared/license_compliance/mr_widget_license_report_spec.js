@@ -1,4 +1,5 @@
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import api from '~/api';
 import LicenseManagement from 'ee/vue_shared/license_compliance/mr_widget_license_report.vue';

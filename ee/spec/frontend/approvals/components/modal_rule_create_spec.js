@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import ModalRuleCreate from 'ee/approvals/components/modal_rule_create.vue';
 import { stubComponent } from 'helpers/stub_component';

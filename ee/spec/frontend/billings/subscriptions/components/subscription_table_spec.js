@@ -3,6 +3,7 @@ import { mount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import MockAdapter from 'axios-mock-adapter';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import SubscriptionTable from 'ee/billings/subscriptions/components/subscription_table.vue';
 import SubscriptionTableRow from 'ee/billings/subscriptions/components/subscription_table_row.vue';

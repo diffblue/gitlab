@@ -1,5 +1,6 @@
 <script>
 import { GlIcon, GlSearchBoxByType, GlDropdown } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState } from 'vuex';
 import { s__, n__ } from '~/locale';
 import { SELECTIVE_SYNC_NAMESPACES } from '../constants';

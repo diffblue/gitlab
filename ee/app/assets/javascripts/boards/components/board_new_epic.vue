@@ -1,4 +1,5 @@
 <script>
+// eslint-disable-next-line no-restricted-imports
 import { mapActions } from 'vuex';
 import { s__ } from '~/locale';
 import BoardNewItem from '~/boards/components/board_new_item.vue';

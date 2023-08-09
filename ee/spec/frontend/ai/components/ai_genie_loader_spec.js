@@ -1,4 +1,5 @@
 import { GlSprintf } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import Vue, { nextTick } from 'vue';
 import AiGenieLoader from 'ee/ai/components/ai_genie_loader.vue';

@@ -1,5 +1,6 @@
 <script>
 import { GlModal, GlModalDirective } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapState } from 'vuex';
 import { __ } from '~/locale';
 import { ALL_BRANCHES } from 'ee/vue_shared/components/branches_selector/constants';

@@ -10,6 +10,7 @@ import {
 } from '@gitlab/ui';
 import { cloneDeep, uniqueId } from 'lodash';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import { filterStagesByHiddenStatus } from '~/analytics/cycle_analytics/utils';
 import { swapArrayItems } from '~/lib/utils/array_utility';

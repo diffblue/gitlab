@@ -1,6 +1,7 @@
 import { GlSprintf, GlButton } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import UnconfiguredSecurityRule from 'ee/approvals/components/security_configuration/unconfigured_security_rule.vue';
 import { COVERAGE_CHECK_NAME } from 'ee/approvals/constants';

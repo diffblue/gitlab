@@ -1,4 +1,5 @@
 <script>
+// eslint-disable-next-line no-restricted-imports
 import { mapState } from 'vuex';
 import ValueStreamFormContent from './value_stream_form_content.vue';
 import { generateInitialStageData } from './create_value_stream_form/utils';

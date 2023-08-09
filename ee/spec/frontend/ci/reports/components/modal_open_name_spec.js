@@ -1,4 +1,5 @@
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import { mount, createWrapper } from '@vue/test-utils';
 import ModalOpenName from 'ee/ci/reports/components/modal_open_name.vue';

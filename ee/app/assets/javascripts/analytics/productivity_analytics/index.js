@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import DateRange from '~/analytics/shared/components/daterange.vue';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';

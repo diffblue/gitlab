@@ -1,5 +1,6 @@
 <script>
 import { GlDropdown, GlDropdownItem, GlIcon } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapGetters } from 'vuex';
 import { __ } from '~/locale';
 

@@ -9,6 +9,7 @@ import {
 } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import VueApollo from 'vue-apollo';
 import { PROMO_URL } from 'jh_else_ce/lib/utils/url_utility';

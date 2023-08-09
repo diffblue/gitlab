@@ -1,4 +1,5 @@
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import { PLAN_CODE_FREE, addSeatsText, seatsInUseLink } from 'ee/usage_quotas/seats/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';

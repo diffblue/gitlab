@@ -1,4 +1,5 @@
 <script>
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import { GlButton, GlModalDirective, GlModal } from '@gitlab/ui';
 import { uniqueId } from 'lodash';

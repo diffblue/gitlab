@@ -10,6 +10,7 @@ import {
   GlSprintf,
 } from '@gitlab/ui';
 import VueDraggable from 'vuedraggable';
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import { s__, __ } from '~/locale';
 import ProjectSelector from '~/vue_shared/components/project_selector/project_selector.vue';

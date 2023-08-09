@@ -1,5 +1,6 @@
 <script>
 import { GlButton, GlIcon, GlLink, GlTooltipDirective } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapState } from 'vuex';
 import UsageStatistics from 'ee/usage_quotas/components/usage_statistics.vue';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';

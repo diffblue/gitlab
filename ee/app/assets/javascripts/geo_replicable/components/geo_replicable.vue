@@ -1,5 +1,6 @@
 <script>
 import { GlPagination } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import { PREV, NEXT } from '../constants';
 import GeoReplicableItem from './geo_replicable_item.vue';

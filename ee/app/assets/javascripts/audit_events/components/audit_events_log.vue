@@ -1,4 +1,5 @@
 <script>
+// eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState, mapGetters } from 'vuex';
 import { createToken } from '../token_utils';
 import AuditEventsExportButton from './audit_events_export_button.vue';

@@ -1,4 +1,5 @@
 <script>
+// eslint-disable-next-line no-restricted-imports
 import { mapState } from 'vuex';
 import { GlAlert } from '@gitlab/ui';
 import Tracking from '~/tracking';

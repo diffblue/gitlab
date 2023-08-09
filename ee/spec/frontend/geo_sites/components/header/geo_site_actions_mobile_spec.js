@@ -1,5 +1,6 @@
 import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoSiteActionsMobile from 'ee/geo_sites/components/header/geo_site_actions_mobile.vue';

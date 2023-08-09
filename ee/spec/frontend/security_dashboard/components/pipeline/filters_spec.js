@@ -1,6 +1,7 @@
 import { GlToggle } from '@gitlab/ui';
 import { shallowMount, mount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import VueRouter from 'vue-router';
 import Filters from 'ee/security_dashboard/components/pipeline/filters.vue';

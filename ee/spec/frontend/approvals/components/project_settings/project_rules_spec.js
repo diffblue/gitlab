@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import RuleInput from 'ee/approvals/components/mr_edit/rule_input.vue';
 import ProjectRules from 'ee/approvals/components/project_settings/project_rules.vue';

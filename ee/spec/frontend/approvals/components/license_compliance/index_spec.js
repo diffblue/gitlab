@@ -1,6 +1,7 @@
 import { GlIcon, GlSkeletonLoader } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import LicenseComplianceApprovals from 'ee/approvals/components/license_compliance/index.vue';
 import approvalsLicenceComplianceModule, {

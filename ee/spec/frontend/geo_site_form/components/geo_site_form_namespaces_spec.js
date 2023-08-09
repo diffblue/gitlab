@@ -1,6 +1,7 @@
 import { GlIcon, GlSearchBoxByType, GlDropdown } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import GeoSiteFormNamespaces from 'ee/geo_site_form/components/geo_site_form_namespaces.vue';
 import { MOCK_SYNC_NAMESPACES } from '../mock_data';

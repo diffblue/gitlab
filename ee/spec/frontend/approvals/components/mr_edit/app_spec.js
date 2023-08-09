@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import MREditApp from 'ee/approvals/components/mr_edit/app.vue';
 import MRRules from 'ee/approvals/components/mr_edit/mr_rules.vue';

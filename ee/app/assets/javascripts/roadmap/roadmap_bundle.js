@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+// eslint-disable-next-line no-restricted-imports
 import { mapActions } from 'vuex';
 
 import { parseBoolean, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';

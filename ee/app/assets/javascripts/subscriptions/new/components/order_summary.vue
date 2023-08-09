@@ -1,6 +1,7 @@
 <script>
 import * as Sentry from '@sentry/browser';
 import { GlCard, GlLoadingIcon } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { unescape, isEmpty } from 'lodash';
 import { sprintf, s__ } from '~/locale';

@@ -1,5 +1,6 @@
 <script>
 import { once } from 'lodash';
+// eslint-disable-next-line no-restricted-imports
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { componentNames } from 'ee/ci/reports/components/issue_body';
 import api from '~/api';

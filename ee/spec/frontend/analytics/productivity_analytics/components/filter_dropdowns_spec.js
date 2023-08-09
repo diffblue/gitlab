@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import FilterDropdowns from 'ee/analytics/productivity_analytics/components/filter_dropdowns.vue';
 import { getStoreConfig } from 'ee/analytics/productivity_analytics/store';

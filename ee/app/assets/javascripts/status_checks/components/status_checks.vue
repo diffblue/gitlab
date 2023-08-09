@@ -1,5 +1,6 @@
 <script>
 import { GlCard, GlTable, GlIcon, GlLink, GlSprintf } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapState } from 'vuex';
 import { thWidthPercent } from '~/lib/utils/table_utility';
 import { helpPagePath } from '~/helpers/help_page_helper';

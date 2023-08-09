@@ -2,6 +2,7 @@
 import { GlButton, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import VirtualList from 'vue-virtual-scroll-list';
 import Draggable from 'vuedraggable';
+// eslint-disable-next-line no-restricted-imports
 import { mapActions, mapGetters, mapState } from 'vuex';
 import BoardListHeader from 'ee_else_ce/boards/components/board_list_header.vue';
 import { isListDraggable } from '~/boards/boards_util';

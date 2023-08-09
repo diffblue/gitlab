@@ -1,6 +1,7 @@
 import { GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import RuleControls from 'ee/approvals/components/rule_controls.vue';
 import { createStoreOptions } from 'ee/approvals/stores';

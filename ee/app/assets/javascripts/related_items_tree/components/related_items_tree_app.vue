@@ -1,5 +1,6 @@
 <script>
 import { GlLoadingIcon, GlIcon, GlTooltipDirective } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions, mapGetters } from 'vuex';
 import { TYPE_EPIC, TYPE_ISSUE } from '~/issues/constants';
 import { __, sprintf } from '~/locale';

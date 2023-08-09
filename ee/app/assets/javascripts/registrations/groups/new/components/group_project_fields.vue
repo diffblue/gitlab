@@ -9,6 +9,7 @@ import {
 
 import { GlBreakpointInstance as bp } from '@gitlab/ui/dist/utils';
 import { debounce } from 'lodash';
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import { createAlert } from '~/alert';
 import { getGroupPathAvailability } from '~/rest_api';

@@ -1,4 +1,5 @@
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import LicenseReportApp from 'ee/vue_shared/license_compliance/mr_widget_license_report.vue';
 import { parseBoolean } from '~/lib/utils/common_utils';

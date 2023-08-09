@@ -1,5 +1,6 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import TanukiBotChat from 'ee/ai/tanuki_bot/components/tanuki_bot_chat.vue';
 import TanukiBotChatMessages from 'ee/ai/tanuki_bot/components/tanuki_bot_chat_message.vue';

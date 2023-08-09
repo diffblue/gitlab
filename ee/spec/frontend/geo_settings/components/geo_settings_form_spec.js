@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import GeoSettingsForm from 'ee/geo_settings/components/geo_settings_form.vue';
 import initStore from 'ee/geo_settings/store';

@@ -1,5 +1,6 @@
 <script>
 import { GlButton } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { __ } from '~/locale';
 import { visitUrl } from '~/lib/utils/url_utility';

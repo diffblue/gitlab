@@ -1,6 +1,7 @@
 import { GlButton, GlFormSelect } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import SelectionSummary from 'ee/security_dashboard/components/pipeline/selection_summary_vuex.vue';
 

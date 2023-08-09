@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 
 import EpicSidebar from 'ee/epic/components/epic_sidebar.vue';

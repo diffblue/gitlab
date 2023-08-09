@@ -3,6 +3,7 @@ import { mount, shallowMount } from '@vue/test-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Vue, { nextTick } from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import LabelsSelector from 'ee/analytics/cycle_analytics/components/labels_selector.vue';
 import createStore from 'ee/analytics/cycle_analytics/store';

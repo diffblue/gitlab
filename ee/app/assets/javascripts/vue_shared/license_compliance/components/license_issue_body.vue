@@ -1,4 +1,5 @@
 <script>
+// eslint-disable-next-line no-restricted-imports
 import { mapActions } from 'vuex';
 import { GlLink } from '@gitlab/ui';
 import api from '~/api';

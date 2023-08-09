@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import AxiosMockAdapter from 'axios-mock-adapter';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import axios from '~/lib/utils/axios_utils';
 import Api from 'ee/api';

@@ -1,5 +1,6 @@
 <script>
 import { GlTableLite, GlBadge, GlLink } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { DETAILS_FIELDS } from '../constants';

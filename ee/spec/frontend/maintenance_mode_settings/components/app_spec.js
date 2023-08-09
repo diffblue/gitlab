@@ -1,6 +1,7 @@
 import { GlToggle, GlFormTextarea, GlForm, GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import MaintenanceModeSettingsApp from 'ee/maintenance_mode_settings/components/app.vue';
 import { MOCK_BASIC_SETTINGS_DATA } from '../mock_data';

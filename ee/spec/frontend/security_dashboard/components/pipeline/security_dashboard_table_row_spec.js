@@ -1,6 +1,7 @@
 import { GlFormCheckbox, GlSkeletonLoader, GlIcon } from '@gitlab/ui';
 import { mount, shallowMount, createWrapper } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import { cloneDeep } from 'lodash';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';

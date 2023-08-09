@@ -1,5 +1,6 @@
 import { GlSprintf, GlFormTextarea, GlLink, GlButton } from '@gitlab/ui';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import { ENTER_KEY } from '~/lib/utils/keys';
 import TanukiBotChatInput from 'ee/ai/tanuki_bot/components/tanuki_bot_chat_input.vue';

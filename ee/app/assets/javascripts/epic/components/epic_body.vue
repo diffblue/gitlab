@@ -1,10 +1,8 @@
 <script>
 // eslint-disable-next-line no-restricted-imports
 import { mapState } from 'vuex';
-import initRelatedItemsTree from 'ee/related_items_tree/related_items_tree_bundle';
 import IssuableBody from '~/issues/show/components/app.vue';
 import { PathIdSeparator } from '~/related_issues/constants';
-import SidebarContext from '../sidebar_context';
 import EpicHeader from './epic_header.vue';
 import EpicHeaderActions from './epic_header_actions.vue';
 import EpicSidebar from './epic_sidebar.vue';
@@ -45,15 +43,11 @@ export default {
       };
     },
   },
-  mounted() {
-    new SidebarContext(); // eslint-disable-line no-new
-    initRelatedItemsTree();
-  },
 };
 </script>
 
 <template>
-  <div class="epic-page-container">
+  <div>
     <div
       class="issuable-details detail-page-description content-block gl-pt-3 gl-pb-0 gl-border-none"
     >
@@ -76,7 +70,7 @@ export default {
         :initial-description-text="initialDescriptionText"
         :issuable-status="state"
         :is-confidential="confidential"
-        enable-autocomplete
+        :enable-autocomplete="true"
         project-namespace
         issuable-ref
         issuable-type="epic"

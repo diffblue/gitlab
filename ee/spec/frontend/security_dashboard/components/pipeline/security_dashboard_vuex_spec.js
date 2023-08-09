@@ -1,6 +1,7 @@
 import { shallowMount, createWrapper } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
 import Vue, { nextTick } from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import LoadingError from 'ee/security_dashboard/components/pipeline/loading_error.vue';
 import SecurityDashboardTable from 'ee/security_dashboard/components/pipeline/security_dashboard_table.vue';

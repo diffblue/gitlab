@@ -1,4 +1,5 @@
 <script>
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import RuleName from 'ee/approvals/components/rule_name.vue';
 import { n__, sprintf } from '~/locale';

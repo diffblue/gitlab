@@ -1,5 +1,6 @@
 <script>
 import { GlAlert, GlLink, GlSprintf, GlLoadingIcon } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapGetters } from 'vuex';
 import { s__ } from '~/locale';
 import Tracking from '~/tracking';

@@ -1,5 +1,6 @@
 <script>
 import { GlBadge, GlLoadingIcon, GlEmptyState, GlPagination } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import FilterBar from './filter_bar.vue';
 import MergeRequestTable from './merge_request_table.vue';

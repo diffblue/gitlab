@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import BoardScope from 'ee/boards/components/board_scope.vue';
 import BoardLabelsSelect from 'ee/boards/components/labels_select.vue';

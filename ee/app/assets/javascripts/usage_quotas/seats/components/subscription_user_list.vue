@@ -11,6 +11,7 @@ import {
   GlTable,
   GlTooltipDirective,
 } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState, mapGetters } from 'vuex';
 import * as Sentry from '@sentry/browser';
 import dateFormat from '~/lib/dateformat';

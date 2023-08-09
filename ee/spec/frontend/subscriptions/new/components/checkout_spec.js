@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import Checkout from 'ee/subscriptions/new/components/checkout.vue';
 import createStore from 'ee/subscriptions/new/store';

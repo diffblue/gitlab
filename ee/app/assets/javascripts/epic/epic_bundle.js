@@ -1,6 +1,7 @@
 import { GlBreakpointInstance as bp } from '@gitlab/ui/dist/utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+// eslint-disable-next-line no-restricted-imports
 import { mapActions } from 'vuex';
 import { setCookie, convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_utils';
 import { parseIssuableData } from '~/issues/show/utils/parse_data';

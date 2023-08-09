@@ -9,6 +9,7 @@ import {
   GlLoadingIcon,
 } from '@gitlab/ui';
 import fuzzaldrinPlus from 'fuzzaldrin-plus';
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 
 import { __ } from '~/locale';

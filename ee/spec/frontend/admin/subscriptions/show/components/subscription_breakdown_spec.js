@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import { GlCard } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';

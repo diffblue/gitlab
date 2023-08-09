@@ -1,6 +1,7 @@
 <script>
 import { GlButton, GlCard, GlLoadingIcon } from '@gitlab/ui';
 import { escape } from 'lodash';
+// eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState, mapGetters } from 'vuex';
 import { removeTrialSuffix } from 'ee/billings/billings_util';
 import { TABLE_TYPE_DEFAULT, TABLE_TYPE_FREE, TABLE_TYPE_TRIAL } from 'ee/billings/constants';

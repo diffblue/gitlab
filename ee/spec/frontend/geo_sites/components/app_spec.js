@@ -1,5 +1,6 @@
 import { GlButton, GlLoadingIcon, GlModal, GlSprintf } from '@gitlab/ui';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import GeoSitesApp from 'ee/geo_sites/components/app.vue';
 import GeoSites from 'ee/geo_sites/components/geo_sites.vue';

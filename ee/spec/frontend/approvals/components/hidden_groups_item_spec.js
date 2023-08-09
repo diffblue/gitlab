@@ -1,6 +1,7 @@
 import { GlIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import HiddenGroupsItem from 'ee/approvals/components/hidden_groups_item.vue';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';

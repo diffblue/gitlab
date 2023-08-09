@@ -1,6 +1,7 @@
 import { GlButton, GlLoadingIcon, GlIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 
 import TreeItem from 'ee/related_items_tree/components/tree_item.vue';

@@ -1,5 +1,6 @@
 <script>
 import { GlFormGroup, GlFormInput, GlLink } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState } from 'vuex';
 import { s__, __ } from '~/locale';
 import { VALIDATION_FIELD_KEYS, REVERIFICATION_MORE_INFO, BACKFILL_MORE_INFO } from '../constants';

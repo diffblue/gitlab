@@ -1,5 +1,6 @@
 <script>
 import { GlSprintf } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapState } from 'vuex';
 import { i18n, GENIE_CHAT_LOADING_TRANSITION_DURATION } from '../constants';
 

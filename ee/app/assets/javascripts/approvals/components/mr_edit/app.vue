@@ -1,5 +1,6 @@
 <script>
 import { GlAccordion, GlAccordionItem, GlSprintf, GlLink } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapState } from 'vuex';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { helpPagePath } from '~/helpers/help_page_helper';

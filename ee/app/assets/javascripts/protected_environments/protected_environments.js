@@ -1,4 +1,5 @@
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import { createStore } from './store/edit';
 import ProtectedEnvironmentsApp from './protected_environments_app.vue';
