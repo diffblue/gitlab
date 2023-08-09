@@ -172,5 +172,53 @@ RSpec.describe Gitlab::Llm::Chain::Parsers::ChainOfThoughtParser, feature_catego
         end
       end
     end
+
+    describe 'final answer' do
+      context 'when no keyword is present' do
+        let(:output) do
+          <<-OUTPUT
+            Some unformatted answer
+          OUTPUT
+        end
+
+        it 'returns answer as final' do
+          parser.parse
+
+          expect(parser.final_answer).to eq('Some unformatted answer')
+        end
+      end
+
+      context 'when action is DirectAnswer' do
+        let(:output) do
+          <<~OUTPUT
+            Action: DirectAnswer
+            Final Answer: Some answer
+          OUTPUT
+        end
+
+        it 'parses action and sets answer as final' do
+          parser.parse
+
+          expect(parser.action).to eq('DirectAnswer')
+          expect(parser.final_answer).to eq('Some answer')
+        end
+      end
+
+      context 'when action is DirectAnswer followed by unformatted answer' do
+        let(:output) do
+          <<~OUTPUT
+            Action: DirectAnswer
+            Some answer
+          OUTPUT
+        end
+
+        it 'returns unformatted answer as final' do
+          parser.parse
+
+          expect(parser.action).to be_nil
+          expect(parser.final_answer).to eq('Some answer')
+        end
+      end
+    end
   end
 end
