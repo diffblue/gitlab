@@ -31,12 +31,12 @@ describe('Status checks actions', () => {
   const findRemoveBtn = () => wrapper.findByTestId('remove-btn');
 
   describe.each`
-    text           | button           | event
-    ${'Edit'}      | ${findEditBtn}   | ${'open-update-modal'}
-    ${'Remove...'} | ${findRemoveBtn} | ${'open-delete-modal'}
-  `('$text button', ({ text, button, event }) => {
-    it(`renders the button text as '${text}'`, () => {
-      expect(button().text()).toBe(text);
+    ariaLabel   | button           | event
+    ${'Edit'}   | ${findEditBtn}   | ${'open-update-modal'}
+    ${'Remove'} | ${findRemoveBtn} | ${'open-delete-modal'}
+  `('$text button', ({ ariaLabel, button, event }) => {
+    it(`renders the button with the aria-label '${ariaLabel}'`, () => {
+      expect(button().attributes('aria-label')).toBe(ariaLabel);
     });
 
     it(`sends the status check with the '${event}' event`, () => {

@@ -25,7 +25,7 @@ export default {
 
 <template>
   <div>
-    <gl-button category="secondary" variant="confirm" size="small" @click="show()">
+    <gl-button category="secondary" size="small" @click="show">
       {{ $options.i18n.addButton }}
     </gl-button>
     <shared-modal

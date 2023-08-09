@@ -78,7 +78,7 @@ RSpec.describe 'Project settings > [EE] Merge Requests', :js, feature_category: 
           expect(find('[data-testid="status-checks-table"]')).to have_content(rule.name)
 
           within('[data-testid="status-checks-table"]') do
-            click_button 'Remove...'
+            click_button 'Remove'
           end
 
           within('.modal-content') do

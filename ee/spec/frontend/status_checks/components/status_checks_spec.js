@@ -1,4 +1,4 @@
-import { GlTable } from '@gitlab/ui';
+import { GlCard, GlTable } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
@@ -56,13 +56,13 @@ describe('Status checks', () => {
     });
 
     it('creates the create modal', () => {
-      createWrapper(shallowMount);
+      createWrapper(shallowMount, { stubs: { GlCard } });
 
       expect(findCreateModal().exists()).toBe(true);
     });
 
     it('creates the update modal', () => {
-      createWrapper(shallowMount);
+      createWrapper(shallowMount, { stubs: { GlCard } });
 
       expect(findUpdateModal().exists()).toBe(true);
     });
@@ -79,7 +79,7 @@ describe('Status checks', () => {
       expect(findHeaders().at(0).text()).toBe(i18n.nameHeader);
       expect(findHeaders().at(1).text()).toBe(i18n.apiHeader);
       expect(findHeaders().at(2).text()).toBe(i18n.branchHeader);
-      expect(findHeaders().at(3).text()).toBe('');
+      expect(findHeaders().at(3).text()).toBe(i18n.actionsHeader);
     });
 
     describe.each(statusChecks)('status check %#', (statusCheck) => {
