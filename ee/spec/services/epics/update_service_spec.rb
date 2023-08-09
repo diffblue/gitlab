@@ -560,11 +560,13 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
       let(:parent) { group }
     end
 
-    context 'labels are updated' do
+    context 'updating labels' do
       let(:label_a) { create(:group_label, title: 'a', group: group) }
       let(:label_b) { create(:group_label, title: 'b', group: group) }
+      let(:label_c) { create(:group_label, title: 'c', group: group) }
       let(:issuable) { epic }
 
+      it_behaves_like 'updating issuable labels'
       it_behaves_like 'keeps issuable labels sorted after update'
       it_behaves_like 'broadcasting issuable labels updates'
 
