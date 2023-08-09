@@ -2,9 +2,9 @@
 
 RSpec::Matchers.define :match_llm_tools do |expected_tools|
   match do |prompt|
-    zero_shot_prompt_action = 'the action to take'
+    zero_shot_prompt_actions = ['the action to take', 'DirectAnswer']
     actions = prompt[:prompt].scan(/Action: (?<action>.+?)(?=$)/)
-    actions.reject! { |action| action.first.start_with?(zero_shot_prompt_action) }
+    actions.reject! { |action| action.first.start_with?(*zero_shot_prompt_actions) }
     @tools = actions.flatten
 
     expected_tools == @tools
