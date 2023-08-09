@@ -15476,6 +15476,9 @@ msgstr ""
 msgid "Delete corpus"
 msgstr ""
 
+msgid "Delete custom emoji"
+msgstr ""
+
 msgid "Delete deploy key"
 msgstr ""
 
@@ -19384,6 +19387,9 @@ msgid "Failed to create resources"
 msgstr ""
 
 msgid "Failed to create wiki"
+msgstr ""
+
+msgid "Failed to delete custom emoji. Please try again."
 msgstr ""
 
 msgid "Failed to deploy to"
