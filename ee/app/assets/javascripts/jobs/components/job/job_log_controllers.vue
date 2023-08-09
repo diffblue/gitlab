@@ -69,6 +69,15 @@ export default {
     toggleDrawer() {
       this.isRootCauseDrawerShown = !this.isRootCauseDrawerShown;
     },
+    handleScrollTop() {
+      this.$emit('scrollJobLogTop');
+    },
+    handleScrollBottom() {
+      this.$emit('scrollJobLogBottom');
+    },
+    handleSearchResults(searchResults) {
+      this.$emit('searchResults', searchResults);
+    },
   },
   i18n: {
     buttonName: s__('Jobs|Root cause analysis'),
@@ -76,7 +85,7 @@ export default {
 };
 </script>
 <template>
-  <div>
+  <div class="gl-display-contents">
     <root-cause-analysis
       v-if="rootCauseAnalysisIsAvailable"
       :is-shown="isRootCauseDrawerShown"
@@ -93,6 +102,9 @@ export default {
       :is-job-log-size-visible="isJobLogSizeVisible"
       :is-complete="isComplete"
       :job-log="jobLog"
+      @scrollJobLogTop="handleScrollTop"
+      @scrollJobLogBottom="handleScrollBottom"
+      @searchResults="handleSearchResults"
     >
       <template #controllers>
         <gl-button v-if="rootCauseAnalysisIsAvailable" class="gl-mr-2" @click="toggleDrawer">{{
