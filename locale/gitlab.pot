@@ -5552,6 +5552,9 @@ msgstr ""
 msgid "Another issue tracker is already in use. Only one issue tracker service can be active at a time"
 msgstr ""
 
+msgid "Another open merge request already exists for this source branch: %{conflicting_mr_reference}"
+msgstr ""
+
 msgid "Another third-party wiki is already in use. Only one third-party wiki integration can be active at a time"
 msgstr ""
 
