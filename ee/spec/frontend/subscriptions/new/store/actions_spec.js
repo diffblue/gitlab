@@ -4,7 +4,7 @@ import * as constants from 'ee/subscriptions/constants';
 import defaultClient from 'ee/subscriptions/new/graphql';
 import * as actions from 'ee/subscriptions/new/store/actions';
 import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/activate_next_step.mutation.graphql';
-import { ActiveModelError } from 'ee/vue_shared/purchase_flow/utils/purchase_errors';
+import { ActiveModelError } from '~/lib/utils/error_utils';
 import { useMockLocationHelper } from 'helpers/mock_window_location_helper';
 import testAction from 'helpers/vuex_action_helper';
 import Tracking from '~/tracking';

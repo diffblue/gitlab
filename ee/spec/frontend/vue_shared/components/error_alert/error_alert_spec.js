@@ -1,27 +1,34 @@
 import { GlAlert } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import PurchaseErrorAlert from 'ee/vue_shared/purchase_flow/components/checkout/error_alert.vue';
-import {
-  generateHelpTextWithLinks,
-  mapSystemToFriendlyError,
-} from 'ee/vue_shared/purchase_flow/utils/purchase_errors';
+import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
+import { generateHelpTextWithLinks, mapSystemToFriendlyError } from '~/lib/utils/error_utils';
 
 const error = new Error('An error');
 const friendlyError = 'A friendly error';
 const friendlyErrorHTML = '<a href="https://a.link">A friendly error message with links</a>';
+const errorDictionary = {
+  'unfriendly error': {
+    message: 'friendly error message',
+    links: {},
+  },
+};
+const defaultError = {
+  message: 'default error message',
+  links: {},
+};
 
-jest.mock('ee/vue_shared/purchase_flow/utils/purchase_errors', () => ({
+jest.mock('~/lib/utils/error_utils', () => ({
   generateHelpTextWithLinks: jest.fn().mockReturnValue(friendlyErrorHTML),
   mapSystemToFriendlyError: jest.fn().mockReturnValue(friendlyError),
 }));
 
-describe('Purchase Error Alert', () => {
+describe('Error Alert', () => {
   let wrapper;
 
   const findAlert = () => wrapper.findComponent(GlAlert);
 
-  const createComponent = (props = { error: undefined }) => {
-    wrapper = shallowMount(PurchaseErrorAlert, {
+  const createComponent = (props = {}) => {
+    wrapper = shallowMount(ErrorAlert, {
       propsData: props,
     });
   };
@@ -38,7 +45,7 @@ describe('Purchase Error Alert', () => {
 
   describe('with an error', () => {
     beforeEach(() => {
-      createComponent({ error });
+      createComponent({ error, errorDictionary, defaultError });
     });
 
     it('passes the correct props', () => {
@@ -53,7 +60,7 @@ describe('Purchase Error Alert', () => {
     });
 
     it('invokes mapSystemToFriendlyError', () => {
-      expect(mapSystemToFriendlyError).toHaveBeenCalledWith(error);
+      expect(mapSystemToFriendlyError).toHaveBeenCalledWith(error, errorDictionary, defaultError);
     });
 
     it('passes the correct html', () => {

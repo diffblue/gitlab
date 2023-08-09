@@ -19,8 +19,12 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createMockApolloProvider } from 'ee_jest/subscriptions/spec_helper';
 import { mockCiMinutesPlans, mockStoragePlans } from 'ee_jest/subscriptions/mock_data';
-import ErrorAlert from 'ee/vue_shared/purchase_flow/components/checkout/error_alert.vue';
+import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
 import { PurchaseEvent } from 'ee/subscriptions/new/constants';
+import {
+  PURCHASE_ERROR_DICTIONARY,
+  CONTACT_SUPPORT_DEFAULT_MESSAGE,
+} from 'ee/vue_shared/purchase_flow/error_constants';
 
 Vue.use(VueApollo);
 
@@ -106,7 +110,11 @@ describe('Buy Addons Shared App', () => {
         });
 
         it('passes the correct props to the alert', () => {
-          expect(findErrorAlert().props('error')).toBe(error);
+          expect(findErrorAlert().props()).toEqual({
+            error,
+            errorDictionary: PURCHASE_ERROR_DICTIONARY,
+            defaultError: CONTACT_SUPPORT_DEFAULT_MESSAGE,
+          });
         });
 
         it('captures the error', () => {

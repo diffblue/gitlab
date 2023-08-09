@@ -4,7 +4,11 @@ import StepOrderApp from 'ee/vue_shared/purchase_flow/components/step_order_app.
 import Checkout from 'jh_else_ee/subscriptions/new/components/checkout.vue';
 import ConfirmOrder from 'ee/subscriptions/new/components/checkout/confirm_order.vue';
 import OrderSummary from 'jh_else_ee/subscriptions/new/components/order_summary.vue';
-import ErrorAlert from 'ee/vue_shared/purchase_flow/components/checkout/error_alert.vue';
+import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
+import {
+  PURCHASE_ERROR_DICTIONARY,
+  CONTACT_SUPPORT_DEFAULT_MESSAGE,
+} from 'ee/vue_shared/purchase_flow/error_constants';
 
 export default {
   components: {
@@ -19,6 +23,8 @@ export default {
       error: null,
     };
   },
+  purchaseErrorDictionary: PURCHASE_ERROR_DICTIONARY,
+  defaultPurchaseError: CONTACT_SUPPORT_DEFAULT_MESSAGE,
   mounted() {
     this.$store.subscribeAction({
       after: this.handleVuexActionDispatch,
@@ -42,7 +48,13 @@ export default {
 </script>
 <template>
   <div data-testid="subscription_app">
-    <error-alert v-if="error" class="gl-mb-4" :error="error" />
+    <error-alert
+      v-if="error"
+      class="gl-mb-4"
+      :error="error"
+      :error-dictionary="$options.purchaseErrorDictionary"
+      :default-error="$options.defaultPurchaseError"
+    />
     <step-order-app>
       <template #checkout>
         <checkout @error="handleError" @error-reset="hideError" />
