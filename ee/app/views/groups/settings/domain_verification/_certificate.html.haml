@@ -23,7 +23,7 @@
       s_("DomainVerification|Manually enter certificate information"),
       radio_options: { checked: !auto_ssl_available_and_enabled }
 
-.js-shown-unless-auto-ssl.custom-control{ class: ("gl-display-none" if auto_ssl_available_and_enabled) }
+.js-shown-unless-auto-ssl.custom-control.gl-pl-0{ class: ("gl-display-none" if auto_ssl_available_and_enabled) }
   - if domain_presenter.user_defined_certificate?
     .form-group.gl-form-group.gl-max-w-80
       = render Pajamas::CardComponent.new(body_options: { class: 'gl-display-flex gl-align-items-center gl-justify-content-space-between gl-p-5' }) do |c|
