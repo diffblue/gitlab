@@ -64,7 +64,6 @@ export default {
       v-model="selectedGroup"
       name="namespace_id"
       label-for="namespace_id"
-      data-qa-selector="subscription_for"
       :label="$options.i18n.groupSelectLabel"
       :items="items"
       :default-toggle-text="$options.i18n.defaultToggleText"
@@ -80,7 +79,6 @@ export default {
       <gl-form-input
         v-model="groupName"
         name="new_group_name"
-        data-qa-selector="new_group_name"
         data-testid="new-group-name-input"
         required
         :state="hasValidGroup"
