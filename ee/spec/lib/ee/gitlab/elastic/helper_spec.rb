@@ -731,34 +731,6 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
     end
   end
 
-  describe '#uncached_healthy?' do
-    subject(:uncached_healthy?) { helper.uncached_healthy? }
-
-    context 'when cluster is healthy' do
-      before do
-        allow(described_class.default.client.cluster).to receive(:health).and_return({ 'status' => 'green' })
-      end
-
-      it { is_expected.to eq(true) }
-    end
-
-    context 'when cluster is not healthy' do
-      before do
-        allow(described_class.default.client.cluster).to receive(:health).and_return({ 'status' => 'red' })
-      end
-
-      it { is_expected.to eq(false) }
-    end
-
-    context 'when an error is raised from client' do
-      before do
-        allow(described_class.default.client.cluster).to receive(:health).and_raise(StandardError)
-      end
-
-      it { is_expected.to eq(false) }
-    end
-  end
-
   describe '#remove_wikis_from_the_standalone_index' do
     context 'container_type is other than Group or Project' do
       it 'not calls delete_by_query' do

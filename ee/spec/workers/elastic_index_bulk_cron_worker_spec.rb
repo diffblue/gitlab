@@ -14,6 +14,7 @@ RSpec.describe ElasticIndexBulkCronWorker, feature_category: :global_search do
   before do
     stub_const("Elastic::ProcessBookkeepingService::SHARDS", shards)
     stub_ee_application_setting(elasticsearch_indexing: true, elasticsearch_requeue_workers: true)
+    allow(Search::ClusterHealthCheck::Elastic).to receive(:healthy?).and_return(true)
   end
 
   describe '.perform' do
@@ -59,11 +60,8 @@ RSpec.describe ElasticIndexBulkCronWorker, feature_category: :global_search do
       end
 
       context 'when search cluster is unhealthy' do
-        let(:helper) { Gitlab::Elastic::Helper.default }
-
         before do
-          allow(Gitlab::Elastic::Helper).to receive(:default).and_return(helper)
-          allow(helper).to receive(:healthy?).and_return(false)
+          allow(Search::ClusterHealthCheck::Elastic).to receive(:healthy?).and_return(false)
         end
 
         it 'does nothing if cluster is not healthy' do
