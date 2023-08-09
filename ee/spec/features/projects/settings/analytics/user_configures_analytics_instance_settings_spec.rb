@@ -66,7 +66,7 @@ RSpec.describe 'Project > Settings > Analytics -> Data sources -> Product analyt
       cube_api_base_url = 'https://cube.example.com'
       cube_api_key = '123-cubejs-4-me'
 
-      fill_in('Product analytics configurator connection string', with: configurator_connection_string)
+      fill_in('Connection string', with: configurator_connection_string)
       fill_in('Collector host', with: collector_host)
       fill_in('Clickhouse URL', with: clickhouse_connection_string)
       fill_in('Cube API URL', with: cube_api_base_url)
@@ -75,7 +75,7 @@ RSpec.describe 'Project > Settings > Analytics -> Data sources -> Product analyt
       click_button 'Save changes'
       wait_for_requests
 
-      expect(page).to have_field('Product analytics configurator connection string',
+      expect(page).to have_field('Connection string',
         with: configurator_connection_string)
       expect(page).to have_field('Collector host', with: collector_host)
       expect(page).to have_field('Clickhouse URL', with: clickhouse_connection_string)
