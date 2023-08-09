@@ -574,19 +574,48 @@ RSpec.describe Namespace do
           namespace.add_owner(owner)
         end
 
-        context 'when the owner is privatized by abuse automation' do
-          let(:privatized_by_abuse_automation) { true }
+        context 'when the namespace is not root' do
+          before do
+            namespace.parent = build(:group)
+          end
 
-          include_examples 'sync'
+          include_examples 'no sync'
         end
 
-        context 'when the owner is not privatized by abuse automation' do
-          include_examples 'sync'
+        context 'when the root namespace is not trial nor paid' do
+          before do
+            allow(namespace.actual_plan).to receive(:paid?).and_return(false)
+            allow(namespace).to receive(:trial?).and_return(false)
+          end
+
+          include_examples 'no sync'
+        end
+
+        context 'when the root namespace is on a paid plan' do
+          before do
+            allow(namespace.actual_plan).to receive(:paid?).and_return(true)
+            namespace.parent = nil
+          end
+
+          context 'when the owner is privatized by abuse automation' do
+            let(:privatized_by_abuse_automation) { true }
+
+            include_examples 'sync'
+          end
+
+          context 'when the owner is not privatized by abuse automation' do
+            include_examples 'sync'
+          end
         end
       end
 
-      context 'when user namespace' do
+      context 'when non-free user namespace' do
         let(:namespace) { create(:namespace, owner: owner) }
+
+        before do
+          allow(namespace.actual_plan).to receive(:paid?).and_return(true)
+          namespace.parent = nil
+        end
 
         context 'when the owner is privatized by abuse automation' do
           let(:privatized_by_abuse_automation) { true }
@@ -596,6 +625,25 @@ RSpec.describe Namespace do
 
         context 'when the owner is not privatized by abuse automation' do
           include_examples 'sync'
+        end
+      end
+
+      context 'when free user namespace' do
+        let(:namespace) { create(:namespace, owner: owner) }
+
+        before do
+          allow(namespace.actual_plan).to receive(:paid?).and_return(false)
+          namespace.parent = nil
+        end
+
+        context 'when the owner is privatized by abuse automation' do
+          let(:privatized_by_abuse_automation) { true }
+
+          include_examples 'no sync'
+        end
+
+        context 'when the owner is not privatized by abuse automation' do
+          include_examples 'no sync'
         end
       end
     end
