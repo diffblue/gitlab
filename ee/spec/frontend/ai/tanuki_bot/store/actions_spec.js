@@ -109,6 +109,18 @@ describe('TanukiBot Store Actions', () => {
         },
       );
     });
+
+    describe('with incoming tool message', () => {
+      it('commits the correct mutation', () => {
+        const payload = { ...MOCK_USER_MESSAGE, role: GENIE_CHAT_MODEL_ROLES.tool };
+        return testAction({
+          action: actions.addDuoChatMessage,
+          payload,
+          state,
+          expectedMutations: [{ type: types.ADD_TOOL_MESSAGE, payload }],
+        });
+      });
+    });
   });
 
   describe('setMessages', () => {

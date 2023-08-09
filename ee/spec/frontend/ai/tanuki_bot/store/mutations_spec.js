@@ -14,6 +14,20 @@ describe('GitLab Duo Chat Store Mutations', () => {
     const requestId = '123';
     const userMessageWithRequestId = { ...MOCK_USER_MESSAGE, requestId };
 
+    describe('tool message', () => {
+      it.each(['tool_info', 'TOOL_INFO'])(
+        'ignores the messages with role="%s" and does not populate the state',
+        (role) => {
+          const messageData = {
+            ...MOCK_USER_MESSAGE,
+            role,
+          };
+          mutations[types.ADD_MESSAGE](state, messageData);
+          expect(state.messages).toStrictEqual([]);
+        },
+      );
+    });
+
     describe('when there is no message with the same requestId', () => {
       it.each`
         messageData                                                                  | expectedState
@@ -117,5 +131,26 @@ describe('GitLab Duo Chat Store Mutations', () => {
 
       expect(state.loading).toBe(true);
     });
+  });
+
+  describe('ADD_TOOL_MESSAGE', () => {
+    const toolMessage = {
+      ...MOCK_USER_MESSAGE,
+      role: GENIE_CHAT_MODEL_ROLES.tool,
+    };
+    it.each`
+      desc              | message              | isLoading | expectedState
+      ${'sets'}         | ${toolMessage}       | ${true}   | ${toolMessage}
+      ${'does not set'} | ${MOCK_USER_MESSAGE} | ${true}   | ${''}
+      ${'does not set'} | ${toolMessage}       | ${false}  | ${''}
+    `(
+      '$desc the `toolMessage` when message is $message and loading is $isLoading',
+      ({ message, isLoading, expectedState }) => {
+        state.loading = isLoading;
+        mutations[types.ADD_TOOL_MESSAGE](state, message);
+
+        expect(state.toolMessage).toStrictEqual(expectedState);
+      },
+    );
   });
 });

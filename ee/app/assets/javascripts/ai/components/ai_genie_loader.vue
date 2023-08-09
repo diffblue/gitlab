@@ -1,5 +1,6 @@
 <script>
 import { GlSprintf } from '@gitlab/ui';
+import { mapState } from 'vuex';
 import { i18n, GENIE_CHAT_LOADING_TRANSITION_DURATION } from '../constants';
 
 export default {
@@ -13,6 +14,9 @@ export default {
       loadingSequence: 0,
       timeout: null,
     };
+  },
+  computed: {
+    ...mapState(['toolMessage']),
   },
   beforeDestroy() {
     clearTimeout(this.timeout);
@@ -54,6 +58,12 @@ export default {
         <div class="ai-genie-loader__dot ai-genie-loader__dot--3"></div>
       </div>
       <gl-sprintf :message="$options.i18n.GENIE_CHAT_LOADING_MESSAGE">
+        <template #tool>
+          <strong class="gl-mr-2" data-testid="tool">
+            <span v-if="toolMessage">{{ toolMessage.content }}</span>
+            <span v-else>{{ $options.i18n.GITLAB_DUO }}</span>
+          </strong>
+        </template>
         <template #transition>
           <transition-group
             ref="transition"
