@@ -50,14 +50,14 @@ module EE
         field :actual_size_limit,
               GraphQL::Types::Float,
               null: true,
-              description: 'Actual storage size limit for the namespace in bytes. ' \
-                           'This limit is agnostic of enforcement type.'
+              description: 'The actual storage size limit (in bytes) based on the enforcement type ' \
+                           'of either repository or namespace. This limit is agnostic of enforcement type.'
 
         field :storage_size_limit,
               GraphQL::Types::Float,
               null: true,
-              description: 'Storage limit included in the root namespace plan in bytes. ' \
-                           'This limit only applies to namespaces under Namespace limit enforcement.'
+              description: 'The storage limit (in bytes) included with the root namespace plan. ' \
+                           'This limit only applies to namespaces under namespace limit enforcement.'
 
         field :is_temporary_storage_increase_enabled,
               GraphQL::Types::Boolean,
