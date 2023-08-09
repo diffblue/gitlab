@@ -6,7 +6,7 @@ module Namespaces
       private
 
       def paragraph_1_extra_message
-        Kernel.format(
+        safe_format(
           s_("UsageQuota|The %{strong_start}%{context_name}%{strong_end} project will be affected by this. "),
           strong_tags.merge(context_name: context.name)
         )

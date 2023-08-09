@@ -187,7 +187,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
         render_inline(component)
 
         expect(page).to have_link(
-          'How can I manage my storage?',
+          'How can I manage my storage',
           href: help_page_path(
             'user/usage_quotas',
             anchor: 'manage-your-storage-usage'

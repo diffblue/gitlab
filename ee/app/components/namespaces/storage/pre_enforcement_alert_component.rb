@@ -3,6 +3,7 @@
 module Namespaces
   module Storage
     class PreEnforcementAlertComponent < ViewComponent::Base
+      include SafeFormatHelper
       include ::Namespaces::CombinedStorageUsers::PreEnforcement
 
       # @param [UserNamespace, Group, SubGroup, Project] context
@@ -38,6 +39,14 @@ module Namespaces
         help_page_path('user/usage_quotas', anchor: 'namespace-storage-limit')
       end
 
+      def promotion_link
+        "https://about.gitlab.com/pricing/faq-efficient-free-tier/#transition-offer"
+      end
+
+      def offer_availability_link
+        "https://about.gitlab.com/pricing/faq-efficient-free-tier/#q-is-this-offer-available-for-all-free-tier-users"
+      end
+
       def learn_more_link
         help_page_path('user/usage_quotas', anchor: 'manage-your-storage-usage')
       end
@@ -48,8 +57,8 @@ module Namespaces
 
       def strong_tags
         {
-          strong_start: "<strong>",
-          strong_end: "</strong>"
+          strong_start: "<strong>".html_safe,
+          strong_end: "</strong>".html_safe
         }
       end
 
@@ -61,56 +70,80 @@ module Namespaces
         text_args = {
           namespace_name: root_namespace.name,
           extra_message: paragraph_1_extra_message,
-          storage_limit_link_start: Kernel.format('<a href="%{url}" >', { url: storage_limit_docs_link }),
-          link_end: "</a>"
+          storage_limit_link_start: Kernel.format('<a href="%{url}" >', { url: storage_limit_docs_link }).html_safe,
+          link_end: "</a>".html_safe
         }.merge(strong_tags)
 
-        Kernel.format(
+        safe_format(
           s_(
             "UsageQuota|%{storage_limit_link_start}A namespace storage limit%{link_end} will soon " \
             "be enforced for the %{strong_start}%{namespace_name}%{strong_end} namespace. %{extra_message}"
           ),
           text_args
-        ).html_safe
+        )
       end
 
       def usage_quotas_nav_instruction
-        if root_namespace.user_namespace?
-          s_("UsageQuota|User settings &gt; Usage quotas")
-        else
-          s_("UsageQuota|Group settings &gt; Usage quotas")
-        end
+        message = if root_namespace.user_namespace?
+                    s_("UsageQuota|User settings %{gt} Usage quotas")
+                  else
+                    s_("UsageQuota|Group settings %{gt} Usage quotas")
+                  end
+
+        safe_format(message, { gt: "&gt;".html_safe })
       end
 
       def text_paragraph_2
         text_args = {
           used_storage: storage_counter(root_namespace.root_storage_statistics&.storage_size || 0),
           usage_quotas_nav_instruction: usage_quotas_nav_instruction,
-          docs_link_start: Kernel.format('<a href="%{url}" >', { url: learn_more_link }),
-          link_end: "</a>"
+          docs_link_start: Kernel.format('<a href="%{url}" >', { url: learn_more_link }).html_safe,
+          link_end: "</a>".html_safe
         }.merge(strong_tags)
 
-        Kernel.format(
+        safe_format(
           s_(
             "UsageQuota|The namespace is currently using %{strong_start}%{used_storage}%{strong_end} " \
             "of namespace storage. Group owners can view namespace storage usage and purchase more from " \
             "%{strong_start}%{usage_quotas_nav_instruction}%{strong_end}. " \
-            "%{docs_link_start}How can I manage my storage?%{link_end}." \
+            "%{docs_link_start}How can I manage my storage%{link_end}?" \
           ),
           text_args
-        ).html_safe
+        )
       end
 
       def text_paragraph_3
         text_args = {
-          faq_link_start: Kernel.format('<a href="%{url}" >', { url: faq_link }),
-          link_end: "</a>"
+          faq_link_start: Kernel.format('<a href="%{url}" >', { url: faq_link }).html_safe,
+          link_end: "</a>".html_safe
         }
 
-        Kernel.format(
+        safe_format(
           s_("UsageQuota|For more information about storage limits, see our %{faq_link_start}FAQ%{link_end}."),
           text_args
-        ).html_safe
+        )
+      end
+
+      def text_paragraph_4
+        text_args = {
+          promotion_link_start: Kernel.format('<a href="%{url}" >', { url: promotion_link }).html_safe,
+          offer_availability_link_start: Kernel.format(
+            '<a href="%{url}" >', { url: offer_availability_link }
+          ).html_safe,
+          link_end: "</a>".html_safe
+        }
+
+        safe_format(
+          _(
+            "To minimize the impact of storage limits to Free top-level groups, " \
+            "for a limited time, GitLab is offering a " \
+            "%{promotion_link_start}one-time 70 percent discount%{link_end} " \
+            "off the list price for %{offer_availability_link_start}qualifying top-level groups%{link_end} " \
+            "when you purchase a new, one year subscription of GitLab Premium SaaS. " \
+            "This offer is valid until 2023-10-31."
+          ),
+          text_args
+        )
       end
 
       def user_allowed?
