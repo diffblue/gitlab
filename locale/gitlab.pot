@@ -29646,27 +29646,6 @@ msgstr ""
 msgid "Metrics:"
 msgstr ""
 
-msgid "MetricsDashboardAnnotation|Annotation can't belong to both a cluster and an environment at the same time"
-msgstr ""
-
-msgid "MetricsDashboardAnnotation|Annotation has not been deleted"
-msgstr ""
-
-msgid "MetricsDashboardAnnotation|Annotation must belong to a cluster or an environment"
-msgstr ""
-
-msgid "MetricsDashboardAnnotation|Dashboard with requested path can not be found"
-msgstr ""
-
-msgid "MetricsDashboardAnnotation|You are not authorized to create annotation for selected cluster"
-msgstr ""
-
-msgid "MetricsDashboardAnnotation|You are not authorized to create annotation for selected environment"
-msgstr ""
-
-msgid "MetricsDashboardAnnotation|You are not authorized to delete this annotation"
-msgstr ""
-
 msgid "MetricsDashboardAnnotation|can't be before starting_at time"
 msgstr ""
 
