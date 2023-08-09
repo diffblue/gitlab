@@ -189,9 +189,7 @@ module EE
       def refresh_merge_trains(project)
         return unless project.merge_pipelines_were_disabled?
 
-        MergeTrains::Car.first_on_each_train(project).each do |car|
-          MergeTrains::RefreshWorker.perform_async(car.target_project_id, car.target_branch)
-        end
+        MergeTrains::Train.all_for_project(project).each(&:refresh_async)
       end
     end
   end

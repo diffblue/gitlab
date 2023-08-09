@@ -8,6 +8,35 @@ RSpec.describe MergeTrains::Train, feature_category: :merge_trains do
 
   let(:train) { described_class.new(target_project, merge_request.target_branch) }
 
+  describe '.all_for_project' do
+    before do
+      create(:merge_train_car, target_project: target_project, target_branch: 'master')
+      create(:merge_train_car, target_project: target_project, target_branch: 'master')
+      create(:merge_train_car, target_project: target_project, target_branch: 'feature-1')
+      create(:merge_train_car, :merged, target_project: target_project, target_branch: 'feature-2')
+      create(:merge_train_car, target_project: create(:project), target_branch: 'master')
+    end
+
+    subject(:trains) { described_class.all_for_project(target_project) }
+
+    it 'returns distinct active merge trains' do
+      branches = trains.map(&:target_branch)
+
+      expect(branches).to contain_exactly('master', 'feature-1')
+    end
+  end
+
+  describe '#refresh_async' do
+    subject { train.refresh_async }
+
+    it 'schedules a worker' do
+      expect(MergeTrains::RefreshWorker)
+        .to receive(:perform_async).with(train.project_id, train.target_branch)
+
+      subject
+    end
+  end
+
   describe '#all_cars' do
     subject { train.all_cars }
 
