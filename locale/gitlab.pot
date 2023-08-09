@@ -11990,6 +11990,9 @@ msgstr ""
 msgid "Compliance framework"
 msgstr ""
 
+msgid "ComplianceFrameworks|Active compliance frameworks"
+msgstr ""
+
 msgid "ComplianceFrameworks|Add framework"
 msgstr ""
 
@@ -12047,7 +12050,7 @@ msgstr ""
 msgid "ComplianceFrameworks|Error setting the default compliance frameworks"
 msgstr ""
 
-msgid "ComplianceFrameworks|Frameworks that have been added will appear here."
+msgid "ComplianceFrameworks|Frameworks that have been added will appear here, start by creating a new one above."
 msgstr ""
 
 msgid "ComplianceFrameworks|Invalid format"

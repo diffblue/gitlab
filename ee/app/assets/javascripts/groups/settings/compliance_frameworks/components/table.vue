@@ -1,12 +1,21 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import Vue from 'vue';
-import { GlAlert, GlButton, GlLoadingIcon, GlTableLite, GlLabel, GlToast } from '@gitlab/ui';
+import {
+  GlAlert,
+  GlButton,
+  GlCard,
+  GlIcon,
+  GlLoadingIcon,
+  GlTableLite,
+  GlLabel,
+  GlToast,
+} from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 
 import { DANGER, INFO, EDIT_BUTTON_LABEL } from '../constants';
 import updateComplianceFrameworkMutation from '../graphql/queries/update_compliance_framework.mutation.graphql';
@@ -24,6 +33,8 @@ export default {
     FormModal,
     GlAlert,
     GlButton,
+    GlCard,
+    GlIcon,
     GlLoadingIcon,
     GlTableLite,
     GlLabel,
@@ -59,8 +70,8 @@ export default {
         },
         {
           key: 'actions',
-          label: '',
-          thClass: 'w-10p',
+          label: __('Actions'),
+          thClass: 'gl-text-right',
           tdClass: 'gl-vertical-align-middle!',
         },
       ],
@@ -118,7 +129,7 @@ export default {
       return this.error || this.message;
     },
     showAddButton() {
-      return this.hasLoaded && this.canAddEdit && !this.isEmpty;
+      return this.canAddEdit;
     },
   },
   methods: {
@@ -209,6 +220,7 @@ export default {
     },
   },
   i18n: {
+    title: s__('ComplianceFrameworks|Active compliance frameworks'),
     deleteMessage: s__('ComplianceFrameworks|Compliance framework deleted successfully'),
     deleteError: s__(
       'ComplianceFrameworks|Error deleting the compliance framework. Please try again',
@@ -239,48 +251,69 @@ export default {
     >
       {{ alertMessage }}
     </gl-alert>
-    <gl-loading-icon v-if="isLoading" size="lg" class="gl-mt-5" />
-    <empty-state v-if="isEmpty" :image-path="emptyStateSvgPath" @addFramework="onClickAdd" />
 
-    <gl-table-lite v-if="hasFrameworks" :items="complianceFrameworks" :fields="tableFields">
-      <template #cell(name)="{ item: framework }">
-        <gl-label
-          :background-color="framework.color"
-          :description="$options.i18n.editFramework"
-          :title="frameworkName(framework)"
-          :target="framework.editPath"
-          :data-testid="frameworkTestId(framework)"
-        />
-      </template>
-      <template #cell(description)="{ item: framework }">
-        <p data-testid="compliance-framework-description" class="gl-mb-0">
-          {{ framework.description }}
-        </p>
-      </template>
-      <template #cell(actions)="{ item: framework }">
-        <table-actions
-          :key="framework.parsedId"
-          :framework="framework"
-          :loading="isDeleting(framework.id)"
-          @delete="markForDeletion"
-          @edit="markForEdit"
-          @setDefault="setDefaultFramework"
-          @removeDefault="setDefaultFramework"
-        />
-      </template>
-    </gl-table-lite>
-
-    <gl-button
-      v-if="showAddButton"
-      class="gl-mt-3"
-      category="secondary"
-      variant="confirm"
-      size="small"
-      data-testid="add-framework-btn"
-      @click="onClickAdd"
+    <gl-card
+      class="gl-new-card"
+      header-class="gl-new-card-header"
+      body-class="gl-new-card-body gl-px-0"
     >
-      {{ $options.i18n.addBtn }}
-    </gl-button>
+      <template #header>
+        <div class="gl-new-card-title-wrapper">
+          <h5 class="gl-new-card-title">
+            {{ $options.i18n.title }}
+            <span class="gl-new-card-count">
+              <gl-icon name="lock" class="gl-mr-2" />
+              {{ complianceFrameworks.length }}
+            </span>
+          </h5>
+        </div>
+        <div class="gl-new-card-actions">
+          <gl-button
+            v-if="showAddButton"
+            size="small"
+            data-testid="add-framework-btn"
+            @click="onClickAdd"
+            >{{ $options.i18n.addBtn }}
+          </gl-button>
+        </div>
+      </template>
+
+      <gl-loading-icon v-if="isLoading" size="sm" class="gl-m-4" />
+      <empty-state v-else-if="isEmpty" :image-path="emptyStateSvgPath" />
+
+      <gl-table-lite
+        v-if="hasFrameworks"
+        :items="complianceFrameworks"
+        :fields="tableFields"
+        stacked="md"
+      >
+        <template #cell(name)="{ item: framework }">
+          <gl-label
+            :background-color="framework.color"
+            :description="$options.i18n.editFramework"
+            :title="frameworkName(framework)"
+            :target="framework.editPath"
+            :data-testid="frameworkTestId(framework)"
+          />
+        </template>
+        <template #cell(description)="{ item: framework }">
+          <p data-testid="compliance-framework-description" class="gl-mb-0">
+            {{ framework.description }}
+          </p>
+        </template>
+        <template #cell(actions)="{ item: framework }">
+          <table-actions
+            :key="framework.parsedId"
+            :framework="framework"
+            :loading="isDeleting(framework.id)"
+            @delete="markForDeletion"
+            @edit="markForEdit"
+            @setDefault="setDefaultFramework"
+            @removeDefault="setDefaultFramework"
+          />
+        </template>
+      </gl-table-lite>
+    </gl-card>
 
     <form-modal ref="formModal" :framework="markedForEdit" @change="onChange" />
     <delete-modal

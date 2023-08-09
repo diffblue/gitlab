@@ -51,7 +51,7 @@ export default {
 </script>
 <template>
   <div>
-    <div v-if="canAddEdit" class="gl-display-flex">
+    <div v-if="canAddEdit" class="gl-display-flex gl-justify-content-end">
       <gl-button
         v-gl-tooltip="$options.i18n.editFramework"
         :disabled="loading"
