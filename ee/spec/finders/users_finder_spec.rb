@@ -48,6 +48,29 @@ RSpec.describe UsersFinder do
           expect(users).to contain_exactly(saml_user)
         end
       end
+
+      context 'with auditor users' do
+        before do
+          stub_licensed_features(auditor_user: true)
+        end
+
+        let_it_be(:group) { create(:group) }
+        let_it_be(:auditor_user) { create(:user, :auditor) }
+        let_it_be(:non_auditor_user) { create(:user) }
+        let_it_be(:auditors_visible_to_admin) { as_admin ? [auditor_user] : [auditor_user, non_auditor_user, *normal_users, *users_visible_to_admin] }
+
+        it 'returns all users by default' do
+          users = described_class.new(user).execute
+
+          expect(users).to contain_exactly(auditor_user, non_auditor_user, *normal_users, *users_visible_to_admin)
+        end
+
+        it 'returns only auditor users when auditors param is supplied' do
+          users = described_class.new(user, auditors: true).execute
+
+          expect(users).to contain_exactly(*auditors_visible_to_admin)
+        end
+      end
     end
 
     context 'with a normal user' do

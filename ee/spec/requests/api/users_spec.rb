@@ -328,6 +328,22 @@ RSpec.describe API::Users, :aggregate_failures, feature_category: :user_profile 
     end
   end
 
+  describe 'GET /api/users?auditors=true' do
+    context 'querying users who are auditors ' do
+      before do
+        stub_licensed_features(auditor_user: true)
+      end
+      let_it_be(:auditor_user) { create(:user, :auditor) }
+
+      it 'returns all users' do
+        get api("/users", admin, admin_mode: true), params: { auditors: true }
+        expect(response).to match_response_schema('public_api/v4/user/basics')
+        expect(json_response.size).to eq(1)
+        expect(json_response.map { |u| u['id'] }).to include(auditor_user.id)
+      end
+    end
+  end
+
   describe 'GET /user/:id' do
     context 'when authenticated' do
       context 'as an admin' do

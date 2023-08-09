@@ -7,7 +7,9 @@ module EE
     override :execute
     def execute
       users = by_non_ldap(super)
-      by_saml_provider_id(users)
+      users = by_saml_provider_id(users)
+      users = by_auditors(users) if ::License.feature_available?(:auditor_user)
+      order(users)
     end
 
     def by_non_ldap(users)
@@ -29,6 +31,13 @@ module EE
       return super unless params[:provider] == "scim"
 
       users.with_scim_identities_by_extern_uid(params[:extern_uid])
+    end
+
+    def by_auditors(users)
+      # can_read_all_resources to ensure user is administrator
+      return users unless params[:auditors] && current_user&.can_read_all_resources?
+
+      users.auditors
     end
   end
 end
