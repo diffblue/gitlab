@@ -7,7 +7,7 @@ import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
 import AiGenieChatConversation from 'ee/ai/components/ai_genie_chat_conversation.vue';
 import AiGenieChatMessage from 'ee/ai/components/ai_genie_chat_message.vue';
 import UserFeedback from 'ee/ai/components/user_feedback.vue';
-import { i18n } from 'ee/ai/constants';
+import { i18n, GENIE_CHAT_RESET_MESSAGE } from 'ee/ai/constants';
 import { TANUKI_BOT_TRACKING_EVENT_NAME } from 'ee/ai/tanuki_bot/constants';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
@@ -155,6 +155,18 @@ describe('GitLab Duo Chat', () => {
     describe('when input is submitted', () => {
       beforeEach(() => {
         findGenieChat().vm.$emit('send-chat-prompt', MOCK_USER_MESSAGE.msg);
+      });
+
+      describe('loading state', () => {
+        it('does set loading to `true` for a message other than the reset one', () => {
+          expect(actionSpies.setLoading).toHaveBeenCalled();
+        });
+        it('does not set loading to `true` for a reset message', async () => {
+          actionSpies.setLoading.mockReset();
+          findGenieChat().vm.$emit('send-chat-prompt', GENIE_CHAT_RESET_MESSAGE);
+          await nextTick();
+          expect(actionSpies.setLoading).not.toHaveBeenCalled();
+        });
       });
 
       describe.each`
