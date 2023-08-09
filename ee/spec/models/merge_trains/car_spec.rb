@@ -79,35 +79,6 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
     end
   end
 
-  describe '.first_on_each_train' do
-    let!(:first_on_master) { create_merge_request_on_train(target_branch: 'master', source_branch: 'feature-1') }
-    let!(:second_on_master) { create_merge_request_on_train(target_branch: 'master', source_branch: 'feature-2') }
-
-    let!(:first_on_stable) do
-      create_merge_request_on_train(target_branch: 'stable', source_branch: 'feature-1-backport')
-    end
-
-    let!(:second_on_stable) do
-      create_merge_request_on_train(target_branch: 'stable', source_branch: 'feature-2-backport')
-    end
-
-    subject { described_class.first_on_each_train(project) }
-
-    it 'returns only first merge requests per merge train' do
-      is_expected.to contain_exactly(first_on_master.merge_train_car, first_on_stable.merge_train_car)
-    end
-
-    context 'when first_on_master has already been merged' do
-      let!(:first_on_master) do
-        create_merge_request_on_train(target_branch: 'master', source_branch: 'feature-1', status: :merged)
-      end
-
-      it 'returns second on master as active MR' do
-        is_expected.to contain_exactly(second_on_master.merge_train_car, first_on_stable.merge_train_car)
-      end
-    end
-  end
-
   describe '#all_next' do
     subject { car.all_next }
 

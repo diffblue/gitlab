@@ -58,7 +58,7 @@ module MergeTrains
 
       after_transition fresh: :stale do |car|
         car.run_after_commit do
-          car.refresh_async
+          car.train.refresh_async
         end
       end
 
@@ -83,10 +83,6 @@ module MergeTrains
     scope :preload_api_entities, -> do
       preload(:user, :merge_request, pipeline: Ci::Pipeline::PROJECT_ROUTE_AND_NAMESPACE_ROUTE)
         .merge(MergeRequest.preload_routables)
-    end
-
-    scope :first_on_each_train, ->(project) do
-      active.where(target_project: project).select('DISTINCT ON (target_branch) *').order(:target_branch, :id)
     end
 
     def all_next
@@ -151,12 +147,8 @@ module MergeTrains
       ACTIVE_STATUSES.include?(status_name.to_s)
     end
 
-    def refresh_async
-      MergeTrains::RefreshWorker.perform_async(target_project_id, target_branch)
-    end
-
     def train
-      Train.new(target_project.id, target_branch)
+      Train.new(target_project_id, target_branch)
     end
 
     private
