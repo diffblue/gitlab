@@ -6,8 +6,9 @@ import { createComplianceAdherencesResponse } from '../../mock_data';
 describe('ComplianceStandardsAdherenceTable component', () => {
   let wrapper;
 
-  const adherencesResponse = createComplianceAdherencesResponse();
-  const adherences = adherencesResponse.data.group.projectComplianceStandardsAdherence.nodes;
+  const adherencesResponse = (checkName) => createComplianceAdherencesResponse({ checkName });
+  const adherences = (checkName) =>
+    adherencesResponse(checkName).data.group.projectComplianceStandardsAdherence.nodes;
 
   const findErrorMessage = () => wrapper.findComponent(GlAlert);
   const findStandardsAdherenceTable = () => wrapper.findComponent(GlTable);
@@ -16,7 +17,11 @@ describe('ComplianceStandardsAdherenceTable component', () => {
   const findFirstTableRow = () => findTableRows().at(1);
   const findFirstTableRowData = () => findFirstTableRow().findAll('td');
 
-  const createComponent = ({ propsData = {}, data = {} } = {}) => {
+  const createComponent = ({
+    propsData = {},
+    data = {},
+    checkName = 'AT_LEAST_TWO_APPROVALS',
+  } = {}) => {
     wrapper = mountExtended(ComplianceStandardsAdherenceTable, {
       propsData: {
         groupPath: 'example-group',
@@ -25,7 +30,7 @@ describe('ComplianceStandardsAdherenceTable component', () => {
       data() {
         return {
           adherences: {
-            list: adherences,
+            list: adherences(checkName),
           },
           ...data,
         };
@@ -56,26 +61,66 @@ describe('ComplianceStandardsAdherenceTable component', () => {
     });
   });
 
-  describe('when there are standards adherences', () => {
-    beforeEach(() => {
-      createComponent();
+  describe('when there are standards adherence checks available', () => {
+    describe('when check is `PREVENT_APPROVAL_BY_MERGE_REQUEST_AUTHOR`', () => {
+      beforeEach(() => {
+        createComponent({ checkName: 'PREVENT_APPROVAL_BY_MERGE_REQUEST_AUTHOR' });
+      });
+
+      it('renders the table row properly', () => {
+        const rowText = findFirstTableRowData().wrappers.map((e) => e.text());
+
+        expect(rowText).toStrictEqual([
+          'Success',
+          'Example Project',
+          'Prevent authors as approvers Have a valid rule that prevents author approved merge requests',
+          'GitLab',
+          'Jul 1, 2023',
+          'View details',
+        ]);
+      });
     });
 
-    it('renders the table row properly', () => {
-      const rowText = findFirstTableRowData().wrappers.map((e) => e.text());
+    describe('when check is `PREVENT_APPROVAL_BY_MERGE_REQUEST_COMMITTERS`', () => {
+      beforeEach(() => {
+        createComponent({ checkName: 'PREVENT_APPROVAL_BY_MERGE_REQUEST_COMMITTERS' });
+      });
 
-      expect(rowText).toStrictEqual([
-        'Success',
-        'Example Project',
-        'Prevent authors as approvers Have a valid rule that prevents author approved merge requests',
-        'GitLab',
-        'Jul 1, 2023',
-        'View details',
-      ]);
+      it('renders the table row properly', () => {
+        const rowText = findFirstTableRowData().wrappers.map((e) => e.text());
+
+        expect(rowText).toStrictEqual([
+          'Success',
+          'Example Project',
+          'Prevent committers as approvers Have a valid rule that prevents merge requests approved by committers',
+          'GitLab',
+          'Jul 1, 2023',
+          'View details',
+        ]);
+      });
+    });
+
+    describe('when check is `AT_LEAST_TWO_APPROVALS`', () => {
+      beforeEach(() => {
+        createComponent();
+      });
+
+      it('renders the table row properly', () => {
+        const rowText = findFirstTableRowData().wrappers.map((e) => e.text());
+
+        expect(rowText).toStrictEqual([
+          'Success',
+          'Example Project',
+          'At least two approvals Have a valid rule that requires any merge request to have more than two approvals',
+          'GitLab',
+          'Jul 1, 2023',
+          'View details',
+        ]);
+      });
     });
   });
 
-  describe('when there are no standards adherences', () => {
+  describe('when there are no standards adherence checks available', () => {
     beforeEach(() => {
       createComponent({ data: { adherences: { list: [] } } });
     });

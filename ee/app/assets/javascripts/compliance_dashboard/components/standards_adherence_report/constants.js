@@ -1,5 +1,7 @@
 import { __, s__ } from '~/locale';
 
+// Checks and proper values sourced from:
+// https://gitlab.com/gitlab-org/gitlab/-/blob/ea5e2706045c51ea2a2e408e39093da0aca3eec7/doc/api/graphql/reference/index.md#L25792
 const PREVENT_APPROVAL_BY_MERGE_REQUEST_AUTHOR = 'PREVENT_APPROVAL_BY_MERGE_REQUEST_AUTHOR';
 const PREVENT_APPROVAL_BY_MERGE_REQUEST_COMMITTERS = 'PREVENT_APPROVAL_BY_MERGE_REQUEST_COMMITTERS';
 const AT_LEAST_TWO_APPROVALS = 'AT_LEAST_TWO_APPROVALS';
