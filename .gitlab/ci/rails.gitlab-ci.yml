@@ -463,6 +463,7 @@ rspec:artifact-collector ee:
     - !reference ['.rails:rules:ee-only-system', rules]
 
 rspec:coverage:
+  image: ${REGISTRY_HOST}/${REGISTRY_GROUP}/gitlab-build-images/debian-bullseye-slim-ruby-${RUBY_VERSION}
   extends:
     - .ruby-gems-coverage-cache
     - .rails:rules:rspec-coverage
@@ -519,6 +520,7 @@ rspec:coverage:
         path: coverage/coverage.xml
 
 rspec:undercoverage:
+  image: ${REGISTRY_HOST}/${REGISTRY_GROUP}/gitlab-build-images/debian-bullseye-slim-ruby-${RUBY_VERSION}
   extends:
     - .coverage-base
     - .rails:rules:rspec-undercoverage
