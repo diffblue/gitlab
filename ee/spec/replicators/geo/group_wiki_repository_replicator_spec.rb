@@ -5,9 +5,8 @@ require 'spec_helper'
 RSpec.describe Geo::GroupWikiRepositoryReplicator, feature_category: :geo_replication do
   let(:model_record) { build(:group_wiki_repository, group: create(:group)) }
 
-  include_examples 'a repository replicator'
-  include_examples 'a verifiable replicator' do
-    def handle_model_record_before_example
+  include_examples 'a repository replicator' do
+    def handle_model_record_before_verification_integration_examples
       model_record.save!
       model_record.repository.create_if_not_exists
     end

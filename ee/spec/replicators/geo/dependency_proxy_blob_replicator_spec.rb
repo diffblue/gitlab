@@ -6,5 +6,4 @@ RSpec.describe Geo::DependencyProxyBlobReplicator, feature_category: :geo_replic
   let(:model_record) { build(:dependency_proxy_blob) }
 
   include_examples 'a blob replicator'
-  include_examples 'a verifiable replicator'
 end
