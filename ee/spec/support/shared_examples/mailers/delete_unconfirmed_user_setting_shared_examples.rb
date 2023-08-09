@@ -7,19 +7,16 @@ RSpec.shared_examples 'an email with information about unconfirmed user settings
     where(
       :delete_unconfirmed_users_license,
       :delete_unconfirmed_users_application_setting,
-      :delete_unconfirmed_users_setting_frontend_feature_flag,
-      :delete_unconfirmed_users_setting_feature_flag,
       :email_confirmation_setting,
       :delete_after_days,
       :result
     ) do
-      true  | true  | true  | true  | 'hard' | 7 | true
-      true  | true  | true  | true  | 'soft' | 7 | true
-      true  | true  | true  | true  | 'off'  | 7 | false
-      false | true  | true  | true  | 'hard' | 7 | false
-      true  | false | true  | true  | 'hard' | 7 | false
-      true  | true  | false | true  | 'hard' | 7 | false
-      true  | true  | true  | false | 'hard' | 7 | false
+      true  | true  | 'hard' | 7 | true
+      true  | true  | 'soft' | 7 | true
+      true  | true  | 'off'  | 7 | false
+      false | true  | 'hard' | 7 | false
+      true  | false | 'hard' | 7 | false
+      false | false | 'hard' | 7 | false
     end
 
     with_them do
@@ -29,13 +26,6 @@ RSpec.shared_examples 'an email with information about unconfirmed user settings
         stub_application_setting(delete_unconfirmed_users: delete_unconfirmed_users_application_setting)
         stub_application_setting(unconfirmed_users_delete_after_days: delete_after_days)
         stub_application_setting_enum('email_confirmation_setting', email_confirmation_setting)
-
-        stub_feature_flags(
-          delete_unconfirmed_users_setting_frontend: delete_unconfirmed_users_setting_frontend_feature_flag
-        )
-        stub_feature_flags(
-          delete_unconfirmed_users_setting: delete_unconfirmed_users_setting_feature_flag
-        )
       end
 
       it "has the correct email body contents" do

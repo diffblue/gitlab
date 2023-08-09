@@ -68,16 +68,6 @@ RSpec.describe Users::UnconfirmedUsersDeletionCronWorker, feature_category: :use
         end.to change { Users::GhostUserMigration.count }.by(1)
       end
 
-      context 'when delete_unconfirmed_users_setting feature flag is disabled' do
-        it 'is a no-op' do
-          stub_feature_flags(delete_unconfirmed_users_setting: false)
-
-          worker.perform
-
-          expect(user_to_delete.reload).not_to be_nil
-        end
-      end
-
       context 'when delete_unconfirmed_users license is not enabled' do
         it 'is a no-op' do
           stub_licensed_features(delete_unconfirmed_users: false)
