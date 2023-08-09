@@ -7351,7 +7351,7 @@ msgstr ""
 msgid "BetaBadge|Is supported by a commercially reasonable effort."
 msgstr ""
 
-msgid "BetaBadge|May have performance or stability issues."
+msgid "BetaBadge|May be unstable."
 msgstr ""
 
 msgid "BetaBadge|Should not cause data loss."
