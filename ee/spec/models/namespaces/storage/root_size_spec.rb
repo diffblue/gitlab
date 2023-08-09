@@ -183,12 +183,34 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
     it { is_expected.to eq(current_size) }
 
     context 'with cached values', :use_clean_rails_memory_store_caching do
-      let(:key) { 'root_storage_current_size' }
+      let(:key) do
+        [
+          namespace.root_storage_statistics.cache_key_with_version,
+          'root_storage_current_size'
+        ]
+      end
 
       it 'caches the value' do
         subject
 
-        expect(Rails.cache.read(['namespaces', namespace.id, key])).to eq(current_size)
+        expect(Rails.cache.read(key)).to eq(current_size)
+      end
+
+      context 'without root_storage_statistics' do
+        let(:create_statistics) { nil }
+        let(:key) do
+          [
+            'namespaces',
+            namespace.id,
+            'root_storage_current_size'
+          ]
+        end
+
+        it 'caches the value' do
+          subject
+
+          expect(Rails.cache.read(key)).to eq(0)
+        end
       end
     end
 
