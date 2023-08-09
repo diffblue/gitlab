@@ -36,6 +36,13 @@ module GitlabSubscriptions
           payload: { add_on_purchase: add_on_purchase }
         )
       end
+
+      def add_on_human_reference
+        str = ''
+        str += "namespace #{namespace.name} and " if namespace
+        str += "add-on #{add_on.name.titleize}"
+        str
+      end
     end
   end
 end

@@ -88,6 +88,7 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
 
             expect(response).to have_gitlab_http_status(:bad_request)
             expect(response.body).to include('"quantity":["must be greater than or equal to 1"]')
+            expect(json_response['quantity']).not_to eq(10)
           end
         end
       end
@@ -107,6 +108,10 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
           expect { post_add_on_purchase }.not_to change { GitlabSubscriptions::AddOnPurchase.count }
 
           expect(response).to have_gitlab_http_status(:bad_request)
+          expect(response.body).to include(
+            "Add-on purchase for namespace #{namespace.name} and add-on #{add_on.name.titleize} already exists, " \
+            'update the existing record'
+          )
           expect(json_response['quantity']).not_to eq(10)
         end
       end
@@ -275,7 +280,8 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
 
           expect(response).to have_gitlab_http_status(:bad_request)
           expect(response.body).to include(
-            'Add-on purchase for namespace and add-on does not exist, use the create endpoint instead'
+            "Add-on purchase for namespace #{namespace.name} and add-on #{add_on.name.titleize} does not exist, " \
+            'create a new record instead'
           )
         end
       end
