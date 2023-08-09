@@ -1,8 +1,0 @@
----
-name: ai_chat_emit_user_messages
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/122647
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/420043
-milestone: '16.3'
-type: development
-group: "group::AI Framework"
-default_enabled: false

@@ -49,17 +49,5 @@ RSpec.shared_examples 'completion worker sync and async' do
 
       subject.execute
     end
-
-    context 'when ai_chat_emit_user_messages is disabled' do
-      before do
-        stub_feature_flags(ai_chat_emit_user_messages: false)
-      end
-
-      it 'does not trigger graphql subscription message' do
-        expect(GraphqlTriggers).not_to receive(:ai_completion_response)
-
-        subject.execute
-      end
-    end
   end
 end
