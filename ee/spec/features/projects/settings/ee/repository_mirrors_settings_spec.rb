@@ -18,6 +18,7 @@ RSpec.describe 'Project settings > [EE] repository', feature_category: :source_c
       stub_licensed_features(repository_mirrors: false)
 
       visit project_settings_repository_path(project)
+      click_button 'Add new'
 
       page.within('.project-mirror-settings') do
         expect(page).to have_selector('#url')
@@ -37,6 +38,7 @@ RSpec.describe 'Project settings > [EE] repository', feature_category: :source_c
 
     it 'shows pull mirror settings', :js do
       visit project_settings_repository_path(project)
+      click_button 'Add new'
 
       page.within('.project-mirror-settings') do
         expect(page).to have_selector('#url')
@@ -108,6 +110,7 @@ RSpec.describe 'Project settings > [EE] repository', feature_category: :source_c
 
       it 'does not show a pull mirror' do
         visit project_settings_repository_path(external_project)
+        click_button 'Add new'
 
         expect(page).to have_selector('.js-delete-mirror', count: 0)
         expect(page).to have_select('Mirror direction', options: %w[Pull Push])
@@ -119,6 +122,7 @@ RSpec.describe 'Project settings > [EE] repository', feature_category: :source_c
 
       before do
         visit project_settings_repository_path(project)
+        click_button 'Add new'
       end
 
       it 'that mirrors all branches', :js do
@@ -184,6 +188,7 @@ RSpec.describe 'Project settings > [EE] repository', feature_category: :source_c
 
       before do
         visit project_settings_repository_path(project)
+        click_button 'Add new'
       end
 
       it 'that mirrors all branches', :js do

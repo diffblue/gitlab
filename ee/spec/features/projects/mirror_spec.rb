@@ -110,6 +110,7 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
     describe 'password authentication' do
       it 'can be set up' do
         visit project_settings_repository_path(project)
+        click_button('Add new')
 
         page.within('.project-mirror-settings') do
           fill_and_wait_for_mirror_url_javascript('Git repository URL', 'http://user@example.com')
@@ -149,6 +150,7 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
 
       it 'can be recreated after an SSH mirror is set' do
         visit project_settings_repository_path(project)
+        click_button('Add new')
 
         page.within('.project-mirror-settings') do
           fill_and_wait_for_mirror_url_javascript('Git repository URL', 'ssh://user@example.com')
@@ -165,6 +167,7 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
         expect(page).to have_content('Mirroring settings were successfully updated')
 
         find('.js-delete-pull-mirror').click
+        click_button('Add new')
 
         page.within('.project-mirror-settings') do
           fill_and_wait_for_mirror_url_javascript('Git repository URL', 'http://git@example.com')
@@ -188,6 +191,7 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
 
       it 'can be set up' do
         visit project_settings_repository_path(project)
+        click_button('Add new')
 
         page.within('.project-mirror-settings') do
           fill_and_wait_for_mirror_url_javascript('Git repository URL', ssh_url)
@@ -218,6 +222,7 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
         stub_reactive_cache(cache, known_hosts: key.key_text)
 
         visit project_settings_repository_path(project)
+        click_button('Add new')
 
         page.within('.project-mirror-settings') do
           fill_and_wait_for_mirror_url_javascript('Git repository URL', ssh_url)
@@ -239,6 +244,7 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
         stub_reactive_cache(cache, error: 'Some error text here')
 
         visit project_settings_repository_path(project)
+        click_button('Add new')
 
         page.within('.project-mirror-settings') do
           fill_and_wait_for_mirror_url_javascript('Git repository URL', ssh_url)
@@ -255,6 +261,7 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
 
       it 'allows manual host keys entry' do
         visit project_settings_repository_path(project)
+        click_button('Add new')
 
         page.within('.project-mirror-settings') do
           fill_and_wait_for_mirror_url_javascript('Git repository URL', ssh_url)
@@ -265,6 +272,7 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
           click_without_sidekiq 'Mirror repository'
 
           find('.js-delete-mirror').click
+          click_button('Add new')
           fill_and_wait_for_mirror_url_javascript('Git repository URL', 'ssh://example.com')
 
           select('Pull', from: 'Mirror direction')
@@ -278,6 +286,7 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
     describe 'authentication methods' do
       it 'shows SSH related fields for an SSH URL' do
         visit project_settings_repository_path(project)
+        click_button('Add new')
 
         page.within('.project-mirror-settings') do
           fill_and_wait_for_mirror_url_javascript('Git repository URL', 'ssh://example.com')
@@ -303,6 +312,7 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
 
       it 'hides SSH-related fields for a HTTP URL' do
         visit project_settings_repository_path(project)
+        click_button('Add new')
 
         page.within('.project-mirror-settings') do
           fill_and_wait_for_mirror_url_javascript('Git repository URL', 'https://example.com')

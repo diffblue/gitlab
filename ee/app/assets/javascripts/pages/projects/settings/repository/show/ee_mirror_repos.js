@@ -141,6 +141,6 @@ export default class EEMirrorRepos extends MirrorRepos {
     super.removeRow($target);
 
     const currentCount = parseInt(this.$repoCount.text().replace(/(\(|\))/, ''), 10);
-    this.$repoCount.text(`(${currentCount - 1})`);
+    this.$repoCount.text(`${currentCount - 1}`);
   }
 }

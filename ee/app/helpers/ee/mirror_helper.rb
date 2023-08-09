@@ -35,11 +35,6 @@ module EE
       message.join
     end
 
-    def mirrored_repositories_count(project = @project)
-      count = project.mirror == true ? 1 : 0
-      count + @project.remote_mirrors.to_a.count { |mirror| mirror.enabled }
-    end
-
     def mirror_branches_text(record)
       case record.mirror_branches_setting
       when 'all'
