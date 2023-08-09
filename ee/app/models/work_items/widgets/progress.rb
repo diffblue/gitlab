@@ -3,12 +3,10 @@
 module WorkItems
   module Widgets
     class Progress < Base
-      def progress
-        work_item&.progress&.progress
-      end
+      delegate :progress, :updated_at, :current_value, :start_value, :end_value, to: :progress_instance, allow_nil: true
 
-      def updated_at
-        work_item&.progress&.updated_at
+      def progress_instance
+        work_item&.progress
       end
     end
   end

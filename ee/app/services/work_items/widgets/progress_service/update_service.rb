@@ -11,7 +11,11 @@ module WorkItems
           return unless has_permission?(:admin_work_item)
 
           progress = work_item.progress || work_item.build_progress
+
           progress.current_value = params[:current_value]
+          progress.start_value = params[:start_value] if params.key?(:start_value)
+          progress.end_value = params[:end_value] if params.key?(:end_value)
+
           progress.progress = params[:current_value].nil? ? nil : progress.compute_progress
 
           raise WidgetError, progress.errors.full_messages.join(', ') unless progress.save

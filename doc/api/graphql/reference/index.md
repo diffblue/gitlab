@@ -25336,7 +25336,10 @@ Represents a progress widget.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="workitemwidgetprogresscurrentvalue"></a>`currentValue` | [`Int`](#int) | Current value of the work item. |
+| <a id="workitemwidgetprogressendvalue"></a>`endValue` | [`Int`](#int) | End value of the work item. |
 | <a id="workitemwidgetprogressprogress"></a>`progress` | [`Int`](#int) | Progress of the work item. |
+| <a id="workitemwidgetprogressstartvalue"></a>`startValue` | [`Int`](#int) | Start value of the work item. |
 | <a id="workitemwidgetprogresstype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
 | <a id="workitemwidgetprogressupdatedat"></a>`updatedAt` | [`Time`](#time) | Timestamp of last progress update. |
 
@@ -30308,6 +30311,8 @@ A time-frame defined as a closed inclusive range of two dates.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="workitemwidgetprogressinputcurrentvalue"></a>`currentValue` | [`Int!`](#int) | Current progress value of the work item. |
+| <a id="workitemwidgetprogressinputendvalue"></a>`endValue` | [`Int`](#int) | End value of the work item. |
+| <a id="workitemwidgetprogressinputstartvalue"></a>`startValue` | [`Int`](#int) | Start value of the work item. |
 
 ### `WorkItemWidgetStartAndDueDateUpdateInput`
 

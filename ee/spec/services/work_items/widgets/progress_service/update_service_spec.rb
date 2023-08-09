@@ -18,6 +18,14 @@ RSpec.describe WorkItems::Widgets::ProgressService::UpdateService, feature_categ
     work_item.reload.progress&.current_value
   end
 
+  def work_item_start_value
+    work_item.reload.progress&.start_value
+  end
+
+  def work_item_end_value
+    work_item.reload.progress&.end_value
+  end
+
   describe '#before_update_in_transaction' do
     let(:service) { described_class.new(widget: widget, current_user: user) }
 
@@ -50,6 +58,13 @@ RSpec.describe WorkItems::Widgets::ProgressService::UpdateService, feature_categ
       end
     end
 
+    shared_examples 'start_value & end_value are updated' do |start_value, end_value|
+      it 'updates work item start and end values' do
+        expect { subject }
+          .to change { work_item_start_value }.to(start_value).and change { work_item_end_value }.to(end_value)
+      end
+    end
+
     shared_examples 'raises a WidgetError' do
       it { expect { subject }.to raise_error(described_class::WidgetError, message) }
     end
@@ -76,18 +91,17 @@ RSpec.describe WorkItems::Widgets::ProgressService::UpdateService, feature_categ
 
         context 'when current_value param is present' do
           context 'when current_value param is valid' do
-            let(:params) { { current_value: 20 } }
+            context 'when start & end values are defaults' do
+              let(:params) { { current_value: 20 } }
 
-            it_behaves_like 'current_value & progress are updated', 20, 20
+              it_behaves_like 'current_value & progress are updated', 20, 20
+            end
 
             context 'when start & end values are non-defaults' do
-              before do
-                progress.update!(start_value: 20, end_value: 220)
-              end
-
-              let(:params) { { current_value: 100 } }
+              let(:params) { { current_value: 100, start_value: 20, end_value: 220 } }
 
               it_behaves_like 'current_value & progress are updated', 100, 40
+              it_behaves_like 'start_value & end_value are updated', 20, 220
             end
           end
 
