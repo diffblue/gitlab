@@ -49287,6 +49287,9 @@ msgstr ""
 msgid "Tracing|Duration"
 msgstr ""
 
+msgid "Tracing|Duration (ms)"
+msgstr ""
+
 msgid "Tracing|Enable"
 msgstr ""
 
@@ -49341,10 +49344,10 @@ msgstr ""
 msgid "Tracing|Operation"
 msgstr ""
 
-msgid "Tracing|Service"
+msgid "Tracing|Period"
 msgstr ""
 
-msgid "Tracing|Time range"
+msgid "Tracing|Service"
 msgstr ""
 
 msgid "Tracing|Trace ID"
