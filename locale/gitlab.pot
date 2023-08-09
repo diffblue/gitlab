@@ -28532,6 +28532,9 @@ msgstr ""
 msgid "Markdown enabled."
 msgstr ""
 
+msgid "Markdown is supported"
+msgstr ""
+
 msgid "Markdown supported."
 msgstr ""
 
