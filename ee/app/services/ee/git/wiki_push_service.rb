@@ -9,8 +9,6 @@ module EE
       def execute
         super
 
-        return unless wiki.is_a?(::ProjectWiki) || ::Wiki.use_separate_indices?
-
         return unless wiki.container.use_elasticsearch? && default_branch_changes.any?
 
         wiki.index_wiki_blobs

@@ -1785,6 +1785,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: search_elastic_default_branch_changed
+  :worker_name: Search::ElasticDefaultBranchChangedWorker
+  :feature_category: :global_search
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: search_elastic_group_association_deletion
   :worker_name: Search::ElasticGroupAssociationDeletionWorker
   :feature_category: :global_search
