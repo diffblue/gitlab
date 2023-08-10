@@ -1,6 +1,5 @@
 ---
 key_path: redis_hll_counters.analytics.g_analytics_ci_cd_release_statistics_weekly
-name: g_analytics_ci_cd_release_statistics_weekly
 description: Count of unique visits to the group level CI/CD Analytics Release Statistics tab
 product_section: dev
 product_stage: manage

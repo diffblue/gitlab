@@ -1,7 +1,6 @@
 ---
 data_category: operational
 key_path: usage_activity_by_stage_monthly.manage.custom_compliance_frameworks
-name: count_compliance_management_frameworks
 description: Monthly count of all custom compliance framework labels
 product_section: sec
 product_stage: govern

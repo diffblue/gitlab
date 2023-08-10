@@ -2,7 +2,6 @@
 data_category: optional
 # See Usage Ping metrics dictionary docs https://docs.gitlab.com/ee/development/usage_ping/metrics_dictionary.html
 key_path: redis_hll_counters.analytics.i_analytics_dev_ops_adoption_weekly
-name: users_viewing_analytics_instance_devops_adoption_weekly
 description: Counts visits to DevOps Adoption page per week
 product_section: dev
 product_stage: manage

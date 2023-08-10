@@ -1,6 +1,5 @@
 ---
 key_path: redis_hll_counters.quickactions.i_quickactions_clear_health_status_weekly
-name: "count_clear_health_status_quick_actions_weekly"
 description: Count of WAU using the `/clear_health_status` quick action
 product_section: dev
 product_stage: plan

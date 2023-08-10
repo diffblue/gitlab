@@ -1,6 +1,5 @@
 ---
 key_path: usage_activity_by_stage_monthly.manage.compliance_frameworks_with_pipeline
-name: count_distinct_montlpipeline_containing_compliance_management_frameworks
 description: Count of compliance frameworks that have a pipeline configuration
 product_section: sec
 product_stage: govern

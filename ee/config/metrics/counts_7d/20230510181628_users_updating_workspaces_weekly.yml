@@ -1,6 +1,5 @@
 ---
 key_path: redis_hll_counters.workspaces.users_updating_workspaces_weekly
-name: "count_users_updating_workspaces_weekly"
 description: Count of users updating workspaces
 product_section: dev
 product_stage: create

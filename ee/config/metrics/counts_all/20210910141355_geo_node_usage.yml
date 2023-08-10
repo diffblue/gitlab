@@ -1,6 +1,5 @@
 ---
 key_path: usage_activity_by_stage.enablement.geo_node_usage
-name: geo_node_usage
 description: Usage data for geo nodes
 product_section: enablement
 product_stage: enablement
