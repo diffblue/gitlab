@@ -1780,7 +1780,7 @@ msgstr ""
 msgid "A complete DevOps platform"
 msgstr ""
 
-msgid "A confidential issue cannot have a parent that already has non-confidential children."
+msgid "A confidential issue must have only confidential children. Make any child items confidential and try again."
 msgstr ""
 
 msgid "A confidential work item cannot have a parent that already has non-confidential children."
