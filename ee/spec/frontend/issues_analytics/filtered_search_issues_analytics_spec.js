@@ -7,29 +7,44 @@ describe('FilteredSearchIssueAnalytics', () => {
     let component = null;
     let availableTokenKeys = null;
 
-    beforeEach(() => {
-      setHTMLFixture(fixture);
-      component = new FilteredSearchIssueAnalytics();
-      availableTokenKeys = component.filteredSearchTokenKeys.tokenKeys.map(({ key }) => key);
-    });
+    const defaultTokenKeys = [
+      'author',
+      'assignee',
+      'milestone',
+      'iteration', // will be removed in https://gitlab.com/gitlab-org/gitlab/-/issues/419743
+      'label',
+      'epic',
+      'weight',
+    ];
+    const issuesCompletedTokenKeys = ['author', 'assignee', 'milestone', 'label'];
 
-    afterEach(() => {
-      component = null;
+    describe.each`
+      expectedTokenKeys           | issuesCompletedAnalyticsFeatureFlag | hasIssuesCompletedFeature
+      ${defaultTokenKeys}         | ${false}                            | ${false}
+      ${defaultTokenKeys}         | ${false}                            | ${true}
+      ${defaultTokenKeys}         | ${true}                             | ${false}
+      ${issuesCompletedTokenKeys} | ${true}                             | ${true}
+    `(
+      'when issuesCompletedAnalyticsFeatureFlag=$issuesCompletedAnalyticsFeatureFlag and hasIssuesCompletedFeature=$hasIssuesCompletedFeature',
+      ({ expectedTokenKeys, issuesCompletedAnalyticsFeatureFlag, hasIssuesCompletedFeature }) => {
+        beforeEach(() => {
+          gon.features = { issuesCompletedAnalyticsFeatureFlag };
 
-      resetHTMLFixture();
-    });
+          setHTMLFixture(fixture);
+          component = new FilteredSearchIssueAnalytics({ hasIssuesCompletedFeature });
+          availableTokenKeys = component.filteredSearchTokenKeys.tokenKeys.map(({ key }) => key);
+        });
 
-    it.each`
-      token          | available
-      ${'author'}    | ${true}
-      ${'assignee'}  | ${true}
-      ${'milestone'} | ${true}
-      ${'label'}     | ${true}
-      ${'epic'}      | ${true}
-      ${'weight'}    | ${true}
-      ${'release'}   | ${false}
-    `('includes $token filter $available', ({ token, available }) => {
-      expect(availableTokenKeys.includes(token)).toBe(available);
-    });
+        afterEach(() => {
+          component = null;
+
+          resetHTMLFixture();
+        });
+
+        it('should only include the supported token keys', () => {
+          expect(availableTokenKeys).toEqual(expectedTokenKeys);
+        });
+      },
+    );
   });
 });

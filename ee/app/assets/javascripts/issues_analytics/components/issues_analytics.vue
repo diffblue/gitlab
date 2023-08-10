@@ -19,6 +19,11 @@ export default {
     GlChartLegend,
     IssuesAnalyticsTable,
   },
+  inject: {
+    hasIssuesCompletedFeature: {
+      default: false,
+    },
+  },
   props: {
     endpoint: {
       type: String,
@@ -141,7 +146,12 @@ export default {
     },
   },
   created() {
-    this.filterManager = new FilteredSearchIssueAnalytics(this.appliedFilters);
+    const { hasIssuesCompletedFeature } = this;
+
+    this.filterManager = new FilteredSearchIssueAnalytics({
+      hasIssuesCompletedFeature,
+      ...this.appliedFilters,
+    });
     this.filterManager.setup();
 
     this.setSvg('scroll-handle');

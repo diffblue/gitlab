@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
 import { queryToObject } from '~/lib/utils/url_utility';
+import { parseBoolean } from '~/lib/utils/common_utils';
 import IssuesAnalytics from './components/issues_analytics.vue';
 import store from './stores';
 
@@ -25,6 +26,7 @@ export default () => {
     filtersEmptyStateSvgPath,
     issuesApiEndpoint,
     issuesPageEndpoint,
+    hasIssuesCompletedFeature,
   } = el.dataset;
 
   // Set default filters from URL
@@ -39,6 +41,7 @@ export default () => {
     provide: {
       fullPath,
       type,
+      hasIssuesCompletedFeature: parseBoolean(hasIssuesCompletedFeature),
     },
     render: (createElement) =>
       createElement(IssuesAnalytics, {

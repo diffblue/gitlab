@@ -1,0 +1,8 @@
+---
+name: issues_completed_analytics_feature_flag
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/128399
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/420928
+milestone: '16.3'
+type: development
+group: group::optimize
+default_enabled: false

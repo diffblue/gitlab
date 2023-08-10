@@ -218,6 +218,7 @@ module GitlabSubscriptions
       insights
       instance_level_devops_adoption
       issuable_health_status
+      issues_completed_analytics
       jira_vulnerabilities_integration
       jira_issue_association_enforcement
       kubernetes_cluster_vulnerabilities
