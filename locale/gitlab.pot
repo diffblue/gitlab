@@ -676,9 +676,6 @@ msgstr ""
 msgid "%{days} days until tags are automatically removed"
 msgstr ""
 
-msgid "%{deployLinkStart}Use a template to deploy to ECS%{deployLinkEnd}, or use a docker image to %{commandsLinkStart}run AWS commands in GitLab CI/CD%{commandsLinkEnd}."
-msgstr ""
-
 msgid "%{description}- Sentry event: %{errorUrl}- First seen: %{firstSeen}- Last seen: %{lastSeen} %{countLabel}: %{count}%{userCountLabel}: %{userCount}"
 msgstr ""
 
@@ -4853,9 +4850,6 @@ msgid "Amazon EKS"
 msgstr ""
 
 msgid "Amazon EKS integration allows you to provision EKS clusters from GitLab."
-msgstr ""
-
-msgid "Amazon Web Services Logo"
 msgstr ""
 
 msgid "An %{link_start}alert%{link_end} with the same fingerprint is already open. To change the status of this alert, resolve the linked alert."
@@ -10224,6 +10218,9 @@ msgstr ""
 msgid "CiVariable|Define a CI/CD variable in the UI"
 msgstr ""
 
+msgid "CiVariable|GitLab CI/CD supports OpenID Connect (OIDC) to give your build and deployment jobs access to cloud credentials and services. %{linkStart}How do I configure OIDC for my cloud provider?%{linkEnd}"
+msgstr ""
+
 msgid "CiVariable|Maximum of %{limit} environments listed. For more environments, enter a search query."
 msgstr ""
 
@@ -10231,6 +10228,9 @@ msgid "CiVariable|New environment"
 msgstr ""
 
 msgid "CiVariable|Search environments"
+msgstr ""
+
+msgid "CiVariable|Use OIDC to securely connect to cloud services"
 msgstr ""
 
 msgid "CiVariable|Variable %{key} has been deleted."
@@ -16108,9 +16108,6 @@ msgid "Deployed-before"
 msgstr ""
 
 msgid "Deploying to"
-msgstr ""
-
-msgid "Deploying to AWS is easy with GitLab"
 msgstr ""
 
 msgid "Deployment"
@@ -27601,9 +27598,6 @@ msgid "Learn more about adding certificates to your project by following the %{d
 msgstr ""
 
 msgid "Learn more about custom project templates"
-msgstr ""
-
-msgid "Learn more about deploying to AWS"
 msgstr ""
 
 msgid "Learn more about deploying to a cluster"
