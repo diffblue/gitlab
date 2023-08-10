@@ -63,8 +63,7 @@ module EE
       condition(:code_suggestions_enabled_by_instance) do
         next true if ::Gitlab.org_or_com?
 
-        ::Gitlab::CurrentSettings.instance_level_code_suggestions_enabled &&
-          ::Gitlab::CurrentSettings.ai_access_token.present?
+        ::Gitlab::CurrentSettings.instance_level_code_suggestions_enabled
       end
 
       condition(:code_suggestions_enabled_by_user) do

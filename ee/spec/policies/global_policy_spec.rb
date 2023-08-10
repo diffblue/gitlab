@@ -546,7 +546,7 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
     context 'when not on .org or .com' do
       where(:licensed, :instance_level_code_suggestions_enabled, :ai_access_token, :cs_matcher) do
         true  | false | nil                  | be_disallowed(:access_code_suggestions)
-        true  | true  | nil                  | be_disallowed(:access_code_suggestions)
+        true  | true  | nil                  | be_allowed(:access_code_suggestions)
         true  | false | 'glpat-access_token' | be_disallowed(:access_code_suggestions)
         true  | true  | 'glpat-access_token' | be_allowed(:access_code_suggestions)
         false | false | nil                  | be_disallowed(:access_code_suggestions)
