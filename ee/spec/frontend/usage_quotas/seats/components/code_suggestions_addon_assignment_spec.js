@@ -66,14 +66,14 @@ describe('CodeSuggestionsAddonAssignment', () => {
 
   const codeSuggestionsAddOn = { name: ADD_ON_CODE_SUGGESTIONS };
 
-  const assignableAddOns = { assignable: [codeSuggestionsAddOn], assigned: [] };
-  const assignedAddOns = { assignable: [codeSuggestionsAddOn], assigned: [codeSuggestionsAddOn] };
-  const noAddOns = { assignable: [], assigned: [] };
+  const applicableAddOns = { applicable: [codeSuggestionsAddOn], assigned: [] };
+  const assignedAddOns = { applicable: [codeSuggestionsAddOn], assigned: [codeSuggestionsAddOn] };
+  const noAddOns = { applicable: [], assigned: [] };
 
   describe.each([
     {
-      title: 'when there are assignable addons',
-      addOns: assignableAddOns,
+      title: 'when there are applicable addons',
+      addOns: applicableAddOns,
       toggleProps: { disabled: false, value: false },
       tooltipExists: false,
     },
@@ -84,7 +84,7 @@ describe('CodeSuggestionsAddonAssignment', () => {
       tooltipExists: false,
     },
     {
-      title: 'when there are no assignable addons',
+      title: 'when there are no applicable addons',
       addOns: noAddOns,
       toggleProps: { disabled: true, value: false },
       tooltipExists: true,
@@ -112,7 +112,7 @@ describe('CodeSuggestionsAddonAssignment', () => {
   describe('when assigning an addon', () => {
     beforeEach(() => {
       createComponent(
-        { addOns: { assignable: [codeSuggestionsAddon], assigned: [] } },
+        { addOns: { applicable: [codeSuggestionsAddon], assigned: [] } },
         assignAddOnHandler,
         unassignAddOnHandler,
       );
@@ -152,7 +152,7 @@ describe('CodeSuggestionsAddonAssignment', () => {
   describe('when unassigning an addon', () => {
     beforeEach(() => {
       createComponent(
-        { addOns: { assignable: [codeSuggestionsAddon], assigned: [codeSuggestionsAddon] } },
+        { addOns: { applicable: [codeSuggestionsAddon], assigned: [codeSuggestionsAddon] } },
         assignAddOnHandler,
         unassignAddOnHandler,
       );
