@@ -1,15 +1,2 @@
-.row.gl-mt-3.gl-mb-3
-  .col-lg-12
-    = form_with url: project_subscriptions_path(@project), id: 'pipeline-subscriptions-form', method: :post, authenticity_token: true do |f|
-      %fieldset
-        .form-group
-          = f.label :upstream_project_path do
-            = _("Project path")
-            = link_to sprite_icon('question-o'), help_page_path('ci/pipelines/index', anchor: 'trigger-a-pipeline-when-an-upstream-project-is-rebuilt'), target: '_blank', rel: 'noopener noreferrer'
-          = f.text_field :upstream_project_path, class: "form-control", data: { qa_selector: "upstream_project_path_field" }
-        = render Pajamas::ButtonComponent.new(variant: :confirm, type: :submit, button_options: { data: { qa_selector: "subscribe_button" } }) do
-          = _('Subscribe')
-
 = render 'projects/settings/subscriptions/table', mode: 'upstream'
-
 = render 'projects/settings/subscriptions/table', mode: 'downstream'

@@ -25,7 +25,7 @@ RSpec.describe 'projects/settings/subscriptions/_index.html.haml' do
 
     it 'has delete button' do
       render
-      expect(rendered).to have_selector('[data-testid="delete-subscription"].btn-danger')
+      expect(rendered).to have_selector('[data-testid="delete-subscription"]')
     end
   end
 
@@ -33,7 +33,7 @@ RSpec.describe 'projects/settings/subscriptions/_index.html.haml' do
     it 'has no delete button' do
       render
       expect(rendered).not_to have_content('No project subscribes to the pipelines in this project.')
-      expect(rendered).not_to have_selector('[data-testid="delete-subscription"].btn-danger')
+      expect(rendered).not_to have_selector('[data-testid="delete-subscription"]')
     end
   end
 end
