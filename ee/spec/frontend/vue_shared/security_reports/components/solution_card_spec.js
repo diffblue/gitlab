@@ -1,5 +1,8 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { renderGFM } from '~/behaviors/markdown/render_gfm';
 import SolutionCard from 'ee/vue_shared/security_reports/components/solution_card.vue';
+
+jest.mock('~/behaviors/markdown/render_gfm');
 
 describe('Solution Card', () => {
   const solutionText = 'Upgrade to XYZ';
@@ -25,6 +28,10 @@ describe('Solution Card', () => {
 
     it('renders the solution text', () => {
       expect(findSolutionText().text()).toBe(solutionText);
+    });
+
+    it('renders gfm', () => {
+      expect(renderGFM).toHaveBeenCalledWith(findSolutionText().element);
     });
   });
 
