@@ -7,11 +7,7 @@ class Groups::Security::ComplianceDashboardsController < Groups::ApplicationCont
 
   before_action :authorize_compliance_dashboard!
 
-  track_event :show,
-    name: 'g_compliance_dashboard',
-    action: 'show_compliance_dashboard',
-    label: 'redis_hll_counters.compliance.compliance_total_unique_counts_monthly',
-    destinations: [:redis_hll, :snowplow]
+  track_internal_event :show, name: 'g_compliance_dashboard'
 
   feature_category :compliance_management
 

@@ -30,12 +30,9 @@ RSpec.describe Groups::Security::ComplianceDashboardsController, feature_categor
           let(:target_id) { 'g_compliance_dashboard' }
         end
 
-        it_behaves_like 'Snowplow event tracking with RedisHLL context' do
-          let(:category) { described_class.to_s }
-          let(:action) { 'show_compliance_dashboard' }
+        it_behaves_like 'internal event tracking' do
           let(:namespace) { group }
-          let(:label) { 'redis_hll_counters.compliance.compliance_total_unique_counts_monthly' }
-          let(:property) { 'g_compliance_dashboard' }
+          let(:action) { 'g_compliance_dashboard' }
         end
       end
 
