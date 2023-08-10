@@ -1,5 +1,5 @@
-import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { GlCollapsibleListbox, GlListboxItem } from '@gitlab/ui';
+import { mount } from '@vue/test-utils';
 import HealthStatusDropdown from 'ee/sidebar/components/health_status/health_status_dropdown.vue';
 import {
   HEALTH_STATUS_AT_RISK,
@@ -12,11 +12,16 @@ import {
 describe('HealthStatusDropdown component', () => {
   let wrapper;
 
-  const findDropdown = () => wrapper.findComponent(GlDropdown);
-  const findDropdownItemAt = (index) => wrapper.findAllComponents(GlDropdownItem).at(index);
+  const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
+  const findDropdownItemAt = (index) => wrapper.findAllComponents(GlListboxItem).at(index);
 
-  const mountComponent = ({ healthStatus = HEALTH_STATUS_ON_TRACK } = {}) => {
-    wrapper = shallowMount(HealthStatusDropdown, { propsData: { healthStatus } });
+  const mountComponent = ({ healthStatus } = {}) => {
+    wrapper = mount(HealthStatusDropdown, {
+      propsData: { healthStatus },
+      stubs: {
+        GlCollapsibleListbox,
+      },
+    });
   };
 
   describe('dropdown text', () => {
@@ -31,7 +36,7 @@ describe('HealthStatusDropdown component', () => {
       ({ healthStatus, dropdownText }) => {
         mountComponent({ healthStatus });
 
-        expect(findDropdown().props('text')).toBe(dropdownText);
+        expect(findDropdown().props('toggleText')).toBe(dropdownText);
       },
     );
   });
@@ -46,7 +51,7 @@ describe('HealthStatusDropdown component', () => {
     `('emits "change" event with value "$emitted" for item index $index', ({ index, emitted }) => {
       mountComponent();
 
-      findDropdownItemAt(index).vm.$emit('click');
+      findDropdownItemAt(index).trigger('click');
 
       expect(wrapper.emitted('change')).toEqual([[emitted]]);
     });

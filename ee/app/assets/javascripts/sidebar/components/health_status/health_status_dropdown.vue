@@ -1,5 +1,6 @@
 <script>
-import { GlDropdown, GlDropdownDivider, GlDropdownItem } from '@gitlab/ui';
+import { GlCollapsibleListbox } from '@gitlab/ui';
+import { __ } from '~/locale';
 import {
   HEALTH_STATUS_I18N_ASSIGN_HEALTH_STATUS,
   HEALTH_STATUS_I18N_NO_STATUS,
@@ -14,9 +15,7 @@ export default {
   HEALTH_STATUS_I18N_SELECT_HEALTH_STATUS,
   healthStatusDropdownOptions,
   components: {
-    GlDropdown,
-    GlDropdownDivider,
-    GlDropdownItem,
+    GlCollapsibleListbox,
   },
   props: {
     /**
@@ -29,7 +28,26 @@ export default {
       default: undefined,
     },
   },
+  data() {
+    return {
+      selected: this.healthStatus === null ? '' : this.healthStatus,
+    };
+  },
   computed: {
+    items() {
+      return [
+        {
+          text: '',
+          options: [{ text: this.$options.HEALTH_STATUS_I18N_NO_STATUS, value: '' }],
+          textSrOnly: true,
+        },
+        {
+          text: __('Health status'),
+          options: this.$options.healthStatusDropdownOptions,
+          textSrOnly: true,
+        },
+      ];
+    },
     dropdownText() {
       if (this.healthStatus === null) {
         return this.$options.HEALTH_STATUS_I18N_NO_STATUS;
@@ -40,38 +58,24 @@ export default {
     },
   },
   methods: {
-    handleClick(healthStatus) {
-      this.$emit('change', healthStatus);
-    },
-    isSelected(healthStatus) {
-      return this.healthStatus === healthStatus;
+    onSelect(value) {
+      this.$emit('change', value === '' ? null : value);
     },
     show() {
-      this.$refs.dropdown.show();
+      this.$refs.dropdown.open();
     },
   },
 };
 </script>
 
 <template>
-  <gl-dropdown
+  <gl-collapsible-listbox
     ref="dropdown"
+    v-model="selected"
     block
     :header-text="$options.HEALTH_STATUS_I18N_ASSIGN_HEALTH_STATUS"
-    :text="dropdownText"
-  >
-    <gl-dropdown-item is-check-item :is-checked="isSelected(null)" @click="handleClick(null)">
-      {{ $options.HEALTH_STATUS_I18N_NO_STATUS }}
-    </gl-dropdown-item>
-    <gl-dropdown-divider />
-    <gl-dropdown-item
-      v-for="option in $options.healthStatusDropdownOptions"
-      :key="option.value"
-      is-check-item
-      :is-checked="isSelected(option.value)"
-      @click="handleClick(option.value)"
-    >
-      {{ option.text }}
-    </gl-dropdown-item>
-  </gl-dropdown>
+    :toggle-text="dropdownText"
+    :items="items"
+    @select="onSelect"
+  />
 </template>
