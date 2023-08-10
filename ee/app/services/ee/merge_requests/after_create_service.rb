@@ -16,6 +16,7 @@ module EE
 
         schedule_sync_for(merge_request)
         schedule_fetch_suggested_reviewers(merge_request)
+        track_usage_event if merge_request.project.scan_result_policy_reads.any?
       end
 
       private
@@ -36,6 +37,13 @@ module EE
         return unless merge_request.can_suggest_reviewers?
 
         ::MergeRequests::FetchSuggestedReviewersWorker.perform_async(merge_request.id)
+      end
+
+      def track_usage_event
+        ::Gitlab::UsageDataCounters::HLLRedisCounter.track_event(
+          'users_creating_merge_requests_with_security_policies',
+          values: current_user.id
+        )
       end
     end
   end

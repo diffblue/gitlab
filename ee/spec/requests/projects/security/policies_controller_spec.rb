@@ -27,10 +27,12 @@ RSpec.describe Projects::Security::PoliciesController, type: :request, feature_c
   end
 
   describe 'GET #edit' do
+    let(:request) { get edit }
+
     context 'with authorized user' do
       context 'when feature is available' do
         it 'renders the edit page' do
-          get edit
+          request
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(response).to render_template(:edit)
@@ -42,7 +44,7 @@ RSpec.describe Projects::Security::PoliciesController, type: :request, feature_c
         end
 
         it 'does not contain any approver data' do
-          get edit
+          request
           app = Nokogiri::HTML.parse(response.body).at_css('div#js-policy-builder-app')
 
           expect(app['data-scan-result-approvers']).to be_nil
@@ -64,7 +66,7 @@ RSpec.describe Projects::Security::PoliciesController, type: :request, feature_c
           end
 
           it 'renders the edit page with approvers data' do
-            get edit
+            request
 
             expect(response).to have_gitlab_http_status(:ok)
             expect(response).to render_template(:edit)
@@ -81,7 +83,7 @@ RSpec.describe Projects::Security::PoliciesController, type: :request, feature_c
           let_it_be(:edit) { edit_project_security_policy_url(project, id: policy[:name]) }
 
           it 'redirects to #index' do
-            get edit
+            request
 
             expect(response).to redirect_to(project_security_policies_path(project))
           end
@@ -91,7 +93,7 @@ RSpec.describe Projects::Security::PoliciesController, type: :request, feature_c
           let_it_be(:edit) { edit_project_security_policy_url(project, id: policy[:name], type: 'invalid') }
 
           it 'redirects to #index' do
-            get edit
+            request
 
             expect(response).to redirect_to(project_security_policies_path(project))
           end
@@ -101,7 +103,7 @@ RSpec.describe Projects::Security::PoliciesController, type: :request, feature_c
           let_it_be(:edit) { edit_project_security_policy_url(project, id: 'no-existing-policy', type: type) }
 
           it 'returns 404' do
-            get edit
+            request
 
             expect(response).to have_gitlab_http_status(:not_found)
           end
@@ -113,7 +115,7 @@ RSpec.describe Projects::Security::PoliciesController, type: :request, feature_c
           let_it_be(:edit) { edit_project_security_policy_url(project, id: policy[:name], type: type) }
 
           it 'returns 404' do
-            get edit
+            request
 
             expect(response).to have_gitlab_http_status(:not_found)
           end
@@ -127,7 +129,7 @@ RSpec.describe Projects::Security::PoliciesController, type: :request, feature_c
           end
 
           it 'redirects to project page' do
-            get edit
+            request
 
             expect(response).to redirect_to(project_path(policy_management_project))
           end
@@ -137,7 +139,7 @@ RSpec.describe Projects::Security::PoliciesController, type: :request, feature_c
           let_it_be(:policy) { { name: 'invalid' } }
 
           it 'redirects to policy file' do
-            get edit
+            request
 
             expect(response).to redirect_to(
               project_blob_path(
@@ -147,16 +149,20 @@ RSpec.describe Projects::Security::PoliciesController, type: :request, feature_c
             )
           end
         end
+
+        it_behaves_like 'tracks govern usage event', 'users_visiting_security_policies'
       end
 
       context 'when feature is not available' do
         let_it_be(:feature_enabled) { false }
 
         it 'returns 404' do
-          get edit
+          request
 
           expect(response).to have_gitlab_http_status(:not_found)
         end
+
+        it_behaves_like "doesn't track govern usage event", 'users_visiting_security_policies'
       end
     end
 
@@ -170,10 +176,12 @@ RSpec.describe Projects::Security::PoliciesController, type: :request, feature_c
         let_it_be(:feature_enabled) { true }
 
         it 'returns 404' do
-          get edit
+          request
 
           expect(response).to have_gitlab_http_status(:not_found)
         end
+
+        it_behaves_like "doesn't track govern usage event", 'users_visiting_security_policies'
       end
     end
 
@@ -183,11 +191,13 @@ RSpec.describe Projects::Security::PoliciesController, type: :request, feature_c
       end
 
       it 'returns 302' do
-        get edit
+        request
 
         expect(response).to have_gitlab_http_status(:found)
         expect(response).to redirect_to(new_user_session_path)
       end
+
+      it_behaves_like "doesn't track govern usage event", 'users_visiting_security_policies'
     end
   end
 
@@ -211,6 +221,20 @@ RSpec.describe Projects::Security::PoliciesController, type: :request, feature_c
 
         expect(response).to have_gitlab_http_status(status)
       end
+
+      describe 'usage tracking' do
+        context 'with license available' do
+          let(:license) { true }
+
+          it_behaves_like 'tracks govern usage event', 'users_visiting_security_policies'
+        end
+
+        context 'without license available' do
+          let(:license) { false }
+
+          it_behaves_like "doesn't track govern usage event", 'users_visiting_security_policies'
+        end
+      end
     end
   end
 
@@ -233,6 +257,20 @@ RSpec.describe Projects::Security::PoliciesController, type: :request, feature_c
         subject
 
         expect(response).to have_gitlab_http_status(status)
+      end
+
+      describe 'usage tracking' do
+        context 'with license available' do
+          let(:license) { true }
+
+          it_behaves_like 'tracks govern usage event', 'users_visiting_security_policies'
+        end
+
+        context 'without license available' do
+          let(:license) { false }
+
+          it_behaves_like "doesn't track govern usage event", 'users_visiting_security_policies'
+        end
       end
     end
   end

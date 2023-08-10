@@ -4,6 +4,7 @@ module Projects
   module Security
     class PoliciesController < Projects::ApplicationController
       include SecurityAndCompliancePermissions
+      include GovernUsageProjectTracking
 
       before_action :authorize_read_security_orchestration_policies!, except: :edit
       before_action :authorize_modify_security_policy!, only: :edit
@@ -16,6 +17,7 @@ module Projects
       feature_category :security_policy_management
       urgency :default, [:edit]
       urgency :low, [:index, :new]
+      track_govern_activity 'security_policies', :index, :edit, :new
 
       def index
         render :index, locals: { project: project }

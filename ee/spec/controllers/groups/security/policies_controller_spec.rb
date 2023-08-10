@@ -19,6 +19,7 @@ RSpec.describe Groups::Security::PoliciesController, type: :request, feature_cat
     let(:policy_id) { policy[:name] }
     let(:policy_type) { 'scan_execution_policy' }
     let(:edit) { edit_group_security_policy_url(group, id: policy_id, type: policy_type) }
+    let(:request) { get edit }
 
     before do
       group.add_developer(user)
@@ -36,7 +37,7 @@ RSpec.describe Groups::Security::PoliciesController, type: :request, feature_cat
         end
 
         it 'renders the edit page', :aggregate_failures do
-          get edit
+          request
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(response).to render_template(:edit)
@@ -63,7 +64,7 @@ RSpec.describe Groups::Security::PoliciesController, type: :request, feature_cat
         end
 
         it 'does not contain any approver data' do
-          get edit
+          request
           app = Nokogiri::HTML.parse(response.body).at_css('div#js-group-policy-builder-app')
 
           expect(app['data-scan-result-approvers']).to be_nil
@@ -88,7 +89,7 @@ RSpec.describe Groups::Security::PoliciesController, type: :request, feature_cat
           end
 
           it 'renders the edit page with approvers data' do
-            get edit
+            request
 
             expect(response).to have_gitlab_http_status(:ok)
             expect(response).to render_template(:edit)
@@ -104,7 +105,7 @@ RSpec.describe Groups::Security::PoliciesController, type: :request, feature_cat
           let(:policy_type) { nil }
 
           it 'redirects to #index', :aggregate_failures do
-            get edit
+            request
 
             expect(response).to redirect_to(group_security_policies_path(group))
             expect(flash[:alert]).to eq(_('type parameter is missing and is required'))
@@ -115,7 +116,7 @@ RSpec.describe Groups::Security::PoliciesController, type: :request, feature_cat
           let(:policy_type) { 'invalid' }
 
           it 'redirects to #index', :aggregate_failures do
-            get edit
+            request
 
             expect(response).to redirect_to(group_security_policies_path(group))
             expect(flash[:alert]).to eq(_('Invalid policy type'))
@@ -126,7 +127,7 @@ RSpec.describe Groups::Security::PoliciesController, type: :request, feature_cat
           let(:policy_id) { 'no-policy' }
 
           it 'returns 404' do
-            get edit
+            request
 
             expect(response).to have_gitlab_http_status(:not_found)
           end
@@ -136,7 +137,7 @@ RSpec.describe Groups::Security::PoliciesController, type: :request, feature_cat
             let_it_be(:policy_configuration) { nil }
 
             it 'returns 404', :aggregate_failures do
-              get edit
+              request
 
               expect(response).to have_gitlab_http_status(:not_found)
             end
@@ -150,7 +151,7 @@ RSpec.describe Groups::Security::PoliciesController, type: :request, feature_cat
             end
 
             it 'redirects to project page', :aggregate_failures do
-              get edit
+              request
 
               expect(response).to redirect_to(project_path(policy_management_project))
               expect(flash[:alert]).to eq(_("Policy management project does not have any policies in %{policy_path}" % {
@@ -163,7 +164,7 @@ RSpec.describe Groups::Security::PoliciesController, type: :request, feature_cat
             let_it_be(:policy) { { name: 'invalid' } }
 
             it 'redirects to policy file', :aggregate_failures do
-              get edit
+              request
 
               expect(flash[:alert]).to eq(_('Could not fetch policy because existing policy YAML is invalid'))
               expect(response).to redirect_to(
@@ -178,6 +179,10 @@ RSpec.describe Groups::Security::PoliciesController, type: :request, feature_cat
             end
           end
         end
+
+        it_behaves_like 'tracks govern usage event', 'users_visiting_security_policies' do
+          let(:execute) { request }
+        end
       end
 
       context 'when feature is not licensed' do
@@ -186,10 +191,12 @@ RSpec.describe Groups::Security::PoliciesController, type: :request, feature_cat
         end
 
         it 'returns 404' do
-          get edit
+          request
 
           expect(response).to have_gitlab_http_status(:not_found)
         end
+
+        it_behaves_like "doesn't track govern usage event", 'users_visiting_security_policies'
       end
     end
 
@@ -203,10 +210,12 @@ RSpec.describe Groups::Security::PoliciesController, type: :request, feature_cat
       end
 
       it 'returns 404' do
-        get edit
+        request
 
         expect(response).to have_gitlab_http_status(:not_found)
       end
+
+      it_behaves_like "doesn't track govern usage event", 'users_visiting_security_policies'
     end
 
     context 'with anonymous user' do
@@ -215,10 +224,12 @@ RSpec.describe Groups::Security::PoliciesController, type: :request, feature_cat
       end
 
       it 'returns 404' do
-        get edit
+        request
 
         expect(response).to have_gitlab_http_status(:not_found)
       end
+
+      it_behaves_like "doesn't track govern usage event", 'users_visiting_security_policies'
     end
   end
 
@@ -246,6 +257,26 @@ RSpec.describe Groups::Security::PoliciesController, type: :request, feature_cat
         subject
 
         expect(response).to have_gitlab_http_status(status)
+      end
+    end
+
+    describe 'usage tracking' do
+      before do
+        group.add_developer(user)
+        sign_in(user)
+        stub_licensed_features(security_orchestration_policies: license)
+      end
+
+      context 'with license available' do
+        let(:license) { true }
+
+        it_behaves_like 'tracks govern usage event', 'users_visiting_security_policies'
+      end
+
+      context 'without license available' do
+        let(:license) { false }
+
+        it_behaves_like "doesn't track govern usage event", 'users_visiting_security_policies'
       end
     end
   end

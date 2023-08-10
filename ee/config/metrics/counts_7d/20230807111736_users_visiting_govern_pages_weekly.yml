@@ -1,0 +1,28 @@
+---
+key_path: redis_hll_counters.govern.users_visiting_govern_pages_weekly
+description: Unique count of govern actions in a given week
+product_section: sec
+product_stage: govern
+product_group: security_policies
+value_type: number
+status: active
+milestone: "16.3"
+introduced_by_url:
+time_frame: 7d
+data_source: redis_hll
+data_category: optional
+instrumentation_class: AggregatedMetric
+options:
+  aggregate:
+    operator: OR
+    attribute: user_id
+  events:
+    - i_code_review_merge_request_widget_security_reports_expand
+    - users_visiting_security_policies
+    - users_creating_merge_requests_with_security_policies
+performance_indicator_type:
+- smau
+distribution:
+- ee
+tier:
+- ultimate
