@@ -6,4 +6,6 @@ import allRunnersUpgradeStatusData from 'test_fixtures/graphql/ci/runner/list/al
 // Dashboard queries
 import mostActiveRunnersData from 'test_fixtures/graphql/ci/runner/performance/most_active_runners.graphql.json';
 
+export const runnerDashboardPath = '/admin/runners/dashboard';
+
 export { allRunnersUpgradeStatusData, mostActiveRunnersData };
