@@ -9,7 +9,7 @@ import getAiMessages from 'ee/ai/graphql/get_ai_messages.query.graphql';
 import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
 import tanukiBotMutation from 'ee/ai/graphql/tanuki_bot.mutation.graphql';
 import UserFeedback from 'ee/ai/components/user_feedback.vue';
-import { i18n } from 'ee/ai/constants';
+import { i18n, GENIE_CHAT_RESET_MESSAGE } from 'ee/ai/constants';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
 import { SOURCE_TYPES, TANUKI_BOT_TRACKING_EVENT_NAME } from '../constants';
 
@@ -96,7 +96,9 @@ export default {
   methods: {
     ...mapActions(['addDuoChatMessage', 'setMessages', 'setLoading']),
     sendMessage(question) {
-      this.setLoading();
+      if (question !== GENIE_CHAT_RESET_MESSAGE) {
+        this.setLoading();
+      }
       const mutation = this.glFeatures.gitlabDuo ? chatMutation : tanukiBotMutation;
       this.$apollo
         .mutate({
