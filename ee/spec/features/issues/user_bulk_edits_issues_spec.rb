@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Issues > Bulk edit issues', feature_category: :team_planning do
+  include ListboxHelpers
+
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:epic) { create(:epic, group: group) }
@@ -75,8 +77,7 @@ RSpec.describe 'Issues > Bulk edit issues', feature_category: :team_planning do
       context 'to all issues' do
         before do
           check 'Select all'
-          click_button 'Select health status'
-          click_button 'On track'
+          select_from_listbox 'On track', from: 'Select health status'
           update_issues
         end
 
@@ -89,8 +90,7 @@ RSpec.describe 'Issues > Bulk edit issues', feature_category: :team_planning do
       context 'to an issue' do
         before do
           check issue1.title
-          click_button 'Select health status'
-          click_button 'At risk'
+          select_from_listbox 'At risk', from: 'Select health status'
           update_issues
         end
 
