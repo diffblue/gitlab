@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-RSpec.shared_examples 'includes ExternallyDestinationable concern' do
+RSpec.shared_examples 'includes CustomHttpExternallyDestinationable concern' do
   describe 'validations' do
-    it { is_expected.to be_a(AuditEvents::ExternallyDestinationable) }
+    it { is_expected.to be_a(AuditEvents::CustomHttpExternallyDestinationable) }
 
     it { is_expected.to validate_length_of(:destination_url).is_at_most(255) }
     it { is_expected.to validate_presence_of(:destination_url) }

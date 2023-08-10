@@ -3,7 +3,7 @@
 module AuditEvents
   class InstanceExternalAuditEventDestination < ApplicationRecord
     include ExternallyCommonDestinationable
-    include ExternallyDestinationable
+    include CustomHttpExternallyDestinationable
     include Limitable
 
     self.limit_name = 'external_audit_event_destinations'
