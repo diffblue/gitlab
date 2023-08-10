@@ -172,11 +172,11 @@ RSpec.describe Ci::Partitionable::Switch, :aggregate_failures do
       it 'writes' do
         rollout_and_rollback_flag(
           -> {
-            expect(sql(filter: /INSERT .* jobs_metadata/) { jobs_model.find(job.id).create_metadata! })
+            expect(sql(filter: [/INSERT/, /jobs_metadata/]) { jobs_model.find(job.id).create_metadata! })
               .to all match(/INSERT INTO "_test_ci_jobs_metadata"/)
           },
           -> {
-            expect(sql(filter: /INSERT .* jobs_metadata/) { jobs_model.find(job.id).create_metadata! })
+            expect(sql(filter: [/INSERT/, /jobs_metadata/]) { jobs_model.find(job.id).create_metadata! })
               .to all match(/INSERT INTO "_test_p_ci_jobs_metadata"/)
           }
         )
@@ -190,11 +190,11 @@ RSpec.describe Ci::Partitionable::Switch, :aggregate_failures do
 
         rollout_and_rollback_flag(
           -> {
-            expect(sql(filter: /DELETE .* jobs_metadata/) { jobs_model.last.destroy! })
+            expect(sql(filter: [/DELETE/, /jobs_metadata/]) { jobs_model.last.destroy! })
               .to all match(/DELETE FROM "_test_ci_jobs_metadata"/)
           },
           -> {
-            expect(sql(filter: /DELETE .* jobs_metadata/) { jobs_model.last.destroy! })
+            expect(sql(filter: [/DELETE/, /jobs_metadata/]) { jobs_model.last.destroy! })
               .to all match(/DELETE FROM "_test_p_ci_jobs_metadata"/)
           }
         )
@@ -252,11 +252,11 @@ RSpec.describe Ci::Partitionable::Switch, :aggregate_failures do
 
           rollout_and_rollback_flag(
             -> {
-              expect(sql(filter: /INSERT .* jobs_metadata/) { jobs_model.create!(attrs) })
+              expect(sql(filter: [/INSERT/, /jobs_metadata/]) { jobs_model.create!(attrs) })
                 .to all match(/INSERT INTO "_test_ci_jobs_metadata" .* 'test_env_name'/)
             },
             -> {
-              expect(sql(filter: /INSERT .* jobs_metadata/) { jobs_model.create!(attrs) })
+              expect(sql(filter: [/INSERT/, /jobs_metadata/]) { jobs_model.create!(attrs) })
                 .to all match(/INSERT INTO "_test_p_ci_jobs_metadata" .* 'test_env_name'/)
             }
           )
@@ -307,11 +307,9 @@ RSpec.describe Ci::Partitionable::Switch, :aggregate_failures do
   end
 
   def sql(filter: nil, &block)
-    result = ActiveRecord::QueryRecorder.new(&block)
-    result = result.log
-
-    return result unless filter
-
-    result.select { |statement| statement.match?(filter) }
+    ActiveRecord::QueryRecorder.new(&block)
+      .log
+      .select { |statement| Array.wrap(filter).all? { |regex| statement.match?(regex) } }
+      .tap { |result| expect(result).not_to be_empty }
   end
 end
