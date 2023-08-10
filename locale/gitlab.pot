@@ -2686,6 +2686,9 @@ msgstr ""
 msgid "Active personal access tokens"
 msgstr ""
 
+msgid "Active pipeline trigger tokens"
+msgstr ""
+
 msgid "Active project access tokens"
 msgstr ""
 
@@ -2911,6 +2914,9 @@ msgstr ""
 msgid "Add new key"
 msgstr ""
 
+msgid "Add new pipeline trigger token"
+msgstr ""
+
 msgid "Add new token"
 msgstr ""
 
@@ -2978,9 +2984,6 @@ msgid "Add to tree"
 msgstr ""
 
 msgid "Add topics to projects to help users find them."
-msgstr ""
-
-msgid "Add trigger"
 msgstr ""
 
 msgid "Add variable"
@@ -13656,6 +13659,9 @@ msgid "Create or import your first project"
 msgstr ""
 
 msgid "Create phone verification exemption"
+msgstr ""
+
+msgid "Create pipeline trigger token"
 msgstr ""
 
 msgid "Create project"
@@ -28457,9 +28463,6 @@ msgstr ""
 msgid "Manage usage"
 msgstr ""
 
-msgid "Manage your project's triggers"
-msgstr ""
-
 msgid "Manage your subscription"
 msgstr ""
 
@@ -33949,6 +33952,9 @@ msgid "Pipeline subscriptions"
 msgstr ""
 
 msgid "Pipeline subscriptions trigger a new pipeline on the default branch of this project when a pipeline successfully completes for a new tag on the %{default_branch_docs} of the subscribed project."
+msgstr ""
+
+msgid "Pipeline trigger tokens"
 msgstr ""
 
 msgid "Pipeline triggers"
@@ -47641,7 +47647,7 @@ msgstr ""
 msgid "These dates affect how your epics appear in the roadmap. Set a fixed date or one inherited from the milestones assigned to issues in this epic."
 msgstr ""
 
-msgid "These examples show how to trigger this project's pipeline for a branch or tag."
+msgid "These examples show common methods of triggering a pipeline with a pipeline trigger token. The URL and ID for this project is prefilled."
 msgstr ""
 
 msgid "These existing issues have a similar title. It might be better to comment there instead of creating another similar issue."
@@ -51654,6 +51660,9 @@ msgid "View the documentation"
 msgstr ""
 
 msgid "View the latest successful deployment to this environment"
+msgstr ""
+
+msgid "View trigger token usage examples"
 msgstr ""
 
 msgid "View usage details"
