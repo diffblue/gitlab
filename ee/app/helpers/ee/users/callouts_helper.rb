@@ -16,7 +16,6 @@ module EE
       EOA_BRONZE_PLAN_END_DATE = '2022-01-26'
       CL_SUBSCRIPTION_ACTIVATION = 'cloud_licensing_subscription_activation_banner'
       PROFILE_PERSONAL_ACCESS_TOKEN_EXPIRY = 'profile_personal_access_token_expiry'
-      CODE_SUGGESTIONS_THIRD_PARTY_CALLOUT = 'code_suggestions_third_party_callout'
 
       def show_enable_hashed_storage_warning?
         return if hashed_storage_enabled?
@@ -88,10 +87,6 @@ module EE
 
         failed_pipeline = current_user.pipelines.user_not_verified.last
         failed_pipeline.present? && !user_dismissed?('verification_reminder', failed_pipeline.created_at)
-      end
-
-      def show_code_suggestions_third_party_callout?
-        !user_dismissed?(CODE_SUGGESTIONS_THIRD_PARTY_CALLOUT)
       end
 
       private
