@@ -54,6 +54,7 @@ RSpec.describe TrialStatusWidgetHelper, :saas, feature_category: :experimentatio
             last_name: user.last_name,
             company_name: user.organization,
             glm_content: 'trial-status-show-group',
+            create_hand_raise_lead_path: '/-/subscriptions/hand_raise_leads',
             target_id: expected_attrs[:container_id],
             trial_end_date: trial_end_date
           )

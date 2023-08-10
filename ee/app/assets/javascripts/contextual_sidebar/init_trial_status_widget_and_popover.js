@@ -50,6 +50,7 @@ export const initTrialStatusPopover = () => {
     lastName,
     companyName,
     glmContent,
+    createHandRaiseLeadPath,
   } = el.dataset;
 
   return new Vue({
@@ -60,6 +61,7 @@ export const initTrialStatusPopover = () => {
       planName,
       plansHref,
       targetId,
+      createHandRaiseLeadPath,
       trialEndDate: new Date(trialEndDate),
       user: {
         namespaceId,

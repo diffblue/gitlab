@@ -31,6 +31,7 @@ export default {
     planName: {},
     plansHref: {},
     targetId: {},
+    createHandRaiseLeadPath: {},
     trialEndDate: {},
     user: {},
   },
@@ -137,6 +138,7 @@ export default {
       <div data-testid="contact-sales-btn" @click="trackPageAction('contactSalesBtnClick')">
         <div
           class="js-hand-raise-lead-button"
+          :data-create-hand-raise-lead-path="createHandRaiseLeadPath"
           :data-button-attributes="JSON.stringify($options.handRaiseLeadAttributes)"
           :data-namespace-id="user.namespaceId"
           :data-user-name="user.userName"

@@ -429,7 +429,15 @@ RSpec.describe BillingPlansHelper, :saas, feature_category: :subscription_manage
 
     it 'builds correct hash' do
       props = helper.hand_raise_props(namespace, glm_content: 'some-content')
-      expect(props).to eq(namespace_id: namespace.id, user_name: 'Joe', first_name: 'Joe', last_name: 'Doe', company_name: 'ACME', glm_content: 'some-content')
+      expect(props).to eq(
+        namespace_id: namespace.id,
+        user_name: 'Joe',
+        first_name: 'Joe',
+        last_name: 'Doe',
+        company_name: 'ACME',
+        glm_content: 'some-content',
+        create_hand_raise_lead_path: '/-/subscriptions/hand_raise_leads'
+      )
     end
   end
 
@@ -450,6 +458,7 @@ RSpec.describe BillingPlansHelper, :saas, feature_category: :subscription_manage
                                          :last_name,
                                          :company_name,
                                          :glm_content,
+                                         :create_hand_raise_lead_path,
                                          :button_attributes,
                                          :button_text,
                                          :track_action,

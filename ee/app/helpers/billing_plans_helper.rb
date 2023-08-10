@@ -148,7 +148,8 @@ module BillingPlansHelper
       first_name: current_user.first_name,
       last_name: current_user.last_name,
       company_name: current_user.organization,
-      glm_content: glm_content
+      glm_content: glm_content,
+      create_hand_raise_lead_path: subscriptions_hand_raise_leads_path
     }
   end
 

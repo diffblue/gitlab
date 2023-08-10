@@ -18,12 +18,14 @@ export const initHandRaiseLeadButton = (el) => {
     trackExperiment,
     buttonAttributes,
     buttonText,
+    createHandRaiseLeadPath,
   } = el.dataset;
 
   return new Vue({
     el,
     apolloProvider,
     provide: {
+      createHandRaiseLeadPath,
       buttonAttributes: buttonAttributes && JSON.parse(buttonAttributes),
       buttonText: buttonText || PQL_BUTTON_TEXT,
       user: {

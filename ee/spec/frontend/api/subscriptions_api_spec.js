@@ -46,7 +46,7 @@ describe('SubscriptionsApi', () => {
         jest.spyOn(axios, 'post');
         mock.onPost(expectedUrl).replyOnce(HTTP_STATUS_OK, []);
 
-        const { data } = await SubscriptionsApi.sendHandRaiseLead(params);
+        const { data } = await SubscriptionsApi.sendHandRaiseLead(expectedUrl, params);
 
         expect(data).toEqual([]);
         expect(axios.post).toHaveBeenCalledWith(expectedUrl, formParams);
