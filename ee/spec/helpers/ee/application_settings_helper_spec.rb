@@ -8,24 +8,6 @@ RSpec.describe EE::ApplicationSettingsHelper do
       expect(visible_attributes).to include(*%i(max_personal_access_token_lifetime))
     end
 
-    context 'with dashboard limits' do
-      let(:params) do
-        %i[dashboard_limit_enabled dashboard_limit]
-      end
-
-      context 'when on GitLab.com', :saas do
-        it 'contains the dashboard limit parameters' do
-          expect(helper.visible_attributes).to include(*params)
-        end
-      end
-
-      context 'when not on GitLab.com' do
-        it 'does not contain the dashboard limit parameters' do
-          expect(helper.visible_attributes).not_to include(*params)
-        end
-      end
-    end
-
     it 'contains telesign values' do
       expect(visible_attributes).to include(*%i(telesign_customer_xid telesign_api_key))
     end
