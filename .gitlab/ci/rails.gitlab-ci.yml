@@ -468,7 +468,8 @@ rspec:coverage:
     - .rails:rules:rspec-coverage
   stage: post-test
   needs:
-    - setup-test-env
+    - job: setup-test-env
+      artifacts: false
     # FOSS/EE jobs
     - job: rspec:artifact-collector unit
       optional: true
@@ -495,6 +496,7 @@ rspec:coverage:
     # Memory jobs
     - job: memory-on-boot
       optional: true
+      artifacts: false
   variables:
     BUNDLE_WITHOUT: "" # This is to override the variable defined in .gitlab-ci.yml
     BUNDLE_ONLY: "coverage"
