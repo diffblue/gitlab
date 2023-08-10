@@ -23,7 +23,7 @@ module Gitlab
 
           # Match the first occurrence of "Action: " and capture everything until "Action Input"
           def parse_action
-            /Action:(?<action>.+?)(?=Action Input)/m =~ output
+            /Action:(?<action>.+?)(?=Action Input:|Final Answer:)/m =~ output
 
             @action = action&.strip
           end
@@ -58,9 +58,9 @@ module Gitlab
           # response is treated as final response instead of returning "I
           # don't know"
           def final_answer_from_unformatted_response
-            return if action || action_input || thought || final_answer
+            return if action.present? || action_input.present? || thought.present? || final_answer.present?
 
-            answer = output.to_s.strip
+            answer = output.to_s.strip.sub(/\AAction: DirectAnswer\s*/, '')
             return if answer.empty?
 
             @final_answer = answer
