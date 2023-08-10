@@ -27,7 +27,9 @@ exports[`Status Page settings form default state should match the default snapsh
       Expand
     </gl-button-stub>
      
-    <p>
+    <p
+      class="gl-text-secondary"
+    >
       
       Configure file storage settings to link issues in this project to an external status page.
     

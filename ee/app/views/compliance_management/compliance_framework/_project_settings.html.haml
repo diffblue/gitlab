@@ -9,7 +9,7 @@
   %section.settings.compliance-framework.no-animate#js-compliance-framework
     .settings-header
       %h4= _('Compliance framework')
-      %p= html_escape(_('Frameworks can not be added to projects in personal namespaces. %{linkStart}What are personal namespaces?%{linkEnd}')) % { linkStart: namespace_doc_link, linkEnd: '</a>'.html_safe }
+      %p.gl-text-secondary= html_escape(_('Frameworks can not be added to projects in personal namespaces. %{linkStart}What are personal namespaces?%{linkEnd}')) % { linkStart: namespace_doc_link, linkEnd: '</a>'.html_safe }
     .settings-content
 - else
   %section.settings.compliance-framework.no-animate#js-compliance-framework{ class: ('expanded' if expanded) }
@@ -17,7 +17,7 @@
       %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only= _('Compliance framework')
       = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
         = expanded ? _('Collapse') : _('Expand')
-      %p= html_escape(_('Select a compliance framework to apply to this project. %{linkStart}How are these added?%{linkEnd}')) % { linkStart: compliance_framework_doc_link, linkEnd: '</a>'.html_safe }
+      %p.gl-text-secondary= html_escape(_('Select a compliance framework to apply to this project. %{linkStart}How are these added?%{linkEnd}')) % { linkStart: compliance_framework_doc_link, linkEnd: '</a>'.html_safe }
 
     .settings-content
       - frameworks = @project.root_ancestor.compliance_management_frameworks

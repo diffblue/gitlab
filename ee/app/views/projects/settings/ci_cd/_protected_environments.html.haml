@@ -8,7 +8,7 @@
         = _('Protected environments')
       = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
         = expanded ? _('Collapse') : _('Expand')
-      %p
+      %p.gl-text-secondary
         = s_('ProtectedEnvironment|Only specified users can execute deployments in a protected environment.')
     .settings-content
       #js-protected-environments{ data: { project_id: @project.id,

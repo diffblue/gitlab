@@ -5,6 +5,6 @@
     %h3.settings-title.js-settings-toggle.js-settings-toggle-trigger-only= s_('ProjectSettings|Data sources')
     = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded ? _('Collapse') : _('Expand')
-    %p= s_('ProjectSettings|All your dashboard data sources.')
+    %p.gl-text-secondary= s_('ProjectSettings|All your dashboard data sources.')
   .settings-content
     = render_if_exists 'projects/settings/analytics/product_analytics'

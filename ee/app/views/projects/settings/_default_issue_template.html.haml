@@ -6,7 +6,7 @@
       = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
         = expanded ? _('Collapse') : _('Expand')
       - link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_path('user/project/description_templates', anchor: 'set-a-default-template-for-merge-requests-and-issues') }
-      %p#issue-settings-default-template-label= _('Set a default description template to be used for new issues. %{link_start}What are description templates?%{link_end}').html_safe % { link_start: link_start, link_end: '</a>'.html_safe }
+      %p.gl-text-secondary#issue-settings-default-template-label= _('Set a default description template to be used for new issues. %{link_start}What are description templates?%{link_end}').html_safe % { link_start: link_start, link_end: '</a>'.html_safe }
 
     .settings-content
       = gitlab_ui_form_for @project, html: { multipart: true, class: "issue-settings-form" }, authenticity_token: true do |f|
