@@ -17,7 +17,7 @@ RSpec.describe 'Project settings > [EE] Merge Request Approvals', :js, feature_c
   before do
     sign_in(user)
 
-    stub_licensed_features(admin_merge_request_approvers_rules: true)
+    stub_licensed_features(merge_request_approvers: true)
 
     project.add_maintainer(user)
     group.add_developer(user)

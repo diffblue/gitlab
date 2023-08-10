@@ -14,7 +14,7 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
   let(:modal_selector) { '#mr-edit-approvals-create-modal' }
 
   before do
-    stub_licensed_features(admin_merge_request_approvers_rules: true)
+    stub_licensed_features(merge_request_approvers: true)
   end
 
   context 'when editing an MR with a different author' do

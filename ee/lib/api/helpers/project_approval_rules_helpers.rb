@@ -64,7 +64,7 @@ module API
       end
 
       def check_feature_availability
-        forbidden! unless ::License.feature_available?(:admin_merge_request_approvers_rules)
+        forbidden! unless ::License.feature_available?(:merge_request_approvers)
       end
 
       def authorize_read_project_approval_rule!

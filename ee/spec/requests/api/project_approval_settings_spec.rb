@@ -13,7 +13,7 @@ RSpec.describe API::ProjectApprovalSettings, :aggregate_failures, feature_catego
   let_it_be(:other_approver) { create(:user) }
 
   before do
-    stub_licensed_features(admin_merge_request_approvers_rules: true)
+    stub_licensed_features(merge_request_approvers: true)
   end
 
   describe 'GET /projects/:id/approval_settings' do
@@ -50,7 +50,7 @@ RSpec.describe API::ProjectApprovalSettings, :aggregate_failures, feature_catego
 
       context 'when license is missing' do
         before do
-          stub_licensed_features(admin_merge_request_approvers_rules: false)
+          stub_licensed_features(merge_request_approvers: false)
         end
 
         it 'returns 403 error' do
@@ -74,7 +74,7 @@ RSpec.describe API::ProjectApprovalSettings, :aggregate_failures, feature_catego
         end
 
         before do
-          stub_licensed_features(admin_merge_request_approvers_rules: true, multiple_approval_rules: true)
+          stub_licensed_features(merge_request_approvers: true, multiple_approval_rules: true)
           rule.update!(protected_branches: [protected_branch])
         end
 
