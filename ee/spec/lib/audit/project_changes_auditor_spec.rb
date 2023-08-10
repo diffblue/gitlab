@@ -8,12 +8,13 @@ RSpec.describe Audit::ProjectChangesAuditor, feature_category: :audit_events do
     let_it_be(:user) { create(:user) }
     let_it_be(:group) { create(:group) }
 
-    let(:project) do
+    let_it_be(:project) do
       create(
         :project,
         group: group,
         visibility_level: 0,
         name: 'interesting name',
+        description: "Prince",
         path: 'interesting-path',
         repository_size_limit: 10,
         packages_enabled: true,
@@ -79,14 +80,6 @@ RSpec.describe Audit::ProjectChangesAuditor, feature_category: :audit_events do
       end
     end
 
-    describe 'non audit changes' do
-      it 'does not call the audit event service' do
-        project.update!(description: 'new description')
-
-        expect { auditor_instance.execute }.not_to change(AuditEvent, :count)
-      end
-    end
-
     describe 'audit changes' do
       context 'when project visibility_level is updated' do
         let(:change) { "visibility_level" }
@@ -96,6 +89,19 @@ RSpec.describe Audit::ProjectChangesAuditor, feature_category: :audit_events do
 
         before do
           project.update!(visibility_level: 20)
+        end
+
+        it_behaves_like 'project_audit_events_from_to'
+      end
+
+      context 'when project description is updated' do
+        let(:change) { "description" }
+        let(:event) { "project_description_updated" }
+        let(:change_from) { "Prince" }
+        let(:change_to) { "The Artist formerly known as Prince" }
+
+        before do
+          project.update!(description: 'The Artist formerly known as Prince')
         end
 
         it_behaves_like 'project_audit_events_from_to'
