@@ -34,6 +34,7 @@ RSpec.describe 'Protected Branches', :js, feature_category: :source_code_managem
         end
 
         def fill_in_form(branch_name)
+          click_button 'Add protected branch'
           branch_input.click
           click_on branch_name
 
@@ -52,6 +53,7 @@ RSpec.describe 'Protected Branches', :js, feature_category: :source_code_managem
         end
 
         it 'has code owner toggle' do
+          click_button 'Add protected branch'
           expect(page).to have_content("Require approval from code owners")
           expect(code_owner_toggle[:class]).to include("is-checked")
         end

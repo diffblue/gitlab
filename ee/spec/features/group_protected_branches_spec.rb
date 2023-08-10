@@ -86,6 +86,7 @@ RSpec.describe 'Group-level Protected Branches', :js, feature_category: :source_
     let(:license_code_owner_approval_required) { false }
 
     it 'has no `code_owner_approval` form field' do
+      click_button 'Add protected branch'
       expect(new_container).not_to have_css('.js-code-owner-toggle')
       expect(list_container).not_to have_css('.js-code-owner-toggle')
     end
@@ -103,11 +104,11 @@ RSpec.describe 'Group-level Protected Branches', :js, feature_category: :source_
     let(:push_access) { 'No one' }
 
     it 'created successfully' do
+      click_button 'Add protected branch'
       branch_input.fill_in with: branch_name
-
       update_protected_branch_form(real_time_request: false)
-
       click_on 'Protect'
+
       wait_for_requests
 
       protected_branch = group.protected_branches.last

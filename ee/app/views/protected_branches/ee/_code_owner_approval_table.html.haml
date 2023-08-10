@@ -1,5 +1,5 @@
 - if protected_branch_entity.feature_available?(:code_owner_approval_required)
-  %td
+  %td{ data: { label: s_("ProtectedBranch|Code owner approval") } }
     = render Pajamas::ToggleComponent.new(classes: 'js-code-owner-toggle gl-mr-5',
       label: s_("ProtectedBranch|Toggle code owner approval"),
       is_checked: protected_branch.code_owner_approval_required,
