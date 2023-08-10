@@ -19409,6 +19409,9 @@ msgstr ""
 msgid "Failed to create resources"
 msgstr ""
 
+msgid "Failed to create target branch rule"
+msgstr ""
+
 msgid "Failed to create wiki"
 msgstr ""
 
@@ -53925,6 +53928,9 @@ msgid "You have insufficient permissions to configure escalation policies for th
 msgstr ""
 
 msgid "You have insufficient permissions to create a Todo for this alert"
+msgstr ""
+
+msgid "You have insufficient permissions to create a target branch rule"
 msgstr ""
 
 msgid "You have insufficient permissions to create an HTTP integration for this project"
