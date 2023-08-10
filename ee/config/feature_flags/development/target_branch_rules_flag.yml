@@ -1,0 +1,8 @@
+---
+name: target_branch_rules_flag
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/127115
+rollout_issue_url:
+milestone: '16.3'
+type: development
+group: group::code review
+default_enabled: false

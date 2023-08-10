@@ -2890,4 +2890,38 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       it { is_expected.to be_disallowed(:fill_in_merge_request_template) }
     end
   end
+
+  describe 'create_target_branch_rule policy' do
+    let(:current_user) { owner }
+
+    describe 'when the target_branch_rules_flag flag is disabled' do
+      before do
+        stub_feature_flags(target_branch_rules_flag: false)
+      end
+
+      it { is_expected.to be_disallowed(:create_target_branch_rule) }
+    end
+
+    describe 'when the project does not have the correct license' do
+      before do
+        stub_licensed_features(target_branch_rules: false)
+      end
+
+      it { is_expected.to be_disallowed(:create_target_branch_rule) }
+    end
+
+    describe 'when the user does not have permissions' do
+      let(:current_user) { auditor }
+
+      it { is_expected.to be_disallowed(:create_target_branch_rule) }
+    end
+
+    describe 'when the user has permission' do
+      before do
+        stub_licensed_features(target_branch_rules: true)
+      end
+
+      it { is_expected.to be_allowed(:create_target_branch_rule) }
+    end
+  end
 end

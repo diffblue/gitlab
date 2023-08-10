@@ -159,6 +159,7 @@ module GitlabSubscriptions
       scoped_labels
       smartcard_auth
       swimlanes
+      target_branch_rules
       type_of_work_analytics
       minimal_access_role
       unprotection_restrictions

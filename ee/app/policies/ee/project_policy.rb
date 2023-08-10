@@ -264,6 +264,14 @@ module EE
           ::Gitlab::Llm::StageCheck.available?(subject, :generate_description)
       end
 
+      with_scope :subject
+      condition(:target_branch_rules_available) { subject.licensed_feature_available?(:target_branch_rules) }
+
+      with_scope :subject
+      condition(:target_branch_rules_enabled) do
+        ::Feature.enabled?(:target_branch_rules_flag, subject)
+      end
+
       rule { visual_review_bot }.policy do
         prevent :read_note
         enable :create_note
@@ -642,6 +650,10 @@ module EE
       rule do
         ai_features_enabled & generate_description_enabled & can?(:create_issue)
       end.enable :generate_description
+
+      rule do
+        target_branch_rules_enabled & target_branch_rules_available & maintainer
+      end.enable :create_target_branch_rule
     end
 
     override :lookup_access_level!
