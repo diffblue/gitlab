@@ -14,11 +14,14 @@ module Security
       def execute
         action = required_approval(policy)
 
-        return success({ users: [], groups: [], roles: [] }) unless action
+        return success({ users: [], groups: [], all_groups: [], roles: [] }) unless action
+
+        group_approvers = group_approvers(action)
 
         success({
           users: user_approvers(action),
-          groups: group_approvers(action),
+          groups: group_approvers[:visible],
+          all_groups: group_approvers[:all],
           roles: role_approvers(action)
         })
       end
@@ -62,15 +65,20 @@ module Security
       # rubocop: enable CodeReuse/ActiveRecord
 
       def group_approvers(action)
-        return [] unless action[:group_approvers] || action[:group_approvers_ids]
+        return { visible: [], all: [] } unless action[:group_approvers] || action[:group_approvers_ids]
 
         group_paths, group_ids = approvers_within_limit(action[:group_approvers], action[:group_approvers_ids])
 
-        Security::ApprovalGroupsFinder.new(group_ids: group_ids,
+        service = Security::ApprovalGroupsFinder.new(group_ids: group_ids,
           group_paths: group_paths,
           user: current_user,
           container: container,
-          search_globally: search_groups_globally?).execute
+          search_globally: search_groups_globally?)
+
+        visible = service.execute
+        all = service.execute(include_inaccessible: true)
+
+        { visible: visible, all: all }
       end
 
       def role_approvers(action)

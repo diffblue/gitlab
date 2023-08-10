@@ -303,6 +303,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
       end
 
       context 'with group_approvers' do
+        let_it_be(:other_user) { create(:user) }
         let(:group) { create(:group) }
         let(:action) do
           {
@@ -312,7 +313,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
         end
 
         before do
-          group.add_developer(user)
+          group.add_developer(other_user)
         end
 
         context 'with exceeding approvals_required' do

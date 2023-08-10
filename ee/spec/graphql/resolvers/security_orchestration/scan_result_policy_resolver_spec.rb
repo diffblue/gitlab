@@ -19,6 +19,7 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanResultPolicyResolver do
         updated_at: policy_last_updated_at,
         user_approvers: [],
         group_approvers: [],
+        all_group_approvers: [],
         role_approvers: [],
         source: {
           inherited: false,

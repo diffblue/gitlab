@@ -11,6 +11,9 @@ module Types
 
       implements OrchestrationPolicyType
 
+      field :all_group_approvers, [::Types::SecurityOrchestration::ApprovalGroupType],
+            null: true,
+            description: 'All potential approvers of the group type, including groups inaccessible to the user.'
       field :group_approvers, ['::Types::GroupType'], null: true, description: 'Approvers of the group type.'
       field :role_approvers, [::Types::MemberAccessLevelNameEnum],
             null: true,

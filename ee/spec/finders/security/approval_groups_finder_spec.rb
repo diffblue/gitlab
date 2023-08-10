@@ -2,17 +2,23 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::ApprovalGroupsFinder, feature_category: :security_policy_management do
+RSpec.describe Security::ApprovalGroupsFinder, "#execute", feature_category: :security_policy_management do
   let_it_be(:group_name) { FFaker::Lorem.word }
 
   let_it_be(:container_a) { create(:group) }
   let_it_be(:group_a) { create(:group, parent: container_a, name: group_name) }
   let_it_be(:container_b) { create(:group) }
   let_it_be(:group_b) { create(:group, parent: container_b, name: group_name) }
-
   let_it_be(:user) { create(:user) }
 
   let(:groups) { [group_a, group_b] }
+  let(:service) do
+    described_class.new(group_ids: group_ids,
+      group_paths: group_paths,
+      user: user,
+      container: container,
+      search_globally: search_globally)
+  end
 
   before do
     groups.each do |group|
@@ -20,13 +26,9 @@ RSpec.describe Security::ApprovalGroupsFinder, feature_category: :security_polic
     end
   end
 
-  describe '#execute' do
+  context 'with inaccessible groups excluded' do
     subject do
-      described_class.new(group_ids: group_ids,
-        group_paths: group_paths,
-        user: user,
-        container: container,
-        search_globally: search_globally).execute
+      service.execute
     end
 
     let(:group_ids) { groups.map(&:id) }
@@ -88,6 +90,28 @@ RSpec.describe Security::ApprovalGroupsFinder, feature_category: :security_polic
       let(:group_paths) { [group_name] }
 
       it "finds globally accessible groups" do
+        expect(subject).to contain_exactly(group_a, group_b)
+      end
+    end
+  end
+
+  context "with inaccessible groups included" do
+    subject do
+      service.execute(include_inaccessible: true)
+    end
+
+    describe 'authorization' do
+      let(:container) { group_a }
+      let(:group_ids) { [group_a.id, group_b.id] }
+      let(:group_paths) { [] }
+      let(:search_globally) { true }
+
+      before do
+        group_a.update_attribute(:visibility_level, Gitlab::VisibilityLevel::PRIVATE)
+        group_a.members.delete_all
+      end
+
+      it 'includes groups the user lacks access to' do
         expect(subject).to contain_exactly(group_a, group_b)
       end
     end

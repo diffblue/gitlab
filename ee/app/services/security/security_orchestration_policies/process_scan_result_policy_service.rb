@@ -82,7 +82,8 @@ module Security
           orchestration_policy_idx: policy_index,
           group_ids: groups_ids(action_info[:group_approvers_ids], action_info[:group_approvers]),
           security_orchestration_policy_configuration_id: policy_configuration.id,
-          scan_result_policy_id: scan_result_policy_read&.id
+          scan_result_policy_id: scan_result_policy_read&.id,
+          permit_inaccessible_groups: true
         }
 
         rule_params[:severity_levels] = [] if rule[:type] == Security::ScanResultPolicy::LICENSE_FINDING
@@ -140,7 +141,7 @@ module Security
           group_paths: group_paths,
           user: author,
           container: project.namespace,
-          search_globally: search_groups_globally?).execute
+          search_globally: search_groups_globally?).execute(include_inaccessible: true)
       end
       # rubocop: enable Cop/GroupPublicOrVisibleToUser
 
