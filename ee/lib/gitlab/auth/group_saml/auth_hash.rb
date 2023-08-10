@@ -12,10 +12,6 @@ module Gitlab
           Array.wrap(get_raw('groups') || get_raw('Groups'))
         end
 
-        def azure_group_overage_claim?
-          get_raw('http://schemas.microsoft.com/claims/groups.link').present?
-        end
-
         # Access user attributes by hash.
         #
         # auth_hash.user_attributes['can_create_group']

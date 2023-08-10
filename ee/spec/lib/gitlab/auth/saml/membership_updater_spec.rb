@@ -4,77 +4,90 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Auth::Saml::MembershipUpdater, feature_category: :system_access do
   let_it_be(:user) { create(:user) }
-  let_it_be(:group1) { create(:group) }
-  let_it_be(:group2) { create(:group) }
+  let_it_be(:group) { create(:group) }
 
-  let(:auth_hash) do
-    Gitlab::Auth::GroupSaml::AuthHash.new(
-      OmniAuth::AuthHash.new(
-        provider: 'saml',
-        extra: { raw_info: OneLogin::RubySaml::Attributes.new('groups' => %w(Developers Owners)) }
+  let_it_be(:group_link) { create(:saml_group_link, saml_group_name: 'Org Users', group: group) }
+
+  let_it_be_with_refind(:application) { create(:system_access_microsoft_application, enabled: true, namespace: nil) }
+
+  let_it_be(:all_groups) { ['Org Users', 'Dept Users'] }
+  let_it_be(:no_groups) { [] }
+
+  def stub_saml_group_sync_enabled(enabled)
+    allow_next_instance_of(::Gitlab::Auth::Saml::Config) do |instance|
+      allow(instance).to receive_messages(
+        group_sync_enabled?: enabled,
+        microsoft_group_sync_enabled?: enabled,
+        groups: 'groups'
       )
-    )
+    end
   end
 
-  let(:membership_updater) { described_class.new(user, auth_hash) }
+  def stub_microsoft_groups(groups)
+    allow_next_instance_of(::Microsoft::GraphClient) do |instance|
+      allow(instance).to receive_messages(user_group_membership_object_ids: groups)
+    end
+  end
 
-  subject(:update_membership) { membership_updater.execute }
+  def build_auth_hash(groups:, overage:)
+    raw_info = if groups.present?
+                 OneLogin::RubySaml::Attributes.new('groups' => groups)
+               elsif overage
+                 OneLogin::RubySaml::Attributes.new({
+                   'http://schemas.microsoft.com/claims/groups.link' =>
+                     ['https://graph.windows.net/8c750e43/users/e631c82c/getMemberObjects']
+                 })
+               else
+                 OneLogin::RubySaml::Attributes.new
+               end
 
-  context 'when SAML group links exist' do
-    def stub_saml_group_sync_enabled(enabled)
-      allow(membership_updater).to receive(:sync_enabled?).and_return(enabled)
+    Gitlab::Auth::Saml::AuthHash.new(OmniAuth::AuthHash.new(provider: 'saml', extra: { raw_info: raw_info }))
+  end
+
+  using RSpec::Parameterized::TableSyntax
+
+  where(:sync_enabled, :app_enabled, :groups, :microsoft_groups, :expect_saml_worker, :expect_microsoft_worker) do
+    false | false | ref(:all_groups) | ref(:no_groups)  | false | false
+    false | true  | ref(:all_groups) | ref(:no_groups)  | false | false
+
+    false | false | ref(:no_groups)  | ref(:all_groups) | false | false
+    false | true  | ref(:no_groups)  | ref(:all_groups) | false | false
+
+    true  | false | ref(:all_groups) | ref(:no_groups)  | true  | false
+    true  | true  | ref(:all_groups) | ref(:no_groups)  | true  | false
+    true  | false | ref(:no_groups)  | ref(:all_groups) | true  | false
+    true  | true  | ref(:no_groups)  | ref(:all_groups) | false | true
+  end
+
+  with_them do
+    before do
+      stub_saml_group_sync_enabled(sync_enabled)
+      application.update!(enabled: app_enabled)
+      stub_microsoft_groups(microsoft_groups)
     end
 
-    let!(:group_link) { create(:saml_group_link, saml_group_name: 'Owners', group: group1) }
+    def expect_saml_worker_call(expect_call, *args)
+      return expect(Auth::SamlGroupSyncWorker).not_to receive(:perform_async) unless expect_call
 
-    context 'when group sync is not available' do
-      before do
-        stub_saml_group_sync_enabled(false)
-      end
-
-      it 'does not enqueue group sync' do
-        expect(::Auth::SamlGroupSyncWorker).not_to receive(:perform_async)
-
-        update_membership
-      end
+      expect(Auth::SamlGroupSyncWorker).to receive(:perform_async).with(*args)
     end
 
-    context 'when group sync is available' do
-      before do
-        stub_saml_group_sync_enabled(true)
-      end
+    def expect_microsoft_worker_call(expect_call, *args)
+      return expect(::SystemAccess::SamlMicrosoftGroupSyncWorker).not_to receive(:perform_async) unless expect_call
 
-      it 'enqueues group sync' do
-        expect(::Auth::SamlGroupSyncWorker).to receive(:perform_async).with(user.id, match_array(group_link.id), 'saml')
+      expect(::SystemAccess::SamlMicrosoftGroupSyncWorker).to receive(:perform_async).with(*args)
+    end
 
-        update_membership
-      end
+    it 'calls the appropriate sync worker' do
+      group_links = groups.include?(group_link.saml_group_name) ? [group_link.id] : []
 
-      context 'when auth hash contains no groups' do
-        let(:auth_hash) do
-          Gitlab::Auth::GroupSaml::AuthHash.new(
-            OmniAuth::AuthHash.new(provider: 'saml', extra: { raw_info: OneLogin::RubySaml::Attributes.new })
-          )
-        end
+      expect_saml_worker_call(expect_saml_worker, user.id, group_links, 'saml')
+      expect_microsoft_worker_call(expect_microsoft_worker, user.id, 'saml')
 
-        it 'enqueues group sync' do
-          expect(::Auth::SamlGroupSyncWorker).to receive(:perform_async).with(user.id, [], 'saml')
+      auth_hash = build_auth_hash(groups: groups, overage: microsoft_groups.present?)
+      membership_updater = described_class.new(user, auth_hash)
 
-          update_membership
-        end
-      end
-
-      context 'when auth hash groups do not match group links' do
-        before do
-          group_link.update!(saml_group_name: 'Web Developers')
-        end
-
-        it 'enqueues group sync' do
-          expect(::Auth::SamlGroupSyncWorker).to receive(:perform_async).with(user.id, [], 'saml')
-
-          update_membership
-        end
-      end
+      membership_updater.execute
     end
   end
 end
