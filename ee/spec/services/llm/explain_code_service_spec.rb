@@ -39,6 +39,7 @@ RSpec.describe Llm::ExplainCodeService, :saas, feature_category: :source_code_ma
         let(:action_name) { :explain_code }
         let(:content) { 'Explain code' }
 
+        it_behaves_like 'service not emitting message for user prompt'
         it_behaves_like 'completion worker sync and async'
         it_behaves_like 'llm service does not cache user request'
       end
@@ -52,6 +53,7 @@ RSpec.describe Llm::ExplainCodeService, :saas, feature_category: :source_code_ma
         let(:action_name) { :explain_code_open_ai }
         let(:content) { 'Explain code' }
 
+        it_behaves_like 'service not emitting message for user prompt'
         it_behaves_like 'completion worker sync and async'
         it_behaves_like 'llm service does not cache user request'
       end

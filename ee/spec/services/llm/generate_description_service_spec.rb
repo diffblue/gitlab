@@ -60,6 +60,10 @@ RSpec.describe Llm::GenerateDescriptionService, feature_category: :team_planning
       it_behaves_like "ensures license and feature flag checks"
       it_behaves_like "ensures user membership"
 
+      it_behaves_like 'service not emitting message for user prompt' do
+        subject { service }
+      end
+
       it_behaves_like 'completion worker sync and async' do
         subject { service }
       end

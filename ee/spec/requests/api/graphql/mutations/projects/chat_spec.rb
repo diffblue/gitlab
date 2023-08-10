@@ -33,7 +33,8 @@ RSpec.describe 'AiAction for chat', :saas, feature_category: :shared do
     it 'successfully performs a chat request' do
       expect(Llm::CompletionWorker).to receive(:perform_async).with(
         current_user.id, nil, nil, :chat, {
-          content: "summarize", markup_format: :raw, request_id: an_instance_of(String), cache_response: true
+          content: "summarize", markup_format: :raw, request_id: an_instance_of(String),
+          cache_response: true, emit_user_messages: true
         }
       )
 
@@ -45,7 +46,8 @@ RSpec.describe 'AiAction for chat', :saas, feature_category: :shared do
     it 'successfully performs a request' do
       expect(Llm::CompletionWorker).to receive(:perform_async).with(
         current_user.id, resource.id, "Issue", :chat, {
-          content: "summarize", markup_format: :raw, request_id: an_instance_of(String), cache_response: true
+          content: "summarize", markup_format: :raw, request_id: an_instance_of(String),
+          cache_response: true, emit_user_messages: true
         }
       )
 
@@ -61,7 +63,8 @@ RSpec.describe 'AiAction for chat', :saas, feature_category: :shared do
     it 'successfully performs a request' do
       expect(Llm::CompletionWorker).to receive(:perform_async).with(
         current_user.id, current_user.id, "User", :chat, {
-          content: "summarize", markup_format: :raw, request_id: an_instance_of(String), cache_response: true
+          content: "summarize", markup_format: :raw, request_id: an_instance_of(String),
+          cache_response: true, emit_user_messages: true
         }
       )
 
