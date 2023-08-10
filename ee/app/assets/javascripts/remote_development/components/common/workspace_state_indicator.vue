@@ -1,15 +1,10 @@
 <script>
-import { GlIcon, GlTooltipDirective } from '@gitlab/ui';
+import { GlTooltipDirective, GlBadge } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import {
-  WORKSPACE_STATES,
-  FILL_CLASS_GREEN,
-  FILL_CLASS_ORANGE,
-  FILL_CLASS_RED,
-} from '../../constants';
+import { WORKSPACE_STATES } from '../../constants';
 
 export const i18n = {
-  tooltips: {
+  labels: {
     [WORKSPACE_STATES.creationRequested]: s__('Workspaces|Creating'),
     [WORKSPACE_STATES.starting]: s__('Workspaces|Starting'),
     [WORKSPACE_STATES.running]: s__('Workspaces|Running'),
@@ -23,33 +18,29 @@ export const i18n = {
   },
 };
 
-const STATE_TO_ICON_MAP = {
-  [WORKSPACE_STATES.creationRequested]: 'status-running',
-  [WORKSPACE_STATES.starting]: 'status-running',
-  [WORKSPACE_STATES.running]: 'status-active',
-  [WORKSPACE_STATES.stopping]: 'status-running',
-  [WORKSPACE_STATES.stopped]: 'status-stopped',
-  [WORKSPACE_STATES.terminating]: 'status-running',
-  [WORKSPACE_STATES.terminated]: 'status-cancelled',
-  [WORKSPACE_STATES.failed]: 'status_warning',
-  [WORKSPACE_STATES.error]: 'status_warning',
-  [WORKSPACE_STATES.unknown]: 'status_warning',
-};
+const stateLabel = [
+  WORKSPACE_STATES.creationRequested,
+  WORKSPACE_STATES.starting,
+  WORKSPACE_STATES.stopping,
+  WORKSPACE_STATES.terminating,
+];
 
-const STATE_TO_CSS_CLASS_MAP = {
-  [WORKSPACE_STATES.creationRequested]: FILL_CLASS_GREEN,
-  [WORKSPACE_STATES.starting]: FILL_CLASS_GREEN,
-  [WORKSPACE_STATES.running]: FILL_CLASS_GREEN,
-  [WORKSPACE_STATES.failed]: FILL_CLASS_ORANGE,
-  [WORKSPACE_STATES.error]: FILL_CLASS_ORANGE,
-  [WORKSPACE_STATES.terminating]: FILL_CLASS_RED,
-  [WORKSPACE_STATES.terminated]: FILL_CLASS_RED,
-  [WORKSPACE_STATES.unknown]: FILL_CLASS_ORANGE,
+const STATE_TO_VARIANT = {
+  [WORKSPACE_STATES.creationRequested]: 'success',
+  [WORKSPACE_STATES.starting]: 'success',
+  [WORKSPACE_STATES.running]: 'success',
+  [WORKSPACE_STATES.failed]: 'danger',
+  [WORKSPACE_STATES.error]: 'danger',
+  [WORKSPACE_STATES.stopping]: 'info',
+  [WORKSPACE_STATES.stopped]: 'info',
+  [WORKSPACE_STATES.terminating]: 'muted',
+  [WORKSPACE_STATES.terminated]: 'muted',
+  [WORKSPACE_STATES.unknown]: 'danger',
 };
 
 export default {
   components: {
-    GlIcon,
+    GlBadge,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -63,27 +54,24 @@ export default {
   },
   computed: {
     iconName() {
-      return STATE_TO_ICON_MAP[this.workspaceState];
+      return stateLabel.includes(this.workspaceState) ? 'status' : '';
     },
     iconLabel() {
-      return i18n.tooltips[this.workspaceState];
+      return i18n.labels[this.workspaceState];
     },
-    iconClass() {
-      return STATE_TO_CSS_CLASS_MAP[this.workspaceState];
+    variant() {
+      return STATE_TO_VARIANT[this.workspaceState];
     },
   },
 };
 </script>
 <template>
-  <gl-icon
-    v-gl-tooltip
-    :name="iconName"
-    :size="12"
-    :title="iconLabel"
-    :aria-label="iconLabel"
+  <gl-badge
+    :icon="iconName"
     class="workspace-state-indicator"
-    :class="iconClass"
+    :variant="variant"
     data-testid="workspace-state-indicator"
     :data-qa-title="iconLabel"
-  />
+    >{{ iconLabel }}</gl-badge
+  >
 </template>

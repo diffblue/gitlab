@@ -23,7 +23,7 @@ export const WithAPIAccess = (args, { argTypes, createVueApollo }) => {
     },
     props: Object.keys(argTypes),
     template: `<gl-disclosure-dropdown fluid-width toggle-text="Edit">
-      <workspaces-dropdown-group :new-workspace-path="newWorkspacePath" :project-id="projectId" :project-full-path="projectFullPath" />
+      <workspaces-dropdown-group supports-workspaces border-position="top" :new-workspace-path="newWorkspacePath" :project-id="projectId" :project-full-path="projectFullPath" />
     </gl-disclosure-dropdown>`,
   };
 };
