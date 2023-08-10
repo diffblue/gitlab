@@ -18,6 +18,8 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :not_owned do # 
     )
   end
 
+  let(:response_headers) { { 'Content-Type' => 'application/json' } }
+
   let(:headers) do
     {
       accept: 'application/json',
@@ -45,10 +47,12 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :not_owned do # 
     }
   end
 
-  subject(:client) { described_class.new(user) }
+  let(:client) { described_class.new(user) }
 
   shared_examples 'forwarding the request correctly' do
-    let(:successful_response) { { predictions: [candidates: [{ content: "Sure, ..." }]] } }
+    let(:successful_response) do
+      { safetyAttributes: { blocked: false }, predictions: [candidates: [{ content: "Sure, ..." }]] }
+    end
 
     before do
       allow_next_instance_of(Gitlab::Llm::VertexAi::Configuration) do |instance|
@@ -63,7 +67,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :not_owned do # 
         stub_request(:post, url).with(
           headers: headers,
           body: request_payload
-        ).to_return(status: 200, body: successful_response.to_json)
+        ).to_return(status: 200, body: successful_response.to_json, headers: response_headers)
       end
 
       it 'returns the response' do
@@ -96,9 +100,9 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :not_owned do # 
 
       before do
         stub_request(:post, url)
-          .to_return(status: 429, body: too_many_requests_response.to_json)
-          .then.to_return(status: 429, body: too_many_requests_response.to_json)
-          .then.to_return(status: 200, body: successful_response.to_json)
+          .to_return(status: 429, body: too_many_requests_response.to_json, headers: response_headers)
+          .then.to_return(status: 429, body: too_many_requests_response.to_json, headers: response_headers)
+          .then.to_return(status: 200, body: successful_response.to_json, headers: response_headers)
 
         allow(client).to receive(:sleep).and_return(nil)
       end
@@ -108,10 +112,51 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :not_owned do # 
         expect(response.code).to eq(200)
       end
     end
+
+    context 'when a content blocked response is returned from the API' do
+      let(:content_blocked_response) do
+        { safetyAttributes: { blocked: true }, predictions: [candidates: [{ content: "I am just an AI..." }]] }
+      end
+
+      context 'and retry_content_blocked_requests is true' do
+        let(:client) { described_class.new(user, retry_content_blocked_requests: true) }
+
+        before do
+          stub_request(:post, url)
+            .to_return(status: 200, body: content_blocked_response.to_json, headers: response_headers)
+            .then.to_return(status: 200, body: successful_response.to_json, headers: response_headers)
+
+          allow(client).to receive(:sleep).and_return(nil)
+        end
+
+        it 'retries the request' do
+          expect(response).to be_present
+          expect(response.code).to eq(200)
+          expect(client).to have_received(:sleep)
+        end
+      end
+
+      context 'and retry_content_blocked_requests is false' do
+        let(:client) { described_class.new(user, retry_content_blocked_requests: false) }
+
+        before do
+          stub_request(:post, url)
+            .to_return(status: 200, body: content_blocked_response.to_json, headers: response_headers)
+
+          allow(client).to receive(:sleep).and_return(nil)
+        end
+
+        it 'retries the request' do
+          expect(response).to be_present
+          expect(response.code).to eq(200)
+          expect(client).not_to have_received(:sleep)
+        end
+      end
+    end
   end
 
   describe '#chat' do
-    subject(:response) { described_class.new(user).chat(content: 'anything', **options) }
+    subject(:response) { client.chat(content: 'anything', **options) }
 
     it_behaves_like 'forwarding the request correctly'
   end
@@ -125,25 +170,25 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :not_owned do # 
       ]
     end
 
-    subject(:response) { described_class.new(user).messages_chat(content: messages, **options) }
+    subject(:response) { client.messages_chat(content: messages, **options) }
 
     it_behaves_like 'forwarding the request correctly'
   end
 
   describe '#text' do
-    subject(:response) { described_class.new(user).text(content: 'anything', **options) }
+    subject(:response) { client.text(content: 'anything', **options) }
 
     it_behaves_like 'forwarding the request correctly'
   end
 
   describe '#code' do
-    subject(:response) { described_class.new(user).code(content: 'anything', **options) }
+    subject(:response) { client.code(content: 'anything', **options) }
 
     it_behaves_like 'forwarding the request correctly'
   end
 
   describe '#code_completion' do
-    subject(:response) { described_class.new(user).code_completion(content: 'anything', **options) }
+    subject(:response) { client.code_completion(content: 'anything', **options) }
 
     it_behaves_like 'forwarding the request correctly'
   end

@@ -41,7 +41,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :shared do
 
   before do
     stub_application_setting(anthropic_api_key: api_key)
-    stub_full_request("#{described_class::URL}/v1/complete", method: :post)
+    stub_request(:post, "#{described_class::URL}/v1/complete")
       .with(
         body: expected_request_body,
         headers: expected_request_headers

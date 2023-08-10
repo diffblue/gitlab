@@ -6,9 +6,11 @@ module Gitlab
       class Client
         include ::Gitlab::Llm::Concerns::ExponentialBackoff
         include ::Gitlab::Llm::Concerns::MeasuredRequest
+        extend ::Gitlab::Utils::Override
 
-        def initialize(_user)
+        def initialize(_user, client_options = {})
           @logger = Gitlab::Llm::Logger.build
+          @client_options = client_options
         end
 
         # @param [String] content - Input string
@@ -105,6 +107,17 @@ module Gitlab
 
         def service_name
           'vertex_ai'
+        end
+
+        override :retry_immediately?
+        def retry_immediately?(response)
+          return unless @client_options[:retry_content_blocked_requests]
+
+          content_blocked?(response)
+        end
+
+        def content_blocked?(response)
+          response.parsed_response.with_indifferent_access.dig("safetyAttributes", "blocked")
         end
       end
     end
