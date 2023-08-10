@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Security::ApprovalGroupsFinder, "#execute", feature_category: :security_policy_management do
-  let_it_be(:group_name) { FFaker::Lorem.word }
+  let_it_be(:group_name) { "group-#{FFaker::Lorem.word}" }
 
   let_it_be(:container_a) { create(:group) }
   let_it_be(:group_a) { create(:group, parent: container_a, name: group_name) }
