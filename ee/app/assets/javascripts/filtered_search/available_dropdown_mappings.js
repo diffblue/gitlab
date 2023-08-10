@@ -3,6 +3,7 @@ import DropdownAjaxFilter from '~/filtered_search/dropdown_ajax_filter';
 import DropdownNonUser from '~/filtered_search/dropdown_non_user';
 import DropdownUser from '~/filtered_search/dropdown_user';
 import { sortMilestonesByDueDate } from '~/milestones/utils';
+import { mergeUrlParams } from '~/lib/utils/url_utility';
 import DropdownWeight from './dropdown_weight';
 
 export default class AvailableDropdownMappings {
@@ -92,6 +93,9 @@ export default class AvailableDropdownMappings {
   }
 
   getEpicEndpoint() {
-    return `${this.epicsEndpoint}.json`;
+    return mergeUrlParams(
+      { include_ancestor_groups: true, include_descendant_groups: true },
+      this.epicsEndpoint,
+    );
   }
 }
