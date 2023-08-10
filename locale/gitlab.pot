@@ -32785,9 +32785,6 @@ msgstr ""
 msgid "Optional"
 msgstr ""
 
-msgid "Optional parameter \"variables\" must be a Hash. Ex: variables[key1]=value1"
-msgstr ""
-
 msgid "Optionally, you can %{link_to_customize} how FogBugz email addresses and usernames are imported into GitLab."
 msgstr ""
 
