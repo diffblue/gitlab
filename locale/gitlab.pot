@@ -29669,12 +29669,6 @@ msgstr ""
 msgid "MetricsDashboardAnnotation|can't be before starting_at time"
 msgstr ""
 
-msgid "MetricsUsersStarredDashboards|Dashboard with requested path can not be found"
-msgstr ""
-
-msgid "MetricsUsersStarredDashboards|You are not authorized to add star to this dashboard"
-msgstr ""
-
 msgid "Metrics|Create metric"
 msgstr ""
 
