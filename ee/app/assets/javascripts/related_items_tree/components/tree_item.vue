@@ -90,7 +90,7 @@ export default {
         :aria-label="chevronTooltip"
         :class="chevronType"
         variant="link"
-        class="btn-svg btn-tree-item-chevron align-self-start"
+        class="btn-tree-item-chevron align-self-start"
         @click="handleChevronClick"
       >
         <gl-icon :name="chevronType" />
