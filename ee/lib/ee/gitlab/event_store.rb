@@ -30,6 +30,9 @@ module EE
           store.subscribe ::MergeRequests::StreamApprovalAuditEventWorker, to: ::MergeRequests::ApprovedEvent
           store.subscribe ::MergeRequests::ProcessApprovalAutoMergeWorker, to: ::MergeRequests::ApprovedEvent
           store.subscribe ::PullMirrors::ReenableConfigurationWorker, to: ::GitlabSubscriptions::RenewedEvent
+          store.subscribe ::Search::ElasticDefaultBranchChangedWorker,
+            to: ::Repositories::DefaultBranchChangedEvent,
+            if: -> (_) { ::Gitlab::CurrentSettings.elasticsearch_indexing? }
         end
       end
     end
