@@ -43240,7 +43240,19 @@ msgstr ""
 msgid "ServiceDesk|Cannot update custom email"
 msgstr ""
 
+msgid "ServiceDesk|Common ports are 587 when using TLS, and 25 when not."
+msgstr ""
+
 msgid "ServiceDesk|Configure a custom email address"
+msgstr ""
+
+msgid "ServiceDesk|Connect a custom email address your customers can use to create Service Desk issues. Forward all emails from your custom email address to the Service Desk email address of this project. GitLab will send Service Desk emails from the custom address on your behalf using your SMTP credentials."
+msgstr ""
+
+msgid "ServiceDesk|Copy Service Desk email address"
+msgstr ""
+
+msgid "ServiceDesk|Custom email address"
 msgstr ""
 
 msgid "ServiceDesk|Custom email address could not be verified."
@@ -43258,6 +43270,12 @@ msgstr ""
 msgid "ServiceDesk|Custom email does not exist"
 msgstr ""
 
+msgid "ServiceDesk|Custom email is required and must be a valid email address."
+msgstr ""
+
+msgid "ServiceDesk|Email address your customers can use to send support requests. It must support sub-addressing."
+msgstr ""
+
 msgid "ServiceDesk|Enable Service Desk"
 msgstr ""
 
@@ -43267,10 +43285,46 @@ msgstr ""
 msgid "ServiceDesk|Issues created from Service Desk emails will appear here. Each comment becomes part of the email conversation."
 msgstr ""
 
+msgid "ServiceDesk|Minimum 8 characters long."
+msgstr ""
+
 msgid "ServiceDesk|Parameters missing"
 msgstr ""
 
 msgid "ServiceDesk|Please share your feedback on this feature in the %{linkStart}feedback issue%{linkEnd}"
+msgstr ""
+
+msgid "ServiceDesk|SMTP address is required and must be resolvable."
+msgstr ""
+
+msgid "ServiceDesk|SMTP host"
+msgstr ""
+
+msgid "ServiceDesk|SMTP password"
+msgstr ""
+
+msgid "ServiceDesk|SMTP password is required and must be at least 8 characters long."
+msgstr ""
+
+msgid "ServiceDesk|SMTP port"
+msgstr ""
+
+msgid "ServiceDesk|SMTP port is required and must be a port number larger than 0."
+msgstr ""
+
+msgid "ServiceDesk|SMTP username"
+msgstr ""
+
+msgid "ServiceDesk|SMTP username is required."
+msgstr ""
+
+msgid "ServiceDesk|Save and test connection"
+msgstr ""
+
+msgid "ServiceDesk|Saved custom email address and started verification."
+msgstr ""
+
+msgid "ServiceDesk|Service Desk email address to forward emails to"
 msgstr ""
 
 msgid "ServiceDesk|Service Desk is not enabled"
