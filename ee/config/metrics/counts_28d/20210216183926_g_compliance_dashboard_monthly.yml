@@ -13,6 +13,9 @@ instrumentation_class: RedisHLLMetric
 options:
   events:
   - g_compliance_dashboard
+events:
+  - name: g_compliance_dashboard
+    unique: user.id
 distribution:
 - ee
 tier:
