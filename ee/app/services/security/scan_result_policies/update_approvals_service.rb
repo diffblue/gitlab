@@ -20,7 +20,7 @@ module Security
           merge_request_id: merge_request.id,
           pipeline_ids: multi_pipeline_scan_result_policies_enabled? ? related_pipeline_ids : pipeline.id,
           target_pipeline_ids:
-            multi_pipeline_scan_result_policies_enabled? ? related_target_pipeline_ids : target_pipeline.id
+            multi_pipeline_scan_result_policies_enabled? ? related_target_pipeline_ids : target_pipeline&.id
         )
 
         violated_rules, unviolated_rules = partition_rules(approval_rules)
@@ -40,7 +40,9 @@ module Security
           if scan_removed?(approval_rule)
             log_update_approval_rule(
               'Updating MR approval rule',
-              reason: 'Scanner removed by MR', approval_rule_id: approval_rule.id
+              reason: 'Scanner removed by MR',
+              merge_request_id: merge_request.id,
+              approval_rule_id: approval_rule.id
             )
 
             next true
@@ -50,7 +52,9 @@ module Security
           if approval_rule_violated
             log_update_approval_rule(
               'Updating MR approval rule',
-              reason: 'scan_finding rule violated', approval_rule_id: approval_rule.id
+              reason: 'scan_finding rule violated',
+              merge_request_id: merge_request.id,
+              approval_rule_id: approval_rule.id
             )
           end
 
@@ -160,7 +164,10 @@ module Security
       def related_target_pipeline_ids
         return [] unless target_pipeline
 
-        Security::RelatedPipelinesFinder.new(target_pipeline, { sources: related_pipeline_sources }).execute
+        Security::RelatedPipelinesFinder.new(target_pipeline, {
+          sources: related_pipeline_sources,
+          ref: merge_request.target_branch
+        }).execute
       end
       strong_memoize_attr :related_target_pipeline_ids
 

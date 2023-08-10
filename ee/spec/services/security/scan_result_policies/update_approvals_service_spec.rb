@@ -140,6 +140,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
             .with(
               approval_rule_id: report_approver_rule.id,
               message: 'Updating MR approval rule',
+              merge_request_id: merge_request.id,
               reason: 'Scanner removed by MR'
             ).and_call_original
 
@@ -220,6 +221,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
             .with(
               approval_rule_id: report_approver_rule.id,
               message: 'Updating MR approval rule',
+              merge_request_id: merge_request.id,
               reason: 'scan_finding rule violated'
             ).and_call_original
 

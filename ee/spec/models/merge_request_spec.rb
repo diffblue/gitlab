@@ -1490,6 +1490,10 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
         create(:ee_ci_pipeline, :success, project: project, ref: merge_request.target_branch)
       end
 
+      let!(:target_branch_tag_pipeline) do
+        create(:ee_ci_pipeline, :success, project: project, ref: merge_request.target_branch, tag: true)
+      end
+
       let!(:target_branch_running_pipeline) do
         create(:ee_ci_pipeline, :running, project: project, ref: merge_request.target_branch)
       end

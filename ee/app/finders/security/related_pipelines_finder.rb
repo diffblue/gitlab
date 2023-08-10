@@ -21,7 +21,9 @@ module Security
     end
 
     def execute
-      pipelines = latest_completed_pipelines_matching_sha
+      pipelines = all_pipelines
+      pipelines = pipelines.for_branch(params[:ref]) if params[:ref].present?
+      pipelines = latest_completed_pipelines_matching_sha(pipelines)
       pipelines = pipelines.with_pipeline_source(params[:sources]) if params[:sources].present?
 
       # Using map here as `pluck` would not work due to usage of `SELECT max(id)`
@@ -36,10 +38,10 @@ module Security
       project.all_pipelines
     end
 
-    def latest_completed_pipelines_matching_sha
+    def latest_completed_pipelines_matching_sha(pipelines)
       # merged_result_pipeline should include itself and the pipelines with source_sha
       sha = pipeline.merged_result_pipeline? ? [pipeline.source_sha, pipeline.sha] : pipeline.sha
-      all_pipelines.latest_completed_pipeline_ids_per_source(sha)
+      pipelines.latest_completed_pipeline_ids_per_source(sha)
     end
   end
 end

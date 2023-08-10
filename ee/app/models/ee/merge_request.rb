@@ -381,7 +381,7 @@ module EE
           .ci_and_security_orchestration_sources
           .finished
           .order(id: :desc)
-          .find_by(ref: target_branch)
+          .find_by(ref: target_branch, tag: false)
     end
 
     override :can_suggest_reviewers?
