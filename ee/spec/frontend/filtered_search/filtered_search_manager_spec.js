@@ -52,6 +52,13 @@ describe('Filtered Search Manager (EE)', () => {
     resetHTMLFixture();
   });
 
+  it('epics endpoint in dropdown includes ancestor and descendant groups', () => {
+    createSubject();
+    expect(manager.dropdownManager.mapping.epic.extraArguments.endpoint).toBe(
+      `${TEST_EPICS_ENDPOINT}?include_ancestor_groups=true&include_descendant_groups=true`,
+    );
+  });
+
   describe('getSearchTokens', () => {
     describe('Epic token', () => {
       beforeEach(() => {

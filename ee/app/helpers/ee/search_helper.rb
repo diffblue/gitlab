@@ -12,9 +12,9 @@ module EE
       options[:data][:'multiple-assignees'] = 'true' if search_multiple_assignees?(type)
 
       if @project&.group
-        options[:data]['epics-endpoint'] = group_epics_path(@project.group)
+        options[:data]['epics-endpoint'] = expose_path(api_v4_groups_epics_path(id: @project.group.id))
       elsif @group.present?
-        options[:data]['epics-endpoint'] = group_epics_path(@group)
+        options[:data]['epics-endpoint'] = expose_path(api_v4_groups_epics_path(id: @group.id))
       end
 
       if allow_filtering_by_iteration?

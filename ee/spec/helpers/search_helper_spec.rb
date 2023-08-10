@@ -50,6 +50,33 @@ RSpec.describe SearchHelper, feature_category: :global_search do
       end
     end
 
+    describe 'epics-endpoint' do
+      let_it_be(:group, refind: true) { create(:group) }
+      let_it_be(:project_under_group, refind: true) { create(:project, group: group) }
+
+      it 'includes epics endpoint in project context' do
+        @project = project_under_group
+
+        expect(options[:data]['epics-endpoint']).to eq(expose_path(api_v4_groups_epics_path(id: group.id)))
+      end
+
+      it 'includes epics endpoint in group context' do
+        @group = group
+
+        expect(options[:data]['epics-endpoint']).to eq(expose_path(api_v4_groups_epics_path(id: @group.id)))
+      end
+
+      it 'does not include epics endpoint for projects under a namespace' do
+        @project = create(:project, namespace: create(:namespace))
+
+        expect(options[:data]['epics-endpoint']).to be(nil)
+      end
+
+      it 'does not include epics endpoint in dashboard context' do
+        expect(options[:data]['epics-endpoint']).to be(nil)
+      end
+    end
+
     describe 'iterations-endpoint' do
       let_it_be(:group, refind: true) { create(:group) }
       let_it_be(:project_under_group, refind: true) { create(:project, group: group) }
