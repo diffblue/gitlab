@@ -1,6 +1,5 @@
 ---
 key_path: redis_hll_counters.analytics.g_analytics_ci_cd_lead_time_weekly
-name: g_analytics_ci_cd_lead_time_weekly
 description: Count of unique visits to the group level CI/CD Analytics Lead Time tab
 product_section: dev
 product_stage: manage

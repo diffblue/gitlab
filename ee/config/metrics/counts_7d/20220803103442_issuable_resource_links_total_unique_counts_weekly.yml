@@ -1,6 +1,5 @@
 ---
 key_path: redis_hll_counters.incident_management.issuable_resource_links_total_unique_counts_weekly
-name: "count_unique_users_interacting_with_linked_resources_weekly"
 description: Counts unique users for linked resources create and delete events per week
 product_section: ops
 product_stage: monitor

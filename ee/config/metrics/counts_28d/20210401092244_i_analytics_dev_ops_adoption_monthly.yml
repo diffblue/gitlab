@@ -1,7 +1,6 @@
 ---
 data_category: optional
 key_path: redis_hll_counters.analytics.i_analytics_dev_ops_adoption_monthly
-name: users_viewing_analytics_instance_devops_adoption_monthly
 description: Counts visits to DevOps Adoption page per month
 product_section: dev
 product_stage: manage

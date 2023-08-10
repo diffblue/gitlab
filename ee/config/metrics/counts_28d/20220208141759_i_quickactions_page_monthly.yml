@@ -1,6 +1,5 @@
 ---
 key_path: redis_hll_counters.quickactions.i_quickactions_page_monthly
-name: count_i_quickactions_page_monthly
 description: Count of MAU using the `/page <escalation_policy>` quick action
 product_section: ops
 product_stage: monitor

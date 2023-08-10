@@ -1,6 +1,5 @@
 ---
 key_path: counts.remote_agent_configurations
-name: "count_remote_agent_configurations"
 description: Count of remote agent configurations
 product_section: dev
 product_stage: create
