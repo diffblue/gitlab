@@ -42,6 +42,19 @@ RSpec.describe ConfirmationsController, type: :request,
         expect(response).to redirect_to(sso_group_saml_providers_path(group, token: token))
         expect(user.reload).to be_confirmed
       end
+
+      context 'when the provisioning group is deleted' do
+        before do
+          scim_identity.group.destroy!
+        end
+
+        it 'redirects to default sign in path', :aggregate_failures do
+          perform_request
+
+          expect(response).to redirect_to(new_user_session_path(invite_email: user.email, anchor: 'login-pane'))
+          expect(user.reload).to be_confirmed
+        end
+      end
     end
   end
 end

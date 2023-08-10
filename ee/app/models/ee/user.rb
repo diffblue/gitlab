@@ -464,7 +464,7 @@ module EE
     end
 
     def enterprise_user?
-      user_detail.enterprise_group_id.present?
+      user_detail.enterprise_group.present?
     end
 
     def gitlab_employee?

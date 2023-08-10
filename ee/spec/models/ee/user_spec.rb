@@ -1240,9 +1240,11 @@ RSpec.describe User, feature_category: :system_access do
   end
 
   describe '#enterprise_user?' do
+    let_it_be(:user) { create(:user) }
+
     context 'when user is not an enterprise user' do
       before do
-        user.user_detail.enterprise_group = nil
+        user.user_detail.update!(enterprise_group: nil)
       end
 
       it 'returns false' do
@@ -1254,11 +1256,21 @@ RSpec.describe User, feature_category: :system_access do
       let_it_be(:group) { create(:group) }
 
       before do
-        user.user_detail.enterprise_group = group
+        user.user_detail.update!(enterprise_group: group)
       end
 
       it 'returns true' do
         expect(user.enterprise_user?).to eq true
+      end
+
+      context 'when the group is deleted' do
+        before do
+          group.destroy!
+        end
+
+        it 'returns false' do
+          expect(user.reload.enterprise_user?).to eq false
+        end
       end
     end
   end
