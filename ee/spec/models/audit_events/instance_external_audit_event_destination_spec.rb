@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe AuditEvents::InstanceExternalAuditEventDestination, feature_category: :audit_events do
   subject(:destination) { build(:instance_external_audit_event_destination) }
 
-  it_behaves_like 'includes ExternallyDestinationable concern' do
+  it_behaves_like 'includes CustomHttpExternallyDestinationable concern' do
     subject(:destination_without_verification_token) do
       create(:instance_external_audit_event_destination, verification_token: nil)
     end

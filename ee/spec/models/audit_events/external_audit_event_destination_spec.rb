@@ -94,7 +94,7 @@ RSpec.describe AuditEvents::ExternalAuditEventDestination, feature_category: :au
     subject { build(:external_audit_event_destination, group: create(:group)) }
   end
 
-  it_behaves_like 'includes ExternallyDestinationable concern' do
+  it_behaves_like 'includes CustomHttpExternallyDestinationable concern' do
     subject(:destination) { build(:external_audit_event_destination, group: create(:group)) }
 
     subject(:destination_without_verification_token) do

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module AuditEvents
-  module ExternallyDestinationable
+  module CustomHttpExternallyDestinationable
     extend ActiveSupport::Concern
 
     STREAMING_TOKEN_HEADER_KEY = "X-Gitlab-Event-Streaming-Token"

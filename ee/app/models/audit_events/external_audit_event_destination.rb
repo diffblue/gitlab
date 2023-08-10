@@ -2,7 +2,7 @@
 
 module AuditEvents
   class ExternalAuditEventDestination < ApplicationRecord
-    include ExternallyDestinationable
+    include CustomHttpExternallyDestinationable
     include Limitable
     include ExternallyCommonDestinationable
 
