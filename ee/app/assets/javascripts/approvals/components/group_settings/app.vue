@@ -45,24 +45,26 @@ export default {
   <settings-block :default-expanded="defaultExpanded" data-testid="merge-request-approval-settings">
     <template #title> {{ $options.i18n.groupSettingsHeader }}</template>
     <template #description>
-      <gl-sprintf :message="$options.i18n.groupSettingsDescription">
-        <template #separationLink="{ content }">
-          <gl-link
-            data-testid="group-settings-description"
-            :href="$options.links.separationOfDutiesDocsPath"
-            target="_blank"
-            >{{ content }}</gl-link
-          >
-        </template>
-        <template #learnLink="{ content }">
-          <gl-link
-            data-testid="group-settings-learn-more"
-            :href="$options.links.groupSettingsDocsPath"
-            target="_blank"
-            >{{ content }}</gl-link
-          >
-        </template>
-      </gl-sprintf>
+      <p class="gl-text-secondary">
+        <gl-sprintf :message="$options.i18n.groupSettingsDescription">
+          <template #separationLink="{ content }">
+            <gl-link
+              data-testid="group-settings-description"
+              :href="$options.links.separationOfDutiesDocsPath"
+              target="_blank"
+              >{{ content }}</gl-link
+            >
+          </template>
+          <template #learnLink="{ content }">
+            <gl-link
+              data-testid="group-settings-learn-more"
+              :href="$options.links.groupSettingsDocsPath"
+              target="_blank"
+              >{{ content }}</gl-link
+            >
+          </template>
+        </gl-sprintf>
+      </p>
     </template>
     <template #default>
       <approval-settings

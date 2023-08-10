@@ -9,7 +9,7 @@
       = expanded ? _('Collapse') : _('Expand')
     - pages_link_url = help_page_path('administration/pages/index', anchor: 'set-maximum-size-of-each-gitlab-pages-site-in-a-group')
     - pages_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: pages_link_url }
-    %p= s_('GroupSettings|Set a size limit for all content in each Pages site in this group. %{link_start}Learn more.%{link_end}').html_safe % { link_start: pages_link_start, link_end: '</a>'.html_safe }
+    %p.gl-text-secondary= s_('GroupSettings|Set a size limit for all content in each Pages site in this group. %{link_start}Learn more.%{link_end}').html_safe % { link_start: pages_link_start, link_end: '</a>'.html_safe }
 
   .settings-content
     = render 'groups/settings/pages_settings'

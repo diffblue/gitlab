@@ -6,7 +6,7 @@
       = _('Templates')
     = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded ? _('Collapse') : _('Expand')
-    %p
+    %p.gl-text-secondary
       = _('Select a repository containing templates for common files.')
       = link_to _('What templates can I create?'), help_page_path('administration/settings/instance_template_repository.md', anchor: 'supported-file-types-and-locations'), target: '_blank', rel: 'noopener noreferrer'
   .settings-content

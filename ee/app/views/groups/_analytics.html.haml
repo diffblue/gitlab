@@ -10,8 +10,8 @@
       = s_('GroupSettings|Analytics')
     = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded ? _('Collapse') : _('Expand')
-    %p
-      = s_('GroupSettings|Configure analytics features for this group')
+    %p.gl-text-secondary
+      = s_('GroupSettings|Configure analytics features for this group.')
   .settings-content
     = render 'analytics_dashboards' if can_see_analytics_dashboards
     = render 'value_stream_dashboard' if can_see_vsd_settings

@@ -17,7 +17,7 @@
 
   .row
     .col-sm-6{ data: { qa_selector: 'group_usage_message' } }
-      = s_('UsageQuota|Usage of group resources across the projects in the %{strong_start}%{group_name}%{strong_end} group').html_safe % { strong_start: '<strong>'.html_safe, strong_end: '</strong>'.html_safe, group_name: @group.name }
+      %p.gl-text-secondary= s_('UsageQuota|Usage of group resources across the projects in the %{strong_start}%{group_name}%{strong_end} group').html_safe % { strong_start: '<strong>'.html_safe, strong_end: '</strong>'.html_safe, group_name: @group.name }
 
   = gl_tabs_nav({ class: 'js-storage-tabs' }) do
     = gl_tab_link_to '#seats-quota-tab', data: { qa_selector: 'seats_tab' }, item_active: true do
