@@ -47,7 +47,7 @@ module Gitlab
 
             raise Gitlab::Llm::Concerns::CircuitBreaker::InternalServerError if response.server_error?
 
-            return response unless response.too_many_requests?
+            return response unless response.too_many_requests? || retry_immediately?(response)
 
             retries += 1
             raise RateLimitError, "Maximum number of retries (#{MAX_RETRIES}) exceeded." if retries >= MAX_RETRIES
@@ -56,6 +56,12 @@ module Gitlab
             sleep delay
             next
           end
+        end
+
+        # Override in clients to create custom retry conditions, such as the content moderation retry
+        # in the VertexAi::Client.
+        def retry_immediately?(_response)
+          false
         end
       end
     end

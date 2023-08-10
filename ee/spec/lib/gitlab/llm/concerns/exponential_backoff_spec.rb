@@ -7,21 +7,21 @@ RSpec.describe Gitlab::Llm::Concerns::ExponentialBackoff, feature_category: :no_
   let(:response) { instance_double(Net::HTTPResponse, body: body.to_json) }
   let(:success) do
     instance_double(HTTParty::Response,
-      code: 200, success?: true, parsed_response: {},
+      code: 200, success?: true, parsed_response: body,
       response: response, server_error?: false, too_many_requests?: false
     )
   end
 
   let(:too_many_requests_error) do
     instance_double(HTTParty::Response,
-      code: 429, success?: false, parsed_response: {},
+      code: 429, success?: false, parsed_response: body,
       response: response, server_error?: false, too_many_requests?: true
     )
   end
 
   let(:auth_error) do
     instance_double(HTTParty::Response,
-      code: 401, success?: false, parsed_response: {},
+      code: 401, success?: false, parsed_response: body,
       response: response, server_error?: false, too_many_requests?: false
     )
   end
@@ -32,7 +32,7 @@ RSpec.describe Gitlab::Llm::Concerns::ExponentialBackoff, feature_category: :no_
 
   let(:server_error) do
     instance_double(HTTParty::Response,
-      code: 503, success?: false, parsed_response: {},
+      code: 503, success?: false, parsed_response: body,
       response: response, server_error?: true, too_many_requests?: false
     )
   end
@@ -74,6 +74,89 @@ RSpec.describe Gitlab::Llm::Concerns::ExponentialBackoff, feature_category: :no_
         expect(response_caller).to receive(:call).once.and_call_original
 
         expect(subject).to be_success
+      end
+    end
+
+    context 'when a custom retry function is not defined' do
+      let(:blocked_body) { { "safetyAttributes" => { "blocked" => true } } }
+      let(:blocked_response) { instance_double(Net::HTTPResponse, body: blocked_body.to_json) }
+      let(:success_but_content_blocked) do
+        instance_double(HTTParty::Response,
+          code: 200, success?: true, parsed_response: blocked_body,
+          response: blocked_response, server_error?: false, too_many_requests?: false
+        )
+      end
+
+      it 'calls the function once and returns its result' do
+        expect(response_caller).to receive(:call).once.and_call_original
+
+        expect(subject).to be_success
+      end
+    end
+
+    context 'when a custom retry function is defined' do
+      let(:dummy_class) do
+        Class.new do
+          def dummy_method(response_caller)
+            response_caller.call
+          end
+
+          include Gitlab::Llm::Concerns::ExponentialBackoff
+          retry_methods_with_exponential_backoff :dummy_method
+
+          private
+
+          def retry_immediately?(response)
+            parsed_response = if response.parsed_response.is_a?(Hash)
+                                response.parsed_response
+                              else
+                                Gitlab::Json.parse(response.parsed_response)
+                              end
+
+            parsed_response.dig("safetyAttributes", "blocked")
+          end
+        end
+      end
+
+      let(:body) { { "safetyAttributes" => { "blocked" => false } } }
+
+      context 'when the function succeeds and is not content blocked' do
+        it 'calls the function once and returns its result' do
+          expect(subject).to be_success
+        end
+      end
+
+      context 'when the function succeeds but the content was blocked' do
+        let(:blocked_body) { { "safetyAttributes" => { "blocked" => true } } }
+        let(:blocked_response) { instance_double(Net::HTTPResponse, body: blocked_body.to_json) }
+        let(:success_but_content_blocked) do
+          instance_double(HTTParty::Response,
+            code: 200, success?: true, parsed_response: blocked_body,
+            response: blocked_response, server_error?: false, too_many_requests?: false
+          )
+        end
+
+        before do
+          stub_const("#{described_class.name}::INITIAL_DELAY", 0.0)
+          allow(Random).to receive(:rand).and_return(0.001)
+          allow(response_caller).to receive(:call).and_return(success_but_content_blocked, success)
+        end
+
+        it 'retries the function with an exponential backoff until it succeeds' do
+          expect(subject).to be_success
+          expect(Random).to have_received(:rand).once
+          expect(response_caller).to have_received(:call).exactly(2).times
+        end
+
+        it 'raises a RateLimitError if the maximum number of retries is exceeded' do
+          allow(response_caller).to receive(:call).and_return(success_but_content_blocked).exactly(max_retries).times
+
+          expect do
+            subject
+          end.to raise_error(described_class::RateLimitError, "Maximum number of retries (#{max_retries}) exceeded.")
+
+          expect(response_caller).to have_received(:call).exactly(max_retries).times
+        end
       end
     end
 
