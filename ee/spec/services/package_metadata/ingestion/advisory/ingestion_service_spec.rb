@@ -20,6 +20,40 @@ RSpec.describe PackageMetadata::Ingestion::Advisory::IngestionService, feature_c
             .to change { PackageMetadata::Advisory.count }.by(10)
             .and change { PackageMetadata::AffectedPackage.count }.by(10)
         end
+
+        context 'and advisory scanning is enabled' do
+          before do
+            stub_feature_flags(dependency_scanning_on_advisory_ingestion: true)
+          end
+
+          it 'publishes all ingested advisories to the event store' do
+            received_events = []
+            allow(Gitlab::EventStore).to receive(:publish) do |event|
+              received_events << event
+            end
+
+            execute
+
+            received_advisory_ids = received_events.map { |event| event.data[:advisory_id] }
+            received_advisories = PackageMetadata::Advisory.where(id: received_advisory_ids)
+              .pluck(:source_xid, :advisory_xid).sort
+            imported_advisories = import_data.map { |obj| [obj.source_xid, obj.advisory_xid] }.sort
+
+            expect(received_advisories).to eq(imported_advisories)
+          end
+        end
+
+        context 'and advisory scanning is disabled' do
+          before do
+            stub_feature_flags(dependency_scanning_on_advisory_ingestion: false)
+          end
+
+          it 'does not publish anything to the event store' do
+            expect(Gitlab::EventStore).not_to receive(:publish)
+
+            execute
+          end
+        end
       end
 
       context 'when error occurs' do
