@@ -245,6 +245,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
               'X-Gitlab-Authentication-Type' => ['oidc'],
               'X-Gitlab-Instance-Id' => [global_instance_id],
               'X-Gitlab-Global-User-Id' => [global_user_id],
+              'X-Gitlab-Realm' => [gitlab_realm],
               'Authorization' => ["Bearer #{token}"],
               'Content-Type' => ['application/json'],
               'User-Agent' => ['Super Awesome Browser 43.144.12']
@@ -294,6 +295,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
                 'Content-Type' => ['application/json'],
                 'X-Gitlab-Instance-Id' => [global_instance_id],
                 'X-Gitlab-Global-User-Id' => [global_user_id],
+                'X-Gitlab-Realm' => [gitlab_realm],
                 'X-Gitlab-Cs-Accepts' => ['accepts'],
                 'X-Gitlab-Cs-Requests' => ['requests'],
                 'X-Gitlab-Cs-Errors' => ['errors'],
@@ -308,6 +310,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
     context 'when the instance is Gitlab.org_or_com' do
       let(:is_saas) { true }
+      let(:gitlab_realm) { 'saas' }
       let_it_be(:token) { 'generated-jwt' }
 
       let(:headers) do
@@ -367,6 +370,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
     context 'when the instance is Gitlab self-managed' do
       let(:is_saas) { false }
+      let(:gitlab_realm) { 'self-managed' }
       let_it_be(:token) { 'stored-token' }
       let_it_be(:service_access_token) { create(:service_access_token, :code_suggestions, :active, token: token) }
 
