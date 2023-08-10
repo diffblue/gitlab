@@ -10,6 +10,7 @@ module PackageMetadata
 
         def initialize(import_data)
           @import_data = import_data
+          @advisory_map = {}
         end
 
         def execute
@@ -17,6 +18,7 @@ module PackageMetadata
             upsert_advisory_data
             upsert_affected_package_data
           end
+          publish!
         end
 
         private
@@ -27,6 +29,15 @@ module PackageMetadata
 
         def upsert_affected_package_data
           AffectedPackageIngestionTask.execute(import_data, advisory_map)
+        end
+
+        def publish!
+          return unless Feature.enabled?(:dependency_scanning_on_advisory_ingestion)
+
+          advisory_map.each_value do |advisory_id|
+            Gitlab::EventStore.publish(
+              PackageMetadata::IngestedAdvisoryEvent.new(data: { advisory_id: advisory_id }))
+          end
         end
 
         attr_reader :import_data, :advisory_map
