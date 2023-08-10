@@ -30,6 +30,10 @@ RSpec.describe Llm::SummarizeSubmittedReviewService, feature_category: :code_rev
 
     subject { described_class.new(current_user, resource, options).execute }
 
+    it_behaves_like 'service not emitting message for user prompt' do
+      subject { described_class.new(current_user, resource, options) }
+    end
+
     it_behaves_like 'completion worker sync and async' do
       subject { described_class.new(current_user, resource, options) }
     end

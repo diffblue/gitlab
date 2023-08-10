@@ -33,6 +33,7 @@ RSpec.describe Llm::GenerateTestFileService, :saas, feature_category: :code_revi
         group.add_developer(user)
       end
 
+      it_behaves_like 'service not emitting message for user prompt'
       it_behaves_like 'completion worker sync and async'
       it_behaves_like 'llm service does not cache user request'
 

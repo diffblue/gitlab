@@ -47,7 +47,7 @@ module Llm
 
       ::Gitlab::Llm::Cache.new(user).add(payload) if cache_response?(options)
 
-      unless options[:internal_request]
+      if emit_response?(options)
         GraphqlTriggers.ai_completion_response(user.to_global_id, resource&.to_global_id, payload)
       end
 
@@ -106,6 +106,12 @@ module Llm
       return false if options[:internal_request]
 
       options.fetch(:cache_response, false)
+    end
+
+    def emit_response?(options)
+      return false if options[:internal_request]
+
+      options.fetch(:emit_user_messages, false)
     end
   end
 end

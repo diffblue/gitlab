@@ -22,6 +22,7 @@ RSpec.describe Llm::TanukiBotService, :saas, feature_category: :global_search do
       allow(user).to receive(:any_group_with_ai_available?).and_return(true)
     end
 
+    it_behaves_like 'service not emitting message for user prompt'
     it_behaves_like 'completion worker sync and async'
     it_behaves_like 'llm service does not cache user request'
 

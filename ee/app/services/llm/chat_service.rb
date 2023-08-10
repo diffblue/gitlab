@@ -5,7 +5,7 @@ module Llm
     private
 
     def perform
-      worker_perform(user, resource, :chat, options.merge(cache_response: true))
+      worker_perform(user, resource, :chat, options.merge(cache_response: true, emit_user_messages: true))
     end
 
     def valid?

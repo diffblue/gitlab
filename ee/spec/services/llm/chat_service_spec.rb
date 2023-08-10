@@ -11,7 +11,7 @@ RSpec.describe Llm::ChatService, :saas, feature_category: :shared do
   let(:resource) { issue }
   let(:stage_check_available) { true }
   let(:content) { "Summarize issue" }
-  let(:options) { { content: content, cache_response: true } }
+  let(:options) { { content: content, cache_response: true, emit_user_messages: true } }
 
   subject { described_class.new(user, resource, options) }
 
@@ -41,6 +41,7 @@ RSpec.describe Llm::ChatService, :saas, feature_category: :shared do
 
           it_behaves_like 'completion worker sync and async'
           it_behaves_like 'llm service caches user request'
+          it_behaves_like 'service emitting message for user prompt'
         end
 
         context 'when resource is a user' do
@@ -50,6 +51,7 @@ RSpec.describe Llm::ChatService, :saas, feature_category: :shared do
 
           it_behaves_like 'completion worker sync and async'
           it_behaves_like 'llm service caches user request'
+          it_behaves_like 'service emitting message for user prompt'
         end
 
         context 'when gitlab_duo feature flag is disabled' do

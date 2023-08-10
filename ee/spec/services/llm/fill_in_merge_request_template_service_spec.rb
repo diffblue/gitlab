@@ -23,12 +23,17 @@ RSpec.describe Llm::FillInMergeRequestTemplateService, feature_category: :code_r
 
     subject { described_class.new(current_user, resource, {}).execute }
 
+    it_behaves_like 'service not emitting message for user prompt' do
+      subject { described_class.new(current_user, resource, {}) }
+
+      let(:content) { 'Fill in merge request template' }
+    end
+
     it_behaves_like 'completion worker sync and async' do
       subject { described_class.new(current_user, resource, options) }
 
-      let(:action_name) { :fill_in_merge_request_template }
       let(:options) { {} }
-      let(:content) { 'Fill in merge request template' }
+      let(:action_name) { :fill_in_merge_request_template }
     end
 
     context 'when user is not member of project group' do
