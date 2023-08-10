@@ -36,7 +36,7 @@
                 %span{ data: { qa_selector: 'use_template_button' } }
                   = _('Use template')
 
-    = paginate @groups_with_project_templates, params: { controller: 'users', action: 'available_templates', username: current_user.username }, theme: 'gitlab', remote: true
+    = paginate @groups_with_project_templates, params: { controller: 'users', action: 'available_group_templates', username: current_user.username }, theme: 'gitlab', remote: true
   - else
     .bs-callout.bs-callout-warning
       %p
