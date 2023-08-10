@@ -50,6 +50,28 @@ RSpec.describe 'devise/sessions/new' do
     end
   end
 
+  describe 'broadcast messaging' do
+    before do
+      stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan)
+      stub_devise
+      disable_captcha
+
+      render
+    end
+
+    context 'when self-hosted' do
+      let(:should_check_namespace_plan) { false }
+
+      it { expect(rendered).to render_template('layouts/_broadcast') }
+    end
+
+    context 'when SaaS' do
+      let(:should_check_namespace_plan) { true }
+
+      it { expect(rendered).not_to render_template('layouts/_broadcast') }
+    end
+  end
+
   def stub_devise
     allow(view).to receive(:devise_mapping).and_return(Devise.mappings[:user])
     allow(view).to receive(:resource).and_return(spy)

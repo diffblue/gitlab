@@ -38,6 +38,30 @@ RSpec.describe 'devise/registrations/new', feature_category: :system_access do
     end
   end
 
+  describe 'broadcast messaging' do
+    before do
+      stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan)
+      stub_devise
+
+      allow(view).to receive(:glm_tracking_params).and_return({})
+      allow(view).to receive(:arkose_labs_enabled?).and_return(arkose_labs_enabled)
+
+      render
+    end
+
+    context 'when self-hosted' do
+      let(:should_check_namespace_plan) { false }
+
+      it { expect(rendered).not_to render_template('layouts/_broadcast') }
+    end
+
+    context 'when SaaS' do
+      let(:should_check_namespace_plan) { true }
+
+      it { expect(rendered).not_to render_template('layouts/_broadcast') }
+    end
+  end
+
   def stub_devise
     allow(view).to receive(:devise_mapping).and_return(Devise.mappings[:user])
     allow(view).to receive(:resource).and_return(build(:user))
