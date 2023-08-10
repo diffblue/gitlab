@@ -469,7 +469,8 @@ rspec:coverage:
     - .rails:rules:rspec-coverage
   stage: post-test
   needs:
-    - setup-test-env
+    - job: setup-test-env
+      artifacts: false
     # FOSS/EE jobs
     - job: rspec:artifact-collector unit
       optional: true
@@ -496,6 +497,7 @@ rspec:coverage:
     # Memory jobs
     - job: memory-on-boot
       optional: true
+      artifacts: false
   variables:
     FILES_TO_DOWNLOAD: >
       config/bundler_setup.rb
