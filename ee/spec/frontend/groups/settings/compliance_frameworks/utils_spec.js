@@ -6,6 +6,7 @@ import {
   HTTP_STATUS_NOT_FOUND,
   HTTP_STATUS_OK,
 } from '~/lib/utils/http_status';
+import { parseBoolean } from '~/lib/utils/common_utils';
 
 const GET_RAW_FILE_ENDPOINT = /\/api\/(.*)\/projects\/bar%2Fbaz\/repository\/files\/foo\.ya?ml\/raw/;
 
@@ -134,6 +135,59 @@ describe('Utils', () => {
       mock.onGet(GET_RAW_FILE_ENDPOINT).reply(response, {});
 
       expect(await Utils.fetchPipelineConfigurationFileExists('foo.yml@bar/baz')).toBe(returns);
+    });
+  });
+
+  describe('parseFormProps', () => {
+    const input = {
+      canAddEdit: 'true',
+      emptyStateSvgPath: 'false',
+      graphqlFieldName: 'name',
+      groupPath: 'groupPath',
+      pipelineConfigurationFullPathEnabled: 'true',
+      pipelineConfigurationEnabled: 'false',
+    };
+
+    const inputMissingGraphqlFieldName = {
+      canAddEdit: 'true',
+      emptyStateSvgPath: 'false',
+      groupPath: 'groupPath',
+      pipelineConfigurationFullPathEnabled: 'true',
+      pipelineConfigurationEnabled: 'false',
+    };
+
+    it('returns same values for inputs', () => {
+      expect(Utils.parseFormProps(input)).toHaveProperty(
+        'emptyStateSvgPath',
+        input.emptyStateSvgPath,
+      );
+      expect(Utils.parseFormProps(input)).toHaveProperty('groupPath', input.groupPath);
+      expect(Utils.parseFormProps(input)).toHaveProperty(
+        'graphqlFieldName',
+        input.graphqlFieldName,
+      );
+    });
+
+    it('casts boolean strings to strict booleans', () => {
+      expect(Utils.parseFormProps(input)).toHaveProperty(
+        'canAddEdit',
+        parseBoolean(input.canAddEdit),
+      );
+      expect(Utils.parseFormProps(input)).toHaveProperty(
+        'pipelineConfigurationFullPathEnabled',
+        parseBoolean(input.pipelineConfigurationFullPathEnabled),
+      );
+      expect(Utils.parseFormProps(input)).toHaveProperty(
+        'pipelineConfigurationEnabled',
+        parseBoolean(input.pipelineConfigurationEnabled),
+      );
+    });
+
+    it('sets a default null value for graphQlFieldName', () => {
+      expect(Utils.parseFormProps(inputMissingGraphqlFieldName)).toHaveProperty(
+        'graphqlFieldName',
+        null,
+      );
     });
   });
 });
