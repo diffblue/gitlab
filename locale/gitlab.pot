@@ -35419,6 +35419,9 @@ msgstr ""
 msgid "Primary Action"
 msgstr ""
 
+msgid "Print as PDF"
+msgstr ""
+
 msgid "Print codes"
 msgstr ""
 
