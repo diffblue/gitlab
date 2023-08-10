@@ -301,24 +301,6 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
   end
 
-  context 'with free user cap settings', :saas, feature_category: :measurement_and_locking do
-    before do
-      visit general_admin_application_settings_path
-    end
-
-    it 'changes the settings and saves successfully' do
-      page.within('[data-testid="as-free-user-cap"]') do
-        check _('Enable dashboard limits on namespaces')
-        fill_in 'application_setting[dashboard_limit]', with: 5
-        click_button 'Save changes'
-      end
-
-      expect(page).to have_content 'Application settings saved successfully'
-      expect(current_settings.dashboard_limit_enabled).to be true
-      expect(current_settings.dashboard_limit).to eq 5
-    end
-  end
-
   context 'sign up settings', :js, feature_category: :user_profile do
     before do
       visit general_admin_application_settings_path

@@ -73,12 +73,7 @@ module EE
         :openai_api_key,
         :security_policy_global_group_approvers_enabled,
         :anthropic_api_key
-      ].tap do |settings|
-        next unless ::Gitlab.com?
-
-        settings << :dashboard_limit_enabled
-        settings << :dashboard_limit
-      end
+      ]
     end
 
     def elasticsearch_objects_options(objects)
