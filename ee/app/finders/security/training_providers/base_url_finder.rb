@@ -9,6 +9,8 @@ module Security
       self.reactive_cache_refresh_interval = 1.minute
       self.reactive_cache_lifetime = 10.minutes
       self.reactive_cache_work_type = :external_dependency
+      self.reactive_cache_key = ->(finder) { finder.full_url }
+      self.reactive_cache_worker_finder = ->(id, *_args) { from_cache(id) }
 
       def initialize(project, provider, identifier_external_id, language = nil)
         @project = project
@@ -37,6 +39,18 @@ module Security
         new(project, provider, identifier_external_id, language)
       end
 
+      def query_string
+        raise NotImplementedError, 'query_string must be overwritten to return training url query string'
+      end
+
+      def full_url
+        Gitlab::Utils.append_path(provider.url, query_string)
+      end
+
+      def language_param
+        "&language=#{@language}" if @language
+      end
+
       private
 
       attr_reader :project,
@@ -53,10 +67,6 @@ module Security
         end
       end
 
-      def full_url
-        raise NotImplementedError, 'full_url must be overwritten to return training url'
-      end
-
       # Required for ReactiveCaching; Usage overridden by
       # self.reactive_cache_worker_finder
       def id
@@ -68,7 +78,7 @@ module Security
       end
 
       def allowed_identifier_list
-        raise 'allowed_identifier_list must be overwritten to return training url'
+        raise NotImplementedError, 'allowed_identifier_list must be overwritten to return allowed identifier list'
       end
     end
   end
