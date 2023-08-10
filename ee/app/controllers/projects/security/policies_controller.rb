@@ -11,7 +11,8 @@ module Projects
       before_action :validate_policy_configuration, only: :edit
 
       before_action do
-        push_frontend_feature_flag(:security_policies_branch_exceptions, @project)
+        push_frontend_feature_flag(:security_policies_branch_exceptions, project)
+        push_frontend_feature_flag(:scan_result_policy_settings, @project)
       end
 
       feature_category :security_policy_management

@@ -247,6 +247,7 @@ export default {
             <slot name="actions-first"></slot>
             <slot name="rules"></slot>
             <slot name="actions"></slot>
+            <slot name="settings"></slot>
           </div>
           <yaml-editor
             v-if="shouldShowYamlEditor"

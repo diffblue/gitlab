@@ -19,23 +19,6 @@ actions:
       - the.one
 `;
 
-export const collidingKeysScanResultManifest = `---
-name: This policy has colliding keys
-description: This policy has colliding keys
-enabled: true
-rules:
-  - type: scan_finding
-    branches: []
-    branch_type: protected
-    scanners: []
-    vulnerabilities_allowed: 0
-    severity_levels: []
-    vulnerability_states: []
-actions:
-  - type: require_approval
-    approvals_required: 1
-`;
-
 export const mockDefaultBranchesScanResultObject = {
   type: 'scan_result_policy',
   name: 'critical vulnerability CS approvals',
@@ -97,6 +80,76 @@ export const mockGroupScanResultPolicy = {
     },
   },
 };
+
+export const mockApprovalSettingsScanResultManifest = `type: scan_result_policy
+name: critical vulnerability CS approvals
+description: This policy enforces critical vulnerability CS approvals
+enabled: true
+rules:
+  - type: scan_finding
+    branches: []
+    scanners:
+      - container_scanning
+    vulnerabilities_allowed: 1
+    severity_levels:
+      - critical
+    vulnerability_states:
+      - newly_detected
+actions:
+  - type: require_approval
+    approvals_required: 1
+    user_approvers:
+      - the.one
+approval_settings:
+  block_unprotecting_branches:
+    enabled: true
+`;
+
+export const mockApprovalSettingsScanResultObject = {
+  type: 'scan_result_policy',
+  name: 'critical vulnerability CS approvals',
+  description: 'This policy enforces critical vulnerability CS approvals',
+  enabled: true,
+  rules: [
+    {
+      type: 'scan_finding',
+      branches: [],
+      scanners: ['container_scanning'],
+      vulnerabilities_allowed: 1,
+      severity_levels: ['critical'],
+      vulnerability_states: ['newly_detected'],
+    },
+  ],
+  actions: [
+    {
+      type: 'require_approval',
+      approvals_required: 1,
+      user_approvers: ['the.one'],
+    },
+  ],
+  approval_settings: {
+    block_unprotecting_branches: {
+      enabled: true,
+    },
+  },
+};
+
+export const collidingKeysScanResultManifest = `---
+name: This policy has colliding keys
+description: This policy has colliding keys
+enabled: true
+rules:
+  - type: scan_finding
+    branches: []
+    branch_type: protected
+    scanners: []
+    vulnerabilities_allowed: 0
+    severity_levels: []
+    vulnerability_states: []
+actions:
+  - type: require_approval
+    approvals_required: 1
+`;
 
 export const mockWithBranchesScanResultManifest = `type: scan_result_policy
 name: low vulnerability SAST approvals

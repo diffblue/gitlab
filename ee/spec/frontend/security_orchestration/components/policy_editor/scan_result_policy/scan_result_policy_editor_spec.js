@@ -1,9 +1,10 @@
-import { shallowMount } from '@vue/test-utils';
 import { GlEmptyState } from '@gitlab/ui';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import PolicyEditorLayout from 'ee/security_orchestration/components/policy_editor/policy_editor_layout.vue';
 import {
   DEFAULT_SCAN_RESULT_POLICY,
+  SCAN_RESULT_POLICY_SETTINGS_POLICY,
   getInvalidBranches,
   fromYaml,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib';
@@ -30,6 +31,7 @@ import {
 import DimDisableContainer from 'ee/security_orchestration/components/policy_editor/dim_disable_container.vue';
 import PolicyActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_action_builder.vue';
 import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_builder.vue';
+import ApprovalSettings from 'ee/security_orchestration/components/policy_editor/scan_result_policy/approval_settings.vue';
 
 jest.mock('ee/security_orchestration/components/policy_editor/scan_result_policy/lib', () => ({
   ...jest.requireActual(
@@ -71,8 +73,8 @@ describe('ScanResultPolicyEditor', () => {
     role: [],
   };
 
-  const factory = ({ propsData = {}, provide = {} } = {}) => {
-    wrapper = shallowMount(ScanResultPolicyEditor, {
+  const factory = ({ propsData = {}, provide = {}, glFeatures = {} } = {}) => {
+    wrapper = shallowMountExtended(ScanResultPolicyEditor, {
       propsData: {
         assignedPolicyProject: DEFAULT_ASSIGNED_POLICY_PROJECT,
         ...propsData,
@@ -85,6 +87,7 @@ describe('ScanResultPolicyEditor', () => {
         namespaceType: NAMESPACE_TYPES.PROJECT,
         scanPolicyDocumentationPath,
         scanResultPolicyApprovers,
+        glFeatures,
         ...provide,
       },
     });
@@ -105,9 +108,10 @@ describe('ScanResultPolicyEditor', () => {
   const findPolicyEditorLayout = () => wrapper.findComponent(PolicyEditorLayout);
   const findPolicyActionBuilder = () => wrapper.findComponent(PolicyActionBuilder);
   const findAllPolicyActionBuilders = () => wrapper.findAllComponents(PolicyActionBuilder);
-  const findAddRuleButton = () => wrapper.find('[data-testid="add-rule"]');
+  const findAddRuleButton = () => wrapper.findByTestId('add-rule');
   const findAllDisabledComponents = () => wrapper.findAllComponents(DimDisableContainer);
   const findAllRuleBuilders = () => wrapper.findAllComponents(PolicyRuleBuilder);
+  const findApprovalSettings = () => wrapper.findComponent(ApprovalSettings);
 
   const changesToRuleMode = () =>
     findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_RULE);
@@ -125,6 +129,16 @@ describe('ScanResultPolicyEditor', () => {
   });
 
   describe('rendering', () => {
+    describe('with "scanResultPolicySettings" feature flag enabled', () => {
+      it('passes the correct yamlEditorValue prop to the PolicyEditorLayout component', () => {
+        factory({ glFeatures: { scanResultPolicySettings: true } });
+
+        expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(
+          SCAN_RESULT_POLICY_SETTINGS_POLICY,
+        );
+      });
+    });
+
     it.each`
       prop                 | compareFn          | expected
       ${'yamlEditorValue'} | ${'toBe'}          | ${DEFAULT_SCAN_RESULT_POLICY}
@@ -450,6 +464,37 @@ describe('ScanResultPolicyEditor', () => {
       await waitForPromises();
 
       expect(getInvalidBranches).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('settings', () => {
+    it('does not display the settings section', () => {
+      factory();
+
+      expect(findApprovalSettings().exists()).toBe(false);
+    });
+
+    describe('with "scanResultPolicySettings" feature flag enabled', () => {
+      it('displays setting section', () => {
+        factory({ glFeatures: { scanResultPolicySettings: true } });
+
+        expect(findApprovalSettings().exists()).toBe(true);
+      });
+
+      it('updates the policy when a change is emitted', async () => {
+        factory({ glFeatures: { scanResultPolicySettings: true } });
+
+        await findApprovalSettings().vm.$emit('changed', {
+          block_unprotecting_branches: {
+            enabled: false,
+          },
+        });
+
+        expect(findPolicyEditorLayout().props('yamlEditorValue')).toContain(
+          `block_unprotecting_branches:
+    enabled: false`,
+        );
+      });
     });
   });
 });
