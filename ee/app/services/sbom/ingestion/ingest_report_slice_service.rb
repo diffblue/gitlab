@@ -20,9 +20,7 @@ module Sbom
       end
 
       def execute
-        ApplicationRecord.transaction do
-          TASKS.each { |task| task.execute(pipeline, occurrence_maps) }
-        end
+        TASKS.each { |task| task.execute(pipeline, occurrence_maps) }
 
         occurrence_maps.map(&:occurrence_id)
       end
