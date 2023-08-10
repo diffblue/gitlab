@@ -27585,6 +27585,9 @@ msgstr ""
 msgid "Learn more about Needs relationships"
 msgstr ""
 
+msgid "Learn more about Service Desk"
+msgstr ""
+
 msgid "Learn more about Web Terminal"
 msgstr ""
 
