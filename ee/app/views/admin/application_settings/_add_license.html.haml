@@ -6,7 +6,7 @@
       = _('Add License')
     = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle', data: { qa_selector: 'expand_add_license_button' } }) do
       = expanded_by_default? ? _('Collapse') : _('Expand')
-    %p
+    %p.gl-text-secondary
       - if License.current
         = _('To continue using GitLab Enterprise Edition, upload the %{codeOpen}.gitlab-license%{codeClose} file or enter the license key you have received from GitLab Inc.').html_safe % {codeOpen: '<code>'.html_safe, codeClose: '</code>'.html_safe}
       - else

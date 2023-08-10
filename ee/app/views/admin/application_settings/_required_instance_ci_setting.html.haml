@@ -6,7 +6,7 @@
       = s_('AdminSettings|Required pipeline configuration')
     = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded ? _('Collapse') : _('Expand')
-    %p
+    %p.gl-text-secondary
       - config_link_start = '<a href="%{url}">'.html_safe % { url: help_page_path('administration/settings/continuous_integration', anchor: 'required-pipeline-configuration') }
       = s_('AdminSettings|Set a CI/CD template as the required pipeline configuration for all projects in the instance. Project CI/CD configuration merges into the required pipeline configuration when the pipeline runs. %{link_start}What is a required pipeline configuration?%{link_end}').html_safe % { link_start: config_link_start, link_end: '</a>'.html_safe }
   .settings-content

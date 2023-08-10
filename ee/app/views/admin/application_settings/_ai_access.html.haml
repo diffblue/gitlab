@@ -12,7 +12,7 @@
       = s_('CodeSuggestionsSM|Code Suggestions')
     = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded ? _('Collapse') : _('Expand')
-    %p
+    %p.gl-text-secondary
       = code_suggestions_description
 
   .settings-content

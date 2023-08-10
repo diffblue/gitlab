@@ -7,7 +7,7 @@
       = _('Product analytics')
     = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded ? _('Collapse') : _('Expand')
-    %p
+    %p.gl-text-secondary
       = s_('AdminSettings|Configure product analytics to track events within your project applications.')
       = link_to _('Learn more.'), help_page_path('user/product_analytics/index')
   .settings-content

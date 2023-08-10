@@ -6,7 +6,7 @@
       = _('Maintenance mode')
     = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded_by_default? ? _('Collapse') : _('Expand')
-    %p
+    %p.gl-text-secondary
       = _('Prevent users from performing write operations while GitLab maintenance is in progress.')
       = link_to _('Learn more.'), help_page_path('administration/maintenance_mode/index'), target: '_blank', rel: 'noopener noreferrer'
   .settings-content

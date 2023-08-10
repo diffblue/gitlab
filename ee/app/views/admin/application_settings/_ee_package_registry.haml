@@ -1,33 +1,32 @@
-.settings-content
-  %h5
-    = s_('PackageRegistry|Forward package requests')
-  %p.gl-mb-2
-    = s_('PackageRegistry|Forward package requests to a public registry if the packages are not found in the GitLab package registry.')
-  %p
-    - docs_link_path = help_page_path('user/packages/package_registry/supported_functionality', { anchor: 'deleting-packages' })
-    - docs_link_start = '<a href="%{url}">'.html_safe % { url: docs_link_path }
-    = html_escape(s_('PackageRegistry|There are security risks if packages are deleted while request forwarding is enabled. %{docs_link_start}What are the risks?%{docs_link_end}')).html_safe % { docs_link_start: docs_link_start, docs_link_end: '</a>'.html_safe }
-  = gitlab_ui_form_for @application_setting, url: ci_cd_admin_application_settings_path(anchor: 'js-package-settings'), html: { class: 'fieldset-form' } do |f|
-    = form_errors(@application_setting)
+%h5
+  = s_('PackageRegistry|Forward package requests')
+%p.gl-mb-2
+  = s_('PackageRegistry|Forward package requests to a public registry if the packages are not found in the GitLab package registry.')
+%p
+  - docs_link_path = help_page_path('user/packages/package_registry/supported_functionality', { anchor: 'deleting-packages' })
+  - docs_link_start = '<a href="%{url}">'.html_safe % { url: docs_link_path }
+  = html_escape(s_('PackageRegistry|There are security risks if packages are deleted while request forwarding is enabled. %{docs_link_start}What are the risks?%{docs_link_end}')).html_safe % { docs_link_start: docs_link_start, docs_link_end: '</a>'.html_safe }
+= gitlab_ui_form_for @application_setting, url: ci_cd_admin_application_settings_path(anchor: 'js-package-settings'), html: { class: 'fieldset-form' } do |f|
+  = form_errors(@application_setting)
 
-    %fieldset
+  %fieldset
+    .form-group
+      = f.gitlab_ui_checkbox_component :npm_package_requests_forwarding,
+        s_('PackageRegistry|Forward %{package_type} package requests') % { package_type: 'npm' }
+      = f.gitlab_ui_checkbox_component :lock_npm_package_requests_forwarding,
+        s_('PackageRegistry|Enforce %{package_type} setting for all subgroups') % { package_type: 'npm' }
+
+    .form-group
+      = f.gitlab_ui_checkbox_component :pypi_package_requests_forwarding,
+        s_('PackageRegistry|Forward %{package_type} package requests') % { package_type: 'PyPI' }
+      = f.gitlab_ui_checkbox_component :lock_pypi_package_requests_forwarding,
+        s_('PackageRegistry|Enforce %{package_type} setting for all subgroups') % { package_type: 'PyPI' }
+
+    - if Feature.enabled?(:maven_central_request_forwarding)
       .form-group
-        = f.gitlab_ui_checkbox_component :npm_package_requests_forwarding,
-          s_('PackageRegistry|Forward %{package_type} package requests') % { package_type: 'npm' }
-        = f.gitlab_ui_checkbox_component :lock_npm_package_requests_forwarding,
-          s_('PackageRegistry|Enforce %{package_type} setting for all subgroups') % { package_type: 'npm' }
+        = f.gitlab_ui_checkbox_component :maven_package_requests_forwarding,
+          s_('PackageRegistry|Forward %{package_type} package requests') % { package_type: 'Maven' }
+        = f.gitlab_ui_checkbox_component :lock_maven_package_requests_forwarding,
+          s_('PackageRegistry|Enforce %{package_type} setting for all subgroups') % { package_type: 'Maven' }
 
-      .form-group
-        = f.gitlab_ui_checkbox_component :pypi_package_requests_forwarding,
-          s_('PackageRegistry|Forward %{package_type} package requests') % { package_type: 'PyPI' }
-        = f.gitlab_ui_checkbox_component :lock_pypi_package_requests_forwarding,
-          s_('PackageRegistry|Enforce %{package_type} setting for all subgroups') % { package_type: 'PyPI' }
-
-      - if Feature.enabled?(:maven_central_request_forwarding)
-        .form-group
-          = f.gitlab_ui_checkbox_component :maven_package_requests_forwarding,
-            s_('PackageRegistry|Forward %{package_type} package requests') % { package_type: 'Maven' }
-          = f.gitlab_ui_checkbox_component :lock_maven_package_requests_forwarding,
-            s_('PackageRegistry|Enforce %{package_type} setting for all subgroups') % { package_type: 'Maven' }
-
-      = f.submit _('Save changes'), pajamas_button: true
+    = f.submit _('Save changes'), pajamas_button: true

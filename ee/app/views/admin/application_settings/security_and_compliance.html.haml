@@ -9,7 +9,7 @@
       = _('License Compliance')
     = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded_by_default? ? _('Collapse') : _('Expand')
-    %p
+    %p.gl-text-secondary
       = _('Settings for the License Compliance feature')
   .settings-content
     = render 'license_compliance'
