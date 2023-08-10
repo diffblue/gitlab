@@ -214,7 +214,7 @@ export const mockTableItemsWithCodeSuggestionsAddOn = [
     email: 'administrator@email.com',
     user: {
       add_ons: {
-        assignable: [{ name: ADD_ON_CODE_SUGGESTIONS }],
+        applicable: [{ name: ADD_ON_CODE_SUGGESTIONS }],
         assigned: [{ name: ADD_ON_CODE_SUGGESTIONS }],
       },
       id: 2,
@@ -234,7 +234,7 @@ export const mockTableItemsWithCodeSuggestionsAddOn = [
     email: 'agustin_walker@email.com',
     user: {
       add_ons: {
-        assignable: [{ name: ADD_ON_CODE_SUGGESTIONS }],
+        applicable: [{ name: ADD_ON_CODE_SUGGESTIONS }],
         assigned: [],
       },
       id: 3,
@@ -255,7 +255,7 @@ export const mockTableItemsWithCodeSuggestionsAddOn = [
     email: null,
     user: {
       add_ons: {
-        assignable: [],
+        applicable: [],
         assigned: [],
       },
       id: 4,

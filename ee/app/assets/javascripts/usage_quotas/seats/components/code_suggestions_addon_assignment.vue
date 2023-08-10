@@ -43,9 +43,9 @@ export default {
     };
   },
   computed: {
-    isAssignable() {
+    isApplicable() {
       return Boolean(
-        this.addOns?.assignable?.find((assignable) => assignable.name === ADD_ON_CODE_SUGGESTIONS),
+        this.addOns?.applicable?.find((applicable) => applicable.name === ADD_ON_CODE_SUGGESTIONS),
       );
     },
     globalUserId() {
@@ -105,12 +105,12 @@ export default {
       :value="isAssigned"
       :label="$options.i18n.toggleLabel"
       :is-loading="isLoading"
-      :disabled="!isAssignable"
+      :disabled="!isApplicable"
       class="gl-display-inline-block gl-vertical-align-middle"
       label-position="hidden"
       @change="onToggle"
     />
-    <gl-tooltip v-if="!isAssignable" :target="toggleId">
+    <gl-tooltip v-if="!isApplicable" :target="toggleId">
       {{ $options.i18n.addOnUnavailableTooltipText }}
     </gl-tooltip>
   </div>
