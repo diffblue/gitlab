@@ -101,6 +101,35 @@ RSpec.describe MergeRequests::AfterCreateService, feature_category: :code_review
       end
     end
 
+    describe 'usage activity tracking' do
+      let(:user) { merge_request.author }
+
+      context 'when project has no security policy configuration' do
+        it_behaves_like "doesn't track govern usage service event",
+          'users_creating_merge_requests_with_security_policies'
+      end
+
+      context 'with project security_orchestration_policy_configuration' do
+        before do
+          configuration = create(:security_orchestration_policy_configuration, project: project)
+          create(:scan_result_policy_read, security_orchestration_policy_configuration: configuration, project: project)
+        end
+
+        it_behaves_like 'tracks govern usage service event', 'users_creating_merge_requests_with_security_policies'
+      end
+
+      context "with group security_orchestration_policy_configuration" do
+        let_it_be(:configuration) { create(:security_orchestration_policy_configuration, :namespace) }
+
+        before do
+          create(:scan_result_policy_read, security_orchestration_policy_configuration: configuration, project: project)
+          project.update!(namespace: configuration.namespace)
+        end
+
+        it_behaves_like 'tracks govern usage service event', 'users_creating_merge_requests_with_security_policies'
+      end
+    end
+
     context 'for audit events' do
       let_it_be(:project_bot) { create(:user, :project_bot, email: "bot@example.com") }
       let_it_be(:merge_request) { create(:merge_request, author: project_bot) }

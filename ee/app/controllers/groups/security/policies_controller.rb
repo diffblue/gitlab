@@ -3,6 +3,8 @@
 module Groups
   module Security
     class PoliciesController < Groups::ApplicationController
+      include GovernUsageGroupTracking
+
       before_action :authorize_group_security_policies!, except: :edit
       before_action :authorize_modify_security_policy!, only: :edit
       before_action :validate_policy_configuration, only: :edit
@@ -10,6 +12,7 @@ module Groups
       feature_category :security_policy_management
       urgency :default, [:edit]
       urgency :low, [:index, :new]
+      track_govern_activity 'security_policies', :index, :edit, :new
 
       def edit
         @policy_name = URI.decode_www_form_component(params[:id])
