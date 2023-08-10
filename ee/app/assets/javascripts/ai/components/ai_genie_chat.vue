@@ -196,7 +196,7 @@ export default {
         :dismissible="false"
         variant="tip"
         :show-icon="false"
-        class="gl-text-center gl-border-t gl-p-4 gl-text-gray-500 gl-bg-gray-10 legal-warning gl-max-w-full"
+        class="gl-text-center gl-border-t gl-p-4 gl-text-gray-700 gl-bg-gray-50 legal-warning gl-max-w-full"
         role="alert"
         data-testid="chat-legal-warning"
       >
@@ -210,7 +210,7 @@ export default {
       <slot name="hero"></slot>
 
       <section
-        class="gl-display-flex gl-flex-direction-column gl-justify-content-end gl-flex-grow-1 gl-border-b-0"
+        class="gl-display-flex gl-flex-direction-column gl-justify-content-end gl-flex-grow-1 gl-border-b-0 gl-bg-gray-10"
       >
         <transition-group
           tag="div"
@@ -270,13 +270,13 @@ export default {
     <footer
       v-if="isChatAvailable"
       data-testid="chat-footer"
-      class="gl-drawer-footer gl-drawer-footer-sticky gl-p-5 gl-border-t gl-bg-white"
+      class="gl-drawer-footer gl-drawer-footer-sticky gl-p-5 gl-border-t gl-bg-gray-10"
       :class="{ 'gl-drawer-body-scrim-on-footer': !scrolledToBottom }"
     >
       <gl-form data-testid="chat-prompt-form" @submit.stop.prevent="sendChatPrompt">
         <gl-form-input-group>
           <div
-            class="ai-genie-chat-input gl-flex-grow-1 gl-vertical-align-top gl-max-w-full gl-min-h-8 gl-inset-border-1-gray-400 gl-rounded-base"
+            class="ai-genie-chat-input gl-flex-grow-1 gl-vertical-align-top gl-max-w-full gl-min-h-8 gl-inset-border-1-gray-400 gl-rounded-base gl-bg-white"
             :data-value="prompt"
           >
             <gl-form-textarea
