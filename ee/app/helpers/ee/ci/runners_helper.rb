@@ -7,6 +7,15 @@ module EE
 
       BUY_PIPELINE_MINUTES_NOTIFICATION_DOT = 'buy_pipeline_minutes_notification_dot'
 
+      override :admin_runners_data_attributes
+      def admin_runners_data_attributes
+        dashboard_available = ::Feature.enabled?(:runners_dashboard) &&
+          License.feature_available?(:runner_performance_insights)
+        return super.merge(runner_dashboard_path: dashboard_admin_runners_path) if dashboard_available
+
+        super
+      end
+
       override :toggle_shared_runners_settings_data
       def toggle_shared_runners_settings_data(project)
         super.merge(is_credit_card_validation_required: validate_credit_card?(project).to_s)

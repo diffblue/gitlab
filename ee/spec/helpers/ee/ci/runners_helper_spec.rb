@@ -2,13 +2,39 @@
 
 require "spec_helper"
 
-RSpec.describe EE::Ci::RunnersHelper, feature_category: :continuous_integration do
+RSpec.describe EE::Ci::RunnersHelper, feature_category: :runner_fleet do
   let_it_be(:user, refind: true) { create(:user) }
   let_it_be(:namespace) { create(:namespace, owner: user) }
   let_it_be(:project) { create(:project, namespace: namespace) }
 
   before do
     allow(helper).to receive(:current_user).and_return(user)
+  end
+
+  describe '#admin_runners_data_attributes' do
+    using RSpec::Parameterized::TableSyntax
+
+    subject { helper.admin_runners_data_attributes }
+
+    where(:runner_performance_insights, :runners_dashboard, :runner_dashboard_path) do
+      true  | true  | ::Gitlab::Routing.url_helpers.dashboard_admin_runners_path
+      false | true  | nil
+      true  | false | nil
+      false | false | nil
+    end
+
+    with_them do
+      before do
+        stub_licensed_features(runner_performance_insights: runner_performance_insights)
+        stub_feature_flags(runners_dashboard: runners_dashboard)
+      end
+
+      it 'returns dashboard path' do
+        expect(subject[:runner_dashboard_path]).to eq(runner_dashboard_path)
+      end
+
+      it_behaves_like 'admin_runners_data_attributes contains data'
+    end
   end
 
   shared_examples_for 'minutes notification' do

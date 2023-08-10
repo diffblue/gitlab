@@ -121,6 +121,32 @@ RSpec.describe "Admin Runners", feature_category: :runner_fleet do
         it_behaves_like 'runner upgrade disabled'
       end
     end
+
+    describe 'fleet dashboard link' do
+      context 'with runner_performance_insights licensed feature' do
+        before do
+          stub_licensed_features(runner_performance_insights: true)
+
+          visit admin_runners_path
+        end
+
+        it 'shows dashboard link' do
+          expect(page).to have_link s_('Runners|Fleet dashboard'), href: dashboard_admin_runners_path
+        end
+      end
+
+      context 'without runner_performance_insights licensed feature' do
+        before do
+          stub_licensed_features(runner_performance_insights: false)
+
+          visit admin_runners_path
+        end
+
+        it 'shows no dashboard link' do
+          expect(page).not_to have_link(href: dashboard_admin_runners_path)
+        end
+      end
+    end
   end
 
   describe "Runner edit page", :js do
