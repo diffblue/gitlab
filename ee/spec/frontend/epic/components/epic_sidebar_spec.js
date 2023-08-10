@@ -7,6 +7,7 @@ import { getStoreConfig } from 'ee/epic/store';
 
 import SidebarAncestorsWidget from 'ee_component/sidebar/components/ancestors_tree/sidebar_ancestors_widget.vue';
 
+import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_widget/labels_select_root.vue';
 import SidebarParticipantsWidget from '~/sidebar/components/participants/sidebar_participants_widget.vue';
 import SidebarReferenceWidget from '~/sidebar/components/copy/sidebar_reference_widget.vue';
 import SidebarSubscriptionsWidget from '~/sidebar/components/subscriptions/sidebar_subscriptions_widget.vue';
@@ -89,7 +90,7 @@ describe('EpicSidebarComponent', () => {
     });
 
     it('renders labels select element', () => {
-      expect(wrapper.find('[data-testid="labels-select"]').exists()).toBe(true);
+      expect(wrapper.findComponent(LabelsSelectWidget).exists()).toBe(true);
     });
 
     it('renders SidebarSubscriptionsWidget', () => {
@@ -135,7 +136,7 @@ describe('EpicSidebarComponent', () => {
     });
 
     it('renders subscription toggle element', () => {
-      expect(wrapper.find('[data-testid="subscribe"]').exists()).toBe(true);
+      expect(wrapper.findComponent(SidebarSubscriptionsWidget).exists()).toBe(true);
     });
   });
 

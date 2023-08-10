@@ -1,4 +1,4 @@
-import { GlForm } from '@gitlab/ui';
+import { GlForm, GlFormCheckbox, GlFormInput } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import EpicForm from 'ee/epic/components/epic_form.vue';
@@ -9,6 +9,7 @@ import Autosave from '~/autosave';
 import { visitUrl } from '~/lib/utils/url_utility';
 import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_widget/labels_select_root.vue';
 import ColorSelectDropdown from '~/vue_shared/components/color_select_dropdown/color_select_root.vue';
+import MarkdownEditor from '~/vue_shared/components/markdown/markdown_editor.vue';
 import { CLEAR_AUTOSAVE_ENTRY_EVENT } from '~/vue_shared/constants';
 import markdownEditorEventHub from '~/vue_shared/components/markdown/eventhub';
 import { mockTracking } from 'helpers/tracking_helper';
@@ -50,9 +51,9 @@ describe('ee/epic/components/epic_form.vue', () => {
   const findForm = () => wrapper.findComponent(GlForm);
   const findLabels = () => wrapper.findComponent(LabelsSelectWidget);
   const findColor = () => wrapper.findComponent(ColorSelectDropdown);
-  const findTitle = () => wrapper.find('[data-testid="epic-title"]');
-  const findDescription = () => wrapper.find('[data-testid="epic-description"]');
-  const findConfidentialityCheck = () => wrapper.find('[data-testid="epic-confidentiality"]');
+  const findTitle = () => wrapper.findComponent(GlFormInput);
+  const findDescription = () => wrapper.findComponent(MarkdownEditor);
+  const findConfidentialityCheck = () => wrapper.findComponent(GlFormCheckbox);
   const findStartDate = () => wrapper.find('[data-testid="epic-start-date"]');
   const findStartDateReset = () => wrapper.find('[data-testid="clear-start-date"]');
   const findDueDate = () => wrapper.find('[data-testid="epic-due-date"]');

@@ -162,12 +162,11 @@ export default {
     <gl-disclosure-dropdown
       v-if="showMobileDropdown"
       ref="epicActionsDropdownMobile"
-      class="gl-w-full gl-mt-3"
+      class="gl-display-block gl-sm-display-none! gl-w-full gl-mt-3"
       category="secondary"
       :auto-close="false"
+      toggle-class="gl-w-full"
       :toggle-text="$options.i18n.dropdownText"
-      toggle-class="gl-display-flex gl-sm-display-none!"
-      block
     >
       <gl-disclosure-dropdown-group v-if="showNotificationToggle">
         <sidebar-subscriptions-widget
@@ -214,11 +213,11 @@ export default {
     <gl-disclosure-dropdown
       v-if="showDesktopDropdown"
       ref="epicActionsDropdownDesktop"
+      class="gl-display-none gl-sm-display-block gl-ml-3"
       placement="right"
       :auto-close="false"
       data-testid="desktop-dropdown"
       :toggle-text="$options.i18n.dropdownText"
-      toggle-class="gl-display-none gl-sm-display-flex! gl-ml-3"
       text-sr-only
       icon="ellipsis_v"
       category="tertiary"

@@ -124,7 +124,6 @@ export default {
           :issuable-iid="String(iid)"
           :full-path="fullPath"
           :issuable-type="issuableType"
-          data-testid="todo"
         />
       </sidebar-header>
       <sidebar-date-widget
@@ -132,7 +131,7 @@ export default {
         :full-path="fullPath"
         date-type="startDate"
         :issuable-type="issuableType"
-        :can-inherit="true"
+        can-inherit
         data-testid="start-date"
         :max-date="maxDate"
         @startDateUpdated="updateMinDate"
@@ -142,7 +141,7 @@ export default {
         :full-path="fullPath"
         date-type="dueDate"
         :issuable-type="issuableType"
-        :can-inherit="true"
+        can-inherit
         data-testid="due-date"
         :min-date="minDate"
         @dueDateUpdated="updateMaxDate"
@@ -152,7 +151,7 @@ export default {
         :iid="String(iid)"
         :full-path="fullPath"
         :allow-label-remove="canUpdate"
-        :allow-multiselect="true"
+        allow-multiselect
         :labels-filter-base-path="epicsWebUrl"
         variant="sidebar"
         issuable-type="epic"
@@ -203,7 +202,6 @@ export default {
         :iid="String(iid)"
         :full-path="fullPath"
         :issuable-type="issuableType"
-        data-testid="subscribe"
         @expandSidebar="handleSidebarToggle"
       />
       <div v-if="!isMrSidebarMoved" class="block with-sub-blocks">
