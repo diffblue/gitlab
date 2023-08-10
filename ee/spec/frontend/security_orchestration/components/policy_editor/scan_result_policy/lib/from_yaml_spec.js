@@ -6,6 +6,8 @@ import {
   collidingKeysScanResultManifest,
   mockDefaultBranchesScanResultManifest,
   mockDefaultBranchesScanResultObject,
+  mockApprovalSettingsScanResultManifest,
+  mockApprovalSettingsScanResultObject,
 } from 'ee_jest/security_orchestration/mocks/mock_scan_result_policy_data';
 import {
   unsupportedManifest,
@@ -22,6 +24,16 @@ describe('fromYaml', () => {
   `('$title', ({ input, output }) => {
     expect(fromYaml(input)).toStrictEqual(output);
   });
+
+  describe('feature flag', () => {
+    it.each`
+      title                                                                                                               | input                                                                                                                           | output
+      ${'returns the policy object for a manifest with `approval_settings` and the `scan_result_policy` feature flag on'} | ${{ manifest: mockApprovalSettingsScanResultManifest, validateRuleMode: true, glFeatures: { scanResultPolicySettings: true } }} | ${mockApprovalSettingsScanResultObject}
+      ${'returns the error object for a manifest with `approval_settings` and the `scan_result_policy` feature flag off'} | ${{ manifest: mockApprovalSettingsScanResultManifest, validateRuleMode: true }}                                                 | ${{ error: true }}
+    `('$title', ({ input, output }) => {
+      expect(fromYaml(input)).toStrictEqual(output);
+    });
+  });
 });
 
 describe('createPolicyObject', () => {
@@ -32,5 +44,15 @@ describe('createPolicyObject', () => {
     ${'returns the error policy object and the error for an colliding keys'}       | ${[collidingKeysScanResultManifest]}       | ${{ policy: { error: true }, hasParsingError: true }}
   `('$title', ({ input, output }) => {
     expect(createPolicyObject(...input)).toStrictEqual(output);
+  });
+
+  describe('feature flag', () => {
+    it.each`
+      title                                                                                                               | input                                                                           | output
+      ${'returns the policy object for a manifest with `approval_settings` and the `scan_result_policy` feature flag on'} | ${[mockApprovalSettingsScanResultManifest, { scanResultPolicySettings: true }]} | ${{ policy: mockApprovalSettingsScanResultObject, hasParsingError: false }}
+      ${'returns the error object for a manifest with `approval_settings` and the `scan_result_policy` feature flag off'} | ${[mockApprovalSettingsScanResultManifest]}                                     | ${{ policy: { error: true }, hasParsingError: true }}
+    `('$title', ({ input, output }) => {
+      expect(createPolicyObject(...input)).toStrictEqual(output);
+    });
   });
 });

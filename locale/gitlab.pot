@@ -41368,6 +41368,9 @@ msgstr ""
 msgid "ScanResultPolicy|Age is:"
 msgstr ""
 
+msgid "ScanResultPolicy|Block users from unprotecting branches"
+msgstr ""
+
 msgid "ScanResultPolicy|Choose an option"
 msgstr ""
 
@@ -41411,6 +41414,9 @@ msgid "ScanResultPolicy|Only 1 severity is allowed"
 msgstr ""
 
 msgid "ScanResultPolicy|Only 2 status criteria are allowed"
+msgstr ""
+
+msgid "ScanResultPolicy|Override project approval settings"
 msgstr ""
 
 msgid "ScanResultPolicy|Pre-existing"

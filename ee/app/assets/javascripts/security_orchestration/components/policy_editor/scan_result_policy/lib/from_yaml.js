@@ -1,10 +1,11 @@
 import { safeLoad } from 'js-yaml';
 import { isValidPolicy } from '../../utils';
+import { PRIMARY_POLICY_KEYS } from '../../constants';
 
 /*
   Construct a policy object expected by the policy editor from a yaml manifest.
 */
-export const fromYaml = ({ manifest, validateRuleMode = false }) => {
+export const fromYaml = ({ manifest, validateRuleMode = false, glFeatures = {} }) => {
   try {
     const policy = safeLoad(manifest, { json: true });
     if (validateRuleMode) {
@@ -15,6 +16,10 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
        * schema. These values should not be retrieved from the backend schema because
        * the UI for new attributes may not be available.
        */
+      const primaryKeys = [
+        ...PRIMARY_POLICY_KEYS,
+        ...(glFeatures?.scanResultPolicySettings ? [`approval_settings`] : []),
+      ];
       const rulesKeys = [
         'type',
         'branches',
@@ -39,7 +44,9 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
         'role_approvers',
       ];
 
-      return isValidPolicy({ policy, rulesKeys, actionsKeys }) ? policy : { error: true };
+      return isValidPolicy({ policy, primaryKeys, rulesKeys, actionsKeys })
+        ? policy
+        : { error: true };
     }
 
     return policy;
@@ -56,8 +63,8 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
  * @param {String} manifest a security policy in yaml form
  * @returns {Object} security policy object and any errors
  */
-export const createPolicyObject = (manifest) => {
-  const policy = fromYaml({ manifest, validateRuleMode: true });
+export const createPolicyObject = (manifest, glFeatures = {}) => {
+  const policy = fromYaml({ manifest, validateRuleMode: true, glFeatures });
 
   return { policy, hasParsingError: Boolean(policy.error) };
 };

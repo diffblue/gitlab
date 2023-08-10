@@ -19,12 +19,14 @@ import {
 import PolicyEditorLayout from '../policy_editor_layout.vue';
 import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
 import DimDisableContainer from '../dim_disable_container.vue';
+import ApprovalSettings from './approval_settings.vue';
 import PolicyActionBuilder from './policy_action_builder.vue';
 import PolicyRuleBuilder from './policy_rule_builder.vue';
 
 import {
   createPolicyObject,
   DEFAULT_SCAN_RESULT_POLICY,
+  SCAN_RESULT_POLICY_SETTINGS_POLICY,
   getInvalidBranches,
   fromYaml,
   toYaml,
@@ -51,16 +53,18 @@ export default {
     notOwnerDescription: s__(
       'SecurityOrchestration|Scan result policies can only be created by project owners.',
     ),
+    settingsTitle: s__('ScanResultPolicy|Override project approval settings'),
     yamlPreview: s__('SecurityOrchestration|.yaml preview'),
     ACTIONS_LABEL,
   },
   components: {
-    GlEmptyState,
-    GlButton,
-    PolicyActionBuilder,
-    PolicyRuleBuilder,
-    PolicyEditorLayout,
+    ApprovalSettings,
     DimDisableContainer,
+    GlButton,
+    GlEmptyState,
+    PolicyActionBuilder,
+    PolicyEditorLayout,
+    PolicyRuleBuilder,
   },
   mixins: [glFeatureFlagsMixin()],
   inject: [
@@ -89,11 +93,13 @@ export default {
     },
   },
   data() {
-    const yamlEditorValue = this.existingPolicy
-      ? toYaml(this.existingPolicy)
+    const DEFAULT_POLICY = this.glFeatures.scanResultPolicySettings
+      ? SCAN_RESULT_POLICY_SETTINGS_POLICY
       : DEFAULT_SCAN_RESULT_POLICY;
 
-    const { policy, hasParsingError } = createPolicyObject(yamlEditorValue);
+    const yamlEditorValue = this.existingPolicy ? toYaml(this.existingPolicy) : DEFAULT_POLICY;
+
+    const { policy, hasParsingError } = createPolicyObject(yamlEditorValue, this.glFeatures);
 
     return {
       errors: { action: [] },
@@ -136,6 +142,9 @@ export default {
     rulesHaveBranches() {
       return this.policy.rules.some(this.ruleHasBranchesProperty);
     },
+    shouldShowSettings() {
+      return this.glFeatures.scanResultPolicySettings;
+    },
   },
   watch: {
     invalidBranches(branches) {
@@ -153,6 +162,10 @@ export default {
     updateAction(actionIndex, values) {
       this.policy.actions.splice(actionIndex, 1, values);
       this.$set(this.errors, 'action', []);
+      this.updateYamlEditorValue(this.policy);
+    },
+    updateApprovalSettings(values) {
+      this.policy.approval_settings = values;
       this.updateYamlEditorValue(this.policy);
     },
     addRule() {
@@ -208,7 +221,9 @@ export default {
         const mergeRequest = await modifyPolicy({
           action,
           assignedPolicyProject,
-          name: this.originalName || fromYaml({ manifest: this.yamlEditorValue })?.name,
+          name:
+            this.originalName ||
+            fromYaml({ manifest: this.yamlEditorValue, glFeatures: this.glFeatures })?.name,
           namespacePath: this.namespacePath,
           yamlEditorValue: this.yamlEditorValue,
         });
@@ -241,7 +256,7 @@ export default {
       );
     },
     updateYaml(manifest) {
-      const { policy, hasParsingError } = createPolicyObject(manifest);
+      const { policy, hasParsingError } = createPolicyObject(manifest, this.glFeatures);
 
       this.yamlEditorValue = manifest;
       this.hasParsingError = hasParsingError;
@@ -353,6 +368,22 @@ export default {
           @error="handleParsingError"
           @updateApprovers="updatePolicyApprovers"
           @changed="updateAction(index, $event)"
+        />
+      </dim-disable-container>
+    </template>
+    <template #settings>
+      <dim-disable-container v-if="shouldShowSettings" :disabled="hasParsingError">
+        <template #title>
+          <h5>{{ $options.i18n.settingsTitle }}</h5>
+        </template>
+
+        <template #disabled>
+          <div class="gl-bg-gray-10 gl-rounded-base gl-p-6"></div>
+        </template>
+
+        <approval-settings
+          :approval-settings="policy.approval_settings"
+          @changed="updateApprovalSettings"
         />
       </dim-disable-container>
     </template>
