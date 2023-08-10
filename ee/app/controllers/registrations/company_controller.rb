@@ -4,6 +4,7 @@ module Registrations
   class CompanyController < ApplicationController
     include OneTrustCSP
     include GoogleAnalyticsCSP
+    include GoogleSyndicationCSP
     include RegistrationsTracking
     include ::Onboarding::SetRedirect
 

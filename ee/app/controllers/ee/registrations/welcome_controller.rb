@@ -10,6 +10,7 @@ module EE
       prepended do
         include OneTrustCSP
         include GoogleAnalyticsCSP
+        include GoogleSyndicationCSP
         include ::Onboarding::SetRedirect
         include RegistrationsTracking
 
