@@ -107,7 +107,9 @@ RSpec.describe 'Remote Development workspaces dropdown group', :api, :js, featur
 
       # noinspection RubyInstanceMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
       def expect_workspace_state_indicator(state)
-        expect(page).to have_selector("svg[data-testid='workspace-state-indicator'][title='#{state}']")
+        indicator = page.find("[data-testid='workspace-state-indicator']")
+
+        expect(indicator).to have_text(state)
       end
     end
   end

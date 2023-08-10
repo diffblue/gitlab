@@ -36,9 +36,9 @@ export default {
   <gl-disclosure-dropdown-item class="gl-my-0" :item="dropdownItem" @action="trackOpenWorkspace">
     <template #list-item>
       <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
-        <span class="gl-display-inline-flex gl-align-items-center">
-          <workspace-state-indicator class="gl-mr-3" :workspace-state="workspace.actualState" />
-          <span class="gl-mr-4 gl-word-break-word">{{ workspace.name }}</span>
+        <span class="gl-display-inline-flex gl-flex-direction-column gl-align-items-flex-start">
+          <workspace-state-indicator class="gl-mb-2" :workspace-state="workspace.actualState" />
+          <span class="gl-pl-1 gl-word-break-word gl-w-90p">{{ workspace.name }}</span>
         </span>
         <workspace-actions
           :actual-state="workspace.actualState"
