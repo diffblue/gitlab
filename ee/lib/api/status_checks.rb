@@ -154,7 +154,7 @@ module API
             success Entities::MergeRequests::StatusCheck
             is_array true
           end
-          get do
+          get '/', urgency: :low do
             merge_request = find_merge_request_with_access(params[:merge_request_iid], :approve_merge_request)
 
             ::Gitlab::PollingInterval.set_api_header(self, interval: 10_000)
