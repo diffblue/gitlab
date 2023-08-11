@@ -99,7 +99,6 @@ export default {
       <span
         class="timeline-cell gl-float-left gl-overflow-hidden gl-relative"
         :style="timelineStyles"
-        data-testid="empty-timeline-cell"
       >
         <current-day-indicator
           :preset-type="presetType"

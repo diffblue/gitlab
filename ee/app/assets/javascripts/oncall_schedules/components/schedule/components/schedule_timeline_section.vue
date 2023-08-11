@@ -58,11 +58,7 @@ export default {
         presetIsDay ? __('Hour') : __('Date')
       }}</span>
     </div>
-    <div
-      ref="timelineHeaderWrapper"
-      v-gl-resize-observer="updateShiftStyles"
-      data-testid="timeline-header-wrapper"
-    >
+    <div ref="timelineHeaderWrapper" v-gl-resize-observer="updateShiftStyles">
       <days-header-item v-if="presetIsDay" :timeframe-item="timeframe[0]" />
       <weeks-header-item
         v-for="(timeframeItem, index) in timeframe"

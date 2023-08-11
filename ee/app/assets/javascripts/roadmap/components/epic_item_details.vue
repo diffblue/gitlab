@@ -163,7 +163,6 @@ export default {
           size="small"
           :icon="expandIconName"
           :loading="childrenFetchInProgress"
-          data-testid="expand-icon-button"
           @click="toggleIsEpicExpanded"
         />
       </span>

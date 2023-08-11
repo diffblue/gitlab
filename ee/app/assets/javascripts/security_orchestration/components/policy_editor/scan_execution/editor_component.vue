@@ -229,7 +229,7 @@ export default {
     @update-editor-mode="changeEditorMode"
   >
     <template #rules>
-      <dim-disable-container data-testid="rule-builder-container" :disabled="hasParsingError">
+      <dim-disable-container :disabled="hasParsingError">
         <template #title>
           <h4>{{ $options.i18n.CONDITIONS_LABEL }}</h4>
         </template>
@@ -257,7 +257,7 @@ export default {
     </template>
 
     <template #actions-first>
-      <dim-disable-container data-testid="action-container" :disabled="hasParsingError">
+      <dim-disable-container :disabled="hasParsingError">
         <template #title>
           <h4>{{ $options.i18n.ACTIONS_LABEL }}</h4>
         </template>

@@ -179,7 +179,7 @@ export default {
       <gl-dropdown-text v-show="isLoading" data-testid="dropdown-text-loading-icon">
         <gl-loading-icon class="gl-mx-auto" size="sm" />
       </gl-dropdown-text>
-      <gl-dropdown-text v-if="isFetchResultEmpty && !isLoading" data-testid="empty-result-message">
+      <gl-dropdown-text v-if="isFetchResultEmpty && !isLoading">
         <span class="gl-text-gray-500">{{ $options.i18n.emptySearchResult }}</span>
       </gl-dropdown-text>
       <gl-intersection-observer v-if="hasNextPage" @appear="loadMoreGroups">

@@ -287,7 +287,6 @@ export default {
       </gl-form-group>
 
       <gl-form-group
-        data-testid="target-url-input-group"
         :invalid-feedback="form.fields.targetUrl.feedback"
         :label="i18n.targetUrl.label"
       >

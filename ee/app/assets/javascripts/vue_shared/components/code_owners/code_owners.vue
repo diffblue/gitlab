@@ -138,7 +138,7 @@ export default {
   >
     <div class="gl-display-flex gl-flex-wrap gl-p-3">
       <div class="gl-mr-2">
-        <gl-icon name="users" data-testid="users-icon" />
+        <gl-icon name="users" />
         <component
           :is="hasCodeOwners ? 'gl-link' : 'span'"
           class="gl-font-weight-bold gl-text-black-normal!"

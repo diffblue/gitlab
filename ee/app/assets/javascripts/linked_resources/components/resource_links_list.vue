@@ -27,7 +27,7 @@ export default {
 </script>
 
 <template>
-  <div class="related-issues-token-body" data-testid="resource-link-list">
+  <div class="related-issues-token-body">
     <ul class="related-items-list content-list">
       <li
         v-for="link in resourceLinks"

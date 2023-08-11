@@ -134,7 +134,6 @@ export default {
   <gl-form>
     <div class="w-75 gl-xs-w-full!">
       <gl-form-group
-        data-testid="escalation-policy-name"
         :label="$options.i18n.fields.name.title"
         :invalid-feedback="$options.i18n.fields.name.validation.empty"
         label-size="sm"

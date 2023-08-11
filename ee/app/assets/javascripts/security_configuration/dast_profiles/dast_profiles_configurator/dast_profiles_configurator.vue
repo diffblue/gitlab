@@ -193,11 +193,7 @@ export default {
           "
         />
 
-        <profile-conflict-alert
-          v-if="hasProfilesConflict"
-          class="gl-my-5"
-          data-testid="dast-profiles-conflict-alert"
-        />
+        <profile-conflict-alert v-if="hasProfilesConflict" class="gl-my-5" />
       </template>
     </section-layout>
 

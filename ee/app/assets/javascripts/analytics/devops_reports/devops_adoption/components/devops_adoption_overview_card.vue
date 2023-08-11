@@ -74,9 +74,7 @@ export default {
         @click="trackCardTitleClick"
         >{{ title }}
       </gl-button>
-      <span v-else class="gl-font-md gl-font-weight-bold" data-testid="card-title-text"
-        >{{ title }}
-      </span>
+      <span v-else class="gl-font-md gl-font-weight-bold">{{ title }} </span>
     </div>
     <gl-progress-bar
       :value="adoptedCount"

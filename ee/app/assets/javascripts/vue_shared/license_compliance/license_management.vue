@@ -83,7 +83,6 @@ export default {
       :empty-message="$options.emptyMessage"
       :filterable="isAdmin"
       filter="name"
-      data-testid="license-compliance-list"
     >
       <template #header>
         <div v-if="isAdmin" class="order-1 gl-display-flex gl-align-items-center">

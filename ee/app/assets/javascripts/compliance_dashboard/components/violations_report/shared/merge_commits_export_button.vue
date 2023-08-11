@@ -66,7 +66,7 @@ export default {
 
 <template>
   <div>
-    <gl-dropdown data-testid="merge-commit-dropdown" split>
+    <gl-dropdown split>
       <template #button-content>
         <gl-button
           ref="listMergeCommitsButton"

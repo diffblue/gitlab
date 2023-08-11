@@ -143,7 +143,6 @@ export default {
             :options="$options.SCAN_CADENCE_OPTIONS"
             :disabled="!form.isScheduledScan"
             field="repeat-input"
-            data-testid="schedule-cadence-input"
             @input="handleInput"
           />
         </gl-form-group>

@@ -66,12 +66,9 @@ export default {
     <p class="gl-mb-0 gl-px-5 gl-pt-5">
       <gl-sprintf :message="$options.i18n.howToActivateSubscription">
         <template #link="{ content }">
-          <gl-link
-            data-testid="activate-subscription-link"
-            :href="$options.links.activateSubscriptionUrl"
-            target="_blank"
-            >{{ content }}</gl-link
-          >
+          <gl-link :href="$options.links.activateSubscriptionUrl" target="_blank">{{
+            content
+          }}</gl-link>
         </template>
       </gl-sprintf>
     </p>

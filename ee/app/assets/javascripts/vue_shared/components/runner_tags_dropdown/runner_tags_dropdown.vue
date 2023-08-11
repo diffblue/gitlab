@@ -168,7 +168,6 @@ export default {
   <gl-collapsible-listbox
     multiple
     searchable
-    data-testid="runner-tags-list"
     :block="block"
     :disabled="isDropdownDisabled"
     :toggle-class="toggleClass"

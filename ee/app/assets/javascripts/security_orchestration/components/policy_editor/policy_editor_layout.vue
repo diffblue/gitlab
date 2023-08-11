@@ -193,13 +193,7 @@ export default {
       <div class="gl-display-flex gl-flex-direction-column gl-lg-flex-direction-row">
         <section class="gl-w-full gl-mr-7">
           <div v-if="shouldShowRuleEditor" data-testid="rule-editor">
-            <gl-alert
-              v-if="hasParsingError"
-              data-testid="parsing-alert"
-              class="gl-mb-5"
-              variant="warning"
-              :dismissible="false"
-            >
+            <gl-alert v-if="hasParsingError" class="gl-mb-5" variant="warning" :dismissible="false">
               {{ parsingError }}
             </gl-alert>
 
@@ -231,11 +225,7 @@ export default {
               />
             </gl-form-group>
 
-            <gl-form-group
-              :label="$options.i18n.toggleLabel"
-              :disabled="hasParsingError"
-              data-testid="policy-enable"
-            >
+            <gl-form-group :label="$options.i18n.toggleLabel" :disabled="hasParsingError">
               <gl-form-radio-group
                 :options="$options.STATUS_OPTIONS"
                 :disabled="hasParsingError"
@@ -265,7 +255,6 @@ export default {
         >
           <h5>{{ $options.i18n.yamlPreview }}</h5>
           <pre
-            data-testid="yaml-preview"
             class="security-policies-bg-gray-10 security-policies-pre-min-width gl-white-space-pre-wrap gl-border-none gl-p-0"
             :class="{ 'gl-opacity-5': hasParsingError }"
             >{{ yamlEditorValue }}</pre
@@ -285,7 +274,6 @@ export default {
         v-gl-tooltip.hover.focus="{ disabled: disableTooltip }"
         class="gl-pt-2 gl-mr-3"
         :title="saveTooltipText"
-        data-testid="save-policy-tooltip"
       >
         <gl-button
           type="submit"

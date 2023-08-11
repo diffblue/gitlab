@@ -92,7 +92,6 @@ export default {
           :items="vulnerabilityStateGroups"
           :selected="selectedFilter"
           :disabled="disabled"
-          data-testid="vulnerability-groups-select"
           @select="selectVulnerabilityStateGroup"
         />
         <policy-rule-multi-select

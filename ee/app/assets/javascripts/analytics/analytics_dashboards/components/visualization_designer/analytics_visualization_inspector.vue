@@ -43,7 +43,6 @@ export default {
           class="gl-mb-2"
           icon="chart"
           block
-          data-testid="columnchart-button"
           @click="selectVisualizationType('ColumnChart')"
           >{{ s__('Analytics|Column Chart') }}</gl-button
         >
@@ -82,12 +81,9 @@ export default {
           @click="selectVisualizationType('LineChart')"
           >{{ s__('Analytics|Line Chart') }}</gl-dropdown-item
         >
-        <gl-dropdown-item
-          icon-name="chart"
-          data-testid="columnchart-dd-item"
-          @click="selectVisualizationType('ColumnChart')"
-          >{{ s__('Analytics|Column Chart') }}</gl-dropdown-item
-        >
+        <gl-dropdown-item icon-name="chart" @click="selectVisualizationType('ColumnChart')">{{
+          s__('Analytics|Column Chart')
+        }}</gl-dropdown-item>
         <gl-dropdown-item
           icon-name="table"
           data-testid="datatable-dd-item"
