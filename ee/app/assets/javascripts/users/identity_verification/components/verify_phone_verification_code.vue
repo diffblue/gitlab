@@ -157,9 +157,7 @@ export default {
       <gl-icon name="information-o" :size="12" class="gl-mt-2" />
       <gl-sprintf :message="$options.i18n.resendCode">
         <template #link="{ content }">
-          <gl-link class="gl-font-sm" data-testid="resend-code-link" @click="resendCode">
-            {{ content }}</gl-link
-          >
+          <gl-link class="gl-font-sm" @click="resendCode"> {{ content }}</gl-link>
         </template>
       </gl-sprintf>
     </div>

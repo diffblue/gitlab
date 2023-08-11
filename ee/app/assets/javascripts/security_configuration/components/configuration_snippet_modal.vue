@@ -130,10 +130,7 @@ export default {
       </gl-sprintf>
     </p>
 
-    <div
-      class="gl-w-full gl-h-full gl-border-1 gl-border-solid gl-border-gray-100"
-      data-testid="configuration-modal-yaml-snippet"
-    >
+    <div class="gl-w-full gl-h-full gl-border-1 gl-border-solid gl-border-gray-100">
       <source-editor ref="editor" :value="yaml" file-name="*.yml" :editor-options="editorOptions" />
     </div>
   </gl-modal>

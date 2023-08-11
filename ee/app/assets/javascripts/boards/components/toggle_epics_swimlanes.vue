@@ -73,13 +73,9 @@ export default {
 </script>
 
 <template>
-  <div
-    class="board-swimlanes-toggle-wrapper gl-md-display-flex gl-align-items-center gl-ml-3"
-    data-testid="toggle-swimlanes"
-  >
+  <div class="board-swimlanes-toggle-wrapper gl-md-display-flex gl-align-items-center gl-ml-3">
     <span
       class="board-swimlanes-toggle-text gl-white-space-nowrap gl-font-weight-bold gl-line-height-normal"
-      data-testid="toggle-swimlanes-label"
     >
       {{ __('Group by') }}
     </span>

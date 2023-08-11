@@ -335,7 +335,6 @@ export default {
           <div class="gl-flex-grow-1 gl-text-gray-700 gl-font-weight-bold">{{ scheduleRange }}</div>
 
           <gl-collapsible-listbox
-            data-testid="shift-preset-change"
             :items="$options.presetListboxItems"
             :toggle-text="$options.i18n.presetTypeLabels[presetType]"
             :selected="presetType"

@@ -245,7 +245,6 @@ export default {
 
     <gl-table-lite
       v-else-if="hasCoverageData"
-      data-testid="test-coverage-data-table"
       :fields="$options.tableFields"
       :items="sortedCoverageData"
     >

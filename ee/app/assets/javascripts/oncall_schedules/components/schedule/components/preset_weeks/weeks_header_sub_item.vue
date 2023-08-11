@@ -45,10 +45,7 @@ export default {
 </script>
 
 <template>
-  <div
-    class="item-sublabel week-item-sublabel gl-pb-3 gl-relative gl-display-flex"
-    data-testid="week-item-sublabel"
-  >
+  <div class="item-sublabel week-item-sublabel gl-pb-3 gl-relative gl-display-flex">
     <span
       v-for="(subItem, index) in headerSubItems"
       :key="index"

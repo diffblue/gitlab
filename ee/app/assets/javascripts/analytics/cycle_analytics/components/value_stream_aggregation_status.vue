@@ -64,7 +64,6 @@ export default {
       target="vsa-data-refresh"
       :title="$options.i18n.POPOVER_TITLE"
       :css-classes="['stage-item-popover']"
-      data-testid="vsa-data-refresh-popover"
     >
       <div class="gl-px-4">
         <div

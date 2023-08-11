@@ -136,7 +136,6 @@ export default {
       <div
         v-if="displayType === $options.PANEL_DISPLAY_TYPES.VISUALIZATION"
         class="grid-stack-item gl-m-5"
-        data-testid="grid-stack-visualization"
       >
         <panels-base
           v-if="selectedVisualizationType"

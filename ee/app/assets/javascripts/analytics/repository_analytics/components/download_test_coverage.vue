@@ -141,13 +141,9 @@ export default {
       :action-primary="downloadCSVModalButton"
       :action-cancel="cancelModalButton"
     >
-      <gl-alert
-        v-if="hasError"
-        variant="danger"
-        data-testid="group-code-coverage-projects-error"
-        @dismiss="dismissError"
-        >{{ $options.i18n.queryErrorMessage }}</gl-alert
-      >
+      <gl-alert v-if="hasError" variant="danger" @dismiss="dismissError">{{
+        $options.i18n.queryErrorMessage
+      }}</gl-alert>
       <div>{{ $options.i18n.downloadCSVModalDescription }}</div>
       <div class="gl-my-4">
         <label class="gl-display-block col-form-label-sm col-form-label">

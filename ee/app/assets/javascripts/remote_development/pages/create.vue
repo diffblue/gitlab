@@ -272,7 +272,6 @@ export default {
         <gl-form-group
           :label="$options.i18n.form.maxHoursBeforeTermination"
           label-for="workspace-cluster-max-hours-before-termination"
-          data-testid="workspace-cluster-max-hours-before-termination-form-group"
         >
           <gl-form-input-group>
             <gl-form-input

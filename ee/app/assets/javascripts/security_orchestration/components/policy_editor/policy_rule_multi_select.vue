@@ -99,7 +99,6 @@ export default {
 <template>
   <gl-collapsible-listbox
     multiple
-    data-testid="policy-rule-multi-select"
     :header-text="listBoxHeader"
     :items="listBoxItems"
     :selected="selected"

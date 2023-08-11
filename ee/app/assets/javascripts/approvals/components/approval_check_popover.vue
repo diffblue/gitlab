@@ -49,7 +49,6 @@ export default {
       class="author-link gl-cursor-help"
       :aria-label="__('help')"
       :size="14"
-      data-testid="icon2"
     />
     <gl-popover :target="popoverId" placement="top" :title="title">
       <div class="gl-mb-3">{{ text }}</div>

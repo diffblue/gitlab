@@ -77,7 +77,6 @@ export default {
     <gl-alert
       v-if="showAlert"
       class="gl-mt-3"
-      data-testid="policy-project-alert"
       :dismissible="true"
       :variant="alertVariant"
       @dismiss="dismissAlert"

@@ -112,13 +112,7 @@ export default {
           class="gl-mr-2"
           data-testid="feature-flag-details-icon"
         />
-        <gl-link
-          v-gl-tooltip
-          :title="flag.name"
-          :href="flag.path"
-          class="gl-str-truncated"
-          data-testid="feature-flag-details-link"
-        >
+        <gl-link v-gl-tooltip :title="flag.name" :href="flag.path" class="gl-str-truncated">
           <gl-truncate :text="flag.name" />
         </gl-link>
         <span

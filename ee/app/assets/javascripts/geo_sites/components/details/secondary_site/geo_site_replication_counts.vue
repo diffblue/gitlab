@@ -41,7 +41,7 @@ export default {
       class="gl-display-grid geo-site-replication-counts-grid gl-align-items-center gl-mb-3"
       data-testid="replication-type"
     >
-      <span data-testid="replicable-title">{{ type.title }}</span>
+      <span>{{ type.title }}</span>
       <geo-site-replication-sync-percentage :values="type.sync" />
       <geo-site-replication-sync-percentage :values="type.verification" />
     </div>

@@ -46,7 +46,6 @@ export default {
       :disabled="!canAdminBoard"
       :checked="checked"
       class="gl-text-gray-500"
-      data-testid="scope-to-current-iteration"
       @change="handleToggle"
       >{{ $options.i18n.label }}
     </gl-form-checkbox>

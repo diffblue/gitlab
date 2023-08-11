@@ -124,7 +124,6 @@ export default {
       :label="$options.i18n.corpusName"
       label-size="sm"
       label-for="corpus-name"
-      data-testid="corpus-name-group"
       :invalid-feedback="nameError"
       :state="hasValidName"
     >
@@ -155,7 +154,6 @@ export default {
       :label="$options.i18n.corpusFile"
       label-size="sm"
       label-for="corpus-file"
-      data-testid="corpus-file-group"
       :invalid-feedback="fileError"
       :state="hasValidFile"
     >

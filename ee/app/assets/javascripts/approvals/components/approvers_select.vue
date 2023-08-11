@@ -184,11 +184,7 @@ export default {
         />
       </template>
     </gl-collapsible-listbox>
-    <gl-dropdown
-      data-testid="group-options-dropdown"
-      :text="selectedGroupOption"
-      class="gl-w-30p gl-ml-4"
-    >
+    <gl-dropdown :text="selectedGroupOption" class="gl-w-30p gl-ml-4">
       <gl-dropdown-item
         v-for="groupOption in $options.groupOptions"
         :key="groupOption"
