@@ -37,7 +37,7 @@ jest.mock('~/alert');
 jest.mock('~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal');
 
 const forecastLineStyle = { type: 'dashed', color: DATA_VIZ_BLUE_500 };
-const forecastAreaStyle = { opacity: 1, color: GRAY_50 };
+const forecastAreaStyle = { opacity: 0.2, color: GRAY_50 };
 const contextId = 'gid://gitlab/project/1';
 const makeMockCiCdAnalyticsCharts = ({ selectedChart = 0 } = {}) => ({
   render() {

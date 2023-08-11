@@ -1,4 +1,5 @@
-import { DATA_VIZ_BLUE_500, GRAY_300 } from '@gitlab/ui/dist/tokens/js/tokens';
+import { DATA_VIZ_BLUE_500, GRAY_300, GRAY_50 } from '@gitlab/ui/dist/tokens/js/tokens';
+import { defaultAreaOpacity } from '@gitlab/ui/dist/utils/charts/config';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 
 export const scatterChartLineProps = {
@@ -48,6 +49,11 @@ export const DEFAULT_NULL_SERIES_OPTIONS = {
   areaStyle: {
     color: 'none',
   },
+};
+
+export const BASE_FORECAST_SERIES_OPTIONS = {
+  lineStyle: { type: 'dashed', color: DATA_VIZ_BLUE_500 },
+  areaStyle: { opacity: defaultAreaOpacity, color: GRAY_50 },
 };
 
 export const STACKED_AREA_CHART_SERIES_OPTIONS = {
