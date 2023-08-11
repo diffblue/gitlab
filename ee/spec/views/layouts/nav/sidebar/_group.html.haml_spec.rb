@@ -262,7 +262,7 @@ RSpec.describe 'layouts/nav/sidebar/_group' do
         specify do
           render
 
-          expect(rendered).not_to have_link('CI/CD')
+          expect(rendered).not_to have_link('CI/CD', href: group_analytics_ci_cd_analytics_path(group))
         end
       end
     end

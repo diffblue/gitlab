@@ -1672,7 +1672,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
         expect_allowed(*auditor_permissions)
         expect_disallowed(*(reporter_permissions - auditor_permissions))
         expect_disallowed(*(developer_permissions - auditor_permissions))
-        expect_disallowed(*maintainer_permissions)
+        expect_disallowed(*(maintainer_permissions - auditor_permissions))
         expect_disallowed(*(owner_permissions - auditor_permissions))
       end
     end
@@ -2027,8 +2027,8 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
   context 'when group is read only' do
     let(:current_user) { owner }
     let(:policies) do
-      %i[create_epic update_epic admin_pipeline admin_group_runners register_group_runners add_cluster
-         create_cluster update_cluster admin_cluster create_deploy_token create_subgroup create_package]
+      %i[create_epic update_epic admin_pipeline register_group_runners add_cluster create_cluster
+        update_cluster admin_cluster create_deploy_token create_subgroup create_package]
     end
 
     before do
@@ -2846,8 +2846,8 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
       it { is_expected.to be_allowed(:read_group_runners) }
       it { is_expected.to be_allowed(:read_group_all_available_runners) }
-      it { is_expected.to be_disallowed(:admin_group_runners) }
       it { is_expected.to be_disallowed(:register_group_runners) }
+      it { is_expected.to be_disallowed(:create_runner) }
     end
   end
 
