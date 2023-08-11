@@ -12269,7 +12269,7 @@ CREATE TABLE audit_events_google_cloud_logging_configurations (
     log_id_name text DEFAULT 'audit_events'::text,
     encrypted_private_key bytea NOT NULL,
     encrypted_private_key_iv bytea NOT NULL,
-    name text,
+    name text NOT NULL,
     CONSTRAINT check_0ef835c61e CHECK ((char_length(client_email) <= 254)),
     CONSTRAINT check_55783c7c19 CHECK ((char_length(google_project_id_name) <= 30)),
     CONSTRAINT check_898a76b005 CHECK ((char_length(log_id_name) <= 511)),
