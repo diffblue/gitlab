@@ -24,6 +24,7 @@ RSpec.describe Groups::Security::DashboardController, feature_category: :vulnera
         end
 
         it { is_expected.to have_gitlab_http_status(:ok) }
+        it { is_expected.to render_template(:show) }
       end
 
       context 'when user is not allowed to access group security dashboard' do

@@ -10,9 +10,9 @@ module Projects
         push_frontend_feature_flag(:openai_experimentation, @project)
       end
 
-      before_action :vulnerability, except: [:index, :new]
-      before_action :authorize_admin_vulnerability!, except: [:show, :index, :discussions]
-      before_action :authorize_read_vulnerability!, except: [:new, :update, :destroy, :bulk_update]
+      before_action :vulnerability, except: [:new]
+      before_action :authorize_admin_vulnerability!, except: [:show, :discussions]
+      before_action :authorize_read_vulnerability!, except: [:new]
 
       alias_method :vulnerable, :project
 
