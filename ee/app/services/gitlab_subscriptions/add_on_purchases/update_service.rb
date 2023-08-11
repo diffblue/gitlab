@@ -3,6 +3,9 @@
 module GitlabSubscriptions
   module AddOnPurchases
     class UpdateService < ::GitlabSubscriptions::AddOnPurchases::BaseService
+      extend ::Gitlab::Utils::Override
+
+      override :execute
       def execute
         super
 
@@ -14,6 +17,7 @@ module GitlabSubscriptions
       private
 
       # rubocop: disable CodeReuse/ActiveRecord
+      override :add_on_purchase
       def add_on_purchase
         @add_on_purchase ||= GitlabSubscriptions::AddOnPurchase.find_by(
           namespace: namespace,
@@ -32,6 +36,7 @@ module GitlabSubscriptions
         add_on_purchase.update(attributes)
       end
 
+      override :error_response
       def error_response
         if add_on_purchase.nil?
           ServiceResponse.error(

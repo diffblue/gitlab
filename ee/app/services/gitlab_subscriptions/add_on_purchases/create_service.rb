@@ -3,6 +3,9 @@
 module GitlabSubscriptions
   module AddOnPurchases
     class CreateService < ::GitlabSubscriptions::AddOnPurchases::BaseService
+      extend ::Gitlab::Utils::Override
+
+      override :execute
       def execute
         super
 
@@ -17,6 +20,7 @@ module GitlabSubscriptions
         ServiceResponse.error(message: "Namespace #{namespace.id} is not a root namespace")
       end
 
+      override :add_on_purchase
       def add_on_purchase
         @add_on_purchase ||= GitlabSubscriptions::AddOnPurchase.new(
           namespace: namespace,
@@ -27,6 +31,7 @@ module GitlabSubscriptions
         )
       end
 
+      override :error_response
       def error_response
         if add_on_purchase.errors.of_kind?(:subscription_add_on_id, :taken)
           ServiceResponse.error(
