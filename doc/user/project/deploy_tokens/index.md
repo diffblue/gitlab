@@ -95,6 +95,7 @@ Prerequisites:
 1. On the left sidebar, at the top, select **Search GitLab** (**{search}**) to find your project or group.
 1. Select **Settings > Repository**.
 1. Expand **Deploy tokens**.
+1. Select **Add token**.
 1. Complete the fields, and select the desired [scopes](#scope).
 1. Select **Create deploy token**.
 
