@@ -1,10 +1,9 @@
 <script>
 import { GlIcon, GlTooltip } from '@gitlab/ui';
-import { cloneDeep } from 'lodash';
 import { n__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { getSeverity } from '~/ci/reports/utils';
-import { SAST_SCALE_KEY, CODE_QUALITY_SCALE_KEY } from '~/ci/reports/constants';
+import { CODE_QUALITY_SCALE_KEY } from '~/ci/reports/constants';
 
 const inlineFindingsCountThreshold = 3;
 
@@ -29,11 +28,6 @@ export default {
       required: false,
       default: () => [],
     },
-    sast: {
-      type: Array,
-      required: false,
-      default: () => [],
-    },
   },
   data() {
     return {
@@ -48,20 +42,12 @@ export default {
         scaledCodeQuality.scale = CODE_QUALITY_SCALE_KEY;
         return scaledCodeQuality;
       });
-      this.sast.map((e) => {
-        const scaledSast = e;
-        scaledSast.scale = SAST_SCALE_KEY;
-        return scaledSast;
-      });
 
       // cloneDeep to not mutate props
-      return this.codequality.concat(cloneDeep(this.sast));
+      return this.codequality;
     },
     codeQualityTooltipTextCollapsed() {
       return n__('1 Code Quality finding', '%d Code Quality findings', this.codequality.length);
-    },
-    sastTooltipTextCollapsed() {
-      return n__('1 Security finding', '%d Security findings', this.sast.length);
     },
     showMoreCount() {
       return this.moreCount && this.isHoveringFirstIcon;
@@ -146,7 +132,6 @@ export default {
       <span v-if="codequality.length" class="gl-display-block">{{
         codeQualityTooltipTextCollapsed
       }}</span>
-      <span v-if="sast.length" class="gl-display-block">{{ sastTooltipTextCollapsed }}</span>
     </gl-tooltip>
   </div>
 </template>
