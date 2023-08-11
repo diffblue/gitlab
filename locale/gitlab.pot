@@ -47708,6 +47708,9 @@ msgstr ""
 msgid "There was an summarizing your pending comments."
 msgstr ""
 
+msgid "These branches already have an open merge request: %{link_to_mr}. Select a different source or target branch."
+msgstr ""
+
 msgid "These dates affect how your epics appear in the roadmap. Set a fixed date or one inherited from the milestones assigned to issues in this epic."
 msgstr ""
 
