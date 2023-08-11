@@ -26,12 +26,7 @@ module QA
     describe 'Group' do
       let(:group) { create(:group, path: "test-group-#{SecureRandom.hex(8)}") }
 
-      let(:project) do
-        Resource::Project.fabricate_via_api! do |resource|
-          resource.name = 'project-shared-with-group'
-        end
-      end
-
+      let(:project) { create(:project, name: 'project-shared-with-group') }
       let(:user) do
         Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1)
       end

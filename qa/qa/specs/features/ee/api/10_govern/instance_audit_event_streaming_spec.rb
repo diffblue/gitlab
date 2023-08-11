@@ -69,11 +69,7 @@ module QA
       context 'when a project is created' do
         # Create a group first so its audit event is streamed before we check for the create project event
         let!(:group) { Resource::Group.fabricate! }
-        let(:entity_path) do
-          Resource::Project.fabricate_via_api! do |project|
-            project.group = group
-          end.full_path
-        end
+        let(:entity_path) { create(:project, group: group).full_path }
 
         include_examples 'streamed events', 'project_created', 'Project', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/415875'
       end

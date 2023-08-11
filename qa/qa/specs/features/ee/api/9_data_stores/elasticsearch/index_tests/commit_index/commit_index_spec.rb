@@ -13,15 +13,8 @@ module QA
       include_context 'advanced search active'
 
       let(:api_client) { Runtime::API::Client.new(:gitlab) }
-
-      let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = "test-project-for-commit-index"
-        end
-      end
-
+      let(:project) { create(:project, name: 'test-project-for-commit-index') }
       let(:content) { "Advanced search test commit #{SecureRandom.hex(8)}" }
-
       let(:commit) do
         Resource::Repository::Commit.fabricate_via_api! do |commit|
           commit.project = project

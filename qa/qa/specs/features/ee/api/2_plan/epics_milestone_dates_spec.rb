@@ -12,12 +12,7 @@ module QA
       let(:fixed_due_date) { (Date.today + 90).iso8601 }
       let(:api_client) { Runtime::API::Client.new(:gitlab) }
       let(:group) { create(:group, path: "epic-milestone-group-#{SecureRandom.hex(8)}") }
-      let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = "epic-milestone-project-#{SecureRandom.hex(8)}"
-          project.group = group
-        end
-      end
+      let(:project) { create(:project, name: "epic-milestone-project-#{SecureRandom.hex(8)}", group: group) }
 
       it 'updates epic dates when updating milestones', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347958' do
         epic, milestone = create_epic_issue_milestone

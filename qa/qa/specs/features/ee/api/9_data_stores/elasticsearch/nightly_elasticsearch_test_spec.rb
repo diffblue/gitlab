@@ -18,12 +18,7 @@ module QA
       p4_threshold = 3
       let(:project_file_content) { "elasticsearch: #{SecureRandom.hex(8)}" }
       let(:api_client) { Runtime::API::Client.new(:gitlab) }
-
-      let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = "api-es-#{SecureRandom.hex(8)}"
-        end
-      end
+      let(:project) { create(:project, name: "api-es-#{SecureRandom.hex(8)}") }
 
       before do
         Resource::Repository::Commit.fabricate_via_api! do |commit|
