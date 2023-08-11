@@ -10,6 +10,8 @@ import {
   findWorkItemCreatedEvent,
   findClosedEvent,
   findWorkItemClosedEvent,
+  findReopenedEvent,
+  findWorkItemReopenedEvent,
 } from 'jest/contribution_events/utils';
 
 export const eventEpicCreated = findCreatedEvent(TARGET_TYPE_EPIC);
@@ -25,3 +27,10 @@ export const eventTestCaseClosed = findWorkItemClosedEvent(WORK_ITEM_ISSUE_TYPE_
 export const eventRequirementClosed = findWorkItemClosedEvent(WORK_ITEM_ISSUE_TYPE_REQUIREMENT);
 export const eventObjectiveClosed = findWorkItemClosedEvent(WORK_ITEM_ISSUE_TYPE_OBJECTIVE);
 export const eventKeyResultClosed = findWorkItemClosedEvent(WORK_ITEM_ISSUE_TYPE_KEY_RESULT);
+
+export const eventEpicReopened = findReopenedEvent(TARGET_TYPE_EPIC);
+
+export const eventTestCaseReopened = findWorkItemReopenedEvent(WORK_ITEM_ISSUE_TYPE_TEST_CASE);
+export const eventRequirementReopened = findWorkItemReopenedEvent(WORK_ITEM_ISSUE_TYPE_REQUIREMENT);
+export const eventObjectiveReopened = findWorkItemReopenedEvent(WORK_ITEM_ISSUE_TYPE_OBJECTIVE);
+export const eventKeyResultReopened = findWorkItemReopenedEvent(WORK_ITEM_ISSUE_TYPE_KEY_RESULT);
