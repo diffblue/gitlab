@@ -140,20 +140,6 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
           end
         end
 
-        context 'when ensure_onboarding is disabled' do
-          let_it_be(:user) { create(:user, onboarding_in_progress: true) }
-
-          before do
-            stub_feature_flags(ensure_onboarding: false)
-          end
-
-          it 'does not store onboarding url' do
-            post_create
-
-            expect(user.user_detail.onboarding_step_url).to be_nil
-          end
-        end
-
         context 'when onboarding and on SaaS' do
           let_it_be(:user) { create(:user, onboarding_in_progress: true) }
 

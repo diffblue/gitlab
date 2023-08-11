@@ -24,7 +24,6 @@ RSpec.describe Ldap::OmniauthCallbacksController, feature_category: :system_acce
 
     before do
       stub_ee_application_setting(should_check_namespace_plan: true)
-      stub_feature_flags(ensure_onboarding: true)
     end
 
     it 'does not enforce onboarding for sign up' do

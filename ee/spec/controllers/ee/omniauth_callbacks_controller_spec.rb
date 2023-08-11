@@ -269,7 +269,6 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
 
     before do
       stub_ee_application_setting(should_check_namespace_plan: check_namespace_plan)
-      stub_feature_flags(ensure_onboarding: true)
       stub_omniauth_setting(block_auto_created_users: false)
     end
 
