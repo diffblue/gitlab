@@ -45,9 +45,8 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
 
     context 'state transition: [:started] => [:finished]' do
       context 'Geo repository update events' do
-        let(:repository_updated_service) { instance_double('::Geo::RepositoryUpdatedService') }
-        let(:wiki_updated_service) { instance_double('::Geo::RepositoryUpdatedService') }
         let(:design_updated_service) { instance_double('::Geo::RepositoryUpdatedService') }
+        let(:repository_updated_service) { instance_double('::Geo::RepositoryUpdatedService') }
 
         before do
           allow(::Geo::RepositoryUpdatedService)
@@ -57,81 +56,8 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
 
           allow(::Geo::RepositoryUpdatedService)
             .to receive(:new)
-            .with(project.wiki.repository)
-            .and_return(wiki_updated_service)
-
-          allow(::Geo::RepositoryUpdatedService)
-            .to receive(:new)
             .with(project.design_repository)
             .and_return(design_updated_service)
-        end
-
-        context 'with geo_project_wiki_repository_replication feature flag disabled' do
-          before do
-            stub_feature_flags(geo_project_wiki_repository_replication: false)
-            stub_feature_flags(geo_project_repository_replication: false)
-          end
-
-          it 'calls Geo::RepositoryUpdatedService when running on a Geo primary node', :aggregate_failures do
-            stub_primary_node
-
-            expect(repository_updated_service).to receive(:execute).once
-            expect(wiki_updated_service).to receive(:execute).once
-
-            import_state.finish
-          end
-
-          it 'does not call Geo::RepositoryUpdatedService when not running on a Geo primary node', :aggregate_failures do
-            stub_secondary_node
-
-            expect(repository_updated_service).not_to receive(:execute)
-            expect(wiki_updated_service).not_to receive(:execute)
-
-            import_state.finish
-          end
-        end
-
-        context 'with geo_project_wiki_repository_replication feature flag enabled' do
-          before do
-            stub_feature_flags(geo_project_wiki_repository_replication: true)
-            stub_feature_flags(geo_project_repository_replication: false)
-          end
-
-          context 'when on a Geo primary site' do
-            before do
-              stub_primary_node
-            end
-
-            it 'does not call Geo::RepositoryUpdatedService for the wiki repository', :aggregate_failures do
-              expect(repository_updated_service).to receive(:execute).once
-              expect_next_instance_of(::Geo::RepositoryUpdatedService, project.wiki.repository).never
-
-              import_state.finish
-            end
-
-            context 'when wiki_repository does not exist' do
-              it 'does not call replicator to update Geo' do
-                expect(project.wiki_repository).to be_nil
-                expect(repository_updated_service).to receive(:execute).once
-                expect_next_instance_of(Geo::ProjectWikiRepositoryReplicator).never
-
-                import_state.finish
-              end
-            end
-
-            context 'when wiki_repository exists' do
-              it 'calls replicator to update Geo after record is saved', :aggregate_failures do
-                create(:project_wiki_repository, project: project)
-
-                expect(import_state).to receive(:run_after_commit).once.and_call_original
-                expect(project.wiki_repository).to be_present
-                expect(repository_updated_service).to receive(:execute).once
-                expect(project.wiki_repository.replicator).to receive(:geo_handle_after_update)
-
-                import_state.finish
-              end
-            end
-          end
         end
 
         context 'with geo_design_management_repository_replication feature flag disabled' do
@@ -181,7 +107,6 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
 
         context 'with geo_project_repository_replication feature flag disabled' do
           before do
-            stub_feature_flags(geo_project_wiki_repository_replication: true)
             stub_feature_flags(geo_project_repository_replication: false)
           end
 

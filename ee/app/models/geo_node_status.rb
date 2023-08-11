@@ -436,8 +436,6 @@ class GeoNodeStatus < ApplicationRecord
     self.projects_count = Geo::ProjectRegistry.count
     self.repositories_synced_count = Geo::ProjectRegistry.synced(:repository).count
     self.repositories_failed_count = Geo::ProjectRegistry.sync_failed(:repository).count
-    self.wikis_synced_count = Geo::ProjectRegistry.synced(:wiki).count
-    self.wikis_failed_count = Geo::ProjectRegistry.sync_failed(:wiki).count
   end
 
   def load_designs_data
@@ -491,9 +489,6 @@ class GeoNodeStatus < ApplicationRecord
     self.repositories_checksummed_count = repository_verification_finder.count_verified_repositories
     self.repositories_checksum_failed_count = repository_verification_finder.count_verification_failed_repositories
     self.repositories_checksum_total_count = self.projects_count
-    self.wikis_checksummed_count = repository_verification_finder.count_verified_wikis
-    self.wikis_checksum_failed_count = repository_verification_finder.count_verification_failed_wikis
-    self.wikis_checksum_total_count = self.projects_count
 
     Gitlab::Geo::REPLICATOR_CLASSES.each do |replicator|
       next unless replicator.verification_feature_flag_enabled?
@@ -509,12 +504,7 @@ class GeoNodeStatus < ApplicationRecord
     self.repositories_verification_failed_count = Geo::ProjectRegistry.verification_failed(:repository).count
     self.repositories_verification_total_count = self.projects_count
     self.repositories_checksum_mismatch_count = Geo::ProjectRegistry.mismatch(:repository).count
-    self.wikis_verified_count = Geo::ProjectRegistry.verified(:wiki).count
-    self.wikis_verification_failed_count = Geo::ProjectRegistry.verification_failed(:wiki).count
-    self.wikis_verification_total_count = self.projects_count
-    self.wikis_checksum_mismatch_count = Geo::ProjectRegistry.mismatch(:wiki).count
     self.repositories_retrying_verification_count = Geo::ProjectRegistry.retrying_verification(:repository).count
-    self.wikis_retrying_verification_count = Geo::ProjectRegistry.retrying_verification(:wiki).count
 
     ::Gitlab::Geo.verification_enabled_replicator_classes.each do |replicator|
       public_send("#{replicator.replicable_name_plural}_verified_count=", replicator.verified_count) # rubocop:disable GitlabSecurity/PublicSend

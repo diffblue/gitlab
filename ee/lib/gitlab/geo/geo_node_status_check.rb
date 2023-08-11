@@ -26,8 +26,6 @@ module Gitlab
 
         print_repositories_status
         print_verified_repositories
-        print_wikis_status
-        print_verified_wikis
         print_container_repositories_status
         print_design_repositories_status
         print_replicators_status
@@ -45,8 +43,6 @@ module Gitlab
       def print_replication_verification_status
         print_repositories_status
         print_verified_repositories
-        print_wikis_status
-        print_verified_wikis
         print_container_repositories_status
         print_design_repositories_status
         print_replicators_status
@@ -68,7 +64,6 @@ module Gitlab
       def legacy_replication_and_verification_checks_status
         replicables = [
           ["repositories", Gitlab::Geo.repository_verification_enabled?],
-          ["wikis", Gitlab::Geo.repository_verification_enabled?],
           ["job_artifacts", false],
           ["design_repositories", false]
         ]
@@ -236,32 +231,6 @@ module Gitlab
             succeeded: current_node_status.repositories_verified_count,
             total: current_node_status.projects_count,
             percentage: current_node_status.repositories_verified_in_percentage
-          )
-        end
-      end
-
-      def print_wikis_status
-        return if ::Geo::ProjectWikiRepositoryReplicator.enabled?
-
-        print_counts_row(
-          description: 'Wikis',
-          failed: current_node_status.wikis_failed_count,
-          succeeded: current_node_status.wikis_synced_count,
-          total: current_node_status.projects_count,
-          percentage: current_node_status.wikis_synced_in_percentage
-        )
-      end
-
-      def print_verified_wikis
-        return if ::Geo::ProjectWikiRepositoryReplicator.enabled?
-
-        if Gitlab::Geo.repository_verification_enabled?
-          print_counts_row(
-            description: 'Verified Wikis',
-            failed: current_node_status.wikis_verification_failed_count,
-            succeeded: current_node_status.wikis_verified_count,
-            total: current_node_status.projects_count,
-            percentage: current_node_status.wikis_verified_in_percentage
           )
         end
       end

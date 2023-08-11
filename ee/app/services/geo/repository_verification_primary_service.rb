@@ -8,7 +8,6 @@ module Geo
 
     def execute
       verify_checksum(:repository, project.repository)
-      verify_checksum(:wiki, project.wiki.repository)
 
       Geo::ResetChecksumEventStore.new(project).create!
     end
@@ -18,8 +17,6 @@ module Geo
     attr_reader :project
 
     def verify_checksum(type, repository)
-      return if type == :wiki && ::Geo::ProjectWikiRepositoryReplicator.enabled?
-
       checksum = calculate_checksum(repository)
       update_repository_state!(type, checksum: checksum)
     rescue StandardError => e

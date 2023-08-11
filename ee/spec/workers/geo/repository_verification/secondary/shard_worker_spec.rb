@@ -116,34 +116,13 @@ RSpec.describe Geo::RepositoryVerification::Secondary::ShardWorker, :geo, :reque
       subject.perform(shard_name)
     end
 
-    context 'with geo_project_wiki_repository_replication feature flag disabled' do
-      before do
-        stub_feature_flags(geo_project_wiki_repository_replication: false)
-      end
+    it 'does not schedule jobs for projects missing wiki verification' do
+      create(:repository_state, :repository_verified, :wiki_verified, project: project_1)
+      missing_wiki_verification = create(:geo_project_registry, :synced, :repository_verified, project: project_1)
 
-      it 'schedule jobs for projects missing wiki verification' do
-        create(:repository_state, :repository_verified, :wiki_verified, project: project_1)
-        missing_wiki_verification = create(:geo_project_registry, :synced, :repository_verified, project: project_1)
+      expect(verification_worker).not_to receive(:perform_async).with(missing_wiki_verification.id)
 
-        expect(verification_worker).to receive(:perform_async).with(missing_wiki_verification.id)
-
-        subject.perform(shard_name)
-      end
-    end
-
-    context 'with geo_project_wiki_repository_replication feature flag enabled' do
-      before do
-        stub_feature_flags(geo_project_wiki_repository_replication: true)
-      end
-
-      it 'does not schedule jobs for projects missing wiki verification' do
-        create(:repository_state, :repository_verified, :wiki_verified, project: project_1)
-        missing_wiki_verification = create(:geo_project_registry, :synced, :repository_verified, project: project_1)
-
-        expect(verification_worker).not_to receive(:perform_async).with(missing_wiki_verification.id)
-
-        subject.perform(shard_name)
-      end
+      subject.perform(shard_name)
     end
 
     it 'does not schedule jobs for projects on other shards' do
@@ -192,61 +171,26 @@ RSpec.describe Geo::RepositoryVerification::Secondary::ShardWorker, :geo, :reque
         end
       end
 
-      context 'with geo_project_wiki_repository_replication feature flag disabled' do
-        before do
-          stub_feature_flags(geo_project_wiki_repository_replication: false)
-        end
+      it 'handles multiple batches of projects needing verification, skipping repositories not verified on primary' do
+        reg1 = create(:geo_project_registry, :synced, :repository_verification_outdated, project: repository_verified_1)
+        reg2 = create(:geo_project_registry, :synced, :repository_verification_outdated, project: repository_verified_2)
+        create(:geo_project_registry, :synced, :repository_verification_outdated, :wiki_verified, project: repository_failed, primary_repository_checksummed: false)
+        reg4 = create(:geo_project_registry, :synced, :wiki_verification_outdated, project: wiki_verified, primary_repository_checksummed: false)
+        create(:geo_project_registry, :synced, :repository_verification_failed, :wiki_verification_failed, project: repository_and_wiki_verified_1)
+        reg6 = create(:geo_project_registry, :synced, project: repository_and_wiki_verified_2)
 
-        it 'handles multiple batches of projects/wikis needing verification, skipping repositories not verified on primary' do
-          reg1 = create(:geo_project_registry, :synced, :repository_verification_outdated, project: repository_verified_1)
-          reg2 = create(:geo_project_registry, :synced, :repository_verification_outdated, project: repository_verified_2)
-          create(:geo_project_registry, :synced, :repository_verification_outdated, :wiki_verified, project: repository_failed, primary_repository_checksummed: false)
-          reg4 = create(:geo_project_registry, :synced, :wiki_verification_outdated, project: wiki_verified, primary_repository_checksummed: false)
-          create(:geo_project_registry, :synced, :repository_verification_failed, :wiki_verification_failed, project: repository_and_wiki_verified_1)
-          reg6 = create(:geo_project_registry, :synced, project: repository_and_wiki_verified_2)
+        expect(verification_worker).to receive(:perform_async).with(reg1.id).once.and_call_original
+        expect(verification_worker).to receive(:perform_async).with(reg2.id).once.and_call_original
+        expect(verification_worker).not_to receive(:perform_async).with(reg4.id)
+        expect(verification_worker).to receive(:perform_async).with(reg6.id).once.and_call_original
 
-          expect(verification_worker).to receive(:perform_async).with(reg1.id).once.and_call_original
-          expect(verification_worker).to receive(:perform_async).with(reg2.id).once.and_call_original
-          expect(verification_worker).to receive(:perform_async).with(reg4.id).once.and_call_original
-          expect(verification_worker).to receive(:perform_async).with(reg6.id).once.and_call_original
-
-          # In the setup phase, we stub the db_retrieve_batch_size value to 1, and
-          # we have 6 registries that can be verified. So, 7 (number of registries
-          # in this state + 1) is the number of times the worker needs to run to
-          # ensure that enqueue secondary_singleworker once per registry pending
-          # verification.
-          7.times do
-            Sidekiq::Testing.inline! { subject.perform(shard_name) }
-          end
-        end
-      end
-
-      context 'with geo_project_wiki_repository_replication feature flag enabled' do
-        before do
-          stub_feature_flags(geo_project_wiki_repository_replication: true)
-        end
-
-        it 'handles multiple batches of projects needing verification, skipping repositories not verified on primary' do
-          reg1 = create(:geo_project_registry, :synced, :repository_verification_outdated, project: repository_verified_1)
-          reg2 = create(:geo_project_registry, :synced, :repository_verification_outdated, project: repository_verified_2)
-          create(:geo_project_registry, :synced, :repository_verification_outdated, :wiki_verified, project: repository_failed, primary_repository_checksummed: false)
-          reg4 = create(:geo_project_registry, :synced, :wiki_verification_outdated, project: wiki_verified, primary_repository_checksummed: false)
-          create(:geo_project_registry, :synced, :repository_verification_failed, :wiki_verification_failed, project: repository_and_wiki_verified_1)
-          reg6 = create(:geo_project_registry, :synced, project: repository_and_wiki_verified_2)
-
-          expect(verification_worker).to receive(:perform_async).with(reg1.id).once.and_call_original
-          expect(verification_worker).to receive(:perform_async).with(reg2.id).once.and_call_original
-          expect(verification_worker).not_to receive(:perform_async).with(reg4.id)
-          expect(verification_worker).to receive(:perform_async).with(reg6.id).once.and_call_original
-
-          # In the setup phase, we stub the db_retrieve_batch_size value to 1, and
-          # we have 6 registries that can be verified. So, 7 (number of registries
-          # in this state + 1) is the number of times the worker needs to run to
-          # ensure that enqueue secondary_singleworker once per registry pending
-          # verification.
-          7.times do
-            Sidekiq::Testing.inline! { subject.perform(shard_name) }
-          end
+        # In the setup phase, we stub the db_retrieve_batch_size value to 1, and
+        # we have 6 registries that can be verified. So, 7 (number of registries
+        # in this state + 1) is the number of times the worker needs to run to
+        # ensure that enqueue secondary_singleworker once per registry pending
+        # verification.
+        7.times do
+          Sidekiq::Testing.inline! { subject.perform(shard_name) }
         end
       end
     end

@@ -65,15 +65,7 @@ module Geo
     end
 
     def lease_key
-      @lease_key ||=
-        if replicator == 'project_wiki_repository'
-          # Only to keep compatibility with the legacy framework for wikis. We can
-          # remove this conditional in the same merge request that removes all references
-          # to the geo_project_wiki_repository_replication feature flag from the codebase.
-          "#{Geo::RepositoryBaseSyncService::LEASE_KEY_PREFIX}:wiki:#{replicator.model_record.project_id}"
-        else
-          "#{LEASE_KEY_PREFIX}:#{replicable_name}:#{replicator.model_record.id}"
-        end
+      @lease_key ||= "#{LEASE_KEY_PREFIX}:#{replicable_name}:#{replicator.model_record.id}"
     end
 
     def lease_timeout

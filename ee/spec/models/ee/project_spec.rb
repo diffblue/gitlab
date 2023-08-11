@@ -2389,9 +2389,8 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     let_it_be(:project) { create(:project) }
 
     context 'Geo repository update events' do
-      let(:repository_updated_service) { instance_double('::Geo::RepositoryUpdatedService') }
-      let(:wiki_updated_service) { instance_double('::Geo::RepositoryUpdatedService') }
       let(:design_updated_service) { instance_double('::Geo::RepositoryUpdatedService') }
+      let(:repository_updated_service) { instance_double('::Geo::RepositoryUpdatedService') }
 
       before do
         allow(::Geo::RepositoryUpdatedService)
@@ -2401,67 +2400,8 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
         allow(::Geo::RepositoryUpdatedService)
           .to receive(:new)
-          .with(project.wiki.repository)
-          .and_return(wiki_updated_service)
-
-        allow(::Geo::RepositoryUpdatedService)
-          .to receive(:new)
           .with(project.design_repository)
           .and_return(design_updated_service)
-      end
-
-      context 'with geo_project_wiki_repository_replication feature flag disabled' do
-        let_it_be(:import_state) { create(:import_state, :started, project: project) }
-
-        before do
-          stub_feature_flags(geo_project_wiki_repository_replication: false)
-          stub_feature_flags(geo_project_repository_replication: false)
-        end
-
-        it 'calls Geo::RepositoryUpdatedService when running on a Geo primary node', :aggregate_failures do
-          stub_primary_node
-
-          expect(repository_updated_service).to receive(:execute).once
-          expect(wiki_updated_service).to receive(:execute).once
-
-          project.after_import
-        end
-
-        it 'does not call Geo::RepositoryUpdatedService when not running on a Geo primary node', :aggregate_failures do
-          stub_secondary_node
-
-          expect(repository_updated_service).not_to receive(:execute)
-          expect(wiki_updated_service).not_to receive(:execute)
-
-          project.after_import
-        end
-      end
-
-      context 'with geo_project_wiki_repository_replication feature flag enabled' do
-        let_it_be(:import_state) { create(:import_state, :started, project: project) }
-
-        before do
-          stub_feature_flags(geo_project_wiki_repository_replication: true)
-          stub_feature_flags(geo_project_repository_replication: false)
-        end
-
-        it 'does not call Geo::RepositoryUpdatedService for wikis when running on a Geo primary node', :aggregate_failures do
-          stub_primary_node
-
-          expect(repository_updated_service).to receive(:execute).once
-          expect(wiki_updated_service).not_to receive(:execute)
-
-          project.after_import
-        end
-
-        it 'does not call Geo::RepositoryUpdatedService when not running on a Geo primary node', :aggregate_failures do
-          stub_secondary_node
-
-          expect(repository_updated_service).not_to receive(:execute)
-          expect(wiki_updated_service).not_to receive(:execute)
-
-          project.after_import
-        end
       end
 
       context 'with geo_design_management_repository_replication feature flag disabled' do
@@ -2522,7 +2462,6 @@ RSpec.describe Project, feature_category: :groups_and_projects do
         let_it_be(:import_state) { create(:import_state, :started, project: project) }
 
         before do
-          stub_feature_flags(geo_project_wiki_repository_replication: true)
           stub_feature_flags(geo_project_repository_replication: false)
         end
 

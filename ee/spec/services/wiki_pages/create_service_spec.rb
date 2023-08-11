@@ -5,77 +5,82 @@ require 'spec_helper'
 RSpec.describe WikiPages::CreateService, feature_category: :wiki do
   include ::EE::GeoHelpers
 
-  let(:user) { create(:user) }
-
-  let(:opts) do
-    {
-      title: 'Title',
-      content: 'Content for wiki page',
-      format: 'markdown'
-    }
-  end
-
-  subject(:service) { described_class.new(container: container, current_user: user, params: opts) }
-
   describe '#execute' do
-    let(:container) { create(:project, :wiki_repo) }
+    context 'with Geo replication' do
+      let_it_be(:primary) { create(:geo_node, :primary) }
+      let_it_be(:secondary) { create(:geo_node) }
+      let_it_be(:user) { create(:user) }
 
-    context 'with geo_project_wiki_repository_replication feature flag disabled' do
-      before do
-        stub_feature_flags(geo_project_wiki_repository_replication: false)
+      let(:container) { create(:project) }
+
+      let(:opts) do
+        {
+          title: 'Title',
+          content: 'Content for wiki page',
+          format: 'markdown'
+        }
       end
 
-      it 'calls Geo::RepositoryUpdatedService when running on a Geo primary site' do
-        stub_primary_node
+      subject(:service) { described_class.new(container: container, current_user: user, params: opts) }
 
-        expect_next_instance_of(::Geo::RepositoryUpdatedService, container.wiki.repository) do |service|
-          expect(service).to receive(:execute).once
-        end
-
-        service.execute
-      end
-
-      it 'does not call Geo::RepositoryUpdatedService when not running on a Geo primary site' do
-        stub_secondary_node
-
-        expect_next_instance_of(::Geo::RepositoryUpdatedService).never
-
-        service.execute
-      end
-    end
-
-    context 'with geo_project_wiki_repository_replication feature flag enabled' do
-      before do
-        stub_feature_flags(geo_project_wiki_repository_replication: true)
-      end
-
-      context 'when on a Geo primary site' do
+      context 'with geo_project_wiki_repository_replication feature flag disabled' do
         before do
-          stub_primary_node
+          stub_feature_flags(geo_project_wiki_repository_replication: false)
         end
 
-        it 'does not call Geo::RepositoryUpdatedService' do
-          expect_next_instance_of(::Geo::RepositoryUpdatedService).never
+        context 'when on a Geo primary site' do
+          before do
+            stub_current_geo_node(primary)
+          end
 
-          service.execute
+          it 'does not create a Geo::Event' do
+            expect { service.execute }
+              .not_to change { ::Geo::Event.count }
+          end
         end
 
-        it 'calls replicator to update Geo' do
-          expect(container.wiki_repository.replicator).to receive(:geo_handle_after_update)
+        context 'when not on a Geo primary site' do
+          before do
+            stub_current_geo_node(secondary)
+          end
 
-          service.execute
+          it 'does not create a Geo::Event' do
+            expect { service.execute }
+              .not_to change { ::Geo::Event.count }
+          end
         end
       end
 
-      context 'when not on a Geo primary site' do
+      context 'with geo_project_wiki_repository_replication feature flag enabled' do
         before do
-          stub_secondary_node
+          stub_feature_flags(geo_project_wiki_repository_replication: true)
         end
 
-        it 'does not call replicator to update Geo' do
-          expect_next_instance_of(Geo::ProjectWikiRepositoryReplicator).never
+        context 'when on a Geo primary site' do
+          before do
+            stub_current_geo_node(primary)
+          end
 
-          service.execute
+          it 'creates a Geo::Event' do
+            event_params = {
+              event_name: :updated,
+              replicable_name: :project_wiki_repository
+            }
+
+            expect { service.execute }
+              .to change { ::Geo::Event.where(event_params).count }.by(1)
+          end
+        end
+
+        context 'when not on a Geo primary site' do
+          before do
+            stub_current_geo_node(secondary)
+          end
+
+          it 'does not create a Geo::Event' do
+            expect { service.execute }
+              .not_to change { ::Geo::Event.count }
+          end
         end
       end
     end

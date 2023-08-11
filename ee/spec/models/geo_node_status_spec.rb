@@ -187,17 +187,6 @@ RSpec.describe GeoNodeStatus, :geo, feature_category: :geo_replication do
     end
   end
 
-  describe '#wikis_synced_count' do
-    it 'returns the right number of synced registries' do
-      create(:geo_project_registry, :synced, project: project_1)
-      create(:geo_project_registry, :synced, project: project_3)
-      create(:geo_project_registry, :repository_syncing, project: project_4)
-      create(:geo_project_registry, :wiki_syncing)
-
-      expect(subject.wikis_synced_count).to eq(3)
-    end
-  end
-
   describe '#repositories_failed_count' do
     it 'returns the right number of failed registries' do
       create(:geo_project_registry, :sync_failed, project: project_1)
@@ -206,17 +195,6 @@ RSpec.describe GeoNodeStatus, :geo, feature_category: :geo_replication do
       create(:geo_project_registry, :wiki_syncing)
 
       expect(subject.repositories_failed_count).to eq(2)
-    end
-  end
-
-  describe '#wikis_failed_count' do
-    it 'returns the right number of failed registries' do
-      create(:geo_project_registry, :sync_failed, project: project_1)
-      create(:geo_project_registry, :sync_failed, project: project_3)
-      create(:geo_project_registry, :repository_syncing, project: project_4)
-      create(:geo_project_registry, :wiki_syncing)
-
-      expect(subject.wikis_failed_count).to eq(2)
     end
   end
 
@@ -238,27 +216,6 @@ RSpec.describe GeoNodeStatus, :geo, feature_category: :geo_replication do
       create(:geo_project_registry, project: project_4)
 
       expect(subject.repositories_synced_in_percentage).to be_within(0.0001).of(25)
-    end
-  end
-
-  describe '#wikis_synced_in_percentage' do
-    it 'returns 0 when no projects are available' do
-      expect(subject.wikis_synced_in_percentage).to eq(0)
-    end
-
-    it 'returns 0 when project count is unknown' do
-      allow(subject).to receive(:projects_count).and_return(nil)
-
-      expect(subject.wikis_synced_in_percentage).to eq(0)
-    end
-
-    it 'returns the right percentage' do
-      create(:geo_project_registry, :synced, project: project_1)
-      create(:geo_project_registry, project: project_2)
-      create(:geo_project_registry, project: project_3)
-      create(:geo_project_registry, project: project_4)
-
-      expect(subject.wikis_synced_in_percentage).to be_within(0.0001).of(25)
     end
   end
 
@@ -366,68 +323,6 @@ RSpec.describe GeoNodeStatus, :geo, feature_category: :geo_replication do
       create(:repository_state, :repository_verified, project: project_1)
 
       expect(subject.repositories_checksummed_in_percentage).to be_within(0.0001).of(25)
-    end
-  end
-
-  describe '#wikis_checksummed_count' do
-    before do
-      stub_current_geo_node(primary)
-    end
-
-    it 'returns the right number of checksummed wikis' do
-      create(:repository_state, :wiki_verified)
-      create(:repository_state, :wiki_verified)
-
-      expect(subject.wikis_checksummed_count).to eq(2)
-    end
-
-    it 'returns existing value when feature flag if off' do
-      allow(Gitlab::Geo).to receive(:repository_verification_enabled?).and_return(false)
-      create(:geo_node_status, :healthy, geo_node: primary)
-
-      expect(subject.wikis_checksummed_count).to eq(585)
-    end
-  end
-
-  describe '#wikis_checksum_failed_count' do
-    before do
-      stub_current_geo_node(primary)
-    end
-
-    it 'returns the right number of failed wikis' do
-      create(:repository_state, :wiki_failed)
-      create(:repository_state, :wiki_failed)
-
-      expect(subject.wikis_checksum_failed_count).to eq(2)
-    end
-
-    it 'returns existing value when feature flag if off' do
-      allow(Gitlab::Geo).to receive(:repository_verification_enabled?).and_return(false)
-      create(:geo_node_status, :healthy, geo_node: primary)
-
-      expect(subject.wikis_checksum_failed_count).to eq(55)
-    end
-  end
-
-  describe '#wikis_checksummed_in_percentage' do
-    before do
-      stub_current_geo_node(primary)
-    end
-
-    it 'returns 0 when no projects are available' do
-      expect(subject.wikis_checksummed_in_percentage).to eq(0)
-    end
-
-    it 'returns 0 when project count is unknown' do
-      allow(subject).to receive(:projects_count).and_return(nil)
-
-      expect(subject.wikis_checksummed_in_percentage).to eq(0)
-    end
-
-    it 'returns the right percentage' do
-      create(:repository_state, :wiki_verified, project: project_1)
-
-      expect(subject.wikis_checksummed_in_percentage).to be_within(0.0001).of(25)
     end
   end
 
@@ -568,94 +463,6 @@ RSpec.describe GeoNodeStatus, :geo, feature_category: :geo_replication do
       create(:geo_node_status, :healthy, geo_node: secondary)
 
       expect(subject.repositories_retrying_verification_count).to eq(25)
-    end
-  end
-
-  describe '#wikis_verified_count' do
-    before do
-      stub_current_geo_node(secondary)
-    end
-
-    it 'returns the right number of verified registries' do
-      create(:geo_project_registry, :wiki_verified, project: project_1)
-      create(:geo_project_registry, :wiki_verified, :wiki_checksum_mismatch, project: project_3)
-      create(:geo_project_registry, :wiki_verification_failed)
-      create(:geo_project_registry, :repository_verified, project: project_4)
-
-      expect(subject.wikis_verified_count).to eq(2)
-    end
-
-    it 'returns existing value when feature flag if off' do
-      allow(Gitlab::Geo).to receive(:repository_verification_enabled?).and_return(false)
-      create(:geo_node_status, :healthy, geo_node: secondary)
-
-      expect(subject.wikis_verified_count).to eq(499)
-    end
-  end
-
-  describe '#wikis_checksum_mismatch_count' do
-    before do
-      stub_current_geo_node(secondary)
-    end
-
-    it 'returns the right number of registries that checksum mismatch' do
-      create(:geo_project_registry, :wiki_checksum_mismatch, project: project_1)
-      create(:geo_project_registry, :wiki_checksum_mismatch, project: project_3)
-      create(:geo_project_registry, :wiki_verified)
-      create(:geo_project_registry, :repository_checksum_mismatch, project: project_4)
-
-      expect(subject.wikis_checksum_mismatch_count).to eq(2)
-    end
-
-    it 'returns existing value when feature flag if off' do
-      allow(Gitlab::Geo).to receive(:repository_verification_enabled?).and_return(false)
-      create(:geo_node_status, :healthy, geo_node: secondary)
-
-      expect(subject.wikis_checksum_mismatch_count).to eq(10)
-    end
-  end
-
-  describe '#wikis_verification_failed_count' do
-    before do
-      stub_current_geo_node(secondary)
-    end
-
-    it 'returns the right number of registries that verification failed' do
-      create(:geo_project_registry, :wiki_verification_failed, project: project_1)
-      create(:geo_project_registry, :wiki_verification_failed, project: project_3)
-      create(:geo_project_registry, :wiki_verified)
-      create(:geo_project_registry, :repository_verification_failed, project: project_4)
-
-      expect(subject.wikis_verification_failed_count).to eq(2)
-    end
-
-    it 'returns existing value when feature flag if off' do
-      allow(Gitlab::Geo).to receive(:repository_verification_enabled?).and_return(false)
-      create(:geo_node_status, :healthy, geo_node: secondary)
-
-      expect(subject.wikis_verification_failed_count).to eq(99)
-    end
-  end
-
-  describe '#wikis_retrying_verification_count' do
-    before do
-      stub_current_geo_node(secondary)
-    end
-
-    it 'returns the right number of registries retrying verification' do
-      create(:geo_project_registry, :wiki_verification_failed, wiki_verification_retry_count: 1, project: project_1)
-      create(:geo_project_registry, :wiki_verification_failed, wiki_verification_retry_count: nil, project: project_3)
-      create(:geo_project_registry, :wiki_verified)
-      create(:geo_project_registry, :wiki_verification_failed, wiki_verification_retry_count: 1, project: project_4)
-
-      expect(subject.wikis_retrying_verification_count).to eq(2)
-    end
-
-    it 'returns existing value when feature flag if off' do
-      allow(Gitlab::Geo).to receive(:repository_verification_enabled?).and_return(false)
-      create(:geo_node_status, :healthy, geo_node: secondary)
-
-      expect(subject.wikis_retrying_verification_count).to eq(3)
     end
   end
 
