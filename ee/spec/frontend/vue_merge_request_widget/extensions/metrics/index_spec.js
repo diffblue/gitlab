@@ -3,9 +3,7 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { trimText } from 'helpers/text_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
-import extensionsContainer from '~/vue_merge_request_widget/components/extensions/container';
-import { registerExtension } from '~/vue_merge_request_widget/components/extensions';
-import metricsExtension from 'ee/vue_merge_request_widget/extensions/metrics';
+import metricsExtension from 'ee/vue_merge_request_widget/extensions/metrics/index.vue';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { metricsResponse, changedMetric, unchangedMetric } from './mock_data';
 
@@ -13,19 +11,17 @@ describe('Metrics extension', () => {
   let wrapper;
   let mock;
 
-  registerExtension(metricsExtension);
-
   const endpoint = '/root/repo/-/merge_requests/4/metrics_reports.json';
 
   const mockApi = (statusCode, data) => {
-    mock.onGet(endpoint).reply(statusCode, data);
+    mock.onGet(endpoint).reply(statusCode, data, {});
   };
 
   const findToggleCollapsedButton = () => wrapper.findByTestId('toggle-button');
   const findAllExtensionListItems = () => wrapper.findAllByTestId('extension-list-item');
 
   const createComponent = () => {
-    wrapper = mountExtended(extensionsContainer, {
+    wrapper = mountExtended(metricsExtension, {
       propsData: {
         mr: {
           metricsReportsPath: endpoint,

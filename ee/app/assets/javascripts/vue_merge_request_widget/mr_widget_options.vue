@@ -11,7 +11,6 @@ import MrWidgetGeoSecondaryNode from './components/states/mr_widget_secondary_ge
 import WidgetContainer from './components/widget/app.vue';
 import loadPerformanceExtension from './extensions/load_performance';
 import browserPerformanceExtension from './extensions/browser_performance';
-import metricsExtension from './extensions/metrics';
 import licenseComplianceExtension from './extensions/license_compliance';
 
 export default {
@@ -24,8 +23,6 @@ export default {
     MrWidgetJiraAssociationMissing,
     BlockingMergeRequestsReport: () =>
       import('./components/blocking_merge_requests/blocking_merge_requests_report.vue'),
-    GroupedMetricsReportsApp: () =>
-      import('ee/vue_shared/metrics_reports/grouped_metrics_reports_app.vue'),
   },
   directives: {
     SafeHtml,
@@ -84,9 +81,6 @@ export default {
       const loadPerformance = this.mr?.loadPerformance || {};
 
       return Boolean(loadPerformance.head_path && loadPerformance.base_path);
-    },
-    shouldRenderMetricsReport() {
-      return Boolean(this.mr?.metricsReportsPath);
     },
     browserPerformanceText() {
       const { improved, degraded, same } = this.mr.browserPerformanceMetrics;
@@ -169,11 +163,6 @@ export default {
         this.fetchLoadPerformance();
       }
     },
-    shouldRenderMetricsReport(newVal) {
-      if (newVal) {
-        this.registerMetrics();
-      }
-    },
     shouldRenderLicenseReport(newVal) {
       if (newVal) {
         this.registerLicenseCompliance();
@@ -189,9 +178,6 @@ export default {
     },
     registerBrowserPerformance() {
       registerExtension(browserPerformanceExtension);
-    },
-    registerMetrics() {
-      registerExtension(metricsExtension);
     },
     getServiceEndpoints(store) {
       const base = CEWidgetOptions.methods.getServiceEndpoints(store);
