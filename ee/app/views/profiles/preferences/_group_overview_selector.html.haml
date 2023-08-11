@@ -3,6 +3,6 @@
 .form-group
   = f.label :group_view, class: 'label-bold' do
     = _('Group overview content')
-  = f.select :group_view, group_view_choices, {}, class: 'gl-form-select custom-select'
+  = f.select :group_view, group_view_choices, {}, class: 'gl-form-select custom-select gl-display-block gl-form-input-xl'
   .form-text.text-muted
     = _('Choose what content you want to see on a group’s overview page.')
