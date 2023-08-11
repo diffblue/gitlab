@@ -11,18 +11,17 @@
           .text-muted
             = template.description
         .controls.d-flex.align-items-baseline
-          %a.btn.gl-button.btn-default.gl-mr-3{ href: project_path(template), rel: 'noopener noreferrer', target: '_blank' }
+          = render Pajamas::ButtonComponent.new(button_options: { class: 'gl-mr-3', href: project_path(template), rel: 'noopener noreferrer', target: '_blank' }) do
             = _('Preview')
           %label.btn.gl-button.btn-confirm.custom-template-button.choose-template.gl-mb-0{ for: template.name }
             %input{ type: "radio", autocomplete: "off", name: "project[template_project_id]", id: template.name, value: template.id, data: { template_name: template.name } }
             %span{ data: { qa_selector: 'use_template_button' } }
               = _('Use template')
-
     = paginate @custom_project_templates, params: { controller: 'users', action: 'available_project_templates', username: current_user.username }, theme: 'gitlab', remote: true
   - else
     .bs-callout.bs-callout-warning
       %p
         = _("There are no custom project templates set up for this GitLab instance. They are enabled from GitLab's Admin Area. Contact your GitLab instance administrator to setup custom project templates.")
 
-      %strong
-        = link_to _("Learn more about custom project templates"), help_page_path("administration/custom_project_templates")
+      = render Pajamas::ButtonComponent.new(href: help_page_path("administration/custom_project_templates")) do
+        = _("Learn more about custom project templates")
