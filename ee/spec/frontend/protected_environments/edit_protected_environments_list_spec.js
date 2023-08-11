@@ -7,7 +7,7 @@ import { mountExtended, extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { TEST_HOST } from 'helpers/test_constants';
 import axios from '~/lib/utils/axios_utils';
-import { sprintf, s__ } from '~/locale';
+import { s__ } from '~/locale';
 import AccessDropdown from '~/projects/settings/components/access_dropdown.vue';
 import { createStore } from 'ee/protected_environments/store/edit';
 import AddRuleModal from 'ee/protected_environments/add_rule_modal.vue';
@@ -125,6 +125,7 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
   const findApprovalsInput = () =>
     wrapper.findByRole('textbox', { name: s__('ProtectedEnvironments|Required approval count') });
   const findProtectedEnvironments = () => wrapper.findComponent(ProtectedEnvironments);
+  const findItemToggleButton = () => wrapper.findByTestId('protected-environment-item-toggle');
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
@@ -150,23 +151,6 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
   afterEach(() => {
     mock.restore();
     mock.resetHistory();
-  });
-
-  it('shows a header counting the number of protected environments', async () => {
-    await createComponent();
-
-    expect(
-      wrapper
-        .findByRole('heading', {
-          name: sprintf(
-            s__(
-              'ProtectedEnvironments|List of protected environments (%{protectedEnvironmentsCount})',
-            ),
-            { protectedEnvironmentsCount: 1 },
-          ),
-        })
-        .exists(),
-    ).toBe(true);
   });
 
   it('shows a header for the protected environment', async () => {
@@ -254,7 +238,7 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
 
       await createComponent();
 
-      wrapper.findComponent(GlButton).vm.$emit('click');
+      findItemToggleButton().vm.$emit('click');
 
       const button = findDeployerDeleteButton();
 
@@ -291,7 +275,7 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
 
       await createComponent();
 
-      wrapper.findComponent(GlButton).vm.$emit('click');
+      findItemToggleButton().vm.$emit('click');
 
       const button = findDeployerDeleteButton();
 
@@ -383,7 +367,7 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
       [environment] = DEFAULT_ENVIRONMENTS;
       await createComponent();
 
-      wrapper.findComponent(GlButton).vm.$emit('click');
+      findItemToggleButton().vm.$emit('click');
 
       await nextTick();
     });

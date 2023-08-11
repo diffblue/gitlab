@@ -38051,10 +38051,13 @@ msgstr ""
 msgid "ProtectedEnvironments|Edit"
 msgstr ""
 
-msgid "ProtectedEnvironments|List of protected environments (%{protectedEnvironmentsCount})"
+msgid "ProtectedEnvironments|Number of approvals must be between 1 and 5"
 msgstr ""
 
-msgid "ProtectedEnvironments|Number of approvals must be between 1 and 5"
+msgid "ProtectedEnvironments|Protect an environment"
+msgstr ""
+
+msgid "ProtectedEnvironments|Protected environments"
 msgstr ""
 
 msgid "ProtectedEnvironments|Remove approval rule"
@@ -38082,6 +38085,9 @@ msgid "ProtectedEnvironments|Users"
 msgstr ""
 
 msgid "ProtectedEnvironment|%{environment_name} will be writable for developers. Are you sure?"
+msgstr ""
+
+msgid "ProtectedEnvironment|Add new protected environment"
 msgstr ""
 
 msgid "ProtectedEnvironment|All environments specified with the deployment tiers below are protected by a parent group. %{link_start}Learn More%{link_end}."

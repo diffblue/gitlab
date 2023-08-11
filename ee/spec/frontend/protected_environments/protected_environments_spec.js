@@ -5,6 +5,7 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { s__ } from '~/locale';
 import { state } from 'ee/protected_environments/store/edit/state';
 import ProtectedEnvironments from 'ee/protected_environments/protected_environments.vue';
+import CreateProtectedEnvironment from 'ee/protected_environments/create_protected_environment.vue';
 import Pagination from '~/vue_shared/components/pagination_links.vue';
 import { DEVELOPER_ACCESS_LEVEL } from './constants';
 
@@ -83,19 +84,46 @@ describe('ee/protected_environments/protected_environments.vue', () => {
       scopedSlots: {
         default: '<div :data-testid="props.environment.name">{{props.environment.name}}</div>',
       },
+      provide: {
+        apiLink: '',
+        docsLink: '',
+      },
+      // Stub access dropdown since it triggers some requests that are out-of-scope here
+      stubs: ['AccessDropdown'],
     });
   };
 
   const findEnvironmentButton = (name) => wrapper.findByRole('button', { name });
   const findPagination = () => wrapper.findComponent(Pagination);
+  const findAddButton = () => wrapper.findByTestId('new-environment-button');
+  const findAddForm = () => wrapper.findComponent(CreateProtectedEnvironment);
+  const findCancelButton = () => wrapper.findByTestId('cancel-button');
+
+  describe('header', () => {
+    it('shows a header with the title protected environments', async () => {
+      await createComponent();
+
+      expect(
+        wrapper
+          .findByRole('heading', {
+            name: s__('ProtectedEnvironments|Protected environments'),
+          })
+          .exists(),
+      ).toBe(true);
+    });
+
+    it('shows a header counting the number of protected environments', async () => {
+      await createComponent();
+
+      expect(wrapper.findByTestId('protected-environments-count').text()).toContain('1');
+    });
+  });
 
   describe('environment button', () => {
     let button;
 
     const findBadges = () => wrapper.findAllComponents(GlBadge);
-
     const findDeploymentBadge = () => findBadges().at(0);
-
     const findApprovalBadge = () => findBadges().at(1);
 
     beforeEach(() => {
@@ -177,6 +205,36 @@ describe('ee/protected_environments/protected_environments.vue', () => {
       findPagination().props('change')(2);
 
       expect(setPageMock).toHaveBeenCalledWith(expect.any(Object), 2);
+    });
+  });
+
+  describe('add form', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
+    it('renders the add button', () => {
+      expect(findAddButton().exists()).toBe(true);
+    });
+
+    it('clicking the add button shows the add form', async () => {
+      expect(findAddForm().exists()).toBe(false);
+
+      await findAddButton().trigger('click');
+
+      expect(findAddForm().exists()).toBe(true);
+    });
+
+    it('clicking the cancel button hides the add form', async () => {
+      expect(findAddForm().exists()).toBe(false);
+
+      await findAddButton().trigger('click');
+
+      expect(findAddForm().exists()).toBe(true);
+
+      await findCancelButton().trigger('click');
+
+      expect(findAddForm().exists()).toBe(false);
     });
   });
 });

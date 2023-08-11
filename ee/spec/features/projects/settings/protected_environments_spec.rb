@@ -64,6 +64,7 @@ RSpec.describe 'Protected Environments', feature_category: :environment_manageme
 
       it 'allows creating explicit protected environments', :js do
         within('[data-testid="new-protected-environment"]') do
+          click_button s_('ProtectedEnvironment|Protect an environment')
           set_protected_environment('staging')
           set_allowed_to_deploy('Developers + Maintainers')
           set_allowed_to_approve('Developers + Maintainers')
