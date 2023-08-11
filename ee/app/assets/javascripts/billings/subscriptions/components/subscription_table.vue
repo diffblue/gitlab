@@ -170,24 +170,29 @@ export default {
   <div>
     <gl-card
       v-if="!isLoading && !hasErrorSubscription"
-      class="gl-mt-3 subscription-table js-subscription-table"
-      body-class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-lg-flex-direction-column! flex-grid gl-p-0"
-      header-class="gl-display-flex gl-justify-content-space-between gl-align-items-center"
+      class="gl-new-card subscription-table js-subscription-table"
+      header-class="gl-new-card-header"
+      body-class="gl-new-card-body gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-lg-flex-direction-column! flex-grid gl-p-0"
     >
       <template #header>
-        <strong data-testid="subscription-header" data-qa-selector="subscription_header">{{
-          subscriptionHeader
-        }}</strong>
-        <div v-if="!readOnly" class="gl-display-flex">
+        <div class="gl-new-card-title-wrapper">
+          <h5
+            class="gl-new-card-title"
+            data-testid="subscription-header"
+            data-qa-selector="subscription_header"
+          >
+            {{ subscriptionHeader }}
+          </h5>
+        </div>
+        <div v-if="!readOnly" class="gl-new-card-actions gl-display-flex">
           <gl-button
             v-for="(button, index) in buttons"
             :key="button.text"
             :href="button.href"
             :class="{ 'gl-ml-3': index !== 0 }"
             :data-testid="button.testId"
-            category="secondary"
+            size="small"
             target="_blank"
-            variant="confirm"
             @click="button.clickHandler"
             >{{ button.text }}</gl-button
           >
@@ -196,8 +201,7 @@ export default {
             :class="{ 'gl-ml-2': buttons.length !== 0 }"
             data-testid="refresh-seats-button"
             data-qa-selector="refresh_seats"
-            category="secondary"
-            variant="confirm"
+            size="small"
             @click="refreshSeats"
             >{{ s__('SubscriptionTable|Refresh Seats') }}</gl-button
           >
