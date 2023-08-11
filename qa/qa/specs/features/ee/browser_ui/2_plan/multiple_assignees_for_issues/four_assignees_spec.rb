@@ -20,15 +20,14 @@ module QA
         project.add_member(user_3)
         project.add_member(user_4)
 
-        Resource::Issue.fabricate_via_api! do |issue|
-          issue.project = project
-          issue.assignee_ids = [
+        create(:issue,
+          project: project,
+          assignee_ids: [
             user_1.id,
             user_2.id,
             user_3.id,
             user_4.id
-          ]
-        end
+          ])
 
         project.visit!
       end

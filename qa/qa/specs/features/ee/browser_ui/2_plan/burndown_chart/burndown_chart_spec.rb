@@ -15,10 +15,7 @@ module QA
       before do
         Flow::Login.sign_in
 
-        weight_of_two = 2
-
-        create_issue(milestone.project, milestone, weight_of_two)
-        create_issue(milestone.project, milestone, weight_of_two)
+        create_list(:issue, 2, project: milestone.project, milestone: milestone, weight: 2)
       end
 
       it 'shows burndown chart on milestone page', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347972' do
@@ -31,14 +28,6 @@ module QA
           show.click_weight_button
 
           expect(show.burndown_chart).to have_content('Remaining')
-        end
-      end
-
-      def create_issue(project, milestone, weight)
-        Resource::Issue.fabricate_via_api! do |issue|
-          issue.project = project
-          issue.milestone = milestone
-          issue.weight = weight
         end
       end
     end

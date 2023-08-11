@@ -33,11 +33,7 @@ module QA
       end
 
       def fabricate_issue_with_label(project, title, label)
-        Resource::Issue.fabricate_via_api! do |issue|
-          issue.project = project
-          issue.title = title
-          issue.labels = [label]
-        end
+        create(:issue, project: project, title: title, labels: [label])
       end
     end
   end

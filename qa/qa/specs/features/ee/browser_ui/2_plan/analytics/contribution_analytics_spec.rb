@@ -12,11 +12,7 @@ module QA
         end
       end
 
-      let(:issue) do
-        Resource::Issue.fabricate_via_api! do |issue|
-          issue.project = project
-        end
-      end
+      let(:issue) { create(:issue, project: project) }
 
       let(:mr) do
         Resource::MergeRequest.fabricate_via_api! do |mr|

@@ -94,9 +94,7 @@ module QA
             project.visibility = 'private'
           end
 
-          Resource::Issue.fabricate_via_api! do |issue|
-            issue.project = project
-          end
+          create(:issue, project: project)
         end
 
         def create_epic_resource(group)

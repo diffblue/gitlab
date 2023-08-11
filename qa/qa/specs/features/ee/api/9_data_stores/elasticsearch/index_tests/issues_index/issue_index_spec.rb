@@ -15,10 +15,9 @@ module QA
       let(:api_client) { Runtime::API::Client.new(:gitlab) }
 
       let(:issue) do
-        Resource::Issue.fabricate_via_api! do |issue|
-          issue.title = 'Issue for issue index test'
-          issue.description = "Some issue description #{SecureRandom.hex(8)}"
-        end
+        create(:issue,
+          title: 'Issue for issue index test',
+          description: "Some issue description #{SecureRandom.hex(8)}")
       end
 
       it(

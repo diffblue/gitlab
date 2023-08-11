@@ -11,12 +11,7 @@ module QA
         end
       end
 
-      let(:issue) do
-        Resource::Issue.fabricate_via_api! do |issue|
-          issue.title = 'My geo issue'
-          issue.project = project
-        end
-      end
+      let(:issue) { create(:issue, title: 'My geo issue', project: project) }
 
       it 'user uploads attachment to the primary node',
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348052' do

@@ -26,17 +26,16 @@ module QA
         project.add_member(user_5)
         project.add_member(user_6)
 
-        @issue = Resource::Issue.fabricate_via_api! do |issue|
-          issue.project = project
-          issue.assignee_ids = [
+        @issue = create(:issue,
+          project: project,
+          assignee_ids: [
             user_1.id,
             user_2.id,
             user_3.id,
             user_4.id,
             user_5.id,
             user_6.id
-          ]
-        end
+          ])
       end
 
       it 'shows the first three assignees and a +n sign in the issues list', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347976' do

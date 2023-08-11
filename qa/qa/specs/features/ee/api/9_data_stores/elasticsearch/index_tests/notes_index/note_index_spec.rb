@@ -13,13 +13,7 @@ module QA
       include_context 'advanced search active'
 
       let(:api_client) { Runtime::API::Client.new(:gitlab) }
-
-      let(:issue) do
-        Resource::Issue.fabricate_via_api! do |issue|
-          issue.title = 'Issue for note index test'
-        end
-      end
-
+      let(:issue) { create(:issue, title: 'Issue for note index test') }
       let(:note) do
         Resource::ProjectIssueNote.fabricate_via_api! do |project_issue_note|
           project_issue_note.project = issue.project

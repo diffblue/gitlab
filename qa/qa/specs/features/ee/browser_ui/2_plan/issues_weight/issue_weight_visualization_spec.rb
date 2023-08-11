@@ -12,15 +12,7 @@ module QA
       end
 
       let(:weight) { 1000 }
-
-      let(:issue) do
-        Resource::Issue.fabricate_via_api! do |issue|
-          issue.milestone = milestone
-          issue.project = milestone.project
-          issue.title = 'keep-the-ring-safe'
-          issue.weight = weight
-        end
-      end
+      let(:issue) { create(:issue, milestone: milestone, project: milestone.project, weight: weight) }
 
       it 'shows the set weight in the issue page, in the milestone page, and in the issues list page', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347986' do
         issue.visit!

@@ -63,9 +63,7 @@ module QA
             end
 
             hook_trigger_times.times do
-              Resource::Issue.fabricate_via_api! do |issue_init|
-                issue_init.project = project
-              end
+              create(:issue, project: project)
 
               # WebHook events are delayed/async, so giving a chance
               # for the auto-disabler to catch up

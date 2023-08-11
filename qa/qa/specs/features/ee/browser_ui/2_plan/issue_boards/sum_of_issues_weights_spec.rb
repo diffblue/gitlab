@@ -14,17 +14,8 @@ module QA
       before do
         Flow::Login.sign_in
 
-        Resource::Issue.fabricate_via_api! do |issue|
-          issue.project = label_board_list.project
-          issue.labels = [label]
-          issue.weight = weight_for_issue_1
-        end
-
-        Resource::Issue.fabricate_via_api! do |issue|
-          issue.project = label_board_list.project
-          issue.labels = [label]
-          issue.weight = weight_for_issue_2
-        end
+        create(:issue, project: label_board_list.project, labels: [label], weight: weight_for_issue_1)
+        create(:issue, project: label_board_list.project, labels: [label], weight: weight_for_issue_2)
 
         label_board_list.project.visit!
         Page::Project::Menu.perform(&:go_to_issue_boards)
