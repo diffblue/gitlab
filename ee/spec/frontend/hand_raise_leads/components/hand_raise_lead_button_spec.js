@@ -27,6 +27,7 @@ describe('HandRaiseLeadButton', () => {
     return shallowMountExtended(HandRaiseLeadButton, {
       provide: {
         small: false,
+        createHandRaiseLeadPath: '/-/subscriptions/hand_raise_leads',
         user: {
           namespaceId: '1',
           userName: 'joe',
@@ -269,12 +270,15 @@ describe('HandRaiseLeadButton', () => {
       });
 
       it('primary submits the valid form', () => {
-        expect(SubscriptionsApi.sendHandRaiseLead).toHaveBeenCalledWith({
-          namespaceId: 1,
-          comment: 'comment',
-          glmContent: 'some-content',
-          ...FORM_DATA,
-        });
+        expect(SubscriptionsApi.sendHandRaiseLead).toHaveBeenCalledWith(
+          '/-/subscriptions/hand_raise_leads',
+          {
+            namespaceId: 1,
+            comment: 'comment',
+            glmContent: 'some-content',
+            ...FORM_DATA,
+          },
+        );
       });
 
       it('clears the form after submission', () => {

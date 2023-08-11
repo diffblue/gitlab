@@ -57,6 +57,7 @@ export default {
   },
   mixins: [Tracking.mixin()],
   inject: {
+    createHandRaiseLeadPath: {},
     user: {
       default: {},
     },
@@ -177,7 +178,7 @@ export default {
     async submit() {
       this.isLoading = true;
 
-      await SubscriptionsApi.sendHandRaiseLead(this.formParams)
+      await SubscriptionsApi.sendHandRaiseLead(this.createHandRaiseLeadPath, this.formParams)
         .then(() => {
           createAlert({
             message: this.$options.i18n.handRaiseActionSuccess,

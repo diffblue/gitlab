@@ -33,6 +33,7 @@ describe('TrialStatusPopover component', () => {
           planName: 'Ultimate',
           plansHref: 'billing/path-for/group',
           targetId: 'target-element-identifier',
+          createHandRaiseLeadPath: '/-/subscriptions/hand_raise_leads',
           trialEndDate: new Date('2021-02-21'),
           user: {
             namespaceId: 'namespaceId',
