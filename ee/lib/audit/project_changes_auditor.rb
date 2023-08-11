@@ -3,6 +3,7 @@
 module Audit
   class ProjectChangesAuditor < BaseChangesAuditor
     def execute
+      audit_changes(:description, as: 'description', model: model, event_type: 'project_description_updated')
       audit_changes(
         :visibility_level,
         as: 'visibility_level',
