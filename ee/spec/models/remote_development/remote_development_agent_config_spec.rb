@@ -25,9 +25,10 @@ RSpec.describe RemoteDevelopment::RemoteDevelopmentAgentConfig, feature_category
 
   describe '#after_update' do
     it 'prevents dns_zone from being updated' do
-      subject.update(dns_zone: 'new-zone') # rubocop:disable Rails/SaveBang
-      expect(subject.errors.full_messages)
-        .to match_array(['Dns zone is currently immutable, and cannot be updated. Create a new agent instead.'])
+      expect { subject.update!(dns_zone: 'new-zone') }.to raise_error(
+        ActiveRecord::RecordInvalid,
+        "Validation failed: Dns zone is currently immutable, and cannot be updated. Create a new agent instead."
+      )
     end
   end
 
@@ -38,9 +39,10 @@ RSpec.describe RemoteDevelopment::RemoteDevelopmentAgentConfig, feature_category
       subject { config }
 
       it 'prevents config from being created' do
-        subject.save # rubocop:disable Rails/SaveBang
-        expect(subject.errors.full_messages)
-          .to match_array(['Dns zone contains invalid characters (valid characters: [a-z0-9\\-])'])
+        expect { subject.save! }.to raise_error(
+          ActiveRecord::RecordInvalid,
+          "Validation failed: Dns zone contains invalid characters (valid characters: [a-z0-9\\-])"
+        )
       end
     end
   end
