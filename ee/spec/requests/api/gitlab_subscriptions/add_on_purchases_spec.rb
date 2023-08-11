@@ -7,13 +7,8 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
   let_it_be(:add_on) { create(:gitlab_subscription_add_on) }
   let_it_be(:admin) { create(:admin) }
   let_it_be(:purchase_xid) { 'S-A00000001' }
-  let(:feature_flag_enabled) { false }
   let(:namespace_id) { namespace.id }
   let(:add_on_name) { add_on.name }
-
-  before do
-    stub_feature_flags(purchase_code_suggestions: feature_flag_enabled)
-  end
 
   shared_examples 'not found error' do
     it 'returns :not_found' do
@@ -70,57 +65,49 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
       let_it_be(:admin_mode) { true }
       let_it_be(:user) { admin }
 
-      context 'when feature flag is disabled' do
-        it_behaves_like 'not found error'
-      end
+      include_examples 'API endpoint pre-checks'
 
-      context 'when the feature flag is enabled' do
-        let(:feature_flag_enabled) { true }
+      context 'when the add-on purchase does not exist' do
+        it 'creates a new add-on purchase' do
+          expect { post_add_on_purchase }.to change { GitlabSubscriptions::AddOnPurchase.count }
 
-        include_examples 'API endpoint pre-checks'
-
-        context 'when the add-on purchase does not exist' do
-          it 'creates a new add-on purchase' do
-            expect { post_add_on_purchase }.to change { GitlabSubscriptions::AddOnPurchase.count }
-
-            expect(response).to have_gitlab_http_status(:success)
-            expect(json_response['namespace_id']).to eq(namespace_id)
-            expect(json_response['namespace_name']).to eq(namespace.name)
-            expect(json_response['add_on']).to eq(add_on.name.titleize)
-            expect(json_response['quantity']).to eq(params[:quantity])
-            expect(json_response['expires_on']).to eq(params[:expires_on])
-            expect(json_response['purchase_xid']).to eq(params[:purchase_xid])
-          end
-
-          context 'when the add-on purchase cannot be saved' do
-            let(:params) { super().merge(quantity: 0) }
-
-            it 'returns an error' do
-              post_add_on_purchase
-
-              expect(response).to have_gitlab_http_status(:bad_request)
-              expect(response.body).to include('"quantity":["must be greater than or equal to 1"]')
-            end
-          end
+          expect(response).to have_gitlab_http_status(:success)
+          expect(json_response['namespace_id']).to eq(namespace_id)
+          expect(json_response['namespace_name']).to eq(namespace.name)
+          expect(json_response['add_on']).to eq(add_on.name.titleize)
+          expect(json_response['quantity']).to eq(params[:quantity])
+          expect(json_response['expires_on']).to eq(params[:expires_on])
+          expect(json_response['purchase_xid']).to eq(params[:purchase_xid])
         end
 
-        context 'when the add-on purchase already exists' do
-          before do
-            create(
-              :gitlab_subscription_add_on_purchase,
-              namespace: namespace,
-              add_on: add_on,
-              quantity: 5,
-              purchase_xid: purchase_xid
-            )
-          end
+        context 'when the add-on purchase cannot be saved' do
+          let(:params) { super().merge(quantity: 0) }
 
-          it 'does not create a new add-on purchase and does not update the existing one' do
-            expect { post_add_on_purchase }.not_to change { GitlabSubscriptions::AddOnPurchase.count }
+          it 'returns an error' do
+            post_add_on_purchase
 
             expect(response).to have_gitlab_http_status(:bad_request)
-            expect(json_response['quantity']).not_to eq(10)
+            expect(response.body).to include('"quantity":["must be greater than or equal to 1"]')
           end
+        end
+      end
+
+      context 'when the add-on purchase already exists' do
+        before do
+          create(
+            :gitlab_subscription_add_on_purchase,
+            namespace: namespace,
+            add_on: add_on,
+            quantity: 5,
+            purchase_xid: purchase_xid
+          )
+        end
+
+        it 'does not create a new add-on purchase and does not update the existing one' do
+          expect { post_add_on_purchase }.not_to change { GitlabSubscriptions::AddOnPurchase.count }
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+          expect(json_response['quantity']).not_to eq(10)
         end
       end
     end
@@ -150,41 +137,33 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
       let_it_be(:admin_mode) { true }
       let_it_be(:user) { admin }
 
-      context 'when feature flag is disabled' do
+      include_examples 'API endpoint pre-checks'
+
+      context 'when the add-on purchase does not exist' do
         it_behaves_like 'not found error'
       end
 
-      context 'when the feature flag is enabled' do
-        let(:feature_flag_enabled) { true }
+      context 'when the add-on purchase exists' do
+        it 'returns the found add-on purchase' do
+          add_on_purchase = create(
+            :gitlab_subscription_add_on_purchase,
+            namespace: namespace,
+            add_on: add_on,
+            quantity: 5,
+            purchase_xid: purchase_xid
+          )
 
-        include_examples 'API endpoint pre-checks'
+          get_add_on_purchase
 
-        context 'when the add-on purchase does not exist' do
-          it_behaves_like 'not found error'
-        end
-
-        context 'when the add-on purchase exists' do
-          it 'returns the found add-on purchase' do
-            add_on_purchase = create(
-              :gitlab_subscription_add_on_purchase,
-              namespace: namespace,
-              add_on: add_on,
-              quantity: 5,
-              purchase_xid: purchase_xid
-            )
-
-            get_add_on_purchase
-
-            expect(response).to have_gitlab_http_status(:success)
-            expect(json_response).to eq(
-              'namespace_id' => namespace_id,
-              'namespace_name' => namespace.name,
-              'add_on' => add_on.name.titleize,
-              'quantity' => add_on_purchase.quantity,
-              'expires_on' => add_on_purchase.expires_on.to_s,
-              'purchase_xid' => add_on_purchase.purchase_xid
-            )
-          end
+          expect(response).to have_gitlab_http_status(:success)
+          expect(json_response).to eq(
+            'namespace_id' => namespace_id,
+            'namespace_name' => namespace.name,
+            'add_on' => add_on.name.titleize,
+            'quantity' => add_on_purchase.quantity,
+            'expires_on' => add_on_purchase.expires_on.to_s,
+            'purchase_xid' => add_on_purchase.purchase_xid
+          )
         end
       end
     end
@@ -223,89 +202,81 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
       let_it_be(:admin_mode) { true }
       let_it_be(:user) { admin }
 
-      context 'when feature flag is disabled' do
-        it_behaves_like 'not found error'
-      end
+      include_examples 'API endpoint pre-checks'
 
-      context 'when the feature flag is enabled' do
-        let(:feature_flag_enabled) { true }
+      context 'when the add-on purchase exists' do
+        let_it_be(:expires_on) { Date.current + 6.months }
+        let_it_be_with_reload(:add_on_purchase) do
+          create(
+            :gitlab_subscription_add_on_purchase,
+            namespace: namespace,
+            add_on: add_on,
+            quantity: 5,
+            expires_on: expires_on,
+            purchase_xid: purchase_xid
+          )
+        end
 
-        include_examples 'API endpoint pre-checks'
+        it 'updates the found add-on purchase' do
+          expect do
+            put_add_on_purchase
+            add_on_purchase.reload
+          end.to change { add_on_purchase.quantity }.from(5).to(10)
+            .and change { add_on_purchase.expires_on }.from(expires_on).to(params[:expires_on].to_date)
 
-        context 'when the add-on purchase exists' do
-          let_it_be(:expires_on) { Date.current + 6.months }
-          let_it_be_with_reload(:add_on_purchase) do
-            create(
-              :gitlab_subscription_add_on_purchase,
-              namespace: namespace,
-              add_on: add_on,
-              quantity: 5,
-              expires_on: expires_on,
-              purchase_xid: purchase_xid
-            )
-          end
+          expect(response).to have_gitlab_http_status(:success)
+          expect(json_response).to eq(
+            'namespace_id' => namespace_id,
+            'namespace_name' => namespace.name,
+            'add_on' => add_on.name.titleize,
+            'quantity' => params[:quantity],
+            'expires_on' => params[:expires_on],
+            'purchase_xid' => params[:purchase_xid]
+          )
+        end
 
-          it 'updates the found add-on purchase' do
+        context 'with only required params' do
+          let(:params) { { expires_on: (Date.current + 1.year).to_s } }
+
+          it 'updates the add-on purchase' do
             expect do
               put_add_on_purchase
               add_on_purchase.reload
-            end.to change { add_on_purchase.quantity }.from(5).to(10)
-              .and change { add_on_purchase.expires_on }.from(expires_on).to(params[:expires_on].to_date)
+            end.to change { add_on_purchase.expires_on }.from(expires_on).to(params[:expires_on].to_date)
+              .and not_change { add_on_purchase.quantity }
 
             expect(response).to have_gitlab_http_status(:success)
             expect(json_response).to eq(
               'namespace_id' => namespace_id,
               'namespace_name' => namespace.name,
               'add_on' => add_on.name.titleize,
-              'quantity' => params[:quantity],
+              'quantity' => add_on_purchase.quantity,
               'expires_on' => params[:expires_on],
-              'purchase_xid' => params[:purchase_xid]
+              'purchase_xid' => add_on_purchase.purchase_xid
             )
-          end
-
-          context 'with only required params' do
-            let(:params) { { expires_on: (Date.current + 1.year).to_s } }
-
-            it 'updates the add-on purchase' do
-              expect do
-                put_add_on_purchase
-                add_on_purchase.reload
-              end.to change { add_on_purchase.expires_on }.from(expires_on).to(params[:expires_on].to_date)
-                .and not_change { add_on_purchase.quantity }
-
-              expect(response).to have_gitlab_http_status(:success)
-              expect(json_response).to eq(
-                'namespace_id' => namespace_id,
-                'namespace_name' => namespace.name,
-                'add_on' => add_on.name.titleize,
-                'quantity' => add_on_purchase.quantity,
-                'expires_on' => params[:expires_on],
-                'purchase_xid' => add_on_purchase.purchase_xid
-              )
-            end
-          end
-
-          context 'when the add-on purchase cannot be saved' do
-            let(:params) { super().merge(quantity: 0) }
-
-            it 'returns an error' do
-              put_add_on_purchase
-
-              expect(response).to have_gitlab_http_status(:bad_request)
-              expect(response.body).to include('"quantity":["must be greater than or equal to 1"]')
-            end
           end
         end
 
-        context 'when the add-on purchase does not exist' do
+        context 'when the add-on purchase cannot be saved' do
+          let(:params) { super().merge(quantity: 0) }
+
           it 'returns an error' do
             put_add_on_purchase
 
             expect(response).to have_gitlab_http_status(:bad_request)
-            expect(response.body).to include(
-              'Add-on purchase for namespace and add-on does not exist, use the create endpoint instead'
-            )
+            expect(response.body).to include('"quantity":["must be greater than or equal to 1"]')
           end
+        end
+      end
+
+      context 'when the add-on purchase does not exist' do
+        it 'returns an error' do
+          put_add_on_purchase
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+          expect(response.body).to include(
+            'Add-on purchase for namespace and add-on does not exist, use the create endpoint instead'
+          )
         end
       end
     end
