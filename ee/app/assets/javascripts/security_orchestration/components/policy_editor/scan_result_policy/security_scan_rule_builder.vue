@@ -18,6 +18,7 @@ import { getDefaultRule, groupSelectedVulnerabilityStates } from './lib';
 import SeverityFilter from './scan_filters/severity_filter.vue';
 import AgeFilter from './scan_filters/age_filter.vue';
 import StatusFilters from './scan_filters/status_filters.vue';
+import AttributeFilters from './scan_filters/attribute_filters.vue';
 import BaseLayoutComponent from './base_layout/base_layout_component.vue';
 import PolicyRuleBranchSelection from './policy_rule_branch_selection.vue';
 import {
@@ -26,6 +27,9 @@ import {
   PREVIOUSLY_EXISTING,
   SEVERITY,
   STATUS,
+  ATTRIBUTE,
+  FIX_AVAILABLE,
+  FALSE_POSITIVE,
   AGE,
   AGE_TOOLTIP_NO_PREVIOUSLY_EXISTING_VULNERABILITY,
   AGE_TOOLTIP_MAXIMUM_REACHED,
@@ -40,6 +44,7 @@ export default {
   AGE,
   NEWLY_DETECTED,
   PREVIOUSLY_EXISTING,
+  ATTRIBUTE,
   scanResultRuleCopy: s__(
     'ScanResultPolicy|When %{scanType} %{scanners} runs against the %{branches} %{branchExceptions} and find(s) %{vulnerabilitiesNumber} %{boldDescription} of the following criteria:',
   ),
@@ -54,6 +59,7 @@ export default {
     SeverityFilter,
     AgeFilter,
     StatusFilters,
+    AttributeFilters,
     NumberRangeSelect,
   },
   mixins: [glFeatureFlagsMixin()],
@@ -69,14 +75,18 @@ export default {
       this.initRule.vulnerability_states,
     );
     const { vulnerability_age: vulnerabilityAge, severity_levels: severityLevels } = this.initRule;
+    const vulnerabilityAttributes = this.initRule.vulnerability_attributes || {};
 
     const filters = {
       [SEVERITY]: severityLevels.length ? severityLevels : null,
       [AGE]: Object.keys(vulnerabilityAge || {}).length ? vulnerabilityAge : null,
-      [NEWLY_DETECTED]: vulnerabilityStateGroups[NEWLY_DETECTED],
-      [PREVIOUSLY_EXISTING]: vulnerabilityStateGroups[PREVIOUSLY_EXISTING],
+      [NEWLY_DETECTED]: vulnerabilityStateGroups[NEWLY_DETECTED] || null,
+      [PREVIOUSLY_EXISTING]: vulnerabilityStateGroups[PREVIOUSLY_EXISTING] || null,
+      [FALSE_POSITIVE]: vulnerabilityAttributes[FALSE_POSITIVE] !== undefined,
+      [FIX_AVAILABLE]: vulnerabilityAttributes[FIX_AVAILABLE] !== undefined,
     };
     filters[STATUS] = filters[NEWLY_DETECTED] && filters[PREVIOUSLY_EXISTING] ? [] : null;
+    filters[ATTRIBUTE] = filters[FALSE_POSITIVE] && filters[FIX_AVAILABLE] ? [] : null;
 
     return {
       filters,
@@ -132,6 +142,24 @@ export default {
         }
       },
     },
+    vulnerabilityAttributes: {
+      get() {
+        return this.initRule.vulnerability_attributes || {};
+      },
+      set(value) {
+        this.filters = {
+          ...this.filters,
+          [FALSE_POSITIVE]: value[FALSE_POSITIVE] !== undefined,
+          [FIX_AVAILABLE]: value[FIX_AVAILABLE] !== undefined,
+        };
+        this.updateCombinedFilters();
+        if (!Object.keys(value).length) {
+          this.removeFilterFromRule('vulnerability_attributes');
+        } else {
+          this.triggerChanged({ vulnerability_attributes: value });
+        }
+      },
+    },
     isSeverityFilterSelected() {
       return this.isFilterSelected(this.$options.SEVERITY) || this.severityLevelsToAdd.length > 0;
     },
@@ -143,6 +171,9 @@ export default {
         this.isFilterSelected(this.$options.NEWLY_DETECTED) ||
         this.isFilterSelected(this.$options.PREVIOUSLY_EXISTING)
       );
+    },
+    isAttributeFilterSelected() {
+      return this.isFilterSelected(FIX_AVAILABLE) || this.isFilterSelected(FALSE_POSITIVE);
     },
     selectedVulnerabilitiesOperator() {
       return this.vulnerabilitiesAllowed === 0 ? ANY_OPERATOR : GREATER_THAN_OPERATOR;
@@ -174,6 +205,15 @@ export default {
         this.filters[statusKey] = [];
         this.filters[STATUS] =
           this.filters[NEWLY_DETECTED] && this.filters[PREVIOUSLY_EXISTING] ? [] : null;
+      } else if (filter === ATTRIBUTE) {
+        const attributeKey =
+          Object.keys(this.vulnerabilityAttributes)[0] === FIX_AVAILABLE
+            ? FALSE_POSITIVE
+            : FIX_AVAILABLE;
+        this.vulnerabilityAttributes = {
+          ...this.vulnerabilityAttributes,
+          [attributeKey]: true,
+        };
       } else {
         this.filters[filter] = [];
       }
@@ -195,9 +235,18 @@ export default {
       this.updateCombinedFilters();
       this.emitStatusFilterChanges();
     },
+    removeAttributesFilter(attribute) {
+      const { [attribute]: deletedAttribute, ...otherAttributes } = this.vulnerabilityAttributes;
+      this.filters[attribute] = null;
+      this.vulnerabilityAttributes = otherAttributes;
+      this.updateCombinedFilters();
+    },
     updateCombinedFilters() {
-      this.filters[STATUS] =
-        this.filters[NEWLY_DETECTED] && this.filters[PREVIOUSLY_EXISTING] ? [] : null;
+      this.filters = {
+        ...this.filters,
+        [STATUS]: this.filters[NEWLY_DETECTED] && this.filters[PREVIOUSLY_EXISTING] ? [] : null,
+        [ATTRIBUTE]: this.filters[FIX_AVAILABLE] && this.filters[FALSE_POSITIVE] ? [] : null,
+      };
     },
     removeFilterFromRule(filter) {
       const { [filter]: deletedFilter, ...otherFilters } = this.initRule;
@@ -350,6 +399,13 @@ export default {
           :selected="vulnerabilityAge"
           @remove="removeAgeFilter"
           @input="handleVulnerabilityAgeChanges"
+        />
+
+        <attribute-filters
+          v-if="isAttributeFilterSelected"
+          :selected="vulnerabilityAttributes"
+          @remove="removeAttributesFilter"
+          @input="vulnerabilityAttributes = $event"
         />
 
         <scan-filter-selector

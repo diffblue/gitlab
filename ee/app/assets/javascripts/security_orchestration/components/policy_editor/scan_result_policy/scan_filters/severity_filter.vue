@@ -48,7 +48,7 @@ export default {
 <template>
   <base-layout-component class="gl-w-full" :show-remove-button="showRemoveButton" @remove="remove">
     <template #selector>
-      <label class="gl-mb-0" :title="$options.i18n.label">{{ $options.i18n.label }}</label>
+      <label class="gl-mb-0 gl-mr-2" :title="$options.i18n.label">{{ $options.i18n.label }}</label>
       <policy-rule-multi-select
         v-model="severityLevelsToAdd"
         :item-type-name="$options.i18n.severityLevels"
