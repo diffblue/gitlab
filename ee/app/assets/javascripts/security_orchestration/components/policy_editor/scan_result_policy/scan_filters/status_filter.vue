@@ -1,6 +1,6 @@
 <script>
 import { GlCollapsibleListbox } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 import PolicyRuleMultiSelect from '../../policy_rule_multi_select.vue';
 import BaseLayoutComponent from '../base_layout/base_layout_component.vue';
 import { groupSelectedVulnerabilityStates } from '../lib';
@@ -15,7 +15,7 @@ export default {
   APPROVAL_VULNERABILITY_STATES,
   i18n: {
     label: s__('ScanResultPolicy|Status is:'),
-    headerText: s__('ScanResultPolicy|Choose an option'),
+    headerText: __('Choose an option'),
     vulnerabilityStates: s__('ScanResultPolicy|vulnerability states'),
   },
   name: 'StatusFilter',
@@ -85,7 +85,7 @@ export default {
     @remove="remove"
   >
     <template #selector>
-      <label class="gl-mb-0 gl-mr-4" :title="$options.i18n.label">{{ $options.i18n.label }}</label>
+      <label class="gl-mb-0 gl-mr-5" :title="$options.i18n.label">{{ $options.i18n.label }}</label>
       <slot>
         <gl-collapsible-listbox
           :header-text="$options.i18n.headerText"

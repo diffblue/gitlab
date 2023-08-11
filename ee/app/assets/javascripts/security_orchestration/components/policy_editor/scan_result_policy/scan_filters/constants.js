@@ -2,6 +2,7 @@ import { s__ } from '~/locale';
 
 export const SEVERITY = 'severity';
 export const STATUS = 'status';
+export const ATTRIBUTE = 'attribute';
 export const AGE = 'age';
 
 export const UNKNOWN_LICENSE = {
@@ -35,6 +36,11 @@ export const FILTERS = [
     value: AGE,
     tooltip: AGE_TOOLTIPS,
   },
+  {
+    text: s__('ScanResultPolicy|New attribute'),
+    value: ATTRIBUTE,
+    tooltip: s__('ScanResultPolicy|Only 2 attribute criteria are allowed'),
+  },
 ];
 
 export const AGE_DAY = 'day';
@@ -52,6 +58,18 @@ export const AGE_INTERVALS = [
 export const VULNERABILITY_AGE_ALLOWED_KEYS = ['value', 'interval', 'operator'];
 
 export const FILTERS_STATUS_INDEX = FILTERS.findIndex(({ value }) => value === STATUS);
+
+export const FIX_AVAILABLE = 'fix_available';
+export const FALSE_POSITIVE = 'false_positive';
+
+export const VULNERABILITY_ATTRIBUTES = [
+  { value: FIX_AVAILABLE, text: s__('ScanResultPolicy|Fix available') },
+  { value: FALSE_POSITIVE, text: s__('ScanResultPolicy|False positive') },
+];
+export const VULNERABILITY_ATTRIBUTE_OPERATORS = [
+  { text: s__('ScanResultPolicy|Is'), value: 'true' },
+  { text: s__('ScanResultPolicy|Is not'), value: 'false' },
+];
 
 export const NEWLY_DETECTED = 'newly_detected';
 export const PREVIOUSLY_EXISTING = 'previously_existing';

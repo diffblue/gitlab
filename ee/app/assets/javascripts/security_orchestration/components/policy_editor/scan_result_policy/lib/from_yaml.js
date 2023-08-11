@@ -33,6 +33,7 @@ export const fromYaml = ({ manifest, validateRuleMode = false, glFeatures = {} }
         'vulnerabilities_allowed',
         'vulnerability_states',
         'vulnerability_age',
+        'vulnerability_attributes',
       ];
       const actionsKeys = [
         'type',

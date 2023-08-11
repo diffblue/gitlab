@@ -1,6 +1,6 @@
 <script>
 import { GlCollapsibleListbox } from '@gitlab/ui';
-import { sprintf, s__ } from '~/locale';
+import { sprintf, __, s__ } from '~/locale';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import BaseLayoutComponent from '../base_layout/base_layout_component.vue';
 import { EXCEPT, MATCHING } from '../lib/rules';
@@ -8,7 +8,7 @@ import { UNKNOWN_LICENSE } from './constants';
 
 export default {
   i18n: {
-    headerText: s__('ScanResultPolicy|Choose an option'),
+    headerText: __('Choose an option'),
     label: s__('ScanResultPolicy|License is:'),
     licenseType: s__('ScanResultPolicy|Select license types'),
     matchTypeToggleText: s__('ScanResultPolicy|matching type'),

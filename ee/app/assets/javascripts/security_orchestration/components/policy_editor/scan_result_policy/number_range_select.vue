@@ -1,6 +1,6 @@
 <script>
 import { GlCollapsibleListbox, GlFormInput } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { __ } from '~/locale';
 import { ANY_OPERATOR } from '../constants';
 import { enforceIntValue } from '../utils';
 
@@ -56,7 +56,7 @@ export default {
     },
   },
   i18n: {
-    headerText: s__('ScanResultPolicy|Choose an option'),
+    headerText: __('Choose an option'),
   },
 };
 </script>

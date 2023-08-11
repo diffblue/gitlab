@@ -9892,6 +9892,9 @@ msgstr ""
 msgid "Choose a type..."
 msgstr ""
 
+msgid "Choose an option"
+msgstr ""
+
 msgid "Choose file…"
 msgstr ""
 
@@ -41366,10 +41369,16 @@ msgstr ""
 msgid "ScanResultPolicy|Age is:"
 msgstr ""
 
-msgid "ScanResultPolicy|Block users from unprotecting branches"
+msgid "ScanResultPolicy|Attribute is:"
 msgstr ""
 
-msgid "ScanResultPolicy|Choose an option"
+msgid "ScanResultPolicy|Attribute:"
+msgstr ""
+
+msgid "ScanResultPolicy|Attributes are automatically applied by the scanners"
+msgstr ""
+
+msgid "ScanResultPolicy|Block users from unprotecting branches"
 msgstr ""
 
 msgid "ScanResultPolicy|Choose criteria type"
@@ -41384,6 +41393,21 @@ msgstr ""
 msgid "ScanResultPolicy|Except"
 msgstr ""
 
+msgid "ScanResultPolicy|False positive"
+msgstr ""
+
+msgid "ScanResultPolicy|Fix available"
+msgstr ""
+
+msgid "ScanResultPolicy|Fix available is only applicable to container and dependency scanning"
+msgstr ""
+
+msgid "ScanResultPolicy|Is"
+msgstr ""
+
+msgid "ScanResultPolicy|Is not"
+msgstr ""
+
 msgid "ScanResultPolicy|License is:"
 msgstr ""
 
@@ -41394,6 +41418,9 @@ msgid "ScanResultPolicy|Matching"
 msgstr ""
 
 msgid "ScanResultPolicy|New age"
+msgstr ""
+
+msgid "ScanResultPolicy|New attribute"
 msgstr ""
 
 msgid "ScanResultPolicy|New severity"
@@ -41409,6 +41436,9 @@ msgid "ScanResultPolicy|Only 1 age criteria is allowed"
 msgstr ""
 
 msgid "ScanResultPolicy|Only 1 severity is allowed"
+msgstr ""
+
+msgid "ScanResultPolicy|Only 2 attribute criteria are allowed"
 msgstr ""
 
 msgid "ScanResultPolicy|Only 2 status criteria are allowed"

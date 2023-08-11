@@ -1,6 +1,6 @@
 <script>
 import { GlCollapsibleListbox } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 import BaseLayoutComponent from '../base_layout/base_layout_component.vue';
 import NumberRangeSelect from '../number_range_select.vue';
 import { ANY_OPERATOR, VULNERABILITY_AGE_OPERATORS } from '../../constants';
@@ -10,7 +10,7 @@ import { AGE, AGE_DAY, AGE_INTERVALS } from './constants';
 export default {
   i18n: {
     label: s__('ScanResultPolicy|Age is:'),
-    headerText: s__('ScanResultPolicy|Choose an option'),
+    headerText: __('Choose an option'),
   },
   name: 'AgeFilter',
   components: {
