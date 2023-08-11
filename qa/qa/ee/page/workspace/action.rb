@@ -13,21 +13,10 @@ module QA
             element :workspace_action, ':data-qa-selector="`${item.name}_action`"' # rubocop:disable QA/ElementWithPattern
           end
 
-          def stop_workspace(workspace)
-            within_element("#{workspace}_action".to_sym) do
-              click_element(:workspace_stop_button)
-              Support::Retrier.retry_until(sleep_interval: 5, max_attempts: 10) do
-                !has_element?(:workspace_stop_button, wait: 0)
-              end
-            end
-          end
-
-          def terminate_workspace(workspace)
-            within_element("#{workspace}_action".to_sym) do
-              click_element(:workspace_terminate_button)
-              Support::Retrier.retry_until(sleep_interval: 5, max_attempts: 10) do
-                !has_element?(:workspace_terminate_button, wait: 0)
-              end
+          def click_workspace_action(workspace, action)
+            within_element("#{workspace}_action".to_sym, skip_finished_loading_check: true) do
+              click_element("workspace_#{action}_button", skip_finished_loading_check: true)
+              Support::WaitForRequests.wait_for_requests(skip_finished_loading_check: false, finish_loading_wait: 180)
             end
           end
         end

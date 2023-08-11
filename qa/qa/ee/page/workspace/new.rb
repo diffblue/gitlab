@@ -26,12 +26,8 @@ module QA
             agent_selector.select agent
           end
 
-          def confirm_workspace_creation
-            click_element(:save_workspace_button)
-
-            Support::Retrier.retry_until do
-              !has_element?(:save_workspace_button, wait: 0)
-            end
+          def save_workspace
+            click_element(:save_workspace_button, skip_finished_loading_check: true)
           end
         end
       end

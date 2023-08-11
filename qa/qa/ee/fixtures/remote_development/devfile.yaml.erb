@@ -1,0 +1,13 @@
+schemaVersion: 2.2.0
+components:
+  - name: tooling-container
+    attributes:
+      gl/inject-editor: true
+    container:
+      image: registry.gitlab.com/gitlab-org/remote-development/gitlab-remote-development-docs/debian-bullseye-ruby-3.2-node-18.12:rubygems-3.4-git-2.33-lfs-2.9-yarn-1.22-graphicsmagick-1.3.36-gitlab-workspaces
+      env:
+        - name: KEY
+          value: VALUE
+      endpoints:
+      - name: http-3000
+        targetPort: 3000

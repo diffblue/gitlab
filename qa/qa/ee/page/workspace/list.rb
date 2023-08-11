@@ -22,33 +22,33 @@ module QA
             has_element?(:empty_new_workspace_button)
           end
 
-          def click_new_workspace_button
-            Support::Retrier.retry_until do
-              click_element(:list_new_workspace_button)
-              !has_element?(:list_new_workspace_button, wait: 0)
-            end
-          end
-
           def create_workspace(agent, project)
-            click_new_workspace_button
+            click_element(:list_new_workspace_button, skip_finished_loading_check: true)
 
-            QA::EE::Page::Workspace::New.perform do |p|
-              p.select_devfile_project(project)
-              p.select_cluster_agent(agent)
-              p.confirm_workspace_creation
+            QA::EE::Page::Workspace::New.perform do |new|
+              new.select_devfile_project(project)
+              new.select_cluster_agent(agent)
+              new.save_workspace
             end
+            Support::WaitForRequests.wait_for_requests(skip_finished_loading_check: true)
           end
 
           def get_workspaces_list
-            return if has_element?(:empty_new_workspace_button, wait: 0)
+            all_elements(:workspace_list_item, minimum: 0, skip_finished_loading_check: true)
+              .flat_map { |element| element.text.scan(/(^workspace[^.\n]*)/) }.flatten
+          end
 
-            all_elements(:workspace_list_item,
-              minimum: 0).map { |element| element.text.match(/(workspace\S+)/)[1] }
+          def wait_for_workspaces_creation(workspace)
+            within_element("#{workspace}_action".to_sym, skip_finished_loading_check: true) do
+              Support::WaitForRequests.wait_for_requests(skip_finished_loading_check: false, finish_loading_wait: 180)
+            end
           end
 
           def has_workspace_state?(workspace, state)
-            Support::Retrier.retry_until(sleep_interval: 5, max_attempts: 10) do
-              has_element?("#{workspace}_actual_state".to_sym, title: state)
+            within_element(workspace.to_s.to_sym, skip_finished_loading_check: true) do
+              Support::Retrier.retry_until(sleep_interval: 5, max_attempts: 10) do
+                has_element?("#{workspace}_actual_state".to_sym, title: state)
+              end
             end
           end
         end
