@@ -591,6 +591,84 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
           end
         end
       end
+
+      describe 'linked items widget' do
+        let_it_be(:blocked_items) { create_list(:work_item, 2, project: project) }
+        let_it_be(:blocking_items) { create_list(:work_item, 3, project: project) }
+
+        let(:work_item_fields) do
+          <<~GRAPHQL
+            id
+            widgets {
+              type
+              ... on WorkItemWidgetLinkedItems {
+                blocked
+                blockedByCount
+                blockingCount
+              }
+            }
+          GRAPHQL
+        end
+
+        before do
+          blocked_items.each do |item|
+            create(:work_item_link, source: work_item, target: item, link_type: 'blocks')
+          end
+
+          blocking_items.each do |item|
+            create(:work_item_link, source: item, target: work_item, link_type: 'blocks')
+          end
+        end
+
+        it 'returns widget information' do
+          post_graphql(query, current_user: current_user)
+
+          expect(work_item_data).to include(
+            'widgets' => include(
+              hash_including(
+                'type' => 'LINKED_ITEMS',
+                'blocked' => true,
+                'blockedByCount' => 3,
+                'blockingCount' => 2
+              )
+            )
+          )
+        end
+
+        it 'avoids N+1 queries', :use_sql_query_cache do
+          post_graphql(query, current_user: current_user) # warmup
+          control_count = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+            post_graphql(query, current_user: current_user)
+          end
+
+          create_list(:work_item, 3, project: project) do |item|
+            create(:work_item_link, source: item, target: work_item, link_type: 'blocks')
+          end
+
+          expect { post_graphql(query, current_user: current_user) }.to issue_same_number_of_queries_as(control_count)
+          expect_graphql_errors_to_be_empty
+        end
+
+        context 'when `linked_work_items` feature flag is disabled' do
+          before do
+            stub_feature_flags(linked_work_items: false)
+          end
+
+          it 'returns null fields' do
+            post_graphql(query, current_user: current_user)
+            expect(work_item_data).to include(
+              'widgets' => include(
+                hash_including(
+                  'type' => 'LINKED_ITEMS',
+                  'blocked' => nil,
+                  'blockedByCount' => nil,
+                  'blockingCount' => nil
+                )
+              )
+            )
+          end
+        end
+      end
     end
   end
 end

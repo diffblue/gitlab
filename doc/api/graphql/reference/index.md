@@ -25358,6 +25358,9 @@ Represents the linked items widget.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="workitemwidgetlinkeditemsblocked"></a>`blocked` | [`Boolean`](#boolean) | Indicates the work item is blocked. Returns `null`if `linked_work_items` feature flag is disabled. |
+| <a id="workitemwidgetlinkeditemsblockedbycount"></a>`blockedByCount` | [`Int`](#int) | Count of items blocking the work item. Returns `null`if `linked_work_items` feature flag is disabled. |
+| <a id="workitemwidgetlinkeditemsblockingcount"></a>`blockingCount` | [`Int`](#int) | Count of items the work item is blocking. Returns `null`if `linked_work_items` feature flag is disabled. |
 | <a id="workitemwidgetlinkeditemslinkeditems"></a>`linkedItems` **{warning-solid}** | [`LinkedWorkItemTypeConnection`](#linkedworkitemtypeconnection) | **Introduced** in 16.3. This feature is an Experiment. It can be changed or removed at any time. Linked items for the work item. Returns `null`if `linked_work_items` feature flag is disabled. |
 | <a id="workitemwidgetlinkeditemstype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
 
