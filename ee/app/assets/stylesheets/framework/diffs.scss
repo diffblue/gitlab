@@ -1,8 +1,8 @@
 @import 'framework/variables';
 // Merge request diff grid layout modifications for inline code quality diff
 // These grid templates build off of their equivalents in app/.../diffs.scss
-// to expand the column only when the .with-codequality class is applied
-.diff-grid.with-codequality {
+// to expand the column only when the .with-inline-findings class is applied
+.diff-grid.with-inline-findings {
   .diff-grid-right {
     grid-template-columns: 50px 8px 20px 1fr;
   }

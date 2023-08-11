@@ -60,8 +60,8 @@ describe('EE DiffView', () => {
       }));
     });
 
-    it('has the with-codequality class', () => {
-      expect(wrapper.classes('with-codequality')).toBe(true);
+    it('has the with-inline-findings class', () => {
+      expect(wrapper.classes('with-inline-findings')).toBe(true);
     });
   });
 
@@ -70,8 +70,8 @@ describe('EE DiffView', () => {
       ({ wrapper } = createComponent({ withCodequality: false }));
     });
 
-    it('does not have the with-codequality class', () => {
-      expect(wrapper.classes('with-codequality')).toBe(false);
+    it('does not have the with-inline-findings class', () => {
+      expect(wrapper.classes('with-inline-findings')).toBe(false);
     });
   });
 });

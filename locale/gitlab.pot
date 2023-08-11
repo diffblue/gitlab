@@ -1564,11 +1564,6 @@ msgid_plural "%d Issues"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "1 Security finding"
-msgid_plural "%d Security findings"
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "1 closed issue"
 msgid_plural "%{issues} closed issues"
 msgstr[0] ""
