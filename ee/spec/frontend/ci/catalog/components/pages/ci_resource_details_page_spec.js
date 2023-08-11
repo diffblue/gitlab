@@ -1,9 +1,8 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import VueRouter from 'vue-router';
-import { GlLoadingIcon } from '@gitlab/ui';
+import { GlEmptyState, GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { cacheConfig } from 'ee/ci/catalog/graphql/settings';
@@ -36,9 +35,14 @@ describe('CiResourceDetailsPage', () => {
 
   const defaultProps = {};
 
+  const defaultProvide = {
+    ciCatalogPath: '/ci/catalog/resources',
+  };
+
   const findAboutComponent = () => wrapper.findComponent(CiResourceAbout);
   const findDetailsComponent = () => wrapper.findComponent(CiResourceDetails);
   const findHeaderComponent = () => wrapper.findComponent(CiResourceHeader);
+  const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findHeaderSkeletonLoader = () => wrapper.findComponent(CiResourceHeaderSkeletonLoader);
 
@@ -53,6 +57,9 @@ describe('CiResourceDetailsPage', () => {
     wrapper = shallowMount(CiResourceDetailsPage, {
       router,
       apolloProvider: mockApollo,
+      provide: {
+        ...defaultProvide,
+      },
       propsData: {
         ...defaultProps,
         ...props,
@@ -117,6 +124,23 @@ describe('CiResourceDetailsPage', () => {
           isLoadingSharedData: true,
         });
       });
+    });
+  });
+
+  describe('and there are no resources', () => {
+    beforeEach(async () => {
+      const mockError = new Error('error');
+      sharedDataResponse.mockRejectedValue(mockError);
+      additionalDataResponse.mockRejectedValue(mockError);
+
+      createComponent();
+      await waitForPromises();
+    });
+
+    it('renders the empty state', () => {
+      expect(findDetailsComponent().exists()).toBe(false);
+      expect(findEmptyState().exists()).toBe(true);
+      expect(findEmptyState().props('primaryButtonLink')).toBe(defaultProvide.ciCatalogPath);
     });
   });
 

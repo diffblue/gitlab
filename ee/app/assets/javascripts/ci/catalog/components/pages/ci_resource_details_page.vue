@@ -1,5 +1,6 @@
 <script>
-import { GlLoadingIcon } from '@gitlab/ui';
+import { GlEmptyState, GlLoadingIcon } from '@gitlab/ui';
+import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { CI_CATALOG_RESOURCE_TYPE } from '../../graphql/settings';
@@ -16,10 +17,13 @@ export default {
     CiResourceDetails,
     CiResourceHeader,
     CiResourceHeaderSkeletonLoader,
+    GlEmptyState,
     GlLoadingIcon,
   },
+  inject: ['ciCatalogPath'],
   data() {
     return {
+      isEmpty: false,
       resourceSharedData: {},
       resourceAdditionalDetails: {},
     };
@@ -36,6 +40,7 @@ export default {
         return data.ciCatalogResource;
       },
       error(e) {
+        this.isEmpty = true;
         createAlert({ message: e.message });
       },
     },
@@ -50,6 +55,7 @@ export default {
         return data.ciCatalogResource;
       },
       error(e) {
+        this.isEmpty = true;
         createAlert({ message: e.message });
       },
     },
@@ -68,11 +74,25 @@ export default {
       return this.resourceAdditionalDetails?.versions?.nodes || [];
     },
   },
+  i18n: {
+    emptyStateTitle: s__('CiCatalog|No component available'),
+    emptyStateDescription: s__(
+      'CiCatalog|Component ID not found, or you do not have permission to access component.',
+    ),
+    emptyStateButtonText: s__('CiCatalog|Back to the CI/CD Catalog'),
+  },
 };
 </script>
 <template>
-  <div>
-    <div class="gl-display-flex">
+  <div class="gl-display-flex">
+    <gl-empty-state
+      v-if="isEmpty"
+      :title="$options.i18n.emptyStateTitle"
+      :description="$options.i18n.emptyStateDescription"
+      :primary-button-text="$options.i18n.emptyStateButtonText"
+      :primary-button-link="ciCatalogPath"
+    />
+    <div v-else class="gl-display-flex">
       <div class="gl-w-70p">
         <ci-resource-header-skeleton-loader
           v-if="isLoadingSharedData"

@@ -9945,10 +9945,16 @@ msgstr ""
 msgid "CiCatalog|About this project"
 msgstr ""
 
+msgid "CiCatalog|Back to the CI/CD Catalog"
+msgstr ""
+
 msgid "CiCatalog|CI/CD Catalog"
 msgstr ""
 
 msgid "CiCatalog|CI/CD Catalog resource"
+msgstr ""
+
+msgid "CiCatalog|Component ID not found, or you do not have permission to access component."
 msgstr ""
 
 msgid "CiCatalog|Create a pipeline component repository and make reusing pipeline configurations faster and easier."
@@ -9967,6 +9973,9 @@ msgid "CiCatalog|Mark project as a CI/CD Catalog resource"
 msgstr ""
 
 msgid "CiCatalog|Mark project as a CI/CD Catalog resource. %{linkStart}What is the CI/CD Catalog?%{linkEnd}"
+msgstr ""
+
+msgid "CiCatalog|No component available"
 msgstr ""
 
 msgid "CiCatalog|No release available"

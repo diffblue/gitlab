@@ -29,6 +29,7 @@ export const initNamespaceCatalog = (selector = '#js-ci-namespace-catalog') => {
     apolloProvider,
     router: createRouter(ciCatalogPath),
     provide: {
+      ciCatalogPath,
       projectFullPath,
       pageTitle: s__('CiCatalog|CI/CD Catalog'),
       pageDescription: s__(
