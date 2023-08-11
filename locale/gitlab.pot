@@ -13127,6 +13127,39 @@ msgstr ""
 msgid "ContributionEvent|Removed due to membership expiration from %{resourceParentLink}."
 msgstr ""
 
+msgid "ContributionEvent|Reopened Epic %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Reopened incident %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Reopened issue %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Reopened key result %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Reopened merge request %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Reopened milestone %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Reopened objective %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Reopened requirement %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Reopened resource."
+msgstr ""
+
+msgid "ContributionEvent|Reopened task %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Reopened test case %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
 msgid "ContributionEvent|…and %{count} more commits. %{linkStart}Compare%{linkEnd}."
 msgstr ""
 

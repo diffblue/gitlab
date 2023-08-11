@@ -56,4 +56,16 @@ RSpec.shared_context '[EE] with user contribution events' do # rubocop:disable R
   # reopened
   let_it_be(:reopened_epic_event) { create(:event, :reopened, author: user, project: nil, group: group, target: epic) }
   let_it_be(:reopened_test_case_event) { create(:event, :reopened, author: user, project: project, target: test_case) }
+
+  let_it_be(:reopened_requirement_event) do
+    create(:event, :reopened, :for_work_item, author: user, project: project, target: requirement)
+  end
+
+  let_it_be(:reopened_objective_event) do
+    create(:event, :reopened, :for_work_item, author: user, project: project, target: objective)
+  end
+
+  let_it_be(:reopened_key_result_event) do
+    create(:event, :reopened, :for_work_item, author: user, project: project, target: key_result)
+  end
 end
