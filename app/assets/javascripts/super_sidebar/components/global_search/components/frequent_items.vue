@@ -110,6 +110,7 @@ export default {
       v-for="item of formattedItems"
       :key="item.forDropdown.id"
       :item="item.forDropdown"
+      class="show-on-focus-or-hover--context"
     >
       <template #list-item
         ><frequent-item :item="item.forRenderer" @remove="removeItem"

@@ -56,6 +56,7 @@ export default {
       category="tertiary"
       :aria-label="$options.i18n.remove"
       :title="$options.i18n.remove"
+      class="show-on-focus-or-hover--target"
       @click.stop.prevent="onRemove"
       @keydown.enter.stop.prevent="onRemove"
     />
