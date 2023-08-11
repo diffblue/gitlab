@@ -20,7 +20,8 @@ RSpec.describe ElasticDeleteProjectWorker, feature_category: :global_search do
     { options: { current_user: user, project_ids: :any } }
   end
 
-  it 'deletes a project with all nested objects and clears the index_status', :elastic, :sidekiq_inline do
+  it 'deletes a project with all nested objects and clears the index_status', :elastic, :sidekiq_inline,
+    quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/421739' do
     project = create(:project, :repository)
     issue = create(:issue, project: project)
     milestone = create(:milestone, project: project)
