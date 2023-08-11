@@ -562,8 +562,9 @@ module EE
         prevent :create_epic
         prevent :update_epic
         prevent :admin_pipeline
-        prevent :admin_group_runners
         prevent :register_group_runners
+        prevent :create_runner
+        prevent :update_runner
         prevent :add_cluster
         prevent :create_cluster
         prevent :update_cluster
