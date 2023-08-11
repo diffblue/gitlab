@@ -8583,6 +8583,9 @@ msgstr ""
 msgid "BroadcastMessages|Indigo"
 msgstr ""
 
+msgid "BroadcastMessages|Leave blank to target all group and project pages."
+msgstr ""
+
 msgid "BroadcastMessages|Light"
 msgstr ""
 
@@ -8610,10 +8613,16 @@ msgstr ""
 msgid "BroadcastMessages|Notification"
 msgstr ""
 
-msgid "BroadcastMessages|Paths can contain wildcards, like */welcome"
+msgid "BroadcastMessages|One or more roles is required."
+msgstr ""
+
+msgid "BroadcastMessages|Paths can contain wildcards, like */welcome."
 msgstr ""
 
 msgid "BroadcastMessages|Red"
+msgstr ""
+
+msgid "BroadcastMessages|Select at least one role."
 msgstr ""
 
 msgid "BroadcastMessages|Show only to users who have specific roles on groups/project pages"
