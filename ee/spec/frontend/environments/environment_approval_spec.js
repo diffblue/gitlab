@@ -25,6 +25,7 @@ Vue.use(VueApollo);
 describe('ee/environments/components/environment_approval.vue', () => {
   let wrapper;
   let apollo;
+  let $toast;
 
   const environment = convertObjectPropsToCamelCase(mockEnvironment, { deep: true });
 
@@ -32,11 +33,13 @@ describe('ee/environments/components/environment_approval.vue', () => {
   const mockDeployment = mockDeploymentFixture.data.project.deployment;
 
   const createWrapper = ({ propsData = {}, deploymentFixture = mockDeploymentFixture } = {}) => {
+    $toast = { show: jest.fn() };
     apollo = createMockApollo([[deploymentApprovalQuery, () => deploymentFixture]]);
     return mountExtended(EnvironmentApproval, {
       propsData: { environment, deploymentIid, ...propsData },
       provide: { projectId: '5', projectPath: 'test/hello' },
       apolloProvider: apollo,
+      mocks: { $toast },
     });
   };
 
@@ -207,10 +210,10 @@ describe('ee/environments/components/environment_approval.vue', () => {
     });
 
     describe.each`
-      ref          | api                      | text
-      ${'approve'} | ${Api.approveDeployment} | ${__('Approve')}
-      ${'reject'}  | ${Api.rejectDeployment}  | ${__('Reject')}
-    `('$ref', ({ ref, api, text }) => {
+      ref          | api                      | text             | toast
+      ${'approve'} | ${Api.approveDeployment} | ${__('Approve')} | ${'Deployment approved'}
+      ${'reject'}  | ${Api.rejectDeployment}  | ${__('Reject')}  | ${'Deployment rejected'}
+    `('$ref', ({ ref, api, text, toast }) => {
       let button;
 
       beforeEach(async () => {
@@ -245,6 +248,16 @@ describe('ee/environments/components/environment_approval.vue', () => {
         expect(wrapper.emitted('change')).toEqual([[]]);
       });
 
+      it(`should toast a messsage when ${ref} is clicked`, async () => {
+        api.mockResolvedValue();
+
+        await button.trigger('click');
+
+        await waitForPromises();
+
+        expect($toast.show).toHaveBeenCalledWith(toast);
+      });
+
       it('should show an error on failure', async () => {
         api.mockRejectedValue({ response: { data: { message: 'oops' } } });
 
@@ -252,6 +265,15 @@ describe('ee/environments/components/environment_approval.vue', () => {
         await nextTick();
 
         expect(createAlert).toHaveBeenCalledWith({ message: 'oops' });
+      });
+
+      it('should not toast a message on failure', async () => {
+        api.mockRejectedValue({ response: { data: { message: 'oops' } } });
+
+        await button.trigger('click');
+        await waitForPromises();
+
+        expect($toast.show).not.toHaveBeenCalled();
       });
 
       it('should set loading to true after click', async () => {

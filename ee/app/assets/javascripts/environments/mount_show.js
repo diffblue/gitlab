@@ -1,10 +1,12 @@
 import * as Sentry from '@sentry/browser';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import { GlToast } from '@gitlab/ui';
 import createDefaultClient from '~/lib/graphql';
 import EnvironmentApproval from './components/environment_approval.vue';
 
 Vue.use(VueApollo);
+Vue.use(GlToast);
 
 export const initDeploymentApprovals = () => {
   const els = document.querySelectorAll('.js-deployment-approval');
