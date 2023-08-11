@@ -51,13 +51,17 @@ let subscriptionHandlerMock;
 
 describe('AiGenie', () => {
   let wrapper;
-  const containerId = 'container';
+  const containerSelector = '.container';
   const language = 'vue';
   const resourceId = 'gid://gitlab/Project/1';
   const userId = 'gid://gitlab/User/1';
 
-  const getContainer = () => document.getElementById(containerId);
-  const createComponent = ({ propsData = { containerId }, data = {}, glFeatures = {} } = {}) => {
+  const getContainer = () => document.querySelector(containerSelector);
+  const createComponent = ({
+    propsData = { containerSelector },
+    data = {},
+    glFeatures = {},
+  } = {}) => {
     const apolloProvider = createMockApollo([
       [aiResponseSubscription, subscriptionHandlerMock],
       [explainCodeMutation, mutationHandlerMock],
@@ -128,7 +132,9 @@ describe('AiGenie', () => {
     getSelection = getSelectionMock(),
   } = {}) => {
     jest.spyOn(window, 'getSelection').mockImplementation(() => getSelection);
-    jest.spyOn(document.getElementById(containerId), 'contains').mockImplementation(() => contains);
+    jest
+      .spyOn(document.querySelector(containerSelector), 'contains')
+      .mockImplementation(() => contains);
     simulateSelectionEvent();
     await waitForDebounce();
   };
@@ -141,7 +147,7 @@ describe('AiGenie', () => {
     mutationHandlerMock = jest.fn().mockResolvedValue(explainCodeMutationResponse);
     subscriptionHandlerMock = jest.fn().mockResolvedValue(explainCodeSubscriptionResponse);
     setHTMLFixture(
-      `<div id="${containerId}" style="height:1000px; width: 800px"><span class="line" id="${LINE_ID}"><p lang=${language} id="first-paragraph">Foo</p></span></div>`,
+      `<div class="container" style="height:1000px; width: 800px"><span class="line" id="${LINE_ID}"><p lang=${language} id="first-paragraph">Foo</p></span></div>`,
     );
     getMarkdown.mockImplementation(({ text }) => Promise.resolve({ data: { html: text } }));
   });
