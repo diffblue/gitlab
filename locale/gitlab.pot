@@ -43288,6 +43288,9 @@ msgstr ""
 msgid "ServiceAccount|User does not have permission to create a service account."
 msgstr ""
 
+msgid "ServiceDesk|A verification email has been sent to a sub-address of your custom email address. This can take up to 30 minutes. The screen refreshes automatically."
+msgstr ""
+
 msgid "ServiceDesk|Cannot create custom email"
 msgstr ""
 
@@ -43339,6 +43342,9 @@ msgstr ""
 msgid "ServiceDesk|Issues created from Service Desk emails will appear here. Each comment becomes part of the email conversation."
 msgstr ""
 
+msgid "ServiceDesk|Keep custom email"
+msgstr ""
+
 msgid "ServiceDesk|Minimum 8 characters long."
 msgstr ""
 
@@ -43346,6 +43352,15 @@ msgid "ServiceDesk|Parameters missing"
 msgstr ""
 
 msgid "ServiceDesk|Please share your feedback on this feature in the %{linkStart}feedback issue%{linkEnd}"
+msgstr ""
+
+msgid "ServiceDesk|Reset custom email"
+msgstr ""
+
+msgid "ServiceDesk|Reset custom email address and delete credentials"
+msgstr ""
+
+msgid "ServiceDesk|Reset custom email address."
 msgstr ""
 
 msgid "ServiceDesk|SMTP address is required and must be resolvable."
@@ -43396,10 +43411,22 @@ msgstr ""
 msgid "ServiceDesk|To enable Service Desk on this instance, an instance administrator must first set up incoming email."
 msgstr ""
 
+msgid "ServiceDesk|To use a custom email address for this Service Desk, you'll need to configure and verify an email address again."
+msgstr ""
+
 msgid "ServiceDesk|Use Service Desk to connect with your users and offer customer support through email right inside GitLab"
 msgstr ""
 
 msgid "ServiceDesk|User cannot manage project."
+msgstr ""
+
+msgid "ServiceDesk|Verification started"
+msgstr ""
+
+msgid "ServiceDesk|Verify %{customEmail} with SMTP host %{smtpAddress}:"
+msgstr ""
+
+msgid "ServiceDesk|You are about to %{strongStart}disable the custom email address%{strongEnd} %{customEmail} %{strongStart}and delete its credentials%{strongEnd}."
 msgstr ""
 
 msgid "ServiceDesk|Your users can send emails to this address:"
