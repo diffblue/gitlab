@@ -38,12 +38,7 @@ module QA
       end
 
       context 'when only one user is allowed to merge and push to a protected branch' do
-        let(:project) do
-          Resource::Project.fabricate_via_api! do |resource|
-            resource.name = 'user-with-access-to-protected-branch'
-            resource.initialize_with_readme = true
-          end
-        end
+        let(:project) { create(:project, :with_readme, name: 'user-with-access-to-protected-branch') }
 
         before do
           project.add_member(user_developer, Resource::Members::AccessLevel::DEVELOPER)
@@ -74,12 +69,7 @@ module QA
       context 'when only one group is allowed to merge and push to a protected branch' do
         let(:group) { create(:group, path: "access-to-protected-branch-#{SecureRandom.hex(8)}") }
 
-        let(:project) do
-          Resource::Project.fabricate_via_api! do |resource|
-            resource.name = 'group-with-access-to-protected-branch'
-            resource.initialize_with_readme = true
-          end
-        end
+        let(:project) { create(:project, :with_readme, name: 'group-with-access-to-protected-branch') }
 
         before do
           login

@@ -223,9 +223,7 @@ module QA
           user.password = nil
         end
 
-        @project = Resource::Project.fabricate_via_api! do |project|
-          project.name = 'push_rules'
-        end
+        @project = create(:project, name: 'push_rules')
 
         Resource::Repository::ProjectPush.fabricate! do |push|
           push.project = @project

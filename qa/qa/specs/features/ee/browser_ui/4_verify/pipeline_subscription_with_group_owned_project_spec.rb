@@ -8,19 +8,17 @@ module QA
       let(:group) { create(:group, name: "group-for-pipeline-subscriptions-#{SecureRandom.hex(3)}") }
 
       let(:upstream_project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.group = group
-          project.name = 'upstream-project-for-subscription'
-          project.description = 'Project with CI subscription'
-        end
+        create(:project,
+          name: 'upstream-project-for-subscription',
+          description: 'Project with CI subscription',
+          group: group)
       end
 
       let(:downstream_project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.group = group
-          project.name = 'project-with-pipeline-subscription'
-          project.description = 'Project with CI subscription'
-        end
+        create(:project,
+          name: 'project-with-pipeline-subscription',
+          description: 'Project with CI subscription',
+          group: group)
       end
 
       let!(:runner) do

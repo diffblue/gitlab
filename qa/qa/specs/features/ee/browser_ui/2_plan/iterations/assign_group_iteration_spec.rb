@@ -12,10 +12,7 @@ module QA
       let(:iteration_group) { create(:group, path: "group-to-test-assigning-iterations-#{SecureRandom.hex(8)}") }
 
       let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.group = iteration_group
-          project.name = "project-to-test-iterations-#{SecureRandom.hex(8)}"
-        end
+        create(:project, name: "project-to-test-iterations-#{SecureRandom.hex(8)}", group: iteration_group)
       end
 
       let(:issue) do

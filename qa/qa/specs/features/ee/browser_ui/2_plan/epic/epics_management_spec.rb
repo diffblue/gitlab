@@ -88,11 +88,7 @@ module QA
         end
 
         def create_issue_resource
-          project = Resource::Project.fabricate_via_api! do |project|
-            project.name = 'project-for-issues'
-            project.description = 'project for adding issues'
-            project.visibility = 'private'
-          end
+          project = create(:project, :private, name: 'project-for-issues', description: 'project for adding issues')
 
           Resource::Issue.fabricate_via_api! do |issue|
             issue.project = project

@@ -5,12 +5,7 @@ module QA
   # it can only be run against an EE instance with an active license
   RSpec.describe 'Verify', :runner, :reliable, product_group: :pipeline_execution do
     describe 'Parent-child pipelines dependent relationship' do
-      let!(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'pipelines-dependent-relationship'
-        end
-      end
-
+      let!(:project) { create(:project, name: 'pipelines-dependent-relationship') }
       let!(:runner) do
         Resource::ProjectRunner.fabricate_via_api! do |runner|
           runner.project = project

@@ -5,9 +5,7 @@ module QA
     describe 'Approval rules', :reliable, product_group: :code_review do
       let(:approver1) { Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1) }
       let(:approver2) { Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_2, Runtime::Env.gitlab_qa_password_2) }
-      let(:project) do
-        Resource::Project.fabricate_via_api! { |project| project.name = "approval-rules" }
-      end
+      let(:project) { create(:project, name: 'approval-rules') }
 
       def login(user = nil)
         Runtime::Browser.visit(:gitlab, Page::Main::Login)

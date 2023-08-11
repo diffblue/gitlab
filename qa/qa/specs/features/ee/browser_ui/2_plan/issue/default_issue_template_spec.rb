@@ -3,11 +3,7 @@
 module QA
   RSpec.describe 'Plan', :reliable, product_group: :project_management do
     describe 'Default issue templates' do
-      let(:default_template_project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = "default-issue-template-project"
-        end
-      end
+      let(:default_template_project) { create(:project, name: 'default-issue-template-project') }
 
       let(:template) { 'This is a default issue template' }
 

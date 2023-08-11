@@ -5,10 +5,7 @@ module QA
     only: { subdomain: %i[staging staging-canary] } do
     describe 'License Scanning' do
       let!(:test_project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'license-scanning-project'
-          project.description = 'License Scanning Project'
-        end
+        create(:project, name: 'license-scanning-project', description: 'License Scanning Project')
       end
 
       let!(:licenses) do

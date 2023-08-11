@@ -13,12 +13,7 @@ module QA
         end
       end
 
-      let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'merge-trains-transient-bugs'
-          project.group = group
-        end
-      end
+      let(:project) { create(:project, name: 'merge-trains-transient-bugs', group: group) }
 
       let!(:ci_file) do
         Resource::Repository::Commit.fabricate_via_api! do |commit|

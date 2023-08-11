@@ -26,12 +26,7 @@ module QA
 
       let!(:group_sso_url) { Flow::Saml.enable_saml_sso(group, saml_idp_service, enforce_sso: true) }
 
-      let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'dependency-proxy-sso-project'
-          project.group = group
-        end
-      end
+      let(:project) { create(:project, name: 'dependency-proxy-sso-project', group: group) }
 
       let!(:runner) do
         Resource::ProjectRunner.fabricate! do |runner|

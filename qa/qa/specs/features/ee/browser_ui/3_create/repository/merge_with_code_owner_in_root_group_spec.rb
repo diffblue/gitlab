@@ -11,13 +11,7 @@ module QA
         end
 
         let(:root_group) { Resource::Sandbox.fabricate_via_api! }
-        let(:project) do
-          Resource::Project.fabricate_via_api! do |project|
-            project.group = root_group
-            project.name = "code-owner-approve-and-merge"
-            project.initialize_with_readme = true
-          end
-        end
+        let(:project) { create(:project, :with_readme, name: 'code-owner-approve-and-merge', group: root_group) }
 
         before do
           group_or_project.add_member(approver, Resource::Members::AccessLevel::MAINTAINER)

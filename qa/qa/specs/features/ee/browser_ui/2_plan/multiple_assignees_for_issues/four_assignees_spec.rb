@@ -11,10 +11,7 @@ module QA
         user_3 = Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_3, Runtime::Env.gitlab_qa_password_3)
         user_4 = Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_4, Runtime::Env.gitlab_qa_password_4)
 
-        project = Resource::Project.fabricate_via_api! do |project|
-          project.name = 'project-to-test-issue-with-multiple-assignees'
-        end
-
+        project = create(:project, name: 'project-to-test-issue-with-multiple-assignees')
         project.add_member(user_1)
         project.add_member(user_2)
         project.add_member(user_3)

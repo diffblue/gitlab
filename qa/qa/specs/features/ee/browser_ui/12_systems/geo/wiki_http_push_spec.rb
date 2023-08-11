@@ -12,10 +12,7 @@ module QA
 
           # Create new wiki and push wiki commit
           QA::Flow::Login.while_signed_in(address: :geo_primary) do
-            project = Resource::Project.fabricate_via_api! do |project|
-              project.name = 'geo-wiki-http-project'
-              project.description = 'Geo project for wiki repo test'
-            end
+            project = create(:project, name: 'geo-wiki-http-project', description: 'Geo project for wiki repo test')
 
             wiki = Resource::Wiki::ProjectPage.fabricate_via_api! do |wiki|
               wiki.project = project

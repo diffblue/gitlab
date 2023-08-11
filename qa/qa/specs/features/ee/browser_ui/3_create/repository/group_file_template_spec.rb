@@ -43,25 +43,21 @@ module QA
       let(:group) { create(:group, path: 'template-group', api_client: api_client) }
 
       let(:file_template_project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.group = group
-          project.name = 'group-file-template-project'
-          project.description = 'Add group file templates'
-          project.auto_devops_enabled = false
-          project.initialize_with_readme = true
-          project.api_client = api_client
-        end
+        create(:project,
+          :with_readme,
+          name: 'group-file-template-project',
+          description: 'Add group file templates',
+          group: group,
+          api_client: api_client)
       end
 
       let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.group = group
-          project.name = 'group-file-template-project-2'
-          project.description = 'Add files for group file templates'
-          project.auto_devops_enabled = false
-          project.initialize_with_readme = true
-          project.api_client = api_client
-        end
+        create(:project,
+          :with_readme,
+          name: 'group-file-template-project-2',
+          description: 'Add files for group file templates',
+          group: group,
+          api_client: api_client)
       end
 
       templates.each do |template|

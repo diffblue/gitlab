@@ -3,14 +3,8 @@
 module QA
   RSpec.describe 'Verify', :runner, :reliable, product_group: :pipeline_execution do
     describe 'Pipelines for merged results and merge trains' do
-      let!(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'pipelines-for-merge-trains'
-        end
-      end
-
+      let!(:project) { create(:project, name: 'pipelines-for-merge-trains') }
       let!(:executor) { "qa-runner-#{Faker::Alphanumeric.alphanumeric(number: 8)}" }
-
       let!(:runner) do
         Resource::ProjectRunner.fabricate_via_api! do |runner|
           runner.project = project

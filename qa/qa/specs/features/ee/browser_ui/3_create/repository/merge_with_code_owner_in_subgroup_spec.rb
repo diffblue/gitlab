@@ -10,12 +10,7 @@ module QA
           end
         end
 
-        let(:project) do
-          Resource::Project.fabricate_via_api! do |project|
-            project.name = "approve-and-merge"
-            project.initialize_with_readme = true
-          end
-        end
+        let(:project) { create(:project, :with_readme, name: 'approve-and-merge') }
 
         before do
           group_or_project.add_member(approver, Resource::Members::AccessLevel::MAINTAINER)

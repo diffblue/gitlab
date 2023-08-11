@@ -26,12 +26,7 @@ module QA
 
         let(:group) { create(:group, api_client: admin_api_client, path: "group-for-vsa-#{SecureRandom.hex(4)}") }
 
-        let(:project) do
-          Resource::Project.fabricate_via_api! do |resource|
-            resource.api_client = admin_api_client
-            resource.group = group
-          end
-        end
+        let(:project) { create(:project, group: group, api_client: admin_api_client) }
 
         before do
           group.add_member(user, Resource::Members::AccessLevel::MAINTAINER)

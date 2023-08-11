@@ -13,11 +13,7 @@ module QA
       end
     end
 
-    let(:project) do
-      Resource::Project.fabricate_via_api! do |project|
-        project.name = 'pipeline-for-merge-trains'
-      end
-    end
+    let(:project) { create(:project, name: 'pipeline-for-merge-trains') }
 
     let!(:runner) do
       Resource::ProjectRunner.fabricate! do |runner|

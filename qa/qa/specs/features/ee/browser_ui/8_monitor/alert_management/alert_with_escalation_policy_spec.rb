@@ -7,13 +7,7 @@ module QA
       issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/397133'
     } do
     describe 'Alert with escalation policy' do
-      let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'project-for-alert'
-          project.description = 'Project for alert'
-        end
-      end
-
+      let(:project) { create(:project, name: 'project-for-alert', description: 'Project for alert') }
       let(:rotation_schedule_name) { Faker::Lorem.sentence }
       let(:escalation_policy_name) { Faker::Lorem.sentence }
       let(:mail_hog_api) { Vendor::MailHog::API.new }

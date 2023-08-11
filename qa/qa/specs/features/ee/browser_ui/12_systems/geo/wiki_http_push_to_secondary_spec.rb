@@ -15,10 +15,7 @@ module QA
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348053' do
         QA::Flow::Login.while_signed_in(address: :geo_primary) do
           # Create a new project and wiki
-          project = Resource::Project.fabricate_via_api! do |project|
-            project.name = 'geo-wiki-http2-project'
-            project.description = 'Geo test project'
-          end
+          project = create(:project, name: 'geo-wiki-http2-project', description: 'Geo test project')
 
           wiki = Resource::Wiki::ProjectPage.fabricate_via_api! do |wiki|
             wiki.project = project
