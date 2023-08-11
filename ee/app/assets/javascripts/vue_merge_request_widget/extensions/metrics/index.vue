@@ -1,16 +1,31 @@
+<script>
 import { uniqueId } from 'lodash';
 import { __, n__, s__, sprintf } from '~/locale';
 import axios from '~/lib/utils/axios_utils';
+import MrWidget from '~/vue_merge_request_widget/components/widget/widget.vue';
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
 
 export default {
   name: 'WidgetMetrics',
-  props: ['metricsReportsPath'],
-  enablePolling: true,
+  components: {
+    MrWidget,
+  },
+  props: {
+    mr: {
+      type: Object,
+      required: true,
+    },
+  },
   i18n: {
     label: s__('Reports|metrics report'),
     loading: s__('Reports|Metrics reports are loading'),
     error: s__('Reports|Metrics reports failed to load results'),
+  },
+  data() {
+    return {
+      collapsedData: {},
+      content: [],
+    };
   },
   computed: {
     numberOfChanges() {
@@ -22,19 +37,19 @@ export default {
       return changedMetrics.length + newMetrics.length + removedMetrics.length;
     },
     hasChanges() {
-      return this.numberOfChanges() > 0;
+      return this.numberOfChanges > 0;
     },
     statusIcon() {
-      return this.hasChanges() ? EXTENSION_ICONS.warning : EXTENSION_ICONS.success;
+      return this.hasChanges ? EXTENSION_ICONS.warning : EXTENSION_ICONS.success;
     },
     shouldCollapse() {
-      return this.hasChanges();
+      return this.hasChanges;
     },
-  },
-  methods: {
+    apiMetricsPath() {
+      return this.mr.metricsReportsPath;
+    },
     summary() {
-      const hasChanges = this.hasChanges();
-      const numberOfChanges = this.numberOfChanges();
+      const { hasChanges, numberOfChanges } = this;
       const changesSummary = sprintf(
         s__('Reports|Metrics reports: %{strong_start}%{numberOfChanges}%{strong_end} %{changes}'),
         {
@@ -43,13 +58,17 @@ export default {
         },
       );
       const noChangesSummary = s__('Reports|Metrics report scanning detected no new changes');
-      return hasChanges ? changesSummary : noChangesSummary;
+      return hasChanges ? { title: changesSummary } : { title: noChangesSummary };
     },
+  },
+  methods: {
     fetchCollapsedData() {
-      return axios.get(this.metricsReportsPath);
-    },
-    fetchFullData() {
-      return Promise.resolve(this.prepareReports());
+      return axios.get(this.apiMetricsPath).then((response) => {
+        this.collapsedData = response.data;
+        this.content = this.getContent(response.data);
+
+        return response;
+      });
     },
     formatMetricDelta(metric) {
       // calculate metric delta for sorting if numeric
@@ -58,17 +77,17 @@ export default {
       // give non-numeric metrics high delta so they appear first
       return Number.isNaN(delta) ? Infinity : delta;
     },
-    prepareReports() {
+    getContent(collapsedData) {
       const {
         new_metrics: newMetrics = [],
         existing_metrics: existingMetrics = [],
         removed_metrics: removedMetrics = [],
-      } = this.collapsedData;
+      } = collapsedData;
 
       return [
         ...newMetrics.map((metric, index) => {
           return {
-            header: index === 0 && __('New'),
+            header: index === 0 ? __('New') : '',
             id: uniqueId('new-metric-'),
             text: `${metric.name}: ${metric.value}`,
             icon: { name: EXTENSION_ICONS.neutral },
@@ -76,7 +95,7 @@ export default {
         }),
         ...removedMetrics.map((metric, index) => {
           return {
-            header: index === 0 && __('Removed'),
+            header: index === 0 ? __('Removed') : '',
             id: uniqueId('resolved-metric-'),
             text: `${metric.name}: ${metric.value}`,
             icon: { name: EXTENSION_ICONS.neutral },
@@ -95,7 +114,7 @@ export default {
           .sort((a, b) => b.delta - a.delta)
           .map((metric, index) => {
             return {
-              header: index === 0 && __('Changed'),
+              header: index === 0 ? __('Changed') : '',
               ...metric,
             };
           }),
@@ -103,7 +122,7 @@ export default {
           .filter((metric) => !metric?.previous_value)
           .map((metric, index) => {
             return {
-              header: index === 0 && __('No changes'),
+              header: index === 0 ? __('No changes') : '',
               id: uniqueId('unchanged-metric-'),
               text: `${metric.name}: ${metric.value}`,
               icon: { name: EXTENSION_ICONS.neutral },
@@ -113,3 +132,17 @@ export default {
     },
   },
 };
+</script>
+<template>
+  <mr-widget
+    :error-text="$options.i18n.error"
+    :status-icon-name="statusIcon"
+    :loading-text="$options.i18n.loading"
+    :help-popover="$options.helpPopover"
+    :widget-name="$options.name"
+    :summary="summary"
+    :content="content"
+    :is-collapsible="shouldCollapse"
+    :fetch-collapsed-data="fetchCollapsedData"
+  />
+</template>
