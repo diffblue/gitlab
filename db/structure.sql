@@ -12340,6 +12340,7 @@ CREATE TABLE audit_events_streaming_headers (
     external_audit_event_destination_id bigint NOT NULL,
     key text NOT NULL,
     value text NOT NULL,
+    active boolean DEFAULT true NOT NULL,
     CONSTRAINT check_53c3152034 CHECK ((char_length(key) <= 255)),
     CONSTRAINT check_ac213cca22 CHECK ((char_length(value) <= 255))
 );
@@ -17271,6 +17272,7 @@ CREATE TABLE instance_audit_events_streaming_headers (
     instance_external_audit_event_destination_id bigint NOT NULL,
     key text NOT NULL,
     value text NOT NULL,
+    active boolean DEFAULT true NOT NULL,
     CONSTRAINT check_d52adbbabb CHECK ((char_length(value) <= 255)),
     CONSTRAINT check_e92010d531 CHECK ((char_length(key) <= 255))
 );
