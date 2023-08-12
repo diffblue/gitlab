@@ -9,7 +9,7 @@ export const mockText = {
   EMPTY_TITLE: 'Add a project to the dashboard',
   EMPTY_SUBTITLE:
     "The operations dashboard provides a summary of each project's operational health, including pipeline and alert statuses. More information",
-  EMPTY_SVG_SOURCE: '/assets/illustrations/operations-dashboard_empty.svg',
+  EMPTY_SVG_SOURCE: '/assets/illustrations/empty-state/empty-radar-md.svg',
   SEARCH_PROJECTS: 'Search your projects',
   SEARCH_DESCRIPTION_SUFFIX: 'in projects',
 };

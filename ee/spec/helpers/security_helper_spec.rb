@@ -22,7 +22,7 @@ RSpec.describe SecurityHelper do
     it 'returns vulnerability, project, feedback, asset, and docs paths for the instance security dashboard' do
       is_expected.to eq({
         no_vulnerabilities_svg_path: image_path('illustrations/empty-state/empty-search-md.svg'),
-        empty_state_svg_path: image_path('illustrations/operations-dashboard_empty.svg'),
+        empty_state_svg_path: image_path('illustrations/empty-state/empty-radar-md.svg'),
         security_dashboard_empty_svg_path: image_path('illustrations/security-dashboard_empty.svg'),
         project_add_endpoint: security_projects_path,
         project_list_endpoint: security_projects_path,

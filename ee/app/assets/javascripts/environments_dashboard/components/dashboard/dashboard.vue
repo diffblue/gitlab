@@ -238,6 +238,7 @@ export default {
         v-else
         :title="$options.emptyDashboardHeader"
         :svg-path="emptyDashboardSvgPath"
+        :svg-height="150"
       >
         <template #description>
           {{ $options.emptyDashboardDocs }}

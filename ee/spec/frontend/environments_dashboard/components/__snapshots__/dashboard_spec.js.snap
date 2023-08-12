@@ -82,7 +82,8 @@ exports[`dashboard should match the snapshot 1`] = `
     <gl-empty-state-stub
       contentclass=""
       invertindarkmode="true"
-      svgpath="/assets/illustrations/operations-dashboard_empty.svg"
+      svgheight="150"
+      svgpath="/assets/illustrations/empty-state/empty-radar-md.svg"
       title="Add a project to the dashboard"
     >
       

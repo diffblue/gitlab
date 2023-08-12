@@ -44,7 +44,7 @@ describe('dashboard', () => {
     propsData = {
       addPath: 'mock-addPath',
       listPath: 'mock-listPath',
-      emptyDashboardSvgPath: '/assets/illustrations/operations-dashboard_empty.svg',
+      emptyDashboardSvgPath: '/assets/illustrations/empty-state/empty-radar-md.svg',
       emptyDashboardHelpPath: '/help/user/operations_dashboard/index.html',
       environmentsDashboardHelpPath: '/help/user/operations_dashboard/index.html',
     };
