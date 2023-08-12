@@ -36,6 +36,29 @@ module Gitlab
         enabled_for?(user: user)
       end
 
+      # Note: a Rake task is using this class method to extract embeddings for a test fixture.
+      def self.embedding_for_question(openai_client, question)
+        embeddings_result = openai_client.embeddings(input: question, moderated: false)
+
+        embeddings_result['data'].first["embedding"]
+      end
+
+      # Note: a Rake task is using this class method to extract embeddings for a test fixture.
+      def self.get_nearest_neighbors(embedding)
+        ::Embedding::TanukiBotMvc.current.neighbor_for(
+          embedding,
+          limit: RECORD_LIMIT
+        ).map do |item|
+          item.metadata['source_url'] = item.url
+
+          {
+            id: item.id,
+            content: item.content,
+            metadata: item.metadata
+          }
+        end
+      end
+
       def initialize(current_user:, question:, logger: nil)
         @current_user = current_user
         @question = question
@@ -44,10 +67,18 @@ module Gitlab
       end
 
       def execute
-        return {} unless question.present?
-        return {} unless self.class.enabled_for?(user: current_user)
+        return empty_response unless question.present?
+        return empty_response unless self.class.enabled_for?(user: current_user)
 
-        search_documents = query_search_documents
+        unless ::Embedding::TanukiBotMvc.any?
+          logger.debug(message: "Need to query docs but no embeddings are found")
+          return empty_response
+        end
+
+        embedding = self.class.embedding_for_question(openai_client, question)
+        return empty_response if embedding.nil?
+
+        search_documents = self.class.get_nearest_neighbors(embedding)
         return empty_response if search_documents.empty?
 
         get_completions(search_documents)
@@ -88,24 +119,6 @@ module Gitlab
         })
 
         final_prompt_result
-      end
-
-      def query_search_documents
-        embeddings_result = openai_client.embeddings(input: question, moderated: false)
-        question_embedding = embeddings_result['data'].first['embedding']
-
-        ::Embedding::TanukiBotMvc.current.neighbor_for(
-          question_embedding,
-          limit: RECORD_LIMIT
-        ).map do |item|
-          item.metadata['source_url'] = item.url
-
-          {
-            id: item.id,
-            content: item.content,
-            metadata: item.metadata
-          }
-        end
       end
 
       def empty_response

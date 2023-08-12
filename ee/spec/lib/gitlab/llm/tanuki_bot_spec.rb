@@ -173,6 +173,14 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
               allow(described_class).to receive(:ai_feature_enabled?).and_return(true)
             end
 
+            context 'when `tanuki_bot_mvc` table is empty (no embeddings are stored in the table)' do
+              it 'returns an empty hash' do
+                ::Embedding::TanukiBotMvc.connection.execute("truncate #{::Embedding::TanukiBotMvc.table_name}")
+
+                expect(execute).to eq({})
+              end
+            end
+
             it 'executes calls through to anthropic' do
               embeddings
 
