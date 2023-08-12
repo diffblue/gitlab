@@ -8,7 +8,7 @@ RSpec.describe 'operations/environments.html.haml' do
 
     expect(rendered).to match %r{data-add-path="/-/operations/environments.json"}
     expect(rendered).to match %r{data-list-path="/-/operations/environments.json"}
-    expect(rendered).to match %r{data-empty-dashboard-svg-path="/assets/illustrations/operations-dashboard_empty.*\.svg"}
+    expect(rendered).to match %r{data-empty-dashboard-svg-path="/assets/illustrations/empty-state/empty-radar-md.*\.svg"}
     expect(rendered).to match %r{data-empty-dashboard-help-path="/help/ci/environments/environments_dashboard.md"}
     expect(rendered).to match %r{data-environments-dashboard-help-path="/help/ci/environments/environments_dashboard.md"}
   end

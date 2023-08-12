@@ -200,6 +200,7 @@ export default {
         v-else
         :title="s__(`OperationsDashboard|Add a project to the dashboard`)"
         :svg-path="emptyDashboardSvgPath"
+        :svg-height="150"
       >
         <template #description>
           {{

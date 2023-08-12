@@ -24,7 +24,7 @@ describe('dashboard component', () => {
 
   const emptyDashboardHelpPath = '/help/user/operations_dashboard/index.html';
   const operationsDashboardHelpPath = '/help/user/operations_dashboard/index.html';
-  const emptyDashboardSvgPath = '/assets/illustrations/operations-dashboard_empty.svg';
+  const emptyDashboardSvgPath = '/assets/illustrations/empty-state/empty-radar-md.svg';
 
   const mountComponent = ({ state = {} } = {}) =>
     mountExtended(Dashboard, {
