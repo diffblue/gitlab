@@ -188,6 +188,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         third_party_ai_features_enabled: true,
         experiment_features_enabled: true
       )
+      stub_licensed_features(ai_tanuki_bot: true)
     end
 
     shared_examples_for 'successful prompt processing' do
@@ -199,7 +200,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       end
     end
 
-    context 'with predefined issue' do
+    context 'with predefined issue', time_travel_to: Time.utc(2023, 8, 11) do
       let_it_be(:label) { create(:label, project: project, title: 'ai-enablement') }
       let_it_be(:milestone) { create(:milestone, project: project, title: 'milestone1', due_date: 3.days.from_now) }
       let_it_be(:issue) do
@@ -208,35 +209,45 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
           labels: [label], created_at: 2.days.ago, milestone: milestone)
       end
 
-      # rubocop: disable Layout/LineLength
-      where(:input_template, :tools, :answer_match) do
-        'Can you list all labels on %{issue_identifier} issue?'                       | %w[IssueIdentifier ResourceReader] | /ai-enablement/
-        'How many days ago was %<issue_identifier>s issue created?'                   | %w[IssueIdentifier ResourceReader] | /2 days/
-        'For which milestone is %<issue_identifier>s issue? And how long until then?' | %w[IssueIdentifier ResourceReader] | /milestone1.*3 days/
-      end
-      # rubocop: enable Layout/LineLength
+      context 'with predefined tools' do
+        context 'with issue reference' do
+          let(:input) { format(input_template, issue_identifier: "the issue #{issue.to_reference(full: true)}") }
 
-      with_them do
-        let(:input) { format(input_template, issue_identifier: issue.to_reference(full: true)) }
+          # rubocop: disable Layout/LineLength
+          where(:input_template, :tools, :answer_match) do
+            'Please summarize %<issue_identifier>s' | %w[IssueIdentifier ResourceReader] | //
+            'Summarize %<issue_identifier>s with bullet points' | %w[IssueIdentifier ResourceReader] | //
+            'Can you list all the labels on %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader] | /ai-enablement/
+            'How old is %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader] | /2 days/
+            'How many days ago %<issue_identifier>s was created?' | %w[IssueIdentifier ResourceReader] | //
+            'For which milestone is %<issue_identifier>s? And how long until then' | %w[IssueIdentifier ResourceReader] | //
+            'What should be the final solution for %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader] | /solution/
+          end
+          # rubocop: enable Layout/LineLength
 
-        it_behaves_like 'successful prompt processing'
-      end
-
-      context 'with issue as resource' do
-        let(:resource) { issue }
-
-        # rubocop: disable Layout/LineLength
-        where(:input_template, :tools, :answer_match) do
-          'Can you list all labels on this issue?'                      | %w[IssueIdentifier ResourceReader] | /ai-enablement/
-          'How many days ago was current issue created?'                | %w[IssueIdentifier ResourceReader] | /2 days/
-          'For which milestone is this issue? And how long until then?' | %w[IssueIdentifier ResourceReader] | /milestone1.*3 days/
+          with_them do
+            it_behaves_like 'successful prompt processing'
+          end
         end
-        # rubocop: enable Layout/LineLength
 
-        with_them do
-          let(:input) { input_template }
+        context 'with `this issue`' do
+          let(:resource) { issue }
+          let(:input) { format(input_template, issue_identifier: "this issue") }
 
-          it_behaves_like 'successful prompt processing'
+          # rubocop: disable Layout/LineLength
+          where(:input_template, :tools, :answer_match) do
+            'Please summarize %<issue_identifier>s' | %w[IssueIdentifier ResourceReader] | //
+            'Can you list all the labels on %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader] | /ai-enablement/
+            'How old is %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader] | /2 days/
+            'How many days ago %<issue_identifier>s was created?' | %w[IssueIdentifier ResourceReader] | //
+            'For which milestone is %<issue_identifier>s? And how long until then' | %w[IssueIdentifier ResourceReader] | //
+            'What should be the final solution for %<issue_identifier>s?' | %w[IssueIdentifier ResourceReader] | /solution/
+          end
+          # rubocop: enable Layout/LineLength
+
+          with_them do
+            it_behaves_like 'successful prompt processing'
+          end
         end
       end
 
@@ -276,11 +287,9 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
           # IssueIdentifider overrides context.resource
           # JsonReader takes resource from context
           # So JsonReader twice with different action input
-          # 'Is it duplicate of issue %<issue_identifier2>s issue?' | ['IssueIdentifier', 'ResourceReader'] | /no/i
           'Can you provide more details about that issue?' | %w[IssueIdentifier ResourceReader] | /(reliability|providers)/
-          # Translation would have to be explicitly allowed in protmp rules first
-          # 'Can you translate your last answer to German?' | [] | /Anbieter/ # Anbieter == provider
           'Can you reword your answer?' | [] | /provider/i
+          'Can you simplify your answer?' | [] | /provider|simplify/i
         end
         # rubocop: enable Layout/LineLength
 
@@ -292,6 +301,47 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
 
           it_behaves_like 'successful prompt processing'
         end
+      end
+    end
+
+    context 'when asking to explain code' do
+      # rubocop: disable Layout/LineLength
+      where(:input_template, :tools, :answer_match) do
+        # NOTE: `tools: []` is the correct expected value.
+        # There is no tool for explaining a code and the LLM answers the question directly.
+        'Can you explain the code ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""?' | [] | /ruby/i
+        'Can you explain function ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""?' | [] | /ruby/i
+        'Write me tests for function ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""' | [] | //
+        'What is the complexity of the function ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""?' | [] | /O\(1\)/
+        'How would you refactor the ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend"" code?' | [] | /ruby/i
+        'Can you fix the bug in my ""def hello_world\\nput(\""Hello, world!\\n\"");\nend"" code?' | [] | /ruby/i
+        'Create an example of how to use method ""def hello_world\\nput(\""Hello, world!\\n\"");\nend""' | [] | //
+        'Create a function to validate an e-mail address' | [] | //i
+        'Create a function in Python to call the spotify API to get my playlists' | [] | /python/i
+        'Create a tic tac toe game in Javascript' | [] | /javascript/i
+        'What would the ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend"" code look like in Python?' | [] | /python/i
+      end
+      # rubocop: enable Layout/LineLength
+
+      with_them do
+        let(:input) { input_template }
+
+        it_behaves_like 'successful prompt processing'
+      end
+    end
+
+    context 'when asking about how to use GitLab', :ai_embedding_fixtures do
+      where(:input_template, :tools, :answer_match) do
+        'How do I change my password in GitLab' | ['GitlabDocumentation'] | /password/
+        'How do I fork a project?' | ['GitlabDocumentation'] | /fork/
+        'How do I clone a repository?' | ['GitlabDocumentation'] | /clone/
+        'How do I create a project template?' | ['GitlabDocumentation'] | /project/
+      end
+
+      with_them do
+        let(:input) { input_template }
+
+        it_behaves_like 'successful prompt processing'
       end
     end
 
