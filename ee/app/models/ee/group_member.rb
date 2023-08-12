@@ -13,12 +13,19 @@ module EE
 
       scope :by_group_ids, ->(group_ids) { where(source_id: group_ids) }
 
-      scope :with_ldap_dn, -> { joins(user: :identities).where("identities.provider LIKE ?", 'ldap%') }
+      scope :with_ldap_dn, -> do
+        joins(user: :identities).where("identities.provider LIKE ?", 'ldap%')
+        .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/422405')
+      end
+
       scope :with_identity_provider, ->(provider) do
         joins(user: :identities).where(identities: { provider: provider })
+        .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/422405')
       end
+
       scope :with_saml_identity, ->(provider) do
         joins(user: :identities).where(identities: { saml_provider_id: provider })
+        .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/422405')
       end
 
       scope :reporters, -> { where(access_level: ::Gitlab::Access::REPORTER) }

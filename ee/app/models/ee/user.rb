@@ -127,10 +127,13 @@ module EE
           .merge(::Member.with_elevated_guests)
 
         where('EXISTS (?)', subquery)
+          .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/422405')
       end
 
       scope :guests_with_elevating_role, -> do
-        joins(:user_highest_role).joins(:elevated_members).where(user_highest_role: { highest_access_level: ::Gitlab::Access::GUEST })
+        joins(:user_highest_role).joins(:elevated_members)
+          .where(user_highest_role: { highest_access_level: ::Gitlab::Access::GUEST })
+          .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/422405')
       end
 
       scope :subscribed_for_admin_email, -> { where(admin_email_unsubscribed_at: nil) }
