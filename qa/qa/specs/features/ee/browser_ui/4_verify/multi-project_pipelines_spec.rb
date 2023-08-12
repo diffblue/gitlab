@@ -7,7 +7,7 @@ module QA
     describe 'Multi-project pipelines' do
       let(:downstream_job_name) { 'downstream_job' }
       let(:executor) { "qa-runner-#{SecureRandom.hex(4)}" }
-      let!(:group) { Resource::Group.fabricate_via_api! }
+      let!(:group) { create(:group) }
 
       let(:upstream_project) do
         Resource::Project.fabricate_via_api! do |project|

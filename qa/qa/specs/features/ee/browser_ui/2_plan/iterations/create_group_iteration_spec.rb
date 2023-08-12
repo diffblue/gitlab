@@ -12,9 +12,7 @@ module QA
       let(:iteration_period) { "#{format_date(start_date)} - #{format_date(due_date)}" }
 
       let!(:iteration_group) do
-        QA::Resource::Group.fabricate_via_api! do |group|
-          group.path = "group-to-test-creating-iteration-cadences-#{SecureRandom.hex(8)}"
-        end
+        create(:group, path: "group-to-test-creating-iteration-cadences-#{SecureRandom.hex(8)}")
       end
 
       before do

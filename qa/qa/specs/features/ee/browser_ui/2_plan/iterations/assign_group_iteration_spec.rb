@@ -9,11 +9,7 @@ module QA
       let!(:due_date) { thirteen_days_from_now_yyyy_mm_dd }
       let(:iteration_period) { "#{format_date(start_date)} - #{format_date(due_date)}" }
 
-      let(:iteration_group) do
-        QA::Resource::Group.fabricate_via_api! do |group|
-          group.path = "group-to-test-assigning-iterations-#{SecureRandom.hex(8)}"
-        end
-      end
+      let(:iteration_group) { create(:group, path: "group-to-test-assigning-iterations-#{SecureRandom.hex(8)}") }
 
       let(:project) do
         Resource::Project.fabricate_via_api! do |project|

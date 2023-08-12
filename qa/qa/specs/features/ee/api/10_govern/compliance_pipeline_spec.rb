@@ -4,9 +4,7 @@ module QA
   RSpec.describe 'Govern', product_group: :compliance do
     describe 'Compliance pipeline' do
       let(:group) do
-        Resource::Group.fabricate_via_api! do |group|
-          group.path = "compliance-pipeline-#{Faker::Alphanumeric.alphanumeric(number: 8)}"
-        end
+        create(:group, path: "compliance-pipeline-#{Faker::Alphanumeric.alphanumeric(number: 8)}")
       end
 
       let!(:runner) do

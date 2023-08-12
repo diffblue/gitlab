@@ -12,11 +12,7 @@ module QA
     end
 
     describe 'Group' do
-      let(:group) do
-        Resource::Group.fabricate_via_api! do |resource|
-          resource.path = "test-group-#{SecureRandom.hex(8)}"
-        end
-      end
+      let(:group) { create(:group, path: "test-group-#{SecureRandom.hex(8)}") }
 
       context 'for disable and Enable LFS', :reliable,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347919' do
@@ -89,12 +85,7 @@ module QA
           end
         end
 
-        let(:two_fa_group) do
-          QA::Resource::Group.fabricate_via_api! do |group|
-            group.sandbox = sandbox_group
-            group.api_client = owner_api_client
-          end
-        end
+        let(:two_fa_group) { create(:group, sandbox: sandbox_group, api_client: owner_api_client) }
 
         before do
           sign_in(as: owner_user)

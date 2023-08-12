@@ -9,10 +9,9 @@ module QA
       let(:original_page_content) { 'Original wiki content' }
 
       let(:group) do
-        Resource::Group.fabricate_via_api! do |group|
-          group.path = "group-to-move-storage-of-#{SecureRandom.hex(8)}"
-          group.api_client = Runtime::API::Client.as_admin
-        end
+        create(:group,
+          path: "group-to-move-storage-of-#{SecureRandom.hex(8)}",
+          api_client: Runtime::API::Client.as_admin)
       end
 
       let(:wiki) do

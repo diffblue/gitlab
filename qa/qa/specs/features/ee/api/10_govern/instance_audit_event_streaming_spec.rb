@@ -80,10 +80,9 @@ module QA
         # Create a group within a group so that the test doesn't reuse a pre-existing group
         let!(:parent_group) { Resource::Group.fabricate! }
         let(:entity_path) do
-          Resource::Group.fabricate_via_api! do |group|
-            group.sandbox = parent_group
-            group.name = "audit-event-streaming-#{Faker::Alphanumeric.alphanumeric(number: 8)}"
-          end.full_path
+          create(:group,
+            sandbox: parent_group,
+            name: "audit-event-streaming-#{Faker::Alphanumeric.alphanumeric(number: 8)}").full_path
         end
 
         it_behaves_like 'streamed events', :audit_operation, 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/415874'

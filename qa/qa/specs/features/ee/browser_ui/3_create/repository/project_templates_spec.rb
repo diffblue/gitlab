@@ -19,10 +19,7 @@ module QA
       let(:template_container_group_name) { "instance-template-container-group-#{SecureRandom.hex(8)}" }
 
       let(:template_container_group) do
-        QA::Resource::Group.fabricate_via_api! do |group|
-          group.path = template_container_group_name
-          group.description = 'Instance template container group'
-        end
+        create(:group, path: template_container_group_name, description: 'Instance template container group')
       end
 
       let(:template_project) do
@@ -49,7 +46,7 @@ module QA
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347932' do
           built_in = 'Ruby on Rails'
 
-          Resource::Group.fabricate_via_api!.visit!
+          create(:group).visit!
           Page::Group::Show.perform(&:go_to_new_project)
 
           QA::Flow::Project.go_to_create_project_from_template
@@ -94,7 +91,7 @@ module QA
             end
           end
 
-          Resource::Group.fabricate_via_api!.visit!
+          create(:group).visit!
 
           Page::Group::Show.perform(&:go_to_new_project)
 
@@ -147,7 +144,7 @@ module QA
             end
           end
 
-          group = Resource::Group.fabricate_via_api!
+          group = create(:group)
           group.visit!
 
           Page::Group::Show.perform(&:go_to_new_project)

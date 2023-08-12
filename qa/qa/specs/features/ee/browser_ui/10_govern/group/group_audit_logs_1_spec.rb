@@ -24,11 +24,7 @@ module QA
     end
 
     describe 'Group' do
-      let(:group) do
-        Resource::Group.fabricate_via_api! do |resource|
-          resource.path = "test-group-#{SecureRandom.hex(8)}"
-        end
-      end
+      let(:group) { create(:group, path: "test-group-#{SecureRandom.hex(8)}") }
 
       let(:project) do
         Resource::Project.fabricate_via_api! do |resource|

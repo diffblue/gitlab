@@ -3,7 +3,7 @@
 module QA
   RSpec.describe 'Verify', :runner, :transient, product_group: :pipeline_execution do
     describe 'Merge trains transient bugs' do
-      let(:group) { Resource::Group.fabricate_via_api! }
+      let(:group) { create(:group) }
 
       let!(:runner) do
         Resource::GroupRunner.fabricate_via_api! do |runner|

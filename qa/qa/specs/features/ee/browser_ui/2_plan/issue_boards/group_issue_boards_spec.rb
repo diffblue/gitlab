@@ -7,9 +7,7 @@ module QA
       let(:board_2) { "Board-#{SecureRandom.hex(4)}" }
       let(:board_3) { "Board-#{SecureRandom.hex(4)}" }
 
-      let(:group) do
-        QA::Resource::Group.fabricate_via_api!
-      end
+      let(:group) { create(:group) }
 
       before do
         Flow::Login.sign_in

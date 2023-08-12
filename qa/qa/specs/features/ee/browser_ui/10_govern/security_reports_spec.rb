@@ -27,11 +27,7 @@ module QA
         YAML
       end
 
-      let(:group) do
-        Resource::Group.fabricate_via_api! do |group|
-          group.path = "govern-security-reports-#{Faker::Alphanumeric.alphanumeric(number: 6)}"
-        end
-      end
+      let(:group) { create(:group, path: "govern-security-reports-#{Faker::Alphanumeric.alphanumeric(number: 6)}") }
 
       let!(:project) do
         Resource::Project.fabricate_via_api! do |project|

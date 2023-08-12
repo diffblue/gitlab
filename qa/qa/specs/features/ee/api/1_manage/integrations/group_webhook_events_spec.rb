@@ -22,10 +22,7 @@ module QA
       it 'sends subgroup events',
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/383580' do
         EE::Resource::GroupWebHook.setup(session: session, subgroup: true) do |webhook, smocker|
-          group = Resource::Group.fabricate_via_api! do |group|
-            group.sandbox = webhook.group
-          end
-
+          group = create(:group, sandbox: webhook.group)
           group.immediate_remove_via_api!
 
           expect { smocker.events(session).size }.to eventually_eq(2)
