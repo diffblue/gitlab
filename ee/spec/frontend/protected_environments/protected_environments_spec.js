@@ -62,12 +62,14 @@ describe('ee/protected_environments/protected_environments.vue', () => {
   let wrapper;
 
   const setPageMock = jest.fn(() => Promise.resolve());
+  const fetchProtectedEnvironmentsMock = jest.fn(() => Promise.resolve());
 
   const createStore = ({ pageInfo } = {}) => {
     return new Vuex.Store({
       state: { ...state, pageInfo },
       actions: {
         setPage: setPageMock,
+        fetchProtectedEnvironments: fetchProtectedEnvironmentsMock,
       },
     });
   };
@@ -217,24 +219,33 @@ describe('ee/protected_environments/protected_environments.vue', () => {
       expect(findAddButton().exists()).toBe(true);
     });
 
-    it('clicking the add button shows the add form', async () => {
+    it('does not render the add form', () => {
       expect(findAddForm().exists()).toBe(false);
-
-      await findAddButton().trigger('click');
-
-      expect(findAddForm().exists()).toBe(true);
     });
 
-    it('clicking the cancel button hides the add form', async () => {
-      expect(findAddForm().exists()).toBe(false);
+    describe('when add button is clicked', () => {
+      beforeEach(async () => {
+        await findAddButton().trigger('click');
+      });
 
-      await findAddButton().trigger('click');
+      it('shows the add form', () => {
+        expect(findAddForm().exists()).toBe(true);
+      });
 
-      expect(findAddForm().exists()).toBe(true);
+      it('when canceled, hides the add form', async () => {
+        await findCancelButton().trigger('click');
 
-      await findCancelButton().trigger('click');
+        expect(findAddForm().exists()).toBe(false);
+      });
 
-      expect(findAddForm().exists()).toBe(false);
+      it('when form success, hides the form and refetches', async () => {
+        expect(fetchProtectedEnvironmentsMock).not.toHaveBeenCalled();
+
+        await findAddForm().vm.$emit('success');
+
+        expect(findAddForm().exists()).toBe(false);
+        expect(fetchProtectedEnvironmentsMock).toHaveBeenCalled();
+      });
     });
   });
 });
