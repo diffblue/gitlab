@@ -11,19 +11,19 @@ RSpec.describe 'Group.contributions', feature_category: :value_stream_management
 
   let(:query) do
     <<~QUERY
-    query($fullPath: ID!) {
-      group(fullPath: $fullPath) {
-        contributions(from: "2022-01-01", to: "2022-01-10") {
-          nodes {
-            user {
-              id
+      query($fullPath: ID!) {
+        group(fullPath: $fullPath) {
+          contributions(from: "2022-01-01", to: "2022-01-10") {
+            nodes {
+              user {
+                id
+              }
+              totalEvents
+              repoPushed
             }
-            totalEvents
-            repoPushed
           }
         }
       }
-    }
     QUERY
   end
 
@@ -43,30 +43,44 @@ RSpec.describe 'Group.contributions', feature_category: :value_stream_management
       create(:event, :pushed, project: project, author: user, created_at: Date.parse('2022-01-05'))
     end
 
-    it 'returns data' do
-      post_graphql(query, current_user: user, variables: { fullPath: group.full_path })
+    shared_examples 'returns correct data' do
+      it 'returns data' do
+        post_graphql(query, current_user: user, variables: { fullPath: group.full_path })
 
-      expect(graphql_data_at('group', 'contributions', 'nodes')).to eq([
-        { 'user' => { 'id' => user.to_gid.to_s },
-          'totalEvents' => 1,
-          'repoPushed' => 1 }
-      ])
+        expect(graphql_data_at('group', 'contributions', 'nodes')).to eq([
+          { 'user' => { 'id' => user.to_gid.to_s },
+            'totalEvents' => 1,
+            'repoPushed' => 1 }
+        ])
+      end
     end
 
-    context 'with events from different users' do
-      def run_query
-        post_graphql(query, current_user: user, variables: { fullPath: group.full_path })
+    context 'when postgres is the data source' do
+      it_behaves_like 'returns correct data'
+
+      context 'with events from different users' do
+        def run_query
+          post_graphql(query, current_user: user, variables: { fullPath: group.full_path })
+        end
+
+        it 'does not create N+1 queries' do
+          # warm the query to avoid flakiness
+          run_query
+
+          control_count = ActiveRecord::QueryRecorder.new { run_query }
+
+          create(:event, :pushed, project: project, author: create(:user), created_at: Date.parse('2022-01-05'))
+          expect { run_query }.not_to exceed_all_query_limit(control_count)
+        end
+      end
+    end
+
+    context 'when clickhouse is the data source', :click_house do
+      before do
+        stub_feature_flags(clickhouse_data_collection: true)
       end
 
-      it 'does not create N+1 queries' do
-        # warm the query to avoid flakiness
-        run_query
-
-        control_count = ActiveRecord::QueryRecorder.new { run_query }
-
-        create(:event, :pushed, project: project, author: create(:user), created_at: Date.parse('2022-01-05'))
-        expect { run_query }.not_to exceed_all_query_limit(control_count)
-      end
+      it_behaves_like 'returns correct data'
     end
   end
 end
