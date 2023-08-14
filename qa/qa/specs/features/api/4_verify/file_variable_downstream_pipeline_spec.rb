@@ -121,24 +121,16 @@ module QA
         end
       end
 
-      let(:upstream_pipeline) do
-        Resource::Pipeline.fabricate_via_api! do |pipeline|
-          pipeline.project = project
-        end
-      end
+      let(:upstream_pipeline) { create(:pipeline, project: project) }
 
       def child_pipeline
-        Resource::Pipeline.fabricate_via_api! do |pipeline|
-          pipeline.project = project
-          pipeline.id = upstream_pipeline.downstream_pipeline_id(bridge_name: 'trigger_child')
-        end
+        create(:pipeline, project: project, id: upstream_pipeline.downstream_pipeline_id(bridge_name: 'trigger_child'))
       end
 
       def downstream_project_pipeline
-        Resource::Pipeline.fabricate_via_api! do |pipeline|
-          pipeline.project = downstream_project
-          pipeline.id = upstream_pipeline.downstream_pipeline_id(bridge_name: 'trigger_downstream_project')
-        end
+        create(:pipeline,
+          project: downstream_project,
+          id: upstream_pipeline.downstream_pipeline_id(bridge_name: 'trigger_downstream_project'))
       end
 
       around do |example|

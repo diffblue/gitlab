@@ -296,10 +296,7 @@ module QA
       end
 
       def latest_pipeline
-        Resource::Pipeline.fabricate_via_api! do |pipeline|
-          pipeline.project = project
-          pipeline.id = project.pipelines.first[:id] unless project.pipelines.empty?
-        end
+        create(:pipeline, project: project, id: project.pipelines.empty? ? nil : project.pipelines.first[:id])
       end
 
       def ci_file
