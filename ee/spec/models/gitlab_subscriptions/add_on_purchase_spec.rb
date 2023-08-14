@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :subscription_management do
+RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provisioning do
   subject { build(:gitlab_subscription_add_on_purchase) }
 
   describe 'associations' do

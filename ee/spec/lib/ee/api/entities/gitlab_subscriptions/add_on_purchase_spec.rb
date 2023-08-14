@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::EE::API::Entities::GitlabSubscriptions::AddOnPurchase, feature_category: :purchase do
+RSpec.describe ::EE::API::Entities::GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provisioning do
   it 'contains the correct attributes', :aggregate_failures do
     add_on_purchase = build(:gitlab_subscription_add_on_purchase)
 
