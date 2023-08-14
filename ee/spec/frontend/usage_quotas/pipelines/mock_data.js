@@ -43,33 +43,28 @@ export const mockGetCiMinutesUsageNamespace = {
           monthIso8601: '2021-06-01',
           minutes: 5,
           sharedRunnersDuration: 60,
-          projects: {
-            nodes: [
-              {
-                minutes: 5,
-                sharedRunnersDuration: 60,
-                project: {
-                  id: 'gid://gitlab/Project/6',
-                  name: 'devcafe-wp-theme',
-                  nameWithNamespace: 'Group / devcafe-wp-theme',
-                  avatarUrl: null,
-                  webUrl: 'http://gdk.test:3000/group/devcafe-wp-theme',
-                },
-              },
-            ],
-            pageInfo,
-          },
         },
         {
           month: 'July',
           monthIso8601: '2021-07-01',
           minutes: 0,
           sharedRunnersDuration: 0,
-          projects: {
-            nodes: [],
-            pageInfo,
-          },
         },
+        {
+          month: 'August',
+          monthIso8601: '2022-08-01',
+          minutes: 5,
+          sharedRunnersDuration: 80,
+        },
+      ],
+    },
+  },
+};
+
+export const mockGetCiMinutesUsageNamespaceProjects = {
+  data: {
+    ciMinutesUsage: {
+      nodes: [
         {
           month: 'August',
           monthIso8601: '2022-08-01',
@@ -97,8 +92,27 @@ export const mockGetCiMinutesUsageNamespace = {
   },
 };
 
+export const emptyMockGetCiMinutesUsageNamespaceProjects = {
+  data: {
+    ciMinutesUsage: {
+      nodes: [
+        {
+          month: 'July',
+          monthIso8601: '2021-07-01',
+          minutes: 0,
+          sharedRunnersDuration: 0,
+          projects: {
+            nodes: [],
+            pageInfo,
+          },
+        },
+      ],
+    },
+  },
+};
+
 export const defaultProjectListProps = {
-  projects: mockGetCiMinutesUsageNamespace.data.ciMinutesUsage.nodes[2].projects.nodes,
+  projects: mockGetCiMinutesUsageNamespaceProjects.data.ciMinutesUsage.nodes[0].projects.nodes,
   pageInfo,
 };
 

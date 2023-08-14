@@ -26,9 +26,6 @@ export const SHARED_RUNNER_POPOVER_OPTIONS = {
 export const PROJECTS_TABLE_LABEL_PROJECT = __('Project');
 export const PROJECTS_TABLE_LABEL_SHARED_RUNNERS = s__('UsageQuota|Shared runner duration');
 export const PROJECTS_TABLE_LABEL_MINUTES = s__('UsageQuota|Compute usage');
-export const PROJECTS_TABLE_USAGE_SINCE = s__(
-  'UsageQuota|The table below shows usage since %{usageSince}',
-);
 export const PROJECTS_TABLE_FIELDS = [
   {
     key: 'project',

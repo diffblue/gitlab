@@ -1,20 +1,17 @@
 <script>
-import { GlAlert, GlSprintf, GlTableLite, GlKeysetPagination, GlLink } from '@gitlab/ui';
-import { sprintf } from '~/locale';
-import { formatDate } from '~/lib/utils/datetime_utility';
+import { GlSprintf, GlTableLite, GlKeysetPagination, GlLink } from '@gitlab/ui';
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 import {
   PROJECTS_TABLE_FIELDS,
   LABEL_CI_MINUTES_DISABLED,
   SHARED_RUNNERS_DOC_LINK,
-  PROJECTS_TABLE_USAGE_SINCE,
   PROJECTS_NO_SHARED_RUNNERS,
   PROJECTS_TABLE_OMITS_MESSAGE,
 } from '../constants';
 
 export default {
   name: 'ProjectCIMinutesList',
-  components: { ProjectAvatar, GlAlert, GlSprintf, GlTableLite, GlKeysetPagination, GlLink },
+  components: { ProjectAvatar, GlSprintf, GlTableLite, GlKeysetPagination, GlLink },
   inject: ['pageSize', 'ciMinutesAnyProjectEnabled', 'ciMinutesLastResetDate'],
   props: {
     projects: {
@@ -29,11 +26,6 @@ export default {
   computed: {
     showPagination() {
       return Boolean(this.pageInfo?.hasPreviousPage || this.pageInfo?.hasNextPage);
-    },
-    projectsTableInfoMessage() {
-      return sprintf(PROJECTS_TABLE_USAGE_SINCE, {
-        usageSince: formatDate(this.ciMinutesLastResetDate, 'mmm dd, yyyy', true),
-      });
     },
   },
   methods: {
@@ -63,9 +55,6 @@ export default {
 </script>
 <template>
   <section class="pipelines-project-list" data-testid="pipelines-quota-tab-project-table">
-    <gl-alert :dismissible="false" class="gl-my-3" data-testid="project-usage-info-alert">
-      {{ projectsTableInfoMessage }}
-    </gl-alert>
     <gl-table-lite :items="projects" :fields="$options.PROJECTS_TABLE_FIELDS">
       <template #cell(project)="{ item: { project } }">
         <div class="gl-display-flex gl-align-items-center">
