@@ -23,7 +23,7 @@ module Sbom
     scope :order_by_id, -> { order(id: :asc) }
 
     scope :order_by_component_name, ->(direction) do
-      joins(:component).order("sbom_components.name" => direction)
+      order(component_name: direction)
     end
 
     scope :order_by_package_name, ->(direction) do
@@ -39,10 +39,8 @@ module Sbom
     end
 
     scope :filter_by_search_with_component_and_group, ->(search, component_id, group) do
-      includes(project: :namespace).where(
-        source_id: Sbom::Source.select(:id).where("source->'input_file'->>'path' ILIKE ?", sanitize_sql("%#{search}%")),
-        component_id: component_id,
-        project: group.all_projects)
+      includes(project: :namespace).where('input_file_path ILIKE ?', "%#{search}%") # # rubocop:disable GitlabSecurity/SqlInjection
+                                   .where(component_id: component_id, project: group.all_projects)
     end
 
     scope :with_component, -> { includes(:component) }
