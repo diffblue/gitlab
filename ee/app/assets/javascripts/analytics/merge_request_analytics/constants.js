@@ -58,3 +58,5 @@ export const PIPELINE_STATUS_ICON_CLASSES = {
 export const UNITS = {
   DAYS: __('days'),
 };
+
+export const MAX_LABEL_SUGGESTIONS = 100;
