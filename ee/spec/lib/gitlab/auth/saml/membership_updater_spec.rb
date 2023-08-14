@@ -2,17 +2,17 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Auth::Saml::MembershipUpdater do
+RSpec.describe Gitlab::Auth::Saml::MembershipUpdater, feature_category: :system_access do
   let_it_be(:user) { create(:user) }
   let_it_be(:group1) { create(:group) }
   let_it_be(:group2) { create(:group) }
 
   let(:auth_hash) do
     Gitlab::Auth::GroupSaml::AuthHash.new(
-      OmniAuth::AuthHash.new(extra: {
-        raw_info: OneLogin::RubySaml::Attributes.new('groups' => %w(Developers Owners)),
-        provider: 'saml'
-      })
+      OmniAuth::AuthHash.new(
+        provider: 'saml',
+        extra: { raw_info: OneLogin::RubySaml::Attributes.new('groups' => %w(Developers Owners)) }
+      )
     )
   end
 
@@ -45,7 +45,7 @@ RSpec.describe Gitlab::Auth::Saml::MembershipUpdater do
       end
 
       it 'enqueues group sync' do
-        expect(::Auth::SamlGroupSyncWorker).to receive(:perform_async).with(user.id, match_array(group_link.id))
+        expect(::Auth::SamlGroupSyncWorker).to receive(:perform_async).with(user.id, match_array(group_link.id), 'saml')
 
         update_membership
       end
@@ -53,12 +53,12 @@ RSpec.describe Gitlab::Auth::Saml::MembershipUpdater do
       context 'when auth hash contains no groups' do
         let(:auth_hash) do
           Gitlab::Auth::GroupSaml::AuthHash.new(
-            OmniAuth::AuthHash.new(extra: { raw_info: OneLogin::RubySaml::Attributes.new })
+            OmniAuth::AuthHash.new(provider: 'saml', extra: { raw_info: OneLogin::RubySaml::Attributes.new })
           )
         end
 
         it 'enqueues group sync' do
-          expect(::Auth::SamlGroupSyncWorker).to receive(:perform_async).with(user.id, [])
+          expect(::Auth::SamlGroupSyncWorker).to receive(:perform_async).with(user.id, [], 'saml')
 
           update_membership
         end
@@ -70,7 +70,7 @@ RSpec.describe Gitlab::Auth::Saml::MembershipUpdater do
         end
 
         it 'enqueues group sync' do
-          expect(::Auth::SamlGroupSyncWorker).to receive(:perform_async).with(user.id, [])
+          expect(::Auth::SamlGroupSyncWorker).to receive(:perform_async).with(user.id, [], 'saml')
 
           update_membership
         end
