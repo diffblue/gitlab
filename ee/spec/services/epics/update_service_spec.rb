@@ -564,6 +564,7 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
       let(:label_a) { create(:group_label, title: 'a', group: group) }
       let(:label_b) { create(:group_label, title: 'b', group: group) }
       let(:label_c) { create(:group_label, title: 'c', group: group) }
+      let(:label_locked) { create(:group_label, title: 'locked', group: group, lock_on_merge: true) }
       let(:issuable) { epic }
 
       it_behaves_like 'updating issuable labels'
