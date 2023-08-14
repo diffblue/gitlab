@@ -18,7 +18,7 @@ module QA
       end
 
       before do
-        cluster.install_kubernetes_agent(agent_token.token)
+        cluster.install_kubernetes_agent(agent_token.token, kubernetes_agent.name)
 
         creates_agent_config(project)
       end
