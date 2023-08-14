@@ -5,6 +5,7 @@ import {
   WORK_ITEM_ISSUE_TYPE_OBJECTIVE,
   WORK_ITEM_ISSUE_TYPE_KEY_RESULT,
 } from 'ee/contribution_events/constants';
+import { EPIC_NOTEABLE_TYPE } from '~/notes/constants';
 import {
   findCreatedEvent,
   findWorkItemCreatedEvent,
@@ -12,6 +13,7 @@ import {
   findWorkItemClosedEvent,
   findReopenedEvent,
   findWorkItemReopenedEvent,
+  findCommentedEvent,
 } from 'jest/contribution_events/utils';
 
 export const eventEpicCreated = findCreatedEvent(TARGET_TYPE_EPIC);
@@ -34,3 +36,5 @@ export const eventTestCaseReopened = findWorkItemReopenedEvent(WORK_ITEM_ISSUE_T
 export const eventRequirementReopened = findWorkItemReopenedEvent(WORK_ITEM_ISSUE_TYPE_REQUIREMENT);
 export const eventObjectiveReopened = findWorkItemReopenedEvent(WORK_ITEM_ISSUE_TYPE_OBJECTIVE);
 export const eventKeyResultReopened = findWorkItemReopenedEvent(WORK_ITEM_ISSUE_TYPE_KEY_RESULT);
+
+export const eventCommentedEpic = findCommentedEvent(EPIC_NOTEABLE_TYPE);

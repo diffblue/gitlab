@@ -13071,6 +13071,30 @@ msgstr ""
 msgid "ContributionEvent|Closed test case %{targetLink} in %{resourceParentLink}."
 msgstr ""
 
+msgid "ContributionEvent|Commented on %{noteableLink}."
+msgstr ""
+
+msgid "ContributionEvent|Commented on Epic %{noteableLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Commented on commit %{noteableLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Commented on design %{noteableLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Commented on issue %{noteableLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Commented on merge request %{noteableLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Commented on snippet %{noteableLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Commented on snippet %{noteableLink}."
+msgstr ""
+
 msgid "ContributionEvent|Created project %{resourceParentLink}."
 msgstr ""
 
