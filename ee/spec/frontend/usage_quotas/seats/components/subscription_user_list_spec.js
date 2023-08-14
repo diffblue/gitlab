@@ -8,9 +8,10 @@ import {
   GlModal,
 } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import VueApollo from 'vue-apollo';
+import { PROMO_URL } from 'jh_else_ce/lib/utils/url_utility';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import SubscriptionUserList from 'ee/usage_quotas/seats/components/subscription_user_list.vue';
 import {
@@ -28,6 +29,7 @@ import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import SearchAndSortBar from 'ee/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
 import addOnPurchaseQuery from 'ee/usage_quotas/graphql/queries/get_add_on_purchase_query.graphql';
 import CodeSuggestionsAddOnAssignment from 'ee/usage_quotas/seats/components/code_suggestions_addon_assignment.vue';
+import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
 
 Vue.use(Vuex);
 Vue.use(VueApollo);
@@ -103,7 +105,7 @@ describe('Subscription User List', () => {
   const findErrorModal = () => wrapper.findComponent(GlModal);
   const findAllCodeSuggestionsAddonComponents = () =>
     wrapper.findAllComponents(CodeSuggestionsAddOnAssignment);
-  const findAddonPurchaseError = () => wrapper.findByTestId('addon-purchase-fetch-error');
+  const findAddOnError = () => wrapper.findComponent(ErrorAlert);
 
   const serializeUser = (rowWrapper) => {
     const avatarLink = rowWrapper.findComponent(GlAvatarLink);
@@ -295,6 +297,34 @@ describe('Subscription User List', () => {
         },
       };
 
+      const salesLink = `${PROMO_URL}/sales/`;
+      const supportLink = `${PROMO_URL}/support/`;
+      const expectedErrorDictionaryProp = {
+        add_on_purchase_fetch_error: {
+          links: { supportLink },
+          message:
+            'An error occurred while loading details for the Code Suggestions add-on. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}.',
+        },
+        cannot_assign_addon: {
+          links: { supportLink },
+          message:
+            'Something went wrong when assigning the add-on to this member. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}.',
+          title: 'Error assigning Code Suggestions add-on',
+        },
+        cannot_unassign_addon: {
+          links: { supportLink },
+          message:
+            'Something went wrong when un-assigning the add-on to this member. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}.',
+          title: 'Error un-assigning Code Suggestions add-on',
+        },
+        no_seats_available: {
+          links: { salesLink },
+          message:
+            'You have assigned all available Code Suggestions add-on seats. Please %{salesLinkStart}contact sales%{salesLinkEnd} if you would like to purchase more seats.',
+          title: 'No seats available',
+        },
+      };
+
       describe('when there is a paid subscription', () => {
         describe('when there are purchased addons', () => {
           beforeEach(async () => {
@@ -387,13 +417,60 @@ describe('Subscription User List', () => {
         });
 
         it('shows an error alert', () => {
-          expect(findAddonPurchaseError().text()).toBe(
-            'An error occurred while loading details for the Code Suggestions add-on.',
-          );
+          const expectedProps = {
+            dismissible: true,
+            error: 'ADD_ON_PURCHASE_FETCH_ERROR',
+            errorDictionary: expectedErrorDictionaryProp,
+          };
+          expect(findAddOnError().props()).toEqual(expect.objectContaining(expectedProps));
+        });
+
+        it('clears error alert when dismissed', async () => {
+          findAddOnError().vm.$emit('dismiss');
+
+          await nextTick();
+
+          expect(findAddOnError().exists()).toBe(false);
         });
 
         it('does not show code suggestions addon field', () => {
           expect(findAllCodeSuggestionsAddonComponents().length).toBe(0);
+        });
+      });
+
+      describe('when there is an error while assigning addon', () => {
+        const addOnAssignmentError = 'NO_SEATS_AVAILABLE';
+        beforeEach(async () => {
+          await createComponent({
+            ...commonProps,
+            initialState: {
+              hasNoSubscription: false,
+            },
+            initialGetters: {
+              tableItems: () => mockTableItemsWithCodeSuggestionsAddOn,
+            },
+            handler: assignedAddonDataHandler,
+          });
+          findAllCodeSuggestionsAddonComponents()
+            .at(0)
+            .vm.$emit('handleAddOnAssignmentError', addOnAssignmentError);
+        });
+
+        it('shows an error alert', () => {
+          const expectedProps = {
+            dismissible: true,
+            error: addOnAssignmentError,
+            errorDictionary: expectedErrorDictionaryProp,
+          };
+          expect(findAddOnError().props()).toEqual(expect.objectContaining(expectedProps));
+        });
+
+        it('clears error alert when dismissed', async () => {
+          findAddOnError().vm.$emit('dismiss');
+
+          await nextTick();
+
+          expect(findAddOnError().exists()).toBe(false);
         });
       });
     });

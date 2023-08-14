@@ -114,6 +114,7 @@ describe('Buy Addons Shared App', () => {
             error,
             errorDictionary: PURCHASE_ERROR_DICTIONARY,
             defaultError: CONTACT_SUPPORT_DEFAULT_MESSAGE,
+            dismissible: false,
           });
         });
 

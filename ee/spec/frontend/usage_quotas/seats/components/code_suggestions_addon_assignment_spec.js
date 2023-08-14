@@ -18,15 +18,27 @@ describe('CodeSuggestionsAddonAssignment', () => {
   const globalUserId = `gid://gitlab/User/${userId}`;
   const addOnPurchaseId = 'gid://gitlab/GitlabSubscriptions::AddOnPurchase/2';
   const codeSuggestionsAddon = { name: ADD_ON_CODE_SUGGESTIONS };
-  const addOnAssignmentSuccess = {
+  const addOnPurchase = {
+    id: addOnPurchaseId,
+    name: ADD_ON_CODE_SUGGESTIONS,
+    purchasedQuantity: 3,
+    assignedQuantity: 2,
+  };
+  const addOnAssignmentSuccess = { clientMutationId: '1', errors: [], addOnPurchase };
+  const knownAddOnAssignmentError = {
     clientMutationId: '1',
-    errors: [],
-    addOnPurchase: {
-      id: addOnPurchaseId,
-      name: ADD_ON_CODE_SUGGESTIONS,
-      purchasedQuantity: 3,
-      assignedQuantity: 2,
-    },
+    errors: ['NO_SEATS_AVAILABLE'],
+    addOnPurchase,
+  };
+  const unknownAddOnAssignmentError = {
+    clientMutationId: '1',
+    errors: ['AN_ERROR'],
+    addOnPurchase,
+  };
+  const nonStringAddOnAssignmentError = {
+    clientMutationId: '1',
+    errors: [null],
+    addOnPurchase,
   };
 
   const assignAddOnHandler = jest.fn().mockResolvedValue({
@@ -42,11 +54,11 @@ describe('CodeSuggestionsAddonAssignment', () => {
       [userAddOnAssignmentRemoveMutation, addOnAssignmentRemoveHandler],
     ]);
 
-  const createComponent = (
+  const createComponent = ({
     props = {},
     addonAssignmentCreateHandler = assignAddOnHandler,
     addOnAssignmentRemoveHandler = unassignAddOnHandler,
-  ) => {
+  }) => {
     wrapper = shallowMount(CodeSuggestionsAddonAssignment, {
       apolloProvider: createMockApolloProvider(
         addonAssignmentCreateHandler,
@@ -97,7 +109,7 @@ describe('CodeSuggestionsAddonAssignment', () => {
     },
   ])('$title', ({ addOns, toggleProps, tooltipExists }) => {
     beforeEach(() => {
-      createComponent({ addOns });
+      createComponent({ props: { addOns } });
     });
 
     it('renders addon toggle with appropriate props', () => {
@@ -111,11 +123,9 @@ describe('CodeSuggestionsAddonAssignment', () => {
 
   describe('when assigning an addon', () => {
     beforeEach(() => {
-      createComponent(
-        { addOns: { applicable: [codeSuggestionsAddon], assigned: [] } },
-        assignAddOnHandler,
-        unassignAddOnHandler,
-      );
+      createComponent({
+        props: { addOns: { applicable: [codeSuggestionsAddon], assigned: [] } },
+      });
       findToggle().vm.$emit('change', true);
     });
 
@@ -144,18 +154,74 @@ describe('CodeSuggestionsAddonAssignment', () => {
       });
     });
 
-    it('does not call addon unassigment mutation', () => {
+    it('does not call addon un-assigment mutation', () => {
       expect(unassignAddOnHandler).not.toHaveBeenCalled();
     });
   });
 
-  describe('when unassigning an addon', () => {
+  describe('when error occurs while assigning add-on', () => {
+    const addOns = { applicable: [codeSuggestionsAddon], assigned: [] };
+
+    it('emits an event with the error code from response for a known error', async () => {
+      createComponent({
+        props: { addOns },
+        addonAssignmentCreateHandler: jest
+          .fn()
+          .mockResolvedValue({ data: { userAddOnAssignmentCreate: knownAddOnAssignmentError } }),
+      });
+      findToggle().vm.$emit('change', true);
+
+      await waitForPromises();
+
+      expect(wrapper.emitted('handleAddOnAssignmentError')).toEqual([['NO_SEATS_AVAILABLE']]);
+    });
+
+    it('emits an event with generic error code for a non string error code', async () => {
+      createComponent({
+        props: { addOns },
+        addonAssignmentCreateHandler: jest.fn().mockResolvedValue({
+          data: { userAddOnAssignmentCreate: nonStringAddOnAssignmentError },
+        }),
+      });
+      findToggle().vm.$emit('change', true);
+
+      await waitForPromises();
+
+      expect(wrapper.emitted('handleAddOnAssignmentError')).toEqual([['CANNOT_ASSIGN_ADDON']]);
+    });
+
+    it('emits an event with generic error code for an unknown error', async () => {
+      createComponent({
+        props: { addOns },
+        addonAssignmentCreateHandler: jest
+          .fn()
+          .mockResolvedValue({ data: { userAddOnAssignmentCreate: unknownAddOnAssignmentError } }),
+      });
+      findToggle().vm.$emit('change', true);
+
+      await waitForPromises();
+
+      expect(wrapper.emitted('handleAddOnAssignmentError')).toEqual([['CANNOT_ASSIGN_ADDON']]);
+    });
+
+    it('emits an event with the generic error code', async () => {
+      createComponent({
+        props: { addOns },
+        addonAssignmentCreateHandler: jest.fn().mockRejectedValue(new Error('An error')),
+      });
+      findToggle().vm.$emit('change', true);
+
+      await waitForPromises();
+
+      expect(wrapper.emitted('handleAddOnAssignmentError')).toEqual([['CANNOT_ASSIGN_ADDON']]);
+    });
+  });
+
+  describe('when un-assigning an addon', () => {
     beforeEach(() => {
-      createComponent(
-        { addOns: { applicable: [codeSuggestionsAddon], assigned: [codeSuggestionsAddon] } },
-        assignAddOnHandler,
-        unassignAddOnHandler,
-      );
+      createComponent({
+        props: { addOns: { applicable: [codeSuggestionsAddon], assigned: [codeSuggestionsAddon] } },
+      });
       findToggle().vm.$emit('change', false);
     });
 
@@ -186,6 +252,64 @@ describe('CodeSuggestionsAddonAssignment', () => {
 
     it('does not call addon assigment mutation', () => {
       expect(assignAddOnHandler).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('when error occurs while un-assigning add-on', () => {
+    const addOns = { applicable: [codeSuggestionsAddon], assigned: [codeSuggestionsAddon] };
+
+    it('emits an event with the error code from response for a known error', async () => {
+      createComponent({
+        props: { addOns },
+        addOnAssignmentRemoveHandler: jest
+          .fn()
+          .mockResolvedValue({ data: { userAddOnAssignmentRemove: knownAddOnAssignmentError } }),
+      });
+      findToggle().vm.$emit('change', false);
+
+      await waitForPromises();
+
+      expect(wrapper.emitted('handleAddOnAssignmentError')).toEqual([['NO_SEATS_AVAILABLE']]);
+    });
+
+    it('emits an event with generic error code for a non string error code', async () => {
+      createComponent({
+        props: { addOns },
+        addOnAssignmentRemoveHandler: jest.fn().mockResolvedValue({
+          data: { userAddOnAssignmentRemove: nonStringAddOnAssignmentError },
+        }),
+      });
+      findToggle().vm.$emit('change', true);
+
+      await waitForPromises();
+
+      expect(wrapper.emitted('handleAddOnAssignmentError')).toEqual([['CANNOT_UNASSIGN_ADDON']]);
+    });
+
+    it('emits an event with generic error code for an unknown error', async () => {
+      createComponent({
+        props: { addOns },
+        addOnAssignmentRemoveHandler: jest
+          .fn()
+          .mockResolvedValue({ data: { userAddOnAssignmentRemove: unknownAddOnAssignmentError } }),
+      });
+      findToggle().vm.$emit('change', false);
+
+      await waitForPromises();
+
+      expect(wrapper.emitted('handleAddOnAssignmentError')).toEqual([['CANNOT_UNASSIGN_ADDON']]);
+    });
+
+    it('emits an event with the generic error code', async () => {
+      createComponent({
+        props: { addOns },
+        addOnAssignmentRemoveHandler: jest.fn().mockRejectedValue(new Error('An error')),
+      });
+      findToggle().vm.$emit('change', false);
+
+      await waitForPromises();
+
+      expect(wrapper.emitted('handleAddOnAssignmentError')).toEqual([['CANNOT_UNASSIGN_ADDON']]);
     });
   });
 });
