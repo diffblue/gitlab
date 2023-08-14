@@ -52251,6 +52251,9 @@ msgstr ""
 msgid "Vulnerability|GitLab Security Report"
 msgstr ""
 
+msgid "Vulnerability|GitLab has identified sensitive strings in the code snippet for the AI prompt, indicating a possible leaked secret. Please review your code before utilizing the Explain This Vulnerability feature. If you still wish to proceed and send the %{linkStart}code%{linkEnd} to the AI, click the checkbox below."
+msgstr ""
+
 msgid "Vulnerability|Hide prompt"
 msgstr ""
 
@@ -52402,6 +52405,9 @@ msgid "Vulnerability|Vulnerable class:"
 msgstr ""
 
 msgid "Vulnerability|Vulnerable method:"
+msgstr ""
+
+msgid "Vulnerability|Warning: possible secrets detected"
 msgstr ""
 
 msgid "WARNING:"
