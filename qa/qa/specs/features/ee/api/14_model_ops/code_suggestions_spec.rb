@@ -140,7 +140,7 @@ module QA
           response = post(url, nil, headers: headers)
 
           unless response.code == 201
-            safe_response = masked_parsed_response(response, mask_secrets: [:access_token])
+            safe_response = masked_parsed_response(response, mask_by_key: [:access_token])
             raise "Failed to get code suggestions access token. " \
                   "Request returned (#{response.code}): `#{safe_response}`."
           end
