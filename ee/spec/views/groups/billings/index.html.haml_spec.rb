@@ -66,6 +66,16 @@ RSpec.describe 'groups/billings/index', :saas, :aggregate_failures, feature_cate
 
         expect(rendered).to have_css(css)
       end
+
+      context 'with an expired trial' do
+        let_it_be(:group) { create(:group_with_plan, plan: :free_plan, trial_ends_on: Date.yesterday) }
+
+        it 'omits the trial CTA' do
+          render
+
+          expect(rendered).not_to have_link('Start a free Ultimate trial')
+        end
+      end
     end
 
     context 'with a paid plan' do

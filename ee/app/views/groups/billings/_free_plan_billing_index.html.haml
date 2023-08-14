@@ -8,15 +8,16 @@
 
   .gl-flex-direction-row.gl-display-flex.gl-flex-wrap.gl-justify-content-center.gl-mb-7.gl-ml-7{ data: { track_action: 'render' } }
     = render Billing::PlanComponent.with_collection(plans_data, namespace: namespace)
-  .gl-mb-2
-    = s_("BillingPlans|All plans have unlimited (private) repositories.")
-  .gl-mb-5
-    = s_("BillingPlans|Ready to explore the value of the paid features today? Start a trial, no credit card required.")
-  = link_to s_("BillingPlans|Start a free Ultimate trial"),
-        new_trial_path(namespace_id: namespace.id),
-        class: ["gl-mb-6 btn gl-button btn-confirm-secondary"],
-        data: start_free_trial_data
-  .billing-plan-divider.gl-m-auto.gl-border-b.gl-mb-7
+  - if namespace.never_had_trial?
+    .gl-mb-2
+      = s_("BillingPlans|All plans have unlimited (private) repositories.")
+    .gl-mb-5
+      = s_("BillingPlans|Ready to explore the value of the paid features today? Start a trial, no credit card required.")
+    = link_to s_("BillingPlans|Start a free Ultimate trial"),
+          new_trial_path(namespace_id: namespace.id),
+          class: ["gl-mb-6 btn gl-button btn-confirm-secondary"],
+          data: start_free_trial_data
+    .billing-plan-divider.gl-m-auto.gl-border-b.gl-mb-7
   - image_alt = s_('InProductMarketing|Team members collaborating')
   = image_tag 'marketing/free-trial-team-members.png', alt: image_alt, title: image_alt, width: 280, height: 125, class: 'gl-mb-6'
   .gl-font-size-h1.gl-font-weight-bold.gl-line-height-24.gl-mb-4
