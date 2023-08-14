@@ -13,12 +13,7 @@ module QA
       let(:hash) { SecureRandom.hex(8) }
       let(:content) { Faker::Lorem.paragraph(sentence_count: 1000) }
 
-      let(:owner_user) do
-        Resource::User.fabricate_via_api! do |user|
-          user.api_client = admin_api_client
-          user.hard_delete_on_api_removal = true
-        end
-      end
+      let(:owner_user) { create(:user, :hard_delete, api_client: admin_api_client) }
 
       let(:free_plan_group) do
         Resource::Sandbox.fabricate! do |sandbox|

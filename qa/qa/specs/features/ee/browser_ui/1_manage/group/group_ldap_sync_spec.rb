@@ -168,14 +168,13 @@ module QA
         created_users = {}
 
         users.each do |user|
-          created_users[user[:username]] = Resource::User.fabricate_via_api! do |resource|
-            resource.username = user[:username]
-            resource.name = user[:name]
-            resource.email = user[:email]
-            resource.extern_uid = user[:extern_uid]
-            resource.provider = user[:provider]
-            resource.api_client = Runtime::API::Client.as_admin
-          end
+          created_users[user[:username]] = create(:user,
+            username: user[:username],
+            name: user[:name],
+            email: user[:email],
+            extern_uid: user[:extern_uid],
+            provider: user[:provider],
+            api_client: Runtime::API::Client.as_admin)
         end
         created_users
       end

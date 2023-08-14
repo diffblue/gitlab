@@ -9,19 +9,15 @@ module QA
       let(:hash) { SecureRandom.hex(8) }
 
       let(:group_owner) do
-        Resource::User.fabricate_via_api! do |user|
-          user.email = "test-user-#{hash}@gitlab.com"
-          user.api_client = admin_api_client
-          user.hard_delete_on_api_removal = true
-        end
+        create(:user, :hard_delete, email: "test-user-#{hash}@gitlab.com", api_client: admin_api_client)
       end
 
-      let(:user_2) { Resource::User.fabricate_via_api! { |user| user.api_client = admin_api_client } }
-      let(:user_3) { Resource::User.fabricate_via_api! { |user| user.api_client = admin_api_client } }
-      let(:user_4) { Resource::User.fabricate_via_api! { |user| user.api_client = admin_api_client } }
-      let(:user_5) { Resource::User.fabricate_via_api! { |user| user.api_client = admin_api_client } }
-      let(:user_6) { Resource::User.fabricate_via_api! { |user| user.api_client = admin_api_client } }
-      let(:user_7) { Resource::User.fabricate_via_api! { |user| user.api_client = admin_api_client } }
+      let(:user_2) { create(:user, api_client: admin_api_client) }
+      let(:user_3) { create(:user, api_client: admin_api_client) }
+      let(:user_4) { create(:user, api_client: admin_api_client) }
+      let(:user_5) { create(:user, api_client: admin_api_client) }
+      let(:user_6) { create(:user, api_client: admin_api_client) }
+      let(:user_7) { create(:user, api_client: admin_api_client) }
 
       let(:private_group) do
         Resource::Sandbox.fabricate! do |sandbox|

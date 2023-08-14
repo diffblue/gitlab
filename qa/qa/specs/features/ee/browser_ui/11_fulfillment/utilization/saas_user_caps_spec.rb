@@ -16,8 +16,8 @@ module QA
     describe 'Utilization' do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:hash) { SecureRandom.hex(8) }
-      let(:user_2) { Resource::User.fabricate_via_api! { |user| user.api_client = admin_api_client } }
-      let(:user_3) { Resource::User.fabricate_via_api! { |user| user.api_client = admin_api_client } }
+      let(:user_2) { create(:user, api_client: admin_api_client) }
+      let(:user_3) { create(:user, api_client: admin_api_client) }
 
       let(:group) do
         Resource::Sandbox.fabricate! do |sandbox|

@@ -70,9 +70,7 @@ module QA
 
       context 'for enable and disable 2FA requirement', :requires_admin, :reliable, :skip_live_env,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347920' do
-        let!(:owner_user) do
-          Resource::User.fabricate_via_api!
-        end
+        let!(:owner_user) { create(:user) }
 
         let!(:owner_api_client) do
           Runtime::API::Client.new(:gitlab, user: owner_user, is_new_session: false)

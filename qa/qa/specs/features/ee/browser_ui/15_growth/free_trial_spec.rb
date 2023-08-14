@@ -5,11 +5,7 @@ module QA
     describe 'SaaS trials' do
       let(:api_client) { Runtime::API::Client.as_admin }
       let(:user) do
-        Resource::User.fabricate_via_api! do |user|
-          user.email = "test-user-#{SecureRandom.hex(4)}@gitlab.com"
-          user.api_client = api_client
-          user.hard_delete_on_api_removal = true
-        end
+        create(:user, :hard_delete, email: "test-user-#{SecureRandom.hex(4)}@gitlab.com", api_client: api_client)
       end
 
       let(:group_for_trial) do

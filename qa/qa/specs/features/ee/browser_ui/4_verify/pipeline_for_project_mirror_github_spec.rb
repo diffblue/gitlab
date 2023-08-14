@@ -22,12 +22,7 @@ module QA
 
       let(:group) { create(:group, api_client: admin_api_client) }
 
-      let(:user) do
-        Resource::User.fabricate_via_api! do |resource|
-          resource.api_client = admin_api_client
-          resource.hard_delete_on_api_removal = true
-        end
-      end
+      let(:user) { create(:user, :hard_delete, api_client: admin_api_client) }
 
       let(:imported_project) do
         EE::Resource::ImportRepoWithCiCd.fabricate_via_browser_ui! do |project|

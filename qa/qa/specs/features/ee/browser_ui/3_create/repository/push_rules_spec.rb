@@ -211,10 +211,7 @@ module QA
       def prepare
         Flow::Login.sign_in
 
-        @creator = Resource::User.fabricate_via_api! do |user|
-          user.username = Runtime::User.username
-          user.password = Runtime::User.password
-        end
+        @creator = create(:user, username: Runtime::User.username, password: Runtime::User.password)
 
         @root = Resource::User.init do |user|
           user.username = 'root'

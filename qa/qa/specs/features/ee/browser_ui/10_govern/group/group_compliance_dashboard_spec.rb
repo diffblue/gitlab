@@ -3,12 +3,7 @@
 module QA
   RSpec.describe 'Govern', :skip_live_env, product_group: :compliance do
     describe 'compliance dashboard' do
-      let!(:approver1) do
-        Resource::User.fabricate_via_api! do |usr|
-          usr.name = "user1-compliance-dashboard-#{SecureRandom.hex(8)}"
-        end
-      end
-
+      let!(:approver1) { create(:user, name: "user1-compliance-dashboard-#{SecureRandom.hex(8)}") }
       let!(:approver1_api_client) { Runtime::API::Client.new(:gitlab, user: approver1) }
       let(:author_api_client) { Runtime::API::Client.new(:gitlab) }
 

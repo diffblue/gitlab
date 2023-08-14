@@ -16,13 +16,12 @@ module QA
       let(:api_client) { Runtime::API::Client.as_admin }
 
       let(:user) do
-        Resource::User.fabricate_via_api! do |user|
-          user.api_client = api_client
-          user.name = 'JoeBloggs'
-          user.username = "qa-user-name-#{SecureRandom.hex(8)}"
-          user.first_name = 'Joe'
-          user.last_name = 'Bloggs'
-        end
+        create(:user,
+          api_client: api_client,
+          name: 'JoeBloggs',
+          username: "qa-user-name-#{SecureRandom.hex(8)}",
+          first_name: 'Joe',
+          last_name: 'Bloggs')
       end
 
       it(

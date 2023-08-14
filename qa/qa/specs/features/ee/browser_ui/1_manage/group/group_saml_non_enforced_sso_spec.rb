@@ -5,7 +5,7 @@ module QA
     describe 'Group SAML SSO - Non enforced SSO', product_group: :authentication_and_authorization do
       include Support::API
 
-      let(:user) { Resource::User.fabricate_via_api! }
+      let(:user) { create(:user) }
 
       before(:all) do
         @group = Resource::Sandbox.fabricate_via_api! do |sandbox_group|
