@@ -47,6 +47,7 @@ exports[`MergeRequestTable component matches the snapshot 1`] = `
               highlighteditemstitleclass="gl-px-5"
               menu-class="w-100 mw-100"
               size="medium"
+              splithref=""
               text="Time from first comment to last commit"
               toggleclass="dropdown-menu-toggle w-100"
               variant="default"

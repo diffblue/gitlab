@@ -297,7 +297,6 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
             class="btn btn-default btn-md btn-block gl-button gl-new-dropdown-toggle"
             data-testid="base-dropdown-toggle"
             id="dropdown-toggle-btn-2"
-            listeners="[object Object]"
             type="button"
           >
             <!---->

@@ -196,13 +196,13 @@ RSpec.describe 'Epic boards sidebar', :js, feature_category: :portfolio_manageme
 
       subscription_button = find('[data-testid="subscription-toggle"]')
 
-      subscription_button.click
+      subscription_button.find('button').click
 
       wait_for_requests
 
       expect(subscription_button).to have_css("button.is-checked")
 
-      subscription_button.click
+      subscription_button.find('button').click
 
       wait_for_requests
 
