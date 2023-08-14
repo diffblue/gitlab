@@ -40,14 +40,10 @@ module QA
 
       it 'is not allowed to create a file via the API', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347874' do
         expect do
-          Resource::File.fabricate_via_api! do |file|
-            file.api_client = @user_api_client
-            file.project = @project
-            file.branch = 'new_branch'
-            file.commit_message = 'Add new file'
-            file.name = 'test.txt'
-            file.content = "New file"
-          end
+          create(:file,
+            api_client: @user_api_client,
+            project: @project,
+            branch: 'new_branch')
         end.to raise_error(Resource::ApiFabricator::ResourceFabricationFailedError, /403 Forbidden/)
       end
 
