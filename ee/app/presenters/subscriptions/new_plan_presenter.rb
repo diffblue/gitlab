@@ -5,8 +5,8 @@ module Subscriptions
     presents ::Plan
 
     NEW_PLAN_TITLES = {
-      silver: 'Premium (Formerly Silver)',
-      gold: 'Ultimate (Formerly Gold)'
+      silver: 'Premium',
+      gold: 'Ultimate'
     }.freeze
 
     delegator_override :title

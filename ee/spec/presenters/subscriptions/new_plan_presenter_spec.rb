@@ -2,14 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe Subscriptions::NewPlanPresenter do
+RSpec.describe Subscriptions::NewPlanPresenter, feature_category: :subscription_management do
   describe '#title' do
     using RSpec::Parameterized::TableSyntax
 
     where(:legacy_name, :new_title) do
       'bronze'   | 'Bronze'
-      'silver'   | 'Premium (Formerly Silver)'
-      'gold'     | 'Ultimate (Formerly Gold)'
+      'silver'   | 'Premium'
+      'gold'     | 'Ultimate'
       'premium'  | 'Premium'
       'ultimate' | 'Ultimate'
     end
