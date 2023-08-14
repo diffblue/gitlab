@@ -18,7 +18,7 @@ export default {
   NO_CI_MINUTES_MSG,
   props: {
     selectedYear: {
-      type: String,
+      type: Number,
       required: true,
     },
     usageDataByYear: {
@@ -42,12 +42,12 @@ export default {
     chartData() {
       return [
         {
-          data: this.getUsageDataSelectedYear,
+          data: this.selectedYearUsageData,
           name: this.$options.USAGE_BY_MONTH,
         },
       ];
     },
-    getUsageDataSelectedYear() {
+    selectedYearUsageData() {
       if (this.usageDataByYear && this.selectedYear) {
         return this.usageDataByYear[this.selectedYear]
           .slice()
@@ -62,13 +62,11 @@ export default {
 };
 </script>
 <template>
-  <div>
-    <gl-area-chart
-      class="gl-mb-3"
-      :data="chartData"
-      :option="$options.chartOptions"
-      responsive
-      :width="0"
-    />
-  </div>
+  <gl-area-chart
+    class="gl-mb-3"
+    :data="chartData"
+    :option="$options.chartOptions"
+    responsive
+    :width="0"
+  />
 </template>

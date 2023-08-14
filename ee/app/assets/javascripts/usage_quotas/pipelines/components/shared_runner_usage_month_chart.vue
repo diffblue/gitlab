@@ -14,7 +14,7 @@ export default {
   },
   props: {
     selectedYear: {
-      type: String,
+      type: Number,
       required: true,
     },
     usageDataByYear: {

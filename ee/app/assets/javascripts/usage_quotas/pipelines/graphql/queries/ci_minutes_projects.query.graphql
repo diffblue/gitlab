@@ -1,13 +1,14 @@
 #import "~/graphql_shared/fragments/page_info.fragment.graphql"
 
-query getCiMinutesUsageGroup(
+query getGroupProjectsCiMinutesUsage(
   $namespaceId: NamespaceID
+  $date: Date
   $first: Int
   $last: Int
   $after: String
   $before: String
 ) {
-  ciMinutesUsage(namespaceId: $namespaceId) {
+  ciMinutesUsage(namespaceId: $namespaceId, date: $date) {
     nodes {
       month
       monthIso8601

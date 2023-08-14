@@ -1,17 +1,18 @@
 import { cloneDeep } from 'lodash';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import MinutesUsageCharts from 'ee/usage_quotas/pipelines/components/minutes_usage_charts.vue';
+import MinutesUsagePerMonth from 'ee/usage_quotas/pipelines/components/minutes_usage_per_month.vue';
 import NoMinutesAlert from 'ee/usage_quotas/pipelines/components/no_minutes_alert.vue';
 import { mockGetCiMinutesUsageNamespace } from '../mock_data';
 
-describe('MinutesUsageCharts', () => {
+describe('MinutesUsagePerMonth', () => {
   let wrapper;
   const defaultProps = {
     ciMinutesUsage: cloneDeep(mockGetCiMinutesUsageNamespace.data.ciMinutesUsage.nodes),
+    selectedYear: 2022,
   };
 
   const createComponent = ({ props = {} } = {}) => {
-    wrapper = shallowMountExtended(MinutesUsageCharts, {
+    wrapper = shallowMountExtended(MinutesUsagePerMonth, {
       propsData: {
         ...defaultProps,
         ...props,
@@ -26,16 +27,9 @@ describe('MinutesUsageCharts', () => {
   const findNoMinutesAlert = () => wrapper.findComponent(NoMinutesAlert);
   const findMinutesByNamespace = () => wrapper.findByTestId('minutes-by-namespace');
   const findSharedRunnerByNamespace = () => wrapper.findByTestId('shared-runner-by-namespace');
-  const findMinutesByProject = () => wrapper.findByTestId('minutes-by-project');
-  const findSharedRunnerByProject = () => wrapper.findByTestId('shared-runner-by-project');
-  const findYearDropdown = () => wrapper.findByTestId('minutes-usage-year-dropdown');
 
   it('does not render NoMinutesAlert if there are compute minutes', () => {
     expect(findNoMinutesAlert().exists()).toBe(false);
-  });
-
-  it('should contain a year dropdown', () => {
-    expect(findYearDropdown().exists()).toBe(true);
   });
 
   describe('with no compute minutes', () => {
@@ -45,13 +39,6 @@ describe('MinutesUsageCharts', () => {
         ciMinutesUsage: defaultProps.ciMinutesUsage.map((usage) => ({
           ...usage,
           minutes: 0,
-          projects: {
-            ...usage.projects,
-            nodes: usage.projects.nodes.map((project) => ({
-              ...project,
-              minutes: 0,
-            })),
-          },
         })),
       };
 
@@ -60,12 +47,10 @@ describe('MinutesUsageCharts', () => {
 
     it('does not render compute charts', () => {
       expect(findMinutesByNamespace().exists()).toBe(false);
-      expect(findMinutesByProject().exists()).toBe(false);
     });
 
     it('renders Shared Runners charts', () => {
       expect(findSharedRunnerByNamespace().exists()).toBe(true);
-      expect(findSharedRunnerByProject().exists()).toBe(true);
     });
   });
 
@@ -76,13 +61,6 @@ describe('MinutesUsageCharts', () => {
         ciMinutesUsage: defaultProps.ciMinutesUsage.map((usage) => ({
           ...usage,
           sharedRunnersDuration: 0,
-          projects: {
-            ...usage.projects,
-            nodes: usage.projects.nodes.map((project) => ({
-              ...project,
-              sharedRunnersDuration: 0,
-            })),
-          },
         })),
       };
 
@@ -91,12 +69,10 @@ describe('MinutesUsageCharts', () => {
 
     it('renders compute charts', () => {
       expect(findMinutesByNamespace().exists()).toBe(true);
-      expect(findMinutesByProject().exists()).toBe(true);
     });
 
     it('does not render Shared Runners charts', () => {
       expect(findSharedRunnerByNamespace().exists()).toBe(false);
-      expect(findSharedRunnerByProject().exists()).toBe(false);
     });
   });
 });

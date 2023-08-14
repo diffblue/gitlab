@@ -1,12 +1,13 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import { GlAlert, GlButton, GlLoadingIcon } from '@gitlab/ui';
-import getCiMinutesUsageNamespace from 'ee/usage_quotas/pipelines/graphql/queries/ci_minutes_namespace.query.graphql';
+import { GlAlert, GlButton } from '@gitlab/ui';
+import { Wrapper } from '@vue/test-utils'; // eslint-disable-line no-unused-vars
+import getCiMinutesMonthlySummary from 'ee/usage_quotas/pipelines/graphql/queries/ci_minutes.query.graphql';
+import getCiMinutesMonthSummaryWithProjects from 'ee/usage_quotas/pipelines/graphql/queries/ci_minutes_projects.query.graphql';
 import { sprintf } from '~/locale';
-import { formatDate } from '~/lib/utils/datetime_utility';
+import { formatDate, getMonthNames } from '~/lib/utils/datetime_utility';
 import { pushEECproductAddToCartEvent } from '~/google_tag_manager';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { useFakeDate } from 'helpers/fake_date';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import PipelineUsageApp from 'ee/usage_quotas/pipelines/components/app.vue';
@@ -24,9 +25,13 @@ import {
   CI_MINUTES_HELP_LINK,
   CI_MINUTES_HELP_LINK_LABEL,
 } from 'ee/usage_quotas/pipelines/constants';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { TYPENAME_GROUP } from '~/graphql_shared/constants';
 import {
   defaultProvide,
   mockGetCiMinutesUsageNamespace,
+  mockGetCiMinutesUsageNamespaceProjects,
+  emptyMockGetCiMinutesUsageNamespaceProjects,
   defaultProjectListProps,
 } from '../mock_data';
 
@@ -34,26 +39,41 @@ Vue.use(VueApollo);
 jest.mock('~/google_tag_manager');
 
 describe('PipelineUsageApp', () => {
+  /** @type { Wrapper } */
   let wrapper;
-  const ciMinutesHandler = jest.fn().mockResolvedValue(mockGetCiMinutesUsageNamespace);
 
-  const createMockApolloProvider = ({ reject = false } = {}) => {
-    const rejectResponse = jest.fn().mockRejectedValue(new Error('GraphQL error'));
+  const findAlert = () => wrapper.findComponent(GlAlert);
+  const findOverviewLoadingIcon = () =>
+    wrapper.findByTestId('pipelines-overview-loading-indicator');
+  const findByMonthChartLoadingIcon = () =>
+    wrapper.findByTestId('pipelines-by-month-chart-loading-indicator');
+  const findByProjectChartLoadingIcon = () =>
+    wrapper.findByTestId('pipelines-by-project-chart-loading-indicator');
+  const findProjectList = () => wrapper.findComponent(ProjectList);
+  const findBuyAdditionalMinutesButton = () => wrapper.findComponent(GlButton);
+  const findMonthlyUsageOverview = () => wrapper.findByTestId('monthly-usage-overview');
+  const findPurchasedUsageOverview = () => wrapper.findByTestId('purchased-usage-overview');
+  const findYearDropdown = () => wrapper.findComponentByTestId('minutes-usage-year-dropdown');
+  const findYearDropdownItems = () =>
+    wrapper.findAllComponentsByTestId('minutes-usage-year-dropdown-item');
+  const findMonthDropdown = () => wrapper.findComponentByTestId('minutes-usage-month-dropdown');
+  const findMonthDropdownItems = () =>
+    wrapper.findAllComponentsByTestId('minutes-usage-month-dropdown-item');
+
+  const ciMinutesHandler = jest.fn();
+  const ciMinutesProjectsHandler = jest.fn();
+  const gqlRejectResponse = new Error('GraphQL error');
+
+  const createMockApolloProvider = () => {
     const requestHandlers = [
-      [getCiMinutesUsageNamespace, reject ? rejectResponse : ciMinutesHandler],
+      [getCiMinutesMonthlySummary, ciMinutesHandler],
+      [getCiMinutesMonthSummaryWithProjects, ciMinutesProjectsHandler],
     ];
 
     return createMockApollo(requestHandlers);
   };
 
-  const findAlert = () => wrapper.findComponent(GlAlert);
-  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
-  const findProjectList = () => wrapper.findComponent(ProjectList);
-  const findBuyAdditionalMinutesButton = () => wrapper.findComponent(GlButton);
-  const findMonthlyUsageOverview = () => wrapper.findByTestId('monthly-usage-overview');
-  const findPurchasedUsageOverview = () => wrapper.findByTestId('purchased-usage-overview');
-
-  const createComponent = ({ provide = {}, mockApollo } = {}) => {
+  const createComponent = ({ provide = {}, mockApollo = createMockApolloProvider() } = {}) => {
     wrapper = shallowMountExtended(PipelineUsageApp, {
       apolloProvider: mockApollo,
       provide: {
@@ -66,11 +86,14 @@ describe('PipelineUsageApp', () => {
     });
   };
 
-  describe('Buy additional compute minutes Button', () => {
-    const mockApollo = createMockApolloProvider();
+  beforeEach(() => {
+    ciMinutesHandler.mockResolvedValue(mockGetCiMinutesUsageNamespace);
+    ciMinutesProjectsHandler.mockResolvedValue(mockGetCiMinutesUsageNamespaceProjects);
+  });
 
+  describe('Buy additional compute minutes Button', () => {
     it('calls pushEECproductAddToCartEvent on click', async () => {
-      createComponent({ mockApollo });
+      createComponent();
 
       await waitForPromises();
 
@@ -80,7 +103,7 @@ describe('PipelineUsageApp', () => {
 
     describe('Gitlab SaaS: valid data for buyAdditionalMinutesPath and buyAdditionalMinutesTarget', () => {
       it('renders the button to buy additional compute minutes', async () => {
-        createComponent({ mockApollo });
+        createComponent();
 
         await waitForPromises();
 
@@ -92,7 +115,6 @@ describe('PipelineUsageApp', () => {
     describe('Gitlab Self-Managed: buyAdditionalMinutesPath and buyAdditionalMinutesTarget not provided', () => {
       beforeEach(() => {
         createComponent({
-          mockApollo,
           provide: {
             buyAdditionalMinutesPath: undefined,
             buyAdditionalMinutesTarget: undefined,
@@ -107,10 +129,8 @@ describe('PipelineUsageApp', () => {
   });
 
   describe('namespace ci usage overview', () => {
-    const mockApollo = createMockApolloProvider();
-
     it('passes reset date for monthlyUsageTitle to compute minutes UsageOverview if present', async () => {
-      createComponent({ mockApollo });
+      createComponent();
 
       await waitForPromises();
 
@@ -122,7 +142,7 @@ describe('PipelineUsageApp', () => {
     });
 
     it('passes correct props to compute minutes UsageOverview', async () => {
-      createComponent({ mockApollo });
+      createComponent();
 
       await waitForPromises();
 
@@ -143,7 +163,7 @@ describe('PipelineUsageApp', () => {
     });
 
     it('passes correct props to purchased compute minutes UsageOverview', async () => {
-      createComponent({ mockApollo });
+      createComponent();
 
       await waitForPromises();
 
@@ -163,7 +183,6 @@ describe('PipelineUsageApp', () => {
 
     it('shows unlimited as usagePercentage on compute minutes UsageOverview under correct circumstances', async () => {
       createComponent({
-        mockApollo,
         provide: {
           ciMinutesDisplayMinutesAvailableData: false,
           ciMinutesAnyProjectEnabled: false,
@@ -183,14 +202,14 @@ describe('PipelineUsageApp', () => {
       ${false}    | ${'0'}         | ${false}
     `(
       'shows additional minutes: $showAdditionalMinutes when displayData is $displayData and purchase limit is $purchasedLimit',
-      ({ displayData, purchasedLimit, showAdditionalMinutes }) => {
+      async ({ displayData, purchasedLimit, showAdditionalMinutes }) => {
         createComponent({
-          mockApollo,
           provide: {
             ciMinutesDisplayMinutesAvailableData: displayData,
             ciMinutesPurchasedMinutesLimit: purchasedLimit,
           },
         });
+        await waitForPromises();
         const expectedUsageOverviewInstances = showAdditionalMinutes ? 2 : 1;
         expect(wrapper.findAllComponents(UsageOverview)).toHaveLength(
           expectedUsageOverviewInstances,
@@ -200,12 +219,8 @@ describe('PipelineUsageApp', () => {
   });
 
   describe('with apollo fetching successful', () => {
-    const mockApollo = createMockApolloProvider();
-
-    useFakeDate(2022, 7, 14);
-
     it('passes the correct props to ProjectList', async () => {
-      createComponent({ mockApollo });
+      createComponent();
 
       await waitForPromises();
 
@@ -215,21 +230,28 @@ describe('PipelineUsageApp', () => {
 
   describe('with apollo loading', () => {
     beforeEach(() => {
-      const mockApollo = createMockApolloProvider({
-        mockCiMinutesUsageQuery: new Promise(() => {}),
-      });
-      createComponent({ mockApollo });
+      ciMinutesHandler.mockResolvedValue(null);
+      ciMinutesProjectsHandler.mockResolvedValue(null);
+      createComponent();
     });
 
-    it('should show loading icon', () => {
-      expect(findLoadingIcon().exists()).toBe(true);
+    it('shows loading icon for overview', () => {
+      expect(findOverviewLoadingIcon().exists()).toBe(true);
+    });
+
+    it('shows a loading icon by month chart', () => {
+      expect(findByMonthChartLoadingIcon().exists()).toBe(true);
+    });
+
+    it('shows loading icon for by project chart', () => {
+      expect(findByProjectChartLoadingIcon().exists()).toBe(true);
     });
   });
 
   describe('with apollo fetching error', () => {
     beforeEach(() => {
-      const mockApollo = createMockApolloProvider({ reject: true });
-      createComponent({ mockApollo });
+      ciMinutesHandler.mockRejectedValue(gqlRejectResponse);
+      createComponent();
       return waitForPromises();
     });
 
@@ -240,13 +262,8 @@ describe('PipelineUsageApp', () => {
 
   describe('with a namespace without projects', () => {
     beforeEach(() => {
-      const mockCiMinutesUsageQuery = { ...mockGetCiMinutesUsageNamespace };
-      mockGetCiMinutesUsageNamespace.data.ciMinutesUsage.nodes[2].projects.nodes = [];
-
-      const mockApollo = createMockApolloProvider({
-        mockCiMinutesUsageQuery,
-      });
-      createComponent({ mockApollo });
+      ciMinutesProjectsHandler.mockResolvedValue(emptyMockGetCiMinutesUsageNamespaceProjects);
+      createComponent();
       return waitForPromises();
     });
 
@@ -255,20 +272,87 @@ describe('PipelineUsageApp', () => {
     });
   });
 
-  describe('apollo calls', () => {
-    beforeEach(() => {
-      const mockApollo = createMockApolloProvider();
-      createComponent({ mockApollo });
-      return waitForPromises();
+  describe.each`
+    pageType          | isUserNamespace | namespaceGQLId
+    ${'Namespace'}    | ${false}        | ${convertToGraphQLId(TYPENAME_GROUP, defaultProvide.namespaceId)}
+    ${'User profile'} | ${true}         | ${null}
+  `('$pageType page type apollo calls', ({ isUserNamespace, namespaceGQLId }) => {
+    const defaultPerMonthQueryVariables = {
+      date: defaultProvide.ciMinutesLastResetDate,
+      first: defaultProvide.pageSize,
+      namespaceId: namespaceGQLId,
+    };
+
+    beforeEach(async () => {
+      createComponent({ provide: { userNamespace: isUserNamespace } });
+      await waitForPromises();
     });
 
-    it('makes a query to fetch more data when `fetchMore` is emitted', async () => {
+    it('sets initial values of Year and Month dropdowns', () => {
+      const lastResetDate = new Date(defaultProvide.ciMinutesLastResetDate);
+      const expectedYear = lastResetDate.getUTCFullYear().toString();
+      const expectedMonth = getMonthNames()[lastResetDate.getUTCMonth()];
+
+      expect(findYearDropdown().props('text')).toBe(expectedYear);
+      expect(findMonthDropdown().props('text')).toBe(expectedMonth);
+    });
+
+    it('makes monthly initial summary call', () => {
       expect(ciMinutesHandler).toHaveBeenCalledTimes(1);
+      expect(ciMinutesHandler).toHaveBeenCalledWith({ namespaceId: namespaceGQLId });
+    });
 
-      findProjectList().vm.$emit('fetchMore');
-      await nextTick();
+    it('makes month projects initial call', () => {
+      expect(ciMinutesProjectsHandler).toHaveBeenCalledTimes(1);
+      expect(ciMinutesProjectsHandler).toHaveBeenCalledWith({
+        ...defaultPerMonthQueryVariables,
+        date: defaultProvide.ciMinutesLastResetDate,
+      });
+    });
 
-      expect(ciMinutesHandler).toHaveBeenCalledTimes(2);
+    describe('subsequent calls', () => {
+      beforeEach(() => {
+        ciMinutesHandler.mockClear();
+        ciMinutesProjectsHandler.mockClear();
+      });
+
+      it('makes a query to fetch more data when `fetchMore` is emitted', async () => {
+        findProjectList().vm.$emit('fetchMore', { after: '123' });
+        await nextTick();
+
+        expect(ciMinutesHandler).toHaveBeenCalledTimes(0);
+        expect(ciMinutesProjectsHandler).toHaveBeenCalledTimes(1);
+        expect(ciMinutesProjectsHandler).toHaveBeenCalledWith({
+          after: '123',
+          ...defaultPerMonthQueryVariables,
+        });
+      });
+
+      it('will switch years', async () => {
+        const yearItem = findYearDropdownItems().at(1);
+        yearItem.vm.$emit('click');
+        await nextTick();
+        expect(findYearDropdown().props('text')).toBe(yearItem.text());
+        expect(ciMinutesHandler).toHaveBeenCalledTimes(0);
+        expect(ciMinutesProjectsHandler).toHaveBeenCalledTimes(1);
+        expect(ciMinutesProjectsHandler).toHaveBeenCalledWith({
+          ...defaultPerMonthQueryVariables,
+          date: '2021-08-01',
+        });
+      });
+
+      it('will switch months', async () => {
+        const monthItem = findMonthDropdownItems().at(2);
+        monthItem.vm.$emit('click');
+        await nextTick();
+        expect(findMonthDropdown().props('text')).toBe(monthItem.text());
+        expect(ciMinutesHandler).toHaveBeenCalledTimes(0);
+        expect(ciMinutesProjectsHandler).toHaveBeenCalledTimes(1);
+        expect(ciMinutesProjectsHandler).toHaveBeenCalledWith({
+          ...defaultPerMonthQueryVariables,
+          date: '2022-03-01',
+        });
+      });
     });
   });
 });

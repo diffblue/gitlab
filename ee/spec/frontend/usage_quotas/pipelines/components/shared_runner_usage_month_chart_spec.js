@@ -1,13 +1,13 @@
 import { GlAreaChart } from '@gitlab/ui/dist/charts';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import SharedRunnerUsageMonthChart from 'ee/usage_quotas/pipelines/components/shared_runner_usage_month_chart.vue';
-import { getUsageDataByYear } from 'ee/usage_quotas/pipelines/utils';
+import { getUsageDataByYearAsArray } from 'ee/usage_quotas/pipelines/utils';
 import { mockGetCiMinutesUsageNamespace } from '../mock_data';
 
 const {
   data: { ciMinutesUsage },
 } = mockGetCiMinutesUsageNamespace;
-const usageDataByYear = getUsageDataByYear(ciMinutesUsage.nodes);
+const usageDataByYear = getUsageDataByYearAsArray(ciMinutesUsage.nodes);
 
 describe('Shared runner usage month chart component', () => {
   let wrapper;
@@ -18,7 +18,7 @@ describe('Shared runner usage month chart component', () => {
     wrapper = shallowMountExtended(SharedRunnerUsageMonthChart, {
       propsData: {
         usageDataByYear,
-        selectedYear: '2022',
+        selectedYear: 2022,
       },
     });
   };

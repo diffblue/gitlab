@@ -1,12 +1,19 @@
 <script>
-import { GlAlert, GlButton, GlLoadingIcon } from '@gitlab/ui';
-import { sprintf } from '~/locale';
-import { formatDate } from '~/lib/utils/datetime_utility';
+import {
+  GlAlert,
+  GlButton,
+  GlLoadingIcon,
+  GlDropdown,
+  GlDropdownItem,
+  GlFormGroup,
+} from '@gitlab/ui';
+import { s__, sprintf } from '~/locale';
+import { formatDate, getMonthNames } from '~/lib/utils/datetime_utility';
 import { TYPENAME_GROUP } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { pushEECproductAddToCartEvent } from '~/google_tag_manager';
-import getCiMinutesUsageProfile from '../graphql/queries/ci_minutes.query.graphql';
-import getCiMinutesUsageNamespace from '../graphql/queries/ci_minutes_namespace.query.graphql';
+import getCiMinutesUsageNamespace from '../graphql/queries/ci_minutes.query.graphql';
+import getCiMinutesUsageNamespaceProjects from '../graphql/queries/ci_minutes_projects.query.graphql';
 import {
   ERROR_MESSAGE,
   LABEL_BUY_ADDITIONAL_MINUTES,
@@ -19,13 +26,27 @@ import {
   CI_MINUTES_HELP_LINK,
   CI_MINUTES_HELP_LINK_LABEL,
 } from '../constants';
+import { USAGE_BY_MONTH_HEADER, USAGE_BY_PROJECT_HEADER } from '../../constants';
+import { getUsageDataByYearAsArray, formatIso8601Date } from '../utils';
 import ProjectList from './project_list.vue';
 import UsageOverview from './usage_overview.vue';
-import MinutesUsageCharts from './minutes_usage_charts.vue';
+import MinutesUsagePerMonth from './minutes_usage_per_month.vue';
+import MinutesUsagePerProject from './minutes_usage_per_project.vue';
 
 export default {
   name: 'PipelineUsageApp',
-  components: { GlAlert, GlButton, GlLoadingIcon, ProjectList, UsageOverview, MinutesUsageCharts },
+  components: {
+    GlAlert,
+    GlButton,
+    GlLoadingIcon,
+    GlDropdown,
+    GlDropdownItem,
+    GlFormGroup,
+    ProjectList,
+    UsageOverview,
+    MinutesUsagePerProject,
+    MinutesUsagePerMonth,
+  },
   inject: [
     'pageSize',
     'namespacePath',
@@ -45,21 +66,55 @@ export default {
     'buyAdditionalMinutesTarget',
   ],
   data() {
+    const lastResetDate = new Date(this.ciMinutesLastResetDate);
+    const year = lastResetDate.getUTCFullYear();
+    // NOTE: month indexes in JS start from 0. So `(new Date()).getMonth()` for
+    // January would be 0. To keep indexes in data humane, it required a few +1
+    // and -1 operations with month indexes in this component. Though the result
+    // might be not worth the effort juggling the indexes. We can change this to
+    // keep 0-based indexes and do a +1 only before we need to present data in
+    // text format.
+    const month = lastResetDate.getUTCMonth() + 1;
+
     return {
       error: '',
       namespace: null,
       ciMinutesUsage: [],
+      projectsCiMinutesUsage: [],
+      selectedYear: year,
+      selectedMonth: month,
     };
   },
   apollo: {
     ciMinutesUsage: {
       query() {
-        return this.userNamespace ? getCiMinutesUsageProfile : getCiMinutesUsageNamespace;
+        return getCiMinutesUsageNamespace;
       },
       variables() {
         return {
-          namespaceId: convertToGraphQLId(TYPENAME_GROUP, this.namespaceId),
+          namespaceId: this.userNamespace
+            ? null
+            : convertToGraphQLId(TYPENAME_GROUP, this.namespaceId),
+        };
+      },
+      update(res) {
+        return res?.ciMinutesUsage?.nodes;
+      },
+      error() {
+        this.error = ERROR_MESSAGE;
+      },
+    },
+    projectsCiMinutesUsage: {
+      query() {
+        return getCiMinutesUsageNamespaceProjects;
+      },
+      variables() {
+        return {
+          namespaceId: this.userNamespace
+            ? null
+            : convertToGraphQLId(TYPENAME_GROUP, this.namespaceId),
           first: this.pageSize,
+          date: this.selectedDateInIso8601,
         };
       },
       update(res) {
@@ -71,23 +126,30 @@ export default {
     },
   },
   computed: {
-    currentMonthProjectData() {
-      return (
-        this.ciMinutesUsage.find((usage) => usage.monthIso8601 === this.ciMinutesLastResetDate) ||
-        {}
-      );
+    selectedDateInIso8601() {
+      return formatIso8601Date(this.selectedYear, this.selectedMonth, 1);
+    },
+    selectedMonthProjectData() {
+      const monthData = this.projectsCiMinutesUsage.find((usage) => {
+        return usage.monthIso8601 === this.selectedDateInIso8601;
+      });
+
+      return monthData || {};
     },
     projects() {
-      return this.currentMonthProjectData?.projects?.nodes ?? [];
+      return this.selectedMonthProjectData?.projects?.nodes ?? [];
     },
     projectsPageInfo() {
-      return this.currentMonthProjectData?.projects?.pageInfo ?? {};
+      return this.selectedMonthProjectData?.projects?.pageInfo ?? {};
     },
     shouldShowBuyAdditionalMinutes() {
       return this.buyAdditionalMinutesPath && this.buyAdditionalMinutesTarget;
     },
-    isLoading() {
+    isLoadingYearUsageData() {
       return this.$apollo.queries.ciMinutesUsage.loading;
+    },
+    isLoadingMonthProjectUsageData() {
+      return this.$apollo.queries.projectsCiMinutesUsage.loading;
     },
     monthlyUsageTitle() {
       return sprintf(TITLE_USAGE_SINCE, {
@@ -109,15 +171,36 @@ export default {
         this.ciMinutesDisplayMinutesAvailableData && Number(this.ciMinutesPurchasedMinutesLimit) > 0
       );
     },
+    usageDataByYear() {
+      return getUsageDataByYearAsArray(this.ciMinutesUsage);
+    },
+    years() {
+      return Object.keys(this.usageDataByYear).map(Number).reverse();
+    },
+    months() {
+      return getMonthNames();
+    },
+    projectsTableInfoMessage() {
+      return sprintf(
+        s__('UsageQuota|The chart and the table below show usage for %{month} %{year}'),
+        {
+          month: getMonthNames()[this.selectedMonth - 1],
+          year: this.selectedYear,
+        },
+      );
+    },
   },
   methods: {
     clearError() {
       this.error = '';
     },
     fetchMoreProjects(variables) {
-      this.$apollo.queries.ciMinutesUsage.fetchMore({
+      this.$apollo.queries.projectsCiMinutesUsage.fetchMore({
         variables: {
-          namespaceId: convertToGraphQLId(TYPENAME_GROUP, this.namespaceId),
+          namespaceId: this.userNamespace
+            ? null
+            : convertToGraphQLId(TYPENAME_GROUP, this.namespaceId),
+          date: this.selectedDateInIso8601,
           ...variables,
         },
         updateQuery(previousResult, { fetchMoreResult }) {
@@ -150,15 +233,24 @@ export default {
   ADDITIONAL_MINUTES_HELP_LINK,
   CI_MINUTES_HELP_LINK,
   CI_MINUTES_HELP_LINK_LABEL,
+  USAGE_BY_MONTH_HEADER,
+  USAGE_BY_PROJECT_HEADER,
 };
 </script>
 
 <template>
   <div>
-    <gl-loading-icon v-if="isLoading" class="gl-mt-5" size="lg" />
+    <gl-loading-icon
+      v-if="isLoadingYearUsageData"
+      class="gl-mt-5"
+      size="lg"
+      data-testid="pipelines-overview-loading-indicator"
+    />
+
     <gl-alert v-else-if="error" variant="danger" @dismiss="clearError">
       {{ error }}
     </gl-alert>
+
     <section v-else>
       <section>
         <div
@@ -205,14 +297,96 @@ export default {
           data-testid="purchased-usage-overview"
         />
       </section>
-      <minutes-usage-charts :ci-minutes-usage="ciMinutesUsage" />
-      <section class="gl-py-5">
-        <project-list
-          :projects="projects"
-          :page-info="projectsPageInfo"
-          @fetchMore="fetchMoreProjects"
+    </section>
+
+    <div class="gl-display-flex gl-my-5">
+      <gl-form-group :label="s__('UsageQuota|Filter charts by year')">
+        <gl-dropdown
+          :text="selectedYear.toString()"
+          :disabled="isLoadingYearUsageData"
+          data-testid="minutes-usage-year-dropdown"
+        >
+          <gl-dropdown-item
+            v-for="year in years"
+            :key="year"
+            :is-checked="selectedYear === year"
+            is-check-item
+            data-testid="minutes-usage-year-dropdown-item"
+            @click="selectedYear = year"
+          >
+            {{ year }}
+          </gl-dropdown-item>
+        </gl-dropdown>
+      </gl-form-group>
+    </div>
+
+    <section class="gl-my-5">
+      <h2 class="gl-font-lg">{{ $options.USAGE_BY_MONTH_HEADER }}</h2>
+
+      <gl-loading-icon
+        v-if="isLoadingYearUsageData"
+        class="gl-mt-5"
+        size="lg"
+        data-testid="pipelines-by-month-chart-loading-indicator"
+      />
+
+      <minutes-usage-per-month
+        v-else
+        :selected-year="selectedYear"
+        :ci-minutes-usage="ciMinutesUsage"
+      />
+    </section>
+
+    <section class="gl-my-5">
+      <h2 class="gl-font-lg">{{ $options.USAGE_BY_PROJECT_HEADER }}</h2>
+
+      <div class="gl-display-flex gl-my-3">
+        <gl-form-group :label="s__('UsageQuota|Filter projects data by month')">
+          <gl-dropdown
+            :text="months[selectedMonth - 1]"
+            :disabled="isLoadingMonthProjectUsageData"
+            data-testid="minutes-usage-month-dropdown"
+          >
+            <gl-dropdown-item
+              v-for="(month, index) in months"
+              :key="month"
+              :is-checked="selectedMonth === index + 1"
+              is-check-item
+              data-testid="minutes-usage-month-dropdown-item"
+              @click="selectedMonth = index + 1"
+            >
+              {{ month }}
+            </gl-dropdown-item>
+          </gl-dropdown>
+        </gl-form-group>
+      </div>
+
+      <gl-loading-icon
+        v-if="isLoadingMonthProjectUsageData"
+        class="gl-mt-5"
+        size="lg"
+        data-testid="pipelines-by-project-chart-loading-indicator"
+      />
+
+      <template v-else>
+        <gl-alert :dismissible="false" class="gl-my-3" data-testid="project-usage-info-alert">
+          {{ projectsTableInfoMessage }}
+        </gl-alert>
+
+        <minutes-usage-per-project
+          :selected-year="selectedYear"
+          :selected-month="selectedMonth"
+          :projects-ci-minutes-usage="projectsCiMinutesUsage"
         />
-      </section>
+
+        <div class="gl-pt-5">
+          <project-list
+            :projects="projects"
+            :page-info="projectsPageInfo"
+            @fetchMore="fetchMoreProjects"
+          />
+        </div>
+      </template>
     </section>
   </div>
 </template>
