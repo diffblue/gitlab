@@ -47,9 +47,9 @@ export default {
         return data;
       },
     },
-    filterLabels: {
+    filterLabelsResults: {
       query() {
-        return filterLabelsQueryBuilder(this.rawFilterLabels, this.isProject);
+        return filterLabelsQueryBuilder(this.filterLabelsQuery, this.isProject);
       },
       variables() {
         return {
@@ -57,7 +57,7 @@ export default {
         };
       },
       skip() {
-        return this.rawFilterLabels.length === 0 || !this.namespace;
+        return this.filterLabelsQuery.length === 0 || !this.namespace;
       },
       update(data) {
         const labels = Object.entries(data?.namespace || {})
@@ -73,26 +73,27 @@ export default {
   data() {
     return {
       groupOrProject: null,
-      filterLabels: [],
+      filterLabelsResults: [],
     };
   },
   computed: {
     loading() {
       return (
-        this.$apollo.queries.groupOrProject.loading || this.$apollo.queries.filterLabels.loading
+        this.$apollo.queries.groupOrProject.loading ||
+        this.$apollo.queries.filterLabelsResults.loading
       );
     },
     fullPath() {
       return this.data?.namespace;
     },
-    rawFilterLabels() {
+    filterLabelsQuery() {
       return this.data?.filter_labels || [];
     },
     hasFilterLabels() {
-      return this.filterLabels.length > 0;
+      return this.filterLabelsResults.length > 0;
     },
     filterLabelNames() {
-      return this.filterLabels.map(({ title }) => title);
+      return this.filterLabelsResults.map(({ title }) => title);
     },
     excludeMetrics() {
       let metrics = this.data?.exclude_metrics || [];
@@ -120,9 +121,9 @@ export default {
       return sprintf(DASHBOARD_NAMESPACE_LOAD_ERROR, { fullPath });
     },
     loadLabelsError() {
-      if (this.rawFilterLabels.length === 0 || this.filterLabels.length > 0) return '';
+      if (this.filterLabelsQuery.length === 0 || this.filterLabelsResults.length > 0) return '';
 
-      const labels = this.rawFilterLabels.join(', ');
+      const labels = this.filterLabelsQuery.join(', ');
       return sprintf(DASHBOARD_LABELS_LOAD_ERROR, { labels });
     },
   },
@@ -146,7 +147,7 @@ export default {
       <h5 data-testid="comparison-chart-title">{{ title || defaultTitle }}</h5>
       <comparison-chart-labels
         v-if="hasFilterLabels"
-        :labels="filterLabels"
+        :labels="filterLabelsResults"
         :web-url="namespace.webUrl"
       />
     </div>
