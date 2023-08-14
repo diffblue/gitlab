@@ -4451,6 +4451,9 @@ msgstr ""
 msgid "AlertSettings|A webhook URL and authorization key is generated for the integration. After you save the integration, both are visible under the “View credentials” tab."
 msgstr ""
 
+msgid "AlertSettings|Active alerts"
+msgstr ""
+
 msgid "AlertSettings|Add new integration"
 msgstr ""
 
