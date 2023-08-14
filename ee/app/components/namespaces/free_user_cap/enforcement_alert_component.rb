@@ -5,9 +5,6 @@ module Namespaces
     class EnforcementAlertComponent < BaseAlertComponent
       private
 
-      PROMOTION_URL = 'https://about.gitlab.com/pricing/faq-efficient-free-tier/#transition-offer'
-      OFFER_AVAILABILITY_URL = 'https://about.gitlab.com/pricing/faq-efficient-free-tier/#q-is-this-offer-available-for-all-free-tier-users'
-
       def variant
         :danger
       end
@@ -27,15 +24,8 @@ module Namespaces
                   "you can reduce the number of users in your top-level group to %{free_limit} users or " \
                   "less. You can also upgrade to a paid tier, which do not have user limits. If you " \
                   "need additional time, you can start a free 30-day trial which includes unlimited " \
-                  "users. To minimize the impact to operations, for a limited time, GitLab is " \
-                  "offering a %{promotion_link_start}one-time 70 percent discount%{link_end} " \
-                  "off the list price at time of purchase for a new, one year subscription of " \
-                  "GitLab Premium SaaS to %{offer_availability_link_start}qualifying top-level groups%{link_end}. " \
-                  "The offer is valid until %{offer_date}.").html_safe % {
+                  "users.").html_safe % {
             link_start: free_user_limit_link_start,
-            promotion_link_start: promotion_link_start_short,
-            offer_availability_link_start: offer_availability_link_start_short,
-            offer_date: l(Date.new(2023, 8, 13), format: :long),
             link_end: link_end,
             free_limit: free_user_limit
           },
@@ -58,14 +48,6 @@ module Namespaces
 
       def free_user_limit_url
         help_page_path('user/free_user_limit')
-      end
-
-      def promotion_link_start_short
-        "<a href='#{PROMOTION_URL}' target='_blank' rel='noopener noreferrer'>".html_safe
-      end
-
-      def offer_availability_link_start_short
-        "<a href='#{OFFER_AVAILABILITY_URL}' target='_blank' rel='noopener noreferrer'>".html_safe
       end
     end
   end
