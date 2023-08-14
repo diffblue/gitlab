@@ -37,6 +37,7 @@ RSpec.describe SystemAccess::MicrosoftApplication, feature_category: :system_acc
     it { is_expected.to validate_uniqueness_of(:namespace_id) }
     it { is_expected.to validate_presence_of(:tenant_xid) }
     it { is_expected.to validate_presence_of(:client_xid) }
+    it { is_expected.to validate_presence_of(:encrypted_client_secret) }
     it { is_expected.to validate_presence_of(:login_endpoint) }
     it { is_expected.to validate_presence_of(:graph_endpoint) }
 

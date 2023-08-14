@@ -12,6 +12,7 @@ module SystemAccess
     validates :namespace_id, uniqueness: true
     validates :tenant_xid, presence: true
     validates :client_xid, presence: true
+    validates :encrypted_client_secret, presence: true
     validates :login_endpoint,
       presence: true,
       public_url: { schemes: %w[https], enforce_sanitization: true, ascii_only: true }

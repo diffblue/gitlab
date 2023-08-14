@@ -28,13 +28,13 @@
       = s_('GroupSAML|SCIM Token')
   .col-lg-9
     #js-scim-token-app{ data: { endpoint_url: @scim_token_url, generate_token_path: group_scim_oauth_path } }
-- if ::Feature.enabled?(:microsoft_azure_group_sync)
+- if @microsoft_application
   %section.row.border-top.mt-4
     .col-lg-3.gl-mb-3
       %h4.page-title
         = s_('Microsoft|Microsoft Azure Integration')
     .col-lg-9
-      = render 'microsoft_application_form', group: @group, microsoft_application: @microsoft_application
+      = render 'microsoft_application'
 %section.row.border-top.mt-4
   .col-lg-3.gl-mb-3
     %h4.page-title

@@ -124,86 +124,8 @@ RSpec.describe 'SAML provider settings', feature_category: :system_access do
         expect(page).to have_content 'Warning - Enable SSO enforcement to reduce security risks.'
       end
 
-      context 'for Microsoft Azure integration' do
-        context 'when the feature flag is not enabled' do
-          before do
-            stub_feature_flags(microsoft_azure_group_sync: false)
-          end
-
-          it 'does not display the settings' do
-            visit group_saml_providers_path(group)
-
-            expect(page).not_to have_content(s_('Microsoft|Microsoft Azure Integration'))
-          end
-        end
-
-        context 'when the feature flag is enabled' do
-          let(:tenant_id) { generate(:token) }
-          let(:client_id) { generate(:token) }
-          let(:client_secret) { generate(:token) }
-          let(:login_endpoint) { 'https://login.microsoftonline.us' }
-          let(:graph_endpoint) { 'https://graph.microsoft.us' }
-
-          before do
-            stub_feature_flags(microsoft_azure_group_sync: true)
-
-            visit group_saml_providers_path(group)
-          end
-
-          it 'displays the settings' do
-            expect(page).to have_content(s_('Microsoft|Microsoft Azure Integration'))
-
-            # Default values
-            expect(find_field(s_('Microsoft|Enable Microsoft Azure integration for this group'))).not_to be_checked
-            expect(find_field(s_('Microsoft|Login API endpoint')).value)
-              .to have_content('https://login.microsoftonline.com')
-            expect(find_field(s_('Microsoft|Graph API endpoint')).value)
-              .to have_content('https://graph.microsoft.com')
-          end
-
-          it 'renders 404 when trying to save when the feature flag is disabled' do
-            expect(page).to have_content(s_('Microsoft|Microsoft Azure Integration'))
-
-            stub_feature_flags(microsoft_azure_group_sync: false)
-
-            page.within('.microsoft-application') do
-              click_button(_("Save changes"))
-            end
-
-            expect(status_code).to eq(404)
-          end
-
-          it 'successfully saves' do
-            check s_('Microsoft|Enable Microsoft Azure integration for this group')
-            fill_in s_('Microsoft|Tenant ID'), with: tenant_id
-            fill_in s_('Microsoft|Client ID'), with: client_id
-            fill_in s_('Microsoft|Client secret'), with: client_secret
-            fill_in s_('Microsoft|Login API endpoint'), with: login_endpoint
-            fill_in s_('Microsoft|Graph API endpoint'), with: graph_endpoint
-
-            page.within('.microsoft-application') do
-              click_button(_("Save changes"))
-            end
-
-            expect(find_field(s_('Microsoft|Enable Microsoft Azure integration for this group'))).to be_checked
-            expect(find_field(s_('Microsoft|Tenant ID')).value).to have_content(tenant_id)
-            expect(find_field(s_('Microsoft|Client ID')).value).to have_content(client_id)
-            expect(find_field(s_('Microsoft|Login API endpoint')).value).to have_content(login_endpoint)
-            expect(find_field(s_('Microsoft|Graph API endpoint')).value).to have_content(graph_endpoint)
-
-            # Ensure the secret is saved but isn't displayed after save.
-            expect(find_field(s_('Microsoft|Client secret')).value).not_to have_content(client_secret)
-            expect(group.system_access_microsoft_application.client_secret).to eq(client_secret)
-          end
-
-          it 'displays an error when fields are not filled' do
-            page.within('.microsoft-application') do
-              click_button(_("Save changes"))
-            end
-
-            expect(page).to have_content "Tenant ID can't be blank and Client ID can't be blank"
-          end
-        end
+      it_behaves_like 'Microsoft Azure integration form' do
+        let(:path) { group_saml_providers_path(group) }
       end
 
       context 'enforced_group_managed_accounts enabled', :js do
