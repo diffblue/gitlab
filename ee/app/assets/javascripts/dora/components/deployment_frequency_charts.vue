@@ -1,7 +1,7 @@
 <script>
 import * as Sentry from '@sentry/browser';
 import { GlToggle, GlBadge, GlAlert, GlSprintf, GlLink } from '@gitlab/ui';
-import { DATA_VIZ_BLUE_500, GRAY_50 } from '@gitlab/ui/dist/tokens/js/tokens';
+import { BASE_FORECAST_SERIES_OPTIONS } from 'ee/analytics/shared/constants';
 import * as DoraApi from 'ee/api/dora_api';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
@@ -225,10 +225,9 @@ export default {
 
         this.rawApiData[id] = apiData;
         this.forecastChartData[id] = {
+          ...BASE_FORECAST_SERIES_OPTIONS,
           name: this.$options.i18n.forecast,
           data: [],
-          lineStyle: { type: 'dashed', color: DATA_VIZ_BLUE_500 },
-          areaStyle: { opacity: 1, color: GRAY_50 },
         };
       }),
     );
