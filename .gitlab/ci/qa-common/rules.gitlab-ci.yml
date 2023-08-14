@@ -155,6 +155,15 @@
     - *default-branch
     - *feature-flags-set-manual
 
+.rules:test:smoke-for-omnibus-mr:
+  rules:
+    - if: '$CI_PROJECT_NAME == "omnibus-gitlab" && $PIPELINE_TYPE =~ /TRIGGERED_(CE|EE)_PIPELINE/ && $QA_RUN_SMOKE_AND_RELIABLE_TESTS_FOR_OMNIBUS_MR == "true" && $QA_SUITES =~ /Test::Instance::All/' # adding Test::Instance::All to run instance, decomposition-single/multiple-db and praefect test
+      variables:
+        QA_RSPEC_TAGS: "--tag smoke --tag reliable --tag ~orchestrated --tag ~skip_live_env"
+    - if: '$CI_PROJECT_NAME == "omnibus-gitlab" && $PIPELINE_TYPE =~ /TRIGGERED_(CE|EE)_PIPELINE/ && $QA_RUN_SMOKE_AND_RELIABLE_TESTS_FOR_OMNIBUS_MR == "false" && $QA_SUITES =~ /Test::Instance::All/' # adding Test::Instance::All to run instance, decomposition-single/multiple-db and praefect test
+      variables:
+        QA_RSPEC_TAGS: "--tag ~smoke --tag ~reliable --tag ~orchestrated --tag ~skip_live_env --tag ~transient"
+
 # ------------------------------------------
 # Report
 # ------------------------------------------
