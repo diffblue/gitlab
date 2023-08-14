@@ -58,26 +58,15 @@ module Registrations
         redirect_to import_url
       else
         track_event('successfully_submitted_form')
-        redirect_successful_namespace_creation(payload[:project])
+
+        redirect_to onboarding_project_learn_gitlab_path(payload[:project],
+          trial_onboarding_flow: params[:trial_onboarding_flow]
+        )
       end
     end
 
     def authorize_create_group!
       access_denied! unless can?(current_user, :create_group)
-    end
-
-    def redirect_successful_namespace_creation(project)
-      redirect_path = onboarding_project_learn_gitlab_path(project,
-        trial_onboarding_flow: params[:trial_onboarding_flow]
-      )
-
-      experiment(:registration_verification, user: current_user) do |e|
-        e.control { redirect_to redirect_path }
-        e.candidate do
-          store_location_for(:user, redirect_path)
-          redirect_to new_users_sign_up_verification_path(project_id: project.id)
-        end
-      end
     end
 
     def import?

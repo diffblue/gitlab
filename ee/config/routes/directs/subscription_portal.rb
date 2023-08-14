@@ -12,10 +12,6 @@ direct :subscription_portal_payment_form do
   Addressable::URI.join(subscription_portal_url, '/payment_forms/cc_validation').to_s
 end
 
-direct :subscription_portal_registration_validation_form do
-  Addressable::URI.join(subscription_portal_url, '/payment_forms/cc_registration_validation').to_s
-end
-
 direct :subscription_portal_manage do
   Addressable::URI.join(subscription_portal_url, '/subscriptions').to_s
 end

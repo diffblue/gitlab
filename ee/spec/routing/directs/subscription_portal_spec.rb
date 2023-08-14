@@ -23,12 +23,6 @@ RSpec.describe 'Custom URLs', 'Subscription Portal', feature_category: :subscrip
     it { is_expected.to eq("#{staging_customers_url}/payment_forms/cc_validation") }
   end
 
-  describe 'subscription_portal_registration_validation_form_url' do
-    subject { subscription_portal_registration_validation_form_url }
-
-    it { is_expected.to eq("#{staging_customers_url}/payment_forms/cc_registration_validation") }
-  end
-
   describe 'subscription_portal_manage_url' do
     subject { subscription_portal_manage_url }
 

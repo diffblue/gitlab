@@ -26,8 +26,6 @@ module EE
           gon.subscriptions_legacy_sign_in_url = ::Gitlab::Routing.url_helpers.subscription_portal_legacy_sign_in_url
           gon.payment_form_url                 = ::Gitlab::Routing.url_helpers.subscription_portal_payment_form_url
           gon.payment_validation_form_id       = ::Gitlab::SubscriptionPortal::PAYMENT_VALIDATION_FORM_ID
-          gon.registration_validation_form_url = ::Gitlab::Routing.url_helpers
-                                                                  .subscription_portal_registration_validation_form_url
         end
 
         push_frontend_feature_flag(:ai_chat_history_context, current_user)

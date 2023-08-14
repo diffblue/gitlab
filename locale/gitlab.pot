@@ -38833,36 +38833,6 @@ msgstr ""
 msgid "RegistrationFeatures|use this feature"
 msgstr ""
 
-msgid "RegistrationVerification|Are you sure you want to skip this step?"
-msgstr ""
-
-msgid "RegistrationVerification|Enable free compute minutes"
-msgstr ""
-
-msgid "RegistrationVerification|GitLab will not charge your card, it will only be used for validation."
-msgstr ""
-
-msgid "RegistrationVerification|Pipelines using shared GitLab runners will fail until you validate your account."
-msgstr ""
-
-msgid "RegistrationVerification|Skip this for now"
-msgstr ""
-
-msgid "RegistrationVerification|To keep GitLab spam and abuse free we ask that you verify your identity with a valid payment method, such as a debit or credit card. Until then, you can't use free compute minutes to build your application."
-msgstr ""
-
-msgid "RegistrationVerification|Validate account"
-msgstr ""
-
-msgid "RegistrationVerification|Verify your identity"
-msgstr ""
-
-msgid "RegistrationVerification|Yes, I'd like to skip"
-msgstr ""
-
-msgid "RegistrationVerification|You can alway verify your account at a later time."
-msgstr ""
-
 msgid "Registry entry enqueued to be resynced"
 msgstr ""
 
@@ -54765,9 +54735,6 @@ msgid "Your applications"
 msgstr ""
 
 msgid "Your authorized applications"
-msgstr ""
-
-msgid "Your browser does not support iFrames"
 msgstr ""
 
 msgid "Your browser doesn't support WebAuthn. Please use a supported browser, e.g. Chrome (67+) or Firefox (60+)."
