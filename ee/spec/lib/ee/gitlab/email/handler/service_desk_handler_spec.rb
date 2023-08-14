@@ -80,7 +80,7 @@ RSpec.describe Gitlab::Email::Handler::ServiceDeskHandler do
             it 'assigns epic' do
               epic = create(:epic, group: group)
               file_content = "/epic #{epic.to_reference}"
-              set_template_file('assign_epic', file_content)
+              set_template_file('assign_epic_to_issue', file_content)
 
               receiver.execute
 
