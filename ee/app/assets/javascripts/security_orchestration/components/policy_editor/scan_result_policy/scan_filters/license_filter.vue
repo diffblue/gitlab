@@ -104,7 +104,8 @@ export default {
       });
     },
     selectAllLicenseTypes() {
-      this.triggerChanged({ license_types: this.filteredLicenses });
+      const licensesValues = this.filteredLicenses.map(({ value }) => value);
+      this.triggerChanged({ license_types: licensesValues });
     },
   },
 };

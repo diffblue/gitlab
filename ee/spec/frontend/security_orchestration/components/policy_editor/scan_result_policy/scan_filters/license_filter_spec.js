@@ -101,7 +101,7 @@ describe('LicenseFilter', () => {
       it('can select single all licence types', () => {
         findLicenseTypeListBox().vm.$emit('select-all');
         expect(wrapper.emitted('changed')).toEqual([
-          [expect.objectContaining({ license_types: allLicenses })],
+          [expect.objectContaining({ license_types: allLicenses.map(({ value }) => value) })],
         ]);
       });
 
