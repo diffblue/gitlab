@@ -5,6 +5,7 @@ require_relative '../../../fast_spec_helper'
 RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DevfileParser, feature_category: :remote_development do
   include_context 'with remote development shared fixtures'
 
+  let(:dns_zone) { "workspaces.localdev.me" }
   let(:logger) { instance_double(Logger) }
   let(:user) { instance_double("User", name: "name", email: "name@example.com") }
   let(:agent) { instance_double("Clusters::Agent", id: 1) }
@@ -17,7 +18,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DevfileParser, 
       deployment_resource_version: "1",
       desired_state: RemoteDevelopment::Workspaces::States::RUNNING,
       actual_state: RemoteDevelopment::Workspaces::States::STOPPED,
-      dns_zone: "workspaces.localdev.me",
+      dns_zone: dns_zone,
       processed_devfile: example_processed_devfile,
       user: user,
       agent: agent
@@ -35,10 +36,10 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DevfileParser, 
         workspace_name: workspace.name,
         workspace_namespace: workspace.namespace,
         agent_id: workspace.agent.id,
-        owning_inventory: owning_inventory,
         started: true,
         include_inventory: false,
         include_network_policy: false,
+        dns_zone: dns_zone,
         user_name: user.name,
         user_email: user.email
       )

@@ -23,7 +23,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGe
     let(:desired_state) { RemoteDevelopment::Workspaces::States::RUNNING }
     let(:actual_state) { RemoteDevelopment::Workspaces::States::STOPPED }
     let(:deployment_resource_version_from_agent) { workspace.deployment_resource_version }
-    let(:owning_inventory) { "#{workspace.name}-workspace-inventory" }
     let(:network_policy_enabled) { true }
     let(:gitlab_workspaces_proxy_namespace) { 'gitlab-workspaces' }
 
@@ -50,7 +49,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGe
           workspace_name: workspace.name,
           workspace_namespace: workspace.namespace,
           agent_id: workspace.agent.id,
-          owning_inventory: owning_inventory,
           started: started,
           user_name: user.name,
           user_email: user.email,

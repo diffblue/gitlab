@@ -12,7 +12,6 @@ RSpec.shared_context 'with remote development shared fixtures' do
     workspace_name:,
     workspace_namespace:,
     agent_id:,
-    owning_inventory:,
     resource_version:,
     # NOTE: previous_actual_state is the actual state of the workspace IMMEDIATELY prior to the current state. We don't
     # simulate the situation where there may have been multiple transitions between reconciliation polling intervals.
@@ -26,7 +25,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
     error_details: nil
   )
     # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409787
-    #       Default some of the parameters which can be derived from others: e.g. owning_inventory, workspace_namespace
+    #       Default some of the parameters which can be derived from others: workspace_namespace
 
     info = {
       name: workspace_name,
@@ -53,9 +52,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
 
     spec_replicas = [ # rubocop:disable Style/MultilineTernaryOperator
       RemoteDevelopment::Workspaces::States::STOPPED, RemoteDevelopment::Workspaces::States::STOPPING
-    ].include?(current_actual_state) ? 0 : 1
-    host_template_annotation = get_workspace_host_template_annotation(workspace_name, dns_zone)
-    host_template_environment_variable = get_workspace_host_template_env_var(workspace_name, dns_zone)
+    ].include?(current_actual_state) ? "0" : "1"
+    started = spec_replicas == "1"
 
     # rubocop:disable Lint/DuplicateBranch
     status =
@@ -256,159 +254,24 @@ RSpec.shared_context 'with remote development shared fixtures' do
       end
     # rubocop:enable Lint/DuplicateBranch
 
-    latest_k8s_deployment_info = <<~RESOURCES_YAML
-      apiVersion: apps/v1
-      kind: Deployment
-      metadata:
-        annotations:
-          config.k8s.io/owning-inventory: #{owning_inventory}
-          workspaces.gitlab.com/host-template: #{host_template_annotation}
-          workspaces.gitlab.com/id: \'#{workspace_id}\'
-        creationTimestamp: null
-        labels:
-          agent.gitlab.com/id: \'#{agent_id}\'
-        name: #{workspace_name}
-        namespace: #{workspace_namespace}
-        resourceVersion: "#{resource_version}"
-      spec:
-        replicas: #{spec_replicas}
-        selector:
-          matchLabels:
-            agent.gitlab.com/id: \'#{agent_id}\'
-        strategy:
-          type: Recreate
-        template:
-          metadata:
-            annotations:
-              config.k8s.io/owning-inventory: #{owning_inventory}
-              workspaces.gitlab.com/host-template: #{host_template_annotation}
-              workspaces.gitlab.com/id: \'#{workspace_id}\'
-            creationTimestamp: null
-            labels:
-              agent.gitlab.com/id: \'#{agent_id}\'
-            name: #{workspace_name}
-            namespace: #{workspace_namespace}
-          spec:
-            containers:
-            - command:
-              - "/projects/.gl-editor/start_server.sh"
-              env:
-              - name: EDITOR_VOLUME_DIR
-                value: "/projects/.gl-editor"
-              - name: EDITOR_PORT
-                value: "60001"
-              - name: SSH_PORT
-                value: "60022"
-              - name: PROJECTS_ROOT
-                value: "/projects"
-              - name: PROJECT_SOURCE
-                value: "/projects"
-              - name: GL_WORKSPACE_DOMAIN_TEMPLATE
-                value: #{host_template_environment_variable}
-              image: quay.io/mloriedo/universal-developer-image:ubi8-dw-demo
-              imagePullPolicy: Always
-              name: tooling-container
-              ports:
-              - containerPort: 60001
-                name: editor-server
-                protocol: TCP
-              - containerPort: 60022
-                name: ssh-server
-                protocol: TCP
-              resources: {}
-              volumeMounts:
-              - mountPath: "/projects"
-                name: gl-workspace-data
-              securityContext:
-                allowPrivilegeEscalation: false
-                privileged: false
-                runAsNonRoot: true
-                runAsUser: 5001
-            initContainers:
-            - args:
-              - |-
-                if [ ! -d '/projects/test-project' ];
-                then
-                  git clone --branch master #{root_url}test-group/test-project.git /projects/test-project;
-                  cd /projects/test-project;
-                  git config user.name "${GIT_AUTHOR_NAME}";
-                  git config user.email "${GIT_AUTHOR_EMAIL}";
-                fi
-              command: ["/bin/sh", "-c"]
-              env:
-              - name: PROJECTS_ROOT
-                value: "/projects"
-              - name: PROJECT_SOURCE
-                value: "/projects"
-              - name: GIT_AUTHOR_NAME
-                value: #{user_name}
-              - name: GIT_AUTHOR_EMAIL
-                value: #{user_email}
-              - name: GL_WORKSPACE_DOMAIN_TEMPLATE
-                value: #{host_template_environment_variable}
-              image: alpine/git:2.36.3
-              imagePullPolicy: Always
-              name: gl-cloner-injector-gl-cloner-injector-command-1
-              resources:
-                limits:
-                  cpu: 500m
-                  memory: 256Mi
-                requests:
-                  cpu: 100m
-                  memory: 128Mi
-              volumeMounts:
-              - mountPath: "/projects"
-                name: gl-workspace-data
-              securityContext:
-                allowPrivilegeEscalation: false
-                privileged: false
-                runAsNonRoot: true
-                runAsUser: 5001
-            - env:
-              - name: EDITOR_VOLUME_DIR
-                value: "/projects/.gl-editor"
-              - name: EDITOR_PORT
-                value: "60001"
-              - name: SSH_PORT
-                value: "60022"
-              - name: PROJECTS_ROOT
-                value: "/projects"
-              - name: PROJECT_SOURCE
-                value: "/projects"
-              - name: GL_WORKSPACE_DOMAIN_TEMPLATE
-                value: #{host_template_environment_variable}
-              image: registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:2
-              imagePullPolicy: Always
-              name: gl-editor-injector-gl-editor-injector-command-2
-              resources:
-                limits:
-                  cpu: 500m
-                  memory: 256Mi
-                requests:
-                  cpu: 100m
-                  memory: 128Mi
-              volumeMounts:
-              - mountPath: "/projects"
-                name: gl-workspace-data
-              securityContext:
-                allowPrivilegeEscalation: false
-                privileged: false
-                runAsNonRoot: true
-                runAsUser: 5001
-            volumes:
-            - name: gl-workspace-data
-              persistentVolumeClaim:
-                claimName: #{workspace_name}-gl-workspace-data
-            securityContext:
-              runAsNonRoot: true
-              runAsUser: 5001
-              fsGroup: 0
-              fsGroupChangePolicy: OnRootMismatch
-      status:
-      #{status.indent(2)}
-    RESOURCES_YAML
+    config_to_apply = create_config_to_apply(
+      workspace_id: workspace_id,
+      workspace_name: workspace_name,
+      workspace_namespace: workspace_namespace,
+      agent_id: agent_id,
+      started: started,
+      user_name: user_name,
+      user_email: user_email,
+      include_inventory: false,
+      include_network_policy: false,
+      dns_zone: dns_zone
+    )
+    config_to_apply = YAML.load_stream(config_to_apply)
+    latest_k8s_deployment_info = config_to_apply.detect { |config| config.fetch('kind') == 'Deployment' }
+    latest_k8s_deployment_info['metadata']['resourceVersion'] = resource_version
+    latest_k8s_deployment_info['status'] = YAML.safe_load(status)
 
-    info[:latest_k8s_deployment_info] = YAML.safe_load(latest_k8s_deployment_info)
+    info[:latest_k8s_deployment_info] = latest_k8s_deployment_info
     info[:error_details] = error_details
     info.deep_symbolize_keys.to_h
   end
@@ -443,7 +306,6 @@ RSpec.shared_context 'with remote development shared fixtures' do
     workspace_name:,
     workspace_namespace:,
     agent_id:,
-    owning_inventory:,
     started:,
     user_name:,
     user_email:,
@@ -454,25 +316,26 @@ RSpec.shared_context 'with remote development shared fixtures' do
     spec_replicas = started == true ? "1" : "0"
     host_template_annotation = get_workspace_host_template_annotation(workspace_name, dns_zone)
     host_template_environment_variable = get_workspace_host_template_env_var(workspace_name, dns_zone)
-    inventory_config = <<~RESOURCES_YAML
+
+    workspace_inventory = <<~RESOURCES_YAML
       ---
       kind: ConfigMap
       apiVersion: v1
       metadata:
-        name: #{owning_inventory}
+        name: #{workspace_name}-workspace-inventory
         namespace: #{workspace_namespace}
         labels:
-          cli-utils.sigs.k8s.io/inventory-id: #{owning_inventory}
+          cli-utils.sigs.k8s.io/inventory-id: #{workspace_name}-workspace-inventory
           agent.gitlab.com/id: \'#{agent_id}\'
     RESOURCES_YAML
 
-    resources = <<~RESOURCES_YAML
+    k8s_resources_for_workspace_core = <<~RESOURCES_YAML
       ---
       apiVersion: apps/v1
       kind: Deployment
       metadata:
         annotations:
-          config.k8s.io/owning-inventory: #{owning_inventory}
+          config.k8s.io/owning-inventory: #{workspace_name}-workspace-inventory
           workspaces.gitlab.com/host-template: #{host_template_annotation}
           workspaces.gitlab.com/id: \'#{workspace_id}\'
         creationTimestamp: null
@@ -490,7 +353,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
         template:
           metadata:
             annotations:
-              config.k8s.io/owning-inventory: #{owning_inventory}
+              config.k8s.io/owning-inventory: #{workspace_name}-workspace-inventory
               workspaces.gitlab.com/host-template: #{host_template_annotation}
               workspaces.gitlab.com/id: \'#{workspace_id}\'
             creationTimestamp: null
@@ -620,7 +483,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
       kind: Service
       metadata:
         annotations:
-          config.k8s.io/owning-inventory: #{owning_inventory}
+          config.k8s.io/owning-inventory: #{workspace_name}-workspace-inventory
           workspaces.gitlab.com/host-template: #{host_template_annotation}
           workspaces.gitlab.com/id: \'#{workspace_id}\'
         creationTimestamp: null
@@ -645,7 +508,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
       kind: PersistentVolumeClaim
       metadata:
         annotations:
-          config.k8s.io/owning-inventory: #{owning_inventory}
+          config.k8s.io/owning-inventory: #{workspace_name}-workspace-inventory
           workspaces.gitlab.com/host-template: #{host_template_annotation}
           workspaces.gitlab.com/id: \'#{workspace_id}\'
         creationTimestamp:
@@ -662,64 +525,60 @@ RSpec.shared_context 'with remote development shared fixtures' do
       status: {}
     RESOURCES_YAML
 
-    if include_network_policy
-      resources += <<~RESOURCE_YAML
-        ---
-        apiVersion: networking.k8s.io/v1
-        kind: NetworkPolicy
-        metadata:
-          annotations:
-            config.k8s.io/owning-inventory: #{owning_inventory}
-            workspaces.gitlab.com/host-template: #{host_template_annotation}
-            workspaces.gitlab.com/id: \'#{workspace_id}\'
-          labels:
-            agent.gitlab.com/id: \'#{agent_id}\'
-          name: #{workspace_name}
-          namespace: #{workspace_namespace}
-        spec:
-          egress:
-          - to:
-            - ipBlock:
-                cidr: 0.0.0.0/0
-                except:
-                - 10.0.0.0/8
-                - 172.16.0.0/12
-                - 192.168.0.0/16
-          - ports:
-            - port: 53
-              protocol: TCP
-            - port: 53
-              protocol: UDP
-            to:
-            - namespaceSelector:
-                matchLabels:
-                  kubernetes.io/metadata.name: kube-system
-          ingress:
-          - from:
-            - namespaceSelector:
-                matchLabels:
-                  kubernetes.io/metadata.name: gitlab-workspaces
-              podSelector:
-                matchLabels:
-                  app.kubernetes.io/name: gitlab-workspaces-proxy
-          podSelector: {}
-          policyTypes:
-          - Ingress
-          - Egress
-      RESOURCE_YAML
-    end
+    k8s_resources_for_network_policy = <<~RESOURCE_YAML
+      ---
+      apiVersion: networking.k8s.io/v1
+      kind: NetworkPolicy
+      metadata:
+        annotations:
+          config.k8s.io/owning-inventory: #{workspace_name}-workspace-inventory
+          workspaces.gitlab.com/host-template: #{host_template_annotation}
+          workspaces.gitlab.com/id: \'#{workspace_id}\'
+        labels:
+          agent.gitlab.com/id: \'#{agent_id}\'
+        name: #{workspace_name}
+        namespace: #{workspace_namespace}
+      spec:
+        egress:
+        - to:
+          - ipBlock:
+              cidr: 0.0.0.0/0
+              except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+        - ports:
+          - port: 53
+            protocol: TCP
+          - port: 53
+            protocol: UDP
+          to:
+          - namespaceSelector:
+              matchLabels:
+                kubernetes.io/metadata.name: kube-system
+        ingress:
+        - from:
+          - namespaceSelector:
+              matchLabels:
+                kubernetes.io/metadata.name: gitlab-workspaces
+            podSelector:
+              matchLabels:
+                app.kubernetes.io/name: gitlab-workspaces-proxy
+        podSelector: {}
+        policyTypes:
+        - Ingress
+        - Egress
+    RESOURCE_YAML
 
-    unless include_inventory
-      return YAML.load_stream(resources).map do |resource|
-        YAML.dump(resource)
-      end.join
-    end
+    resources = ""
+    resources += workspace_inventory if include_inventory
+    resources += k8s_resources_for_workspace_core
+    resources += k8s_resources_for_network_policy if include_network_policy
 
-    YAML.load_stream(inventory_config + resources).map do |resource|
+    YAML.load_stream(resources).map do |resource|
       YAML.dump(resource)
     end.join
   end
-
   # rubocop:enable Metrics/ParameterLists
 
   # noinspection RubyInstanceMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/

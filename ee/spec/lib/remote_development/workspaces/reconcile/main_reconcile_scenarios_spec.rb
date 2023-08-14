@@ -212,7 +212,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, 'Partial Update S
                 workspace_name: workspace.name,
                 workspace_namespace: workspace.namespace,
                 agent_id: workspace.agent.id,
-                owning_inventory: "#{workspace.name}-workspace-inventory",
                 resource_version: deployment_resource_version_from_agent,
                 current_actual_state: current_actual_state,
                 previous_actual_state: previous_actual_state,

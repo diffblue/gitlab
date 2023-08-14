@@ -68,7 +68,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
       let(:expected_actual_state) { actual_state }
       let(:expected_deployment_resource_version) { deployment_resource_version_from_agent }
       let(:expected_config_to_apply) { nil }
-      let(:owning_inventory) { "#{workspace.name}-workspace-inventory" }
       let(:error_from_agent) { nil }
 
       let(:workspace_agent_info) do
@@ -77,7 +76,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
           workspace_name: workspace.name,
           workspace_namespace: workspace.namespace,
           agent_id: workspace.agent.id,
-          owning_inventory: owning_inventory,
           resource_version: deployment_resource_version_from_agent,
           previous_actual_state: previous_actual_state,
           current_actual_state: current_actual_state,
@@ -209,7 +207,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
             workspace_name: workspace2.name,
             workspace_namespace: workspace2.namespace,
             agent_id: workspace2.agent.id,
-            owning_inventory: owning_inventory,
             resource_version: deployment_resource_version_from_agent,
             previous_actual_state: previous_actual_state,
             current_actual_state: current_actual_state,
@@ -345,7 +342,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
         # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         context 'when desired_state does not match actual_state' do
           let(:deployment_resource_version_from_agent) { workspace.deployment_resource_version }
-          let(:owning_inventory) { "#{workspace.name}-workspace-inventory" }
 
           let(:expected_config_to_apply) do
             create_config_to_apply(
@@ -353,7 +349,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
               workspace_name: workspace.name,
               workspace_namespace: workspace.namespace,
               agent_id: workspace.agent.id,
-              owning_inventory: owning_inventory,
               started: expected_value_for_started,
               user_name: user.name,
               user_email: user.email
@@ -472,7 +467,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
                 workspace_name: workspace.name,
                 workspace_namespace: workspace.namespace,
                 agent_id: workspace.agent.id,
-                owning_inventory: owning_inventory,
                 started: expected_value_for_started,
                 user_name: user.name,
                 user_email: user.email
@@ -513,7 +507,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
           workspace_name: workspace_name,
           workspace_namespace: workspace_namespace,
           agent_id: '1',
-          owning_inventory: 'does-not-matter',
           resource_version: '42',
           previous_actual_state: RemoteDevelopment::Workspaces::States::STOPPING,
           current_actual_state: RemoteDevelopment::Workspaces::States::STOPPED,
@@ -547,16 +540,12 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
       let(:workspace_agent_infos) { [] }
 
       # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
-      let(:owning_inventory) { "#{unprovisioned_workspace.name}-workspace-inventory" }
-
-      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       let(:expected_config_to_apply) do
         create_config_to_apply(
           workspace_id: unprovisioned_workspace.id,
           workspace_name: unprovisioned_workspace.name,
           workspace_namespace: unprovisioned_workspace.namespace,
           agent_id: unprovisioned_workspace.agent.id,
-          owning_inventory: owning_inventory,
           started: expected_value_for_started,
           user_name: user.name,
           user_email: user.email
