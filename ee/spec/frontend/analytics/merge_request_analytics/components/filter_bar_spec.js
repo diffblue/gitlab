@@ -5,6 +5,7 @@ import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import FilterBar from 'ee/analytics/merge_request_analytics/components/filter_bar.vue';
 import storeConfig from 'ee/analytics/merge_request_analytics/store';
+import { MAX_LABEL_SUGGESTIONS } from 'ee/analytics/merge_request_analytics/constants';
 import { mockBranches } from 'jest/vue_shared/components/filtered_search_bar/mock_data';
 import {
   filterMilestones,
@@ -200,6 +201,12 @@ describe('Filter bar', () => {
       const { initialLabels } = getSearchToken(labelsTokenType);
 
       expect(initialLabels).toHaveLength(filterLabels.length);
+    });
+
+    it('restricts the maximum number of label suggestions', () => {
+      const { maxSuggestions } = getSearchToken(labelsTokenType);
+
+      expect(maxSuggestions).toBe(MAX_LABEL_SUGGESTIONS);
     });
 
     it('provides the initial author token', () => {

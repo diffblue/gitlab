@@ -27,6 +27,7 @@ import BranchToken from '~/vue_shared/components/filtered_search_bar/tokens/bran
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
 import MilestoneToken from '~/vue_shared/components/filtered_search_bar/tokens/milestone_token.vue';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
+import { MAX_LABEL_SUGGESTIONS } from '../constants';
 
 export default {
   name: 'FilterBar',
@@ -91,6 +92,7 @@ export default {
           unique: false,
           symbol: '~',
           fetchLabels: this.fetchLabels,
+          maxSuggestions: MAX_LABEL_SUGGESTIONS,
         },
         {
           icon: 'pencil',
