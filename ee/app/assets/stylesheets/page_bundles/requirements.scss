@@ -2,6 +2,11 @@
 
 .requirements-container {
   .requirement-form-drawer {
+    .gl-drawer-header {
+      @include gl-border-bottom-0;
+      @include gl-pb-0;
+    }
+
     &.zen-mode {
       // We need to override `z-index` provided to GlDrawer
       // in Zen mode to enable full-screen editing.
@@ -15,14 +20,17 @@
       @include gl-border-b-solid;
       @include gl-border-b-gray-100;
       @include gl-border-b-1;
-
-      &,
-      .title {
-        @include gl-mb-3;
-      }
+      @include gl-display-flex;
+      @include gl-pb-3;
+      @include gl-align-items-flex-start;
 
       .title {
         @include gl-font-size-markdown-h2;
+        @include gl-mb-0;
+        @include gl-pb-0;
+        @include gl-flex-grow-1;
+        @include gl-mr-2;
+        @include gl-border-bottom-0;
       }
     }
 
@@ -35,6 +43,10 @@
 
       .detail-page-description {
         @include gl-border-none;
+      }
+
+      .description {
+        @include gl-mt-4;
       }
     }
   }
