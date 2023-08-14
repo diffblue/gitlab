@@ -20447,7 +20447,8 @@ CREATE TABLE plan_limits (
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     ci_max_artifact_size_annotations integer DEFAULT 0 NOT NULL,
     ci_job_annotations_size integer DEFAULT 81920 NOT NULL,
-    ci_job_annotations_num integer DEFAULT 20 NOT NULL
+    ci_job_annotations_num integer DEFAULT 20 NOT NULL,
+    file_size_limit_mb double precision DEFAULT 100.0 NOT NULL
 );
 
 CREATE SEQUENCE plan_limits_id_seq
