@@ -48,7 +48,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
             workspace_name: 'name',
             workspace_namespace: 'namespace',
             agent_id: 1,
-            owning_inventory: 'owning_inventory',
             resource_version: 1,
             previous_actual_state: previous_actual_state,
             current_actual_state: current_actual_state,

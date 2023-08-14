@@ -16,7 +16,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::Factory, feature
       workspace_name: workspace.name,
       workspace_namespace: namespace,
       agent_id: agent.id,
-      owning_inventory: "#{workspace.name}-workspace-inventory",
       resource_version: "1",
       previous_actual_state: previous_actual_state,
       current_actual_state: current_actual_state,
