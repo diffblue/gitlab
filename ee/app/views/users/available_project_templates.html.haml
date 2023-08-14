@@ -1,7 +1,7 @@
 .custom-project-templates
   - if @custom_project_templates.present?
     - @custom_project_templates.each do |template|
-      .template-option.d-flex.align-items-center{ data: { qa_selector: 'template_option_container' } }
+      .template-option.d-flex.align-items-center{ data: { testid: 'template-option-container' } }
         .avatar-container.s40
           = project_icon(template, alt: template.name, class: 'btn-template-icon avatar s40 avatar-tile', lazy: false)
         .description
@@ -15,7 +15,7 @@
             = _('Preview')
           %label.btn.gl-button.btn-confirm.custom-template-button.choose-template.gl-mb-0{ for: template.name }
             %input{ type: "radio", autocomplete: "off", name: "project[template_project_id]", id: template.name, value: template.id, data: { template_name: template.name } }
-            %span{ data: { qa_selector: 'use_template_button' } }
+            %span{ data: { testid: 'use-template-button' } }
               = _('Use template')
     = paginate @custom_project_templates, params: { controller: 'users', action: 'available_project_templates', username: current_user.username }, theme: 'gitlab', remote: true
   - else

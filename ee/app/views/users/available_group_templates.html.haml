@@ -19,7 +19,7 @@
             = gl_badge_tag projects.count, nil, { class: 'gl-font-weight-bold' }
 
         - projects.each do |project|
-          .template-option.align-items-center{ data: { qa_selector: 'template_option_container' } }
+          .template-option.align-items-center{ data: { testid: 'template-option-container' } }
             .avatar-container.s40
               = project_icon(project, alt: project.name, class: 'btn-template-icon avatar s40 avatar-tile', lazy: false)
             .description.gl-ml-2
@@ -33,7 +33,7 @@
                 = _('Preview')
               %label.btn.gl-button.btn-confirm.custom-template-button.choose-template.gl-mb-0{ for: project.name }
                 %input{ type: "radio", autocomplete: "off", name: "project[template_project_id]", id: project.name, value: project.id, data: { subgroup_full_path: project.namespace.full_path, target_group_full_path: @target_group&.full_path, subgroup_id: project.namespace_id, template_name: project.name, parent_group_id: @target_group&.id || group.parent_id } }
-                %span{ data: { qa_selector: 'use_template_button' } }
+                %span{ data: { testid: 'use-template-button' } }
                   = _('Use template')
 
     = paginate @groups_with_project_templates, params: { controller: 'users', action: 'available_group_templates', username: current_user.username }, theme: 'gitlab', remote: true
