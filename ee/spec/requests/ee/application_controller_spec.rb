@@ -35,18 +35,6 @@ RSpec.describe ApplicationController, type: :request, feature_category: :shared 
         end
       end
 
-      context 'when feature flag is disabled' do
-        before do
-          stub_feature_flags(ensure_onboarding: false)
-        end
-
-        it 'does not redirect to the onboarding step' do
-          get root_path
-
-          expect(response).not_to be_redirect
-        end
-      end
-
       context 'when request path equals redirect path' do
         let(:url) { root_path }
 

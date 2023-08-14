@@ -12,7 +12,7 @@ module Onboarding
     end
 
     def start_onboarding(onboarding_step_url, user)
-      return unless Onboarding.user_onboarding_enabled?(user)
+      return unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
 
       user.onboarding_in_progress = true
       user.user_detail.onboarding_step_url = onboarding_step_url

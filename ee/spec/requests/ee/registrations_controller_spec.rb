@@ -187,19 +187,6 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
         end
       end
 
-      context 'when ensure_onboarding is disabled' do
-        before do
-          stub_feature_flags(ensure_onboarding: false)
-        end
-
-        it 'does not set onboarding' do
-          create_user
-
-          created_user = User.find_by(email: user_attrs[:email])
-          expect(created_user.onboarding_in_progress).to be_falsey
-        end
-      end
-
       context 'when not on SaaS' do
         let(:should_check_namespace_plan) { false }
 

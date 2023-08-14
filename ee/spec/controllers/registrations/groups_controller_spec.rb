@@ -43,18 +43,6 @@ RSpec.describe Registrations::GroupsController, :experiment, feature_category: :
       end
     end
 
-    context 'when ensure_onboarding is disabled' do
-      before do
-        stub_feature_flags(ensure_onboarding: false)
-      end
-
-      it 'does not finish onboarding' do
-        subject
-
-        expect(user.user_detail.onboarding_step_url).to eq url
-      end
-    end
-
     context 'when onboarding is enabled' do
       it 'finishes onboarding' do
         subject

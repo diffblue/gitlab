@@ -374,7 +374,6 @@ RSpec.describe Groups::OmniauthCallbacksController, :aggregate_failures, feature
 
         before do
           enable_namespace_license_check!
-          stub_feature_flags(ensure_onboarding: true)
           stub_omniauth_setting(block_auto_created_users: false)
         end
 

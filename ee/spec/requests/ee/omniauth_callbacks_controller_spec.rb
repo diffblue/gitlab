@@ -11,7 +11,6 @@ RSpec.describe OmniauthCallbacksController, feature_category: :system_access do
     let(:check_namespace_plan) { true }
 
     before do
-      stub_feature_flags(ensure_onboarding: true)
       stub_omniauth_setting(block_auto_created_users: false)
       mock_auth_hash(provider.to_s, 'my-uid', user.email)
     end
