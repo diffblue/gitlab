@@ -18,6 +18,35 @@ RSpec.describe Commits::CreateService, feature_category: :source_code_management
   end
 
   describe '#execute' do
+    context 'when Gitaly returns a non-ASCII characters in the error message' do
+      let(:gitaly_error) { (+"ツ").force_encoding(Encoding::ASCII_8BIT) }
+      let(:gitaly_error_in_utf8) { "ツ" }
+
+      it 'returns an error message in UTF-8 encoding' do
+        allow(service).to receive(:create_commit!).and_raise(Gitlab::Git::CommandError, gitaly_error)
+
+        result = service.execute
+
+        expect(result[:status]).to be(:error)
+        expect(result[:message]).to eq(gitaly_error_in_utf8)
+      end
+
+      context 'when feature flag "errors_utf_8_encoding" is disabled' do
+        before do
+          stub_feature_flags(errors_utf_8_encoding: false)
+        end
+
+        it 'returns an error message in original encoding' do
+          allow(service).to receive(:create_commit!).and_raise(Gitlab::Git::CommandError, gitaly_error)
+
+          result = service.execute
+
+          expect(result[:status]).to be(:error)
+          expect(result[:message]).to eq(gitaly_error)
+        end
+      end
+    end
+
     context 'when the repository size limit has been exceeded' do
       before do
         stub_licensed_features(repository_size_limit: true)
