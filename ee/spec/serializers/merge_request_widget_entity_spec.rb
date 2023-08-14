@@ -205,9 +205,20 @@ RSpec.describe MergeRequestWidgetEntity, feature_category: :code_review_workflow
       context "when a report artifact is produced from a forked project" do
         let(:source_project) { fork_project(project, user, repository: true) }
         let(:fork_merge_request) { create(:merge_request, source_project: source_project, target_project: project) }
+        let(:fork_pipeline) { create(:ci_empty_pipeline, project: source_project) }
         let(:subject_json) { described_class.new(fork_merge_request, current_user: user, request: request).as_json }
 
         specify { expect(subject_json).to include(:license_scanning) }
+
+        it 'the full report leads to the fork project' do
+          allow(fork_merge_request).to receive_messages(
+            head_pipeline: fork_pipeline,
+            project: source_project,
+            target_project: project
+          )
+
+          expect(subject_json[:license_scanning][:full_report_path]).to include(source_project.full_path)
+        end
       end
     end
   end
