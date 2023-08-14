@@ -11,6 +11,7 @@ exports[`IterationDropdown default shows gl-dropdown 1`] = `
   size="md"
   splitbuttontype="button"
   splitclass=",[object Object]"
+  splithref=""
   toggleattrs="[object Object]"
   toggleclass=",[object Object]"
   toggletag="button"

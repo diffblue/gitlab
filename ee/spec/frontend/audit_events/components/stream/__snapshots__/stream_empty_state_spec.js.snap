@@ -60,7 +60,6 @@ exports[`StreamEmptyState should render correctly 1`] = `
             class="btn btn-confirm btn-md gl-button gl-new-dropdown-toggle"
             data-testid="base-dropdown-toggle"
             id="dropdown-toggle-btn-10"
-            listeners="[object Object]"
             type="button"
           >
             <!---->
