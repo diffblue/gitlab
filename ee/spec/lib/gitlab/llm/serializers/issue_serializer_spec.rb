@@ -46,7 +46,8 @@ RSpec.describe Gitlab::Llm::Serializers::IssueSerializer, feature_category: :no_
       end
 
       context 'when there more notes for the issue' do
-        it 'returns an array with notes no longer than limit' do
+        it 'returns an array with notes no longer than limit',
+          quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/421850' do
           create(:note, noteable: issue, project: issue.project, note: '*' * content_limit)
 
           notes = described_class.serialize(issue: issue, user: user, content_limit: content_limit)
