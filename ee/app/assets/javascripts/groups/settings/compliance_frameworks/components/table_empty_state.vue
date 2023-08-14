@@ -1,10 +1,9 @@
 <script>
-import { GlButton, GlEmptyState } from '@gitlab/ui';
+import { GlEmptyState } from '@gitlab/ui';
 import { s__ } from '~/locale';
 
 export default {
   components: {
-    GlButton,
     GlEmptyState,
   },
   props: {
@@ -14,34 +13,22 @@ export default {
       default: null,
     },
   },
-  methods: {
-    onAddFramework(event) {
-      event.preventDefault();
-      this.$emit('addFramework', event);
-    },
-  },
   i18n: {
     heading: s__('ComplianceFrameworks|No compliance frameworks are set up yet'),
-    description: s__('ComplianceFrameworks|Frameworks that have been added will appear here.'),
-    addButton: s__('ComplianceFrameworks|Add framework'),
+    description: s__(
+      'ComplianceFrameworks|Frameworks that have been added will appear here, start by creating a new one above.',
+    ),
   },
 };
 </script>
 
 <template>
-  <gl-empty-state
-    :description="$options.i18n.description"
-    :svg-path="imagePath"
-    compact
-    :svg-height="100"
-  >
+  <gl-empty-state class="gl-m-0" :svg-path="imagePath" :svg-height="100">
     <template #title>
-      <h5 class="gl-mt-0">{{ $options.i18n.heading }}</h5>
+      <h6 class="gl-font-lg gl-mt-0">{{ $options.i18n.heading }}</h6>
     </template>
-    <template #actions>
-      <gl-button category="primary" variant="confirm" class="gl-mb-3" @click="onAddFramework"
-        >{{ $options.i18n.addButton }}
-      </gl-button>
+    <template #description>
+      <p class="gl-text-secondary">{{ $options.i18n.description }}</p>
     </template>
   </gl-empty-state>
 </template>

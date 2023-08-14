@@ -172,7 +172,7 @@ describe('Table', () => {
 
   describe('content', () => {
     beforeEach(async () => {
-      wrapper = createComponentWithApollo(fetch);
+      wrapper = createComponentWithApollo(fetch, shallowMount);
       await waitForPromises();
     });
 
@@ -182,19 +182,23 @@ describe('Table', () => {
       expect(findEmptyState().exists()).toBe(false);
     });
 
-    it('shows the add framework button', () => {
-      const addBtn = findAddBtn();
-
-      expect(addBtn.text()).toBe('Add framework');
-    });
-
     it('renders the delete modal', () => {
       expect(findDeleteModal().exists()).toBe(true);
     });
 
+    describe('when editing is available', () => {
+      beforeEach(() => {
+        wrapper = createComponentWithApollo(fetch, updateDefault, {}, mount);
+      });
+
+      it('shows the add framework button', () => {
+        expect(findAddBtn().text()).toBe('Add framework');
+      });
+    });
+
     describe('when editing is unavailable', () => {
       beforeEach(() => {
-        wrapper = createComponentWithApollo(fetch, updateDefault, {}, shallowMount, {
+        wrapper = createComponentWithApollo(fetch, updateDefault, {}, mount, {
           canAddEdit: false,
         });
       });
