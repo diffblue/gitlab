@@ -6,7 +6,7 @@ module Emails
       @current_user = @user = User.find(user_id)
       @target_url = user_url(@user)
       @token = token
-      mail_with_locale(to: @user.notification_email_or_default, subject: subject("Account was created for you"))
+      email_with_layout(to: @user.notification_email_or_default, subject: subject("Account was created for you"))
     end
 
     def instance_access_request_email(user, recipient)

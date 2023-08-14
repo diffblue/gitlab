@@ -17,6 +17,10 @@ class NotifyPreview < ActionMailer::Preview
     end
   end
 
+  def new_user_email
+    Notify.new_user_email(user.id).message
+  end
+
   def note_merge_request_email_for_discussion
     note_email(:note_merge_request_email) do
       note = <<-MD.strip_heredoc
