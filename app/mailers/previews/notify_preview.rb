@@ -73,6 +73,11 @@ class NotifyPreview < ActionMailer::Preview
     Notify.access_token_revoked_email(user, 'token_name').message
   end
 
+  def ssh_key_expired_email
+    fingerprints = []
+    Notify.ssh_key_expired_email(user, fingerprints).message
+  end
+
   def new_mention_in_merge_request_email
     Notify.new_mention_in_merge_request_email(user.id, merge_request.id, user.id).message
   end
