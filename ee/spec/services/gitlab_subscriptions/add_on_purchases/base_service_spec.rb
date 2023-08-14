@@ -4,7 +4,6 @@ require 'spec_helper'
 
 RSpec.describe GitlabSubscriptions::AddOnPurchases::BaseService, feature_category: :purchase do
   describe '#execute' do
-    let_it_be(:admin) { build(:user, :admin) }
     let_it_be(:namespace) { create(:namespace) }
     let_it_be(:add_on) { create(:gitlab_subscription_add_on) }
 
@@ -16,76 +15,69 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::BaseService, feature_categor
       }
     end
 
-    let(:test_class) do
-      Class.new(described_class) do
-        def execute
-          super
+    subject(:result) { test_class.new(namespace, add_on, params).execute }
 
-          add_on_purchase
-        end
+    context 'when execute method was not overridden' do
+      let(:test_class) do
+        Class.new(described_class)
       end
-    end
-
-    subject(:result) { test_class.new(user, namespace, add_on, params).execute }
-
-    context 'with a non-admin user' do
-      let(:non_admin) { build(:user) }
-      let(:user) { non_admin }
 
       it 'raises an error' do
-        expect { result }.to raise_error(Gitlab::Access::AccessDeniedError)
+        expect { result }.to raise_error(described_class::ImplementationMissingError)
       end
     end
 
-    context 'with an admin user' do
-      let(:user) { admin }
-
-      context 'when add_on_purchase method was not overridden' do
-        it 'raises an error' do
-          expect { result }.to raise_error(described_class::ImplementationMissingError)
+    context 'when add_on_purchase method was not overridden' do
+      let(:test_class) do
+        Class.new(described_class) do
+          def execute
+            add_on_purchase
+          end
         end
       end
 
-      context 'when add_on_purchase method was overridden' do
-        let(:test_class) do
-          Class.new(described_class) do
-            include Gitlab::Utils::StrongMemoize
+      it 'raises an error' do
+        expect { result }.to raise_error(described_class::ImplementationMissingError)
+      end
+    end
 
-            def execute
-              super
+    context 'when add_on_purchase method was overridden' do
+      let(:test_class) do
+        Class.new(described_class) do
+          include Gitlab::Utils::StrongMemoize
 
-              add_on_purchase.save ? successful_response : error_response
-            end
+          def execute
+            add_on_purchase.save ? successful_response : error_response
+          end
 
-            private
+          private
 
-            def add_on_purchase
-              @add_on_purchase ||= GitlabSubscriptions::AddOnPurchase.new(
-                namespace: namespace,
-                add_on: add_on,
-                quantity: quantity,
-                expires_on: expires_on,
-                purchase_xid: purchase_xid
-              )
-            end
+          def add_on_purchase
+            @add_on_purchase ||= GitlabSubscriptions::AddOnPurchase.new(
+              namespace: namespace,
+              add_on: add_on,
+              quantity: quantity,
+              expires_on: expires_on,
+              purchase_xid: purchase_xid
+            )
           end
         end
+      end
 
-        context 'with success response' do
-          it 'returns a success' do
-            expect(result[:status]).to eq(:success)
-            expect(result[:add_on_purchase]).to be_present
-          end
+      context 'with success response' do
+        it 'returns a success' do
+          expect(result[:status]).to eq(:success)
+          expect(result[:add_on_purchase]).to be_present
         end
+      end
 
-        context 'with error response' do
-          let(:params) { super().merge(quantity: 0) }
+      context 'with error response' do
+        let(:params) { super().merge(quantity: 0) }
 
-          it 'returns an error' do
-            expect(result[:status]).to eq(:error)
-            expect(result[:message]).to eq('Add-on purchase could not be saved')
-            expect(result[:add_on_purchase]).to be_present
-          end
+        it 'returns an error' do
+          expect(result[:status]).to eq(:error)
+          expect(result[:message]).to eq('Add-on purchase could not be saved')
+          expect(result[:add_on_purchase]).to be_present
         end
       end
     end

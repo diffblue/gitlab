@@ -4,8 +4,6 @@ module GitlabSubscriptions
   module AddOnPurchases
     class UpdateService < ::GitlabSubscriptions::AddOnPurchases::BaseService
       def execute
-        super
-
         return error_response unless add_on_purchase
 
         update_add_on_purchase ? successful_response : error_response

@@ -4,8 +4,6 @@ module GitlabSubscriptions
   module AddOnPurchases
     class CreateService < ::GitlabSubscriptions::AddOnPurchases::BaseService
       def execute
-        super
-
         return root_namespace_error unless namespace.root?
 
         add_on_purchase.save ? successful_response : error_response

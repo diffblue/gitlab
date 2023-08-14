@@ -30,7 +30,6 @@ module API
         end
         post ":id/subscription_add_on_purchase/:add_on_name" do
           result = ::GitlabSubscriptions::AddOnPurchases::CreateService.new(
-            current_user,
             @namespace,
             @add_on,
             declared_params
@@ -76,7 +75,6 @@ module API
         end
         put ":id/subscription_add_on_purchase/:add_on_name" do
           result = ::GitlabSubscriptions::AddOnPurchases::UpdateService.new(
-            current_user,
             @namespace,
             @add_on,
             declared_params
