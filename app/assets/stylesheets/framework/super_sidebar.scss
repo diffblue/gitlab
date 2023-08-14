@@ -159,10 +159,6 @@ $super-sidebar-transition-hint-duration: $super-sidebar-transition-duration / 4;
   }
 
   .nav-item-link {
-    .draggable-icon {
-      cursor: grab;
-    }
-
     &:hover,
     &:focus-within {
       .nav-item-badge {
