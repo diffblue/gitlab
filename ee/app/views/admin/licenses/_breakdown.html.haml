@@ -10,7 +10,7 @@
     .col-sm-6.d-flex.gl-mb-5
       = render Pajamas::CardComponent.new do |c|
         - c.with_body do
-          %h2.gl-mt-0{ data: { qa_selector: 'users_in_license' } }
+          %h2.gl-mt-0{ data: { testid: 'users-in-license' } }
             = licensed_users(@license)
           .text-uppercase.gl-mb-4= _('Users in License')
           - if @license.will_expire?
@@ -26,7 +26,7 @@
     .col-sm-6.d-flex.gl-mb-5
       = render Pajamas::CardComponent.new do |c|
         - c.with_body do
-          %h2.gl-mt-0{ data: { qa_selector: 'billable_users' } }
+          %h2.gl-mt-0{ data: { testid: 'billable-users' } }
             = number_with_delimiter @license.daily_billable_users_count
           .text-uppercase.gl-mb-4= _('Billable Users')
           %p
@@ -38,7 +38,7 @@
     .col-sm-6.d-flex.gl-mb-5
       = render Pajamas::CardComponent.new(card_options: { class: 'flex-fill' }) do |c|
         - c.with_body do
-          %h2.gl-mt-0{ data: { qa_selector: 'maximum_users' } }
+          %h2.gl-mt-0
             = number_with_delimiter @license.maximum_user_count
           .text-uppercase.gl-mb-4= _('Maximum Users')
           %p= _('This is the highest peak of users on your installation since the license started.')
@@ -48,7 +48,7 @@
     .col-sm-6.d-flex.gl-mb-5
       = render Pajamas::CardComponent.new do |c|
         - c.with_body do
-          %h2.gl-mt-0{ data: { qa_selector: 'users_over_license' } }
+          %h2.gl-mt-0
             = number_with_delimiter users_over_license
           .text-uppercase.gl-mb-4= _('Users over License')
           - if users_over_license > 0
