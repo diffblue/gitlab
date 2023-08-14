@@ -987,7 +987,6 @@ The full example of the script `get_all_projects_top_level_namespace_storage_ana
 
 Review the [cleanup policy](packages/dependency_proxy/reduce_dependency_proxy_storage.md#cleanup-policies) and how to [purge the cache using the API](packages/dependency_proxy/reduce_dependency_proxy_storage.md#use-the-api-to-clear-the-cache)
 
-
 ## Community resources
 
 These resources are not officially supported. Ensure to test scripts and tutorials before running destructive cleanup commands that may not be reverted.
