@@ -1,0 +1,25 @@
+.form-group.gl-form-group
+  = f.gitlab_ui_checkbox_component :enabled, s_('Microsoft|Enable Microsoft Azure integration for this group')
+  .form-group.gl-form-group
+    = f.label :tenant_xid, s_('Microsoft|Tenant ID')
+    = f.text_field :tenant_xid, class: 'form-control gl-form-input'
+  .form-group.gl-form-group
+    = f.label :client_xid, s_('Microsoft|Client ID')
+    = f.text_field :client_xid, class: 'form-control gl-form-input'
+  .form-group.gl-form-group
+    = f.label :client_secret, s_('Microsoft|Client secret')
+    = f.password_field :client_secret, class: 'form-control gl-form-input'
+  .form-group.gl-form-group
+    = f.label :login_endpoint, s_('Microsoft|Login API endpoint')
+    = f.text_field :login_endpoint, class: 'form-control gl-form-input'
+    .form-text.text-muted
+      = s_("Microsoft|Use the default value, unless you're using Azure AD for US Government or Azure AD China operated by 22Vianet.")
+      = link_to _('Learn more.'), 'https://learn.microsoft.com/en-us/graph/deployments#app-registration-and-token-service-root-endpoints', target: '_blank', rel: 'noopener noreferrer'
+  .form-group.gl-form-group
+    = f.label :graph_endpoint, s_('Microsoft|Graph API endpoint')
+    = f.text_field :graph_endpoint, class: 'form-control gl-form-input'
+    .form-text.text-muted
+      = s_("Microsoft|Use the default value, unless you're using using Microsoft Graph for US Government or Microsoft Graph China operated by 22Vianet.")
+      = link_to _('Learn more.'), 'https://learn.microsoft.com/en-us/graph/deployments#microsoft-graph-and-graph-explorer-service-root-endpoints', target: '_blank', rel: 'noopener noreferrer'
+
+  = f.submit _("Save changes"), pajamas_button: true

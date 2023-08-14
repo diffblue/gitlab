@@ -4,18 +4,19 @@ require_relative '../concerns/saml_authorization'
 class Groups::SamlProvidersController < Groups::ApplicationController
   include SamlAuthorization
   include SafeFormatHelper
+  include MicrosoftApplicationActions
+
   before_action :require_top_level_group
   before_action :authorize_manage_saml!
   before_action :check_group_saml_available!
   before_action :check_group_saml_configured
-  before_action :check_microsoft_azure_feature_flag, only: [:microsoft_application]
+  before_action :find_or_initialize_microsoft_application, only: [:show]
 
   feature_category :system_access
 
   def show
     @saml_provider = @group.saml_provider || @group.build_saml_provider
     @saml_response_check = load_test_response if @saml_provider.persisted?
-    @microsoft_application = find_or_initialize_microsoft_application
 
     scim_token = ScimOauthAccessToken.find_by_group_id(@group.id)
 
@@ -40,25 +41,6 @@ class Groups::SamlProvidersController < Groups::ApplicationController
     render :show
   end
 
-  def microsoft_application
-    @saml_provider = @group.saml_provider
-    @microsoft_application = find_or_initialize_microsoft_application
-
-    params = microsoft_application_params.dup
-    params.delete(:client_secret) if params[:client_secret].empty?
-
-    if @microsoft_application.update(params)
-      flash[:notice] = s_('Microsoft|Microsoft Azure integration settings were successfully updated.')
-    else
-      flash[:alert] = safe_format(
-        s_('Microsoft|Microsoft Azure integration settings failed to save. %{errors}'),
-        errors: @microsoft_application.errors.full_messages.to_sentence
-      )
-    end
-
-    redirect_to group_saml_providers_path(group)
-  end
-
   private
 
   def load_test_response
@@ -66,12 +48,6 @@ class Groups::SamlProvidersController < Groups::ApplicationController
     return if test_response.blank?
 
     Gitlab::Auth::GroupSaml::ResponseCheck.for_group(group: @group, raw_response: test_response, user: current_user)
-  end
-
-  def find_or_initialize_microsoft_application
-    return unless ::Feature.enabled?(:microsoft_azure_group_sync)
-
-    ::SystemAccess::MicrosoftApplication.find_or_initialize_by(namespace: @group) # rubocop:disable CodeReuse/ActiveRecord
   end
 
   def saml_provider_params
@@ -84,12 +60,11 @@ class Groups::SamlProvidersController < Groups::ApplicationController
     params.require(:saml_provider).permit(allowed_params)
   end
 
-  def microsoft_application_params
-    params.require(:system_access_microsoft_application)
-          .permit(:enabled, :tenant_xid, :client_xid, :client_secret, :login_endpoint, :graph_endpoint)
+  def microsoft_application_namespace
+    @group
   end
 
-  def check_microsoft_azure_feature_flag
-    render_404 unless ::Feature.enabled?(:microsoft_azure_group_sync)
+  def microsoft_application_redirect_path
+    group_saml_providers_path(group)
   end
 end

@@ -1,0 +1,5 @@
+- return unless @microsoft_application
+
+%section.microsoft-application.gl-mt-4.col-lg-9.gl-p-0
+  = gitlab_ui_form_for [@group, @microsoft_application], method: :put, url: update_microsoft_application_group_saml_providers_url do |f|
+    = render 'shared/system_access/microsoft_application_form', f: f

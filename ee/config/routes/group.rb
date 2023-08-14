@@ -210,7 +210,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
       match :callback, to: 'omniauth_callbacks#group_saml', via: callback_methods
       get :sso, to: 'sso#saml'
       delete :unlink, to: 'sso#unlink'
-      post :microsoft_application
+      put :update_microsoft_application
     end
 
     resource :scim_oauth, only: [:create], controller: :scim_oauth
