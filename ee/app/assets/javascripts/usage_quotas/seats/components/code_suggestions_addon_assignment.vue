@@ -2,6 +2,11 @@
 import { GlToggle, GlTooltip } from '@gitlab/ui';
 import { __ } from '~/locale';
 import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/seats/constants';
+import {
+  CANNOT_ASSIGN_ADDON_ERROR_CODE,
+  CANNOT_UNASSIGN_ADDON_ERROR_CODE,
+  ADD_ON_ERROR_DICTIONARY,
+} from 'ee/usage_quotas/error_constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_USER } from '~/graphql_shared/constants';
 import userAddOnAssignmentCreateMutation from 'ee/usage_quotas/graphql/queries/user_addon_assignment_create.mutation.graphql';
@@ -67,12 +72,19 @@ export default {
       try {
         const { errors } = this.isAssigned ? await this.unassignAddOn() : await this.assignAddOn();
         if (errors.length) {
-          // Will be handled in a follow-up MR
+          const errorCode = errors[0];
+          if (!this.isKnownErrorCode(errorCode)) {
+            throw errors;
+          }
+          this.$emit('handleAddOnAssignmentError', errorCode);
         } else {
           this.isAssigned = !this.isAssigned;
         }
-      } catch (error) {
-        // Will be handled in a follow-up MR
+      } catch (e) {
+        const error = this.isAssigned
+          ? CANNOT_UNASSIGN_ADDON_ERROR_CODE
+          : CANNOT_ASSIGN_ADDON_ERROR_CODE;
+        this.$emit('handleAddOnAssignmentError', error);
       } finally {
         this.isLoading = false;
       }
@@ -94,6 +106,13 @@ export default {
         variables: this.addOnAssignmentQueryVariables,
       });
       return userAddOnAssignmentRemove;
+    },
+    isKnownErrorCode(errorCode) {
+      if (errorCode instanceof String || typeof errorCode === 'string') {
+        return Object.keys(ADD_ON_ERROR_DICTIONARY).includes(errorCode.toLowerCase());
+      }
+
+      return false;
     },
   },
 };

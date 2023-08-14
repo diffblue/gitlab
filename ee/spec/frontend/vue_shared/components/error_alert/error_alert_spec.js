@@ -3,15 +3,17 @@ import { shallowMount } from '@vue/test-utils';
 import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
 import { generateHelpTextWithLinks, mapSystemToFriendlyError } from '~/lib/utils/error_utils';
 
-const error = new Error('An error');
-const friendlyError = 'A friendly error';
-const friendlyErrorHTML = '<a href="https://a.link">A friendly error message with links</a>';
-const errorDictionary = {
-  'unfriendly error': {
-    message: 'friendly error message',
-    links: {},
-  },
+const unfriendlyErrorMessage = 'unfriendly error';
+const error = new Error(unfriendlyErrorMessage);
+const friendlyError = {
+  title: 'friendly title',
+  message: 'friendly error message',
+  links: {},
 };
+const errorDictionary = {
+  [unfriendlyErrorMessage]: friendlyError,
+};
+const friendlyErrorHTML = '<a href="https://a.link">A friendly error message with links</a>';
 const defaultError = {
   message: 'default error message',
   links: {},
@@ -45,13 +47,14 @@ describe('Error Alert', () => {
 
   describe('with an error', () => {
     beforeEach(() => {
-      createComponent({ error, errorDictionary, defaultError });
+      createComponent({ error, errorDictionary, defaultError, dismissible: true });
     });
 
     it('passes the correct props', () => {
       expect(findAlert().props()).toMatchObject({
-        dismissible: false,
+        dismissible: true,
         variant: 'danger',
+        title: friendlyError.title,
       });
     });
 
@@ -65,6 +68,12 @@ describe('Error Alert', () => {
 
     it('passes the correct html', () => {
       expect(findAlert().html()).toContain(friendlyErrorHTML);
+    });
+
+    it('emits a dismiss event when dismissing the error', () => {
+      findAlert().vm.$emit('dismiss');
+
+      expect(wrapper.emitted('dismiss')).toHaveLength(1);
     });
   });
 });

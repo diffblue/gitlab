@@ -1,6 +1,5 @@
 <script>
 import {
-  GlAlert,
   GlAvatarLabeled,
   GlAvatarLink,
   GlBadge,
@@ -27,12 +26,16 @@ import {
   ADD_ON_CODE_SUGGESTIONS,
   emailNotVisibleTooltipText,
   filterUsersPlaceholder,
-  CODE_SUGGESTIONS_ADDON_PURCHASE_FETCH_ERROR,
 } from 'ee/usage_quotas/seats/constants';
+import {
+  ADD_ON_ERROR_DICTIONARY,
+  ADD_ON_PURCHASE_FETCH_ERROR_CODE,
+} from 'ee/usage_quotas/error_constants';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { s__, __ } from '~/locale';
 import SearchAndSortBar from 'ee/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
 import getAddOnPurchaseQuery from 'ee/usage_quotas/graphql/queries/get_add_on_purchase_query.graphql';
+import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
 import RemoveBillableMemberModal from './remove_billable_member_modal.vue';
 import SubscriptionSeatDetails from './subscription_seat_details.vue';
 import CodeSuggestionsAddonAssignment from './code_suggestions_addon_assignment.vue';
@@ -45,7 +48,6 @@ export default {
   },
   components: {
     CodeSuggestionsAddonAssignment,
-    GlAlert,
     GlAvatarLabeled,
     GlAvatarLink,
     GlBadge,
@@ -57,13 +59,14 @@ export default {
     RemoveBillableMemberModal,
     SearchAndSortBar,
     SubscriptionSeatDetails,
+    ErrorAlert,
   },
   mixins: [glFeatureFlagsMixin()],
   inject: ['fullPath'],
   data() {
     return {
       addOnPurchase: undefined,
-      codeSuggestionsAddOnPurchaseFetchError: undefined,
+      codeSuggestionsAddOnError: undefined,
     };
   },
   apollo: {
@@ -82,7 +85,7 @@ export default {
         };
       },
       error(error) {
-        this.codeSuggestionsAddOnPurchaseFetchError = CODE_SUGGESTIONS_ADDON_PURCHASE_FETCH_ERROR;
+        this.codeSuggestionsAddOnError = ADD_ON_PURCHASE_FETCH_ERROR_CODE;
         Sentry.captureException(error);
       },
       skip() {
@@ -166,8 +169,11 @@ export default {
     isProjectOrGroupInvite(user) {
       return this.isGroupInvite(user) || this.isProjectInvite(user);
     },
-    hideCodeSuggestionsAddOnPurchaseFetchError() {
-      this.codeSuggestionsAddOnPurchaseFetchError = undefined;
+    handleAddOnAssignmentError(error) {
+      this.codeSuggestionsAddOnError = error;
+    },
+    hideCodeSuggestionsAddOnError() {
+      this.codeSuggestionsAddOnError = undefined;
     },
   },
   i18n: {
@@ -180,6 +186,7 @@ export default {
   cannotRemoveModalTitle: CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_TITLE,
   cannotRemoveModalText: CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT,
   sortOptions: SORT_OPTIONS,
+  addOnErrorDictionary: ADD_ON_ERROR_DICTIONARY,
 };
 </script>
 
@@ -204,14 +211,13 @@ export default {
       </gl-button>
     </div>
 
-    <gl-alert
-      v-if="codeSuggestionsAddOnPurchaseFetchError"
-      data-testid="addon-purchase-fetch-error"
-      variant="danger"
-      @dismiss="hideCodeSuggestionsAddOnPurchaseFetchError"
-    >
-      {{ codeSuggestionsAddOnPurchaseFetchError }}
-    </gl-alert>
+    <error-alert
+      v-if="codeSuggestionsAddOnError"
+      :error="codeSuggestionsAddOnError"
+      :error-dictionary="$options.addOnErrorDictionary"
+      :dismissible="true"
+      @dismiss="hideCodeSuggestionsAddOnError"
+    />
 
     <gl-table
       :items="tableItems"
@@ -282,6 +288,7 @@ export default {
           :user-id="item.user.id"
           :add-ons="item.user.add_ons"
           :add-on-purchase-id="addOnPurchase.id"
+          @handleAddOnAssignmentError="handleAddOnAssignmentError"
         />
       </template>
 

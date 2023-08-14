@@ -103,6 +103,7 @@ describe('App component', () => {
           error,
           errorDictionary: PURCHASE_ERROR_DICTIONARY,
           defaultError: CONTACT_SUPPORT_DEFAULT_MESSAGE,
+          dismissible: false,
         });
       });
 

@@ -79,9 +79,6 @@ export const REMOVE_BILLABLE_MEMBER_MODAL_CONTENT_TEXT_TEMPLATE = s__(
 If you continue, the user will be removed from the %{namespace}
 group and all its subgroups and projects. This action can't be undone.`,
 );
-export const CODE_SUGGESTIONS_ADDON_PURCHASE_FETCH_ERROR = s__(
-  'Billing|An error occurred while loading details for the Code Suggestions add-on.',
-);
 export const AVATAR_SIZE = 32;
 export const SORT_OPTIONS = [
   {

@@ -25,6 +25,11 @@ export default {
       required: false,
       default: () => {},
     },
+    dismissible: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   computed: {
     friendlyError() {
@@ -37,7 +42,13 @@ export default {
 };
 </script>
 <template>
-  <gl-alert v-if="error" variant="danger" :dismissible="false">
+  <gl-alert
+    v-if="error"
+    variant="danger"
+    :title="friendlyError.title"
+    :dismissible="dismissible"
+    @dismiss="$emit('dismiss')"
+  >
     <span v-safe-html="friendlyErrorMessage"></span>
   </gl-alert>
 </template>
