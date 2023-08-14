@@ -22,6 +22,8 @@ FactoryBot.define do
       )
 
       occurrence.package_manager = occurrence.source&.source&.dig('package_manager', 'name')
+      occurrence.input_file_path = occurrence.source&.source&.dig('input_file', 'path')
+      occurrence.component_name = occurrence.component&.name
     end
   end
 end

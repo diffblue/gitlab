@@ -134,21 +134,21 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     context 'with unrelated group' do
       let_it_be(:unrelated_group) { create(:group) }
 
-      it 'returns empty array' do
-        result = described_class.filter_by_search_with_component_and_group('file', component.id, unrelated_group)
-
-        expect(result).to be_empty
+      subject do
+        described_class.filter_by_search_with_component_and_group('file', component.id, unrelated_group)
       end
+
+      it { is_expected.to be_empty }
     end
 
     context 'with unrelated component' do
       let_it_be(:unrelated_component) { create(:sbom_component) }
 
-      it 'returns empty array' do
-        result = described_class.filter_by_search_with_component_and_group('file', unrelated_component.id, group)
-
-        expect(result).to be_empty
+      subject do
+        described_class.filter_by_search_with_component_and_group('file', unrelated_component.id, group)
       end
+
+      it { is_expected.to be_empty }
     end
   end
 
