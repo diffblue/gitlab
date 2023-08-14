@@ -50,7 +50,7 @@ RSpec.describe EE::Namespace::RootStorageStatistics, feature_category: :consumab
 
         total_wiki_size = project_stat1.wiki_size + project_stat2.wiki_size + root_namespace_stat.wiki_size +
           group1_namespace_stat.wiki_size + group2_namespace_stat.wiki_size + subgroup1_namespace_stat.wiki_size
-        total_storage_size = project_stat1.storage_size + project_stat2.storage_size +
+        total_storage_size = project_stat1.reload.storage_size + project_stat2.reload.storage_size +
           root_namespace_stat.storage_size + group1_namespace_stat.storage_size +
           group2_namespace_stat.storage_size + subgroup1_namespace_stat.storage_size
 
@@ -66,7 +66,7 @@ RSpec.describe EE::Namespace::RootStorageStatistics, feature_category: :consumab
         root_storage_statistics.reload
 
         total_wiki_size = project_stat1.wiki_size + project_stat2.wiki_size
-        total_storage_size = project_stat1.storage_size + project_stat2.storage_size
+        total_storage_size = project_stat1.reload.storage_size + project_stat2.reload.storage_size
 
         expect(root_storage_statistics.storage_size).to eq(total_storage_size)
         expect(root_storage_statistics.wiki_size).to eq(total_wiki_size)
@@ -87,7 +87,7 @@ RSpec.describe EE::Namespace::RootStorageStatistics, feature_category: :consumab
 
         root_storage_statistics.reload
 
-        expect(root_storage_statistics.storage_size).to eq(project_stat.storage_size)
+        expect(root_storage_statistics.storage_size).to eq(project_stat.reload.storage_size)
         expect(root_storage_statistics.wiki_size).to eq(project_stat.wiki_size)
       end
     end

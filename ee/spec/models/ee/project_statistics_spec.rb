@@ -5,11 +5,11 @@ require 'spec_helper'
 RSpec.describe ProjectStatistics do
   using RSpec::Parameterized::TableSyntax
 
-  describe '#update_storage_size' do
-    let_it_be(:project) { create(:project) }
-    let_it_be(:statistics) { project.statistics }
-    let_it_be(:other_sizes) { 3 }
-    let_it_be(:uploads_size) { 5 }
+  describe '#refresh_storage_size!' do
+    let_it_be_with_reload(:project) { create(:project) }
+    let(:statistics) { project.statistics }
+    let(:other_sizes) { 3 }
+    let(:uploads_size) { 5 }
 
     context 'when should_check_namespace_plan? returns true' do
       before do
@@ -75,7 +75,7 @@ RSpec.describe ProjectStatistics do
         it 'equals the storage size' do
           statistics = create_fork(plan: plan, fork_visibility: fork_visibility, repository_size: 500)
 
-          expect(statistics.cost_factored_storage_size).to eq(500)
+          expect(statistics.reload.cost_factored_storage_size).to eq(500)
         end
       end
     end
@@ -101,14 +101,14 @@ RSpec.describe ProjectStatistics do
         it 'returns the storage size with the cost factor applied' do
           statistics = create_fork(plan: plan, fork_visibility: fork_visibility, repository_size: 100)
 
-          expect(statistics.cost_factored_storage_size).to eq(10)
+          expect(statistics.reload.cost_factored_storage_size).to eq(10)
         end
       end
 
       it 'returns the storage size if the fork namespace is free and the fork is private' do
         statistics = create_fork(plan: :free_plan, fork_visibility: :private, repository_size: 300)
 
-        expect(statistics.cost_factored_storage_size).to eq(300)
+        expect(statistics.reload.cost_factored_storage_size).to eq(300)
       end
 
       it 'returns the storage size with the cost factor applied for a fork in a subgroup' do
@@ -120,7 +120,7 @@ RSpec.describe ProjectStatistics do
         statistics = project_fork.statistics.reload
         statistics.update!(repository_size: 650)
 
-        expect(statistics.cost_factored_storage_size).to eq(65)
+        expect(statistics.reload.cost_factored_storage_size).to eq(65)
       end
 
       it 'returns the storage size if the project is not a fork' do
@@ -129,13 +129,13 @@ RSpec.describe ProjectStatistics do
         statistics = project.statistics.reload
         statistics.update!(repository_size: 200)
 
-        expect(statistics.cost_factored_storage_size).to eq(200)
+        expect(statistics.reload.cost_factored_storage_size).to eq(200)
       end
 
       it 'rounds to the nearest integer' do
         statistics = create_fork(plan: :free_plan, fork_visibility: :public, repository_size: 305)
 
-        expect(statistics.cost_factored_storage_size).to eq(31)
+        expect(statistics.reload.cost_factored_storage_size).to eq(31)
       end
     end
 
