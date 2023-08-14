@@ -40,6 +40,7 @@ module API
         {
           'X-Gitlab-Instance-Id' => instance_id,
           'X-Gitlab-Global-User-Id' => user_id,
+          'X-Gitlab-Realm' => gitlab_realm,
           'X-Gitlab-Authentication-Type' => 'oidc',
           'Authorization' => "Bearer #{gateway_token}",
           'Content-Type' => 'application/json',
@@ -50,6 +51,9 @@ module API
       # In case the request was proxied from the self-managed instance,
       # we have an extra check on Gitlab.com if FF is enabled for self-managed admin.
       # The FF is used for gradual rollout for handpicked self-managed customers interested to use code suggestions.
+      #
+      # NOTE: This code path is being phased out as part of working towards GA for code suggestions.
+      # See https://gitlab.com/groups/gitlab-org/-/epics/11114
       def access_code_suggestions_when_proxied_to_saas?
         proxied = proxied?
 
@@ -63,9 +67,13 @@ module API
       end
 
       def gitlab_realm
+        # NOTE: This code path is being phased out as part of working towards GA for code suggestions.
+        # See https://gitlab.com/groups/gitlab-org/-/epics/11114
         return Gitlab::CodeSuggestions::AccessToken::GITLAB_REALM_SELF_MANAGED if proxied?
 
-        Gitlab::CodeSuggestions::AccessToken::GITLAB_REALM_SAAS
+        return Gitlab::CodeSuggestions::AccessToken::GITLAB_REALM_SAAS if Gitlab.org_or_com?
+
+        Gitlab::CodeSuggestions::AccessToken::GITLAB_REALM_SELF_MANAGED
       end
 
       def completions_endpoint
