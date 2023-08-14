@@ -7,13 +7,19 @@ module Dependencies
 
     belongs_to :project
     belongs_to :group
+    belongs_to :pipeline, class_name: 'Ci::Pipeline'
     belongs_to :author, class_name: 'User', foreign_key: :user_id, inverse_of: :dependency_list_exports
 
-    validates :project, presence: true, unless: :group
-    validates :group, presence: true, unless: :project
     validates :status, presence: true
     validates :file, presence: true, if: :finished?
+    validates :export_type, presence: true
+
     validate :only_one_exportable
+
+    enum export_type: {
+      json: 0,
+      sbom: 1
+    }
 
     state_machine :status, initial: :created do
       state :created, value: 0
@@ -43,7 +49,7 @@ module Dependencies
     end
 
     def exportable
-      project || group
+      pipeline || project || group
     end
 
     def exportable=(value)
@@ -52,6 +58,8 @@ module Dependencies
         make_project_level_export(value)
       when Group
         make_group_level_export(value)
+      when Ci::Pipeline
+        make_pipeline_level_export(value)
       else
         raise "Can not assign #{value.class} as exportable"
       end
@@ -62,15 +70,23 @@ module Dependencies
     def make_project_level_export(project)
       self.project = project
       self.group = nil
+      self.pipeline = nil
     end
 
     def make_group_level_export(group)
       self.project = nil
       self.group = group
+      self.pipeline = nil
+    end
+
+    def make_pipeline_level_export(pipeline)
+      self.project = nil
+      self.group = nil
+      self.pipeline = pipeline
     end
 
     def only_one_exportable
-      errors.add(:base, _('Project & Group can not be assigned at the same time')) if project && group
+      errors.add(:base, 'Only one exportable is required') unless [project, group, pipeline].one?
     end
   end
 end
