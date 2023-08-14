@@ -1,7 +1,7 @@
 import { GlModal, GlLink, GlIntersperse } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
-
+import { shallowMount, createWrapper } from '@vue/test-utils';
 import DependenciesLicenseLinks from 'ee/dependencies/components/dependency_license_links.vue';
+import { BV_SHOW_MODAL } from '~/lib/utils/constants';
 
 describe('DependencyLicenseLinks component', () => {
   // data helpers
@@ -113,10 +113,10 @@ describe('DependencyLicenseLinks component', () => {
     const modalId = wrapper.findComponent(GlModal).props('modalId');
     const modalTrigger = findModalTrigger();
 
-    const rootEmit = jest.spyOn(wrapper.vm.$root, '$emit');
+    const rootWrapper = createWrapper(wrapper.vm.$root);
 
     modalTrigger.trigger('click');
-    expect(rootEmit.mock.calls[0]).toContain(modalId);
+    expect(rootWrapper.emitted(BV_SHOW_MODAL)[0]).toContain(modalId);
   });
 
   it('assigns a unique modal-id to each of its instances', () => {
