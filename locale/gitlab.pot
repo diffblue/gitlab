@@ -55017,6 +55017,9 @@ msgstr ""
 msgid "can not be changed when assigned to an epic"
 msgstr ""
 
+msgid "can not be set for template labels"
+msgstr ""
+
 msgid "can not be set for this resource"
 msgstr ""
 
