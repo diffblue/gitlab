@@ -30,5 +30,7 @@ module PackageMetadata
         record.errors.add(url, "size is greater than #{MAX_URL_SIZE}") if url.size > MAX_URL_SIZE
       end
     end
+
+    scope :with_affected_packages, -> { includes(:affected_packages) }
   end
 end
