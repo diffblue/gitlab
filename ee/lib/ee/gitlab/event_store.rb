@@ -33,6 +33,7 @@ module EE
           store.subscribe ::Search::ElasticDefaultBranchChangedWorker,
             to: ::Repositories::DefaultBranchChangedEvent,
             if: -> (_) { ::Gitlab::CurrentSettings.elasticsearch_indexing? }
+          store.subscribe ::PackageMetadata::AdvisoryScanWorker, to: ::PackageMetadata::IngestedAdvisoryEvent
         end
       end
     end
