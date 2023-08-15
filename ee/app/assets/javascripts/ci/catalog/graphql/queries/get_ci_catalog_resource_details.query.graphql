@@ -7,6 +7,21 @@ query getCiCatalogResourceDetails($id: CiCatalogResourceID!) {
     versions(first: 1) {
       nodes {
         id
+        commit {
+          id
+          pipelines(first: 1) {
+            nodes {
+              id
+              detailedStatus {
+                id
+                detailsPath
+                icon
+                text
+                group
+              }
+            }
+          }
+        }
         tagName
         releasedAt
       }
