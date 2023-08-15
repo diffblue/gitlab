@@ -283,42 +283,30 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
         context 'with denied policy' do
           let(:denied_policy) { build(:software_license_policy, :denied, software_license: apache) }
+          let(:merge_request) { create(:ee_merge_request, :with_cyclonedx_reports, source_project: project) }
 
           before do
             project.software_license_policies << denied_policy
             synchronous_reactive_cache(merge_request)
           end
 
-          context 'when the license_scanning_sbom_scanner feature flag is disabled' do
+          context 'when querying uncompressed package metadata' do
             before do
-              stub_feature_flags(license_scanning_sbom_scanner: false)
+              stub_feature_flags(compressed_package_metadata_query: false)
+              create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem",
+                version: "1.8.0", license_name: "Apache-2.0")
             end
 
             it { is_expected.to be_truthy }
           end
 
-          context 'when the license_scanning_sbom_scanner feature flag is enabled' do
-            let(:merge_request) { create(:ee_merge_request, :with_cyclonedx_reports, source_project: project) }
-            let(:denied_policy) { build(:software_license_policy, :denied, software_license: build(:software_license, :apache_2_0)) }
-
-            context 'when querying uncompressed package metadata' do
-              before do
-                stub_feature_flags(compressed_package_metadata_query: false)
-                create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem",
-                  version: "1.8.0", license_name: "Apache-2.0")
-              end
-
-              it { is_expected.to be_truthy }
+          context 'when querying compressed package metadata' do
+            before do
+              create(:pm_package, name: "nokogiri", purl_type: "gem",
+                other_licenses: [{ license_names: ["Apache-2.0"], versions: ["1.8.0"] }])
             end
 
-            context 'when querying compressed package metadata' do
-              before do
-                create(:pm_package, name: "nokogiri", purl_type: "gem",
-                  other_licenses: [{ license_names: ["Apache-2.0"], versions: ["1.8.0"] }])
-              end
-
-              it { is_expected.to be_truthy }
-            end
+            it { is_expected.to be_truthy }
           end
 
           context 'with disabled licensed feature' do
@@ -333,42 +321,32 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
             let!(:license_check) { create(:report_approver_rule, :license_scanning, merge_request: merge_request) }
 
             context 'when rule is not approved' do
+              let(:merge_request) { create(:ee_merge_request, :with_cyclonedx_reports, source_project: project) }
+              let(:denied_policy) { build(:software_license_policy, :denied, software_license: build(:software_license, :apache_2_0)) }
+
               before do
                 allow_any_instance_of(ApprovalWrappedRule).to receive(:approved?).and_return(false)
               end
 
-              context 'when the license_scanning_sbom_scanner feature flag is disabled' do
+              context 'when querying uncompressed package metadata' do
                 before do
-                  stub_feature_flags(license_scanning_sbom_scanner: false)
+                  stub_feature_flags(compressed_package_metadata_query: false)
+                  create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem",
+                    version: "1.8.0", license_name: "Apache-2.0")
                 end
 
                 it { is_expected.to be_truthy }
               end
 
-              context 'when the license_scanning_sbom_scanner feature flag is enabled' do
-                let(:merge_request) { create(:ee_merge_request, :with_cyclonedx_reports, source_project: project) }
-                let(:denied_policy) { build(:software_license_policy, :denied, software_license: build(:software_license, :apache_2_0)) }
-
-                context 'when querying uncompressed package metadata' do
-                  before do
-                    stub_feature_flags(compressed_package_metadata_query: false)
-                    create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem",
-                      version: "1.8.0", license_name: "Apache-2.0")
-                  end
-
-                  it { is_expected.to be_truthy }
+              context 'when querying compressed package metadata' do
+                before do
+                  create(
+                    :pm_package, name: "nokogiri", purl_type: "gem",
+                    other_licenses: [{ license_names: ["Apache-2.0"], versions: ["1.8.0"] }]
+                  )
                 end
 
-                context 'when querying compressed package metadata' do
-                  before do
-                    create(
-                      :pm_package, name: "nokogiri", purl_type: "gem",
-                      other_licenses: [{ license_names: ["Apache-2.0"], versions: ["1.8.0"] }]
-                    )
-                  end
-
-                  it { is_expected.to be_truthy }
-                end
+                it { is_expected.to be_truthy }
               end
             end
 
@@ -377,17 +355,7 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
                 allow_any_instance_of(ApprovalWrappedRule).to receive(:approved?).and_return(true)
               end
 
-              context 'when the license_scanning_sbom_scanner feature flag is disabled' do
-                before do
-                  stub_feature_flags(license_scanning_sbom_scanner: false)
-                end
-
-                it { is_expected.to be_falsey }
-              end
-
-              context 'when the license_scanning_sbom_scanner feature flag is enabled' do
-                it { is_expected.to be_falsey }
-              end
+              it { is_expected.to be_falsey }
             end
           end
         end
@@ -396,18 +364,15 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
   end
 
   describe '#enabled_reports' do
-    where(:report_type, :with_reports, :enable_license_scanning_sbom_scanner?, :feature) do
-      :sast                | [:with_sast_reports]                                       | false | :sast
-      :container_scanning  | [:with_container_scanning_reports]                         | false | :container_scanning
-      :dast                | [:with_dast_reports]                                       | false | :dast
-      :dependency_scanning | [:with_dependency_scanning_reports]                        | false | :dependency_scanning
-      :license_scanning    | [:with_license_scanning_reports]                           | false | :license_scanning
-      :license_scanning    | [:with_license_scanning_reports]                           | true  | :license_scanning
-      :license_scanning    | [:with_license_scanning_reports, :with_cyclonedx_reports]  | true  | :license_scanning
-      :license_scanning    | [:with_cyclonedx_reports]                                  | true  | :license_scanning
-      :coverage_fuzzing    | [:with_coverage_fuzzing_reports]                           | false | :coverage_fuzzing
-      :secret_detection    | [:with_secret_detection_reports]                           | false | :secret_detection
-      :api_fuzzing         | [:with_api_fuzzing_reports]                                | false | :api_fuzzing
+    where(:report_type, :with_reports, :feature) do
+      :sast                | [:with_sast_reports]                                       | :sast
+      :container_scanning  | [:with_container_scanning_reports]                         | :container_scanning
+      :dast                | [:with_dast_reports]                                       | :dast
+      :dependency_scanning | [:with_dependency_scanning_reports]                        | :dependency_scanning
+      :license_scanning    | [:with_cyclonedx_reports]                                  | :license_scanning
+      :coverage_fuzzing    | [:with_coverage_fuzzing_reports]                           | :coverage_fuzzing
+      :secret_detection    | [:with_secret_detection_reports]                           | :secret_detection
+      :api_fuzzing         | [:with_api_fuzzing_reports]                                | :api_fuzzing
     end
 
     with_them do
@@ -415,7 +380,6 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
       before do
         stub_licensed_features({ feature => true })
-        stub_feature_flags(license_scanning_sbom_scanner: enable_license_scanning_sbom_scanner?)
       end
 
       context "when head pipeline has reports" do
@@ -815,7 +779,7 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     let!(:base_pipeline) do
       create(
         :ee_ci_pipeline,
-        :with_license_scanning_report,
+        :with_cyclonedx_report,
         project: project,
         ref: merge_request.target_branch,
         sha: merge_request.diff_base_sha
@@ -823,15 +787,14 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     end
 
     before do
-      stub_feature_flags(license_scanning_sbom_scanner: false)
       merge_request.update!(head_pipeline_id: head_pipeline.id)
     end
 
-    context 'when head pipeline has license scanning reports' do
+    context 'when head pipeline has cyclonedx reports' do
       let!(:head_pipeline) do
         create(
           :ee_ci_pipeline,
-          :with_license_scanning_report,
+          :with_cyclonedx_report,
           project: project,
           ref: merge_request.source_branch,
           sha: merge_request.diff_head_sha
@@ -881,7 +844,7 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
       end
     end
 
-    context 'when head pipeline does not have license scanning reports' do
+    context 'when head pipeline does not have cyclonedx reports' do
       let!(:head_pipeline) do
         create(
           :ci_pipeline,
@@ -897,24 +860,24 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
       end
     end
 
-    context "when a license scan report is produced from the head pipeline" do
+    context "when a cyclonedx report is produced from the head pipeline" do
       where(:pipeline_status, :build_types, :expected_status) do
         [
-          [:blocked, [:license_scan_v2_1], :parsed],
           [:blocked, [:container_scanning], :error],
-          [:blocked, [:license_scan_v2_1, :container_scanning], :parsed],
+          [:blocked, [:cyclonedx], :parsed],
+          [:blocked, [:cyclonedx, :container_scanning], :parsed],
           [:blocked, [], :error],
           [:failed, [:container_scanning], :error],
-          [:failed, [:license_scan_v2_1], :parsed],
-          [:failed, [:license_scan_v2_1, :container_scanning], :parsed],
+          [:failed, [:cyclonedx], :parsed],
+          [:failed, [:cyclonedx, :container_scanning], :parsed],
           [:failed, [], :error],
           [:running, [:container_scanning], :error],
-          [:running, [:license_scan_v2_1], :parsed],
-          [:running, [:license_scan_v2_1, :container_scanning], :parsed],
+          [:running, [:cyclonedx], :parsed],
+          [:running, [:cyclonedx, :container_scanning], :parsed],
           [:running, [], :error],
           [:success, [:container_scanning], :error],
-          [:success, [:license_scan_v2_1], :parsed],
-          [:success, [:license_scan_v2_1, :container_scanning], :parsed],
+          [:success, [:cyclonedx], :parsed],
+          [:success, [:cyclonedx, :container_scanning], :parsed],
           [:success, [], :error]
         ]
       end
@@ -959,10 +922,6 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     context 'when service can be executed' do
       before do
         merge_request.update!(head_pipeline_id: head_pipeline.id)
-
-        allow_next_instance_of(::Gitlab::LicenseScanning::ArtifactScanner) do |scanner|
-          allow(scanner).to receive(:results_available?).and_return(true)
-        end
 
         allow_next_instance_of(::Gitlab::LicenseScanning::SbomScanner) do |scanner|
           allow(scanner).to receive(:results_available?).and_return(true)

@@ -54,21 +54,19 @@ RSpec.describe API::Dependencies, feature_category: :dependency_management do
           expect(vulnerability['url']).to end_with(path)
         end
 
-        context 'when the license_scanning_sbom_scanner feature flag is false' do
+        context 'without cyclonedx report' do
           before_all do
-            stub_feature_flags(license_scanning_sbom_scanner: false)
             create(:ee_ci_build, :success, :license_scanning, pipeline: pipeline)
           end
 
-          it 'include license information to response' do
-            license = json_response.find { |dep| dep['name'] == 'nokogiri' }['licenses'][0]
+          it 'does not include license information to response' do
+            licenses = json_response.find { |dep| dep['name'] == 'nokogiri' }['licenses']
 
-            expect(license['name']).to eq('MIT')
-            expect(license['url']).to eq('http://opensource.org/licenses/mit-license')
+            expect(licenses).to be_empty
           end
         end
 
-        context 'when the license_scanning_sbom_scanner feature flag is true' do
+        context 'with cyclonedx report' do
           context 'when querying uncompressed package metadata' do
             before_all do
               stub_feature_flags(compressed_package_metadata_query: false)

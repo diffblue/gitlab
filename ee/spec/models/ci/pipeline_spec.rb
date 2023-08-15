@@ -363,20 +363,14 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
     context 'when pipeline has a build with dependency list reports' do
       let_it_be(:build) { create(:ee_ci_build, :success, :dependency_list, pipeline: pipeline, project: project) }
       let_it_be(:build1) { create(:ee_ci_build, :success, :dependency_scanning, pipeline: pipeline, project: project) }
-      let_it_be(:build2) { create(:ee_ci_build, :success, :license_scanning, pipeline: pipeline, project: project) }
+      let_it_be(:build2) { create(:ee_ci_build, :success, :cyclonedx, pipeline: pipeline, project: project) }
 
-      context 'when the license_scanning_sbom_scanner feature flag is false' do
-        before do
-          stub_feature_flags(license_scanning_sbom_scanner: false)
-        end
+      it 'returns a dependency list report with collected data' do
+        mini_portile2 = subject.dependencies.find { |x| x[:name] == 'mini_portile2' }
 
-        it 'returns a dependency list report with collected data' do
-          mini_portile2 = subject.dependencies.find { |x| x[:name] == 'mini_portile2' }
-
-          expect(subject.dependencies.count).to eq(21)
-          expect(mini_portile2[:name]).not_to be_empty
-          expect(mini_portile2[:licenses]).to be_empty
-        end
+        expect(subject.dependencies.count).to eq(21)
+        expect(mini_portile2[:name]).not_to be_empty
+        expect(mini_portile2[:licenses]).to be_empty
       end
 
       context 'when builds are retried' do

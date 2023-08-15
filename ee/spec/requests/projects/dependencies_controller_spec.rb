@@ -166,15 +166,18 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
           end
         end
 
-        context 'with found license report' do
+        context 'with found cyclonedx report' do
           let(:user) { developer }
           let(:pipeline) { create(:ee_ci_pipeline, :with_dependency_list_report, project: project) }
 
-          context 'when the license_scanning_sbom_scanner feature flag is false' do
-            let(:build) { create(:ee_ci_build, :success, :license_scanning, pipeline: pipeline) }
+          let(:build) { create(:ee_ci_build, :success, :cyclonedx, pipeline: pipeline) }
 
+          context 'when querying uncompressed package metadata' do
             before do
-              stub_feature_flags(license_scanning_sbom_scanner: false)
+              stub_feature_flags(compressed_package_metadata_query: false)
+
+              create(:pm_package_version_license, :with_all_relations,
+                name: "nokogiri", purl_type: "gem", version: "1.8.0", license_name: "BSD")
 
               pipeline.builds << build
               get project_dependencies_path(project, format: :json)
@@ -182,57 +185,33 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
 
             it 'includes license information in response' do
               nokogiri = json_response['dependencies'].find { |dep| dep['name'] == 'nokogiri' }
-              url = "http://opensource.org/licenses/mit-license"
+              url = "https://spdx.org/licenses/BSD.html"
 
-              expect(nokogiri['licenses'])
-                .to include({ "name" => "MIT", "url" => url })
+              expect(nokogiri['licenses']).to include({ "name" => "BSD-4-Clause", "url" => url })
             end
           end
 
-          context 'when the license_scanning_sbom_scanner feature flag is true' do
-            let(:build) { create(:ee_ci_build, :success, :cyclonedx, pipeline: pipeline) }
+          context 'when querying compressed package metadata' do
+            before do
+              create(:pm_package, name: "nokogiri", purl_type: "gem",
+                other_licenses: [{ license_names: ["BSD"], versions: ["1.8.0"] }])
 
-            context 'when querying uncompressed package metadata' do
-              before do
-                stub_feature_flags(compressed_package_metadata_query: false)
-
-                create(:pm_package_version_license, :with_all_relations,
-                  name: "nokogiri", purl_type: "gem", version: "1.8.0", license_name: "BSD")
-
-                pipeline.builds << build
-                get project_dependencies_path(project, format: :json)
-              end
-
-              it 'includes license information in response' do
-                nokogiri = json_response['dependencies'].find { |dep| dep['name'] == 'nokogiri' }
-                url = "https://spdx.org/licenses/BSD.html"
-
-                expect(nokogiri['licenses']).to include({ "name" => "BSD-4-Clause", "url" => url })
-              end
+              pipeline.builds << build
+              get project_dependencies_path(project, format: :json)
             end
 
-            context 'when querying compressed package metadata' do
-              before do
-                create(:pm_package, name: "nokogiri", purl_type: "gem",
-                  other_licenses: [{ license_names: ["BSD"], versions: ["1.8.0"] }])
+            it 'includes license information in response' do
+              nokogiri = json_response['dependencies'].find { |dep| dep['name'] == 'nokogiri' }
+              url = "https://spdx.org/licenses/BSD.html"
 
-                pipeline.builds << build
-                get project_dependencies_path(project, format: :json)
-              end
-
-              it 'includes license information in response' do
-                nokogiri = json_response['dependencies'].find { |dep| dep['name'] == 'nokogiri' }
-                url = "https://spdx.org/licenses/BSD.html"
-
-                expect(nokogiri['licenses']).to include({ "name" => "BSD-4-Clause", "url" => url })
-              end
+              expect(nokogiri['licenses']).to include({ "name" => "BSD-4-Clause", "url" => url })
             end
           end
         end
 
         context 'with a report of the wrong type' do
           let(:user) { developer }
-          let!(:pipeline) { create(:ee_ci_pipeline, :with_sast_report, project: project) }
+          let!(:pipeline) { create(:ee_ci_pipeline, :with_license_scanning_report, project: project) }
 
           before do
             get project_dependencies_path(project, format: :json)

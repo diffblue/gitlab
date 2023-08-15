@@ -70,11 +70,21 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
           end
 
           context 'with existing report' do
-            context 'when the license_scanning_sbom_scanner feature flag is disabled' do
-              let_it_be(:pipeline) { create(:ci_pipeline, project: project, status: :success, builds: [create(:ee_ci_build, :success, :license_scan_v2_1)]) }
+            context 'when querying uncompressed package metadata' do
+              let_it_be(:pipeline) { create(:ee_ci_pipeline, status: :success, project: project, builds: [create(:ee_ci_build, :success, :cyclonedx)]) }
 
               before do
-                stub_feature_flags(license_scanning_sbom_scanner: false)
+                stub_feature_flags(compressed_package_metadata_query: false)
+
+                create(:pm_package_version_license, :with_all_relations, name: "activesupport",
+                  purl_type: "gem", version: "5.1.4", license_name: "MIT")
+                create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus",
+                  purl_type: "golang", version: "v1.4.2", license_name: "MIT")
+                create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus",
+                  purl_type: "golang", version: "v1.4.2", license_name: "BSD-3-Clause")
+                create(:pm_package_version_license, :with_all_relations, name: "org.apache.logging.log4j/log4j-api",
+                  purl_type: "maven", version: "2.6.1", license_name: "BSD-3-Clause")
+
                 get_licenses
               end
 
@@ -87,23 +97,24 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
                 expect(json_response['licenses'][0]).to include({
                   'id' => nil,
                   'classification' => 'unclassified',
-                  'name' => "BSD 3-Clause \"New\" or \"Revised\" License",
+                  'name' => 'BSD-3-Clause',
                   'spdx_identifier' => "BSD-3-Clause",
-                  'url' => "https://opensource.org/licenses/BSD-3-Clause",
-                  'components' => [
+                  'url' => "https://spdx.org/licenses/BSD-3-Clause.html",
+                  # TODO: figure out if order is important here
+                  'components' => match_array([
                     {
-                      "name" => "b",
-                      "package_manager" => "yarn",
-                      "version" => "0.1.0",
-                      "blob_path" => project_blob_path(project, "#{project.default_branch}/yarn.lock")
+                      "name" => "github.com/sirupsen/logrus",
+                      "package_manager" => nil,
+                      "version" => "v1.4.2",
+                      "blob_path" => %r{^/namespace\d+/project-\d+/-/blob/master/go.sum$}
                     },
                     {
-                      "name" => "c",
-                      "package_manager" => "bundler",
-                      "version" => "1.1.0",
-                      "blob_path" => project_blob_path(project, "#{project.default_branch}/Gemfile.lock")
+                      "name" => "org.apache.logging.log4j/log4j-api",
+                      "package_manager" => nil,
+                      "version" => "2.6.1",
+                      "blob_path" => nil
                     }
-                  ]
+                  ])
                 })
               end
 
@@ -124,484 +135,243 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
               end
             end
 
-            context 'when the license_scanning_sbom_scanner feature flag is enabled' do
-              context 'when querying uncompressed package metadata' do
-                let_it_be(:pipeline) { create(:ee_ci_pipeline, status: :success, project: project, builds: [create(:ee_ci_build, :success, :cyclonedx)]) }
+            context 'when querying compressed package metadata' do
+              let_it_be(:pipeline) { create(:ee_ci_pipeline, status: :success, project: project, builds: [create(:ee_ci_build, :success, :cyclonedx)]) }
 
-                before do
-                  stub_feature_flags(compressed_package_metadata_query: false)
+              before do
+                create(:pm_package, name: "activesupport", purl_type: "gem",
+                  other_licenses: [{ license_names: ["MIT"], versions: ["5.1.4"] }])
+                create(:pm_package, name: "github.com/sirupsen/logrus", purl_type: "golang",
+                  other_licenses: [{ license_names: ["MIT", "BSD-3-Clause"], versions: ["v1.4.2"] }])
+                create(:pm_package, name: "org.apache.logging.log4j/log4j-api", purl_type: "maven",
+                  other_licenses: [{ license_names: ["BSD-3-Clause"], versions: ["2.6.1"] }])
 
-                  create(:pm_package_version_license, :with_all_relations, name: "activesupport",
-                    purl_type: "gem", version: "5.1.4", license_name: "MIT")
-                  create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus",
-                    purl_type: "golang", version: "v1.4.2", license_name: "MIT")
-                  create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus",
-                    purl_type: "golang", version: "v1.4.2", license_name: "BSD-3-Clause")
-                  create(:pm_package_version_license, :with_all_relations, name: "org.apache.logging.log4j/log4j-api",
-                    purl_type: "maven", version: "2.6.1", license_name: "BSD-3-Clause")
-
-                  get_licenses
-                end
-
-                it 'returns success code' do
-                  expect(response).to have_gitlab_http_status(:ok)
-                end
-
-                it 'returns a hash with licenses sorted by name' do
-                  expect(json_response['licenses'].length).to eq(3)
-                  expect(json_response['licenses'][0]).to include({
-                    'id' => nil,
-                    'classification' => 'unclassified',
-                    'name' => 'BSD-3-Clause',
-                    'spdx_identifier' => "BSD-3-Clause",
-                    'url' => "https://spdx.org/licenses/BSD-3-Clause.html",
-                    # TODO: figure out if order is important here
-                    'components' => match_array([
-                      {
-                        "name" => "github.com/sirupsen/logrus",
-                        "package_manager" => nil,
-                        "version" => "v1.4.2",
-                        "blob_path" => %r{^/namespace\d+/project-\d+/-/blob/master/go.sum$}
-                      },
-                      {
-                        "name" => "org.apache.logging.log4j/log4j-api",
-                        "package_manager" => nil,
-                        "version" => "2.6.1",
-                        "blob_path" => nil
-                      }
-                    ])
-                  })
-                end
-
-                it 'returns status ok' do
-                  expect(json_response['report']['status']).to eq('ok')
-                end
-
-                it 'includes the pagination headers' do
-                  expect(response).to include_pagination_headers
-                end
-
-                context 'with pagination params' do
-                  let(:params) { { namespace_id: project.namespace, project_id: project, per_page: 2, page: 2 } }
-
-                  it 'return only 1 license' do
-                    expect(json_response['licenses'].length).to eq(1)
-                  end
-                end
+                get_licenses
               end
 
-              context 'when querying compressed package metadata' do
-                let_it_be(:pipeline) { create(:ee_ci_pipeline, status: :success, project: project, builds: [create(:ee_ci_build, :success, :cyclonedx)]) }
+              it 'returns success code' do
+                expect(response).to have_gitlab_http_status(:ok)
+              end
 
-                before do
-                  create(:pm_package, name: "activesupport", purl_type: "gem",
-                    other_licenses: [{ license_names: ["MIT"], versions: ["5.1.4"] }])
-                  create(:pm_package, name: "github.com/sirupsen/logrus", purl_type: "golang",
-                    other_licenses: [{ license_names: ["MIT", "BSD-3-Clause"], versions: ["v1.4.2"] }])
-                  create(:pm_package, name: "org.apache.logging.log4j/log4j-api", purl_type: "maven",
-                    other_licenses: [{ license_names: ["BSD-3-Clause"], versions: ["2.6.1"] }])
+              it 'returns a hash with licenses sorted by name' do
+                expect(json_response['licenses'].length).to eq(3)
+                expect(json_response['licenses'][0]).to include({
+                  'id' => nil,
+                  'classification' => 'unclassified',
+                  'name' => 'BSD-3-Clause',
+                  'spdx_identifier' => "BSD-3-Clause",
+                  'url' => "https://spdx.org/licenses/BSD-3-Clause.html",
+                  # TODO: figure out if order is important here
+                  'components' => match_array([
+                    {
+                      "name" => "github.com/sirupsen/logrus",
+                      "package_manager" => nil,
+                      "version" => "v1.4.2",
+                      "blob_path" => %r{^/namespace\d+/project-\d+/-/blob/master/go.sum$}
+                    },
+                    {
+                      "name" => "org.apache.logging.log4j/log4j-api",
+                      "package_manager" => nil,
+                      "version" => "2.6.1",
+                      "blob_path" => nil
+                    }
+                  ])
+                })
+              end
 
-                  get_licenses
-                end
+              it 'returns status ok' do
+                expect(json_response['report']['status']).to eq('ok')
+              end
 
-                it 'returns success code' do
-                  expect(response).to have_gitlab_http_status(:ok)
-                end
+              it 'includes the pagination headers' do
+                expect(response).to include_pagination_headers
+              end
 
-                it 'returns a hash with licenses sorted by name' do
-                  expect(json_response['licenses'].length).to eq(3)
-                  expect(json_response['licenses'][0]).to include({
-                    'id' => nil,
-                    'classification' => 'unclassified',
-                    'name' => 'BSD-3-Clause',
-                    'spdx_identifier' => "BSD-3-Clause",
-                    'url' => "https://spdx.org/licenses/BSD-3-Clause.html",
-                    # TODO: figure out if order is important here
-                    'components' => match_array([
-                      {
-                        "name" => "github.com/sirupsen/logrus",
-                        "package_manager" => nil,
-                        "version" => "v1.4.2",
-                        "blob_path" => %r{^/namespace\d+/project-\d+/-/blob/master/go.sum$}
-                      },
-                      {
-                        "name" => "org.apache.logging.log4j/log4j-api",
-                        "package_manager" => nil,
-                        "version" => "2.6.1",
-                        "blob_path" => nil
-                      }
-                    ])
-                  })
-                end
+              context 'with pagination params' do
+                let(:params) { { namespace_id: project.namespace, project_id: project, per_page: 2, page: 2 } }
 
-                it 'returns status ok' do
-                  expect(json_response['report']['status']).to eq('ok')
-                end
-
-                it 'includes the pagination headers' do
-                  expect(response).to include_pagination_headers
-                end
-
-                context 'with pagination params' do
-                  let(:params) { { namespace_id: project.namespace, project_id: project, per_page: 2, page: 2 } }
-
-                  it 'return only 1 license' do
-                    expect(json_response['licenses'].length).to eq(1)
-                  end
+                it 'return only 1 license' do
+                  expect(json_response['licenses'].length).to eq(1)
                 end
               end
             end
           end
 
           context "when software policies are applied to some of the most recently detected licenses" do
-            context "when the license_scanning_sbom_scanner feature flag is disabled" do
-              let_it_be(:pipeline) { create(:ci_pipeline, project: project, status: :success, builds: [create(:ee_ci_build, :success, :license_scan_v2_1)]) }
-              let_it_be(:mit_policy) { create(:software_license_policy, :denied, software_license: mit_license, project: project) }
-              let_it_be(:other_license) { create(:software_license, spdx_identifier: "Other-Id") }
-              let_it_be(:other_license_policy) { create(:software_license_policy, :allowed, software_license: other_license, project: project) }
+            let_it_be(:pipeline) { create(:ee_ci_pipeline, status: :success, project: project, builds: [create(:ee_ci_build, :success, :cyclonedx)]) }
+            let_it_be(:mit_policy) { create(:software_license_policy, :denied, software_license: mit_license, project: project) }
+            let_it_be(:other_license) { create(:software_license, spdx_identifier: "Other-Id") }
+            let_it_be(:other_license_policy) { create(:software_license_policy, :allowed, software_license: other_license, project: project) }
 
+            before do
+              stub_feature_flags(compressed_package_metadata_query: false)
+
+              create(:pm_package_version_license, :with_all_relations, name: "activesupport", purl_type: "gem", version: "5.1.4", license_name: "MIT")
+              create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "MIT")
+              create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "BSD-3-Clause")
+              create(:pm_package_version_license, :with_all_relations, name: "org.apache.logging.log4j/log4j-api", purl_type: "maven", version: "2.6.1", license_name: "BSD-3-Clause")
+
+              get_licenses
+            end
+
+            context "when loading all policies" do
               before do
-                stub_feature_flags(license_scanning_sbom_scanner: false)
+                get :index, params: {
+                  namespace_id: project.namespace,
+                  project_id: project,
+                  detected: false
+                }, format: :json
               end
 
-              context "when loading all policies" do
-                before do
-                  get :index, params: {
-                    namespace_id: project.namespace,
-                    project_id: project,
-                    detected: false
-                  }, format: :json
-                end
+              it { expect(response).to have_gitlab_http_status(:ok) }
+              it { expect(json_response["licenses"].count).to be(4) }
 
-                it { expect(response).to have_gitlab_http_status(:ok) }
-                it { expect(json_response["licenses"].count).to be(4) }
+              it 'sorts by name by default' do
+                names = json_response['licenses'].map { |x| x['name'] }
 
-                it 'sorts by name by default' do
-                  names = json_response['licenses'].map { |x| x['name'] }
-
-                  expect(names).to eql(['BSD 3-Clause "New" or "Revised" License',
-                    'MIT', other_license.name, 'unknown'])
-                end
-
-                it 'includes a policy for an unclassified and known license that was detected in the scan report' do
-                  expect(json_response.dig("licenses", 0)).to include({
-                    "id" => nil,
-                    "spdx_identifier" => "BSD-3-Clause",
-                    "name" => "BSD 3-Clause \"New\" or \"Revised\" License",
-                    "url" => "https://opensource.org/licenses/BSD-3-Clause",
-                    "classification" => "unclassified"
-                  })
-                end
-
-                it 'includes a policy for a denied license found in the scan report' do
-                  expect(json_response.dig("licenses", 1)).to include({
-                    "id" => mit_policy.id,
-                    "spdx_identifier" => "MIT",
-                    "name" => mit_license.name,
-                    "url" => "https://opensource.org/licenses/MIT",
-                    "classification" => "denied"
-                  })
-                end
-
-                it 'includes a policy for an allowed license NOT found in the latest scan report' do
-                  expect(json_response.dig("licenses", 2)).to include({
-                    "id" => other_license_policy.id,
-                    "spdx_identifier" => other_license.spdx_identifier,
-                    "name" => other_license.name,
-                    "url" => nil,
-                    "classification" => "allowed"
-                  })
-                end
-
-                it 'includes an entry for an unclassified and unknown license found in the scan report' do
-                  expect(json_response.dig("licenses", 3)).to include({
-                    "id" => nil,
-                    "spdx_identifier" => nil,
-                    "name" => "unknown",
-                    "url" => nil,
-                    "classification" => "unclassified"
-                  })
-                end
+                expect(names).to eql(['BSD-3-Clause', 'MIT', other_license.name, 'unknown'])
               end
 
-              context "when loading software policies that match licenses detected in the most recent license scan report" do
-                before do
-                  get :index, params: {
-                    namespace_id: project.namespace,
-                    project_id: project,
-                    detected: true
-                  }, format: :json
-                end
-
-                it { expect(response).to have_gitlab_http_status(:ok) }
-
-                it 'only includes policies for licenses detected in the most recent scan report' do
-                  expect(json_response["licenses"].count).to be(3)
-                end
-
-                it 'includes an unclassified policy for a known license detected in the scan report' do
-                  expect(json_response.dig("licenses", 0)).to include({
-                    "id" => nil,
-                    "spdx_identifier" => "BSD-3-Clause",
-                    "classification" => "unclassified"
-                  })
-                end
-
-                it 'includes a classified license for a known license detected in the scan report' do
-                  expect(json_response.dig("licenses", 1)).to include({
-                    "id" => mit_policy.id,
-                    "spdx_identifier" => "MIT",
-                    "classification" => "denied"
-                  })
-                end
-
-                it 'includes an unclassified and unknown license discovered in the scan report' do
-                  expect(json_response.dig("licenses", 2)).to include({
-                    "id" => nil,
-                    "spdx_identifier" => nil,
-                    "name" => "unknown",
-                    "url" => nil,
-                    "classification" => "unclassified"
-                  })
-                end
+              it 'includes a policy for an unclassified and known license that was detected in the scan report' do
+                expect(json_response.dig("licenses", 0)).to include({
+                  "id" => nil,
+                  "spdx_identifier" => "BSD-3-Clause",
+                  "name" => 'BSD-3-Clause',
+                  "url" => "https://spdx.org/licenses/BSD-3-Clause.html",
+                  "classification" => "unclassified"
+                })
               end
 
-              context "when loading `allowed` software policies only" do
-                before do
-                  get :index, params: {
-                    namespace_id: project.namespace,
-                    project_id: project,
-                    classification: ['allowed']
-                  }, format: :json
-                end
-
-                it { expect(response).to have_gitlab_http_status(:ok) }
-                it { expect(json_response["licenses"].count).to be(1) }
-
-                it 'includes only `allowed` policies' do
-                  expect(json_response.dig("licenses", 0)).to include({
-                    "id" => other_license_policy.id,
-                    "spdx_identifier" => "Other-Id",
-                    "classification" => "allowed"
-                  })
-                end
+              it 'includes a policy for a denied license found in the scan report' do
+                expect(json_response.dig("licenses", 1)).to include({
+                  "id" => mit_policy.id,
+                  "spdx_identifier" => "MIT",
+                  "name" => mit_license.name,
+                  "url" => "https://spdx.org/licenses/MIT.html",
+                  "classification" => "denied"
+                })
               end
 
-              context "when loading `allowed` and `denied` software policies" do
-                before do
-                  get :index, params: {
-                    namespace_id: project.namespace,
-                    project_id: project,
-                    classification: %w[allowed denied]
-                  }, format: :json
-                end
-
-                it { expect(response).to have_gitlab_http_status(:ok) }
-                it { expect(json_response["licenses"].count).to be(2) }
-
-                it 'includes `denied` policies' do
-                  expect(json_response.dig("licenses", 0)).to include({
-                    "id" => mit_policy.id,
-                    "spdx_identifier" => mit_license.spdx_identifier,
-                    "classification" => mit_policy.classification
-                  })
-                end
-
-                it 'includes `allowed` policies' do
-                  expect(json_response.dig("licenses", 1)).to include({
-                    "id" => other_license_policy.id,
-                    "spdx_identifier" => other_license_policy.spdx_identifier,
-                    "classification" => other_license_policy.classification
-                  })
-                end
+              it 'includes a policy for an allowed license NOT found in the latest scan report' do
+                expect(json_response.dig("licenses", 2)).to include({
+                  "id" => other_license_policy.id,
+                  "spdx_identifier" => other_license.spdx_identifier,
+                  "name" => other_license.name,
+                  "url" => nil,
+                  "classification" => "allowed"
+                })
               end
 
-              context "when loading policies ordered by `classification` in `ascending` order" do
-                before do
-                  get :index, params: { namespace_id: project.namespace, project_id: project, sort_by: :classification, sort_direction: :asc }, format: :json
-                end
-
-                specify { expect(response).to have_gitlab_http_status(:ok) }
-                specify { expect(json_response['licenses'].map { |x| x['classification'] }).to eq(%w[allowed unclassified unclassified denied]) }
+              it 'includes an entry for an unclassified and unknown license found in the scan report' do
+                expect(json_response.dig("licenses", 3)).to include({
+                  "id" => nil,
+                  "spdx_identifier" => nil,
+                  "name" => "unknown",
+                  "url" => nil,
+                  "classification" => "unclassified"
+                })
               end
             end
 
-            context "when the license_scanning_sbom_scanner feature flag is enabled" do
-              let_it_be(:pipeline) { create(:ee_ci_pipeline, status: :success, project: project, builds: [create(:ee_ci_build, :success, :cyclonedx)]) }
-              let_it_be(:mit_policy) { create(:software_license_policy, :denied, software_license: mit_license, project: project) }
-              let_it_be(:other_license) { create(:software_license, spdx_identifier: "Other-Id") }
-              let_it_be(:other_license_policy) { create(:software_license_policy, :allowed, software_license: other_license, project: project) }
-
+            context "when loading software policies that match licenses detected in the most recent license scan report" do
               before do
-                stub_feature_flags(compressed_package_metadata_query: false)
-
-                create(:pm_package_version_license, :with_all_relations, name: "activesupport", purl_type: "gem", version: "5.1.4", license_name: "MIT")
-                create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "MIT")
-                create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "BSD-3-Clause")
-                create(:pm_package_version_license, :with_all_relations, name: "org.apache.logging.log4j/log4j-api", purl_type: "maven", version: "2.6.1", license_name: "BSD-3-Clause")
-
-                get_licenses
+                get :index, params: {
+                  namespace_id: project.namespace,
+                  project_id: project,
+                  detected: true
+                }, format: :json
               end
 
-              context "when loading all policies" do
-                before do
-                  get :index, params: {
-                    namespace_id: project.namespace,
-                    project_id: project,
-                    detected: false
-                  }, format: :json
-                end
+              it { expect(response).to have_gitlab_http_status(:ok) }
 
-                it { expect(response).to have_gitlab_http_status(:ok) }
-                it { expect(json_response["licenses"].count).to be(4) }
-
-                it 'sorts by name by default' do
-                  names = json_response['licenses'].map { |x| x['name'] }
-
-                  expect(names).to eql(['BSD-3-Clause', 'MIT', other_license.name, 'unknown'])
-                end
-
-                it 'includes a policy for an unclassified and known license that was detected in the scan report' do
-                  expect(json_response.dig("licenses", 0)).to include({
-                    "id" => nil,
-                    "spdx_identifier" => "BSD-3-Clause",
-                    "name" => 'BSD-3-Clause',
-                    "url" => "https://spdx.org/licenses/BSD-3-Clause.html",
-                    "classification" => "unclassified"
-                  })
-                end
-
-                it 'includes a policy for a denied license found in the scan report' do
-                  expect(json_response.dig("licenses", 1)).to include({
-                    "id" => mit_policy.id,
-                    "spdx_identifier" => "MIT",
-                    "name" => mit_license.name,
-                    "url" => "https://spdx.org/licenses/MIT.html",
-                    "classification" => "denied"
-                  })
-                end
-
-                it 'includes a policy for an allowed license NOT found in the latest scan report' do
-                  expect(json_response.dig("licenses", 2)).to include({
-                    "id" => other_license_policy.id,
-                    "spdx_identifier" => other_license.spdx_identifier,
-                    "name" => other_license.name,
-                    "url" => nil,
-                    "classification" => "allowed"
-                  })
-                end
-
-                it 'includes an entry for an unclassified and unknown license found in the scan report' do
-                  expect(json_response.dig("licenses", 3)).to include({
-                    "id" => nil,
-                    "spdx_identifier" => nil,
-                    "name" => "unknown",
-                    "url" => nil,
-                    "classification" => "unclassified"
-                  })
-                end
+              it 'only includes policies for licenses detected in the most recent scan report' do
+                expect(json_response["licenses"].count).to be(3)
               end
 
-              context "when loading software policies that match licenses detected in the most recent license scan report" do
-                before do
-                  get :index, params: {
-                    namespace_id: project.namespace,
-                    project_id: project,
-                    detected: true
-                  }, format: :json
-                end
-
-                it { expect(response).to have_gitlab_http_status(:ok) }
-
-                it 'only includes policies for licenses detected in the most recent scan report' do
-                  expect(json_response["licenses"].count).to be(3)
-                end
-
-                it 'includes an unclassified policy for a known license detected in the scan report' do
-                  expect(json_response.dig("licenses", 0)).to include({
-                    "id" => nil,
-                    "spdx_identifier" => "BSD-3-Clause",
-                    "classification" => "unclassified"
-                  })
-                end
-
-                it 'includes a classified license for a known license detected in the scan report' do
-                  expect(json_response.dig("licenses", 1)).to include({
-                    "id" => mit_policy.id,
-                    "spdx_identifier" => "MIT",
-                    "classification" => "denied"
-                  })
-                end
-
-                it 'includes an unclassified and unknown license discovered in the scan report' do
-                  expect(json_response.dig("licenses", 2)).to include({
-                    "id" => nil,
-                    "spdx_identifier" => nil,
-                    "name" => "unknown",
-                    "url" => nil,
-                    "classification" => "unclassified"
-                  })
-                end
+              it 'includes an unclassified policy for a known license detected in the scan report' do
+                expect(json_response.dig("licenses", 0)).to include({
+                  "id" => nil,
+                  "spdx_identifier" => "BSD-3-Clause",
+                  "classification" => "unclassified"
+                })
               end
 
-              context "when loading `allowed` software policies only" do
-                before do
-                  get :index, params: {
-                    namespace_id: project.namespace,
-                    project_id: project,
-                    classification: ['allowed']
-                  }, format: :json
-                end
-
-                it { expect(response).to have_gitlab_http_status(:ok) }
-                it { expect(json_response["licenses"].count).to be(1) }
-
-                it 'includes only `allowed` policies' do
-                  expect(json_response.dig("licenses", 0)).to include({
-                    "id" => other_license_policy.id,
-                    "spdx_identifier" => "Other-Id",
-                    "classification" => "allowed"
-                  })
-                end
+              it 'includes a classified license for a known license detected in the scan report' do
+                expect(json_response.dig("licenses", 1)).to include({
+                  "id" => mit_policy.id,
+                  "spdx_identifier" => "MIT",
+                  "classification" => "denied"
+                })
               end
 
-              context "when loading `allowed` and `denied` software policies" do
-                before do
-                  get :index, params: {
-                    namespace_id: project.namespace,
-                    project_id: project,
-                    classification: %w[allowed denied]
-                  }, format: :json
-                end
+              it 'includes an unclassified and unknown license discovered in the scan report' do
+                expect(json_response.dig("licenses", 2)).to include({
+                  "id" => nil,
+                  "spdx_identifier" => nil,
+                  "name" => "unknown",
+                  "url" => nil,
+                  "classification" => "unclassified"
+                })
+              end
+            end
 
-                it { expect(response).to have_gitlab_http_status(:ok) }
-                it { expect(json_response["licenses"].count).to be(2) }
-
-                it 'includes `denied` policies' do
-                  expect(json_response.dig("licenses", 0)).to include({
-                    "id" => mit_policy.id,
-                    "spdx_identifier" => mit_license.spdx_identifier,
-                    "classification" => mit_policy.classification
-                  })
-                end
-
-                it 'includes `allowed` policies' do
-                  expect(json_response.dig("licenses", 1)).to include({
-                    "id" => other_license_policy.id,
-                    "spdx_identifier" => other_license_policy.spdx_identifier,
-                    "classification" => other_license_policy.classification
-                  })
-                end
+            context "when loading `allowed` software policies only" do
+              before do
+                get :index, params: {
+                  namespace_id: project.namespace,
+                  project_id: project,
+                  classification: ['allowed']
+                }, format: :json
               end
 
-              context "when loading policies ordered by `classification` in `ascending` order" do
-                before do
-                  get :index, params: { namespace_id: project.namespace, project_id: project, sort_by: :classification, sort_direction: :asc }, format: :json
-                end
+              it { expect(response).to have_gitlab_http_status(:ok) }
+              it { expect(json_response["licenses"].count).to be(1) }
 
-                specify { expect(response).to have_gitlab_http_status(:ok) }
-                specify { expect(json_response['licenses'].map { |x| x['classification'] }).to eq(%w[allowed unclassified unclassified denied]) }
+              it 'includes only `allowed` policies' do
+                expect(json_response.dig("licenses", 0)).to include({
+                  "id" => other_license_policy.id,
+                  "spdx_identifier" => "Other-Id",
+                  "classification" => "allowed"
+                })
               end
+            end
+
+            context "when loading `allowed` and `denied` software policies" do
+              before do
+                get :index, params: {
+                  namespace_id: project.namespace,
+                  project_id: project,
+                  classification: %w[allowed denied]
+                }, format: :json
+              end
+
+              it { expect(response).to have_gitlab_http_status(:ok) }
+              it { expect(json_response["licenses"].count).to be(2) }
+
+              it 'includes `denied` policies' do
+                expect(json_response.dig("licenses", 0)).to include({
+                  "id" => mit_policy.id,
+                  "spdx_identifier" => mit_license.spdx_identifier,
+                  "classification" => mit_policy.classification
+                })
+              end
+
+              it 'includes `allowed` policies' do
+                expect(json_response.dig("licenses", 1)).to include({
+                  "id" => other_license_policy.id,
+                  "spdx_identifier" => other_license_policy.spdx_identifier,
+                  "classification" => other_license_policy.classification
+                })
+              end
+            end
+
+            context "when loading policies ordered by `classification` in `ascending` order" do
+              before do
+                get :index, params: { namespace_id: project.namespace, project_id: project, sort_by: :classification, sort_direction: :asc }, format: :json
+              end
+
+              specify { expect(response).to have_gitlab_http_status(:ok) }
+              specify { expect(json_response['licenses'].map { |x| x['classification'] }).to eq(%w[allowed unclassified unclassified denied]) }
             end
           end
 

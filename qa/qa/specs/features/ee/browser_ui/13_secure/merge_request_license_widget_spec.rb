@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Secure', :runner, product_group: :composition_analysis, feature_flag: {
-    name: 'license_scanning_sbom_scanner'
-  }, quarantine: {
+  RSpec.describe 'Secure', :runner, product_group: :composition_analysis, quarantine: {
     type: :waiting_on,
     issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/397067'
   } do
@@ -125,8 +123,8 @@ module QA
           Page::MergeRequest::Show.perform do |show|
             show.wait_for_license_compliance_report
             show.expand_license_report
-            expect(show).to have_approved_license approved_license_name
-            expect(show).to have_denied_license denied_license_name
+            expect(show).not_to have_approved_license approved_license_name
+            expect(show).not_to have_denied_license denied_license_name
           end
         end
       end
@@ -147,7 +145,6 @@ module QA
             project.name = 'license-widget-project'
             project.description = 'License widget test'
           end
-          Runtime::Feature.enable(:license_scanning_sbom_scanner, project: @project)
 
           @runner = Resource::ProjectRunner.fabricate! do |runner|
             runner.project = @project
