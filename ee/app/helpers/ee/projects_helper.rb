@@ -316,10 +316,12 @@ module EE
 
     def security_dashboard_pipeline_data(project)
       pipeline = project.latest_ingested_security_pipeline
-      return {} unless pipeline
+      sbom_pipeline = project.latest_ingested_sbom_pipeline
 
-      {
-        pipeline: {
+      pipelines = {}
+
+      if pipeline
+        pipelines[:pipeline] = {
           id: pipeline.id,
           path: pipeline_path(pipeline),
           created_at: pipeline.created_at.to_fs(:iso8601),
@@ -332,7 +334,19 @@ module EE
             }
           }
         }
-      }
+      end
+
+      if sbom_pipeline
+        pipelines[:sbom_pipeline] = {
+          id: sbom_pipeline.id,
+          path: pipeline_path(sbom_pipeline),
+          created_at: sbom_pipeline.created_at.to_fs(:iso8601),
+          has_warnings: "", # To be added in: https://gitlab.com/gitlab-org/gitlab/-/issues/366960
+          has_errors: "" # To be added in: https://gitlab.com/gitlab-org/gitlab/-/issues/366960
+        }
+      end
+
+      pipelines
     end
   end
 end

@@ -14,12 +14,24 @@ const defaultPipeline = {
   path: '/mixed-vulnerabilities/dependency-list-test-01/-/pipelines/214',
 };
 
+const sbomPipeline = {
+  createdAt: '2021-09-05T20:08:07Z',
+  id: '245',
+  path: '/mixed-vulnerabilities/dependency-list-test-01/-/pipelines/245',
+};
+
 describe('Project Pipeline Status Component', () => {
   let wrapper;
 
-  const findPipelineStatusBadge = () => wrapper.findComponent(PipelineStatusBadge);
-  const findTimeAgoTooltip = () => wrapper.findComponent(TimeAgoTooltip);
-  const findLink = () => wrapper.findComponent(GlLink);
+  const findPipelineStatusBadge = () =>
+    wrapper.findByTestId('pipeline').findComponent(PipelineStatusBadge);
+  const findTimeAgoTooltip = () => wrapper.findByTestId('pipeline').findComponent(TimeAgoTooltip);
+  const findLink = () => wrapper.findByTestId('pipeline').findComponent(GlLink);
+  const findSbomPipelineStatusBadge = () =>
+    wrapper.findByTestId('sbom-pipeline').findComponent(PipelineStatusBadge);
+  const findSbomTimeAgoTooltip = () =>
+    wrapper.findByTestId('sbom-pipeline').findComponent(TimeAgoTooltip);
+  const findSbomLink = () => wrapper.findByTestId('sbom-pipeline').findComponent(GlLink);
   const findParsingStatusNotice = () => wrapper.findByTestId('parsing-status-notice');
   const findAutoFixMrsLink = () => wrapper.findByTestId('auto-fix-mrs-link');
 
@@ -31,6 +43,7 @@ describe('Project Pipeline Status Component', () => {
           {
             propsData: {
               pipeline: defaultPipeline,
+              sbomPipeline,
             },
             provide: {
               projectFullPath: '/group/project',
@@ -128,6 +141,34 @@ describe('Project Pipeline Status Component', () => {
       createWrapper();
 
       expect(findAutoFixMrsLink().exists()).toBe(false);
+    });
+  });
+
+  describe('sbom pipeline', () => {
+    beforeEach(() => {
+      createWrapper();
+    });
+
+    it('should show the timeAgoTooltip component', () => {
+      const TimeComponent = findSbomTimeAgoTooltip();
+      expect(TimeComponent.exists()).toBe(true);
+      expect(TimeComponent.props()).toStrictEqual({
+        time: sbomPipeline.createdAt,
+        cssClass: '',
+        dateTimeFormat: DEFAULT_DATE_TIME_FORMAT,
+        tooltipPlacement: 'top',
+      });
+    });
+
+    it('should show the link component', () => {
+      const GlLinkComponent = findSbomLink();
+      expect(GlLinkComponent.exists()).toBe(true);
+      expect(GlLinkComponent.text()).toBe(`#${sbomPipeline.id}`);
+      expect(GlLinkComponent.attributes('href')).toBe(sbomPipeline.path);
+    });
+
+    it('should show the pipeline status badge component', () => {
+      expect(findSbomPipelineStatusBadge().props('pipeline')).toBe(sbomPipeline);
     });
   });
 });

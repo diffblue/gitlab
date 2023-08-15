@@ -41144,6 +41144,9 @@ msgstr ""
 msgid "SAML|Your organization's SSO has been connected to your GitLab account"
 msgstr ""
 
+msgid "SBOMs last updated"
+msgstr ""
+
 msgid "SCIM|SCIM Token"
 msgstr ""
 
@@ -41917,6 +41920,9 @@ msgid "Security configuration"
 msgstr ""
 
 msgid "Security dashboard"
+msgstr ""
+
+msgid "Security reports last updated"
 msgstr ""
 
 msgid "SecurityApprovals|A merge request approval is required when test coverage declines."
