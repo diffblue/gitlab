@@ -12,7 +12,7 @@ module Analytics
         dashboard_project: analytics_dashboard_pointer_project(namespace)&.to_json,
         can_configure_dashboards_project: can_configure_dashboards_project?(namespace).to_s,
         tracking_key: can_read_product_analytics && is_project ? tracking_key(namespace) : nil,
-        collector_host: can_read_product_analytics ? collector_host : nil,
+        collector_host: can_read_product_analytics ? collector_host(namespace) : nil,
         chart_empty_state_illustration_path: image_path('illustrations/chart-empty-state.svg'),
         dashboard_empty_state_illustration_path: image_path('illustrations/security-dashboard-empty-state.svg'),
         namespace_full_path: namespace.full_path,
@@ -26,7 +26,7 @@ module Analytics
 
       {
         tracking_key: can_read_product_analytics ? tracking_key(project) : nil,
-        collector_host: can_read_product_analytics ? collector_host : nil,
+        collector_host: can_read_product_analytics ? collector_host(project) : nil,
         dashboards_path: project_analytics_dashboards_path(project)
       }
     end
@@ -37,8 +37,12 @@ module Analytics
       namespace.is_a?(Project)
     end
 
-    def collector_host
-      ::Gitlab::CurrentSettings.product_analytics_data_collector_host
+    def collector_host(project)
+      if project?(project)
+        ProductAnalytics::Settings.for_project(project).product_analytics_data_collector_host
+      else
+        ::Gitlab::CurrentSettings.product_analytics_data_collector_host
+      end
     end
 
     def tracking_key(project)
