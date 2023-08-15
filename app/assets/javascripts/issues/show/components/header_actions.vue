@@ -419,7 +419,7 @@ export default {
       v-gl-tooltip.bottom
       :title="$options.i18n.editTitleAndDescription"
       :aria-label="$options.i18n.editTitleAndDescription"
-      class="js-issuable-edit gl-display-none gl-sm-display-block"
+      class="js-issuable-edit gl-display-none! gl-sm-display-block!"
       data-testid="edit-button"
       @click="edit"
     >
