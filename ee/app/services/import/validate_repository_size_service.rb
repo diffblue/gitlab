@@ -7,8 +7,6 @@ module Import
     end
 
     def execute
-      return unless ::Feature.enabled?(:post_import_repository_size_check)
-
       project.repository.expire_content_cache
 
       ::Projects::UpdateStatisticsService.new(project, nil, statistics: [:repository_size]).execute
