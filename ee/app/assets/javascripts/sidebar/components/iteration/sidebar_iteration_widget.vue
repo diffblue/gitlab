@@ -5,6 +5,7 @@ import {
   GlDropdownSectionHeader,
   GlIcon,
   GlLink,
+  GlTooltipDirective,
 } from '@gitlab/ui';
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 import { getIterationPeriod, groupByIterationCadences } from 'ee/iterations/utils';
@@ -22,6 +23,9 @@ export default {
     GlLink,
     SidebarDropdownWidget,
     IterationTitle,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   props: {
     attrWorkspacePath: {
@@ -77,6 +81,19 @@ export default {
         </div>
         <iteration-title v-if="currentAttribute.title" :title="currentAttribute.title" />
       </gl-link>
+    </template>
+    <template #value-collapsed="{ currentAttribute }">
+      <div
+        v-if="currentAttribute"
+        v-gl-tooltip.left.viewport
+        :title="__('Iteration')"
+        class="sidebar-collapsed-icon"
+      >
+        <gl-icon :aria-label="__('Iteration')" name="iteration" />
+        <span class="collapse-truncated-title gl-pt-2 gl-px-3 gl-font-sm">
+          {{ getIterationPeriod(currentAttribute) }}
+        </span>
+      </div>
     </template>
     <template #list="{ attributesList = [], isAttributeChecked, updateAttribute }">
       <template v-for="(cadence, index) in groupByIterationCadences(attributesList)">
