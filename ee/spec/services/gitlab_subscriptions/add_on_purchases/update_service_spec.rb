@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSubscriptions::AddOnPurchases::UpdateService, :aggregate_failures, feature_category: :purchase do
+RSpec.describe GitlabSubscriptions::AddOnPurchases::UpdateService, :aggregate_failures, feature_category: :saas_provisioning do
   describe '#execute' do
     let_it_be(:namespace) { create(:namespace) }
     let_it_be(:add_on) { create(:gitlab_subscription_add_on) }
