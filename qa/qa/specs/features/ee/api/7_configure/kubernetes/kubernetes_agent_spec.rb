@@ -7,14 +7,25 @@ module QA
     include Service::Shellout
 
     describe 'Kubernetes Agent' do
-      let!(:cluster) { Service::KubernetesCluster.new(provider_class: Service::ClusterProvider::Gcloud).create! }
-
-      let(:agent_token) do
-        Resource::Clusters::AgentToken.fabricate_via_api!
+      let!(:project) do
+        Resource::Project.fabricate_via_api! do |project|
+          project.name = 'kubernetes-app-project'
+        end
       end
 
-      let(:project) do
-        agent_token.agent.project
+      let!(:cluster) { Service::KubernetesCluster.new(provider_class: Service::ClusterProvider::Gcloud).create! }
+
+      let!(:kubernetes_agent) do
+        Resource::Clusters::Agent.fabricate_via_api! do |agent|
+          agent.name = 'agent1'
+          agent.project = project
+        end
+      end
+
+      let!(:agent_token) do
+        Resource::Clusters::AgentToken.fabricate_via_api! do |token|
+          token.agent = kubernetes_agent
+        end
       end
 
       before do
