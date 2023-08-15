@@ -196,12 +196,12 @@ export default {
       this.show = true;
     },
     approve() {
-      return this.actOnDeployment(Api.approveDeployment.bind(Api));
+      return this.actOnDeployment(Api.approveDeployment.bind(Api), this.$options.i18n.approved);
     },
     reject() {
-      return this.actOnDeployment(Api.rejectDeployment.bind(Api));
+      return this.actOnDeployment(Api.rejectDeployment.bind(Api), this.$options.i18n.rejected);
     },
-    actOnDeployment(action) {
+    actOnDeployment(action, message) {
       this.loading = true;
       this.show = false;
       return action({
@@ -211,6 +211,7 @@ export default {
       })
         .then(() => {
           this.$emit('change');
+          this.$toast.show(message);
         })
         .catch((err) => {
           if (err.response) {
@@ -234,7 +235,7 @@ export default {
         return this.$options.i18n.rejectedByMe;
       }
 
-      return this.$options.i18n.rejected;
+      return this.$options.i18n.rejectedAt;
     },
   },
   i18n: {
@@ -249,7 +250,7 @@ export default {
     current: s__('DeploymentApproval| Current approvals: %{current}'),
     approval: s__('DeploymentApproval|Approved %{time}'),
     approvalByMe: s__('DeploymentApproval|Approved by you %{time}'),
-    rejected: s__('DeploymentApproval|Rejected %{time}'),
+    rejectedAt: s__('DeploymentApproval|Rejected %{time}'),
     rejectedByMe: s__('DeploymentApproval|Rejected by you %{time}'),
     charactersLeft: __('Characters left'),
     charactersOverLimit: __('Characters over limit'),
@@ -259,6 +260,8 @@ export default {
     approve: __('Approve'),
     reject: __('Reject'),
     cancel: __('Cancel'),
+    approved: s__('DeploymentApproval|Deployment approved'),
+    rejected: s__('DeploymentApproval|Deployment rejected'),
   },
 };
 </script>

@@ -16261,6 +16261,12 @@ msgstr ""
 msgid "DeploymentApproval|Approving will run the manual job from deployment #%{deploymentIid}. Rejecting will fail the manual job."
 msgstr ""
 
+msgid "DeploymentApproval|Deployment approved"
+msgstr ""
+
+msgid "DeploymentApproval|Deployment rejected"
+msgstr ""
+
 msgid "DeploymentApproval|Deployment tier: %{tier}"
 msgstr ""
 
