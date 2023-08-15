@@ -10982,6 +10982,9 @@ msgstr ""
 msgid "ClusterAgents|To delete the agent, type %{name} to confirm:"
 msgstr ""
 
+msgid "ClusterAgents|To manage more agents, %{linkStart}use Terraform%{linkEnd}."
+msgstr ""
+
 msgid "ClusterAgents|To revoke the token, type %{name} to confirm:"
 msgstr ""
 
@@ -11004,6 +11007,9 @@ msgid "ClusterAgents|View all %{number} agents"
 msgstr ""
 
 msgid "ClusterAgents|View all %{number} clusters"
+msgstr ""
+
+msgid "ClusterAgents|We only support 100 agents on the UI."
 msgstr ""
 
 msgid "ClusterAgents|We would love to learn more about your experience with the GitLab Agent."
