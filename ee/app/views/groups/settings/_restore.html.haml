@@ -1,12 +1,16 @@
 - return unless group.marked_for_deletion?
 - date = permanent_deletion_date(group.marked_for_deletion_on)
 
-.sub-section
-  %h4.warning-title= _('Restore group')
-  %p
-    %strong= _('This group has been scheduled for permanent removal on %{date}') %{ date: date }
-  %p
-    = _("Restoring the group will prevent the group, its subgroups and projects from being removed on this date.")
-  %p
-    = render Pajamas::ButtonComponent.new(method: :post, href: group_restore_path(group)) do
-      = _('Restore group')
+= render Pajamas::CardComponent.new(card_options: { class: 'gl-new-card' }, header_options: { class: 'gl-new-card-header gl-flex-direction-column' }, body_options: { class: 'gl-new-card-body gl-px-5 gl-py-4' }) do |c|
+  - c.with_header do
+    .gl-new-card-title-wrapper
+      %h4.gl-new-card-title.warning-title= _('Restore group')
+    %p.gl-new-card-description
+
+  - c.with_body do
+    %p.gl-font-weight-bold= _('This group has been scheduled for permanent removal on %{date}') %{ date: date }
+    %p
+      = _("Restoring the group will prevent the group, its subgroups and projects from being removed on this date.")
+    %p
+      = render Pajamas::ButtonComponent.new(method: :post, href: group_restore_path(group)) do
+        = _('Restore group')
