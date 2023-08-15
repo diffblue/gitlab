@@ -36,6 +36,7 @@ import {
   invalidVulnerabilitiesAllowed,
   invalidVulnerabilityStates,
   invalidVulnerabilityAge,
+  invalidVulnerabilityAttributes,
   humanizeInvalidBranchesError,
   invalidBranchType,
 } from './lib';
@@ -295,7 +296,8 @@ export default {
         invalidVulnerabilitiesAllowed(rules) ||
         invalidVulnerabilityStates(rules) ||
         invalidBranchType(rules) ||
-        invalidVulnerabilityAge(rules)
+        invalidVulnerabilityAge(rules) ||
+        invalidVulnerabilityAttributes(rules)
       );
     },
   },

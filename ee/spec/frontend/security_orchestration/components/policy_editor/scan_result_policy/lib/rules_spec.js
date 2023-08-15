@@ -8,6 +8,7 @@ import {
   invalidVulnerabilityStates,
   invalidBranchType,
   invalidVulnerabilityAge,
+  invalidVulnerabilityAttributes,
   VULNERABILITY_STATE_KEYS,
   humanizeInvalidBranchesError,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/rules';
@@ -202,5 +203,26 @@ describe('humanizeInvalidBranchesError', () => {
     expect(humanizeInvalidBranchesError(['main', 'protected', 'master'])).toEqual(
       'The following branches do not exist on this development project: main, protected and master. Please review all protected branches to ensure the values are accurate before updating this policy.',
     );
+  });
+});
+
+describe('invalidVulnerabilityAttributes', () => {
+  it.each`
+    rules                                                                                 | expectedResult
+    ${null}                                                                               | ${false}
+    ${[]}                                                                                 | ${false}
+    ${[{}]}                                                                               | ${false}
+    ${[{ vulnerability_attributes: {} }]}                                                 | ${false}
+    ${[{ vulnerability_attributes: { false_positive: true } }]}                           | ${false}
+    ${[{ vulnerability_attributes: { fix_available: false } }]}                           | ${false}
+    ${[{ vulnerability_attributes: { false_positive: true, fix_available: false } }]}     | ${false}
+    ${[{ vulnerability_attributes: 'invalid' }]}                                          | ${true}
+    ${[{ vulnerability_attributes: { invalid: true } }]}                                  | ${true}
+    ${[{ vulnerability_attributes: { fix_available: true, false_positive: 'invalid' } }]} | ${true}
+    ${[{ vulnerability_attributes: { false_positive: 1 } }]}                              | ${true}
+    ${[{ vulnerability_attributes: { false_positive: [] } }]}                             | ${true}
+    ${[{ vulnerability_attributes: { false_positive: {} } }]}                             | ${true}
+  `('returns $expectedResult', ({ rules, expectedResult }) => {
+    expect(invalidVulnerabilityAttributes(rules)).toStrictEqual(expectedResult);
   });
 });

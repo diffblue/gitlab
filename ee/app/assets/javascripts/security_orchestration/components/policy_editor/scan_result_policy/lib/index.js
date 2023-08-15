@@ -11,6 +11,7 @@ export {
   invalidBranchType,
   invalidVulnerabilityAge,
   humanizeInvalidBranchesError,
+  invalidVulnerabilityAttributes,
   SCAN_FINDING,
   LICENSE_FINDING,
 } from './rules';
