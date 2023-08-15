@@ -169,8 +169,8 @@ If successful, returns [`201`](rest/index.md#status-codes) and the following res
 Example request:
 
 ```shell
-curl --request PATCH \
-  --url "https://gitlab.example.com/api/v4/projects/1/job_token_scope" \
+curl --request POST \
+  --url "https://gitlab.example.com/api/v4/projects/1/job_token_scope/allowlist" \
   --header 'PRIVATE-TOKEN: <your_access_token>' \
   --header 'Content-Type: application/json' \
   --data '{ "target_project_id": 2 }'
