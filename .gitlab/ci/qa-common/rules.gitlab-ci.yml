@@ -157,10 +157,10 @@
 
 .rules:test:smoke-for-omnibus-mr:
   rules:
-    - if: '$CI_PROJECT_NAME == "omnibus-gitlab" && $PIPELINE_TYPE =~ /TRIGGERED_(CE|EE)_PIPELINE/ && $QA_RUN_SMOKE_AND_RELIABLE_TESTS_FOR_OMNIBUS_MR == "true"'
+    - if: '$CI_PROJECT_NAME == "omnibus-gitlab" && $PIPELINE_TYPE =~ /TRIGGERED_(CE|EE)_PIPELINE/ && $QA_OMNIBUS_MR_TESTS == "only-smoke-reliable"'
       variables:
         QA_RSPEC_TAGS: "--tag smoke --tag reliable --tag ~orchestrated --tag ~skip_live_env"
-    - if: '$CI_PROJECT_NAME == "omnibus-gitlab" && $PIPELINE_TYPE =~ /TRIGGERED_(CE|EE)_PIPELINE/ && $QA_RUN_SMOKE_AND_RELIABLE_TESTS_FOR_OMNIBUS_MR == "false"'
+    - if: '$CI_PROJECT_NAME == "omnibus-gitlab" && $PIPELINE_TYPE =~ /TRIGGERED_(CE|EE)_PIPELINE/ && $QA_OMNIBUS_MR_TESTS == "except-smoke-reliable"'
       variables:
         QA_RSPEC_TAGS: "--tag ~smoke --tag ~reliable --tag ~orchestrated --tag ~skip_live_env --tag ~transient"
 
