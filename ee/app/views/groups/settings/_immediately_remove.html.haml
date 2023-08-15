@@ -1,15 +1,20 @@
 - remove_form_id = local_assigns.fetch(:remove_form_id, nil)
 
 - if group.marked_for_deletion?
-  .sub-section
-    %h4.gl-text-red-500= _('Permanently remove group')
-    = form_tag(group, method: :delete, id: remove_form_id) do
-      %p
-        %strong= _('Removing this group also removes all child projects, including archived projects, and their resources.')
-      %p= immediately_remove_group_message(group)
-      %p
-        %strong= _('Are you ABSOLUTELY SURE you wish to remove this group?')
+  = render Pajamas::CardComponent.new(card_options: { class: 'gl-new-card' }, header_options: { class: 'gl-new-card-header gl-flex-direction-column' }, body_options: { class: 'gl-new-card-body gl-px-5 gl-py-4' }) do |c|
+    - c.with_header do
+      .gl-new-card-title-wrapper
+        %h4.gl-new-card-title.gl-text-red-500= _('Permanently remove group')
+      %p.gl-new-card-description
 
-      = hidden_field_tag(:permanently_remove, true)
+    - c.with_body do
+      = form_tag(group, method: :delete, id: remove_form_id) do
+        %p
+          %strong= _('Removing this group also removes all child projects, including archived projects, and their resources.')
+        %p= immediately_remove_group_message(group)
+        %p
+          %strong= _('Are you ABSOLUTELY SURE you wish to remove this group?')
 
-      = render 'groups/settings/remove_button', group: group, remove_form_id: remove_form_id
+        = hidden_field_tag(:permanently_remove, true)
+
+        = render 'groups/settings/remove_button', group: group, remove_form_id: remove_form_id
