@@ -1,5 +1,5 @@
 import { nextTick } from 'vue';
-import { GlCollapsibleListbox, GlFormInput } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlFormInput, GlIcon, GlPopover } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import PolicyRuleBranchSelection from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_branch_selection.vue';
 import ProtectedBranchesDropdown from 'ee/security_orchestration/components/policy_editor/protected_branches_dropdown.vue';
@@ -43,15 +43,17 @@ describe('PolicyRuleBranchSelection', () => {
     branches: [PROTECTED_BRANCHES_MOCK[0].name],
   };
 
-  const factory = (propsData = {}, provide = {}) => {
+  const factory = ({ propsData = {}, provide = {} } = {}) => {
     wrapper = shallowMountExtended(PolicyRuleBranchSelection, {
       propsData: {
         initRule: DEFAULT_RULE,
         ...propsData,
       },
       provide: {
+        existingPolicy: undefined,
         namespaceId: '1',
         namespaceType: NAMESPACE_TYPES.PROJECT,
+        glFeatures: { scanResultPolicySettings: false },
         ...provide,
       },
     });
@@ -62,6 +64,8 @@ describe('PolicyRuleBranchSelection', () => {
   const findProtectedBranchesSelector = () => wrapper.findComponent(GlCollapsibleListbox);
   const findSpecificBranchInput = () => wrapper.findComponent(GlFormInput);
   const findBranchesLabel = () => wrapper.findByTestId('branches-label');
+  const findAllProtectedBranchesInfoIcon = () => wrapper.findComponent(GlIcon);
+  const findAllProtectedBranchesPopover = () => wrapper.findComponent(GlPopover);
 
   describe('project-level', () => {
     describe('default', () => {
@@ -85,7 +89,7 @@ describe('PolicyRuleBranchSelection', () => {
       });
 
       it('does render branches label when a branch is selected', async () => {
-        factory({ initRule: UPDATED_SCAN_FINDING_RULE });
+        factory({ propsData: { initRule: UPDATED_SCAN_FINDING_RULE } });
         await nextTick();
         expect(findBranchesLabel().exists()).toBe(true);
       });
@@ -123,13 +127,17 @@ describe('PolicyRuleBranchSelection', () => {
       it('does not show branches label if "All Protected Branches" is selected', () => {
         expect(findBranchesLabel().exists()).toBe(false);
       });
+
+      it('does not show "All Protected Branches" information', () => {
+        expect(findAllProtectedBranchesInfoIcon().isVisible()).toBe(false);
+      });
     });
   });
 
   describe('group-level', () => {
     describe('default', () => {
       beforeEach(() => {
-        factory({}, { namespaceType: NAMESPACE_TYPES.GROUP });
+        factory({ provide: { namespaceType: NAMESPACE_TYPES.GROUP } });
       });
 
       it.each`
@@ -139,6 +147,10 @@ describe('PolicyRuleBranchSelection', () => {
         ${'does not'} | ${'group-level specific branches input'}       | ${findSpecificBranchInput}                   | ${false}
       `('$title render the $component', ({ findFn, output }) => {
         expect(findFn().exists()).toBe(output);
+      });
+
+      it('does not show "All Protected Branches" information', () => {
+        expect(findAllProtectedBranchesInfoIcon().isVisible()).toBe(false);
       });
     });
 
@@ -153,14 +165,7 @@ describe('PolicyRuleBranchSelection', () => {
       `(
         'should select branch selector based on selected branches for a group',
         ({ initRule, expectedResult }) => {
-          factory(
-            {
-              initRule,
-            },
-            {
-              namespaceType: NAMESPACE_TYPES.GROUP,
-            },
-          );
+          factory({ propsData: { initRule }, provide: { namespaceType: NAMESPACE_TYPES.GROUP } });
 
           expect(findProtectedBranchesSelector().props('selected')).toBe(expectedResult);
         },
@@ -169,7 +174,7 @@ describe('PolicyRuleBranchSelection', () => {
 
     describe('specific branches input', () => {
       beforeEach(async () => {
-        factory({}, { namespaceType: NAMESPACE_TYPES.GROUP });
+        factory({ provide: { namespaceType: NAMESPACE_TYPES.GROUP } });
         await findProtectedBranchesSelector().vm.$emit('select', 'SPECIFIC_BRANCHES');
         await nextTick();
       });
@@ -215,9 +220,7 @@ describe('PolicyRuleBranchSelection', () => {
         ${SCAN_EXECUTION_BRANCH_TYPE_OPTIONS()}
         ${SCAN_RESULT_BRANCH_TYPE_OPTIONS()}
       `('should accept different branch type options', ({ branchTypes }) => {
-        factory({
-          branchTypes,
-        });
+        factory({ propsData: { branchTypes } });
 
         expect(findProtectedBranchesSelector().props('items')).toEqual(branchTypes);
       });
@@ -247,9 +250,7 @@ describe('PolicyRuleBranchSelection', () => {
         ${RULE_WITH_BRANCH_TYPE}     | ${'default'}
         ${UPDATED_SCAN_FINDING_RULE} | ${'SPECIFIC_BRANCHES'}
       `('can display previously saved branch types', ({ initRule, expectedResult }) => {
-        factory({
-          initRule,
-        });
+        factory({ propsData: { initRule } });
 
         expect(findProtectedBranchesSelector().props('selected')).toBe(expectedResult);
       });
@@ -268,6 +269,42 @@ describe('PolicyRuleBranchSelection', () => {
 
         expect(wrapper.emitted('error')).toHaveLength(1);
         expect(wrapper.emitted('error')).toEqual([[error]]);
+      });
+    });
+
+    describe('"scanResultPolicySettings" feature flag', () => {
+      it('shows "All Protected Branches" information when  "All Protected Branches" is selected', () => {
+        factory({ provide: { glFeatures: { scanResultPolicySettings: true } } });
+        expect(findAllProtectedBranchesInfoIcon().isVisible()).toBe(true);
+        expect(findAllProtectedBranchesPopover().exists()).toBe(true);
+        expect(findAllProtectedBranchesPopover().props('target')).toBe(
+          findAllProtectedBranchesInfoIcon().attributes('id'),
+        );
+      });
+
+      it('does not show "All Protected Branches" information when  "All Protected Branches" is not selected', async () => {
+        factory({ provide: { glFeatures: { scanResultPolicySettings: true } } });
+        await findProtectedBranchesSelector().vm.$emit('select', 'SPECIFIC_BRANCHES');
+        expect(findAllProtectedBranchesInfoIcon().isVisible()).toBe(false);
+        expect(findAllProtectedBranchesPopover().emitted('open')).toBeUndefined();
+      });
+
+      it('shows "All Protected Branches" information on page load for new policies', async () => {
+        factory({ provide: { glFeatures: { scanResultPolicySettings: true } } });
+        await nextTick();
+        expect(findAllProtectedBranchesInfoIcon().isVisible()).toBe(true);
+        expect(findAllProtectedBranchesPopover().emitted('open')).toHaveLength(1);
+      });
+
+      it('does not show "All Protected Branches" information on page load for existing policies', async () => {
+        factory({
+          provide: {
+            existingPolicy: { type: 'scan_result_policy' },
+            glFeatures: { scanResultPolicySettings: true },
+          },
+        });
+        await nextTick();
+        expect(findAllProtectedBranchesPopover().emitted('open')).toBeUndefined();
       });
     });
   });

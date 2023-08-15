@@ -1,5 +1,6 @@
 <script>
-import { GlCollapsibleListbox, GlFormInput } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlFormInput, GlIcon, GlPopover } from '@gitlab/ui';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { n__, s__ } from '~/locale';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { slugifyToArray } from '../utils';
@@ -16,9 +17,12 @@ export default {
   components: {
     GlCollapsibleListbox,
     GlFormInput,
+    GlIcon,
+    GlPopover,
     ProtectedBranchesDropdown,
   },
-  inject: ['namespaceId', 'namespaceType'],
+  mixins: [glFeatureFlagsMixin()],
+  inject: ['existingPolicy', 'namespaceId', 'namespaceType'],
   props: {
     initRule: {
       type: Object,
@@ -33,6 +37,12 @@ export default {
   i18n: {
     groupLevelBranchInput: s__('SecurityOrchestration|group level branch input'),
     groupLevelBranchSelector: s__('SecurityOrchestration|group level branch selector'),
+    protectedBranchesTooltipDesc: s__(
+      'SecurityOrchestration|When this policy is enabled, protected branches cannot be unprotected and users will not be allowed to force push to protected branches.',
+    ),
+    protectedBranchesTooltipTitle: s__(
+      'SecurityOrchestration|Important info about protected branch',
+    ),
   },
   data() {
     let selectedBranchType = ALL_PROTECTED_BRANCHES.value;
@@ -90,6 +100,18 @@ export default {
         ? this.branchTypes
         : SCAN_EXECUTION_BRANCH_TYPE_OPTIONS(this.namespaceType);
     },
+    showProtectedBranchesWarning() {
+      return (
+        this.glFeatures.scanResultPolicySettings && this.selected === ALL_PROTECTED_BRANCHES.value
+      );
+    },
+  },
+  async mounted() {
+    // Need to wait for the icon's v-show to resolve
+    await this.$nextTick();
+    if (!this.existingPolicy) {
+      this.showPopover();
+    }
   },
   methods: {
     handleSelect(value) {
@@ -126,6 +148,9 @@ export default {
       this.showProtectedBranchesError = hasErrored;
       this.$emit('error', error);
     },
+    showPopover() {
+      this.$refs.popover.$emit('open');
+    },
   },
 };
 </script>
@@ -141,6 +166,17 @@ export default {
       :selected="selected"
       @select="handleSelect"
     />
+
+    <gl-icon
+      v-show="showProtectedBranchesWarning"
+      id="protected-branches-information"
+      name="information-o"
+      :arial-label="$options.i18n.protectedBranchesTooltipLabel"
+    />
+    <gl-popover ref="popover" target="protected-branches-information" boundary="viewport">
+      <template #title>{{ $options.i18n.protectedBranchesTooltipTitle }}</template>
+      {{ $options.i18n.protectedBranchesTooltipDesc }}
+    </gl-popover>
 
     <template v-if="displayBranchSelector">
       <protected-branches-dropdown
