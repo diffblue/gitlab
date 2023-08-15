@@ -3,14 +3,14 @@
 module GitlabSubscriptions
   class CreateTrialOrLeadService
     def initialize(user:, params:)
-      @generate_trial = Gitlab::Utils.to_boolean(params[:trial_onboarding_flow])
+      @onboarding_status = ::Onboarding::Status.new(params, nil, nil)
 
       merged_params = params.merge(hardcoded_values).merge(user_values(user))
       @params = remapping_for_api(merged_params)
     end
 
     def execute
-      response = submit_client_request(@params, generate_trial: @generate_trial)
+      response = submit_client_request
 
       if response[:success]
         ServiceResponse.success
@@ -45,12 +45,15 @@ module GitlabSubscriptions
       params
     end
 
-    def submit_client_request(params, generate_trial: false)
-      if generate_trial
-        client.generate_trial(params.merge(product_interaction: 'SaaS Trial'))
+    def submit_client_request
+      if @onboarding_status.trial_onboarding_flow?
+        client.generate_trial(
+          @params.merge(product_interaction: ::Onboarding::Status::PRODUCT_INTERACTION[:trial])
+        )
       else
         client.generate_lead(
-          params.except(:glm_source, :glm_content).merge(product_interaction: 'SaaS Registration')
+          @params.except(:glm_source, :glm_content)
+                 .merge(product_interaction: ::Onboarding::Status::PRODUCT_INTERACTION[:lead])
         )
       end
     end

@@ -29,7 +29,7 @@ module Registrations
     end
 
     def create
-      service_class = if params[:import_url].present?
+      service_class = if import?
                         Registrations::ImportNamespaceCreateService
                       else
                         Registrations::StandardNamespaceCreateService
@@ -53,7 +53,7 @@ module Registrations
     def actions_after_success(payload)
       finish_onboarding(current_user)
 
-      if params[:import_url].present?
+      if import?
         import_url = URI.join(root_url, params[:import_url], "?namespace_id=#{payload[:group].id}").to_s
         redirect_to import_url
       else
@@ -80,8 +80,18 @@ module Registrations
       end
     end
 
-    def track_event(action)
-      ::Gitlab::Tracking.event(self.class.name, action, user: current_user, label: helpers.onboarding_track_label)
+    def import?
+      params[:import_url].present?
     end
+
+    def track_event(action)
+      ::Gitlab::Tracking
+        .event(self.class.name, action, user: current_user, label: onboarding_status.group_creation_tracking_label)
+    end
+
+    def onboarding_status
+      ::Onboarding::Status.new(params, session, current_user)
+    end
+    strong_memoize_attr :onboarding_status
   end
 end

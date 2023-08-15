@@ -20,10 +20,6 @@ module Projects
       }
     end
 
-    def onboarding_track_label
-      in_trial_onboarding_flow? ? 'trial_registration' : 'free_registration'
-    end
-
     private
 
     def onboarding_actions_data(project)

@@ -12,6 +12,8 @@ module Projects
       push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
     end
 
+    helper_method :onboarding_status
+
     feature_category :onboarding
     urgency :low, [:show]
 
@@ -32,5 +34,10 @@ module Projects
     def owner_access!
       access_denied! unless can?(current_user, :owner_access, project)
     end
+
+    def onboarding_status
+      ::Onboarding::Status.new(params, session, current_user)
+    end
+    strong_memoize_attr :onboarding_status
   end
 end

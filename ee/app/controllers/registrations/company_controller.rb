@@ -31,7 +31,7 @@ module Registrations
 
         unless onboarding_status.trial?
           experiment(:automatic_trial_registration, actor: current_user).track(:successfully_submitted_form,
-            label: tracking_label)
+            label: onboarding_status.tracking_label)
         end
 
         path = new_users_sign_up_group_path(redirect_params)
@@ -68,19 +68,13 @@ module Registrations
       # to exclude user that comes from trial registration
       base_params = glm_tracking_params.merge(trial: params[:trial])
 
-      return base_params unless params[:trial_onboarding_flow] == 'true'
+      return base_params unless onboarding_status.trial_onboarding_flow?
 
       base_params.merge(trial_onboarding_flow: true)
     end
 
     def track_event(action)
-      ::Gitlab::Tracking.event(self.class.name, action, user: current_user, label: tracking_label)
-    end
-
-    def tracking_label
-      return 'trial_registration' if onboarding_status.trial?
-
-      'free_registration'
+      ::Gitlab::Tracking.event(self.class.name, action, user: current_user, label: onboarding_status.tracking_label)
     end
 
     def onboarding_status
