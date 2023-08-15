@@ -210,8 +210,8 @@ RSpec.describe 'Protected Branches', :js, feature_category: :source_code_managem
     let(:visit_page) { project_settings_repository_path(project) }
     let(:group_level_tr) { find('[data-testid="protected-branch"][data-test-type="group-level"]') }
     let(:project_level_tr) { find('[data-testid="protected-branch"][data-test-type="project-level"]') }
-    let(:allowed_to_merge_input) { item_tr.find('[data-testid="protected-branch-allowed-to-merge"]') }
-    let(:allowed_to_push_input) { item_tr.find('[data-testid="protected-branch-allowed-to-push"]') }
+    let(:allowed_to_merge_input) { item_tr.find('[data-testid="protected-branch-allowed-to-merge"] .dropdown-toggle') }
+    let(:allowed_to_push_input) { item_tr.find('[data-testid="protected-branch-allowed-to-push"] .dropdown-toggle') }
     let(:force_push_toggle) { item_tr.find('[data-testid="protected-branch-force-push-toggle"]') }
     let(:code_owner_toggle) { item_tr.find('[data-testid="protected-branch-code-owner-toggle"]') }
     let(:action_td) { item_tr.find('[data-testid="protected-branch-action"]') }

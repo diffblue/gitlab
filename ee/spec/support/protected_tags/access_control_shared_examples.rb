@@ -98,7 +98,7 @@ RSpec.shared_examples "protected tags > access control > EE" do
     # Update Protected Tag
     within(".protected-tags-list") do
       find(".js-allowed-to-create").click
-      find(".gl-search-box-by-type-input").set(users.last.name) # Find a user that is not loaded
+      find(".gl-search-box-by-type-input", visible: true).set(users.last.name) # Find a user that is not loaded
 
       expect(page).to have_selector('.dropdown-header', count: 3)
 
