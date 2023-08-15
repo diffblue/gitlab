@@ -51,6 +51,7 @@ module PackageMetadata
                 fixed_versions: affected_package.fixed_versions,
                 pm_advisory_id: advisory_map[data_object.advisory_xid],
                 distro_version: affected_package.distro_version,
+                versions: affected_package.versions,
                 overridden_advisory_fields: affected_package.overridden_advisory_fields,
                 created_at: now,
                 updated_at: now

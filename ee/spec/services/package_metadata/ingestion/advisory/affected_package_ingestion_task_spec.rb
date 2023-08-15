@@ -17,9 +17,14 @@ RSpec.describe PackageMetadata::Ingestion::Advisory::AffectedPackageIngestionTas
     let(:import_data) do
       [
         build(:pm_advisory_data_object, advisory_xid: advisory_xid,
-          affected_packages: [build(:pm_affected_package_data_object,
-            package_name: existing_affected_package.package_name,
-            fixed_versions: %w[9.9.9])]),
+          affected_packages: [
+            build(:pm_affected_package_data_object,
+              package_name: existing_affected_package.package_name,
+              fixed_versions: %w[9.9.9],
+              versions: [{ 'number' => '1.2.4',
+                           'commit' => { 'tags' => ['v1.2.4-tag'], 'sha' => '295cf0778821bf08681e2bd0ef0e6cad04fc3001',
+                                         'timestamp' => '20190626162700' } }])
+          ]),
         build(:pm_advisory_data_object)
       ]
     end
@@ -38,6 +43,13 @@ RSpec.describe PackageMetadata::Ingestion::Advisory::AffectedPackageIngestionTas
           .to change { existing_affected_package.reload.fixed_versions }
           .from(%w[5.2.1.1])
           .to(%w[9.9.9])
+          .and change { existing_affected_package.reload.versions }
+          .from([{ 'number' => '1.2.3',
+                   'commit' => { 'tags' => ['v1.2.3-tag'], 'sha' => '295cf0778821bf08681e2bd0ef0e6cad04fc3001',
+                                 'timestamp' => '20190626162700' } }])
+          .to([{ 'number' => '1.2.4',
+                 'commit' => { 'tags' => ['v1.2.4-tag'], 'sha' => '295cf0778821bf08681e2bd0ef0e6cad04fc3001',
+                               'timestamp' => '20190626162700' } }])
       end
     end
 
