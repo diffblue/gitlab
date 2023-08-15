@@ -26,6 +26,10 @@ RSpec.describe 'Rack Attack EE throttles', feature_category: :system_access do
     let(:post_args) { { headers: oauth_token_headers(token) } }
 
     before do
+      allow_next_instance_of(Projects::Alerting::NotifyService) do |instance|
+        allow(instance).to receive(:execute).and_return(ServiceResponse.success)
+      end
+
       stub_application_setting(settings_to_set)
     end
 
@@ -86,36 +90,18 @@ RSpec.describe 'Rack Attack EE throttles', feature_category: :system_access do
   end
 
   describe 'requests to prometheus alert notify endpoint with oauth token' do
-    before do
-      allow_next_instance_of(Projects::Prometheus::Alerts::NotifyService) do |instance|
-        allow(instance).to receive(:execute).and_return(ServiceResponse.success)
-      end
-    end
-
     it_behaves_like 'incident management rate limiting' do
       let(:path) { "/#{project.full_path}/prometheus/alerts/notify" }
     end
   end
 
   describe 'requests to generic alert notify endpoint with oauth token' do
-    before do
-      allow_next_instance_of(Projects::Alerting::NotifyService) do |instance|
-        allow(instance).to receive(:execute).and_return(ServiceResponse.success)
-      end
-    end
-
     it_behaves_like 'incident management rate limiting' do
       let(:path) { "/#{project.full_path}/alerts/notify" }
     end
   end
 
   describe 'requests to AlertManagement::HttpIntegration notify endpoint with oauth token' do
-    before do
-      allow_next_instance_of(Projects::Alerting::NotifyService) do |instance|
-        allow(instance).to receive(:execute).and_return(ServiceResponse.success)
-      end
-    end
-
     it_behaves_like 'incident management rate limiting' do
       let(:path) { "/#{project.full_path}/alerts/notify/http-integration-name/eddd36969b2d3d6a" }
     end
