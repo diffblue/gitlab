@@ -21539,12 +21539,6 @@ msgstr ""
 msgid "Gitaly Servers"
 msgstr ""
 
-msgid "Gitaly relative path:"
-msgstr ""
-
-msgid "Gitaly storage name:"
-msgstr ""
-
 msgid "Gitaly timeouts"
 msgstr ""
 
@@ -36964,6 +36958,12 @@ msgstr ""
 msgid "ProjectSettings|Flexible tool to collaboratively develop ideas and plan work in this project."
 msgstr ""
 
+msgid "ProjectSettings|For Gitaly, location of data on the storage. For Gitaly Cluster, location of data on the virtual storage."
+msgstr ""
+
+msgid "ProjectSettings|For Gitaly, name of the storage that stores the repository. For Gitaly Cluster, name of the virtual storage that stores the repository."
+msgstr ""
+
 msgid "ProjectSettings|Forks"
 msgstr ""
 
@@ -37099,6 +37099,9 @@ msgstr ""
 msgid "ProjectSettings|Publish, store, and view packages in a project."
 msgstr ""
 
+msgid "ProjectSettings|Relative path:"
+msgstr ""
+
 msgid "ProjectSettings|Releases"
 msgstr ""
 
@@ -37169,6 +37172,9 @@ msgid "ProjectSettings|Squashing is never performed and the checkbox is hidden."
 msgstr ""
 
 msgid "ProjectSettings|Status checks must succeed"
+msgstr ""
+
+msgid "ProjectSettings|Storage name:"
 msgstr ""
 
 msgid "ProjectSettings|Store custom configuration files."
