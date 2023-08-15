@@ -1,6 +1,7 @@
 <script>
 import { mapActions } from 'vuex';
 import BoardListHeaderFoss from '~/boards/components/board_list_header.vue';
+import { fetchPolicies } from '~/lib/graphql';
 import { n__, __, sprintf } from '~/locale';
 import { setError } from '~/boards/graphql/cache_updates';
 import { listsDeferredQuery } from '../constants';
@@ -10,17 +11,15 @@ import { listsDeferredQuery } from '../constants';
 // eslint-disable-next-line @gitlab/no-runtime-template-compiler
 export default {
   extends: BoardListHeaderFoss,
-  inject: ['weightFeatureAvailable', 'isEpicBoard', 'issuableType'],
+  inject: ['weightFeatureAvailable', 'isEpicBoard'],
   apollo: {
     boardList: {
+      fetchPolicy: fetchPolicies.CACHE_AND_NETWORK,
       query() {
         return listsDeferredQuery[this.issuableType].query;
       },
       variables() {
-        return {
-          id: this.list.id,
-          filters: this.filterParams,
-        };
+        return this.countQueryVariables;
       },
       context: {
         isSingleRequest: true,
@@ -71,7 +70,7 @@ export default {
   watch: {
     boardList: {
       handler() {
-        if (!this.isEpicBoard) {
+        if (!this.isEpicBoard && !this.isApolloBoard) {
           this.setFullBoardIssuesCount({
             listId: this.boardList?.id,
             count: this.boardList?.issuesCount ?? 0,
