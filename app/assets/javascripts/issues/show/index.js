@@ -29,9 +29,13 @@ export function initIncidentApp(issueData = {}, store) {
     return undefined;
   }
 
-  bootstrapApollo({ ...issueState, issueType: el.dataset.issueType });
+  bootstrapApollo({ ...issueState, issueType: TYPE_INCIDENT });
 
   const {
+    authorId,
+    authorName,
+    authorUsername,
+    authorWebUrl,
     canCreateIncident,
     canUpdate,
     canUpdateTimelineEvent,
@@ -45,8 +49,8 @@ export function initIncidentApp(issueData = {}, store) {
     hasLinkedAlerts,
     slaFeatureAvailable,
     uploadMetricsFeatureAvailable,
-    state,
   } = issueData;
+  const headerActionsData = convertObjectPropsToCamelCase(JSON.parse(el.dataset.headerActionsData));
 
   const fullPath = `${projectNamespace}/${projectPath}`;
   const router = createRouter(currentPath, currentTab);
@@ -70,6 +74,22 @@ export function initIncidentApp(issueData = {}, store) {
       slaFeatureAvailable: parseBoolean(slaFeatureAvailable),
       uploadMetricsFeatureAvailable: parseBoolean(uploadMetricsFeatureAvailable),
       contentEditorOnIssues: gon.features.contentEditorOnIssues,
+      // for HeaderActions component
+      canCreateIssue: parseBoolean(headerActionsData.canCreateIncident),
+      canDestroyIssue: parseBoolean(headerActionsData.canDestroyIssue),
+      canPromoteToEpic: parseBoolean(headerActionsData.canPromoteToEpic),
+      canReopenIssue: parseBoolean(headerActionsData.canReopenIssue),
+      canReportSpam: parseBoolean(headerActionsData.canReportSpam),
+      canUpdateIssue: parseBoolean(headerActionsData.canUpdateIssue),
+      isIssueAuthor: parseBoolean(headerActionsData.isIssueAuthor),
+      issuePath: headerActionsData.issuePath,
+      newIssuePath: headerActionsData.newIssuePath,
+      projectPath: headerActionsData.projectPath,
+      reportAbusePath: headerActionsData.reportAbusePath,
+      reportedUserId: headerActionsData.reportedUserId,
+      reportedFromUrl: headerActionsData.reportedFromUrl,
+      submitAsSpamPath: headerActionsData.submitAsSpamPath,
+      issuableEmailAddress: headerActionsData.issuableEmailAddress,
     },
     computed: {
       ...mapGetters(['getNoteableData']),
@@ -78,8 +98,15 @@ export function initIncidentApp(issueData = {}, store) {
       return createElement(IssueApp, {
         props: {
           ...issueData,
+          author: {
+            id: authorId,
+            name: authorName,
+            username: authorUsername,
+            webUrl: authorWebUrl,
+          },
           issueId: Number(issuableId),
-          issuableStatus: state,
+          issuableStatus: this.getNoteableData?.state,
+          issuableType: TYPE_INCIDENT,
           descriptionComponent: IncidentTabs,
           showTitleBorder: false,
           isConfidential: this.getNoteableData?.confidential,
