@@ -1,6 +1,7 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import Component from 'ee/subscriptions/new/components/checkout/zuora.vue';
 import { getStoreConfig } from 'ee/subscriptions/new/store';

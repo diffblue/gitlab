@@ -1,5 +1,6 @@
 <script>
 import { GlSprintf } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState } from 'vuex';
 import { STEP_PAYMENT_METHOD, TRACK_SUCCESS_MESSAGE } from 'ee/subscriptions/constants';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';

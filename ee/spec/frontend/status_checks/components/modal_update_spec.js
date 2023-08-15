@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import ModalUpdate from 'ee/status_checks/components/modal_update.vue';
 import SharedModal from 'ee/status_checks/components/shared_modal.vue';

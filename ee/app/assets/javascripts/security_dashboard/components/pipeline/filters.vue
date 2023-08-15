@@ -1,6 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { GlToggle } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import { DISMISSAL_STATES } from 'ee/security_dashboard/store/modules/filters/constants';
 import { s__ } from '~/locale';

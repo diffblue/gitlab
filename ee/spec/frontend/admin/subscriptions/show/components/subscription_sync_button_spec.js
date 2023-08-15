@@ -1,5 +1,6 @@
 import { GlButton, GlIcon, GlLoadingIcon, GlPopover } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import SubscriptionSyncButton from 'ee/admin/subscriptions/show/components/subscription_sync_button.vue';
 import * as initialStore from 'ee/admin/subscriptions/show/store/';

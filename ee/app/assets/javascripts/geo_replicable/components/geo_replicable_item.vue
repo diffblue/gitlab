@@ -1,5 +1,6 @@
 <script>
 import { GlLink, GlButton } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState } from 'vuex';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import { __, s__ } from '~/locale';

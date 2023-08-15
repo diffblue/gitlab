@@ -11,6 +11,7 @@ import { shallowMount } from '@vue/test-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Vue, { nextTick } from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import ProductivityApp from 'ee/analytics/productivity_analytics/components/app.vue';

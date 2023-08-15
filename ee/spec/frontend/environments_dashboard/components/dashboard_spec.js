@@ -1,6 +1,7 @@
 import { GlButton, GlEmptyState, GlModal, GlSprintf, GlLink, GlPagination } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import component from 'ee/environments_dashboard/components/dashboard/dashboard.vue';
 import Environment from 'ee/environments_dashboard/components/dashboard/environment.vue';

@@ -1,5 +1,6 @@
 <script>
 import { GlLink, GlButton, GlSprintf } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapGetters } from 'vuex';
 import { GEO_REPLICATION_SUPPORTED_TYPES_URL } from 'ee/geo_sites/constants';
 import { s__ } from '~/locale';

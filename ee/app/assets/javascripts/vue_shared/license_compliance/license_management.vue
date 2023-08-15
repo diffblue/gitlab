@@ -1,4 +1,5 @@
 <script>
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapGetters, mapActions } from 'vuex';
 import { GlButton, GlLoadingIcon, GlIcon, GlPopover } from '@gitlab/ui';
 import { LICENSE_MANAGEMENT } from 'ee/vue_shared/license_compliance/store/constants';

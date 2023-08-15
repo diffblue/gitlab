@@ -1,4 +1,5 @@
 <script>
+// eslint-disable-next-line no-restricted-imports
 import { mapActions } from 'vuex';
 import BoardsSelectorFoss from '~/boards/components/boards_selector.vue';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';

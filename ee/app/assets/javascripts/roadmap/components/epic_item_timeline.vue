@@ -1,5 +1,6 @@
 <script>
 import { GlPopover, GlProgressBar, GlIcon } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapState } from 'vuex';
 import { __, sprintf } from '~/locale';
 import {

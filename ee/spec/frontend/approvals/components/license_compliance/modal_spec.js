@@ -1,6 +1,7 @@
 import { GlSprintf, GlModal } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import LicenseComplianceModal from 'ee/approvals/components/license_compliance/modal.vue';
 import { APPROVALS_MODAL } from 'ee/approvals/stores/modules/license_compliance';

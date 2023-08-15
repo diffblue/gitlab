@@ -1,4 +1,5 @@
 <script>
+// eslint-disable-next-line no-restricted-imports
 import { mapActions } from 'vuex';
 import { REMOVE_SITE_MODAL_ID } from 'ee/geo_sites/constants';
 import { BV_SHOW_MODAL } from '~/lib/utils/constants';

@@ -1,5 +1,6 @@
 <script>
 import { GlDisclosureDropdownItem } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapActions } from 'vuex';
 
 export default {

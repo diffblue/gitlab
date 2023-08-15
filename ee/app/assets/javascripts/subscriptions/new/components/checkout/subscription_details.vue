@@ -9,6 +9,7 @@ import {
   GlSprintf,
 } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
+// eslint-disable-next-line no-restricted-imports
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { QSR_RECONCILIATION_PATH, STEP_SUBSCRIPTION_DETAILS } from 'ee/subscriptions/constants';
 import { PurchaseEvent, NEW_GROUP } from 'ee/subscriptions/new/constants';

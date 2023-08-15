@@ -1,5 +1,6 @@
 <script>
 import { GlButton, GlIcon, GlLink, GlLoadingIcon, GlPopover, GlTooltipDirective } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { STATUS_OPEN } from '~/issues/constants';
 import { formatDate } from '~/lib/utils/datetime_utility';

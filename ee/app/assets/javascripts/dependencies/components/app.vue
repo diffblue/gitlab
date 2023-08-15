@@ -1,5 +1,6 @@
 <script>
 import { GlEmptyState, GlIcon, GlLoadingIcon, GlSprintf, GlLink } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { __, s__ } from '~/locale';
 import { DEPENDENCY_LIST_TYPES } from '../store/constants';

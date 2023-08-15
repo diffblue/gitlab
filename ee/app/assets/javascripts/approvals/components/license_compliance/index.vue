@@ -1,6 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { GlButton, GlIcon, GlLink, GlSkeletonLoader, GlSprintf } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState } from 'vuex';
 import { APPROVALS, APPROVALS_MODAL } from 'ee/approvals/stores/modules/license_compliance';
 import { s__ } from '~/locale';

@@ -10,6 +10,7 @@ import {
   GlIcon,
   GlTooltipDirective,
 } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapGetters, mapState } from 'vuex';
 import { s__ } from '~/locale';
 import { billingPlans, billingPlanNames } from '~/integrations/constants';

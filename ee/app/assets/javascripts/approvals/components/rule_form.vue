@@ -1,6 +1,7 @@
 <script>
 import { GlFormGroup, GlFormInput } from '@gitlab/ui';
 import { groupBy, isEqual, isNumber } from 'lodash';
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
 import { sprintf } from '~/locale';

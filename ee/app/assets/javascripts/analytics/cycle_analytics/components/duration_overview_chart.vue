@@ -1,5 +1,6 @@
 <script>
 import { GlAreaChart, GlChartSeriesLabel } from '@gitlab/ui/dist/charts';
+// eslint-disable-next-line no-restricted-imports
 import { mapGetters, mapState } from 'vuex';
 import { GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';

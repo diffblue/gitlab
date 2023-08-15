@@ -6,6 +6,7 @@ import {
   GlFormInput,
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions, mapGetters } from 'vuex';
 import { s__, __ } from '~/locale';
 import AccessDropdown from '~/projects/settings/components/access_dropdown.vue';

@@ -1,4 +1,5 @@
 <script>
+// eslint-disable-next-line no-restricted-imports
 import { mapState } from 'vuex';
 import { PROJECT_APPROVAL_SETTINGS_LABELS_I18N } from '../../constants';
 import ApprovalSettings from '../approval_settings.vue';

@@ -1,6 +1,7 @@
 import { GlButton, GlLabel, GlLink, GlIcon, GlTooltip } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 
 import ItemWeight from 'ee/boards/components/issue_card_weight.vue';

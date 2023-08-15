@@ -2,6 +2,7 @@ import { GlDropdown } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import BoardsSelector from 'ee/boards/components/boards_selector.vue';
 import epicBoardsQuery from 'ee/boards/graphql/epic_boards.query.graphql';

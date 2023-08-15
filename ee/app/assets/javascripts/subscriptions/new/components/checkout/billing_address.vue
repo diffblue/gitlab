@@ -1,6 +1,7 @@
 <script>
 import { GlFormGroup, GlFormInput, GlFormSelect } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import {
   STEP_BILLING_ADDRESS,

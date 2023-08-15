@@ -8,6 +8,7 @@ import {
   GlSearchBoxByType,
 } from '@gitlab/ui';
 import { debounce } from 'lodash';
+// eslint-disable-next-line no-restricted-imports
 import { mapGetters, mapState } from 'vuex';
 import { getGroupLabels } from 'ee/api/analytics_api';
 import { removeFlash } from '~/analytics/shared/utils';

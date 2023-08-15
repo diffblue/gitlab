@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import Translate from '~/vue_shared/translate';
 import createDefaultClient from '~/lib/graphql';

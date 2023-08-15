@@ -2,6 +2,7 @@ import { GlButton, GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 
 import VueApollo from 'vue-apollo';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import IterationSelect from 'ee/boards/components/iteration_select.vue';
 

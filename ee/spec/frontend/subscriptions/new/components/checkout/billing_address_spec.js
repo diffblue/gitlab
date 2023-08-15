@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 
 import VueApollo from 'vue-apollo';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import { mockTracking } from 'helpers/tracking_helper';
 import { STEPS } from 'ee/subscriptions/constants';

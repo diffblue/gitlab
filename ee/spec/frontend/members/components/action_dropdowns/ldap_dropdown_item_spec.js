@@ -1,6 +1,7 @@
 import { GlListboxItem } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import LdapDropdownFooter from 'ee/members/components/action_dropdowns/ldap_dropdown_footer.vue';
 import waitForPromises from 'helpers/wait_for_promises';

@@ -1,5 +1,6 @@
 <script>
 import { GlLoadingIcon } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState } from 'vuex';
 import { s__ } from '~/locale';
 import GeoSettingsForm from './geo_settings_form.vue';

@@ -2,6 +2,7 @@ import { GlEmptyState } from '@gitlab/ui';
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 
 import InsightsChart from 'ee/insights/components/insights_chart.vue';

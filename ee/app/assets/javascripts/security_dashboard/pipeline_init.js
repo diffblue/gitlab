@@ -1,4 +1,5 @@
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import PipelineSecurityDashboard from './components/pipeline/pipeline_security_dashboard.vue';
 import apolloProvider from './graphql/provider';

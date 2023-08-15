@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import GeoSiteForm from 'ee/geo_site_form/components/geo_site_form.vue';
 import GeoSiteFormCapacities from 'ee/geo_site_form/components/geo_site_form_capacities.vue';

@@ -1,5 +1,6 @@
 import { GlLink } from '@gitlab/ui';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import VueApollo from 'vue-apollo';
 import { triggerEvent, mockTracking, unmockTracking } from 'helpers/tracking_helper';

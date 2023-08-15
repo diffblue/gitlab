@@ -1,5 +1,6 @@
 <script>
 import { GlLink, GlIcon, GlTooltipDirective } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapState } from 'vuex';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { createCveIdRequestIssueBody } from '~/helpers/cve_id_request_helper';

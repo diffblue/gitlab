@@ -1,4 +1,5 @@
 <script>
+// eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState } from 'vuex';
 import Pagination from '~/vue_shared/components/pagination_links.vue';
 import { LICENSE_LIST } from '../store/constants';

@@ -1,6 +1,7 @@
 import { GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import ModalCreate from 'ee/status_checks/components/modal_create.vue';
 import SharedModal from 'ee/status_checks/components/shared_modal.vue';

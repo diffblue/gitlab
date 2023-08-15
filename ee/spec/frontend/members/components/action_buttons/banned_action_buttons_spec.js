@@ -1,6 +1,7 @@
 import { GlButton, GlForm } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import BannedActionButtons from 'ee/members/components/action_buttons/banned_action_buttons.vue';
 import { MEMBER_TYPES } from '~/members/constants';

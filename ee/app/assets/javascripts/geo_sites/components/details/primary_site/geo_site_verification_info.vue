@@ -1,5 +1,6 @@
 <script>
 import { GlCard, GlIcon, GlPopover, GlLink } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapGetters } from 'vuex';
 import { HELP_INFO_URL } from 'ee/geo_sites/constants';
 import { s__, __ } from '~/locale';

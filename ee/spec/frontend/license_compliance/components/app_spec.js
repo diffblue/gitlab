@@ -1,6 +1,7 @@
 import { GlEmptyState, GlLoadingIcon, GlAlert } from '@gitlab/ui';
 import { shallowMount, mount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 
 import LicenseComplianceApp from 'ee/license_compliance/components/app.vue';

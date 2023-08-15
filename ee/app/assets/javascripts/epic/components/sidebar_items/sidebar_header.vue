@@ -1,4 +1,5 @@
 <script>
+// eslint-disable-next-line no-restricted-imports
 import { mapActions } from 'vuex';
 
 import ToggleSidebar from '~/sidebar/components/toggle/toggle_sidebar.vue';

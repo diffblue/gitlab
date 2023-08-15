@@ -1,6 +1,7 @@
 import { GlEmptyState, GlSprintf, GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import GeoReplicableEmptyState from 'ee/geo_replicable/components/geo_replicable_empty_state.vue';
 import { GEO_TROUBLESHOOTING_LINK } from 'ee/geo_replicable/constants';

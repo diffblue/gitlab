@@ -1,5 +1,6 @@
 <script>
 import { debounce } from 'lodash';
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import { RULE_TYPE_ANY_APPROVER } from '../../constants';
 

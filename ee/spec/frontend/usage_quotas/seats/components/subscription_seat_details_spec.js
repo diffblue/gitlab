@@ -1,6 +1,7 @@
 import { GlTableLite } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import SubscriptionSeatDetails from 'ee/usage_quotas/seats/components/subscription_seat_details.vue';
 import SubscriptionSeatDetailsLoader from 'ee/usage_quotas/seats/components/subscription_seat_details_loader.vue';

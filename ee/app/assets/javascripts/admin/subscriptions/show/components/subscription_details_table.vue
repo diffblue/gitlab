@@ -1,5 +1,6 @@
 <script>
 import { GlSkeletonLoader, GlTableLite } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapGetters } from 'vuex';
 import { slugify, slugifyWithUnderscore } from '~/lib/utils/text_utility';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';

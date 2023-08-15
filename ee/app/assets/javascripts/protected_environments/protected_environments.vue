@@ -1,5 +1,6 @@
 <script>
 import { GlCard, GlBadge, GlButton, GlCollapse, GlIcon, GlModal } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import Pagination from '~/vue_shared/components/pagination_links.vue';
 import { n__, s__, __, sprintf } from '~/locale';

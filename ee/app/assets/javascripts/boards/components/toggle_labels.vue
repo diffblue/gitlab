@@ -1,5 +1,6 @@
 <script>
 import { GlToggle } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 

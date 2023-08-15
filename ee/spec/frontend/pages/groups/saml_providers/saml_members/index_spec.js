@@ -1,6 +1,7 @@
 import { GlTable, GlSkeletonLoader } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import MembersApp from 'ee/pages/groups/saml_providers/saml_members/index.vue';
 import createInitialState from 'ee/pages/groups/saml_providers/saml_members/store/state';

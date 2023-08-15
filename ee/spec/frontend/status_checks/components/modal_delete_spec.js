@@ -1,5 +1,6 @@
 import { GlModal, GlSprintf } from '@gitlab/ui';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import ModalDelete from 'ee/status_checks/components/modal_delete.vue';
 import { stubComponent } from 'helpers/stub_component';

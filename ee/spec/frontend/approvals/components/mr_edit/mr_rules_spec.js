@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import MRRules from 'ee/approvals/components/mr_edit/mr_rules.vue';
 import RuleControls from 'ee/approvals/components/rule_controls.vue';

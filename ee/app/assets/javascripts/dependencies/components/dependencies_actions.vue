@@ -1,5 +1,6 @@
 <script>
 import { GlButton, GlSorting, GlSortingItem, GlTooltipDirective } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState } from 'vuex';
 import { omit } from 'lodash';
 import { __, s__ } from '~/locale';

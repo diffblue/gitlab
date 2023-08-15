@@ -1,4 +1,5 @@
 <script>
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapGetters } from 'vuex';
 import { DATA_VIZ_BLUE_500 } from '@gitlab/ui/dist/tokens/js/tokens';
 import { GlLineChart } from '@gitlab/ui/dist/charts';

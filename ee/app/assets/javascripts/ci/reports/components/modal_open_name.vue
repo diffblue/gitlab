@@ -1,5 +1,6 @@
 <script>
 import { GlTooltipDirective, GlResizeObserverDirective, GlButton } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapActions } from 'vuex';
 import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/components/constants';
 import { BV_SHOW_MODAL } from '~/lib/utils/constants';

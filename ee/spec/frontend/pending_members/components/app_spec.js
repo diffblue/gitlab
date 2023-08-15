@@ -1,6 +1,7 @@
 import { GlPagination, GlBadge, GlAvatarLabeled, GlModal } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import { mockDataMembers, mockInvitedApprovedMember } from 'ee_jest/pending_members/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';

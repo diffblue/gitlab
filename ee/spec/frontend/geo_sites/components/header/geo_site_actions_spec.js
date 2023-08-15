@@ -1,5 +1,6 @@
 import { shallowMount, createWrapper } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import GeoSiteActions from 'ee/geo_sites/components/header/geo_site_actions.vue';
 import GeoSiteActionsDesktop from 'ee/geo_sites/components/header/geo_site_actions_desktop.vue';

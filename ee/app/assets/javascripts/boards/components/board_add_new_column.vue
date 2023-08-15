@@ -12,6 +12,7 @@ import {
   GlFormRadioGroup,
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapActions, mapGetters, mapState } from 'vuex';
 import BoardAddNewColumnForm from '~/boards/components/board_add_new_column_form.vue';
 import { ListType, createListMutations, listsQuery, BoardType } from 'ee_else_ce/boards/constants';

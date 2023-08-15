@@ -1,6 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import FeatureFlagActions from 'ee/feature_flags/components/actions.vue';
 import waitForPromises from 'helpers/wait_for_promises';

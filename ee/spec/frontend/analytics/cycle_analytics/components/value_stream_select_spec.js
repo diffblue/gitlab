@@ -1,5 +1,6 @@
 import { GlCollapsibleListbox } from '@gitlab/ui';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import ValueStreamSelect from 'ee/analytics/cycle_analytics/components/value_stream_select.vue';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';

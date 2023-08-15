@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import modalModule from '~/vuex_shared/modules/modal';
 import state from './state';

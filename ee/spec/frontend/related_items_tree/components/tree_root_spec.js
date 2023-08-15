@@ -2,6 +2,7 @@ import { GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import Draggable from 'vuedraggable';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 
 import { ESC_KEY_CODE } from '~/lib/utils/keycodes';

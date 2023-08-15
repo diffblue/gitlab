@@ -1,5 +1,6 @@
 <script>
 import { GlForm, GlToggle, GlFormGroup, GlFormTextarea, GlButton, GlLoadingIcon } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState } from 'vuex';
 import { __ } from '~/locale';
 import { mapComputed } from '~/vuex_shared/bindings';

@@ -1,5 +1,6 @@
 <script>
 import { GlTabs, GlTab, GlBadge, GlSearchBoxByType } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapGetters, mapActions, mapState } from 'vuex';
 import { setUrlParams, updateHistory } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';

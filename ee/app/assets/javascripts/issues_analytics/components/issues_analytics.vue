@@ -2,6 +2,7 @@
 import { GlLoadingIcon, GlEmptyState } from '@gitlab/ui';
 import { GlColumnChart, GlChartLegend } from '@gitlab/ui/dist/charts';
 import { engineeringNotation, sum, average } from '@gitlab/ui/src/utils/number_utils';
+// eslint-disable-next-line no-restricted-imports
 import { mapGetters, mapActions, mapState } from 'vuex';
 import { getMonthNames } from '~/lib/utils/datetime_utility';
 import { getSvgIconPathContent } from '~/lib/utils/icon_utils';

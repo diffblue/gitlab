@@ -1,6 +1,7 @@
 import { GlModal, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import Component from 'ee/vue_shared/license_compliance/components/delete_confirmation_modal.vue';
 import { allowedLicense } from '../mock_data';

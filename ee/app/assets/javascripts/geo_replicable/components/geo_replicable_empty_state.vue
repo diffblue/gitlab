@@ -1,5 +1,6 @@
 <script>
 import { GlEmptyState, GlSprintf, GlLink } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapGetters } from 'vuex';
 import { __, s__, sprintf } from '~/locale';
 import { GEO_TROUBLESHOOTING_LINK } from '../constants';

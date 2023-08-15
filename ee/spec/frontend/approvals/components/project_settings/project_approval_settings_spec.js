@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import ApprovalSettings from 'ee/approvals/components/approval_settings.vue';
 import ProjectApprovalSettings from 'ee/approvals/components/project_settings/project_approval_settings.vue';

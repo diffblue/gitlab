@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import RuleInput from 'ee/approvals/components/mr_edit/rule_input.vue';
 import { createStoreOptions } from 'ee/approvals/stores';

@@ -1,5 +1,6 @@
 <script>
 import { GlLoadingIcon } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import RoadmapShell from 'jh_else_ee/roadmap/components/roadmap_shell.vue';
 

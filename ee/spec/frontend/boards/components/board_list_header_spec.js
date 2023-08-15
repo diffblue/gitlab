@@ -1,6 +1,7 @@
 import { GlButtonGroup } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import BoardListHeader from 'ee/boards/components/board_list_header.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';

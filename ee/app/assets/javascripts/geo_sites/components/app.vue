@@ -1,5 +1,6 @@
 <script>
 import { GlButton, GlLoadingIcon, GlModal } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState, mapGetters } from 'vuex';
 import { s__, __ } from '~/locale';
 import { REMOVE_SITE_MODAL_ID } from '../constants';

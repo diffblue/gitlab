@@ -2,6 +2,7 @@ import { GlIcon } from '@gitlab/ui';
 import { GlLineChart } from '@gitlab/ui/dist/charts';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import { DURATION_STAGE_TIME_DESCRIPTION } from 'ee/analytics/cycle_analytics/constants';
 import DurationChart from 'ee/analytics/cycle_analytics/components/duration_chart.vue';

@@ -1,4 +1,5 @@
 <script>
+// eslint-disable-next-line no-restricted-imports
 import { mapGetters } from 'vuex';
 import { s__ } from '~/locale';
 import GeoSiteReplicationSyncPercentage from './geo_site_replication_sync_percentage.vue';

@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import ValueStreamForm from 'ee/analytics/cycle_analytics/components/value_stream_form.vue';

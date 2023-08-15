@@ -1,4 +1,5 @@
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import { shallowMount } from '@vue/test-utils';
 import EpicItemTimelineComponent from 'ee/roadmap/components/epic_item_timeline.vue';

@@ -1,5 +1,6 @@
 <script>
 import { GlButton, GlIcon, GlLabel, GlTooltip } from '@gitlab/ui';
+// eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState } from 'vuex';
 import { getIdFromGraphQLId, getNodesOrDefault } from '~/graphql_shared/utils';
 import { convertObjectPropsToCamelCase, isScopedLabel } from '~/lib/utils/common_utils';

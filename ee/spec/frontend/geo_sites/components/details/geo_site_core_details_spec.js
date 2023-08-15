@@ -1,5 +1,6 @@
 import { GlLink } from '@gitlab/ui';
 import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoSiteCoreDetails from 'ee/geo_sites/components/details/geo_site_core_details.vue';
