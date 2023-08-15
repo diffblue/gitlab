@@ -4,6 +4,7 @@ module Projects
   module Security
     class VulnerabilitiesController < Projects::ApplicationController
       include IssuableActions
+      include GovernUsageProjectTracking
 
       before_action do
         push_frontend_feature_flag(:create_vulnerability_jira_issue_via_graphql, @project)
@@ -18,6 +19,7 @@ module Projects
 
       feature_category :vulnerability_management
       urgency :low
+      track_govern_activity 'security_vulnerabilities', :show
 
       def show
         push_force_frontend_feature_flag(

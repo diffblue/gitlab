@@ -3,6 +3,8 @@
 module Groups
   module Security
     class VulnerabilitiesController < Groups::ApplicationController
+      include GovernUsageGroupTracking
+
       layout 'group'
 
       before_action do
@@ -11,6 +13,7 @@ module Groups
 
       feature_category :vulnerability_management
       urgency :low
+      track_govern_activity 'security_vulnerabilities', :index, conditions: :dashboard_available?
 
       def index
         render :unavailable unless dashboard_available?

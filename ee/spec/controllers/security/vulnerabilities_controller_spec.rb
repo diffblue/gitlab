@@ -25,11 +25,19 @@ RSpec.describe Security::VulnerabilitiesController, feature_category: :vulnerabi
         end
 
         it { is_expected.to render_template(:instance_security) }
+
+        it_behaves_like 'tracks govern usage event', 'users_visiting_security_vulnerabilities' do
+          let(:request) { subject }
+        end
       end
 
       context 'is disabled' do
         it { is_expected.to have_gitlab_http_status(:not_found) }
         it { is_expected.to render_template('errors/not_found') }
+
+        it_behaves_like "doesn't track govern usage event", 'users_visiting_security_vulnerabilities' do
+          let(:request) { subject }
+        end
       end
     end
   end

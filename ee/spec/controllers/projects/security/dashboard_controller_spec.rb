@@ -61,5 +61,9 @@ RSpec.describe Projects::Security::DashboardController, feature_category: :vulne
         expect(response.body).to have_css('div#js-project-security-dashboard[data-has-vulnerabilities="true"]')
       end
     end
+
+    it_behaves_like 'tracks govern usage event', 'users_visiting_security_dashboard' do
+      let(:request) { show_security_dashboard }
+    end
   end
 end

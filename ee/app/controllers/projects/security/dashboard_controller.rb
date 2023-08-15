@@ -5,6 +5,7 @@ module Projects
     class DashboardController < Projects::ApplicationController
       include SecurityAndCompliancePermissions
       include SecurityDashboardsPermissions
+      include GovernUsageProjectTracking
 
       alias_method :vulnerable, :project
 
@@ -14,6 +15,7 @@ module Projects
 
       feature_category :vulnerability_management
       urgency :low
+      track_govern_activity 'security_dashboard', :index
     end
   end
 end

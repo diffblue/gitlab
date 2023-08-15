@@ -1,13 +1,13 @@
 ---
-key_path: redis_hll_counters.govern.users_visiting_govern_pages_monthly
-description: Unique count of govern actions in a given month
+key_path: redis_hll_counters.govern.users_visiting_threat_insights_pages_monthly
+description: Unique count of threat insights actions in a given month
 product_section: sec
 product_stage: govern
-product_group: security_policies
+product_group: threat_insights
 value_type: number
 status: active
 milestone: "16.3"
-introduced_by_url:
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/129482
 time_frame: 28d
 data_source: redis_hll
 data_category: optional
@@ -17,17 +17,14 @@ options:
     operator: OR
     attribute: user_id
   events:
-    - i_code_review_merge_request_widget_security_reports_expand
-    - users_visiting_security_policies
-    - users_creating_merge_requests_with_security_policies
-    - users_visiting_dependencies
-    - users_visiting_licenses
     - users_visiting_security_vulnerability_report
     - users_visiting_security_dashboard
     - users_visiting_security_vulnerabilities
     - users_visiting_pipeline_security
-performance_indicator_type:
-- smau
+    - users_visiting_dependencies
+    - users_visiting_licenses
+    - i_code_review_merge_request_widget_security_reports_expand
+performance_indicator_type: []
 distribution:
 - ee
 tier:

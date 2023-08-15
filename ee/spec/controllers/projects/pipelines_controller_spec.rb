@@ -16,6 +16,8 @@ RSpec.describe Projects::PipelinesController do
 
   describe 'GET security', feature_category: :vulnerability_management do
     context 'with a sast artifact' do
+      let(:request) { get :security, params: { namespace_id: project.namespace, project_id: project, id: pipeline } }
+
       before do
         create(:ee_ci_build, :sast, pipeline: pipeline)
       end
@@ -23,24 +25,26 @@ RSpec.describe Projects::PipelinesController do
       context 'with feature enabled' do
         before do
           stub_licensed_features(sast: true, security_dashboard: true)
-
-          get :security, params: { namespace_id: project.namespace, project_id: project, id: pipeline }
         end
 
         it 'responds with a 200 and show the template' do
+          request
+
           expect(response).to have_gitlab_http_status(:ok)
           expect(response).to render_template :show
         end
+
+        it_behaves_like 'tracks govern usage event', 'users_visiting_pipeline_security'
       end
 
       context 'with feature disabled' do
-        before do
-          get :security, params: { namespace_id: project.namespace, project_id: project, id: pipeline }
-        end
-
         it 'redirects to the pipeline page' do
+          request
+
           expect(response).to redirect_to(pipeline_path(pipeline))
         end
+
+        it_behaves_like "doesn't track govern usage event", 'users_visiting_pipeline_security'
       end
     end
 

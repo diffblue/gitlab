@@ -24,17 +24,29 @@ RSpec.describe Groups::Security::VulnerabilitiesController, feature_category: :v
         end
 
         it { is_expected.to have_gitlab_http_status(:ok) }
+
+        it_behaves_like 'tracks govern usage event', 'users_visiting_security_vulnerabilities' do
+          let(:request) { subject }
+        end
       end
 
       context 'when user is not allowed to access group security vulnerabilities' do
         it { is_expected.to have_gitlab_http_status(:ok) }
         it { is_expected.to render_template(:unavailable) }
+
+        it_behaves_like "doesn't track govern usage event", 'users_visiting_security_vulnerabilities' do
+          let(:request) { subject }
+        end
       end
     end
 
     context 'when security dashboard feature is disabled' do
       it { is_expected.to have_gitlab_http_status(:ok) }
       it { is_expected.to render_template(:unavailable) }
+
+      it_behaves_like "doesn't track govern usage event", 'users_visiting_security_vulnerabilities' do
+        let(:request) { subject }
+      end
     end
   end
 end
