@@ -237,16 +237,6 @@ RSpec.describe Security::DependencyListService, feature_category: :vulnerability
             end
           end
 
-          context 'when the pipeline has a build with a license scanning report' do
-            let(:scanner_type) { ::Gitlab::LicenseScanning::ArtifactScanner }
-
-            before do
-              pipeline.builds << create(:ee_ci_build, :success, :dependency_scanning_with_matching_licenses, pipeline: pipeline)
-            end
-
-            it_behaves_like 'paginate license application'
-          end
-
           context 'when the pipeline has a build with a cyclonedx sbom scanning report' do
             let(:scanner_type) { ::Gitlab::LicenseScanning::SbomScanner }
 

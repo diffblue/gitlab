@@ -769,6 +769,7 @@ RSpec.describe Projects::MergeRequestsController do
   describe 'GET #license_scanning_reports', feature_category: :software_composition_analysis do
     let(:comparison_status) { { status: :parsed, data: { new_licenses: [], existing_licenses: [], removed_licenses: [] } } }
     let(:expected_response) { { "new_licenses" => [], "existing_licenses" => [], "removed_licenses" => [] } }
+    let_it_be_with_reload(:merge_request) { create(:ee_merge_request, :with_cyclonedx_reports, source_project: project, author: author) }
 
     let(:params) do
       {
@@ -792,29 +793,16 @@ RSpec.describe Projects::MergeRequestsController do
       end
     end
 
-    context 'when the license_scanning_sbom_scanner feature flag is false' do
-      let_it_be_with_reload(:merge_request) { create(:ee_merge_request, :with_license_scanning_reports, source_project: project, author: author) }
-
-      before do
-        stub_feature_flags(license_scanning_sbom_scanner: false)
-      end
-
-      it_behaves_like 'license scanning report comparison', :with_license_scanning_reports
-      it_behaves_like 'authorize read pipeline'
-    end
-
-    context 'when the license_scanning_sbom_scanner feature flag is true' do
-      let_it_be_with_reload(:merge_request) { create(:ee_merge_request, :with_cyclonedx_reports, source_project: project, author: author) }
-
-      it_behaves_like 'license scanning report comparison', :with_cyclonedx_reports
-      it_behaves_like 'authorize read pipeline'
-    end
+    it_behaves_like 'license scanning report comparison', :with_cyclonedx_reports
+    it_behaves_like 'authorize read pipeline'
   end
 
   describe 'GET #license_scanning_reports_collapsed', feature_category: :software_composition_analysis do
     let(:comparison_status) { { status: :parsed, data: { new_licenses: 0, existing_licenses: 0, removed_licenses: 0 } } }
     let(:comparison_status_extended) { { status: :parsed, data: { new_licenses: [], existing_licenses: [], removed_licenses: [] } } }
     let(:expected_response) { { "new_licenses" => 0, "existing_licenses" => 0, "removed_licenses" => 0 } }
+
+    let_it_be_with_reload(:merge_request) { create(:ee_merge_request, :with_cyclonedx_reports, source_project: project, author: author) }
 
     let(:params) do
       {
@@ -843,23 +831,8 @@ RSpec.describe Projects::MergeRequestsController do
       end
     end
 
-    context "when the license_scanning_sbom_scanner feature flag is false" do
-      let_it_be_with_reload(:merge_request) { create(:ee_merge_request, :with_license_scanning_reports, source_project: project, author: author) }
-
-      before do
-        stub_feature_flags(license_scanning_sbom_scanner: false)
-      end
-
-      it_behaves_like 'license scanning report comparison', :with_license_scanning_reports
-      it_behaves_like 'authorize read pipeline'
-    end
-
-    context "when the license_scanning_sbom_scanner feature flag is true" do
-      let_it_be_with_reload(:merge_request) { create(:ee_merge_request, :with_cyclonedx_reports, source_project: project, author: author) }
-
-      it_behaves_like 'license scanning report comparison', :with_cyclonedx_reports
-      it_behaves_like 'authorize read pipeline'
-    end
+    it_behaves_like 'license scanning report comparison', :with_cyclonedx_reports
+    it_behaves_like 'authorize read pipeline'
   end
 
   describe 'GET #metrics_reports', feature_category: :metrics do

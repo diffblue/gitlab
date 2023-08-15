@@ -18,14 +18,14 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :soft
 
     context "when loading data for multiple reports" do
       it 'loads the data efficiently' do
-        base_pipeline = create(:ci_pipeline, :success, project: project)
-        head_pipeline = create(:ci_pipeline, :success, project: project, builds: [create(:ci_build, :success, job_artifacts: [create(:ee_ci_job_artifact, :license_scan)])])
+        base_pipeline = create(:ee_ci_pipeline, project: project)
+        head_pipeline = create(:ee_ci_pipeline, :with_cyclonedx_report, project: project)
 
         control_count = ActiveRecord::QueryRecorder.new do
           service.execute(base_pipeline.reload, head_pipeline.reload)
         end.count
 
-        new_head_pipeline = create(:ci_pipeline, :success, project: project, builds: [create(:ee_ci_build, :license_scan_v2_1, :success)])
+        new_head_pipeline = create(:ee_ci_pipeline, :with_cyclonedx_report, project: project)
 
         expect do
           service.execute(base_pipeline.reload, new_head_pipeline.reload)
@@ -33,23 +33,20 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :soft
       end
     end
 
-    context 'when head pipeline has license scanning reports' do
-      context 'when the license_scanning_sbom_scanner feature flag is false' do
+    context 'when head pipeline has test reports' do
+      context 'with incorrect report type' do
         let!(:base_pipeline) { nil }
         let!(:head_pipeline) { create(:ee_ci_pipeline, :with_license_scanning_report, project: project) }
 
-        before do
-          stub_feature_flags(license_scanning_sbom_scanner: false)
-        end
-
         it 'reports new licenses' do
           expect(subject[:status]).to eq(:parsed)
-          expect(subject[:data]['new_licenses'].count).to eq(4)
-          expect(subject[:data]['new_licenses']).to include(a_hash_including('name' => 'MIT'))
+          expect(subject[:data]['new_licenses']).to be_empty
+          expect(subject[:data]['existing_licenses']).to be_empty
+          expect(subject[:data]['removed_licenses']).to be_empty
         end
       end
 
-      context 'when the license_scanning_sbom_scanner feature flag is true' do
+      context 'with cyclonedx report' do
         let!(:base_pipeline) { nil }
         let!(:head_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
 
@@ -88,92 +85,57 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :soft
         project.add_developer(contributor)
       end
 
-      context 'when the license_scanning_sbom_scanner feature flag is false' do
-        let(:service) { described_class.new(project, maintainer) }
-        let(:maintainer) { create(:user) }
-        let(:contributor) { create(:user) }
-        let_it_be(:project) { create(:project, :public, :repository) }
-        let(:base_pipeline) { nil }
-        let(:head_pipeline) { create(:ee_ci_pipeline, :with_license_scanning_report, project: forked_project, user: contributor) }
-        let(:forked_project) { fork_project(project, contributor, namespace: contributor.namespace) }
+      let(:service) { described_class.new(project, maintainer) }
+      let(:maintainer) { create(:user) }
+      let(:contributor) { create(:user) }
+      let_it_be(:project) { create(:project, :public, :repository) }
+      let(:base_pipeline) { nil }
+      let(:head_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: forked_project, user: contributor) }
+      let(:forked_project) { fork_project(project, contributor, namespace: contributor.namespace) }
 
+      context 'when querying uncompressed package metadata' do
         before do
-          stub_feature_flags(license_scanning_sbom_scanner: false)
+          stub_feature_flags(compressed_package_metadata_query: false)
+
+          create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem", version: "1.8.0", license_name: "BSD")
         end
 
         it 'reports new licenses' do
           expect(subject[:status]).to eq(:parsed)
-          expect(subject[:data]['new_licenses'].count).to be > 1
+          expect(subject[:data]['new_licenses'].count).to eq(2)
         end
       end
 
-      context 'when the license_scanning_sbom_scanner feature flag is true' do
-        let(:service) { described_class.new(project, maintainer) }
-        let(:maintainer) { create(:user) }
-        let(:contributor) { create(:user) }
-        let_it_be(:project) { create(:project, :public, :repository) }
-        let(:base_pipeline) { nil }
-        let(:head_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: forked_project, user: contributor) }
-        let(:forked_project) { fork_project(project, contributor, namespace: contributor.namespace) }
-
-        context 'when querying uncompressed package metadata' do
-          before do
-            stub_feature_flags(compressed_package_metadata_query: false)
-
-            create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem", version: "1.8.0", license_name: "BSD")
-          end
-
-          it 'reports new licenses' do
-            expect(subject[:status]).to eq(:parsed)
-            expect(subject[:data]['new_licenses'].count).to eq(2)
-          end
+      context 'when querying compressed package metadata' do
+        before do
+          create(:pm_package, name: "nokogiri", purl_type: "gem",
+            other_licenses: [{ license_names: ["BSD"], versions: ["1.8.0"] }])
         end
 
-        context 'when querying compressed package metadata' do
-          before do
-            create(:pm_package, name: "nokogiri", purl_type: "gem",
-              other_licenses: [{ license_names: ["BSD"], versions: ["1.8.0"] }])
-          end
-
-          it 'reports new licenses' do
-            expect(subject[:status]).to eq(:parsed)
-            expect(subject[:data]['new_licenses'].count).to eq(2)
-          end
+        it 'reports new licenses' do
+          expect(subject[:status]).to eq(:parsed)
+          expect(subject[:data]['new_licenses'].count).to eq(2)
         end
       end
     end
 
     context 'when base and head pipelines have test reports' do
-      context 'when the license_scanning_sbom_scanner feature flag is false' do
+      context 'with license scanning reports' do
         let!(:base_pipeline) { create(:ee_ci_pipeline, :with_license_scanning_report, project: project) }
         let!(:head_pipeline) { create(:ee_ci_pipeline, :with_license_scanning_feature_branch, project: project) }
-
-        before do
-          stub_feature_flags(license_scanning_sbom_scanner: false)
-        end
 
         it 'reports status as parsed' do
           expect(subject[:status]).to eq(:parsed)
         end
 
-        it 'reports new licenses' do
-          expect(subject[:data]['new_licenses']).to match([a_hash_including('name' => 'WTFPL')])
-        end
-
-        it 'reports existing licenses' do
-          expect(subject[:data]['existing_licenses']).to match([a_hash_including('name' => 'MIT')])
-        end
-
-        it 'reports removed licenses' do
-          expect(subject[:data]['removed_licenses']).to match([
-            a_hash_including('name' => 'Apache 2.0'),
-            a_hash_including('name' => 'New BSD'),
-            a_hash_including('name' => 'unknown')
-          ])
+        it 'does not display results' do
+          expect(subject[:data]['new_licenses']).to be_empty
+          expect(subject[:data]['existing_licenses']).to be_empty
+          expect(subject[:data]['removed_licenses']).to be_empty
         end
       end
 
-      context 'when the license_scanning_sbom_scanner feature flag is true' do
+      context 'with cyclonedx reports' do
         let!(:base_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
         let!(:head_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_pypi_only, project: project) }
 
@@ -237,26 +199,20 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :soft
     end
 
     context 'when pipelines have corrupted reports' do
-      context 'when the license_scanning_sbom_scanner feature flag is false' do
-        before do
-          stub_feature_flags(license_scanning_sbom_scanner: false)
+      let!(:base_pipeline) { build(:ee_ci_pipeline, :with_corrupted_cyclonedx_report, project: project) }
+      let!(:head_pipeline) { build(:ee_ci_pipeline, :with_corrupted_cyclonedx_report, project: project) }
+
+      context "when base and head pipeline have corrupted reports" do
+        it 'does not expose parser errors' do
+          expect(subject[:status]).to eq(:parsed)
         end
+      end
 
-        let!(:base_pipeline) { build(:ee_ci_pipeline, :with_corrupted_license_scanning_report, project: project) }
-        let!(:head_pipeline) { build(:ee_ci_pipeline, :with_corrupted_license_scanning_report, project: project) }
+      context "when the base pipeline is nil" do
+        subject { service.execute(nil, head_pipeline) }
 
-        context "when base and head pipeline have corrupted reports" do
-          it 'does not expose parser errors' do
-            expect(subject[:status]).to eq(:parsed)
-          end
-        end
-
-        context "when the base pipeline is nil" do
-          subject { service.execute(nil, head_pipeline) }
-
-          it 'does not expose parser errors' do
-            expect(subject[:status]).to eq(:parsed)
-          end
+        it 'does not expose parser errors' do
+          expect(subject[:status]).to eq(:parsed)
         end
       end
     end

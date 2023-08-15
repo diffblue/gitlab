@@ -206,59 +206,35 @@ RSpec.describe 'Pipeline', :js, feature_category: :continuous_integration do
       stub_licensed_features(license_scanning: true)
     end
 
-    context 'with License Compliance and CycloneDX artifacts' do
+    context 'with CycloneDX artifacts' do
       before do
-        create(:ee_ci_build, :license_scanning, pipeline: pipeline)
         create(:ee_ci_build, :cyclonedx, pipeline: pipeline)
+        create(:pm_package_version_license, :with_all_relations, name: "activesupport", purl_type: "gem",
+          version: "5.1.4", license_name: "MIT")
+        create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus",
+          purl_type: "golang", version: "v1.4.2", license_name: "MIT")
+        create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus",
+          purl_type: "golang", version: "v1.4.2", license_name: "BSD-3-Clause")
+        create(:pm_package_version_license, :with_all_relations, name: "org.apache.logging.log4j/log4j-api",
+          purl_type: "maven", version: "2.6.1", license_name: "BSD-3-Clause")
+        create(:pm_package_version_license, :with_all_relations, name: "yargs", purl_type: "npm", version: "11.1.0",
+          license_name: "unknown")
 
         visit licenses_project_pipeline_path(project, pipeline)
       end
 
-      context 'when the license_scanning_sbom_scanner feature flag is false' do
-        before_all do
-          stub_feature_flags(license_scanning_sbom_scanner: false)
-        end
-
-        it 'shows license tab pane as active' do
-          expect(page).to have_content('Licenses')
-          expect(page).to have_selector('[data-testid="license-tab"]')
-          expect(find('[data-testid="license-tab"]')).to have_content('4')
-        end
-
-        it 'shows security report section', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/375026' do
-          expect(page).to have_content('Loading License Compliance report')
-        end
+      it 'shows license tab pane as active' do
+        expect(page).to have_content('Licenses')
+        expect(page).to have_selector('[data-testid="license-tab"]')
+        expect(find('[data-testid="license-tab"]')).to have_content('4')
       end
 
-      context 'when the license_scanning_sbom_scanner feature flag is true' do
-        before do
-          create(:pm_package_version_license, :with_all_relations, name: "activesupport", purl_type: "gem",
-            version: "5.1.4", license_name: "MIT")
-          create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus",
-            purl_type: "golang", version: "v1.4.2", license_name: "MIT")
-          create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus",
-            purl_type: "golang", version: "v1.4.2", license_name: "BSD-3-Clause")
-          create(:pm_package_version_license, :with_all_relations, name: "org.apache.logging.log4j/log4j-api",
-            purl_type: "maven", version: "2.6.1", license_name: "BSD-3-Clause")
-          create(:pm_package_version_license, :with_all_relations, name: "yargs", purl_type: "npm", version: "11.1.0",
-            license_name: "unknown")
-
-          visit licenses_project_pipeline_path(project, pipeline)
-        end
-
-        it 'shows license tab pane as active' do
-          expect(page).to have_content('Licenses')
-          expect(page).to have_selector('[data-testid="license-tab"]')
-          expect(find('[data-testid="license-tab"]')).to have_content('4')
-        end
-
-        it 'shows security report section', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/375026' do
-          expect(page).to have_content('Loading License Compliance report')
-        end
+      it 'shows security report section', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/375026' do
+        expect(page).to have_content('Loading License Compliance report')
       end
     end
 
-    context 'without License Compliance or CycloneDX artifacts' do
+    context 'without CycloneDX artifacts' do
       before do
         visit licenses_project_pipeline_path(project, pipeline)
       end
