@@ -30892,6 +30892,12 @@ msgstr ""
 msgid "Navigation|Unpin item"
 msgstr ""
 
+msgid "Navigation|View all my groups"
+msgstr ""
+
+msgid "Navigation|View all my projects"
+msgstr ""
+
 msgid "Navigation|View all your groups"
 msgstr ""
 
