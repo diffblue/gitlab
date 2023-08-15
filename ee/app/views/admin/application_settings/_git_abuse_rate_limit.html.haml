@@ -6,7 +6,7 @@
       = s_('AdminSettings|Git abuse rate limit')
     = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded_by_default? ? _('Collapse') : _('Expand')
-    %p
+    %p.gl-text-secondary
       = s_('AdminSettings|Configure limits on the number of repositories users can download, clone, or fork in a given time.')
   .settings-content
     #js-git-abuse-rate-limit-settings-form{ data: git_abuse_rate_limit_data }

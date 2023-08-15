@@ -10,7 +10,7 @@
       = _('Advanced Search')
     = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle', data: { qa_selector: 'expand_advanced_search_button' } }) do
       = expanded_by_default? ? _('Collapse') : _('Expand')
-    %p
+    %p.gl-text-secondary
       = _('Configure settings for Advanced Search with Elasticsearch.')
 
   .settings-content
@@ -207,7 +207,7 @@
       = _('Elasticsearch zero-downtime reindexing')
     = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded_by_default? ? _('Collapse') : _('Expand')
-    %p
+    %p.gl-text-secondary
       = _('Trigger cluster reindexing. Only use this with an index that was created in GitLab 13.0 or later.')
 
   .settings-content

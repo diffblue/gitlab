@@ -5,7 +5,7 @@
         = _('Incident Management Limits')
       = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
         = expanded_by_default? ? _('Collapse') : _('Expand')
-      %p
+      %p.gl-text-secondary
         = _('Limit the number of inbound incident management alerts that can be sent to a project.')
         = link_to _('Learn more.'), help_page_path('administration/instance_limits.md', anchor: 'limit-inbound-incident-management-alerts'), target: '_blank', rel: 'noopener noreferrer'
     .settings-content
