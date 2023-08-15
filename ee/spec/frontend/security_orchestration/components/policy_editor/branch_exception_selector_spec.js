@@ -1,5 +1,5 @@
 import { GlSprintf, GlCollapsibleListbox } from '@gitlab/ui';
-import BranchExceptionSelector from 'ee/security_orchestration/components/branch_exception_selector.vue';
+import BranchExceptionSelector from 'ee/security_orchestration/components/policy_editor/branch_exception_selector.vue';
 import ProjectBranchSelector from 'ee/vue_shared/components/branches_selector/project_branch_selector.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { NO_EXCEPTION_KEY, EXCEPTION_KEY } from 'ee/security_orchestration/components/constants';

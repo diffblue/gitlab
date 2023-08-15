@@ -1,12 +1,12 @@
 <script>
 import { GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import BranchExceptionSelector from 'ee/security_orchestration/components/branch_exception_selector.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import BranchExceptionSelector from '../branch_exception_selector.vue';
 import ScanFilterSelector from '../scan_filter_selector.vue';
 import { SCAN_RESULT_BRANCH_TYPE_OPTIONS } from '../constants';
-import PolicyRuleMultiSelect from '../policy_rule_multi_select.vue';
+import RuleMultiSelect from '../rule_multi_select.vue';
 import PolicyRuleBranchSelection from './policy_rule_branch_selection.vue';
 import ScanTypeSelect from './base_layout/scan_type_select.vue';
 import StatusFilter from './scan_filters/status_filter.vue';
@@ -24,7 +24,7 @@ export default {
     GlSprintf,
     LicenseFilter,
     PolicyRuleBranchSelection,
-    PolicyRuleMultiSelect,
+    RuleMultiSelect,
     ScanFilterSelector,
     ScanTypeSelect,
     StatusFilter,
@@ -122,7 +122,7 @@ export default {
     <base-layout-component class="gl-pt-3" :show-remove-button="false">
       <template #content>
         <status-filter :show-remove-button="false" class="gl-bg-white!">
-          <policy-rule-multi-select
+          <rule-multi-select
             v-model="licenseStatuses"
             class="gl-display-inline! gl-vertical-align-middle"
             :item-type-name="$options.i18n.licenseStatuses"

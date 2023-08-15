@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_utils';
 import apolloProvider from 'ee/vue_shared/security_configuration/graphql/provider';
-import NewPolicyApp from './components/policy_editor/new_policy.vue';
+import App from './components/policy_editor/app.vue';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from './constants';
 import { decomposeApprovers } from './utils';
 
@@ -81,7 +81,7 @@ export default (el, namespaceType) => {
         : DEFAULT_ASSIGNED_POLICY_PROJECT,
     },
     render(createElement) {
-      return createElement(NewPolicyApp);
+      return createElement(App);
     },
   });
 };

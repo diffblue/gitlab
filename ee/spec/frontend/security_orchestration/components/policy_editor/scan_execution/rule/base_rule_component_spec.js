@@ -3,7 +3,7 @@ import { GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import BaseRuleComponent from 'ee/security_orchestration/components/policy_editor/scan_execution/rule/base_rule_component.vue';
 import BranchTypeSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/rule/branch_type_selector.vue';
-import BranchExceptionSelector from 'ee/security_orchestration/components/branch_exception_selector.vue';
+import BranchExceptionSelector from 'ee/security_orchestration/components/policy_editor/branch_exception_selector.vue';
 import {
   SCAN_EXECUTION_SCHEDULE_RULE,
   SCAN_EXECUTION_PIPELINE_RULE,

@@ -1,7 +1,7 @@
 <script>
 import { s__ } from '~/locale';
 import { SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
-import PolicyRuleMultiSelect from '../../policy_rule_multi_select.vue';
+import RuleMultiSelect from '../../rule_multi_select.vue';
 import BaseLayoutComponent from '../base_layout/base_layout_component.vue';
 import { SEVERITY } from './constants';
 
@@ -13,7 +13,7 @@ export default {
   },
   name: 'SeverityFilter',
   components: {
-    PolicyRuleMultiSelect,
+    RuleMultiSelect,
     BaseLayoutComponent,
   },
   props: {
@@ -49,7 +49,7 @@ export default {
   <base-layout-component class="gl-w-full" :show-remove-button="showRemoveButton" @remove="remove">
     <template #selector>
       <label class="gl-mb-0 gl-mr-2" :title="$options.i18n.label">{{ $options.i18n.label }}</label>
-      <policy-rule-multi-select
+      <rule-multi-select
         v-model="severityLevelsToAdd"
         :item-type-name="$options.i18n.severityLevels"
         :items="$options.SEVERITY_LEVELS"

@@ -3,8 +3,8 @@ import { GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { REPORT_TYPES_DEFAULT, SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import BranchExceptionSelector from 'ee/security_orchestration/components/branch_exception_selector.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import BranchExceptionSelector from '../branch_exception_selector.vue';
 import {
   ANY_OPERATOR,
   GREATER_THAN_OPERATOR,
@@ -13,7 +13,7 @@ import {
 } from '../constants';
 import { enforceIntValue } from '../utils';
 import ScanFilterSelector from '../scan_filter_selector.vue';
-import PolicyRuleMultiSelect from '../policy_rule_multi_select.vue';
+import RuleMultiSelect from '../rule_multi_select.vue';
 import { getDefaultRule, groupSelectedVulnerabilityStates } from './lib';
 import SeverityFilter from './scan_filters/severity_filter.vue';
 import AgeFilter from './scan_filters/age_filter.vue';
@@ -53,7 +53,7 @@ export default {
     BranchExceptionSelector,
     GlSprintf,
     PolicyRuleBranchSelection,
-    PolicyRuleMultiSelect,
+    RuleMultiSelect,
     ScanFilterSelector,
     ScanTypeSelect,
     SeverityFilter,
@@ -330,7 +330,7 @@ export default {
               </template>
 
               <template #scanners>
-                <policy-rule-multi-select
+                <rule-multi-select
                   v-model="scannersToAdd"
                   class="gl-display-inline! gl-vertical-align-middle"
                   :item-type-name="$options.i18n.scanners"

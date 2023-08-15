@@ -1,7 +1,7 @@
 import { GlCollapsibleListbox } from '@gitlab/ui';
 import BaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/scan_result_policy/base_layout/base_layout_component.vue';
 import StatusFilter from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/status_filter.vue';
-import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_editor/policy_rule_multi_select.vue';
+import RuleMultiSelect from 'ee/security_orchestration/components/policy_editor/rule_multi_select.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import {
   NEWLY_DETECTED,
@@ -24,14 +24,14 @@ describe('StatusFilter', () => {
       stubs: {
         BaseLayoutComponent,
         GlCollapsibleListbox,
-        PolicyRuleMultiSelect,
+        RuleMultiSelect,
       },
     });
   };
 
   const findBaseLayoutComponent = () => wrapper.findComponent(BaseLayoutComponent);
   const findListBox = () => wrapper.findComponent(GlCollapsibleListbox);
-  const findPolicyRuleMultiSelect = () => wrapper.findComponent(PolicyRuleMultiSelect);
+  const findPolicyRuleMultiSelect = () => wrapper.findComponent(RuleMultiSelect);
   const findAllSelectedItem = () => wrapper.findByTestId('listbox-select-all-button');
 
   it('renders both dropdowns', () => {

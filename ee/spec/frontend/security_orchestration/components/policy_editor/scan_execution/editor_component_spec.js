@@ -5,7 +5,7 @@ import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_edito
 import PolicyActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_execution/action/action_section.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import PolicyEditorLayout from 'ee/security_orchestration/components/policy_editor/policy_editor_layout.vue';
+import EditorLayout from 'ee/security_orchestration/components/policy_editor/editor_layout.vue';
 import {
   DEFAULT_SCAN_EXECUTION_POLICY,
   buildScannerAction,
@@ -92,7 +92,7 @@ describe('ScanExecutionPolicyEditor', () => {
   const findAddActionButton = () => wrapper.findByTestId('add-action');
   const findAddRuleButton = () => wrapper.findByTestId('add-rule');
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
-  const findPolicyEditorLayout = () => wrapper.findComponent(PolicyEditorLayout);
+  const findPolicyEditorLayout = () => wrapper.findComponent(EditorLayout);
   const findPolicyActionBuilder = () => wrapper.findComponent(PolicyActionBuilder);
   const findAllPolicyActionBuilders = () => wrapper.findAllComponents(PolicyActionBuilder);
   const findPolicyRuleBuilder = () => wrapper.findComponent(PolicyRuleBuilder);

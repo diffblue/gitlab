@@ -5,10 +5,10 @@ import {
   ALL_PROTECTED_BRANCHES,
   SPECIFIC_BRANCHES,
 } from 'ee/security_orchestration/components/policy_editor/constants';
-import BranchExceptionSelector from 'ee/security_orchestration/components/branch_exception_selector.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { SCAN_EXECUTION_RULES_LABELS, SCAN_EXECUTION_RULES_PIPELINE_KEY } from '../constants';
+import BranchExceptionSelector from '../../branch_exception_selector.vue';
 import BranchTypeSelector from './branch_type_selector.vue';
 
 export default {

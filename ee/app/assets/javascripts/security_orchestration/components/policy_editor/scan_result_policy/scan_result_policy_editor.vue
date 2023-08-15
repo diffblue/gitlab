@@ -16,7 +16,7 @@ import {
   RULES_LABEL,
   MAX_ALLOWED_RULES_LENGTH,
 } from '../constants';
-import PolicyEditorLayout from '../policy_editor_layout.vue';
+import EditorLayout from '../editor_layout.vue';
 import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
 import DimDisableContainer from '../dim_disable_container.vue';
 import ApprovalSettings from './approval_settings.vue';
@@ -63,7 +63,7 @@ export default {
     GlButton,
     GlEmptyState,
     PolicyActionBuilder,
-    PolicyEditorLayout,
+    EditorLayout,
     PolicyRuleBuilder,
   },
   mixins: [glFeatureFlagsMixin()],
@@ -303,7 +303,7 @@ export default {
 </script>
 
 <template>
-  <policy-editor-layout
+  <editor-layout
     v-if="!disableScanPolicyUpdate"
     :custom-save-button-text="$options.i18n.createMergeRequest"
     :has-parsing-error="hasParsingError"
@@ -387,7 +387,7 @@ export default {
         />
       </dim-disable-container>
     </template>
-  </policy-editor-layout>
+  </editor-layout>
   <gl-empty-state
     v-else
     :description="$options.i18n.notOwnerDescription"
