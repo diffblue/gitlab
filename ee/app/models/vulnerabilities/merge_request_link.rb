@@ -6,7 +6,9 @@ module Vulnerabilities
     belongs_to :vulnerability
     belongs_to :merge_request
 
-    has_one :author, through: :merge_request, class_name: 'User'
+    has_one :author, -> {
+      allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/422085')
+    }, through: :merge_request, class_name: 'User'
 
     validates :vulnerability, :merge_request, presence: true
     validates :merge_request_id,
