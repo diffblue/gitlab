@@ -20,9 +20,8 @@ module Geo
       return unless range
 
       created_in_range, deleted_in_range = handle_differences_in_range(range)
-      created_above, deleted_above = create_missing_above(end_of_batch: range.last)
 
-      [created_in_range, deleted_in_range, created_above, deleted_above].flatten.compact.any?
+      [created_in_range, deleted_in_range].flatten.compact.any?
     rescue StandardError => e
       log_error("Error while backfilling #{registry_class}", e)
 
@@ -68,39 +67,6 @@ module Geo
 
     def find_registry_differences(range)
       registry_class.find_registry_differences(range)
-    end
-
-    # This hack is used to sync new files soon after they are created.
-    #
-    # This is not needed for replicables that have already implemented
-    # create events.
-    #
-    # @param [Integer] end_of_batch the last ID of the batch processed in create_untracked_in_range
-    # @return [Array] the list of IDs of created records
-    def create_missing_above(end_of_batch:)
-      return [] if registry_class.has_create_events?
-      return [] unless model_class.any?
-
-      last_id = model_class.last.id
-
-      # When the LoopingBatcher will soon approach the end of the table, it
-      # finds the records at the end of the table anyway, so conserve resources.
-      return [] if batch_close_to_the_end?(end_of_batch, last_id)
-
-      # Try to call this service often enough that batch_size is greater than
-      # the number of recently created records since last call.
-      start = last_id - batch_size + 1
-      finish = last_id
-
-      handle_differences_in_range(start..finish)
-    end
-
-    # Returns true when LoopingBatcher will soon return ranges near the end of
-    # the table.
-    #
-    # @return [Boolean] true if the end_of_batch ID is near the end of the table
-    def batch_close_to_the_end?(end_of_batch, last_id)
-      last_id < end_of_batch + 5 * batch_size
     end
 
     def log_created(range, untracked, created)
