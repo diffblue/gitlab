@@ -7,6 +7,8 @@ module EE
       extend ActiveSupport::Concern
 
       prepended do
+        include MicrosoftApplicationActions
+
         before_action :elasticsearch_reindexing_task, only: [:advanced_search]
         before_action :elasticsearch_index_settings, only: [:advanced_search]
         before_action :elasticsearch_warn_if_not_using_aliases, only: [:advanced_search]
@@ -16,6 +18,7 @@ module EE
         before_action :push_password_complexity_feature, only: [:general]
         before_action :new_license, only: [:general]
         before_action :scim_token, only: [:general]
+        before_action :find_or_initialize_microsoft_application, only: [:general]
         before_action :verify_namespace_plan_check_enabled, only: [:namespace_storage]
 
         feature_category :sm_provisioning, [:seat_link_payload]
@@ -163,6 +166,14 @@ module EE
 
       def new_license
         @new_license ||= License.new(data: params[:trial_key]) # rubocop:disable Gitlab/ModuleWithInstanceVariables
+      end
+
+      def microsoft_application_namespace
+        nil
+      end
+
+      def microsoft_application_redirect_path
+        general_admin_application_settings_path
       end
     end
   end

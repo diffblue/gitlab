@@ -1,0 +1,14 @@
+- return unless @microsoft_application
+
+%section.settings.no-animate{ class: ('expanded' if expanded_by_default?) }
+  .settings-header
+    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
+      = s_('Microsoft|Microsoft Azure Integration')
+    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
+      = expanded_by_default? ? _('Collapse') : _('Expand')
+    %p
+      = s_('Microsoft|Sync group memberships from Microsoft Azure when SAML response includes an overage claim.')
+      = link_to _('Learn more.'), help_page_path('user/group/saml_sso/group_sync.md'), target: '_blank', rel: 'noopener noreferrer'
+  .settings-content.microsoft-application
+    = gitlab_ui_form_for @microsoft_application, method: :put, url: update_microsoft_application_admin_application_settings_url do |f|
+      = render 'shared/system_access/microsoft_application_form', f: f
