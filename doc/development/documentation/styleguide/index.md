@@ -1653,7 +1653,7 @@ instance administrator.
 Certain styles should be applied to specific sections. Styles for specific
 sections are outlined in this section.
 
-## Help and feedback section
+### Help and feedback section
 
 This section ([introduced](https://gitlab.com/gitlab-org/gitlab-docs/-/merge_requests/319) in GitLab 11.4)
 is displayed at the end of each document and can be omitted by adding a key into
