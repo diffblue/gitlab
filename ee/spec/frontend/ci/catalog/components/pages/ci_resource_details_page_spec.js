@@ -166,7 +166,10 @@ describe('CiResourceDetailsPage', () => {
         expect(findHeaderComponent().props()).toEqual({
           description: defaultSharedData.description,
           icon: defaultSharedData.icon,
+          latestVersion: defaultSharedData.latestVersion,
           name: defaultSharedData.name,
+          pipelineStatus:
+            defaultAdditionalData.versions.nodes[0].commit.pipelines.nodes[0].detailedStatus,
           resourceId: defaultSharedData.id,
           rootNamespace: defaultSharedData.rootNamespace,
           webPath: defaultSharedData.webPath,

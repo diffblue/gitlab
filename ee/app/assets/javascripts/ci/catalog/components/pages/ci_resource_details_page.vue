@@ -73,6 +73,12 @@ export default {
     versions() {
       return this.resourceAdditionalDetails?.versions?.nodes || [];
     },
+    pipelineStatus() {
+      return (
+        this.resourceAdditionalDetails?.versions?.nodes[0]?.commit?.pipelines?.nodes[0]
+          ?.detailedStatus || null
+      );
+    },
   },
   i18n: {
     emptyStateTitle: s__('CiCatalog|No component available'),
@@ -103,7 +109,9 @@ export default {
           :description="resourceSharedData.description"
           :icon="resourceSharedData.icon"
           :is-loading="isLoadingSharedData"
+          :latest-version="resourceSharedData.latestVersion"
           :name="resourceSharedData.name"
+          :pipeline-status="pipelineStatus"
           :resource-id="resourceSharedData.id"
           :root-namespace="resourceSharedData.rootNamespace"
           :web-path="resourceSharedData.webPath"

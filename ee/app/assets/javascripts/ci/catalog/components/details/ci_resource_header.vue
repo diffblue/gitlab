@@ -1,11 +1,15 @@
 <script>
-import { GlAvatar, GlAvatarLink } from '@gitlab/ui';
+import { GlAvatar, GlAvatarLink, GlBadge } from '@gitlab/ui';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { isNumeric } from '~/lib/utils/number_utils';
+import CiBadgeLink from '~/vue_shared/components/ci_badge_link.vue';
 
 export default {
   components: {
+    CiBadgeLink,
     GlAvatar,
     GlAvatarLink,
+    GlBadge,
   },
   props: {
     description: {
@@ -17,9 +21,19 @@ export default {
       required: false,
       default: '',
     },
+    latestVersion: {
+      required: false,
+      type: Object,
+      default: () => ({}),
+    },
     name: {
       type: String,
       required: true,
+    },
+    pipelineStatus: {
+      type: Object,
+      required: false,
+      default: () => ({}),
     },
     resourceId: {
       type: String,
@@ -35,11 +49,22 @@ export default {
     },
   },
   computed: {
+    entityId() {
+      return getIdFromGraphQLId(this.resourceId);
+    },
     fullPath() {
       return `${this.rootNamespace.fullPath}/${this.rootNamespace.name}`;
     },
-    entityId() {
-      return getIdFromGraphQLId(this.resourceId);
+    hasLatestVersion() {
+      return this.latestVersion?.tagName;
+    },
+    hasPipelineStatus() {
+      return this.pipelineStatus?.text;
+    },
+    versionBadgeText() {
+      return isNumeric(this.latestVersion.tagName)
+        ? `v${this.latestVersion.tagName}`
+        : this.latestVersion.tagName;
     },
   },
 };
@@ -58,11 +83,30 @@ export default {
           :src="icon"
         />
       </gl-avatar-link>
-      <div class="gl-display-flex gl-flex-direction-column gl-justify-content-center">
+      <div
+        class="gl-display-flex gl-flex-direction-column gl-align-items-flex-start gl-justify-content-center"
+      >
         <div class="gl-font-sm gl-text-secondary">
           {{ fullPath }}
         </div>
-        <div class="gl-font-lg gl-font-weight-bold">{{ name }}</div>
+        <span class="gl-display-flex">
+          <div class="gl-font-lg gl-font-weight-bold">{{ name }}</div>
+          <gl-badge
+            v-if="hasLatestVersion"
+            size="sm"
+            class="gl-ml-3 gl-my-1"
+            :href="latestVersion.tagPath"
+          >
+            {{ versionBadgeText }}
+          </gl-badge>
+        </span>
+        <ci-badge-link
+          v-if="hasPipelineStatus"
+          class="gl-mt-2"
+          :status="pipelineStatus"
+          badge-size="sm"
+          show-text
+        />
       </div>
     </div>
     <p>

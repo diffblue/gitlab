@@ -11,7 +11,12 @@ describe('CiResourceAbout', () => {
     isLoadingDetails: false,
     openIssuesCount: 4,
     openMergeRequestsCount: 9,
-    latestVersion: { id: 1, tagName: 'v1.0.0', releasedAt: '2022-08-23T17:19:09Z' },
+    latestVersion: {
+      id: 1,
+      tagName: 'v1.0.0',
+      tagPath: 'path/to/release',
+      releasedAt: '2022-08-23T17:19:09Z',
+    },
     webPath: 'path/to/project',
   };
 
