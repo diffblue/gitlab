@@ -13,7 +13,7 @@ module Gitlab
             next unless component.purl
 
             Hashie::Mash.new(name: component.name, purl_type: component.purl.type,
-              version: component.version)
+              version: component.version, path: sbom_report.source&.input_file_path)
           end.reject(&:blank?)
         end
       end

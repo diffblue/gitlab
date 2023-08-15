@@ -7,11 +7,11 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
 
   let_it_be(:components_to_fetch) do
     [
-      Hashie::Mash.new({ name: "beego", purl_type: "golang", version: "v1.10.0" }),
-      Hashie::Mash.new({ name: "camelcase", purl_type: "npm", version: "1.2.1" }),
-      Hashie::Mash.new({ name: "camelcase", purl_type: "npm", version: "4.1.0" }),
-      Hashie::Mash.new({ name: "cliui", purl_type: "npm", version: "2.1.0" }),
-      Hashie::Mash.new({ name: "cliui", purl_type: "golang", version: "2.1.0" })
+      Hashie::Mash.new({ name: "beego", purl_type: "golang", version: "v1.10.0", path: nil }),
+      Hashie::Mash.new({ name: "camelcase", purl_type: "npm", version: "1.2.1", path: "" }),
+      Hashie::Mash.new({ name: "camelcase", purl_type: "npm", version: "4.1.0", path: "package-lock.json" }),
+      Hashie::Mash.new({ name: "cliui", purl_type: "npm", version: "2.1.0", path: "package-lock.json" }),
+      Hashie::Mash.new({ name: "cliui", purl_type: "golang", version: "2.1.0", path: "package-lock.json" })
     ]
   end
 
@@ -58,16 +58,17 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
       context 'and components to fetch are not empty' do
         it 'returns only the items that matched the fetched components' do
           expect(fetch).to contain_exactly(
-            have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0",
-                            licenses: [{ name: "Open LDAP Public License v2.1", spdx_identifier: "OLDAP-2.1" },
-                              { name: "Open LDAP Public License v2.2", spdx_identifier: "OLDAP-2.2" }]),
-            have_attributes(name: "camelcase", purl_type: "npm", version: "1.2.1",
+            have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0", path: "",
+              licenses: contain_exactly(
+                { name: "Open LDAP Public License v2.1", spdx_identifier: "OLDAP-2.1" },
+                { name: "Open LDAP Public License v2.2", spdx_identifier: "OLDAP-2.2" })),
+            have_attributes(name: "camelcase", purl_type: "npm", version: "1.2.1", path: "",
               licenses: [{ "name" => "Open LDAP Public License v2.1", "spdx_identifier" => "OLDAP-2.1" }]),
-            have_attributes(name: "camelcase", purl_type: "npm", version: "4.1.0",
+            have_attributes(name: "camelcase", purl_type: "npm", version: "4.1.0", path: "package-lock.json",
               licenses: [{ "name" => "Open LDAP Public License v2.2", "spdx_identifier" => "OLDAP-2.2" }]),
-            have_attributes(name: "cliui", purl_type: "npm", version: "2.1.0",
+            have_attributes(name: "cliui", purl_type: "npm", version: "2.1.0", path: "package-lock.json",
               licenses: [{ "name" => "Open LDAP Public License v2.3", "spdx_identifier" => "OLDAP-2.3" }]),
-            have_attributes(name: "cliui", purl_type: "golang", version: "2.1.0",
+            have_attributes(name: "cliui", purl_type: "golang", version: "2.1.0", path: "package-lock.json",
               licenses: [{ "name" => "Open LDAP Public License v2.6", "spdx_identifier" => "OLDAP-2.6" }])
           )
         end
@@ -237,9 +238,9 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
 
           it 'returns "unknown" license for all the matching components' do
             expect(fetch).to contain_exactly(
-              have_attributes(name: 'pg', purl_type: 'gem', version: '1.2.3',
+              have_attributes(name: "pg", purl_type: "gem", version: "1.2.3",
                 licenses: [{ "name" => "unknown", "spdx_identifier" => "unknown" }]),
-              have_attributes(name: 'JUnit', purl_type: 'maven', version: '4.5.6',
+              have_attributes(name: "JUnit", purl_type: "maven", version: "4.5.6",
                 licenses: [{ "name" => "unknown", "spdx_identifier" => "unknown" }])
             )
           end
@@ -273,7 +274,7 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
             end
 
             # this test shows that the current matching behaviour is incorrect, because the default
-            # license is returned, when "unknown" should actually be returned.
+            # license is returned, when 'unknown' should actually be returned.
             # We need to add a new `valid?` method to the semver_dialects gem to handle invalid versions.
             #
             # See https://gitlab.com/gitlab-org/vulnerability-research/foss/semver_dialects/-/issues/3
@@ -283,7 +284,7 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
             # and add a test to the table in the `returns 'unknown' as the license` example above.
             it "returns the default licenses" do
               expect(fetch).to eq([
-                "name" => "beego", "purl_type" => "golang", "version" => "invalid-version",
+                "name" => "beego", "purl_type" => "golang", "version" => "invalid-version", "path" => "",
                 "licenses" => [{ "name" => "Default License 2.1", "spdx_identifier" => "DEFAULT-2.1" }]
               ])
             end
@@ -296,7 +297,7 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
 
             it "returns the default licenses" do
               expect(fetch).to eq([
-                "name" => "beego", "purl_type" => "golang", "version" => "123.456.789",
+                "name" => "beego", "purl_type" => "golang", "version" => "123.456.789", "path" => "",
                 "licenses" => [{ "name" => "Default License 2.1", "spdx_identifier" => "DEFAULT-2.1" }]
               ])
             end
@@ -364,17 +365,17 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
       context 'and components to fetch are not empty' do
         it 'returns only the items that matched the fetched components' do
           expect(fetch).to contain_exactly(
-            have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0",
-                            licenses: contain_exactly(
-                              { name: "Open LDAP Public License v2.1", spdx_identifier: "OLDAP-2.1" },
-                              { name: "Open LDAP Public License v2.2", spdx_identifier: "OLDAP-2.2" })),
-            have_attributes(name: "camelcase", purl_type: "npm", version: "1.2.1",
+            have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0", path: "",
+              licenses: contain_exactly(
+                { name: "Open LDAP Public License v2.1", spdx_identifier: "OLDAP-2.1" },
+                { name: "Open LDAP Public License v2.2", spdx_identifier: "OLDAP-2.2" })),
+            have_attributes(name: "camelcase", purl_type: "npm", version: "1.2.1", path: "",
               licenses: [{ "name" => "Open LDAP Public License v2.1", "spdx_identifier" => "OLDAP-2.1" }]),
-            have_attributes(name: "camelcase", purl_type: "npm", version: "4.1.0",
+            have_attributes(name: "camelcase", purl_type: "npm", version: "4.1.0", path: "package-lock.json",
               licenses: [{ "name" => "Open LDAP Public License v2.2", "spdx_identifier" => "OLDAP-2.2" }]),
-            have_attributes(name: "cliui", purl_type: "npm", version: "2.1.0",
+            have_attributes(name: "cliui", purl_type: "npm", version: "2.1.0", path: "package-lock.json",
               licenses: [{ "name" => "Open LDAP Public License v2.3", "spdx_identifier" => "OLDAP-2.3" }]),
-            have_attributes(name: "cliui", purl_type: "golang", version: "2.1.0",
+            have_attributes(name: "cliui", purl_type: "golang", version: "2.1.0", path: "package-lock.json",
               licenses: [{ "name" => "Open LDAP Public License v2.6", "spdx_identifier" => "OLDAP-2.6" }])
           )
         end

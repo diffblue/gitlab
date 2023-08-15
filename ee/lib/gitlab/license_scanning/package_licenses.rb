@@ -8,9 +8,9 @@ module Gitlab
 
       def initialize(project:, components:)
         @components = components
-        # component_versions keeps track of the requested versions for each component, to
+        # component_data keeps track of the requested versions for each component, to
         # facilitate faster lookups by avoiding an O(n^2) search against the components array
-        @component_versions = Hash.new { |h, k| h[k] = [] }
+        @component_data = Hash.new { |h, k| h[k] = [] }
         @project = project
         @all_records = {}
         @cached_licenses = []
@@ -24,7 +24,7 @@ module Gitlab
 
       private
 
-      attr_reader :components, :component_versions, :all_records, :project, :cached_licenses
+      attr_reader :components, :component_data, :all_records, :project, :cached_licenses
 
       # obtains licenses by using data from the `licenses` jsonb column in the pm_packages table to query
       # data from the pm_licenses table
@@ -32,7 +32,7 @@ module Gitlab
         use_replica_if_available do
           init_all_records_to_unknown_licenses do |component|
             # build cache for faster lookups of licenses and component_version data
-            build_component_versions_cache(component)
+            build_component_data_cache(component)
           end
 
           # For each batch of components, we execute two queries:
@@ -45,11 +45,11 @@ module Gitlab
             packages_for_batch = ::PackageMetadata::Package.packages_for(components: components_batch)
 
             packages_for_batch.each do |package|
-              requested_versions_for_package(package).each do |version|
-                license_ids = package.license_ids_for(version: version)
+              requested_data_for_package(package).each do |component|
+                license_ids = package.license_ids_for(version: component[:version])
 
                 add_record_with_known_licenses(purl_type: package.purl_type, name: package.name,
-                  version: version, license_ids: license_ids)
+                  version: component[:version], license_ids: license_ids, path: component[:path])
               end
             end
           end
@@ -62,7 +62,10 @@ module Gitlab
       # and pm_licenses tables
       def uncompressed_fetch
         use_replica_if_available do
-          init_all_records_to_unknown_licenses
+          init_all_records_to_unknown_licenses do |component|
+            # build cache for faster lookups of licenses and component_version data
+            build_component_data_cache(component)
+          end
 
           # For each batch of components, we execute two queries:
           #
@@ -84,7 +87,7 @@ module Gitlab
         "#{name}/#{version}/#{purl_type}"
       end
 
-      def component_versions_key(name:, purl_type:)
+      def component_data_key(name:, purl_type:)
         "#{name}/#{purl_type}"
       end
 
@@ -106,9 +109,9 @@ module Gitlab
       # we fetch package details from the pm_packages table which only contains the
       # purl_type and name. We need a way to know which versions were requested for
       # each purl_type and name, so we use a hash to store this data for faster lookups.
-      def build_component_versions_cache(component)
-        component_versions[component_versions_key(name: component.name, purl_type: component.purl_type)] <<
-          component.version
+      def build_component_data_cache(component)
+        component_data[component_data_key(name: component.name, purl_type: component.purl_type)] <<
+          { version: component.version, path: component.path }
       end
 
       # there's only about 500 licenses in the pm_licenses table, and the data doesn't change often, so we use
@@ -136,24 +139,31 @@ module Gitlab
         end
       end
 
-      def requested_versions_for_package(package)
-        component_versions[component_versions_key(name: package.name, purl_type: package.purl_type)]
+      def requested_data_for_package(package)
+        component_data[component_data_key(name: package.name, purl_type: package.purl_type)]
       end
 
       # Every time a license is encountered for a component, we record it.
       # This allows us to determine which components do not have licenses.
       # Adds a single record with known licenses. This method is used by both the
       # uncompressed and compressed queries.
-      def add_record_with_known_licenses(purl_type:, name:, version:, license_ids:)
+      def add_record_with_known_licenses(purl_type:, name:, version:, license_ids:, path:)
         all_records[component_key(name: name, version: version, purl_type: purl_type)] =
           Hashie::Mash.new(purl_type: purl_type, name: name, version: version,
-            licenses: licenses_with_names_for(license_ids: license_ids))
+            licenses: licenses_with_names_for(license_ids: license_ids), path: path || '')
       end
 
       # Adds multiple records with known licenses
       def add_records_with_known_licenses(records)
         records.each do |purl_type, name, version, license_ids|
-          add_record_with_known_licenses(purl_type: purl_type, name: name, version: version, license_ids: license_ids)
+          components = component_data[component_data_key(name: name, purl_type: purl_type)]
+
+          components.each do |component|
+            next unless component[:version] == version
+
+            add_record_with_known_licenses(purl_type: purl_type, name: name,
+              version: version, license_ids: license_ids, path: component[:path])
+          end
         end
       end
 
