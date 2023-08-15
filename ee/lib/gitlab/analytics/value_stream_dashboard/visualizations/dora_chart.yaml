@@ -1,0 +1,8 @@
+---
+version: 1
+title: Dora Chart
+type: DORAChart
+data:
+  type: value_stream
+  query: {}
+options: {}

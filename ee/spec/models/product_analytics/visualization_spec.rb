@@ -12,7 +12,7 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
   let(:dashboards) { project.product_analytics_dashboards }
 
   before do
-    stub_licensed_features(product_analytics: true)
+    stub_licensed_features(product_analytics: true, project_level_analytics_dashboard: true)
   end
 
   shared_examples_for 'a valid visualization' do
@@ -32,7 +32,7 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
   describe '.for_project' do
     subject { described_class.for_project(project) }
 
-    num_builtin_visualizations = 14
+    num_builtin_visualizations = 15
 
     it 'returns all visualizations stored in the project as well as built-in ones' do
       num_custom_visualizations = 2
@@ -56,6 +56,34 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
       it 'does not return custom visualizations from self' do
         expect(subject.map { |v| v.config['title'] }).not_to include('Daily Something', 'Example title')
       end
+    end
+  end
+
+  describe '.load_value_stream_dashboard_visualization' do
+    subject { described_class.load_value_stream_dashboard_visualization('dora_chart') }
+
+    it 'returns the value stream dashboard builtin visualization' do
+      expect(subject.slug).to eq('dora_chart')
+    end
+  end
+
+  describe '.product_analytics_visualizations' do
+    subject { described_class.product_analytics_visualizations }
+
+    num_builtin_visualizations = 14
+
+    it 'returns the product analytics builtin visualizations' do
+      expect(subject.count).to eq(num_builtin_visualizations)
+    end
+  end
+
+  describe '.value_stream_dashboard_visualizations' do
+    subject { described_class.value_stream_dashboard_visualizations }
+
+    num_builtin_visualizations = 1
+
+    it 'returns the value stream dashboard builtin visualizations' do
+      expect(subject.count).to eq(num_builtin_visualizations)
     end
   end
 
