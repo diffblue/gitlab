@@ -536,6 +536,10 @@ module EE
       vulnerability_statistic&.pipeline
     end
 
+    def latest_ingested_sbom_pipeline
+      latest_default_branch_pipeline_with_reports(::Ci::JobArtifact.of_report_type(:sbom))
+    end
+
     def latest_default_branch_pipeline_with_reports(reports)
       latest_pipeline_with_reports_for_ref(default_branch, reports)
     end

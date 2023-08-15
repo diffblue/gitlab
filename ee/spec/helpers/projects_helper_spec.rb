@@ -245,7 +245,7 @@ RSpec.describe ProjectsHelper do
         it { is_expected.to match(base_values) }
       end
 
-      context 'with pipeline' do
+      context 'with security pipeline' do
         let(:pipeline_created_at) { '1881-05-19T00:00:00Z' }
         let(:pipeline) { build_stubbed(:ci_pipeline, project: project, created_at: pipeline_created_at) }
         let(:pipeline_values) do
@@ -268,6 +268,7 @@ RSpec.describe ProjectsHelper do
 
         before do
           allow(project).to receive(:latest_ingested_security_pipeline).and_return(pipeline)
+          allow(project).to receive(:latest_ingested_sbom_pipeline).and_return(nil)
           allow(pipeline).to receive_messages(
             has_security_report_ingestion_warnings?: true,
             has_security_report_ingestion_errors?: false
@@ -275,6 +276,28 @@ RSpec.describe ProjectsHelper do
         end
 
         it { is_expected.to match(base_values.merge!(pipeline_values)) }
+
+        context 'with sbom pipeline' do
+          let(:sbom_pipeline_created_at) { '1981-07-19T00:00:00Z' }
+          let(:sbom_pipeline) { build_stubbed(:ci_pipeline, project: project, created_at: sbom_pipeline_created_at) }
+          let(:sbom_pipeline_values) do
+            {
+              sbom_pipeline: {
+                id: sbom_pipeline.id,
+                path: "/#{project.full_path}/-/pipelines/#{sbom_pipeline.id}",
+                created_at: sbom_pipeline_created_at,
+                has_warnings: '',
+                has_errors: ''
+              }
+            }
+          end
+
+          before do
+            allow(project).to receive(:latest_ingested_sbom_pipeline).and_return(sbom_pipeline)
+          end
+
+          it { is_expected.to match(base_values.merge(sbom_pipeline_values, pipeline_values)) }
+        end
       end
     end
   end

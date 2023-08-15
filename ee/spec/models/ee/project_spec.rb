@@ -2289,6 +2289,18 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     it { is_expected.to eq(pipeline_1) }
   end
 
+  describe '#latest_ingested_sbom_pipeline' do
+    let_it_be(:project, refind: true) { create(:project) }
+    let_it_be(:pipeline_1) { create(:ee_ci_pipeline, :with_dast_report, :success, project: project) }
+    let_it_be(:pipeline_2) { create(:ee_ci_pipeline, project: project) }
+    let_it_be(:pipeline_3) { create(:ee_ci_pipeline, :with_cyclonedx_report, :success, project: project) }
+    let_it_be(:pipeline_4) { create(:ee_ci_pipeline, :success, project: project) }
+
+    subject { project.latest_ingested_sbom_pipeline }
+
+    it { is_expected.to eq(pipeline_3) }
+  end
+
   describe '#latest_default_branch_pipeline_with_reports' do
     let_it_be(:project) { create(:project) }
     let_it_be(:pipeline_1) { create(:ee_ci_pipeline, :with_sast_report, project: project) }

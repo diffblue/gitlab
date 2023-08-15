@@ -33,10 +33,19 @@ export default {
   },
   props: {
     pipeline: { type: Object, required: true },
+    sbomPipeline: { type: Object, required: false, default: null },
   },
   computed: {
     parsingStatusMessage() {
-      const { hasParsingErrors, hasParsingWarnings } = this.pipeline;
+      return this.parseStatusMessage(this.pipeline);
+    },
+    sbomParsingStatusMessage() {
+      return this.parseStatusMessage(this.sbomPipeline);
+    },
+  },
+  methods: {
+    parseStatusMessage(pipeline) {
+      const { hasParsingErrors, hasParsingWarnings } = pipeline;
 
       if (hasParsingErrors && hasParsingWarnings) {
         return this.$options.i18n.hasParsingErrorsAndWarnings;
@@ -52,46 +61,71 @@ export default {
     },
   },
   i18n: {
-    lastUpdated: __('Last updated'),
+    lastUpdated: __('Security reports last updated'),
     hasParsingErrorsAndWarnings: s__('SecurityReports|Parsing errors and warnings in pipeline'),
     hasParsingErrors: s__('SecurityReports|Parsing errors in pipeline'),
     hasParsingWarnings: s__('SecurityReports|Parsing warnings in pipeline'),
     autoFixSolutions: s__('AutoRemediation|Auto-fix solutions'),
     autoFixMrsLink: s__('AutoRemediation|%{mrsCount} ready for review'),
+    sbomLastUpdated: __('SBOMs last updated'),
   },
 };
 </script>
 
 <template>
   <div
-    class="gl-md-display-flex gl-align-items-center gl-border-solid gl-border-1 gl-border-gray-100 gl-p-6"
+    class="gl-lg-display-flex gl-align-items-center gl-border-solid gl-border-1 gl-border-gray-100 gl-p-6"
   >
-    <div class="gl-mr-3">
-      <span class="gl-font-weight-bold gl-mr-3">{{ $options.i18n.lastUpdated }}</span
-      ><span class="gl-white-space-nowrap">
-        <time-ago-tooltip class="gl-pr-3" :time="pipeline.createdAt" /><gl-link
-          :href="pipeline.path"
-          >#{{ pipeline.id }}</gl-link
-        >
-        <pipeline-status-badge :pipeline="pipeline" class="gl-ml-3" />
-      </span>
+    <div class="gl-display-flex gl-align-items-center" data-testid="pipeline">
+      <div class="gl-mr-3">
+        <span class="gl-font-weight-bold gl-mr-3">{{ $options.i18n.lastUpdated }}</span
+        ><span class="gl-white-space-nowrap">
+          <time-ago-tooltip class="gl-pr-3" :time="pipeline.createdAt" /><gl-link
+            :href="pipeline.path"
+            >#{{ pipeline.id }}</gl-link
+          >
+          <pipeline-status-badge :pipeline="pipeline" class="gl-ml-3" />
+        </span>
+      </div>
+      <div
+        v-if="parsingStatusMessage"
+        class="gl-ml-2 gl-text-orange-400 gl-font-weight-bold"
+        data-testid="parsing-status-notice"
+      >
+        <gl-icon name="warning" class="gl-mr-3" />{{ parsingStatusMessage }}
+      </div>
+      <div v-if="autoFixMrsCount" class="gl-md-ml-3" data-testid="auto-fix-mrs-link">
+        <span class="gl-font-weight-bold gl-mr-3">{{ $options.i18n.autoFixSolutions }}</span>
+        <gl-link :href="autoFixMrsPath" class="gl-white-space-nowrap">{{
+          sprintf($options.i18n.autoFixMrsLink, { mrsCount: autoFixMrsCount })
+        }}</gl-link>
+      </div>
     </div>
+
+    <div v-if="sbomPipeline" class="gl-mx-3 gl-display-none gl-lg-display-block">•</div>
+
     <div
-      v-if="parsingStatusMessage"
-      class="gl-mr-3 gl-mt-5 gl-md-mt-0 gl-text-orange-400 gl-font-weight-bold"
-      data-testid="parsing-status-notice"
+      v-if="sbomPipeline"
+      class="gl-md-display-flex gl-align-items-center gl-mt-5 gl-lg-mt-0"
+      data-testid="sbom-pipeline"
     >
-      <gl-icon name="warning" class="gl-mr-3" />{{ parsingStatusMessage }}
-    </div>
-    <div
-      v-if="autoFixMrsCount"
-      class="gl-md-ml-3 gl-mt-5 gl-md-mt-0"
-      data-testid="auto-fix-mrs-link"
-    >
-      <span class="gl-font-weight-bold gl-mr-3">{{ $options.i18n.autoFixSolutions }}</span>
-      <gl-link :href="autoFixMrsPath" class="gl-white-space-nowrap">{{
-        sprintf($options.i18n.autoFixMrsLink, { mrsCount: autoFixMrsCount })
-      }}</gl-link>
+      <div>
+        <span class="gl-font-weight-bold gl-mr-3">{{ $options.i18n.sbomLastUpdated }}</span
+        ><span class="gl-white-space-nowrap">
+          <time-ago-tooltip class="gl-pr-3" :time="sbomPipeline.createdAt" /><gl-link
+            :href="sbomPipeline.path"
+            >#{{ sbomPipeline.id }}</gl-link
+          >
+          <pipeline-status-badge :pipeline="sbomPipeline" class="gl-ml-3" />
+        </span>
+      </div>
+      <div
+        v-if="sbomParsingStatusMessage"
+        class="gl-mr-3 gl-ml-2 gl-mt-5 gl-md-mt-0 gl-text-orange-400 gl-font-weight-bold"
+        data-testid="parsing-status-notice"
+      >
+        <gl-icon name="warning" class="gl-mr-3" />{{ sbomParsingStatusMessage }}
+      </div>
     </div>
   </div>
 </template>
