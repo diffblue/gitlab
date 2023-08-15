@@ -871,6 +871,9 @@ msgstr ""
 msgid "%{label_for_message} unavailable"
 msgstr ""
 
+msgid "%{label_name} is locked and was not removed"
+msgstr ""
+
 msgid "%{label_name} was removed"
 msgstr ""
 
