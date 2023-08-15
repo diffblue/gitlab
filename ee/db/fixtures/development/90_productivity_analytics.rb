@@ -3,18 +3,54 @@
 require './spec/support/sidekiq_middleware'
 require 'active_support/testing/time_helpers'
 
+# Usage:
+#
+# Simple invocation seeds all projects:
+#
+# FILTER=productivity_analytics SEED_PRODUCTIVITY_ANALYTICS=1 bundle exec rake db:seed_fu
+#
+# Seed specific project:
+#
+# FILTER=productivity_analytics SEED_PRODUCTIVITY_ANALYTICS=1 PROJECT_ID=10 bundle exec rake db:seed_fu
+
 class Gitlab::Seeder::ProductivityAnalytics
   include ActiveSupport::Testing::TimeHelpers
 
+  attr_reader :project, :maintainers, :admin, :default_branch
+
   def initialize(project)
-    @project = project
-    @user = User.admins.first
-    @issue_count = 3
+    @admin = User.admins.first
+    @project = project || create_project_with_group
+    @issue_count = 10
+    @maintainers = []
+    @default_branch = @project.default_branch
   end
 
   def seed!
+    unless project.repository_exists?
+      error =
+        "(#{project.full_path}) doesn't have a repository." \
+        'Try specifying a project with working repository or omit the PROJECT_ID parameter' \
+        'so the seed script will automatically create one.'
+    end
+
+    if Gitlab.config.external_diffs.enabled
+      error =
+        "(#{project.full_path}) has merge request external diffs enabled." \
+        'Disable it before continuing.'
+    end
+
+    if error
+      print_error(error)
+
+      return
+    end
+
     Sidekiq::Worker.skipping_transaction_check do
       Sidekiq::Testing.inline! do
+        create_maintainers!
+        print '.'
+
         issues = create_issues
         print '.'
 
@@ -28,16 +64,70 @@ class Gitlab::Seeder::ProductivityAnalytics
         print '.'
 
         create_notes(merge_requests)
-
-        merge_merge_requests(merge_requests)
         print '.'
       end
     end
 
+    merge_merge_requests
     print '.'
+
+    puts "\nSuccessfully seeded '#{project.full_path}'\n"
+    puts "URL: #{Rails.application.routes.url_helpers.project_url(project)}"
   end
 
   private
+
+  def print_error(message)
+    puts 'WARNING'
+    puts '========================'
+    puts "Seeding #{self.class} is not possible\n"
+    puts message
+  end
+
+  def create_project_with_group
+    Sidekiq::Testing.inline! do
+      namespace = FactoryBot.create(
+        :group,
+        :public,
+        name: "Productivity Group #{suffix}",
+        path: "p-analytics-group-#{suffix}"
+      )
+      project = FactoryBot.create(
+        :project,
+        :public,
+        :repository,
+        name: "Productivity Project #{suffix}",
+        path: "p-analytics-project-#{suffix}",
+        creator: admin,
+        namespace: namespace
+      )
+
+      project.create_repository
+      project
+    end
+  end
+
+  def create_maintainers!
+    5.times do |i|
+      user = FactoryBot.create(
+        :user,
+        name: "P User#{i}",
+        username: "p-user-#{i}-#{suffix}",
+        email: "p-user-#{i}@#{suffix}.com"
+      )
+
+      project.group&.add_maintainer(user)
+      project.add_maintainer(user)
+
+      @maintainers << user
+    end
+
+    AuthorizedProjectUpdate::ProjectRecalculateService.new(project).execute
+
+    # Persist project and namespace on DB so gitaly allows users creating branches in repository
+    Project.connection.commit_db_transaction
+    Project.connection.begin_db_transaction
+  end
 
   def create_issues
     Array.new(@issue_count) do
@@ -45,20 +135,20 @@ class Gitlab::Seeder::ProductivityAnalytics
         title: "Productivity Analytics: #{FFaker::Lorem.sentence(6)}",
         description: FFaker::Lorem.sentence,
         state: 'opened',
-        assignees: [@project.team.users.sample]
+        assignees: [project.team.users.sample]
       }
 
-      travel_to(rand(90..100).days.ago) do
-        Issues::CreateService.new(container: @project, current_user: @project.team.users.sample, params: issue_params, perform_spam_check: false).execute[:issue]
+      travel_to(random_past_date) do
+        Issues::CreateService.new(container: project, current_user: maintainers.sample, params: issue_params, perform_spam_check: false).execute[:issue]
       end
     end
   end
 
   def add_milestones_and_list_labels(issues)
     issues.shuffle.map.with_index do |issue, index|
-      travel_to(80.days.ago) do
+      travel_to(random_past_date) do
         if index.even?
-          issue.update(milestone: @project.milestones.sample)
+          issue.update(milestone: project.milestones.sample)
         else
           label_name = "#{FFaker::Product.brand}-#{FFaker::Product.brand}-#{rand(1000)}"
           list_label = FactoryBot.create(:label, title: label_name, project: issue.project)
@@ -75,19 +165,20 @@ class Gitlab::Seeder::ProductivityAnalytics
     issues.map do |issue|
       branch_name = filename = "#{FFaker::Product.brand}-#{FFaker::Product.brand}-#{rand(1000)}"
 
-      travel_to(70.days.ago) do
-        issue.project.repository.add_branch(@user, branch_name, 'master')
+      travel_to(random_past_date) do
+        commit_user = maintainers.sample
+        issue.project.repository.add_branch(commit_user, branch_name, 'HEAD')
 
-        commit_sha = issue.project.repository.create_file(@user, filename, "content", message: "Commit for #{issue.to_reference}", branch_name: branch_name)
+        commit_sha = issue.project.repository.create_file(commit_user, filename, 'content', message: "Commit for #{issue.to_reference}", branch_name: branch_name)
         issue.project.repository.commit(commit_sha)
 
         ::Git::BranchPushService.new(
           issue.project,
-          @user,
+          commit_user,
           change: {
-            oldrev: issue.project.repository.commit("master").sha,
+            oldrev: issue.project.repository.commit('HEAD').sha,
             newrev: commit_sha,
-            ref: 'refs/heads/master'
+            ref: "refs/heads/#{default_branch}"
           }
         ).execute
       end
@@ -102,19 +193,23 @@ class Gitlab::Seeder::ProductivityAnalytics
         title: 'Productivity Analytics merge_request',
         description: "Fixes #{issue.to_reference}",
         source_branch: branch,
-        target_branch: 'master'
+        target_branch: default_branch
       }
       travel_to(issue.created_at) do
-        MergeRequests::CreateService.new(project: issue.project, current_user: @user, params: opts).execute
+        mr = MergeRequests::CreateService.new(project: issue.project, current_user: maintainers.sample, params: opts).execute
+        mr.ensure_metrics!
+        mr.prepare
+        mr
       end
     end
   end
 
   def create_notes(merge_requests)
     merge_requests.each do |merge_request|
-      travel_to(merge_request.created_at + rand(5).days) do
+      date = get_date_after(merge_request.created_at)
+      travel_to(date) do
         Note.create!(
-          author: @user,
+          author: maintainers.sample,
           project: merge_request.project,
           noteable: merge_request,
           note: FFaker::Lorem.sentence(rand(5))
@@ -123,31 +218,51 @@ class Gitlab::Seeder::ProductivityAnalytics
     end
   end
 
-  def merge_merge_requests(merge_requests)
-    merge_requests.each do |merge_request|
-      travel_to(rand(30..45).days.ago) do
-        MergeRequests::MergeService.new(project: merge_request.project, current_user: @user).execute(merge_request)
+  def merge_merge_requests
+    Sidekiq::Worker.skipping_transaction_check do
+      project.merge_requests.take(7).each do |merge_request| # leaves some MRs opened for code review analytics chart
+        date = get_date_after(merge_request.created_at)
+        user = maintainers.sample
+        travel_to(date) do
+          MergeRequests::MergeService.new(
+            project: merge_request.project,
+            current_user: user,
+            params: { sha: merge_request.diff_head_sha }
+          ).execute(merge_request.reset)
+
+          issue = merge_request.visible_closing_issues_for(user).first
+          MergeRequests::CloseIssueWorker.new.perform(project.id, user.id, issue.id, merge_request.id) if issue
+        end
       end
     end
+  end
+
+  def suffix
+    @suffix ||= Time.now.to_i
+  end
+
+  def get_date_after(date)
+    travel_back
+
+    random_date = [*date.to_i..Time.now.to_i].sample
+
+    Time.at(random_date)
+  end
+
+  def random_past_date
+    rand(1..45).days.ago
   end
 end
 
 Gitlab::Seeder.quiet do
   flag = 'SEED_PRODUCTIVITY_ANALYTICS'
+  project_id = ENV['PROJECT_ID']
+
+  project = Project.find(project_id) if project_id
 
   if ENV[flag]
-    Project.not_mass_generated.find_each do |project|
-      # This seed naively assumes that every project has a repository, and every
-      # repository has a `master` branch, which may be the case for a pristine
-      # GDK seed, but is almost never true for a GDK that's actually had
-      # development performed on it.
-      next unless project.repository_exists? && project.repository.commit('master')
-
-      seeder = Gitlab::Seeder::ProductivityAnalytics.new(project)
-      seeder.seed!
-      puts "Productivity analytics seeded for project #{project.full_path}"
-      break
-    end
+    seeder = Gitlab::Seeder::ProductivityAnalytics.new(project)
+    seeder.seed!
   else
     puts "Skipped. Use the `#{flag}` environment variable to enable."
   end
