@@ -119,8 +119,6 @@ module API
               gitlab_realm: gitlab_realm
             ).encoded
           else
-            forbidden! unless ::Feature.enabled?(:self_managed_code_suggestions_completion_api)
-
             code_suggestions_token = ::Ai::ServiceAccessToken.code_suggestions.active.last
             unauthorized! if code_suggestions_token.nil?
 

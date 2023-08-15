@@ -396,16 +396,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           end
         end
       end
-
-      context 'when feature flag is disabled' do
-        let(:current_user) { create(:user) }
-
-        before do
-          stub_feature_flags(self_managed_code_suggestions_completion_api: false)
-        end
-
-        include_examples 'a forbidden response'
-      end
     end
   end
 end
