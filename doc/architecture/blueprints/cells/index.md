@@ -304,7 +304,6 @@ This is the list of known affected features with proposed solutions.
 - [Cells: CI Runners](cells-feature-ci-runners.md)
 - [Cells: Container Registry](cells-feature-container-registry.md)
 - [Cells: Contributions: Forks](cells-feature-contributions-forks.md)
-- [Cells: Dashboard: Projects, Todos, Issues, Merge Requests, Activity, ...](cells-feature-dashboard.md)
 - [Cells: Database Sequences](cells-feature-database-sequences.md)
 - [Cells: Data Migration](cells-feature-data-migration.md)
 - [Cells: Explore](cells-feature-explore.md)
@@ -320,6 +319,7 @@ This is the list of known affected features with proposed solutions.
 - [Cells: Snippets](cells-feature-snippets.md)
 - [Cells: Uploads](cells-feature-uploads.md)
 - [Cells: User Profile](cells-feature-user-profile.md)
+- [Cells: Your Work](cells-feature-your-work.md)
 
 ## Frequently Asked Questions
 
