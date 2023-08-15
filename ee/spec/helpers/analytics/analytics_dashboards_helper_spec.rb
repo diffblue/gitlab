@@ -19,6 +19,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
     allow(helper).to receive(:project_analytics_dashboards_path).with(project).and_return('/-/analytics/dashboards')
 
     stub_application_setting(product_analytics_data_collector_host: 'https://new-collector.example.com')
+    stub_application_setting(project_collector_host: 'https://project-collector.example.com')
     stub_application_setting(product_analytics_clickhouse_connection_string: 'clickhouse://localhost:9000')
     stub_application_setting(cube_api_base_url: 'https://cube.example.com')
     stub_application_setting(cube_api_key: '0987654321')
@@ -181,16 +182,22 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
     where(
       :can_read_product_analytics,
       :project_instrumentation_key,
-      :expected_tracking_key
+      :expected_tracking_key,
+      :use_project_level
     ) do
-      false | nil | nil
-      true | 'snowplow-key' | 'snowplow-key'
-      true | nil | nil
+      false | nil | nil | false
+      true | 'snowplow-key' | 'snowplow-key' | false
+      true | 'snowplow-key' | 'snowplow-key' | true
+      true | nil | nil | false
     end
 
     with_them do
       before do
-        project.project_setting.update!(product_analytics_instrumentation_key: project_instrumentation_key)
+        project.project_setting.update!(
+          product_analytics_instrumentation_key: project_instrumentation_key,
+          product_analytics_data_collector_host:
+            use_project_level ? 'https://project-collector.example.com' : nil
+        )
 
         stub_application_setting(product_analytics_enabled: can_read_product_analytics)
 
@@ -204,9 +211,11 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
       subject(:data) { helper.analytics_project_settings_data(project) }
 
       it 'returns the expected data' do
+        expected_collector = use_project_level ? 'https://project-collector.example.com' : 'https://new-collector.example.com'
+
         expect(data).to eq({
           tracking_key: can_read_product_analytics ? expected_tracking_key : nil,
-          collector_host: can_read_product_analytics ? 'https://new-collector.example.com' : nil,
+          collector_host: can_read_product_analytics ? expected_collector : nil,
           dashboards_path: '/-/analytics/dashboards'
         })
       end
