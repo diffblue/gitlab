@@ -161,7 +161,7 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
                         "name" => "github.com/sirupsen/logrus",
                         "package_manager" => nil,
                         "version" => "v1.4.2",
-                        "blob_path" => nil
+                        "blob_path" => %r{^/namespace\d+/project-\d+/-/blob/master/go.sum$}
                       },
                       {
                         "name" => "org.apache.logging.log4j/log4j-api",
@@ -222,7 +222,7 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
                         "name" => "github.com/sirupsen/logrus",
                         "package_manager" => nil,
                         "version" => "v1.4.2",
-                        "blob_path" => nil
+                        "blob_path" => %r{^/namespace\d+/project-\d+/-/blob/master/go.sum$}
                       },
                       {
                         "name" => "org.apache.logging.log4j/log4j-api",

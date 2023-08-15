@@ -24,6 +24,7 @@ module Gitlab
               license.add_dependency(
                 name: package_license.name,
                 package_manager: package_license.package_manager,
+                path: package_license.path,
                 purl_type: package_license.purl_type,
                 version: package_license.version
               )
