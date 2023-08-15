@@ -5,6 +5,13 @@ require 'spec_helper'
 RSpec.describe Gitlab::ExclusiveLease, :clean_gitlab_redis_shared_state do
   let(:unique_key) { SecureRandom.hex(10) }
 
+  before do
+    stub_feature_flags(
+      use_cluster_shared_state_for_exclusive_lease: false,
+      enable_exclusive_lease_double_lock_rw: false
+    )
+  end
+
   describe '#try_obtain_with_ttl' do
     it 'cannot obtain twice before the lease has expired' do
       lease = described_class.new(unique_key, timeout: 3600)
