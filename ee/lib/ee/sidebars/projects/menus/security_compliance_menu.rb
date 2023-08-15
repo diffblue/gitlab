@@ -48,7 +48,7 @@ module EE
 
           def can_access_dependencies?
             can?(context.current_user, :access_security_and_compliance, context.project) &&
-              can?(context.current_user, :read_dependencies, context.project)
+              can?(context.current_user, :read_dependency, context.project)
           end
 
           override :configuration_menu_item_paths

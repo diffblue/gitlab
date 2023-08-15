@@ -1136,7 +1136,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
   end
 
-  describe 'read_dependencies' do
+  describe 'read_dependency' do
     context 'when dependency scanning feature available' do
       before do
         stub_licensed_features(dependency_scanning: true)
@@ -1148,13 +1148,13 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
         context 'with public access to repository' do
           let(:project) { public_project }
 
-          it { is_expected.to be_allowed(:read_dependencies) }
+          it { is_expected.to be_allowed(:read_dependency) }
         end
 
         context 'with limited access to repository' do
           let(:project) { create(:project, :public, :repository_private) }
 
-          it { is_expected.not_to be_allowed(:read_dependencies) }
+          it { is_expected.not_to be_allowed(:read_dependency) }
         end
       end
 
@@ -1165,54 +1165,54 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
           let(:current_user) { admin }
 
           context 'when admin mode enabled', :enable_admin_mode do
-            it { is_expected.to be_allowed(:read_dependencies) }
+            it { is_expected.to be_allowed(:read_dependency) }
           end
 
           context 'when admin mode disabled' do
-            it { is_expected.to be_disallowed(:read_dependencies) }
+            it { is_expected.to be_disallowed(:read_dependency) }
           end
         end
 
         context 'with owner' do
           let(:current_user) { owner }
 
-          it { is_expected.to be_allowed(:read_dependencies) }
+          it { is_expected.to be_allowed(:read_dependency) }
         end
 
         context 'with maintainer' do
           let(:current_user) { maintainer }
 
-          it { is_expected.to be_allowed(:read_dependencies) }
+          it { is_expected.to be_allowed(:read_dependency) }
         end
 
         context 'with developer' do
           let(:current_user) { developer }
 
-          it { is_expected.to be_allowed(:read_dependencies) }
+          it { is_expected.to be_allowed(:read_dependency) }
         end
 
         context 'with reporter' do
           let(:current_user) { reporter }
 
-          it { is_expected.to be_allowed(:read_dependencies) }
+          it { is_expected.to be_allowed(:read_dependency) }
         end
 
         context 'with guest' do
           let(:current_user) { guest }
 
-          it { is_expected.to be_disallowed(:read_dependencies) }
+          it { is_expected.to be_disallowed(:read_dependency) }
         end
 
         context 'with non member' do
           let(:current_user) { non_member }
 
-          it { is_expected.to be_disallowed(:read_dependencies) }
+          it { is_expected.to be_disallowed(:read_dependency) }
         end
 
         context 'with anonymous' do
           let(:current_user) { anonymous }
 
-          it { is_expected.to be_disallowed(:read_dependencies) }
+          it { is_expected.to be_disallowed(:read_dependency) }
         end
       end
     end
@@ -1220,7 +1220,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     context 'when dependency list feature not available' do
       let(:current_user) { admin }
 
-      it { is_expected.not_to be_allowed(:read_dependencies) }
+      it { is_expected.not_to be_allowed(:read_dependency) }
     end
   end
 
@@ -2556,7 +2556,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
     context 'for a member role with read_dependency true' do
       let(:member_role_abilities) { { read_dependency: true } }
-      let(:allowed_abilities) { [:read_dependencies] }
+      let(:allowed_abilities) { [:read_dependency] }
       let(:licensed_features) { { dependency_scanning: true } }
 
       it_behaves_like 'custom roles abilities'

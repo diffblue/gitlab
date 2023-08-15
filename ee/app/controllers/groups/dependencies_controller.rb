@@ -25,7 +25,7 @@ module Groups
     private
 
     def authorize_read_dependency_list!
-      return if can?(current_user, :read_dependencies, group) && Feature.enabled?(:group_level_dependencies, group)
+      return if can?(current_user, :read_dependency, group) && Feature.enabled?(:group_level_dependencies, group)
 
       render_not_authorized
     end

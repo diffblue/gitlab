@@ -6,7 +6,7 @@ module Types
       graphql_name 'Dependency'
       description 'A software dependency used by a project'
 
-      authorize :read_dependencies
+      authorize :read_dependency
 
       field :id, ::Types::GlobalIDType,
         null: false, description: 'ID of the dependency.'

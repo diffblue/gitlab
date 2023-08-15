@@ -173,7 +173,7 @@ module Sidebars
 
         def read_group_level_dependencies_available?
           context.group.licensed_feature_available?(:security_dashboard) &&
-            can?(context.current_user, :read_dependencies, context.group) &&
+            can?(context.current_user, :read_dependency, context.group) &&
             Feature.enabled?(:group_level_dependencies, context.group)
         end
       end
