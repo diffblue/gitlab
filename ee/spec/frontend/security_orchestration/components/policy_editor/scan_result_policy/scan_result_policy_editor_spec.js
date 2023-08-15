@@ -1,7 +1,7 @@
 import { GlEmptyState } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import PolicyEditorLayout from 'ee/security_orchestration/components/policy_editor/policy_editor_layout.vue';
+import EditorLayout from 'ee/security_orchestration/components/policy_editor/editor_layout.vue';
 import {
   DEFAULT_SCAN_RESULT_POLICY,
   SCAN_RESULT_POLICY_SETTINGS_POLICY,
@@ -105,7 +105,7 @@ describe('ScanResultPolicyEditor', () => {
   };
 
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
-  const findPolicyEditorLayout = () => wrapper.findComponent(PolicyEditorLayout);
+  const findPolicyEditorLayout = () => wrapper.findComponent(EditorLayout);
   const findPolicyActionBuilder = () => wrapper.findComponent(PolicyActionBuilder);
   const findAllPolicyActionBuilders = () => wrapper.findAllComponents(PolicyActionBuilder);
   const findAddRuleButton = () => wrapper.findByTestId('add-rule');

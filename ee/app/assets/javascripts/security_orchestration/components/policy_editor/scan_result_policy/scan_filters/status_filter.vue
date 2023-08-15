@@ -1,7 +1,7 @@
 <script>
 import { GlCollapsibleListbox } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
-import PolicyRuleMultiSelect from '../../policy_rule_multi_select.vue';
+import RuleMultiSelect from '../../rule_multi_select.vue';
 import BaseLayoutComponent from '../base_layout/base_layout_component.vue';
 import { groupSelectedVulnerabilityStates } from '../lib';
 import {
@@ -20,7 +20,7 @@ export default {
   },
   name: 'StatusFilter',
   components: {
-    PolicyRuleMultiSelect,
+    RuleMultiSelect,
     BaseLayoutComponent,
     GlCollapsibleListbox,
   },
@@ -94,7 +94,7 @@ export default {
           :disabled="disabled"
           @select="selectVulnerabilityStateGroup"
         />
-        <policy-rule-multi-select
+        <rule-multi-select
           v-model="filters"
           :item-type-name="$options.i18n.vulnerabilityStates"
           :items="$options.APPROVAL_VULNERABILITY_STATES[selectedFilter]"

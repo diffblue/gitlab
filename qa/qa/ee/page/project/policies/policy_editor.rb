@@ -6,7 +6,7 @@ module QA
       module Project
         module Policies
           class PolicyEditor < QA::Page::Base
-            view 'ee/app/assets/javascripts/security_orchestration/components/policy_editor/policy_selection.vue' do
+            view 'ee/app/assets/javascripts/security_orchestration/components/policy_editor/policy_type_selector.vue' do
               element :policy_selection_wizard
             end
 

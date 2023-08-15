@@ -3,19 +3,19 @@ import * as urlUtils from '~/lib/utils/url_utility';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/security_orchestration/components/constants';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import NewPolicy from 'ee/security_orchestration/components/policy_editor/new_policy.vue';
-import PolicySelection from 'ee/security_orchestration/components/policy_editor/policy_selection.vue';
-import PolicyEditor from 'ee/security_orchestration/components/policy_editor/policy_editor.vue';
+import App from 'ee/security_orchestration/components/policy_editor/app.vue';
+import PolicyTypeSelector from 'ee/security_orchestration/components/policy_editor/policy_type_selector.vue';
+import EditorWrapper from 'ee/security_orchestration/components/policy_editor/editor_wrapper.vue';
 
-describe('NewPolicy component', () => {
+describe('App component', () => {
   let wrapper;
 
-  const findPolicySelection = () => wrapper.findComponent(PolicySelection);
-  const findPolicyEditor = () => wrapper.findComponent(PolicyEditor);
+  const findPolicySelection = () => wrapper.findComponent(PolicyTypeSelector);
+  const findPolicyEditor = () => wrapper.findComponent(EditorWrapper);
   const findPath = () => wrapper.findComponent(GlPath);
 
   const factory = ({ provide = {} } = {}) => {
-    wrapper = shallowMountExtended(NewPolicy, {
+    wrapper = shallowMountExtended(App, {
       provide: {
         assignedPolicyProject: {},
         namespaceType: NAMESPACE_TYPES.GROUP,
@@ -32,19 +32,19 @@ describe('NewPolicy component', () => {
       });
 
       it('should display the title correctly', () => {
-        expect(wrapper.findByText(NewPolicy.i18n.titles.default).exists()).toBe(true);
+        expect(wrapper.findByText(App.i18n.titles.default).exists()).toBe(true);
       });
 
       it('should display the path items correctly', () => {
         expect(findPath().props('items')).toMatchObject([
           {
             selected: true,
-            title: NewPolicy.i18n.choosePolicyType,
+            title: App.i18n.choosePolicyType,
           },
           {
             disabled: true,
             selected: false,
-            title: NewPolicy.i18n.policyDetails,
+            title: App.i18n.policyDetails,
           },
         ]);
       });
@@ -61,7 +61,7 @@ describe('NewPolicy component', () => {
       });
 
       it('should display the title correctly', () => {
-        expect(wrapper.findByText(NewPolicy.i18n.titles.default).exists()).toBe(true);
+        expect(wrapper.findByText(App.i18n.titles.default).exists()).toBe(true);
       });
 
       it('should display the correct view', () => {
@@ -73,12 +73,12 @@ describe('NewPolicy component', () => {
         expect(findPath().props('items')).toMatchObject([
           {
             selected: true,
-            title: NewPolicy.i18n.choosePolicyType,
+            title: App.i18n.choosePolicyType,
           },
           {
             disabled: true,
             selected: false,
-            title: NewPolicy.i18n.policyDetails,
+            title: App.i18n.policyDetails,
           },
         ]);
       });
@@ -101,7 +101,7 @@ describe('NewPolicy component', () => {
     });
 
     it('should display the title correctly', () => {
-      expect(wrapper.findByText(NewPolicy.i18n.editTitles.scanResult).exists()).toBe(true);
+      expect(wrapper.findByText(App.i18n.editTitles.scanResult).exists()).toBe(true);
     });
 
     it('should not display the GlPath component when there is an existing policy', () => {

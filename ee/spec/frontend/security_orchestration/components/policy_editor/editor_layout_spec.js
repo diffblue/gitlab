@@ -16,12 +16,12 @@ import {
 } from 'ee/security_orchestration/components/policy_editor/constants';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import SegmentedControlButtonGroup from '~/vue_shared/components/segmented_control_button_group.vue';
-import PolicyEditorLayout from 'ee/security_orchestration/components/policy_editor/policy_editor_layout.vue';
+import EditorLayout from 'ee/security_orchestration/components/policy_editor/editor_layout.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { mockDastScanExecutionObject } from '../../mocks/mock_scan_execution_policy_data';
 import { mockDefaultBranchesScanResultObject } from '../../mocks/mock_scan_result_policy_data';
 
-describe('PolicyEditorLayout component', () => {
+describe('EditorLayout component', () => {
   let wrapper;
   let glTooltipDirectiveMock;
   const policiesPath = 'path/to/policy';
@@ -32,7 +32,7 @@ describe('PolicyEditorLayout component', () => {
 
   const factory = ({ propsData = {}, provide = {} } = {}) => {
     glTooltipDirectiveMock = jest.fn();
-    wrapper = shallowMountExtended(PolicyEditorLayout, {
+    wrapper = shallowMountExtended(EditorLayout, {
       directives: {
         GlTooltip: glTooltipDirectiveMock,
       },

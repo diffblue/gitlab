@@ -1,9 +1,9 @@
 <script>
 import { GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import BranchExceptionSelector from 'ee/security_orchestration/components/branch_exception_selector.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import BranchExceptionSelector from '../branch_exception_selector.vue';
 import ScanFilterSelector from '../scan_filter_selector.vue';
 import { SCAN_RESULT_BRANCH_TYPE_OPTIONS } from '../constants';
 import { getDefaultRule } from './lib';

@@ -4,14 +4,14 @@ import { s__ } from '~/locale';
 import { getParameterByName, removeParams, visitUrl } from '~/lib/utils/url_utility';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
-import PolicyEditor from './policy_editor.vue';
-import PolicySelection from './policy_selection.vue';
+import EditorWrapper from './editor_wrapper.vue';
+import PolicyTypeSelector from './policy_type_selector.vue';
 
 export default {
   components: {
     GlPath,
-    PolicyEditor,
-    PolicySelection,
+    EditorWrapper,
+    PolicyTypeSelector,
   },
   mixins: [glFeatureFlagMixin()],
   inject: {
@@ -98,7 +98,7 @@ export default {
       <h3>{{ title }}</h3>
       <gl-path v-if="enableWizard" :items="glPathItems" @selected="handlePathSelection" />
     </header>
-    <policy-selection v-if="!selectedPolicy" />
-    <policy-editor v-else :selected-policy-type="selectedPolicy.value" />
+    <policy-type-selector v-if="!selectedPolicy" />
+    <editor-wrapper v-else :selected-policy-type="selectedPolicy.value" />
   </div>
 </template>

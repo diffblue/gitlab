@@ -1,6 +1,6 @@
 import { GlCollapsibleListbox, GlListboxItem } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_editor/policy_rule_multi_select.vue';
+import RuleMultiSelect from 'ee/security_orchestration/components/policy_editor/rule_multi_select.vue';
 
 const items = { start: 'Start now', middle: 'Almost there', end: 'Done' };
 const itemsKeys = Object.keys(items);
@@ -11,7 +11,7 @@ describe('Rule Multi Select', () => {
   let wrapper;
 
   const createComponent = (props = {}) => {
-    wrapper = shallowMountExtended(PolicyRuleMultiSelect, {
+    wrapper = shallowMountExtended(RuleMultiSelect, {
       propsData: {
         itemTypeName: 'demo items',
         items,

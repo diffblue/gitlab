@@ -1,13 +1,13 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/security_orchestration/components/constants';
-import PolicySelection from 'ee/security_orchestration/components/policy_editor/policy_selection.vue';
+import PolicyTypeSelector from 'ee/security_orchestration/components/policy_editor/policy_type_selector.vue';
 
-describe('PolicySelection component', () => {
+describe('PolicyTypeSelector component', () => {
   const policiesPath = '/policies/path';
   let wrapper;
 
   const factory = (provide = {}) => {
-    wrapper = shallowMountExtended(PolicySelection, {
+    wrapper = shallowMountExtended(PolicyTypeSelector, {
       stubs: { GlCard: true },
       provide: {
         policiesPath,
@@ -17,9 +17,9 @@ describe('PolicySelection component', () => {
   };
 
   describe.each`
-    id                                                          | title                                            | description
-    ${POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter}    | ${PolicySelection.i18n.scanResultPolicyTitle}    | ${PolicySelection.i18n.scanResultPolicyDesc}
-    ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter} | ${PolicySelection.i18n.scanExecutionPolicyTitle} | ${PolicySelection.i18n.scanExecutionPolicyDesc}
+    id                                                          | title                                               | description
+    ${POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter}    | ${PolicyTypeSelector.i18n.scanResultPolicyTitle}    | ${PolicyTypeSelector.i18n.scanResultPolicyDesc}
+    ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter} | ${PolicyTypeSelector.i18n.scanExecutionPolicyTitle} | ${PolicyTypeSelector.i18n.scanExecutionPolicyDesc}
   `('selection card: $title', ({ id, title, description }) => {
     beforeEach(() => {
       factory();
