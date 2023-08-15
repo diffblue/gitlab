@@ -36064,7 +36064,7 @@ msgstr ""
 msgid "Profiles|Edit Profile"
 msgstr ""
 
-msgid "Profiles|Email"
+msgid "Profiles|Email address"
 msgstr ""
 
 msgid "Profiles|Email addresses"
