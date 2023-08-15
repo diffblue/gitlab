@@ -77,10 +77,6 @@ class Geo::BaseRegistry < Geo::TrackingBase
       .limit(batch_size)
   end
 
-  def self.has_create_events?
-    true
-  end
-
   # Overridden for legacy Geo::ProjectRegistry, Geo::DesignRegistry
   # and Geo::GroupWikiRepositoryRegistry which is not yet verifiable
   # TODO: Remove after
