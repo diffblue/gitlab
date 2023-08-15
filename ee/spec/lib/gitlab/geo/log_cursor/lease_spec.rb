@@ -5,6 +5,13 @@ require 'spec_helper'
 RSpec.describe Gitlab::Geo::LogCursor::Lease, :clean_gitlab_redis_shared_state, feature_category: :geo_replication do
   include ExclusiveLeaseHelpers
 
+  before do
+    stub_feature_flags(
+      use_cluster_shared_state_for_exclusive_lease: false,
+      enable_exclusive_lease_double_lock_rw: false
+    )
+  end
+
   describe '.exclusive_lease' do
     it 'returns an exclusive lease instance' do
       expect(described_class.send(:exclusive_lease)).to be_an_instance_of(Gitlab::ExclusiveLease)
