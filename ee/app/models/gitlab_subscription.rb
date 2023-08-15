@@ -30,6 +30,7 @@ class GitlabSubscription < ApplicationRecord
 
   scope :with_hosted_plan, -> (plan_name) do
     joins(:hosted_plan).where(trial: false, 'plans.name' => plan_name)
+    .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/422013')
   end
 
   scope :with_a_paid_hosted_plan, -> do

@@ -11,6 +11,7 @@ RSpec.describe 'cross-database foreign keys' do
   # should be added as a comment along with the name of the column.
   let!(:allowed_cross_database_foreign_keys) do
     [
+      'gitlab_subscriptions.hosted_plan_id',      # https://gitlab.com/gitlab-org/gitlab/-/issues/422012
       'group_import_states.user_id',              # https://gitlab.com/gitlab-org/gitlab/-/issues/421210
       'project_authorizations.user_id',           # https://gitlab.com/gitlab-org/gitlab/-/issues/422044
       'projects.creator_id',                      # https://gitlab.com/gitlab-org/gitlab/-/issues/421844
