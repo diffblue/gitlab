@@ -103,20 +103,4 @@ RSpec.describe WelcomeHelper, feature_category: :onboarding do
       end
     end
   end
-
-  describe '#in_trial_onboarding_flow?' do
-    subject { helper.in_trial_onboarding_flow? }
-
-    it 'returns true if query param trial_flow is set to true' do
-      allow(helper).to receive(:params).and_return({ trial_onboarding_flow: 'true' })
-
-      is_expected.to eq(true)
-    end
-
-    it 'returns true if query param trial_flow is not set' do
-      allow(helper).to receive(:params).and_return({})
-
-      is_expected.to eq(false)
-    end
-  end
 end

@@ -27,7 +27,7 @@ module EE
 
         return clean_params unless onboarding_status.enabled?
 
-        clean_params[:email_opted_in] = '1' if ::Gitlab::Utils.to_boolean(clean_params[:setup_for_company])
+        clean_params[:email_opted_in] = '1' if onboarding_status.setup_for_company?
 
         if clean_params[:email_opted_in] == '1'
           clean_params[:email_opted_in_ip] = request.remote_ip
@@ -70,7 +70,7 @@ module EE
 
       override :signup_onboarding_path
       def signup_onboarding_path
-        if params[:joining_project] == 'true'
+        if onboarding_status.joining_a_project?
           finish_onboarding(current_user)
           path_for_signed_in_user(current_user)
         elsif onboarding_status.redirect_to_company_form?
@@ -85,20 +85,13 @@ module EE
       end
 
       override :track_event
-      def track_event(action, label = tracking_label)
+      def track_event(action)
         ::Gitlab::Tracking.event(
           helpers.body_data_page,
           action,
           user: current_user,
-          label: label
+          label: onboarding_status.tracking_label
         )
-      end
-
-      def tracking_label
-        return 'trial_registration' if onboarding_status.trial?
-        return 'invite_registration' if onboarding_status.invite?
-
-        'free_registration'
       end
 
       override :welcome_update_params

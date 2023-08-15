@@ -5,12 +5,13 @@ require 'spec_helper'
 RSpec.describe 'projects/learn_gitlab/onboarding', feature_category: :onboarding do
   let(:project) { build(:project) }
   let(:track_label) { 'free_registration' }
+  let(:onboarding_status) { instance_double(::Onboarding::Status, onboarding_tracking_label: track_label) }
 
   subject { rendered }
 
   before do
     assign(:project, project)
-    allow(view).to receive(:onboarding_track_label).and_return(track_label)
+    allow(view).to receive(:onboarding_status).and_return(onboarding_status)
 
     render
   end

@@ -3,14 +3,6 @@
 module WelcomeHelper
   include ::Gitlab::Utils::StrongMemoize
 
-  def in_trial_onboarding_flow?
-    # This only comes from the submission of the company form.
-    # It is then passed around to creating group/project
-    # and then back to welcome controller for the
-    # continuous getting started action.
-    params[:trial_onboarding_flow] == 'true'
-  end
-
   def setup_for_company_label_text
     if onboarding_status.subscription?
       _('Who will be using this GitLab subscription?')

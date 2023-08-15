@@ -18,24 +18,20 @@ module Registrations
       Gitlab::Tracking.event(self.class.name, group_track_action, namespace: group, user: user)
       ::Onboarding::Progress.onboard(group)
 
-      if user.setup_for_company && !::Gitlab::Utils.to_boolean(params[:trial])
+      if user.setup_for_company && !onboarding_status.trial?
         experiment(:automatic_trial_registration, actor: user).track(:assignment,
           namespace: group)
       end
 
       experiment(:phone_verification_for_low_risk_users, user: user).track(:assignment, namespace: group)
 
-      apply_trial if in_trial_onboarding_flow?
+      apply_trial if onboarding_status.trial_onboarding_flow?
     end
 
     def modified_group_params
       return group_params unless group_needs_path_added?
 
       group_params.compact_blank.with_defaults(path: Namespace.clean_path(group_name))
-    end
-
-    def in_trial_onboarding_flow?
-      params[:trial_onboarding_flow] == 'true'
     end
 
     def apply_trial
@@ -70,6 +66,10 @@ module Registrations
         create_event: true,
         setup_for_company: user.setup_for_company
       )
+    end
+
+    def onboarding_status
+      @onboarding_status ||= ::Onboarding::Status.new(params, nil, nil)
     end
   end
 end

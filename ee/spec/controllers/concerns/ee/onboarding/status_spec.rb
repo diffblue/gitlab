@@ -35,23 +35,37 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
   end
 
   describe '#redirect_to_company_form?' do
-    where(:params, :trial?, :expected_result) do
-      { user: { setup_for_company: true } } | false | true
-      { user: { setup_for_company: false } } | false | false
-      { user: {} } | false | false
-      { user: { setup_for_company: true } } | true | true
-      { user: { setup_for_company: false } } | true | true
-      { user: {} } | true | true
+    where(:setup_for_company?, :trial?, :expected_result) do
+      true  | false | true
+      false | false | false
+      false | true  | true
     end
 
     with_them do
-      let(:instance) { described_class.new(params, nil, nil) }
+      let(:instance) { described_class.new({}, nil, nil) }
 
       subject { instance.redirect_to_company_form? }
 
       before do
         allow(instance).to receive(:trial?).and_return(trial?)
+        allow(instance).to receive(:setup_for_company?).and_return(setup_for_company?)
       end
+
+      it { is_expected.to eq(expected_result) }
+    end
+  end
+
+  describe '#setup_for_company?' do
+    where(:params, :expected_result) do
+      { user: { setup_for_company: true } }  | true
+      { user: { setup_for_company: false } } | false
+      { user: {} }                           | false
+    end
+
+    with_them do
+      let(:instance) { described_class.new(params, nil, nil) }
+
+      subject { instance.setup_for_company? }
 
       it { is_expected.to eq(expected_result) }
     end
@@ -68,6 +82,108 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
       let(:user) { build_stubbed(:user) }
 
       it { is_expected.to eq(false) }
+    end
+  end
+
+  describe '#joining_a_project?' do
+    where(:params, :expected_result) do
+      { joining_project: 'true' }  | true
+      { joining_project: 'false' } | false
+      {}                           | false
+      { joining_project: '' }      | false
+    end
+
+    with_them do
+      let(:instance) { described_class.new(params, nil, nil) }
+
+      subject { instance.joining_a_project? }
+
+      it { is_expected.to eq(expected_result) }
+    end
+  end
+
+  describe '#trial_onboarding_flow?' do
+    where(:params, :expected_result) do
+      { trial_onboarding_flow: 'true' }  | true
+      { trial_onboarding_flow: 'false' } | false
+      {}                                 | false
+      { trial_onboarding_flow: '' }      | false
+    end
+
+    with_them do
+      let(:instance) { described_class.new(params, nil, nil) }
+
+      subject { instance.trial_onboarding_flow? }
+
+      it { is_expected.to eq(expected_result) }
+    end
+  end
+
+  describe '#tracking_label' do
+    let(:instance) { described_class.new({}, nil, nil) }
+    let(:trial?) { false }
+    let(:invite?) { false }
+
+    subject(:tracking_label) { instance.tracking_label }
+
+    before do
+      allow(instance).to receive(:trial?).and_return(trial?)
+      allow(instance).to receive(:invite?).and_return(invite?)
+    end
+
+    it { is_expected.to eq('free_registration') }
+
+    context 'when it is a trial' do
+      let(:trial?) { true }
+
+      it { is_expected.to eq('trial_registration') }
+    end
+
+    context 'when it is an invite' do
+      let(:invite?) { true }
+
+      it { is_expected.to eq('invite_registration') }
+    end
+  end
+
+  describe '#onboarding_tracking_label' do
+    let(:instance) { described_class.new({}, nil, nil) }
+    let(:trial_onboarding_flow?) { false }
+
+    subject(:tracking_label) { instance.onboarding_tracking_label }
+
+    before do
+      allow(instance).to receive(:trial_onboarding_flow?).and_return(trial_onboarding_flow?)
+    end
+
+    it { is_expected.to eq('free_registration') }
+
+    context 'when it is a trial_onboarding_flow' do
+      let(:trial_onboarding_flow?) { true }
+
+      it { is_expected.to eq('trial_registration') }
+    end
+  end
+
+  describe '#group_creation_tracking_label' do
+    where(:trial_onboarding_flow?, :trial?, :expected_result) do
+      true  | true  | 'trial_registration'
+      true  | false | 'trial_registration'
+      false | true  | 'trial_registration'
+      false | false | 'free_registration'
+    end
+
+    with_them do
+      let(:instance) { described_class.new({}, nil, nil) }
+
+      subject { instance.group_creation_tracking_label }
+
+      before do
+        allow(instance).to receive(:trial_onboarding_flow?).and_return(trial_onboarding_flow?)
+        allow(instance).to receive(:trial?).and_return(trial?)
+      end
+
+      it { is_expected.to eq(expected_result) }
     end
   end
 

@@ -5,6 +5,31 @@ module EE
     module Status
       extend ::Gitlab::Utils::Override
 
+      PRODUCT_INTERACTION = {
+        free: 'Personal SaaS Registration',
+        trial: 'SaaS Trial',
+        invite: 'Invited User',
+        lead: 'SaaS Registration'
+      }.freeze
+
+      module ClassMethods
+        extend ::Gitlab::Utils::Override
+
+        override :tracking_label
+        def tracking_label
+          super.merge(
+            {
+              trial: 'trial_registration',
+              invite: 'invite_registration'
+            }
+          )
+        end
+      end
+
+      def self.prepended(base)
+        base.singleton_class.prepend ClassMethods
+      end
+
       override :continue_full_onboarding?
       def continue_full_onboarding?
         !subscription? &&
@@ -13,8 +38,12 @@ module EE
           enabled?
       end
 
+      def joining_a_project?
+        ::Gitlab::Utils.to_boolean(params[:joining_project], default: false)
+      end
+
       def redirect_to_company_form?
-        trial? || ::Gitlab::Utils.to_boolean(params.dig(:user, :setup_for_company), default: false)
+        trial? || setup_for_company?
       end
 
       def invite?
@@ -31,6 +60,37 @@ module EE
         base_stored_user_location_path.starts_with?(::Gitlab::Routing.url_helpers.oauth_authorization_path)
       end
 
+      def tracking_label
+        return self.class.tracking_label[:trial] if trial?
+        return self.class.tracking_label[:invite] if invite?
+
+        self.class.tracking_label[:free]
+      end
+
+      def group_creation_tracking_label
+        return self.class.tracking_label[:trial] if trial_onboarding_flow? || trial?
+
+        self.class.tracking_label[:free]
+      end
+
+      def onboarding_tracking_label
+        return self.class.tracking_label[:trial] if trial_onboarding_flow?
+
+        self.class.tracking_label[:free]
+      end
+
+      def trial_onboarding_flow?
+        # This only comes from the submission of the company form.
+        # It is then passed around to creating group/project
+        # and then back to welcome controller for the
+        # continuous getting started action.
+        ::Gitlab::Utils.to_boolean(params[:trial_onboarding_flow], default: false)
+      end
+
+      def setup_for_company?
+        ::Gitlab::Utils.to_boolean(params.dig(:user, :setup_for_company), default: false)
+      end
+
       def enabled?
         ::Gitlab.com?
       end
@@ -41,9 +101,9 @@ module EE
 
       def iterable_product_interaction
         if invite?
-          'Invited User'
+          PRODUCT_INTERACTION[:invite]
         else
-          'Personal SaaS Registration'
+          PRODUCT_INTERACTION[:free]
         end
       end
 
