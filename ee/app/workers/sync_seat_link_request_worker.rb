@@ -96,8 +96,6 @@ class SyncSeatLinkRequestWorker
   end
 
   def update_code_suggestions_tokens(response)
-    return unless ::Feature.enabled?(:code_suggestions_tokens_from_customers_dot)
-
     code_suggestions = response.dig('service_tokens', 'code_suggestions')
     return unless code_suggestions.present?
 
