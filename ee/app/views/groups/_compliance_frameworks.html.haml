@@ -8,7 +8,7 @@
         = s_('GroupSettings|Compliance frameworks')
       = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
         = expanded ? _('Collapse') : _('Expand')
-      %p.gl-text-secondary.gl-mb-0
+      %p.gl-text-secondary
         = html_escape(s_('GroupSettings|Configure compliance frameworks to make them available to projects in this group. %{linkStart}What are compliance frameworks?%{linkEnd}')) % { linkStart: compliance_framework_doc_link, linkEnd: '</a>'.html_safe }
     .settings-content
       #js-compliance-frameworks-list{ data: compliance_frameworks_list_data(@group) }

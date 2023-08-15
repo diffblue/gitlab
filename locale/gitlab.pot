@@ -22616,7 +22616,7 @@ msgstr ""
 msgid "GroupSettings|Compliance frameworks"
 msgstr ""
 
-msgid "GroupSettings|Configure analytics features for this group"
+msgid "GroupSettings|Configure analytics features for this group."
 msgstr ""
 
 msgid "GroupSettings|Configure compliance frameworks to make them available to projects in this group. %{linkStart}What are compliance frameworks?%{linkEnd}"
