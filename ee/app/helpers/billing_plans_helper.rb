@@ -175,7 +175,7 @@ module BillingPlansHelper
     {
       track_action: 'click_button',
       track_label: 'start_trial',
-      qa_selector: 'start_your_free_trial'
+      testid: 'start-your-free-trial'
     }
   end
 

@@ -22,13 +22,13 @@
           .gl-form-checkbox-group
             .gl-form-checkbox.form-check.form-check-inline
               = radio_button_tag :trial_entity, :company, params[:trial_entity]=='company', required: true,
-                class: 'form-check-input', data: { qa_selector: 'trial_company' }
+                class: 'form-check-input', data: { testid: 'trial-company' }
               = label_tag :trial_entity_company, _('My company or team'), class: 'form-check-label'
             .gl-form-checkbox.form-check.form-check-inline
               = radio_button_tag :trial_entity, :individual, params[:trial_entity]=='individual', required: true,
-                class: 'form-check-input', data: { qa_selector: 'trial_individual' }
+                class: 'form-check-input', data: { testid: 'trial-individual' }
               = label_tag :trial_entity_individual, _('Just me'), class: 'form-check-label'
-      = render Pajamas::ButtonComponent.new(type: :submit, variant: :confirm, button_options: {data: { qa_selector: 'start_your_free_trial' }}) do
+      = render Pajamas::ButtonComponent.new(type: :submit, variant: :confirm, button_options: {data: { testid: 'start-your-free-trial' }}) do
         = _('Start your free trial')
 
   .col-md-4.gl-mt-9
