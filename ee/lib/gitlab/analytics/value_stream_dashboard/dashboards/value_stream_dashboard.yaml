@@ -1,0 +1,14 @@
+---
+title: Value Stream Dashboard
+description: The Value Stream Dashboard allows all stakeholders from executives to individual contributors to identify trends, patterns, and opportunities for software development improvements.
+panels:
+  - id: 1
+    visualization: dora_chart
+    title: DORA metrics comparison
+    gridAttributes:
+      yPos: 1
+      xPos: 0
+      width: 12
+      height: 6
+    options: {}
+

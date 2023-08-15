@@ -6,6 +6,9 @@ module ProductAnalytics
 
     DASHBOARD_ROOT_LOCATION = '.gitlab/analytics/dashboards'
 
+    PRODUCT_ANALYTICS_DASHBOARDS_LIST = %w[audience behavior].freeze
+    VALUE_STREAM_DASHBOARD_LIST = %w[value_stream_dashboard].freeze
+
     def self.for_project(project)
       config_project = project.analytics_dashboards_configuration_project || project
       raise ArgumentError, 'Project not provided' unless project.present?
@@ -14,7 +17,7 @@ module ProductAnalytics
 
       root_trees = config_project.repository.tree(:head, DASHBOARD_ROOT_LOCATION)
 
-      dashboards << builtin_dashboards(project) if product_analytics_available?(project)
+      dashboards << builtin_dashboards(project)
 
       dashboards << local_dashboards(config_project, root_trees.trees) if root_trees&.trees
 
@@ -53,14 +56,17 @@ module ProductAnalytics
       end
     end
 
-    def self.builtin_dashboards(project)
-      config_project = project.analytics_dashboards_configuration_project || project
+    def self.load_yaml_dashboard_config(name, file_path)
+      Gitlab::PathTraversal.check_path_traversal!(name)
 
-      dashboard_names = %w[audience behavior]
-      dashboard_names.map do |name|
-        config = YAML.safe_load(
-          File.read(Rails.root.join('ee/lib/gitlab/analytics/product_analytics/dashboards', "#{name}.yaml"))
-        )
+      YAML.safe_load(
+        File.read(Rails.root.join(file_path, "#{name}.yaml"))
+      )
+    end
+
+    def self.product_analytics_dashboards(project, config_project)
+      PRODUCT_ANALYTICS_DASHBOARDS_LIST.map do |name|
+        config = load_yaml_dashboard_config(name, 'ee/lib/gitlab/analytics/product_analytics/dashboards')
 
         new(
           project: project,
@@ -73,6 +79,35 @@ module ProductAnalytics
           config_project: config_project
         )
       end
+    end
+
+    def self.value_stream_dashboard(project, config_project)
+      VALUE_STREAM_DASHBOARD_LIST.map do |name|
+        config = load_yaml_dashboard_config(name, 'ee/lib/gitlab/analytics/value_stream_dashboard/dashboards')
+
+        new(
+          project: project,
+          title: config['title'],
+          slug: name,
+          description: config['description'],
+          schema_version: config['version'],
+          panels: ProductAnalytics::Panel.from_data(config['panels'], project),
+          user_defined: false,
+          config_project: config_project
+        )
+      end
+    end
+
+    def self.builtin_dashboards(project)
+      return [] unless product_analytics_available?(project)
+
+      config_project = project.analytics_dashboards_configuration_project || project
+
+      builtin = []
+
+      builtin << product_analytics_dashboards(project, config_project) if product_analytics_available?(project)
+
+      builtin
     end
 
     def self.product_analytics_available?(project)

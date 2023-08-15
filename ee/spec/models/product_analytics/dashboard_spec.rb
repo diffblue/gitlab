@@ -15,7 +15,8 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
 
   before do
     stub_feature_flags(product_analytics_snowplow_support: false)
-    stub_licensed_features(product_analytics: true)
+    # project_level_analytics_dashboard is used for the Value Stream Dashboard
+    stub_licensed_features(product_analytics: true, project_level_analytics_dashboard: true)
   end
 
   describe '.for_project' do
@@ -51,7 +52,9 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
         end
 
         it 'has all dashboards included hardcoded' do
-          expect(subject.map(&:title)).to eq(['Audience', 'Behavior', 'Dashboard Example 1'])
+          expect(subject.map(&:title)).to match_array([
+            'Audience', 'Behavior', 'Dashboard Example 1'
+          ])
         end
       end
     end
@@ -88,7 +91,7 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
   end
 
   describe '#panels' do
-    subject { described_class.for_project(project).first.panels }
+    subject { described_class.for_project(project).last.panels }
 
     it { is_expected.to be_a(Array) }
 
@@ -131,5 +134,30 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
     subject { dashboard_1 == dashboard_2 }
 
     it { is_expected.to be false }
+  end
+
+  describe '.product_analytics_dashboards' do
+    subject { described_class.product_analytics_dashboards(project, config_project) }
+
+    it 'returns the built in product analytics dashboards' do
+      expect(subject.size).to eq(2)
+      expect(subject.map(&:title)).to include('Audience', 'Behavior')
+    end
+  end
+
+  describe '.value_stream_dashboard' do
+    subject { described_class.value_stream_dashboard(project, config_project) }
+
+    it 'returns the value stream dashboard' do
+      dashboard = subject.first
+      expect(dashboard).to be_a(described_class)
+      expect(dashboard.title).to eq('Value Stream Dashboard')
+      expect(dashboard.slug).to eq('value_stream_dashboard')
+      expect(dashboard.description).to eq(
+        'The Value Stream Dashboard allows all stakeholders from executives ' \
+        'to individual contributors to identify trends, patterns, and ' \
+        'opportunities for software development improvements.')
+      expect(dashboard.schema_version).to eq(nil)
+    end
   end
 end
