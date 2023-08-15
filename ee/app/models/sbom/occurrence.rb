@@ -39,7 +39,7 @@ module Sbom
     end
 
     scope :filter_by_search_with_component_and_group, ->(search, component_id, group) do
-      includes(project: :namespace).where('input_file_path ILIKE ?', "%#{search}%") # # rubocop:disable GitlabSecurity/SqlInjection
+      includes(project: :namespace).where('input_file_path ILIKE ?', "%#{sanitize_sql_like(search.to_s)}%") # rubocop:disable GitlabSecurity/SqlInjection
                                    .where(component_id: component_id, project: group.all_projects)
     end
 

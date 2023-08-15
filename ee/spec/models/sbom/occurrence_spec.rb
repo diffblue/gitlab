@@ -120,6 +120,7 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
         'file'  | [ref(:occurrence_bundler)]
         'pack'  | [ref(:occurrence_npm)]
         'lock'  | [ref(:occurrence_npm), ref(:occurrence_bundler)]
+        '_'     | []
       end
 
       with_them do
