@@ -87,6 +87,8 @@ RSpec.describe 'Projects > Audit Events', :js, feature_category: :audit_events d
       stub_licensed_features(audit_events: true)
 
       visit new_project_deploy_key_path(project)
+      click_button 'Add new key'
+      wait_for_all_requests
 
       fill_in 'deploy_key_title', with: 'laptop'
       fill_in 'deploy_key_key', with: "#{ssh_key} user@laptop"
