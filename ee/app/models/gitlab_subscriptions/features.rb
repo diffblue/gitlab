@@ -73,6 +73,7 @@ module GitlabSubscriptions
       visual_review_app
       wip_limits
       zoekt_code_search
+      blocked_work_items
     ].freeze
 
     PREMIUM_FEATURES = %i[
