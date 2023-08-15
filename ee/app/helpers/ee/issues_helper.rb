@@ -25,15 +25,6 @@ module EE
       parent.feature_available?(:scoped_labels)
     end
 
-    override :issue_closed_link
-    def issue_closed_link(issue, current_user, css_class: '')
-      if issue.promoted? && can?(current_user, :read_epic, issue.promoted_to_epic)
-        link_to(s_('IssuableStatus|promoted'), issue.promoted_to_epic, class: css_class)
-      else
-        super
-      end
-    end
-
     override :issue_header_actions_data
     def issue_header_actions_data(project, issuable, current_user, issuable_sidebar)
       actions = super

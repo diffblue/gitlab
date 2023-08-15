@@ -25941,16 +25941,10 @@ msgstr ""
 msgid "IssuableEvents|unassigned"
 msgstr ""
 
-msgid "IssuableStatus|%{wi_type} created %{created_at} by "
-msgstr ""
-
 msgid "IssuableStatus|Closed"
 msgstr ""
 
 msgid "IssuableStatus|Closed (%{link})"
-msgstr ""
-
-msgid "IssuableStatus|Created %{created_at} by"
 msgstr ""
 
 msgid "IssuableStatus|duplicated"
