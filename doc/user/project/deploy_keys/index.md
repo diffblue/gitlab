@@ -85,6 +85,7 @@ Prerequisites:
 1. On the left sidebar, at the top, select **Search GitLab** (**{search}**) to find your project.
 1. Select **Settings > Repository**.
 1. Expand **Deploy keys**.
+1. Select **Add new key**.
 1. Complete the fields.
 1. Optional. To grant `read-write` permission, select the **Grant write permissions to this key**
    checkbox.
