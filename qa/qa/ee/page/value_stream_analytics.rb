@@ -100,8 +100,8 @@ module QA
         # @param [String] to
         # @return [void]
         def select_date_range(from:, to:)
-          set_date(:daterange_picker_start_container, from)
-          set_date(:daterange_picker_end_container, to)
+          set_date('daterange-picker-start-container', from)
+          set_date('daterange-picker-end-container', to)
         end
 
         # Return lifecycle metric
@@ -171,7 +171,7 @@ module QA
         # @return [void]
         def set_date(input_element, date)
           within_element(input_element) do
-            find_element(:gl_datepicker_input).then do |input|
+            find_element('gl-datepicker-input').then do |input|
               input.set(date)
               input.send_keys(:enter)
             end
