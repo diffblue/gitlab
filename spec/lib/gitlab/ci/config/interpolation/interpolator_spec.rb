@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Config::Yaml::Interpolator, feature_category: :pipeline_composition do
+RSpec.describe Gitlab::Ci::Config::Interpolation::Interpolator, feature_category: :pipeline_composition do
   let_it_be(:project) { create(:project) }
 
   let(:result) { ::Gitlab::Ci::Config::Yaml::Result.new(config: [header, content]) }

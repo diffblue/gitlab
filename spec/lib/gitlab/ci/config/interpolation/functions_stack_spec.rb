@@ -2,10 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Interpolation::FunctionsStack, feature_category: :pipeline_composition do
+RSpec.describe Gitlab::Ci::Config::Interpolation::FunctionsStack, feature_category: :pipeline_composition do
   let(:functions) { ['truncate(0,4)', 'truncate(1,2)'] }
   let(:input_value) { 'test_input_value' }
-  let(:function_klass) { Gitlab::Ci::Interpolation::Functions::Truncate }
 
   subject { described_class.new(functions).evaluate(input_value) }
 

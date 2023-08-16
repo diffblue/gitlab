@@ -2,7 +2,7 @@
 
 require 'fast_spec_helper'
 
-RSpec.describe Gitlab::Ci::Interpolation::Block, feature_category: :pipeline_composition do
+RSpec.describe Gitlab::Ci::Config::Interpolation::Block, feature_category: :pipeline_composition do
   subject { described_class.new(block, data, ctx) }
 
   let(:data) do
@@ -101,7 +101,7 @@ RSpec.describe Gitlab::Ci::Interpolation::Block, feature_category: :pipeline_com
 
       context 'when too many functions are specified' do
         it 'returns error' do
-          stub_const('Gitlab::Ci::Interpolation::Block::MAX_FUNCTIONS', 1)
+          stub_const('Gitlab::Ci::Config::Interpolation::Block::MAX_FUNCTIONS', 1)
 
           expect(subject).not_to be_valid
           expect(subject.errors.first).to eq('too many functions in interpolation block')

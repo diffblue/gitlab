@@ -2,7 +2,7 @@
 
 require 'fast_spec_helper'
 
-RSpec.describe Gitlab::Ci::Interpolation::Template, feature_category: :pipeline_composition do
+RSpec.describe Gitlab::Ci::Config::Interpolation::Template, feature_category: :pipeline_composition do
   subject { described_class.new(YAML.safe_load(config), ctx) }
 
   let(:config) do
@@ -67,7 +67,7 @@ RSpec.describe Gitlab::Ci::Interpolation::Template, feature_category: :pipeline_
 
   context 'when template contains symbols that need interpolation' do
     subject do
-      described_class.new({ '$[[ inputs.key ]]'.to_sym => 'cde' }, ctx)
+      described_class.new({ '$[[ inputs.key ]]': 'cde' }, ctx)
     end
 
     it 'performs a valid interpolation' do
@@ -78,7 +78,7 @@ RSpec.describe Gitlab::Ci::Interpolation::Template, feature_category: :pipeline_
 
   context 'when template is too large' do
     before do
-      stub_const('Gitlab::Ci::Interpolation::Config::MAX_NODES', 1)
+      stub_const('Gitlab::Ci::Config::Interpolation::Config::MAX_NODES', 1)
     end
 
     it 'returns an error' do

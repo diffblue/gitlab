@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Interpolation::Inputs, feature_category: :pipeline_composition do
+RSpec.describe Gitlab::Ci::Config::Interpolation::Inputs, feature_category: :pipeline_composition do
   let(:inputs) { described_class.new(specs, args) }
   let(:specs) { { foo: { default: 'bar' } } }
   let(:args) { {} }
