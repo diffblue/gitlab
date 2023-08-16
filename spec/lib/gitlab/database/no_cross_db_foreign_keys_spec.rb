@@ -12,6 +12,7 @@ RSpec.describe 'cross-database foreign keys' do
   let!(:allowed_cross_database_foreign_keys) do
     [
       'group_import_states.user_id',              # https://gitlab.com/gitlab-org/gitlab/-/issues/421210
+      'identities.saml_provider_id',              # https://gitlab.com/gitlab-org/gitlab/-/issues/422010
       'project_authorizations.user_id',           # https://gitlab.com/gitlab-org/gitlab/-/issues/422044
       'projects.creator_id',                      # https://gitlab.com/gitlab-org/gitlab/-/issues/421844
       'projects.marked_for_deletion_by_user_id',  # https://gitlab.com/gitlab-org/gitlab/-/issues/421844
