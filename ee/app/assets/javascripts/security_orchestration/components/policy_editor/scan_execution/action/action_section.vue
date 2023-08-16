@@ -52,7 +52,7 @@ export default {
   data() {
     return {
       filters: {
-        [CI_VARIABLE]: null,
+        [CI_VARIABLE]: false,
       },
       selectedScanner: this.initAction.scan || DEFAULT_SCANNER,
     };
@@ -99,7 +99,7 @@ export default {
   },
   methods: {
     isFilterSelected(filter) {
-      return Boolean(this.filters[filter]);
+      return this.filters[filter];
     },
     emitCiVariableFilterChanges() {
       const updatedAction = { ...this.initAction };
@@ -118,7 +118,7 @@ export default {
       this.$emit('changed', updatedAction);
     },
     selectFilter(filter) {
-      this.$set(this.filters, filter, []);
+      this.$set(this.filters, filter, true);
       if (filter === CI_VARIABLE) {
         this.triggerChanged({ variables: { '': '' } });
       }
