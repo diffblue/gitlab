@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require './ee/db/seeds/shared/dora_metrics'
+
 module Quality
   module Seeders
     module Insights
@@ -9,7 +11,36 @@ module Quality
         SEVERITY_LABELS = %w[S::1 S::2 S::3 S::4].freeze
         PRIORITY_LABELS = %w[P::1 P::2 P::3 P::4].freeze
 
+        def seed(backfill_weeks: DEFAULT_BACKFILL_WEEKS, average_issues_per_week: DEFAULT_AVERAGE_ISSUES_PER_WEEK)
+          create_iterations!
+
+          ::Gitlab::Seeder::DoraMetrics.new(project: project).execute
+
+          super
+        end
+
         private
+
+        def additional_params
+          {
+            weight: rand(10),
+            iteration_id: random_iteration_id
+          }
+        end
+
+        def random_iteration_id
+          return unless project.group
+
+          project.group.iterations.sample&.id
+        end
+
+        def create_iterations!
+          return unless project.group
+
+          3.times do |i|
+            FactoryBot.create(:iteration, group: project.group, title: "it-#{i}-#{suffix}")
+          end
+        end
 
         def labels
           super + [
