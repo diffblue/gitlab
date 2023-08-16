@@ -73,6 +73,7 @@ module EE
       has_many :repository_storage_moves, class_name: 'Groups::RepositoryStorageMove', inverse_of: :container
 
       has_many :epic_board_recent_visits, class_name: 'Boards::EpicBoardRecentVisit', inverse_of: :group
+      has_many :ssh_certificates, inverse_of: :group, foreign_key: :namespace_id, class_name: 'Groups::SshCertificate'
 
       belongs_to :file_template_project, class_name: "Project"
 

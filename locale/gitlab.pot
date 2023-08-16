@@ -56633,6 +56633,9 @@ msgstr ""
 msgid "must be unique by status and elapsed time within a policy"
 msgstr ""
 
+msgid "must be unique. This CA has already been configured for another namespace."
+msgstr ""
+
 msgid "must belong to same project of its requirement object."
 msgstr ""
 
