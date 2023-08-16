@@ -1,5 +1,5 @@
 <script>
-import { GlAlert, GlButton, GlDropdown, GlModal, GlSprintf, GlTooltipDirective } from '@gitlab/ui';
+import { GlAlert, GlButton, GlModal, GlSprintf } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
 import linkSecurityPolicyProject from '../../graphql/mutations/link_security_policy_project.mutation.graphql';
 import unlinkSecurityPolicyProject from '../../graphql/mutations/unlink_security_policy_project.mutation.graphql';
@@ -10,7 +10,6 @@ import {
 } from './constants';
 
 export default {
-  PROJECT_SELECTOR_HEIGHT: 204,
   i18n: {
     modal: {
       okTitle: __('Save'),
@@ -37,13 +36,9 @@ export default {
   components: {
     GlAlert,
     GlButton,
-    GlDropdown,
     GlModal,
     GlSprintf,
     InstanceProjectSelector,
-  },
-  directives: {
-    GlTooltip: GlTooltipDirective,
   },
   inject: [
     'disableSecurityPolicyProject',
@@ -68,12 +63,6 @@ export default {
     };
   },
   computed: {
-    dropdownText() {
-      return this.selectedProjectName || this.$options.i18n.emptyPlaceholder;
-    },
-    selectedProjects() {
-      return [this.selectedProject];
-    },
     selectedProjectId() {
       return this.selectedProject?.id || '';
     },
@@ -168,11 +157,10 @@ export default {
       this.shouldShowUnlinkWarning = false;
       this.hasSelectedNewProject = true;
       this.selectedProject = data;
-      this.$refs.dropdown.hide();
     },
     confirmDeletion() {
       this.shouldShowUnlinkWarning = true;
-      this.selectedProject = {};
+      this.selectedProject = null;
       this.hasSelectedNewProject = true;
     },
     restoreProject() {
@@ -224,23 +212,12 @@ export default {
         {{ $options.i18n.unlinkWarning }}
       </gl-alert>
       <div class="gl-display-flex gl-mb-3">
-        <gl-dropdown
-          ref="dropdown"
-          v-gl-tooltip
-          :title="dropdownText"
-          class="gl-min-w-0 gl-flex-grow-1"
-          menu-class="gl-w-full! gl-max-w-full!"
-          toggle-class="gl-min-w-0"
+        <instance-project-selector
+          class="gl-w-full"
           :disabled="disableSecurityPolicyProject"
-          :text="dropdownText"
-        >
-          <instance-project-selector
-            class="gl-w-full"
-            :max-list-height="$options.PROJECT_SELECTOR_HEIGHT"
-            :selected-projects="selectedProjects"
-            @projectClicked="setSelectedProject"
-          />
-        </gl-dropdown>
+          :selected-project="selectedProject"
+          @projectClicked="setSelectedProject"
+        />
         <gl-button
           v-if="selectedProjectId"
           icon="remove"

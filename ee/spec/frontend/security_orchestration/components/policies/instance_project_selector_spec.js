@@ -1,23 +1,20 @@
 import Vue, { nextTick } from 'vue';
+import { GlCollapsibleListbox } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
 import InstanceProjectSelector from 'ee/security_orchestration/components/policies/instance_project_selector.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import getUsersProjects from '~/graphql_shared/queries/get_users_projects.query.graphql';
-import ProjectSelector from '~/vue_shared/components/project_selector/project_selector.vue';
 
 let querySpy;
 
 const defaultProjectSelectorProps = {
-  maxListHeight: 402,
-  projectSearchResults: [],
-  selectedProjects: [],
-  showLoadingIndicator: false,
-  showMinimumSearchQueryMessage: false,
-  showNoResultsMessage: false,
-  showSearchErrorMessage: false,
-  totalResults: 0,
+  disabled: false,
+  items: [],
+  selected: '',
+  toggleText: 'Select a project',
+  noResultsText: 'Enter at least three characters to search',
 };
 
 const defaultQueryVariables = {
@@ -85,7 +82,8 @@ const createMockApolloProvider = (queryResolver) => {
 describe('InstanceProjectSelector Component', () => {
   let wrapper;
 
-  const findProjectSelector = () => wrapper.findComponent(ProjectSelector);
+  const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
+  const findErrorMessage = () => wrapper.findByTestId('error-message');
 
   const createWrapper = ({ queryResolver, propsData = {} } = {}) => {
     wrapper = shallowMountExtended(InstanceProjectSelector, {
@@ -103,17 +101,22 @@ describe('InstanceProjectSelector Component', () => {
     });
 
     it('renders the project selector', () => {
-      expect(findProjectSelector().props()).toStrictEqual(defaultProjectSelectorProps);
+      expect(findListbox().props()).toMatchObject(defaultProjectSelectorProps);
+    });
+
+    it('renders custom header', () => {
+      createWrapper({ propsData: { headerText: 'Test header' } });
+      expect(findListbox().props('headerText')).toBe('Test header');
     });
 
     it('does not query when the search query is less than three characters', async () => {
-      findProjectSelector().vm.$emit('searched', '');
+      findListbox().vm.$emit('searched', '');
       await waitForPromises();
       expect(querySpy).not.toHaveBeenCalled();
     });
 
     it('does query when the search query is more than three characters', async () => {
-      findProjectSelector().vm.$emit('searched', 'abc');
+      findListbox().vm.$emit('search', 'abc');
       await waitForPromises();
       expect(querySpy).toHaveBeenCalledTimes(1);
       expect(querySpy).toHaveBeenCalledWith(defaultQueryVariables);
@@ -121,10 +124,10 @@ describe('InstanceProjectSelector Component', () => {
 
     it('does query when the bottom is reached', async () => {
       expect(querySpy).toHaveBeenCalledTimes(0);
-      findProjectSelector().vm.$emit('searched', 'abc');
+      findListbox().vm.$emit('search', 'abc');
       await waitForPromises();
       expect(querySpy).toHaveBeenCalledTimes(1);
-      findProjectSelector().vm.$emit('bottomReached');
+      findListbox().vm.$emit('bottom-reached');
       await waitForPromises();
       expect(querySpy).toHaveBeenCalledTimes(2);
       expect(querySpy).toHaveBeenCalledWith({
@@ -133,10 +136,15 @@ describe('InstanceProjectSelector Component', () => {
       });
     });
 
-    it('emits on "projectClicked"', () => {
-      const project = { id: 0, name: 'test' };
-      findProjectSelector().vm.$emit('projectClicked', project);
-      expect(wrapper.emitted('projectClicked')).toStrictEqual([[project]]);
+    it('emits on "projectClicked"', async () => {
+      findListbox().vm.$emit('search', 'Pages');
+      await waitForPromises();
+
+      const project = { id: 'gid://gitlab/Project/5000162' };
+      findListbox().vm.$emit('select', project.id);
+      expect(wrapper.emitted('projectClicked')).toStrictEqual([
+        [mockGetUsersProjects.success.data.projects.nodes[0]],
+      ]);
     });
   });
 
@@ -145,11 +153,12 @@ describe('InstanceProjectSelector Component', () => {
       querySpy = jest.fn().mockResolvedValue(mockGetUsersProjects.error);
       createWrapper({ queryResolver: querySpy });
       await nextTick();
-      findProjectSelector().vm.$emit('searched', 'abc');
+      findListbox().vm.$emit('search', 'abc');
       await waitForPromises();
-      expect(findProjectSelector().props()).toStrictEqual({
+      expect(findErrorMessage().exists()).toBe(true);
+      expect(findListbox().props()).toMatchObject({
         ...defaultProjectSelectorProps,
-        showSearchErrorMessage: true,
+        noResultsText: 'Sorry, no projects matched your search',
       });
     });
 
@@ -157,11 +166,12 @@ describe('InstanceProjectSelector Component', () => {
       querySpy = jest.fn().mockResolvedValue(mockGetUsersProjects.empty);
       createWrapper({ queryResolver: querySpy });
       await nextTick();
-      findProjectSelector().vm.$emit('searched', 'abc');
+      findListbox().vm.$emit('search', 'abc');
       await waitForPromises();
-      expect(findProjectSelector().props()).toStrictEqual({
+      expect(findErrorMessage().exists()).toBe(false);
+      expect(findListbox().props()).toMatchObject({
         ...defaultProjectSelectorProps,
-        showNoResultsMessage: true,
+        noResultsText: 'Sorry, no projects matched your search',
       });
     });
   });
