@@ -40,16 +40,6 @@ users are prevented from modifying locked files by pushing, merging,
 or any other means, and are shown an error like: `The path '.gitignore' is
 locked by Administrator`.
 
-NOTE:
-There is a bug which blocks changes which include a merged file locked by
-another user. In 16.1 we introduced `merge_commit_diff_modes` feature flag,
-disabled by default. When `merge_commit_diff_modes` is enabled merge commits
-with no additional changes are not evaluated. Merge commits with additional
-changes only evaluate the changes that were added by the committer.
-In 16.3 `merge_commit_diff_modes` is enabled by default for self-managed
-instances.
-For more information see [Issue 23625](https://gitlab.com/gitlab-org/gitlab/-/issues/23625).
-
 ## Exclusive file locks
 
 This process allows you to lock single files or file extensions and it is
