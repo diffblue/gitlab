@@ -13,7 +13,6 @@ module EE
       include ::Emails::EnterpriseUsers
       include ::Emails::Requirements
       include ::Emails::UserCap
-      include ::Emails::FreeUserCap
       include ::Emails::OncallRotation
       include ::Emails::GroupMemberships
       include ::Emails::InProductMarketing

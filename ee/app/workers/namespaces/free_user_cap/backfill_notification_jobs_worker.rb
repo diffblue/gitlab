@@ -15,9 +15,7 @@ module Namespaces
       data_consistency :always
       idempotent!
 
-      def perform(...)
-        OverLimitNotificationWorker.perform_with_capacity(...)
-      end
+      def perform(...); end
     end
   end
 end
