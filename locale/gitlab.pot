@@ -17691,6 +17691,9 @@ msgstr ""
 msgid "EmailParticipantsWarning|and %{moreCount} more"
 msgstr ""
 
+msgid "EmailVerification|Update your email to a valid permanent address. If you use a temporary email, you won't be able to sign in later."
+msgstr ""
+
 msgid "Emails"
 msgstr ""
 
