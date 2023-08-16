@@ -7,7 +7,9 @@ module Vulnerabilities
     belongs_to :vulnerability
     belongs_to :issue
 
-    has_one :author, through: :issue, class_name: 'User'
+    has_one :author, -> {
+      allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/422155')
+    }, through: :issue, class_name: 'User'
 
     enum link_type: { related: 1, created: 2 } # 'related' is the default value
 
