@@ -46,7 +46,13 @@ module ProductAnalytics
       Gitlab::PathTraversal.check_allowed_absolute_path!(
         file.to_s, [Rails.root.join(path).to_s]
       )
-      new(config: File.read(file), slug: data)
+      init_error = nil
+      begin
+        config_file = File.read(file)
+      rescue Errno::ENOENT
+        init_error = "Visualization file #{data}.yaml not found"
+      end
+      new(config: config_file, slug: data, init_error: init_error)
     end
 
     def self.load_product_analytics_visualization(data)
@@ -72,7 +78,20 @@ module ProductAnalytics
       end
     end
 
-    def initialize(config:, slug:)
+    def initialize_with_error(init_error, slug)
+      @options = {}
+      @type = 'unknown'
+      @data = {}
+      @errors = [init_error]
+      @slug = slug.parameterize.underscore
+    end
+
+    def initialize(config:, slug:, init_error: nil)
+      if init_error
+        initialize_with_error(init_error, slug)
+        return
+      end
+
       begin
         @config = YAML.safe_load(config)
         @type = @config['type']
