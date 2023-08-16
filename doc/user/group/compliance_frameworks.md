@@ -113,7 +113,7 @@ mutation {
 }
 ```
 
-## Compliance pipelines **(ULTIMATE)**
+## Compliance pipelines **(ULTIMATE ALL)**
 
 > - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/3156) in GitLab 13.9, disabled behind `ff_evaluate_group_level_compliance_pipeline` [feature flag](../../administration/feature_flags.md).
 > - [Enabled by default](https://gitlab.com/gitlab-org/gitlab/-/issues/300324) in GitLab 13.11.

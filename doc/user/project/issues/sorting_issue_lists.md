@@ -105,7 +105,7 @@ title in this order:
 - Numbers
 - Letters: first Latin, then accented (for example, `ö`)
 
-## Sorting by health status **(ULTIMATE)**
+## Sorting by health status **(ULTIMATE ALL)**
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/377841) in GitLab 15.7.
 

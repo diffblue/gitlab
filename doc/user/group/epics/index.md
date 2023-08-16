@@ -52,7 +52,7 @@ You can add issues from a different group hierarchy to an epic.
 To do it, paste the issue URL when
 [adding an existing issue](manage_epics.md#add-an-existing-issue-to-an-epic).
 
-## Roadmap in epics **(ULTIMATE)**
+## Roadmap in epics **(ULTIMATE ALL)**
 
 If your epic contains one or more [child epics](manage_epics.md#multi-level-child-epics) that
 have a start or due date, a visual
