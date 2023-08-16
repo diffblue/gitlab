@@ -19,20 +19,6 @@ RSpec.describe Projects::Ci::Catalog::ResourcesController, feature_category: :pi
       end
     end
 
-    context 'with disabled FF `ci_namespace_catalog_experimental`' do
-      before do
-        stub_licensed_features(ci_namespace_catalog: true)
-        stub_feature_flags(ci_namespace_catalog_experimental: false)
-        project.add_developer(user)
-      end
-
-      it 'responds with 404' do
-        get path
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
-
     context 'with license for `ci_namespace_catalog`' do
       before do
         stub_licensed_features(ci_namespace_catalog: true)
