@@ -36,7 +36,7 @@
                 = _('Compliance framework')
               - if user_has_edit_permissions
                 - selected_default_framework = @project.compliance_framework_setting&.compliance_management_framework&.id
-                = cf.select :framework, options_for_select(frameworks.map { |fw| [fw.name.truncate(88), fw.id] }, selected_default_framework), { selected: '', prompt: _('Choose your framework'), include_blank: _('None') }, { class: 'form-control gl-w-full', disabled: false }
+                = cf.select :framework, options_for_select(frameworks.map { |fw| [fw.name.truncate(88), fw.id] }, selected_default_framework), { selected: '', prompt: _('Choose your framework'), include_blank: _('None') }, { class: 'form-control gl-form-input-xl', disabled: false }
               - else
                 - selected_framework = @project.compliance_framework_setting&.compliance_management_framework&.name&.truncate(88) || _('None')
                 = cf.text_field :framework, value: selected_framework, class: 'form-control read-only', disabled: true
