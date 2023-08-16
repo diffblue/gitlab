@@ -59,6 +59,29 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
     end
   end
 
+  describe '.load_visualization_data' do
+    context "when file exists" do
+      subject do
+        described_class.load_visualization_data("ee/lib/gitlab/analytics/product_analytics/visualizations",
+          "total_sessions")
+      end
+
+      it "initializes visualization from file" do
+        expect(subject.slug).to eq("total_sessions")
+        expect(subject.errors).to be_nil
+      end
+    end
+
+    context 'when file cannot be opened' do
+      subject { described_class.load_visualization_data("ee/lib", "not-existing-file") }
+
+      it 'initializes visualization with errors' do
+        expect(subject.slug).to eq('not_existing_file')
+        expect(subject.errors).to match_array(["Visualization file not-existing-file.yaml not found"])
+      end
+    end
+  end
+
   describe '.load_value_stream_dashboard_visualization' do
     subject { described_class.load_value_stream_dashboard_visualization('dora_chart') }
 
@@ -142,6 +165,17 @@ other: okay1111
 
     it 'captures the syntax error' do
       expect(subject.errors).to match_array(['root is not of type: object'])
+    end
+  end
+
+  context 'when initialized with init_error' do
+    subject do
+      described_class.new(config: nil, slug: "not-existing",
+        init_error: "Some init error")
+    end
+
+    it 'captures the init_error' do
+      expect(subject.errors).to match_array(['Some init error'])
     end
   end
 end
