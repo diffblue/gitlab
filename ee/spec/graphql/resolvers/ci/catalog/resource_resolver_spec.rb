@@ -14,7 +14,6 @@ RSpec.describe Resolvers::Ci::Catalog::ResourceResolver, feature_category: :pipe
     context 'when ci catalog feature is enabled' do
       before do
         stub_licensed_features(ci_namespace_catalog: true)
-        stub_feature_flags(ci_namespace_catalog_experimental: true)
       end
 
       context 'and user is the namespace owner' do
@@ -70,7 +69,6 @@ RSpec.describe Resolvers::Ci::Catalog::ResourceResolver, feature_category: :pipe
     context 'when ci catalog feature is not enabled' do
       before do
         stub_licensed_features(ci_namespace_catalog: false)
-        stub_feature_flags(ci_namespace_catalog_experimental: false)
       end
 
       context 'and the user is a namespace owner' do

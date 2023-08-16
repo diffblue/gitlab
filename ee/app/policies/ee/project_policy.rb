@@ -684,8 +684,7 @@ module EE
 
     override :namespace_catalog_available?
     def namespace_catalog_available?
-      project.licensed_feature_available?(:ci_namespace_catalog) &&
-        ::Feature.enabled?(:ci_namespace_catalog_experimental, project)
+      project.licensed_feature_available?(:ci_namespace_catalog)
     end
   end
 end

@@ -15,19 +15,6 @@ RSpec.describe Ci::Catalog::ResourcesHelper, feature_category: :pipeline_composi
   describe '#can_add_catalog_resource?' do
     subject { helper.can_add_catalog_resource?(project) }
 
-    context 'when FF `ci_namespace_catalog_experimental` is disabled' do
-      before do
-        stub_feature_flags(ci_namespace_catalog_experimental: false)
-        stub_licensed_features(ci_namespace_catalog: true)
-
-        project.add_owner(user)
-      end
-
-      it 'returns false' do
-        expect(subject).to be false
-      end
-    end
-
     context 'when user is not an owner' do
       before do
         stub_licensed_features(ci_namespace_catalog: true)
@@ -69,19 +56,6 @@ RSpec.describe Ci::Catalog::ResourcesHelper, feature_category: :pipeline_composi
 
   describe '#can_view_namespace_catalog?' do
     subject { helper.can_view_namespace_catalog?(project) }
-
-    context 'when FF `ci_namespace_catalog_experimental` is disabled' do
-      before do
-        stub_feature_flags(ci_namespace_catalog_experimental: false)
-        stub_licensed_features(ci_namespace_catalog: true)
-
-        project.add_owner(user)
-      end
-
-      it 'returns false' do
-        expect(subject).to be false
-      end
-    end
 
     context 'when user has no permissions to collaborate' do
       before do
