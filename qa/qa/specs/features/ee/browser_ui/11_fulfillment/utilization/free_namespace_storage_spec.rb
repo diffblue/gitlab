@@ -159,7 +159,7 @@ module QA
                 usage_quota.namespace_usage_total.squish
               end
                 .to eventually_match(%r{Namespace storage used #{total_size} [KMG]i?B.+}i)
-                      .within(max_attempts: 10, reload_page: page, sleep_interval: 1)
+                      .within(max_duration: 300, reload_page: page)
 
               expect(usage_quota.dependency_proxy_size).to match(%r{0 B}i)
               expect(usage_quota.group_usage_message)
