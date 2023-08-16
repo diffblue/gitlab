@@ -15,13 +15,6 @@ module Admin
         .html_safe % { link_start: link_start, link_end: '</a>'.html_safe }
     end
 
-    def code_suggestions_token_explanation
-      link_start = code_suggestions_link_start(code_suggestions_pat_docs_url)
-
-      s_('CodeSuggestionsSM|On GitLab.com, create a token. This token is required to use Code Suggestions on your self-managed instance. %{link_start}How do I create a token?%{link_end}')
-        .html_safe % { link_start: link_start, link_end: '</a>'.html_safe }
-    end
-
     def code_suggestions_agreement
       terms_link_start = code_suggestions_link_start(code_suggestions_agreement_url)
       ai_docs_link_start = code_suggestions_link_start(code_suggestions_ai_docs_url)
@@ -48,10 +41,6 @@ module Admin
 
     def code_suggestions_ai_docs_url
       'https://docs.gitlab.com/ee/user/ai_features.html#third-party-services'
-    end
-
-    def code_suggestions_pat_docs_url
-      'https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html#create-a-personal-access-token'
     end
     # rubocop:enable Gitlab/DocUrl
 

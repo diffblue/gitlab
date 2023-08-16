@@ -145,7 +145,6 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
       it 'does not render the form' do
         render
         expect(rendered).not_to have_field('application_setting_instance_level_code_suggestions_enabled')
-        expect(rendered).not_to have_field('application_setting_ai_access_token')
       end
     end
 
@@ -167,7 +166,6 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
           it 'renders the form' do
             render
             expect(rendered).to have_field('application_setting_instance_level_code_suggestions_enabled')
-            expect(rendered).to have_field('application_setting_ai_access_token')
           end
         end
 
