@@ -1,8 +1,9 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
-import { GlButton, GlLoadingIcon } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { GlLoadingIcon } from '@gitlab/ui';
+import { s__ } from '~/locale';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { stubComponent } from 'helpers/stub_component';
 import Zuora, { Event } from 'ee/billings/components/zuora_simple.vue';
@@ -30,16 +31,20 @@ describe('CreditCardVerification', () => {
 
   const findCheckForReuseLoading = () => wrapper.findComponent(GlLoadingIcon);
   const findZuora = () => wrapper.findComponent(Zuora);
-  const findSubmitButton = () => wrapper.findComponent(GlButton);
+  const findSubmitButton = () => wrapper.find('[type="submit"]');
+  const findPhoneExemptionLink = () =>
+    wrapper.findByText(s__('IdentityVerification|Verify with a phone number instead?'));
 
-  const createComponent = () => {
-    wrapper = shallowMount(CreditCardVerification, {
+  const createComponent = (providedProps = {}) => {
+    wrapper = shallowMountExtended(CreditCardVerification, {
       provide: {
         creditCard: {
           formId: 'form_id',
           userId: 927,
           verifyCreditCardPath: MOCK_VERIFY_CREDIT_CARD_PATH,
         },
+        offerPhoneNumberExemption: true,
+        ...providedProps,
       },
       propsData: { completed: false },
       stubs: {
@@ -223,6 +228,32 @@ describe('CreditCardVerification', () => {
       await nextTick();
 
       expect(findSubmitButton().props('disabled')).toBe(false);
+    });
+  });
+
+  describe('when phone exemption is not offered', () => {
+    beforeEach(() => {
+      createComponent({ offerPhoneNumberExemption: false });
+    });
+
+    it('does not show a link to request a phone exemption', () => {
+      expect(findPhoneExemptionLink().exists()).toBe(false);
+    });
+  });
+
+  describe('when phone exemption is offered', () => {
+    beforeEach(() => {
+      createComponent({ offerPhoneNumberExemption: true });
+    });
+
+    it('shows a link to request a phone exemption', () => {
+      expect(findPhoneExemptionLink().exists()).toBe(true);
+    });
+
+    it('emits an `exemptionRequested` event when clicking the link', () => {
+      findPhoneExemptionLink().vm.$emit('click');
+
+      expect(wrapper.emitted('exemptionRequested')).toHaveLength(1);
     });
   });
 });

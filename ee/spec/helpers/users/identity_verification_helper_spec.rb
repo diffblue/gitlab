@@ -9,6 +9,7 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
 
   describe '#identity_verification_data' do
     let(:mock_required_identity_verification_methods) { ['email'] }
+    let(:mock_offer_phone_number_exemption) { true }
 
     let(:mock_identity_verification_state) do
       { credit_card: false, email: true }
@@ -20,6 +21,9 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
       )
       allow(user).to receive(:identity_verification_state).and_return(
         mock_identity_verification_state
+      )
+      allow(user).to receive(:offer_phone_number_exemption?).and_return(
+        mock_offer_phone_number_exemption
       )
     end
 
@@ -90,6 +94,8 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
       {
         verification_methods: mock_required_identity_verification_methods,
         verification_state: mock_identity_verification_state,
+        offer_phone_number_exemption: mock_offer_phone_number_exemption,
+        phone_exemption_path: toggle_phone_exemption_identity_verification_path,
         credit_card: {
           user_id: user.id,
           form_id: ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_ID,

@@ -1,12 +1,18 @@
 import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 import { visitUrl } from '~/lib/utils/url_utility';
+import { createAlert } from '~/alert';
+import { HTTP_STATUS_OK, HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
 import IdentityVerificationWizard from 'ee/users/identity_verification/components/wizard.vue';
 import VerificationStep from 'ee/users/identity_verification/components/verification_step.vue';
 import CreditCardVerification from 'ee/users/identity_verification/components/credit_card_verification.vue';
 import PhoneVerification from 'ee/users/identity_verification/components/phone_verification.vue';
 import EmailVerification from 'ee/users/identity_verification/components/email_verification.vue';
+import { I18N_GENERIC_ERROR } from 'ee/users/identity_verification/constants';
 
+jest.mock('~/alert');
 jest.mock('~/lib/utils/url_utility', () => ({
   visitUrl: jest.fn().mockName('visitUrlMock'),
 }));
@@ -14,11 +20,13 @@ jest.mock('~/lib/utils/url_utility', () => ({
 describe('IdentityVerificationWizard', () => {
   let wrapper;
   let steps;
+  let axiosMock;
 
   const DEFAULT_PROVIDE = {
     verificationSteps: ['creditCard', 'email'],
     initialVerificationState: { creditCard: false, email: false },
     successfulVerificationPath: '/users/identity_verification/success',
+    phoneExemptionPath: '/users/identity_verification/toggle_phone_exemption',
   };
 
   const createComponent = ({ provide } = { provide: {} }) => {
@@ -169,6 +177,54 @@ describe('IdentityVerificationWizard', () => {
 
       expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
       expect(visitUrl).toHaveBeenCalledWith(DEFAULT_PROVIDE.successfulVerificationPath);
+    });
+  });
+
+  describe('when the `exemptionRequested` event is fired from the phone verification step', () => {
+    beforeEach(() => {
+      axiosMock = new MockAdapter(axios);
+
+      createComponent({
+        provide: {
+          verificationSteps: ['phone', 'email'],
+          initialVerificationState: { phone: false, email: true },
+        },
+      });
+    });
+
+    afterEach(() => {
+      createAlert.mockClear();
+      axiosMock.restore();
+    });
+
+    it('renders the credit card verification step instead of the phone verification step', async () => {
+      axiosMock.onPatch(DEFAULT_PROVIDE.phoneExemptionPath).reply(HTTP_STATUS_OK, {
+        verification_methods: ['credit_card', 'email'],
+        verification_state: { credit_card: false, email: true },
+      });
+
+      wrapper.findComponent(PhoneVerification).vm.$emit('exemptionRequested');
+
+      await axios.waitForAll();
+
+      expect(wrapper.findComponent(PhoneVerification).exists()).toBe(false);
+      expect(wrapper.findComponent(CreditCardVerification).exists()).toBe(true);
+    });
+
+    describe('when there is an error requesting a phone exemption', () => {
+      it('renders the credit card verification step instead of the phone verification step', async () => {
+        axiosMock.onPatch(DEFAULT_PROVIDE.phoneExemptionPath).reply(HTTP_STATUS_BAD_REQUEST, {});
+
+        wrapper.findComponent(PhoneVerification).vm.$emit('exemptionRequested');
+
+        await axios.waitForAll();
+
+        expect(createAlert).toHaveBeenCalledWith({
+          message: I18N_GENERIC_ERROR,
+          captureError: true,
+          error: expect.any(Error),
+        });
+      });
     });
   });
 });

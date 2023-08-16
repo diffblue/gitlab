@@ -48,11 +48,11 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
       expect_to_see_welcome_page
     end
 
-    context 'and the user has a phone verification exemption' do
+    context 'when the user requests a phone verification exemption' do
       it 'verifies the user' do
-        user.create_phone_number_exemption!
-
         expect_to_see_identity_verification_page
+
+        request_phone_exemption
 
         verify_credit_card
 
@@ -229,5 +229,9 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
   def expect_to_see_welcome_page
     expect(page).to have_content(_(format('Welcome to GitLab, %{first_name}!', first_name: user.first_name)))
+  end
+
+  def request_phone_exemption
+    click_button s_('IdentityVerification|Verify with a credit card instead?')
   end
 end
