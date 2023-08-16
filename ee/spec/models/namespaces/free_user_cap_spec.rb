@@ -5,22 +5,6 @@ require 'spec_helper'
 RSpec.describe Namespaces::FreeUserCap, feature_category: :measurement_and_locking do
   using RSpec::Parameterized::TableSyntax
 
-  describe '.over_user_limit_mails_enabled?' do
-    subject { described_class.over_user_limit_mails_enabled? }
-
-    context 'when feature flag is enabled' do
-      it { is_expected.to be_truthy }
-    end
-
-    context 'when feature flag is disabled' do
-      it 'reflects the state of the feature flag' do
-        stub_feature_flags free_user_cap_over_user_limit_mails: false
-
-        expect(subject).to be_falsey
-      end
-    end
-  end
-
   describe '.dashboard_limit' do
     subject { described_class.dashboard_limit }
 

@@ -5,10 +5,6 @@ module Namespaces
     REACHED_LIMIT_VARIANT = 'reached'
     CLOSE_TO_LIMIT_VARIANT = 'close'
 
-    def self.over_user_limit_mails_enabled?
-      ::Feature.enabled?(:free_user_cap_over_user_limit_mails)
-    end
-
     def self.dashboard_limit
       ::Gitlab::CurrentSettings.dashboard_limit
     end

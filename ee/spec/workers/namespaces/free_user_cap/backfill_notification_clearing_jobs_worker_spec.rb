@@ -10,8 +10,8 @@ RSpec.describe Namespaces::FreeUserCap::BackfillNotificationClearingJobsWorker,
   let(:worker) { described_class.new }
 
   describe '#perform' do
-    it 'adds a NotificationClearingWorker jobs to the limited capacity worker pool' do
-      expect(Namespaces::FreeUserCap::NotificationClearingWorker).to receive(:perform_with_capacity)
+    it 'does not add NotificationClearingWorker jobs to the limited capacity worker pool' do
+      expect(Namespaces::FreeUserCap::NotificationClearingWorker).not_to receive(:perform_with_capacity)
 
       worker.perform
     end

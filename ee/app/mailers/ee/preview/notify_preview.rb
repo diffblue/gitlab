@@ -3,7 +3,6 @@
 module EE
   module Preview
     module NotifyPreview
-      FREE_USER_CAP_OVERLIMIT_CHECKED_AT = "2022-11-07 14:33:44 UTC"
       extend ActiveSupport::Concern
 
       # We need to define the methods on the prepender directly because:
@@ -83,10 +82,6 @@ module EE
 
         def user_cap_reached
           ::Notify.user_cap_reached(user.id).message
-        end
-
-        def over_free_user_limit_email
-          ::Notify.over_free_user_limit_email(user, group, FREE_USER_CAP_OVERLIMIT_CHECKED_AT).message
         end
 
         def confirmation_instructions_email
