@@ -4,19 +4,23 @@ module Gitlab
   module Database
     module HealthStatus
       module Indicators
-        class PatroniApdex < PrometheusAlertIndicator
+        class WalRate < PrometheusAlertIndicator
           private
 
           def enabled?
-            Feature.enabled?(:batched_migrations_health_status_patroni_apdex, type: :ops)
+            Feature.enabled?(:db_health_check_wal_rate, type: :ops)
           end
 
           def sli_query_key
-            :apdex_sli_query
+            :wal_rate_sli_query
           end
 
           def slo_key
-            :apdex_slo
+            :wal_rate_slo
+          end
+
+          def alert_condition
+            ALERT_CONDITIONS[:below]
           end
         end
       end
