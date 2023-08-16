@@ -444,7 +444,7 @@ describe('AnalyticsDashboard', () => {
           initialDashboard: {
             ...NEW_DASHBOARD,
           },
-          defaultFilters: {},
+          defaultFilters: buildDefaultDashboardFilters(''),
           showDateRangeFilter: true,
           syncUrlFilters: false,
         });

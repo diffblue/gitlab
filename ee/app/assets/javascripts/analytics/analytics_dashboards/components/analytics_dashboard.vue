@@ -65,9 +65,7 @@ export default {
           visualizations: [],
         },
       },
-      defaultFilters: this.isNewDashboard
-        ? {}
-        : buildDefaultDashboardFilters(window.location.search),
+      defaultFilters: buildDefaultDashboardFilters(window.location.search),
       isSaving: false,
       backUrl: this.$router.resolve('/').href,
       editingEnabled: this.glFeatures.combinedAnalyticsDashboardsEditor,
