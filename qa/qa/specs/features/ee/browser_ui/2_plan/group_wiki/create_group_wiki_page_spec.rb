@@ -11,7 +11,7 @@ module QA
       end
 
       context 'when wiki is empty' do
-        let(:group) { Resource::Group.fabricate_via_api! }
+        let(:group) { create(:group) }
 
         it 'creates a new page', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347689' do
           group.visit!

@@ -3,11 +3,7 @@
 module QA
   RSpec.describe 'Plan' do
     describe 'Contribution Analytics', product_group: :optimize do
-      let(:group) do
-        Resource::Group.fabricate_via_api! do |group|
-          group.path = "contribution_analytics-#{SecureRandom.hex(8)}"
-        end
-      end
+      let(:group) { create(:group, path: "contribution_anayltics-#{SecureRandom.hex(8)}") }
 
       let(:project) do
         Resource::Project.fabricate_via_api! do |project|

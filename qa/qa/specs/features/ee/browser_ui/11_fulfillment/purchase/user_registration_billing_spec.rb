@@ -5,9 +5,7 @@ module QA
     product_group: :billing_and_subscription_management do
     describe 'Purchase' do
       describe 'User Registration' do
-        let(:group) do
-          Resource::Group.fabricate_via_api!
-        end
+        let(:group) { create(:group) }
 
         let(:user) do
           Resource::User.init do |user|

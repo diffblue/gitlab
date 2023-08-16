@@ -3,17 +3,8 @@
 module QA
   RSpec.describe 'Data Stores' do
     describe 'Group with members', product_group: :tenant_scale do
-      let(:source_group_with_members) do
-        Resource::Group.fabricate_via_api! do |group|
-          group.path = "source-group-with-members_#{SecureRandom.hex(8)}"
-        end
-      end
-
-      let(:target_group_with_project) do
-        Resource::Group.fabricate_via_api! do |group|
-          group.path = "target-group-with-project_#{SecureRandom.hex(8)}"
-        end
-      end
+      let(:source_group_with_members) { create(:group, path: "source-group-with-members_#{SecureRandom.hex(8)}") }
+      let(:target_group_with_project) { create(:group, path: "target-group-with-project_#{SecureRandom.hex(8)}") }
 
       let!(:project) do
         Resource::Project.fabricate_via_api! do |project|

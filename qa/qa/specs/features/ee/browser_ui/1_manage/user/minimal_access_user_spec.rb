@@ -12,9 +12,7 @@ module QA
       end
 
       let(:group) do
-        group = Resource::Group.fabricate_via_api! do |group|
-          group.api_client = admin_api_client
-        end
+        group = create(:group, api_client: admin_api_client)
         group.sandbox.add_member(user_with_minimal_access, Resource::Members::AccessLevel::MINIMAL_ACCESS)
         group
       end

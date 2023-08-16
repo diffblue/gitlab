@@ -6,7 +6,7 @@ module QA
       before do
         Flow::Login.sign_in
 
-        group = QA::Resource::Group.fabricate_via_api!
+        group = create(:group)
 
         Page::Main::Menu.perform(&:go_to_groups)
         Page::Dashboard::Groups.perform do |groups|

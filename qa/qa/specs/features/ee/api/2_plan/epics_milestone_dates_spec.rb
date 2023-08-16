@@ -11,13 +11,7 @@ module QA
       let(:fixed_start_date) { Date.today.to_date.strftime("%Y-%m-%d") }
       let(:fixed_due_date) { (Date.today.to_date + 90).strftime("%Y-%m-%d") }
       let(:api_client) { Runtime::API::Client.new(:gitlab) }
-
-      let(:group) do
-        Resource::Group.fabricate_via_api! do |group|
-          group.path = "epic-milestone-group-#{SecureRandom.hex(8)}"
-        end
-      end
-
+      let(:group) { create(:group, path: "epic-milestone-group-#{SecureRandom.hex(8)}") }
       let(:project) do
         Resource::Project.fabricate_via_api! do |project|
           project.name = "epic-milestone-project-#{SecureRandom.hex(8)}"

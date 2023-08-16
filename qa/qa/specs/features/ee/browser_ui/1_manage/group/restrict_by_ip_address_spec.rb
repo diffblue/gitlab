@@ -13,10 +13,7 @@ module QA
 
         @user = Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1)
 
-        @group = Resource::Group.fabricate_via_api! do |group|
-          group.path = "ip-address-restricted-group-#{SecureRandom.hex(8)}"
-          group.sandbox = @sandbox_group
-        end
+        @group = create(:group, path: "ip-address-restricted-group-#{SecureRandom.hex(8)}", sandbox: @sandbox_group)
 
         @project = Resource::Project.fabricate_via_api! do |project|
           project.group = @group

@@ -5,12 +5,7 @@ module QA
     describe 'Pipeline subscription with a group owned project', :runner, product_group: :pipeline_execution do
       let(:executor) { "qa-runner-#{SecureRandom.hex(3)}" }
       let(:tag_name) { "awesome-tag-#{SecureRandom.hex(3)}" }
-
-      let(:group) do
-        Resource::Group.fabricate_via_api! do |group|
-          group.name = "group-for-pipeline-subscriptions-#{SecureRandom.hex(3)}"
-        end
-      end
+      let(:group) { create(:group, name: "group-for-pipeline-subscriptions-#{SecureRandom.hex(3)}") }
 
       let(:upstream_project) do
         Resource::Project.fabricate_via_api! do |project|

@@ -11,7 +11,7 @@ module QA
         end
       end
 
-      let(:group) { Resource::Group.fabricate_via_api! }
+      let(:group) { create(:group) }
 
       let(:project_with_success_run) do
         Resource::Project.fabricate_via_api! do |project|

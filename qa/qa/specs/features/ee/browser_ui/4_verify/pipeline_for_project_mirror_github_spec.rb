@@ -20,11 +20,7 @@ module QA
         }
       end
 
-      let(:group) do
-        Resource::Group.fabricate_via_api! do |resource|
-          resource.api_client = admin_api_client
-        end
-      end
+      let(:group) { create(:group, api_client: admin_api_client) }
 
       let(:user) do
         Resource::User.fabricate_via_api! do |resource|

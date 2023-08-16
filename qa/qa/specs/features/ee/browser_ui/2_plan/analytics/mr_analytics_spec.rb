@@ -13,11 +13,7 @@ module QA
         end
       end
 
-      let(:group) do
-        Resource::Group.fabricate_via_api! do |group|
-          group.path = "mr-analytics-#{SecureRandom.hex(8)}"
-        end
-      end
+      let(:group) { create(:group, path: "mr-analytics-#{SecureRandom.hex(8)}") }
 
       let(:project) do
         Resource::Project.fabricate_via_api! do |project|

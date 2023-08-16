@@ -40,12 +40,7 @@ module QA
         Runtime::API::Client.as_admin
       end
 
-      let(:group) do
-        Resource::Group.fabricate_via_api! do |group|
-          group.path = 'template-group'
-          group.api_client = api_client
-        end
-      end
+      let(:group) { create(:group, path: 'template-group', api_client: api_client) }
 
       let(:file_template_project) do
         Resource::Project.fabricate_via_api! do |project|

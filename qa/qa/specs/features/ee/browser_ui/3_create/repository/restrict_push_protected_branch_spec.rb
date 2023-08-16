@@ -72,11 +72,7 @@ module QA
       end
 
       context 'when only one group is allowed to merge and push to a protected branch' do
-        let(:group) do
-          Resource::Group.fabricate_via_api! do |group|
-            group.path = "access-to-protected-branch-#{SecureRandom.hex(8)}"
-          end
-        end
+        let(:group) { create(:group, path: "access-to-protected-branch-#{SecureRandom.hex(8)}") }
 
         let(:project) do
           Resource::Project.fabricate_via_api! do |resource|

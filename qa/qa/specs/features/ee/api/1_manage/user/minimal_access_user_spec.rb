@@ -12,9 +12,7 @@ module QA
 
         @user_api_client = Runtime::API::Client.new(:gitlab, user: @user_with_minimal_access)
 
-        @group = Resource::Group.fabricate_via_api! do |group|
-          group.path = "group-for-minimal-access-#{SecureRandom.hex(8)}"
-        end
+        @group = create(:group, path: "group-for-minimal-access-#{SecureRandom.hex(8)}")
 
         @group.sandbox.add_member(@user_with_minimal_access, Resource::Members::AccessLevel::MINIMAL_ACCESS)
 

@@ -11,12 +11,7 @@ module QA
         end
       end
 
-      let(:group) do
-        Resource::Group.fabricate_via_api! do |resource|
-          resource.sandbox = root_group
-          resource.path = "#{group_name}-#{SecureRandom.hex(4)}"
-        end
-      end
+      let(:group) { create(:group, sandbox: root_group, path: "#{group_name}-#{SecureRandom.hex(4)}") }
 
       let(:project) do
         Resource::Project.fabricate_via_api! do |project|
@@ -186,12 +181,8 @@ module QA
       end
 
       def create_group_and_add_user_via_api(user_name, group_name, role)
-        group = Resource::Group.fabricate_via_api! do |resource|
-          resource.path = "#{group_name}-#{SecureRandom.hex(4)}"
-        end
-
+        group = create(:group, path: "#{group_name}-#{SecureRandom.hex(4)}")
         group.add_member(@created_users[user_name], role)
-
         group
       end
 

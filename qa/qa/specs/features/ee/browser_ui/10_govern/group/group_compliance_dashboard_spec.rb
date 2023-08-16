@@ -16,11 +16,7 @@ module QA
       let(:author_approval_violation) { "Approved by author" }
       let(:committer_approval_violation) { "Approved by committer" }
 
-      let(:group) do
-        Resource::Group.fabricate_via_api! do |grp|
-          grp.path = "test-group-compliance-#{SecureRandom.hex(8)}"
-        end
-      end
+      let(:group) { create(:group, path: "test-group-compliance-#{SecureRandom.hex(8)}") }
 
       let!(:project) do
         Resource::Project.fabricate_via_api! do |proj|

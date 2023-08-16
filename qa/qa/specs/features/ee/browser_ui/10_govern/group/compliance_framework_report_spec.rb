@@ -3,11 +3,7 @@
 module QA
   RSpec.describe 'Govern', :skip_live_env, product_group: :compliance do
     describe 'Compliance Framework Report' do
-      let!(:subgroup) do
-        Resource::Group.fabricate_via_api! do |group|
-          group.path = "compliance-#{Faker::Alphanumeric.alphanumeric(number: 8)}"
-        end
-      end
+      let!(:subgroup) { create(:group, path: "compliance-#{Faker::Alphanumeric.alphanumeric(number: 8)}") }
 
       let!(:top_level_project) do
         Resource::Project.fabricate_via_api! do |project|
