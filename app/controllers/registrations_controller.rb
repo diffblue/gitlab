@@ -46,7 +46,6 @@ class RegistrationsController < Devise::RegistrationsController
       accept_pending_invitations if new_user.persisted?
 
       persist_accepted_terms_if_required(new_user)
-      set_role_required(new_user)
       send_custom_confirmation_instructions
       track_weak_password_error(new_user, self.class.name, 'create')
 
@@ -87,10 +86,6 @@ class RegistrationsController < Devise::RegistrationsController
 
     terms = ApplicationSetting::Term.latest
     Users::RespondToTermsService.new(new_user, terms).execute(accepted: true)
-  end
-
-  def set_role_required(new_user)
-    new_user.set_role_required! if new_user.persisted?
   end
 
   def destroy_confirmation_valid?
