@@ -43,6 +43,7 @@ export default function externalIssuesListFactory({
 
     return new Vue({
       el: mountPointEl,
+      name: 'ExternalIssuesListRoot',
       provide: {
         ...mountPointEl.dataset,
         page: parseInt(page, 10),

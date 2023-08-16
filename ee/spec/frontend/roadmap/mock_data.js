@@ -221,6 +221,7 @@ export const mockRawEpic = {
   id: 'gid://gitlab/Epic/41',
   iid: '2',
   title: 'Another marketing',
+  titleHtml: 'Another marketing',
   description: '',
   state: 'opened',
   startDate: '2017-06-26',
