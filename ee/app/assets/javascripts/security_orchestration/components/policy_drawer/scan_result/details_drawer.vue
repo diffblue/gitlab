@@ -39,7 +39,7 @@ export default {
     },
     approvers() {
       return [
-        ...this.policy.groupApprovers,
+        ...this.policy.allGroupApprovers,
         ...this.policy.roleApprovers.map((r) => {
           return {
             GUEST: __('Guest'),
