@@ -59,6 +59,7 @@ module EE
           .where(name: PAID_HOSTED_PLANS)
           .where(gitlab_subscriptions: { namespace_id: namespaces })
           .distinct
+          .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/422013')
       end
     end
 
