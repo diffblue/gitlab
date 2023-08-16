@@ -98,9 +98,7 @@ module EE
       def find_or_create_subscription_add_on!(name)
         not_found!('Subscription Add-on') unless GitlabSubscriptions::AddOn.names[name]
 
-        GitlabSubscriptions::AddOn
-          .create_with(description: GitlabSubscriptions::AddOn.descriptions[name.to_sym])
-          .find_or_create_by!(name: name)
+        GitlabSubscriptions::AddOn.find_or_create_by_name(name)
       end
       # rubocop: enable CodeReuse/ActiveRecord
 

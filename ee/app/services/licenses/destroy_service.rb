@@ -11,6 +11,7 @@ module Licenses
 
       clear_future_subscriptions
       license.destroy
+      update_code_suggestions_add_on_purchase
     end
 
     private
@@ -19,6 +20,10 @@ module Licenses
       return unless license.current?
 
       Gitlab::CurrentSettings.current_application_settings.update(future_subscriptions: [])
+    end
+
+    def update_code_suggestions_add_on_purchase
+      ::GitlabSubscriptions::AddOnPurchases::SelfManaged::ProvisionCodeSuggestionsService.new.execute
     end
   end
 end

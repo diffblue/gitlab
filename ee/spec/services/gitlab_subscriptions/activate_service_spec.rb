@@ -7,7 +7,7 @@ RSpec.describe GitlabSubscriptions::ActivateService, feature_category: :sm_provi
 
   let!(:application_settings) { create(:application_setting) }
 
-  let_it_be(:license_key) { build(:gitlab_license, :cloud).export }
+  let(:license_key) { build(:gitlab_license, :cloud).export }
 
   let(:activation_code) { 'activation_code' }
   let(:automated) { false }
@@ -108,6 +108,22 @@ RSpec.describe GitlabSubscriptions::ActivateService, feature_category: :sm_provi
           expect(application_settings.future_subscriptions).to eq([])
         end
       end
+    end
+
+    context 'when new license does not contain a code suggestions add-on purchase' do
+      it_behaves_like 'call service to handle the provision of code suggestions'
+    end
+
+    context 'when new license contains a code suggestions add-on purchase' do
+      let(:license_key) do
+        build(
+          :gitlab_license,
+          :cloud,
+          restrictions: { code_suggestions_seat_count: 1, subscription_name: 'A-S00000001' }
+        ).export
+      end
+
+      it_behaves_like 'call service to handle the provision of code suggestions'
     end
 
     context 'when the current license key does not match the one returned from activation' do
