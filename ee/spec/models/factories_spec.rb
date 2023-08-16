@@ -118,6 +118,8 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
   # associations must be unique and cannot be reused, or the factory default
   # is being mutated.
   skip_factory_defaults = %i[
+    catalog_resource_component
+    catalog_resource_version
     ci_job_token_project_scope_link
     ci_subscriptions_project
     compliance_standards_adherence
