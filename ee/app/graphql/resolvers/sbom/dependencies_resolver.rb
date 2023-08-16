@@ -13,7 +13,7 @@ module Resolvers
         packager_asc: { sort_by: 'packager', sort: 'asc' }
       }.freeze
 
-      authorize :read_dependencies
+      authorize :read_dependency
       authorizes_object!
 
       type Types::Sbom::DependencyType.connection_type, null: true

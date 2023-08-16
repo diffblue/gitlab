@@ -37,7 +37,7 @@ module Projects
     end
 
     def authorize_read_dependency_list!
-      render_not_authorized unless can?(current_user, :read_dependencies, project)
+      render_not_authorized unless can?(current_user, :read_dependency, project)
     end
 
     def dependencies

@@ -413,7 +413,7 @@ module EE
         prevent(*create_read_update_admin_destroy(:iteration))
       end
 
-      rule { dependency_scanning_enabled & can?(:download_code) }.enable :read_dependencies
+      rule { dependency_scanning_enabled & can?(:download_code) }.enable :read_dependency
 
       rule { license_scanning_enabled & can?(:download_code) }.enable :read_licenses
 
@@ -624,7 +624,7 @@ module EE
         enable :admin_vulnerability
       end
       rule { custom_roles_allowed & role_enables_read_dependency & dependency_scanning_enabled }.policy do
-        enable :read_dependencies
+        enable :read_dependency
       end
 
       rule { can?(:create_issue) & okrs_enabled }.policy do
