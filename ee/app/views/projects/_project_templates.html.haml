@@ -7,12 +7,12 @@
       = gl_tab_link_to '#built-in', tab_class: 'built-in-tab', class: 'active', data: { toggle: 'tab' } do
         = _('Built-in')
         = gl_tab_counter_badge Gitlab::ProjectTemplate.all.count + Gitlab::SampleDataTemplate.all.count
-      = gl_tab_link_to '#custom-instance-project-templates', tab_class: 'custom-instance-project-templates-tab', class: 'js-custom-instance-project-templates-nav-link', data: { toggle: 'tab', qa_selector: 'instance_templates_tab' } do
+      = gl_tab_link_to '#custom-instance-project-templates', tab_class: 'custom-instance-project-templates-tab', class: 'js-custom-instance-project-templates-nav-link', data: { toggle: 'tab', testid: 'instance-templates-tab' } do
         = _('Instance')
-        = gl_tab_counter_badge(project_template_count, { data: { qa_selector: 'instance_template_tab_badge_content' } })
-      = gl_tab_link_to '#custom-group-project-templates', tab_class: 'custom-group-project-templates-tab', class: 'js-custom-group-project-templates-nav-link', data: { toggle: 'tab', qa_selector: 'group_templates_tab' } do
+        = gl_tab_counter_badge(project_template_count, { data: { qa_selector: 'instance-template-tab_badge-content' } })
+      = gl_tab_link_to '#custom-group-project-templates', tab_class: 'custom-group-project-templates-tab', class: 'js-custom-group-project-templates-nav-link', data: { toggle: 'tab', testid: 'group-templates-tab' } do
         = _('Group')
-        = gl_tab_counter_badge(group_project_templates_count(group_id), { data: { qa_selector: 'group_template_tab_badge_content' } })
+        = gl_tab_counter_badge(group_project_templates_count(group_id), { data: { testid: 'group-template-tab-badge-content' } })
 
   .tab-content
     .project-templates-buttons.import-buttons.tab-pane.active#built-in
