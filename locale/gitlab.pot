@@ -6292,7 +6292,7 @@ msgstr ""
 msgid "Are you sure you want to retry this migration?"
 msgstr ""
 
-msgid "Are you sure you want to revoke this %{accessTokenType}? This action cannot be undone."
+msgid "Are you sure you want to revoke the %{accessTokenType} \"%{tokenName}\"? This action cannot be undone."
 msgstr ""
 
 msgid "Are you sure you want to revoke this SSH key?"
