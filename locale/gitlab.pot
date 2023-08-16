@@ -42587,6 +42587,9 @@ msgstr ""
 msgid "SecurityOrchestration|View policy project"
 msgstr ""
 
+msgid "SecurityOrchestration|Vulnerabilities %{vulnerabilityStates}."
+msgstr ""
+
 msgid "SecurityOrchestration|Vulnerabilities are %{vulnerabilityStates}."
 msgstr ""
 
@@ -42635,6 +42638,12 @@ msgstr ""
 msgid "SecurityOrchestration|any security scanner finds"
 msgstr ""
 
+msgid "SecurityOrchestration|are false positives"
+msgstr ""
+
+msgid "SecurityOrchestration|are not false positives"
+msgstr ""
+
 msgid "SecurityOrchestration|branch"
 msgstr ""
 
@@ -42648,6 +42657,12 @@ msgid "SecurityOrchestration|group level branch input"
 msgstr ""
 
 msgid "SecurityOrchestration|group level branch selector"
+msgstr ""
+
+msgid "SecurityOrchestration|have a fix available"
+msgstr ""
+
+msgid "SecurityOrchestration|have no fix available"
 msgstr ""
 
 msgid "SecurityOrchestration|more than %{allowed}"

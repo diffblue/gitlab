@@ -42,6 +42,7 @@ const singleValuedSecurityScannerRule = {
     scanners: ['sast'],
     severity_levels: ['critical'],
     vulnerability_states: ['newly_detected'],
+    vulnerability_attributes: { fix_available: true },
   },
   humanized: {
     summary:
@@ -49,6 +50,7 @@ const singleValuedSecurityScannerRule = {
     criteriaList: [
       'Severity is critical.',
       'Vulnerabilities are new and need triage or dismissed.',
+      'Vulnerabilities have a fix available.',
     ],
   },
 };
@@ -77,6 +79,7 @@ const multipleValuedSecurityScannerRule = {
     severity_levels: ['info', 'critical'],
     vulnerability_states: ['resolved'],
     vulnerability_age: { operator: GREATER_THAN_OPERATOR, value: 2, interval: AGE_MONTH },
+    vulnerability_attributes: { fix_available: true, false_positive: false },
   },
   humanized: {
     summary:
@@ -85,6 +88,7 @@ const multipleValuedSecurityScannerRule = {
       'Severity is info or critical.',
       'Vulnerabilities are previously existing and resolved.',
       'Vulnerability age is greater than 2 months.',
+      'Vulnerabilities have a fix available and are not false positives.',
     ],
   },
 };
@@ -146,6 +150,7 @@ const allValuedSecurityScannerRule = {
     vulnerabilities_allowed: 2,
     severity_levels: ['info', 'critical'],
     vulnerability_states: ['new_needs_triage', 'resolved', 'confirmed'],
+    vulnerability_attributes: { false_positive: true, fix_available: false },
   },
   humanized: {
     summary:
@@ -153,6 +158,7 @@ const allValuedSecurityScannerRule = {
     criteriaList: [
       'Severity is info or critical.',
       'Vulnerabilities are new and need triage, or previously existing and resolved or confirmed.',
+      'Vulnerabilities are false positives and have no fix available.',
     ],
   },
 };
