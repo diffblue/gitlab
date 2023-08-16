@@ -8,7 +8,7 @@ module QA
   #    ```/chatops run feature set --user=gitlab-qa code_suggestions_completion_api true```
   # 2. Enable the Code Suggestions user preference
   #    See https://docs.gitlab.com/ee/user/project/repository/code_suggestions.html#enable-code-suggestions-for-an-individual-user
-  RSpec.describe 'ModelOps', { only: :pipeline ['canary production'] } do
+  RSpec.describe 'ModelOps', only: { pipeline: %i[production canary] } do
     include Support::API
 
     describe 'Code Suggestions', product_group: :ai_assisted do
