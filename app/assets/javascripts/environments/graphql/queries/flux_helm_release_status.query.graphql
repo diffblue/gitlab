@@ -8,6 +8,7 @@ query getFluxHelmReleaseStatusQuery(
     namespace: $namespace
     environmentName: $environmentName
   ) @client {
+    message
     status
     type
   }

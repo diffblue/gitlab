@@ -16353,6 +16353,24 @@ msgstr ""
 msgid "Deployment|Failed"
 msgstr ""
 
+msgid "Deployment|Flux sync failed"
+msgstr ""
+
+msgid "Deployment|Flux sync reconciled successfully"
+msgstr ""
+
+msgid "Deployment|Flux sync reconciling"
+msgstr ""
+
+msgid "Deployment|Flux sync stalled"
+msgstr ""
+
+msgid "Deployment|Flux sync status is unavailable"
+msgstr ""
+
+msgid "Deployment|Flux sync status is unknown"
+msgstr ""
+
 msgid "Deployment|Latest Deployed"
 msgstr ""
 
@@ -16368,10 +16386,16 @@ msgstr ""
 msgid "Deployment|Success"
 msgstr ""
 
+msgid "Deployment|Sync status is unknown. %{linkStart}How do I configure Flux for my deployment?%{linkEnd}"
+msgstr ""
+
 msgid "Deployment|This deployment was created using the API"
 msgstr ""
 
 msgid "Deployment|Triggerer"
+msgstr ""
+
+msgid "Deployment|Unable to detect state. %{linkStart}How are states detected?%{linkEnd}"
 msgstr ""
 
 msgid "Deployment|Unavailable"
