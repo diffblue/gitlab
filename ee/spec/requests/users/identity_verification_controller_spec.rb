@@ -692,4 +692,54 @@ feature_category: :system_access do
       end
     end
   end
+
+  describe 'PATCH toggle_phone_exemption' do
+    let_it_be(:user) { unconfirmed_user }
+
+    let(:offer_phone_number_exemption) { true }
+
+    subject(:do_request) { patch toggle_phone_exemption_identity_verification_path(format: :json) }
+
+    before do
+      stub_session(verification_user_id: user.id)
+
+      allow_next_found_instance_of(User) do |user|
+        allow(user).to receive(:offer_phone_number_exemption?).and_return(offer_phone_number_exemption)
+      end
+    end
+
+    it_behaves_like 'it requires an unconfirmed user'
+    it_behaves_like 'it requires a valid verification_user_id', 'toggle_phone_exemption'
+
+    describe 'when offering phone exemption' do
+      it 'toggles phone exemption' do
+        expect { do_request }.to change { User.find(user.id).exempt_from_phone_number_verification? }.to(true)
+      end
+
+      it 'returns verification methods and state' do
+        do_request
+
+        expect(json_response).to eq({
+          'verification_methods' => user.required_identity_verification_methods,
+          'verification_state' => user.identity_verification_state
+        })
+      end
+
+      it_behaves_like 'logs and tracks the event', :toggle_phone_exemption, :success
+    end
+
+    describe 'when not offering phone exemption' do
+      let(:offer_phone_number_exemption) { false }
+
+      it_behaves_like 'logs and tracks the event', :toggle_phone_exemption, :failed
+
+      it 'returns an empty response with a bad request status', :aggregate_failures do
+        do_request
+
+        expect(json_response).to be_empty
+
+        expect(response).to have_gitlab_http_status(:bad_request)
+      end
+    end
+  end
 end

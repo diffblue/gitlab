@@ -111,6 +111,29 @@ module IdentityVerifiable
       ActiveModel::Type::Boolean.new.cast(phone_number_exemption_attribute.value)
   end
 
+  def toggle_phone_number_verification
+    exempt_from_phone_number_verification? ? destroy_phone_number_exemption : create_phone_number_exemption!
+    clear_memoization(:phone_number_exemption_attribute)
+    clear_memoization(:identity_verification_state)
+  end
+
+  def offer_phone_number_exemption?
+    return false unless credit_card_verification_enabled?
+
+    case arkose_risk_band
+    when Arkose::VerifyResponse::RISK_BAND_MEDIUM.downcase
+      true
+    when Arkose::VerifyResponse::RISK_BAND_LOW.downcase
+      if phone_number_verification_enabled?
+        experiment(:phone_verification_for_low_risk_users, user: self) do |e|
+          e.candidate { true }
+        end.run
+      end
+    else
+      false
+    end
+  end
+
   private
 
   def verification_state

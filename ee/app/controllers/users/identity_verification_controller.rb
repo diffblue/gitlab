@@ -7,7 +7,7 @@ module Users
     include Arkose::ContentSecurityPolicy
     include IdentityVerificationHelper
 
-    EVENT_CATEGORIES = %i[email phone credit_card error].freeze
+    EVENT_CATEGORIES = %i[email phone credit_card error toggle_phone_exemption].freeze
 
     skip_before_action :authenticate_user!
     before_action :require_verification_user!
@@ -124,6 +124,21 @@ module Users
       else
         log_event(:credit_card, :success)
         render json: {}
+      end
+    end
+
+    def toggle_phone_exemption
+      if @user.offer_phone_number_exemption?
+        @user.toggle_phone_number_verification
+
+        log_event(:toggle_phone_exemption, :success)
+        render json: {
+          verification_methods: @user.required_identity_verification_methods,
+          verification_state: @user.identity_verification_state
+        }
+      else
+        log_event(:toggle_phone_exemption, :failed)
+        render status: :bad_request, json: {}
       end
     end
 

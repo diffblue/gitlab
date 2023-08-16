@@ -19,7 +19,7 @@ export default {
     Zuora,
   },
   mixins: [Tracking.mixin({ category: EVENT_CATEGORY })],
-  inject: ['creditCard'],
+  inject: ['creditCard', 'offerPhoneNumberExemption'],
   data() {
     return {
       currentUserId: this.creditCard.userId,
@@ -88,6 +88,7 @@ export default {
       'IdentityVerification|GitLab will not charge or store your payment information, it will only be used for verification.',
     ),
     formSubmit: s__('IdentityVerification|Verify payment method'),
+    verifyWithPhone: s__('IdentityVerification|Verify with a phone number instead?'),
   },
   zuoraFormHeight: 328,
 };
@@ -128,5 +129,13 @@ export default {
     >
       {{ $options.i18n.formSubmit }}
     </gl-button>
+    <gl-button
+      v-if="offerPhoneNumberExemption"
+      block
+      variant="link"
+      class="gl-mt-5 gl-font-sm"
+      @click="$emit('exemptionRequested')"
+      >{{ $options.i18n.verifyWithPhone }}</gl-button
+    >
   </div>
 </template>

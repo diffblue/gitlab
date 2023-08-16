@@ -2,8 +2,10 @@
 import { kebabCase } from 'lodash';
 import { s__, sprintf } from '~/locale';
 import { visitUrl } from '~/lib/utils/url_utility';
-
-import { REDIRECT_TIMEOUT } from '../constants';
+import { convertArrayToCamelCase, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
+import axios from '~/lib/utils/axios_utils';
+import { createAlert } from '~/alert';
+import { REDIRECT_TIMEOUT, I18N_GENERIC_ERROR } from '../constants';
 import EmailVerification from './email_verification.vue';
 import CreditCardVerification from './credit_card_verification.vue';
 import PhoneVerification from './phone_verification.vue';
@@ -17,9 +19,15 @@ export default {
     EmailVerification,
     VerificationStep,
   },
-  inject: ['verificationSteps', 'initialVerificationState', 'successfulVerificationPath'],
+  inject: [
+    'verificationSteps',
+    'initialVerificationState',
+    'successfulVerificationPath',
+    'phoneExemptionPath',
+  ],
   data() {
     return {
+      steps: this.verificationSteps,
       stepsVerifiedState: this.initialVerificationState,
     };
   },
@@ -29,7 +37,7 @@ export default {
       return this.orderedSteps.find(isIncomplete);
     },
     orderedSteps() {
-      return [...this.verificationSteps].sort(
+      return [...this.steps].sort(
         (a, b) => this.stepsVerifiedState[b] - this.stepsVerifiedState[a],
       );
     },
@@ -37,7 +45,7 @@ export default {
       return !Object.entries(this.stepsVerifiedState).filter(([, completed]) => !completed).length;
     },
     isStandaloneEmailVerification() {
-      return this.verificationSteps.length === 1;
+      return this.steps.length === 1;
     },
   },
   methods: {
@@ -59,6 +67,21 @@ export default {
         email: emailStep,
       };
       return sprintf(templates[step], { stepNumber: number });
+    },
+    exemptionRequested() {
+      axios
+        .patch(this.phoneExemptionPath)
+        .then((response) => {
+          this.steps = convertArrayToCamelCase(response.data.verification_methods);
+          this.stepsVerifiedState = convertObjectPropsToCamelCase(response.data.verification_state);
+        })
+        .catch((error) => {
+          createAlert({
+            message: I18N_GENERIC_ERROR,
+            captureError: true,
+            error,
+          });
+        });
     },
   },
   i18n: {
@@ -82,7 +105,7 @@ export default {
       <email-verification
         v-if="isStandaloneEmailVerification"
         :is-standalone="true"
-        @completed="onStepCompleted(verificationSteps[0])"
+        @completed="onStepCompleted(steps[0])"
       />
       <template v-for="(step, index) in orderedSteps" v-else>
         <verification-step
@@ -91,7 +114,11 @@ export default {
           :completed="stepsVerifiedState[step]"
           :is-active="step === activeStep"
         >
-          <component :is="methodComponent(step)" @completed="onStepCompleted(step)" />
+          <component
+            :is="methodComponent(step)"
+            @completed="onStepCompleted(step)"
+            @exemptionRequested="exemptionRequested"
+          />
         </verification-step>
       </template>
     </div>

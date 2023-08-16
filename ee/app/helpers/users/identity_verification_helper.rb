@@ -7,6 +7,8 @@ module Users
         data: {
           verification_methods: user.required_identity_verification_methods,
           verification_state: user.identity_verification_state,
+          offer_phone_number_exemption: user.offer_phone_number_exemption?,
+          phone_exemption_path: toggle_phone_exemption_identity_verification_path,
           credit_card: {
             user_id: user.id,
             form_id: ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_ID,
