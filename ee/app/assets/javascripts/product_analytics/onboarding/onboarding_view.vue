@@ -6,7 +6,6 @@ import {
   STATE_LOADING_INSTANCE,
   STATE_CREATE_INSTANCE,
   STATE_WAITING_FOR_EVENTS,
-  FETCH_ERROR_MESSAGE,
 } from './constants';
 
 export default {
@@ -49,9 +48,6 @@ export default {
       });
     },
   },
-  i18n: {
-    fetchErrorMessage: FETCH_ERROR_MESSAGE,
-  },
 };
 </script>
 
@@ -61,7 +57,15 @@ export default {
       v-model="state"
       :poll-state="pollState"
       @complete="onComplete"
-      @error="showError($event, false, $options.i18n.fetchErrorMessage)"
+      @error="
+        showError(
+          $event,
+          false,
+          s__(
+            'ProductAnalytics|An error occurred while fetching data. Refresh the page to try again.',
+          ),
+        )
+      "
     />
 
     <gl-loading-icon v-if="!state" size="lg" class="gl-my-7" />

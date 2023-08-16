@@ -1,4 +1,4 @@
-import { s__, __ } from '~/locale';
+import { s__ } from '~/locale';
 
 export const I18N_ONBOARDING_BREADCRUMB = s__('ProductAnalytics|Product analytics onboarding');
 
@@ -42,33 +42,3 @@ export const STATE_LOADING_INSTANCE = 'LOADING_INSTANCE';
 export const STATE_WAITING_FOR_EVENTS = 'WAITING_FOR_EVENTS';
 
 export const STATE_COMPLETE = 'COMPLETE';
-
-export const EMPTY_STATE_I18N = {
-  empty: {
-    title: s__('ProductAnalytics|Analyze your product with Product Analytics'),
-    description: s__(
-      'ProductAnalytics|Set up Product Analytics to track how your product is performing. Combine it with your GitLab data to better understand where you can improve your product and development processes.',
-    ),
-    setUpBtnText: s__('ProductAnalytics|Set up product analytics'),
-    learnMoreBtnText: __('Learn more'),
-  },
-  loading: {
-    title: s__('ProductAnalytics|Creating your product analytics instance...'),
-    description: s__(
-      'ProductAnalytics|This might take a while, feel free to navigate away from this page and come back later.',
-    ),
-  },
-};
-
-export const FETCH_ERROR_MESSAGE = s__(
-  'ProductAnalytics|An error occurred while fetching data. Refresh the page to try again.',
-);
-
-export const ONBOARDING_LIST_ITEM_I18N = {
-  title: __('Product Analytics'),
-  description: s__(
-    'ProductAnalytics|Set up to track how your product is performing and optimize your product and development processes.',
-  ),
-  waitingForEvents: s__('ProductAnalytics|Waiting for events'),
-  loadingInstance: s__('ProductAnalytics|Loading instance'),
-};
