@@ -232,7 +232,7 @@
   },
   "devDependencies": {
     "@gitlab/eslint-plugin": "19.0.1",
-    "@gitlab/stylelint-config": "4.1.0",
+    "@gitlab/stylelint-config": "5.0.0",
     "@graphql-eslint/eslint-plugin": "3.20.1",
     "@testing-library/dom": "^7.16.2",
     "@types/jest": "^28.1.3",
