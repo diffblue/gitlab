@@ -7,7 +7,7 @@
       = s_('PushRule|Push rules')
     = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded ? _('Collapse') : _('Expand')
-    %p
+    %p.gl-text-secondary
       = s_('PushRules|Restrict push operations for this project.')
       = link_to _('Learn more.'), help_page_path('user/project/repository/push_rules'), target: '_blank', rel: 'noopener noreferrer'
   .settings-content

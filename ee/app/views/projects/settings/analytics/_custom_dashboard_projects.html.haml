@@ -6,7 +6,7 @@
     %h3.settings-title.js-settings-toggle.js-settings-toggle-trigger-only= s_('ProjectSettings|Custom dashboard projects')
     = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded ? _('Collapse') : _('Expand')
-    %p= s_('ProjectSettings|Store custom configuration files.')
+    %p.gl-text-secondary= s_('ProjectSettings|Store custom configuration files.')
   .settings-content
     %h4= s_('ProjectSettings|Analytics Dashboards')
     %p= s_('ProjectSettings|Select the project containing Analytics Dashboards configuration files.')

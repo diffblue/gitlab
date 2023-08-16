@@ -5,7 +5,7 @@
         = _("Automatic deployment rollbacks")
       = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
         = expanded ? _('Collapse') : _('Expand')
-      %p
+      %p.gl-text-secondary
         = s_('AutoRollback|Automatically roll back to the last successful deployment when a critical problem is detected.')
 
     .settings-content
