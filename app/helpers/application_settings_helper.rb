@@ -241,6 +241,7 @@ module ApplicationSettingsHelper
       :default_artifacts_expire_in,
       :default_branch_name,
       :default_branch_protection,
+      :default_branch_protection_defaults,
       :default_ci_config_path,
       :default_group_visibility,
       :default_preferred_language,
