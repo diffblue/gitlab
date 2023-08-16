@@ -67,4 +67,8 @@ class Groups::SamlProvidersController < Groups::ApplicationController
   def microsoft_application_redirect_path
     group_saml_providers_path(group)
   end
+
+  def microsoft_group_sync_enabled?
+    @group.saml_provider&.enabled?
+  end
 end

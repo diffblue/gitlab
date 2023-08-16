@@ -175,6 +175,10 @@ module EE
       def microsoft_application_redirect_path
         general_admin_application_settings_path
       end
+
+      def microsoft_group_sync_enabled?
+        ::Gitlab::Auth::Saml::Config.microsoft_group_sync_enabled?
+      end
     end
   end
 end

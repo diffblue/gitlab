@@ -12,6 +12,10 @@ RSpec.describe Admin::ApplicationSettingsController, feature_category: :shared d
 
     it_behaves_like 'Microsoft application controller actions' do
       let(:path) { update_microsoft_application_admin_application_settings_path }
+
+      before do
+        allow(::Gitlab::Auth::Saml::Config).to receive(:microsoft_group_sync_enabled?).and_return(true)
+      end
     end
   end
 end
