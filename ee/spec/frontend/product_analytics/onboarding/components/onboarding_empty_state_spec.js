@@ -4,7 +4,6 @@ import { GlEmptyState, GlLoadingIcon } from '@gitlab/ui';
 import OnboardingEmptyState from 'ee/product_analytics/onboarding/components/onboarding_empty_state.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { TEST_HOST } from 'spec/test_constants';
-import { EMPTY_STATE_I18N } from 'ee/product_analytics/onboarding/constants';
 import initializeProductAnalyticsMutation from 'ee/product_analytics/graphql/mutations/initialize_product_analytics.mutation.graphql';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -59,12 +58,14 @@ describe('OnboardingEmptyState', () => {
       const emptyState = findEmptyState();
 
       expect(emptyState.props()).toMatchObject({
-        title: EMPTY_STATE_I18N.empty.title,
+        title: 'Analyze your product with Product Analytics',
         svgPath: TEST_HOST,
       });
-      expect(emptyState.text()).toContain(EMPTY_STATE_I18N.empty.description);
-      expect(findSetupBtn().text()).toBe(EMPTY_STATE_I18N.empty.setUpBtnText);
-      expect(findLearnMoreBtn().text()).toBe(EMPTY_STATE_I18N.empty.learnMoreBtnText);
+      expect(emptyState.text()).toContain(
+        'Set up Product Analytics to track how your product is performing. Combine it with your GitLab data to better understand where you can improve your product and development processes.',
+      );
+      expect(findSetupBtn().text()).toBe('Set up product analytics');
+      expect(findLearnMoreBtn().text()).toBe('Learn more');
       expect(findLearnMoreBtn().attributes('href')).toBe('/help/user/product_analytics/index');
     });
 
@@ -94,10 +95,12 @@ describe('OnboardingEmptyState', () => {
       const emptyState = findEmptyState();
 
       expect(emptyState.props()).toMatchObject({
-        title: EMPTY_STATE_I18N.loading.title,
+        title: 'Creating your product analytics instance...',
         svgPath: TEST_HOST,
       });
-      expect(emptyState.text()).toContain(EMPTY_STATE_I18N.loading.description);
+      expect(emptyState.text()).toContain(
+        'This might take a while, feel free to navigate away from this page and come back later.',
+      );
     });
 
     it('renders the loading icon', () => {

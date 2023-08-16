@@ -11,7 +11,6 @@ import {
   STATE_LOADING_INSTANCE,
   STATE_CREATE_INSTANCE,
   STATE_WAITING_FOR_EVENTS,
-  FETCH_ERROR_MESSAGE,
 } from 'ee/product_analytics/onboarding/constants';
 import {
   TEST_TRACKING_KEY,
@@ -150,7 +149,7 @@ describe('ProductAnalyticsOnboardingView', () => {
       expectAlertOnError({
         finder: findStateComponent,
         captureError: false,
-        message: FETCH_ERROR_MESSAGE,
+        message: 'An error occurred while fetching data. Refresh the page to try again.',
       });
     });
   });

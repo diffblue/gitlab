@@ -1,7 +1,7 @@
 <script>
 import { GlButton, GlEmptyState, GlLoadingIcon } from '@gitlab/ui';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import { EMPTY_STATE_I18N } from '../constants';
+import { s__ } from '~/locale';
 import initializeProductAnalyticsMutation from '../../graphql/mutations/initialize_product_analytics.mutation.graphql';
 
 export default {
@@ -33,12 +33,18 @@ export default {
   },
   computed: {
     title() {
-      return this.loading ? EMPTY_STATE_I18N.loading.title : EMPTY_STATE_I18N.empty.title;
+      return this.loading
+        ? s__('ProductAnalytics|Creating your product analytics instance...')
+        : s__('ProductAnalytics|Analyze your product with Product Analytics');
     },
     description() {
       return this.loading
-        ? EMPTY_STATE_I18N.loading.description
-        : EMPTY_STATE_I18N.empty.description;
+        ? s__(
+            'ProductAnalytics|This might take a while, feel free to navigate away from this page and come back later.',
+          )
+        : s__(
+            'ProductAnalytics|Set up Product Analytics to track how your product is performing. Combine it with your GitLab data to better understand where you can improve your product and development processes.',
+          );
     },
   },
   methods: {
@@ -74,7 +80,6 @@ export default {
       }
     },
   },
-  i18n: EMPTY_STATE_I18N,
   docsPath: helpPagePath('user/product_analytics/index'),
 };
 </script>
@@ -89,10 +94,10 @@ export default {
     <template #actions>
       <template v-if="!loading">
         <gl-button variant="confirm" data-testid="setup-btn" @click="onConfirm">
-          {{ $options.i18n.empty.setUpBtnText }}
+          {{ s__('ProductAnalytics|Set up product analytics') }}
         </gl-button>
         <gl-button :href="$options.docsPath" data-testid="learn-more-btn">
-          {{ $options.i18n.empty.learnMoreBtnText }}
+          {{ __('Learn more') }}
         </gl-button>
       </template>
       <gl-loading-icon v-else size="lg" class="gl-mt-5" />

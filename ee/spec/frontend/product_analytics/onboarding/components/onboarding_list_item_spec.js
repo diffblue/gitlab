@@ -4,8 +4,6 @@ import AnalyticsFeatureListItem from 'ee/analytics/analytics_dashboards/componen
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 import {
-  FETCH_ERROR_MESSAGE,
-  ONBOARDING_LIST_ITEM_I18N,
   STATE_CREATE_INSTANCE,
   STATE_LOADING_INSTANCE,
   STATE_WAITING_FOR_EVENTS,
@@ -36,8 +34,9 @@ describe('OnboardingListItem', () => {
 
     it('renders the list item', () => {
       expect(findListItem().props()).toMatchObject({
-        title: ONBOARDING_LIST_ITEM_I18N.title,
-        description: ONBOARDING_LIST_ITEM_I18N.description,
+        title: 'Product Analytics',
+        description:
+          'Set up to track how your product is performing and optimize your product and development processes.',
         badgeText: null,
         to: 'product-analytics-onboarding',
       });
@@ -61,7 +60,9 @@ describe('OnboardingListItem', () => {
       });
 
       it('emits an error event with a message', () => {
-        expect(wrapper.emitted('error')).toEqual([[error, true, FETCH_ERROR_MESSAGE]]);
+        expect(wrapper.emitted('error')).toEqual([
+          [error, true, 'An error occurred while fetching data. Refresh the page to try again.'],
+        ]);
       });
     });
   });
@@ -69,8 +70,8 @@ describe('OnboardingListItem', () => {
   describe('badge text', () => {
     it.each`
       state                       | badgeText
-      ${STATE_WAITING_FOR_EVENTS} | ${ONBOARDING_LIST_ITEM_I18N.waitingForEvents}
-      ${STATE_LOADING_INSTANCE}   | ${ONBOARDING_LIST_ITEM_I18N.loadingInstance}
+      ${STATE_WAITING_FOR_EVENTS} | ${'Waiting for events'}
+      ${STATE_LOADING_INSTANCE}   | ${'Loading instance'}
     `('renders "$badgeText" when the state is "$state"', async ({ state, badgeText }) => {
       await createWrapper(state);
 
