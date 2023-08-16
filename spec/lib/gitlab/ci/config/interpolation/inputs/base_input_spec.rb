@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Interpolation::Inputs::BaseInput, feature_category: :pipeline_composition do
+RSpec.describe Gitlab::Ci::Config::Interpolation::Inputs::BaseInput, feature_category: :pipeline_composition do
   describe '.matches?' do
     it 'is not implemented' do
       expect { described_class.matches?(double) }.to raise_error(NotImplementedError)

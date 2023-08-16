@@ -2,7 +2,7 @@
 
 require 'fast_spec_helper'
 
-RSpec.describe Gitlab::Ci::Interpolation::Functions::Base, feature_category: :pipeline_composition do
+RSpec.describe Gitlab::Ci::Config::Interpolation::Functions::Base, feature_category: :pipeline_composition do
   let(:custom_function_klass) do
     Class.new(described_class) do
       def self.function_expression_pattern

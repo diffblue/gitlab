@@ -2,7 +2,7 @@
 
 require 'fast_spec_helper'
 
-RSpec.describe Gitlab::Ci::Interpolation::Access, feature_category: :pipeline_composition do
+RSpec.describe Gitlab::Ci::Config::Interpolation::Access, feature_category: :pipeline_composition do
   subject { described_class.new(access, ctx) }
 
   let(:access) do
@@ -44,6 +44,15 @@ RSpec.describe Gitlab::Ci::Interpolation::Access, feature_category: :pipeline_co
       expect(subject).not_to be_valid
       expect(subject.errors.first)
         .to eq 'invalid interpolation access pattern'
+    end
+  end
+
+  context 'when a non-existent key is accessed' do
+    let(:access) { 'inputs.nonexistent' }
+
+    it 'returns an error' do
+      expect(subject).not_to be_valid
+      expect(subject.errors.first).to eq('unknown interpolation key: `nonexistent`')
     end
   end
 end

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Interpolation::Functions::Truncate, feature_category: :pipeline_composition do
+RSpec.describe Gitlab::Ci::Config::Interpolation::Functions::Truncate, feature_category: :pipeline_composition do
   it 'matches exactly the truncate function with 2 numeric arguments' do
     expect(described_class.matches?('truncate(1,2)')).to be_truthy
     expect(described_class.matches?('truncate( 11 , 222 )')).to be_truthy

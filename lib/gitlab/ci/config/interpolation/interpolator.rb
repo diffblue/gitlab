@@ -3,10 +3,9 @@
 module Gitlab
   module Ci
     class Config
-      module Yaml
+      module Interpolation
         ##
-        # Config::Yaml::Interpolator performs CI config file interpolation, and surfaces all possible interpolation
-        # errors. It is designed to provide an external file's validation context too.
+        # Performs CI config file interpolation, and surfaces all possible interpolation errors.
         #
         class Interpolator
           attr_reader :config, :args, :errors
@@ -62,7 +61,7 @@ module Gitlab
           end
 
           def header
-            @entry ||= Ci::Config::Header::Root.new(config.header).tap do |header|
+            @entry ||= Header::Root.new(config.header).tap do |header|
               header.key = 'header'
 
               header.compose!
@@ -78,16 +77,15 @@ module Gitlab
           end
 
           def inputs
-            @inputs ||= Ci::Interpolation::Inputs.new(spec, args)
+            @inputs ||= Inputs.new(spec, args)
           end
 
           def context
-            @context ||= Ci::Interpolation::Context.new({ inputs: inputs.to_hash })
+            @context ||= Context.new({ inputs: inputs.to_hash })
           end
 
           def template
-            @template ||= ::Gitlab::Ci::Interpolation::Template
-              .new(content, context)
+            @template ||= Template.new(content, context)
           end
         end
       end
