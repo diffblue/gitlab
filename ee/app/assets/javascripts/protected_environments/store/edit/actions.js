@@ -16,12 +16,15 @@ const fetchUsersForRuleForProject = (
   if (userId != null) {
     return getUser(userId).then(({ data }) => [data]);
   } else if (groupId != null) {
-    return getGroupMembers(groupId, groupInheritanceType === INHERITED_GROUPS).then(
+    return getGroupMembers(groupId, groupInheritanceType?.toString() === INHERITED_GROUPS).then(
       ({ data }) => data,
     );
   }
 
-  return getProjectMembers(projectId, groupInheritanceType === INHERITED_GROUPS).then(({ data }) =>
+  return getProjectMembers(
+    projectId,
+    groupInheritanceType?.toString() === INHERITED_GROUPS,
+  ).then(({ data }) =>
     data.filter(({ access_level: memberAccessLevel }) => memberAccessLevel >= accessLevel),
   );
 };

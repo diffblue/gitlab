@@ -144,10 +144,12 @@ describe('ee/protected_environments/store/edit/actions', () => {
 
   describe('fetchMembers', () => {
     it.each`
-      type              | rule                                                                                                     | url                               | response
-      ${'group'}        | ${{ group_id: 1, user_id: null, access_level: null, group_inheritance_type: '1' }}                       | ${'/api/v4/groups/1/members/all'} | ${[{ name: 'root' }]}
-      ${'user'}         | ${{ group_id: null, user_id: 1, access_level: null, group_ineritance_type: null }}                       | ${'/api/v4/users/1'}              | ${{ name: 'root' }}
-      ${'access level'} | ${{ group_id: null, user_id: null, access_level: MAINTAINER_ACCESS_LEVEL, group_inheritance_type: '0' }} | ${'/api/v4/projects/8/members'}   | ${[{ name: 'root', access_level: MAINTAINER_ACCESS_LEVEL.toString() }]}
+      type                                | rule                                                                                                     | url                               | response
+      ${'group with inheritance'}         | ${{ group_id: 1, user_id: null, access_level: null, group_inheritance_type: '1' }}                       | ${'/api/v4/groups/1/members/all'} | ${[{ name: 'root' }]}
+      ${'group with integer inheritance'} | ${{ group_id: 1, user_id: null, access_level: null, group_inheritance_type: 1 }}                         | ${'/api/v4/groups/1/members/all'} | ${[{ name: 'root' }]}
+      ${'group without inheritance'}      | ${{ group_id: 1, user_id: null, access_level: null, group_inheritance_type: 0 }}                         | ${'/api/v4/groups/1/members'}     | ${[{ name: 'root' }]}
+      ${'user'}                           | ${{ group_id: null, user_id: 1, access_level: null, group_ineritance_type: null }}                       | ${'/api/v4/users/1'}              | ${{ name: 'root' }}
+      ${'access level'}                   | ${{ group_id: null, user_id: null, access_level: MAINTAINER_ACCESS_LEVEL, group_inheritance_type: '0' }} | ${'/api/v4/projects/8/members'}   | ${[{ name: 'root', access_level: MAINTAINER_ACCESS_LEVEL.toString() }]}
     `(
       'successfully fetches members for a given deploy access rule of type $type',
       ({ rule, url, response }) => {
