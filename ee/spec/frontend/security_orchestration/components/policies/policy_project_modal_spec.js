@@ -1,4 +1,4 @@
-import { GlDropdown, GlModal, GlAlert } from '@gitlab/ui';
+import { GlModal, GlAlert, GlCollapsibleListbox } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -28,7 +28,7 @@ describe('ProjectModal Component', () => {
     name: 'Test 1',
   };
 
-  const findDropdown = () => wrapper.findComponent(GlDropdown);
+  const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
   const findInstanceProjectSelector = () => wrapper.findComponent(InstanceProjectSelector);
   const findUnlinkButton = () => wrapper.findByLabelText('Unlink project');
   const findAlert = () => wrapper.findComponent(GlAlert);
@@ -96,7 +96,7 @@ describe('ProjectModal Component', () => {
     });
 
     it('displays a placeholder when no project is selected', () => {
-      expect(findDropdown().props('text')).toBe('Choose a project');
+      expect(findDropdown().props('toggleText')).toBe('Select a project');
     });
 
     it('does not display the remove button when no project is selected', () => {
@@ -114,11 +114,11 @@ describe('ProjectModal Component', () => {
 
     findModal().vm.$emit('change');
     expect(wrapper.emitted('close')).toEqual([[]]);
-    expect(findInstanceProjectSelector().props('selectedProjects')[0].name).toBe('Test 1');
+    expect(findInstanceProjectSelector().props('selectedProject').name).toBe('Test 1');
 
     // should restore the previous state when action is not submitted
     await nextTick();
-    expect(findInstanceProjectSelector().props('selectedProjects')[0].name).toBeUndefined();
+    expect(findInstanceProjectSelector().props('selectedProject').name).toBeUndefined();
   });
 
   describe('unlinking project', () => {
@@ -180,7 +180,7 @@ describe('ProjectModal Component', () => {
 
     it.each`
       messageType  | factoryFn                                                                                                  | text                                   | variant      | hasPolicyProject | selectedProject
-      ${'success'} | ${createWrapperAndSelectProject}                                                                           | ${POLICY_PROJECT_LINK_SUCCESS_MESSAGE} | ${'success'} | ${true}          | ${[sampleProject]}
+      ${'success'} | ${createWrapperAndSelectProject}                                                                           | ${POLICY_PROJECT_LINK_SUCCESS_MESSAGE} | ${'success'} | ${true}          | ${sampleProject}
       ${'failure'} | ${() => createWrapperAndSelectProject({ mutationResult: mockLinkSecurityPolicyProjectResponses.failure })} | ${POLICY_PROJECT_LINK_ERROR_MESSAGE}   | ${'danger'}  | ${false}         | ${undefined}
     `(
       'emits an event with $messageType message',
@@ -194,7 +194,7 @@ describe('ProjectModal Component', () => {
         });
 
         if (selectedProject) {
-          expect(findInstanceProjectSelector().props('selectedProjects')).toEqual(selectedProject);
+          expect(findInstanceProjectSelector().props('selectedProject')).toEqual(selectedProject);
         }
       },
     );

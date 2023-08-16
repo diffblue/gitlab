@@ -1,16 +1,25 @@
 <script>
+import { GlAvatar, GlCollapsibleListbox, GlTruncate, GlTooltipDirective } from '@gitlab/ui';
 import produce from 'immer';
+import { __ } from '~/locale';
 import getUsersProjects from '~/graphql_shared/queries/get_users_projects.query.graphql';
-import ProjectSelector from '~/vue_shared/components/project_selector/project_selector.vue';
 import { PAGE_SIZE } from 'ee/security_orchestration/constants';
+import { AVATAR_SHAPE_OPTION_RECT } from '~/vue_shared/constants';
 
 const defaultPageInfo = { endCursor: '', hasNextPage: false };
 
 export default {
+  AVATAR_SHAPE_OPTION_RECT,
   MINIMUM_QUERY_LENGTH: 3,
   SEARCH_ERROR: 'SEARCH_ERROR',
   QUERY_TOO_SHORT_ERROR: 'QUERY_TOO_SHORT_ERROR',
   NO_RESULTS_ERROR: 'NO_RESULTS_ERROR',
+  i18n: {
+    defaultPlaceholder: __('Select a project'),
+    errorNetworkMessage: __('Something went wrong, unable to search projects'),
+    noResultsText: __('Sorry, no projects matched your search'),
+    searchText: __('Enter at least three characters to search'),
+  },
   apollo: {
     projects: {
       query: getUsersProjects,
@@ -42,24 +51,29 @@ export default {
       },
     },
   },
+  directives: {
+    GlTooltip: GlTooltipDirective,
+  },
   components: {
-    ProjectSelector,
+    GlAvatar,
+    GlCollapsibleListbox,
+    GlTruncate,
   },
   props: {
-    selectedProjects: {
-      type: Array,
+    headerText: {
+      type: String,
       required: false,
-      default: () => [],
+      default: __('Select a project'),
     },
-    maxListHeight: {
-      type: Number,
-      required: false,
-      default: 402,
-    },
-    projectQuery: {
+    selectedProject: {
       type: Object,
       required: false,
-      default: () => getUsersProjects,
+      default: null,
+    },
+    disabled: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   data() {
@@ -79,6 +93,24 @@ export default {
     },
     isSearchQueryTooShort() {
       return this.searchQuery.length < this.$options.MINIMUM_QUERY_LENGTH;
+    },
+    selected() {
+      return this.selectedProject?.id || '';
+    },
+    toggleText() {
+      return this.selectedProject?.name || this.$options.i18n.defaultPlaceholder;
+    },
+    listBoxItems() {
+      return this.projects.map(({ id, name, ...project }) => ({
+        ...project,
+        value: id,
+        text: name,
+      }));
+    },
+    searchSuggestionText() {
+      return this.isSearchQueryTooShort
+        ? this.$options.i18n.searchText
+        : this.$options.i18n.noResultsText;
     },
   },
   methods: {
@@ -124,22 +156,54 @@ export default {
     setErrorType(errorType) {
       this.errorType = errorType;
     },
+    selectProject(projectId) {
+      const project = this.projects.find(({ id }) => projectId === id);
+      this.$emit('projectClicked', project);
+    },
   },
 };
 </script>
 
 <template>
-  <project-selector
-    class="gl-w-full"
-    :max-list-height="maxListHeight"
-    :project-search-results="projects"
-    :selected-projects="selectedProjects"
-    :show-loading-indicator="isLoadingFirstResult"
-    :show-minimum-search-query-message="isErrorOfType($options.QUERY_TOO_SHORT_ERROR)"
-    :show-no-results-message="isErrorOfType($options.NO_RESULTS_ERROR)"
-    :show-search-error-message="isErrorOfType($options.SEARCH_ERROR)"
-    @searched="fetchProjects"
-    @projectClicked="$emit('projectClicked', $event)"
-    @bottomReached="fetchNextPage"
-  />
+  <gl-collapsible-listbox
+    block
+    fluid-width
+    searchable
+    infinite-scroll
+    is-check-centered
+    :disabled="disabled"
+    :header-text="headerText"
+    :loading="isLoadingFirstResult"
+    :no-results-text="searchSuggestionText"
+    :searching="isSearchingProjects"
+    :selected="selected"
+    :items="listBoxItems"
+    :toggle-text="toggleText"
+    @bottom-reached="fetchNextPage"
+    @search="fetchProjects"
+    @select="selectProject"
+  >
+    <template #list-item="{ item }">
+      <div class="gl-display-flex gl-flex-nowrap gl-gap-3 gl-align-items-center">
+        <gl-avatar
+          fallback-on-error
+          :shape="$options.AVATAR_SHAPE_OPTION_RECT"
+          :entity-name="item.text"
+          :alt="item.text"
+          :src="item.text[0]"
+          :size="32"
+        />
+        <gl-truncate :text="item.nameWithNamespace" with-tooltip />
+      </div>
+    </template>
+    <template #footer>
+      <div
+        v-if="isErrorOfType($options.SEARCH_ERROR)"
+        data-testid="error-message"
+        class="gl-text-red-500 gl-pl-7 gl-pr-3 gl-pb-3 js-search-error-message"
+      >
+        {{ $options.i18n.errorNetworkMessage }}
+      </div>
+    </template>
+  </gl-collapsible-listbox>
 </template>
