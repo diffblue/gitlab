@@ -18,14 +18,14 @@
     path: /logs
     method: POST
     body:
-      details.add: group
+      details.custom_message: Added group
       details.target_type: Group
       entity_type: Group
-      event_type: audit_operation
+      event_type: group_created
       target_type: Group
     headers:
       Content-Type: application/x-www-form-urlencoded
-      X-Gitlab-Audit-Event-Type: audit_operation
+      X-Gitlab-Audit-Event-Type: group_created
   response:
     status: 200
 - request:
@@ -110,5 +110,34 @@
     headers:
       Content-Type: application/x-www-form-urlencoded
       X-Gitlab-Audit-Event-Type: remove_ssh_key
+  response:
+    status: 200
+- request:
+    path: /logs
+    method: POST
+    body:
+      details.target_type: 'AuditEvents::InstanceExternalAuditEventDestination'
+      entity_path: gitlab_instance
+      entity_type: 'Gitlab::Audit::InstanceScope'
+      event_type: create_instance_event_streaming_destination
+      target_type: 'AuditEvents::InstanceExternalAuditEventDestination'
+    headers:
+      Content-Type: application/x-www-form-urlencoded
+      X-Gitlab-Audit-Event-Type: create_instance_event_streaming_destination
+  response:
+    status: 200
+- request:
+    path: /logs
+    method: POST
+    body:
+      details.add: email
+      details.custom_message: Email created
+      details.target_type: Email
+      entity_type: User
+      event_type: email_created
+      target_type: Email
+    headers:
+      Content-Type: application/x-www-form-urlencoded
+      X-Gitlab-Audit-Event-Type: email_created
   response:
     status: 200

@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-# We toggle feature flags and create setup used by a few tests so we use instance variables to avoid needlessly creating
-# and destroying the same setup, or flipping a feature flag (which causes flakiness if GitLab doesn't immediately use
-# the new flag setting)
+# The Smocker service is used by a few tests so the instance variable avoids needless creating and destroying
 # rubocop: disable RSpec/InstanceVariable
 module QA
   # Redefine the constant because it's too long when it's used in the spec
@@ -11,27 +9,16 @@ module QA
     'Govern',
     :requires_admin,
     :skip_live_env, # We need to enable local requests to use a local mock streaming server
-    product_group: :compliance,
-    feature_flag: {
-      name: 'ff_external_audit_events',
-      scope: :global,
-      rollout_issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/393772'
-    },
-    quarantine: {
-      type: :flaky,
-      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/416821'
-    }
+    product_group: :compliance
   ) do
     describe 'Instance audit event streaming' do
       let(:target_details) { entity_path }
 
       before(:context) do
-        enable_local_requests
+        # We use the time at the start of the test to limit the results we get from the audit events API
+        @test_start = DateTime.now
 
-        @feature_flag = 'ff_external_audit_events'
-        @flag_enabled = Runtime::Feature.enabled?(@feature_flag)
-        # Enable again even if already enabled just in case it was recently toggled
-        Runtime::Feature.enable(:ff_external_audit_events)
+        enable_local_requests
 
         # Set up smocker as a mock streaming event destination
         @stream_destination = StreamDestination.fabricate_via_api!(!@flag_enabled) do |resource|
@@ -43,7 +30,6 @@ module QA
       after(:context) do
         Service::DockerRun::Smocker.teardown!
         @stream_destination.remove_via_api! if @stream_destination
-        Runtime::Feature.disable(:ff_external_audit_events) unless @flag_enabled
 
         restore_local_requests
       end
@@ -55,10 +41,10 @@ module QA
         Service::DockerRun::Smocker.logs
       end
 
-      shared_examples 'streamed events' do |event_type, testcase|
+      shared_examples 'streamed events' do |event_type, entity_type, testcase|
         it 'received by an external server', testcase: testcase do
           entity_path # Call to trigger the event before we can check it was received
-          event_record = wait_for_event(event_type, entity_path)
+          event_record = wait_for_event(event_type, entity_type, entity_path)
           verify_response = mock_service.verify
 
           # Most of the verification is done via the last `expect` statement below using
@@ -85,7 +71,7 @@ module QA
             name: "audit-event-streaming-#{Faker::Alphanumeric.alphanumeric(number: 8)}").full_path
         end
 
-        it_behaves_like 'streamed events', :audit_operation, 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/415874'
+        it_behaves_like 'streamed events', :group_created, 'Group', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/415874'
       end
 
       context 'when a project is created' do
@@ -97,13 +83,13 @@ module QA
           end.full_path
         end
 
-        it_behaves_like 'streamed events', :project_created, 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/415875'
+        it_behaves_like 'streamed events', :project_created, 'Project', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/415875'
       end
 
       context 'when a user is created' do
         let(:entity_path) { Resource::User.fabricate_via_api!.username }
 
-        it_behaves_like 'streamed events', :user_created, 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/415876'
+        it_behaves_like 'streamed events', :user_created, 'User', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/415876'
       end
 
       context 'when a repository is cloned via SSH' do
@@ -127,7 +113,7 @@ module QA
           project.full_path
         end
 
-        it_behaves_like 'streamed events', :repository_git_operation, 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/415972'
+        it_behaves_like 'streamed events', :repository_git_operation, 'Project', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/415972'
       end
     end
 
@@ -171,21 +157,29 @@ module QA
 
     # Wait for the mock service to receive a request with the specified event type
     #
-    # @param event_type the event to wait for
-    # @param entity_path the event entity identifier
+    # @param [Symbol] event_type the event to wait for
+    # @param [String] entity_type the entity type of the event
+    # @param [String] entity_path the event entity identifier
+    # @param [Integer] wait the amount of time to wait for the event to be received
+    # @param [Boolean] raise_on_failure raise an error if the event is not received
     # @return [Hash] the request
-    def wait_for_event(event_type, entity_path = nil, wait: 10, raise_on_failure: true)
-      event_request = Support::Waiter.wait_until(max_duration: wait, sleep_interval: 1, raise_on_failure: false) do
+    def wait_for_event(event_type, entity_type, entity_path = nil, wait: 10, raise_on_failure: true)
+      event = Support::Waiter.wait_until(max_duration: wait, sleep_interval: 1, raise_on_failure: raise_on_failure) do
         mock_service.history.find do |record|
-          record.request[:body][:event_type] == event_type.to_s &&
-            (!entity_path || record.request[:body][:entity_path] == entity_path)
+          body = record.request[:body]
+          body&.dig(:event_type) == event_type.to_s && body&.dig(:entity_type) == entity_type &&
+            (!entity_path || body&.dig(:entity_path) == entity_path)
         end&.request
       end
-      return event_request unless event_request.nil? && raise_on_failure
+      return event unless event.nil? && raise_on_failure
+
+      # Get the audit events from the API to help troubleshoot failures
+      audit_events = EE::Resource::AuditEvents.all(created_after: @test_start.iso8601, entity_type: entity_type)
 
       raise QA::Support::Repeater::WaitExceededError,
         "An event with type '#{event_type}'#{" and entity_path '#{entity_path}'" if entity_path} was not received. " \
-        "Event history: #{mock_service.stringified_history}"
+        "Event history: #{mock_service.stringified_history}. " \
+        "Audit events with entity_type '#{entity_type}': #{audit_events}"
     end
 
     # Wait for GitLab to be ready to start streaming audit events
@@ -193,7 +187,7 @@ module QA
       # Create and then remove an SSH key and confirm that the mock streaming server received the event
       Support::Waiter.wait_until(max_duration: 60, sleep_interval: 1, message: 'Waiting for streaming to start') do
         Resource::SSHKey.fabricate_via_api!.remove_via_api!
-        wait_for_event(:remove_ssh_key, wait: 2, raise_on_failure: false)
+        wait_for_event(:remove_ssh_key, 'User', wait: 2, raise_on_failure: false)
       end
     rescue QA::Support::Repeater::WaitExceededError
       # If there is a failure this will output the logs from the smocker container (at the debug log level)
