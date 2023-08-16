@@ -90,14 +90,15 @@ export default {
 };
 </script>
 <template>
-  <div class="gl-display-flex">
-    <gl-empty-state
-      v-if="isEmpty"
-      :title="$options.i18n.emptyStateTitle"
-      :description="$options.i18n.emptyStateDescription"
-      :primary-button-text="$options.i18n.emptyStateButtonText"
-      :primary-button-link="ciCatalogPath"
-    />
+  <div>
+    <div v-if="isEmpty" class="gl-display-flex">
+      <gl-empty-state
+        :title="$options.i18n.emptyStateTitle"
+        :description="$options.i18n.emptyStateDescription"
+        :primary-button-text="$options.i18n.emptyStateButtonText"
+        :primary-button-link="ciCatalogPath"
+      />
+    </div>
     <div v-else class="gl-display-flex">
       <div class="gl-w-70p">
         <ci-resource-header-skeleton-loader
