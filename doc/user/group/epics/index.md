@@ -4,7 +4,7 @@ group: Product Planning
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# Epics **(PREMIUM)**
+# Epics **(PREMIUM ALL)**
 
 When [issues](../../project/issues/index.md) share a theme across projects and
 milestones, you can manage them by using epics.
