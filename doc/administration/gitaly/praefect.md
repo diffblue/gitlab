@@ -671,8 +671,6 @@ Updates to example must be made at:
    }
    ```
 
-1. Enable [distribution of reads](index.md#distributed-reads).
-
 1. Save the changes to `/etc/gitlab/gitlab.rb` and
    [reconfigure Praefect](../restart_gitlab.md#reconfigure-a-linux-package-installation):
 
