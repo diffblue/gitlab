@@ -79,14 +79,14 @@ export default {
 
     const filters = {
       [SEVERITY]: severityLevels.length ? severityLevels : null,
-      [AGE]: Object.keys(vulnerabilityAge || {}).length ? vulnerabilityAge : null,
+      [AGE]: Boolean(Object.keys(vulnerabilityAge || {}).length),
       [NEWLY_DETECTED]: vulnerabilityStateGroups[NEWLY_DETECTED] || null,
       [PREVIOUSLY_EXISTING]: vulnerabilityStateGroups[PREVIOUSLY_EXISTING] || null,
       [FALSE_POSITIVE]: vulnerabilityAttributes[FALSE_POSITIVE] !== undefined,
       [FIX_AVAILABLE]: vulnerabilityAttributes[FIX_AVAILABLE] !== undefined,
     };
-    filters[STATUS] = filters[NEWLY_DETECTED] && filters[PREVIOUSLY_EXISTING] ? [] : null;
-    filters[ATTRIBUTE] = filters[FALSE_POSITIVE] && filters[FIX_AVAILABLE] ? [] : null;
+    filters[STATUS] = Boolean(filters[NEWLY_DETECTED] && filters[PREVIOUSLY_EXISTING]);
+    filters[ATTRIBUTE] = Boolean(filters[FALSE_POSITIVE] && filters[FIX_AVAILABLE]);
 
     return {
       filters,
@@ -203,8 +203,9 @@ export default {
       if (filter === STATUS) {
         const statusKey = this.filters[NEWLY_DETECTED] ? PREVIOUSLY_EXISTING : NEWLY_DETECTED;
         this.filters[statusKey] = [];
-        this.filters[STATUS] =
-          this.filters[NEWLY_DETECTED] && this.filters[PREVIOUSLY_EXISTING] ? [] : null;
+        this.filters[STATUS] = Boolean(
+          this.filters[NEWLY_DETECTED] && this.filters[PREVIOUSLY_EXISTING],
+        );
       } else if (filter === ATTRIBUTE) {
         const attributeKey =
           Object.keys(this.vulnerabilityAttributes)[0] === FIX_AVAILABLE
@@ -227,7 +228,7 @@ export default {
       this.emitSeverityFilterChanges();
     },
     removeAgeFilter() {
-      this.filters[AGE] = null;
+      this.filters[AGE] = false;
       this.vulnerabilityAge = null;
     },
     removeStatusFilter(filter) {
@@ -237,15 +238,15 @@ export default {
     },
     removeAttributesFilter(attribute) {
       const { [attribute]: deletedAttribute, ...otherAttributes } = this.vulnerabilityAttributes;
-      this.filters[attribute] = null;
+      this.filters[attribute] = false;
       this.vulnerabilityAttributes = otherAttributes;
       this.updateCombinedFilters();
     },
     updateCombinedFilters() {
       this.filters = {
         ...this.filters,
-        [STATUS]: this.filters[NEWLY_DETECTED] && this.filters[PREVIOUSLY_EXISTING] ? [] : null,
-        [ATTRIBUTE]: this.filters[FIX_AVAILABLE] && this.filters[FALSE_POSITIVE] ? [] : null,
+        [STATUS]: Boolean(this.filters[NEWLY_DETECTED] && this.filters[PREVIOUSLY_EXISTING]),
+        [ATTRIBUTE]: this.filters[FIX_AVAILABLE] && this.filters[FALSE_POSITIVE],
       };
     },
     removeFilterFromRule(filter) {

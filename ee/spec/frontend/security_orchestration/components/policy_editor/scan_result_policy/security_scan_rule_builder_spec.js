@@ -252,14 +252,14 @@ describe('SecurityScanRuleBuilder', () => {
     factory({ initRule: UPDATED_RULE });
 
     expect(findScanFilterSelector().props('selected')).toEqual({
-      age: { operator: 'less_than', value: 1, interval: 'day' },
+      age: true,
       previously_existing: ['detected'],
       newly_detected: null,
       severity: ['high'],
-      status: null,
+      status: false,
       false_positive: true,
       fix_available: false,
-      attribute: null,
+      attribute: false,
     });
   });
 
@@ -274,27 +274,27 @@ describe('SecurityScanRuleBuilder', () => {
     expect(statusFilters.at(0).props('filter')).toEqual(NEWLY_DETECTED);
     expect(statusFilters.at(1).props('filter')).toEqual(PREVIOUSLY_EXISTING);
     expect(findScanFilterSelector().props('selected')).toEqual({
-      age: { operator: 'less_than', value: 1, interval: 'day' },
+      age: true,
       previously_existing: ['detected'],
       newly_detected: [],
       severity: ['high'],
-      status: [],
+      status: true,
       false_positive: true,
       fix_available: false,
-      attribute: null,
+      attribute: false,
     });
 
     await statusFilters.at(1).vm.$emit('remove', NEWLY_DETECTED);
 
     expect(findScanFilterSelector().props('selected')).toEqual({
-      age: { operator: 'less_than', value: 1, interval: 'day' },
+      age: true,
       newly_detected: null,
       previously_existing: ['detected'],
       severity: ['high'],
-      status: null,
+      status: false,
       false_positive: true,
       fix_available: false,
-      attribute: null,
+      attribute: false,
     });
   });
 
