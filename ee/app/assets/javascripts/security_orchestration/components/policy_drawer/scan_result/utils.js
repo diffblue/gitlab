@@ -13,6 +13,8 @@ import {
   NEEDS_TRIAGE_PLURAL,
   APPROVAL_VULNERABILITY_STATE_GROUPS,
   APPROVAL_VULNERABILITY_STATES_FLAT,
+  FIX_AVAILABLE,
+  FALSE_POSITIVE,
 } from '../../policy_editor/scan_result_policy/scan_filters/constants';
 import { LICENSE_FINDING, LICENSE_STATES } from '../../policy_editor/scan_result_policy/lib/rules';
 import { groupSelectedVulnerabilityStates } from '../../policy_editor/scan_result_policy/lib/vulnerability_states';
@@ -135,6 +137,30 @@ const humanizeVulnerabilityStates = (vulnerabilitiesStates) => {
       ];
     }, [])
     .join(divider);
+};
+
+/**
+ * Create a human-readable version of vulnerability attributes.
+ * Supported attributes must be included in VULNERABILITY_ATTRIBUTES mapping.
+ * @param {Object} vulnerabilityAttributes - Object containing applicable vulnerability attributes
+ * @returns {String}
+ */
+const humanizeVulnerabilityAttributes = (vulnerabilityAttributes) => {
+  const sentenceMap = {
+    [FIX_AVAILABLE]: new Map([
+      [true, s__('SecurityOrchestration|have a fix available')],
+      [false, s__('SecurityOrchestration|have no fix available')],
+    ]),
+    [FALSE_POSITIVE]: new Map([
+      [true, s__('SecurityOrchestration|are false positives')],
+      [false, s__('SecurityOrchestration|are not false positives')],
+    ]),
+  };
+  const sentence = Object.entries(vulnerabilityAttributes).map(([key, value]) => {
+    return sentenceMap[key].get(value);
+  });
+
+  return sentence.join(__(' and '));
 };
 
 /**
@@ -286,6 +312,12 @@ const humanizeRule = (rule) => {
 
   addCriteria(Object.keys(rule.vulnerability_age || {}).length, () =>
     humanizeVulnerabilityAge(rule.vulnerability_age),
+  );
+
+  addCriteria(Object.keys(rule.vulnerability_attributes || {}).length, () =>
+    sprintf(s__('SecurityOrchestration|Vulnerabilities %{vulnerabilityStates}.'), {
+      vulnerabilityStates: humanizeVulnerabilityAttributes(rule.vulnerability_attributes),
+    }),
   );
 
   return {
