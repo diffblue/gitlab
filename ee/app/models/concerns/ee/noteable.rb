@@ -13,18 +13,6 @@ module EE
       end
     end
 
-    override :note_etag_key
-    def note_etag_key
-      case self
-      when Epic
-        ::Gitlab::Routing.url_helpers.group_epic_notes_path(group, self)
-      when ::Vulnerability
-        ::Gitlab::Routing.url_helpers.project_security_vulnerability_notes_path(project, self)
-      else
-        super
-      end
-    end
-
     private
 
     override :synthetic_note_ids_relations

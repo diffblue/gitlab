@@ -15,7 +15,7 @@ module ResourceEvents
       )
       ResourceWeightEvent.id_in(ids).with_work_item.each(&:trigger_note_subscription_create)
 
-      resource.expire_note_etag_cache
+      resource.broadcast_notes_changed
 
       if resource.is_a?(WorkItem)
         Gitlab::UsageDataCounters::WorkItemActivityUniqueCounter.track_work_item_weight_changed_action(author: user)

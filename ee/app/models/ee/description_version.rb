@@ -40,7 +40,7 @@ module EE
 
       description_versions.update_all(deleted_at: Time.current)
 
-      issuable&.expire_note_etag_cache
+      issuable&.broadcast_notes_changed
     end
 
     def deleted?

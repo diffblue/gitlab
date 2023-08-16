@@ -9,12 +9,6 @@ module EE
 
           EE_ROUTE_DEFINITONS = [
             [
-              %r(^/groups/#{::Gitlab::PathRegex.full_namespace_route_regex}/-/epics/\d+/notes\z),
-              'epic_notes',
-              ::Groups::Epics::NotesController,
-              :index
-            ],
-            [
               %r(^/groups/#{::Gitlab::PathRegex.full_namespace_route_regex}/-/epics/\d+/realtime_changes\z),
               'epic_realtime_changes',
               ::Groups::EpicsController,
