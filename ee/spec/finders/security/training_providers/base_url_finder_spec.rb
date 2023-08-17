@@ -15,18 +15,18 @@ RSpec.describe Security::TrainingProviders::BaseUrlFinder do
   describe '#execute' do
     it 'raises an error if allowed_identifier_list is not implemented' do
       expect { finder.execute }.to raise_error(
-        'allowed_identifier_list must be overwritten to return allowed identifier list'
+        'allowed_identifier_list must be overwritten to return training url'
       )
     end
 
-    it 'raises an error if query_string is not implemented' do
+    it 'raises an error if full_url is not implemented' do
       allow_next_instance_of(described_class) do |instance|
         allow(instance).to receive(:allowed_identifier_list).and_return(['cwe'])
       end
 
       expect { finder.execute }.to raise_error(
         NotImplementedError,
-        'query_string must be overwritten to return training url query string'
+        'full_url must be overwritten to return training url'
       )
     end
 
