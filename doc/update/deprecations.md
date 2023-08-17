@@ -1052,6 +1052,22 @@ The GitLab [License Compliance](https://docs.gitlab.com/ee/user/compliance/licen
 
 <div class="deprecation breaking-change" data-milestone="16.3">
 
+### RSA key size limits
+
+<div class="deprecation-notes">
+- Announced in GitLab <span class="milestone">16.3</span>
+- Removal in GitLab <span class="milestone">16.3</span> ([breaking change](https://docs.gitlab.com/ee/update/terminology.html#breaking-change))
+- To discuss this change or learn more, see the [deprecation issue](https://gitlab.com/groups/gitlab-org/-/epics/11186).
+</div>
+
+Go versions 1.20.7 and later add a `maxRSAKeySize` constant that limits RSA keys to a maximum of 8192 bits. As a result, RSA keys larger than 8192 bits will no longer work with GitLab. Any RSA keys larger than 8192 bits must be regenerated at a smaller size.
+
+You might notice this issue because your logs include an error like `tls: server sent certificate containing RSA key larger than 8192 bits`. To test the length of your key, use this command: `openssl rsa -in <your-key-file> -text -noout | grep "Key:"`.
+
+</div>
+
+<div class="deprecation breaking-change" data-milestone="16.3">
+
 ### Twitter OmniAuth login option is removed from GitLab.com
 
 <div class="deprecation-notes">
