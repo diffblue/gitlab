@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { createMockSubscription } from 'mock-apollo-client';
 import { GlBadge, GlIcon, GlSkeletonLoader } from '@gitlab/ui';
@@ -15,6 +15,13 @@ Vue.use(VueApollo);
 jest.mock('~/alert');
 jest.mock('~/rest_api');
 
+const showToast = jest.fn();
+const mocks = {
+  $toast: {
+    show: showToast,
+  },
+};
+
 describe('AiSummary component', () => {
   let wrapper;
   let aiResponseSubscriptionHandler;
@@ -27,6 +34,8 @@ describe('AiSummary component', () => {
   const findBadge = () => wrapper.findComponent(GlBadge);
   const findIcon = (name) =>
     wrapper.findAllComponents(GlIcon).filter((icon) => icon.props().name === name);
+  const findCopyButton = () => wrapper.find('[data-testid="copy-ai-summary"]');
+  const findRemoveButton = () => wrapper.find('[data-testid="remove-ai-summary"]');
 
   const createWrapper = (props = { aiLoading: false }) => {
     window.gon = { current_user_id: userId };
@@ -43,6 +52,7 @@ describe('AiSummary component', () => {
       provide: {
         resourceGlobalId,
       },
+      mocks,
       propsData: props,
     });
   };
@@ -74,7 +84,7 @@ describe('AiSummary component', () => {
       aiResponseSubscriptionHandler.next({
         data: {
           aiCompletionResponse: {
-            responseBody: 'yay',
+            responseBody: '**yay**',
           },
         },
       });
@@ -100,6 +110,22 @@ describe('AiSummary component', () => {
     it('shows "Only visible to you"', () => {
       expect(findIcon('eye-slash').exists()).toBe(true);
       expect(wrapper.text()).toContain('Only visible to you');
+    });
+
+    it('can copy summary text to clipboard', () => {
+      expect(findCopyButton().attributes('data-clipboard-text')).toBe('**yay**');
+
+      findCopyButton().vm.$emit('action');
+
+      expect(showToast).toHaveBeenCalledWith('Copied');
+    });
+
+    it('can remove summary from button', async () => {
+      findRemoveButton().vm.$emit('action');
+
+      await nextTick();
+
+      expect(wrapper.text()).toBe('');
     });
   });
 });
