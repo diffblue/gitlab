@@ -493,6 +493,30 @@ RSpec.shared_examples 'an API endpoint for updating project approval rule' do
         expect(response).to have_gitlab_http_status(:ok)
       end
     end
+
+    context 'when approval rule is from scan result policy' do
+      let(:url) { "/projects/#{project.id}/approval_settings/#{scan_result_policy_rule.id}" }
+
+      shared_examples_for 'cannot update rule' do
+        it 'returns not_found' do
+          put api(url, user)
+
+          expect(response).to have_gitlab_http_status(:not_found)
+        end
+      end
+
+      context 'when report_type is scan_finding' do
+        let_it_be(:scan_result_policy_rule) { create(:approval_project_rule, :scan_finding, project: project) }
+
+        it_behaves_like 'cannot update rule'
+      end
+
+      context 'when report_type is license_scanning' do
+        let_it_be(:scan_result_policy_rule) { create(:approval_project_rule, :license_scanning, project: project) }
+
+        it_behaves_like 'cannot update rule'
+      end
+    end
   end
 
   shared_examples_for 'a user without access' do
@@ -572,6 +596,30 @@ RSpec.shared_examples 'an API endpoint for deleting project approval rule' do
       delete api(url, user)
 
       expect(response).to have_gitlab_http_status(:not_found)
+    end
+  end
+
+  context 'when approval rule is from scan result policy' do
+    let(:url) { "/projects/#{project.id}/approval_settings/#{scan_result_policy_rule.id}" }
+
+    shared_examples_for 'cannot delete rule' do
+      it 'returns not_found' do
+        delete api(url, user)
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+
+    context 'when report_type is scan_finding' do
+      let_it_be(:scan_result_policy_rule) { create(:approval_project_rule, :scan_finding, project: project) }
+
+      it_behaves_like 'cannot delete rule'
+    end
+
+    context 'when report_type is license_scanning' do
+      let_it_be(:scan_result_policy_rule) { create(:approval_project_rule, :license_scanning, project: project) }
+
+      it_behaves_like 'cannot delete rule'
     end
   end
 

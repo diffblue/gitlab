@@ -146,6 +146,19 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
     end
   end
 
+  describe '.not_from_scan_result_policy' do
+    it 'returns regular or any-approver rules' do
+      any_approver_rule = create(:approval_project_rule, rule_type: :any_approver)
+      regular_rule = create(:approval_project_rule)
+      create(:approval_project_rule, :license_scanning)
+      create(:approval_project_rule, :scan_finding)
+
+      expect(described_class.not_from_scan_result_policy).to(
+        contain_exactly(any_approver_rule, regular_rule)
+      )
+    end
+  end
+
   describe '#vulnerability_attribute_false_positive' do
     let(:rule) { build(:approval_project_rule, scan_result_policy_read: scan_result_policy) }
 

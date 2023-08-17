@@ -121,7 +121,7 @@ RSpec.describe API::ProjectApprovalRules, :aggregate_failures, feature_category:
 
       context 'report_approver rules' do
         let!(:report_approver_rule) do
-          create(:approval_project_rule, :license_scanning, project: project)
+          create(:approval_project_rule, :code_coverage, project: project)
         end
 
         it 'includes report_approver rules' do
@@ -131,6 +131,21 @@ RSpec.describe API::ProjectApprovalRules, :aggregate_failures, feature_category:
 
           expect(json.size).to eq(2)
           expect(json.map { |rule| rule['name'] }).to contain_exactly(rule.name, report_approver_rule.name)
+        end
+      end
+
+      context 'rules from scan result policy' do
+        let_it_be(:scan_finding_rule) do
+          create(:approval_project_rule, :scan_finding, project: project)
+        end
+
+        it 'returns 404' do
+          get api(url, developer)
+
+          json = json_response
+
+          expect(json.size).to eq(1)
+          expect(json.map { |rule| rule['name'] }).not_to include(scan_finding_rule.name)
         end
       end
     end
