@@ -1533,4 +1533,15 @@ RSpec.describe Epic, feature_category: :portfolio_management do
 
     it_behaves_like 'an exportable', restricted_association: :parent
   end
+
+  describe '#serialize_for_ai' do
+    let(:epic) { build(:epic) }
+    let(:user) { build(:user) }
+
+    it 'calls the serializations class' do
+      expect(::Gitlab::Llm::Serializers::EpicSerializer).to receive(:serialize)
+                                                               .with(user: user, epic: epic, content_limit: 100).once
+      epic.serialize_for_ai(user: user, content_limit: 100)
+    end
+  end
 end

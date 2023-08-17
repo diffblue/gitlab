@@ -710,6 +710,10 @@ module EE
       super + [:notes]
     end
 
+    def serialize_for_ai(user:, content_limit:)
+      ::Gitlab::Llm::Serializers::EpicSerializer.serialize(epic: self, user: user, content_limit: content_limit)
+    end
+
     private
 
     def validate_parent_epic

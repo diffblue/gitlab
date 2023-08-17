@@ -31,8 +31,8 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       end
       allow(Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor)
         .to receive(:new)
-        .with(context: context, options: anything)
-        .and_return(tool_double)
+              .with(context: context, options: anything)
+              .and_return(tool_double)
     end
 
     it 'executes associated tools and adds observations during the execution' do
@@ -95,14 +95,14 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
   describe '#prompt' do
     before do
       allow(agent).to receive(:provider_prompt_class)
-        .and_return(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
+                        .and_return(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
 
       Gitlab::Llm::Cache.new(user).add(request_id: 'uuid1', role: 'user', content: 'question 1')
       Gitlab::Llm::Cache.new(user).add(request_id: 'uuid1', role: 'assistant', content: 'response 1')
       # this should be ignored because response contains an error
       Gitlab::Llm::Cache.new(user).add(request_id: 'uuid2', role: 'user', content: 'question 2')
       Gitlab::Llm::Cache.new(user)
-        .add(request_id: 'uuid2', role: 'assistant', content: 'response 2', errors: ['error'])
+                        .add(request_id: 'uuid2', role: 'assistant', content: 'response 2', errors: ['error'])
       # this should be ignored because it doesn't contain response
       Gitlab::Llm::Cache.new(user).add(request_id: 'uuid3', role: 'user', content: 'question 3')
 
@@ -342,6 +342,95 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         let(:input) { input_template }
 
         it_behaves_like 'successful prompt processing'
+      end
+    end
+
+    context 'with predefined epic' do
+      let_it_be(:label) { create(:label, group: group, title: 'ai-framework') }
+      let_it_be(:epic) do
+        create(:epic, group: group, title: 'A testing epic for AI reliability',
+          description: 'This epic is about evaluating reliability of different AI prompts in chat',
+          labels: [label], created_at: 5.days.ago)
+      end
+
+      # rubocop: disable Layout/LineLength
+      where(:input_template, :tools, :answer_match) do
+        'Please summarize %<epic_identifier>s'                    | %w[EpicIdentifier ResourceReader] | //
+        'Can you list all labels on %{epic_identifier} epic?'     | %w[EpicIdentifier ResourceReader] | /ai-framework/
+        'How many days ago was %<epic_identifier>s epic created?' | %w[EpicIdentifier ResourceReader] | /5 days/
+
+        let(:input) { format(input_template, epic_identifier: epic.to_reference(full: true)) }
+
+        it_behaves_like 'successful prompt processing'
+        context 'with epic as resource' do
+          let(:resource) { epic }
+
+          # rubocop: disable Layout/LineLength
+          where(:input_template, :tools, :answer_match) do
+            'Can you list all labels on this epic?'       | %w[EpicIdentifier ResourceReader] | /ai-framework/
+            'How many days ago was current epic created?' | %w[EpicIdentifier ResourceReader] | /5 days/
+          end
+          # rubocop: enable Layout/LineLength
+
+          with_them do
+            let(:input) { input_template }
+
+            it_behaves_like 'successful prompt processing'
+          end
+        end
+
+        context 'with chat history' do
+          let_it_be(:epic2) do
+            create(
+              :epic,
+              group: group,
+              title: 'AI chat - send websocket subscription message also for user messages',
+              description: 'To make sure that new messages are propagated to all chat windows ' \
+                           '(e.g. if user has chat window open in multiple windows) we should send subscription ' \
+                           'message for user messages too (currently we send messages only for AI responses)'
+            )
+          end
+
+          let(:history) do
+            [
+              { role: 'user', content: "What is epic #{epic.to_reference(full: true)} about?" },
+              { role: 'assistant', content: "The summary of epic is:\n\n## Provider Comparison\n" \
+                                            "- Difficulty in evaluating which provider is better \n" \
+                                            "- Both providers have pros and cons" }
+            ]
+          end
+
+          before do
+            uuid = SecureRandom.uuid
+
+            history.each do |message|
+              Gitlab::Llm::Cache.new(user).add({ request_id: uuid, role: message[:role], content: message[:content] })
+            end
+          end
+
+          # rubocop: disable Layout/LineLength
+          where(:input_template, :tools, :answer_match) do
+            # evaluation of questions which involve processing of other resources is not reliable yet
+            # because both EpicIdentifider and JsonReader tools assume we work with single resource:
+            # EpicIdentifider overrides context.resource
+            # JsonReader takes resource from context
+            # So JsonReader twice with different action input
+            'Can you provide more details about that epic' | %w[EpicIdentifier ResourceReader] | /(reliability|providers)/
+            # Translation would have to be explicitly allowed in protmp rules first
+            # 'Can you translate your last answer to German?' | [] | /Anbieter/ # Anbieter == provider
+            'Can you reword your answer?' | [] | /provider/i
+          end
+          # rubocop: enable Layout/LineLength
+
+          with_them do
+            let(:input) do
+              format(input_template, epic_identifier: epic.to_reference(full: true),
+                epic_identifier2: epic2.to_reference(full: true))
+            end
+
+            it_behaves_like 'successful prompt processing'
+          end
+        end
       end
     end
 
