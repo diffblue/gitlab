@@ -116,8 +116,11 @@ export default {
 <template>
   <div
     ref="panelWrapper"
-    class="grid-stack-item-content gl-shadow-sm gl-rounded-small gl-p-4 gl-display-flex gl-flex-direction-column gl-bg-white"
-    :class="{ 'gl-border-t-2 gl-border-t-solid gl-border-red-500': showErrorState }"
+    class="grid-stack-item-content gl-border gl-rounded-small gl-p-4 gl-display-flex gl-flex-direction-column gl-bg-white"
+    :class="{
+      // TODO: simplify border colour classes once 'gl-border-t-red-500' is available: https://gitlab.com/gitlab-org/gitlab-ui/-/merge_requests/3628
+      'gl-border-t-2 gl-border-t-solid gl-border-red-500 gl-border-l-gray-100 gl-border-r-gray-100 gl-border-b-gray-100': showErrorState,
+    }"
   >
     <tooltip-on-truncate
       v-if="title"
@@ -127,7 +130,7 @@ export default {
       class="gl-pb-3 gl-text-truncate"
     >
       <gl-icon v-if="showErrorState" name="warning" class="gl-text-red-500" />
-      <strong>{{ title }}</strong>
+      <strong class="gl-text-gray-700">{{ title }}</strong>
     </tooltip-on-truncate>
     <div class="gl-overflow-y-auto gl-h-full" :class="{ 'gl--flex-center': loading }">
       <gl-loading-icon v-if="loading" size="lg" />
