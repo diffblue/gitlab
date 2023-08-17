@@ -28,6 +28,7 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     :admin_vulnerability
   ].freeze
   ALL_CUSTOMIZABLE_GROUP_PERMISSIONS = [
+    :read_dependency,
     :read_vulnerability,
     :admin_vulnerability
   ].freeze

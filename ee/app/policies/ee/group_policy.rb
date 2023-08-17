@@ -202,6 +202,13 @@ module EE
         ::Feature.enabled?(:custom_roles_on_groups, @subject.root_ancestor)
       end
 
+      desc "Custom role on group that enables read dependency"
+      condition(:role_enables_read_dependency) do
+        next unless @user.is_a?(User)
+
+        @user.custom_permission_for?(@subject, :read_dependency)
+      end
+
       desc "Custom role on group that enables read vulnerability"
       condition(:role_enables_read_vulnerability) do
         next unless @user.is_a?(User)
@@ -459,6 +466,10 @@ module EE
       rule { security_dashboard_enabled & developer }.policy do
         enable :read_group_security_dashboard
         enable :admin_vulnerability
+      end
+
+      rule { custom_roles_allowed & custom_roles_on_groups_allowed & role_enables_read_dependency }.policy do
+        enable :read_dependency
       end
 
       rule { custom_roles_allowed & custom_roles_on_groups_allowed & role_enables_read_vulnerability }.policy do
