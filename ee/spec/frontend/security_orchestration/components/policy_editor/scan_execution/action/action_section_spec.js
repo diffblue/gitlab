@@ -207,7 +207,7 @@ describe('PolicyActionBuilder', () => {
       it('displays the scan filter selector', () => {
         expect(findScanFilterSelector().props()).toMatchObject({
           filters: FILTERS,
-          selected: { [CI_VARIABLE]: null },
+          selected: { [CI_VARIABLE]: false },
         });
       });
 
