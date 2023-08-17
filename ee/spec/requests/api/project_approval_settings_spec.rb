@@ -120,7 +120,7 @@ RSpec.describe API::ProjectApprovalSettings, :aggregate_failures, feature_catego
 
       context 'report_approver rules' do
         let!(:report_approver_rule) do
-          create(:approval_project_rule, :license_scanning, project: project)
+          create(:approval_project_rule, :code_coverage, project: project)
         end
 
         it 'includes report_approver rules' do
