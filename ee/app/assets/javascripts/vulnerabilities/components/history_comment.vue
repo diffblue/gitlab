@@ -181,7 +181,7 @@ export default {
 <template>
   <history-comment-editor
     v-if="isEditingComment"
-    class="discussion-reply-holder"
+    class="discussion-reply-holder gl-pb-4 gl-px-5"
     :initial-comment="initialComment"
     :is-saving="isSavingComment"
     @onSave="saveComment"
@@ -198,7 +198,7 @@ export default {
     :action-buttons="actionButtons"
     icon-name="comment"
     icon-class="timeline-icon m-0"
-    class="m-3"
+    class="gl-p-5 gl-border-t gl-border-gray-50"
   >
     <div v-safe-html="noteHtml" class="md">
       <gl-loading-icon size="sm" />
@@ -206,17 +206,17 @@ export default {
 
     <template #right-content>
       <gl-button
-        ref="confirmDeleteButton"
         variant="danger"
         :loading="isDeletingComment"
+        data-testid="confirm-delete-button"
         @click="deleteComment"
       >
         {{ __('Delete') }}
       </gl-button>
       <gl-button
-        ref="cancelDeleteButton"
         class="ml-2"
         :disabled="isDeletingComment"
+        data-testid="cancel-delete-button"
         @click="cancelDeleteConfirmation"
       >
         {{ __('Cancel') }}
@@ -224,14 +224,13 @@ export default {
     </template>
   </event-item>
 
-  <div v-else class="discussion-reply-holder">
-    <button
-      ref="addCommentButton"
-      class="btn btn-text-field"
-      type="button"
+  <div v-else class="discussion-reply-holder gl-pb-4 gl-px-5">
+    <textarea
+      rows="1"
+      :placeholder="s__('vulnerability|Add a comment')"
+      class="reply-placeholder-text-field gl-font-regular!"
+      data-testid="add-comment-textarea"
       @focus="showCommentInput"
-    >
-      {{ s__('vulnerability|Add a comment') }}
-    </button>
+    ></textarea>
   </div>
 </template>

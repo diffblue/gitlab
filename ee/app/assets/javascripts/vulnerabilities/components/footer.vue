@@ -216,7 +216,7 @@ export default {
       :project-path="project.url"
       :help-path="vulnerability.relatedIssuesHelpPath"
     />
-    <div v-if="vulnerabilityDetectionData" class="notes" data-testid="detection-note">
+    <div v-if="vulnerabilityDetectionData" data-testid="detection-note">
       <div class="system-note gl-display-flex gl-align-items-center gl-p-0! gl-mt-6!">
         <div
           class="gl-float-left gl--flex-center gl-rounded-full gl-mt-n1 gl-ml-2 gl-w-6 gl-h-6 gl-bg-gray-50 gl-text-gray-600 gl-m-0!"
@@ -232,7 +232,7 @@ export default {
     </div>
     <hr />
     <gl-loading-icon v-if="discussionsLoading" />
-    <div v-else-if="discussions.length" class="notes discussion-body">
+    <div v-else-if="discussions.length">
       <history-entry
         v-for="discussion in discussions"
         :key="discussion.id"
