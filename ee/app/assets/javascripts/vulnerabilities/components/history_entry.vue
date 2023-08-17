@@ -39,7 +39,6 @@ export default {
     >
       <template #header-message>{{ systemNote.body }}</template>
     </event-item>
-    <hr v-if="comments.length" class="gl-m-0" />
     <history-comment
       v-for="comment in comments"
       ref="existingComment"

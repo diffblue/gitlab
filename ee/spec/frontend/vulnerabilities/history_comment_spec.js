@@ -1,4 +1,3 @@
-import { mount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import createNoteMutation from 'ee/security_dashboard/graphql/mutations/note_create.mutation.graphql';
@@ -7,6 +6,7 @@ import updateNoteMutation from 'ee/security_dashboard/graphql/mutations/note_upd
 import EventItem from 'ee/vue_shared/security_reports/components/event_item.vue';
 import HistoryComment from 'ee/vulnerabilities/components/history_comment.vue';
 import HistoryCommentEditor from 'ee/vulnerabilities/components/history_comment_editor.vue';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
@@ -48,7 +48,7 @@ describe('History Comment', () => {
       [destroyNoteMutation, destroyNoteMutationSpy],
     ]);
 
-    wrapper = mount(HistoryComment, {
+    wrapper = mountExtended(HistoryComment, {
       apolloProvider,
       provide: {
         vulnerabilityId: TEST_VULNERABILITY_ID,
@@ -75,19 +75,19 @@ describe('History Comment', () => {
       .mockResolvedValue(createMutationResponse({ queryName: UPDATE_NOTE, note }));
   });
 
-  const addCommentButton = () => wrapper.findComponent({ ref: 'addCommentButton' });
+  const addCommentTextarea = () => wrapper.findByTestId('add-comment-textarea');
   const commentEditor = () => wrapper.findComponent(HistoryCommentEditor);
   const eventItem = () => wrapper.findComponent(EventItem);
   const editButton = () => wrapper.find('[title="Edit Comment"]');
   const deleteButton = () => wrapper.find('[title="Delete Comment"]');
-  const confirmDeleteButton = () => wrapper.findComponent({ ref: 'confirmDeleteButton' });
-  const cancelDeleteButton = () => wrapper.findComponent({ ref: 'cancelDeleteButton' });
+  const confirmDeleteButton = () => wrapper.findByTestId('confirm-delete-button');
+  const cancelDeleteButton = () => wrapper.findByTestId('cancel-delete-button');
 
   // Check that the passed-in elements exist, and that everything else does not exist.
   const expectExists = (...expectedElements) => {
     const set = new Set(expectedElements);
 
-    expect(addCommentButton().exists()).toBe(set.has(addCommentButton));
+    expect(addCommentTextarea().exists()).toBe(set.has(addCommentTextarea));
     expect(commentEditor().exists()).toBe(set.has(commentEditor));
     expect(eventItem().exists()).toBe(set.has(eventItem));
     expect(editButton().exists()).toBe(set.has(editButton));
@@ -96,28 +96,28 @@ describe('History Comment', () => {
     expect(cancelDeleteButton().exists()).toBe(set.has(cancelDeleteButton));
   };
 
-  const expectAddCommentView = () => expectExists(addCommentButton);
+  const expectAddCommentView = () => expectExists(addCommentTextarea);
   const expectExistingCommentView = () => expectExists(eventItem, editButton, deleteButton);
   const expectEditCommentView = () => expectExists(commentEditor);
   const expectDeleteConfirmView = () => {
     expectExists(eventItem, confirmDeleteButton, cancelDeleteButton);
   };
 
-  // Either the add comment button or the edit button will exist, but not both at the same time.
-  // If the add comment button exists we focus it, otherwise we click the edit button.
-  const showEditView = async () => {
-    if (addCommentButton().exists()) {
-      addCommentButton().trigger('focus');
-    } else {
-      editButton().vm.$emit('click');
+  // Either the add comment textarea or the edit button will exist, but not both at the same time.
+  // If the add comment textarea exists we focus it, otherwise we click the edit button.
+  const showEditView = () => {
+    if (addCommentTextarea().exists()) {
+      return addCommentTextarea().trigger('focus');
     }
 
-    await nextTick();
+    editButton().vm.$emit('click');
+    return nextTick();
   };
 
   const editAndSaveNewContent = async (content) => {
     await showEditView();
     commentEditor().vm.$emit('onSave', content);
+    return nextTick();
   };
 
   afterEach(() => {
@@ -131,17 +131,17 @@ describe('History Comment', () => {
       expectAddCommentView();
     });
 
-    it('shows the comment editor when the add comment button is focused', () => {
-      return showEditView().then(() => {
-        expectEditCommentView();
-        expect(commentEditor().props('initialComment')).toBe('');
-      });
+    it('shows the comment editor when the add comment button is focused', async () => {
+      await showEditView();
+
+      expectEditCommentView();
+      expect(commentEditor().props('initialComment')).toBe('');
     });
 
     it('shows the add comment button when the cancel button is clicked in the comment editor', async () => {
       await showEditView();
-      commentEditor().vm.$emit('onCancel');
-      await nextTick();
+      await commentEditor().vm.$emit('onCancel');
+
       expectAddCommentView();
     });
   });
@@ -165,24 +165,22 @@ describe('History Comment', () => {
 
     it('shows the comment when the cancel button is clicked in the comment editor', async () => {
       await showEditView();
-      commentEditor().vm.$emit('onCancel');
-      await nextTick();
+      await commentEditor().vm.$emit('onCancel');
+
       expectExistingCommentView();
       expect(eventItem().element.innerHTML).toContain(note.bodyHtml);
     });
 
     it('shows the delete confirmation buttons when the delete button is clicked', async () => {
-      deleteButton().trigger('click');
-      await nextTick();
+      await deleteButton().trigger('click');
+
       expectDeleteConfirmView();
     });
 
     it('shows the comment when the cancel button is clicked on the delete confirmation', async () => {
-      deleteButton().trigger('click');
+      await deleteButton().trigger('click');
+      await cancelDeleteButton().trigger('click');
 
-      await nextTick();
-      cancelDeleteButton().trigger('click');
-      await nextTick();
       expectExistingCommentView();
       expect(eventItem().element.innerHTML).toContain(note.bodyHtml);
     });
@@ -222,7 +220,6 @@ describe('History Comment', () => {
       createWrapper({ propsData });
 
       await editAndSaveNewContent('new comment');
-      await nextTick();
 
       expect(commentEditor().props('isSaving')).toBe(true);
     });
@@ -284,12 +281,10 @@ describe('History Comment', () => {
         propsData: { comment: note },
       });
 
-      deleteButton().trigger('click');
+      await deleteButton().trigger('click');
 
-      await nextTick();
-      confirmDeleteButton().trigger('click');
+      await confirmDeleteButton().trigger('click');
 
-      await nextTick();
       expect(confirmDeleteButton().props('loading')).toBe(true);
       expect(cancelDeleteButton().props('disabled')).toBe(true);
 
@@ -300,8 +295,7 @@ describe('History Comment', () => {
     it('sends mutation to delete note', async () => {
       createWrapper({ propsData: { comment: note } });
 
-      deleteButton().trigger('click');
-      await nextTick();
+      await deleteButton().trigger('click');
 
       confirmDeleteButton().trigger('click');
       expect(destroyNoteMutationSpy).toHaveBeenCalledWith({
@@ -313,9 +307,8 @@ describe('History Comment', () => {
       destroyNoteMutationSpy.mockResolvedValue({ errors: ['Some domain specific error'] });
       createWrapper({ propsData: { comment: note } });
 
-      deleteButton().trigger('click');
+      await deleteButton().trigger('click');
 
-      await nextTick();
       confirmDeleteButton().trigger('click');
 
       await waitForPromises();
@@ -329,9 +322,8 @@ describe('History Comment', () => {
       destroyNoteMutationSpy.mockRejectedValue(new Error('Some top-level error'));
       createWrapper({ propsData: { comment: note } });
 
-      deleteButton().trigger('click');
+      await deleteButton().trigger('click');
 
-      await nextTick();
       confirmDeleteButton().trigger('click');
 
       await waitForPromises();
