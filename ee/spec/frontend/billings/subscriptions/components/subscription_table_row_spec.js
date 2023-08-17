@@ -70,7 +70,7 @@ describe('subscription table row', () => {
 
   const findColumnLabelAndTitle = (columnWrapper) => {
     const label = columnWrapper.find('[data-testid="property-label"]');
-    const value = columnWrapper.find('[data-testid="property-value"]');
+    const value = columnWrapper.find('.property-value');
 
     return expect.objectContaining({
       label: label.text(),
@@ -115,9 +115,7 @@ describe('subscription table row', () => {
     it('should append the "number" css class to property value in "Column A"', () => {
       const currentCol = findContentCells().at(0);
 
-      expect(
-        currentCol.find('[data-testid="property-value"]').element.classList.contains('number'),
-      ).toBe(true);
+      expect(currentCol.find('.property-value').element.classList.contains('number')).toBe(true);
     });
 
     it('should render an info icon in "Column B"', () => {
@@ -209,7 +207,7 @@ describe('subscription table row', () => {
     it('renders a dash when the value is zero', () => {
       createComponent({ props: { isFreePlan: true, columns: [dateColumn] } });
 
-      expect(wrapper.find('[data-testid="property-value"]').text()).toBe('-');
+      expect(wrapper.find('.property-value').text()).toBe('-');
     });
   });
 
@@ -232,7 +230,7 @@ describe('subscription table row', () => {
       const outputDate = dateInWords(new Date(d[0], d[1] - 1, d[2]));
 
       expect(currentCol.find('[data-testid="property-label"]').text()).toMatch(dateColumn.label);
-      expect(currentCol.find('[data-testid="property-value"]').text()).toMatch(outputDate);
+      expect(currentCol.find('.property-value').text()).toMatch(outputDate);
     });
   });
 

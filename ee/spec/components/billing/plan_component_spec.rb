@@ -59,8 +59,8 @@ RSpec.describe Billing::PlanComponent, :aggregate_failures, type: :component, fe
       expect(page).to have_link('Upgrade to Premium', href: '_purchase_url_')
     end
 
-    it 'adds qa selector to cta link' do
-      css = "[data-track-label='plan_cta'][data-qa-selector='upgrade_to_#{plan_name}']" # rubocop:disable QA/SelectorUsage
+    it 'adds testid selector to cta link' do
+      css = "[data-track-label='plan_cta'][data-testid='upgrade-to-#{plan_name}']"
 
       expect(page).to have_css(css)
     end
@@ -84,8 +84,8 @@ RSpec.describe Billing::PlanComponent, :aggregate_failures, type: :component, fe
       expect(page).to have_link('Upgrade to Ultimate', href: '_purchase_url_')
     end
 
-    it 'adds qa selector to cta link' do
-      css = "[data-track-label='plan_cta'][data-qa-selector='upgrade_to_#{plan_name}']" # rubocop:disable QA/SelectorUsage
+    it 'adds testid selector to cta link' do
+      css = "[data-track-label='plan_cta'][data-testid='upgrade-to-#{plan_name}']"
 
       expect(page).to have_css(css)
     end

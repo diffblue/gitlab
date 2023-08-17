@@ -3,7 +3,7 @@ import { GlIcon, GlButton } from '@gitlab/ui';
 import { TABLE_TYPE_DEFAULT } from 'ee/billings/constants';
 import { dateInWords } from '~/lib/utils/datetime_utility';
 import Popover from '~/vue_shared/components/help_popover.vue';
-import { convertToSnakeCase } from '~/lib/utils/text_utility';
+import { slugify } from '~/lib/utils/text_utility';
 
 export default {
   name: 'SubscriptionTableRow',
@@ -70,8 +70,8 @@ export default {
     isSeatsUsageButtonShown(col) {
       return this.billableSeatsHref && col.id === 'seatsInUse';
     },
-    qaSelectorValue(col) {
-      return convertToSnakeCase(col?.label ?? '');
+    testIdSelectorValue(col) {
+      return slugify(col?.label ?? '');
     },
   },
   TABLE_TYPE_DEFAULT,
@@ -101,9 +101,8 @@ export default {
           <popover v-if="col.popover" :options="getPopoverOptions(col)" />
         </span>
         <p
-          data-testid="property-value"
           class="property-value gl-mt-2 gl-mb-0 gl-flex-grow-1"
-          :data-qa-selector="qaSelectorValue(col)"
+          :data-testid="testIdSelectorValue(col)"
           :class="[col.colClass ? col.colClass : '']"
         >
           {{ getDisplayValue(col) }}
@@ -112,7 +111,6 @@ export default {
           v-if="isSeatsUsageButtonShown(col)"
           :href="billableSeatsHref"
           data-testid="seats-usage-button"
-          data-qa-selector="see_seats_usage"
           size="small"
           class="gl-mt-3"
           >{{ s__('SubscriptionTable|See usage') }}</gl-button

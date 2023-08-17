@@ -177,11 +177,7 @@ export default {
     >
       <template #header>
         <div class="gl-new-card-title-wrapper">
-          <h5
-            class="gl-new-card-title"
-            data-testid="subscription-header"
-            data-qa-selector="subscription_header"
-          >
+          <h5 class="gl-new-card-title" data-testid="subscription-header">
             {{ subscriptionHeader }}
           </h5>
         </div>
@@ -200,8 +196,7 @@ export default {
           <gl-button
             v-if="canRefreshSeats"
             :class="{ 'gl-ml-2': buttons.length !== 0 }"
-            data-testid="refresh-seats-button"
-            data-qa-selector="refresh_seats"
+            data-testid="refresh-seats"
             size="small"
             @click="refreshSeats"
             >{{ s__('SubscriptionTable|Refresh Seats') }}</gl-button

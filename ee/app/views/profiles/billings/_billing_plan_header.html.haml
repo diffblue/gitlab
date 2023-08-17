@@ -5,7 +5,7 @@
     .avatar-container.s96.home-panel-avatar.gl-mr-3.float-none.gl-mb-6.gl-mt-2{ class: 'gl-mx-auto!' }
       = user_avatar_without_link(user: current_user, class: 'mb-3', size: 96)
 
-  %h4{ data: { qa_selector: 'billing_plan_header' } }
+  %h4
     = s_("BillingPlans|@%{user_name} you are currently using the %{plan_name}.").html_safe % { user_name: current_user.username, plan_name: current_plan.name }
 
   - if namespace.free_personal?

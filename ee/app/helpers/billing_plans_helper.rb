@@ -167,7 +167,7 @@ module BillingPlansHelper
       track_action: 'click_button',
       track_label: 'upgrade',
       track_property: plan.code,
-      qa_selector: "upgrade_to_#{plan.code}"
+      testid: "upgrade-to-#{plan.code}"
     }
   end
 
