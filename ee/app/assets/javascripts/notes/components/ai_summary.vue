@@ -1,5 +1,5 @@
 <script>
-import { GlBadge, GlIcon, GlLink } from '@gitlab/ui';
+import { GlBadge, GlIcon, GlLink, GlSkeletonLoader } from '@gitlab/ui';
 import { fetchPolicies } from '~/lib/graphql';
 import { __ } from '~/locale';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
@@ -8,6 +8,7 @@ import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completio
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { getMarkdown } from '~/rest_api';
 import { TYPENAME_USER } from '~/graphql_shared/constants';
+import { MAX_REQUEST_TIMEOUT } from 'ee/notes/constants';
 import { renderGFM } from '~/behaviors/markdown/render_gfm';
 
 export default {
@@ -15,6 +16,7 @@ export default {
     GlBadge,
     GlIcon,
     GlLink,
+    GlSkeletonLoader,
   },
   directives: { SafeHtml },
   inject: {
@@ -42,6 +44,14 @@ export default {
       };
     },
   },
+  mounted() {
+    this.timeout = window.setTimeout(this.handleError, MAX_REQUEST_TIMEOUT);
+  },
+  destroyed() {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+  },
   apollo: {
     $subscribe: {
       aiCompletionResponse: {
@@ -62,7 +72,7 @@ export default {
           }
 
           if (data?.aiCompletionResponse?.responseBody) {
-            this.$emit('set-ai-loading', false);
+            clearTimeout(this.timeout);
             const markdownResponse = await getMarkdown({
               text: data.aiCompletionResponse.responseBody,
               gfm: true,
@@ -70,6 +80,7 @@ export default {
             this.markdown = markdownResponse.data.html;
 
             this.$nextTick(() => {
+              this.$emit('set-ai-loading', false);
               renderGFM(this.$refs.markdown);
             });
           }
@@ -97,7 +108,7 @@ export default {
 </script>
 
 <template>
-  <div v-if="markdown" class="ai-summary-card gl-rounded-base gl-border gl-bg-gray-10">
+  <div v-if="markdown || aiLoading" class="ai-summary-card gl-rounded-base gl-border gl-bg-gray-10">
     <div class="gl-px-5 gl-py-4 gl-bg-white gl-rounded-top-base gl-border-b">
       <div class="gl-display-flex gl-align-items-center gl-gap-3">
         <gl-icon name="tanuki-ai" class="gl-text-purple-600" />
@@ -106,15 +117,19 @@ export default {
       </div>
     </div>
     <div class="gl-px-5 gl-py-4">
-      <div v-if="markdown" ref="markdown" v-safe-html="markdown" class="gl-mb-2"></div>
-      <div class="gl-text-secondary gl-font-sm">
-        <gl-icon name="eye-slash" class="gl-text-gray-400 gl-mr-2" :size="12" />{{
-          $options.i18n.onlyVisibleToYou
-        }}
-        &middot;
-        <gl-link :href="$options.feedback.link" target="_blank" class="gl-font-sm">{{
-          __('Leave feedback')
-        }}</gl-link>
+      <gl-skeleton-loader v-if="aiLoading" :lines="5" />
+      <div v-else>
+        <div v-if="markdown" ref="markdown" v-safe-html="markdown" class="gl-mb-2"></div>
+
+        <div class="gl-text-secondary gl-font-sm">
+          <gl-icon name="eye-slash" class="gl-text-gray-400 gl-mr-2" :size="12" />{{
+            $options.i18n.onlyVisibleToYou
+          }}
+          &middot;
+          <gl-link :href="$options.feedback.link" target="_blank" class="gl-font-sm">{{
+            __('Leave feedback')
+          }}</gl-link>
+        </div>
       </div>
     </div>
   </div>
