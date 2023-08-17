@@ -13,6 +13,7 @@ import projectBoardMembersQuery from '~/boards/graphql/project_board_members.que
 import actionsCE from '~/boards/stores/actions';
 import * as typesCE from '~/boards/stores/mutation_types';
 import { TYPENAME_ITERATION, TYPENAME_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
+import usersAutocompleteQuery from '~/graphql_shared/queries/users_autocomplete.query.graphql';
 import { getIdFromGraphQLId, convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPE_EPIC, WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import { fetchPolicies } from '~/lib/graphql';
@@ -647,6 +648,21 @@ export default {
     if (!query) {
       // eslint-disable-next-line @gitlab/require-i18n-strings
       throw new Error('Unknown board type');
+    }
+
+    if (gon.features?.newGraphqlUsersAutocomplete) {
+      return gqlClient
+        .query({
+          query: usersAutocompleteQuery,
+          variables: { ...variables, isProject: boardType === WORKSPACE_PROJECT },
+        })
+        .then(({ data }) => {
+          commit(types.RECEIVE_ASSIGNEES_SUCCESS, data[boardType]?.autocompleteUsers);
+        })
+        .catch((e) => {
+          commit(types.RECEIVE_ASSIGNEES_FAILURE);
+          throw e;
+        });
     }
 
     return gqlClient
