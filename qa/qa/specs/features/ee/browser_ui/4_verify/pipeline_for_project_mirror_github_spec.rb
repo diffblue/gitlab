@@ -59,7 +59,11 @@ module QA
 
       it(
         'user commits to GitHub triggers CI pipeline',
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347679'
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347679',
+        quarantine: {
+          type: :investigating,
+          issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/417675"
+        }
       ) do
         Page::Project::Menu.perform(&:go_to_pipelines)
         Page::Project::Pipeline::Index.perform do |index|
