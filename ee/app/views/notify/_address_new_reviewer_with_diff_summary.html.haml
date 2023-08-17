@@ -1,0 +1,4 @@
+- if diff_summary_available?(@merge_request, @previous_reviewers, @recipient)
+  %p
+    = html_escape(s_('Notify|%{name} requested a new review on %{mr_link}.')) % {name: sanitize_name(@updated_by_user.name), mr_link: merge_request_reference_link(@merge_request).html_safe}
+    = render 'notify/diff_summary'
