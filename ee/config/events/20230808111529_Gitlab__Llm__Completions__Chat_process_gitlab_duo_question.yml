@@ -1,0 +1,23 @@
+---
+description: This event represents a single tool used to answer a user question, on the span of a single request Id there can be multiple event records marking that array of tools was used to answer one question.
+category: Gitlab::Llm::Completions::Chat
+action: process_gitlab_duo_question
+label_description: Name of GitLab Duo tool used to answer user question
+property_description: Ai Action request Id that can be used to connect this event to others that happen when the request is resolved.
+value_description: Boolean flag indicating if chat response had status "ok"
+extra_properties:
+identifiers:
+- user
+- namespace
+product_section: data-science
+product_stage: modelops
+product_group: "group::ai framework"
+milestone: "16.3"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/128503
+distributions:
+  - ee
+tiers:
+  - premium
+  - ultimate
+
+
