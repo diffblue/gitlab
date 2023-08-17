@@ -323,7 +323,8 @@ export default {
       </router-link>
     </section>
     <div
-      class="grid-stack-container gl-mx-n5 gl-pl-2 gl-pr-2 gl-bg-gray-10 gl-border-t-1 gl-border-t-solid gl-border-t-gray-100"
+      class="grid-stack-container gl-mx-n5 gl-pl-2 gl-pr-2 gl-border-t-1 gl-border-t-solid gl-border-t-gray-100"
+      :class="{ 'gl-bg-gray-10': editing }"
     >
       <div class="grid-stack-container gl-display-flex">
         <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 gl-py-3">
