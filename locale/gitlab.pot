@@ -22820,7 +22820,7 @@ msgstr ""
 msgid "GroupsDropdown|Toggle edit mode"
 msgstr ""
 
-msgid "GroupsEmptyState|A group is a collection of several projects."
+msgid "GroupsEmptyState|A group is a collection of several projects"
 msgstr ""
 
 msgid "GroupsEmptyState|Create new project"
@@ -22832,7 +22832,7 @@ msgstr ""
 msgid "GroupsEmptyState|Groups are the best way to manage multiple projects and members."
 msgstr ""
 
-msgid "GroupsEmptyState|If you organize your projects under a group, it works like a folder."
+msgid "GroupsEmptyState|If you organize your projects under a group, it works like a folder. You can manage your group member's permissions and access to each project in the group."
 msgstr ""
 
 msgid "GroupsEmptyState|No archived projects."
@@ -22848,9 +22848,6 @@ msgid "GroupsEmptyState|No subgroups or projects."
 msgstr ""
 
 msgid "GroupsEmptyState|Projects are where you can store your code, access issues, wiki, and other features of Gitlab."
-msgstr ""
-
-msgid "GroupsEmptyState|You can manage your group member’s permissions and access to each project in the group."
 msgstr ""
 
 msgid "GroupsEmptyState|You do not have necessary permissions to create a subgroup or project in this group. Please contact an owner of this group to create a new subgroup or project."
