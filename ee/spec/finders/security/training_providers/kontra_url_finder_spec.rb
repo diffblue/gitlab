@@ -53,14 +53,14 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder do
   describe '#full_url' do
     context "when external_type is present in allowed list" do
       it 'returns full url path' do
-        expect(finder.full_url).to eq('example.com/?cwe=2')
+        expect(finder.full_url).to eq('https://example.com/?cwe=2')
       end
 
       context "when identifier contains CWE-{number} format" do
         let_it_be(:identifier) { create(:vulnerabilities_identifier, external_type: 'cwe', external_id: "CWE-2") }
 
         it 'returns full url path with proper mapping key' do
-          expect(finder.full_url).to eq('example.com/?cwe=2')
+          expect(finder.full_url).to eq('https://example.com/?cwe=2')
         end
       end
 
@@ -70,7 +70,7 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder do
         it 'returns full url path with the language parameter mapped' do
           expect(
             described_class.new(identifier.project, provider, identifier_external_id, language).full_url
-          ).to eq("example.com/?cwe=2&language=#{language}")
+          ).to eq("https://example.com/?cwe=2&language=#{language}")
         end
       end
     end
