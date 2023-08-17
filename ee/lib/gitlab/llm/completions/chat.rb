@@ -24,7 +24,7 @@ module Gitlab
 
           response = Gitlab::Llm::Chain::Agents::ZeroShot::Executor.new(
             user_input: options[:content],
-            tools: TOOLS,
+            tools: tools(user),
             context: context
           ).execute
 
@@ -38,6 +38,12 @@ module Gitlab
           ::Gitlab::Llm::GraphqlSubscriptionResponseService
             .new(user, resource, response_modifier, options: response_options)
             .execute
+        end
+
+        def tools(user)
+          tools = TOOLS.dup
+          tools << ::Gitlab::Llm::Chain::Tools::EpicIdentifier if Feature.enabled?(:chat_epic_identifier, user)
+          tools
         end
       end
     end

@@ -33,7 +33,8 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
       tools = [
         ::Gitlab::Llm::Chain::Tools::IssueIdentifier,
         ::Gitlab::Llm::Chain::Tools::JsonReader,
-        ::Gitlab::Llm::Chain::Tools::GitlabDocumentation
+        ::Gitlab::Llm::Chain::Tools::GitlabDocumentation,
+        ::Gitlab::Llm::Chain::Tools::EpicIdentifier
       ]
       expected_params = [
         user_input: content,
@@ -78,6 +79,35 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
       let(:expected_container) { nil }
 
       it_behaves_like 'success'
+    end
+
+    context 'when epic identifier flag is switched off' do
+      before do
+        stub_feature_flags(chat_epic_identifier: false)
+      end
+
+      it 'calls zero shot agent with tools without epic identifier' do
+        tools = [
+          ::Gitlab::Llm::Chain::Tools::JsonReader,
+          ::Gitlab::Llm::Chain::Tools::IssueIdentifier,
+          ::Gitlab::Llm::Chain::Tools::GitlabDocumentation
+        ]
+        expected_params = [
+          user_input: content,
+          tools: match_array(tools),
+          context: context
+        ]
+
+        expect_next_instance_of(::Gitlab::Llm::Chain::Agents::ZeroShot::Executor, *expected_params) do |instance|
+          expect(instance).to receive(:execute).and_return(answer)
+        end
+
+        expect(::Gitlab::Llm::Chain::GitlabContext).to receive(:new)
+          .with(current_user: user, container: expected_container, resource: resource, ai_request: ai_request)
+          .and_return(context)
+
+        subject
+      end
     end
   end
 end

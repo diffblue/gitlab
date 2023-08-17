@@ -61,6 +61,18 @@ module Gitlab
           end
           strong_memoize_attr :projects_from_context
 
+          def group_from_context
+            case context.container
+            when Group
+              context.container
+            when Project
+              context.container.group
+            when Namespaces::ProjectNamespace
+              context.container.parent
+            end
+          end
+          strong_memoize_attr :group_from_context
+
           private
 
           attr_reader :logger

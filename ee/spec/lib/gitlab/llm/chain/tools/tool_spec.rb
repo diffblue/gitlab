@@ -67,4 +67,45 @@ RSpec.describe Gitlab::Llm::Chain::Tools::Tool, feature_category: :shared do
       expect { subject.perform }.to raise_error(NotImplementedError)
     end
   end
+
+  describe '#group_from_context' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
+
+    it 'returns group if it is set as container' do
+      context = Gitlab::Llm::Chain::GitlabContext.new(
+        current_user: user,
+        container: group,
+        resource: user,
+        ai_request: ai_request_double,
+        tools_used: [Gitlab::Llm::Chain::Tools::IssueIdentifier]
+      )
+
+      expect(described_class.new(context: context, options: options).group_from_context).to eq(group)
+    end
+
+    it 'returns parent group if project is set as container' do
+      context = Gitlab::Llm::Chain::GitlabContext.new(
+        current_user: user,
+        container: project,
+        resource: user,
+        ai_request: ai_request_double,
+        tools_used: [Gitlab::Llm::Chain::Tools::IssueIdentifier]
+      )
+
+      expect(described_class.new(context: context, options: options).group_from_context).to eq(group)
+    end
+
+    it 'returns parent group if project is set as container' do
+      context = Gitlab::Llm::Chain::GitlabContext.new(
+        current_user: user,
+        container: project.project_namespace,
+        resource: user,
+        ai_request: ai_request_double,
+        tools_used: [Gitlab::Llm::Chain::Tools::IssueIdentifier]
+      )
+
+      expect(described_class.new(context: context, options: options).group_from_context).to eq(group)
+    end
+  end
 end
