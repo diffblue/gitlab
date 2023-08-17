@@ -23603,6 +23603,9 @@ msgstr ""
 msgid "IDE|This option is disabled because you don't have write permissions for the current branch."
 msgstr ""
 
+msgid "IMPORTANT: Use this setting only for VERY strict auditing purposes. When turned on, nobody will be able to remove the label from any merge requests after they are merged. In addition, nobody will be able to turn off this setting or delete this label."
+msgstr ""
+
 msgid "INFO: Your SSH key has expired. Please generate a new key."
 msgstr ""
 
@@ -28347,6 +28350,9 @@ msgstr ""
 msgid "Lock File?"
 msgstr ""
 
+msgid "Lock label after a merge request is merged"
+msgstr ""
+
 msgid "Lock memberships to LDAP synchronization"
 msgstr ""
 
@@ -28354,6 +28360,9 @@ msgid "Lock memberships to SAML Group Links synchronization"
 msgstr ""
 
 msgid "Lock not found"
+msgstr ""
+
+msgid "Lock on merge"
 msgstr ""
 
 msgid "Lock status"
