@@ -3,6 +3,9 @@
 module Security
   module TrainingProviders
     class SecureCodeWarriorUrlFinder < BaseUrlFinder
+      self.reactive_cache_key = ->(finder) { finder.full_url }
+      self.reactive_cache_worker_finder = ->(id, *args) { from_cache(id) }
+
       ALLOWED_IDENTIFIER_LIST = %w[cwe owasp].freeze
       OWASP_WEB_2017 = %w[A1 A2 A3 A4 A5 A6 A7 A8 A9 A10].freeze
       OWASP_API_2019 = %w[API1 API2 API3 API4 API5 API6 API7 API8 API9 API10].freeze
@@ -12,8 +15,8 @@ module Security
         { url: response.parsed_response["url"] } if response
       end
 
-      def query_string
-        "?Id=gitlab#{mapping_elements}"
+      def full_url
+        Gitlab::Utils.append_path(provider.url, "?Id=gitlab#{mapping_elements}")
       end
 
       def mapping_elements
