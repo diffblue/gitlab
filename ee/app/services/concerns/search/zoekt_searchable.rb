@@ -3,14 +3,14 @@
 module Search
   module ZoektSearchable
     def use_zoekt?
+      # TODO: rename to search_code_with_zoekt?
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/421619
       return false if params[:basic_search]
       return false unless ::Feature.enabled?(:search_code_with_zoekt, current_user)
       return false unless ::License.feature_available?(:zoekt_code_search)
       return false unless current_user&.enabled_zoekt?
 
-      scope == 'blobs' &&
-        zoekt_searchable_scope.respond_to?(:use_zoekt?) &&
-        zoekt_searchable_scope.use_zoekt?
+      scope == 'blobs' && zoekt_searchable_scope.try(:search_code_with_zoekt?)
     end
 
     def zoekt_searchable_scope

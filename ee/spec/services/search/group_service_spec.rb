@@ -88,6 +88,7 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
 
     before do
       allow(group).to receive(:use_zoekt?).and_return(use_zoekt)
+      allow(group).to receive(:search_code_with_zoekt?).and_return(use_zoekt)
     end
 
     it 'returns a Gitlab::Zoekt::SearchResults' do
