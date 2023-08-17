@@ -623,7 +623,9 @@ module EE
       rule { custom_roles_allowed & role_enables_admin_vulnerability }.policy do
         enable :admin_vulnerability
       end
+
       rule { custom_roles_allowed & role_enables_read_dependency & dependency_scanning_enabled }.policy do
+        enable :access_security_and_compliance
         enable :read_dependency
       end
 

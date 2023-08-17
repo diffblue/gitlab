@@ -2556,7 +2556,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
     context 'for a member role with read_dependency true' do
       let(:member_role_abilities) { { read_dependency: true } }
-      let(:allowed_abilities) { [:read_dependency] }
+      let(:allowed_abilities) { [:access_security_and_compliance, :read_dependency] }
       let(:licensed_features) { { dependency_scanning: true } }
 
       it_behaves_like 'custom roles abilities'

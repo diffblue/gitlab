@@ -3034,5 +3034,29 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
         it { is_expected.to be_disallowed(*disallowed_abilities) }
       end
     end
+
+    context 'for a member role with read_dependency true' do
+      context 'with custom_roles_on_groups FF enabled' do
+        before do
+          stub_feature_flags(custom_roles_on_groups: [parent_group])
+        end
+
+        let(:member_role_abilities) { { read_dependency: true } }
+        let(:allowed_abilities) { [:read_dependency] }
+
+        it_behaves_like 'custom roles abilities'
+      end
+
+      context 'with custom_roles_on_groups FF disabled' do
+        before do
+          stub_feature_flags(custom_roles_on_groups: false)
+          create_member_role(group_member_guest)
+        end
+
+        let(:disallowed_abilities) { [:read_dependency] }
+
+        it { is_expected.to be_disallowed(*disallowed_abilities) }
+      end
+    end
   end
 end
