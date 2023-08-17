@@ -2,10 +2,13 @@
 
 module Groups
   class DependenciesController < Groups::ApplicationController
+    include GovernUsageGroupTracking
+
     before_action :authorize_read_dependency_list!
 
     feature_category :dependency_management
     urgency :low
+    track_govern_activity 'dependencies', :index
 
     def index
       respond_to do |format|

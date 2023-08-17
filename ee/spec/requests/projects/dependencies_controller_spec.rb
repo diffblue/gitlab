@@ -277,6 +277,10 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
             expect(json_response['report']['status']).to eq('job_failed')
           end
         end
+
+        it_behaves_like 'tracks govern usage event', 'users_visiting_dependencies' do
+          let(:request) { get project_dependencies_path(project, format: :html) }
+        end
       end
 
       context 'when licensed feature is unavailable' do
@@ -292,6 +296,10 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
           get project_dependencies_path(project, format: :html)
 
           expect(response).to have_gitlab_http_status(:not_found)
+        end
+
+        it_behaves_like "doesn't track govern usage event", 'users_visiting_dependencies' do
+          let(:request) { get project_dependencies_path(project, format: :html) }
         end
       end
     end
@@ -315,6 +323,10 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
         get project_dependencies_path(project, format: :html)
 
         expect(response).to have_gitlab_http_status(:not_found)
+      end
+
+      it_behaves_like "doesn't track govern usage event", 'users_visiting_dependencies' do
+        let(:request) { get project_dependencies_path(project, format: :html) }
       end
     end
   end

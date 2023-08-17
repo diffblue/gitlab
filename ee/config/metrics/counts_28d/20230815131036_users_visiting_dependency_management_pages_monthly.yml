@@ -1,9 +1,9 @@
 ---
-key_path: redis_hll_counters.govern.users_visiting_govern_pages_monthly
-description: Unique count of govern actions in a given month
+key_path: redis_hll_counters.govern.users_visiting_dependency_management_pages_monthly
+description: Unique count of dependency management actions in a given month
 product_section: sec
 product_stage: govern
-product_group: security_policies
+product_group: threat_insights
 value_type: number
 status: active
 milestone: "16.3"
@@ -17,13 +17,9 @@ options:
     operator: OR
     attribute: user_id
   events:
-    - i_code_review_merge_request_widget_security_reports_expand
-    - users_visiting_security_policies
-    - users_creating_merge_requests_with_security_policies
     - users_visiting_dependencies
     - users_visiting_licenses
-performance_indicator_type:
-- smau
+performance_indicator_type: []
 distribution:
 - ee
 tier:

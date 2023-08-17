@@ -3,12 +3,14 @@
 module Projects
   class LicensesController < Projects::ApplicationController
     include SecurityAndCompliancePermissions
+    include GovernUsageProjectTracking
 
     before_action :authorize_read_licenses!, only: [:index]
     before_action :authorize_admin_software_license_policy!, only: [:create, :update]
 
     feature_category :dependency_management
     urgency :low
+    track_govern_activity 'licenses', :index
 
     def index
       respond_to do |format|

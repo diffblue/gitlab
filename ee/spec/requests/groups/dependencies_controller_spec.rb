@@ -54,6 +54,10 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
               expect(response).to have_gitlab_http_status(:not_found)
             end
           end
+
+          it_behaves_like 'tracks govern usage event', 'users_visiting_dependencies' do
+            let(:request) { subject }
+          end
         end
 
         context 'when user is not allowed to access group level dependencies' do
@@ -61,6 +65,10 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
             subject
 
             expect(response).to have_gitlab_http_status(:not_found)
+          end
+
+          it_behaves_like "doesn't track govern usage event", 'users_visiting_dependencies' do
+            let(:request) { subject }
           end
         end
       end
@@ -70,6 +78,10 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
           subject
 
           expect(response).to have_gitlab_http_status(:not_found)
+        end
+
+        it_behaves_like "doesn't track govern usage event", 'users_visiting_dependencies' do
+          let(:request) { subject }
         end
       end
     end

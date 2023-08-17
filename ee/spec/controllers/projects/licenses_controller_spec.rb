@@ -35,16 +35,14 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
           end
 
           context "when requesting HTML" do
-            subject { get :index, params: params }
+            subject(:get_licenses_html) { get :index, params: params }
 
             let_it_be(:apache_license) { create(:software_license, :apache_2_0) }
             let_it_be(:custom_license) { create(:software_license, :user_entered) }
 
-            before do
-              subject
-            end
-
             it 'returns the necessary licenses app data' do
+              get_licenses_html
+
               licenses_app_data = assigns(:licenses_app_data)
 
               expect(response).to have_gitlab_http_status(:ok)
@@ -60,6 +58,10 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
               expect(licenses_app_data[:settings_path]).to eql(controller.helpers.api_v4_projects_approval_settings_path(id: project.id))
               expect(licenses_app_data[:approvals_documentation_path]).to eql(help_page_path('user/compliance/license_compliance/index', anchor: 'enabling-license-approvals-within-a-project'))
               expect(licenses_app_data[:locked_approvals_rule_name]).to eql(ApprovalRuleLike::DEFAULT_NAME_FOR_LICENSE_REPORT)
+            end
+
+            it_behaves_like 'tracks govern usage event', 'users_visiting_licenses' do
+              let(:request) { get_licenses_html }
             end
           end
 
@@ -389,12 +391,14 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
         end
 
         context 'with maintainer' do
+          subject(:get_licenses_html) { get :index, params: params }
+
           before do
             project.add_maintainer(user)
           end
 
           it 'responds to an HTML request' do
-            get :index, params: params
+            get_licenses_html
 
             expect(response).to have_gitlab_http_status(:ok)
             licenses_app_data = assigns(:licenses_app_data)
@@ -404,16 +408,22 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
             expect(licenses_app_data[:documentation_path]).to eql(help_page_path('user/compliance/license_compliance/index'))
             expect(licenses_app_data[:empty_state_svg_path]).to eql(controller.helpers.image_path('illustrations/Dependency-list-empty-state.svg'))
           end
+
+          it_behaves_like 'tracks govern usage event', 'users_visiting_licenses' do
+            let(:request) { get_licenses_html }
+          end
         end
       end
 
       context 'when feature is not available' do
-        before do
+        it 'returns 404' do
           get_licenses
+
+          expect(response).to have_gitlab_http_status(:not_found)
         end
 
-        it 'returns 404' do
-          expect(response).to have_gitlab_http_status(:not_found)
+        it_behaves_like "doesn't track govern usage event", 'users_visiting_dependencies' do
+          let(:request) { get_licenses }
         end
       end
     end
@@ -421,12 +431,16 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
     context 'with unauthorized user' do
       before do
         stub_licensed_features(license_scanning: true)
-
-        get_licenses
       end
 
       it 'returns 404' do
+        get_licenses
+
         expect(response).to have_gitlab_http_status(:not_found)
+      end
+
+      it_behaves_like "doesn't track govern usage event", 'users_visiting_dependencies' do
+        let(:request) { get_licenses }
       end
     end
   end
