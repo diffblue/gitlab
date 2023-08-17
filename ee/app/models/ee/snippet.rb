@@ -10,6 +10,9 @@ module EE
       include UsageStatistics
 
       scope :for_projects, ->(projects) { where(project: projects) }
+      scope :by_repository_storage, ->(storage) do
+        joins(snippet_repository: :shard).where(shards: { name: storage })
+      end
     end
 
     override :repository_size_checker

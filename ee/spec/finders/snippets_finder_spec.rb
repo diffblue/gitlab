@@ -3,14 +3,15 @@
 require 'spec_helper'
 
 RSpec.describe SnippetsFinder do
+  let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:project) { create(:project, :public, group: group) }
-  let_it_be(:private_project_snippet) { create(:project_snippet, :private, project: project) }
-  let_it_be(:internal_project_snippet) { create(:project_snippet, :internal, project: project) }
-  let_it_be(:public_project_snippet) { create(:project_snippet, :public, project: project) }
+  let_it_be(:private_project_snippet) { create(:project_snippet, :private, project: project, author: user) }
+  let_it_be(:internal_project_snippet) { create(:project_snippet, :internal, project: project, author: user) }
+  let_it_be(:public_project_snippet) { create(:project_snippet, :public, :repository, project: project, author: user) }
 
   let(:finder_params) { {} }
-  let(:finder_user) {}
+  let(:finder_user) { user }
 
   subject { described_class.new(finder_user, finder_params).execute }
 
@@ -18,7 +19,6 @@ RSpec.describe SnippetsFinder do
     let_it_be(:user) { create(:user, :auditor) }
 
     let(:finder_params) { { project: project } }
-    let(:finder_user) { user }
 
     it 'returns all snippets for auditor users' do
       expect(subject).to match_array([private_project_snippet, internal_project_snippet, public_project_snippet])
@@ -26,7 +26,6 @@ RSpec.describe SnippetsFinder do
   end
 
   context 'filter by authorized snippet projects and authored personal' do
-    let_it_be(:user) { create(:user) }
     let_it_be(:other_user) { create(:user) }
     let_it_be(:other_project) { create(:project) }
     let_it_be(:private_personal_snippet) { create(:personal_snippet, :private, author: user) }
@@ -40,7 +39,6 @@ RSpec.describe SnippetsFinder do
     let_it_be(:other_public_project_snippet) { create(:project_snippet, :public, project: other_project, author: other_user) }
 
     let(:finder_params) { { authorized_and_user_personal: true } }
-    let(:finder_user) { user }
 
     context 'when no user' do
       let(:finder_user) {}
@@ -152,7 +150,7 @@ RSpec.describe SnippetsFinder do
         end
       end
 
-      context 'when user is a an auditor' do
+      context 'when user is an auditor' do
         let_it_be(:auditor) { create(:user, :auditor) }
         let(:finder_user) { auditor }
         let(:finder_params) { { author: user, all_available: true } }
@@ -211,6 +209,36 @@ RSpec.describe SnippetsFinder do
         it 'does not return any record' do
           expect(subject).to be_empty
         end
+      end
+    end
+  end
+
+  context 'for a user' do
+    context 'when repository storage name is given' do
+      let(:finder_params) { { project: project, repository_storage: public_project_snippet.repository_storage } }
+
+      it 'the repository storage filter is ignored' do
+        expect(subject).to eq([public_project_snippet, internal_project_snippet])
+      end
+    end
+  end
+
+  context 'for an admin', :enable_admin_mode do
+    let_it_be(:user) { create(:user, :admin) }
+
+    context 'when repository storage name is given' do
+      let(:finder_params) { { project: project, repository_storage: public_project_snippet.repository_storage } }
+
+      it 'filters by the repository storage name' do
+        expect(subject).to eq([public_project_snippet])
+      end
+    end
+
+    context 'when repository storage name is not given' do
+      let(:finder_params) { { project: project } }
+
+      it 'returns all snippets' do
+        expect(subject).to match_array([public_project_snippet, internal_project_snippet, private_project_snippet])
       end
     end
   end
