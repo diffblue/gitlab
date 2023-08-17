@@ -11,12 +11,13 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
   let(:expected_container) { group }
   let(:content) { 'Summarize issue' }
   let(:ai_request) { instance_double(Gitlab::Llm::Chain::Requests::Anthropic) }
-  let(:options) { { request_id: 'uuid', content: content } }
+  let(:options) { { content: content } }
   let(:container) { group }
   let(:context) do
     instance_double(
       Gitlab::Llm::Chain::GitlabContext,
-      tools_used: [::Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor]
+      tools_used: [::Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor],
+      container: container
     )
   end
 
@@ -26,10 +27,10 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
     )
   end
 
-  subject { described_class.new(nil).execute(user, resource, options) }
+  subject { described_class.new(nil, request_id: 'uuid').execute(user, resource, options) }
 
   shared_examples 'success' do
-    it 'calls the ZeroShot Agent with the right parameters' do
+    it 'calls the ZeroShot Agent with the right parameters', :snowplow do
       tools = [
         ::Gitlab::Llm::Chain::Tools::IssueIdentifier,
         ::Gitlab::Llm::Chain::Tools::JsonReader,
@@ -54,6 +55,45 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
         .and_return(context)
 
       subject
+
+      expect_snowplow_event(
+        category: described_class.to_s,
+        label: "IssueIdentifier",
+        action: 'process_gitlab_duo_question',
+        property: 'uuid',
+        namespace: container,
+        user: user,
+        value: 1
+      )
+    end
+
+    context 'with unsuccessful response' do
+      let(:answer) do
+        ::Gitlab::Llm::Chain::Answer.new(
+          status: :error, context: context, content: content, tool: nil, is_final: true
+        )
+      end
+
+      it 'sends process_gitlab_duo_question snowplow event with value eql 0' do
+        allow_next_instance_of(::Gitlab::Llm::Chain::Agents::ZeroShot::Executor) do |instance|
+          expect(instance).to receive(:execute).and_return(answer)
+        end
+
+        allow(Gitlab::Metrics::Sli::Apdex[:llm_chat_answers]).to receive(:increment)
+        allow(::Gitlab::Llm::Chain::GitlabContext).to receive(:new).and_return(context)
+
+        subject
+
+        expect_snowplow_event(
+          category: described_class.to_s,
+          label: "IssueIdentifier",
+          action: 'process_gitlab_duo_question',
+          property: 'uuid',
+          namespace: container,
+          user: user,
+          value: 0
+        )
+      end
     end
   end
 

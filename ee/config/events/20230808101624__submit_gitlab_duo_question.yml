@@ -1,0 +1,23 @@
+---
+description: This event represents a successful submission of a GitLab Duo question by a user.
+category: default
+action: submit_gitlab_duo_question
+label_description:
+property_description: Ai Action request Id that can be used to connect this event to others that happen when request is resolved.
+value_description:
+extra_properties:
+identifiers:
+- project
+- user
+- namespace
+product_section: data-science
+product_stage: modelops
+product_group: "group::ai framework"
+milestone: "16.3"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/128503
+distributions:
+- ee
+tiers: 
+- premium
+- ultimate
+

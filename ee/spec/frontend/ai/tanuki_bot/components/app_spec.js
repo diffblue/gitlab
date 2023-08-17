@@ -17,6 +17,8 @@ import getAiMessages from 'ee/ai/graphql/get_ai_messages.query.graphql';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { getMarkdown } from '~/rest_api';
+import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import { helpCenterState } from '~/super_sidebar/constants';
 import {
   MOCK_USER_MESSAGE,
@@ -205,6 +207,26 @@ describe('GitLab Duo Chat', () => {
             expect.any(Object),
             MOCK_TANUKI_SUCCESS_RES.data.aiCompletionResponse,
           );
+        });
+
+        describe('snowplow tracking', () => {
+          let trackingSpy;
+
+          beforeEach(() => {
+            trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+          });
+
+          afterEach(() => {
+            unmockTracking();
+          });
+
+          it('tracks the snowplow event on successful mutation for chat', async () => {
+            createComponent();
+            findGenieChat().vm.$emit('send-chat-prompt', MOCK_USER_MESSAGE.msg);
+
+            await waitForPromises();
+            expect(trackingSpy).toHaveBeenCalled();
+          });
         });
       });
     });

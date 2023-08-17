@@ -10,6 +10,7 @@ import getAiMessages from 'ee/ai/graphql/get_ai_messages.query.graphql';
 import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
 import tanukiBotMutation from 'ee/ai/graphql/tanuki_bot.mutation.graphql';
 import UserFeedback from 'ee/ai/components/user_feedback.vue';
+import Tracking from '~/tracking';
 import { i18n, GENIE_CHAT_RESET_MESSAGE } from 'ee/ai/constants';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
 import { SOURCE_TYPES, TANUKI_BOT_TRACKING_EVENT_NAME } from '../constants';
@@ -39,7 +40,7 @@ export default {
     GlLink,
     UserFeedback,
   },
-  mixins: [glFeatureFlagMixin()],
+  mixins: [glFeatureFlagMixin(), Tracking.mixin()],
   props: {
     userId: {
       type: String,
@@ -110,6 +111,9 @@ export default {
           },
         })
         .then(({ data: { aiAction = {} } = {} }) => {
+          this.track('submit_gitlab_duo_question', {
+            property: aiAction.requestId,
+          });
           this.addDuoChatMessage({
             ...aiAction,
             content: question,

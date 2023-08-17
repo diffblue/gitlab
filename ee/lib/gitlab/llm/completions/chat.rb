@@ -38,6 +38,18 @@ module Gitlab
           ::Gitlab::Llm::GraphqlSubscriptionResponseService
             .new(user, resource, response_modifier, options: response_options)
             .execute
+
+          context.tools_used.each do |tool|
+            Gitlab::Tracking.event(
+              self.class.to_s,
+              'process_gitlab_duo_question',
+              label: tool::NAME,
+              property: params[:request_id],
+              namespace: context.container,
+              user: user,
+              value: response.status == :ok ? 1 : 0
+            )
+          end
         end
 
         def tools(user)
