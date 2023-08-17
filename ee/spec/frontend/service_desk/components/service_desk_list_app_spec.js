@@ -36,6 +36,7 @@ describe('EE ServiceDeskListApp', () => {
   const defaultProvide = {
     releasesPath: 'releases/path',
     autocompleteAwardEmojisPath: 'autocomplete/award/emojis/path',
+    hasBlockedIssuesFeature: false,
     hasIterationsFeature: true,
     hasIssueWeightsFeature: true,
     hasIssuableHealthStatusFeature: true,
@@ -55,6 +56,7 @@ describe('EE ServiceDeskListApp', () => {
     canEditProjectSettings: true,
     serviceDeskEmailAddress: 'service@email.com',
     initialSort: '',
+    isIssueRepositioningDisabled: true,
   };
 
   const defaultQueryResponse = cloneDeep(getServiceDeskIssuesQueryResponse);
