@@ -468,7 +468,13 @@ module EE
     end
 
     def use_zoekt?
+      # TODO: rename to index_code_with_zoekt?
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/421613
       ::Zoekt::IndexedNamespace.enabled_for_namespace?(self)
+    end
+
+    def search_code_with_zoekt?
+      ::Zoekt::IndexedNamespace.search_enabled_for_namespace?(self)
     end
 
     def has_index_assignment?(type:)

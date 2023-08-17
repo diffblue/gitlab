@@ -9,6 +9,7 @@ module Zoekt
     belongs_to :shard, foreign_key: :zoekt_shard_id, inverse_of: :indexed_namespaces
     belongs_to :namespace
 
+    validates :search, inclusion: [true, false]
     validate :only_root_namespaces_can_be_indexed
 
     scope :recent, -> { order(id: :desc) }
@@ -26,11 +27,27 @@ module Zoekt
     end
 
     def self.enabled_for_project?(project)
-      where(namespace: project.root_namespace).exists?
+      for_project(project).exists?
     end
 
     def self.enabled_for_namespace?(namespace)
-      where(namespace: namespace.root_ancestor).exists?
+      for_namespace(namespace).exists?
+    end
+
+    def self.search_enabled_for_project?(project)
+      for_project(project).where(search: true).exists?
+    end
+
+    def self.search_enabled_for_namespace?(namespace)
+      for_namespace(namespace).where(search: true).exists?
+    end
+
+    def self.for_project(project)
+      where(namespace: project.root_namespace)
+    end
+
+    def self.for_namespace(namespace)
+      where(namespace: namespace.root_ancestor)
     end
 
     private

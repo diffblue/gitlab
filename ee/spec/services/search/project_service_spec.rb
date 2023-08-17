@@ -77,14 +77,14 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
       )
     end
 
-    let(:use_zoekt) { true }
+    let(:search_code_with_zoekt) { true }
     let(:user_preference_enabled_zoekt) { true }
     let(:scope) { 'blobs' }
     let(:basic_search) { nil }
     let(:advanced_search) { nil }
 
     before do
-      allow(project).to receive(:use_zoekt?).and_return(use_zoekt)
+      allow(project).to receive(:search_code_with_zoekt?).and_return(search_code_with_zoekt)
       allow(user).to receive(:enabled_zoekt?).and_return(user_preference_enabled_zoekt)
     end
 
@@ -95,7 +95,7 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
     end
 
     context 'when project does not have Zoekt enabled' do
-      let(:use_zoekt) { false }
+      let(:search_code_with_zoekt) { false }
 
       it 'does not search with Zoekt' do
         expect(service.use_zoekt?).to eq(false)

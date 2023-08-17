@@ -13,11 +13,12 @@ RSpec.describe ::Zoekt::IndexedNamespace, feature_category: :global_search do
   let_it_be(:indexed_project_of_parent_namespace) { create(:project, namespace: indexed_parent_namespace) }
   let_it_be(:indexed_project_of_child_namespace) { create(:project, namespace: indexed_child_namespace) }
   let_it_be(:shard) { Zoekt::Shard.create!(index_base_url: 'http://example.com:1234/', search_base_url: 'http://example.com:4567/') }
+  let(:search_enabled) { true }
 
-  before_all do
-    described_class.create!(shard: shard, namespace: indexed_namespace1)
-    described_class.create!(shard: shard, namespace: indexed_namespace2)
-    described_class.create!(shard: shard, namespace: indexed_parent_namespace)
+  before do
+    described_class.create!(shard: shard, namespace: indexed_namespace1, search: search_enabled)
+    described_class.create!(shard: shard, namespace: indexed_namespace2, search: search_enabled)
+    described_class.create!(shard: shard, namespace: indexed_parent_namespace, search: search_enabled)
   end
 
   context 'with validations' do
@@ -25,6 +26,13 @@ RSpec.describe ::Zoekt::IndexedNamespace, feature_category: :global_search do
       expect do
         described_class.create!(shard: shard, namespace: indexed_child_namespace)
       end.to raise_error(/Only root namespaces can be indexed/)
+    end
+
+    it 'does not allow search to be nil' do
+      np = described_class.first
+      expect(np).to be_valid
+      np.search = nil
+      expect(np).not_to be_valid
     end
   end
 
@@ -55,6 +63,67 @@ RSpec.describe ::Zoekt::IndexedNamespace, feature_category: :global_search do
 
     it 'delegates to root namespace for projects in subgroups' do
       expect(described_class.enabled_for_project?(indexed_project_of_child_namespace)).to eq(true)
+    end
+  end
+
+  describe '#search_enabled_for_namespace?' do
+    context 'when indexed namespace has search enabled' do
+      it 'returns true for those indexed namespace records' do
+        expect(described_class.search_enabled_for_namespace?(indexed_namespace1)).to eq(true)
+        expect(described_class.search_enabled_for_namespace?(indexed_namespace2)).to eq(true)
+      end
+
+      it 'returns false for unindexed namespace records' do
+        expect(described_class.search_enabled_for_namespace?(unindexed_namespace)).to eq(false)
+      end
+
+      it 'delegates to root namespace for subgroups' do
+        expect(described_class.search_enabled_for_namespace?(indexed_child_namespace)).to eq(true)
+      end
+    end
+
+    context 'when indexed namespace has search disabled' do
+      let(:search_enabled) { false }
+
+      it 'returns false even for those indexed namespace records' do
+        expect(described_class.search_enabled_for_namespace?(indexed_namespace1)).to eq(false)
+      end
+    end
+  end
+
+  describe '#search_enabled_for_project?' do
+    context 'when indexed namespace has search enabled' do
+      it 'returns true for projects in indexed namespaces' do
+        expect(described_class.search_enabled_for_project?(indexed_project1)).to eq(true)
+        expect(described_class.search_enabled_for_project?(indexed_project_of_parent_namespace)).to eq(true)
+      end
+
+      it 'returns false for projects in unindexed namespaces' do
+        expect(described_class.search_enabled_for_project?(unindexed_project)).to eq(false)
+      end
+
+      it 'delegates to root namespace for projects in subgroups' do
+        expect(described_class.search_enabled_for_project?(indexed_project_of_child_namespace)).to eq(true)
+      end
+    end
+
+    context 'when indexed namespace has search disabled' do
+      let(:search_enabled) { false }
+
+      it 'returns false even for projects in indexed namespaces' do
+        expect(described_class.search_enabled_for_project?(indexed_project1)).to eq(false)
+        expect(described_class.enabled_for_project?(indexed_project_of_parent_namespace)).to eq(true)
+      end
+    end
+  end
+
+  describe '#search?' do
+    subject { described_class.new }
+
+    it 'is an attribute that is enabled by default' do
+      expect(subject.search).to be true
+      subject.search = false
+      expect(subject.search).to be false
     end
   end
 
