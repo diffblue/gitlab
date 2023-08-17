@@ -116,4 +116,12 @@ RSpec.describe Gitlab::Llm::VertexAi::Configuration, feature_category: :not_owne
       expect(described_class.payload_parameters(new_payload)).to eq(new_payload)
     end
   end
+
+  describe 'methods delegated to model config' do
+    it 'delegates host, url and payload to model_config' do
+      is_expected.to delegate_method(:host).to(:model_config)
+      is_expected.to delegate_method(:url).to(:model_config)
+      is_expected.to delegate_method(:payload).to(:model_config)
+    end
+  end
 end

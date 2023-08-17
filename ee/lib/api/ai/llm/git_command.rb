@@ -18,12 +18,27 @@ module API
           desc 'Asks OpenAI to generate Git command from natural text'
           params do
             requires :prompt, type: String
+            optional :model,
+              type: String,
+              values: [::Llm::GitCommandService::OPENAI, ::Llm::GitCommandService::VERTEXAI],
+              default: 'openai'
           end
           post 'git_command' do
             response = ::Llm::GitCommandService.new(current_user, current_user, declared_params).execute
 
             if response.success?
-              workhorse_headers = ::Gitlab::Llm::OpenAi::Workhorse.chat_response(options: response.payload)
+              workhorse_headers =
+                if declared_params[:model] == ::Llm::GitCommandService::VERTEXAI
+                  config = response.payload
+                  Gitlab::Workhorse.send_url(
+                    config[:url],
+                    body: config[:body],
+                    headers: config[:headers].transform_values { |v| [v] },
+                    method: "POST"
+                  )
+                else
+                  ::Gitlab::Llm::OpenAi::Workhorse.chat_response(options: response.payload)
+                end
 
               header(*workhorse_headers)
               status :ok
