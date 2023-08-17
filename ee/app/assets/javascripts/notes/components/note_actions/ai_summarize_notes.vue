@@ -37,7 +37,7 @@ export default {
   },
   methods: {
     onClick() {
-      this.$root.$emit(BV_HIDE_TOOLTIP);
+      this.hideTooltips();
 
       if (this.loading) {
         return;
@@ -56,6 +56,10 @@ export default {
         .then(({ data: { aiAction } }) => {
           const errors = aiAction?.errors || [];
 
+          // in some cases the tooltip can get stuck
+          // open when clicking the button, so hide again just in case
+          this.hideTooltips();
+
           if (errors[0]) {
             this.handleError(new Error(errors[0]));
           }
@@ -65,9 +69,12 @@ export default {
         .catch(this.handleError);
     },
     hideTooltips() {
-      this.$root.$emit(BV_HIDE_TOOLTIP);
+      this.$nextTick(() => {
+        this.$root.$emit(BV_HIDE_TOOLTIP);
+      });
     },
     handleError(error) {
+      this.hideTooltips();
       const alertOptions = error ? { captureError: true, error } : {};
       this.errorAlert = createAlert({
         message: error ? error.message : __('Something went wrong'),
@@ -85,7 +92,7 @@ export default {
 
 <template>
   <gl-button
-    v-gl-tooltip.focus.hover
+    v-gl-tooltip
     icon="tanuki-ai"
     :disabled="loading"
     :loading="loading"
