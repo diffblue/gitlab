@@ -7,7 +7,7 @@ module GitlabSubscriptions
 
       override :execute
       def execute
-        return root_namespace_error unless namespace.root?
+        return root_namespace_error if ::Gitlab::CurrentSettings.should_check_namespace_plan? && !namespace&.root?
 
         add_on_purchase.save ? successful_response : error_response
       end
@@ -15,7 +15,9 @@ module GitlabSubscriptions
       private
 
       def root_namespace_error
-        ServiceResponse.error(message: "Namespace #{namespace.id} is not a root namespace")
+        message = namespace.present? ? "Namespace #{namespace.name} is not a root namespace" : 'No namespace given'
+
+        ServiceResponse.error(message: message)
       end
 
       override :add_on_purchase
@@ -33,8 +35,7 @@ module GitlabSubscriptions
       def error_response
         if add_on_purchase.errors.of_kind?(:subscription_add_on_id, :taken)
           ServiceResponse.error(
-            message: "Add-on purchase for namespace #{namespace.id} and add-on #{add_on.name.titleize} " \
-                     "already exists, use the update endpoint instead"
+            message: "Add-on purchase for #{add_on_human_reference} already exists, update the existing record"
           )
         else
           super

@@ -38,7 +38,7 @@ module GitlabSubscriptions
       def error_response
         if add_on_purchase.nil?
           ServiceResponse.error(
-            message: 'Add-on purchase for namespace and add-on does not exist, use the create endpoint instead'
+            message: "Add-on purchase for #{add_on_human_reference} does not exist, create a new record instead"
           )
         else
           super
