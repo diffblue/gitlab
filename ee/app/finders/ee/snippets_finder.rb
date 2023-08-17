@@ -21,6 +21,11 @@ module EE
       super
     end
 
+    override :filter_snippets
+    def filter_snippets
+      by_repository_storage(super)
+    end
+
     # This method returns snippets from a more restrictive scope.
     # When current_user is not nil we return the personal snippets
     # authored by the user and also snippets from the authorized projects.
@@ -45,6 +50,16 @@ module EE
       else
         ::Snippet.public_to_user
       end.only_personal_snippets
+    end
+
+    def can_change_repository_storage?
+      Ability.allowed?(current_user, :change_repository_storage)
+    end
+
+    def by_repository_storage(snippets)
+      return snippets if params[:repository_storage].blank? || !can_change_repository_storage?
+
+      snippets.by_repository_storage(params[:repository_storage])
     end
   end
 end
