@@ -1,5 +1,12 @@
 <script>
-import { GlBadge, GlIcon, GlLink, GlSkeletonLoader } from '@gitlab/ui';
+import {
+  GlBadge,
+  GlDisclosureDropdown,
+  GlDisclosureDropdownItem,
+  GlIcon,
+  GlLink,
+  GlSkeletonLoader,
+} from '@gitlab/ui';
 import { fetchPolicies } from '~/lib/graphql';
 import { __ } from '~/locale';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
@@ -10,15 +17,20 @@ import { getMarkdown } from '~/rest_api';
 import { TYPENAME_USER } from '~/graphql_shared/constants';
 import { MAX_REQUEST_TIMEOUT } from 'ee/notes/constants';
 import { renderGFM } from '~/behaviors/markdown/render_gfm';
+import Tracking from '~/tracking';
 
 export default {
   components: {
     GlBadge,
+    GlDisclosureDropdown,
+    GlDisclosureDropdownItem,
     GlIcon,
     GlLink,
     GlSkeletonLoader,
   },
   directives: { SafeHtml },
+  mixins: [Tracking.mixin()],
+  trackingLabel: 'ai_discussion_summary',
   inject: {
     resourceGlobalId: { default: null },
   },
@@ -34,6 +46,7 @@ export default {
       errorAlert: null,
       aiCompletionResponse: {},
       markdown: null,
+      textForClipboard: null,
     };
   },
   computed: {
@@ -78,6 +91,7 @@ export default {
               gfm: true,
             });
             this.markdown = markdownResponse.data.html;
+            this.textForClipboard = data.aiCompletionResponse.responseBody;
 
             this.$nextTick(() => {
               this.$emit('set-ai-loading', false);
@@ -97,12 +111,28 @@ export default {
       });
       this.$emit('set-ai-loading', false);
     },
+    dismissSummary() {
+      this.markdown = null;
+    },
+    copyToClipboard() {
+      this.$toast.show(__('Copied'));
+    },
   },
   feedback: {
     link: 'https://gitlab.com/gitlab-org/gitlab/-/issues/407779',
   },
   i18n: {
     onlyVisibleToYou: __('Only visible to you'),
+  },
+  items: {
+    copy: { text: __('Copy to clipboard') },
+    remove: {
+      text: __('Remove summary'),
+      extraAttrs: {
+        variant: 'danger',
+        class: 'gl-text-red-500!',
+      },
+    },
   },
 };
 </script>
@@ -114,6 +144,32 @@ export default {
         <gl-icon name="tanuki-ai" class="gl-text-purple-600" />
         <h5 class="gl-my-0">{{ __('AI-generated summary') }}</h5>
         <gl-badge variant="neutral">{{ __('Experiment') }}</gl-badge>
+        <gl-disclosure-dropdown
+          icon="ellipsis_v"
+          category="tertiary"
+          class="gl-ml-auto"
+          :toggle-text="__('Actions')"
+          text-sr-only
+          data-testid="dropdown-actions"
+          no-caret
+          placement="right"
+        >
+          <gl-disclosure-dropdown-item
+            :item="$options.items.copy"
+            :data-clipboard-text="textForClipboard"
+            data-testid="copy-ai-summary"
+            :tracking-label="$options.trackingLabel"
+            tracking-action="copy_summary"
+            @action="copyToClipboard"
+          />
+          <gl-disclosure-dropdown-item
+            :item="$options.items.remove"
+            data-testid="remove-ai-summary"
+            :tracking-label="$options.trackingLabel"
+            tracking-action="remove_summary"
+            @action="dismissSummary"
+          />
+        </gl-disclosure-dropdown>
       </div>
     </div>
     <div class="gl-px-5 gl-py-4">
