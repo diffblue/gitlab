@@ -43,6 +43,14 @@ module EE
       merge_request.latest_merge_request_diff&.merge_request_diff_llm_summary
     end
 
+    def diff_summary_available?(merge_request, previous_reviewers, recipient)
+      new_reviewers = merge_request.reviewers - previous_reviewers
+
+      new_reviewers.include?(recipient) &&
+        summarize_llm_enabled?(merge_request.project, recipient) &&
+        diff_llm_summary(merge_request).present?
+    end
+
     def review_llm_summary_allowed?(merge_request, user)
       Ability.allowed?(user, :summarize_submitted_review, merge_request)
     end
