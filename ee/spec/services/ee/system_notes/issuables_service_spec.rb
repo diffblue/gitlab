@@ -119,10 +119,24 @@ RSpec.describe ::SystemNotes::IssuablesService, feature_category: :team_planning
       let(:noteable) { epic }
       let(:target) { create(:epic) }
 
-      it 'creates system notes when relating epics' do
-        result = service.relate_issuable(target)
+      context 'for epics' do
+        it 'creates system notes when relating epics' do
+          result = service.relate_issuable(target)
 
-        expect(result.note).to eq("marked this epic as related to #{target.to_reference(target.group, full: true)}")
+          expect(result.note).to eq("marked this epic as related to #{target.to_reference(target.group, full: true)}")
+        end
+      end
+
+      context 'for work items' do
+        let_it_be(:target) { create(:work_item, :objective, project: project) }
+        let_it_be(:noteable) { create(:work_item, :objective, project: project) }
+
+        it 'sets the note text with the correct work item type' do
+          result = service.relate_issuable(target)
+
+          expect(result.note)
+            .to eq("marked this objective as related to #{target.to_reference(target.project)}")
+        end
       end
     end
   end
