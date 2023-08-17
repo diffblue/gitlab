@@ -51,8 +51,8 @@ describe('Learn GitLab', () => {
   it('renders the progress bar with correct values', () => {
     const progressBar = wrapper.findComponent(GlProgressBar);
 
-    expect(progressBar.attributes('value')).toBe('3');
-    expect(progressBar.attributes('max')).toBe('12');
+    expect(progressBar.vm.$attrs.value).toBe(3);
+    expect(progressBar.vm.$attrs.max).toBe(12);
   });
 
   describe('Invite Members Modal', () => {

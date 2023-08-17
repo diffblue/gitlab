@@ -36,8 +36,6 @@ exports[`Learn GitLab renders correctly 1`] = `
      
     <div
       class="progress"
-      max="12"
-      value="3"
     >
       <div
         aria-valuemax="12"
