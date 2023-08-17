@@ -30,6 +30,7 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
   before do
     group.add_developer(user)
     stub_licensed_features(epics: true, subepics: true)
+    stub_feature_flags(move_close_into_dropdown: false)
     sign_in(user)
   end
 
@@ -353,7 +354,7 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
     end
   end
 
-  describe 'epic actions', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/297505' do
+  describe 'epic actions' do
     shared_examples 'epic closed' do |selector|
       it 'can close an epic' do
         expect(page).to have_css('.gl-badge', text: 'Open')
@@ -361,6 +362,8 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
         within selector do
           click_button 'Close epic'
         end
+
+        wait_for_all_requests
 
         expect(page).to have_css('.gl-badge', text: 'Closed')
       end
@@ -374,6 +377,8 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
           click_button 'Reopen epic'
         end
 
+        wait_for_all_requests
+
         expect(page).to have_css('.gl-badge', text: 'Open')
       end
     end
@@ -386,7 +391,7 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
           visit group_epic_path(group, open_epic)
         end
 
-        it_behaves_like 'epic closed', '.detail-page-header'
+        it_behaves_like 'epic closed', '.detail-page-description'
       end
 
       context 'when clicking the bottom `Close epic` button', :aggregate_failures do
@@ -408,7 +413,7 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
           visit group_epic_path(group, closed_epic)
         end
 
-        it_behaves_like 'epic reopened', '.detail-page-header'
+        it_behaves_like 'epic reopened', '.detail-page-description'
       end
 
       context 'when clicking the bottom `Reopen epic` button', :aggregate_failures do
