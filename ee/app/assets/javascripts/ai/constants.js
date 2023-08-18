@@ -22,7 +22,7 @@ export const i18n = {
   TOO_LONG_ERROR_MESSAGE: s__(
     'AI|There is too much text in the chat. Please try again with a shorter text.',
   ),
-  GENIE_CHAT_PROMPT_PLACEHOLDER: s__('AI|You can ask AI for more information.'),
+  GENIE_CHAT_PROMPT_PLACEHOLDER: s__('AI|Ask GitLab Duo'),
   GENIE_CHAT_SUBMIT_LABEL: s__('AI|Send chat message.'),
   GENIE_CHAT_EMPTY_STATE_TITLE: s__('AI|Ask a question'),
   GENIE_CHAT_EMPTY_STATE_DESC: s__('AI|AI generated explanations will appear here.'),
