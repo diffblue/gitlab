@@ -197,7 +197,8 @@ class Groups::OmniauthCallbacksController < OmniauthCallbacksController
       authentication_event: true,
       authentication_provider: provider,
       additional_details: {
-        with: provider
+        with: provider,
+        registration_details: user.registration_audit_details
       }
     }
 

@@ -161,7 +161,14 @@ RSpec.describe Groups::OmniauthCallbacksController, :aggregate_failures, feature
             authentication_event: true,
             authentication_provider: provider,
             additional_details: {
-              with: provider
+              with: provider,
+              registration_details: {
+                email: user.email,
+                id: user.id,
+                name: user.name,
+                username: user.username,
+                access_level: user.access_level
+              }
             }
           }
         ).and_call_original

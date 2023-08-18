@@ -123,7 +123,7 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
     context 'audit events' do
       context 'when licensed' do
         before do
-          stub_licensed_features(admin_audit_log: true)
+          stub_licensed_features(admin_audit_log: true, external_audit_events: true)
         end
 
         context 'when user registers for the instance' do
@@ -132,11 +132,19 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
           end
 
           it 'logs the audit event info', :aggregate_failures do
+            create(:instance_external_audit_event_destination)
+
             # Stub .audit here so that only relevant audit events are received below
             allow(::Gitlab::Audit::Auditor).to receive(:audit)
-
+            expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async)
+                                                                .with('registration_created', anything, anything)
             expect(::Gitlab::Audit::Auditor).to receive(:audit).with(hash_including({
-              name: "registration_created"
+              name: "registration_created",
+              additional_details: {
+                registration_details: hash_including({
+                  email: new_user_email
+                })
+              }
             })).and_call_original
 
             subject
@@ -156,9 +164,15 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
               }),
               details: hash_including({
                 target_details: created_user.username,
-                custom_message: "Instance access request"
-              })
-            )
+                custom_message: "Instance access request",
+                registration_details: {
+                  id: created_user.id,
+                  username: created_user.username,
+                  name: created_user.name,
+                  email: created_user.email,
+                  access_level: created_user.access_level
+                }
+              }))
           end
 
           context 'with invalid user' do
