@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import { GlCollapse, GlBadge, GlPopover, GlLink } from '@gitlab/ui';
+import { GlCollapse, GlBadge, GlPopover, GlLink, GlSprintf } from '@gitlab/ui';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import CodeOwners, {
@@ -9,6 +9,7 @@ import CodeOwners, {
   codeOwnersHelpPath,
 } from 'ee_component/vue_shared/components/code_owners/code_owners.vue';
 import codeOwnersInfoQuery from 'ee/graphql_shared/queries/code_owners_info.query.graphql';
+import { toNounSeriesText } from '~/lib/utils/grammar';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { codeOwnersPath, codeOwnersMock, codeOwnersPropsMock } from '../mock_data';
 
@@ -37,6 +38,9 @@ const createComponent = async ({ props = {}, codeOwnersDataMock = codeOwnersMock
         ...codeOwnersPropsMock,
         ...props,
       },
+      stubs: {
+        GlSprintf,
+      },
     }),
   );
 
@@ -44,10 +48,8 @@ const createComponent = async ({ props = {}, codeOwnersDataMock = codeOwnersMock
 };
 
 describe('Code owners component', () => {
-  const findCodeOwners = () => wrapper.findAllByTestId('code-owners');
-  const findCommaSeparators = () => wrapper.findAllByTestId('comma-separator');
-  const findAndSeparators = () => wrapper.findAllByTestId('and-separator');
   const findCollapse = () => wrapper.findComponent(GlCollapse);
+  const findCodeOwners = () => findCollapse().findAllComponents(GlLink);
   const findToggle = () => wrapper.findByTestId('collapse-toggle');
   const findBranchRulesLink = () => wrapper.findByTestId('branch-rules-link');
   const findLinkToFile = () => wrapper.findByTestId('codeowners-file-link');
@@ -133,20 +135,25 @@ describe('Code owners component', () => {
     });
   });
 
+  it('with empty code owners, does not render code owners collapse', async () => {
+    await createComponent({ codeOwnersDataMock: [] });
+
+    expect(findCollapse().exists()).toBe(false);
+  });
+
   it.each`
-    codeOwners                    | commaSeparators | codeOwnersLength | andSeparators
-    ${[]}                         | ${0}            | ${0}             | ${0}
-    ${codeOwnersMock.slice(0, 1)} | ${0}            | ${1}             | ${0}
-    ${codeOwnersMock.slice(0, 2)} | ${0}            | ${2}             | ${1}
-    ${codeOwnersMock.slice(0, 3)} | ${1}            | ${3}             | ${1}
-    ${codeOwnersMock}             | ${5}            | ${7}             | ${1}
+    codeOwners                    | expectedCount | expectedText
+    ${codeOwnersMock.slice(0, 1)} | ${1}          | ${'Idella Welch'}
+    ${codeOwnersMock.slice(0, 2)} | ${2}          | ${'Idella Welch and Winston Von'}
+    ${codeOwnersMock.slice(0, 3)} | ${3}          | ${'Idella Welch, Winston Von, and Don Runte'}
+    ${codeOwnersMock}             | ${7}          | ${toNounSeriesText(codeOwnersMock.map((x) => x.name))}
   `(
     'renders "$commaSeparators" comma separators, "$andSeparators" and separators for "$codeOwnersLength" codeowners',
-    async ({ codeOwners, commaSeparators, codeOwnersLength, andSeparators }) => {
+    async ({ codeOwners, expectedCount, expectedText }) => {
       await createComponent({ codeOwnersDataMock: codeOwners });
-      expect(findCommaSeparators().length).toBe(commaSeparators);
-      expect(findAndSeparators().length).toBe(andSeparators);
-      expect(findCodeOwners().length).toBe(codeOwnersLength);
+
+      expect(findCollapse().text()).toBe(expectedText);
+      expect(findCodeOwners().length).toBe(expectedCount);
     },
   );
 });

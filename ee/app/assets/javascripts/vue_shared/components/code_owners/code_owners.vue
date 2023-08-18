@@ -1,9 +1,10 @@
 <script>
 import { uniqueId } from 'lodash';
-import { GlIcon, GlLink, GlButton, GlCollapse, GlBadge, GlPopover } from '@gitlab/ui';
+import { GlIcon, GlLink, GlButton, GlCollapse, GlBadge, GlPopover, GlSprintf } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import { toNounSeriesText } from '~/lib/utils/grammar';
 import codeOwnersInfoQuery from '../../../graphql_shared/queries/code_owners_info.query.graphql';
 
 export const i18n = {
@@ -35,6 +36,7 @@ export default {
     GlBadge,
     GlCollapse,
     GlPopover,
+    GlSprintf,
   },
   apollo: {
     project: {
@@ -102,17 +104,16 @@ export default {
     codeOwnersTotal() {
       return this.blobInfo?.codeOwners?.length;
     },
-    lastIndexOfCodeOwners() {
-      return this.codeOwnersTotal - 1;
-    },
     toggleText() {
       return this.isCodeOwnersExpanded ? this.$options.i18n.hideAll : this.$options.i18n.showAll;
     },
     hasCodeOwners() {
       return this.filePath && Boolean(this.codeOwners.length);
     },
-    commaSeparateList() {
-      return this.codeOwners.length > 1;
+    codeOwnersSprintfMessage() {
+      return toNounSeriesText(
+        this.codeOwners.map((codeOwner, index) => `%{linkStart}${index}%{linkEnd}`),
+      );
     },
     isLoading() {
       return this.$apollo.queries.project.loading;
@@ -127,6 +128,10 @@ export default {
     toggleCodeOwners() {
       this.isCodeOwnersExpanded = !this.isCodeOwnersExpanded;
     },
+    getCodeOwner(idx) {
+      // what: idx could be a str coming from sprintf so we transform it to a number
+      return this.codeOwners[Number(idx)];
+    },
   },
 };
 </script>
@@ -136,8 +141,8 @@ export default {
     v-if="filePath"
     class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-justify-content-space-between gl-align-items-center"
   >
-    <div class="gl-display-flex gl-flex-wrap gl-p-3">
-      <div class="gl-mr-2">
+    <div class="gl-display-flex gl-flex-wrap gl-pr-3">
+      <div>
         <gl-icon name="users" />
         <component
           :is="hasCodeOwners ? 'gl-link' : 'span'"
@@ -147,7 +152,7 @@ export default {
           >{{ $options.i18n.title }}
         </component>
       </div>
-      <div v-if="!hasCodeOwners && !isLoading">
+      <div v-if="!hasCodeOwners && !isLoading" class="gl-ml-3">
         <span data-testid="no-codeowners-text">{{ $options.i18n.noCodeOwnersText }}</span>
         <gl-link
           data-testid="codeowners-docs-link"
@@ -158,38 +163,25 @@ export default {
       </div>
 
       <template v-if="hasCodeOwners && !isLoading">
-        <gl-badge class="gl-mx-2" size="sm">{{ codeOwnersTotal }}</gl-badge>
+        <gl-badge class="gl-mx-3" size="sm">{{ codeOwnersTotal }}</gl-badge>
         <gl-button
-          class="gl-w-12"
           variant="link"
+          size="small"
           data-testid="collapse-toggle"
+          class="gl-mr-3"
+          :icon="collapseIcon"
           @click="toggleCodeOwners"
         >
-          <gl-icon :name="collapseIcon" />
           {{ toggleText }}
         </gl-button>
-        <gl-collapse :visible="isCodeOwnersExpanded" class="gl-ml-2">
-          <div
-            v-for="(owner, index) in codeOwners"
-            :key="owner.id"
-            class="gl-display-inline-block"
-            data-testid="code-owners"
-          >
-            <span
-              v-if="commaSeparateList && index === lastIndexOfCodeOwners"
-              data-testid="and-separator"
-              class="gl-ml-2"
-              >{{ $options.i18n.and }}</span
-            >
-            <span
-              v-if="commaSeparateList && index !== 0 && index !== lastIndexOfCodeOwners"
-              data-testid="comma-separator"
-              >,
-            </span>
-            <gl-link :href="owner.webPath" target="_blank">
-              {{ owner.name }}
-            </gl-link>
-          </div>
+        <gl-collapse :visible="isCodeOwnersExpanded" data-testid="code-owners-list">
+          <gl-sprintf :message="codeOwnersSprintfMessage">
+            <template #link="{ content }">
+              <gl-link :href="getCodeOwner(content).webPath" target="_blank">{{
+                getCodeOwner(content).name
+              }}</gl-link>
+            </template>
+          </gl-sprintf>
         </gl-collapse>
       </template>
     </div>
