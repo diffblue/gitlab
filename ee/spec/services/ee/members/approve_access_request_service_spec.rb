@@ -6,7 +6,7 @@ RSpec.describe Members::ApproveAccessRequestService, feature_category: :groups_a
   let_it_be(:project) { create(:project, :public) }
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:access_requester_user) { create(:user) }
+  let_it_be(:access_requester_user) { create(:user, name: "John Wick") }
   let(:access_requester) { source.requesters.find_by!(user_id: access_requester_user.id) }
   let(:opts) { {} }
   let(:params) { {} }
@@ -15,7 +15,7 @@ RSpec.describe Members::ApproveAccessRequestService, feature_category: :groups_a
   shared_examples "auditor with context" do
     it "creates audit event with name" do
       expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
-        hash_including(name: "member_created")
+        hash_including(name: "member_created", target_details: "John Wick")
       ).and_call_original
 
       described_class.new(current_user, params).execute(access_requester, **opts)
