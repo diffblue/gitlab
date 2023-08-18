@@ -1,14 +1,7 @@
-import { parse } from 'yaml';
-import Api from '~/api';
 import { formatAsPercentageWithoutSymbol, secondsToDays } from 'ee/dora/components/util';
 import { VULNERABILITY_METRICS } from '~/analytics/shared/constants';
 import { groupDoraPerformanceScoreCountsByCategory } from './utils';
-import {
-  TABLE_METRICS,
-  UNITS,
-  YAML_CONFIG_PATH,
-  DORA_PERFORMERS_SCORE_CATEGORIES,
-} from './constants';
+import { TABLE_METRICS, UNITS, DORA_PERFORMERS_SCORE_CATEGORIES } from './constants';
 
 /**
  * @typedef {Object} ValueStreamDashboardTableMetric
@@ -213,23 +206,6 @@ export const fetchMetricsForTimePeriods = async (timePeriods, queryFn, queryPara
   });
 
   return Promise.all(promises);
-};
-
-/**
- * Fetches and returns the parsed YAML config file.
- *
- * @param {Number} projectId - ID of the project that contains the YAML config file
- * @returns {Object} The parsed YAML config file
- */
-export const fetchYamlConfig = async (projectId) => {
-  if (!projectId) return null;
-
-  try {
-    const { data } = await Api.getRawFile(projectId, YAML_CONFIG_PATH);
-    return parse(data);
-  } catch {
-    return null;
-  }
 };
 
 /**

@@ -9,7 +9,7 @@ import {
   MAX_PANELS_LIMIT,
   YAML_CONFIG_LOAD_ERROR,
 } from '../../constants';
-import { fetchYamlConfig } from '../../api';
+import { fetchYamlConfig } from '../../yaml_utils';
 import DoraVisualization from '../../components/dora_visualization.vue';
 import DoraPerformersScore from '../../components/dora_performers_score.vue';
 
