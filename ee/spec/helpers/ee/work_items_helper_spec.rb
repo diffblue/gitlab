@@ -47,4 +47,43 @@ RSpec.describe EE::WorkItemsHelper, feature_category: :team_planning do
       end
     end
   end
+
+  describe '#work_items_list_data' do
+    let_it_be(:group) { build(:group) }
+
+    subject(:work_items_list_data) { helper.work_items_list_data(group) }
+
+    before do
+      stub_licensed_features(
+        issuable_health_status: feature_available,
+        issue_weights: feature_available
+      )
+    end
+
+    context 'when features are available' do
+      let(:feature_available) { true }
+
+      it 'returns true for the features' do
+        expect(work_items_list_data).to include(
+          {
+            has_issuable_health_status_feature: "true",
+            has_issue_weights_feature: "true"
+          }
+        )
+      end
+    end
+
+    context 'when features are not available' do
+      let(:feature_available) { false }
+
+      it 'returns false for the features' do
+        expect(work_items_list_data).to include(
+          {
+            has_issuable_health_status_feature: "false",
+            has_issue_weights_feature: "false"
+          }
+        )
+      end
+    end
+  end
 end
