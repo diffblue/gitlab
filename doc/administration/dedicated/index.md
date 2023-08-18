@@ -80,18 +80,22 @@ The turnaround time for processing configuration change requests is [documented 
 
 ### Encrypted Data At Rest (BYOK)
 
-If you want your GitLab data to be encrypted at rest, the KMS keys used must be accessible by GitLab services. KMS keys can be used in two modes for this purpose:
+You can opt to encrypt your GitLab data at rest with AWS KMS keys, which must be made accessible to GitLab Dedicated infrastructure. GitLab Dedicated only supports keys with AWS-managed key material (the [AWS_KMS](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#key-origin) origin type).
 
-1. Per-service KMS keys (Backup, EBS, RDS, S3), or
-1. One KMS key for all services.
+For instructions on how to create and manage KMS keys, see the [AWS KMS documentation](https://docs.aws.amazon.com/kms/latest/developerguide/getting-started.html).
 
-If you use a key per service, all services must be encrypted at rest. Selective enablement of this feature is not supported.
+In GitLab Dedicated, you can use KMS keys in two ways:
 
-The keys provided have to reside in the same primary, secondary and backup region specified during [onboarding](#onboarding).
+- One KMS key for all services
+- Per-service KMS keys (Backup, EBS, RDS, S3)
+  - Keys do not need to be unique to each service.
+  - All services must be encrypted at rest.
+  - Selective enablement of this feature is not supported.
+  - Keys do not need to be unique to each service.
 
-For instructions on how to create and manage KMS keys, visit [Managing keys](https://docs.aws.amazon.com/kms/latest/developerguide/getting-started.html) in the AWS KMS documentation.
+Make sure the AWS KMS keys are replicated to your desired primary, secondary, and backup region specified during [onboarding](#onboarding).
 
-GitLab Dedicated supports only AWS managed KMS keys with KMS [as key material](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#key-origin).
+#### Create KMS keys in AWS
 
 To create a KMS key using the AWS Console:
 
@@ -185,8 +189,6 @@ The last page asks you to confirm the KMS key policy. It should look similar to 
     ]
 }
 ```
-
-Make sure the AWS KMS keys are replicated to your desired primary, secondary and backup region specified during [onboarding](#onboarding).
 
 ### Inbound Private Link
 
