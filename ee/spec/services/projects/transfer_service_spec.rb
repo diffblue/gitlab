@@ -69,8 +69,9 @@ RSpec.describe Projects::TransferService do
   end
 
   describe 'elasticsearch indexing' do
-    it 'delegates transfer to Elastic::ProjectTransferWorker' do
+    it 'delegates transfer to Elastic::ProjectTransferWorker and ::Search::Zoekt::ProjectTransferWorker' do
       expect(::Elastic::ProjectTransferWorker).to receive(:perform_async).with(project.id, project.namespace.id, group.id).once
+      expect(::Search::Zoekt::ProjectTransferWorker).to receive(:perform_async).with(project.id, project.namespace.id).once
 
       subject.execute(group)
     end

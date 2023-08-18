@@ -32,6 +32,7 @@ module EE
         super
 
         ::Elastic::ProjectTransferWorker.perform_async(project.id, old_namespace.id, new_namespace.id)
+        ::Search::Zoekt::ProjectTransferWorker.perform_async(project.id, old_namespace.id)
 
         delete_scan_result_policies(old_group)
         unassign_policy_project
