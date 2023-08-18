@@ -8,16 +8,17 @@ describe('Dependency proxy usage component', () => {
 
   const helpPath = helpPagePath('user/packages/dependency_proxy/index');
   const defaultProps = {
-    dependencyProxyTotalSize: 512,
+    dependencyProxyTotalSize: '512',
   };
 
   const findTotalSizeSection = () => wrapper.findByTestId('total-size-section');
   const findMoreInformation = () => wrapper.findByTestId('dependency-proxy-description');
 
-  const createComponent = () => {
+  const createComponent = ({ props = {} } = {}) => {
     wrapper = shallowMountExtended(DependencyProxyUsage, {
       propsData: {
         ...defaultProps,
+        ...props,
       },
       stubs: {
         GlSprintf,
@@ -31,7 +32,23 @@ describe('Dependency proxy usage component', () => {
   });
 
   it('displays the total size section when prop is provided', () => {
-    expect(findTotalSizeSection().props('value')).toBe(defaultProps.dependencyProxyTotalSize);
+    expect(findTotalSizeSection().props('value')).toBe(512);
+  });
+
+  describe('when `dependencyProxyTotalSize` has BigInt value', () => {
+    const mockDependencyProxyTotalSize = String(Number.MAX_SAFE_INTEGER);
+
+    beforeEach(() => {
+      createComponent({
+        props: {
+          dependencyProxyTotalSize: mockDependencyProxyTotalSize,
+        },
+      });
+    });
+
+    it('displays the total size section when prop is provided', () => {
+      expect(findTotalSizeSection().props('value')).toBe(Number.MAX_SAFE_INTEGER);
+    });
   });
 
   it('displays a more information link', () => {
