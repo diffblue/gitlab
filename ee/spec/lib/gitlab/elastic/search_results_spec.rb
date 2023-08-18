@@ -410,7 +410,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
         let(:scope) { 'projects' }
         let(:results) { described_class.new(user, '*', [unarchived_result.id, archived_result.id], filters: filters) }
 
-        it_behaves_like 'search results filtered by archived', 'search_projects_hide_archived' do
+        it_behaves_like 'search results filtered by archived' do
           before do
             ensure_elasticsearch_index!
           end

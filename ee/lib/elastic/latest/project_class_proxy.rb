@@ -25,7 +25,7 @@ module Elastic
             }
           end
 
-          if Feature.enabled?(:search_projects_hide_archived, options[:current_user]) && !options[:include_archived]
+          unless options[:include_archived]
             filters << {
               terms: {
                 _name: context.name(:archived, false),
