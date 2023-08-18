@@ -10135,6 +10135,9 @@ msgstr ""
 msgid "CiVariables|Do you want to delete the variable %{key}?"
 msgstr ""
 
+msgid "CiVariables|Edit Variable"
+msgstr ""
+
 msgid "CiVariables|Environments"
 msgstr ""
 
