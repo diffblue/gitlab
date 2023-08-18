@@ -46,6 +46,7 @@ Available scheduled maintenance windows, performed outside standard working hour
 
 Consider the following notes:
 
+- The Dedicated instance is not expected to be down the entire duration of the maintenance window. Occasionally, a small period of downtime (on the order of a few tens of seconds) can occur while compute resources restart after they are upgraded. If it occurs, this small period of downtime typically happens during the first half of the maintenance window. Long-running connections may be interrupted during this period. To mitigate this, clients should implement strategies like automatic recovery and retry. Longer periods of downtime during the maintenance window are rare, and GitLab provides notice if longer downtime is anticipated.
 - In case of a performance degradation or downtime during the scheduled maintenance window,
   the impact to [the system SLA](https://about.gitlab.com/handbook/engineering/infrastructure/team/gitlab-dedicated/slas/) is not counted.
 - The weekly scheduled maintenance window can be postponed into another window within the same week.
