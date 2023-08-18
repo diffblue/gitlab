@@ -45,6 +45,11 @@ msgstr ""
 msgid " and %{sliced}"
 msgstr ""
 
+msgid " except branch:"
+msgid_plural " except branches:"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid " or "
 msgstr ""
 
@@ -1436,6 +1441,9 @@ msgid "+ %{amount} more"
 msgstr ""
 
 msgid "+ %{count} more"
+msgstr ""
+
+msgid "+ %{hiddenBranchesLength} more"
 msgstr ""
 
 msgid "+ %{moreCount} more"
@@ -42214,6 +42222,12 @@ msgstr ""
 msgid "SecurityOrchestration|%{agent} for %{namespaces}"
 msgstr ""
 
+msgid "SecurityOrchestration|%{branchName}"
+msgstr ""
+
+msgid "SecurityOrchestration|%{branchName} (in %{codeStart}%{fullPath}%{codeEnd})"
+msgstr ""
+
 msgid "SecurityOrchestration|%{cadence} on %{branches}"
 msgstr ""
 
@@ -42359,6 +42373,9 @@ msgid "SecurityOrchestration|For large groups, there may be a significant delay 
 msgstr ""
 
 msgid "SecurityOrchestration|Groups"
+msgstr ""
+
+msgid "SecurityOrchestration|Hide extra branches"
 msgstr ""
 
 msgid "SecurityOrchestration|If any scanner finds a newly detected critical vulnerability in an open merge request targeting the master branch, then require two approvals from any member of App security."
@@ -42645,13 +42662,13 @@ msgstr ""
 msgid "SecurityOrchestration|Vulnerability age requires previously existing vulnerability states (detected, confirmed, resolved, or dismissed)"
 msgstr ""
 
-msgid "SecurityOrchestration|When %{scanners} %{vulnerabilitiesAllowed} %{vulnerability} in an open merge request %{targeting}%{branches}%{criteriaApply}"
+msgid "SecurityOrchestration|When %{scanners} %{vulnerabilitiesAllowed} %{vulnerability} in an open merge request %{targeting}%{branches}%{branchExceptionsString}%{criteriaApply}"
 msgstr ""
 
-msgid "SecurityOrchestration|When license scanner finds any license except %{licenses}%{detection} in an open merge request %{targeting}%{branches}."
+msgid "SecurityOrchestration|When license scanner finds any license except %{licenses}%{detection} in an open merge request %{targeting}%{branches}%{branchExceptionsString}"
 msgstr ""
 
-msgid "SecurityOrchestration|When license scanner finds any license matching %{licenses}%{detection} in an open merge request %{targeting}%{branches}."
+msgid "SecurityOrchestration|When license scanner finds any license matching %{licenses}%{detection} in an open merge request %{targeting}%{branches}%{branchExceptionsString}"
 msgstr ""
 
 msgid "SecurityOrchestration|When this policy is enabled, protected branches cannot be unprotected and users will not be allowed to force push to protected branches."

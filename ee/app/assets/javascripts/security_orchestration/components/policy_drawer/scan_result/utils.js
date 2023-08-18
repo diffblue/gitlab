@@ -17,7 +17,7 @@ import {
   FALSE_POSITIVE,
 } from '../../policy_editor/scan_result_policy/scan_filters/constants';
 import { LICENSE_FINDING, LICENSE_STATES } from '../../policy_editor/scan_result_policy/lib/rules';
-import { groupSelectedVulnerabilityStates } from '../../policy_editor/scan_result_policy/lib/vulnerability_states';
+import { groupSelectedVulnerabilityStates } from '../../policy_editor/scan_result_policy/lib';
 
 /**
  * Create a human-readable list of strings, adding the necessary punctuation and conjunctions
@@ -83,6 +83,43 @@ const humanizeBranchType = (branchType) => {
   return sprintf(s__('SecurityOrchestration|targeting %{branchTypeText}'), {
     branchTypeText: HUMANIZED_BRANCH_TYPE_TEXT_DICT[branchType],
   });
+};
+
+/**
+ * Convert branch exceptions to readable string
+ * @param exception {String|Object} { name: string, full_path: string}
+ */
+const humanizedBranchException = (exception) => {
+  if (!exception) return '';
+
+  if (typeof exception === 'string') {
+    return sprintf(s__('SecurityOrchestration|%{branchName}'), {
+      branchName: exception,
+    });
+  }
+
+  return sprintf(
+    s__('SecurityOrchestration|%{branchName} (in %{codeStart}%{fullPath}%{codeEnd})'),
+    {
+      branchName: exception.name,
+      fullPath: exception.full_path,
+    },
+  );
+};
+
+/**
+ *
+ * @param exceptions {Array}
+ * @returns {Array} formatted readable exceptions
+ */
+export const humanizedBranchExceptions = (exceptions) => {
+  if (!exceptions) return [];
+
+  const filteredExceptions = exceptions.filter(Boolean);
+
+  if (filteredExceptions.length === 0) return [];
+
+  return filteredExceptions.map(humanizedBranchException);
 };
 
 /**
@@ -269,13 +306,21 @@ const humanizeRule = (rule) => {
     };
   }
 
+  const branchExceptions = humanizedBranchExceptions(rule.branch_exceptions);
+
+  const branchExceptionsString = n__(
+    ' except branch:',
+    ' except branches:',
+    rule.branch_exceptions?.length,
+  );
+
   if (rule.type === LICENSE_FINDING) {
     const summaryText = rule.match_on_inclusion
       ? s__(
-          'SecurityOrchestration|When license scanner finds any license matching %{licenses}%{detection} in an open merge request %{targeting}%{branches}.',
+          'SecurityOrchestration|When license scanner finds any license matching %{licenses}%{detection} in an open merge request %{targeting}%{branches}%{branchExceptionsString}',
         )
       : s__(
-          'SecurityOrchestration|When license scanner finds any license except %{licenses}%{detection} in an open merge request %{targeting}%{branches}.',
+          'SecurityOrchestration|When license scanner finds any license except %{licenses}%{detection} in an open merge request %{targeting}%{branches}%{branchExceptionsString}',
         );
 
     return {
@@ -284,7 +329,9 @@ const humanizeRule = (rule) => {
         detection: humanizeLicenseDetection(rule.license_states),
         branches: humanizedValue,
         targeting: targetingValue,
+        branchExceptionsString: branchExceptions.length ? branchExceptionsString : '.',
       }),
+      branchExceptions,
     };
   }
 
@@ -320,10 +367,17 @@ const humanizeRule = (rule) => {
     }),
   );
 
+  const criteriaMessage = s__('SecurityOrchestration| and all the following apply:');
+  let criteriaEnding = '';
+
+  if (!branchExceptions.length) {
+    criteriaEnding = '.';
+  }
+
   return {
     summary: sprintf(
       s__(
-        'SecurityOrchestration|When %{scanners} %{vulnerabilitiesAllowed} %{vulnerability} in an open merge request %{targeting}%{branches}%{criteriaApply}',
+        'SecurityOrchestration|When %{scanners} %{vulnerabilitiesAllowed} %{vulnerability} in an open merge request %{targeting}%{branches}%{branchExceptionsString}%{criteriaApply}',
       ),
       {
         scanners: humanizeScanners(createHumanizedScanners(rule.scanners)),
@@ -331,12 +385,14 @@ const humanizeRule = (rule) => {
         targeting: targetingValue,
         vulnerabilitiesAllowed: humanizeVulnerabilitiesAllowed(rule.vulnerabilities_allowed),
         vulnerability: n__('vulnerability', 'vulnerabilities', rule.vulnerabilities_allowed),
-        criteriaApply: criteriaList.length
-          ? s__('SecurityOrchestration| and all the following apply:')
-          : '.',
+        branchExceptionsString: branchExceptions.length ? branchExceptionsString : '',
+        criteriaApply:
+          criteriaList.length && !branchExceptions.length ? criteriaMessage : criteriaEnding,
       },
     ),
     criteriaList,
+    branchExceptions,
+    criteriaMessage: criteriaList.length && branchExceptions.length ? criteriaMessage : '',
   };
 };
 
