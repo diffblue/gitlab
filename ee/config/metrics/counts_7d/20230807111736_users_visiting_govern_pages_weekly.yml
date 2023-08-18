@@ -22,6 +22,10 @@ options:
     - users_creating_merge_requests_with_security_policies
     - users_visiting_dependencies
     - users_visiting_licenses
+    - users_visiting_security_vulnerability_report
+    - users_visiting_security_dashboard
+    - users_visiting_security_vulnerabilities
+    - users_visiting_pipeline_security
 performance_indicator_type:
 - smau
 distribution:

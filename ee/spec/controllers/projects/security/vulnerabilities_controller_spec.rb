@@ -21,6 +21,10 @@ RSpec.describe Projects::Security::VulnerabilitiesController, feature_category: 
     end
 
     it { is_expected.to have_gitlab_http_status(:not_found) }
+
+    it_behaves_like "doesn't track govern usage event", 'users_visiting_security_vulnerabilities' do
+      let(:request) { subject }
+    end
   end
 
   describe 'GET #new' do
@@ -81,6 +85,10 @@ RSpec.describe Projects::Security::VulnerabilitiesController, feature_category: 
 
         expect(response.body).to have_css("#js-vulnerability-main")
       end
+
+      it_behaves_like 'tracks govern usage event', 'users_visiting_security_vulnerabilities' do
+        let(:request) { show_vulnerability }
+      end
     end
 
     context "when there's no attached pipeline" do
@@ -92,6 +100,10 @@ RSpec.describe Projects::Security::VulnerabilitiesController, feature_category: 
         expect(response).to have_gitlab_http_status(:ok)
         expect(response).to render_template(:show)
         expect(response.body).to have_text(vulnerability.title)
+      end
+
+      it_behaves_like 'tracks govern usage event', 'users_visiting_security_vulnerabilities' do
+        let(:request) { show_vulnerability }
       end
     end
   end

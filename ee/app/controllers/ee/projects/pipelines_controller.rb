@@ -7,6 +7,8 @@ module EE
       extend ::Gitlab::Utils::Override
 
       prepended do
+        include GovernUsageProjectTracking
+
         before_action :authorize_read_licenses!, only: [:licenses]
         before_action do
           push_frontend_feature_flag(:pipeline_security_dashboard_graphql, project, type: :development)
@@ -20,6 +22,8 @@ module EE
         feature_category :code_quality, [:codequality_report]
 
         urgency :low, [:codequality_report, :licenses, :security]
+        track_govern_activity 'pipeline_security', :security,
+          conditions: -> { pipeline.expose_security_dashboard? }
       end
 
       def security
