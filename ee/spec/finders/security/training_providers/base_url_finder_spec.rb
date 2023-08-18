@@ -19,17 +19,6 @@ RSpec.describe Security::TrainingProviders::BaseUrlFinder do
       )
     end
 
-    it 'raises an error if full_url is not implemented' do
-      allow_next_instance_of(described_class) do |instance|
-        allow(instance).to receive(:allowed_identifier_list).and_return(['cwe'])
-      end
-
-      expect { finder.execute }.to raise_error(
-        NotImplementedError,
-        'full_url must be overwritten to return training url'
-      )
-    end
-
     context 'when response_url is nil' do
       before do
         allow_next_instance_of(described_class) do |instance|
@@ -120,6 +109,34 @@ RSpec.describe Security::TrainingProviders::BaseUrlFinder do
         expect(subject.send(:provider)).to eq(provider)
         expect(subject.send(:identifier_external_id)).to eq(identifier_external_id)
         expect(subject.send(:language)).to eq(language)
+      end
+    end
+  end
+
+  describe '#full_url' do
+    let(:implementation) do
+      Class.new(described_class) do
+        def query_params
+          {
+            a: '?',
+            b: '123',
+            c: 'a=c&b'
+          }
+        end
+      end
+    end
+
+    subject(:finder) { implementation.new(identifier.project, provider, identifier_external_id) }
+
+    it 'returns provider url with encoded query params' do
+      expect(finder.full_url).to eq("#{provider.url}?a=%3F&b=123&c=a%3Dc%26b")
+    end
+
+    context 'when query_params is not implemented' do
+      let(:implementation) { described_class }
+
+      it 'returns the provider url' do
+        expect(finder.full_url).to eq(provider.url)
       end
     end
   end

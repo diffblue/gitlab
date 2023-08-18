@@ -14,16 +14,37 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder do
   let(:finder) { described_class.new(identifier.project, provider, identifier_external_id) }
 
   describe '#calculate_reactive_cache' do
-    context 'when response is nil' do
+    context 'when request fails' do
       let_it_be(:finder) { described_class.new(identifier.project, provider, identifier.external_id) }
 
       before do
         synchronous_reactive_cache(finder)
-        allow(Gitlab::HTTP).to receive(:try_get).and_return(nil)
+        stub_request(:get, "http://test.host/test")
+          .with(
+            headers: {
+              'Authorization' => 'Bearer sbdMsxcgW2Xs75Q2uHc9FhUCZSEV3fSg'
+            })
+          .and_raise(SocketError)
       end
 
       it 'returns nil' do
         expect(finder.calculate_reactive_cache(dummy_url)).to be_nil
+      end
+    end
+
+    context 'when response is 404' do
+      before do
+        synchronous_reactive_cache(finder)
+        stub_request(:get, "http://test.host/test")
+          .with(
+            headers: {
+              'Authorization' => 'Bearer sbdMsxcgW2Xs75Q2uHc9FhUCZSEV3fSg'
+            })
+          .to_return(status: 404, body: '{"error":"Exercise not found"}', headers: { 'Content-Type' => 'application/json' })
+      end
+
+      it 'returns hash with nil url' do
+        expect(finder.calculate_reactive_cache(dummy_url)).to eq({ url: nil })
       end
     end
 
@@ -32,7 +53,12 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder do
 
       before do
         synchronous_reactive_cache(finder)
-        allow(Gitlab::HTTP).to receive_message_chain(:try_get, :parsed_response).and_return(response)
+        stub_request(:get, "http://test.host/test")
+          .with(
+            headers: {
+              'Authorization' => 'Bearer sbdMsxcgW2Xs75Q2uHc9FhUCZSEV3fSg'
+            })
+          .to_return(status: 200, body: response.to_json, headers: { 'Content-Type' => 'application/json' })
       end
 
       it 'returns content url hash' do
@@ -53,14 +79,14 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder do
   describe '#full_url' do
     context "when external_type is present in allowed list" do
       it 'returns full url path' do
-        expect(finder.full_url).to eq('https://example.com/?cwe=2')
+        expect(finder.full_url).to eq('https://example.com?cwe=2')
       end
 
       context "when identifier contains CWE-{number} format" do
         let_it_be(:identifier) { create(:vulnerabilities_identifier, external_type: 'cwe', external_id: "CWE-2") }
 
         it 'returns full url path with proper mapping key' do
-          expect(finder.full_url).to eq('https://example.com/?cwe=2')
+          expect(finder.full_url).to eq('https://example.com?cwe=2')
         end
       end
 
@@ -70,7 +96,7 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder do
         it 'returns full url path with the language parameter mapped' do
           expect(
             described_class.new(identifier.project, provider, identifier_external_id, language).full_url
-          ).to eq("https://example.com/?cwe=2&language=#{language}")
+          ).to eq("https://example.com?cwe=2&language=#{language}")
         end
       end
     end

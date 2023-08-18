@@ -37,6 +37,12 @@ module Security
         new(project, provider, identifier_external_id, language)
       end
 
+      def full_url
+        return provider.url if query_params.blank?
+
+        "#{provider.url}?#{query_params.to_query}"
+      end
+
       private
 
       attr_reader :project,
@@ -53,8 +59,8 @@ module Security
         end
       end
 
-      def full_url
-        raise NotImplementedError, 'full_url must be overwritten to return training url'
+      def query_params
+        {}
       end
 
       # Required for ReactiveCaching; Usage overridden by

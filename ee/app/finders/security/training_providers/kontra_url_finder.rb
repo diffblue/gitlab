@@ -3,6 +3,8 @@
 module Security
   module TrainingProviders
     class KontraUrlFinder < BaseUrlFinder
+      extend ::Gitlab::Utils::Override
+
       self.reactive_cache_key = ->(finder) { finder.full_url }
       self.reactive_cache_worker_finder = ->(id, *args) { from_cache(id) }
 
@@ -22,14 +24,14 @@ module Security
         { url: response.parsed_response["link"] } if response
       end
 
-      def full_url
-        Gitlab::Utils.append_path(provider.url, "?cwe=#{identifier.split('-').last}#{language_param}")
+      override :query_params
+      def query_params
+        params = { cwe: identifier.split('-').last }
+        params = params.merge({ language: @language }) if @language
+        params
       end
 
-      def language_param
-        "&language=#{@language}" if @language
-      end
-
+      override :allowed_identifier_list
       def allowed_identifier_list
         ALLOWED_IDENTIFIER_LIST
       end

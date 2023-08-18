@@ -3,6 +3,8 @@
 module Security
   module TrainingProviders
     class SecureCodeWarriorUrlFinder < BaseUrlFinder
+      extend ::Gitlab::Utils::Override
+
       self.reactive_cache_key = ->(finder) { finder.full_url }
       self.reactive_cache_worker_finder = ->(id, *args) { from_cache(id) }
 
@@ -15,19 +17,18 @@ module Security
         { url: response.parsed_response["url"] } if response
       end
 
-      def full_url
-        Gitlab::Utils.append_path(provider.url, "?Id=gitlab#{mapping_elements}")
+      override :query_params
+      def query_params
+        params = {
+          'Id' => 'gitlab',
+          'MappingList' => mapping_list,
+          'MappingKey' => mapping_key
+        }
+        params = params.merge({ 'LanguageKey' => @language }) if @language
+        params
       end
 
-      def mapping_elements
-        "&MappingList=#{determine_mapping_list}&MappingKey=#{determine_mapping_key}#{language_param}"
-      end
-
-      def language_param
-        "&LanguageKey=#{@language}" if @language
-      end
-
-      def determine_mapping_list
+      def mapping_list
         case external_type
         when "cwe"
           "cwe"
@@ -40,7 +41,7 @@ module Security
         end
       end
 
-      def determine_mapping_key
+      def mapping_key
         case external_type
         when "cwe"
           identifier.split('-').last
@@ -49,6 +50,7 @@ module Security
         end
       end
 
+      override :allowed_identifier_list
       def allowed_identifier_list
         ALLOWED_IDENTIFIER_LIST
       end
