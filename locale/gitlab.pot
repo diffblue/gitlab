@@ -15487,9 +15487,6 @@ msgstr ""
 msgid "Define custom rules for what constitutes spam, independent of Akismet"
 msgstr ""
 
-msgid "Define environments in the deploy stage(s) in %{code_open}.gitlab-ci.yml%{code_close} to track deployments here."
-msgstr ""
-
 msgid "Define how approval rules are applied to merge requests."
 msgstr ""
 
@@ -16353,9 +16350,6 @@ msgstr ""
 msgid "Deployments|You don't have any deployments right now."
 msgstr ""
 
-msgid "Deployment|API"
-msgstr ""
-
 msgid "Deployment|Cancelled"
 msgstr ""
 
@@ -16402,9 +16396,6 @@ msgid "Deployment|Success"
 msgstr ""
 
 msgid "Deployment|Sync status is unknown. %{linkStart}How do I configure Flux for my deployment?%{linkEnd}"
-msgstr ""
-
-msgid "Deployment|This deployment was created using the API"
 msgstr ""
 
 msgid "Deployment|Triggerer"
@@ -54324,9 +54315,6 @@ msgid "You don't have any applications."
 msgstr ""
 
 msgid "You don't have any authorized applications."
-msgstr ""
-
-msgid "You don't have any deployments right now."
 msgstr ""
 
 msgid "You don't have any open merge requests"

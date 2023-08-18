@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Environment detail page', feature_category: :environment_management do
+RSpec.describe 'Environment detail page', :js, feature_category: :environment_management do
   let_it_be(:project) do
     create(:project, :repository).tap { |p| p.ci_cd_settings.update!(forward_deployment_enabled: false) }
   end
@@ -11,7 +11,6 @@ RSpec.describe 'Environment detail page', feature_category: :environment_managem
 
   before do
     stub_licensed_features(protected_environments: true)
-    stub_feature_flags(environment_details_vue: false)
   end
 
   context 'when the environment is protected and the user has deployment-only access to it' do
@@ -62,7 +61,7 @@ RSpec.describe 'Environment detail page', feature_category: :environment_managem
 
     it 'shows play button with manual job' do
       expect(page).to have_button(s_('Environments|Deploy to...'), count: 2)
-      expect(page).to have_link('stop production', count: 2)
+      expect(page).to have_button('stop production', count: 2, visible: :all)
     end
   end
 end
