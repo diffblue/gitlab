@@ -5,7 +5,7 @@ module Gitlab
     class CompletionsFactory
       COMPLETIONS = {
         explain_vulnerability: {
-          service_class: ::Gitlab::Llm::VertexAi::Completions::ExplainVulnerability,
+          service_class: ::Gitlab::Llm::Completions::ExplainVulnerability,
           prompt_class: ::Gitlab::Llm::Templates::ExplainVulnerability
         },
         summarize_comments: {

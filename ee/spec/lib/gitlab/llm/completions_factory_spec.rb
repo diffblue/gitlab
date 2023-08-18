@@ -19,7 +19,7 @@ RSpec.describe Gitlab::Llm::CompletionsFactory, feature_category: :no_category d
       end
 
       it 'passes parameters to the completion class' do
-        completion_class = ::Gitlab::Llm::VertexAi::Completions::ExplainVulnerability
+        completion_class = ::Gitlab::Llm::Completions::ExplainVulnerability
         template_class = ::Gitlab::Llm::Templates::ExplainVulnerability
 
         expect(completion_class).to receive(:new).with(template_class, { include_source_code: true }).and_call_original

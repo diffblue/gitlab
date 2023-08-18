@@ -22,7 +22,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :shared do
 
   let(:default_body_params) do
     {
-      prompt: 'anything',
+      prompt: "anything",
       model: described_class::DEFAULT_MODEL,
       max_tokens_to_sample: described_class::DEFAULT_MAX_TOKENS,
       temperature: described_class::DEFAULT_TEMPERATURE
@@ -85,7 +85,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :shared do
 
       let(:expected_request_body) do
         {
-          prompt: 'anything',
+          prompt: "anything",
           model: described_class::DEFAULT_MODEL,
           max_tokens_to_sample: described_class::DEFAULT_MAX_TOKENS,
           temperature: options[:temperature]
