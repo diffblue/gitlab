@@ -95,7 +95,7 @@ export default {
     <div class="col-md-6 gl-mb-5">
       <gl-card class="gl-h-full" data-testid="billable-users">
         <header>
-          <h2 data-testid="billable-users-count">{{ billableUsers }}</h2>
+          <h2>{{ billableUsers }}</h2>
           <h5 class="gl-font-weight-normal text-uppercase">
             {{ $options.i18n.billableUsersTitle }}
           </h5>
