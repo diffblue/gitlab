@@ -97,7 +97,7 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
 
     let(:scope) { 'projects' }
 
-    it_behaves_like 'search results filtered by archived', 'search_projects_hide_archived' do
+    it_behaves_like 'search results filtered by archived' do
       before do
         ensure_elasticsearch_index!
       end
