@@ -13209,6 +13209,15 @@ msgstr ""
 msgid "ContributionEvent|Reopened test case %{targetLink} in %{resourceParentLink}."
 msgstr ""
 
+msgid "ContributionEvent|Updated design %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Updated resource."
+msgstr ""
+
+msgid "ContributionEvent|Updated wiki page %{targetLink} in %{resourceParentLink}."
+msgstr ""
+
 msgid "ContributionEvent|…and %{count} more commits. %{linkStart}Compare%{linkEnd}."
 msgstr ""
 
