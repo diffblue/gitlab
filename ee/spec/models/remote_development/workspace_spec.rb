@@ -6,11 +6,16 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
   let_it_be(:user) { create(:user) }
   let_it_be(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
   let_it_be(:project) { create(:project, :public, :in_group) }
+  let_it_be(:personal_access_token) { create(:personal_access_token, user: user) }
 
-  subject { create(:workspace, user: user, agent: agent, project: project) }
+  subject do
+    create(:workspace, user: user, agent: agent, project: project, personal_access_token: personal_access_token)
+  end
 
   describe 'associations' do
     it { is_expected.to belong_to(:user) }
+    it { is_expected.to belong_to(:personal_access_token) }
+    it { is_expected.to have_many(:workspace_variables) }
     it { is_expected.to have_one(:remote_development_agent_config) }
 
     # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409786
@@ -21,6 +26,7 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
       expect(subject.user).to eq(user)
       expect(subject.project).to eq(project)
       expect(subject.agent).to eq(agent)
+      expect(subject.personal_access_token).to eq(personal_access_token)
       expect(subject.remote_development_agent_config).to eq(agent.remote_development_agent_config)
       expect(agent.remote_development_agent_config.workspaces.first).to eq(subject)
     end
