@@ -1,4 +1,7 @@
-import { humanizeRules } from 'ee/security_orchestration/components/policy_drawer/scan_result/utils';
+import {
+  humanizeRules,
+  humanizedBranchExceptions,
+} from 'ee/security_orchestration/components/policy_drawer/scan_result/utils';
 import {
   securityScanBuildRule,
   licenseScanBuildRule,
@@ -45,6 +48,8 @@ const singleValuedSecurityScannerRule = {
     vulnerability_attributes: { fix_available: true },
   },
   humanized: {
+    branchExceptions: [],
+    criteriaMessage: '',
     summary:
       'When SAST scanner finds any vulnerabilities in an open merge request targeting the main branch and all the following apply:',
     criteriaList: [
@@ -64,6 +69,8 @@ const noVulnerabilityStatesSecurityScannerRule = {
     vulnerability_age: { operator: LESS_THAN_OPERATOR, value: 1, interval: AGE_WEEK },
   },
   humanized: {
+    branchExceptions: [],
+    criteriaMessage: '',
     summary:
       'When SAST scanner finds any vulnerabilities in an open merge request targeting the main branch and all the following apply:',
     criteriaList: ['Severity is critical.', 'Vulnerability age is less than 1 week.'],
@@ -82,6 +89,8 @@ const multipleValuedSecurityScannerRule = {
     vulnerability_attributes: { fix_available: true, false_positive: false },
   },
   humanized: {
+    branchExceptions: [],
+    criteriaMessage: '',
     summary:
       'When DAST or SAST scanners find more than 2 vulnerabilities in an open merge request targeting the staging or main branches and all the following apply:',
     criteriaList: [
@@ -101,6 +110,8 @@ const noCriteriaSecurityScannerRule = {
     vulnerabilities_allowed: 1,
   },
   humanized: {
+    branchExceptions: [],
+    criteriaMessage: '',
     summary:
       'When SAST scanner finds more than 1 vulnerability in an open merge request targeting the staging or main branches.',
     criteriaList: [],
@@ -117,8 +128,30 @@ const branchTypeSecurityScannerRule = (branchType = PROJECT_DEFAULT_BRANCH.value
     vulnerabilities_allowed: 1,
   },
   humanized: {
+    branchExceptions: [],
+    criteriaMessage: '',
     summary: `When SAST scanner finds more than 1 vulnerability in an open merge request targeting ${HUMANIZED_BRANCH_TYPE_TEXT_DICT[branchType]}.`,
     criteriaList: [],
+  },
+});
+
+const branchExceptionsSecurityScannerRule = (branchExceptions = []) => ({
+  rule: {
+    ...securityScanBuildRule(),
+    branch_type: PROJECT_DEFAULT_BRANCH.value,
+    branch_exceptions: branchExceptions,
+    severity_levels: [],
+    vulnerability_states: [],
+    scanners: ['sast'],
+    vulnerabilities_allowed: 1,
+  },
+  humanized: {
+    branchExceptions: ['test', 'test1'],
+    criteriaList: [],
+    criteriaMessage: '',
+    summary: `When SAST scanner finds more than 1 vulnerability in an open merge request targeting ${
+      HUMANIZED_BRANCH_TYPE_TEXT_DICT[PROJECT_DEFAULT_BRANCH.value]
+    } except branches:`,
   },
 });
 
@@ -138,6 +171,8 @@ const branchTypeAndBranchesSecurityScannerRule = {
     branch_type: PROJECT_DEFAULT_BRANCH.value,
   },
   humanized: {
+    branchExceptions: [],
+    criteriaMessage: '',
     summary:
       'When any security scanner finds any vulnerabilities in an open merge request targeting the default branch.',
     criteriaList: [],
@@ -153,6 +188,8 @@ const allValuedSecurityScannerRule = {
     vulnerability_attributes: { false_positive: true, fix_available: false },
   },
   humanized: {
+    branchExceptions: [],
+    criteriaMessage: '',
     summary:
       'When any security scanner finds more than 2 vulnerabilities in an open merge request targeting any protected branch and all the following apply:',
     criteriaList: [
@@ -171,6 +208,7 @@ const singleValuedLicenseScanRule = {
     license_states: ['detected'],
   },
   humanized: {
+    branchExceptions: [],
     summary:
       'When license scanner finds any license matching MIT License that is pre-existing and is in an open merge request targeting the main branch.',
   },
@@ -185,6 +223,7 @@ const multipleValuedLicenseScanRule = {
     license_states: ['detected', 'newly_detected'],
   },
   humanized: {
+    branchExceptions: [],
     summary:
       'When license scanner finds any license except CMU License, CNRI Jython License and CNRI Python License in an open merge request targeting the staging or main branches.',
   },
@@ -199,7 +238,25 @@ const branchTypeLicenseScanRule = (branchType = PROJECT_DEFAULT_BRANCH.value) =>
     license_states: ['detected', 'newly_detected'],
   },
   humanized: {
+    branchExceptions: [],
     summary: `When license scanner finds any license except CMU License, CNRI Jython License and CNRI Python License in an open merge request targeting ${HUMANIZED_BRANCH_TYPE_TEXT_DICT[branchType]}.`,
+  },
+});
+
+const branchExceptionLicenseScanRule = (branchExceptions = []) => ({
+  rule: {
+    ...licenseScanBuildRule(),
+    branch_type: PROJECT_DEFAULT_BRANCH.value,
+    branch_exceptions: branchExceptions,
+    match_on_inclusion: false,
+    license_types: ['CMU License', 'CNRI Jython License', 'CNRI Python License'],
+    license_states: ['detected', 'newly_detected'],
+  },
+  humanized: {
+    summary: `When license scanner finds any license except CMU License, CNRI Jython License and CNRI Python License in an open merge request targeting ${
+      HUMANIZED_BRANCH_TYPE_TEXT_DICT[PROJECT_DEFAULT_BRANCH.value]
+    } except branches:`,
+    branchExceptions: ['test', 'test1'],
   },
 });
 
@@ -246,6 +303,12 @@ describe('humanizeRules', () => {
       },
     );
 
+    it('returns a single rule as a human-readable string for rules with branch exceptions', () => {
+      expect(
+        humanizeRules([branchExceptionsSecurityScannerRule(['test', 'test1']).rule]),
+      ).toStrictEqual([branchExceptionsSecurityScannerRule(['test', 'test1']).humanized]);
+    });
+
     it('returns a single rule as a human-readable string for rules with branch type and branches', () => {
       expect(humanizeRules([branchTypeAndBranchesSecurityScannerRule.rule])).toStrictEqual([
         branchTypeAndBranchesSecurityScannerRule.humanized,
@@ -283,5 +346,26 @@ describe('humanizeRules', () => {
         ]);
       },
     );
+
+    it('returns a single rule as a human-readable string for rules with branch exceptions', () => {
+      expect(
+        humanizeRules([branchExceptionLicenseScanRule(['test', 'test1']).rule]),
+      ).toStrictEqual([branchExceptionLicenseScanRule(['test', 'test1']).humanized]);
+    });
+  });
+});
+
+describe('humanizedBranchExceptions', () => {
+  it.each`
+    exceptions                                                                                       | expectedResult
+    ${undefined}                                                                                     | ${[]}
+    ${[undefined, null]}                                                                             | ${[]}
+    ${['test', 'test1']}                                                                             | ${['test', 'test1']}
+    ${['test']}                                                                                      | ${['test']}
+    ${['test', undefined]}                                                                           | ${['test']}
+    ${[{ name: 'test', full_path: 'gitlab/group' }]}                                                 | ${['test (in %{codeStart}gitlab/group%{codeEnd})']}
+    ${[{ name: 'test', full_path: 'gitlab/group' }, { name: 'test1', full_path: 'gitlab/project' }]} | ${['test (in %{codeStart}gitlab/group%{codeEnd})', 'test1 (in %{codeStart}gitlab/project%{codeEnd})']}
+  `('should humanize branch exceptions', ({ exceptions, expectedResult }) => {
+    expect(humanizedBranchExceptions(exceptions)).toEqual(expectedResult);
   });
 });

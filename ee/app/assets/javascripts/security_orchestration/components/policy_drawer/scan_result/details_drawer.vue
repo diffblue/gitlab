@@ -1,9 +1,11 @@
 <script>
 import { s__, __ } from '~/locale';
+import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import { fromYaml } from '../../policy_editor/scan_result_policy/lib';
 import { SUMMARY_TITLE } from '../constants';
 import PolicyInfoRow from '../info_row.vue';
 import PolicyDrawerLayout from '../drawer_layout.vue';
+import BranchExceptionsToggleList from '../branch_exceptions_toggle_list.vue';
 import Approvals from './policy_approvals.vue';
 import { humanizeRules } from './utils';
 
@@ -13,6 +15,7 @@ export default {
     scanResult: s__('SecurityOrchestration|Scan result'),
   },
   components: {
+    BranchExceptionsToggleList,
     PolicyDrawerLayout,
     PolicyInfoRow,
     Approvals,
@@ -53,6 +56,14 @@ export default {
       ];
     },
   },
+  methods: {
+    capitalizedCriteriaMessage(message) {
+      return capitalizeFirstCharacter(message.trim());
+    },
+    showBranchExceptions(exceptions) {
+      return exceptions?.length > 0;
+    },
+  },
 };
 </script>
 
@@ -66,8 +77,22 @@ export default {
     <template v-if="parsedYaml" #summary>
       <policy-info-row data-testid="policy-summary" :label="$options.i18n.summary">
         <approvals :action="requireApproval" :approvers="approvers" />
-        <div v-for="({ summary, criteriaList }, idx) in humanizedRules" :key="idx" class="gl-pt-5">
+        <div
+          v-for="(
+            { summary, branchExceptions, criteriaMessage, criteriaList }, idx
+          ) in humanizedRules"
+          :key="idx"
+          class="gl-pt-5"
+        >
           {{ summary }}
+          <branch-exceptions-toggle-list
+            v-if="showBranchExceptions"
+            class="gl-mb-2"
+            :branch-exceptions="branchExceptions"
+          />
+          <p v-if="criteriaMessage" class="gl-mb-3">
+            {{ capitalizedCriteriaMessage(criteriaMessage) }}
+          </p>
           <ul class="gl-m-0">
             <li v-for="(criteria, criteriaIdx) in criteriaList" :key="criteriaIdx" class="gl-mt-2">
               {{ criteria }}
