@@ -48,7 +48,7 @@ export default {
         captureException({ error, component: this.$options.name });
       },
     },
-    dependencyProxyTotalSizeInBytes: {
+    dependencyProxyTotalSizeBytes: {
       query: GetDependencyProxyTotalSizeQuery,
       variables() {
         return {
@@ -56,7 +56,7 @@ export default {
         };
       },
       update({ group }) {
-        return group?.dependencyProxyTotalSizeInBytes;
+        return group?.dependencyProxyTotalSizeBytes;
       },
       error(error) {
         captureException({ error, component: this.$options.name });
@@ -73,7 +73,7 @@ export default {
       namespace: {},
       searchTerm: '',
       firstFetch: true,
-      dependencyProxyTotalSizeInBytes: 0,
+      dependencyProxyTotalSizeBytes: '0',
       loadingError: false,
       sortKey: 'STORAGE_SIZE_DESC',
     };
@@ -96,7 +96,7 @@ export default {
       return this.$apollo.queries.namespace.loading;
     },
     isDependencyProxyStorageQueryLoading() {
-      return this.$apollo.queries.dependencyProxyTotalSizeInBytes.loading;
+      return this.$apollo.queries.dependencyProxyTotalSizeBytes.loading;
     },
     pageInfo() {
       return this.namespace.projects?.pageInfo ?? {};
@@ -172,7 +172,7 @@ export default {
 
     <dependency-proxy-usage
       v-if="!userNamespace"
-      :dependency-proxy-total-size="dependencyProxyTotalSizeInBytes"
+      :dependency-proxy-total-size="dependencyProxyTotalSizeBytes"
       :loading="isDependencyProxyStorageQueryLoading"
     />
     <template v-if="namespace.rootStorageStatistics">

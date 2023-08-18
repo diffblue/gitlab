@@ -15,9 +15,9 @@ export default {
   },
   props: {
     dependencyProxyTotalSize: {
-      type: Number,
+      type: String,
       required: false,
-      default: 0,
+      default: '0',
     },
     loading: {
       type: Boolean,
@@ -54,7 +54,7 @@ export default {
     </template>
     <template #right-secondary-text>
       <number-to-human-size
-        :value="dependencyProxyTotalSize"
+        :value="Number(dependencyProxyTotalSize)"
         data-testid="total-size-section"
         data-qa-selector="dependency_proxy_size"
       />

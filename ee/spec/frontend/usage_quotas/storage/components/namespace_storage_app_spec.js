@@ -109,7 +109,7 @@ describe('NamespaceStorageApp', () => {
 
   describe('Dependency proxy usage', () => {
     beforeEach(() => {
-      mockDependencyProxyResponse.data.group.dependencyProxyTotalSizeInBytes = 512;
+      mockDependencyProxyResponse.data.group.dependencyProxyTotalSizeBytes = '512';
       mockApollo = createMockApolloProvider(
         mockedNamespaceStorageResponse,
         mockDependencyProxyResponse,
@@ -138,7 +138,7 @@ describe('NamespaceStorageApp', () => {
 
   describe('Container registry usage', () => {
     beforeEach(async () => {
-      mockDependencyProxyResponse.data.group.dependencyProxyTotalSizeInBytes = 512;
+      mockDependencyProxyResponse.data.group.dependencyProxyTotalSizeBytes = '512';
       mockApollo = createMockApolloProvider(
         mockedNamespaceStorageResponse,
         mockDependencyProxyResponse,
