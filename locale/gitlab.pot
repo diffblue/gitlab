@@ -796,6 +796,12 @@ msgstr ""
 msgid "%{italic_start}What's new%{italic_end} is inactive and cannot be viewed."
 msgstr ""
 
+msgid "%{item_ids} could not be removed due to insufficient permissions"
+msgstr ""
+
+msgid "%{item_ids} could not be removed due to not being linked"
+msgstr ""
+
 msgid "%{itemsCount} issues with a limit of %{maxIssueCount}"
 msgstr ""
 
@@ -23603,6 +23609,9 @@ msgstr ""
 msgid "IDE|This option is disabled because you don't have write permissions for the current branch."
 msgstr ""
 
+msgid "IDs with errors: %{error_messages}."
+msgstr ""
+
 msgid "IMPORTANT: Use this setting only for VERY strict auditing purposes. When turned on, nobody will be able to remove the label from any merge requests after they are merged. In addition, nobody will be able to turn off this setting or delete this label."
 msgstr ""
 
@@ -31419,7 +31428,7 @@ msgstr ""
 msgid "No more than %{max_issues} issues can be updated at the same time"
 msgstr ""
 
-msgid "No more than %{max_work_items} work items can be linked at the same time."
+msgid "No more than %{max_work_items} work items can be modified at the same time."
 msgstr ""
 
 msgid "No other labels with such name or description"
@@ -31534,6 +31543,12 @@ msgid "No webhook events"
 msgstr ""
 
 msgid "No webhooks enabled. Select trigger events above."
+msgstr ""
+
+msgid "No work item IDs provided."
+msgstr ""
+
+msgid "No work item found."
 msgstr ""
 
 msgid "No worries, you can still use all the %{strong}%{plan_name}%{strong_close} features for now. You have %{remaining_days} day to renew your subscription."
@@ -45954,6 +45969,9 @@ msgid "Successfully unbanned"
 msgstr ""
 
 msgid "Successfully unblocked"
+msgstr ""
+
+msgid "Successfully unlinked IDs: %{item_ids}."
 msgstr ""
 
 msgid "Successfully unlocked"
