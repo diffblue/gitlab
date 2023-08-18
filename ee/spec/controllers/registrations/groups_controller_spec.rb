@@ -280,17 +280,6 @@ RSpec.describe Registrations::GroupsController, :experiment, feature_category: :
 
           it { is_expected.to redirect_to(success_path) }
         end
-
-        context 'when the `registration_verification` experiment is enabled' do
-          before do
-            stub_experiments(registration_verification: :candidate)
-          end
-
-          it 'is expected to store the success path and redirect to the verification page' do
-            expect(subject).to redirect_to(new_users_sign_up_verification_path(project_id: project.id))
-            expect(controller.stored_location_for(:user)).to eq(success_path)
-          end
-        end
       end
 
       context 'with import_url in the params', :saas do
