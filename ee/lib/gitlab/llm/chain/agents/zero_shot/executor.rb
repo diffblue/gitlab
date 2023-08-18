@@ -90,7 +90,9 @@ module Gitlab
                 user_input: user_input,
                 agent_scratchpad: +"",
                 conversation: conversation,
-                prompt_version: prompt_version
+                prompt_version: prompt_version,
+                current_code: current_code,
+                explain_current_blob: Feature.enabled?(:explain_current_blob, context.current_user)
               }
             end
 
@@ -114,6 +116,15 @@ module Gitlab
                 .select { |_uuid, messages| messages.size > 1 }
 
               by_request.values.sort_by { |messages| messages.first.timestamp }.flatten
+            end
+
+            def current_code
+              return "" unless Feature.enabled?(:explain_current_blob, context.current_user)
+
+              blob = @context.extra_resource[:blob]
+              return "" unless blob
+
+              "The current code file that user sees is #{blob.path} and has the following content\n#{blob.data}\n\n"
             end
 
             PROMPT_TEMPLATE = [
@@ -141,7 +152,7 @@ module Gitlab
                 Final Answer: the final answer to the original input question.
 
                 When concluding your response, provide the final answer as "Final Answer:" as soon as the answer is recognized.
-
+                %<current_code>s
                 If no tool is needed, give a final answer with "Action: DirectAnswer" for the Action parameter and skip writing an Observation.
                 Begin!
               PROMPT

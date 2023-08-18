@@ -126,6 +126,7 @@ module Gitlab
                 # now the issue in context is being referenced in user input.
                 context.resource = issue
                 content = "I identified the issue #{json[:ResourceIdentifier]}."
+                content += " For more information use ResourceReader." if load_json?
 
                 logger.debug(message: "Answer", class: self.class.to_s, content: content)
                 return Answer.new(status: :ok, context: context, content: content, tool: nil)
@@ -146,6 +147,10 @@ module Gitlab
             end
 
             private
+
+            def load_json?
+              Feature.enabled?(:push_ai_to_load_identified_issue_json)
+            end
 
             def authorize
               Utils::Authorizer.context_authorized?(context: context)

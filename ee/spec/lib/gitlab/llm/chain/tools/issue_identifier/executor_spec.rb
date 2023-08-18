@@ -3,13 +3,18 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_category: :shared do
-  RSpec.shared_examples 'success response' do
+  RSpec.shared_examples 'success response' do |ff_off|
     it 'returns success response' do
       ai_request = double
       allow(ai_request).to receive(:request).and_return(ai_response)
       allow(context).to receive(:ai_request).and_return(ai_request)
 
-      response = "I identified the issue #{identifier}."
+      response = if ff_off
+                   "I identified the issue #{identifier}."
+                 else
+                   "I identified the issue #{identifier}. For more information use ResourceReader."
+                 end
+
       expect(tool.execute.content).to eq(response)
     end
   end
@@ -137,6 +142,21 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
           end
 
           it_behaves_like 'success response'
+        end
+
+        context 'when push_ai_to_load_identified_issue_json FF is disabled' do
+          before do
+            stub_feature_flags(push_ai_to_load_identified_issue_json: false)
+          end
+
+          context 'when is issue identified with reference' do
+            let(:identifier) { issue2.to_reference(full: true) }
+            let(:ai_response) do
+              "reference\", \"ResourceIdentifier\": \"#{identifier}\"}"
+            end
+
+            it_behaves_like 'success response', true
+          end
         end
 
         # Skipped pending https://gitlab.com/gitlab-org/gitlab/-/issues/413509

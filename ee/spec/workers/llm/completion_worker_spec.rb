@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Llm::CompletionWorker, feature_category: :team_planning do
+  include FakeBlobHelpers
   include AfterNextHelpers
 
   it_behaves_like 'worker with data consistency', described_class, data_consistency: :delayed
@@ -19,13 +20,22 @@ RSpec.describe Llm::CompletionWorker, feature_category: :team_planning do
     let(:options) { { 'key' => 'value' } }
     let(:ai_template) { { method: :completions, prompt: 'something', options: { temperature: 0.7 } } }
     let(:ai_action_name) { :summarize_comments }
-    let(:params) { options.merge(request_id: 'uuid', internal_request: true, cache_response: false) }
+    let(:referer_url) { nil }
+    let(:extra_resource) { {} }
+
+    let(:params) do
+      options.merge(request_id: 'uuid', internal_request: true, cache_response: false, referer_url: referer_url)
+    end
 
     subject { described_class.new.perform(user_id, resource_id, resource_type, ai_action_name, params) }
 
     shared_examples 'performs successfully' do
       it 'calls Gitlab::Llm::CompletionsFactory' do
         completion = instance_double(Gitlab::Llm::Completions::SummarizeAllOpenNotes)
+        extra_resource_finder = instance_double(::Llm::ExtraResourceFinder)
+
+        expect(::Llm::ExtraResourceFinder).to receive(:new).with(user, referer_url).and_return(extra_resource_finder)
+        expect(extra_resource_finder).to receive(:execute).and_return(extra_resource)
 
         expect(Gitlab::Llm::CompletionsFactory)
           .to receive(:completion)
@@ -34,7 +44,7 @@ RSpec.describe Llm::CompletionWorker, feature_category: :team_planning do
 
         expect(completion)
           .to receive(:execute)
-          .with(user, resource, options.symbolize_keys)
+          .with(user, resource, options.symbolize_keys.merge(extra_resource: extra_resource))
 
         subject
       end
@@ -43,6 +53,13 @@ RSpec.describe Llm::CompletionWorker, feature_category: :team_planning do
     context 'with valid parameters' do
       before do
         group.add_reporter(user)
+      end
+
+      context 'when extra resource is found' do
+        let(:referer_url) { "foobar" }
+        let(:extra_resource) { { blob: fake_blob(path: 'file.md') } }
+
+        it_behaves_like 'performs successfully'
       end
 
       context 'for an issue' do
