@@ -26,6 +26,7 @@ describe('SidebarIterationWidget', () => {
   let wrapper;
   let mockApollo;
 
+  const findCollapsedIterationText = () => wrapper.findByTestId('collapsed-content').text();
   const findCurrentIterationText = () => wrapper.findByTestId('select-iteration').text();
   const findIterationItemsTextAt = (at) => wrapper.findAllByTestId('iteration-items').at(at).text();
   const findIterationCadenceTitleAt = (at) =>
@@ -83,6 +84,12 @@ describe('SidebarIterationWidget', () => {
 
       expect(findCurrentIterationText()).toContain(getIterationPeriod(mockIteration2));
       expect(findCurrentIterationText()).toContain(mockIteration2.title);
+    });
+
+    it('renders iteration period when collapsed', async () => {
+      await createComponentWithApollo({ iterationCadences: true });
+
+      expect(findCollapsedIterationText()).toContain(getIterationPeriod(mockIteration1));
     });
   });
 
