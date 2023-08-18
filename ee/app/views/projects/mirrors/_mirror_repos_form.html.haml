@@ -9,7 +9,7 @@
 
 .form-group
   = label_tag :mirror_direction, _('Mirror direction'), class: 'label-light'
-  = select_tag :mirror_direction, options_for_select(direction_options), class: 'custom-select gl-form-select js-mirror-direction', disabled: (direction_options.count == 1) || has_existing_pull_mirror, data: { qa_selector: 'mirror_direction_field' }
+  = select_tag :mirror_direction, options_for_select(direction_options), class: 'custom-select gl-form-select js-mirror-direction gl-max-w-34 gl-display-block', disabled: (direction_options.count == 1) || has_existing_pull_mirror, data: { qa_selector: 'mirror_direction_field' }
 
 .js-form-insertion-point
 
@@ -29,7 +29,7 @@
 
   .form-group
     = f.label :mirror_user_name, _('Mirror user'), class: 'label-light'
-    = f.text_field :mirror_user_name, value: current_user.name, class: 'form-control gl-form-input gl-mb-2', required: true, disabled: true
+    = f.text_field :mirror_user_name, value: current_user.name, class: 'form-control gl-form-input gl-mb-2 gl-form-input-xl', required: true, disabled: true
     .help-block
       = _('You will be the author of all events in the activity feed that are the result of an update, like new branches being created or new commits being pushed to existing branches.')
 

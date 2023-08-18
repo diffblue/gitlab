@@ -24,7 +24,7 @@
       = radio_button_tag :mirror_branch_setting, :regex, false, class: 'form-check-input js-mirror-branch-setting'
       = label_tag :mirror_branch_setting_regex, class: 'form-check-label' do
         = _('Mirror specific branches')
-        = text_field_tag :mirror_branch_regex, nil, class: 'form-control gl-form-input gl-mt-2 js-mirror-branch-regex', placeholder: _('Example') + ':(feature|hotfix)\/*', disabled: true
+        = text_field_tag :mirror_branch_regex, nil, class: 'form-control gl-form-input gl-mt-2  js-mirror-branch-regex gl-form-input-xl', placeholder: _('Example') + ':(feature|hotfix)\/*', disabled: true
         .form-text.text-muted
           = _('All branch names must match %{link_start}this regular expression%{link_end}. If empty, any branch name is allowed.').html_safe % { link_start: wiki_syntax_link_start, link_end: '</a>'.html_safe }
 
