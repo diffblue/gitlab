@@ -3750,6 +3750,7 @@ Input type: `GoogleCloudLoggingConfigurationCreateInput`
 | <a id="mutationgooglecloudloggingconfigurationcreategoogleprojectidname"></a>`googleProjectIdName` | [`String!`](#string) | Unique identifier of the Google Cloud project to which the logging configuration belongs. |
 | <a id="mutationgooglecloudloggingconfigurationcreategrouppath"></a>`groupPath` | [`ID!`](#id) | Group path. |
 | <a id="mutationgooglecloudloggingconfigurationcreatelogidname"></a>`logIdName` | [`String`](#string) | Unique identifier used to distinguish and manage different logs within the same Google Cloud project.(defaults to `audit_events`). |
+| <a id="mutationgooglecloudloggingconfigurationcreatename"></a>`name` | [`String`](#string) | Destination name. |
 | <a id="mutationgooglecloudloggingconfigurationcreateprivatekey"></a>`privateKey` | [`String!`](#string) | Private Key associated with the service account. This key is used to authenticate the service account and authorize it to interact with the Google Cloud Logging service. |
 
 #### Fields
@@ -3791,6 +3792,7 @@ Input type: `GoogleCloudLoggingConfigurationUpdateInput`
 | <a id="mutationgooglecloudloggingconfigurationupdategoogleprojectidname"></a>`googleProjectIdName` | [`String`](#string) | Unique identifier of the Google Cloud project to which the logging configuration belongs. |
 | <a id="mutationgooglecloudloggingconfigurationupdateid"></a>`id` | [`AuditEventsGoogleCloudLoggingConfigurationID!`](#auditeventsgooglecloudloggingconfigurationid) | ID of the google Cloud configuration to update. |
 | <a id="mutationgooglecloudloggingconfigurationupdatelogidname"></a>`logIdName` | [`String`](#string) | Unique identifier used to distinguish and manage different logs within the same Google Cloud project. |
+| <a id="mutationgooglecloudloggingconfigurationupdatename"></a>`name` | [`String`](#string) | Destination name. |
 | <a id="mutationgooglecloudloggingconfigurationupdateprivatekey"></a>`privateKey` | [`String`](#string) | Private Key associated with the service account. This key is used to authenticate the service account and authorize it to interact with the Google Cloud Logging service. |
 
 #### Fields
@@ -16583,6 +16585,7 @@ Stores Google Cloud Logging configurations associated with IAM service accounts,
 | <a id="googlecloudloggingconfigurationtypegroup"></a>`group` | [`Group!`](#group) | Group the configuration belongs to. |
 | <a id="googlecloudloggingconfigurationtypeid"></a>`id` | [`ID!`](#id) | ID of the configuration. |
 | <a id="googlecloudloggingconfigurationtypelogidname"></a>`logIdName` | [`String!`](#string) | Log ID. |
+| <a id="googlecloudloggingconfigurationtypename"></a>`name` | [`String!`](#string) | Name of the external destination to send audit events to. |
 | <a id="googlecloudloggingconfigurationtypeprivatekey"></a>`privateKey` | [`String!`](#string) | Private key. |
 
 ### `GpgSignature`

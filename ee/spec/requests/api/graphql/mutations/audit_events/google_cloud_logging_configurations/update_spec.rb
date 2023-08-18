@@ -5,13 +5,14 @@ require 'spec_helper'
 RSpec.describe 'Update Google Cloud logging configuration', feature_category: :audit_events do
   include GraphqlHelpers
 
-  let_it_be(:config) { create(:google_cloud_logging_configuration) }
+  let_it_be_with_reload(:config) { create(:google_cloud_logging_configuration) }
   let_it_be(:group) { config.group }
   let_it_be(:owner) { create(:user) }
   let_it_be(:updated_google_project_id_name) { 'updated-project' }
   let_it_be(:updated_client_email) { 'updated-email@example.com' }
   let_it_be(:updated_private_key) { OpenSSL::PKey::RSA.new(4096).to_pem }
   let_it_be(:updated_log_id_name) { 'updated_log_id_name' }
+  let_it_be(:updated_destination_name) { 'updated_destination_name' }
   let_it_be(:config_gid) { global_id_of(config) }
 
   let(:current_user) { owner }
@@ -24,7 +25,8 @@ RSpec.describe 'Update Google Cloud logging configuration', feature_category: :a
       googleProjectIdName: updated_google_project_id_name,
       clientEmail: updated_client_email,
       privateKey: updated_private_key,
-      logIdName: updated_log_id_name
+      logIdName: updated_log_id_name,
+      name: updated_destination_name
     }
   end
 
@@ -60,18 +62,44 @@ RSpec.describe 'Update Google Cloud logging configuration', feature_category: :a
         expect(config.client_email).to eq(updated_client_email)
         expect(config.private_key).to eq(updated_private_key)
         expect(config.log_id_name).to eq(updated_log_id_name)
+        expect(config.name).to eq(updated_destination_name)
       end
 
       it 'audits the update' do
-        subject
+        Mutations::AuditEvents::GoogleCloudLoggingConfigurations::Update::AUDIT_EVENT_COLUMNS.each do |column|
+          message = if column == :private_key
+                      "Changed #{column}"
+                    else
+                      "Changed #{column} from #{config[column]} to #{input[column.to_s.camelize(:lower).to_sym]}"
+                    end
 
-        expect(Gitlab::Audit::Auditor).to have_received(:audit) do |args|
-          expect(args[:name]).to eq('google_cloud_logging_configuration_updated')
-          expect(args[:author]).to eq(current_user)
-          expect(args[:scope]).to eq(group)
-          expect(args[:target]).to eq(group)
-          expect(args[:message]).to eq("Updated Google Cloud logging configuration with project id: " \
-                                       "#{updated_google_project_id_name} and log id: #{updated_log_id_name}")
+          expected_hash = {
+            name: Mutations::AuditEvents::GoogleCloudLoggingConfigurations::Update::UPDATE_EVENT_NAME,
+            author: current_user,
+            scope: group,
+            target: config,
+            message: message
+          }
+
+          expect(Gitlab::Audit::Auditor).to receive(:audit).once.ordered.with(hash_including(expected_hash))
+        end
+
+        subject
+      end
+
+      context 'when the fields are updated with existing values' do
+        let(:input) do
+          {
+            id: config_gid,
+            googleProjectIdName: config.google_project_id_name,
+            name: config.name
+          }
+        end
+
+        it 'does not audit the event' do
+          expect(Gitlab::Audit::Auditor).not_to receive(:audit)
+
+          subject
         end
       end
 

@@ -12,7 +12,7 @@ module Mutations
             author: current_user,
             scope: config.group,
             target: config.group,
-            message: "#{action.capitalize} Google Cloud logging configuration with project id: " \
+            message: "#{action.capitalize} Google Cloud logging configuration with name: #{config.name} project id: " \
                      "#{config.google_project_id_name} and log id: #{config.log_id_name}"
           }
 

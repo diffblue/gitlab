@@ -8,6 +8,10 @@ module Mutations
 
         authorize :admin_external_audit_events
 
+        argument :name, GraphQL::Types::String,
+          required: false,
+          description: 'Destination name.'
+
         argument :group_path, GraphQL::Types::ID,
           required: true,
           description: 'Group path.'
@@ -39,13 +43,14 @@ module Mutations
           null: true,
           description: 'configuration created.'
 
-        def resolve(group_path:, google_project_id_name:, client_email:, private_key:, log_id_name: nil)
+        def resolve(group_path:, google_project_id_name:, client_email:, private_key:, log_id_name: nil, name: nil)
           group = authorized_find!(group_path)
           config_attributes = {
             group: group,
             google_project_id_name: google_project_id_name,
             client_email: client_email,
-            private_key: private_key
+            private_key: private_key,
+            name: name
           }
 
           config_attributes[:log_id_name] = log_id_name if log_id_name.present?

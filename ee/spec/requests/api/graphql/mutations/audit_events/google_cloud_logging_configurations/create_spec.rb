@@ -7,6 +7,7 @@ RSpec.describe 'Create Google Cloud logging configuration', feature_category: :a
 
   let_it_be(:group) { create(:group) }
   let_it_be(:owner) { create(:user) }
+  let_it_be(:destination_name) { 'my_google_destination' }
   let_it_be(:google_project_id_name) { 'test-project' }
   let_it_be(:client_email) { 'test-email@example.com' }
   let_it_be(:private_key) { OpenSSL::PKey::RSA.new(4096).to_pem }
@@ -18,6 +19,7 @@ RSpec.describe 'Create Google Cloud logging configuration', feature_category: :a
 
   let(:input) do
     {
+      name: destination_name,
       groupPath: group.full_path,
       googleProjectIdName: google_project_id_name,
       clientEmail: client_email,
@@ -40,8 +42,8 @@ RSpec.describe 'Create Google Cloud logging configuration', feature_category: :a
         expect(args[:author]).to eq(current_user)
         expect(args[:scope]).to eq(group)
         expect(args[:target]).to eq(group)
-        expect(args[:message]).to eq("Created Google Cloud logging configuration with project id: " \
-                                     "#{google_project_id_name} and log id: #{log_id_name}")
+        expect(args[:message]).to eq("Created Google Cloud logging configuration with name: #{destination_name} " \
+                                     "project id: #{google_project_id_name} and log id: #{log_id_name}")
       end
     end
   end
@@ -84,6 +86,7 @@ RSpec.describe 'Create Google Cloud logging configuration', feature_category: :a
 
         config = AuditEvents::GoogleCloudLoggingConfiguration.last
         expect(config.group).to eq(group)
+        expect(config.name).to eq(destination_name)
         expect(config.google_project_id_name).to eq(google_project_id_name)
         expect(config.client_email).to eq(client_email)
         expect(config.log_id_name).to eq(log_id_name)
@@ -97,6 +100,7 @@ RSpec.describe 'Create Google Cloud logging configuration', feature_category: :a
 
         let(:input) do
           {
+            name: destination_name,
             groupPath: group.full_path,
             googleProjectIdName: google_project_id_name,
             clientEmail: client_email,
@@ -111,6 +115,7 @@ RSpec.describe 'Create Google Cloud logging configuration', feature_category: :a
 
           config = AuditEvents::GoogleCloudLoggingConfiguration.last
           expect(config.group).to eq(group)
+          expect(config.name).to eq(destination_name)
           expect(config.google_project_id_name).to eq(google_project_id_name)
           expect(config.client_email).to eq(client_email)
           expect(config.log_id_name).to eq(log_id_name)
