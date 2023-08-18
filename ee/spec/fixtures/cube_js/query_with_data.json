@@ -4,7 +4,7 @@
     {
       "query": {
         "measures": [
-          "SnowplowTrackedEvents.pageViewsCount"
+          "SnowplowTrackedEvents.count"
         ],
         "filters": [
           {
@@ -39,7 +39,7 @@
       },
       "data": [
         {
-          "SnowplowTrackedEvents.pageViewsCount": "335"
+          "SnowplowTrackedEvents.count": "335"
         }
       ],
       "lastRefreshTime": "2023-07-13T09:24:31.279Z",
@@ -68,12 +68,12 @@
         ],
         "leafMeasureAdditive": true,
         "leafMeasures": [
-          "SnowplowTrackedEvents.pageViewsCount"
+          "SnowplowTrackedEvents.count"
         ],
         "measureToLeafMeasures": {
-          "SnowplowTrackedEvents.pageViewsCount": [
+          "SnowplowTrackedEvents.count": [
             {
-              "measure": "SnowplowTrackedEvents.pageViewsCount",
+              "measure": "SnowplowTrackedEvents.count",
               "additive": true,
               "type": "count"
             }
@@ -152,9 +152,9 @@
       "requestId": "e10b4c42-3546-48d2-be32-22b48bd153b0-span-1",
       "annotation": {
         "measures": {
-          "SnowplowTrackedEvents.pageViewsCount": {
-            "title": "Snowplow Tracked Events Page Views Count",
-            "shortTitle": "Page Views Count",
+          "SnowplowTrackedEvents.count": {
+            "title": "Snowplow Tracked Events Count",
+            "shortTitle": "Event Count",
             "type": "number",
             "drillMembers": [
 
@@ -186,7 +186,7 @@
   ],
   "pivotQuery": {
     "measures": [
-      "SnowplowTrackedEvents.pageViewsCount"
+      "SnowplowTrackedEvents.count"
     ],
     "filters": [
       {
