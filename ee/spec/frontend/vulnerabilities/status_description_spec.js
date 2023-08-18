@@ -1,5 +1,4 @@
 import { GlLink, GlSkeletonLoader, GlLoadingIcon } from '@gitlab/ui';
-import { mount } from '@vue/test-utils';
 import { capitalize } from 'lodash';
 import StatusDescription from 'ee/vulnerabilities/components/status_description.vue';
 import {
@@ -7,6 +6,7 @@ import {
   VULNERABILITY_STATES,
   DISMISSAL_REASONS,
 } from 'ee/vulnerabilities/constants';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import UsersMockHelper from 'helpers/user_mock_data_helper';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import UserAvatarLink from '~/vue_shared/components/user_avatar/user_avatar_link.vue';
@@ -23,7 +23,8 @@ describe('Vulnerability status description component', () => {
   const userAvatar = () => wrapper.findComponent(UserAvatarLink);
   const userLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const skeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
-  const statusEl = () => wrapper.find('[data-testid="status"]');
+  const statusEl = () => wrapper.findByTestId('status');
+  const dismissalReasonEl = () => wrapper.findByTestId('dismissal-reason');
 
   // Create a date using the passed-in string, or just use the current time if nothing was passed in.
   const createDate = (value) => (value ? new Date(value) : new Date()).toISOString();
@@ -39,7 +40,7 @@ describe('Vulnerability status description component', () => {
       vulnerability[propertyName] = vulnerability[propertyName] || createDate();
     }
 
-    wrapper = mount(StatusDescription, {
+    wrapper = mountExtended(StatusDescription, {
       propsData: { ...props, vulnerability },
       provide: { glFeatures: { dismissalReason } },
     });
@@ -50,7 +51,7 @@ describe('Vulnerability status description component', () => {
     it.each(ALL_STATES)('shows the correct string for the vulnerability state "%s"', (state) => {
       createWrapper({ vulnerability: { state, pipeline: {} } });
 
-      expect(statusEl().text()).toBe(`${capitalize(state)} ·`);
+      expect(statusEl().text()).toBe(`${capitalize(state)}`);
     });
 
     it.each(Object.entries(DISMISSAL_REASONS))(
@@ -68,7 +69,8 @@ describe('Vulnerability status description component', () => {
           },
         });
 
-        expect(statusEl().text()).toBe(`Dismissed: ${translation} ·`);
+        expect(statusEl().text()).toBe(`Dismissed`);
+        expect(dismissalReasonEl().text()).toBe(translation);
       },
     );
 

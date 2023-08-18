@@ -57,19 +57,24 @@ export default {
       switch (this.state) {
         case 'detected':
           return s__(
-            'VulnerabilityManagement|%{statusStart}Detected%{statusEnd} %{timeago} in pipeline %{pipelineLink}',
+            'VulnerabilityManagement|%{statusStart}Detected%{statusEnd} · %{timeago} in pipeline %{pipelineLink}',
           );
         case 'confirmed':
           return s__(
-            'VulnerabilityManagement|%{statusStart}Confirmed%{statusEnd} %{timeago} by %{user}',
+            'VulnerabilityManagement|%{statusStart}Confirmed%{statusEnd} · %{timeago} by %{user}',
           );
         case 'dismissed':
+          if (this.hasDismissalReason) {
+            return s__(
+              'VulnerabilityManagement|%{statusStart}Dismissed%{statusEnd}: %{dismissalReason} · %{timeago} by %{user}',
+            );
+          }
           return s__(
-            'VulnerabilityManagement|%{statusStart}Dismissed%{statusEnd} %{timeago} by %{user}',
+            'VulnerabilityManagement|%{statusStart}Dismissed%{statusEnd} · %{timeago} by %{user}',
           );
         case 'resolved':
           return s__(
-            'VulnerabilityManagement|%{statusStart}Resolved%{statusEnd} %{timeago} by %{user}',
+            'VulnerabilityManagement|%{statusStart}Resolved%{statusEnd} · %{timeago} by %{user}',
           );
         default:
           return '%timeago';
@@ -97,11 +102,13 @@ export default {
     <!-- there are cases in which `time` is undefined (e.g.: manually submitted vulnerabilities in "needs triage" state) -->
     <gl-sprintf v-else-if="time" :message="statusText">
       <template #status="{ content }">
-        <span :class="{ 'gl-font-weight-bold': isStatusBolded }" data-testid="status">
-          <template v-if="hasDismissalReason">
-            {{ content }}: {{ dismissalReasonText }} &middot;
-          </template>
-          <template v-else>{{ content }} &middot;</template>
+        <span :class="{ 'gl-font-weight-bold': isStatusBolded }" data-testid="status">{{
+          content
+        }}</span>
+      </template>
+      <template #dismissalReason>
+        <span :class="{ 'gl-font-weight-bold': isStatusBolded }" data-testid="dismissal-reason">
+          {{ dismissalReasonText }}
         </span>
       </template>
       <template #timeago>
