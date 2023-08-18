@@ -177,11 +177,7 @@ export default {
     >
       <template #header>
         <div class="gl-new-card-title-wrapper">
-          <h5
-            class="gl-new-card-title"
-            data-testid="subscription-header"
-            data-qa-selector="subscription_header"
-          >
+          <h5 class="gl-new-card-title" data-testid="subscription-header">
             {{ subscriptionHeader }}
           </h5>
         </div>
