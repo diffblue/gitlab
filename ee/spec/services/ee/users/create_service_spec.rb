@@ -40,7 +40,14 @@ RSpec.describe Users::CreateService, feature_category: :user_management do
               custom_message: "User #{@resource.username} created",
               target_id: @resource.id,
               target_type: 'User',
-              target_details: @resource.full_path
+              target_details: @resource.full_path,
+              registration_details: {
+                id: @resource.id,
+                name: @resource.name,
+                username: @resource.username,
+                email: @resource.email,
+                access_level: @resource.access_level
+              }
             }
           }
         end

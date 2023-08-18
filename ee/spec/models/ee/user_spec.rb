@@ -3137,4 +3137,22 @@ RSpec.describe User, feature_category: :system_access do
       end
     end
   end
+
+  describe '#registration_audit_details' do
+    let!(:user) { create(:user, namespace: create(:user_namespace, namespace_settings: create(:namespace_settings))) }
+
+    subject { user.registration_audit_details }
+
+    it 'returns audit details hash' do
+      details_hash = {
+        id: user.id,
+        username: user.username,
+        name: user.name,
+        email: user.email,
+        access_level: user.access_level
+      }
+
+      expect(subject).to eql(details_hash)
+    end
+  end
 end

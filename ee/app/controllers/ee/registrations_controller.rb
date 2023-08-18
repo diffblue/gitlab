@@ -103,7 +103,10 @@ module EE
         scope: user,
         target: user,
         target_details: user.username,
-        message: _("Instance access request")
+        message: _("Instance access request"),
+        additional_details: {
+          registration_details: user.registration_audit_details
+        }
       })
     end
 

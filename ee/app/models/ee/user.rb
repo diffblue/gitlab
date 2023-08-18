@@ -616,6 +616,16 @@ module EE
       end
     end
 
+    def registration_audit_details
+      {
+        id: id,
+        username: username,
+        name: name,
+        email: email,
+        access_level: access_level
+      }
+    end
+
     protected
 
     override :password_required?

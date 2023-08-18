@@ -23,7 +23,8 @@ module EE
           target_details: user.full_path,
           message: "User #{user.username} created",
           additional_details: {
-            add: "user"
+            add: "user",
+            registration_details: user.registration_audit_details
           }
         })
       end
