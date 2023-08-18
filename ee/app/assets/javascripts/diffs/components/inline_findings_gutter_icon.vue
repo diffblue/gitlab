@@ -4,6 +4,7 @@ import { n__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { getSeverity } from '~/ci/reports/utils';
 import { CODE_QUALITY_SCALE_KEY } from '~/ci/reports/constants';
+import { scaleFindings } from './inline_findings_gutter_icon_utils';
 
 const inlineFindingsCountThreshold = 3;
 
@@ -23,7 +24,7 @@ export default {
       type: String,
       required: true,
     },
-    codequality: {
+    codeQuality: {
       type: Array,
       required: false,
       default: () => [],
@@ -35,39 +36,28 @@ export default {
     };
   },
   computed: {
-    combinedFindings() {
-      // add scale info
-      this.codequality.map((e) => {
-        const scaledCodeQuality = e;
-        scaledCodeQuality.scale = CODE_QUALITY_SCALE_KEY;
-        return scaledCodeQuality;
-      });
-
-      // cloneDeep to not mutate props
-      return this.codequality;
+    scaledCodeQuality() {
+      return getSeverity(this.codeQuality.map((e) => scaleFindings(e, CODE_QUALITY_SCALE_KEY)));
     },
     codeQualityTooltipTextCollapsed() {
-      return n__('1 Code Quality finding', '%d Code Quality findings', this.codequality.length);
+      return n__('1 Code Quality finding', '%d Code Quality findings', this.codeQuality.length);
     },
     showMoreCount() {
       return this.moreCount && this.isHoveringFirstIcon;
     },
     line() {
-      return this.combinedFindings[0].line;
+      return this.scaledCodeQuality[0].line;
     },
     moreCount() {
-      return this.combinedFindings.length > inlineFindingsCountThreshold
-        ? this.combinedFindings.length - inlineFindingsCountThreshold
+      return this.scaledCodeQuality.length > inlineFindingsCountThreshold
+        ? this.scaledCodeQuality.length - inlineFindingsCountThreshold
         : 0;
     },
-    findingsWithSeverity() {
-      return getSeverity(this.combinedFindings);
-    },
     firstItem() {
-      return { ...this.combinedFindings[0], filePath: this.filePath };
+      return { ...this.scaledCodeQuality[0], filePath: this.filePath };
     },
     inlineFindingsSubItems() {
-      return this.findingsWithSeverity.slice(1, inlineFindingsCountThreshold);
+      return this.scaledCodeQuality.slice(1, inlineFindingsCountThreshold);
     },
   },
 };
@@ -75,7 +65,7 @@ export default {
 
 <template>
   <div
-    v-if="findingsWithSeverity.length"
+    v-if="scaledCodeQuality.length"
     class="gl-z-index-1 gl-relative"
     @click="$emit('showInlineFindings')"
   >
@@ -86,8 +76,8 @@ export default {
           ref="firstInlineFindingsIcon"
           :key="firstItem.description"
           :size="16"
-          :name="findingsWithSeverity[0].name"
-          :class="findingsWithSeverity[0].class"
+          :name="firstItem.name"
+          :class="firstItem.class"
           class="gl-hover-cursor-pointer gl-relative gl-top-1 inline-findings-severity-icon gl-vertical-align-baseline!"
           @mouseenter="isHoveringFirstIcon = true"
           @mouseleave="isHoveringFirstIcon = false"
@@ -101,11 +91,11 @@ export default {
           -->
           <!-- eslint-disable vue/no-use-v-if-with-v-for -->
           <gl-icon
-            v-for="(item, index) in inlineFindingsSubItems"
+            v-for="item in inlineFindingsSubItems"
             v-if="isHoveringFirstIcon"
             :key="item.description"
-            :name="inlineFindingsSubItems[index].name"
-            :class="inlineFindingsSubItems[index].class"
+            :name="item.name"
+            :class="item.class"
             class="gl-hover-cursor-pointer gl-relative gl-top-1 inline-findings-severity-icon gl-absolute gl-left-0"
           />
           <!-- eslint-enable -->
@@ -129,7 +119,7 @@ export default {
       b) because the tooltip would be misaligned hence the negative margin
      -->
     <gl-tooltip v-if="!$props.inlineFindingsExpanded" :target="() => $refs.inlineFindingsIcon">
-      <span v-if="codequality.length" class="gl-display-block">{{
+      <span v-if="codeQuality.length" class="gl-display-block">{{
         codeQualityTooltipTextCollapsed
       }}</span>
     </gl-tooltip>

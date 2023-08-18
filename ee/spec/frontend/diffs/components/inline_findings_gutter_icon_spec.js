@@ -9,6 +9,7 @@ import {
   fiveCodeQualityFindings,
   threeCodeQualityFindings,
   singularCodeQualityFinding,
+  filePath,
 } from '../../../../../spec/frontend/diffs/mock_data/inline_findings';
 
 jest.mock('~/mr_notes/stores', () => jest.requireActual('helpers/mocks/mr_notes/stores'));
@@ -45,7 +46,7 @@ describe('EE inlineFindingsGutterIcon', () => {
     ${'blocker'}
     ${'unknown'}
   `('shows icon for $severity degradation', ({ severity }) => {
-    createComponent({ filePath: 'index.js', codequality: [{ severity }] });
+    createComponent({ filePath: 'index.js', codeQuality: [{ severity }] });
 
     expect(findIcon().exists()).toBe(true);
     expect(findIcon().attributes()).toMatchObject({
@@ -68,7 +69,7 @@ describe('EE inlineFindingsGutterIcon', () => {
 
     describe('with maximum 3 code Quality findings', () => {
       beforeEach(() => {
-        createComponent(threeCodeQualityFindings);
+        createComponent({ filePath, codeQuality: threeCodeQualityFindings });
       });
 
       it('contains a tooltip', () => {
@@ -107,7 +108,7 @@ describe('EE inlineFindingsGutterIcon', () => {
 
     describe('with more than 3 codequality findings', () => {
       beforeEach(() => {
-        createComponent(fiveCodeQualityFindings);
+        createComponent({ filePath, codeQuality: fiveCodeQualityFindings });
       });
 
       it('displays first icon with correct severity', () => {
@@ -130,12 +131,12 @@ describe('EE inlineFindingsGutterIcon', () => {
 
     describe('with singular finding', () => {
       it('displays correct popover text with singular codequality finding', () => {
-        createComponent(singularCodeQualityFinding);
+        createComponent({ filePath, codeQuality: singularCodeQualityFinding });
         expect(wrapper.findComponent(GlTooltip).text()).toContain('1 Code Quality finding');
       });
 
       it('does not trigger "first-icon-hovered" class when firstInlineFindingsIcon is hovered', async () => {
-        createComponent(singularCodeQualityFinding);
+        createComponent({ filePath, codeQuality: singularCodeQualityFinding });
         findFirstIcon().vm.$emit('mouseenter');
         await nextTick();
         expect(wrapper.findAll('.first-icon-hovered')).toHaveLength(0);
@@ -145,7 +146,7 @@ describe('EE inlineFindingsGutterIcon', () => {
     describe('indicator icon', () => {
       describe('with inlineFindingsExpanded prop false', () => {
         beforeEach(() => {
-          createComponent(singularCodeQualityFinding);
+          createComponent({ filePath, codeQuality: singularCodeQualityFinding });
         });
 
         it('shows severity icon with correct tooltip', () => {
@@ -156,7 +157,8 @@ describe('EE inlineFindingsGutterIcon', () => {
       describe('with inlineFindingsExpanded prop true', () => {
         beforeEach(() => {
           createComponent({
-            ...singularCodeQualityFinding,
+            filePath,
+            codeQuality: singularCodeQualityFinding,
             inlineFindingsExpanded: true,
           });
         });
