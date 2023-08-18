@@ -33679,6 +33679,9 @@ msgstr ""
 msgid "Pages Domain"
 msgstr ""
 
+msgid "PagesDomain|Certificate Key is too long. (Max %d bytes)"
+msgstr ""
+
 msgid "Pagination|First"
 msgstr ""
 
