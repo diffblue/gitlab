@@ -31,14 +31,14 @@ module MicrosoftApplicationActions
   private
 
   def find_or_initialize_microsoft_application
-    return unless ::Gitlab::Auth::Saml::Config.microsoft_group_sync_enabled?
+    return unless microsoft_group_sync_enabled?
 
     @microsoft_application = # rubocop:disable Gitlab/ModuleWithInstanceVariables
       ::SystemAccess::MicrosoftApplication.find_or_initialize_by(namespace: microsoft_application_namespace) # rubocop:disable CodeReuse/ActiveRecord
   end
 
   def check_microsoft_group_sync_available
-    render_404 unless ::Gitlab::Auth::Saml::Config.microsoft_group_sync_enabled?
+    render_404 unless microsoft_group_sync_enabled?
   end
 
   def microsoft_application_params

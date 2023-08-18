@@ -541,8 +541,14 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
   end
 
-  it_behaves_like 'Microsoft Azure integration form' do
-    let(:path) { general_admin_application_settings_path }
+  describe 'Microsoft Azure integration', feature_category: :system_access do
+    before do
+      allow(::Gitlab::Auth::Saml::Config).to receive(:microsoft_group_sync_enabled?).and_return(true)
+    end
+
+    it_behaves_like 'Microsoft Azure integration form' do
+      let(:path) { general_admin_application_settings_path }
+    end
   end
 
   describe 'Namespace storage cost factor for forks setting', feature_category: :consumables_cost_management do
