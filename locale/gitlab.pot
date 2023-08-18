@@ -25163,6 +25163,16 @@ msgstr ""
 msgid "Inline math"
 msgstr ""
 
+msgid "InlineFindings|1 Code Quality finding detected"
+msgid_plural "InlineFindings|%d Code Quality findings detected"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "InlineFindings|1 SAST finding detected"
+msgid_plural "InlineFindings|%d SAST findings detected"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "Input host keys manually"
 msgstr ""
 

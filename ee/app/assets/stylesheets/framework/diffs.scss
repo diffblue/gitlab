@@ -48,10 +48,14 @@
     filter: drop-shadow(0 1px 0.5px #fff) drop-shadow(1px 0 0.5px #fff) drop-shadow(0 -1px 0.5px #fff) drop-shadow(-1px 0 0.5px #fff);
   }
 
+  // this rule needs to be removed together when the sastReportsInInlineDiff flag is removed https://gitlab.com/gitlab-org/gitlab/-/issues/410191
   .more-count-copy {
     line-height: $code-line-height;
   }
 
+  .more-count-copy-dropdown {
+    line-height: 0.11;
+  }
 
   .inline-findings-transition-container {
     .more-count-enter,
@@ -64,7 +68,7 @@
 
     .more-count {
       // Each icon is 10px per $x-pos above, we currently only ever show 3 additional icons
-      // See `codequalityCountThreshold` in  `code_quality_gutter-icon.vue`
+      // See `codequalityCountThreshold` in  `inline_findings_gutter-icon.vue` or `inline_findings_gutter_icon_dropdown.vue`
       transform: translateX(30px);
       z-index: 3;
       transition: opacity 0.1s, transform 0.2s;
@@ -117,4 +121,20 @@
       font-size: $gl-font-size-large;
     }
   }
+}
+
+.findings-dropdown {
+  font-family: $regular-font;
+
+  .gl-truncate {
+    max-width: 19rem;
+  }
+
+  .gl-truncate-end {
+    white-space: nowrap !important;
+  }
+}
+
+.findings-dropdown-width {
+  width: 23rem;
 }
