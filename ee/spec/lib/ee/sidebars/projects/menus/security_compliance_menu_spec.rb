@@ -46,45 +46,31 @@ RSpec.describe Sidebars::Projects::Menus::SecurityComplianceMenu, feature_catego
 
   describe 'Menu items' do
     describe 'with read_vulnerablity custom role permission' do
-      subject(:renderable_items) { described_class.new(context).renderable_items }
+      subject(:renderable_items) { described_class.new(context).renderable_items.map(&:item_id) }
 
       before do
         stub_licensed_features(
           security_dashboard: true, audit_events: true, dependency_scanning: true, custom_roles: true, license_scanning: true)
-      end
 
-      let_it_be(:project) { create(:project, :public, :in_group) }
-      let_it_be(:guest) { create(:user) }
-      let_it_be(:member) do
-        create(
-          :group_member,
-          user: guest,
-          source: project.group,
-          access_level: Gitlab::Access::GUEST
-        )
-      end
-
-      let_it_be(:member_role) do
         create(:member_role, :guest, namespace: project.group, read_vulnerability: true).tap do |role|
+          member = create(:group_member, :guest, user: guest, source: project.group)
           role.members << member
         end
       end
 
+      let(:guest) { create(:user) }
       let(:context) { Sidebars::Projects::Context.new(current_user: guest, container: project, show_promotions: false, show_discover_project_security: false) }
-      let(:allowed_pages) { [:vulnerability_report] }
-      let(:disallowed_pages) do
-        [:configuration, :discover_project_security, :dashboard, :on_demand_scans, :dependency_list,
-          :license_compliance, :scan_policies, :audit_events]
+
+      context 'with a public project' do
+        let_it_be(:project) { create(:project, :public, :in_group) }
+
+        it { expect(renderable_items).to match_array([:dashboard, :dependency_list, :license_compliance, :vulnerability_report]) }
       end
 
-      it 'displays the vulnerability report menu item' do
-        expect(renderable_items.find { |i| i.item_id == :vulnerability_report }).not_to be_nil
-      end
+      context 'with a private project' do
+        let_it_be(:project) { create(:project, :private, :in_group) }
 
-      it 'does not display other pages' do
-        disallowed_pages.each do |page_id|
-          expect(renderable_items.find { |i| i.item_id == page_id }).to be_nil
-        end
+        it { expect(renderable_items).to match_array([:dashboard, :vulnerability_report]) }
       end
     end
 
