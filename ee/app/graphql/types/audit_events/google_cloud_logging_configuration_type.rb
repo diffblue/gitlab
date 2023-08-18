@@ -31,6 +31,10 @@ module Types
       field :private_key, GraphQL::Types::String,
         null: false,
         description: 'Private key.'
+
+      field :name, GraphQL::Types::String,
+        null: false,
+        description: 'Name of the external destination to send audit events to.'
     end
   end
 end

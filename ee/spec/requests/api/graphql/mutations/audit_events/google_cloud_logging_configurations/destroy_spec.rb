@@ -50,8 +50,8 @@ RSpec.describe 'Destroy Google Cloud logging configuration', feature_category: :
           expect(args[:author]).to eq(current_user)
           expect(args[:scope]).to eq(group)
           expect(args[:target]).to eq(group)
-          expect(args[:message]).to eq("Deleted Google Cloud logging configuration with project id: " \
-                                       "#{config.google_project_id_name} and log id: #{config.log_id_name}")
+          expect(args[:message]).to eq("Deleted Google Cloud logging configuration with name: #{config.name} " \
+                                       "project id: #{config.google_project_id_name} and log id: #{config.log_id_name}")
         end
       end
 

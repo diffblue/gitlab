@@ -6,11 +6,20 @@ module Mutations
       class Update < Base
         graphql_name 'GoogleCloudLoggingConfigurationUpdate'
 
+        include ::Audit::Changes
+
+        UPDATE_EVENT_NAME = 'google_cloud_logging_configuration_updated'
+        AUDIT_EVENT_COLUMNS = [:google_project_id_name, :client_email, :private_key, :log_id_name, :name].freeze
+
         authorize :admin_external_audit_events
 
         argument :id, ::Types::GlobalIDType[::AuditEvents::GoogleCloudLoggingConfiguration],
           required: true,
           description: 'ID of the google Cloud configuration to update.'
+
+        argument :name, GraphQL::Types::String,
+          required: false,
+          description: 'Destination name.'
 
         argument :google_project_id_name, GraphQL::Types::String,
           required: false,
@@ -38,18 +47,18 @@ module Mutations
           null: true,
           description: 'configuration updated.'
 
-        def resolve(id:, google_project_id_name: nil, client_email: nil, private_key: nil, log_id_name: nil)
+        def resolve(id:, google_project_id_name: nil, client_email: nil, private_key: nil, log_id_name: nil, name: nil)
           config = authorized_find!(id)
           config_attributes = {
             google_project_id_name: google_project_id_name,
             client_email: client_email,
             private_key: private_key,
-            log_id_name: log_id_name
+            log_id_name: log_id_name,
+            name: name
           }.compact
 
           if config.update(config_attributes)
-            audit(config, action: :updated)
-
+            audit_update(config)
             { google_cloud_logging_configuration: config, errors: [] }
           else
             { google_cloud_logging_configuration: nil, errors: Array(config.errors) }
@@ -57,6 +66,18 @@ module Mutations
         end
 
         private
+
+        def audit_update(config)
+          AUDIT_EVENT_COLUMNS.each do |column|
+            audit_changes(
+              column,
+              as: column.to_s,
+              entity: config.group,
+              model: config,
+              event_type: UPDATE_EVENT_NAME
+            )
+          end
+        end
 
         def find_object(config_gid)
           GitlabSchema.object_from_id(
