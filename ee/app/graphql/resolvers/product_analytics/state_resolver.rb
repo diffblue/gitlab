@@ -48,7 +48,7 @@ module Resolvers
       class << self
         def events_table
           if Feature.enabled?(:product_analytics_snowplow_support, @project)
-            'SnowplowTrackedEvents.pageViewsCount'
+            'SnowplowTrackedEvents.count'
           else
             'TrackedEvents.pageViewsCount'
           end

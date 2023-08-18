@@ -350,7 +350,7 @@ RSpec.shared_examples 'product analytics dashboards' do
 
     def stub_cube_proxy_zero_count
       query_object = Gitlab::Json.parse(query_response_with_data)
-      query_object['results'][0]['data'][0]['SnowplowTrackedEvents.pageViewsCount'] = 0
+      query_object['results'][0]['data'][0]['SnowplowTrackedEvents.count'] = 0
 
       stub_request(:post, cube_api_url)
         .to_return(status: 200, body: query_object.to_json, headers: {})

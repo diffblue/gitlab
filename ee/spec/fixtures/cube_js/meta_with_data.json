@@ -331,7 +331,7 @@
       "connectedComponent": 2,
       "measures": [
         {
-          "name": "SnowplowTrackedEvents.pageViewsCount",
+          "name": "SnowplowTrackedEvents.Count",
           "title": "Snowplow Tracked Events Page Views Count",
           "shortTitle": "Page Views Count",
           "cumulativeTotal": false,

@@ -76,14 +76,14 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
 
         it 'shows the selected measure data' do
           expect(find('[data-testid="grid-stack-panel"]'))
-            .to have_content('Page Views Count 335')
+            .to have_content('Event Count 335')
         end
 
         [
           {
             name: 'LineChart',
             button_text: 'Line Chart',
-            content: 'Snowplow Tracked Events Page Views Count'
+            content: 'Snowplow Tracked Events Count'
           },
           {
             name: 'ColumnChart',
@@ -147,7 +147,7 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
   end
 
   def select_all_views_measure
-    click_button 'Page Views'
-    click_button 'All Pages'
+    click_button 'Events'
+    click_button 'All Events Compared'
   end
 end
