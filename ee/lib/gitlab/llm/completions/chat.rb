@@ -19,7 +19,8 @@ module Gitlab
             current_user: user,
             container: resource.try(:resource_parent)&.root_ancestor,
             resource: resource,
-            ai_request: ai_request
+            ai_request: ai_request,
+            extra_resource: options.delete(:extra_resource) || {}
           )
 
           response = Gitlab::Llm::Chain::Agents::ZeroShot::Executor.new(

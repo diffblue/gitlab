@@ -10,12 +10,15 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
   let(:tool_answer) { instance_double(Gitlab::Llm::Chain::Answer, is_final?: false, content: 'Bar', status: :ok) }
   let(:tool_double) { instance_double(Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor) }
   let(:tools) { [Gitlab::Llm::Chain::Tools::IssueIdentifier] }
+  let(:extra_resource) { {} }
   let(:response_double) { "I know the final answer\nFinal Answer: FooBar" }
+  let(:resource) { user }
 
   let(:context) do
     Gitlab::Llm::Chain::GitlabContext.new(
-      current_user: user, container: nil, resource: user, ai_request: ai_request_double,
-      tools_used: [Gitlab::Llm::Chain::Tools::IssueIdentifier, Gitlab::Llm::Chain::Tools::IssueIdentifier]
+      current_user: user, container: nil, resource: resource, ai_request: ai_request_double,
+      tools_used: [Gitlab::Llm::Chain::Tools::IssueIdentifier, Gitlab::Llm::Chain::Tools::IssueIdentifier],
+      extra_resource: extra_resource
     )
   end
 
@@ -155,14 +158,46 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
 
       agent.prompt
     end
+
+    context 'when resource is a blob' do
+      let_it_be(:project) { create(:project, :repository) }
+      let_it_be(:blob) { project.repository.blob_at("master", "README") }
+
+      let(:extra_resource) { { blob: blob } }
+      let(:injected_prompt) do
+        "The current code file that user sees is #{blob.path} and has the following content\n#{blob.data}"
+      end
+
+      before do
+        stub_feature_flags(explain_current_blob: user)
+      end
+
+      it 'includes the blob data in the prompt' do
+        expect(agent.prompt[:prompt]).to include injected_prompt
+      end
+
+      context 'when the feature flag explain_current_blob is disabled for current user' do
+        let(:other_user) { create(:user) }
+
+        before do
+          stub_feature_flags(explain_current_blob: other_user)
+        end
+
+        it 'omits the blob data in the prompt' do
+          expect(agent.prompt[:prompt]).to exclude injected_prompt
+        end
+      end
+    end
   end
 
   describe 'real requests', :real_ai_request, :saas do
     using RSpec::Parameterized::TableSyntax
 
     let_it_be_with_reload(:group) { create(:group_with_plan, :public, plan: :ultimate_plan) }
-    let_it_be(:project) { create(:project, group: group) }
+    let_it_be(:project) { create(:project, :repository, group: group) }
+
     let(:resource) { user }
+    let(:extra_resource) { {} }
 
     let(:executor) do
       ai_request = ::Gitlab::Llm::Chain::Requests::Anthropic.new(user)
@@ -170,7 +205,8 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         current_user: user,
         container: resource.try(:resource_parent)&.root_ancestor,
         resource: resource,
-        ai_request: ai_request
+        ai_request: ai_request,
+        extra_resource: extra_resource
       )
 
       described_class.new(
@@ -197,6 +233,51 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
 
         expect(executor.prompt).to match_llm_tools(tools)
         expect(answer.content).to match_llm_answer(answer_match)
+      end
+    end
+
+    context 'with blob as resource' do
+      let(:blob) { project.repository.blob_at("master", "files/ruby/popen.rb") }
+      let(:extra_resource) { { blob: blob } }
+
+      context 'when the feature flag :explain_current_blob is enabled for user' do
+        where(:input_template, :tools, :answer_match) do
+          'Explain the code'          | [] | /ruby|popen/i
+          'Explain this code'         | [] | /ruby|popen/i
+          'What is this code doing?'  | [] | /ruby|popen/i
+          'Can you explain the code ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""?' | [] | /hello/i
+        end
+
+        with_them do
+          let(:input) { input_template }
+
+          before do
+            stub_feature_flags(explain_current_blob: user)
+          end
+
+          it_behaves_like 'successful prompt processing'
+        end
+      end
+
+      context 'when the feature flag :explain_current_blob is disabled for user' do
+        let_it_be(:other_user) { create(:user) }
+
+        where(:input_template, :tools, :answer_match) do
+          'Explain the code'          | [] | /react/i # Hallucinates by making up react code
+          'Explain this code'         | [] | /react/i # Hallucinates by making up react code
+          'What is this code doing?'  | [] | /react/i # Hallucinates by making up react code
+          'Can you explain the code ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""?' | [] | /hello/i
+        end
+
+        with_them do
+          let(:input) { input_template }
+
+          before do
+            stub_feature_flags(explain_current_blob: other_user)
+          end
+
+          it_behaves_like 'successful prompt processing'
+        end
       end
     end
 

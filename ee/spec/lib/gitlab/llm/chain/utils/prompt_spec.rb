@@ -38,4 +38,20 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Prompt, feature_category: :shared do
       expect(described_class.role_conversation([prompt], input_vars)).to eq([result].to_json)
     end
   end
+
+  describe "#default_system_prompt" do
+    let(:explain_current_blob) do
+      "You can explain code if the user provided a code snippet and answer directly."
+    end
+
+    it 'includes the prompt to explain code directly' do
+      expect(described_class.default_system_prompt(explain_current_blob: true)).to include explain_current_blob
+    end
+
+    context 'when explain_current_blob is false by default' do
+      it 'omits the prompt to explain code directly' do
+        expect(described_class.default_system_prompt).to exclude explain_current_blob
+      end
+    end
+  end
 end

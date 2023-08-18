@@ -10,7 +10,8 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::VertexAi, feature_
         tool_names: "tool names",
         user_input: 'foo?',
         agent_scratchpad: "some observation",
-        prompt_version: ::Gitlab::Llm::Chain::Agents::ZeroShot::Executor::PROMPT_TEMPLATE
+        prompt_version: ::Gitlab::Llm::Chain::Agents::ZeroShot::Executor::PROMPT_TEMPLATE,
+        current_code: ""
       }
       prompt = described_class.prompt(options)[:prompt]
       prompt_text = "Answer the question as accurate as you can."

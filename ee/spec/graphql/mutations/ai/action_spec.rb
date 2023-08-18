@@ -7,8 +7,11 @@ RSpec.describe Mutations::Ai::Action, feature_category: :not_owned do # rubocop:
   let_it_be(:resource, reload: true) { create(:issue) }
   let(:resource_id) { resource.to_gid.to_s }
   let(:request_id) { 'uuid' }
+  let(:request) { instance_double(ActionDispatch::Request, headers: { "Referer" => "foobar" }) }
+  let(:context) { { current_user: user, request: request } }
+  let(:expected_options) { {} }
 
-  subject(:mutation) { described_class.new(object: nil, context: { current_user: user }, field: nil) }
+  subject(:mutation) { described_class.new(object: nil, context: context, field: nil) }
 
   describe '#ready?' do
     let(:arguments) { { summarize_comments: { resource_id: resource_id }, markup_format: :markdown } }
@@ -127,15 +130,14 @@ RSpec.describe Mutations::Ai::Action, feature_category: :not_owned do # rubocop:
         end
 
         context 'when resource is null' do
-          let(:input) { { chat: { resource_id: nil } } }
-          let(:expected_options) { {} }
+          let(:resource_id) { nil }
 
           it 'calls Llm::ExecuteMethodService' do
             expect_next_instance_of(
               Llm::ExecuteMethodService,
               user,
               nil,
-              :chat,
+              expected_method,
               expected_options
             ) do |svc|
               expect(svc)
@@ -166,6 +168,18 @@ RSpec.describe Mutations::Ai::Action, feature_category: :not_owned do # rubocop:
             expect(subject[:request_id]).to be_nil
           end
         end
+      end
+    end
+
+    context 'when chat input is set ' do
+      let_it_be(:project) { create(:project, :repository).tap { |p| p.add_developer(user) } }
+      let_it_be(:issue) { create(:issue, project: project) }
+
+      let(:input) { { chat: { resource_id: resource_id } } }
+
+      it_behaves_like 'an AI action' do
+        let(:expected_method) { :chat }
+        let(:expected_options) { { referer_url: "foobar" } }
       end
     end
 

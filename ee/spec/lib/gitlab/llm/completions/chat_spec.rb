@@ -3,15 +3,20 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
+  include FakeBlobHelpers
+
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
-  let_it_be(:project) { create(:project, group: group) }
-  let_it_be(:resource) { create(:issue, project: project) }
+  let_it_be(:project) { create(:project, :repository,  group: group) }
+  let_it_be(:issue) { create(:issue, project: project) }
 
+  let(:resource) { issue }
   let(:expected_container) { group }
   let(:content) { 'Summarize issue' }
   let(:ai_request) { instance_double(Gitlab::Llm::Chain::Requests::Anthropic) }
-  let(:options) { { content: content } }
+  let(:blob) { fake_blob(path: 'file.md') }
+  let(:extra_resource) { { blob: blob } }
+  let(:options) { { request_id: 'uuid', content: content, extra_resource: extra_resource } }
   let(:container) { group }
   let(:context) do
     instance_double(
@@ -51,7 +56,8 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
         .to receive(:increment)
         .with(labels: { tool: "IssueIdentifier" }, success: true)
       expect(::Gitlab::Llm::Chain::GitlabContext).to receive(:new)
-        .with(current_user: user, container: expected_container, resource: resource, ai_request: ai_request)
+        .with(current_user: user, container: expected_container, resource: resource, ai_request: ai_request,
+          extra_resource: extra_resource)
         .and_return(context)
 
       subject
@@ -143,7 +149,8 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
         end
 
         expect(::Gitlab::Llm::Chain::GitlabContext).to receive(:new)
-          .with(current_user: user, container: expected_container, resource: resource, ai_request: ai_request)
+          .with(current_user: user, container: expected_container, resource: resource, ai_request: ai_request,
+            extra_resource: extra_resource)
           .and_return(context)
 
         subject

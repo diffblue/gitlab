@@ -33,7 +33,15 @@ module Gitlab
             end.to_json
           end
 
-          def self.default_system_prompt
+          def self.default_system_prompt(explain_current_blob: false)
+            # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/420959
+            # Remove the conditional along with the feature flag.
+            explain_code_prompt = if explain_current_blob
+                                    "\nYou can explain code if the user provided a code snippet and answer directly."
+                                  else
+                                    ""
+                                  end
+
             <<~PROMPT
               You are a DevSecOps Assistant named '#{Gitlab::Llm::Chain::Agents::ZeroShot::Executor::AGENT_NAME}' created by GitLab.
 
@@ -49,6 +57,7 @@ module Gitlab
               The generated code should be formatted in markdown.
 
               If a question cannot be answered with the tools and information given, answer politely that you don’t know.
+              #{explain_code_prompt}
 
               If the question is to write or generate new code you should always answer directly.
               When no tool matches you should answer the question directly.

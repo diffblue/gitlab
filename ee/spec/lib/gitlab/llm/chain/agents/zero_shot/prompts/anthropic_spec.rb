@@ -25,7 +25,8 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic, feature
             'request_id' => 'uuid1', 'role' => 'assistant', 'content' => 'response 2', 'timestamp' => Time.current.to_s
           )
         ],
-        prompt_version: prompt_version
+        prompt_version: prompt_version,
+        current_code: ""
       }
     end
 
