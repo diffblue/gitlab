@@ -24,7 +24,7 @@ RSpec.describe 'shared/issuable/_sidebar.html.haml' do
       let(:issuable) { issue }
 
       it 'shows iteration dropdown' do
-        expect(rendered).to have_css('[data-testid="iteration_container"]')
+        expect(rendered).to have_css('[data-testid="iteration-container"]')
       end
     end
 
@@ -32,7 +32,7 @@ RSpec.describe 'shared/issuable/_sidebar.html.haml' do
       let(:issuable) { incident }
 
       it 'does not show iteration dropdown' do
-        expect(rendered).not_to have_css('[data-testid="iteration_container"]')
+        expect(rendered).not_to have_css('[data-testid="iteration-container"]')
       end
     end
 
@@ -67,7 +67,7 @@ RSpec.describe 'shared/issuable/_sidebar.html.haml' do
     end
 
     it 'does not show iteration dropdown' do
-      expect(rendered).not_to have_css('[data-testid="iteration_container"]')
+      expect(rendered).not_to have_css('[data-testid="iteration-container"]')
     end
   end
 end

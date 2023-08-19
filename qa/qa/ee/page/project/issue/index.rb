@@ -13,13 +13,13 @@ module QA
 
               base.class_eval do
                 view 'ee/app/assets/javascripts/issues/list/components/issue_card_time_info.vue' do
-                  element :issuable_weight_content
+                  element 'issuable-weight-content'
                 end
               end
             end
 
             def issuable_weight
-              find_element(:issuable_weight_content)
+              find_element('issuable-weight-content')
             end
 
             def wait_for_issue_replication(issue)

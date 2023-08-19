@@ -8,12 +8,12 @@ module QA
           module Jira
             class Index < QA::Page::Base
               view 'app/assets/javascripts/vue_shared/issuable/list/components/issuable_list_root.vue' do
-                element :issuable_search_container
-                element :issuable_container
+                element 'issuable-search-container'
+                element 'issuable-container'
               end
 
               def search_issues(issue_search_text)
-                within_element(:issuable_search_container) do
+                within_element('issuable-search-container') do
                   find('input.gl-filtered-search-term-input').click
                   find('input[aria-label="Search"]').set(issue_search_text)
                   find('button[aria-label="Search"]').click
@@ -27,7 +27,7 @@ module QA
 
               def click_issue(issue_key)
                 id = issue_key.split('-')[-1]
-                within_element(:issuable_container, issue_id: id) do
+                within_element('issuable-container', issue_id: id) do
                   find('a.issue-title-text').click
                 end
               end
