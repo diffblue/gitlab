@@ -73,7 +73,7 @@ export default {
       <gl-link
         class="gl-text-gray-900! gl-line-height-20"
         :href="attributeUrl"
-        data-testid="iteration_link"
+        data-testid="iteration-link"
       >
         <div>
           <gl-icon name="iteration" class="gl-mr-1" />

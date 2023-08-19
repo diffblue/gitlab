@@ -38,7 +38,7 @@ export default {
     <weight-count
       class="issuable-weight gl-mr-3"
       :weight="weight"
-      data-qa-selector="issuable_weight_content"
+      data-testid="issuable-weight-content"
     />
     <issue-health-status v-if="showHealthStatus" :health-status="healthStatus" />
   </issue-card-time-info>

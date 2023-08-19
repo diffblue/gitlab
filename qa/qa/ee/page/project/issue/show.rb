@@ -17,11 +17,11 @@ module QA
                 end
 
                 view 'ee/app/assets/javascripts/sidebar/components/iteration/sidebar_iteration_widget.vue' do
-                  element :iteration_link
+                  element 'iteration-link'
                 end
 
                 view 'app/views/shared/issuable/_sidebar.html.haml' do
-                  element :iteration_container
+                  element 'iteration-container'
                 end
 
                 view 'ee/app/assets/javascripts/sidebar/components/weight/sidebar_weight_widget.vue' do
@@ -31,13 +31,13 @@ module QA
             end
 
             def assign_iteration(iteration_period)
-              within_element(:iteration_container) do
+              within_element('iteration-container') do
                 click_element('edit-button')
                 click_on("#{iteration_period}")
               end
 
               wait_until(reload: false) do
-                has_element?(:iteration_container, text: iteration_period, wait: 0)
+                has_element?('iteration-container', text: iteration_period, wait: 0)
               end
 
               refresh
@@ -46,17 +46,17 @@ module QA
             def click_iteration(iteration_period)
               has_iteration?(iteration_period)
 
-              within_element(:iteration_container) do
-                click_element(:iteration_link, text: iteration_period)
+              within_element('iteration-container') do
+                click_element('iteration-link', text: iteration_period)
               end
             end
 
             def has_iteration?(iteration_period)
               wait_until_iteration_container_loaded
 
-              within_element(:iteration_container) do
+              within_element('iteration-container') do
                 wait_until(reload: false) do
-                  has_element?(:iteration_link, text: iteration_period, wait: 0)
+                  has_element?('iteration-link', text: iteration_period, wait: 0)
                 end
               end
             end
@@ -80,8 +80,8 @@ module QA
 
             def wait_until_iteration_container_loaded
               wait_until(reload: false, max_duration: 10, sleep_interval: 1) do
-                has_element?(:iteration_container)
-                has_element?(:iteration_link)
+                has_element?('iteration-container')
+                has_element?('iteration-link')
               end
             end
           end
