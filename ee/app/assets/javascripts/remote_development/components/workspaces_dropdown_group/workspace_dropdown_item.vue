@@ -1,6 +1,7 @@
 <script>
 import { GlDisclosureDropdownItem } from '@gitlab/ui';
 import Tracking from '~/tracking';
+import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import WorkspaceStateIndicator from '../common/workspace_state_indicator.vue';
 import WorkspaceActions from '../common/workspace_actions.vue';
 
@@ -9,6 +10,7 @@ export default {
     GlDisclosureDropdownItem,
     WorkspaceStateIndicator,
     WorkspaceActions,
+    TimeAgoTooltip,
   },
   mixins: [Tracking.mixin()],
   props: {
@@ -39,6 +41,10 @@ export default {
         <span class="gl-display-inline-flex gl-flex-direction-column gl-align-items-flex-start">
           <workspace-state-indicator class="gl-mb-2" :workspace-state="workspace.actualState" />
           <span class="gl-pl-1 gl-word-break-word gl-w-90p">{{ workspace.name }}</span>
+          <time-ago-tooltip
+            class="gl-font-sm-600 gl-pl-1 gl-text-secondary gl-mt-2"
+            :time="workspace.createdAt"
+          />
         </span>
         <workspace-actions
           :actual-state="workspace.actualState"

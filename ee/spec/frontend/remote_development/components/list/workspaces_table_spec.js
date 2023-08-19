@@ -3,6 +3,7 @@ import { cloneDeep } from 'lodash';
 import VueApollo from 'vue-apollo';
 import Vue from 'vue';
 import { GlLink, GlTableLite } from '@gitlab/ui';
+import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import WorkspacesTable from 'ee/remote_development/components/list/workspaces_table.vue';
 import WorkspaceActions from 'ee/remote_development/components/common/workspace_actions.vue';
 import WorkspaceStateIndicator from 'ee/remote_development/components/common/workspace_state_indicator.vue';
@@ -27,12 +28,13 @@ const findTableRowsAsData = (wrapper) =>
     const rowData = {
       workspaceState: tds.at(0).findComponent(WorkspaceStateIndicator).props('workspaceState'),
       nameText: tds.at(1).text(),
-      actionsProps: tds.at(3).findComponent(WorkspaceActions).props(),
+      createdAt: tds.at(2).findComponent(TimeAgoTooltip).props().time,
+      actionsProps: tds.at(4).findComponent(WorkspaceActions).props(),
     };
 
-    if (tds.at(2).findComponent(GlLink).exists()) {
-      rowData.previewText = tds.at(2).text();
-      rowData.previewHref = tds.at(2).findComponent(GlLink).attributes('href');
+    if (tds.at(3).findComponent(GlLink).exists()) {
+      rowData.previewText = tds.at(3).text();
+      rowData.previewHref = tds.at(3).findComponent(GlLink).attributes('href');
     }
 
     return rowData;
@@ -99,6 +101,7 @@ describe('remote_development/components/list/workspaces_table.vue', () => {
           return {
             nameText: `${x.projectName}   ${x.name}`,
             workspaceState: x.actualState,
+            createdAt: x.createdAt,
             actionsProps: {
               actualState: x.actualState,
               desiredState: x.desiredState,

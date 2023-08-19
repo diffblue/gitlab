@@ -1,6 +1,7 @@
 <script>
 import { GlTableLite, GlLink } from '@gitlab/ui';
 import { __ } from '~/locale';
+import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { WORKSPACE_STATES } from '../../constants';
 import WorkspaceStateIndicator from '../common/workspace_state_indicator.vue';
 import UpdateWorkspaceMutation from '../common/update_workspace_mutation.vue';
@@ -26,6 +27,7 @@ export const i18n = {
   tableColumnHeaders: {
     name: __('Name'),
     preview: __('Preview'),
+    created: __('Created'),
   },
 };
 
@@ -36,6 +38,7 @@ export default {
     WorkspaceStateIndicator,
     WorkspaceActions,
     UpdateWorkspaceMutation,
+    TimeAgoTooltip,
   },
   props: {
     workspaces: {
@@ -65,6 +68,11 @@ export default {
       key: 'name',
       label: i18n.tableColumnHeaders.name,
       thClass: 'gl-w-25p',
+    },
+    {
+      key: 'created',
+      label: i18n.tableColumnHeaders.created,
+      thClass: 'gl-w-20p',
     },
     {
       key: 'preview',
@@ -105,6 +113,12 @@ export default {
             <span class="gl-text-gray-500 gl-font-sm gl-pb-1"> {{ item.projectName }} </span>
             <span class="gl-text-black-normal"> {{ item.name }} </span>
           </div>
+        </template>
+        <template #cell(created)="{ item }">
+          <time-ago-tooltip
+            class="gl-white-space-nowrap gl-font-sm-600 gl-text-secondary"
+            :time="item.createdAt"
+          />
         </template>
         <template #cell(preview)="{ item }">
           <gl-link

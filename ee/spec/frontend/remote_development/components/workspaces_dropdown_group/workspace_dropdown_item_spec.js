@@ -1,4 +1,5 @@
 import { GlDisclosureDropdownItem } from '@gitlab/ui';
+import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { mockTracking } from 'helpers/tracking_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import WorkspaceDropdownItem from 'ee/remote_development/components/workspaces_dropdown_group/workspace_dropdown_item.vue';
@@ -35,6 +36,10 @@ describe('remote_development/components/workspaces_dropdown_group/workspace_drop
 
     it('displays the workspace name', () => {
       expect(wrapper.text()).toContain(WORKSPACE.name);
+    });
+
+    it('displays workspace creation date', () => {
+      expect(wrapper.findComponent(TimeAgoTooltip).props('time')).toBe(WORKSPACE.createdAt);
     });
 
     it('passes workspace URL to the dropdown item', () => {
