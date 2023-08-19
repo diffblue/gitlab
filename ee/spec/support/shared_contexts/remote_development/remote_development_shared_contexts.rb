@@ -52,8 +52,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
 
     spec_replicas = [ # rubocop:disable Style/MultilineTernaryOperator
       RemoteDevelopment::Workspaces::States::STOPPED, RemoteDevelopment::Workspaces::States::STOPPING
-    ].include?(current_actual_state) ? "0" : "1"
-    started = spec_replicas == "1"
+    ].include?(current_actual_state) ? 0 : 1
+    started = spec_replicas == 1
 
     # rubocop:disable Lint/DuplicateBranch
     status =
@@ -313,282 +313,508 @@ RSpec.shared_context 'with remote development shared fixtures' do
     include_network_policy: true,
     dns_zone: 'workspaces.localdev.me'
   )
-    spec_replicas = started == true ? "1" : "0"
+    spec_replicas = started == true ? 1 : 0
     host_template_annotation = get_workspace_host_template_annotation(workspace_name, dns_zone)
     host_template_environment_variable = get_workspace_host_template_env_var(workspace_name, dns_zone)
 
-    workspace_inventory = <<~RESOURCES_YAML
-      ---
-      kind: ConfigMap
-      apiVersion: v1
-      metadata:
-        name: #{workspace_name}-workspace-inventory
-        namespace: #{workspace_namespace}
-        labels:
-          cli-utils.sigs.k8s.io/inventory-id: #{workspace_name}-workspace-inventory
-          agent.gitlab.com/id: \'#{agent_id}\'
-    RESOURCES_YAML
+    workspace_inventory = workspace_inventory(
+      workspace_name: workspace_name,
+      workspace_namespace: workspace_namespace,
+      agent_id: agent_id
+    )
 
-    k8s_resources_for_workspace_core = <<~RESOURCES_YAML
-      ---
-      apiVersion: apps/v1
-      kind: Deployment
-      metadata:
-        annotations:
-          config.k8s.io/owning-inventory: #{workspace_name}-workspace-inventory
-          workspaces.gitlab.com/host-template: #{host_template_annotation}
-          workspaces.gitlab.com/id: \'#{workspace_id}\'
-        creationTimestamp: null
-        labels:
-          agent.gitlab.com/id: \'#{agent_id}\'
-        name: #{workspace_name}
-        namespace: #{workspace_namespace}
-      spec:
-        replicas: #{spec_replicas}
-        selector:
-          matchLabels:
-            agent.gitlab.com/id: \'#{agent_id}\'
-        strategy:
-          type: Recreate
-        template:
-          metadata:
-            annotations:
-              config.k8s.io/owning-inventory: #{workspace_name}-workspace-inventory
-              workspaces.gitlab.com/host-template: #{host_template_annotation}
-              workspaces.gitlab.com/id: \'#{workspace_id}\'
-            creationTimestamp: null
-            labels:
-              agent.gitlab.com/id: \'#{agent_id}\'
-            name: #{workspace_name}
-            namespace: #{workspace_namespace}
-          spec:
-            containers:
-            - command:
-              - "/projects/.gl-editor/start_server.sh"
-              env:
-              - name: EDITOR_VOLUME_DIR
-                value: "/projects/.gl-editor"
-              - name: EDITOR_PORT
-                value: "60001"
-              - name: SSH_PORT
-                value: "60022"
-              - name: PROJECTS_ROOT
-                value: "/projects"
-              - name: PROJECT_SOURCE
-                value: "/projects"
-              - name: GL_WORKSPACE_DOMAIN_TEMPLATE
-                value: #{host_template_environment_variable}
-              image: quay.io/mloriedo/universal-developer-image:ubi8-dw-demo
-              imagePullPolicy: Always
-              name: tooling-container
-              ports:
-              - containerPort: 60001
-                name: editor-server
-                protocol: TCP
-              - containerPort: 60022
-                name: ssh-server
-                protocol: TCP
-              resources: {}
-              volumeMounts:
-              - mountPath: "/projects"
-                name: gl-workspace-data
-              securityContext:
-                allowPrivilegeEscalation: false
-                privileged: false
-                runAsNonRoot: true
-                runAsUser: 5001
-            initContainers:
-            - args:
-              - |-
-                if [ ! -d '/projects/test-project' ];
-                then
-                  git clone --branch master #{root_url}test-group/test-project.git /projects/test-project;
-                  cd /projects/test-project;
-                  git config user.name "${GIT_AUTHOR_NAME}";
-                  git config user.email "${GIT_AUTHOR_EMAIL}";
-                fi
-              command: ["/bin/sh", "-c"]
-              env:
-              - name: PROJECTS_ROOT
-                value: "/projects"
-              - name: PROJECT_SOURCE
-                value: "/projects"
-              - name: GIT_AUTHOR_NAME
-                value: #{user_name}
-              - name: GIT_AUTHOR_EMAIL
-                value: #{user_email}
-              - name: GL_WORKSPACE_DOMAIN_TEMPLATE
-                value: #{host_template_environment_variable}
-              image: alpine/git:2.36.3
-              imagePullPolicy: Always
-              name: gl-cloner-injector-gl-cloner-injector-command-1
-              resources:
-                limits:
-                  cpu: 500m
-                  memory: 256Mi
-                requests:
-                  cpu: 100m
-                  memory: 128Mi
-              volumeMounts:
-              - mountPath: "/projects"
-                name: gl-workspace-data
-              securityContext:
-                allowPrivilegeEscalation: false
-                privileged: false
-                runAsNonRoot: true
-                runAsUser: 5001
-            - env:
-              - name: EDITOR_VOLUME_DIR
-                value: "/projects/.gl-editor"
-              - name: EDITOR_PORT
-                value: "60001"
-              - name: SSH_PORT
-                value: "60022"
-              - name: PROJECTS_ROOT
-                value: "/projects"
-              - name: PROJECT_SOURCE
-                value: "/projects"
-              - name: GL_WORKSPACE_DOMAIN_TEMPLATE
-                value: #{host_template_environment_variable}
-              image: registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:2
-              imagePullPolicy: Always
-              name: gl-editor-injector-gl-editor-injector-command-2
-              resources:
-                limits:
-                  cpu: 500m
-                  memory: 256Mi
-                requests:
-                  cpu: 100m
-                  memory: 128Mi
-              volumeMounts:
-              - mountPath: "/projects"
-                name: gl-workspace-data
-              securityContext:
-                allowPrivilegeEscalation: false
-                privileged: false
-                runAsNonRoot: true
-                runAsUser: 5001
-            volumes:
-            - name: gl-workspace-data
-              persistentVolumeClaim:
-                claimName: #{workspace_name}-gl-workspace-data
-            securityContext:
-              runAsNonRoot: true
-              runAsUser: 5001
-              fsGroup: 0
-              fsGroupChangePolicy: OnRootMismatch
-      status: {}
-      ---
-      apiVersion: v1
-      kind: Service
-      metadata:
-        annotations:
-          config.k8s.io/owning-inventory: #{workspace_name}-workspace-inventory
-          workspaces.gitlab.com/host-template: #{host_template_annotation}
-          workspaces.gitlab.com/id: \'#{workspace_id}\'
-        creationTimestamp: null
-        labels:
-          agent.gitlab.com/id: \'#{agent_id}\'
-        name: #{workspace_name}
-        namespace: #{workspace_namespace}
-      spec:
-        ports:
-        - name: editor-server
-          port: 60001
-          targetPort: 60001
-        - name: ssh-server
-          port: 60022
-          targetPort: 60022
-        selector:
-          agent.gitlab.com/id: \'#{agent_id}\'
-      status:
-        loadBalancer: {}
-      ---
-      apiVersion: v1
-      kind: PersistentVolumeClaim
-      metadata:
-        annotations:
-          config.k8s.io/owning-inventory: #{workspace_name}-workspace-inventory
-          workspaces.gitlab.com/host-template: #{host_template_annotation}
-          workspaces.gitlab.com/id: \'#{workspace_id}\'
-        creationTimestamp:
-        labels:
-          agent.gitlab.com/id: \'#{agent_id}\'
-        name: #{workspace_name}-gl-workspace-data
-        namespace: #{workspace_namespace}
-      spec:
-        accessModes:
-        - ReadWriteOnce
-        resources:
-          requests:
-            storage: 15Gi
-      status: {}
-    RESOURCES_YAML
+    workspace_deployment = workspace_deployment(
+      workspace_id: workspace_id,
+      workspace_name: workspace_name,
+      workspace_namespace: workspace_namespace,
+      agent_id: agent_id,
+      spec_replicas: spec_replicas,
+      host_template_annotation: host_template_annotation,
+      host_template_environment_variable: host_template_environment_variable,
+      user_name: user_name,
+      user_email: user_email
+    )
 
-    k8s_resources_for_network_policy = <<~RESOURCE_YAML
-      ---
-      apiVersion: networking.k8s.io/v1
-      kind: NetworkPolicy
-      metadata:
-        annotations:
-          config.k8s.io/owning-inventory: #{workspace_name}-workspace-inventory
-          workspaces.gitlab.com/host-template: #{host_template_annotation}
-          workspaces.gitlab.com/id: \'#{workspace_id}\'
-        labels:
-          agent.gitlab.com/id: \'#{agent_id}\'
-        name: #{workspace_name}
-        namespace: #{workspace_namespace}
-      spec:
-        egress:
-        - to:
-          - ipBlock:
-              cidr: 0.0.0.0/0
-              except:
-              - 10.0.0.0/8
-              - 172.16.0.0/12
-              - 192.168.0.0/16
-        - ports:
-          - port: 53
-            protocol: TCP
-          - port: 53
-            protocol: UDP
-          to:
-          - namespaceSelector:
-              matchLabels:
-                kubernetes.io/metadata.name: kube-system
-        ingress:
-        - from:
-          - namespaceSelector:
-              matchLabels:
-                kubernetes.io/metadata.name: gitlab-workspaces
-            podSelector:
-              matchLabels:
-                app.kubernetes.io/name: gitlab-workspaces-proxy
-        podSelector: {}
-        policyTypes:
-        - Ingress
-        - Egress
-    RESOURCE_YAML
+    workspace_service = workspace_service(
+      workspace_id: workspace_id,
+      workspace_name: workspace_name,
+      workspace_namespace: workspace_namespace,
+      agent_id: agent_id,
+      host_template_annotation: host_template_annotation
+    )
 
-    resources = ""
-    resources += workspace_inventory if include_inventory
-    resources += k8s_resources_for_workspace_core
-    resources += k8s_resources_for_network_policy if include_network_policy
+    workspace_pvc = workspace_pvc(
+      workspace_id: workspace_id,
+      workspace_name: workspace_name,
+      workspace_namespace: workspace_namespace,
+      agent_id: agent_id,
+      host_template_annotation: host_template_annotation
+    )
 
-    YAML.load_stream(resources).map do |resource|
-      YAML.dump(resource)
+    workspace_network_policy = workspace_network_policy(
+      workspace_id: workspace_id,
+      workspace_name: workspace_name,
+      workspace_namespace: workspace_namespace,
+      agent_id: agent_id,
+      host_template_annotation: host_template_annotation
+    )
+
+    resources = []
+    resources << workspace_inventory if include_inventory
+    resources << workspace_deployment
+    resources << workspace_service
+    resources << workspace_pvc
+    resources << workspace_network_policy if include_network_policy
+
+    resources.map do |resource|
+      YAML.dump(resource.deep_stringify_keys)
     end.join
   end
   # rubocop:enable Metrics/ParameterLists
 
+  def workspace_inventory(
+    workspace_name:,
+    workspace_namespace:,
+    agent_id:
+  )
+    {
+      kind: "ConfigMap",
+      apiVersion: "v1",
+      metadata: {
+        name: "#{workspace_name}-workspace-inventory",
+        namespace: workspace_namespace.to_s,
+        labels: {
+          "cli-utils.sigs.k8s.io/inventory-id": "#{workspace_name}-workspace-inventory",
+          "agent.gitlab.com/id": agent_id.to_s
+        }
+      }
+    }
+  end
+
+  # noinspection RubyParameterNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
+  # rubocop:disable Metrics/ParameterLists
+  def workspace_deployment(
+    workspace_id:,
+    workspace_name:,
+    workspace_namespace:,
+    agent_id:,
+    spec_replicas:,
+    host_template_annotation:,
+    host_template_environment_variable:,
+    user_name:,
+    user_email:
+  )
+    {
+      apiVersion: "apps/v1",
+      kind: "Deployment",
+      metadata: {
+        annotations: {
+          "config.k8s.io/owning-inventory": "#{workspace_name}-workspace-inventory",
+          "workspaces.gitlab.com/host-template": host_template_annotation.to_s,
+          "workspaces.gitlab.com/id": workspace_id.to_s
+        },
+        creationTimestamp: nil,
+        labels: {
+          "agent.gitlab.com/id": agent_id.to_s
+        },
+        name: workspace_name.to_s,
+        namespace: workspace_namespace.to_s
+      },
+      spec: {
+        replicas: spec_replicas,
+        selector: {
+          matchLabels: {
+            "agent.gitlab.com/id": agent_id.to_s
+          }
+        },
+        strategy: {
+          type: "Recreate"
+        },
+        template: {
+          metadata: {
+            annotations: {
+              "config.k8s.io/owning-inventory": "#{workspace_name}-workspace-inventory",
+              "workspaces.gitlab.com/host-template": host_template_annotation.to_s,
+              "workspaces.gitlab.com/id": workspace_id.to_s
+            },
+            creationTimestamp: nil,
+            labels: {
+              "agent.gitlab.com/id": agent_id.to_s
+            },
+            name: workspace_name.to_s,
+            namespace: workspace_namespace.to_s
+          },
+          spec: {
+            containers: [
+              {
+                command: [
+                  "/projects/.gl-editor/start_server.sh"
+                ],
+                env: [
+                  {
+                    name: "EDITOR_VOLUME_DIR",
+                    value: "/projects/.gl-editor"
+                  },
+                  {
+                    name: "EDITOR_PORT",
+                    value: "60001"
+                  },
+                  {
+                    name: "SSH_PORT",
+                    value: "60022"
+                  },
+                  {
+                    name: "PROJECTS_ROOT",
+                    value: "/projects"
+                  },
+                  {
+                    name: "PROJECT_SOURCE",
+                    value: "/projects"
+                  },
+                  {
+                    name: "GL_WORKSPACE_DOMAIN_TEMPLATE",
+                    value: host_template_environment_variable.to_s
+                  }
+                ],
+                image: "quay.io/mloriedo/universal-developer-image:ubi8-dw-demo",
+                imagePullPolicy: "Always",
+                name: "tooling-container",
+                ports: [
+                  {
+                    containerPort: 60001,
+                    name: "editor-server",
+                    protocol: "TCP"
+                  },
+                  {
+                    containerPort: 60022,
+                    name: "ssh-server",
+                    protocol: "TCP"
+                  }
+                ],
+                resources: {},
+                volumeMounts: [
+                  {
+                    mountPath: "/projects",
+                    name: "gl-workspace-data"
+                  }
+                ],
+                securityContext: {
+                  allowPrivilegeEscalation: false,
+                  privileged: false,
+                  runAsNonRoot: true,
+                  runAsUser: 5001
+                }
+              }
+            ],
+            initContainers: [
+              {
+                args: [
+                  <<~ARGS.chomp
+                    if [ ! -d '/projects/test-project' ];
+                    then
+                      git clone --branch master #{root_url}test-group/test-project.git /projects/test-project;
+                      cd /projects/test-project;
+                      git config user.name "${GIT_AUTHOR_NAME}";
+                      git config user.email "${GIT_AUTHOR_EMAIL}";
+                    fi
+                  ARGS
+                ],
+                command: %w[/bin/sh -c],
+                env: [
+                  {
+                    name: "PROJECTS_ROOT",
+                    value: "/projects"
+                  },
+                  {
+                    name: "PROJECT_SOURCE",
+                    value: "/projects"
+                  },
+                  {
+                    name: "GIT_AUTHOR_NAME",
+                    value: user_name.to_s
+                  },
+                  {
+                    name: "GIT_AUTHOR_EMAIL",
+                    value: user_email.to_s
+                  },
+                  {
+                    name: "GL_WORKSPACE_DOMAIN_TEMPLATE",
+                    value: host_template_environment_variable.to_s
+                  }
+                ],
+                image: "alpine/git:2.36.3",
+                imagePullPolicy: "Always",
+                name: "gl-cloner-injector-gl-cloner-injector-command-1",
+                resources: {
+                  limits: {
+                    cpu: "500m",
+                    memory: "256Mi"
+                  },
+                  requests: {
+                    cpu: "100m",
+                    memory: "128Mi"
+                  }
+                },
+                volumeMounts: [
+                  {
+                    mountPath: "/projects",
+                    name: "gl-workspace-data"
+                  }
+                ],
+                securityContext: {
+                  allowPrivilegeEscalation: false,
+                  privileged: false,
+                  runAsNonRoot: true,
+                  runAsUser: 5001
+                }
+              },
+              {
+                env: [
+                  {
+                    name: "EDITOR_VOLUME_DIR",
+                    value: "/projects/.gl-editor"
+                  },
+                  {
+                    name: "EDITOR_PORT",
+                    value: "60001"
+                  },
+                  {
+                    name: "SSH_PORT",
+                    value: "60022"
+                  },
+                  {
+                    name: "PROJECTS_ROOT",
+                    value: "/projects"
+                  },
+                  {
+                    name: "PROJECT_SOURCE",
+                    value: "/projects"
+                  },
+                  {
+                    name: "GL_WORKSPACE_DOMAIN_TEMPLATE",
+                    value: host_template_environment_variable.to_s
+                  }
+                ],
+                image: "registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:2",
+                imagePullPolicy: "Always",
+                name: "gl-editor-injector-gl-editor-injector-command-2",
+                resources: {
+                  limits: {
+                    cpu: "500m",
+                    memory: "256Mi"
+                  },
+                  requests: {
+                    cpu: "100m",
+                    memory: "128Mi"
+                  }
+                },
+                volumeMounts: [
+                  {
+                    mountPath: "/projects",
+                    name: "gl-workspace-data"
+                  }
+                ],
+                securityContext: {
+                  allowPrivilegeEscalation: false,
+                  privileged: false,
+                  runAsNonRoot: true,
+                  runAsUser: 5001
+                }
+              }
+            ],
+            volumes: [
+              {
+                name: "gl-workspace-data",
+                persistentVolumeClaim: {
+                  claimName: "#{workspace_name}-gl-workspace-data"
+                }
+              }
+            ],
+            securityContext: {
+              runAsNonRoot: true,
+              runAsUser: 5001,
+              fsGroup: 0,
+              fsGroupChangePolicy: "OnRootMismatch"
+            }
+          }
+        }
+      },
+      status: {}
+    }
+  end
+  # rubocop:enable Metrics/ParameterLists
+
+  def workspace_service(
+    workspace_id:,
+    workspace_name:,
+    workspace_namespace:,
+    agent_id:,
+    host_template_annotation:
+  )
+    {
+      apiVersion: "v1",
+      kind: "Service",
+      metadata: {
+        annotations: {
+          "config.k8s.io/owning-inventory": "#{workspace_name}-workspace-inventory",
+          "workspaces.gitlab.com/host-template": host_template_annotation.to_s,
+          "workspaces.gitlab.com/id": workspace_id.to_s
+        },
+        creationTimestamp: nil,
+        labels: {
+          "agent.gitlab.com/id": agent_id.to_s
+        },
+        name: workspace_name.to_s,
+        namespace: workspace_namespace.to_s
+      },
+      spec: {
+        ports: [
+          {
+            name: "editor-server",
+            port: 60001,
+            targetPort: 60001
+          },
+          {
+            name: "ssh-server",
+            port: 60022,
+            targetPort: 60022
+          }
+        ],
+        selector: {
+          "agent.gitlab.com/id": agent_id.to_s
+        }
+      },
+      status: {
+        loadBalancer: {}
+      }
+    }
+  end
+
+  def workspace_pvc(
+    workspace_id:,
+    workspace_name:,
+    workspace_namespace:,
+    agent_id:,
+    host_template_annotation:
+  )
+    {
+      apiVersion: "v1",
+      kind: "PersistentVolumeClaim",
+      metadata: {
+        annotations: {
+          "config.k8s.io/owning-inventory": "#{workspace_name}-workspace-inventory",
+          "workspaces.gitlab.com/host-template": host_template_annotation.to_s,
+          "workspaces.gitlab.com/id": workspace_id.to_s
+        },
+        creationTimestamp: nil,
+        labels: {
+          "agent.gitlab.com/id": agent_id.to_s
+        },
+        name: "#{workspace_name}-gl-workspace-data",
+        namespace: workspace_namespace.to_s
+      },
+      spec: {
+        accessModes: [
+          "ReadWriteOnce"
+        ],
+        resources: {
+          requests: {
+            storage: "15Gi"
+          }
+        }
+      },
+      status: {}
+    }
+  end
+
+  def workspace_network_policy(
+    workspace_id:,
+    workspace_name:,
+    workspace_namespace:,
+    agent_id:,
+    host_template_annotation:
+  )
+    {
+      apiVersion: "networking.k8s.io/v1",
+      kind: "NetworkPolicy",
+      metadata: {
+        annotations: {
+          "config.k8s.io/owning-inventory": "#{workspace_name}-workspace-inventory",
+          "workspaces.gitlab.com/host-template": host_template_annotation.to_s,
+          "workspaces.gitlab.com/id": workspace_id.to_s
+        },
+        labels: {
+          "agent.gitlab.com/id": agent_id.to_s
+        },
+        name: workspace_name.to_s,
+        namespace: workspace_namespace.to_s
+      },
+      spec: {
+        egress: [
+          {
+            to: [
+              {
+                ipBlock: {
+                  cidr: "0.0.0.0/0",
+                  except: %w[10.0.0.0/8 172.16.0.0/12 192.168.0.0/16]
+                }
+              }
+            ]
+          },
+          {
+            ports: [
+              {
+                port: 53,
+                protocol: "TCP"
+              },
+              {
+                port: 53,
+                protocol: "UDP"
+              }
+            ],
+            to: [
+              {
+                namespaceSelector: {
+                  matchLabels: {
+                    "kubernetes.io/metadata.name": "kube-system"
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        ingress: [
+          {
+            from: [
+              {
+                namespaceSelector: {
+                  matchLabels: {
+                    "kubernetes.io/metadata.name": "gitlab-workspaces"
+                  }
+                },
+                podSelector: {
+                  matchLabels: {
+                    "app.kubernetes.io/name": "gitlab-workspaces-proxy"
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        podSelector: {},
+        policyTypes: %w[Ingress Egress]
+      }
+    }
+  end
+
   # noinspection RubyInstanceMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
   def get_workspace_host_template_annotation(workspace_name, dns_zone)
-    %("{{.port}}-#{workspace_name}.#{dns_zone}")
+    "{{.port}}-#{workspace_name}.#{dns_zone}"
   end
 
   # noinspection RubyInstanceMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
   def get_workspace_host_template_env_var(workspace_name, dns_zone)
-    %("${PORT}-#{workspace_name}.#{dns_zone}")
+    "${PORT}-#{workspace_name}.#{dns_zone}"
   end
 
   def example_devfile
