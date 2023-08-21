@@ -112,7 +112,9 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
           global_group_approvers_enabled:
             Gitlab::CurrentSettings.security_policy_global_group_approvers_enabled.to_json,
           root_namespace_path: project.root_ancestor.full_path,
-          timezones: timezones.to_json
+          timezones: timezones.to_json,
+          max_active_scan_execution_policies_reached: false,
+          max_active_scan_result_policies_reached: false
         }
       end
 
@@ -192,7 +194,9 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
           global_group_approvers_enabled:
             Gitlab::CurrentSettings.security_policy_global_group_approvers_enabled.to_json,
           root_namespace_path: namespace.root_ancestor.full_path,
-          timezones: timezones.to_json
+          timezones: timezones.to_json,
+          max_active_scan_execution_policies_reached: false,
+          max_active_scan_result_policies_reached: false
         }
       end
 
@@ -251,6 +255,122 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
           }.to_json))
         end
       end
+    end
+  end
+
+  shared_examples 'when source does not have a security policy project' do
+    it { is_expected.to be_falsey }
+  end
+
+  shared_examples 'when source has active scan policies' do |limited_reached: false|
+    before do
+      allow_next_instance_of(Repository) do |repository|
+        allow(repository).to receive(:blob_data_at).and_return(policy_yaml)
+      end
+    end
+
+    it 'returns if max active scan policies limit was reached' do
+      is_expected.to eq(limited_reached)
+    end
+  end
+
+  shared_examples '#max_active_scan_execution_policies_reached for source' do
+    context 'when a source does not have a security policy project' do
+      it_behaves_like 'when source does not have a security policy project'
+    end
+
+    context 'when a source did not reach the limited of active scan execution policies' do
+      it_behaves_like 'when source has active scan policies'
+    end
+
+    context 'when a source reached the limited of active scan execution policies' do
+      before do
+        stub_const('::Security::ScanExecutionPolicy::POLICY_LIMIT', 1)
+      end
+
+      it_behaves_like 'when source has active scan policies', limited_reached: true
+    end
+  end
+
+  describe '#max_active_scan_execution_policies_reached' do
+    let_it_be(:policy_management_project) { create(:project, :repository) }
+
+    let(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [build(:scan_execution_policy)]) }
+
+    context 'for project' do
+      let_it_be(:security_orchestration_policy_configuration) do
+        create(
+          :security_orchestration_policy_configuration,
+          security_policy_management_project: policy_management_project, project: project
+        )
+      end
+
+      subject { helper.max_active_scan_execution_policies_reached(project) }
+
+      it_behaves_like '#max_active_scan_execution_policies_reached for source'
+    end
+
+    context 'for namespace' do
+      let_it_be(:security_orchestration_policy_configuration) do
+        create(
+          :security_orchestration_policy_configuration, :namespace,
+          security_policy_management_project: policy_management_project, namespace: namespace
+        )
+      end
+
+      subject { helper.max_active_scan_execution_policies_reached(namespace) }
+
+      it_behaves_like '#max_active_scan_execution_policies_reached for source'
+    end
+  end
+
+  shared_examples '#max_active_scan_result_policies_reached for source' do
+    context 'when a source does not have a security policy project' do
+      it_behaves_like 'when source does not have a security policy project'
+    end
+
+    context 'when a source did not reach the limited of active scan result policies' do
+      it_behaves_like 'when source has active scan policies'
+    end
+
+    context 'when a source reached the limited of active scan result policies' do
+      before do
+        stub_const('Security::ScanResultPolicy::LIMIT', 1)
+      end
+
+      it_behaves_like 'when source has active scan policies', limited_reached: true
+    end
+  end
+
+  describe '#max_active_scan_result_policies_reached' do
+    let_it_be(:policy_management_project) { create(:project, :repository) }
+
+    let(:policy_yaml) { build(:orchestration_policy_yaml, scan_result_policy: [build(:scan_result_policy)]) }
+
+    context 'for project' do
+      let_it_be(:security_orchestration_policy_configuration) do
+        create(
+          :security_orchestration_policy_configuration,
+          security_policy_management_project: policy_management_project, project: project
+        )
+      end
+
+      subject { helper.max_active_scan_result_policies_reached(project) }
+
+      it_behaves_like '#max_active_scan_result_policies_reached for source'
+    end
+
+    context 'for namespace' do
+      let_it_be(:security_orchestration_policy_configuration) do
+        create(
+          :security_orchestration_policy_configuration, :namespace,
+          security_policy_management_project: policy_management_project, namespace: namespace
+        )
+      end
+
+      subject { helper.max_active_scan_result_policies_reached(namespace) }
+
+      it_behaves_like '#max_active_scan_result_policies_reached for source'
     end
   end
 end
