@@ -18,6 +18,7 @@ import {
 } from '../../policy_editor/scan_result_policy/scan_filters/constants';
 import { LICENSE_FINDING, LICENSE_STATES } from '../../policy_editor/scan_result_policy/lib/rules';
 import { groupSelectedVulnerabilityStates } from '../../policy_editor/scan_result_policy/lib';
+import { buildBranchExceptionsString, humanizedBranchExceptions } from '../utils';
 
 /**
  * Create a human-readable list of strings, adding the necessary punctuation and conjunctions
@@ -83,43 +84,6 @@ const humanizeBranchType = (branchType) => {
   return sprintf(s__('SecurityOrchestration|targeting %{branchTypeText}'), {
     branchTypeText: HUMANIZED_BRANCH_TYPE_TEXT_DICT[branchType],
   });
-};
-
-/**
- * Convert branch exceptions to readable string
- * @param exception {String|Object} { name: string, full_path: string}
- */
-const humanizedBranchException = (exception) => {
-  if (!exception) return '';
-
-  if (typeof exception === 'string') {
-    return sprintf(s__('SecurityOrchestration|%{branchName}'), {
-      branchName: exception,
-    });
-  }
-
-  return sprintf(
-    s__('SecurityOrchestration|%{branchName} (in %{codeStart}%{fullPath}%{codeEnd})'),
-    {
-      branchName: exception.name,
-      fullPath: exception.full_path,
-    },
-  );
-};
-
-/**
- *
- * @param exceptions {Array}
- * @returns {Array} formatted readable exceptions
- */
-export const humanizedBranchExceptions = (exceptions) => {
-  if (!exceptions) return [];
-
-  const filteredExceptions = exceptions.filter(Boolean);
-
-  if (filteredExceptions.length === 0) return [];
-
-  return filteredExceptions.map(humanizedBranchException);
 };
 
 /**
@@ -307,12 +271,7 @@ const humanizeRule = (rule) => {
   }
 
   const branchExceptions = humanizedBranchExceptions(rule.branch_exceptions);
-
-  const branchExceptionsString = n__(
-    ' except branch:',
-    ' except branches:',
-    rule.branch_exceptions?.length,
-  );
+  const branchExceptionsString = buildBranchExceptionsString(rule.branch_exceptions);
 
   if (rule.type === LICENSE_FINDING) {
     const summaryText = rule.match_on_inclusion

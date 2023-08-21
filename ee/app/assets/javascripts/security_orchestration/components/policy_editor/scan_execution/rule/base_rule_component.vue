@@ -18,7 +18,7 @@ export default {
       'ScanExecutionPolicy|%{rules} every time a pipeline runs for %{scopes} %{branches} %{branchExceptions} %{agents} %{namespaces}',
     ),
     scheduleRule: s__(
-      'ScanExecutionPolicy|%{rules} actions for %{scopes} %{branches} %{branchExceptions} %{agents} %{namespaces} %{period}',
+      'ScanExecutionPolicy|%{rules} actions for %{scopes} %{branches} %{agents} %{branchExceptions} %{namespaces} %{period}',
     ),
     selectedBranchesPlaceholder: s__('ScanExecutionPolicy|Select branches'),
   },

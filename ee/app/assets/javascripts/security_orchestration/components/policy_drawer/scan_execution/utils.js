@@ -9,6 +9,7 @@ import {
   SCAN_EXECUTION_BRANCH_TYPE_OPTIONS,
 } from '../../policy_editor/constants';
 import { createHumanizedScanners } from '../../policy_editor/utils';
+import { buildBranchExceptionsString, humanizedBranchExceptions } from '../utils';
 
 /**
  * Create a human-readable list of runner tags, adding the necessary punctuation and conjunctions
@@ -147,17 +148,37 @@ const humanizePipelineRule = (rule) => {
     return INVALID_RULE_MESSAGE;
   }
 
-  return sprintf(s__('SecurityOrchestration|Every time a pipeline runs for %{branches}'), {
-    branches: humanizedValue,
-  });
+  return {
+    summary: sprintf(
+      s__(
+        'SecurityOrchestration|Every time a pipeline runs for %{branches}%{branchExceptionsString}',
+      ),
+      {
+        branches: humanizedValue,
+        branchExceptionsString: buildBranchExceptionsString(rule.branch_exceptions),
+      },
+    ),
+    branchExceptions: humanizedBranchExceptions(rule.branch_exceptions),
+  };
 };
 
 const humanizeScheduleRule = (rule) => {
+  const branchExceptionsString = buildBranchExceptionsString(rule.branch_exceptions);
+
   if (rule.agents) {
-    return sprintf(s__('SecurityOrchestration|by the agent named %{agents} %{cadence}'), {
-      agents: humanizeAgent(rule.agents),
-      cadence: humanizeCadence(rule.cadence),
-    });
+    return {
+      summary: sprintf(
+        s__(
+          'SecurityOrchestration|by the agent named %{agents} %{cadence}%{branchExceptionsString}',
+        ),
+        {
+          agents: humanizeAgent(rule.agents),
+          cadence: humanizeCadence(rule.cadence),
+          branchExceptionsString,
+        },
+      ),
+      branchExceptions: humanizedBranchExceptions(rule.branch_exceptions),
+    };
   }
 
   const humanizedValue = hasBranchType(rule)
@@ -168,10 +189,17 @@ const humanizeScheduleRule = (rule) => {
     return INVALID_RULE_MESSAGE;
   }
 
-  return sprintf(s__('SecurityOrchestration|%{cadence} on %{branches}'), {
-    cadence: humanizeCadence(rule.cadence),
-    branches: humanizedValue,
-  });
+  return {
+    summary: sprintf(
+      s__('SecurityOrchestration|%{cadence} on %{branches}%{branchExceptionsString}'),
+      {
+        cadence: humanizeCadence(rule.cadence),
+        branches: humanizedValue,
+        branchExceptionsString,
+      },
+    ),
+    branchExceptions: humanizedBranchExceptions(rule.branch_exceptions),
+  };
 };
 
 const HUMANIZE_RULES_METHODS = {

@@ -25,9 +25,7 @@ exports[`DetailsDrawer component default policy renders the correct policy actio
           DAST
         </strong>
         with the following options:
-        <ul
-          class="gl-pl-6"
-        >
+        <ul>
           <li
             class="gl-mt-3"
           >
@@ -75,9 +73,7 @@ exports[`DetailsDrawer component multiple action policy renders the correct poli
           Container Scanning
         </strong>
         with the following options:
-        <ul
-          class="gl-pl-6"
-        >
+        <ul>
           <li
             class="gl-mt-3"
           >
@@ -93,9 +89,7 @@ exports[`DetailsDrawer component multiple action policy renders the correct poli
           Secret Detection
         </strong>
         with the following options:
-        <ul
-          class="gl-pl-6"
-        >
+        <ul>
           <li
             class="gl-mt-3"
           >
@@ -111,9 +105,7 @@ exports[`DetailsDrawer component multiple action policy renders the correct poli
           SAST
         </strong>
         with the following options:
-        <ul
-          class="gl-pl-6"
-        >
+        <ul>
           <li
             class="gl-mt-3"
           >
@@ -194,9 +186,7 @@ exports[`DetailsDrawer component policy with tags and CI variables renders the c
           Secret Detection
         </strong>
         with the following options:
-        <ul
-          class="gl-pl-6"
-        >
+        <ul>
           <li
             class="gl-mt-3"
           >
@@ -265,9 +255,7 @@ exports[`DetailsDrawer component policy with unsupported attributes renders the 
           SAST
         </strong>
         with the following options:
-        <ul
-          class="gl-pl-6"
-        >
+        <ul>
           <li
             class="gl-mt-3"
           >
