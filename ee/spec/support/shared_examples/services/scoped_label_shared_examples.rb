@@ -2,10 +2,12 @@
 
 RSpec.shared_context 'exclusive labels creation' do
   def create_label(title)
+    # Lock all the labels. Since it shouldn't have any effect for normal
+    # issuables, this ensures that is the case
     if parent.is_a?(Group)
-      create(:group_label, group: parent, title: title)
+      create(:group_label, group: parent, title: title, lock_on_merge: true)
     else
-      create(:label, project: parent, title: title)
+      create(:label, project: parent, title: title, lock_on_merge: true)
     end
   end
 
@@ -103,7 +105,8 @@ RSpec.shared_examples 'existing issuable with scoped labels' do
             **described_class.constructor_container_arg(parent), current_user: user, params: { label_ids: [label1.id, label3.id] }
           ).execute(issuable)
 
-          expect(issuable.reload.labels).to match_array([label3])
+          expected = issuable.supports_lock_on_merge? ? [label1] : [label3]
+          expect(issuable.reload.labels).to match_array(expected)
         end
       end
 
@@ -118,7 +121,8 @@ RSpec.shared_examples 'existing issuable with scoped labels' do
             **described_class.constructor_container_arg(parent), current_user: user, params: { labels: [label1.title, label3.title] }
           ).execute(issuable)
 
-          expect(issuable.reload.labels).to match_array([label3])
+          expected = issuable.supports_lock_on_merge? ? [label1] : [label3]
+          expect(issuable.reload.labels).to match_array(expected)
         end
       end
 

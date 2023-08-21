@@ -49,14 +49,14 @@ module EE
     end
 
     override :process_label_ids
-    def process_label_ids(attributes, existing_label_ids: nil, extra_label_ids: [])
+    def process_label_ids(attributes, issuable:, existing_label_ids: nil, extra_label_ids: [])
       ids = super
       added_label_ids = ids - existing_label_ids.to_a
 
-      filter_mutually_exclusive_labels(ids, added_label_ids)
+      filter_mutually_exclusive_labels(ids, added_label_ids, lock_on_merge: issuable.supports_lock_on_merge?)
     end
 
-    def filter_mutually_exclusive_labels(ids, added_label_ids)
+    def filter_mutually_exclusive_labels(ids, added_label_ids, lock_on_merge: false)
       return ids if added_label_ids.empty? || !parent.feature_available?(:scoped_labels)
 
       label_sets = ScopedLabelSet.from_label_ids(ids)
@@ -64,6 +64,8 @@ module EE
       label_sets.flat_map do |set|
         if set.valid? || !set.contains_any?(added_label_ids)
           set.label_ids
+        elsif lock_on_merge && set.lock_on_merge_labels?
+          set.label_ids - added_label_ids
         else
           set.last_id_by_order(label_ids_ordered_by_selection)
         end
