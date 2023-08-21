@@ -19,12 +19,7 @@ module QA
     describe 'Dora Metrics' do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
 
-      let(:group) do
-        Resource::Sandbox.init do |resource|
-          resource.api_client = admin_api_client
-          resource.path = "optimize-vsa-test"
-        end.reload!
-      end
+      let(:group) { build(:sandbox, api_client: admin_api_client, path: 'optimize-vsa-test').reload! }
 
       context "with group metrics", testcase: "https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/419615" do
         let(:resource) { group }
@@ -39,13 +34,12 @@ module QA
         let(:resource) { project }
 
         let(:project) do
-          Resource::Project.init do |resource|
-            resource.add_name_uuid = false
-            resource.api_client = admin_api_client
-            resource.group = group
-            resource.path = "optimize-sandbox"
-            resource.name = "optimize-sandbox"
-          end.reload!
+          build(:project,
+            add_name_uuid: false,
+            api_client: admin_api_client,
+            group: group,
+            path: 'optimize-sandbox',
+            name: 'optimize-sandbox').reload!
         end
 
         it_behaves_like "dora metrics api endpoint", {

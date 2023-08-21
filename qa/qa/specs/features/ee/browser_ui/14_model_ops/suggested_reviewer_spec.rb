@@ -3,11 +3,7 @@
 module QA
   RSpec.describe 'ModelOps', :skip_live_env do
     describe 'Suggested Reviewers' do
-      let(:project) do
-        Resource::Project.init do |project|
-          project.path_with_namespace = 'gitlab-org/gitlab-qa'
-        end.reload!
-      end
+      let(:project) { build(:project, path_with_namespace: 'gitlab-org/gitlab-qa').reload! }
 
       let(:merge_request) do
         Resource::MergeRequest.init do |merge_request|
