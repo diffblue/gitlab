@@ -32,10 +32,7 @@ module QA
             expect(show).to have_system_note('removed this merge request from the merge train')
           end
 
-          Page::Main::Menu.perform do |main|
-            main.go_to_page_by_shortcut('todos-shortcut-button')
-          end
-
+          Page::Main::Menu.perform(&:go_to_todos)
           Page::Dashboard::Todos.perform do |todos|
             todos.wait_until(reload: true, sleep_interval: 1) { todos.has_todo_list? }
 
