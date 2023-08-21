@@ -2,6 +2,8 @@
 require 'spec_helper'
 
 RSpec.describe Licenses::DestroyService, feature_category: :purchase do
+  subject(:destroy_license) { destroy_with(user) }
+
   let(:license) { create(:license) }
 
   let_it_be(:user) { create(:admin) }
@@ -12,7 +14,7 @@ RSpec.describe Licenses::DestroyService, feature_category: :purchase do
 
   shared_examples 'license destroy' do
     it 'destroys a license' do
-      destroy_with(user)
+      destroy_license
 
       expect(License.where(id: license.id)).not_to exist
     end
@@ -23,19 +25,21 @@ RSpec.describe Licenses::DestroyService, feature_category: :purchase do
       expect(Gitlab::CurrentSettings.current_application_settings).to receive(:update)
         .with(future_subscriptions: [])
 
-      destroy_with(user)
+      destroy_license
     end
   end
 
   context 'when admin mode is enabled', :enable_admin_mode do
     it_behaves_like 'license destroy'
     it_behaves_like 'clear future subscriptions application setting'
+    it_behaves_like 'call service to handle the provision of code suggestions'
 
     context 'with cloud license' do
       let(:license) { create(:license, cloud_licensing_enabled: true, plan: License::ULTIMATE_PLAN) }
 
       it_behaves_like 'license destroy'
       it_behaves_like 'clear future subscriptions application setting'
+      it_behaves_like 'call service to handle the provision of code suggestions'
     end
 
     context 'with an active license that is not the current one' do
@@ -46,12 +50,13 @@ RSpec.describe Licenses::DestroyService, feature_category: :purchase do
       end
 
       it_behaves_like 'license destroy'
+      it_behaves_like 'call service to handle the provision of code suggestions'
 
       it 'does not clear the future_subscriptions application setting' do
         expect(Gitlab::CurrentSettings.current_application_settings).not_to receive(:update)
           .with(future_subscriptions: [])
 
-        destroy_with(user)
+        destroy_license
       end
     end
   end

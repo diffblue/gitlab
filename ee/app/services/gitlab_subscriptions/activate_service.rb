@@ -22,6 +22,7 @@ module GitlabSubscriptions
 
       if license.save
         save_future_subscriptions(response[:future_subscriptions])
+        update_code_suggestions_add_on_purchase
 
         {
           success: true,
@@ -63,6 +64,10 @@ module GitlabSubscriptions
       strong_memoize(:application_settings) do
         Gitlab::CurrentSettings.current_application_settings
       end
+    end
+
+    def update_code_suggestions_add_on_purchase
+      ::GitlabSubscriptions::AddOnPurchases::SelfManaged::ProvisionCodeSuggestionsService.new.execute
     end
   end
 end

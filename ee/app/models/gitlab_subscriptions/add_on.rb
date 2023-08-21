@@ -21,5 +21,10 @@ module GitlabSubscriptions
         code_suggestions: 'Add-on for code suggestions.'
       }
     end
+
+    def self.find_or_create_by_name(add_on_name)
+      create_with(description: GitlabSubscriptions::AddOn.descriptions[add_on_name.to_sym])
+        .find_or_create_by!(name: add_on_name)
+    end
   end
 end

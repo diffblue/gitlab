@@ -32,6 +32,7 @@ class SyncSeatLinkRequestWorker
       reset_license!(response['license']) if response['license']
 
       save_future_subscriptions(response)
+      update_code_suggestions_add_on_purchase
       update_reconciliation!(response)
       update_code_suggestions_tokens(response)
     else
@@ -66,6 +67,10 @@ class SyncSeatLinkRequestWorker
 
   def request_error_message(response)
     "Seat Link request failed! Code:#{response.code} Body:#{response.body}"
+  end
+
+  def update_code_suggestions_add_on_purchase
+    ::GitlabSubscriptions::AddOnPurchases::SelfManaged::ProvisionCodeSuggestionsService.new.execute
   end
 
   def update_reconciliation!(response)
