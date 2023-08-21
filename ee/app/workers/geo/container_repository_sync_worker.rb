@@ -16,10 +16,8 @@ module Geo
       Sidekiq.logger.warn "Failed #{msg['class']} with #{msg['args']}: #{msg['error_message']}"
     end
 
-    attr_reader :repository
-
     def perform(id)
-      @repository = ContainerRepository.find_by_id(id)
+      repository = ContainerRepository.find_by_id(id)
 
       if repository.nil?
         log_error("Couldn't find container repository, skipping syncing", container_repository_id: id)
