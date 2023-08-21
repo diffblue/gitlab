@@ -8,12 +8,15 @@ module Security
 
       ALLOWED_IDENTIFIER_LIST = %w[cwe].freeze
 
+      # To improve the authentication/integration
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/354070
+      BEARER_TOKEN = "sbdMsxcgW2Xs75Q2uHc9FhUCZSEV3fSg"
+
       def calculate_reactive_cache(full_url)
-        bearer_token = "sbdMsxcgW2Xs75Q2uHc9FhUCZSEV3fSg" # To improve the authentication/integration https://gitlab.com/gitlab-org/gitlab/-/issues/354070
         response = Gitlab::HTTP.try_get(
           full_url,
           headers: {
-            "Authorization" => "Bearer #{bearer_token}"
+            "Authorization" => "Bearer #{BEARER_TOKEN}"
           }
         )
         { url: response.parsed_response["link"] } if response

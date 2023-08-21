@@ -52,12 +52,12 @@ RSpec.describe Security::TrainingProviders::SecureCodeWarriorUrlFinder do
 
   describe '#full_url' do
     it 'returns full url path' do
-      expect(finder.full_url).to eq('example.com/?Id=gitlab&MappingList=cwe&MappingKey=2')
+      expect(finder.full_url).to eq('https://example.com/?Id=gitlab&MappingList=cwe&MappingKey=2')
     end
 
     context "when identifier contains CWE-{number} format" do
       it 'returns full url path with proper mapping key' do
-        expect(finder.full_url).to eq('example.com/?Id=gitlab&MappingList=cwe&MappingKey=2')
+        expect(finder.full_url).to eq('https://example.com/?Id=gitlab&MappingList=cwe&MappingKey=2')
       end
     end
 
@@ -66,7 +66,7 @@ RSpec.describe Security::TrainingProviders::SecureCodeWarriorUrlFinder do
       let_it_be(:identifier_external_id) { "[#{identifier.external_type}]-[#{identifier.external_id}]-[#{identifier.name}]" }
 
       it 'returns full url path with proper mapping key' do
-        expect(finder.full_url).to eq("example.com/?Id=gitlab&MappingList=owasp-web-2017&MappingKey=A1")
+        expect(finder.full_url).to eq("https://example.com/?Id=gitlab&MappingList=owasp-web-2017&MappingKey=A1")
       end
     end
 
@@ -76,7 +76,7 @@ RSpec.describe Security::TrainingProviders::SecureCodeWarriorUrlFinder do
       it 'returns full url path with the language parameter mapped' do
         expect(
           described_class.new(identifier.project, provider, identifier_external_id, language).full_url
-        ).to eq("example.com/?Id=gitlab&MappingList=cwe&MappingKey=2&LanguageKey=#{language}")
+        ).to eq("https://example.com/?Id=gitlab&MappingList=cwe&MappingKey=2&LanguageKey=#{language}")
       end
     end
   end
