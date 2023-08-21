@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Helpers::AiHelper, type: :helper, feature_category: :no_category do # rubocop: disable RSpec/InvalidFeatureCategory
+RSpec.describe API::Helpers::AiHelper, type: :helper, feature_category: :ai_abstraction_layer do
   let(:user) { build_stubbed(:user) }
 
   describe '#check_feature_enabled!' do

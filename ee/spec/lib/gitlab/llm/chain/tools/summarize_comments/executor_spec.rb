@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_category: :shared do
+RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_category: :duo_chat do
   let(:input_variables) { { input: "user input", suggestions: "" } }
   let(:tool) { described_class.new(context: context, options: input_variables) }
 

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Mutations::Ai::Action, feature_category: :not_owned do # rubocop: disable RSpec/InvalidFeatureCategory
+RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
   let_it_be(:user) { create(:user) }
   let_it_be(:resource, reload: true) { create(:issue) }
   let(:resource_id) { resource.to_gid.to_s }

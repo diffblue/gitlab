@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Llm::ExecuteMethodService, feature_category: :no_category do # rubocop: disable RSpec/InvalidFeatureCategory
+RSpec.describe Llm::ExecuteMethodService, feature_category: :ai_abstraction_layer do
   let_it_be(:user) { build_stubbed(:user) }
   let_it_be(:issue) { build_stubbed(:issue) }
 

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Ai::Experimentation::VertexAi, feature_category: :shared do
+RSpec.describe API::Ai::Experimentation::VertexAi, feature_category: :ai_abstraction_layer do
   let_it_be(:current_user) { create(:user) }
   let_it_be(:url) { "https://example.com/v1/projects/llm/locations/us-central1/publishers/google/models/codechat-bison:predict" }
 

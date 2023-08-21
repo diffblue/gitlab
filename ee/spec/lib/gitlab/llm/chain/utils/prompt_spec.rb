@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Chain::Utils::Prompt, feature_category: :shared do
+RSpec.describe Gitlab::Llm::Chain::Utils::Prompt, feature_category: :duo_chat do
   let(:content) { ["multi", "line", "%<message>s"] }
 
   describe 'messages with roles' do

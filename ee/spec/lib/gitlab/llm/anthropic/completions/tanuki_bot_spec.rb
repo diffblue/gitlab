@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Anthropic::Completions::TanukiBot, feature_category: :global_search do
+RSpec.describe Gitlab::Llm::Anthropic::Completions::TanukiBot, feature_category: :duo_chat do
   let_it_be(:user) { create(:user) }
 
   let(:question) { 'A question' }

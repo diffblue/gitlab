@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Concerns::CircuitBreaker, :clean_gitlab_redis_rate_limiting, feature_category: :shared do
+RSpec.describe Gitlab::Llm::Concerns::CircuitBreaker, :clean_gitlab_redis_rate_limiting, feature_category: :ai_abstraction_layer do
   let(:dummy_class) do
     Class.new do
       include ::Gitlab::Llm::Concerns::CircuitBreaker

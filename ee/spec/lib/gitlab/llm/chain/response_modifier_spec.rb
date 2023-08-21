@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Chain::ResponseModifier, feature_category: :shared do
+RSpec.describe Gitlab::Llm::Chain::ResponseModifier, feature_category: :duo_chat do
   let(:content) { "This is the summary" }
   let(:context) { instance_double(Gitlab::Llm::Chain::GitlabContext) }
   let(:status) { :ok }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category: :no_category do # rubocop: disable RSpec/InvalidFeatureCategory
+RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category: :duo_chat do
   let(:ai_response) { { "completion" => "some ai response text" } }
   let(:template_class) { nil }
   let(:ai_options) do

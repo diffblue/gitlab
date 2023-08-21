@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :shared do
+RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :duo_chat do
   let(:resource) { instance_double(Issue) }
   let(:container) { instance_double(Project) }
   let(:user) { instance_double(User) }

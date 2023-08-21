@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Chain::GitlabContext, feature_category: :shared do
+RSpec.describe Gitlab::Llm::Chain::GitlabContext, feature_category: :duo_chat do
   # Remove this spec once actual implementation is added
   describe '#initialize' do
     it 'initializes' do

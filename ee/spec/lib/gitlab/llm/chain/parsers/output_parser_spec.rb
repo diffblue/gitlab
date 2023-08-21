@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Chain::Parsers::OutputParser, feature_category: :shared do
+RSpec.describe Gitlab::Llm::Chain::Parsers::OutputParser, feature_category: :duo_chat do
   subject(:parser) { described_class.new(output: nil) }
 
   describe '#parse' do

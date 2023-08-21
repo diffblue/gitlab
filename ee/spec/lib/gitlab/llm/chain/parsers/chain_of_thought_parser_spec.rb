@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Chain::Parsers::ChainOfThoughtParser, feature_category: :shared do
+RSpec.describe Gitlab::Llm::Chain::Parsers::ChainOfThoughtParser, feature_category: :duo_chat do
   let(:output) do
     <<-OUTPUT
       Thought: This is a thought

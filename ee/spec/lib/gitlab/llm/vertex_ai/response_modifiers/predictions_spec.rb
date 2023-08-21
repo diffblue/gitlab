@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::VertexAi::ResponseModifiers::Predictions, feature_category: :shared do
+RSpec.describe Gitlab::Llm::VertexAi::ResponseModifiers::Predictions, feature_category: :ai_abstraction_layer do
   describe '#response_body' do
     subject(:response_body) { described_class.new(ai_response.to_json).response_body }
 

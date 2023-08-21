@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::OpenAi::Options, feature_category: :no_category do # rubocop: disable RSpec/InvalidFeatureCategory
+RSpec.describe Gitlab::Llm::OpenAi::Options, feature_category: :ai_abstraction_layer do
   subject(:options) { described_class.new }
 
   describe '#chat' do

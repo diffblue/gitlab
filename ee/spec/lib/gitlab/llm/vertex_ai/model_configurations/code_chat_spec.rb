@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::VertexAi::ModelConfigurations::CodeChat, feature_category: :shared do
+RSpec.describe Gitlab::Llm::VertexAi::ModelConfigurations::CodeChat, feature_category: :ai_abstraction_layer do
   describe '#payload' do
     it 'returns default payload' do
       expect(subject.payload('foo')).to eq(

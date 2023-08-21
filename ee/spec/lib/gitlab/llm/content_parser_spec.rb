@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::ContentParser, feature_category: :global_search do
+RSpec.describe Gitlab::Llm::ContentParser, feature_category: :duo_chat do
   describe '#parse_and_split' do
     let(:content) { 'Something to split' }
     let(:source_name) { '/doc/path/to/file.md' }

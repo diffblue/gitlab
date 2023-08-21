@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::ResponseModifiers::ToolAnswer, feature_category: :no_category do # rubocop: disable RSpec/InvalidFeatureCategory
+RSpec.describe Gitlab::Llm::ResponseModifiers::ToolAnswer, feature_category: :ai_abstraction_layer do
   let(:ai_response) { { content: 'hello' }.to_json }
 
   it 'parses content from the ai response' do
