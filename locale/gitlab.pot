@@ -675,9 +675,6 @@ msgstr ""
 msgid "%{count} total weight"
 msgstr ""
 
-msgid "%{dashboard_path} could not be found."
-msgstr ""
-
 msgid "%{days} days until tags are automatically removed"
 msgstr ""
 
@@ -31419,9 +31416,6 @@ msgstr ""
 msgid "No other labels with such name or description"
 msgstr ""
 
-msgid "No panels matching properties %{opts}"
-msgstr ""
-
 msgid "No parent group"
 msgstr ""
 
@@ -38346,9 +38340,6 @@ msgid "Provision instructions"
 msgstr ""
 
 msgid "Provisioned by:"
-msgstr ""
-
-msgid "Proxy support for this API is not available currently"
 msgstr ""
 
 msgid "Public"
