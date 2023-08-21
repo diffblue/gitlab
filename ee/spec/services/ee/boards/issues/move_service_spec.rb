@@ -45,9 +45,12 @@ RSpec.describe Boards::Issues::MoveService, services: true, feature_category: :t
 
     context 'from milestone to label list' do
       let!(:issue) do
-        create(:labeled_issue, project: project,
-                               milestone: milestone_list1.milestone,
-                               labels: [bug, development])
+        create(
+          :labeled_issue,
+          project: project,
+          milestone: milestone_list1.milestone,
+          labels: [bug, development]
+        )
       end
 
       it 'adds labels and keeps milestone' do
@@ -144,9 +147,12 @@ RSpec.describe Boards::Issues::MoveService, services: true, feature_category: :t
 
     context 'from iteration to label list' do
       let!(:issue) do
-        create(:labeled_issue, project: project,
-                               iteration: iteration_list1.iteration,
-                               labels: [bug, development])
+        create(
+          :labeled_issue,
+          project: project,
+          iteration: iteration_list1.iteration,
+          labels: [bug, development]
+        )
       end
 
       it 'adds labels and keeps iteration' do

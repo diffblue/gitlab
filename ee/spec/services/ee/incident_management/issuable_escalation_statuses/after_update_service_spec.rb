@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe IncidentManagement::IssuableEscalationStatuses::AfterUpdateService,
-feature_category: :incident_management do
+  feature_category: :incident_management do
   let_it_be(:current_user) { create(:user) }
   let_it_be(:escalation_status, reload: true) { create(:incident_management_issuable_escalation_status) }
   let_it_be(:issue, reload: true) { escalation_status.issue }
@@ -96,8 +96,12 @@ feature_category: :incident_management do
 
       before do
         if had_policy && [:acknowledged, :triggered].include?(old_status)
-          create(:incident_management_pending_issue_escalation,
-                 issue: issue, policy: escalation_policy, project: project)
+          create(
+            :incident_management_pending_issue_escalation,
+            issue: issue,
+            policy: escalation_policy,
+            project: project
+          )
         end
       end
 
@@ -127,8 +131,12 @@ feature_category: :incident_management do
       let(:escalations_started_at) { Time.current }
 
       before do
-        create(:incident_management_pending_issue_escalation,
-               issue: issue, policy: policy, project: project)
+        create(
+          :incident_management_pending_issue_escalation,
+          issue: issue,
+          policy: policy,
+          project: project
+        )
 
         update_issue(status_event, policy, escalations_started_at)
 

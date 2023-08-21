@@ -134,9 +134,11 @@ RSpec.describe Boards::Lists::CreateService, feature_category: :team_planning do
               attrs = service.send(:create_list_attributes, nil, nil, nil)
 
               if wip_limits_enabled
-                expect(attrs).to include(max_issue_count: expected_max_issue_count,
-                                         max_issue_weight: expected_max_issue_weight,
-                                         limit_metric: expected_limit_metric)
+                expect(attrs).to include(
+                  max_issue_count: expected_max_issue_count,
+                  max_issue_weight: expected_max_issue_weight,
+                  limit_metric: expected_limit_metric
+                )
               else
                 expect(attrs).not_to include(max_issue_count: 0, max_issue_weight: 0, limit_metric: nil)
               end

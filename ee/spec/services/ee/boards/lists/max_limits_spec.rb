@@ -16,11 +16,14 @@ RSpec.describe 'Max Limits Module', feature_category: :team_planning do
   end
 
   describe 'max limits query methods' do
-    where(:params, :expected_max_issue_count?,
-          :expected_max_issue_weight?,
-          :expected_max_issue_count_by_params,
-          :expected_max_issue_weight_by_params,
-          :expected_list_attributes) do
+    where(
+      :params,
+      :expected_max_issue_count?,
+      :expected_max_issue_weight?,
+      :expected_max_issue_count_by_params,
+      :expected_max_issue_weight_by_params,
+      :expected_list_attributes
+    ) do
       [
         [{ max_issue_count: 0 }, true, false, 0, 0, { max_issue_count: 0 }],
         [{ max_issue_count: nil }, false, false, 0, 0, {}],
