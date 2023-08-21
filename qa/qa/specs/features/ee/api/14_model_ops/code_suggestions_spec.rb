@@ -3,15 +3,20 @@
 module QA
   # These tests require several feature flags, user settings, and instance configuration that will require substantial
   # effort to fully automate. In the meantime the following were done manually so we can run the tests against
-  # gitlab.com with the `gitlab-qa` user:
+  # staging.gitlab.com and gitlab.com with the `gitlab-qa` user:
   # 1. Enable the code_suggestions_completion_api feature flag
   #    ```/chatops run feature set --user=gitlab-qa code_suggestions_completion_api true```
+  #    ```/chatops run feature set --user=gitlab-qa code_suggestions_completion_api true --staging```
   # 2. Enable the Code Suggestions user preference
   #    See https://docs.gitlab.com/ee/user/project/repository/code_suggestions.html#enable-code-suggestions-for-an-individual-user
-  RSpec.describe 'ModelOps', only: { pipeline: %i[production canary] } do
+  RSpec.describe(
+    'ModelOps',
+    only: { pipeline: %w[staging-canary staging canary production] },
+    product_group: :ai_assisted
+  ) do
     include Support::API
 
-    describe 'Code Suggestions', product_group: :ai_assisted do
+    describe 'Code Suggestions' do
       let(:prompt_data) do
         {
           prompt_version: 1,
@@ -49,7 +54,7 @@ module QA
       context 'on the GitLab API with PAT auth' do
         it 'returns a suggestion', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/420973' do
           response = post(
-            'https://gitlab.com/api/v4/code_suggestions/completions',
+            "#{Runtime::Scenario.gitlab_address}/api/v4/code_suggestions/completions",
             JSON.dump(prompt_data),
             headers: {
               Authorization: "Bearer #{Resource::PersonalAccessToken.fabricate!.token}",
