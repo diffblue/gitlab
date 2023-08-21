@@ -5,12 +5,17 @@ jest.mock('lodash/uniqueId', () => (x) => `${x}7`);
 const EXPECTED_CALLBACK_NAME = '_initArkoseLabsScript_callback_7';
 const TEST_PUBLIC_KEY = 'arkose-labs-public-api-key';
 const TEST_DOMAIN = 'client-api.arkoselabs.com';
+const MOCK_CLIENT_ERROR_HANDLER = jest.fn();
 
 describe('initArkoseLabsScript', () => {
   let subject;
 
   const initSubject = () => {
-    subject = initArkoseLabsScript({ publicKey: TEST_PUBLIC_KEY, domain: TEST_DOMAIN });
+    subject = initArkoseLabsScript({
+      publicKey: TEST_PUBLIC_KEY,
+      domain: TEST_DOMAIN,
+      handleError: MOCK_CLIENT_ERROR_HANDLER,
+    });
   };
 
   const findScriptTags = () => document.querySelectorAll('script');
@@ -47,5 +52,15 @@ describe('initArkoseLabsScript', () => {
 
     expect(window[EXPECTED_CALLBACK_NAME]).toBe(undefined);
     return expect(subject).resolves.toBe(enforcement);
+  });
+
+  it('rejects the promise when script fails to load', () => {
+    initSubject();
+
+    const scriptTag = findScriptTags().item(0);
+    const error = new Error();
+    scriptTag.onerror(error);
+
+    return expect(subject).rejects.toThrow(error);
   });
 });

@@ -119,19 +119,35 @@ module EE
       should_challenge = ::Users::CaptchaChallengeService.new(user).execute
       return unless should_challenge[:result]
 
+      # if arkose is down, skip challenge
+      arkose_status = Arkose::StatusService.new.execute
+      return unless arkose_status.success?
+
       failed_login_captcha
     end
 
     def failed_login_captcha
       increment_failed_login_captcha_counter
+      log_failed_login_captcha
 
       self.resource = resource_class.new
-      flash[:alert] = 'Login failed. Please retry from your primary device and network.'
+      flash[:alert] =
+        s_('Session|Unable to verify the user. ' \
+           'An error occurred when loading the user verification challenge. Refresh to try again.')
       flash.delete :recaptcha_error
 
       add_gon_variables
 
       respond_with_navigational(resource) { render :new }
+    end
+
+    def log_failed_login_captcha
+      ::Gitlab::AppLogger.info(
+        message: 'Failed Login',
+        username: user_params[:login],
+        ip: request.remote_ip,
+        reason: 'Unable to load arkose user verification challenge'
+      )
     end
 
     def complete_identity_verification

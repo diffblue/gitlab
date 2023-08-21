@@ -7,7 +7,7 @@ const getCallbackName = () => uniqueId(CALLBACK_NAME);
 export const initArkoseLabsScript = ({ publicKey, domain }) => {
   const callbackFunctionName = getCallbackName();
 
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     window[callbackFunctionName] = (enforcement) => {
       delete window[callbackFunctionName];
       resolve(enforcement);
@@ -21,6 +21,11 @@ export const initArkoseLabsScript = ({ publicKey, domain }) => {
     ].forEach(([attr, value]) => {
       tag.setAttribute(attr, value);
     });
+
+    tag.onerror = (error) => {
+      reject(error);
+    };
+
     document.head.appendChild(tag);
   });
 };
