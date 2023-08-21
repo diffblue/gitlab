@@ -1,4 +1,4 @@
-import { GlEmptyState, GlBadge } from '@gitlab/ui';
+import { GlEmptyState, GlBadge, GlPopover } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import AiGenieLoader from 'ee/ai/components/ai_genie_loader.vue';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
@@ -47,6 +47,7 @@ describe('AiGenieChat', () => {
   const findPromptForm = () => wrapper.findByTestId('chat-prompt-form');
   const findGeneratedByAI = () => wrapper.findByText(i18n.GENIE_CHAT_LEGAL_GENERATED_BY_AI);
   const findBadge = () => wrapper.findComponent(GlBadge);
+  const findPopover = () => wrapper.findComponent(GlPopover);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findPredefined = () => wrapper.findComponent(AiPredefinedPrompts);
   const findChatInput = () => wrapper.findByTestId('chat-prompt-input');
@@ -165,12 +166,17 @@ describe('AiGenieChat', () => {
       );
     });
 
-    it('sets correct props on the Experiment label', () => {
+    it('sets correct props on the Experiment badge', () => {
       const badgeType = 'neutral';
       const badgeSize = 'md';
       expect(findBadge().props('variant')).toBe(badgeType);
       expect(findBadge().props('size')).toBe(badgeSize);
       expect(findBadge().text()).toBe(i18n.EXPERIMENT_BADGE);
+    });
+
+    it('shows the popover when the Experiment badge is clicked', () => {
+      createComponent();
+      expect(findPopover().props('target')).toBe(findBadge().vm.$el.id);
     });
   });
 

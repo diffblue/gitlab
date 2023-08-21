@@ -5,6 +5,9 @@ import {
   GlButton,
   GlAlert,
   GlBadge,
+  GlPopover,
+  GlSprintf,
+  GlLink,
   GlFormInputGroup,
   GlFormTextarea,
   GlForm,
@@ -12,6 +15,7 @@ import {
   GlFormText,
 } from '@gitlab/ui';
 import { throttle } from 'lodash';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { i18n, GENIE_CHAT_RESET_MESSAGE } from '../constants';
@@ -26,6 +30,9 @@ export default {
     GlButton,
     GlAlert,
     GlBadge,
+    GlPopover,
+    GlSprintf,
+    GlLink,
     GlFormInputGroup,
     GlFormTextarea,
     GlForm,
@@ -157,11 +164,13 @@ export default {
     },
   },
   i18n,
+  experimentHelpPagePath: helpPagePath('policy/experiment-beta-support', { anchor: 'experiment' }),
 };
 </script>
 <template>
   <aside
     v-if="!isHidden"
+    id="chat-component"
     ref="drawer"
     class="markdown-code-block gl-drawer gl-drawer-default gl-max-h-full gl-bottom-0 gl-z-index-9999 gl-shadow-none gl-border-l gl-border-t ai-genie-chat"
     :class="{ 'gl-h-auto': !fullScreen }"
@@ -177,9 +186,41 @@ export default {
         <h3 class="gl-my-0 gl-font-size-h2">
           <slot name="title"></slot>
         </h3>
-        <gl-badge class="gl-mx-4" variant="neutral" size="md"
+        <gl-badge
+          id="chat-experiment-badge"
+          class="gl-mx-4 gl-hover-cursor-pointer"
+          variant="neutral"
+          size="md"
           >{{ $options.i18n.EXPERIMENT_BADGE }}
         </gl-badge>
+        <gl-popover
+          target="chat-experiment-badge"
+          container="chat-component"
+          placement="bottom"
+          triggers="click"
+          show-close-button
+          :css-classes="['gl-z-index-9999!']"
+          :title="$options.i18n.EXPERIMENT_POPOVER_TITLE"
+        >
+          <gl-sprintf :message="$options.i18n.EXPERIMENT_POPOVER_CONTENT">
+            <template #link="{ content }">
+              <gl-link
+                :href="$options.experimentHelpPagePath"
+                target="_blank"
+                class="gl-display-inline-block gl-font-sm"
+              >
+                {{ content }}
+              </gl-link>
+            </template>
+            <template #bullets>
+              <ul class="gl-mb-0 gl-pl-5">
+                <li v-for="(item, i) in $options.i18n.EXPERIMENT_POPOVER_BULLETS" :key="`li-${i}`">
+                  {{ item }}
+                </li>
+              </ul>
+            </template>
+          </gl-sprintf>
+        </gl-popover>
         <gl-button
           category="tertiary"
           variant="default"
