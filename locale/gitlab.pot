@@ -54916,9 +54916,6 @@ msgstr ""
 msgid "Your profile"
 msgstr ""
 
-msgid "Your project is no longer receiving GitLab Ultimate benefits as of 2022-07-01. As notified in-app previously, public open source projects on the Free tier can apply to the GitLab for Open Source Program to receive GitLab Ultimate benefits. Please refer to the %{faq_link_start}FAQ%{link_end} for more details."
-msgstr ""
-
 msgid "Your project limit is %{limit} projects! Please contact your administrator to increase it"
 msgstr ""
 
