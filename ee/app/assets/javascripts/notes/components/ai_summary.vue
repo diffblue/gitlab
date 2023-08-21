@@ -75,6 +75,9 @@ export default {
         variables() {
           return this.subscriptionVariables;
         },
+        skip() {
+          return !this.aiLoading;
+        },
         error(error) {
           this.handleError(error);
         },
