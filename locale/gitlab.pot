@@ -24238,6 +24238,12 @@ msgstr ""
 msgid "Import|There is not a valid Git repository at this URL. If your HTTP repository is not publicly accessible, verify your credentials."
 msgstr ""
 
+msgid "Import|Timeout for decompressing archived files (seconds)"
+msgstr ""
+
+msgid "Import|Timeout for decompressing archived files."
+msgstr ""
+
 msgid "Improve customer support with Service Desk"
 msgstr ""
 
@@ -43820,6 +43826,9 @@ msgid "Set time estimate to %{time_estimate}."
 msgstr ""
 
 msgid "Set to 0 for no size limit."
+msgstr ""
+
+msgid "Set to 0 to disable timeout."
 msgstr ""
 
 msgid "Set to auto-merge"
