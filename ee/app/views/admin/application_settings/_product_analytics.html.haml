@@ -24,8 +24,6 @@
           .form-text.text-muted
             = s_('AdminSettings|The host of your data collector instance.')
         .form-group
-          .js-input-copy-visibility{ data: clickhouse_connection_string_data(form_name: 'application_setting', value: @application_setting.product_analytics_clickhouse_connection_string) }
-        .form-group
           = f.label :cube_api_base_url, s_('AdminSettings|Cube API URL'), class: 'label-light'
           = f.url_field :cube_api_base_url, class: 'form-control gl-form-input', placeholder: 'https://cube.gitlab.com'
           .form-text.text-muted

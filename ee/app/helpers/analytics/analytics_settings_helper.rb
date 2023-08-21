@@ -7,18 +7,8 @@ module Analytics
         "#{form_name}[product_analytics_configurator_connection_string]",
         value,
         'https://username:password@gl-configurator.gitlab.com',
-        s_('ProductAnalytics|Connection string'),
+        s_('ProductAnalytics|Snowplow configurator connection string'),
         s_('ProductAnalytics|The connection string for your Snowplow configurator instance.')
-      )
-    end
-
-    def clickhouse_connection_string_data(form_name:, value:)
-      analytics_input_copy_visibility_data(
-        "#{form_name}[product_analytics_clickhouse_connection_string]",
-        value,
-        'https://user:pass@clickhouse.gitlab.com:8123',
-        s_('ProductAnalytics|Clickhouse URL'),
-        s_('ProductAnalytics|Used to connect Snowplow to the Clickhouse instance.')
       )
     end
 

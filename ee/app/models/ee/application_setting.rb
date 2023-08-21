@@ -160,12 +160,6 @@ module EE
         presence: true,
         allow_blank: true
 
-      validates :product_analytics_clickhouse_connection_string,
-        length: { maximum: 512 },
-        addressable_url: ::ApplicationSetting::ADDRESSABLE_URL_VALIDATION_OPTIONS.merge({ allow_localhost: true }),
-        presence: true,
-        if: ->(setting) { setting.product_analytics_enabled && ::Feature.disabled?(:product_analytics_snowplow_support) }
-
       validates :cube_api_key,
         length: { maximum: 255 },
         presence: true,
@@ -269,7 +263,6 @@ module EE
           auto_ban_user_on_excessive_projects_download: false,
           product_analytics_enabled: false,
           product_analytics_data_collector_host: nil,
-          product_analytics_clickhouse_connection_string: nil,
           product_analytics_configurator_connection_string: nil,
           cube_api_base_url: nil,
           cube_api_key: nil

@@ -60,7 +60,6 @@ RSpec.describe Projects::Settings::AnalyticsController, feature_category: :produ
             project_setting_attributes: {
               product_analytics_configurator_connection_string: 'https://test:test@configurator.example.com',
               product_analytics_data_collector_host: 'https://collector.example.com',
-              product_analytics_clickhouse_connection_string: 'https://test:test@clickhouse.example.com',
               cube_api_base_url: 'https://cube.example.com',
               cube_api_key: 'cube_api_key'
             }
@@ -77,10 +76,6 @@ RSpec.describe Projects::Settings::AnalyticsController, feature_category: :produ
           project.reload.project_setting.product_analytics_data_collector_host
         }.to(
           params.dig(:project, :project_setting_attributes, :product_analytics_data_collector_host)
-        ).and change {
-          project.reload.project_setting.product_analytics_clickhouse_connection_string
-        }.to(
-          params.dig(:project, :project_setting_attributes, :product_analytics_clickhouse_connection_string)
         ).and change {
           project.reload.project_setting.cube_api_base_url
         }.to(params.dig(:project, :project_setting_attributes, :cube_api_base_url)).and change {
