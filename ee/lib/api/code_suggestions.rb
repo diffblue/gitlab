@@ -76,10 +76,12 @@ module API
         Gitlab::CodeSuggestions::AccessToken::GITLAB_REALM_SELF_MANAGED
       end
 
-      def completions_endpoint
+      def completions_endpoint(task_type:)
         base_url = ENV.fetch('CODE_SUGGESTIONS_BASE_URL', DEFAULT_CODE_SUGGESTIONS_URL)
 
-        "#{base_url}/v2/completions"
+        task = task_type.endpoint_name
+
+        "#{base_url}/v2/code/#{task}"
       end
     end
 
@@ -127,9 +129,13 @@ module API
             token = code_suggestions_token.token
           end
 
+          task = ::CodeSuggestions::ModelSelector.new(
+            prefix: params.dig('current_file', 'content_above_cursor')
+          )
+
           workhorse_headers =
             Gitlab::Workhorse.send_url(
-              completions_endpoint,
+              completions_endpoint(task_type: task),
               body: params.except(:private_token).to_json,
               headers: model_gateway_headers(headers, token),
               method: "POST"

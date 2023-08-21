@@ -238,7 +238,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           command, params = workhorse_send_data
           expect(command).to eq('send-url')
           expect(params).to eq({
-            'URL' => 'https://codesuggestions.gitlab.com/v2/completions',
+            'URL' => 'https://codesuggestions.gitlab.com/v2/code/completions',
             'AllowRedirects' => false,
             'Body' => body.to_json,
             'Header' => {
@@ -264,7 +264,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
             _, params = workhorse_send_data
             expect(params).to include({
-              'URL' => 'http://test.com/v2/completions'
+              'URL' => 'http://test.com/v2/code/completions'
             })
           end
         end
@@ -342,6 +342,24 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
         before do
           create(:gitlab_subscription_add_on_purchase, add_on: code_suggestions_add_on, namespace: project.namespace)
+        end
+
+        context 'when the task is code generation' do
+          let(:current_user) { create(:user) }
+
+          before do
+            allow_next_instance_of(::CodeSuggestions::ModelSelector) do |selector|
+              allow(selector).to receive(:endpoint_name).and_return("generations")
+            end
+          end
+
+          it 'sends requests to the code generation endpoint' do
+            expect(Gitlab::Workhorse)
+              .to receive(:send_url)
+              .with('https://codesuggestions.gitlab.com/v2/code/generations', an_instance_of(Hash))
+
+            post_api
+          end
         end
 
         it_behaves_like 'code completions endpoint'
