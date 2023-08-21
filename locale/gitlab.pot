@@ -35731,9 +35731,6 @@ msgstr ""
 msgid "ProductAnalytics|Click Events"
 msgstr ""
 
-msgid "ProductAnalytics|Clickhouse URL"
-msgstr ""
-
 msgid "ProductAnalytics|Compares all events against each other"
 msgstr ""
 
@@ -35747,9 +35744,6 @@ msgid "ProductAnalytics|Compares feature usage of all features against each othe
 msgstr ""
 
 msgid "ProductAnalytics|Compares page views of all pages against each other"
-msgstr ""
-
-msgid "ProductAnalytics|Connection string"
 msgstr ""
 
 msgid "ProductAnalytics|Create a visualization"
@@ -35851,6 +35845,9 @@ msgstr ""
 msgid "ProductAnalytics|Set up to track how your product is performing and optimize your product and development processes."
 msgstr ""
 
+msgid "ProductAnalytics|Snowplow configurator connection string"
+msgstr ""
+
 msgid "ProductAnalytics|The connection string for your Snowplow configurator instance."
 msgstr ""
 
@@ -35873,9 +35870,6 @@ msgid "ProductAnalytics|Track specific features"
 msgstr ""
 
 msgid "ProductAnalytics|Unique Users"
-msgstr ""
-
-msgid "ProductAnalytics|Used to connect Snowplow to the Clickhouse instance."
 msgstr ""
 
 msgid "ProductAnalytics|Used to retrieve dashboard data from the Cube instance."

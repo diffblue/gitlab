@@ -20,7 +20,6 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
 
     stub_application_setting(product_analytics_data_collector_host: 'https://new-collector.example.com')
     stub_application_setting(project_collector_host: 'https://project-collector.example.com')
-    stub_application_setting(product_analytics_clickhouse_connection_string: 'clickhouse://localhost:9000')
     stub_application_setting(cube_api_base_url: 'https://cube.example.com')
     stub_application_setting(cube_api_key: '0987654321')
   end

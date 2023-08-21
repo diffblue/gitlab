@@ -20,10 +20,6 @@ module EE
         length: { maximum: 255 },
         addressable_url: { schemes: %w[http https], allow_localhost: true, allow_local_network: true },
         allow_blank: true
-      validates :product_analytics_clickhouse_connection_string,
-        length: { maximum: 512 },
-        addressable_url: { schemes: %w[http https], allow_localhost: true, allow_local_network: true },
-        allow_blank: true
       validates :cube_api_base_url,
         length: { maximum: 512 },
         addressable_url: { schemes: %w[http https], allow_localhost: true, allow_local_network: true },

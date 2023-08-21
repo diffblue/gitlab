@@ -8,23 +8,19 @@ RSpec.describe ProjectSetting, feature_category: :groups_and_projects do
 
   it { is_expected.to allow_value('https://test.com').for(:product_analytics_configurator_connection_string) }
   it { is_expected.to allow_value('https://test.com').for(:product_analytics_data_collector_host) }
-  it { is_expected.to allow_value('https://test.com').for(:product_analytics_clickhouse_connection_string) }
   it { is_expected.to allow_value('https://test.com').for(:cube_api_base_url) }
 
   it { is_expected.to allow_value('').for(:product_analytics_configurator_connection_string) }
   it { is_expected.to allow_value('').for(:product_analytics_data_collector_host) }
-  it { is_expected.to allow_value('').for(:product_analytics_clickhouse_connection_string) }
   it { is_expected.to allow_value('').for(:cube_api_base_url) }
   it { is_expected.to allow_value('').for(:cube_api_key) }
 
   it { is_expected.not_to allow_value('notavalidurl').for(:product_analytics_configurator_connection_string) }
   it { is_expected.not_to allow_value('notavalidurl').for(:product_analytics_data_collector_host) }
-  it { is_expected.not_to allow_value('notavalidurl').for(:product_analytics_clickhouse_connection_string) }
   it { is_expected.not_to allow_value('notavalidurl').for(:cube_api_base_url) }
 
   it { is_expected.to validate_length_of(:product_analytics_configurator_connection_string).is_at_most(512) }
   it { is_expected.to validate_length_of(:product_analytics_data_collector_host).is_at_most(255) }
-  it { is_expected.to validate_length_of(:product_analytics_clickhouse_connection_string).is_at_most(512) }
   it { is_expected.to validate_length_of(:cube_api_base_url).is_at_most(512) }
   it { is_expected.to validate_length_of(:cube_api_key).is_at_most(255) }
 

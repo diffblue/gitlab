@@ -12,26 +12,11 @@ RSpec.describe Analytics::AnalyticsSettingsHelper, feature_category: :product_an
     it 'returns the expected data' do
       test_data = {
         placeholder: 'https://username:password@gl-configurator.gitlab.com',
-        label: s_('ProductAnalytics|Connection string'),
+        label: s_('ProductAnalytics|Snowplow configurator connection string'),
         description: s_('ProductAnalytics|The connection string for your Snowplow configurator instance.')
       }
 
       expect(helper.product_analytics_configurator_connection_string_data(form_name: form_name,
-        value: value)).to eq(expected_data(test_data, expected_name))
-    end
-  end
-
-  describe '#clickhouse_connection_string_data' do
-    let(:expected_name) { "#{form_name}[product_analytics_clickhouse_connection_string]" }
-
-    it 'returns the expected data' do
-      test_data = {
-        placeholder: 'https://user:pass@clickhouse.gitlab.com:8123',
-        label: s_('ProductAnalytics|Clickhouse URL'),
-        description: s_('ProductAnalytics|Used to connect Snowplow to the Clickhouse instance.')
-      }
-
-      expect(helper.clickhouse_connection_string_data(form_name: form_name,
         value: value)).to eq(expected_data(test_data, expected_name))
     end
   end

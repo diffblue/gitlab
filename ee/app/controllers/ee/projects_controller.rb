@@ -101,7 +101,6 @@ module EE
         prevent_merge_without_jira_issue
         cve_id_request_enabled
         product_analytics_data_collector_host
-        product_analytics_clickhouse_connection_string
         cube_api_base_url
         cube_api_key
         product_analytics_configurator_connection_string

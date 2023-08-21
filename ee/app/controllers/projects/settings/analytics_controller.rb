@@ -33,7 +33,7 @@ module Projects
         [
           project_setting_attributes: [
             :product_analytics_configurator_connection_string, :product_analytics_data_collector_host,
-            :product_analytics_clickhouse_connection_string, :cube_api_base_url, :cube_api_key
+            :cube_api_base_url, :cube_api_key
           ],
           analytics_dashboards_pointer_attributes: [:target_project_id]
         ]

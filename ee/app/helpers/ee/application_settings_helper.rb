@@ -64,7 +64,6 @@ module EE
         :throttle_incident_management_notification_period_in_seconds,
         :product_analytics_enabled,
         :product_analytics_data_collector_host,
-        :product_analytics_clickhouse_connection_string,
         :product_analytics_configurator_connection_string,
         :cube_api_base_url,
         :cube_api_key,
