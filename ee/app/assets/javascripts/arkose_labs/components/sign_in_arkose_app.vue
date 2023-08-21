@@ -1,6 +1,5 @@
 <script>
 import { uniqueId } from 'lodash';
-import { GlAlert } from '@gitlab/ui';
 import { needsArkoseLabsChallenge } from 'ee/rest_api';
 import { logError } from '~/lib/logger';
 import { HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
@@ -12,10 +11,6 @@ import { initArkoseLabsScript } from '../init_arkose_labs_script';
 const LOADING_ICON = loadingIconForLegacyJS({ classes: ['gl-mr-2'] });
 
 const MSG_ARKOSE_NEEDED = __('Complete verification to sign in.');
-const MSG_ARKOSE_FAILURE_TITLE = __('Unable to verify the user');
-const MSG_ARKOSE_FAILURE_BODY = __(
-  'An error occurred when loading the user verification challenge. Refresh to try again.',
-);
 
 const ARKOSE_CONTAINER_CLASS = 'js-arkose-labs-container-';
 
@@ -24,7 +19,6 @@ const VERIFICATION_TOKEN_INPUT_NAME = 'arkose_labs_token';
 export default {
   components: {
     DomElementListener,
-    GlAlert,
   },
   props: {
     publicKey: {
@@ -52,7 +46,6 @@ export default {
     return {
       arkoseLabsIframeShown: false,
       showArkoseNeededError: false,
-      showArkoseFailure: false,
       username: '',
       isLoading: false,
       arkoseInitialized: false,
@@ -60,12 +53,13 @@ export default {
       arkoseToken: '',
       arkoseContainerClass: uniqueId(ARKOSE_CONTAINER_CLASS),
       arkoseChallengePassed: false,
+      arkoseChallengeBypassed: false,
       needsChallengeChecks: [],
     };
   },
   computed: {
     showErrorContainer() {
-      return (this.arkoseLabsIframeShown && this.showArkoseNeededError) || this.showArkoseFailure;
+      return this.arkoseLabsIframeShown && this.showArkoseNeededError;
     },
   },
   watch: {
@@ -82,7 +76,6 @@ export default {
     },
     hideErrors() {
       this.showArkoseNeededError = false;
-      this.showArkoseFailure = false;
     },
     getUsernameValue() {
       return document.querySelector(this.usernameSelector)?.value || '';
@@ -91,7 +84,7 @@ export default {
       this.needsChallengeChecks.push(this.checkIfNeedsChallenge());
     },
     onSubmit(e) {
-      if (this.arkoseChallengePassed) {
+      if (this.arkoseChallengePassed || this.arkoseChallengeBypassed) {
         // If the challenge was solved already, proceed with the form's submission.
         return;
       }
@@ -145,12 +138,11 @@ export default {
         if (e.response?.status === HTTP_STATUS_NOT_FOUND) {
           // We ignore 404 errors as it just means the username does not exist.
         } else if (e.response?.status) {
-          // If the request failed with any other error code, we initialize the challenge to make
-          // sure it isn't being bypassed by purposefully making the endpoint fail.
+          // If the request failed with any other error code, we initialize the challenge
           this.initArkoseLabs();
         } else {
           // For any other failure, we show the initialization error message.
-          this.handleArkoseLabsFailure(e);
+          this.bypassArkoseOnFailure(e);
         }
       } finally {
         this.isLoading = false;
@@ -169,7 +161,7 @@ export default {
         selector: `.${this.arkoseContainerClass}`,
         onShown: this.onArkoseLabsIframeShown,
         onCompleted: this.passArkoseLabsChallenge,
-        onError: this.handleArkoseLabsFailure,
+        onError: this.bypassArkoseOnFailure,
       });
     },
     passArkoseLabsChallenge(response) {
@@ -185,9 +177,12 @@ export default {
         });
       }
     },
-    handleArkoseLabsFailure(e) {
+    bypassArkoseOnFailure(e) {
+      // If there is an error, check the Arkose status in the backend before showing an error
       logError('ArkoseLabs initialization error', e);
-      this.showArkoseFailure = true;
+
+      this.isLoading = false;
+      this.arkoseChallengeBypassed = true;
     },
     updateSubmitButtonLoading(val) {
       const button = document.querySelector(this.submitSelector);
@@ -207,8 +202,6 @@ export default {
     },
   },
   MSG_ARKOSE_NEEDED,
-  MSG_ARKOSE_FAILURE_TITLE,
-  MSG_ARKOSE_FAILURE_BODY,
   VERIFICATION_TOKEN_INPUT_NAME,
 };
 </script>
@@ -230,15 +223,7 @@ export default {
       data-testid="arkose-labs-challenge"
     ></div>
     <div v-if="showErrorContainer" class="gl-mb-3 gl-px-5" data-testid="arkose-labs-error-message">
-      <gl-alert
-        v-if="showArkoseFailure"
-        :title="$options.MSG_ARKOSE_FAILURE_TITLE"
-        variant="danger"
-        :dismissible="false"
-      >
-        {{ $options.MSG_ARKOSE_FAILURE_BODY }}
-      </gl-alert>
-      <span v-else-if="showArkoseNeededError" class="gl-text-red-500">
+      <span v-if="showArkoseNeededError" class="gl-text-red-500">
         {{ $options.MSG_ARKOSE_NEEDED }}
       </span>
     </div>

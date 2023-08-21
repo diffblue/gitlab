@@ -139,6 +139,7 @@ RSpec.describe SessionsController, :geo, feature_category: :system_access do
       let(:session_token) { '22612c147bb418c8.2570749403' }
       let(:user_params) { { login: user.username, password: user.password } }
       let(:params) { { arkose_labs_token: session_token, user: user_params } }
+      let(:error_message) { 'Unable to verify the user' }
 
       context 'when ArkoseLabs namespace setting is not set' do
         it 'passes the default API domain to the view' do
@@ -185,7 +186,7 @@ RSpec.describe SessionsController, :geo, feature_category: :system_access do
             post(:create, params: params, session: {})
 
             expect(response).to render_template(:new)
-            expect(flash[:alert]).to include 'Login failed. Please retry from your primary device and network'
+            expect(flash[:alert]).to include error_message
             expect(subject.current_user).to be_nil
           end
         end
@@ -238,7 +239,7 @@ RSpec.describe SessionsController, :geo, feature_category: :system_access do
           post(:create, params: params, session: {})
 
           expect(response).to render_template(:new)
-          expect(flash[:alert]).to include 'Login failed. Please retry from your primary device and network'
+          expect(flash[:alert]).to include error_message
           expect(subject.current_user).to be_nil
         end
 
@@ -253,12 +254,44 @@ RSpec.describe SessionsController, :geo, feature_category: :system_access do
       end
 
       context 'when the user should be verified by Arkose but the request does not contain the arkose token' do
-        it 'prevents the user from logging in' do
-          post(:create, params: params.except!(:arkose_labs_token), session: {})
+        before do
+          allow_next_instance_of(Arkose::StatusService) do |instance|
+            allow(instance).to receive(:execute).and_return(arkose_status_response)
+          end
+        end
 
-          expect(response).to render_template(:new)
-          expect(flash[:alert]).to include 'Login failed. Please retry from your primary device and network'
-          expect(subject.current_user).to be_nil
+        context 'when arkose is operational' do
+          let(:arkose_status_response) { ServiceResponse.success }
+
+          it 'prevents the user from logging in', :aggregate_failures do
+            post(:create, params: params.except!(:arkose_labs_token), session: {})
+
+            expect(response).to render_template(:new)
+            expect(flash[:alert]).to include error_message
+            expect(subject.current_user).to be_nil
+          end
+
+          it 'logs the error message' do
+            expect(Gitlab::AppLogger).to receive(:info).with(
+              hash_including(
+                message: 'Failed Login',
+                username: user.username,
+                reason: 'Unable to load arkose user verification challenge'
+              )
+            )
+
+            post(:create, params: params.except!(:arkose_labs_token), session: {})
+          end
+        end
+
+        context 'when arkose is down' do
+          let(:arkose_status_response) { ServiceResponse.error(message: 'Arkose outage') }
+
+          it 'logs in the user' do
+            post(:create, params: params.except!(:arkose_labs_token), session: {})
+
+            expect(subject.current_user).to eq user
+          end
         end
       end
     end

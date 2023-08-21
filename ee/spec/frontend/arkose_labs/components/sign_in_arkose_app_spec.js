@@ -82,7 +82,7 @@ describe('SignInArkoseApp', () => {
 
   // Assertions
   const itInitializesArkoseLabs = () => {
-    it("includes ArkoseLabs' script", () => {
+    it('includes ArkoseLabs script', () => {
       expect(initArkoseLabsScript).toHaveBeenCalledWith({
         publicKey: MOCK_PUBLIC_KEY,
         domain: MOCK_DOMAIN,
@@ -99,9 +99,6 @@ describe('SignInArkoseApp', () => {
   const expectHiddenArkoseLabsError = () => {
     expect(findArkoseLabsErrorMessage().exists()).toBe(false);
   };
-  const expectArkoseLabsInitError = () => {
-    expect(wrapper.text()).toContain(wrapper.vm.$options.MSG_ARKOSE_FAILURE_BODY);
-  };
 
   beforeEach(() => {
     axiosMock = new AxiosMockAdapter(axios);
@@ -114,7 +111,7 @@ describe('SignInArkoseApp', () => {
   });
 
   describe('when the username field is pre-filled', () => {
-    it("does not include ArkoseLabs' script initially", () => {
+    it('does not include ArkoseLabs script initially', () => {
       expect(initArkoseLabsScript).not.toHaveBeenCalled();
     });
 
@@ -291,24 +288,30 @@ describe('SignInArkoseApp', () => {
         expect(findChallengeContainer().isVisible()).toBe(true);
       });
 
-      it('shows an error alert if the challenge fails to load', async () => {
-        expect(wrapper.text()).not.toContain(wrapper.vm.$options.MSG_ARKOSE_FAILURE_BODY);
-
-        const error = new Error();
-        onError(error);
-
-        expect(logError).toHaveBeenCalledWith('ArkoseLabs initialization error', error);
-
-        await nextTick();
-
-        expectArkoseLabsInitError();
-      });
-
       it('does not submit the form even if the challenge is being suppressed', async () => {
         jest.spyOn(findSignInForm(), 'submit');
         await onSuppress();
 
         expect(findSignInForm().submit).not.toHaveBeenCalled();
+      });
+
+      describe('when challenge fails to load', () => {
+        const error = new Error();
+
+        beforeEach(() => {
+          onError(error);
+        });
+
+        it('logs the error', () => {
+          expect(logError).toHaveBeenCalledWith('ArkoseLabs initialization error', error);
+        });
+
+        it('does not display error message', async () => {
+          submitForm();
+          await waitForPromises();
+
+          expect(findArkoseLabsErrorMessage().exists()).toBe(false);
+        });
       });
 
       describe('when ArkoseLabs calls `onCompleted` handler that has been configured', () => {
@@ -356,17 +359,29 @@ describe('SignInArkoseApp', () => {
       expectHiddenArkoseLabsError();
     });
 
-    it('due to the script inclusion, an error is shown', async () => {
+    describe('when there is a script initialization error', () => {
       const error = new Error();
-      initArkoseLabsScript.mockImplementation(() => {
-        throw new Error();
-      });
-      axiosMock.onPost().reply(HTTP_STATUS_OK, { result: true });
-      initArkoseLabs(MOCK_USERNAME);
-      await waitForPromises();
 
-      expectArkoseLabsInitError();
-      expect(logError).toHaveBeenCalledWith('ArkoseLabs initialization error', error);
+      beforeEach(async () => {
+        initArkoseLabsScript.mockImplementation(() => {
+          throw error;
+        });
+
+        axiosMock.onPost().reply(HTTP_STATUS_OK, { result: true });
+        initArkoseLabs(MOCK_USERNAME);
+        await waitForPromises();
+      });
+
+      it('logs the error', () => {
+        expect(logError).toHaveBeenCalledWith('ArkoseLabs initialization error', error);
+      });
+
+      it('does not display error message', async () => {
+        submitForm();
+        await waitForPromises();
+
+        expect(findArkoseLabsErrorMessage().exists()).toBe(false);
+      });
     });
   });
 });

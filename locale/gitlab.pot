@@ -4927,9 +4927,6 @@ msgstr ""
 msgid "An error occurred previewing the blob"
 msgstr ""
 
-msgid "An error occurred when loading the user verification challenge. Refresh to try again."
-msgstr ""
-
 msgid "An error occurred when updating the title"
 msgstr ""
 
@@ -43702,6 +43699,9 @@ msgstr ""
 msgid "Session duration (minutes)"
 msgstr ""
 
+msgid "Session|Unable to verify the user. An error occurred when loading the user verification challenge. Refresh to try again."
+msgstr ""
+
 msgid "Set %{epic_ref} as the parent epic."
 msgstr ""
 
@@ -50197,9 +50197,6 @@ msgid "Unable to update this epic at this time."
 msgstr ""
 
 msgid "Unable to update this issue at this time."
-msgstr ""
-
-msgid "Unable to verify the user"
 msgstr ""
 
 msgid "Unapprove a merge request"
