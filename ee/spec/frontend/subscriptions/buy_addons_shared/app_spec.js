@@ -184,7 +184,7 @@ describe('Buy Addons Shared App', () => {
         expect(findSummaryLabel().text()).toBe('1 storage pack');
         expect(findSummaryTotal().text()).toBe('Total storage: 10 GB');
         expect(findPriceLabel().text()).toBe('$60 per 10 GB storage pack per year');
-        expect(wrapper.text()).toMatchSnapshot();
+        expect(wrapper.html()).toMatchSnapshot();
       });
 
       it('shows labels correctly for 2 packs', async () => {
@@ -197,7 +197,7 @@ describe('Buy Addons Shared App', () => {
         expect(findSummaryLabel().text()).toBe('2 storage packs');
         expect(findSummaryTotal().text()).toBe('Total storage: 20 GB');
         expect(findPriceLabel().text()).toBe('$60 per 10 GB storage pack per year');
-        expect(wrapper.text()).toMatchSnapshot();
+        expect(wrapper.html()).toMatchSnapshot();
       });
 
       it('does not show labels if input is invalid', async () => {
@@ -205,7 +205,7 @@ describe('Buy Addons Shared App', () => {
         await createComponent(mockApollo, injectedProps);
 
         expect(findQuantityText().text()).toMatchInterpolatedText('x 10 GB per pack');
-        expect(wrapper.text()).toMatchSnapshot();
+        expect(wrapper.html()).toMatchSnapshot();
       });
     });
   });
@@ -298,7 +298,7 @@ describe('Buy Addons Shared App', () => {
         expect(findSummaryLabel().text()).toBe('1 compute pack');
         expect(findSummaryTotal().text()).toBe('Total compute minutes: 1,000');
         expect(findPriceLabel().text()).toBe('$10 per pack of 1,000 compute minutes');
-        expect(wrapper.text()).toMatchSnapshot();
+        expect(wrapper.html()).toMatchSnapshot();
       });
 
       it('shows labels correctly for 2 packs', async () => {
@@ -311,7 +311,7 @@ describe('Buy Addons Shared App', () => {
         expect(findSummaryLabel().text()).toBe('2 compute packs');
         expect(findSummaryTotal().text()).toBe('Total compute minutes: 2,000');
         expect(findPriceLabel().text()).toBe('$10 per pack of 1,000 compute minutes');
-        expect(wrapper.text()).toMatchSnapshot();
+        expect(wrapper.html()).toMatchSnapshot();
       });
 
       it('does not show labels if input is invalid', async () => {
@@ -321,7 +321,7 @@ describe('Buy Addons Shared App', () => {
         expect(findQuantityText().text()).toMatchInterpolatedText(
           'x 1,000 compute minutes per pack',
         );
-        expect(wrapper.text()).toMatchSnapshot();
+        expect(wrapper.html()).toMatchSnapshot();
       });
     });
   });

@@ -1,211 +1,1688 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Buy Addons Shared App CI Minutes labels does not show labels if input is invalid 1`] = `
-"Compute packs are only used after you've used your subscription's monthly quota. The additional compute minutes will roll over month to month and are valid for one year.
-     
-      Compute pack
-      
-            x 1,000 compute minutes per pack
-            
-              -1 compute packs
-             Total compute minutes: -1,000    Gitlab Org's compute minutes 
-        -
-       
-      CI minutes pack
-       
-      -
-     
-        $10 per pack of 1,000 compute minutes
-        Subtotal 
-        -
-        – Total 
-      -
-     
-      Gitlab Org's compute minutes
-     
-      CI minutes pack
-       
-      -
-     
-        $10 per pack of 1,000 compute minutes
-        Subtotal 
-        -
-        – Total 
-      -"
+<step-order-app-stub
+  data-testid="buy-addons-shared"
+>
+  <div>
+    <div
+      class="flash-container"
+    />
+    <step-stub
+      editbuttontext="Edit"
+      errormessage="Must be 1 or more. Cannot be a decimal."
+      nextstepbuttontext="Continue to billing"
+      stepid="subscriptionDetails"
+      title="Purchase details"
+    >
+      <gl-alert-stub
+        class="gl-mb-3"
+        dismisslabel="Dismiss"
+        primarybuttonlink=""
+        primarybuttontext=""
+        secondarybuttonlink=""
+        secondarybuttontext=""
+        showicon="true"
+        title=""
+        variant="info"
+      >
+        Compute packs are only used after you've used your subscription's monthly quota. The additional compute minutes will roll over month to month and are valid for one year.
+      </gl-alert-stub>
+      <label
+        data-testid="product-label"
+        for="quantity"
+      >
+        Compute pack
+      </label>
+      <div
+        class="gl-align-items-center gl-display-flex gl-flex-direction-row"
+      >
+        <gl-form-input-stub
+          class="gl-w-15"
+          data-qa-selector="quantity"
+          min="1"
+          name="quantity"
+          type="number"
+          value="-1"
+        />
+        <div
+          class="gl-ml-3"
+          data-testid="addon-quantity-text"
+        >
+          x 1,000 compute minutes per pack
+          <strong />
+        </div>
+      </div>
+      <strong
+        data-testid="summary-label"
+      >
+        -1 compute packs
+      </strong>
+      <div
+        data-testid="summary-total"
+      >
+        Total compute minutes: -1,000
+      </div>
+    </step-stub>
+    <billing-address-stub />
+    <payment-method-stub />
+    <confirm-order-stub />
+  </div>
+  <gl-card-stub
+    bodyclass=""
+    class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 order-summary"
+    footerclass=""
+    headerclass=""
+  >
+    <div
+      class="gl-lg-display-none"
+    >
+      <h4
+        aria-controls="reference-0"
+        aria-expanded="false"
+        class="collapsed gl-align-items-center gl-display-flex gl-font-lg gl-justify-content-space-between gl-my-0"
+        role="button"
+        tabindex="0"
+      >
+        <div
+          class="gl-align-items-center gl-display-flex"
+        >
+          <gl-icon-stub
+            class="gl-flex-shrink-0"
+            name="chevron-right"
+            size="16"
+          />
+          <span
+            class="gl-ml-2"
+            data-testid="title"
+          >
+            Gitlab Org's compute minutes
+          </span>
+        </div>
+        <span
+          class="gl-ml-3"
+          data-testid="amount"
+        >
+          -
+        </span>
+      </h4>
+      <gl-collapse-stub
+        id="reference-0"
+      >
+        <div
+          class="gl-mt-6"
+        >
+          <div
+            class="gl-display-flex gl-font-weight-bold gl-justify-content-space-between gl-mb-3"
+          >
+            <div
+              data-testid="selected-plan"
+            >
+              CI minutes pack
+            </div>
+            <div>
+              -
+            </div>
+          </div>
+          <div
+            class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mb-5 gl-pb-5"
+          >
+            <div
+              class="gl-text-gray-500"
+              data-testid="price-per-unit"
+            >
+              $10 per pack of 1,000 compute minutes
+            </div>
+          </div>
+          <div
+            class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mb-5 gl-pb-5"
+          >
+            <div
+              class="gl-display-flex gl-justify-content-space-between gl-mb-2 gl-text-gray-500"
+            >
+              <div>
+                Subtotal
+              </div>
+              <div
+                data-testid="total-ex-vat"
+              >
+                -
+              </div>
+            </div>
+            <div
+              class="gl-display-flex gl-justify-content-space-between gl-text-gray-500"
+            >
+              <div
+                data-testid="vat-info-line"
+              >
+                <gl-sprintf-stub
+                  message="Tax (may be %{linkStart}charged upon purchase%{linkEnd})"
+                />
+              </div>
+              <div
+                data-testid="vat"
+              >
+                –
+              </div>
+            </div>
+          </div>
+          <div
+            class="gl-display-flex gl-font-lg gl-font-weight-bold gl-justify-content-space-between"
+          >
+            <div>
+              Total
+            </div>
+            <div
+              data-testid="total-amount"
+            >
+              -
+            </div>
+          </div>
+        </div>
+      </gl-collapse-stub>
+    </div>
+    <div
+      class="gl-display-none gl-lg-display-block"
+    >
+      <h4
+        class="gl-font-lg gl-my-0"
+      >
+        Gitlab Org's compute minutes
+      </h4>
+      <div
+        class="gl-mt-6"
+      >
+        <div
+          class="gl-display-flex gl-font-weight-bold gl-justify-content-space-between gl-mb-3"
+        >
+          <div
+            data-testid="selected-plan"
+          >
+            CI minutes pack
+          </div>
+          <div>
+            -
+          </div>
+        </div>
+        <div
+          class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mb-5 gl-pb-5"
+        >
+          <div
+            class="gl-text-gray-500"
+            data-testid="price-per-unit"
+          >
+            $10 per pack of 1,000 compute minutes
+          </div>
+        </div>
+        <div
+          class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mb-5 gl-pb-5"
+        >
+          <div
+            class="gl-display-flex gl-justify-content-space-between gl-mb-2 gl-text-gray-500"
+          >
+            <div>
+              Subtotal
+            </div>
+            <div
+              data-testid="total-ex-vat"
+            >
+              -
+            </div>
+          </div>
+          <div
+            class="gl-display-flex gl-justify-content-space-between gl-text-gray-500"
+          >
+            <div
+              data-testid="vat-info-line"
+            >
+              <gl-sprintf-stub
+                message="Tax (may be %{linkStart}charged upon purchase%{linkEnd})"
+              />
+            </div>
+            <div
+              data-testid="vat"
+            >
+              –
+            </div>
+          </div>
+        </div>
+        <div
+          class="gl-display-flex gl-font-lg gl-font-weight-bold gl-justify-content-space-between"
+        >
+          <div>
+            Total
+          </div>
+          <div
+            data-testid="total-amount"
+          >
+            -
+          </div>
+        </div>
+      </div>
+    </div>
+  </gl-card-stub>
+</step-order-app-stub>
 `;
 
 exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 1 pack 1`] = `
-"Compute packs are only used after you've used your subscription's monthly quota. The additional compute minutes will roll over month to month and are valid for one year.
-     
-      Compute pack
-      
-            x 1,000 compute minutes per pack =
+<step-order-app-stub
+  data-testid="buy-addons-shared"
+>
+  <div>
+    <div
+      class="flash-container"
+    />
+    <step-stub
+      editbuttontext="Edit"
+      errormessage="Must be 1 or more. Cannot be a decimal."
+      isvalid="true"
+      nextstepbuttontext="Continue to billing"
+      stepid="subscriptionDetails"
+      title="Purchase details"
+    >
+      <gl-alert-stub
+        class="gl-mb-3"
+        dismisslabel="Dismiss"
+        primarybuttonlink=""
+        primarybuttontext=""
+        secondarybuttonlink=""
+        secondarybuttontext=""
+        showicon="true"
+        title=""
+        variant="info"
+      >
+        Compute packs are only used after you've used your subscription's monthly quota. The additional compute minutes will roll over month to month and are valid for one year.
+      </gl-alert-stub>
+      <label
+        data-testid="product-label"
+        for="quantity"
+      >
+        Compute pack
+      </label>
+      <div
+        class="gl-align-items-center gl-display-flex gl-flex-direction-row gl-mb-5"
+      >
+        <gl-form-input-stub
+          class="gl-w-15"
+          data-qa-selector="quantity"
+          min="1"
+          name="quantity"
+          state="true"
+          type="number"
+          value="1"
+        />
+        <div
+          class="gl-ml-3"
+          data-testid="addon-quantity-text"
+        >
+          x 1,000 compute minutes per pack =
+          <strong>
             1,000 compute minutes
-              1 compute pack
-             Total compute minutes: 1,000    Gitlab Org's compute minutes 
-        $10
-       
-      CI minutes pack
-      (x1) 
-      $10
-     
-        $10 per pack of 1,000 compute minutes
-        Subtotal 
-        $10
-        – Total 
-      $10
-     
-      Gitlab Org's compute minutes
-     
-      CI minutes pack
-      (x1) 
-      $10
-     
-        $10 per pack of 1,000 compute minutes
-        Subtotal 
-        $10
-        – Total 
-      $10"
+          </strong>
+        </div>
+      </div>
+      <strong
+        data-testid="summary-label"
+      >
+        1 compute pack
+      </strong>
+      <div
+        data-testid="summary-total"
+      >
+        Total compute minutes: 1,000
+      </div>
+    </step-stub>
+    <billing-address-stub />
+    <payment-method-stub />
+    <confirm-order-stub />
+  </div>
+  <gl-card-stub
+    bodyclass=""
+    class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 order-summary"
+    footerclass=""
+    headerclass=""
+  >
+    <div
+      class="gl-lg-display-none"
+    >
+      <h4
+        aria-controls="reference-0"
+        aria-expanded="false"
+        class="collapsed gl-align-items-center gl-display-flex gl-font-lg gl-justify-content-space-between gl-my-0"
+        role="button"
+        tabindex="0"
+      >
+        <div
+          class="gl-align-items-center gl-display-flex"
+        >
+          <gl-icon-stub
+            class="gl-flex-shrink-0"
+            name="chevron-right"
+            size="16"
+          />
+          <span
+            class="gl-ml-2"
+            data-testid="title"
+          >
+            Gitlab Org's compute minutes
+          </span>
+        </div>
+        <span
+          class="gl-ml-3"
+          data-testid="amount"
+        >
+          $10
+        </span>
+      </h4>
+      <gl-collapse-stub
+        id="reference-0"
+      >
+        <div
+          class="gl-mt-6"
+          quantity-present="true"
+        >
+          <div
+            class="gl-display-flex gl-font-weight-bold gl-justify-content-space-between gl-mb-3"
+          >
+            <div
+              data-testid="selected-plan"
+            >
+              CI minutes pack
+              <span
+                data-testid="quantity"
+              >
+                (x1)
+              </span>
+            </div>
+            <div>
+              $10
+            </div>
+          </div>
+          <div
+            class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mb-5 gl-pb-5"
+          >
+            <div
+              class="gl-text-gray-500"
+              data-testid="price-per-unit"
+            >
+              $10 per pack of 1,000 compute minutes
+            </div>
+          </div>
+          <div
+            class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mb-5 gl-pb-5"
+          >
+            <div
+              class="gl-display-flex gl-justify-content-space-between gl-mb-2 gl-text-gray-500"
+            >
+              <div>
+                Subtotal
+              </div>
+              <div
+                data-testid="total-ex-vat"
+              >
+                $10
+              </div>
+            </div>
+            <div
+              class="gl-display-flex gl-justify-content-space-between gl-text-gray-500"
+            >
+              <div
+                data-testid="vat-info-line"
+              >
+                <gl-sprintf-stub
+                  message="Tax (may be %{linkStart}charged upon purchase%{linkEnd})"
+                />
+              </div>
+              <div
+                data-testid="vat"
+              >
+                –
+              </div>
+            </div>
+          </div>
+          <div
+            class="gl-display-flex gl-font-lg gl-font-weight-bold gl-justify-content-space-between"
+          >
+            <div>
+              Total
+            </div>
+            <div
+              data-testid="total-amount"
+            >
+              $10
+            </div>
+          </div>
+        </div>
+      </gl-collapse-stub>
+    </div>
+    <div
+      class="gl-display-none gl-lg-display-block"
+    >
+      <h4
+        class="gl-font-lg gl-my-0"
+      >
+        Gitlab Org's compute minutes
+      </h4>
+      <div
+        class="gl-mt-6"
+        quantity-present="true"
+      >
+        <div
+          class="gl-display-flex gl-font-weight-bold gl-justify-content-space-between gl-mb-3"
+        >
+          <div
+            data-testid="selected-plan"
+          >
+            CI minutes pack
+            <span
+              data-testid="quantity"
+            >
+              (x1)
+            </span>
+          </div>
+          <div>
+            $10
+          </div>
+        </div>
+        <div
+          class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mb-5 gl-pb-5"
+        >
+          <div
+            class="gl-text-gray-500"
+            data-testid="price-per-unit"
+          >
+            $10 per pack of 1,000 compute minutes
+          </div>
+        </div>
+        <div
+          class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mb-5 gl-pb-5"
+        >
+          <div
+            class="gl-display-flex gl-justify-content-space-between gl-mb-2 gl-text-gray-500"
+          >
+            <div>
+              Subtotal
+            </div>
+            <div
+              data-testid="total-ex-vat"
+            >
+              $10
+            </div>
+          </div>
+          <div
+            class="gl-display-flex gl-justify-content-space-between gl-text-gray-500"
+          >
+            <div
+              data-testid="vat-info-line"
+            >
+              <gl-sprintf-stub
+                message="Tax (may be %{linkStart}charged upon purchase%{linkEnd})"
+              />
+            </div>
+            <div
+              data-testid="vat"
+            >
+              –
+            </div>
+          </div>
+        </div>
+        <div
+          class="gl-display-flex gl-font-lg gl-font-weight-bold gl-justify-content-space-between"
+        >
+          <div>
+            Total
+          </div>
+          <div
+            data-testid="total-amount"
+          >
+            $10
+          </div>
+        </div>
+      </div>
+    </div>
+  </gl-card-stub>
+</step-order-app-stub>
 `;
 
 exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 2 packs 1`] = `
-"Compute packs are only used after you've used your subscription's monthly quota. The additional compute minutes will roll over month to month and are valid for one year.
-     
-      Compute pack
-      
-            x 1,000 compute minutes per pack =
+<step-order-app-stub
+  data-testid="buy-addons-shared"
+>
+  <div>
+    <div
+      class="flash-container"
+    />
+    <step-stub
+      editbuttontext="Edit"
+      errormessage="Must be 1 or more. Cannot be a decimal."
+      isvalid="true"
+      nextstepbuttontext="Continue to billing"
+      stepid="subscriptionDetails"
+      title="Purchase details"
+    >
+      <gl-alert-stub
+        class="gl-mb-3"
+        dismisslabel="Dismiss"
+        primarybuttonlink=""
+        primarybuttontext=""
+        secondarybuttonlink=""
+        secondarybuttontext=""
+        showicon="true"
+        title=""
+        variant="info"
+      >
+        Compute packs are only used after you've used your subscription's monthly quota. The additional compute minutes will roll over month to month and are valid for one year.
+      </gl-alert-stub>
+      <label
+        data-testid="product-label"
+        for="quantity"
+      >
+        Compute pack
+      </label>
+      <div
+        class="gl-align-items-center gl-display-flex gl-flex-direction-row gl-mb-5"
+      >
+        <gl-form-input-stub
+          class="gl-w-15"
+          data-qa-selector="quantity"
+          min="1"
+          name="quantity"
+          state="true"
+          type="number"
+          value="2"
+        />
+        <div
+          class="gl-ml-3"
+          data-testid="addon-quantity-text"
+        >
+          x 1,000 compute minutes per pack =
+          <strong>
             2,000 compute minutes
-              2 compute packs
-             Total compute minutes: 2,000    Gitlab Org's compute minutes 
-        $20
-       
-      CI minutes pack
-      (x2) 
-      $20
-     
-        $10 per pack of 1,000 compute minutes
-        Subtotal 
-        $20
-        – Total 
-      $20
-     
-      Gitlab Org's compute minutes
-     
-      CI minutes pack
-      (x2) 
-      $20
-     
-        $10 per pack of 1,000 compute minutes
-        Subtotal 
-        $20
-        – Total 
-      $20"
+          </strong>
+        </div>
+      </div>
+      <strong
+        data-testid="summary-label"
+      >
+        2 compute packs
+      </strong>
+      <div
+        data-testid="summary-total"
+      >
+        Total compute minutes: 2,000
+      </div>
+    </step-stub>
+    <billing-address-stub />
+    <payment-method-stub />
+    <confirm-order-stub />
+  </div>
+  <gl-card-stub
+    bodyclass=""
+    class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 order-summary"
+    footerclass=""
+    headerclass=""
+  >
+    <div
+      class="gl-lg-display-none"
+    >
+      <h4
+        aria-controls="reference-0"
+        aria-expanded="false"
+        class="collapsed gl-align-items-center gl-display-flex gl-font-lg gl-justify-content-space-between gl-my-0"
+        role="button"
+        tabindex="0"
+      >
+        <div
+          class="gl-align-items-center gl-display-flex"
+        >
+          <gl-icon-stub
+            class="gl-flex-shrink-0"
+            name="chevron-right"
+            size="16"
+          />
+          <span
+            class="gl-ml-2"
+            data-testid="title"
+          >
+            Gitlab Org's compute minutes
+          </span>
+        </div>
+        <span
+          class="gl-ml-3"
+          data-testid="amount"
+        >
+          $20
+        </span>
+      </h4>
+      <gl-collapse-stub
+        id="reference-0"
+      >
+        <div
+          class="gl-mt-6"
+          quantity-present="true"
+        >
+          <div
+            class="gl-display-flex gl-font-weight-bold gl-justify-content-space-between gl-mb-3"
+          >
+            <div
+              data-testid="selected-plan"
+            >
+              CI minutes pack
+              <span
+                data-testid="quantity"
+              >
+                (x2)
+              </span>
+            </div>
+            <div>
+              $20
+            </div>
+          </div>
+          <div
+            class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mb-5 gl-pb-5"
+          >
+            <div
+              class="gl-text-gray-500"
+              data-testid="price-per-unit"
+            >
+              $10 per pack of 1,000 compute minutes
+            </div>
+          </div>
+          <div
+            class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mb-5 gl-pb-5"
+          >
+            <div
+              class="gl-display-flex gl-justify-content-space-between gl-mb-2 gl-text-gray-500"
+            >
+              <div>
+                Subtotal
+              </div>
+              <div
+                data-testid="total-ex-vat"
+              >
+                $20
+              </div>
+            </div>
+            <div
+              class="gl-display-flex gl-justify-content-space-between gl-text-gray-500"
+            >
+              <div
+                data-testid="vat-info-line"
+              >
+                <gl-sprintf-stub
+                  message="Tax (may be %{linkStart}charged upon purchase%{linkEnd})"
+                />
+              </div>
+              <div
+                data-testid="vat"
+              >
+                –
+              </div>
+            </div>
+          </div>
+          <div
+            class="gl-display-flex gl-font-lg gl-font-weight-bold gl-justify-content-space-between"
+          >
+            <div>
+              Total
+            </div>
+            <div
+              data-testid="total-amount"
+            >
+              $20
+            </div>
+          </div>
+        </div>
+      </gl-collapse-stub>
+    </div>
+    <div
+      class="gl-display-none gl-lg-display-block"
+    >
+      <h4
+        class="gl-font-lg gl-my-0"
+      >
+        Gitlab Org's compute minutes
+      </h4>
+      <div
+        class="gl-mt-6"
+        quantity-present="true"
+      >
+        <div
+          class="gl-display-flex gl-font-weight-bold gl-justify-content-space-between gl-mb-3"
+        >
+          <div
+            data-testid="selected-plan"
+          >
+            CI minutes pack
+            <span
+              data-testid="quantity"
+            >
+              (x2)
+            </span>
+          </div>
+          <div>
+            $20
+          </div>
+        </div>
+        <div
+          class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mb-5 gl-pb-5"
+        >
+          <div
+            class="gl-text-gray-500"
+            data-testid="price-per-unit"
+          >
+            $10 per pack of 1,000 compute minutes
+          </div>
+        </div>
+        <div
+          class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mb-5 gl-pb-5"
+        >
+          <div
+            class="gl-display-flex gl-justify-content-space-between gl-mb-2 gl-text-gray-500"
+          >
+            <div>
+              Subtotal
+            </div>
+            <div
+              data-testid="total-ex-vat"
+            >
+              $20
+            </div>
+          </div>
+          <div
+            class="gl-display-flex gl-justify-content-space-between gl-text-gray-500"
+          >
+            <div
+              data-testid="vat-info-line"
+            >
+              <gl-sprintf-stub
+                message="Tax (may be %{linkStart}charged upon purchase%{linkEnd})"
+              />
+            </div>
+            <div
+              data-testid="vat"
+            >
+              –
+            </div>
+          </div>
+        </div>
+        <div
+          class="gl-display-flex gl-font-lg gl-font-weight-bold gl-justify-content-space-between"
+        >
+          <div>
+            Total
+          </div>
+          <div
+            data-testid="total-amount"
+          >
+            $20
+          </div>
+        </div>
+      </div>
+    </div>
+  </gl-card-stub>
+</step-order-app-stub>
 `;
 
 exports[`Buy Addons Shared App Storage labels does not show labels if input is invalid 1`] = `
-"Storage packs
-      
-            x 10 GB per pack
-            
-              -1 storage packs
-             Total storage: -10 GB    Gitlab Org's storage subscription 
-        -
-       
-      Storage pack
-       
-      -
-     
-        $60 per 10 GB storage pack per year
-       
-      Jul 6, 2020 - Dec 15, 2022
-       Subtotal 
-        -
-        – Total 
-      -
-     
-      Gitlab Org's storage subscription
-     
-      Storage pack
-       
-      -
-     
-        $60 per 10 GB storage pack per year
-       
-      Jul 6, 2020 - Dec 15, 2022
-       Subtotal 
-        -
-        – Total 
-      -"
+<step-order-app-stub
+  data-testid="buy-addons-shared"
+>
+  <div>
+    <div
+      class="flash-container"
+    />
+    <step-stub
+      editbuttontext="Edit"
+      errormessage="Must be 1 or more. Cannot be a decimal."
+      nextstepbuttontext="Continue to billing"
+      stepid="subscriptionDetails"
+      title="Purchase details"
+    >
+      <label
+        data-testid="product-label"
+        for="quantity"
+      >
+        Storage packs
+      </label>
+      <div
+        class="gl-align-items-center gl-display-flex gl-flex-direction-row"
+      >
+        <gl-form-input-stub
+          class="gl-w-15"
+          data-qa-selector="quantity"
+          min="1"
+          name="quantity"
+          type="number"
+          value="-1"
+        />
+        <div
+          class="gl-ml-3"
+          data-testid="addon-quantity-text"
+        >
+          x 10 GB per pack
+          <strong />
+        </div>
+      </div>
+      <strong
+        data-testid="summary-label"
+      >
+        -1 storage packs
+      </strong>
+      <div
+        data-testid="summary-total"
+      >
+        Total storage: -10 GB
+      </div>
+    </step-stub>
+    <billing-address-stub />
+    <payment-method-stub />
+    <confirm-order-stub />
+  </div>
+  <gl-card-stub
+    bodyclass=""
+    class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 order-summary"
+    footerclass=""
+    headerclass=""
+  >
+    <div
+      class="gl-lg-display-none"
+    >
+      <h4
+        aria-controls="reference-0"
+        aria-expanded="false"
+        class="collapsed gl-align-items-center gl-display-flex gl-font-lg gl-justify-content-space-between gl-my-0"
+        role="button"
+        tabindex="0"
+      >
+        <div
+          class="gl-align-items-center gl-display-flex"
+        >
+          <gl-icon-stub
+            class="gl-flex-shrink-0"
+            name="chevron-right"
+            size="16"
+          />
+          <span
+            class="gl-ml-2"
+            data-testid="title"
+          >
+            Gitlab Org's storage subscription
+          </span>
+        </div>
+        <span
+          class="gl-ml-3"
+          data-testid="amount"
+        >
+          -
+        </span>
+      </h4>
+      <gl-collapse-stub
+        id="reference-0"
+      >
+        <div
+          class="gl-mt-6"
+        >
+          <div
+            class="gl-display-flex gl-font-weight-bold gl-justify-content-space-between gl-mb-3"
+          >
+            <div
+              data-testid="selected-plan"
+            >
+              Storage pack
+            </div>
+            <div>
+              -
+            </div>
+          </div>
+          <div
+            class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mb-5 gl-pb-5"
+          >
+            <div
+              class="gl-text-gray-500"
+              data-testid="price-per-unit"
+            >
+              $60 per 10 GB storage pack per year
+            </div>
+            <div
+              class="gl-text-gray-500"
+              data-testid="subscription-period"
+            >
+              Jul 6, 2020 - Dec 15, 2022
+              <gl-icon-stub
+                arialabel="Your storage subscription has the same term as your main subscription, and the price is prorated accordingly."
+                name="question-o"
+                role="tooltip"
+                size="16"
+                title="Your storage subscription has the same term as your main subscription, and the price is prorated accordingly."
+              />
+            </div>
+          </div>
+          <div
+            class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mb-5 gl-pb-5"
+          >
+            <div
+              class="gl-display-flex gl-justify-content-space-between gl-mb-2 gl-text-gray-500"
+            >
+              <div>
+                Subtotal
+              </div>
+              <div
+                data-testid="total-ex-vat"
+              >
+                -
+              </div>
+            </div>
+            <div
+              class="gl-display-flex gl-justify-content-space-between gl-text-gray-500"
+            >
+              <div
+                data-testid="vat-info-line"
+              >
+                <gl-sprintf-stub
+                  message="Tax (may be %{linkStart}charged upon purchase%{linkEnd})"
+                />
+              </div>
+              <div
+                data-testid="vat"
+              >
+                –
+              </div>
+            </div>
+          </div>
+          <div
+            class="gl-display-flex gl-font-lg gl-font-weight-bold gl-justify-content-space-between"
+          >
+            <div>
+              Total
+            </div>
+            <div
+              data-testid="total-amount"
+            >
+              -
+            </div>
+          </div>
+        </div>
+      </gl-collapse-stub>
+    </div>
+    <div
+      class="gl-display-none gl-lg-display-block"
+    >
+      <h4
+        class="gl-font-lg gl-my-0"
+      >
+        Gitlab Org's storage subscription
+      </h4>
+      <div
+        class="gl-mt-6"
+      >
+        <div
+          class="gl-display-flex gl-font-weight-bold gl-justify-content-space-between gl-mb-3"
+        >
+          <div
+            data-testid="selected-plan"
+          >
+            Storage pack
+          </div>
+          <div>
+            -
+          </div>
+        </div>
+        <div
+          class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mb-5 gl-pb-5"
+        >
+          <div
+            class="gl-text-gray-500"
+            data-testid="price-per-unit"
+          >
+            $60 per 10 GB storage pack per year
+          </div>
+          <div
+            class="gl-text-gray-500"
+            data-testid="subscription-period"
+          >
+            Jul 6, 2020 - Dec 15, 2022
+            <gl-icon-stub
+              arialabel="Your storage subscription has the same term as your main subscription, and the price is prorated accordingly."
+              name="question-o"
+              role="tooltip"
+              size="16"
+              title="Your storage subscription has the same term as your main subscription, and the price is prorated accordingly."
+            />
+          </div>
+        </div>
+        <div
+          class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mb-5 gl-pb-5"
+        >
+          <div
+            class="gl-display-flex gl-justify-content-space-between gl-mb-2 gl-text-gray-500"
+          >
+            <div>
+              Subtotal
+            </div>
+            <div
+              data-testid="total-ex-vat"
+            >
+              -
+            </div>
+          </div>
+          <div
+            class="gl-display-flex gl-justify-content-space-between gl-text-gray-500"
+          >
+            <div
+              data-testid="vat-info-line"
+            >
+              <gl-sprintf-stub
+                message="Tax (may be %{linkStart}charged upon purchase%{linkEnd})"
+              />
+            </div>
+            <div
+              data-testid="vat"
+            >
+              –
+            </div>
+          </div>
+        </div>
+        <div
+          class="gl-display-flex gl-font-lg gl-font-weight-bold gl-justify-content-space-between"
+        >
+          <div>
+            Total
+          </div>
+          <div
+            data-testid="total-amount"
+          >
+            -
+          </div>
+        </div>
+      </div>
+    </div>
+  </gl-card-stub>
+</step-order-app-stub>
 `;
 
 exports[`Buy Addons Shared App Storage labels shows labels correctly for 1 pack 1`] = `
-"Storage packs
-      
-            x 10 GB per pack =
+<step-order-app-stub
+  data-testid="buy-addons-shared"
+>
+  <div>
+    <div
+      class="flash-container"
+    />
+    <step-stub
+      editbuttontext="Edit"
+      errormessage="Must be 1 or more. Cannot be a decimal."
+      isvalid="true"
+      nextstepbuttontext="Continue to billing"
+      stepid="subscriptionDetails"
+      title="Purchase details"
+    >
+      <label
+        data-testid="product-label"
+        for="quantity"
+      >
+        Storage packs
+      </label>
+      <div
+        class="gl-align-items-center gl-display-flex gl-flex-direction-row gl-mb-5"
+      >
+        <gl-form-input-stub
+          class="gl-w-15"
+          data-qa-selector="quantity"
+          min="1"
+          name="quantity"
+          state="true"
+          type="number"
+          value="1"
+        />
+        <div
+          class="gl-ml-3"
+          data-testid="addon-quantity-text"
+        >
+          x 10 GB per pack =
+          <strong>
             10 GB of storage
-              1 storage pack
-             Total storage: 10 GB    Gitlab Org's storage subscription 
-        $59.67
-       
-      Storage pack
-      (x1) 
-      $59.67
-     
-        $60 per 10 GB storage pack per year
-       
-      Jul 6, 2020 - Dec 15, 2022
-       Subtotal 
-        $59.67
-        – Total 
-      $59.67
-     
-      Gitlab Org's storage subscription
-     
-      Storage pack
-      (x1) 
-      $59.67
-     
-        $60 per 10 GB storage pack per year
-       
-      Jul 6, 2020 - Dec 15, 2022
-       Subtotal 
-        $59.67
-        – Total 
-      $59.67"
+          </strong>
+        </div>
+      </div>
+      <strong
+        data-testid="summary-label"
+      >
+        1 storage pack
+      </strong>
+      <div
+        data-testid="summary-total"
+      >
+        Total storage: 10 GB
+      </div>
+    </step-stub>
+    <billing-address-stub />
+    <payment-method-stub />
+    <confirm-order-stub />
+  </div>
+  <gl-card-stub
+    bodyclass=""
+    class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 order-summary"
+    footerclass=""
+    headerclass=""
+  >
+    <div
+      class="gl-lg-display-none"
+    >
+      <h4
+        aria-controls="reference-0"
+        aria-expanded="false"
+        class="collapsed gl-align-items-center gl-display-flex gl-font-lg gl-justify-content-space-between gl-my-0"
+        role="button"
+        tabindex="0"
+      >
+        <div
+          class="gl-align-items-center gl-display-flex"
+        >
+          <gl-icon-stub
+            class="gl-flex-shrink-0"
+            name="chevron-right"
+            size="16"
+          />
+          <span
+            class="gl-ml-2"
+            data-testid="title"
+          >
+            Gitlab Org's storage subscription
+          </span>
+        </div>
+        <span
+          class="gl-ml-3"
+          data-testid="amount"
+        >
+          $59.67
+        </span>
+      </h4>
+      <gl-collapse-stub
+        id="reference-0"
+      >
+        <div
+          class="gl-mt-6"
+          quantity-present="true"
+        >
+          <div
+            class="gl-display-flex gl-font-weight-bold gl-justify-content-space-between gl-mb-3"
+          >
+            <div
+              data-testid="selected-plan"
+            >
+              Storage pack
+              <span
+                data-testid="quantity"
+              >
+                (x1)
+              </span>
+            </div>
+            <div>
+              $59.67
+            </div>
+          </div>
+          <div
+            class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mb-5 gl-pb-5"
+          >
+            <div
+              class="gl-text-gray-500"
+              data-testid="price-per-unit"
+            >
+              $60 per 10 GB storage pack per year
+            </div>
+            <div
+              class="gl-text-gray-500"
+              data-testid="subscription-period"
+            >
+              Jul 6, 2020 - Dec 15, 2022
+              <gl-icon-stub
+                arialabel="Your storage subscription has the same term as your main subscription, and the price is prorated accordingly."
+                name="question-o"
+                role="tooltip"
+                size="16"
+                title="Your storage subscription has the same term as your main subscription, and the price is prorated accordingly."
+              />
+            </div>
+          </div>
+          <div
+            class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mb-5 gl-pb-5"
+          >
+            <div
+              class="gl-display-flex gl-justify-content-space-between gl-mb-2 gl-text-gray-500"
+            >
+              <div>
+                Subtotal
+              </div>
+              <div
+                data-testid="total-ex-vat"
+              >
+                $59.67
+              </div>
+            </div>
+            <div
+              class="gl-display-flex gl-justify-content-space-between gl-text-gray-500"
+            >
+              <div
+                data-testid="vat-info-line"
+              >
+                <gl-sprintf-stub
+                  message="Tax (may be %{linkStart}charged upon purchase%{linkEnd})"
+                />
+              </div>
+              <div
+                data-testid="vat"
+              >
+                –
+              </div>
+            </div>
+          </div>
+          <div
+            class="gl-display-flex gl-font-lg gl-font-weight-bold gl-justify-content-space-between"
+          >
+            <div>
+              Total
+            </div>
+            <div
+              data-testid="total-amount"
+            >
+              $59.67
+            </div>
+          </div>
+        </div>
+      </gl-collapse-stub>
+    </div>
+    <div
+      class="gl-display-none gl-lg-display-block"
+    >
+      <h4
+        class="gl-font-lg gl-my-0"
+      >
+        Gitlab Org's storage subscription
+      </h4>
+      <div
+        class="gl-mt-6"
+        quantity-present="true"
+      >
+        <div
+          class="gl-display-flex gl-font-weight-bold gl-justify-content-space-between gl-mb-3"
+        >
+          <div
+            data-testid="selected-plan"
+          >
+            Storage pack
+            <span
+              data-testid="quantity"
+            >
+              (x1)
+            </span>
+          </div>
+          <div>
+            $59.67
+          </div>
+        </div>
+        <div
+          class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mb-5 gl-pb-5"
+        >
+          <div
+            class="gl-text-gray-500"
+            data-testid="price-per-unit"
+          >
+            $60 per 10 GB storage pack per year
+          </div>
+          <div
+            class="gl-text-gray-500"
+            data-testid="subscription-period"
+          >
+            Jul 6, 2020 - Dec 15, 2022
+            <gl-icon-stub
+              arialabel="Your storage subscription has the same term as your main subscription, and the price is prorated accordingly."
+              name="question-o"
+              role="tooltip"
+              size="16"
+              title="Your storage subscription has the same term as your main subscription, and the price is prorated accordingly."
+            />
+          </div>
+        </div>
+        <div
+          class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mb-5 gl-pb-5"
+        >
+          <div
+            class="gl-display-flex gl-justify-content-space-between gl-mb-2 gl-text-gray-500"
+          >
+            <div>
+              Subtotal
+            </div>
+            <div
+              data-testid="total-ex-vat"
+            >
+              $59.67
+            </div>
+          </div>
+          <div
+            class="gl-display-flex gl-justify-content-space-between gl-text-gray-500"
+          >
+            <div
+              data-testid="vat-info-line"
+            >
+              <gl-sprintf-stub
+                message="Tax (may be %{linkStart}charged upon purchase%{linkEnd})"
+              />
+            </div>
+            <div
+              data-testid="vat"
+            >
+              –
+            </div>
+          </div>
+        </div>
+        <div
+          class="gl-display-flex gl-font-lg gl-font-weight-bold gl-justify-content-space-between"
+        >
+          <div>
+            Total
+          </div>
+          <div
+            data-testid="total-amount"
+          >
+            $59.67
+          </div>
+        </div>
+      </div>
+    </div>
+  </gl-card-stub>
+</step-order-app-stub>
 `;
 
 exports[`Buy Addons Shared App Storage labels shows labels correctly for 2 packs 1`] = `
-"Storage packs
-      
-            x 10 GB per pack =
+<step-order-app-stub
+  data-testid="buy-addons-shared"
+>
+  <div>
+    <div
+      class="flash-container"
+    />
+    <step-stub
+      editbuttontext="Edit"
+      errormessage="Must be 1 or more. Cannot be a decimal."
+      isvalid="true"
+      nextstepbuttontext="Continue to billing"
+      stepid="subscriptionDetails"
+      title="Purchase details"
+    >
+      <label
+        data-testid="product-label"
+        for="quantity"
+      >
+        Storage packs
+      </label>
+      <div
+        class="gl-align-items-center gl-display-flex gl-flex-direction-row gl-mb-5"
+      >
+        <gl-form-input-stub
+          class="gl-w-15"
+          data-qa-selector="quantity"
+          min="1"
+          name="quantity"
+          state="true"
+          type="number"
+          value="2"
+        />
+        <div
+          class="gl-ml-3"
+          data-testid="addon-quantity-text"
+        >
+          x 10 GB per pack =
+          <strong>
             20 GB of storage
-              2 storage packs
-             Total storage: 20 GB    Gitlab Org's storage subscription 
-        $59.67
-       
-      Storage pack
-      (x2) 
-      $59.67
-     
-        $60 per 10 GB storage pack per year
-       
-      Jul 6, 2020 - Dec 15, 2022
-       Subtotal 
-        $59.67
-        – Total 
-      $59.67
-     
-      Gitlab Org's storage subscription
-     
-      Storage pack
-      (x2) 
-      $59.67
-     
-        $60 per 10 GB storage pack per year
-       
-      Jul 6, 2020 - Dec 15, 2022
-       Subtotal 
-        $59.67
-        – Total 
-      $59.67"
+          </strong>
+        </div>
+      </div>
+      <strong
+        data-testid="summary-label"
+      >
+        2 storage packs
+      </strong>
+      <div
+        data-testid="summary-total"
+      >
+        Total storage: 20 GB
+      </div>
+    </step-stub>
+    <billing-address-stub />
+    <payment-method-stub />
+    <confirm-order-stub />
+  </div>
+  <gl-card-stub
+    bodyclass=""
+    class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 order-summary"
+    footerclass=""
+    headerclass=""
+  >
+    <div
+      class="gl-lg-display-none"
+    >
+      <h4
+        aria-controls="reference-0"
+        aria-expanded="false"
+        class="collapsed gl-align-items-center gl-display-flex gl-font-lg gl-justify-content-space-between gl-my-0"
+        role="button"
+        tabindex="0"
+      >
+        <div
+          class="gl-align-items-center gl-display-flex"
+        >
+          <gl-icon-stub
+            class="gl-flex-shrink-0"
+            name="chevron-right"
+            size="16"
+          />
+          <span
+            class="gl-ml-2"
+            data-testid="title"
+          >
+            Gitlab Org's storage subscription
+          </span>
+        </div>
+        <span
+          class="gl-ml-3"
+          data-testid="amount"
+        >
+          $59.67
+        </span>
+      </h4>
+      <gl-collapse-stub
+        id="reference-0"
+      >
+        <div
+          class="gl-mt-6"
+          quantity-present="true"
+        >
+          <div
+            class="gl-display-flex gl-font-weight-bold gl-justify-content-space-between gl-mb-3"
+          >
+            <div
+              data-testid="selected-plan"
+            >
+              Storage pack
+              <span
+                data-testid="quantity"
+              >
+                (x2)
+              </span>
+            </div>
+            <div>
+              $59.67
+            </div>
+          </div>
+          <div
+            class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mb-5 gl-pb-5"
+          >
+            <div
+              class="gl-text-gray-500"
+              data-testid="price-per-unit"
+            >
+              $60 per 10 GB storage pack per year
+            </div>
+            <div
+              class="gl-text-gray-500"
+              data-testid="subscription-period"
+            >
+              Jul 6, 2020 - Dec 15, 2022
+              <gl-icon-stub
+                arialabel="Your storage subscription has the same term as your main subscription, and the price is prorated accordingly."
+                name="question-o"
+                role="tooltip"
+                size="16"
+                title="Your storage subscription has the same term as your main subscription, and the price is prorated accordingly."
+              />
+            </div>
+          </div>
+          <div
+            class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mb-5 gl-pb-5"
+          >
+            <div
+              class="gl-display-flex gl-justify-content-space-between gl-mb-2 gl-text-gray-500"
+            >
+              <div>
+                Subtotal
+              </div>
+              <div
+                data-testid="total-ex-vat"
+              >
+                $59.67
+              </div>
+            </div>
+            <div
+              class="gl-display-flex gl-justify-content-space-between gl-text-gray-500"
+            >
+              <div
+                data-testid="vat-info-line"
+              >
+                <gl-sprintf-stub
+                  message="Tax (may be %{linkStart}charged upon purchase%{linkEnd})"
+                />
+              </div>
+              <div
+                data-testid="vat"
+              >
+                –
+              </div>
+            </div>
+          </div>
+          <div
+            class="gl-display-flex gl-font-lg gl-font-weight-bold gl-justify-content-space-between"
+          >
+            <div>
+              Total
+            </div>
+            <div
+              data-testid="total-amount"
+            >
+              $59.67
+            </div>
+          </div>
+        </div>
+      </gl-collapse-stub>
+    </div>
+    <div
+      class="gl-display-none gl-lg-display-block"
+    >
+      <h4
+        class="gl-font-lg gl-my-0"
+      >
+        Gitlab Org's storage subscription
+      </h4>
+      <div
+        class="gl-mt-6"
+        quantity-present="true"
+      >
+        <div
+          class="gl-display-flex gl-font-weight-bold gl-justify-content-space-between gl-mb-3"
+        >
+          <div
+            data-testid="selected-plan"
+          >
+            Storage pack
+            <span
+              data-testid="quantity"
+            >
+              (x2)
+            </span>
+          </div>
+          <div>
+            $59.67
+          </div>
+        </div>
+        <div
+          class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mb-5 gl-pb-5"
+        >
+          <div
+            class="gl-text-gray-500"
+            data-testid="price-per-unit"
+          >
+            $60 per 10 GB storage pack per year
+          </div>
+          <div
+            class="gl-text-gray-500"
+            data-testid="subscription-period"
+          >
+            Jul 6, 2020 - Dec 15, 2022
+            <gl-icon-stub
+              arialabel="Your storage subscription has the same term as your main subscription, and the price is prorated accordingly."
+              name="question-o"
+              role="tooltip"
+              size="16"
+              title="Your storage subscription has the same term as your main subscription, and the price is prorated accordingly."
+            />
+          </div>
+        </div>
+        <div
+          class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-mb-5 gl-pb-5"
+        >
+          <div
+            class="gl-display-flex gl-justify-content-space-between gl-mb-2 gl-text-gray-500"
+          >
+            <div>
+              Subtotal
+            </div>
+            <div
+              data-testid="total-ex-vat"
+            >
+              $59.67
+            </div>
+          </div>
+          <div
+            class="gl-display-flex gl-justify-content-space-between gl-text-gray-500"
+          >
+            <div
+              data-testid="vat-info-line"
+            >
+              <gl-sprintf-stub
+                message="Tax (may be %{linkStart}charged upon purchase%{linkEnd})"
+              />
+            </div>
+            <div
+              data-testid="vat"
+            >
+              –
+            </div>
+          </div>
+        </div>
+        <div
+          class="gl-display-flex gl-font-lg gl-font-weight-bold gl-justify-content-space-between"
+        >
+          <div>
+            Total
+          </div>
+          <div
+            data-testid="total-amount"
+          >
+            $59.67
+          </div>
+        </div>
+      </div>
+    </div>
+  </gl-card-stub>
+</step-order-app-stub>
 `;
