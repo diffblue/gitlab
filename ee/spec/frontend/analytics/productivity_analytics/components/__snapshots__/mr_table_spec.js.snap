@@ -8,37 +8,33 @@ exports[`MergeRequestTable component matches the snapshot 1`] = `
     class="card"
   >
     <div
-      class="card-header border-bottom-0"
+      class="border-bottom-0 card-header"
     >
       <div
-        class="gl-responsive-table-row table-row-header d-flex py-0"
+        class="d-flex gl-responsive-table-row py-0 table-row-header"
         role="row"
       >
         <div
-          class="table-section section-50 d-none d-md-flex"
+          class="d-md-flex d-none section-50 table-section"
           role="rowheader"
         >
-          
           Title
-        
         </div>
-         
         <div
-          class="table-section section-50"
+          class="section-50 table-section"
           role="rowheader"
         >
           <div
             class="d-flex"
           >
             <span
-              class="d-none d-md-flex metric-col"
+              class="d-md-flex d-none metric-col"
             >
               Time to merge
             </span>
-             
             <gl-dropdown-stub
               category="primary"
-              class="w-100 metric-col"
+              class="metric-col w-100"
               clearalltext="Clear all"
               clearalltextclass="gl-px-5"
               headertext=""
@@ -70,9 +66,7 @@ exports[`MergeRequestTable component matches the snapshot 1`] = `
                     name="mobile-issue-close"
                     size="16"
                   />
-                  
                   Time from first commit until first comment
-                
                 </span>
               </gl-dropdown-item-stub>
               <gl-dropdown-item-stub
@@ -93,9 +87,7 @@ exports[`MergeRequestTable component matches the snapshot 1`] = `
                     name="mobile-issue-close"
                     size="16"
                   />
-                  
                   Time from first comment to last commit
-                
                 </span>
               </gl-dropdown-item-stub>
               <gl-dropdown-item-stub
@@ -116,9 +108,7 @@ exports[`MergeRequestTable component matches the snapshot 1`] = `
                     name="mobile-issue-close"
                     size="16"
                   />
-                  
                   Time from last commit to merge
-                
                 </span>
               </gl-dropdown-item-stub>
             </gl-dropdown-stub>
@@ -126,7 +116,6 @@ exports[`MergeRequestTable component matches the snapshot 1`] = `
         </div>
       </div>
     </div>
-     
     <div
       class="card-body py-0"
     >
@@ -142,7 +131,5 @@ exports[`MergeRequestTable component matches the snapshot 1`] = `
       />
     </div>
   </div>
-   
-  <!---->
 </div>
 `;

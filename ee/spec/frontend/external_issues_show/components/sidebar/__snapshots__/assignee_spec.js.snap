@@ -8,7 +8,6 @@ exports[`ExternalIssuesSidebarAssignee with assignee template renders avatar com
     <assignee-title-stub
       numberofassignees="1"
     />
-     
     <gl-avatar-link-stub
       href="http://127.0.0.1:3000/root"
       target="_blank"
@@ -25,7 +24,6 @@ exports[`ExternalIssuesSidebarAssignee with assignee template renders avatar com
       />
     </gl-avatar-link-stub>
   </div>
-   
   <div
     class="sidebar-collapsed-icon"
     data-testid="sidebar-collapsed-icon-wrapper"
@@ -51,17 +49,13 @@ exports[`ExternalIssuesSidebarAssignee with no assignee template renders templat
     <assignee-title-stub
       numberofassignees="0"
     />
-     
     <div
-      class="gl-text-gray-500 gl-line-height-14"
+      class="gl-line-height-14 gl-text-gray-500"
       data-testid="no-assignee-text"
     >
-      
       None
-    
     </div>
   </div>
-   
   <div
     class="sidebar-collapsed-icon"
     data-testid="sidebar-collapsed-icon-wrapper"

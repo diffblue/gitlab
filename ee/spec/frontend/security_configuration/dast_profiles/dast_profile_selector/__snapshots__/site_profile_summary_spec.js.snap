@@ -3,77 +3,58 @@
 exports[`DastScannerProfileSummary renders properly 1`] = `
 <gl-card-stub
   bodyclass=""
-  class=""
   footerclass=""
   headerclass=""
 >
-   
   <summary-cell-stub
-    class=""
     label="Target URL"
     value="http://pending.test"
   />
-   
   <summary-cell-stub
     label="Site type"
     value="Website"
   />
-   
   <summary-cell-stub
     label="Authentication URL"
     value="http://pending.test/sign-in"
   />
-   
   <summary-cell-stub
     label="Username"
     value="validation-pending@example.com"
   />
-   
   <summary-cell-stub
     label="Password"
     value="••••••••"
   />
-   
   <summary-cell-stub
     label="Username form field"
     value="session[username]"
   />
-   
   <summary-cell-stub
     label="Password form field"
     value="session[password]"
   />
-   
   <summary-cell-stub
     label="Submit button"
   />
-   
   <summary-cell-stub
     label="Excluded URLs"
     value="http://pending.test/sign-out,http://pending.test/hidden"
   />
-   
   <summary-cell-stub
     label="Request headers"
   />
-   
   <summary-cell-stub
     label="Validation status"
   >
     <dast-site-validation-badge-stub
       status="PENDING_VALIDATION"
     />
-     
-    <!---->
-     
-    <!---->
   </summary-cell-stub>
-   
   <summary-cell-stub
     label="Scan Method"
     value="OpenAPI"
   />
-   
   <summary-cell-stub
     label="OpenAPI Specification file URL"
     value="https://example.com"

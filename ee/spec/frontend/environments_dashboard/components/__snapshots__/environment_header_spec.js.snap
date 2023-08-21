@@ -2,26 +2,23 @@
 
 exports[`Environment Header has a failed pipeline matches the snapshot 1`] = `
 <div
-  class="card-header border-0 py-2 d-flex align-items-center dashboard-card-header-failed"
+  class="align-items-center border-0 card-header d-flex dashboard-card-header-failed py-2"
 >
   <div
-    class="flex-grow-1 block-truncated"
+    class="block-truncated flex-grow-1"
   >
     <gl-link-stub
-      class="js-environment-link cgray"
+      class="cgray js-environment-link"
       href="/enivronment/1"
       title="staging"
     >
       <span
-        class="js-environment-name bold"
+        class="bold js-environment-name"
       >
-         staging
+        staging
       </span>
     </gl-link-stub>
-     
-    <!---->
   </div>
-   
   <review-app-link-stub
     cssclass="btn btn-default btn-sm"
     display="[object Object]"
@@ -33,26 +30,23 @@ exports[`Environment Header has a failed pipeline matches the snapshot 1`] = `
 
 exports[`Environment Header has errors matches the snapshot 1`] = `
 <div
-  class="card-header border-0 py-2 d-flex align-items-center dashboard-card-header-warning"
+  class="align-items-center border-0 card-header d-flex dashboard-card-header-warning py-2"
 >
   <div
-    class="flex-grow-1 block-truncated"
+    class="block-truncated flex-grow-1"
   >
     <gl-link-stub
-      class="js-environment-link cgray"
+      class="cgray js-environment-link"
       href="/enivronment/1"
       title="staging"
     >
       <span
-        class="js-environment-name bold"
+        class="bold js-environment-name"
       >
-         staging
+        staging
       </span>
     </gl-link-stub>
-     
-    <!---->
   </div>
-   
   <review-app-link-stub
     cssclass="btn btn-default btn-sm"
     display="[object Object]"
@@ -64,28 +58,25 @@ exports[`Environment Header has errors matches the snapshot 1`] = `
 
 exports[`Environment Header renders name and link to app matches the snapshot 1`] = `
 <div
-  class="card-header border-0 py-2 d-flex align-items-center bg-light"
+  class="align-items-center bg-light border-0 card-header d-flex py-2"
 >
   <div
-    class="flex-grow-1 block-truncated"
+    class="block-truncated flex-grow-1"
   >
     <a
-      class="gl-link js-environment-link cgray"
+      class="cgray gl-link js-environment-link"
       href="/enivronment/1"
       title="staging"
     >
       <span
-        class="js-environment-name bold"
+        class="bold js-environment-name"
       >
-         staging
+        staging
       </span>
     </a>
-     
-    <!---->
   </div>
-   
   <a
-    class="btn btn-default btn-md gl-button btn btn-default btn-sm"
+    class="btn btn-default btn-md btn-sm gl-button"
     data-track-action="open_review_app"
     data-track-label="review_app"
     href="http://example.com"
@@ -93,15 +84,10 @@ exports[`Environment Header renders name and link to app matches the snapshot 1`
     target="_blank"
     title=""
   >
-    <!---->
-     
-    <!---->
-      
     <span
       class="gl-button-text"
     >
-      
-  View app 
+      View app
       <svg
         aria-hidden="true"
         class="fgray gl-icon s16"
@@ -119,23 +105,22 @@ exports[`Environment Header renders name and link to app matches the snapshot 1`
 
 exports[`Environment Header with environments grouped into a folder matches the snapshot 1`] = `
 <div
-  class="card-header border-0 py-2 d-flex align-items-center bg-light"
+  class="align-items-center bg-light border-0 card-header d-flex py-2"
 >
   <div
-    class="flex-grow-1 block-truncated"
+    class="block-truncated flex-grow-1"
   >
     <gl-link-stub
-      class="js-environment-link cgray"
+      class="cgray js-environment-link"
       href="/enivronment/1"
       title="review/testing"
     >
       <span
-        class="js-environment-name bold"
+        class="bold js-environment-name"
       >
-         review/testing
+        review/testing
       </span>
     </gl-link-stub>
-     
     <gl-badge-stub
       class="dashboard-card-icon"
       iconsize="md"
@@ -145,7 +130,6 @@ exports[`Environment Header with environments grouped into a folder matches the 
       5
     </gl-badge-stub>
   </div>
-   
   <gl-icon-stub
     class="dashboard-card-icon"
     name="information"

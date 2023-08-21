@@ -4,19 +4,14 @@ exports[`MergeRequestTable component template matches the snapshot 1`] = `
 <table
   aria-busy=""
   aria-colcount="7"
-  class="table b-table my-3 gl-table b-table-stacked-sm"
-  id="__BVID__36"
+  class="b-table b-table-stacked-sm gl-table my-3 table"
+  id="reference-0"
   role="table"
 >
-  <!---->
-  <!---->
   <thead
-    class=""
     role="rowgroup"
   >
-    <!---->
     <tr
-      class=""
       role="row"
     >
       <th
@@ -41,7 +36,6 @@ exports[`MergeRequestTable component template matches the snapshot 1`] = `
       </th>
       <th
         aria-colindex="3"
-        class=""
         role="columnheader"
         scope="col"
       >
@@ -51,7 +45,6 @@ exports[`MergeRequestTable component template matches the snapshot 1`] = `
       </th>
       <th
         aria-colindex="4"
-        class=""
         role="columnheader"
         scope="col"
       >
@@ -94,26 +87,24 @@ exports[`MergeRequestTable component template matches the snapshot 1`] = `
   <tbody
     role="rowgroup"
   >
-    <!---->
     <tr
-      class=""
       role="row"
     >
       <td
         aria-colindex="1"
-        class="table-col d-flex align-items-center d-sm-table-cell"
+        class="align-items-center d-flex d-sm-table-cell table-col"
         data-label="Merge Request"
         role="cell"
       >
         <div>
           <div
-            class="d-flex flex-column flex-grow align-items-end align-items-sm-start"
+            class="align-items-end align-items-sm-start d-flex flex-column flex-grow"
           >
             <div
-              class="gl-max-w-34 str-truncated my-2"
+              class="gl-max-w-34 my-2 str-truncated"
             >
               <a
-                class="gl-link font-weight-bold text-plain"
+                class="font-weight-bold gl-link text-plain"
                 href="https://gitlab.com/gitlab-org/gitlab/merge_requests/38062"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -121,25 +112,22 @@ exports[`MergeRequestTable component template matches the snapshot 1`] = `
                 This is just a super long merge request title that does not fit into one line so it needs to be truncated
               </a>
             </div>
-             
             <ul
-              class="horizontal-list list-items-separated text-secondary mb-0"
+              class="horizontal-list list-items-separated mb-0 text-secondary"
             >
               <li>
                 !12345
               </li>
-               
               <li>
                 created 5 months ago
               </li>
-               
               <li>
                 <span
-                  class="d-flex align-items-center"
+                  class="align-items-center d-flex"
                 >
                   <svg
                     aria-hidden="true"
-                    class="gl-mr-2 gl-icon s16"
+                    class="gl-icon gl-mr-2 s16"
                     data-testid="clock-icon"
                     role="img"
                   >
@@ -147,9 +135,7 @@ exports[`MergeRequestTable component template matches the snapshot 1`] = `
                       href="file-mock#clock"
                     />
                   </svg>
-                  
-            11.1
-          
+                  11.1
                 </span>
               </li>
             </ul>
@@ -158,7 +144,7 @@ exports[`MergeRequestTable component template matches the snapshot 1`] = `
       </td>
       <td
         aria-colindex="2"
-        class="text-right table-col d-flex align-items-center d-sm-table-cell"
+        class="align-items-center d-flex d-sm-table-cell table-col text-right"
         data-label="Review time"
         role="cell"
       >
@@ -170,57 +156,51 @@ exports[`MergeRequestTable component template matches the snapshot 1`] = `
       </td>
       <td
         aria-colindex="3"
-        class="table-col d-flex align-items-center d-sm-table-cell"
+        class="align-items-center d-flex d-sm-table-cell table-col"
         data-label="Author"
         role="cell"
       >
         <div>
           <a
-            class="gl-link gl-avatar-link"
+            class="gl-avatar-link gl-link"
             href="https://gitlab.com/foo"
             rel="noopener noreferrer"
             target="_blank"
             title="foo"
           >
             <div
-              class="gl-avatar gl-avatar-identicon gl-avatar-circle gl-avatar-s24 gl-avatar-identicon-bg1"
+              class="gl-avatar gl-avatar-circle gl-avatar-identicon gl-avatar-identicon-bg1 gl-avatar-s24"
             >
-              
-  F
-
+              F
             </div>
           </a>
         </div>
       </td>
       <td
         aria-colindex="4"
-        class="table-col d-flex align-items-center d-sm-table-cell"
+        class="align-items-center d-flex d-sm-table-cell table-col"
         data-label="Approvers"
         role="cell"
       >
         <div>
           <div>
             <a
-              class="gl-link gl-avatar-link"
+              class="gl-avatar-link gl-link"
               href="https://gitlab.com/bar"
               rel="noopener noreferrer"
               target="_blank"
               title="bar"
             >
               <div
-                class="gl-avatar gl-avatar-identicon gl-avatar-circle gl-avatar-s24 gl-avatar-identicon-bg1"
-              >
-                
-  
-
-              </div>
+                class="gl-avatar gl-avatar-circle gl-avatar-identicon gl-avatar-identicon-bg1 gl-avatar-s24"
+              />
             </a>
           </div>
         </div>
       </td>
       <td
         aria-colindex="5"
-        class="text-right table-col d-flex align-items-center d-sm-table-cell"
+        class="align-items-center d-flex d-sm-table-cell table-col text-right"
         data-label="Comments"
         role="cell"
       >
@@ -230,7 +210,7 @@ exports[`MergeRequestTable component template matches the snapshot 1`] = `
       </td>
       <td
         aria-colindex="6"
-        class="text-right table-col d-flex align-items-center d-sm-table-cell"
+        class="align-items-center d-flex d-sm-table-cell table-col text-right"
         data-label="Commits"
         role="cell"
       >
@@ -242,28 +222,24 @@ exports[`MergeRequestTable component template matches the snapshot 1`] = `
       </td>
       <td
         aria-colindex="7"
-        class="text-right table-col d-flex align-items-center d-sm-table-cell"
+        class="align-items-center d-flex d-sm-table-cell table-col text-right"
         data-label="Line changes"
         role="cell"
       >
         <div>
           <span
-            class="font-weight-bold cgreen"
+            class="cgreen font-weight-bold"
           >
-             +504 
+            +504
           </span>
-           
           <span
-            class="font-weight-bold cred"
+            class="cred font-weight-bold"
           >
-             -10 
+            -10
           </span>
         </div>
       </td>
     </tr>
-    <!---->
-    <!---->
   </tbody>
-  <!---->
 </table>
 `;

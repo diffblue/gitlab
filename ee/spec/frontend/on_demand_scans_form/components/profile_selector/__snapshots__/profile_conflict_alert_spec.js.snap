@@ -11,7 +11,7 @@ exports[`ProfileConflictAlert renders properly 1`] = `
   title="You cannot run an active scan against an unvalidated site."
   variant="danger"
 >
-  You can either choose a passive scan or validate the target site from the site profile management page. 
+  You can either choose a passive scan or validate the target site from the site profile management page.
   <gl-link-stub
     href="/help/user/application_security/dast/proxy-based#site-profile-validation"
     target="_blank"

@@ -13,23 +13,13 @@ exports[`Table table content displays the default label 1`] = `
     <span
       class="gl-label-text"
     >
-      
       GDPR (default)
-    
     </span>
-     
-    <!---->
   </span>
-   
-  <!---->
-   
   <div
     class="gl-tooltip"
   >
-    <!---->
-    
     Edit framework
-  
   </div>
 </span>
 `;

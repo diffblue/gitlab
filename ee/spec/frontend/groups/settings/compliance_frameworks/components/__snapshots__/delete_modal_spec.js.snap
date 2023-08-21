@@ -12,10 +12,10 @@ exports[`DeleteModal component layout matches the snapshot 1`] = `
   title="Delete compliance framework GDPR"
   titletag="h4"
 >
-  You are about to permanently delete the compliance framework 
+  You are about to permanently delete the compliance framework
   <strong>
     GDPR
   </strong>
-   from all projects which currently have it applied, which may remove other functionality. This cannot be undone.
+  from all projects which currently have it applied, which may remove other functionality. This cannot be undone.
 </gl-modal-stub>
 `;

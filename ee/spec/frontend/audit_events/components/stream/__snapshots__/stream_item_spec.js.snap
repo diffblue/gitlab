@@ -5,16 +5,14 @@ exports[`StreamItem Group http StreamItem when an item has event filters renders
   class="gl-popover"
   data-testid="filter-popover"
 >
-  Destination has filters applied. 
+  Destination has filters applied.
   <a
     class="gl-link"
     href="/help/administration/audit_event_streaming#event-type-filters"
     rel="noopener"
     target="_blank"
   >
-    
-              What are filters?
-            
+    What are filters?
   </a>
 </div>
 `;

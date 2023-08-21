@@ -1,3 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`MR Widget Security Reports - Summary Highlights should display the summary highlights properly 1`] = `"<div class=\\"gl-font-sm\\"><strong class=\\"gl-text-red-800\\">10 critical</strong>, <strong class=\\"gl-text-red-600\\">20 high</strong> and <strong>60 others</strong></div>"`;
+exports[`MR Widget Security Reports - Summary Highlights should display the summary highlights properly 1`] = `
+<div
+  class="gl-font-sm"
+>
+  <strong
+    class="gl-text-red-800"
+  >
+    10 critical
+  </strong>
+  ,
+  <strong
+    class="gl-text-red-600"
+  >
+    20 high
+  </strong>
+  and
+  <strong>
+    60 others
+  </strong>
+</div>
+`;

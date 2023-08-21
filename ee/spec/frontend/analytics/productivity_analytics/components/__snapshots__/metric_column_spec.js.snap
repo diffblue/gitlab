@@ -7,16 +7,13 @@ exports[`MetricColumn component on creation matches the snapshot 1`] = `
   <span
     class="time"
   >
-    
-      10
-      
+    10
     <span>
-       hrs 
+      hrs
     </span>
   </span>
-   
   <span
-    class="d-flex d-md-none text-secondary metric-label"
+    class="d-flex d-md-none metric-label text-secondary"
   >
     Time from first comment to last commit
   </span>

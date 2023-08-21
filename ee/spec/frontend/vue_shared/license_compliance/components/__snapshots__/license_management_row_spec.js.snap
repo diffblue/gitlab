@@ -2,48 +2,40 @@
 
 exports[`LicenseManagementRow allowed license renders the allowed status text with the status icon 1`] = `
 <div
-  class="table-mobile-content text-capitalize d-flex align-items-center justify-content-end justify-content-md-start status"
+  class="align-items-center d-flex justify-content-end justify-content-md-start status table-mobile-content text-capitalize"
 >
   <issue-status-icon-stub
     status="success"
     statusiconsize="24"
   />
-  
-        Allowed
-      
+  Allowed
 </div>
 `;
 
 exports[`LicenseManagementRow allowed license renders the license name 1`] = `
 <div
-  class="table-mobile-content name"
+  class="name table-mobile-content"
 >
-  
-        MIT
-      
+  MIT
 </div>
 `;
 
 exports[`LicenseManagementRow denied license renders the denied status text with the status icon 1`] = `
 <div
-  class="table-mobile-content text-capitalize d-flex align-items-center justify-content-end justify-content-md-start status"
+  class="align-items-center d-flex justify-content-end justify-content-md-start status table-mobile-content text-capitalize"
 >
   <issue-status-icon-stub
     status="failed"
     statusiconsize="24"
   />
-  
-        Denied
-      
+  Denied
 </div>
 `;
 
 exports[`LicenseManagementRow denied license renders the license name 1`] = `
 <div
-  class="table-mobile-content name"
+  class="name table-mobile-content"
 >
-  
-        New BSD
-      
+  New BSD
 </div>
 `;

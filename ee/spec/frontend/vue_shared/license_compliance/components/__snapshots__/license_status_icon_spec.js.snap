@@ -2,7 +2,7 @@
 
 exports[`LicenseStatusIcon renders "failed" state correctly 1`] = `
 <div
-  class="report-block-list-icon failed"
+  class="failed report-block-list-icon"
 >
   <gl-icon-stub
     class="gl-mb-1"
@@ -15,7 +15,7 @@ exports[`LicenseStatusIcon renders "failed" state correctly 1`] = `
 
 exports[`LicenseStatusIcon renders "neutral" state correctly 1`] = `
 <div
-  class="report-block-list-icon neutral"
+  class="neutral report-block-list-icon"
 >
   <gl-icon-stub
     class="gl-mb-1"

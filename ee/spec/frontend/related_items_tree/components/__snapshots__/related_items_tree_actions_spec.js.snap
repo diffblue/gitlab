@@ -2,11 +2,11 @@
 
 exports[`RelatedItemsTree RelatedItemsTreeActions template renders button group, tree view and roadmap view buttons 1`] = `
 <div
-  class="card-header gl-display-flex gl-px-4 gl-py-3 gl-flex-direction-column gl-sm-flex-direction-row gl-border-bottom-0 gl-bg-gray-10"
+  class="card-header gl-bg-gray-10 gl-border-bottom-0 gl-display-flex gl-flex-direction-column gl-px-4 gl-py-3 gl-sm-flex-direction-row"
 >
   <div>
     <gl-button-group-stub
-      class="gl-flex-grow-1 gl-display-flex"
+      class="gl-display-flex gl-flex-grow-1"
       data-testid="buttons"
     >
       <gl-button-stub
@@ -19,11 +19,8 @@ exports[`RelatedItemsTree RelatedItemsTreeActions template renders button group,
         size="medium"
         variant="default"
       >
-        
         Tree view
-      
       </gl-button-stub>
-       
       <gl-button-stub
         buttontextclasses=""
         category="primary"
@@ -33,18 +30,15 @@ exports[`RelatedItemsTree RelatedItemsTreeActions template renders button group,
         size="medium"
         variant="default"
       >
-        
         Roadmap view
-      
       </gl-button-stub>
     </gl-button-group-stub>
   </div>
-   
   <div
-    class="gl-sm-display-inline-flex gl-display-flex gl-mt-3 gl-sm-mt-0 gl-sm-ml-auto"
+    class="gl-display-flex gl-mt-3 gl-sm-display-inline-flex gl-sm-ml-auto gl-sm-mt-0"
   >
     <toggle-labels-stub
-      class="gl-sm-ml-3! gl-ml-0!"
+      class="gl-ml-0! gl-sm-ml-3!"
     />
   </div>
 </div>

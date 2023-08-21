@@ -2,10 +2,10 @@
 
 exports[`Modal delete Modal the modal text matches the snapshot 1`] = `
 <div>
-  You are about to remove the 
+  You are about to remove the
   <strong>
     Foo
   </strong>
-   status check.
+  status check.
 </div>
 `;

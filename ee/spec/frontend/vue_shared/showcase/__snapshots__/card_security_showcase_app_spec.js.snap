@@ -5,27 +5,21 @@ exports[`Card Security Showcase App renders correctly 1`] = `
   class="gl-my-5"
 >
   <div
-    class="gl-mb-4 col-lg-6 col-xs-12 gl-p-0"
+    class="col-lg-6 col-xs-12 gl-mb-4 gl-p-0"
   >
     <h2
       class="gl-col-12 gl-font-size-h2 gl-text-gray-900"
     >
-      
       Identify vulnerabilities in your code now
-    
     </h2>
-     
     <p
       class="gl-col-12 gl-text-gray-800"
     >
-      
       Use GitLab CI/CD to analyze your source code for known vulnerabilities. Compare the found vulnerabilities between your source and target branches.
-    
     </p>
   </div>
-   
   <div
-    class="gl-display-flex gl-w-full gl-flex-flow-row-wrap"
+    class="gl-display-flex gl-flex-flow-row-wrap gl-w-full"
   >
     <card-showcase-stub
       description="Scan your source code using GitLab CI/CD and uncover vulnerabilities before deploying."
@@ -41,7 +35,6 @@ exports[`Card Security Showcase App renders correctly 1`] = `
       secondarytrackingproperty=""
       title="Enable Static Application Security Testing (SAST)"
     />
-     
     <card-showcase-stub
       description="Scan your code to detect unintentionally committed secrets, like keys, passwords, and API tokens."
       primaryaction="Enable Secret Detection"
@@ -57,29 +50,22 @@ exports[`Card Security Showcase App renders correctly 1`] = `
       title="Enable Secret Detection"
     />
   </div>
-   
   <div
-    class="gl-mb-4 col-lg-6 col-xs-12 gl-p-0"
+    class="col-lg-6 col-xs-12 gl-mb-4 gl-p-0"
   >
     <h2
       class="gl-col-12 gl-font-size-h2 gl-text-gray-900"
     >
-      
       Take your security to the next level
-    
     </h2>
-     
     <p
       class="gl-col-12 gl-text-gray-800"
     >
-      
       Start a free 30-day Ultimate trial or upgrade your instance to access organization-wide security and compliance features. See the other features of the Ultimate plan.
-    
     </p>
   </div>
-   
   <div
-    class="gl-display-flex gl-w-full gl-flex-flow-row-wrap"
+    class="gl-display-flex gl-flex-flow-row-wrap gl-w-full"
   >
     <card-showcase-stub
       description="Access a dedicated area for vulnerability management. This includes a security dashboard, vulnerability report, and settings."
@@ -95,7 +81,6 @@ exports[`Card Security Showcase App renders correctly 1`] = `
       secondarytrackingproperty="vulnerability_management"
       title="Vulnerability management"
     />
-     
     <card-showcase-stub
       description="Find out if your external libraries are safe. Run dependency scanning jobs that check for known vulnerabilities in your external libraries."
       primaryaction="Start a free trial"
@@ -110,7 +95,6 @@ exports[`Card Security Showcase App renders correctly 1`] = `
       secondarytrackingproperty="dependency_scanning"
       title="Dependency scanning"
     />
-     
     <card-showcase-stub
       description="Dynamically examine your application for vulnerabilities in deployed environments."
       primaryaction="Start a free trial"
@@ -125,7 +109,6 @@ exports[`Card Security Showcase App renders correctly 1`] = `
       secondarytrackingproperty="dast"
       title="Dynamic Application Security Testing (DAST)"
     />
-     
     <card-showcase-stub
       description="Audit your Docker-based app. Scan for known vulnerabilities in the Docker images where your code is shipped."
       primaryaction="Start a free trial"

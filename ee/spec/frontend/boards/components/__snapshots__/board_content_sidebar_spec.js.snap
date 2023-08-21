@@ -5,11 +5,10 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
   class="boards-sidebar"
 >
   <h2
-    class="gl-my-0 gl-font-size-h2 gl-line-height-24"
+    class="gl-font-size-h2 gl-line-height-24 gl-my-0"
   >
     Incident details
   </h2>
-   
   <sidebartodowidget-stub
     class="gl-mt-3"
     fullpath="gitlab-org/gitlab-test"
@@ -17,12 +16,10 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
     issuableiid="27"
     issuabletype="issue"
   />
-   
   <boardsidebartitle-stub
     activeitem="[object Object]"
     data-testid="sidebar-title"
   />
-   
   <sidebarassigneeswidget-stub
     editable="true"
     fullpath="gitlab-org/gitlab-test"
@@ -30,9 +27,6 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
     initialassignees="[object Object],[object Object]"
     issuabletype="issue"
   />
-   
-  <!---->
-   
   <div>
     <sidebardropdownwidget-stub
       attrworkspacepath="gitlab-org/gitlab-test"
@@ -42,44 +36,31 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
       issuabletype="issue"
       workspacepath="gitlab-org/gitlab-test"
     />
-     
-    <!---->
   </div>
-   
   <div
-    class="time-tracker sidebar-help-wrap"
+    class="sidebar-help-wrap time-tracker"
     data-testid="time-tracker"
   >
-    <!---->
-     
     <div
-      class="hide-collapsed gl-line-height-20 gl-text-gray-900 gl-display-flex gl-align-items-center gl-font-weight-bold"
+      class="gl-align-items-center gl-display-flex gl-font-weight-bold gl-line-height-20 gl-text-gray-900 hide-collapsed"
     >
-      
-    Time tracking
-    
-      <!---->
-       
+      Time tracking
       <div
-        class="gl-ml-auto gl-display-flex"
+        class="gl-display-flex gl-ml-auto"
       >
         <button
           aria-label="Set estimate"
-          class="btn btn-default btn-sm gl-button btn-default-tertiary"
+          class="btn btn-default btn-default-tertiary btn-sm gl-button"
           data-testid="set-time-estimate-button"
           title="Set estimate"
           type="button"
         >
-          <!---->
-           
-          <!---->
-            
           <span
             class="gl-button-text"
           >
             <svg
               aria-hidden="true"
-              class="gl-text-gray-900! gl-icon s16"
+              class="gl-icon gl-text-gray-900! s16"
               data-testid="timer-icon"
               role="img"
             >
@@ -89,23 +70,18 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
             </svg>
           </span>
         </button>
-         
         <button
-          class="btn btn-default btn-sm gl-button btn-default-tertiary"
+          class="btn btn-default btn-default-tertiary btn-sm gl-button"
           data-testid="add-time-entry-button"
           title="Add time entry"
           type="button"
         >
-          <!---->
-           
-          <!---->
-            
           <span
             class="gl-button-text"
           >
             <svg
               aria-hidden="true"
-              class="gl-text-gray-900! gl-icon s16"
+              class="gl-icon gl-text-gray-900! s16"
               data-testid="plus-icon"
               role="img"
             >
@@ -117,14 +93,9 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
         </button>
       </div>
     </div>
-     
     <div
       class="hide-collapsed"
     >
-      <!---->
-       
-      <!---->
-       
       <div
         data-testid="noTrackingPane"
       >
@@ -134,21 +105,9 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
           No estimate or time spent
         </span>
       </div>
-       
-      <!---->
-       
-      <div>
-        <!---->
-         
-        <!---->
-      </div>
-       
-      <!---->
-       
-      <!---->
+      <div />
     </div>
   </div>
-   
   <sidebardatewidget-stub
     data-testid="sidebar-due-date"
     datetype="dueDate"
@@ -156,7 +115,6 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
     iid="27"
     issuabletype="issue"
   />
-   
   <sidebarlabelswidget-stub
     allowmultiselect="true"
     attrworkspacepath="gitlab-org/gitlab-test"
@@ -176,51 +134,34 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
     variant="sidebar"
     workspacetype="project"
   >
-    
-        None
-      
+    None
   </sidebarlabelswidget-stub>
-   
   <div
     class="block"
   >
     <div>
       <div
-        class="gl-display-flex gl-align-items-center gl-line-height-20 gl-text-gray-900 gl-font-weight-bold"
+        class="gl-align-items-center gl-display-flex gl-font-weight-bold gl-line-height-20 gl-text-gray-900"
       >
         <span
           class="hide-collapsed"
           data-testid="title"
         >
-          
-      Severity
-    
+          Severity
         </span>
-          
-        <!---->
-         
-        <!---->
-          
         <button
-          class="btn gl-text-gray-900! gl-ml-auto hide-collapsed gl-mr-n2 shortcut-sidebar-dropdown-toggle btn-default btn-sm gl-button btn-default-tertiary"
+          class="btn btn-default btn-default-tertiary btn-sm gl-button gl-ml-auto gl-mr-n2 gl-text-gray-900! hide-collapsed shortcut-sidebar-dropdown-toggle"
           data-testid="edit-button"
-          id=""
+          id="reference-0"
           type="button"
         >
-          <!---->
-           
-          <!---->
-            
           <span
             class="gl-button-text"
           >
-            
-      Edit
-    
+            Edit
           </span>
         </button>
       </div>
-       
       <div
         class="gl-line-height-14"
         data-testid="collapsed-content"
@@ -229,11 +170,11 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
           class="sidebar-collapsed-icon"
         >
           <div
-            class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
+            class="gl-align-items-center gl-display-inline-flex gl-justify-content-between gl-max-w-full incident-severity"
           >
             <svg
               aria-hidden="true"
-              class="gl-icon s14 icon-unknown"
+              class="gl-icon icon-unknown s14"
               data-testid="severity-unknown-icon"
               role="img"
             >
@@ -241,28 +182,22 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                 href="file-mock#severity-unknown"
               />
             </svg>
-             
-            <!---->
           </div>
-           
           <div
             class="gl-tooltip"
           >
-            Severity: 
-              Unknown
-            
+            Severity: Unknown
           </div>
         </div>
-         
         <div
           class="hide-collapsed"
         >
           <div
-            class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
+            class="gl-align-items-center gl-display-inline-flex gl-justify-content-between gl-max-w-full incident-severity"
           >
             <svg
               aria-hidden="true"
-              class="gl-icon s12 icon-unknown gl-mr-3 gl-flex-shrink-0"
+              class="gl-flex-shrink-0 gl-icon gl-mr-3 icon-unknown s12"
               data-testid="severity-unknown-icon"
               role="img"
             >
@@ -270,53 +205,42 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                 href="file-mock#severity-unknown"
               />
             </svg>
-             
             <span
               class="gl-min-w-0 gl-text-truncate"
             >
-              
-    Unknown
-  
+              Unknown
             </span>
           </div>
         </div>
       </div>
-       
       <div
         class="gl-mt-3"
         data-testid="expanded-content"
         style="display: none;"
       >
         <div
-          class="gl-new-dropdown gl-mt-3 gl-display-block!"
+          class="gl-display-block! gl-mt-3 gl-new-dropdown"
         >
           <button
-            aria-controls="base-dropdown-5"
+            aria-controls="reference-2"
             aria-haspopup="listbox"
-            aria-labelledby="dropdown-toggle-btn-2"
-            class="btn btn-default btn-md btn-block gl-button gl-new-dropdown-toggle"
+            aria-labelledby="reference-1"
+            class="btn btn-block btn-default btn-md gl-button gl-new-dropdown-toggle"
             data-testid="base-dropdown-toggle"
-            id="dropdown-toggle-btn-2"
+            id="reference-1"
             type="button"
           >
-            <!---->
-             
-            <!---->
-              
             <span
               class="gl-button-text gl-w-full"
             >
               <span
                 class="gl-new-dropdown-button-text"
               >
-                
-        Unknown
-      
+                Unknown
               </span>
-               
               <svg
                 aria-hidden="true"
-                class="gl-button-icon gl-new-dropdown-chevron gl-icon s16"
+                class="gl-button-icon gl-icon gl-new-dropdown-chevron s16"
                 data-testid="chevron-down-icon"
                 role="img"
               >
@@ -326,40 +250,29 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
               </svg>
             </span>
           </button>
-           
           <div
             class="gl-new-dropdown-panel gl-w-31!"
             data-testid="base-dropdown-menu"
-            id="base-dropdown-5"
+            id="reference-2"
           >
             <div
               class="gl-new-dropdown-inner"
             >
-               
               <div
-                class="gl-display-flex gl-align-items-center gl-p-4! gl-min-h-8 gl-border-b-1 gl-border-b-solid gl-border-b-gray-200"
+                class="gl-align-items-center gl-border-b-1 gl-border-b-gray-200 gl-border-b-solid gl-display-flex gl-min-h-8 gl-p-4!"
               >
                 <div
-                  class="gl-flex-grow-1 gl-font-weight-bold gl-font-sm gl-pr-2"
+                  class="gl-flex-grow-1 gl-font-sm gl-font-weight-bold gl-pr-2"
                   data-testid="listbox-header-text"
-                  id="listbox-header-4"
+                  id="reference-3"
                 >
-                  
-      Assign severity
-    
+                  Assign severity
                 </div>
-                 
-                <!---->
-                 
-                <!---->
               </div>
-               
-              <!---->
-               
               <ul
-                aria-labelledby="listbox-header-4"
-                class="gl-new-dropdown-contents gl-new-dropdown-contents-with-scrim-overlay gl-new-dropdown-contents"
-                id="listbox-3"
+                aria-labelledby="reference-3"
+                class="gl-new-dropdown-contents gl-new-dropdown-contents-with-scrim-overlay"
+                id="reference-4"
                 role="listbox"
                 tabindex="-1"
               >
@@ -372,11 +285,9 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                     class="top-scrim top-scrim-dark"
                   />
                 </li>
-                 
                 <li
                   aria-hidden="true"
                 />
-                 
                 <li
                   class="gl-new-dropdown-item"
                   data-testid="listbox-item-CRITICAL"
@@ -388,7 +299,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                   >
                     <svg
                       aria-hidden="true"
-                      class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                      class="gl-align-self-start gl-icon gl-mt-3 gl-new-dropdown-item-check-icon gl-visibility-hidden s16"
                       data-testid="dropdown-item-checkbox"
                       role="img"
                     >
@@ -396,16 +307,15 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                         href="file-mock#mobile-issue-close"
                       />
                     </svg>
-                     
                     <span
                       class="gl-new-dropdown-item-text-wrapper"
                     >
                       <div
-                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
+                        class="gl-align-items-center gl-display-inline-flex gl-justify-content-between gl-max-w-full incident-severity"
                       >
                         <svg
                           aria-hidden="true"
-                          class="gl-icon s12 icon-critical gl-mr-3 gl-flex-shrink-0"
+                          class="gl-flex-shrink-0 gl-icon gl-mr-3 icon-critical s12"
                           data-testid="severity-critical-icon"
                           role="img"
                         >
@@ -413,13 +323,10 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                             href="file-mock#severity-critical"
                           />
                         </svg>
-                         
                         <span
                           class="gl-min-w-0 gl-text-truncate"
                         >
-                          
-    Critical - S1
-  
+                          Critical - S1
                         </span>
                       </div>
                     </span>
@@ -436,7 +343,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                   >
                     <svg
                       aria-hidden="true"
-                      class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                      class="gl-align-self-start gl-icon gl-mt-3 gl-new-dropdown-item-check-icon gl-visibility-hidden s16"
                       data-testid="dropdown-item-checkbox"
                       role="img"
                     >
@@ -444,16 +351,15 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                         href="file-mock#mobile-issue-close"
                       />
                     </svg>
-                     
                     <span
                       class="gl-new-dropdown-item-text-wrapper"
                     >
                       <div
-                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
+                        class="gl-align-items-center gl-display-inline-flex gl-justify-content-between gl-max-w-full incident-severity"
                       >
                         <svg
                           aria-hidden="true"
-                          class="gl-icon s12 icon-high gl-mr-3 gl-flex-shrink-0"
+                          class="gl-flex-shrink-0 gl-icon gl-mr-3 icon-high s12"
                           data-testid="severity-high-icon"
                           role="img"
                         >
@@ -461,13 +367,10 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                             href="file-mock#severity-high"
                           />
                         </svg>
-                         
                         <span
                           class="gl-min-w-0 gl-text-truncate"
                         >
-                          
-    High - S2
-  
+                          High - S2
                         </span>
                       </div>
                     </span>
@@ -484,7 +387,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                   >
                     <svg
                       aria-hidden="true"
-                      class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                      class="gl-align-self-start gl-icon gl-mt-3 gl-new-dropdown-item-check-icon gl-visibility-hidden s16"
                       data-testid="dropdown-item-checkbox"
                       role="img"
                     >
@@ -492,16 +395,15 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                         href="file-mock#mobile-issue-close"
                       />
                     </svg>
-                     
                     <span
                       class="gl-new-dropdown-item-text-wrapper"
                     >
                       <div
-                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
+                        class="gl-align-items-center gl-display-inline-flex gl-justify-content-between gl-max-w-full incident-severity"
                       >
                         <svg
                           aria-hidden="true"
-                          class="gl-icon s12 icon-medium gl-mr-3 gl-flex-shrink-0"
+                          class="gl-flex-shrink-0 gl-icon gl-mr-3 icon-medium s12"
                           data-testid="severity-medium-icon"
                           role="img"
                         >
@@ -509,13 +411,10 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                             href="file-mock#severity-medium"
                           />
                         </svg>
-                         
                         <span
                           class="gl-min-w-0 gl-text-truncate"
                         >
-                          
-    Medium - S3
-  
+                          Medium - S3
                         </span>
                       </div>
                     </span>
@@ -532,7 +431,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                   >
                     <svg
                       aria-hidden="true"
-                      class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                      class="gl-align-self-start gl-icon gl-mt-3 gl-new-dropdown-item-check-icon gl-visibility-hidden s16"
                       data-testid="dropdown-item-checkbox"
                       role="img"
                     >
@@ -540,16 +439,15 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                         href="file-mock#mobile-issue-close"
                       />
                     </svg>
-                     
                     <span
                       class="gl-new-dropdown-item-text-wrapper"
                     >
                       <div
-                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
+                        class="gl-align-items-center gl-display-inline-flex gl-justify-content-between gl-max-w-full incident-severity"
                       >
                         <svg
                           aria-hidden="true"
-                          class="gl-icon s12 icon-low gl-mr-3 gl-flex-shrink-0"
+                          class="gl-flex-shrink-0 gl-icon gl-mr-3 icon-low s12"
                           data-testid="severity-low-icon"
                           role="img"
                         >
@@ -557,13 +455,10 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                             href="file-mock#severity-low"
                           />
                         </svg>
-                         
                         <span
                           class="gl-min-w-0 gl-text-truncate"
                         >
-                          
-    Low - S4
-  
+                          Low - S4
                         </span>
                       </div>
                     </span>
@@ -577,11 +472,11 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                   tabindex="-1"
                 >
                   <span
-                    class="gl-new-dropdown-item-content gl-bg-gray-50!"
+                    class="gl-bg-gray-50! gl-new-dropdown-item-content"
                   >
                     <svg
                       aria-hidden="true"
-                      class="gl-icon s16 gl-new-dropdown-item-check-icon gl-mt-3 gl-align-self-start"
+                      class="gl-align-self-start gl-icon gl-mt-3 gl-new-dropdown-item-check-icon s16"
                       data-testid="dropdown-item-checkbox"
                       role="img"
                     >
@@ -589,16 +484,15 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                         href="file-mock#mobile-issue-close"
                       />
                     </svg>
-                     
                     <span
                       class="gl-new-dropdown-item-text-wrapper"
                     >
                       <div
-                        class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
+                        class="gl-align-items-center gl-display-inline-flex gl-justify-content-between gl-max-w-full incident-severity"
                       >
                         <svg
                           aria-hidden="true"
-                          class="gl-icon s12 icon-unknown gl-mr-3 gl-flex-shrink-0"
+                          class="gl-flex-shrink-0 gl-icon gl-mr-3 icon-unknown s12"
                           data-testid="severity-unknown-icon"
                           role="img"
                         >
@@ -606,27 +500,18 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                             href="file-mock#severity-unknown"
                           />
                         </svg>
-                         
                         <span
                           class="gl-min-w-0 gl-text-truncate"
                         >
-                          
-    Unknown
-  
+                          Unknown
                         </span>
                       </div>
                     </span>
                   </span>
                 </li>
-                 
-                <!---->
-                 
-                <!---->
-                 
                 <li
                   aria-hidden="true"
                 />
-                 
                 <li
                   aria-hidden="true"
                   class="bottom-scrim-wrapper"
@@ -637,30 +522,22 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                   />
                 </li>
               </ul>
-               
-              <!---->
-               
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-   
-  <!---->
-   
   <sidebarhealthstatuswidget-stub
     full-path="gitlab-org/gitlab-test"
     iid="27"
     issuable-type="issue"
   />
-   
   <sidebarconfidentialitywidget-stub
     fullpath="gitlab-org/gitlab-test"
     iid="27"
     issuabletype="issue"
   />
-   
   <sidebarsubscriptionswidget-stub
     data-testid="sidebar-notifications"
     fullpath="gitlab-org/gitlab-test"
@@ -675,11 +552,10 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
   class="boards-sidebar"
 >
   <h2
-    class="gl-my-0 gl-font-size-h2 gl-line-height-24"
+    class="gl-font-size-h2 gl-line-height-24 gl-my-0"
   >
     Issue details
   </h2>
-   
   <sidebartodowidget-stub
     class="gl-mt-3"
     fullpath="gitlab-org/gitlab-test"
@@ -687,12 +563,10 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
     issuableiid="27"
     issuabletype="issue"
   />
-   
   <boardsidebartitle-stub
     activeitem="[object Object]"
     data-testid="sidebar-title"
   />
-   
   <sidebarassigneeswidget-stub
     editable="true"
     fullpath="gitlab-org/gitlab-test"
@@ -700,7 +574,6 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
     initialassignees="[object Object],[object Object]"
     issuabletype="issue"
   />
-   
   <sidebardropdownwidget-stub
     attrworkspacepath="gitlab-org"
     data-testid="sidebar-epic"
@@ -709,7 +582,6 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
     issuabletype="issue"
     workspacepath="gitlab-org/gitlab-test"
   />
-   
   <div>
     <sidebardropdownwidget-stub
       attrworkspacepath="gitlab-org/gitlab-test"
@@ -719,7 +591,6 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
       issuabletype="issue"
       workspacepath="gitlab-org/gitlab-test"
     />
-     
     <sidebariterationwidget-stub
       attr-workspace-path="gitlab-org"
       class="gl-mt-5"
@@ -729,41 +600,30 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
       workspace-path="gitlab-org/gitlab-test"
     />
   </div>
-   
   <div
-    class="time-tracker sidebar-help-wrap"
+    class="sidebar-help-wrap time-tracker"
     data-testid="time-tracker"
   >
-    <!---->
-     
     <div
-      class="hide-collapsed gl-line-height-20 gl-text-gray-900 gl-display-flex gl-align-items-center gl-font-weight-bold"
+      class="gl-align-items-center gl-display-flex gl-font-weight-bold gl-line-height-20 gl-text-gray-900 hide-collapsed"
     >
-      
-    Time tracking
-    
-      <!---->
-       
+      Time tracking
       <div
-        class="gl-ml-auto gl-display-flex"
+        class="gl-display-flex gl-ml-auto"
       >
         <button
           aria-label="Set estimate"
-          class="btn btn-default btn-sm gl-button btn-default-tertiary"
+          class="btn btn-default btn-default-tertiary btn-sm gl-button"
           data-testid="set-time-estimate-button"
           title="Set estimate"
           type="button"
         >
-          <!---->
-           
-          <!---->
-            
           <span
             class="gl-button-text"
           >
             <svg
               aria-hidden="true"
-              class="gl-text-gray-900! gl-icon s16"
+              class="gl-icon gl-text-gray-900! s16"
               data-testid="timer-icon"
               role="img"
             >
@@ -773,23 +633,18 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
             </svg>
           </span>
         </button>
-         
         <button
-          class="btn btn-default btn-sm gl-button btn-default-tertiary"
+          class="btn btn-default btn-default-tertiary btn-sm gl-button"
           data-testid="add-time-entry-button"
           title="Add time entry"
           type="button"
         >
-          <!---->
-           
-          <!---->
-            
           <span
             class="gl-button-text"
           >
             <svg
               aria-hidden="true"
-              class="gl-text-gray-900! gl-icon s16"
+              class="gl-icon gl-text-gray-900! s16"
               data-testid="plus-icon"
               role="img"
             >
@@ -801,14 +656,9 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
         </button>
       </div>
     </div>
-     
     <div
       class="hide-collapsed"
     >
-      <!---->
-       
-      <!---->
-       
       <div
         data-testid="noTrackingPane"
       >
@@ -818,21 +668,9 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
           No estimate or time spent
         </span>
       </div>
-       
-      <!---->
-       
-      <div>
-        <!---->
-         
-        <!---->
-      </div>
-       
-      <!---->
-       
-      <!---->
+      <div />
     </div>
   </div>
-   
   <sidebardatewidget-stub
     data-testid="sidebar-due-date"
     datetype="dueDate"
@@ -840,7 +678,6 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
     iid="27"
     issuabletype="issue"
   />
-   
   <sidebarlabelswidget-stub
     allowmultiselect="true"
     attrworkspacepath="gitlab-org/gitlab-test"
@@ -860,31 +697,23 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
     variant="sidebar"
     workspacetype="project"
   >
-    
-        None
-      
+    None
   </sidebarlabelswidget-stub>
-   
-  <!---->
-   
   <sidebarweightwidget-stub
     full-path="gitlab-org/gitlab-test"
     iid="27"
     issuable-type="issue"
   />
-   
   <sidebarhealthstatuswidget-stub
     full-path="gitlab-org/gitlab-test"
     iid="27"
     issuable-type="issue"
   />
-   
   <sidebarconfidentialitywidget-stub
     fullpath="gitlab-org/gitlab-test"
     iid="27"
     issuabletype="issue"
   />
-   
   <sidebarsubscriptionswidget-stub
     data-testid="sidebar-notifications"
     fullpath="gitlab-org/gitlab-test"

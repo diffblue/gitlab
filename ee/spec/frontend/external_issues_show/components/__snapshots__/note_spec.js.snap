@@ -1,32 +1,74 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`JiraIssuesNote template renders note 1`] = `
-"<timeline-entry-item-stub class=\\"gl-p-5\\">
-  <timeline-icon-stub class=\\"gl-mr-5 gl-ml-2\\">
-    <gl-avatar-link-stub target=\\"_blank\\" href=\\"http://127.0.0.1:3000/root\\">
-      <gl-avatar-stub entityid=\\"0\\" entityname=\\"\\" src=\\"http://127.0.0.1:3000/uploads/-/system/user/avatar/1/avatar.png?width=90\\" alt=\\"Justin Ho\\" size=\\"32\\" shape=\\"circle\\"></gl-avatar-stub>
+<timeline-entry-item-stub
+  class="gl-p-5"
+>
+  <timeline-icon-stub
+    class="gl-ml-2 gl-mr-5"
+  >
+    <gl-avatar-link-stub
+      href="http://127.0.0.1:3000/root"
+      target="_blank"
+    >
+      <gl-avatar-stub
+        alt="Justin Ho"
+        entityid="0"
+        entityname=""
+        shape="circle"
+        size="32"
+        src="http://127.0.0.1:3000/uploads/-/system/user/avatar/1/avatar.png?width=90"
+      />
     </gl-avatar-link-stub>
   </timeline-icon-stub>
   <div>
-    <div class=\\"gl-display-flex gl-justify-content-space-between\\">
-      <div class=\\"gl-display-flex gl-align-items-center gl-mb-3\\">
-        <gl-link-stub href=\\"http://127.0.0.1:3000/root\\" class=\\"gl-text-black-normal gl-font-weight-bold gl-white-space-nowrap gl-mr-2\\">
+    <div
+      class="gl-display-flex gl-justify-content-space-between"
+    >
+      <div
+        class="gl-align-items-center gl-display-flex gl-mb-3"
+      >
+        <gl-link-stub
+          class="gl-font-weight-bold gl-mr-2 gl-text-black-normal gl-white-space-nowrap"
+          href="http://127.0.0.1:3000/root"
+        >
           Justin Ho
         </gl-link-stub>
-        <!----> <span class=\\"gl-text-gray-500 gl-mr-2\\">·</span>
-        <gl-link-stub href=\\"#\\" data-testid=\\"time-ago-link\\" class=\\"gl-text-gray-500\\">
-          <time-ago-tooltip-stub time=\\"&quot;2021-02-01T04:04:40.833Z&quot;\\" tooltipplacement=\\"bottom\\" cssclass=\\"\\" datetimeformat=\\"DATE_WITH_TIME_FORMAT\\"></time-ago-tooltip-stub>
+        <span
+          class="gl-mr-2 gl-text-gray-500"
+        >
+          ·
+        </span>
+        <gl-link-stub
+          class="gl-text-gray-500"
+          data-testid="time-ago-link"
+          href="#"
+        >
+          <time-ago-tooltip-stub
+            cssclass=""
+            datetimeformat="DATE_WITH_TIME_FORMAT"
+            time="\\"2021-02-01T04:04:40.833Z\\""
+            tooltipplacement="bottom"
+          />
         </gl-link-stub>
       </div>
-      <div data-testid=\\"badges-container\\"></div>
+      <div
+        data-testid="badges-container"
+      />
     </div>
     <div>
-      <div class=\\"gl-overflow-x-auto gl-overflow-y-hidden\\">
-        <div class=\\"md\\">
-          <p>hi</p>
+      <div
+        class="gl-overflow-x-auto gl-overflow-y-hidden"
+      >
+        <div
+          class="md"
+        >
+          <p>
+            hi
+          </p>
         </div>
       </div>
     </div>
   </div>
-</timeline-entry-item-stub>"
+</timeline-entry-item-stub>
 `;

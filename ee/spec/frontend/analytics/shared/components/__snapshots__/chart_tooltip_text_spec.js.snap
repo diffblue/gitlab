@@ -1,18 +1,31 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ChartTooltipText with no tooltipValue data renders the tooltip empty state text 1`] = `
-"<div>
+<div>
   This is empty
-</div>"
+</div>
 `;
 
 exports[`ChartTooltipText with tooltipValue data renders the tooltip 1`] = `
-"<div>
-  <div class=\\"gl-display-flex gl-flex-direction-column\\">
-    <div class=\\"gl-display-flex gl-justify-content-space-between\\">
-      <div class=\\"gl-mr-5\\">Cool tip</div>
-      <div data-testid=\\"tooltip-value\\" class=\\"gl-font-weight-bold\\">10</div>
+<div>
+  <div
+    class="gl-display-flex gl-flex-direction-column"
+  >
+    <div
+      class="gl-display-flex gl-justify-content-space-between"
+    >
+      <div
+        class="gl-mr-5"
+      >
+        Cool tip
+      </div>
+      <div
+        class="gl-font-weight-bold"
+        data-testid="tooltip-value"
+      >
+        10
+      </div>
     </div>
   </div>
-</div>"
+</div>
 `;

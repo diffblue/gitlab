@@ -9,32 +9,32 @@ exports[`Security Dashboard default states sets up group-level 1`] = `
       Security dashboard
     </h2>
     <div
-      class="security-charts gl-display-grid"
+      class="gl-display-grid security-charts"
     >
       <section
-        class="gl-border-solid gl-rounded-base gl-border-1 gl-border-gray-100 gl-display-flex gl-flex-direction-column"
+        class="gl-border-1 gl-border-gray-100 gl-border-solid gl-display-flex gl-flex-direction-column gl-rounded-base"
       >
         <header
           class="gl-p-5"
         >
           <h4
-            class="gl-mt-0 gl-mb-3"
+            class="gl-mb-3 gl-mt-0"
             data-testid="title"
           >
-    Vulnerabilities over time
+            Vulnerabilities over time
           </h4>
           <p
-            class="gl-text-secondary gl-m-0"
+            class="gl-m-0 gl-text-secondary"
             data-testid="help-text"
           >
-    June 6th to today
+            June 6th to today
           </p>
           <div
             class="gl-mt-5"
             data-testid="controls"
           >
             <div
-              class="gl-display-flex btn-group"
+              class="btn-group gl-display-flex"
               role="group"
             >
               <button
@@ -44,7 +44,7 @@ exports[`Security Dashboard default states sets up group-level 1`] = `
                 <span
                   class="gl-button-text"
                 >
-    30 Days
+                  30 Days
                 </span>
               </button>
               <button
@@ -54,7 +54,7 @@ exports[`Security Dashboard default states sets up group-level 1`] = `
                 <span
                   class="gl-button-text"
                 >
-    60 Days
+                  60 Days
                 </span>
               </button>
               <button
@@ -64,46 +64,46 @@ exports[`Security Dashboard default states sets up group-level 1`] = `
                 <span
                   class="gl-button-text"
                 >
-    90 Days
+                  90 Days
                 </span>
               </button>
             </div>
           </div>
         </header>
         <div
-          class="gl-spinner-container gl-my-12"
+          class="gl-my-12 gl-spinner-container"
           role="status"
         >
           <span
             aria-label="Loading"
-            class="gl-vertical-align-text-bottom! gl-spinner gl-spinner-dark gl-spinner-lg"
+            class="gl-spinner gl-spinner-dark gl-spinner-lg gl-vertical-align-text-bottom!"
           />
         </div>
       </section>
       <section
-        class="gl-border-solid gl-rounded-base gl-border-1 gl-border-gray-100 gl-display-flex gl-flex-direction-column"
+        class="gl-border-1 gl-border-gray-100 gl-border-solid gl-display-flex gl-flex-direction-column gl-rounded-base"
       >
         <header
           class="gl-p-5"
         >
           <h4
-            class="gl-mt-0 gl-mb-3"
+            class="gl-mb-3 gl-mt-0"
             data-testid="title"
           >
-    Project security status
+            Project security status
           </h4>
           <p
-            class="gl-text-secondary gl-m-0"
+            class="gl-m-0 gl-text-secondary"
             data-testid="help-text"
           />
         </header>
         <div
-          class="gl-spinner-container gl-my-12"
+          class="gl-my-12 gl-spinner-container"
           role="status"
         >
           <span
             aria-label="Loading"
-            class="gl-vertical-align-text-bottom! gl-spinner gl-spinner-dark gl-spinner-lg"
+            class="gl-spinner gl-spinner-dark gl-spinner-lg gl-vertical-align-text-bottom!"
           />
         </div>
       </section>
@@ -121,32 +121,32 @@ exports[`Security Dashboard default states sets up instance-level 1`] = `
       Security dashboard
     </h2>
     <div
-      class="security-charts gl-display-grid"
+      class="gl-display-grid security-charts"
     >
       <section
-        class="gl-border-solid gl-rounded-base gl-border-1 gl-border-gray-100 gl-display-flex gl-flex-direction-column"
+        class="gl-border-1 gl-border-gray-100 gl-border-solid gl-display-flex gl-flex-direction-column gl-rounded-base"
       >
         <header
           class="gl-p-5"
         >
           <h4
-            class="gl-mt-0 gl-mb-3"
+            class="gl-mb-3 gl-mt-0"
             data-testid="title"
           >
-    Vulnerabilities over time
+            Vulnerabilities over time
           </h4>
           <p
-            class="gl-text-secondary gl-m-0"
+            class="gl-m-0 gl-text-secondary"
             data-testid="help-text"
           >
-    June 6th to today
+            June 6th to today
           </p>
           <div
             class="gl-mt-5"
             data-testid="controls"
           >
             <div
-              class="gl-display-flex btn-group"
+              class="btn-group gl-display-flex"
               role="group"
             >
               <button
@@ -156,7 +156,7 @@ exports[`Security Dashboard default states sets up instance-level 1`] = `
                 <span
                   class="gl-button-text"
                 >
-    30 Days
+                  30 Days
                 </span>
               </button>
               <button
@@ -166,7 +166,7 @@ exports[`Security Dashboard default states sets up instance-level 1`] = `
                 <span
                   class="gl-button-text"
                 >
-    60 Days
+                  60 Days
                 </span>
               </button>
               <button
@@ -176,46 +176,46 @@ exports[`Security Dashboard default states sets up instance-level 1`] = `
                 <span
                   class="gl-button-text"
                 >
-    90 Days
+                  90 Days
                 </span>
               </button>
             </div>
           </div>
         </header>
         <div
-          class="gl-spinner-container gl-my-12"
+          class="gl-my-12 gl-spinner-container"
           role="status"
         >
           <span
             aria-label="Loading"
-            class="gl-vertical-align-text-bottom! gl-spinner gl-spinner-dark gl-spinner-lg"
+            class="gl-spinner gl-spinner-dark gl-spinner-lg gl-vertical-align-text-bottom!"
           />
         </div>
       </section>
       <section
-        class="gl-border-solid gl-rounded-base gl-border-1 gl-border-gray-100 gl-display-flex gl-flex-direction-column"
+        class="gl-border-1 gl-border-gray-100 gl-border-solid gl-display-flex gl-flex-direction-column gl-rounded-base"
       >
         <header
           class="gl-p-5"
         >
           <h4
-            class="gl-mt-0 gl-mb-3"
+            class="gl-mb-3 gl-mt-0"
             data-testid="title"
           >
-    Project security status
+            Project security status
           </h4>
           <p
-            class="gl-text-secondary gl-m-0"
+            class="gl-m-0 gl-text-secondary"
             data-testid="help-text"
           />
         </header>
         <div
-          class="gl-spinner-container gl-my-12"
+          class="gl-my-12 gl-spinner-container"
           role="status"
         >
           <span
             aria-label="Loading"
-            class="gl-vertical-align-text-bottom! gl-spinner gl-spinner-dark gl-spinner-lg"
+            class="gl-spinner gl-spinner-dark gl-spinner-lg gl-vertical-align-text-bottom!"
           />
         </div>
       </section>
@@ -227,7 +227,7 @@ exports[`Security Dashboard default states sets up instance-level 1`] = `
 exports[`Security Dashboard error states has unavailable pages 1`] = `
 <div>
   <section
-    class="gl-display-flex empty-state gl-text-center gl-flex-direction-column"
+    class="empty-state gl-display-flex gl-flex-direction-column gl-text-center"
   >
     <div
       class="gl-max-w-full"
@@ -237,14 +237,14 @@ exports[`Security Dashboard error states has unavailable pages 1`] = `
       >
         <img
           alt=""
-          class="gl-max-w-full gl-dark-invert-keep-hue"
+          class="gl-dark-invert-keep-hue gl-max-w-full"
           role="img"
           src="/test/empty_state.svg"
         />
       </div>
     </div>
     <div
-      class="gl-max-w-full gl-m-auto"
+      class="gl-m-auto gl-max-w-full"
       data-testid="gl-empty-state-content"
     >
       <div
@@ -264,7 +264,7 @@ exports[`Security Dashboard error states has unavailable pages 1`] = `
           class="gl-display-flex gl-flex-wrap gl-justify-content-center"
         >
           <a
-            class="btn gl-mb-3 btn-confirm btn-md gl-button gl-mx-2"
+            class="btn btn-confirm btn-md gl-button gl-mb-3 gl-mx-2"
             href="/help/user/application_security/configuration/index"
           >
             <span

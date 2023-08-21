@@ -12,11 +12,8 @@ exports[`Corpus Upload Button component renders header 1`] = `
     tabindex="0"
     variant="confirm"
   >
-    
     New corpus
-  
   </gl-button-stub>
-   
   <gl-modal-stub
     actioncancel="[object Object]"
     actionprimary="[object Object]"

@@ -2,7 +2,7 @@
 
 exports[`Card Showcase component renders correctly 1`] = `
 <div
-  class="gl-p-0 gl-mb-5 gl-mr-5 col-xs-12 col-md-5 col-lg-3 showcase-box-container"
+  class="col-lg-3 col-md-5 col-xs-12 gl-mb-5 gl-mr-5 gl-p-0 showcase-box-container"
 >
   <gl-card-stub
     bodyclass=""
@@ -17,30 +17,24 @@ exports[`Card Showcase component renders correctly 1`] = `
         class="gl-mb-3"
       >
         <strong
-          class="gl-text-gray-800 gl-mb-2"
+          class="gl-mb-2 gl-text-gray-800"
         >
-          
           My title
-        
         </strong>
       </div>
-       
       <p
         class="gl-font-sm"
       >
-        
         A description
-      
       </p>
     </div>
-     
     <div
       class="gl-bottom-0 gl-display-flex"
     >
       <gl-button-stub
         buttontextclasses=""
         category="primary"
-        class="gl-mr-2 gl-mb-2"
+        class="gl-mb-2 gl-mr-2"
         data-testid="primary-button"
         data-track-="showcase_free_security_features"
         data-track-action="click_button"
@@ -53,19 +47,16 @@ exports[`Card Showcase component renders correctly 1`] = `
         target="_blank"
         variant="confirm"
       >
-        
         Primary action
-        
         <gl-icon-stub
           name="external-link"
           size="16"
         />
       </gl-button-stub>
-       
       <gl-button-stub
         buttontextclasses=""
         category="secondary"
-        class="gl-mr-2 gl-mb-2"
+        class="gl-mb-2 gl-mr-2"
         data-testid="secondary-button"
         data-track-action="click_button"
         data-track-experiment="showcase_free_security_features"
@@ -77,10 +68,7 @@ exports[`Card Showcase component renders correctly 1`] = `
         target="_blank"
         variant="confirm"
       >
-        
         Secondary action
-        
-        <!---->
       </gl-button-stub>
     </div>
   </gl-card-stub>

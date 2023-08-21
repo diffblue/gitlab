@@ -10,7 +10,6 @@ exports[`False positive badge component should render the alert badge 1`] = `
     size="md"
     variant="warning"
   />
-   
   <gl-popover-stub
     cssclasses=""
     placement="top"

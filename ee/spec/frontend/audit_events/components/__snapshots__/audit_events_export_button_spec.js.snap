@@ -10,8 +10,6 @@ exports[`AuditEventsExportButton component Audit Events CSV export button matche
   title="Max 100,000 events"
   variant="default"
 >
-  
   Export as CSV
-
 </gl-button-stub>
 `;

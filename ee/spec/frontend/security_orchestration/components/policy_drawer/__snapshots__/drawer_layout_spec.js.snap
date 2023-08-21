@@ -11,28 +11,21 @@ exports[`DrawerLayout component enabled policy matches the snapshots 1`] = `
       Summary
     </span>
   </div>
-   
   <info-row-stub
     data-testid="policy-type"
     label="Policy Type"
   >
-    
     Scan Execution
-  
   </info-row-stub>
-   
   <info-row-stub
     label="Description"
   >
     <div
       data-testid="custom-description-text"
     >
-      
       This policy enforces pipeline configuration to have a job with DAST scan
-    
     </div>
   </info-row-stub>
-   
   <info-row-stub
     label="Source"
   >
@@ -44,7 +37,6 @@ exports[`DrawerLayout component enabled policy matches the snapshots 1`] = `
       </span>
     </div>
   </info-row-stub>
-   
   <info-row-stub
     label="Status"
   >
@@ -58,7 +50,6 @@ exports[`DrawerLayout component enabled policy matches the snapshots 1`] = `
         size="16"
       />
       Enabled
-    
     </div>
   </info-row-stub>
 </div>
@@ -75,16 +66,12 @@ exports[`DrawerLayout component not enabled policy matches the snapshots 1`] = `
       Summary
     </span>
   </div>
-   
   <info-row-stub
     data-testid="policy-type"
     label="Policy Type"
   >
-    
     Scan Execution
-  
   </info-row-stub>
-   
   <info-row-stub
     label="Description"
   >
@@ -92,12 +79,9 @@ exports[`DrawerLayout component not enabled policy matches the snapshots 1`] = `
       class="gl-text-gray-500"
       data-testid="default-description-text"
     >
-      
       No description
-    
     </div>
   </info-row-stub>
-   
   <info-row-stub
     label="Source"
   >
@@ -109,7 +93,6 @@ exports[`DrawerLayout component not enabled policy matches the snapshots 1`] = `
       </span>
     </div>
   </info-row-stub>
-   
   <info-row-stub
     label="Status"
   >
@@ -117,9 +100,7 @@ exports[`DrawerLayout component not enabled policy matches the snapshots 1`] = `
       class="gl-text-gray-500"
       data-testid="not-enabled-status-text"
     >
-      
       Not enabled
-    
     </div>
   </info-row-stub>
 </div>

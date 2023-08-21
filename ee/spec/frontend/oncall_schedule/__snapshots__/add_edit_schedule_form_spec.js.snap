@@ -14,11 +14,10 @@ exports[`AddEditScheduleForm renders form layout 1`] = `
   >
     <gl-form-input-stub
       data-qa-selector="schedule_name_field"
-      id="schedule-name"
+      id="reference-0"
       value="Test schedule from query"
     />
   </gl-form-group-stub>
-   
   <gl-form-group-stub
     label="Description (optional)"
     label-for="schedule-description"
@@ -27,11 +26,10 @@ exports[`AddEditScheduleForm renders form layout 1`] = `
     optionaltext="(optional)"
   >
     <gl-form-input-stub
-      id="schedule-description"
+      id="reference-1"
       value="Description 1 lives here"
     />
   </gl-form-group-stub>
-   
   <gl-form-group-stub
     data-qa-selector="schedule_timezone_container"
     description="Sets the default timezone for the schedule, for all participants"
@@ -45,7 +43,7 @@ exports[`AddEditScheduleForm renders form layout 1`] = `
     state="true"
   >
     <div
-      id="schedule-timezone"
+      id="reference-2"
     />
   </gl-form-group-stub>
 </gl-form-stub>
