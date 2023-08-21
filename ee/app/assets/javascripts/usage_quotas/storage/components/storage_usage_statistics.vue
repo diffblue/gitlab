@@ -9,7 +9,6 @@ import {
   STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE,
   STORAGE_INCLUDED_IN_PLAN_PROJECT_ENFORCEMENT,
   STORAGE_INCLUDED_IN_PLAN_NAMESPACE_ENFORCEMENT,
-  PROJECT_ENFORCEMENT_TYPE,
   STORAGE_STATISTICS_PURCHASED_STORAGE,
   STORAGE_STATISTICS_TOTAL_STORAGE,
   NAMESPACE_STORAGE_OVERVIEW_SUBTITLE,
@@ -33,7 +32,7 @@ export default {
     'purchaseStorageUrl',
     'buyAddonTargetAttr',
     'namespacePlanName',
-    'enforcementType',
+    'isNamespaceUnderProjectLimits',
     'namespacePlanStorageIncluded',
   ],
   props: {
@@ -64,15 +63,14 @@ export default {
   },
   computed: {
     enforcementTypeLearnMoreUrl() {
-      return this.enforcementType === PROJECT_ENFORCEMENT_TYPE
+      return this.isNamespaceUnderProjectLimits
         ? usageQuotasHelpPaths.usageQuotasProjectStorageLimit
         : usageQuotasHelpPaths.usageQuotasNamespaceStorageLimit;
     },
     enforcementTypeSubtitle() {
-      const subtitle =
-        this.enforcementType === PROJECT_ENFORCEMENT_TYPE
-          ? PROJECT_ENFORCEMENT_TYPE_SUBTITLE
-          : NAMESPACE_ENFORCEMENT_TYPE_SUBTITLE;
+      const subtitle = this.isNamespaceUnderProjectLimits
+        ? PROJECT_ENFORCEMENT_TYPE_SUBTITLE
+        : NAMESPACE_ENFORCEMENT_TYPE_SUBTITLE;
 
       return sprintf(subtitle, {
         planLimit: this.includedStorage,
@@ -83,10 +81,9 @@ export default {
         return '';
       }
 
-      const title =
-        this.enforcementType === PROJECT_ENFORCEMENT_TYPE
-          ? STORAGE_INCLUDED_IN_PLAN_PROJECT_ENFORCEMENT
-          : STORAGE_INCLUDED_IN_PLAN_NAMESPACE_ENFORCEMENT;
+      const title = this.isNamespaceUnderProjectLimits
+        ? STORAGE_INCLUDED_IN_PLAN_PROJECT_ENFORCEMENT
+        : STORAGE_INCLUDED_IN_PLAN_NAMESPACE_ENFORCEMENT;
 
       return sprintf(title, {
         planName: this.namespacePlanName,
@@ -136,6 +133,7 @@ export default {
     </p>
     <div class="gl-display-flex gl-sm-flex-direction-column gl-gap-5 gl-py-4">
       <storage-statistics-card
+        :plan-storage-description="storageStatisticsPlanStorage"
         :used-storage="usedStorage"
         :total-storage="totalStorage"
         :loading="loading"

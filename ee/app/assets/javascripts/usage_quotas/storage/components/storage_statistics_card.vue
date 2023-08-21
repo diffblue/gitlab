@@ -7,12 +7,26 @@ import {
   STORAGE_STATISTICS_PERCENTAGE_REMAINING,
   STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE,
   STORAGE_STATISTICS_NAMESPACE_STORAGE_USED,
+  PROJECT_ENFORCEMENT_TYPE_CARD_SUBTITLE,
 } from '../constants';
+import NumberToHumanSize from './number_to_human_size.vue';
 
 export default {
   name: 'StorageStatisticsCard',
-  components: { GlCard, GlProgressBar, GlSkeletonLoader, GlIcon, GlLink },
+  components: {
+    GlCard,
+    GlProgressBar,
+    GlSkeletonLoader,
+    GlIcon,
+    GlLink,
+    NumberToHumanSize,
+  },
+  inject: ['isNamespaceUnderProjectLimits', 'namespacePlanStorageIncluded'],
   props: {
+    planStorageDescription: {
+      type: String,
+      required: true,
+    },
     totalStorage: {
       type: Number,
       required: false,
@@ -64,10 +78,11 @@ export default {
     },
   },
   i18n: {
-    USED_STORAGE_HELP_LINK: usageQuotasHelpPaths.usageQuotas,
     STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE,
     STORAGE_STATISTICS_NAMESPACE_STORAGE_USED,
+    PROJECT_ENFORCEMENT_TYPE_CARD_SUBTITLE,
   },
+  usageQuotasHelpPaths,
 };
 </script>
 
@@ -79,12 +94,12 @@ export default {
       <rect width="340" height="10" x="5" y="54" rx="4" />
     </gl-skeleton-loader>
 
-    <div v-else>
+    <div v-else-if="isNamespaceUnderProjectLimits">
       <div class="gl-font-weight-bold" data-testid="namespace-storage-card-title">
         {{ $options.i18n.STORAGE_STATISTICS_NAMESPACE_STORAGE_USED }}
 
         <gl-link
-          :href="$options.i18n.USED_STORAGE_HELP_LINK"
+          :href="$options.usageQuotasHelpPaths.usageQuotasProjectStorageLimit"
           target="_blank"
           class="gl-ml-2"
           :aria-label="$options.i18n.STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE"
@@ -95,11 +110,37 @@ export default {
       <div class="gl-font-size-h-display gl-font-weight-bold gl-line-height-ratio-1000 gl-my-3">
         {{ storageUsed[0] }}
         <span v-if="storageUsed[1]" class="gl-font-lg">{{ storageUsed[1] }}</span>
-        <span v-if="storageTotal">
+      </div>
+      <hr class="gl-my-4" />
+      <p>{{ $options.i18n.PROJECT_ENFORCEMENT_TYPE_CARD_SUBTITLE }}</p>
+      <p>
+        <strong><number-to-human-size :value="Number(namespacePlanStorageIncluded)" /></strong>
+
+        {{ planStorageDescription }}
+      </p>
+    </div>
+
+    <div v-else>
+      <div class="gl-font-weight-bold" data-testid="namespace-storage-card-title">
+        {{ $options.i18n.STORAGE_STATISTICS_NAMESPACE_STORAGE_USED }}
+
+        <gl-link
+          :href="$options.usageQuotasHelpPaths.usageQuotasNamespaceStorageLimit"
+          target="_blank"
+          class="gl-ml-2"
+          :aria-label="$options.i18n.STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE"
+        >
+          <gl-icon name="question-o" />
+        </gl-link>
+      </div>
+      <div class="gl-font-size-h-display gl-font-weight-bold gl-line-height-ratio-1000 gl-my-3">
+        {{ storageUsed[0] }}
+        <span v-if="storageUsed[1]" class="gl-font-lg">{{ storageUsed[1] }}</span>
+        <template v-if="storageTotal">
           /
           {{ storageTotal[0] }}
           <span class="gl-font-lg">{{ storageTotal[1] }}</span>
-        </span>
+        </template>
       </div>
       <template v-if="percentageUsed !== null">
         <gl-progress-bar :value="percentageUsed" class="gl-my-4" />

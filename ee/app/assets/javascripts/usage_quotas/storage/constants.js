@@ -6,6 +6,9 @@ export const PROJECT_ENFORCEMENT_TYPE = 'project_repository_limit';
 export const PROJECT_ENFORCEMENT_TYPE_SUBTITLE = s__(
   'UsageQuota|Projects under this namespace have %{planLimit} of storage. %{linkStart}How are limits applied?%{linkEnd}',
 );
+export const PROJECT_ENFORCEMENT_TYPE_CARD_SUBTITLE = s__(
+  'UsageQuota|Namespace total storage represents the sum of storage consumed by all projects, Container Registry, and Dependency Proxy.',
+);
 
 // https://docs.gitlab.com/ee/user/usage_quotas#namespace-storage-limit
 // declared in ee/app/models/namespaces/storage/root_size.rb

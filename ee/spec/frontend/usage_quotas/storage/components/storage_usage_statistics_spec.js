@@ -2,10 +2,7 @@ import { GlButton, GlLink, GlSprintf, GlProgressBar } from '@gitlab/ui';
 import StorageStatisticsCard from 'ee/usage_quotas/storage/components/storage_statistics_card.vue';
 import numberToHumanSize from 'ee/usage_quotas/storage/components/number_to_human_size.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import {
-  NAMESPACE_STORAGE_OVERVIEW_SUBTITLE,
-  NAMESPACE_ENFORCEMENT_TYPE,
-} from 'ee/usage_quotas/storage/constants';
+import { NAMESPACE_STORAGE_OVERVIEW_SUBTITLE } from 'ee/usage_quotas/storage/constants';
 import StorageUsageStatistics from 'ee/usage_quotas/storage/components/storage_usage_statistics.vue';
 
 import { withRootStorageStatistics, defaultNamespaceProvideValues } from '../mock_data';
@@ -80,7 +77,7 @@ describe('StorageUsageStatistics', () => {
         // More about namespace storage limit at https://docs.gitlab.com/ee/user/usage_quotas#namespace-storage-limit
         createComponent({
           provide: {
-            enforcementType: NAMESPACE_ENFORCEMENT_TYPE,
+            isNamespaceUnderProjectLimits: false,
           },
         });
 
@@ -97,6 +94,7 @@ describe('StorageUsageStatistics', () => {
 
       expect(findNamespaceStorageCard().props()).toEqual({
         usedStorage: withRootStorageStatistics.rootStorageStatistics.storageSize,
+        planStorageDescription: 'Storage per project included in Free subscription',
         totalStorage:
           withRootStorageStatistics.actualRepositorySizeLimit +
           withRootStorageStatistics.additionalPurchasedStorageSize,
@@ -122,7 +120,7 @@ describe('StorageUsageStatistics', () => {
       it('renders namespace enforcement copy if enforcementType is namespace', () => {
         createComponent({
           provide: {
-            enforcementType: NAMESPACE_ENFORCEMENT_TYPE,
+            isNamespaceUnderProjectLimits: false,
           },
         });
 
