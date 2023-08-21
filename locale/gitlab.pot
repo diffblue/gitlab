@@ -41522,7 +41522,7 @@ msgstr ""
 msgid "ScanResultPolicy|Attributes are automatically applied by the scanners"
 msgstr ""
 
-msgid "ScanResultPolicy|Block users from unprotecting branches"
+msgid "ScanResultPolicy|Block users from modifying protected branches"
 msgstr ""
 
 msgid "ScanResultPolicy|Choose criteria type"

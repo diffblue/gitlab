@@ -103,7 +103,7 @@ actions:
     user_approvers:
       - the.one
 approval_settings:
-  block_unprotecting_branches:
+  block_protected_branch_modification:
     enabled: true
 `;
 
@@ -130,7 +130,7 @@ export const mockApprovalSettingsScanResultObject = {
     },
   ],
   approval_settings: {
-    block_unprotecting_branches: {
+    block_protected_branch_modification: {
       enabled: true,
     },
   },

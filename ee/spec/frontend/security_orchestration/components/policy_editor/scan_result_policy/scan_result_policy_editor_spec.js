@@ -492,13 +492,13 @@ describe('ScanResultPolicyEditor', () => {
         factory({ glFeatures: { scanResultPolicySettings: true } });
 
         await findApprovalSettings().vm.$emit('changed', {
-          block_unprotecting_branches: {
+          block_protected_branch_modification: {
             enabled: false,
           },
         });
 
         expect(findPolicyEditorLayout().props('yamlEditorValue')).toContain(
-          `block_unprotecting_branches:
+          `block_protected_branch_modification:
     enabled: false`,
         );
       });
