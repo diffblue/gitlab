@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Config::Required::Processor do
+RSpec.describe Gitlab::Ci::Config::Required::Processor, feature_category: :pipeline_composition do
   subject { described_class.new(config).perform }
 
   let(:config) { { image: 'image:1.0.0' } }
