@@ -2,72 +2,60 @@
 
 exports[`LicensesTable component given a list of licenses (loaded) renders the table headers 1`] = `
 <div
-  class="gl-responsive-table-row table-row-header text-2 gl-bg-gray-50 px-2"
+  class="gl-bg-gray-50 gl-responsive-table-row px-2 table-row-header text-2"
   role="row"
 >
   <div
-    class="table-section section-30"
+    class="section-30 table-section"
     role="rowheader"
   >
-    
-      Name
-    
+    Name
   </div>
   <div
-    class="table-section section-70"
+    class="section-70 table-section"
     role="rowheader"
   >
-    
-      Component
-    
+    Component
   </div>
 </div>
 `;
 
 exports[`LicensesTable component given a list of licenses (loading) renders the table headers 1`] = `
 <div
-  class="gl-responsive-table-row table-row-header text-2 gl-bg-gray-50 px-2"
+  class="gl-bg-gray-50 gl-responsive-table-row px-2 table-row-header text-2"
   role="row"
 >
   <div
-    class="table-section section-30"
+    class="section-30 table-section"
     role="rowheader"
   >
-    
-      Name
-    
+    Name
   </div>
   <div
-    class="table-section section-70"
+    class="section-70 table-section"
     role="rowheader"
   >
-    
-      Component
-    
+    Component
   </div>
 </div>
 `;
 
 exports[`LicensesTable component given an empty list of licenses renders the table headers 1`] = `
 <div
-  class="gl-responsive-table-row table-row-header text-2 gl-bg-gray-50 px-2"
+  class="gl-bg-gray-50 gl-responsive-table-row px-2 table-row-header text-2"
   role="row"
 >
   <div
-    class="table-section section-30"
+    class="section-30 table-section"
     role="rowheader"
   >
-    
-      Name
-    
+    Name
   </div>
   <div
-    class="table-section section-70"
+    class="section-70 table-section"
     role="rowheader"
   >
-    
-      Component
-    
+    Component
   </div>
 </div>
 `;

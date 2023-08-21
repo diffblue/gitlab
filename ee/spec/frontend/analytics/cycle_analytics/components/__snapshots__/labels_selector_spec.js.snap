@@ -1,53 +1,196 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Value Stream Analytics LabelsSelector with no item selected will render the label selector 1`] = `
-"<gl-dropdown-stub headertext=\\"\\" hideheaderborder=\\"true\\" clearalltext=\\"Clear all\\" clearalltextclass=\\"gl-px-5\\" text=\\"\\" highlighteditemstitle=\\"Selected\\" highlighteditemstitleclass=\\"gl-px-5\\" category=\\"primary\\" variant=\\"default\\" size=\\"medium\\" toggleclass=\\"gl-overflow-hidden\\" splithref=\\"\\" class=\\"gl-w-full\\">
-  <gl-dropdown-section-header-stub>Select a label </gl-dropdown-section-header-stub>
-  <div class=\\"gl-mb-5 gl-px-5\\">
-    <gl-search-box-by-type-stub value=\\"\\" clearbuttontitle=\\"Clear\\"></gl-search-box-by-type-stub>
+<gl-dropdown-stub
+  category="primary"
+  class="gl-w-full"
+  clearalltext="Clear all"
+  clearalltextclass="gl-px-5"
+  headertext=""
+  hideheaderborder="true"
+  highlighteditemstitle="Selected"
+  highlighteditemstitleclass="gl-px-5"
+  size="medium"
+  splithref=""
+  text=""
+  toggleclass="gl-overflow-hidden"
+  variant="default"
+>
+  <gl-dropdown-section-header-stub>
+    Select a label
+  </gl-dropdown-section-header-stub>
+  <div
+    class="gl-mb-5 gl-px-5"
+  >
+    <gl-search-box-by-type-stub
+      clearbuttontitle="Clear"
+      value=""
+    />
   </div>
-  <div class=\\"gl-mb-5 gl-px-5\\">
-    <gl-dropdown-item-stub avatarurl=\\"\\" iconcolor=\\"\\" iconname=\\"\\" iconrightarialabel=\\"\\" iconrightname=\\"\\" secondarytext=\\"\\" class=\\"gl-pl-6!\\"><span class=\\"gl-display-inline-block dropdown-label-box\\" style=\\"background-color: rgb(255, 0, 0);\\"></span>
+  <div
+    class="gl-mb-5 gl-px-5"
+  >
+    <gl-dropdown-item-stub
+      avatarurl=""
+      class="gl-pl-6!"
+      iconcolor=""
+      iconname=""
+      iconrightarialabel=""
+      iconrightname=""
+      secondarytext=""
+    >
+      <span
+        class="dropdown-label-box gl-display-inline-block"
+        style="background-color: rgb(255, 0, 0);"
+      />
       roses
     </gl-dropdown-item-stub>
-    <gl-dropdown-item-stub avatarurl=\\"\\" iconcolor=\\"\\" iconname=\\"\\" iconrightarialabel=\\"\\" iconrightname=\\"\\" secondarytext=\\"\\" class=\\"gl-pl-6!\\"><span class=\\"gl-display-inline-block dropdown-label-box\\" style=\\"background-color: rgb(255, 255, 255);\\"></span>
+    <gl-dropdown-item-stub
+      avatarurl=""
+      class="gl-pl-6!"
+      iconcolor=""
+      iconname=""
+      iconrightarialabel=""
+      iconrightname=""
+      secondarytext=""
+    >
+      <span
+        class="dropdown-label-box gl-display-inline-block"
+        style="background-color: rgb(255, 255, 255);"
+      />
       some space
     </gl-dropdown-item-stub>
-    <gl-dropdown-item-stub avatarurl=\\"\\" iconcolor=\\"\\" iconname=\\"\\" iconrightarialabel=\\"\\" iconrightname=\\"\\" secondarytext=\\"\\" class=\\"gl-pl-6!\\"><span class=\\"gl-display-inline-block dropdown-label-box\\" style=\\"background-color: rgb(0, 0, 255);\\"></span>
+    <gl-dropdown-item-stub
+      avatarurl=""
+      class="gl-pl-6!"
+      iconcolor=""
+      iconname=""
+      iconrightarialabel=""
+      iconrightname=""
+      secondarytext=""
+    >
+      <span
+        class="dropdown-label-box gl-display-inline-block"
+        style="background-color: rgb(0, 0, 255);"
+      />
       violets
     </gl-dropdown-item-stub>
-    <div class=\\"gl-text-center\\" style=\\"display: none;\\">
-      <gl-loading-icon-stub label=\\"Loading\\" size=\\"lg\\" color=\\"dark\\" variant=\\"spinner\\" inline=\\"true\\"></gl-loading-icon-stub>
+    <div
+      class="gl-text-center"
+      style="display: none;"
+    >
+      <gl-loading-icon-stub
+        color="dark"
+        inline="true"
+        label="Loading"
+        size="lg"
+        variant="spinner"
+      />
     </div>
-    <div class=\\"gl-text-secondary\\" style=\\"display: none;\\">
+    <div
+      class="gl-text-secondary"
+      style="display: none;"
+    >
       No matching labels
     </div>
   </div>
-</gl-dropdown-stub>"
+</gl-dropdown-stub>
 `;
 
 exports[`Value Stream Analytics LabelsSelector with selectedLabelNames set will render the label selector 1`] = `
-"<gl-dropdown-stub headertext=\\"\\" hideheaderborder=\\"true\\" clearalltext=\\"Clear all\\" clearalltextclass=\\"gl-px-5\\" text=\\"\\" highlighteditemstitle=\\"Selected\\" highlighteditemstitleclass=\\"gl-px-5\\" category=\\"primary\\" variant=\\"default\\" size=\\"medium\\" toggleclass=\\"gl-overflow-hidden\\" splithref=\\"\\" class=\\"gl-w-full\\">
-  <gl-dropdown-section-header-stub>Select a label </gl-dropdown-section-header-stub>
-  <div class=\\"gl-mb-5 gl-px-5\\">
-    <gl-search-box-by-type-stub value=\\"\\" clearbuttontitle=\\"Clear\\"></gl-search-box-by-type-stub>
+<gl-dropdown-stub
+  category="primary"
+  class="gl-w-full"
+  clearalltext="Clear all"
+  clearalltextclass="gl-px-5"
+  headertext=""
+  hideheaderborder="true"
+  highlighteditemstitle="Selected"
+  highlighteditemstitleclass="gl-px-5"
+  size="medium"
+  splithref=""
+  text=""
+  toggleclass="gl-overflow-hidden"
+  variant="default"
+>
+  <gl-dropdown-section-header-stub>
+    Select a label
+  </gl-dropdown-section-header-stub>
+  <div
+    class="gl-mb-5 gl-px-5"
+  >
+    <gl-search-box-by-type-stub
+      clearbuttontitle="Clear"
+      value=""
+    />
   </div>
-  <div class=\\"gl-mb-5 gl-px-5\\">
-    <gl-dropdown-item-stub avatarurl=\\"\\" iconcolor=\\"\\" iconname=\\"\\" iconrightarialabel=\\"\\" iconrightname=\\"\\" secondarytext=\\"\\" class=\\"gl-pl-6!\\"><span class=\\"gl-display-inline-block dropdown-label-box\\" style=\\"background-color: rgb(255, 0, 0);\\"></span>
+  <div
+    class="gl-mb-5 gl-px-5"
+  >
+    <gl-dropdown-item-stub
+      avatarurl=""
+      class="gl-pl-6!"
+      iconcolor=""
+      iconname=""
+      iconrightarialabel=""
+      iconrightname=""
+      secondarytext=""
+    >
+      <span
+        class="dropdown-label-box gl-display-inline-block"
+        style="background-color: rgb(255, 0, 0);"
+      />
       roses
     </gl-dropdown-item-stub>
-    <gl-dropdown-item-stub avatarurl=\\"\\" iconcolor=\\"\\" iconname=\\"\\" iconrightarialabel=\\"\\" iconrightname=\\"\\" secondarytext=\\"\\" class=\\"gl-pl-6!\\"><span class=\\"gl-display-inline-block dropdown-label-box\\" style=\\"background-color: rgb(255, 255, 255);\\"></span>
+    <gl-dropdown-item-stub
+      avatarurl=""
+      class="gl-pl-6!"
+      iconcolor=""
+      iconname=""
+      iconrightarialabel=""
+      iconrightname=""
+      secondarytext=""
+    >
+      <span
+        class="dropdown-label-box gl-display-inline-block"
+        style="background-color: rgb(255, 255, 255);"
+      />
       some space
     </gl-dropdown-item-stub>
-    <gl-dropdown-item-stub avatarurl=\\"\\" iconcolor=\\"\\" iconname=\\"\\" iconrightarialabel=\\"\\" iconrightname=\\"\\" ischeckitem=\\"true\\" secondarytext=\\"\\" active=\\"true\\" class=\\"\\"><span class=\\"gl-display-inline-block dropdown-label-box\\" style=\\"background-color: rgb(0, 0, 255);\\"></span>
+    <gl-dropdown-item-stub
+      active="true"
+      avatarurl=""
+      iconcolor=""
+      iconname=""
+      iconrightarialabel=""
+      iconrightname=""
+      ischeckitem="true"
+      secondarytext=""
+    >
+      <span
+        class="dropdown-label-box gl-display-inline-block"
+        style="background-color: rgb(0, 0, 255);"
+      />
       violets
     </gl-dropdown-item-stub>
-    <div class=\\"gl-text-center\\" style=\\"display: none;\\">
-      <gl-loading-icon-stub label=\\"Loading\\" size=\\"lg\\" color=\\"dark\\" variant=\\"spinner\\" inline=\\"true\\"></gl-loading-icon-stub>
+    <div
+      class="gl-text-center"
+      style="display: none;"
+    >
+      <gl-loading-icon-stub
+        color="dark"
+        inline="true"
+        label="Loading"
+        size="lg"
+        variant="spinner"
+      />
     </div>
-    <div class=\\"gl-text-secondary\\" style=\\"display: none;\\">
+    <div
+      class="gl-text-secondary"
+      style="display: none;"
+    >
       No matching labels
     </div>
   </div>
-</gl-dropdown-stub>"
+</gl-dropdown-stub>
 `;

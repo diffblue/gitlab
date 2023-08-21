@@ -2,8 +2,6 @@
 
 exports[`MetricChart component template when isLoading is false and chart data is empty matches the snapshot 1`] = `
 <div>
-  <!---->
-   
   <gl-alert-stub
     dismisslabel="Dismiss"
     primarybuttonlink=""
@@ -21,8 +19,6 @@ exports[`MetricChart component template when isLoading is false and chart data i
 
 exports[`MetricChart component template when isLoading is false and chartData is not empty and metricTypes exist matches the snapshot 1`] = `
 <div>
-  <!---->
-   
   <gl-dropdown-stub
     category="primary"
     class="mb-4 metric-dropdown"
@@ -59,9 +55,7 @@ exports[`MetricChart component template when isLoading is false and chartData is
           size="16"
           title="Selected"
         />
-        
-            Time from last commit to merge
-          
+        Time from last commit to merge
       </span>
     </gl-dropdown-item-stub>
     <gl-dropdown-item-stub
@@ -84,15 +78,10 @@ exports[`MetricChart component template when isLoading is false and chartData is
           size="16"
           title="Selected"
         />
-        
-            Time from first comment to last commit
-          
+        Time from first comment to last commit
       </span>
     </gl-dropdown-item-stub>
   </gl-dropdown-stub>
-   
-  <!---->
-   
   <div>
     mockChart
   </div>
@@ -101,8 +90,6 @@ exports[`MetricChart component template when isLoading is false and chartData is
 
 exports[`MetricChart component template when isLoading is true matches the snapshot 1`] = `
 <div>
-  <!---->
-   
   <gl-loading-icon-stub
     class="my-4 py-4"
     color="dark"

@@ -16,17 +16,14 @@ exports[`dashboard should match the snapshot 1`] = `
     titletag="h4"
   >
     <p>
-      This dashboard displays 3 environments per project, and is linked to the Operations Dashboard. When you add or remove a project from one dashboard, GitLab adds or removes the project from the other. 
+      This dashboard displays 3 environments per project, and is linked to the Operations Dashboard. When you add or remove a project from one dashboard, GitLab adds or removes the project from the other.
       <gl-link-stub
         href="/help/user/operations_dashboard/index.html"
         target="_blank"
       >
-        
-            More information
-          
+        More information
       </gl-link-stub>
     </p>
-     
     <project-selector-stub
       maxlistheight="402"
       projectsearchresults=""
@@ -34,18 +31,14 @@ exports[`dashboard should match the snapshot 1`] = `
       totalresults="0"
     />
   </gl-modal-stub>
-   
   <div
-    class="page-title-holder flex-fill d-flex align-items-center"
+    class="align-items-center d-flex flex-fill page-title-holder"
   >
     <h1
-      class="js-dashboard-title page-title gl-font-size-h-display text-nowrap flex-fill"
+      class="flex-fill gl-font-size-h-display js-dashboard-title page-title text-nowrap"
     >
-      
       Environments Dashboard
-    
     </h1>
-     
     <gl-button-stub
       buttontextclasses=""
       category="primary"
@@ -56,26 +49,20 @@ exports[`dashboard should match the snapshot 1`] = `
       tabindex="0"
       variant="confirm"
     >
-      
       Add projects
-    
     </gl-button-stub>
   </div>
-   
   <p
-    class="mt-2 mb-4 js-page-limits-message"
+    class="js-page-limits-message mb-4 mt-2"
   >
-    This dashboard displays 3 environments per project, and is linked to the Operations Dashboard. When you add or remove a project from one dashboard, GitLab adds or removes the project from the other. 
+    This dashboard displays 3 environments per project, and is linked to the Operations Dashboard. When you add or remove a project from one dashboard, GitLab adds or removes the project from the other.
     <gl-link-stub
       href="/help/user/operations_dashboard/index.html"
       target="_blank"
     >
-      
-          More information
-        
+      More information
     </gl-link-stub>
   </p>
-   
   <div
     class="gl-mt-3"
   >
@@ -86,9 +73,7 @@ exports[`dashboard should match the snapshot 1`] = `
       svgpath="/assets/illustrations/empty-state/empty-radar-md.svg"
       title="Add a project to the dashboard"
     >
-      
-        The environments dashboard provides a summary of each project's environments' status, including pipeline and alert statuses.
-        
+      The environments dashboard provides a summary of each project's environments' status, including pipeline and alert statuses.
       <gl-link-stub
         class="js-documentation-link"
         href="/help/user/operations_dashboard/index.html"
@@ -96,7 +81,6 @@ exports[`dashboard should match the snapshot 1`] = `
         View documentation
       </gl-link-stub>
       .
-      
       <gl-button-stub
         buttontextclasses=""
         category="primary"
@@ -107,9 +91,7 @@ exports[`dashboard should match the snapshot 1`] = `
         tabindex="0"
         variant="confirm"
       >
-        
-          Add projects
-        
+        Add projects
       </gl-button-stub>
     </gl-empty-state-stub>
   </div>

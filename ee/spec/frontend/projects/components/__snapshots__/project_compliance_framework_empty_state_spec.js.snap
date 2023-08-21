@@ -5,23 +5,22 @@ exports[`Project compliance framework empty state matches the snapshot when "add
   class="gl-display-flex gl-flex-direction-row"
 >
   <div
-    class="gl-display-none gl-sm-display-block gl-px-4"
+    class="gl-display-none gl-px-4 gl-sm-display-block"
   >
     <div
       class="svg-250"
     >
       <img
         alt=""
-        class="gl-max-w-full gl-dark-invert-keep-hue"
+        class="gl-dark-invert-keep-hue gl-max-w-full"
         height="100"
         role="img"
         src="/image.svg"
       />
     </div>
   </div>
-   
   <div
-    class="gl-flex-grow-1 gl-flex-basis-0 gl-px-4"
+    class="gl-flex-basis-0 gl-flex-grow-1 gl-px-4"
     data-testid="gl-empty-state-content"
   >
     <div
@@ -32,19 +31,17 @@ exports[`Project compliance framework empty state matches the snapshot when "add
       >
         No compliance frameworks are set up yet
       </h5>
-       
       <p
         class="gl-mt-3"
       >
-        Add a framework to 
+        Add a framework to
         <gl-link-stub
           href="/group-path"
         >
           group-name
         </gl-link-stub>
-         and it will appear here.
+        and it will appear here.
       </p>
-       
       <div
         class="gl-display-flex gl-flex-wrap"
       >
@@ -59,8 +56,6 @@ exports[`Project compliance framework empty state matches the snapshot when "add
         >
           Add framework in group-name
         </gl-button-stub>
-         
-        <!---->
       </div>
     </div>
   </div>
@@ -72,23 +67,22 @@ exports[`Project compliance framework empty state matches the snapshot when "add
   class="gl-display-flex gl-flex-direction-row"
 >
   <div
-    class="gl-display-none gl-sm-display-block gl-px-4"
+    class="gl-display-none gl-px-4 gl-sm-display-block"
   >
     <div
       class="svg-250"
     >
       <img
         alt=""
-        class="gl-max-w-full gl-dark-invert-keep-hue"
+        class="gl-dark-invert-keep-hue gl-max-w-full"
         height="100"
         role="img"
         src="/image.svg"
       />
     </div>
   </div>
-   
   <div
-    class="gl-flex-grow-1 gl-flex-basis-0 gl-px-4"
+    class="gl-flex-basis-0 gl-flex-grow-1 gl-px-4"
     data-testid="gl-empty-state-content"
   >
     <div
@@ -99,11 +93,10 @@ exports[`Project compliance framework empty state matches the snapshot when "add
       >
         No compliance frameworks are set up yet
       </h5>
-       
       <p
         class="gl-mt-3"
       >
-        After a framework is added to 
+        After a framework is added to
         <gl-link-stub
           href="/group-path"
         >
@@ -111,14 +104,9 @@ exports[`Project compliance framework empty state matches the snapshot when "add
         </gl-link-stub>
         , it will appear here.
       </p>
-       
       <div
         class="gl-display-flex gl-flex-wrap"
-      >
-        <!---->
-         
-        <!---->
-      </div>
+      />
     </div>
   </div>
 </section>

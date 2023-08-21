@@ -2,10 +2,10 @@
 
 exports[`Project Header matches the snapshot 1`] = `
 <div
-  class="gl-display-flex gl-align-items-center gl-text-gray-500 gl-justify-content-space-between gl-pb-3 gl-mb-5 gl-border-b-solid gl-border-gray-100 gl-border-1"
+  class="gl-align-items-center gl-border-1 gl-border-b-solid gl-border-gray-100 gl-display-flex gl-justify-content-space-between gl-mb-5 gl-pb-3 gl-text-gray-500"
 >
   <div
-    class="gl-display-flex gl-align-items-center"
+    class="gl-align-items-center gl-display-flex"
   >
     <project-avatar-stub
       class="gl-mr-3"
@@ -14,23 +14,18 @@ exports[`Project Header matches the snapshot 1`] = `
       projectname="hello"
       size="24"
     />
-     
     <gl-link-stub
-      class="gl-text-gray-500 gl-mr-3"
+      class="gl-mr-3 gl-text-gray-500"
       data-testid="namespace-link"
       href="/hello"
     >
-      
       hello
-    
     </gl-link-stub>
-     
     <span
       class="gl-mr-3"
     >
       &gt;
     </span>
-     
     <project-avatar-stub
       class="gl-mr-3"
       projectavatarurl="/project-avatar"
@@ -38,17 +33,13 @@ exports[`Project Header matches the snapshot 1`] = `
       projectname="world"
       size="24"
     />
-     
     <gl-link-stub
-      class="gl-text-gray-500 gl-mr-3"
+      class="gl-mr-3 gl-text-gray-500"
       data-testid="project-link"
     >
-      
       world
-    
     </gl-link-stub>
   </div>
-   
   <div
     class="gl-display-flex"
   >
@@ -75,7 +66,7 @@ exports[`Project Header matches the snapshot 1`] = `
         <span
           class="gl-text-red-500"
         >
-           Remove 
+          Remove
         </span>
       </gl-disclosure-dropdown-item-stub>
     </gl-disclosure-dropdown-stub>

@@ -11,27 +11,19 @@ exports[`Corpus upload modal corpus modal uploading state does show the upload p
   >
     <span
       aria-label="Loading"
-      class="gl-vertical-align-text-bottom! gl-spinner gl-spinner-dark gl-spinner-sm"
+      class="gl-spinner gl-spinner-dark gl-spinner-sm gl-vertical-align-text-bottom!"
     />
   </span>
-  
-    Attaching File - 25%
-    
+  Attaching File - 25%
   <button
     class="btn btn-default btn-sm gl-button"
     data-testid="cancel-upload"
     type="button"
   >
-    <!---->
-     
-    <!---->
-      
     <span
       class="gl-button-text"
     >
-      
       Cancel
-    
     </span>
   </button>
 </div>

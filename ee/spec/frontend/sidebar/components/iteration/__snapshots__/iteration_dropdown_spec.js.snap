@@ -22,29 +22,21 @@ exports[`IterationDropdown default shows gl-dropdown 1`] = `
     class="gl-dropdown-inner"
   >
     <div
-      class="gl-dropdown-header gl-border-b-0!"
+      class="gl-border-b-0! gl-dropdown-header"
     >
       <p
         class="gl-dropdown-header-top"
       >
-        
         Assign Iteration
-      
       </p>
-       
       <gl-search-box-by-type-stub
         clearbuttontitle="Clear"
         value=""
       />
     </div>
-     
-    <!---->
-     
     <div
       class="gl-dropdown-contents"
     >
-      <!---->
-        
       <gl-dropdown-item-stub
         avatarurl=""
         iconcolor=""
@@ -54,16 +46,10 @@ exports[`IterationDropdown default shows gl-dropdown 1`] = `
         ischeckitem="true"
         secondarytext=""
       >
-        
-    No iteration
-  
+        No iteration
       </gl-dropdown-item-stub>
-       
       <gl-dropdown-divider-stub />
-       
     </div>
-     
-    <!---->
   </div>
 </b-dropdown-stub>
 `;

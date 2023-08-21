@@ -6,32 +6,29 @@ exports[`RotationsListSectionComponent when the timeframe includes today renders
 >
   <div>
     <div
-      class="gl-clearfix gl-border-t"
+      class="gl-border-t gl-clearfix"
     >
       <span
-        class="details-cell gl-sticky gl-left-0 gl-float-left gl-display-flex gl-justify-content-space-between gl-align-items-center"
+        class="details-cell gl-align-items-center gl-display-flex gl-float-left gl-justify-content-space-between gl-left-0 gl-sticky"
       >
         <span
           aria-label="Rotation 242"
-          class="gl-text-truncate gl-text-gray-700"
+          class="gl-text-gray-700 gl-text-truncate"
           data-testid="rotation-name-gid://gitlab/IncidentManagement::OncallRotation/2"
         >
           Rotation 242
         </span>
-         
         <div
-          class="gl-px-2 btn-group"
+          class="btn-group gl-px-2"
           data-testid="rotation-edit-button-group"
           role="group"
         >
           <button
             aria-label="Edit rotation"
-            class="btn btn-default btn-md gl-button btn-default-tertiary btn-icon"
+            class="btn btn-default btn-default-tertiary btn-icon btn-md gl-button"
             title="Edit rotation"
             type="button"
           >
-            <!---->
-             
             <svg
               aria-hidden="true"
               class="gl-button-icon gl-icon s16"
@@ -42,18 +39,13 @@ exports[`RotationsListSectionComponent when the timeframe includes today renders
                 href="file-mock#pencil"
               />
             </svg>
-              
-            <!---->
           </button>
-           
           <button
             aria-label="Delete rotation"
-            class="btn btn-default btn-md gl-button btn-default-tertiary btn-icon"
+            class="btn btn-default btn-default-tertiary btn-icon btn-md gl-button"
             title="Delete rotation"
             type="button"
           >
-            <!---->
-             
             <svg
               aria-hidden="true"
               class="gl-button-icon gl-icon s16"
@@ -64,14 +56,11 @@ exports[`RotationsListSectionComponent when the timeframe includes today renders
                 href="file-mock#remove"
               />
             </svg>
-              
-            <!---->
           </button>
         </div>
       </span>
-       
       <span
-        class="timeline-cell gl-float-left gl-overflow-hidden gl-relative"
+        class="gl-float-left gl-overflow-hidden gl-relative timeline-cell"
         data-testid="timeline-cell"
         style="width: calc(100% - 180px);"
       >
@@ -80,27 +69,21 @@ exports[`RotationsListSectionComponent when the timeframe includes today renders
           data-testid="current-day-indicator"
           style="left: 14.285714285714286%;"
         />
-         
         <div>
           <div
-            class="rotation-asignee-container gl-absolute gl-h-7 gl-mt-3 gl-pr-1"
+            class="gl-absolute gl-h-7 gl-mt-3 gl-pr-1 rotation-asignee-container"
             style="left: 0px; width: 0px;"
           >
             <div
-              class="gl-h-6 gl-rounded-base gl-display-flex gl-align-items-center gl-justify-content-center"
+              class="gl-align-items-center gl-display-flex gl-h-6 gl-justify-content-center gl-rounded-base"
               data-testid="rotation-assignee"
-              id="rotation-assignee-2"
+              id="reference-0"
               style="background-color: rgb(97, 122, 226);"
             >
               <div
-                class="gl-text-white gl-rounded-base gl-display-flex gl-align-items-center"
-              >
-                <!---->
-                 
-                <!---->
-              </div>
+                class="gl-align-items-center gl-display-flex gl-rounded-base gl-text-white"
+              />
             </div>
-             
             <div
               class="gl-popover"
             >
@@ -108,40 +91,30 @@ exports[`RotationsListSectionComponent when the timeframe includes today renders
                 class="gl-m-0"
                 data-testid="rotation-assignee-starts-at"
               >
-                
-      Starts: January 12, 2021, 10:04 (UTC: +0000)
-    
+                Starts: January 12, 2021, 10:04 (UTC: +0000)
               </p>
-               
               <p
                 class="gl-m-0"
                 data-testid="rotation-assignee-ends-at"
               >
-                
-      Ends: January 15, 2021, 10:04 (UTC: +0000)
-    
+                Ends: January 15, 2021, 10:04 (UTC: +0000)
               </p>
             </div>
           </div>
           <div
-            class="rotation-asignee-container gl-absolute gl-h-7 gl-mt-3 gl-pr-1"
+            class="gl-absolute gl-h-7 gl-mt-3 gl-pr-1 rotation-asignee-container"
             style="left: 0px; width: 0px;"
           >
             <div
-              class="gl-h-6 gl-rounded-base gl-display-flex gl-align-items-center gl-justify-content-center"
+              class="gl-align-items-center gl-display-flex gl-h-6 gl-justify-content-center gl-rounded-base"
               data-testid="rotation-assignee"
-              id="rotation-assignee-3"
+              id="reference-1"
               style="background-color: rgb(201, 93, 46);"
             >
               <div
-                class="gl-text-white gl-rounded-base gl-display-flex gl-align-items-center"
-              >
-                <!---->
-                 
-                <!---->
-              </div>
+                class="gl-align-items-center gl-display-flex gl-rounded-base gl-text-white"
+              />
             </div>
-             
             <div
               class="gl-popover"
             >
@@ -149,18 +122,13 @@ exports[`RotationsListSectionComponent when the timeframe includes today renders
                 class="gl-m-0"
                 data-testid="rotation-assignee-starts-at"
               >
-                
-      Starts: January 16, 2021, 10:04 (UTC: +0000)
-    
+                Starts: January 16, 2021, 10:04 (UTC: +0000)
               </p>
-               
               <p
                 class="gl-m-0"
                 data-testid="rotation-assignee-ends-at"
               >
-                
-      Ends: January 18, 2021, 10:04 (UTC: +0000)
-    
+                Ends: January 18, 2021, 10:04 (UTC: +0000)
               </p>
             </div>
           </div>

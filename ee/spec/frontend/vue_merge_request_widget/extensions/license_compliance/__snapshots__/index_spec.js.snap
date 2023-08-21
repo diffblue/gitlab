@@ -2,7 +2,7 @@
 
 exports[`License Compliance extension expanded data with new licenses displays allowed licenses 1`] = `
 <div
-  class="gl-py-3 gl-pl-9"
+  class="gl-pl-9 gl-py-3"
   data-testid="extension-list-item"
 >
   <div
@@ -18,12 +18,9 @@ exports[`License Compliance extension expanded data with new licenses displays a
           Allowed
         </strong>
       </div>
-       
       <div
         class="gl-display-flex"
       >
-        <!---->
-         
         <div
           class="gl-w-full"
         >
@@ -31,10 +28,10 @@ exports[`License Compliance extension expanded data with new licenses displays a
             class="gl-display-flex gl-flex-nowrap"
           >
             <div
-              class="gl-flex-wrap gl-display-flex gl-w-full"
+              class="gl-display-flex gl-flex-wrap gl-w-full"
             >
               <div
-                class="gl-display-flex gl-align-items-center"
+                class="gl-align-items-center gl-display-flex"
               >
                 <p
                   class="gl-m-0"
@@ -42,54 +39,36 @@ exports[`License Compliance extension expanded data with new licenses displays a
                   Acceptable for use in this project
                 </p>
               </div>
-               
-              <!---->
-               
-              <!---->
-               
-              <!---->
-               
-              <!---->
             </div>
-             
             <div
-              class="gl-display-flex gl-align-items-flex-start gl-ml-auto gl-pl-3"
-            >
-              <!---->
-               
-              <!---->
-            </div>
+              class="gl-align-items-flex-start gl-display-flex gl-ml-auto gl-pl-3"
+            />
           </div>
-           
-          <!---->
         </div>
       </div>
-       
       <ul
-        class="gl-m-0 gl-p-0 gl-list-style-none"
+        class="gl-list-style-none gl-m-0 gl-p-0"
       >
         <li>
           <div
-            class="gl-w-full gl-pl-6"
+            class="gl-pl-6 gl-w-full"
             data-qa-selector="child_content"
             data-testid="child-content"
           >
-            <!---->
-             
             <div
               class="gl-display-flex"
             >
               <div
-                class="report-block-child-icon gl-display-flex"
+                class="gl-display-flex report-block-child-icon"
               >
                 <div
-                  class="gl-mr-3 gl-p-2 gl-m-auto gl-text-green-500"
+                  class="gl-m-auto gl-mr-3 gl-p-2 gl-text-green-500"
                 >
                   <div
-                    class="gl-rounded-full gl-relative gl-display-flex"
+                    class="gl-display-flex gl-relative gl-rounded-full"
                   >
                     <div
-                      class="gl-absolute gl-top-half gl-left-50p gl-translate-x-n50 gl-display-flex gl-m-auto"
+                      class="gl-absolute gl-display-flex gl-left-50p gl-m-auto gl-top-half gl-translate-x-n50"
                     >
                       <div
                         class="gl-display-flex gl-m-auto gl-translate-y-n50"
@@ -110,7 +89,6 @@ exports[`License Compliance extension expanded data with new licenses displays a
                   </div>
                 </div>
               </div>
-               
               <div
                 class="gl-w-full"
               >
@@ -118,16 +96,15 @@ exports[`License Compliance extension expanded data with new licenses displays a
                   class="gl-display-flex gl-flex-nowrap"
                 >
                   <div
-                    class="gl-flex-wrap gl-display-flex gl-w-full"
+                    class="gl-display-flex gl-flex-wrap gl-w-full"
                   >
                     <div
-                      class="gl-display-flex gl-align-items-center"
+                      class="gl-align-items-center gl-display-flex"
                     >
                       <p
                         class="gl-m-0"
                       />
                     </div>
-                     
                     <div
                       class="gl-pr-2"
                     >
@@ -138,49 +115,28 @@ exports[`License Compliance extension expanded data with new licenses displays a
                         ISC License
                       </a>
                     </div>
-                     
-                    <!---->
-                     
-                    <!---->
-                     
-                    <!---->
                   </div>
-                   
                   <div
-                    class="gl-display-flex gl-align-items-flex-start gl-ml-auto gl-pl-3"
+                    class="gl-align-items-flex-start gl-display-flex gl-ml-auto gl-pl-3"
                   >
                     <span>
                       <a
-                        class="btn gl-md-display-block gl-float-left btn-confirm btn-sm gl-button btn-confirm-tertiary"
+                        class="btn btn-confirm btn-confirm-tertiary btn-sm gl-button gl-float-left gl-md-display-block"
                         data-qa-selector="mr_widget_extension_actions_button"
                         data-testid="extension-actions-button"
                         href="/group-name/project-name/-/merge_requests/78/full_report"
                       >
-                        <!---->
-                         
-                        <!---->
-                          
                         <span
                           class="gl-button-text"
                         >
-                          
-        Used by 2 packages
-      
+                          Used by 2 packages
                         </span>
                       </a>
-                       
-                      <!---->
                     </span>
-                     
-                    <!---->
                   </div>
                 </div>
-                 
-                <!---->
               </div>
             </div>
-             
-            <!---->
           </div>
         </li>
       </ul>
@@ -191,7 +147,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
 
 exports[`License Compliance extension expanded data with new licenses displays denied licenses 1`] = `
 <div
-  class="gl-py-3 gl-pl-9 gl-border-b-solid gl-border-b-1 gl-border-gray-100"
+  class="gl-border-b-1 gl-border-b-solid gl-border-gray-100 gl-pl-9 gl-py-3"
   data-testid="extension-list-item"
 >
   <div
@@ -207,12 +163,9 @@ exports[`License Compliance extension expanded data with new licenses displays d
           Denied
         </strong>
       </div>
-       
       <div
         class="gl-display-flex"
       >
-        <!---->
-         
         <div
           class="gl-w-full"
         >
@@ -220,10 +173,10 @@ exports[`License Compliance extension expanded data with new licenses displays d
             class="gl-display-flex gl-flex-nowrap"
           >
             <div
-              class="gl-flex-wrap gl-display-flex gl-w-full"
+              class="gl-display-flex gl-flex-wrap gl-w-full"
             >
               <div
-                class="gl-display-flex gl-align-items-center"
+                class="gl-align-items-center gl-display-flex"
               >
                 <p
                   class="gl-m-0"
@@ -231,54 +184,36 @@ exports[`License Compliance extension expanded data with new licenses displays d
                   Out-of-compliance with the project's policies and should be removed
                 </p>
               </div>
-               
-              <!---->
-               
-              <!---->
-               
-              <!---->
-               
-              <!---->
             </div>
-             
             <div
-              class="gl-display-flex gl-align-items-flex-start gl-ml-auto gl-pl-3"
-            >
-              <!---->
-               
-              <!---->
-            </div>
+              class="gl-align-items-flex-start gl-display-flex gl-ml-auto gl-pl-3"
+            />
           </div>
-           
-          <!---->
         </div>
       </div>
-       
       <ul
-        class="gl-m-0 gl-p-0 gl-list-style-none"
+        class="gl-list-style-none gl-m-0 gl-p-0"
       >
         <li>
           <div
-            class="gl-w-full gl-pl-6"
+            class="gl-pl-6 gl-w-full"
             data-qa-selector="child_content"
             data-testid="child-content"
           >
-            <!---->
-             
             <div
               class="gl-display-flex"
             >
               <div
-                class="report-block-child-icon gl-display-flex"
+                class="gl-display-flex report-block-child-icon"
               >
                 <div
-                  class="gl-mr-3 gl-p-2 gl-m-auto gl-text-red-500"
+                  class="gl-m-auto gl-mr-3 gl-p-2 gl-text-red-500"
                 >
                   <div
-                    class="gl-rounded-full gl-relative gl-display-flex"
+                    class="gl-display-flex gl-relative gl-rounded-full"
                   >
                     <div
-                      class="gl-absolute gl-top-half gl-left-50p gl-translate-x-n50 gl-display-flex gl-m-auto"
+                      class="gl-absolute gl-display-flex gl-left-50p gl-m-auto gl-top-half gl-translate-x-n50"
                     >
                       <div
                         class="gl-display-flex gl-m-auto gl-translate-y-n50"
@@ -299,7 +234,6 @@ exports[`License Compliance extension expanded data with new licenses displays d
                   </div>
                 </div>
               </div>
-               
               <div
                 class="gl-w-full"
               >
@@ -307,16 +241,15 @@ exports[`License Compliance extension expanded data with new licenses displays d
                   class="gl-display-flex gl-flex-nowrap"
                 >
                   <div
-                    class="gl-flex-wrap gl-display-flex gl-w-full"
+                    class="gl-display-flex gl-flex-wrap gl-w-full"
                   >
                     <div
-                      class="gl-display-flex gl-align-items-center"
+                      class="gl-align-items-center gl-display-flex"
                     >
                       <p
                         class="gl-m-0"
                       />
                     </div>
-                     
                     <div
                       class="gl-pr-2"
                     >
@@ -327,35 +260,20 @@ exports[`License Compliance extension expanded data with new licenses displays d
                         Apache License 2.0
                       </a>
                     </div>
-                     
-                    <!---->
-                     
                     <div>
                       <p
                         class="gl-m-0"
                       >
-                         
                         Used by websocket-driver, websocket-extensions, xml-name-validator
                       </p>
                     </div>
-                     
-                    <!---->
                   </div>
-                   
                   <div
-                    class="gl-display-flex gl-align-items-flex-start gl-ml-auto gl-pl-3"
-                  >
-                    <!---->
-                     
-                    <!---->
-                  </div>
+                    class="gl-align-items-flex-start gl-display-flex gl-ml-auto gl-pl-3"
+                  />
                 </div>
-                 
-                <!---->
               </div>
             </div>
-             
-            <!---->
           </div>
         </li>
       </ul>
@@ -366,7 +284,7 @@ exports[`License Compliance extension expanded data with new licenses displays d
 
 exports[`License Compliance extension expanded data with new licenses displays uncategorized licenses 1`] = `
 <div
-  class="gl-py-3 gl-pl-9 gl-border-b-solid gl-border-b-1 gl-border-gray-100"
+  class="gl-border-b-1 gl-border-b-solid gl-border-gray-100 gl-pl-9 gl-py-3"
   data-testid="extension-list-item"
 >
   <div
@@ -382,12 +300,9 @@ exports[`License Compliance extension expanded data with new licenses displays u
           Uncategorized
         </strong>
       </div>
-       
       <div
         class="gl-display-flex"
       >
-        <!---->
-         
         <div
           class="gl-w-full"
         >
@@ -395,10 +310,10 @@ exports[`License Compliance extension expanded data with new licenses displays u
             class="gl-display-flex gl-flex-nowrap"
           >
             <div
-              class="gl-flex-wrap gl-display-flex gl-w-full"
+              class="gl-display-flex gl-flex-wrap gl-w-full"
             >
               <div
-                class="gl-display-flex gl-align-items-center"
+                class="gl-align-items-center gl-display-flex"
               >
                 <p
                   class="gl-m-0"
@@ -406,54 +321,36 @@ exports[`License Compliance extension expanded data with new licenses displays u
                   No policy matches this license
                 </p>
               </div>
-               
-              <!---->
-               
-              <!---->
-               
-              <!---->
-               
-              <!---->
             </div>
-             
             <div
-              class="gl-display-flex gl-align-items-flex-start gl-ml-auto gl-pl-3"
-            >
-              <!---->
-               
-              <!---->
-            </div>
+              class="gl-align-items-flex-start gl-display-flex gl-ml-auto gl-pl-3"
+            />
           </div>
-           
-          <!---->
         </div>
       </div>
-       
       <ul
-        class="gl-m-0 gl-p-0 gl-list-style-none"
+        class="gl-list-style-none gl-m-0 gl-p-0"
       >
         <li>
           <div
-            class="gl-w-full gl-pl-6"
+            class="gl-pl-6 gl-w-full"
             data-qa-selector="child_content"
             data-testid="child-content"
           >
-            <!---->
-             
             <div
               class="gl-display-flex"
             >
               <div
-                class="report-block-child-icon gl-display-flex"
+                class="gl-display-flex report-block-child-icon"
               >
                 <div
-                  class="gl-mr-3 gl-p-2 gl-m-auto gl-text-gray-500"
+                  class="gl-m-auto gl-mr-3 gl-p-2 gl-text-gray-500"
                 >
                   <div
-                    class="gl-rounded-full gl-relative gl-display-flex"
+                    class="gl-display-flex gl-relative gl-rounded-full"
                   >
                     <div
-                      class="gl-absolute gl-top-half gl-left-50p gl-translate-x-n50 gl-display-flex gl-m-auto"
+                      class="gl-absolute gl-display-flex gl-left-50p gl-m-auto gl-top-half gl-translate-x-n50"
                     >
                       <div
                         class="gl-display-flex gl-m-auto gl-translate-y-n50"
@@ -474,7 +371,6 @@ exports[`License Compliance extension expanded data with new licenses displays u
                   </div>
                 </div>
               </div>
-               
               <div
                 class="gl-w-full"
               >
@@ -482,16 +378,15 @@ exports[`License Compliance extension expanded data with new licenses displays u
                   class="gl-display-flex gl-flex-nowrap"
                 >
                   <div
-                    class="gl-flex-wrap gl-display-flex gl-w-full"
+                    class="gl-display-flex gl-flex-wrap gl-w-full"
                   >
                     <div
-                      class="gl-display-flex gl-align-items-center"
+                      class="gl-align-items-center gl-display-flex"
                     >
                       <p
                         class="gl-m-0"
                       />
                     </div>
-                     
                     <div
                       class="gl-pr-2"
                     >
@@ -502,49 +397,28 @@ exports[`License Compliance extension expanded data with new licenses displays u
                         Academic Free License v2.1
                       </a>
                     </div>
-                     
-                    <!---->
-                     
-                    <!---->
-                     
-                    <!---->
                   </div>
-                   
                   <div
-                    class="gl-display-flex gl-align-items-flex-start gl-ml-auto gl-pl-3"
+                    class="gl-align-items-flex-start gl-display-flex gl-ml-auto gl-pl-3"
                   >
                     <span>
                       <a
-                        class="btn gl-md-display-block gl-float-left btn-confirm btn-sm gl-button btn-confirm-tertiary"
+                        class="btn btn-confirm btn-confirm-tertiary btn-sm gl-button gl-float-left gl-md-display-block"
                         data-qa-selector="mr_widget_extension_actions_button"
                         data-testid="extension-actions-button"
                         href="/group-name/project-name/-/merge_requests/78/full_report"
                       >
-                        <!---->
-                         
-                        <!---->
-                          
                         <span
                           class="gl-button-text"
                         >
-                          
-        Used by 1 package
-      
+                          Used by 1 package
                         </span>
                       </a>
-                       
-                      <!---->
                     </span>
-                     
-                    <!---->
                   </div>
                 </div>
-                 
-                <!---->
               </div>
             </div>
-             
-            <!---->
           </div>
         </li>
       </ul>

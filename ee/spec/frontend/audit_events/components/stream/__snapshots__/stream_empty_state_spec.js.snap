@@ -2,7 +2,7 @@
 
 exports[`StreamEmptyState should render correctly 1`] = `
 <section
-  class="gl-display-flex gl-mt-5 empty-state gl-text-center gl-flex-direction-column"
+  class="empty-state gl-display-flex gl-flex-direction-column gl-mt-5 gl-text-center"
 >
   <div
     class="gl-max-w-full"
@@ -12,74 +12,61 @@ exports[`StreamEmptyState should render correctly 1`] = `
     >
       <img
         alt=""
-        class="gl-max-w-full gl-dark-invert-keep-hue"
+        class="gl-dark-invert-keep-hue gl-max-w-full"
         height="72"
         role="img"
         src="mock/path"
       />
     </div>
   </div>
-   
   <div
-    class="gl-max-w-full gl-m-auto"
+    class="gl-m-auto gl-max-w-full"
     data-testid="gl-empty-state-content"
   >
     <div
       class="gl-mx-auto gl-my-0 gl-p-5"
     >
       <h3
-        class="h4 gl-font-size-h-display gl-line-height-36 gl-mt-n3"
+        class="gl-font-size-h-display gl-line-height-36 gl-mt-n3 h4"
       >
-        
-      Setup streaming for audit events
-    
+        Setup streaming for audit events
       </h3>
-       
       <p
         class="gl-mt-3"
       >
         <p>
           Add an HTTP endpoint to manage audit logs in third-party systems.
         </p>
-         
         <p>
           This is great for keeping everything one place.
         </p>
       </p>
-       
       <div
         class="gl-display-flex gl-flex-wrap gl-justify-content-center"
       >
         <div
-          class="gl-new-dropdown gl-disclosure-dropdown"
+          class="gl-disclosure-dropdown gl-new-dropdown"
           data-testid="dropdown-toggle"
         >
           <button
-            aria-controls="base-dropdown-14"
-            aria-labelledby="dropdown-toggle-btn-10"
+            aria-controls="reference-1"
+            aria-labelledby="reference-0"
             class="btn btn-confirm btn-md gl-button gl-new-dropdown-toggle"
             data-testid="base-dropdown-toggle"
-            id="dropdown-toggle-btn-10"
+            id="reference-0"
             type="button"
           >
-            <!---->
-             
-            <!---->
-              
             <span
               class="gl-button-text"
             >
               <span
                 class="gl-new-dropdown-button-text"
               >
-                
-        Add streaming destination
-      
+                Add streaming destination
               </span>
-               
               <svg
                 aria-hidden="true"
-                class="gl-button-icon gl-new-dropdown-chevron gl-icon s16"
+                class="gl-button-icon gl-icon gl-new-dropdown-chevron s16"
                 data-testid="chevron-down-icon"
                 role="img"
               >
@@ -89,21 +76,19 @@ exports[`StreamEmptyState should render correctly 1`] = `
               </svg>
             </span>
           </button>
-           
           <div
             class="gl-new-dropdown-panel gl-w-31!"
             data-testid="base-dropdown-menu"
-            id="base-dropdown-14"
+            id="reference-1"
           >
             <div
               class="gl-new-dropdown-inner"
             >
-                
               <ul
-                aria-labelledby="dropdown-toggle-btn-10"
+                aria-labelledby="reference-0"
                 class="gl-new-dropdown-contents"
                 data-testid="disclosure-content"
-                id="disclosure-11"
+                id="reference-2"
                 tabindex="-1"
               >
                 <li
@@ -119,9 +104,7 @@ exports[`StreamEmptyState should render correctly 1`] = `
                     <span
                       class="gl-new-dropdown-item-text-wrapper"
                     >
-                      
-          HTTP endpoint
-        
+                      HTTP endpoint
                     </span>
                   </button>
                 </li>
@@ -138,14 +121,11 @@ exports[`StreamEmptyState should render correctly 1`] = `
                     <span
                       class="gl-new-dropdown-item-text-wrapper"
                     >
-                      
-          Google Cloud Logging
-        
+                      Google Cloud Logging
                     </span>
                   </button>
                 </li>
               </ul>
-               
             </div>
           </div>
         </div>

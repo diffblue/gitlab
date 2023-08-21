@@ -12,31 +12,24 @@ exports[`Alert integration settings form should match the default snapshot 1`] =
     <p
       class="gl-line-height-20"
     >
-      
       Introduce a countdown timer in incident issues to better track Service Level Agreements (SLAs). The timer starts automatically when the incident is created, and sets a time limit for resolving the incident. When activated, the time to SLA countdown appears on all new incidents.
-    
     </p>
-     
     <gl-form-checkbox-stub
       checked="true"
       class="gl-my-4"
-      id="2"
+      id="reference-0"
     >
       <span>
         Activate "time to SLA" countdown timer
       </span>
-       
       <gl-form-text-stub
         class="gl-font-base gl-text-gray-400"
         tag="small"
         textvariant="muted"
       >
-        
         When activated, this applies to all new incidents in the project.
-      
       </gl-form-text-stub>
     </gl-form-checkbox-stub>
-     
     <gl-form-group-stub
       invalid-feedback=""
       label="Time limit"
@@ -49,22 +42,20 @@ exports[`Alert integration settings form should match the default snapshot 1`] =
         class="gl-display-flex gl-flex-direction-row"
       >
         <gl-form-input-stub
-          id="sla-duration"
+          id="reference-1"
           number=""
           size="xs"
           step="15"
           type="number"
           value="15"
         />
-         
         <gl-form-select-stub
-          class="gl-w-auto gl-ml-3 gl-line-height-normal gl-border-gray-400"
+          class="gl-border-gray-400 gl-line-height-normal gl-ml-3 gl-w-auto"
           options="[object Object],[object Object]"
           value="minutes"
         />
       </div>
     </gl-form-group-stub>
-     
     <gl-button-stub
       buttontextclasses=""
       category="primary"
@@ -73,9 +64,7 @@ exports[`Alert integration settings form should match the default snapshot 1`] =
       type="submit"
       variant="confirm"
     >
-      
       Save changes
-    
     </gl-button-stub>
   </gl-form-stub>
 </gl-tab-stub>

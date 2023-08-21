@@ -2,17 +2,17 @@
 
 exports[`ResourceLinkItem template matches the snapshot 1`] = `
 <div
-  class="item-body d-flex align-items-center gl-px-3 gl-mx-n2 gl-pr-2"
+  class="align-items-center d-flex gl-mx-n2 gl-pr-2 gl-px-3 item-body"
 >
   <div
-    class="item-contents gl-display-flex gl-align-items-center gl-flex-wrap gl-flex-grow-1 flex-xl-nowrap gl-min-h-7"
+    class="flex-xl-nowrap gl-align-items-center gl-display-flex gl-flex-grow-1 gl-flex-wrap gl-min-h-7 item-contents"
   >
     <div
-      class="item-title d-flex align-items-xl-center mb-xl-0 gl-min-w-0"
+      class="align-items-xl-center d-flex gl-min-w-0 item-title mb-xl-0"
     >
       <svg
         aria-hidden="true"
-        class="gl-mr-3 gl-text-gray-500 gl-icon s16 ic-zoom"
+        class="gl-icon gl-mr-3 gl-text-gray-500 ic-zoom s16"
         data-testid="brand-zoom-icon"
         role="img"
       >
@@ -20,9 +20,8 @@ exports[`ResourceLinkItem template matches the snapshot 1`] = `
           href="file-mock#brand-zoom"
         />
       </svg>
-       
       <a
-        class="gl-link sortable-link gl-font-weight-normal"
+        class="gl-font-weight-normal gl-link sortable-link"
         href="https://docs.gitlab.com/incident-info"
         rel="noopener noreferrer"
         target="_blank"
@@ -31,15 +30,12 @@ exports[`ResourceLinkItem template matches the snapshot 1`] = `
       </a>
     </div>
   </div>
-   
   <button
     aria-label="Remove"
-    class="btn js-issue-item-remove-button gl-ml-5 btn-default btn-sm gl-button btn-default-tertiary btn-icon"
+    class="btn btn-default btn-default-tertiary btn-icon btn-sm gl-button gl-ml-5 js-issue-item-remove-button"
     title="Remove"
     type="button"
   >
-    <!---->
-     
     <svg
       aria-hidden="true"
       class="gl-button-icon gl-icon s16"
@@ -50,8 +46,6 @@ exports[`ResourceLinkItem template matches the snapshot 1`] = `
         href="file-mock#close"
       />
     </svg>
-      
-    <!---->
   </button>
 </div>
 `;

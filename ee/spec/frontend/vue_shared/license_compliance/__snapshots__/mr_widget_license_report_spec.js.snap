@@ -11,7 +11,7 @@ exports[`License Report MR Widget report section report body should render corre
   wtag="ul"
 >
   <li
-    class="mx-1 mb-1"
+    class="mb-1 mx-1"
     data-testid="report-heading"
   >
     <h2
@@ -19,13 +19,11 @@ exports[`License Report MR Widget report section report body should render corre
     >
       some-status group-name
     </h2>
-     
     <p
       class="m-0"
     >
       some-status group-description
     </p>
   </li>
-   
 </smart-virtual-list-stub>
 `;

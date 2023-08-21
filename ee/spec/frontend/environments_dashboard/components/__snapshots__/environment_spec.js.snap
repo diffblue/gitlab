@@ -2,21 +2,20 @@
 
 exports[`Environment matchs the snapshot 1`] = `
 <div
-  class="dashboard-card card border-0"
+  class="border-0 card dashboard-card"
 >
   <environment-header-stub
     environment="[object Object]"
     haserrors="true"
   />
-   
   <div
-    class="dashboard-card-body card-body dashboard-card-body-warning"
+    class="card-body dashboard-card-body dashboard-card-body-warning"
   >
     <div
       class="row"
     >
       <div
-        class="col-1 align-self-center px-3"
+        class="align-self-center col-1 px-3"
       >
         <gl-avatar-link-stub
           href="/root"
@@ -32,9 +31,8 @@ exports[`Environment matchs the snapshot 1`] = `
           />
         </gl-avatar-link-stub>
       </div>
-       
       <div
-        class="col-10 col-sm-7 pr-0 pl-5 align-self-center align-middle ci-table"
+        class="align-middle align-self-center ci-table col-10 col-sm-7 pl-5 pr-0"
       >
         <div
           class="branch-commit"
@@ -43,17 +41,13 @@ exports[`Environment matchs the snapshot 1`] = `
             name="work"
             size="14"
           />
-           
           <gl-link-stub
             class="str-truncated"
             href="/root/minimal-ruby-app/-/jobs/1097"
           >
-            
             production #1097
-          
           </gl-link-stub>
         </div>
-         
         <commit-stub
           author="[object Object]"
           commitref="[object Object]"
@@ -64,21 +58,17 @@ exports[`Environment matchs the snapshot 1`] = `
           title="Improve code quality"
         />
       </div>
-       
       <div
-        class="col-sm-3 mt-0 pl-6 pr-0 pl-sm-0 offset-1 offset-sm-0 text-sm-right align-self-center col-12 d-sm-block"
+        class="align-self-center col-12 col-sm-3 d-sm-block mt-0 offset-1 offset-sm-0 pl-6 pl-sm-0 pr-0 text-sm-right"
       >
         <time-ago-stub
           time="2019-02-20T16:15:40.122Z"
           tooltiptext="Finished"
         />
-         
         <alerts-stub
           count="1"
         />
       </div>
-       
-      <!---->
     </div>
   </div>
 </div>

@@ -8,55 +8,45 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
     footerclass=""
     headerclass="[object Object]"
   >
-     
     <gl-collapse-stub
       visible="true"
     >
       <p
-        class="gl-text-gray-500 gl-mb-5"
+        class="gl-mb-5 gl-text-gray-500"
       >
-        
         Description 1 lives here
-      
       </p>
-       
       <div
-        class="gl-border-solid gl-border-1 gl-border-gray-100 gl-rounded-base gl-p-5"
+        class="gl-border-1 gl-border-gray-100 gl-border-solid gl-p-5 gl-rounded-base"
       >
         <div
-          class="gl-display-flex gl-align-items-center escalation-rule-row gl-mb-5"
+          class="escalation-rule-row gl-align-items-center gl-display-flex gl-mb-5"
         >
           <span
-            class="rule-condition gl-md-w-full"
+            class="gl-md-w-full rule-condition"
           >
             <gl-icon-stub
               class="gl-mr-3"
               name="clock"
               size="16"
             />
-             IF alert is not 
-                  acknowledged
-                 in 
+            IF alert is not acknowledged in
             <span
               class="gl-font-weight-bold"
             >
-              
-                    1 mins
-                  
+              1 mins
             </span>
           </span>
-           
           <span
-            class="right-arrow gl-relative gl-min-w-7 gl-bg-gray-900 gl-display-none gl-lg-display-block gl-flex-shrink-0 gl-mx-5"
+            class="gl-bg-gray-900 gl-display-none gl-flex-shrink-0 gl-lg-display-block gl-min-w-7 gl-mx-5 gl-relative right-arrow"
             style="width: 4%;"
           >
             <i
-              class="right-arrow-head gl-absolute gl-p-1 gl-border-solid"
+              class="gl-absolute gl-border-solid gl-p-1 right-arrow-head"
             />
           </span>
-           
           <span
-            class="gl-display-flex gl-align-items-center gl-min-w-0"
+            class="gl-align-items-center gl-display-flex gl-min-w-0"
           >
             <span
               class="gl-text-truncate"
@@ -67,53 +57,43 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
                 name="notifications"
                 size="16"
               />
-               THEN 
-                    email on-call user in schedule
-                   
+              THEN email on-call user in schedule
               <span
                 class="gl-font-weight-bold"
               >
-                
-                      Schedule to fill in
-                    
+                Schedule to fill in
               </span>
             </span>
           </span>
         </div>
         <div
-          class="gl-display-flex gl-align-items-center escalation-rule-row gl-mb-5"
+          class="escalation-rule-row gl-align-items-center gl-display-flex gl-mb-5"
         >
           <span
-            class="rule-condition gl-md-w-full"
+            class="gl-md-w-full rule-condition"
           >
             <gl-icon-stub
               class="gl-mr-3"
               name="clock"
               size="16"
             />
-             IF alert is not 
-                  resolved
-                 in 
+            IF alert is not resolved in
             <span
               class="gl-font-weight-bold"
             >
-              
-                    2 mins
-                  
+              2 mins
             </span>
           </span>
-           
           <span
-            class="right-arrow gl-relative gl-min-w-7 gl-bg-gray-900 gl-display-none gl-lg-display-block gl-flex-shrink-0 gl-mx-5"
+            class="gl-bg-gray-900 gl-display-none gl-flex-shrink-0 gl-lg-display-block gl-min-w-7 gl-mx-5 gl-relative right-arrow"
             style="width: 8%;"
           >
             <i
-              class="right-arrow-head gl-absolute gl-p-1 gl-border-solid"
+              class="gl-absolute gl-border-solid gl-p-1 right-arrow-head"
             />
           </span>
-           
           <span
-            class="gl-display-flex gl-align-items-center gl-min-w-0"
+            class="gl-align-items-center gl-display-flex gl-min-w-0"
           >
             <span
               class="gl-text-truncate"
@@ -124,9 +104,7 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
                 name="notifications"
                 size="16"
               />
-               THEN 
-                    email user
-                   
+              THEN email user
               <gl-token-stub
                 class="gl-text-white"
                 style="background-color: rgb(97, 122, 226);"
@@ -141,47 +119,39 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
                   size="16"
                   src="avatar.com/lena.png"
                 />
-                
-                      Lena
-                    
+                Lena
               </gl-token-stub>
             </span>
           </span>
         </div>
         <div
-          class="gl-display-flex gl-align-items-center escalation-rule-row"
+          class="escalation-rule-row gl-align-items-center gl-display-flex"
         >
           <span
-            class="rule-condition gl-md-w-full"
+            class="gl-md-w-full rule-condition"
           >
             <gl-icon-stub
               class="gl-mr-3"
               name="clock"
               size="16"
             />
-             IF alert is not 
-                  resolved
-                 in 
+            IF alert is not resolved in
             <span
               class="gl-font-weight-bold"
             >
-              
-                    4 mins
-                  
+              4 mins
             </span>
           </span>
-           
           <span
-            class="right-arrow gl-relative gl-min-w-7 gl-bg-gray-900 gl-display-none gl-lg-display-block gl-flex-shrink-0 gl-mx-5"
+            class="gl-bg-gray-900 gl-display-none gl-flex-shrink-0 gl-lg-display-block gl-min-w-7 gl-mx-5 gl-relative right-arrow"
             style="width: 12%;"
           >
             <i
-              class="right-arrow-head gl-absolute gl-p-1 gl-border-solid"
+              class="gl-absolute gl-border-solid gl-p-1 right-arrow-head"
             />
           </span>
-           
           <span
-            class="gl-display-flex gl-align-items-center gl-min-w-0"
+            class="gl-align-items-center gl-display-flex gl-min-w-0"
           >
             <span
               class="gl-text-truncate"
@@ -192,9 +162,7 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
                 name="notifications"
                 size="16"
               />
-               THEN 
-                    email user
-                   
+              THEN email user
               <gl-token-stub
                 class="gl-text-white"
                 style="background-color: rgb(201, 93, 46);"
@@ -209,9 +177,7 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
                   size="16"
                   src="avatar.com/tim.png"
                 />
-                
-                      Tim
-                    
+                Tim
               </gl-token-stub>
             </span>
           </span>
@@ -219,12 +185,10 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
       </div>
     </gl-collapse-stub>
   </gl-card-stub>
-   
   <delete-escalation-policy-modal-stub
     escalationpolicy="[object Object]"
     modalid="deleteEscalationPolicyModal-37"
   />
-   
   <edit-escalation-policy-modal-stub
     escalationpolicy="[object Object]"
     iseditmode="true"

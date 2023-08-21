@@ -6,7 +6,7 @@ exports[`TrialStatusWidget component without the optional containerId prop match
   title="Ultimate Trial"
 >
   <div
-    class="gl-display-flex gl-flex-direction-column gl-align-items-stretch gl-w-full"
+    class="gl-align-items-stretch gl-display-flex gl-flex-direction-column gl-w-full"
     data-testid="widget-menu"
   >
     <div>
@@ -14,7 +14,7 @@ exports[`TrialStatusWidget component without the optional containerId prop match
         class="gl-display-flex gl-w-full"
       >
         <span
-          class="nav-icon-container svg-container gl-mr-3"
+          class="gl-mr-3 nav-icon-container svg-container"
         >
           <img
             class="svg"
@@ -22,26 +22,19 @@ exports[`TrialStatusWidget component without the optional containerId prop match
             width="16"
           />
         </span>
-         
         <span
-          class="nav-item-name gl-flex-grow-1"
+          class="gl-flex-grow-1 nav-item-name"
         >
-          
           Ultimate Trial
-        
         </span>
-         
         <span
           class="collapse-text gl-font-sm gl-mr-auto"
         >
-          
           Day 10/30
-        
         </span>
       </div>
-       
       <div
-        class="gl-display-flex gl-align-items-stretch gl-mt-2"
+        class="gl-align-items-stretch gl-display-flex gl-mt-2"
       >
         <gl-progress-bar-stub
           class="gl-flex-grow-1"
@@ -59,33 +52,27 @@ exports[`TrialStatusWidget component without the optional containerId prop match
   title="Your 30-day trial has ended"
 >
   <div
-    class="gl-display-flex gl-flex-direction-column gl-align-items-stretch gl-w-full"
+    class="gl-align-items-stretch gl-display-flex gl-flex-direction-column gl-w-full"
     data-testid="widget-menu"
   >
     <div
-      class="gl-display-flex gl-gap-5 gl-w-full gl-px-2"
+      class="gl-display-flex gl-gap-5 gl-px-2 gl-w-full"
     >
       <gl-icon-stub
         class="gl-text-blue-600!"
         name="information-o"
         size="16"
       />
-       
       <div>
         <div
           class="gl-font-weight-bold"
         >
-          
           Your 30-day trial has ended
-        
         </div>
-         
         <div
           class="gl-mt-3"
         >
-          
           Looking to do more with GitLab?
-        
         </div>
       </div>
     </div>

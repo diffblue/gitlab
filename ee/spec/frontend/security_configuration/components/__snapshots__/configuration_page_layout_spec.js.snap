@@ -2,12 +2,12 @@
 
 exports[`Security Configuration Page Layout component matches the snapshot 1`] = `
 <article>
-  Page alert 
+  Page alert
   <header
-    class="gl-mt-5 gl-display-flex gl-justify-content-space-between gl-mb-5 gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid"
+    class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-display-flex gl-justify-content-space-between gl-mb-5 gl-mt-5"
   >
     <div
-      class="gl-display-flex gl-flex-direction-column gl-w-full gl-justify-content-space-between gl-md-flex-direction-row"
+      class="gl-display-flex gl-flex-direction-column gl-justify-content-space-between gl-md-flex-direction-row gl-w-full"
     >
       <div>
         <h4
@@ -15,18 +15,15 @@ exports[`Security Configuration Page Layout component matches the snapshot 1`] =
         >
           Page title
         </h4>
-         
         <p>
           Scanner description
         </p>
       </div>
-       
       <div>
         Action
       </div>
     </div>
   </header>
-   
   <div>
     form
   </div>

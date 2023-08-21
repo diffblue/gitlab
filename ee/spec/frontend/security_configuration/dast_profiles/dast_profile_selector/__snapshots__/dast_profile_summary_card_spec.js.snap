@@ -8,16 +8,13 @@ exports[`DastProfileSummaryCard renders properly 1`] = `
     class="gl-card-header"
   >
     <div
-      class="gl-display-flex gl-justify-content-space-between gl-align-items-center"
+      class="gl-align-items-center gl-display-flex gl-justify-content-space-between"
     >
       <div>
         <h3
-          class="gl-font-lg gl-my-0 gl-display-inline"
+          class="gl-display-inline gl-font-lg gl-my-0"
         />
-         
-        <!---->
       </div>
-       
       <div
         class="gl-display-flex gl-gap-x-3"
       >
@@ -32,7 +29,6 @@ exports[`DastProfileSummaryCard renders properly 1`] = `
         >
           Select
         </gl-button-stub>
-         
         <gl-button-stub
           aria-label="Edit %{profileType} profile"
           buttontextclasses=""
@@ -46,11 +42,8 @@ exports[`DastProfileSummaryCard renders properly 1`] = `
       </div>
     </div>
   </div>
-   
   <div
     class="gl-card-body"
   />
-   
-  <!---->
 </div>
 `;

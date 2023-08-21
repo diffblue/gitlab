@@ -9,30 +9,21 @@ exports[`SiteProfileSelector renders properly with no profiles 1`] = `
     class="gl-mb-4"
   >
     <h4
-      class="gl-font-lg gl-mt-0 gl-mb-2"
+      class="gl-font-lg gl-mb-2 gl-mt-0"
     >
-      
       Site profile
-    
     </h4>
-     
     <p>
       <gl-sprintf-stub
         message="A site profile defines the attributes and configuration details of your deployed application, website, or API. %{linkStart}Learn more%{linkEnd}."
       />
     </p>
   </div>
-   
   <empty-state-stub
     class="gl-mb-4"
   >
-    
-      No site profile selected
-    
-      Select a site profile to run a DAST scan
-    
+    No site profile selected Select a site profile to run a DAST scan
   </empty-state-stub>
-   
   <gl-button-stub
     buttontextclasses=""
     category="secondary"
@@ -41,9 +32,7 @@ exports[`SiteProfileSelector renders properly with no profiles 1`] = `
     size="medium"
     variant="confirm"
   >
-    
     Select site profile
-  
   </gl-button-stub>
 </div>
 `;
@@ -57,30 +46,21 @@ exports[`SiteProfileSelector renders properly with profiles 1`] = `
     class="gl-mb-4"
   >
     <h4
-      class="gl-font-lg gl-mt-0 gl-mb-2"
+      class="gl-font-lg gl-mb-2 gl-mt-0"
     >
-      
       Site profile
-    
     </h4>
-     
     <p>
       <gl-sprintf-stub
         message="A site profile defines the attributes and configuration details of your deployed application, website, or API. %{linkStart}Learn more%{linkEnd}."
       />
     </p>
   </div>
-   
   <empty-state-stub
     class="gl-mb-4"
   >
-    
-      No site profile selected
-    
-      Select a site profile to run a DAST scan
-    
+    No site profile selected Select a site profile to run a DAST scan
   </empty-state-stub>
-   
   <gl-button-stub
     buttontextclasses=""
     category="secondary"
@@ -89,9 +69,7 @@ exports[`SiteProfileSelector renders properly with profiles 1`] = `
     size="medium"
     variant="confirm"
   >
-    
     Select site profile
-  
   </gl-button-stub>
 </div>
 `;

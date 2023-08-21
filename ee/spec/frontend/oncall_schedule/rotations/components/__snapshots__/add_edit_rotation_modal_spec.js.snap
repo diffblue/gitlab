@@ -16,11 +16,8 @@ exports[`AddEditRotationModal renders rotation modal layout 1`] = `
       title=""
       variant="danger"
     >
-      
-    Error: Unexpected error whilst calling request handler: value is not a function
-  
+      Error: Unexpected error whilst calling request handler: value is not a function
     </gl-alert-stub>
-     
     <add-edit-rotation-form-stub
       form="[object Object]"
       participants=""

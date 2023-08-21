@@ -2,12 +2,12 @@
 
 exports[`Corpus Upload component renders total size 1`] = `
 <div
-  class="gl-h-11 gl-bg-gray-10 gl-display-flex gl-justify-content-space-between gl-align-items-center"
+  class="gl-align-items-center gl-bg-gray-10 gl-display-flex gl-h-11 gl-justify-content-space-between"
 >
   <div
     class="gl-ml-5"
   >
-    Total Size: 
+    Total Size:
     <span
       class="gl-font-weight-bold"
       data-testid="total-size"
@@ -15,6 +15,5 @@ exports[`Corpus Upload component renders total size 1`] = `
       400 MB
     </span>
   </div>
-   
 </div>
 `;

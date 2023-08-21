@@ -13,11 +13,8 @@ exports[`DependencyListIncompleteAlert component matches the snapshot 1`] = `
   variant="warning"
 >
   <p>
-    
     One or more of your dependency files are not supported, and the dependency list may be incomplete. Below is a list of supported file types.
-  
   </p>
-   
   <ul
     class="mb-0"
   >

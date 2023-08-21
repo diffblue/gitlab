@@ -63,6 +63,6 @@ exports[`ApproversColumn component when a list with two approvers is passed matc
 
 exports[`ApproversColumn component when an empty list approvers is passed matches the snapshot 1`] = `
 <div>
-   – 
+  –
 </div>
 `;

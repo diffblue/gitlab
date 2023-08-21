@@ -13,11 +13,11 @@ exports[`DependencyListJobFailedAlert component matches the snapshot 1`] = `
   variant="danger"
 >
   <span>
-    The 
+    The
     <code>
       dependency_scanning
     </code>
-     job has failed and cannot generate the list. Please ensure the job is running properly and run the pipeline again.
+    job has failed and cannot generate the list. Please ensure the job is running properly and run the pipeline again.
   </span>
 </gl-alert-stub>
 `;

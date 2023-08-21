@@ -2,8 +2,6 @@
 
 exports[`Learn GitLab renders correctly 1`] = `
 <div>
-  <!---->
-   
   <div
     class="row"
   >
@@ -15,25 +13,22 @@ exports[`Learn GitLab renders correctly 1`] = `
       >
         Learn GitLab
       </h1>
-       
       <p
-        class="gl-text-gray-700 gl-mb-0"
+        class="gl-mb-0 gl-text-gray-700"
       >
         Ready to get started with GitLab? Follow these steps to set up your workspace, plan and commit changes, and deploy your project.
       </p>
     </div>
   </div>
-   
   <div
     class="gl-mb-3"
   >
     <p
-      class="gl-text-gray-500 gl-mb-2"
+      class="gl-mb-2 gl-text-gray-500"
       data-testid="completion-percentage"
     >
       25% completed
     </p>
-     
     <div
       class="progress"
     >
@@ -47,48 +42,41 @@ exports[`Learn GitLab renders correctly 1`] = `
       />
     </div>
   </div>
-   
   <div
     class="gl-mt-6"
   >
     <h2
-      class="gl-font-weight-bold gl-font-size-h2"
+      class="gl-font-size-h2 gl-font-weight-bold"
     >
-      
       1. Add code to your project
-    
     </h2>
   </div>
-   
   <div
     class="row"
   >
     <div
-      class="gl-mt-5 col-sm-12 col-mb-6 col-lg-3"
+      class="col-lg-3 col-mb-6 col-sm-12 gl-mt-5"
     >
       <div
         class="gl-card gl-pt-0 h-100"
       >
         <div
-          class="gl-card-header gl-bg-white gl-border-0 gl-pb-0"
+          class="gl-bg-white gl-border-0 gl-card-header gl-pb-0"
         >
           <img
             src="code.svg"
           />
-           
           <h2
             class="gl-font-lg gl-mb-3"
           >
             Start with the WebIDE
           </h2>
-           
           <p
-            class="gl-text-gray-700 gl-mb-6"
+            class="gl-mb-6 gl-text-gray-700"
           >
             Use the built-in editor to create or upload files.
           </p>
         </div>
-         
         <div
           class="gl-card-body gl-pt-0"
         >
@@ -96,7 +84,7 @@ exports[`Learn GitLab renders correctly 1`] = `
             class="gl-mb-4"
           >
             <div
-              class="flex align-items-center"
+              class="align-items-center flex"
             >
               <span
                 class="gl-text-green-500"
@@ -111,61 +99,49 @@ exports[`Learn GitLab renders correctly 1`] = `
                     href="file-mock#check-circle-filled"
                   />
                 </svg>
-                
-      Add code
-      
-                <!---->
+                Add code
               </span>
             </div>
           </div>
         </div>
-         
-        <!---->
       </div>
     </div>
   </div>
-   
   <div
     class="gl-mt-6"
   >
     <h2
-      class="gl-font-weight-bold gl-font-size-h2"
+      class="gl-font-size-h2 gl-font-weight-bold"
     >
-      
       2. Build
-    
     </h2>
   </div>
-   
   <div
     class="row"
   >
     <div
-      class="gl-mt-5 col-sm-12 col-mb-6 col-lg-4"
+      class="col-lg-4 col-mb-6 col-sm-12 gl-mt-5"
     >
       <div
         class="gl-card gl-pt-0 h-100"
       >
         <div
-          class="gl-card-header gl-bg-white gl-border-0 gl-pb-0"
+          class="gl-bg-white gl-border-0 gl-card-header gl-pb-0"
         >
           <img
             src="workspace.svg"
           />
-           
           <h2
             class="gl-font-lg gl-mb-3"
           >
             Set up your workspace
           </h2>
-           
           <p
-            class="gl-text-gray-700 gl-mb-6"
+            class="gl-mb-6 gl-text-gray-700"
           >
             Complete these tasks first so you can enjoy GitLab's features to their fullest:
           </p>
         </div>
-         
         <div
           class="gl-card-body gl-pt-0"
         >
@@ -173,7 +149,7 @@ exports[`Learn GitLab renders correctly 1`] = `
             class="gl-mb-4"
           >
             <div
-              class="flex align-items-center"
+              class="align-items-center flex"
             >
               <span
                 class="gl-text-green-500"
@@ -188,10 +164,7 @@ exports[`Learn GitLab renders correctly 1`] = `
                     href="file-mock#check-circle-filled"
                   />
                 </svg>
-                
-      Invite your colleagues
-      
-                <!---->
+                Invite your colleagues
               </span>
             </div>
           </div>
@@ -199,7 +172,7 @@ exports[`Learn GitLab renders correctly 1`] = `
             class="gl-mb-4"
           >
             <div
-              class="flex align-items-center"
+              class="align-items-center flex"
             >
               <span
                 class="gl-text-green-500"
@@ -214,10 +187,7 @@ exports[`Learn GitLab renders correctly 1`] = `
                     href="file-mock#check-circle-filled"
                   />
                 </svg>
-                
-      Create a repository
-      
-                <!---->
+                Create a repository
               </span>
             </div>
           </div>
@@ -225,7 +195,7 @@ exports[`Learn GitLab renders correctly 1`] = `
             class="gl-mb-4"
           >
             <div
-              class="flex align-items-center"
+              class="align-items-center flex"
             >
               <div>
                 <a
@@ -239,8 +209,6 @@ exports[`Learn GitLab renders correctly 1`] = `
                 >
                   Set up your first project's CI/CD
                 </a>
-                 
-                <!---->
               </div>
             </div>
           </div>
@@ -248,7 +216,7 @@ exports[`Learn GitLab renders correctly 1`] = `
             class="gl-mb-4"
           >
             <div
-              class="flex align-items-center"
+              class="align-items-center flex"
             >
               <div>
                 <a
@@ -263,8 +231,6 @@ exports[`Learn GitLab renders correctly 1`] = `
                 >
                   Start a free trial of GitLab Ultimate
                 </a>
-                 
-                <!---->
               </div>
             </div>
           </div>
@@ -272,7 +238,7 @@ exports[`Learn GitLab renders correctly 1`] = `
             class="gl-mb-4"
           >
             <div
-              class="flex align-items-center"
+              class="align-items-center flex"
             >
               <div>
                 <a
@@ -287,14 +253,11 @@ exports[`Learn GitLab renders correctly 1`] = `
                 >
                   Add code owners
                 </a>
-                 
                 <span
                   class="gl-font-style-italic gl-text-gray-500"
                   data-testid="trial-only"
                 >
-                  
-  - Included in trial
-
+                  - Included in trial
                 </span>
               </div>
             </div>
@@ -303,7 +266,7 @@ exports[`Learn GitLab renders correctly 1`] = `
             class="gl-mb-4"
           >
             <div
-              class="flex align-items-center"
+              class="align-items-center flex"
             >
               <div>
                 <a
@@ -318,49 +281,41 @@ exports[`Learn GitLab renders correctly 1`] = `
                 >
                   Enable require merge approvals
                 </a>
-                 
                 <span
                   class="gl-font-style-italic gl-text-gray-500"
                   data-testid="trial-only"
                 >
-                  
-  - Included in trial
-
+                  - Included in trial
                 </span>
               </div>
             </div>
           </div>
         </div>
-         
-        <!---->
       </div>
     </div>
     <div
-      class="gl-mt-5 col-sm-12 col-mb-6 col-lg-4"
+      class="col-lg-4 col-mb-6 col-sm-12 gl-mt-5"
     >
       <div
         class="gl-card gl-pt-0 h-100"
       >
         <div
-          class="gl-card-header gl-bg-white gl-border-0 gl-pb-0"
+          class="gl-bg-white gl-border-0 gl-card-header gl-pb-0"
         >
           <img
             src="deploy.svg"
           />
-           
           <h2
             class="gl-font-lg gl-mb-3"
           >
             Deploy
           </h2>
-           
           <p
-            class="gl-text-gray-700 gl-mb-6"
+            class="gl-mb-6 gl-text-gray-700"
           >
             Use your new GitLab workflow to deploy your application, monitor its health, and keep it secure:
           </p>
         </div>
-         
         <div
           class="gl-card-body gl-pt-0"
         >
@@ -368,7 +323,7 @@ exports[`Learn GitLab renders correctly 1`] = `
             class="gl-mb-4"
           >
             <div
-              class="flex align-items-center"
+              class="align-items-center flex"
             >
               <div>
                 <a
@@ -383,14 +338,11 @@ exports[`Learn GitLab renders correctly 1`] = `
                 >
                   Scan dependencies for licenses
                 </a>
-                 
                 <span
                   class="gl-font-style-italic gl-text-gray-500"
                   data-testid="trial-only"
                 >
-                  
-  - Included in trial
-
+                  - Included in trial
                 </span>
               </div>
             </div>
@@ -399,7 +351,7 @@ exports[`Learn GitLab renders correctly 1`] = `
             class="gl-mb-4"
           >
             <div
-              class="flex align-items-center"
+              class="align-items-center flex"
             >
               <div>
                 <a
@@ -414,14 +366,11 @@ exports[`Learn GitLab renders correctly 1`] = `
                 >
                   Scan dependencies for vulnerabilities
                 </a>
-                 
                 <span
                   class="gl-font-style-italic gl-text-gray-500"
                   data-testid="trial-only"
                 >
-                  
-  - Included in trial
-
+                  - Included in trial
                 </span>
               </div>
             </div>
@@ -430,7 +379,7 @@ exports[`Learn GitLab renders correctly 1`] = `
             class="gl-mb-4"
           >
             <div
-              class="flex align-items-center"
+              class="align-items-center flex"
             >
               <div>
                 <a
@@ -445,49 +394,41 @@ exports[`Learn GitLab renders correctly 1`] = `
                 >
                   Analyze your application for vulnerabilities with DAST
                 </a>
-                 
                 <span
                   class="gl-font-style-italic gl-text-gray-500"
                   data-testid="trial-only"
                 >
-                  
-  - Included in trial
-
+                  - Included in trial
                 </span>
               </div>
             </div>
           </div>
         </div>
-         
-        <!---->
       </div>
     </div>
     <div
-      class="gl-mt-5 col-sm-12 col-mb-6 col-lg-4"
+      class="col-lg-4 col-mb-6 col-sm-12 gl-mt-5"
     >
       <div
         class="gl-card gl-pt-0 h-100"
       >
         <div
-          class="gl-card-header gl-bg-white gl-border-0 gl-pb-0"
+          class="gl-bg-white gl-border-0 gl-card-header gl-pb-0"
         >
           <img
             src="plan.svg"
           />
-           
           <h2
             class="gl-font-lg gl-mb-3"
           >
             Plan and execute
           </h2>
-           
           <p
-            class="gl-text-gray-700 gl-mb-6"
+            class="gl-mb-6 gl-text-gray-700"
           >
             Create a workflow for your new workspace, and learn how GitLab features work together:
           </p>
         </div>
-         
         <div
           class="gl-card-body gl-pt-0"
         >
@@ -495,7 +436,7 @@ exports[`Learn GitLab renders correctly 1`] = `
             class="gl-mb-4"
           >
             <div
-              class="flex align-items-center"
+              class="align-items-center flex"
             >
               <div>
                 <a
@@ -509,8 +450,6 @@ exports[`Learn GitLab renders correctly 1`] = `
                 >
                   Create an issue
                 </a>
-                 
-                <!---->
               </div>
             </div>
           </div>
@@ -518,7 +457,7 @@ exports[`Learn GitLab renders correctly 1`] = `
             class="gl-mb-4"
           >
             <div
-              class="flex align-items-center"
+              class="align-items-center flex"
             >
               <div>
                 <a
@@ -532,14 +471,10 @@ exports[`Learn GitLab renders correctly 1`] = `
                 >
                   Submit a merge request (MR)
                 </a>
-                 
-                <!---->
               </div>
             </div>
           </div>
         </div>
-         
-        <!---->
       </div>
     </div>
   </div>

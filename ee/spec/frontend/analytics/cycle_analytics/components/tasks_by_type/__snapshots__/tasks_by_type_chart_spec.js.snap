@@ -1,5 +1,45 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TasksByTypeChart no data available should render the no data available message 1`] = `"<gl-stacked-column-chart-stub bars=\\"\\" lines=\\"\\" secondarydata=\\"\\" option=\\"[object Object]\\" presentation=\\"stacked\\" groupby=\\"\\" xaxistype=\\"category\\" xaxistitle=\\"Date\\" yaxistitle=\\"Number of tasks\\" secondarydatatitle=\\"\\" seriesnames=\\"\\" legendaveragetext=\\"Avg\\" legendmaxtext=\\"Max\\" legendmintext=\\"Min\\" legendcurrenttext=\\"Current\\" legendlayout=\\"inline\\" y-axis-type=\\"value\\"></gl-stacked-column-chart-stub>"`;
+exports[`TasksByTypeChart no data available should render the no data available message 1`] = `
+<gl-stacked-column-chart-stub
+  bars=""
+  groupby=""
+  legendaveragetext="Avg"
+  legendcurrenttext="Current"
+  legendlayout="inline"
+  legendmaxtext="Max"
+  legendmintext="Min"
+  lines=""
+  option="[object Object]"
+  presentation="stacked"
+  secondarydata=""
+  secondarydatatitle=""
+  seriesnames=""
+  xaxistitle="Date"
+  xaxistype="category"
+  y-axis-type="value"
+  yaxistitle="Number of tasks"
+/>
+`;
 
-exports[`TasksByTypeChart with data available should render the loading chart 1`] = `"<gl-stacked-column-chart-stub bars=\\"0,1,2,5,2,3,2,4,1\\" lines=\\"\\" secondarydata=\\"\\" option=\\"[object Object]\\" presentation=\\"stacked\\" groupby=\\"Group 1,Group 2,Group 3\\" xaxistype=\\"category\\" xaxistitle=\\"Date\\" yaxistitle=\\"Number of tasks\\" secondarydatatitle=\\"\\" seriesnames=\\"Cool label,Normal label\\" legendaveragetext=\\"Avg\\" legendmaxtext=\\"Max\\" legendmintext=\\"Min\\" legendcurrenttext=\\"Current\\" legendlayout=\\"inline\\" y-axis-type=\\"value\\"></gl-stacked-column-chart-stub>"`;
+exports[`TasksByTypeChart with data available should render the loading chart 1`] = `
+<gl-stacked-column-chart-stub
+  bars="0,1,2,5,2,3,2,4,1"
+  groupby="Group 1,Group 2,Group 3"
+  legendaveragetext="Avg"
+  legendcurrenttext="Current"
+  legendlayout="inline"
+  legendmaxtext="Max"
+  legendmintext="Min"
+  lines=""
+  option="[object Object]"
+  presentation="stacked"
+  secondarydata=""
+  secondarydatatitle=""
+  seriesnames="Cool label,Normal label"
+  xaxistitle="Date"
+  xaxistype="category"
+  y-axis-type="value"
+  yaxistitle="Number of tasks"
+/>
+`;

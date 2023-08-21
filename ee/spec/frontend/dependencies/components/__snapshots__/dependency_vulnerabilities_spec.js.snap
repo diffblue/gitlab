@@ -2,19 +2,14 @@
 
 exports[`DependencVulnerabilities component given a huge number vulnerabilities renders the excess message 1`] = `
 <li
-  class="text-muted text-center mt-3"
+  class="mt-3 text-center text-muted"
 >
-  
-    1 additional vulnerability not shown
-  
+  1 additional vulnerability not shown
 </li>
 `;
 
 exports[`DependencVulnerabilities component given no vulnerabilities renders an empty list 1`] = `
 <ul
   class="list-unstyled mb-0"
->
-   
-  <!---->
-</ul>
+/>
 `;
