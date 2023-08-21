@@ -60,6 +60,23 @@ const mockRules = [
       'default-agent': { namespaces: ['staging', 'releases', 'dev'] },
     },
   },
+  { type: 'pipeline', branches: ['release/*', 'staging'], branch_exceptions: ['main', 'test'] },
+  { type: 'pipeline', branches: ['release/*', 'staging'], branch_exceptions: ['main'] },
+  {
+    type: 'schedule',
+    cadence: '* */20 4 * *',
+    branches: ['test'],
+    branch_exceptions: ['main', 'test1'],
+  },
+  {
+    type: 'schedule',
+    cadence: '* */20 4 * *',
+    agents: {
+      'default-agent': { namespaces: ['staging', 'releases', 'dev'] },
+    },
+    branch_exceptions: ['main', 'test1'],
+  },
+  { type: 'pipeline', branch_type: 'default' },
 ];
 const mockDefaultTagsAction = {
   message: 'Automatically selected runners',
@@ -153,14 +170,66 @@ describe('humanizeRules', () => {
 
   it('returns rules with different number of branches as human-readable strings', () => {
     expect(humanizeRules(mockRules)).toStrictEqual([
-      'every 10 minutes, every hour, every day on the main branch',
-      'Every time a pipeline runs for the release/* and staging branches',
-      'Every time a pipeline runs for the release/1.*, canary and staging branches',
-      'by the agent named default-agent for all namespaces every minute, every 20 hours, on day 4 of the month',
-      'by the agent named default-agent for all namespaces every minute, every 20 hours, on day 4 of the month',
-      'by the agent named default-agent for the production namespace every minute, every 20 hours, on day 4 of the month',
-      'by the agent named default-agent for the staging and releases namespaces every minute, every 20 hours, on day 4 of the month',
-      'by the agent named default-agent for the staging, releases and dev namespaces every minute, every 20 hours, on day 4 of the month',
+      {
+        branchExceptions: [],
+        summary: 'every 10 minutes, every hour, every day on the main branch',
+      },
+      {
+        branchExceptions: [],
+        summary: 'Every time a pipeline runs for the release/* and staging branches',
+      },
+      {
+        branchExceptions: [],
+        summary: 'Every time a pipeline runs for the release/1.*, canary and staging branches',
+      },
+      {
+        branchExceptions: [],
+        summary:
+          'by the agent named default-agent for all namespaces every minute, every 20 hours, on day 4 of the month',
+      },
+      {
+        branchExceptions: [],
+        summary:
+          'by the agent named default-agent for all namespaces every minute, every 20 hours, on day 4 of the month',
+      },
+      {
+        branchExceptions: [],
+        summary:
+          'by the agent named default-agent for the production namespace every minute, every 20 hours, on day 4 of the month',
+      },
+      {
+        branchExceptions: [],
+        summary:
+          'by the agent named default-agent for the staging and releases namespaces every minute, every 20 hours, on day 4 of the month',
+      },
+      {
+        branchExceptions: [],
+        summary:
+          'by the agent named default-agent for the staging, releases and dev namespaces every minute, every 20 hours, on day 4 of the month',
+      },
+      {
+        branchExceptions: ['main', 'test'],
+        summary:
+          'Every time a pipeline runs for the release/* and staging branches except branches:',
+      },
+      {
+        branchExceptions: ['main'],
+        summary: 'Every time a pipeline runs for the release/* and staging branches except branch:',
+      },
+      {
+        branchExceptions: ['main', 'test1'],
+        summary:
+          'every minute, every 20 hours, on day 4 of the month on the test branch except branches:',
+      },
+      {
+        branchExceptions: ['main', 'test1'],
+        summary:
+          'by the agent named default-agent for the staging, releases and dev namespaces every minute, every 20 hours, on day 4 of the month except branches:',
+      },
+      {
+        branchExceptions: [],
+        summary: 'Every time a pipeline runs for the default branch',
+      },
     ]);
   });
 
@@ -171,9 +240,18 @@ describe('humanizeRules', () => {
   it('returns rules with different branch types as human-readable strings', () => {
     expect(humanizeRules(mockRulesBranchType)).toStrictEqual([
       INVALID_RULE_MESSAGE,
-      'Every time a pipeline runs for any protected branch',
-      'Every time a pipeline runs for the default branch',
-      'every minute, every 20 hours, on day 4 of the month on any protected branch',
+      {
+        branchExceptions: [],
+        summary: 'Every time a pipeline runs for any protected branch',
+      },
+      {
+        branchExceptions: [],
+        summary: 'Every time a pipeline runs for the default branch',
+      },
+      {
+        branchExceptions: [],
+        summary: 'every minute, every 20 hours, on day 4 of the month on any protected branch',
+      },
     ]);
   });
 });

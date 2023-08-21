@@ -4,6 +4,7 @@ import { s__ } from '~/locale';
 import { fromYaml } from '../../policy_editor/scan_execution/lib';
 import { ACTIONS } from '../../policy_editor/constants';
 import { SUMMARY_TITLE } from '../constants';
+import BranchExceptionsToggleList from '../branch_exceptions_toggle_list.vue';
 import InfoRow from '../info_row.vue';
 import DrawerLayout from '../drawer_layout.vue';
 import Tags from './humanized_actions/tags.vue';
@@ -22,6 +23,7 @@ export default {
     [ACTIONS.variables]: Variables,
   },
   components: {
+    BranchExceptionsToggleList,
     Tags,
     Variables,
     GlSprintf,
@@ -53,6 +55,9 @@ export default {
     humanizedActionComponent({ action }) {
       return this.$options.HUMANIZED_ACTION_COMPONENTS[action];
     },
+    showBranchExceptions(exceptions) {
+      return exceptions?.length > 0;
+    },
   },
 };
 </script>
@@ -73,7 +78,7 @@ export default {
               <strong>{{ content }}</strong>
             </template>
           </gl-sprintf>
-          <ul class="gl-pl-6">
+          <ul>
             <li v-for="criteria in criteriaList" :key="criteria.message" class="gl-mt-3">
               {{ criteria.message }}
               <component :is="humanizedActionComponent(criteria)" :criteria="criteria" />
@@ -83,7 +88,12 @@ export default {
         <div class="gl-mb-3">{{ $options.i18n.ruleMessage }}</div>
         <ul>
           <li v-for="(rule, idx) in humanizedRules" :key="idx">
-            {{ rule }}
+            {{ rule.summary }}
+            <branch-exceptions-toggle-list
+              v-if="showBranchExceptions(rule.branchExceptions)"
+              class="gl-my-2"
+              :branch-exceptions="rule.branchExceptions"
+            />
           </li>
         </ul>
       </info-row>
