@@ -195,11 +195,6 @@ $subscriptions-full-width-lg: 541px;
       font-weight: $gl-font-weight-normal;
     }
 
-    .field_with_errors {
-      @include gl-flex-grow-1;
-      display: inline;
-    }
-
     .project-import {
       h5 {
         display: none;
