@@ -3,6 +3,7 @@ import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import { storageTypeHelpPaths as helpLinks } from '~/usage_quotas/storage/constants';
+import { PROJECT_ENFORCEMENT_TYPE } from './constants';
 import NamespaceStorageApp from './components/namespace_storage_app.vue';
 
 Vue.use(VueApollo);
@@ -44,6 +45,7 @@ export default () => {
       purchaseStorageUrl,
       buyAddonTargetAttr,
       enforcementType,
+      isNamespaceUnderProjectLimits: enforcementType === PROJECT_ENFORCEMENT_TYPE,
       helpLinks,
     },
     render(createElement) {

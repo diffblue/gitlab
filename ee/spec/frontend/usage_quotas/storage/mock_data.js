@@ -15,7 +15,7 @@ export const defaultNamespaceProvideValues = {
   buyAddonTargetAttr: '_blank',
   namespacePlanName: 'Free',
   namespacePlanStorageIncluded: 1002321,
-  enforcementType: 'project_repository_limit',
+  isNamespaceUnderProjectLimits: true,
   helpLinks: storageTypeHelpPaths,
 };
 
@@ -52,7 +52,7 @@ export const withRootStorageStatistics = {
 export const statisticsCardDefaultProps = {
   totalStorage: 100 * 1024,
   usedStorage: 50 * 1024,
-  hideProgressBar: false,
+  planStorageDescription: 'Storage per project included in Free subscription',
   loading: false,
 };
 
