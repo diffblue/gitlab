@@ -37,5 +37,15 @@ RSpec.describe Gitlab::UrlBuilder do
         expect(subject.build(object, only_path: true)).to eq(path)
       end
     end
+
+    context 'for group level issues' do
+      # Expectation in place to make sure it doesn't fail. Can be updated when we have a URL for group level issues
+      # see https://gitlab.com/gitlab-org/gitlab/-/work_items/393987
+      it 'returns nil' do
+        issue = build_stubbed(:issue, :group_level)
+
+        expect(subject.build(issue)).to be_nil
+      end
+    end
   end
 end
