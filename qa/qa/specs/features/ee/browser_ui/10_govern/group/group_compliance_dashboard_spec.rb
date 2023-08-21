@@ -51,7 +51,7 @@ module QA
           it 'shows only "less than two approvers" violation', :reliable,
             testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/390949' do
             group.visit!
-            Page::Group::Menu.perform(&:click_compliance_report_link)
+            Page::Group::Menu.perform(&:go_to_compliance_report)
             QA::EE::Page::Group::Compliance::Show.perform do |compliance_report|
               expect(compliance_report).to have_violation("Less than 2 approvers", merge_request.title)
               expect(compliance_report).not_to have_violation(author_approval_violation, merge_request.title)
@@ -74,7 +74,7 @@ module QA
           it 'shows only "author approved merge request" and "approved by committer" violations', :reliable,
             testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/390948' do
             group.visit!
-            Page::Group::Menu.perform(&:click_compliance_report_link)
+            Page::Group::Menu.perform(&:go_to_compliance_report)
             QA::EE::Page::Group::Compliance::Show.perform do |compliance_report|
               expect(compliance_report).not_to have_violation(number_of_approvals_violation, merge_request.title)
               expect(compliance_report).to have_violation(author_approval_violation, merge_request.title)

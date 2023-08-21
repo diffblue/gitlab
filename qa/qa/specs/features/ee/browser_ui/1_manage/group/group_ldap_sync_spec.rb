@@ -156,7 +156,7 @@ module QA
             settings.click_add_sync_button
           end
 
-          Page::Group::Menu.perform(&:click_subgroup_members_item)
+          Page::Group::Menu.perform(&:go_to_members)
         end
 
         it_behaves_like 'Group sync', %w[https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347893
@@ -198,7 +198,7 @@ module QA
       end
 
       def verify_users_synced(expected_users)
-        Page::Group::Menu.perform(&:click_subgroup_members_item)
+        Page::Group::Menu.perform(&:go_to_members)
 
         EE::Page::Group::Members.perform do |members|
           members.click_sync_now_if_needed

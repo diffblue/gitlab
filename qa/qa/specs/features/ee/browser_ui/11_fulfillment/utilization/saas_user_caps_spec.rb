@@ -31,7 +31,7 @@ module QA
 
         Flow::Login.sign_in_as_admin
         group.visit!
-        Page::Group::Menu.perform(&:click_group_general_settings_item)
+        Page::Group::Menu.perform(&:go_to_general_settings)
         Page::Group::Settings::General.perform do |settings|
           settings.set_saas_user_cap_limit(2)
         end

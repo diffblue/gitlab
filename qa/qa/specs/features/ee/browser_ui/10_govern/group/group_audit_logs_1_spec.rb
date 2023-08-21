@@ -59,7 +59,7 @@ module QA
         before do
           sign_in(as_admin: true)
           group.visit!
-          Page::Group::Menu.perform(&:click_group_general_settings_item)
+          Page::Group::Menu.perform(&:go_to_general_settings)
           Page::Group::Settings::General.perform do |settings|
             settings.set_repository_size_limit(100)
             settings.click_save_name_visibility_settings_button
@@ -75,7 +75,7 @@ module QA
           sign_in
           group.visit!
           updated_group_name = "#{group.path}-updated"
-          Page::Group::Menu.perform(&:click_group_general_settings_item)
+          Page::Group::Menu.perform(&:go_to_general_settings)
           Page::Group::Settings::General.perform do |settings|
             settings.set_group_name(updated_group_name)
             settings.click_save_name_visibility_settings_button
@@ -90,7 +90,7 @@ module QA
         before do
           sign_in
           group.visit!
-          Page::Group::Menu.perform(&:click_subgroup_members_item)
+          Page::Group::Menu.perform(&:go_to_members)
           Page::Group::Members.perform do |members_page|
             members_page.add_member(user.username, 'Guest')
             members_page.update_access_level(user.username, "Developer")

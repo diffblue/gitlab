@@ -36,7 +36,7 @@ module QA
         end
 
         project.group.visit!
-        Page::Group::Menu.perform(&:click_group_epics_link)
+        Page::Group::Menu.perform(&:go_to_epics)
         QA::EE::Page::Group::Epic::Index.perform do |index|
           expect(index).to have_epic_title(issue.title)
         end

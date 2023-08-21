@@ -132,7 +132,7 @@ module QA
           Page::Main::Menu.perform(&:go_to_groups)
           Page::Dashboard::Groups.perform { |groups| groups.click_group(Runtime::Namespace.sandbox_name) }
 
-          Page::Group::Menu.perform(&:click_group_general_settings_item)
+          Page::Group::Menu.perform(&:go_to_general_settings)
 
           Page::Group::Settings::General.perform do |settings|
             settings.choose_custom_project_template(template_container_group_name)

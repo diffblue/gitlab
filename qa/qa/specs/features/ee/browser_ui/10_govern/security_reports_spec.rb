@@ -144,7 +144,7 @@ module QA
 
         project.group.visit!
 
-        Page::Group::Menu.perform(&:click_group_security_link)
+        Page::Group::Menu.perform(&:go_to_security_dashboard)
 
         EE::Page::Group::Secure::Show.perform do |dashboard|
           Support::Retrier.retry_on_exception(
@@ -156,7 +156,7 @@ module QA
           end
         end
 
-        Page::Group::Menu.perform(&:click_group_vulnerability_link)
+        Page::Group::Menu.perform(&:go_to_vulnerability_report)
 
         EE::Page::Group::Secure::Show.perform do |dashboard|
           dashboard.filter_project(project.id)
