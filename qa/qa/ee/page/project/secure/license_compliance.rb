@@ -75,18 +75,22 @@ module QA
                 table = find('#content-body')
                 row_texts.concat(table.all('div.table-mobile-content').map(&:text))
 
-                # If we've reached the end of the table break
-                # Use exact_text so it doesn't match GitLab Next
-                break unless has_link?(exact_text: 'Next')
-
-                # Click the "Next" button to go to the next page
-                click_on(exact_text: 'Next')
+                finished_pagination = false
+                page.within(table) do
+                  # Is the Next button enabled?
+                  if has_link?('Next', wait: 0)
+                    # Click Next to get to the next page
+                    click_link('Next')
+                  else
+                    # Otherwise we've finished with the pagination
+                    finished_pagination = true
+                  end
+                end
+                break if finished_pagination
               end
-
               licenses.each do |license|
                 return false unless row_texts.include?(license)
               end
-
               true
             end
           end
