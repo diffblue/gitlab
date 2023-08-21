@@ -2,6 +2,8 @@
 
 FactoryBot.define do
   factory :pm_identifier, class: Hash do
+    url { FFaker::Internet.uri("https") }
+
     trait :cve do
       type { 'cve' }
       sequence(:name) { |n| "CVE-#{Date.today.year}-#{n.to_s.rjust(5, '0')}" }
@@ -24,6 +26,6 @@ FactoryBot.define do
     end
 
     skip_create
-    initialize_with { attributes }
+    initialize_with { attributes.with_indifferent_access.freeze }
   end
 end

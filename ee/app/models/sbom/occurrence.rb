@@ -17,6 +17,8 @@ module Sbom
     validates :input_file_path, length: { maximum: 255 }
 
     delegate :name, to: :component
+    delegate :purl_type, to: :component
+    delegate :component_type, to: :component
     delegate :version, to: :component_version, allow_nil: true
     delegate :packager, to: :source, allow_nil: true
 

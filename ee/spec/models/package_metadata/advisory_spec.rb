@@ -69,25 +69,25 @@ RSpec.describe PackageMetadata::Advisory, type: :model, feature_category: :softw
         let(:identifiers) { [identifier] }
 
         context 'with missing type' do
-          let(:identifier) { base_identifier.reject { |k, _| k == :type } }
+          let(:identifier) { base_identifier.reject { |k, _| k == 'type' } }
 
           it { is_expected.not_to be_valid }
         end
 
         context 'with missing name' do
-          let(:identifier) { base_identifier.reject { |k, _| k == :name } }
+          let(:identifier) { base_identifier.reject { |k, _| k == 'name' } }
 
           it { is_expected.not_to be_valid }
         end
 
         context 'with missing url' do
-          let(:identifier) { base_identifier.reject { |k, _| k == :url } }
+          let(:identifier) { base_identifier.reject { |k, _| k == 'url' } }
 
           it { is_expected.to be_valid }
         end
 
         context 'with missing value' do
-          let(:identifier) { base_identifier.reject { |k, _| k == :value } }
+          let(:identifier) { base_identifier.reject { |k, _| k == 'value' } }
 
           it { is_expected.not_to be_valid }
         end

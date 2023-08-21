@@ -91,5 +91,11 @@ RSpec.describe Sbom::Source, type: :model, feature_category: :dependency_managem
 
       it { is_expected.to eq('package-lock.json') }
     end
+
+    describe '#source_file_path' do
+      subject { source.source_file_path }
+
+      it { is_expected.to eq('package.json') }
+    end
   end
 end

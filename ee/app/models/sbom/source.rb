@@ -17,5 +17,9 @@ module Sbom
     def input_file_path
       source.dig('input_file', 'path')
     end
+
+    def source_file_path
+      source.dig('source_file', 'path')
+    end
   end
 end
