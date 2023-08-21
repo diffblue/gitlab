@@ -12,9 +12,8 @@ module QA
               super
 
               base.class_eval do
-                view 'ee/app/views/projects/protected_tags/ee/_create_protected_tag.html.haml' do
-                  element :access_levels_content
-                  element :access_levels_dropdown
+                view 'app/assets/javascripts/protected_tags/protected_tag_create.js' do
+                  element :allowed_to_create_dropdown
                 end
               end
             end

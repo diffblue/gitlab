@@ -65,7 +65,6 @@ export default {
   directives: { GlTooltip },
   inject: {
     accessLevelsData: { default: [] },
-
     apiLink: {},
     docsLink: {},
   },
@@ -182,6 +181,7 @@ export default {
     unifiedRulesHelpText: s__(
       'ProtectedEnvironments|To configure unified approval rules, use the %{apiLinkStart}API%{apiLinkEnd}. Consider using %{docsLinkStart}multiple approval rules%{docsLinkEnd} instead.',
     ),
+    accessDropdownLabel: s__('ProtectedEnvironments|Select users'),
   },
 };
 </script>
@@ -197,6 +197,7 @@ export default {
       </template>
       <access-dropdown
         id="create-approver-dropdown"
+        :label="$options.i18n.accessDropdownLabel"
         :access-levels-data="accessLevelsData"
         :access-level="$options.ACCESS_LEVELS.DEPLOY"
         :disabled="disabled"

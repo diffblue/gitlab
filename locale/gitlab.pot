@@ -2461,6 +2461,9 @@ msgstr ""
 msgid "AccessDropdown|Roles"
 msgstr ""
 
+msgid "AccessDropdown|Select"
+msgstr ""
+
 msgid "AccessDropdown|Users"
 msgstr ""
 
@@ -38201,6 +38204,9 @@ msgstr ""
 msgid "ProtectedEnvironments|Save"
 msgstr ""
 
+msgid "ProtectedEnvironments|Select users"
+msgstr ""
+
 msgid "ProtectedEnvironments|Set which groups, access levels or users are required to approve."
 msgstr ""
 
@@ -38277,9 +38283,6 @@ msgid "ProtectedEnvironment|Select environment"
 msgstr ""
 
 msgid "ProtectedEnvironment|Select groups"
-msgstr ""
-
-msgid "ProtectedEnvironment|Select users"
 msgstr ""
 
 msgid "ProtectedEnvironment|There are currently no protected environments."

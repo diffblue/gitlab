@@ -43,6 +43,7 @@ RSpec.shared_examples "protected tags > access control > EE" do
     set_allowed_to('create')
 
     click_on "Protect"
+    wait_for_requests
 
     set_allowed_to('create', users.map(&:name), form: ".js-protected-tag-edit-form")
     set_allowed_to('create', groups.map(&:name), form: ".js-protected-tag-edit-form")
@@ -68,6 +69,7 @@ RSpec.shared_examples "protected tags > access control > EE" do
     groups.each { |group| set_allowed_to('create', group.name) }
 
     click_on "Protect"
+    wait_for_requests
 
     users.each { |user| set_allowed_to('create', user.name, form: ".js-protected-tag-edit-form") }
     groups.each { |group| set_allowed_to('create', group.name, form: ".js-protected-tag-edit-form") }
@@ -91,11 +93,12 @@ RSpec.shared_examples "protected tags > access control > EE" do
     set_allowed_to('create', roles.values)
 
     click_on 'Protect'
+    wait_for_requests
 
     # Update Protected Tag
     within(".protected-tags-list") do
       find(".js-allowed-to-create").click
-      find(".dropdown-input-field").set(users.last.name) # Find a user that is not loaded
+      find(".gl-search-box-by-type-input").set(users.last.name) # Find a user that is not loaded
 
       expect(page).to have_selector('.dropdown-header', count: 3)
 
@@ -113,7 +116,7 @@ RSpec.shared_examples "protected tags > access control > EE" do
 
     # Verify the user is appended in the dropdown
     find(".protected-tags-list .js-allowed-to-create").click
-    expect(page).to have_selector '.dropdown-content .is-active', text: users.last.name
+    expect(page).to have_selector '.gl-dropdown-contents .gl-dropdown-item', text: users.last.name
 
     expect(ProtectedTag.count).to eq(1)
     roles.each { |(access_type_id, _)| expect(access_levels.map(&:access_level)).to include(access_type_id) }
