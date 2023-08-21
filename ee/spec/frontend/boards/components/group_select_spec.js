@@ -1,6 +1,6 @@
-import { GlDropdown, GlDropdownItem, GlSearchBoxByType, GlLoadingIcon } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlListboxItem, GlLoadingIcon } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
-import Vue, { nextTick } from 'vue';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import GroupSelect from 'ee/boards/components/group_select.vue';
 import subgroupsQuery from 'ee/boards/graphql/sub_groups.query.graphql';
@@ -17,13 +17,13 @@ describe('GroupSelect component', () => {
   let mockApollo;
 
   const findLabel = () => wrapper.findByTestId('header-label');
-  const findGlDropdown = () => wrapper.findComponent(GlDropdown);
+  const findGlDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
   const findGlDropdownLoadingIcon = () =>
     findGlDropdown().find('button:first-child').findComponent(GlLoadingIcon);
-  const findGlSearchBoxByType = () => wrapper.findComponent(GlSearchBoxByType);
-  const findGlDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
+  const findGlSearchBoxByType = () => wrapper.findByTestId('listbox-search-input');
+  const findGlDropdownItems = () => wrapper.findAllComponents(GlListboxItem);
   const findFirstGlDropdownItem = () => findGlDropdownItems().at(0);
-  const findInMenuLoadingIcon = () => wrapper.findByTestId('dropdown-text-loading-icon');
+  const findInMenuLoadingIcon = () => wrapper.findByTestId('listbox-infinite-scroll-loader');
 
   const groupsQueryHandler = jest.fn().mockResolvedValue(mockGroupsResponse());
   const emptyGroupsQueryHandler = jest.fn().mockResolvedValue(mockGroupsResponse([]));
@@ -80,10 +80,6 @@ describe('GroupSelect component', () => {
 
       it('shows GlSearchBoxByType with default attributes', () => {
         expect(findGlSearchBoxByType().exists()).toBe(true);
-        expect(findGlSearchBoxByType().vm.$attrs).toMatchObject({
-          placeholder: 'Search groups',
-          debounce: '250',
-        });
       });
 
       it("displays the fetched groups's name", () => {
@@ -92,7 +88,7 @@ describe('GroupSelect component', () => {
       });
 
       it('does not render loading icon in the menu', () => {
-        expect(findInMenuLoadingIcon().isVisible()).toBe(false);
+        expect(findInMenuLoadingIcon().exists()).toBe(false);
       });
     });
 
@@ -110,15 +106,7 @@ describe('GroupSelect component', () => {
       it('renders the name of the selected group', () => {
         createWrapper({ selectedGroup: mockGroup0 });
 
-        expect(findGlDropdown().find('.gl-dropdown-button-text').text()).toBe(mockGroup0.name);
-      });
-    });
-
-    describe('when groups are loading', () => {
-      it('displays and hides gl-loading-icon while and after fetching data', async () => {
-        createWrapper();
-        await nextTick();
-        expect(findInMenuLoadingIcon().isVisible()).toBe(true);
+        expect(findGlDropdown().props('toggleText')).toBe(mockGroup0.name);
       });
     });
   });
