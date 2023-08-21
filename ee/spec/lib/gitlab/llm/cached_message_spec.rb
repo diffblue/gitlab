@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::CachedMessage, feature_category: :shared do
+RSpec.describe Gitlab::Llm::CachedMessage, feature_category: :duo_chat do
   let(:timestamp) { Time.current }
   let(:data) do
     {

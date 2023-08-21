@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_category: :no_category do # rubocop: disable RSpec/InvalidFeatureCategory
+RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_category: :ai_abstraction_layer do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:project) { create(:project, :public, group: group) }

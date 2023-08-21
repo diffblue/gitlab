@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['AiMessageType'], feature_category: :shared do
+RSpec.describe GitlabSchema.types['AiMessageType'], feature_category: :duo_chat do
   include GraphqlHelpers
 
   it { expect(described_class.graphql_name).to eq('AiMessageType') }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Chain::Utils::TextProcessing, feature_category: :shared do
+RSpec.describe Gitlab::Llm::Chain::Utils::TextProcessing, feature_category: :duo_chat do
   describe '.cleanup_text' do
     context 'when stop word is present' do
       it 'returns test upto the default stop word' do

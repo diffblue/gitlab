@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::VertexAi::ModelConfigurations::Text, feature_category: :shared do
+RSpec.describe Gitlab::Llm::VertexAi::ModelConfigurations::Text, feature_category: :ai_abstraction_layer do
   let_it_be(:host) { 'example-env.com' }
   let_it_be(:project) { 'cllm' }
 

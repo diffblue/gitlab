@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::ResponseModifiers::EmptyResponseModifier, feature_category: :gitlab_duo do # rubocop: disable RSpec/InvalidFeatureCategory
+RSpec.describe Gitlab::Llm::ResponseModifiers::EmptyResponseModifier, feature_category: :duo_chat do
   let(:ai_response) { {} }
 
   it 'parses content from the ai response' do

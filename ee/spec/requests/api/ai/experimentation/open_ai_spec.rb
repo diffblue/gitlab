@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Ai::Experimentation::OpenAi, feature_category: :not_owned do # rubocop: disable  RSpec/InvalidFeatureCategory
+RSpec.describe API::Ai::Experimentation::OpenAi, feature_category: :ai_abstraction_layer do
   let_it_be(:current_user) { create :user }
   let(:header) { { 'Authorization' => ['Bearer test-key'], 'Content-Type' => ['application/json'] } }
   let(:body) { { 'test' => 'test' } }

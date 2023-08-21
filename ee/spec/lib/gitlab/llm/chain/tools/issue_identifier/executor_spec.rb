@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_category: :shared do
+RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_category: :duo_chat do
   RSpec.shared_examples 'success response' do |ff_off|
     it 'returns success response' do
       ai_request = double

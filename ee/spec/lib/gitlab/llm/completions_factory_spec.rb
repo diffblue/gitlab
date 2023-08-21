@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::CompletionsFactory, feature_category: :no_category do # rubocop: disable RSpec/InvalidFeatureCategory
+RSpec.describe Gitlab::Llm::CompletionsFactory, feature_category: :ai_abstraction_layer do
   describe ".completion" do
     context 'with existing completion' do
       let(:completion_name) { :summarize_review }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::BaseResponseModifier, feature_category: :no_category do # rubocop: disable RSpec/InvalidFeatureCategory
+RSpec.describe Gitlab::Llm::BaseResponseModifier, feature_category: :duo_chat do
   subject { described_class.new(response_json) }
 
   shared_examples 'handles the incoming ai_response' do

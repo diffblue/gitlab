@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::VertexAi::Configuration, feature_category: :not_owned do # rubocop: disable  RSpec/InvalidFeatureCategory
+RSpec.describe Gitlab::Llm::VertexAi::Configuration, feature_category: :ai_abstraction_layer do
   let(:host) { "example-#{SecureRandom.hex(8)}.com" }
   let(:url) { "https://#{host}/api" }
   let(:model_config) { instance_double('Gitlab::Llm::VertexAi::ModelConfigurations::CodeChat', host: host) }

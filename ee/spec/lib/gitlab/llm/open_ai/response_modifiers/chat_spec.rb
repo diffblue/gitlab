@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::OpenAi::ResponseModifiers::Chat, feature_category: :no_category do # rubocop: disable RSpec/InvalidFeatureCategory
+RSpec.describe Gitlab::Llm::OpenAi::ResponseModifiers::Chat, feature_category: :duo_chat do
   let(:ai_response) { { choices: [{ message: { content: 'hello' } }] }.to_json }
 
   it 'parses content from the ai response' do

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Ai::Experimentation::Anthropic, feature_category: :shared do
+RSpec.describe API::Ai::Experimentation::Anthropic, feature_category: :ai_abstraction_layer do
   let_it_be(:current_user) { create(:user) }
   let(:body) { { 'test' => 'test' } }
   let(:anthropic_api_key) { 'api-key' }

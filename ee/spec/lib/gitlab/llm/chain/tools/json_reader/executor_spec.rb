@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failures, feature_category: :shared do
+RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failures, feature_category: :duo_chat do
   subject(:reader) { described_class.new(context: context, options: options) }
 
   let_it_be(:user) { create(:user) }

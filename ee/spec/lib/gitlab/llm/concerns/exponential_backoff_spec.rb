@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Concerns::ExponentialBackoff, feature_category: :no_category do # rubocop: disable RSpec/InvalidFeatureCategory
+RSpec.describe Gitlab::Llm::Concerns::ExponentialBackoff, feature_category: :ai_abstraction_layer do
   let(:body) { { 'test' => 'test' } }
   let(:response) { instance_double(Net::HTTPResponse, body: body.to_json) }
   let(:success) do

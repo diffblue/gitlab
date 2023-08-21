@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :not_owned do # rubocop: disable  RSpec/InvalidFeatureCategory
+RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_layer do
   let_it_be(:user) { create(:user) }
 
   let(:access_token) { SecureRandom.uuid }

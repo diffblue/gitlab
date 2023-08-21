@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Chain::Concerns::AiDependent, feature_category: :shared do
+RSpec.describe Gitlab::Llm::Chain::Concerns::AiDependent, feature_category: :duo_chat do
   describe '#prompt' do
     let(:options) { { suggestions: "", input: "" } }
     let(:ai_request) { ::Gitlab::Llm::Chain::Requests::Anthropic.new(double) }

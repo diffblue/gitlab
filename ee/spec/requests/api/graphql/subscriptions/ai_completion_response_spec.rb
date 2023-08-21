@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :not_owned do # rubocop: disable RSpec/InvalidFeatureCategory
+RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_chat do # rubocop: disable RSpec/InvalidFeatureCategory
   include GraphqlHelpers
   include Graphql::Subscriptions::Notes::Helper
 

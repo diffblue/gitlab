@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :shared do
+RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction_layer do
   include StubRequests
 
   let_it_be(:user) { create(:user) }

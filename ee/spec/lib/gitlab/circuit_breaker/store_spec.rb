@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::CircuitBreaker::Store, :clean_gitlab_redis_rate_limiting, feature_category: :shared do
+RSpec.describe Gitlab::CircuitBreaker::Store, :clean_gitlab_redis_rate_limiting, feature_category: :ai_abstraction_layer do
   let(:key) { 'key-1' }
   let(:value) { 'value' }
   let(:circuit_store) { described_class.new }

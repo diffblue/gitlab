@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
+RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
   include FakeBlobHelpers
 
   let_it_be(:user) { create(:user) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Prompts::VertexAi, feature_category: :shared do
+RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Prompts::VertexAi, feature_category: :duo_chat do
   describe '.prompt' do
     it 'returns prompt' do
       prompt = described_class.prompt({ notes_content: 'foo', num: 123 })[:prompt]

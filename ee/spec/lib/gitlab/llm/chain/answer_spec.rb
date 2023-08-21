@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Chain::Answer, feature_category: :shared do
+RSpec.describe Gitlab::Llm::Chain::Answer, feature_category: :duo_chat do
   let(:context) { instance_double(Gitlab::Llm::Chain::GitlabContext) }
   let(:tools) { [Gitlab::Llm::Chain::Tools::IssueIdentifier] }
   let(:tool_double) { instance_double(Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor) }

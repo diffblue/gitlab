@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Llm::BaseService, :saas, feature_category: :no_category do # rubocop: disable RSpec/InvalidFeatureCategory
+RSpec.describe Llm::BaseService, :saas, feature_category: :ai_abstraction_layer do
   let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, group: group) }

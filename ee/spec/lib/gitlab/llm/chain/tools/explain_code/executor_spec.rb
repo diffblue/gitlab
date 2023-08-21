@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Chain::Tools::ExplainCode::Executor, feature_category: :shared do
+RSpec.describe Gitlab::Llm::Chain::Tools::ExplainCode::Executor, feature_category: :duo_chat do
   let_it_be(:user) { create(:user) }
 
   let(:ai_request_double) { instance_double(Gitlab::Llm::Chain::Requests::Anthropic) }

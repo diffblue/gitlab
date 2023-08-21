@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Serializers::IssueSerializer, feature_category: :no_category do # rubocop: disable RSpec/InvalidFeatureCategory
+RSpec.describe Gitlab::Llm::Serializers::IssueSerializer, feature_category: :duo_chat do
   let_it_be(:user) { create(:user) }
   let_it_be(:issue) { create(:issue) }
   let_it_be(:content_limit) { 1000 }

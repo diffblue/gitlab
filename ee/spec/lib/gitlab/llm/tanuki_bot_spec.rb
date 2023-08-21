@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
+RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
   describe '#execute' do
     let_it_be(:user) { create(:user) }
     let_it_be(:embeddings) { create_list(:tanuki_bot_mvc, 2) }

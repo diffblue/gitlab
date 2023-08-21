@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Chain::Requests::OpenAi, feature_category: :shared do
+RSpec.describe Gitlab::Llm::Chain::Requests::OpenAi, feature_category: :duo_chat do
   describe 'initializer' do
     it 'initializes the openai client' do
       request = described_class.new(double)
