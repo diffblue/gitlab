@@ -90,6 +90,7 @@ export default {
     approvalCount: s__('ProtectedEnvironments|Required approval count'),
     editApproverButton: s__('ProtectedEnvironments|Edit'),
     saveApproverButton: s__('ProtectedEnvironments|Save'),
+    accessDropdownLabel: s__('ProtectedEnvironments|Select users'),
   },
   ACCESS_LEVELS,
   DEPLOYER_RULE_KEY,
@@ -114,6 +115,7 @@ export default {
           <access-dropdown
             id="update-deployer-dropdown"
             class="gl-w-30p"
+            :label="$options.i18n.accessDropdownLabel"
             :access-levels-data="accessLevelsData"
             :access-level="$options.ACCESS_LEVELS.DEPLOY"
             @hidden="setRule({ environment: addingEnvironment, newRules: $event })"

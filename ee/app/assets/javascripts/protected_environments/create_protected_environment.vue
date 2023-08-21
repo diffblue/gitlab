@@ -128,6 +128,7 @@ export default {
     ),
     buttonText: s__('ProtectedEnvironment|Protect'),
     buttonTextCancel: __('Cancel'),
+    accessDropdownLabel: s__('ProtectedEnvironments|Select users'),
   },
 };
 </script>
@@ -168,6 +169,7 @@ export default {
           </template>
           <access-dropdown
             id="create-deployer-dropdown"
+            :label="$options.i18n.accessDropdownLabel"
             :access-levels-data="accessLevelsData"
             :access-level="$options.ACCESS_LEVELS.DEPLOY"
             :disabled="disabled"
