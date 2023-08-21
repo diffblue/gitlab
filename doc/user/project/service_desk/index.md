@@ -190,6 +190,124 @@ To edit the custom email display name:
 1. Below **Email display name**, enter a new name.
 1. Select **Save changes**.
 
+### Custom email address (Beta)
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/329990) in GitLab 16.3 [with a flag](../../../administration/feature_flags.md) named `service_desk_custom_email`. Disabled by default.
+
+FLAG:
+On self-managed GitLab, by default this feature is not available. To make it available per project or for your
+entire instance, an administrator can [enable the feature flag](../../../administration/feature_flags.md)
+named `service_desk_custom_email`. On GitLab.com, this feature is not available. The feature is not ready for production use.
+
+Configure a custom email address to show as the sender of your support communication.
+Maintain brand identity and instill confidence among support requesters with a domain they recognize.
+
+This feature is in [Beta](../../../policy/experiment-beta-support.md#beta).
+A Beta feature is not production-ready, but is unlikely to change drastically
+before it's released. We encourage users to try Beta features and provide feedback
+in [the feedback issue](https://gitlab.com/gitlab-org/gitlab/-/issues/416637).
+
+#### Prerequisites
+
+You can use one custom email address for Service Desk per project and it must be unique across the instance.
+
+The custom email address you want to use must meet all of the following requirements:
+
+- You can set up email forwarding.
+- Forwarded emails preserve the original `From` header.
+- Your service provider must support sub-addressing. An email address consists of a local part (everything before `@`) and a
+  domain part.
+
+  With email sub-addressing you can create unique variations of an email address by adding a `+` symbol followed
+  by any text to the local part. Given the email address `support@example.com`, check whether sub-addressing is supported by
+  sending an email to `support+1@example.com`. This email should appear in your mailbox.
+- You have SMTP credentials (ideally, you should use an app password).
+- You must have at least the Maintainer role for the project.
+- Service Desk must be configured for the project.
+
+#### Configure a custom email address
+
+Configure and verify a custom email address when you want to send Service Desk emails using your own email address.
+
+1. On the left sidebar, at the top, select **Search GitLab** (**{search}**) to find your project.
+1. Select **Settings > General**.
+1. Expand **Service Desk** and find the **Custom email** settings.
+1. Note the presented Service Desk address of this project, and with your email provider
+   (for example, Gmail), set up email forwarding from the custom email address to the
+   Service Desk address.
+1. Back in GitLab, complete the fields. **SMTP host** must be resolvable from the network of your GitLab instance (on GitLab self-managed)
+   or the public internet (on GitLab SaaS).
+1. Select **Save & test settings**.
+
+The configuration has been saved and the verification of the custom email address is triggered.
+
+##### Verification
+
+1. After completing the configuration, all project owners and the administrator that saved the custom email configuration receive a notification email.
+1. A verification email is sent using the provided SMTP credentials to the custom email address (with a sub-addressing part).
+   The email contains a verification token. When email forwarding is set up correctly and all prerequisites are met,
+   the email is forwarded to your Service Desk address and ingested by GitLab. GitLab checks the following conditions:
+   1. GitLab can send an email using the SMTP credentials.
+   1. Sub-addressing is supported (with the `+verify` sub-addressing part).
+   1. `From` header is preserved after forwarding.
+   1. Verification token is correct.
+   1. Email is received within 30 minutes.
+
+Typically the process takes only a few minutes.
+
+To cancel verification at any time or if it fails, select **Reset custom email**.
+The settings page updates accordingly and reflects the current state of the verification.
+The SMTP credentials are deleted and you can start the configuration again.
+
+On failure and success all project owners and the user who triggered the verification process receive a
+notification email with the verification result.
+If the verification failed, the email also contains details of the reason.
+
+If the verification was successful, the custom email address is ready to be used.
+You can now enable sending Service Desk emails via the custom email address.
+
+#### Enable or disable the custom email address
+
+After the custom email address has been verified, administrators can enable or disable sending Service Desk emails via the custom email address.
+
+To **enable** the custom email address:
+
+1. On the left sidebar, at the top, select **Search GitLab** (**{search}**) to find your project.
+1. Select **Settings > General**.
+1. Expand **Service Desk**.
+1. Turn on the **Enable custom email** toggle.
+   Service Desk emails to external participants are sent using the SMTP credentials.
+
+To **disable** the custom email address:
+
+1. On the left sidebar, at the top, select **Search GitLab** (**{search}**) to find your project.
+1. Select **Settings > General**.
+1. Expand **Service Desk**.
+1. Turn off the **Enable custom email** toggle.
+   Because you set up email forwarding, emails to your custom email address continue to be processed and
+   appear as Service Desk Tickets in your project.
+
+   Service Desk emails to external participants are now sent using the GitLab instance's default outgoing
+   email configuration.
+
+#### Change or remove custom email configuration
+
+To change the custom email configuration you must reset and remove it and configure custom email again.
+
+To reset the configuration at any step in the process, select **Reset custom email**.
+The credentials are then removed from the database.
+
+#### Known issues
+
+- Some service providers don't allow SMTP connections any more.
+  Often you can enable them on a per user basis and create an app password.
+- Microsoft Exchange doesn't preserve the `From` header, so you cannot use a custom email from the same tenant.
+  As a workaround:
+  - On GitLab SaaS, use a transport rule to forward emails from the custom email address to the Service Desk email
+    from GitLab SaaS. Forwarding to an email address outside the current tenant preserves the original `From` header.
+  - On GitLab self-managed, use a subdomain or a different domain from another service provider for the
+    custom email address or the GitLab instance `incoming_email` or `service_desk_email`.
+
 ### Use an additional Service Desk alias email **(FREE SELF)**
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/2201) in GitLab 13.0.
