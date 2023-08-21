@@ -38068,6 +38068,9 @@ msgstr ""
 msgid "ProtectedBranch|Create wildcard"
 msgstr ""
 
+msgid "ProtectedBranch|Giving merge rights to a protected branch also gives elevated permissions for certain CI/CD features."
+msgstr ""
+
 msgid "ProtectedBranch|Inherited - This setting can be changed at the group level"
 msgstr ""
 
@@ -38138,6 +38141,9 @@ msgid "ProtectedBranch|View protected branches as branch rules"
 msgstr ""
 
 msgid "ProtectedBranch|What are protected branches?"
+msgstr ""
+
+msgid "ProtectedBranch|What are the security implications?"
 msgstr ""
 
 msgid "ProtectedBranch|When pushing directly to the branch. Does not apply to users **Allowed to push**. Optional sections are not enforced."
