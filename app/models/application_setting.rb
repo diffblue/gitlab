@@ -300,6 +300,10 @@ class ApplicationSetting < MainClusterwide::ApplicationRecord
     presence: true,
     numericality: { only_integer: true, greater_than: 0 }
 
+  validates :decompress_archive_file_timeout,
+    presence: true,
+    numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+
   validates :repository_storages, presence: true
   validate :check_repository_storages
   validate :check_repository_storages_weighted
