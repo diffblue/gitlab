@@ -88,6 +88,16 @@ RSpec.describe WorkItems::Progress do
         it_behaves_like 'parent progress is not changed'
       end
 
+      context 'when rollup_progress is disabled' do
+        before do
+          child1_progress.update!(rollup_progress: false)
+        end
+
+        subject { child1_progress.update!(progress: 50) }
+
+        it_behaves_like 'parent progress is not changed'
+      end
+
       context 'when progress of child changes' do
         context 'when parent progress is not created' do
           subject { child1_progress.update!(progress: 30) }
