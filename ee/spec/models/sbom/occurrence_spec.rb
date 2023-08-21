@@ -29,6 +29,67 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     it { is_expected.to validate_length_of(:package_manager).is_at_most(255) }
     it { is_expected.to validate_length_of(:component_name).is_at_most(255) }
     it { is_expected.to validate_length_of(:input_file_path).is_at_most(255) }
+
+    describe '#licenses' do
+      subject { build(:sbom_occurrence, licenses: licenses) }
+
+      let(:apache) { { name: 'Apache-2.0', url: 'http://spdx.org/licenses/Apache-2.0.html' } }
+      let(:mit) { { name: 'MIT', url: 'http://spdx.org/licenses/MIT.html' } }
+
+      context 'when licenses is empty' do
+        let(:licenses) { [] }
+
+        it { is_expected.to be_valid }
+      end
+
+      context 'when licenses has a single valid license' do
+        let(:licenses) { [mit] }
+
+        it { is_expected.to be_valid }
+      end
+
+      context 'when licenses has a multiple valid license' do
+        let(:licenses) { [apache, mit] }
+
+        it { is_expected.to be_valid }
+      end
+
+      context 'when a license name is missing' do
+        let(:licenses) { [{ url: 'http://spdx.org/licenses/MIT.html' }] }
+
+        it { is_expected.to be_invalid }
+      end
+
+      context 'when a license name is blank' do
+        let(:licenses) { [mit.merge(name: '')] }
+
+        it { is_expected.to be_invalid }
+      end
+
+      context 'when a license name is too long' do
+        let(:licenses) { [mit.merge(name: 'X' * 51)] } # max length derived from `pm_licenses`.`spdx_identifier` column
+
+        it { is_expected.to be_invalid }
+      end
+
+      context 'when a license url is missing' do
+        let(:licenses) { [{ name: 'MIT' }] }
+
+        it { is_expected.to be_invalid }
+      end
+
+      context 'when a license url is blank' do
+        let(:licenses) { [mit.merge(url: '')] }
+
+        it { is_expected.to be_invalid }
+      end
+
+      context 'when a license contains unknown properties' do
+        let(:licenses) { [mit.merge(unknown: 'value')] }
+
+        it { is_expected.to be_invalid }
+      end
+    end
   end
 
   describe '.order_by_id' do
