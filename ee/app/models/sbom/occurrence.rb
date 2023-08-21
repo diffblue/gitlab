@@ -18,6 +18,8 @@ module Sbom
     validates :licenses, json_schema: { filename: 'sbom_occurrences-licenses' }
 
     delegate :name, to: :component
+    delegate :purl_type, to: :component
+    delegate :component_type, to: :component
     delegate :version, to: :component_version, allow_nil: true
     delegate :packager, to: :source, allow_nil: true
 

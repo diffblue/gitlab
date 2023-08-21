@@ -240,6 +240,24 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     end
   end
 
+  describe '#purl_type' do
+    let(:component) { build(:sbom_component, purl_type: 'npm') }
+    let(:occurrence) { build(:sbom_occurrence, component: component) }
+
+    it 'delegates purl_type to component' do
+      expect(occurrence.purl_type).to eq('npm')
+    end
+  end
+
+  describe '#component_type' do
+    let(:component) { build(:sbom_component, component_type: 'library') }
+    let(:occurrence) { build(:sbom_occurrence, component: component) }
+
+    it 'delegates component_type to component' do
+      expect(occurrence.component_type).to eq('library')
+    end
+  end
+
   describe 'source delegation' do
     let(:source_attributes) do
       {

@@ -23,10 +23,10 @@ RSpec.describe Security::Ingestion::FindingMap, feature_category: :vulnerability
   describe '#set_identifier_ids_by' do
     let(:identifiers_map) { { identifier.fingerprint => 1 } }
 
-    subject(:set_idenrifier_ids) { finding_map.set_identifier_ids_by(identifiers_map) }
+    subject(:set_identifier_ids) { finding_map.set_identifier_ids_by(identifiers_map) }
 
     it 'changes the identifier_ids of the finding_map' do
-      expect { set_idenrifier_ids }.to change { finding_map.identifier_ids }.from([]).to([1])
+      expect { set_identifier_ids }.to change { finding_map.identifier_ids }.from([]).to([1])
     end
   end
 
