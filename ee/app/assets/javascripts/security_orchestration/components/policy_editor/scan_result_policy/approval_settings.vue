@@ -4,7 +4,9 @@ import { s__ } from '~/locale';
 
 export default {
   i18n: {
-    blockUnprotectingBranches: s__('ScanResultPolicy|Block users from unprotecting branches'),
+    blockUnprotectingBranches: s__(
+      'ScanResultPolicy|Block users from modifying protected branches',
+    ),
   },
   components: {
     GlFormCheckbox,
@@ -18,12 +20,12 @@ export default {
   },
   computed: {
     blockUnprotectingBranches() {
-      return this.approvalSettings?.block_unprotecting_branches?.enabled || false;
+      return this.approvalSettings?.block_protected_branch_modification?.enabled || false;
     },
   },
   methods: {
     updateBlockUnprotectingBranches(value) {
-      const updates = { block_unprotecting_branches: { enabled: value } };
+      const updates = { block_protected_branch_modification: { enabled: value } };
       this.updatePolicy(updates);
     },
     updatePolicy(updates) {

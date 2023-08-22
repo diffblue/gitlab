@@ -13,10 +13,10 @@ describe('ApprovalSettings', () => {
 
   const findCheckbox = () => wrapper.findComponent(GlFormCheckbox);
 
-  describe('"block_unprotecting_branches" checkbox', () => {
+  describe('"block_protected_branch_modification" checkbox', () => {
     const createSettings = (value) => ({
       approvalSettings: {
-        block_unprotecting_branches: {
+        block_protected_branch_modification: {
           enabled: value,
         },
       },

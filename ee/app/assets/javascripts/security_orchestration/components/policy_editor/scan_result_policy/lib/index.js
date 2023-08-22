@@ -39,6 +39,6 @@ actions:
   - type: require_approval
     approvals_required: 1
 approval_settings:
-  block_unprotecting_branches:
+  block_protected_branch_modification:
     enabled: true
 `;
