@@ -116,6 +116,10 @@ namespace :geo do
   task set_secondary_as_primary: :environment do
     abort GEO_LICENSE_ERROR_TEXT unless Gitlab::Geo.license_allows?
 
+    if Gitlab::Utils.to_boolean(ENV['ENABLE_SILENT_MODE'], default: false)
+      Gitlab::SilentMode.enable!
+    end
+
     Gitlab::Geo::GeoTasks.set_secondary_as_primary
   end
 
