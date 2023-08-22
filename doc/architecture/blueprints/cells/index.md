@@ -20,7 +20,6 @@ For more information about Cells, see also:
 
 - [Glossary](glossary.md)
 - [Goals](goals.md)
-- [Cross-section impact](impact.md)
 
 ## Work streams
 
