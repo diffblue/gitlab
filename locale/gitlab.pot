@@ -48827,7 +48827,7 @@ msgstr ""
 msgid "TimeTrackingEstimated|Est"
 msgstr ""
 
-msgid "TimeTrackingReport|From"
+msgid "TimeTrackingReport|From the start of"
 msgstr ""
 
 msgid "TimeTrackingReport|Run report"
@@ -48848,7 +48848,7 @@ msgstr ""
 msgid "TimeTrackingReport|Time spent"
 msgstr ""
 
-msgid "TimeTrackingReport|To"
+msgid "TimeTrackingReport|To the end of"
 msgstr ""
 
 msgid "TimeTrackingReport|Total time spent: "
