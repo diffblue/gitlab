@@ -6,12 +6,6 @@ import DashboardsList from 'ee/analytics/analytics_dashboards/components/dashboa
 import DashboardListItem from 'ee/analytics/analytics_dashboards/components/list/dashboard_list_item.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { VALUE_STREAMS_DASHBOARD_CONFIG } from 'ee/analytics/dashboards/constants';
-import {
-  I18N_DASHBOARD_LIST_TITLE,
-  I18N_DASHBOARD_LIST_PROJECT_DESCRIPTION,
-  I18N_DASHBOARD_LIST_GROUP_DESCRIPTION,
-  I18N_DASHBOARD_LIST_LEARN_MORE,
-} from 'ee/analytics/analytics_dashboards/constants';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { createAlert } from '~/alert';
 import { visitUrl } from '~/lib/utils/url_utility';
@@ -96,7 +90,7 @@ describe('DashboardsList', () => {
     });
 
     it('should render the page title', () => {
-      expect(findPageTitle().text()).toBe(I18N_DASHBOARD_LIST_TITLE);
+      expect(findPageTitle().text()).toBe('Analytics dashboards');
     });
 
     it('does not render the visualization designer button', () => {
@@ -108,7 +102,7 @@ describe('DashboardsList', () => {
     });
 
     it('should render the help link', () => {
-      expect(findHelpLink().text()).toBe(I18N_DASHBOARD_LIST_LEARN_MORE);
+      expect(findHelpLink().text()).toBe('Learn more.');
       expect(findHelpLink().attributes('href')).toBe(
         helpPagePath('user/analytics/analytics_dashboards'),
       );
@@ -125,7 +119,9 @@ describe('DashboardsList', () => {
     });
 
     it('should render the page description', () => {
-      expect(findPageDescription().text()).toContain(I18N_DASHBOARD_LIST_PROJECT_DESCRIPTION);
+      expect(findPageDescription().text()).toContain(
+        'Dashboards are created by editing the projects dashboard files.',
+      );
     });
   });
 
@@ -136,7 +132,9 @@ describe('DashboardsList', () => {
       });
 
       it('should render the page description', () => {
-        expect(findPageDescription().text()).toContain(I18N_DASHBOARD_LIST_GROUP_DESCRIPTION);
+        expect(findPageDescription().text()).toContain(
+          'Dashboards are created by editing the groups dashboard files.',
+        );
       });
 
       it('should not render the Value streams dashboards link', () => {

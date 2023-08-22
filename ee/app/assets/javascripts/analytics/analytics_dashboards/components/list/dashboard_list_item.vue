@@ -1,7 +1,6 @@
 <script>
 import { GlAvatar, GlIcon, GlLabel, GlLink } from '@gitlab/ui';
 import { visitUrl, joinPaths } from '~/lib/utils/url_utility';
-import { I18N_BUILT_IN_DASHBOARD_LABEL } from '../../constants';
 
 export default {
   name: 'DashboardsListItem',
@@ -33,9 +32,6 @@ export default {
         this.$router.push(this.dashboard.slug);
       }
     },
-  },
-  i18n: {
-    builtInLabel: I18N_BUILT_IN_DASHBOARD_LABEL,
   },
 };
 </script>
@@ -76,7 +72,7 @@ export default {
         </p>
       </div>
       <div v-if="isBuiltInDashboard" class="gl-float-right">
-        <gl-label :title="$options.i18n.builtInLabel" background-color="#D9C2EE" />
+        <gl-label :title="s__('Analytics|By GitLab')" background-color="#D9C2EE" />
       </div>
     </div>
   </li>

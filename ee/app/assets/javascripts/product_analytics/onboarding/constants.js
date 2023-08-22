@@ -1,7 +1,3 @@
-import { s__ } from '~/locale';
-
-export const I18N_ONBOARDING_BREADCRUMB = s__('ProductAnalytics|Product analytics onboarding');
-
 export const INSTALL_NPM_PACKAGE = `yarn add @gitlab/application-sdk-browser
 
 OR

@@ -2,6 +2,7 @@
 import { GlEmptyState, GlSkeletonLoader } from '@gitlab/ui';
 import { createAlert } from '~/alert';
 import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
+import { s__ } from '~/locale';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
 import {
   buildDefaultDashboardFilters,
@@ -10,15 +11,7 @@ import {
 } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import { saveCustomDashboard } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import {
-  I18N_DASHBOARD_ERROR_WHILE_SAVING,
-  I18N_DASHBOARD_NOT_FOUND_ACTION,
-  I18N_DASHBOARD_NOT_FOUND_DESCRIPTION,
-  I18N_DASHBOARD_NOT_FOUND_TITLE,
-  I18N_DASHBOARD_SAVED_SUCCESSFULLY,
-  I18N_PRODUCT_ANALYTICS_TITLE,
-  NEW_DASHBOARD,
-} from '../constants';
+import { NEW_DASHBOARD, PRODUCT_ANALYTICS_TITLE } from '../constants';
 import getProductAnalyticsDashboardQuery from '../graphql/queries/get_product_analytics_dashboard.query.graphql';
 import getAvailableVisualizations from '../graphql/queries/get_all_product_analytics_visualizations.query.graphql';
 
@@ -60,7 +53,7 @@ export default {
       initialDashboard: null,
       showEmptyState: false,
       availableVisualizations: {
-        [I18N_PRODUCT_ANALYTICS_TITLE]: {
+        [PRODUCT_ANALYTICS_TITLE]: {
           loading: true,
           visualizations: [],
         },
@@ -141,7 +134,7 @@ export default {
         const visualizations = data?.project?.productAnalyticsVisualizations?.nodes;
         return {
           ...this.availableVisualizations,
-          [I18N_PRODUCT_ANALYTICS_TITLE]: {
+          [PRODUCT_ANALYTICS_TITLE]: {
             loading: false,
             visualizations,
           },
@@ -171,7 +164,7 @@ export default {
         if (saveResult?.status === HTTP_STATUS_CREATED) {
           this.alert?.dismiss();
 
-          this.$toast.show(I18N_DASHBOARD_SAVED_SUCCESSFULLY);
+          this.$toast.show(s__('Analytics|Dashboard was saved successfully'));
 
           const client = this.$apollo.getClient();
           updateApolloCache(client, this.namespaceId, dashboardSlug, dashboard);
@@ -190,25 +183,21 @@ export default {
         if (error.response?.status === HTTP_STATUS_BAD_REQUEST) {
           // We can assume bad request errors are a result of user error.
           // We don't need to capture these errors and can render the message to the user.
-          this.alert = createAlert({
-            message: error.response?.data?.message || I18N_DASHBOARD_ERROR_WHILE_SAVING,
-          });
+          this.showError(error, false, error.response?.data?.message);
         } else {
-          this.alert = createAlert({
-            message: I18N_DASHBOARD_ERROR_WHILE_SAVING,
-            error,
-            captureError: true,
-          });
+          this.showError(error, true);
         }
       } finally {
         this.isSaving = false;
       }
     },
-  },
-  i18n: {
-    emptyTitle: I18N_DASHBOARD_NOT_FOUND_TITLE,
-    emptyDescription: I18N_DASHBOARD_NOT_FOUND_DESCRIPTION,
-    emptyAction: I18N_DASHBOARD_NOT_FOUND_ACTION,
+    showError(error, capture, message) {
+      this.alert = createAlert({
+        message: message || s__('Analytics|Error while saving dashboard'),
+        error,
+        captureError: capture,
+      });
+    },
   },
 };
 </script>
@@ -230,9 +219,9 @@ export default {
     <gl-empty-state
       v-else-if="showEmptyState"
       :svg-path="dashboardEmptyStateIllustrationPath"
-      :title="$options.i18n.emptyTitle"
-      :description="$options.i18n.emptyDescription"
-      :primary-button-text="$options.i18n.emptyAction"
+      :title="s__('Analytics|Dashboard not found')"
+      :description="s__('Analytics|No dashboard matches the specified URL path.')"
+      :primary-button-text="s__('Analytics|View available dashboards')"
       :primary-button-link="backUrl"
     />
     <div v-else class="gl-mt-7">

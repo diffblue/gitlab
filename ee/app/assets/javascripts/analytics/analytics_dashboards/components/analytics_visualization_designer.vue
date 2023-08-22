@@ -11,16 +11,7 @@ import { createCubeJsApi } from 'ee/analytics/analytics_dashboards/data_sources/
 import { getPanelOptions } from 'ee/analytics/analytics_dashboards/utils/visualization_panel_options';
 import { saveProductAnalyticsVisualization } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import { NEW_DASHBOARD_SLUG } from 'ee/vue_shared/components/customizable_dashboard/constants';
-import {
-  PANEL_DISPLAY_TYPES,
-  I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER_CUBEJS_ERROR,
-  I18N_DASHBOARD_VISUALIZATION_DESIGNER_NAME_ERROR,
-  I18N_DASHBOARD_VISUALIZATION_DESIGNER_MEASURE_ERROR,
-  I18N_DASHBOARD_VISUALIZATION_DESIGNER_TYPE_ERROR,
-  I18N_DASHBOARD_VISUALIZATION_DESIGNER_ALREADY_EXISTS_ERROR,
-  I18N_DASHBOARD_VISUALIZATION_DESIGNER_SAVE_ERROR,
-  I18N_DASHBOARD_VISUALIZATION_DESIGNER_SAVE_SUCCESS,
-} from '../constants';
+import { PANEL_DISPLAY_TYPES } from '../constants';
 
 import MeasureSelector from './visualization_designer/selectors/product_analytics/measure_selector.vue';
 import DimensionSelector from './visualization_designer/selectors/product_analytics/dimension_selector.vue';
@@ -112,7 +103,7 @@ export default {
         return;
       }
 
-      this.showAlert(I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER_CUBEJS_ERROR, error, true);
+      this.showAlert(s__('Analytics|An error occurred while loading data'), error, true);
     },
     onVizStateChange(state) {
       this.hasTimeDimension = Boolean(state.query.timeDimensions?.length);
@@ -130,13 +121,13 @@ export default {
     },
     getSaveVisualizationValidationError() {
       if (!this.visualizationName) {
-        return I18N_DASHBOARD_VISUALIZATION_DESIGNER_NAME_ERROR;
+        return s__('Analytics|Enter a visualization name');
       }
       if (!this.selectedVisualizationType) {
-        return I18N_DASHBOARD_VISUALIZATION_DESIGNER_TYPE_ERROR;
+        return s__('Analytics|Select a visualization type');
       }
       if (!this.queryState.measureSubType) {
-        return I18N_DASHBOARD_VISUALIZATION_DESIGNER_MEASURE_ERROR;
+        return s__('Analytics|Select a measurement');
       }
       return null;
     },
@@ -162,16 +153,16 @@ export default {
         if (saveResult.status === HTTP_STATUS_CREATED) {
           this.alert?.dismiss();
 
-          this.$toast.show(I18N_DASHBOARD_VISUALIZATION_DESIGNER_SAVE_SUCCESS);
+          this.$toast.show(s__('Analytics|Visualization was saved successfully'));
 
           if (this.$route?.params.dashboard) {
             this.routeToDashboard(this.$route?.params.dashboard);
           }
         } else {
           this.showAlert(
-            I18N_DASHBOARD_VISUALIZATION_DESIGNER_SAVE_ERROR,
+            this.$options.i18n.saveError,
             new Error(
-              `Recieved an unexpected HTTP status while saving visualization: ${saveResult.status}`,
+              `Received an unexpected HTTP status while saving visualization: ${saveResult.status}`,
             ),
             true,
           );
@@ -181,13 +172,9 @@ export default {
 
         // eslint-disable-next-line @gitlab/require-i18n-strings
         if (message === 'A file with this name already exists') {
-          this.showAlert(I18N_DASHBOARD_VISUALIZATION_DESIGNER_ALREADY_EXISTS_ERROR);
+          this.showAlert(s__('Analytics|A visualization with that name already exists.'));
         } else {
-          this.showAlert(
-            `${I18N_DASHBOARD_VISUALIZATION_DESIGNER_SAVE_ERROR} ${message}`.trimEnd(),
-            error,
-            true,
-          );
+          this.showAlert(`${this.$options.i18n.saveError} ${message}`.trimEnd(), error, true);
         }
       } finally {
         this.isSaving = false;
@@ -214,7 +201,9 @@ export default {
       });
     },
   },
-  I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER_CUBEJS_ERROR,
+  i18n: {
+    saveError: s__('Analytics|Error while saving visualization.'),
+  },
 };
 </script>
 

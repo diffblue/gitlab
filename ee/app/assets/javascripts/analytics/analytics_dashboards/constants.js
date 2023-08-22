@@ -1,64 +1,11 @@
-import { s__, __ } from '~/locale';
+import { __, s__ } from '~/locale';
 
 export const FEATURE_PRODUCT_ANALYTICS = 'productAnalytics';
 
+export const PRODUCT_ANALYTICS_TITLE = __('Product analytics');
+
 export const PRODUCT_ANALYTICS_FEATURE_DASHBOARDS = ['audience', 'behavior'];
 
-export const I18N_NEW_DASHBOARD_BREADCRUMB = s__('Analytics|New dashboard');
-
-export const I18N_BUILT_IN_DASHBOARD_LABEL = s__('Analytics|By GitLab');
-
-export const I18N_DASHBOARD_LIST_TITLE = s__('Analytics|Analytics dashboards');
-export const I18N_DASHBOARD_LIST_TITLE_BREADCRUMB = s__('Analytics|Analytics dashboards');
-export const I18N_DASHBOARD_LIST_PROJECT_DESCRIPTION = s__(
-  'Analytics|Dashboards are created by editing the projects dashboard files.',
-);
-export const I18N_DASHBOARD_LIST_GROUP_DESCRIPTION = s__(
-  'Analytics|Dashboards are created by editing the groups dashboard files.',
-);
-export const I18N_DASHBOARD_LIST_LEARN_MORE = __('Learn more.');
-export const I18N_DASHBOARD_LIST_NEW_DASHBOARD = s__('Analytics|New dashboard');
-export const I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER = s__('Analytics|Visualization Designer');
-export const I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER_BREADCRUMB = s__(
-  'Analytics|Visualization designer',
-);
-export const I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER_CUBEJS_ERROR = s__(
-  'Analytics|An error occurred while loading data',
-);
-
-export const I18N_DASHBOARD_VISUALIZATION_DESIGNER_NAME_ERROR = s__(
-  'Analytics|Enter a visualization name',
-);
-export const I18N_DASHBOARD_VISUALIZATION_DESIGNER_MEASURE_ERROR = s__(
-  'Analytics|Select a measurement',
-);
-export const I18N_DASHBOARD_VISUALIZATION_DESIGNER_TYPE_ERROR = s__(
-  'Analytics|Select a visualization type',
-);
-export const I18N_DASHBOARD_VISUALIZATION_DESIGNER_ALREADY_EXISTS_ERROR = s__(
-  'Analytics|A visualization with that name already exists.',
-);
-export const I18N_DASHBOARD_VISUALIZATION_DESIGNER_SAVE_ERROR = s__(
-  'Analytics|Error while saving visualization.',
-);
-export const I18N_DASHBOARD_VISUALIZATION_DESIGNER_SAVE_SUCCESS = s__(
-  'Analytics|Visualization was saved successfully',
-);
-
-export const I18N_ALERT_NO_POINTER_TITLE = s__('Analytics|Custom dashboards');
-export const I18N_ALERT_NO_POINTER_BUTTON = s__('Analytics|Configure Dashboard Project');
-export const I18N_ALERT_NO_POINTER_DESCRIPTION = s__(
-  'Analytics|To create your own dashboards, first configure a project to store your dashboards.',
-);
-
-export const I18N_DASHBOARD_NOT_FOUND_TITLE = s__('Analytics|Dashboard not found');
-export const I18N_DASHBOARD_NOT_FOUND_DESCRIPTION = s__(
-  'Analytics|No dashboard matches the specified URL path.',
-);
-export const I18N_DASHBOARD_NOT_FOUND_ACTION = s__('Analytics|View available dashboards');
-
-export const I18N_DASHBOARD_SAVED_SUCCESSFULLY = s__('Analytics|Dashboard was saved successfully');
-export const I18N_DASHBOARD_ERROR_WHILE_SAVING = s__('Analytics|Error while saving dashboard');
 export const EVENTS_TYPES = ['pageViews', 'featureUsages', 'clickEvents', 'events'];
 
 export function isTrackedEvent(eventType) {
@@ -188,5 +135,3 @@ export const NEW_DASHBOARD = () => ({
   panels: [],
   userDefined: true,
 });
-
-export const I18N_PRODUCT_ANALYTICS_TITLE = __('Product analytics');

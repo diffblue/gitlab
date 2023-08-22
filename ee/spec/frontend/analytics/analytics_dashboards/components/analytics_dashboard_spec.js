@@ -18,15 +18,7 @@ import {
   updateApolloCache,
 } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import {
-  I18N_DASHBOARD_NOT_FOUND_TITLE,
-  I18N_DASHBOARD_NOT_FOUND_DESCRIPTION,
-  I18N_DASHBOARD_NOT_FOUND_ACTION,
-  I18N_DASHBOARD_SAVED_SUCCESSFULLY,
-  I18N_DASHBOARD_ERROR_WHILE_SAVING,
-  I18N_PRODUCT_ANALYTICS_TITLE,
-  NEW_DASHBOARD,
-} from 'ee/analytics/analytics_dashboards/constants';
+import { NEW_DASHBOARD } from 'ee/analytics/analytics_dashboards/constants';
 import { saveCustomDashboard } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import {
   TEST_CUSTOM_DASHBOARDS_PROJECT,
@@ -222,9 +214,9 @@ describe('AnalyticsDashboard', () => {
     it('renders the empty state', () => {
       expect(findEmptyState().props()).toMatchObject({
         svgPath: TEST_EMPTY_DASHBOARD_SVG_PATH,
-        title: I18N_DASHBOARD_NOT_FOUND_TITLE,
-        description: I18N_DASHBOARD_NOT_FOUND_DESCRIPTION,
-        primaryButtonText: I18N_DASHBOARD_NOT_FOUND_ACTION,
+        title: 'Dashboard not found',
+        description: 'No dashboard matches the specified URL path.',
+        primaryButtonText: 'View available dashboards',
         primaryButtonLink: TEST_ROUTER_BACK_HREF,
       });
     });
@@ -257,7 +249,7 @@ describe('AnalyticsDashboard', () => {
           .nodes;
 
       expect(findDashboard().props().availableVisualizations).toMatchObject({
-        [I18N_PRODUCT_ANALYTICS_TITLE]: {
+        'Product analytics': {
           loading: false,
           visualizations,
         },
@@ -298,9 +290,9 @@ describe('AnalyticsDashboard', () => {
       it('renders the empty state', () => {
         expect(findEmptyState().props()).toMatchObject({
           svgPath: TEST_EMPTY_DASHBOARD_SVG_PATH,
-          title: I18N_DASHBOARD_NOT_FOUND_TITLE,
-          description: I18N_DASHBOARD_NOT_FOUND_DESCRIPTION,
-          primaryButtonText: I18N_DASHBOARD_NOT_FOUND_ACTION,
+          title: 'Dashboard not found',
+          description: 'No dashboard matches the specified URL path.',
+          primaryButtonText: 'View available dashboards',
           primaryButtonLink: TEST_ROUTER_BACK_HREF,
         });
       });
@@ -334,7 +326,7 @@ describe('AnalyticsDashboard', () => {
           isNewFile: false,
         });
 
-        expect(showToast).toHaveBeenCalledWith(I18N_DASHBOARD_SAVED_SUCCESSFULLY);
+        expect(showToast).toHaveBeenCalledWith('Dashboard was saved successfully');
       });
 
       describe('dashboard errors', () => {
@@ -349,7 +341,7 @@ describe('AnalyticsDashboard', () => {
           await mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_FORBIDDEN }));
 
           expect(createAlert).toHaveBeenCalledWith({
-            message: I18N_DASHBOARD_ERROR_WHILE_SAVING,
+            message: 'Error while saving dashboard',
             captureError: true,
             error: new Error(`Bad save dashboard response. Status:${HTTP_STATUS_FORBIDDEN}`),
           });
@@ -363,7 +355,7 @@ describe('AnalyticsDashboard', () => {
 
           expect(createAlert).toHaveBeenCalledWith({
             error: newError,
-            message: I18N_DASHBOARD_ERROR_WHILE_SAVING,
+            message: 'Error while saving dashboard',
             captureError: true,
           });
         });
@@ -410,7 +402,11 @@ describe('AnalyticsDashboard', () => {
         });
 
         await waitForPromises();
-        expect(createAlert).toHaveBeenCalledWith({ message });
+        expect(createAlert).toHaveBeenCalledWith({
+          message,
+          error: badRequestError,
+          captureError: false,
+        });
       });
 
       it('updates the apollo cache', async () => {
