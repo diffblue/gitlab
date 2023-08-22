@@ -5405,6 +5405,9 @@ msgstr ""
 msgid "Analytics|Host"
 msgstr ""
 
+msgid "Analytics|Invalid visualization configuration"
+msgstr ""
+
 msgid "Analytics|Language"
 msgstr ""
 
@@ -5463,6 +5466,9 @@ msgid "Analytics|Select a visualization type"
 msgstr ""
 
 msgid "Analytics|Single Statistic"
+msgstr ""
+
+msgid "Analytics|Something is wrong with your panel visualization configuration. See %{linkStart}troubleshooting documentation%{linkEnd}."
 msgstr ""
 
 msgid "Analytics|Something went wrong while connecting to your data source. See %{linkStart}troubleshooting documentation%{linkEnd}."

@@ -49,6 +49,26 @@ export const dashboard = {
   ],
 };
 
+export const invalidVisualization = {
+  type: 'LineChart',
+  slug: 'invalid_visualization',
+  version: 23, // bad version
+  titlePropertyTypoOhNo: 'Cube line chart', // bad property name
+  data: {
+    type: 'cube_analytics',
+    query: {
+      users: {
+        measures: ['SnowplowTrackedEvents.count'],
+        dimensions: ['SnowplowTrackedEvents.eventType'],
+      },
+    },
+  },
+  errors: [
+    `property '/version' is not: 1`,
+    `property '/titlePropertyTypoOhNo' is invalid: error_type=schema`,
+  ],
+};
+
 export const builtinDashboard = {
   title: 'Analytics Overview',
   panels: [

@@ -6,10 +6,6 @@ import {
   DATE_RANGE_OPTIONS,
   DEFAULT_SELECTED_OPTION_INDEX,
   TODAY,
-  I18N_DATE_RANGE_FILTER_TOOLTIP,
-  I18N_DATE_RANGE_FILTER_TO,
-  I18N_DATE_RANGE_FILTER_FROM,
-  I18N_DATE_RANGE_TIMEZONE_TOOLTIP,
 } from 'ee/vue_shared/components/customizable_dashboard/filters/constants';
 import { dateRangeOptionToFilter } from 'ee/vue_shared/components/customizable_dashboard/utils';
 
@@ -69,7 +65,9 @@ describe('DateRangeFilter', () => {
       const tooltip = getBinding(helpIcon.element, 'gl-tooltip');
 
       expect(helpIcon.props('name')).toBe('information-o');
-      expect(helpIcon.attributes('title')).toBe(I18N_DATE_RANGE_TIMEZONE_TOOLTIP);
+      expect(helpIcon.attributes('title')).toBe(
+        'Dates and times are displayed in the UTC timezone',
+      );
       expect(tooltip).toBeDefined();
     });
   });
@@ -106,8 +104,8 @@ describe('DateRangeFilter', () => {
         await findDropdownItems().at(customRangeOptionIndex).vm.$emit('click');
 
         expect(findDateRangePicker().props()).toMatchObject({
-          toLabel: I18N_DATE_RANGE_FILTER_TO,
-          fromLabel: I18N_DATE_RANGE_FILTER_FROM,
+          toLabel: 'To',
+          fromLabel: 'From',
           tooltip: null,
           defaultMaxDate: TODAY,
           maxDateRange: 0,
@@ -121,21 +119,29 @@ describe('DateRangeFilter', () => {
       });
     });
 
-    describe.each([0, 12, 31])('when given a date range limit of %d', (dateRangeLimit) => {
-      beforeEach(() => {
-        createWrapper({ dateRangeLimit });
-      });
-
-      it('shows the date range picker with date range limit applied', async () => {
-        expect(findDateRangePicker().exists()).toBe(false);
-
-        await findDropdownItems().at(customRangeOptionIndex).vm.$emit('click');
-
-        expect(findDateRangePicker().props()).toMatchObject({
-          tooltip: dateRangeLimit ? I18N_DATE_RANGE_FILTER_TOOLTIP(dateRangeLimit) : null,
-          maxDateRange: dateRangeLimit,
+    describe.each([
+      { dateRangeLimit: 0, expectedTooltip: null },
+      { dateRangeLimit: 1, expectedTooltip: 'Date range limited to 1 day' },
+      { dateRangeLimit: 12, expectedTooltip: 'Date range limited to 12 days' },
+      { dateRangeLimit: 31, expectedTooltip: 'Date range limited to 31 days' },
+    ])(
+      'when given a date range limit of $dateRangeLimit',
+      ({ dateRangeLimit, expectedTooltip }) => {
+        beforeEach(() => {
+          createWrapper({ dateRangeLimit });
         });
-      });
-    });
+
+        it('shows the date range picker with date range limit applied', async () => {
+          expect(findDateRangePicker().exists()).toBe(false);
+
+          await findDropdownItems().at(customRangeOptionIndex).vm.$emit('click');
+
+          expect(findDateRangePicker().props()).toMatchObject({
+            tooltip: expectedTooltip,
+            maxDateRange: dateRangeLimit,
+          });
+        });
+      },
+    );
   });
 });

@@ -104,6 +104,7 @@ export const getGraphQLDashboard = (options = {}, withPanels = true) => {
                   dimensions: [],
                 },
               },
+              errors: null,
               __typename: 'ProductAnalyticsDashboardVisualization',
             },
             __typename: 'ProductAnalyticsDashboardPanel',

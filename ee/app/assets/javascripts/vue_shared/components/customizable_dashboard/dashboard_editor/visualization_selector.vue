@@ -1,7 +1,6 @@
 <script>
 import { GlButton, GlIcon, GlLoadingIcon } from '@gitlab/ui';
 import { humanize } from '~/lib/utils/text_utility';
-import { I18N_VISUALIZATION_SELECTOR_NEW } from '../constants';
 import { availableVisualizationsValidator } from '../utils';
 
 export default {
@@ -28,9 +27,6 @@ export default {
     getVisualizationTitle(slug) {
       return humanize(slug);
     },
-  },
-  i18n: {
-    I18N_VISUALIZATION_SELECTOR_NEW,
   },
 };
 </script>
@@ -60,7 +56,7 @@ export default {
         </ul>
       </div>
       <gl-button variant="confirm" category="tertiary" block @click="onAddClicked()">{{
-        $options.i18n.I18N_VISUALIZATION_SELECTOR_NEW
+        s__('ProductAnalytics|Create a visualization')
       }}</gl-button>
     </div>
   </div>

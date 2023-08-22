@@ -13,6 +13,7 @@ fragment ProductAnalyticsDashboardFragment on ProductAnalyticsDashboard {
         type
         options
         data
+        errors
       }
     }
   }
