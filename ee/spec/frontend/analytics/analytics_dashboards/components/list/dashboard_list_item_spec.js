@@ -2,7 +2,6 @@ import { GlAvatar, GlIcon, GlLabel } from '@gitlab/ui';
 import { visitUrl } from '~/lib/utils/url_utility';
 import DashboardListItem from 'ee/analytics/analytics_dashboards/components/list/dashboard_list_item.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { I18N_BUILT_IN_DASHBOARD_LABEL } from 'ee/analytics/analytics_dashboards/constants';
 import { TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE } from '../../mock_data';
 
 jest.mock('ee/analytics/analytics_dashboards/api/dashboards_api');
@@ -98,7 +97,7 @@ describe('DashboardsListItem', () => {
     });
 
     it('renders the dashboard label', () => {
-      expect(findLabel().props('title')).toBe(I18N_BUILT_IN_DASHBOARD_LABEL);
+      expect(findLabel().props('title')).toBe('By GitLab');
     });
   });
 

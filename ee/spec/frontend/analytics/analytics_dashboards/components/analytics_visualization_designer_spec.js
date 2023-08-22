@@ -10,15 +10,6 @@ import { saveProductAnalyticsVisualization } from 'ee/analytics/analytics_dashbo
 
 import AnalyticsVisualizationDesigner from 'ee/analytics/analytics_dashboards/components/analytics_visualization_designer.vue';
 import VisualizationInspector from 'ee/analytics/analytics_dashboards/components/visualization_designer/analytics_visualization_inspector.vue';
-import {
-  I18N_DASHBOARD_VISUALIZATION_DESIGNER_NAME_ERROR,
-  I18N_DASHBOARD_VISUALIZATION_DESIGNER_MEASURE_ERROR,
-  I18N_DASHBOARD_VISUALIZATION_DESIGNER_TYPE_ERROR,
-  I18N_DASHBOARD_VISUALIZATION_DESIGNER_ALREADY_EXISTS_ERROR,
-  I18N_DASHBOARD_VISUALIZATION_DESIGNER_SAVE_ERROR,
-  I18N_DASHBOARD_VISUALIZATION_DESIGNER_SAVE_SUCCESS,
-  I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER_CUBEJS_ERROR,
-} from 'ee/analytics/analytics_dashboards/constants';
 
 import { NEW_DASHBOARD_SLUG } from 'ee/vue_shared/components/customizable_dashboard/constants';
 
@@ -126,7 +117,7 @@ describe('AnalyticsVisualizationDesigner', () => {
       findQueryBuilder().vm.$emit('queryStatus', { error });
 
       expect(createAlert).toHaveBeenCalledWith({
-        message: I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER_CUBEJS_ERROR,
+        message: 'An error occurred while loading data',
         captureError: true,
         error,
       });
@@ -142,9 +133,9 @@ describe('AnalyticsVisualizationDesigner', () => {
 
     it.each`
       field            | setter                   | errorMessage
-      ${'title'}       | ${setVisualizationTitle} | ${I18N_DASHBOARD_VISUALIZATION_DESIGNER_NAME_ERROR}
-      ${'measurement'} | ${setMeasurement}        | ${I18N_DASHBOARD_VISUALIZATION_DESIGNER_MEASURE_ERROR}
-      ${'type'}        | ${setVisualizationType}  | ${I18N_DASHBOARD_VISUALIZATION_DESIGNER_TYPE_ERROR}
+      ${'title'}       | ${setVisualizationTitle} | ${'Enter a visualization name'}
+      ${'measurement'} | ${setMeasurement}        | ${'Select a measurement'}
+      ${'type'}        | ${setVisualizationType}  | ${'Select a visualization type'}
     `(
       'creates an alert when the $field is empty or not selected',
       async ({ setter, errorMessage }) => {
@@ -179,7 +170,7 @@ describe('AnalyticsVisualizationDesigner', () => {
 
       await waitForPromises();
 
-      expect(showToast).toHaveBeenCalledWith(I18N_DASHBOARD_VISUALIZATION_DESIGNER_SAVE_SUCCESS);
+      expect(showToast).toHaveBeenCalledWith('Visualization was saved successfully');
     });
 
     it('dismisses the existing alert after successfully saving', async () => {
@@ -202,9 +193,9 @@ describe('AnalyticsVisualizationDesigner', () => {
       await waitForPromises();
 
       expect(createAlert).toHaveBeenCalledWith({
-        message: I18N_DASHBOARD_VISUALIZATION_DESIGNER_SAVE_ERROR,
+        message: 'Error while saving visualization.',
         error: new Error(
-          `Recieved an unexpected HTTP status while saving visualization: ${HTTP_STATUS_FORBIDDEN}`,
+          `Received an unexpected HTTP status while saving visualization: ${HTTP_STATUS_FORBIDDEN}`,
         ),
         captureError: true,
       });
@@ -223,7 +214,7 @@ describe('AnalyticsVisualizationDesigner', () => {
       await findSaveButton().vm.$emit('click');
       await waitForPromises();
       expect(createAlert).toHaveBeenCalledWith({
-        message: I18N_DASHBOARD_VISUALIZATION_DESIGNER_ALREADY_EXISTS_ERROR,
+        message: 'A visualization with that name already exists.',
         error: null,
         captureError: false,
       });
@@ -238,7 +229,7 @@ describe('AnalyticsVisualizationDesigner', () => {
       await waitForPromises();
       expect(createAlert).toHaveBeenCalledWith({
         error: newError,
-        message: I18N_DASHBOARD_VISUALIZATION_DESIGNER_SAVE_ERROR,
+        message: 'Error while saving visualization.',
         captureError: true,
       });
     });

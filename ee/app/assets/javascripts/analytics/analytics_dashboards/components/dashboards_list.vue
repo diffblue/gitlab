@@ -5,19 +5,7 @@ import { visitUrl, joinPaths } from '~/lib/utils/url_utility';
 import { createAlert } from '~/alert';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { VALUE_STREAMS_DASHBOARD_CONFIG } from 'ee/analytics/dashboards/constants';
-import {
-  PRODUCT_ANALYTICS_FEATURE_DASHBOARDS,
-  I18N_DASHBOARD_LIST_TITLE,
-  I18N_DASHBOARD_LIST_PROJECT_DESCRIPTION,
-  I18N_DASHBOARD_LIST_GROUP_DESCRIPTION,
-  I18N_DASHBOARD_LIST_LEARN_MORE,
-  I18N_DASHBOARD_LIST_NEW_DASHBOARD,
-  I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER,
-  I18N_ALERT_NO_POINTER_TITLE,
-  I18N_ALERT_NO_POINTER_BUTTON,
-  I18N_ALERT_NO_POINTER_DESCRIPTION,
-  FEATURE_PRODUCT_ANALYTICS,
-} from '../constants';
+import { PRODUCT_ANALYTICS_FEATURE_DASHBOARDS, FEATURE_PRODUCT_ANALYTICS } from '../constants';
 import getAllProductAnalyticsDashboardsQuery from '../graphql/queries/get_all_product_analytics_dashboards.query.graphql';
 import DashboardListItem from './list/dashboard_list_item.vue';
 
@@ -173,15 +161,6 @@ export default {
       });
     },
   },
-  I18N_DASHBOARD_LIST_TITLE,
-  I18N_DASHBOARD_LIST_PROJECT_DESCRIPTION,
-  I18N_DASHBOARD_LIST_GROUP_DESCRIPTION,
-  I18N_DASHBOARD_LIST_LEARN_MORE,
-  I18N_DASHBOARD_LIST_NEW_DASHBOARD,
-  I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER,
-  I18N_ALERT_NO_POINTER_TITLE,
-  I18N_ALERT_NO_POINTER_BUTTON,
-  I18N_ALERT_NO_POINTER_DESCRIPTION,
   helpPageUrl: helpPagePath('user/analytics/analytics_dashboards'),
 };
 </script>
@@ -192,21 +171,21 @@ export default {
       class="gl-display-flex gl-justify-content-space-between gl-lg-flex-direction-row gl-flex-direction-column gl-align-items-flex-start gl-my-6"
     >
       <div>
-        <h2 class="gl-mt-0" data-testid="title">{{ $options.I18N_DASHBOARD_LIST_TITLE }}</h2>
+        <h2 class="gl-mt-0" data-testid="title">{{ s__('Analytics|Analytics dashboards') }}</h2>
         <p data-testid="description" class="gl-mb-0">
           {{
             isProject
-              ? $options.I18N_DASHBOARD_LIST_PROJECT_DESCRIPTION
-              : $options.I18N_DASHBOARD_LIST_GROUP_DESCRIPTION
+              ? s__('Analytics|Dashboards are created by editing the projects dashboard files.')
+              : s__('Analytics|Dashboards are created by editing the groups dashboard files.')
           }}
           <gl-link data-testid="help-link" :href="$options.helpPageUrl">{{
-            $options.I18N_DASHBOARD_LIST_LEARN_MORE
+            __('Learn more.')
           }}</gl-link>
         </p>
       </div>
       <div v-if="showCreateButtons">
         <gl-button to="visualization-designer" data-testid="visualization-designer-button">
-          {{ $options.I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER }}
+          {{ s__('Analytics|Visualization Designer') }}
         </gl-button>
         <router-link
           v-if="customDashboardsProject"
@@ -214,18 +193,22 @@ export default {
           class="btn btn-confirm btn-md gl-button"
           data-testid="new-dashboard-button"
         >
-          {{ $options.I18N_DASHBOARD_LIST_NEW_DASHBOARD }}
+          {{ s__('Analytics|New dashboard') }}
         </router-link>
       </div>
     </header>
     <gl-alert
       v-if="showCustomDashboardSetupBanner"
       :dismissible="false"
-      :primary-button-text="$options.I18N_ALERT_NO_POINTER_BUTTON"
-      :title="$options.I18N_ALERT_NO_POINTER_TITLE"
+      :primary-button-text="s__('Analytics|Configure Dashboard Project')"
+      :title="s__('Analytics|Custom dashboards')"
       class="gl-mt-3 gl-mb-6"
       @primaryAction="redirectToProjectPointerConfig"
-      >{{ $options.I18N_ALERT_NO_POINTER_DESCRIPTION }}</gl-alert
+      >{{
+        s__(
+          'Analytics|To create your own dashboards, first configure a project to store your dashboards.',
+        )
+      }}</gl-alert
     >
     <ul class="content-list gl-border-t gl-border-gray-50">
       <component
