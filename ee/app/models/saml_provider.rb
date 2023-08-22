@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class SamlProvider < ApplicationRecord
+  include IgnorableColumns
   USER_ATTRIBUTES_LOCKED_FOR_MANAGED_ACCOUNTS = %i(email public_email commit_email notification_email).freeze
 
   belongs_to :group
@@ -16,6 +17,7 @@ class SamlProvider < ApplicationRecord
   after_initialize :set_defaults, if: :new_record?
 
   delegate :assertion_consumer_service_url, :issuer, :name_identifier_format, to: :defaults
+  ignore_column :relay_state_domain_allowlist, remove_with: '16.6', remove_after: '2023-10-22'
 
   def certificate_fingerprint=(value)
     super(strip_left_to_right_chars(value))
