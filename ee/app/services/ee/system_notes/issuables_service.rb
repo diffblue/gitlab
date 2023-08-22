@@ -112,10 +112,6 @@ module EE
       def block_message(issuable_type, noteable_reference, type)
         "marked this #{issuable_type} as #{type} #{noteable_reference}"
       end
-
-      def noteable_name
-        noteable.to_ability_name.humanize(capitalize: false)
-      end
     end
   end
 end
