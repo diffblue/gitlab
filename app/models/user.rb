@@ -31,7 +31,6 @@ class User < MainClusterwide::ApplicationRecord
   include RestrictedSignup
   include StripAttribute
   include EachBatch
-  include SafelyChangeColumnDefault
 
   DEFAULT_NOTIFICATION_LEVEL = :participating
 
@@ -59,8 +58,6 @@ class User < MainClusterwide::ApplicationRecord
 
   INCOMING_MAIL_TOKEN_PREFIX = 'glimt-'
   FEED_TOKEN_PREFIX = 'glft-'
-
-  columns_changing_default :project_view
 
   # lib/tasks/tokens.rake needs to be updated when changing mail and feed tokens
   add_authentication_token_field :incoming_email_token, token_generator: -> { self.generate_incoming_mail_token }
