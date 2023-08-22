@@ -3155,4 +3155,28 @@ RSpec.describe User, feature_category: :system_access do
       expect(subject).to eql(details_hash)
     end
   end
+
+  describe 'audits' do
+    context 'audit events' do
+      it 'audits the confirmation request' do
+        user = create :user
+        unconfirmed_email = 'first-unconfirmed-email@example.com'
+
+        expect(::Gitlab::Audit::Auditor).to(receive(:audit).with(hash_including({
+          author: user,
+          scope: user,
+          target: user,
+          name: 'email_confirmation_sent',
+          message: "Confirmation instructions sent to: #{unconfirmed_email}",
+          additional_details: hash_including({
+            current_email: user.email,
+            target_type: 'Email',
+            unconfirmed_email: unconfirmed_email
+          })
+        })).and_call_original)
+
+        user.update!(email: unconfirmed_email)
+      end
+    end
+  end
 end
