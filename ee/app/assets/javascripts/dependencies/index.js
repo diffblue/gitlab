@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import { parseBoolean } from '~/lib/utils/common_utils';
 import DependenciesApp from './components/app.vue';
 import createStore from './store';
 import apolloProvider from './graphql/provider';
@@ -14,6 +15,7 @@ export default (namespaceType) => {
     exportEndpoint,
     supportDocumentationPath,
     locationsEndpoint,
+    enableProjectSearch,
   } = el.dataset;
 
   const store = createStore();
@@ -25,6 +27,7 @@ export default (namespaceType) => {
     exportEndpoint,
     supportDocumentationPath,
     namespaceType,
+    enableProjectSearch: parseBoolean(enableProjectSearch),
   };
 
   if (namespaceType === NAMESPACE_GROUP) {

@@ -9,6 +9,7 @@ import { AVATAR_SHAPE_OPTION_RECT } from '~/vue_shared/constants';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { extractGroupNamespace } from 'ee/dependencies/store/utils';
 import getProjects from '../graphql/projects.query.graphql';
+import DependencyProjectCountPopover from './dependency_project_count_popover.vue';
 
 const mapItemToListboxFormat = (item) => ({ ...item, value: item.id, text: item.name });
 
@@ -19,8 +20,9 @@ export default {
     GlTruncate,
     GlCollapsibleListbox,
     GlAvatar,
+    DependencyProjectCountPopover,
   },
-  inject: ['endpoint'],
+  inject: ['endpoint', 'enableProjectSearch'],
   props: {
     project: {
       type: Object,
@@ -60,6 +62,9 @@ export default {
     },
     availableProjects() {
       return filterBySearchTerm(this.projects, this.searchTerm);
+    },
+    targetId() {
+      return `dependency-count-${this.componentId}`;
     },
   },
   methods: {
@@ -112,7 +117,7 @@ export default {
 <template>
   <span>
     <gl-collapsible-listbox
-      v-if="hasMultipleProjects"
+      v-if="hasMultipleProjects && enableProjectSearch"
       :header-text="projectText"
       :items="availableProjects"
       :searching="loading"
@@ -148,6 +153,11 @@ export default {
         </div>
       </template>
     </gl-collapsible-listbox>
+    <dependency-project-count-popover
+      v-else-if="!enableProjectSearch"
+      :target-id="targetId"
+      :target-text="projectText"
+    />
     <gl-link v-else class="gl-md-white-space-nowrap" :href="projectPath">
       <gl-truncate
         class="gl-display-none gl-md-display-inline-flex"

@@ -41,6 +41,7 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
             expect(response.body).to include('data-endpoint')
             expect(response.body).to include('data-support-documentation-path')
             expect(response.body).to include('data-export-endpoint')
+            expect(response.body).to include('data-enable-project-search')
           end
 
           context 'when feature flag group_level_dependencies is disabled' do

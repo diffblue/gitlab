@@ -865,6 +865,10 @@ module EE
       deletion_schedule.marked_for_deletion_on.future?
     end
 
+    def count_within_namespaces
+      ::Group.where("traversal_ids @> ARRAY[?]", id).count
+    end
+
     private
 
     def active_project_tokens_of_root_ancestor

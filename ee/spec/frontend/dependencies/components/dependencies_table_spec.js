@@ -18,6 +18,7 @@ describe('DependenciesTable component', () => {
     namespaceType: 'project',
     endpoint: 'endpoint',
     locationsEndpoint: 'endpoint',
+    enableProjectSearch: true,
   };
 
   const createComponent = ({ propsData, provide } = {}) => {
