@@ -51,6 +51,18 @@ RSpec.describe EE::IssuesHelper do
         end
 
         it { is_expected.to be_truthy }
+
+        context 'when issue is created at the group level' do
+          let(:issue) { build_stubbed(:issue, :incident, :group_level) }
+
+          it { is_expected.to be_truthy }
+        end
+
+        context 'when issue is created at the user namespace level' do
+          let(:issue) { build_stubbed(:issue, :incident, :user_namespace_level) }
+
+          it { is_expected.to be_truthy }
+        end
       end
     end
   end
