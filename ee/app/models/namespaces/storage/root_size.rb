@@ -42,7 +42,7 @@ module Namespaces
       end
 
       def used_storage_percentage
-        (usage_ratio * 100).floor
+        (usage_ratio * 100).round
       end
 
       def remaining_storage_percentage

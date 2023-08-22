@@ -308,11 +308,11 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
       1000 | 971  | 97
       8192 | 6144 | 75
       5120 | 3840 | 75
-      5120 | 5118 | 99
+      5120 | 5118 | 100
     end
 
     with_them do
-      it 'returns the percentage of remaining storage rounding down to the nearest integer' do
+      it 'returns the percentage of remaining storage rounding to the nearest integer' do
         set_enforcement_limit(namespace, megabytes: limit)
         set_used_storage(namespace, megabytes: used)
 
