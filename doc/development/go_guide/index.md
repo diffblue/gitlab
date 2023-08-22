@@ -9,8 +9,6 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 This document describes various guidelines and best practices for GitLab
 projects using the [Go language](https://go.dev/).
 
-## Overview
-
 GitLab is built on top of [Ruby on Rails](https://rubyonrails.org/), but we're
 also using Go for projects where it makes sense. Go is a very powerful
 language, with many advantages, and is best suited for projects with a lot of
@@ -141,6 +139,12 @@ become available, you can share job templates like this
 [analyzer](https://gitlab.com/gitlab-org/security-products/ci-templates/raw/master/includes-dev/analyzer.yml).
 
 Go GitLab linter plugins are maintained in the [`gitlab-org/language-tools/go/linters`](https://gitlab.com/gitlab-org/language-tools/go/linters/) namespace.
+
+### Help text style guide
+
+If your Go project produces help text for users, consider following the advice given in the
+[Help text style guide](https://gitlab.com/gitlab-org/gitaly/-/blob/master/doc/help_text_style_guide.md) in the
+`gitaly` project.
 
 ## Dependencies
 
