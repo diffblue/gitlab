@@ -48494,7 +48494,13 @@ msgstr ""
 msgid "This merge request is from an internal project to a public project."
 msgstr ""
 
+msgid "This merge request is hidden because its author has been banned"
+msgstr ""
+
 msgid "This merge request is locked."
+msgstr ""
+
+msgid "This merge request is locked. Only project members can comment."
 msgstr ""
 
 msgid "This merge request was merged. To apply this suggestion, edit this file directly."
