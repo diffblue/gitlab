@@ -35,7 +35,7 @@ module Mutations
 
               {
                 enabled_namespaces: enabled_namespaces.select(&:persisted?),
-                errors: enabled_namespaces.sum { |ns| errors_on_object(ns) }
+                errors: enabled_namespaces.sum([]) { |ns| errors_on_object(ns) }
               }
             end
           end
