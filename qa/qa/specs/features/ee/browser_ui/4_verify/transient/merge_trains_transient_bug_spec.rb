@@ -6,11 +6,7 @@ module QA
       let(:group) { create(:group) }
 
       let!(:runner) do
-        Resource::GroupRunner.fabricate_via_api! do |runner|
-          runner.group = group
-          runner.name = group.name
-          runner.tags = [group.name]
-        end
+        create(:group_runner, group: group, name: group.name, tags: [group.name])
       end
 
       let(:project) do

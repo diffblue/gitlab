@@ -53,11 +53,7 @@ module QA
       end
 
       let!(:runner) do
-        Resource::ProjectRunner.fabricate_via_api! do |runner|
-          runner.project = project
-          runner.name = "runner-for-#{project.name}"
-          runner.tags = ['secure_report']
-        end
+        create(:project_runner, project: project, name: "runner-for-#{project.name}", tags: ['secure_report'])
       end
 
       before do

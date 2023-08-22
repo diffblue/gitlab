@@ -24,11 +24,7 @@ module QA
       end
 
       let!(:runner) do
-        Resource::GroupRunner.fabricate_via_api! do |runner|
-          runner.group = group
-          runner.name = executor
-          runner.tags = [executor]
-        end
+        create(:group_runner, group: group, name: executor, tags: [executor])
       end
 
       before do
