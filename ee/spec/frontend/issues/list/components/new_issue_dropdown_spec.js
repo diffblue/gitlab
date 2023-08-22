@@ -1,6 +1,7 @@
 import { GlButton, GlDisclosureDropdown, GlDisclosureDropdownItem } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import NewIssueDropdown from 'ee/issues/list/components/new_issue_dropdown.vue';
+import { WORK_ITEM_TYPE_VALUE_OBJECTIVE } from '~/work_items/constants';
 
 const NEW_ISSUE_PATH = 'mushroom-kingdom/~/issues/new';
 
@@ -9,12 +10,11 @@ describe('NewIssueDropdown component', () => {
 
   const createComponent = () => {
     return mount(NewIssueDropdown, {
-      provide: {
-        fullPath: 'mushroom-kingdom',
-        newIssuePath: NEW_ISSUE_PATH,
+      propsData: {
+        workItemType: WORK_ITEM_TYPE_VALUE_OBJECTIVE,
       },
-      stubs: {
-        GlDisclosureDropdown,
+      provide: {
+        newIssuePath: NEW_ISSUE_PATH,
       },
     });
   };
@@ -38,14 +38,15 @@ describe('NewIssueDropdown component', () => {
     expect(findDropdownItem(0).props('item').href).toBe(NEW_ISSUE_PATH);
   });
 
-  it('renders dropdown with New Objective item', () => {
-    expect(findDropdownItem(1).props('item').text).toBe(NewIssueDropdown.i18n.newObjectiveLabel);
+  it('renders dropdown with new work item text', () => {
+    expect(findDropdownItem(1).props('item').text).toBe('New objective');
   });
 
-  describe('when New Objective is clicked', () => {
-    it('emits `new-objective-clicked` event', async () => {
-      await findDropdownItem(1).find('button').trigger('click');
-      expect(wrapper.emitted()).toHaveProperty('new-objective-clicked');
+  describe('when new work item is clicked', () => {
+    it('emits `select-new-work-item` event', () => {
+      findDropdownItem(1).find('button').trigger('click');
+
+      expect(wrapper.emitted('select-new-work-item')).toEqual([[]]);
     });
   });
 });

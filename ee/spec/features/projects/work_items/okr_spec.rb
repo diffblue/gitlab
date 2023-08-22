@@ -91,6 +91,21 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
     end
   end
 
+  describe 'creating objective from issues list' do
+    before do
+      visit project_issues_path(project)
+    end
+
+    it 'creates an objective from the "New issue" toggle button' do
+      click_button _('Issue type')
+      click_button s_('OKR|New objective')
+      send_keys 'I object!'
+      click_button 'Create objective'
+
+      expect(page).to have_link 'I object!'
+    end
+  end
+
   context 'for objective' do
     before do
       visit project_work_items_path(project, work_items_path: objective.iid)

@@ -1,62 +1,51 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import { GlAlert, GlForm, GlFormCheckbox, GlFormInput } from '@gitlab/ui';
+import { GlAlert, GlButton, GlForm, GlFormCheckbox, GlFormGroup, GlFormInput } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import CreateWorkItemObjective from 'ee/work_items/components/create_work_item_objective.vue';
+import CreateWorkItemForm from 'ee/work_items/components/create_work_item_form.vue';
+import { __ } from '~/locale';
+import { WORK_ITEM_TYPE_VALUE_OBJECTIVE } from '~/work_items/constants';
 import projectWorkItemTypesQuery from '~/work_items/graphql/project_work_item_types.query.graphql';
 import createWorkItemMutation from '~/work_items/graphql/create_work_item.mutation.graphql';
-import { projectWorkItemTypesQueryResponse, createWorkItemMutationResponse } from '../mock_data';
+import {
+  projectWorkItemTypesQueryResponse,
+  createWorkItemMutationResponse,
+  createWorkItemMutationErrorResponse,
+} from '../mock_data';
 
 Vue.use(VueApollo);
 
 describe('Create work item Objective component', () => {
   let wrapper;
-  let fakeApollo;
 
   const querySuccessHandler = jest.fn().mockResolvedValue(projectWorkItemTypesQueryResponse);
-  const createWorkItemSuccessHandler = jest.fn().mockResolvedValue(createWorkItemMutationResponse);
-  const errorHandler = jest.fn().mockRejectedValue('Houston, we have a problem');
+  const mutationSuccessHandler = jest.fn().mockResolvedValue(createWorkItemMutationResponse);
+  const mutationErrorHandler = jest.fn().mockResolvedValue(createWorkItemMutationErrorResponse);
 
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findForm = () => wrapper.findComponent(GlForm);
+  const findFormGroup = () => wrapper.findComponent(GlFormGroup);
   const findTitleInput = () => wrapper.findComponent(GlFormInput);
   const findConfidentialityToggle = () => wrapper.findComponent(GlFormCheckbox);
-  const findCreateButton = () => wrapper.find('[data-testid="create-button"]');
+  const findCreateButton = () => wrapper.findComponent(GlButton);
   const submitForm = async () => {
     findForm().vm.$emit('submit', { preventDefault: jest.fn() });
     await waitForPromises();
   };
 
   const createComponent = ({
-    data = {},
-    props = {},
     queryHandler = querySuccessHandler,
-    mutationHandler = createWorkItemSuccessHandler,
+    mutationHandler = mutationSuccessHandler,
   } = {}) => {
-    fakeApollo = createMockApollo(
-      [
+    wrapper = shallowMount(CreateWorkItemForm, {
+      apolloProvider: createMockApollo([
         [projectWorkItemTypesQuery, queryHandler],
         [createWorkItemMutation, mutationHandler],
-      ],
-      {},
-      { typePolicies: { Project: { merge: true } } },
-    );
-    wrapper = shallowMount(CreateWorkItemObjective, {
-      apolloProvider: fakeApollo,
-      data() {
-        return {
-          ...data,
-        };
-      },
+      ]),
       propsData: {
-        ...props,
-      },
-      mocks: {
-        $router: {
-          go: jest.fn(),
-        },
+        workItemType: WORK_ITEM_TYPE_VALUE_OBJECTIVE,
       },
       provide: {
         fullPath: 'full-path',
@@ -64,25 +53,22 @@ describe('Create work item Objective component', () => {
     });
   };
 
-  afterEach(() => {
-    fakeApollo = null;
-  });
-
-  describe('gl-form', () => {
+  describe('form controls', () => {
     beforeEach(() => {
       createComponent();
     });
 
     it('renders title input', () => {
-      const titleEl = findTitleInput();
-      expect(titleEl.exists()).toBe(true);
-      expect(titleEl.attributes('placeholder')).toBe('Title');
+      expect(findTitleInput().attributes('placeholder')).toBe(__('Title'));
+    });
+
+    it('renders title label', () => {
+      expect(findFormGroup().attributes('label')).toBe(__('Title'));
+      expect(findFormGroup().attributes('label-for')).toBe(findTitleInput().attributes('id'));
     });
 
     it('renders confidentiality toggle checkbox', () => {
-      const checkboxEl = findConfidentialityToggle();
-      expect(checkboxEl.exists()).toBe(true);
-      expect(checkboxEl.text()).toBe(
+      expect(findConfidentialityToggle().text()).toBe(
         'This objective is confidential and should only be visible to team members with at least Reporter access',
       );
     });
@@ -94,14 +80,15 @@ describe('Create work item Objective component', () => {
     expect(findAlert().exists()).toBe(false);
   });
 
-  it('renders a disabled Create button when title input is empty', () => {
+  it('renders a disabled create button when title input is empty', () => {
     createComponent();
 
     expect(findCreateButton().props('disabled')).toBe(true);
   });
 
   it('hides the alert on dismissing the error', async () => {
-    createComponent({ data: { error: true } });
+    createComponent({ queryHandler: jest.fn().mockRejectedValue('oh no') });
+    await waitForPromises();
 
     expect(findAlert().exists()).toBe(true);
 
@@ -123,46 +110,40 @@ describe('Create work item Objective component', () => {
     it('calls mutation with provided title on form submission', async () => {
       await submitForm();
 
-      expect(createWorkItemSuccessHandler).toHaveBeenCalledWith(
-        expect.objectContaining({
-          input: {
-            title: mockTitle,
-            confidential: false,
-            projectPath: 'full-path',
-          },
-        }),
-      );
+      expect(mutationSuccessHandler).toHaveBeenCalledWith({
+        input: {
+          title: mockTitle,
+          confidential: false,
+          projectPath: 'full-path',
+        },
+      });
     });
 
     it('calls mutation with confidentiality set on form submission', async () => {
       findConfidentialityToggle().vm.$emit('input', true);
       await submitForm();
 
-      expect(createWorkItemSuccessHandler).toHaveBeenCalledWith(
-        expect.objectContaining({
-          input: {
-            title: mockTitle,
-            confidential: true,
-            projectPath: 'full-path',
-          },
-        }),
-      );
+      expect(mutationSuccessHandler).toHaveBeenCalledWith({
+        input: {
+          title: mockTitle,
+          confidential: true,
+          projectPath: 'full-path',
+        },
+      });
     });
 
-    it('renders a enabled Create button', () => {
+    it('renders an enabled create button', () => {
       expect(findCreateButton().props('disabled')).toBe(false);
     });
   });
 
   it('shows an alert on mutation error', async () => {
-    createComponent({ mutationHandler: errorHandler });
+    createComponent({ mutationHandler: mutationErrorHandler });
     await waitForPromises();
 
     findTitleInput().vm.$emit('input', 'some title');
     await submitForm();
 
-    expect(findAlert().text()).toBe(
-      'Something went wrong when creating work item. Please try again.',
-    );
+    expect(findAlert().text()).toBe('Title is too long (maximum is 255 characters)');
   });
 });

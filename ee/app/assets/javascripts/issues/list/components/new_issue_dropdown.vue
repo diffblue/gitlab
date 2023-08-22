@@ -1,11 +1,11 @@
 <script>
 import { GlButtonGroup, GlButton, GlDisclosureDropdown } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
+import { sprintfWorkItem } from '~/work_items/constants';
 
 export default {
   i18n: {
     newIssueLabel: __('New issue'),
-    newObjectiveLabel: s__('WorkItem|New objective'),
     toggleSrText: __('Issue type'),
   },
   components: {
@@ -14,6 +14,12 @@ export default {
     GlButtonGroup,
   },
   inject: ['newIssuePath'],
+  props: {
+    workItemType: {
+      type: String,
+      required: true,
+    },
+  },
   computed: {
     items() {
       return [
@@ -22,10 +28,8 @@ export default {
           href: this.newIssuePath,
         },
         {
-          text: this.$options.i18n.newObjectiveLabel,
-          action: () => {
-            this.$emit('new-objective-clicked');
-          },
+          text: sprintfWorkItem(s__('WorkItem|New %{workItemType}'), this.workItemType),
+          action: () => this.$emit('select-new-work-item'),
         },
       ];
     },

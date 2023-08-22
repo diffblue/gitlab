@@ -19,8 +19,9 @@ import { TYPE_TOKEN_OBJECTIVE_OPTION, TYPE_TOKEN_KEY_RESULT_OPTION } from '~/iss
 import {
   WORK_ITEM_TYPE_ENUM_OBJECTIVE,
   WORK_ITEM_TYPE_ENUM_KEY_RESULT,
+  WORK_ITEM_TYPE_VALUE_OBJECTIVE,
 } from '~/work_items/constants';
-import CreateWorkItemObjective from 'ee/work_items/components/create_work_item_objective.vue';
+import CreateWorkItemForm from 'ee/work_items/components/create_work_item_form.vue';
 import searchIterationsQuery from '../queries/search_iterations.query.graphql';
 
 import NewIssueDropdown from './new_issue_dropdown.vue';
@@ -35,10 +36,11 @@ const HealthToken = () =>
   import('ee/vue_shared/components/filtered_search_bar/tokens/health_token.vue');
 
 export default {
+  WORK_ITEM_TYPE_VALUE_OBJECTIVE,
   name: 'IssuesListAppEE',
   components: {
+    CreateWorkItemForm,
     IssuesListApp,
-    CreateWorkItemObjective,
     NewIssueDropdown,
   },
   mixins: [glFeatureFlagMixin()],
@@ -146,18 +148,18 @@ export default {
         })
         .then(({ data }) => data[this.namespace]?.iterations.nodes);
     },
-    handleObjectiveCreationSuccess({ objective }) {
-      if (objective.id) {
+    handleObjectiveCreationSuccess({ workItem }) {
+      if (workItem.id) {
         // Refresh results on list
         this.showObjectiveCreationForm = false;
         this.$refs.issuesListApp.$apollo.queries.issues.refetch();
         this.$refs.issuesListApp.$apollo.queries.issuesCounts.refetch();
       }
     },
-    handleNewObjectiveButtonClick() {
+    showForm() {
       this.showObjectiveCreationForm = true;
     },
-    handleObjectiveCreationCancelled() {
+    hideForm() {
       this.showObjectiveCreationForm = false;
     },
   },
@@ -173,13 +175,16 @@ export default {
     :ee-search-tokens="searchTokens"
   >
     <template v-if="isOkrsEnabled" #new-objective-button>
-      <new-issue-dropdown @new-objective-clicked="handleNewObjectiveButtonClick()" />
+      <new-issue-dropdown
+        :work-item-type="$options.WORK_ITEM_TYPE_VALUE_OBJECTIVE"
+        @select-new-work-item="showForm"
+      />
     </template>
     <template v-if="showObjectiveCreationForm && isOkrsEnabled" #list-body>
-      <create-work-item-objective
-        ref="objectiveForm"
-        @objective-created="handleObjectiveCreationSuccess"
-        @objective-creation-cancelled="handleObjectiveCreationCancelled"
+      <create-work-item-form
+        :work-item-type="$options.WORK_ITEM_TYPE_VALUE_OBJECTIVE"
+        @created="handleObjectiveCreationSuccess"
+        @hide="hideForm"
       />
     </template>
   </issues-list-app>
