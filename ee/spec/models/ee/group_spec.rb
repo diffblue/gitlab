@@ -2929,4 +2929,22 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       end
     end
   end
+
+  describe '.count_within_namespaces' do
+    context 'with a single group in the hierarchy' do
+      it 'returns one' do
+        expect(group.count_within_namespaces).to be 1
+      end
+    end
+
+    context 'with another group in the hierarchy' do
+      before do
+        create(:group, parent: group)
+      end
+
+      it 'returns two' do
+        expect(group.count_within_namespaces).to be 2
+      end
+    end
+  end
 end

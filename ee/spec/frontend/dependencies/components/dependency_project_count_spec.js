@@ -4,6 +4,7 @@ import { GlLink, GlTruncate, GlCollapsibleListbox, GlAvatar } from '@gitlab/ui';
 import { shallowMount, mount } from '@vue/test-utils';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import DependencyProjectCount from 'ee/dependencies/components/dependency_project_count.vue';
+import DependencyProjectCountPopover from 'ee/dependencies/components/dependency_project_count_popover.vue';
 import dependenciesProjectsQuery from 'ee/dependencies/graphql/projects.query.graphql';
 import waitForPromises from 'helpers/wait_for_promises';
 
@@ -36,7 +37,11 @@ describe('Dependency Project Count component', () => {
 
   const apolloResolver = jest.fn().mockResolvedValue(payload);
 
-  const createComponent = ({ propsData, mountFn = shallowMount } = {}) => {
+  const createComponent = ({
+    propsData,
+    mountFn = shallowMount,
+    enableProjectSearch = true,
+  } = {}) => {
     const endpoint = 'groups/endpoint/-/dependencies.json';
     const project = { fullPath, name: projectName };
 
@@ -51,7 +56,7 @@ describe('Dependency Project Count component', () => {
     wrapper = mountFn(DependencyProjectCount, {
       apolloProvider: createMockApollo(handlers),
       propsData: { ...basicProps, ...propsData },
-      provide: { endpoint },
+      provide: { endpoint, enableProjectSearch },
       stubs: { GlLink, GlTruncate },
     });
   };
@@ -59,6 +64,7 @@ describe('Dependency Project Count component', () => {
   const findProjectLink = () => wrapper.findComponent(GlLink);
   const findProjectAvatar = () => wrapper.findComponent(GlAvatar);
   const findProjectList = () => wrapper.findComponent(GlCollapsibleListbox);
+  const findProjectCountPopover = () => wrapper.findComponent(DependencyProjectCountPopover);
 
   describe('with a single project', () => {
     beforeEach(() => {
@@ -168,6 +174,29 @@ describe('Dependency Project Count component', () => {
           });
         });
       });
+    });
+  });
+
+  describe('with project search location disabled', () => {
+    beforeEach(() => {
+      createComponent({
+        propsData: {
+          projectCount: 2,
+        },
+        enableProjectSearch: false,
+      });
+    });
+
+    it('renders project count popover', () => {
+      expect(findProjectCountPopover().props('targetText')).toBe('2 projects');
+    });
+
+    it('does not render listbox', () => {
+      expect(findProjectList().exists()).toBe(false);
+    });
+
+    it('does not renderd link to project path', () => {
+      expect(findProjectLink().exists()).toBe(false);
     });
   });
 });
