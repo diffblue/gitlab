@@ -53555,9 +53555,6 @@ msgstr ""
 msgid "WorkItem|Existing task"
 msgstr ""
 
-msgid "WorkItem|Health status"
-msgstr ""
-
 msgid "WorkItem|History only"
 msgstr ""
 

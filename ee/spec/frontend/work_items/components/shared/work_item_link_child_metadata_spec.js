@@ -1,10 +1,9 @@
-import { GlIcon, GlBadge, GlTooltip } from '@gitlab/ui';
+import { GlIcon, GlTooltip } from '@gitlab/ui';
 import { __ } from '~/locale';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { formatDate } from '~/lib/utils/datetime_utility';
+import IssueHealthStatus from 'ee/related_items_tree/components/issue_health_status.vue';
 import WorkItemLinkChildMetadata from 'ee/work_items/components/shared/work_item_link_child_metadata.vue';
-import { healthStatusTextMap } from 'ee/sidebar/constants';
-import { issueHealthStatusVariantMapping } from 'ee/related_items_tree/constants';
 
 import { workItemObjectiveMetadataWidgets } from 'jest/work_items/mock_data';
 
@@ -60,11 +59,7 @@ describe('WorkItemLinkChildMetadataEE', () => {
 
   it('renders health status badge', () => {
     const { healthStatus } = HEALTH_STATUS;
-    const healthStatusEl = wrapper.findComponent(GlBadge);
 
-    expect(healthStatusEl.exists()).toBe(true);
-    expect(healthStatusEl.props('variant')).toBe(issueHealthStatusVariantMapping[healthStatus]);
-    expect(healthStatusEl.attributes('title')).toBe('Health status');
-    expect(healthStatusEl.text().trim()).toBe(healthStatusTextMap[healthStatus]);
+    expect(wrapper.findComponent(IssueHealthStatus).props('healthStatus')).toBe(healthStatus);
   });
 });
