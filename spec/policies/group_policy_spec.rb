@@ -162,19 +162,16 @@ RSpec.describe GroupPolicy, feature_category: :system_access do
         group.update!(subgroup_creation_level: ::Gitlab::Access::MAINTAINER_SUBGROUP_ACCESS)
       end
 
-      it 'allows every maintainer permission plus creating subgroups' do
-        create_subgroup_permission = [:create_subgroup]
-        updated_maintainer_permissions =
-          maintainer_permissions + create_subgroup_permission
-        updated_owner_permissions =
-          owner_permissions - create_subgroup_permission
-
+      it 'allows permissions from lower roles' do
         expect_allowed(*public_permissions)
         expect_allowed(*guest_permissions)
         expect_allowed(*reporter_permissions)
         expect_allowed(*developer_permissions)
-        expect_allowed(*updated_maintainer_permissions)
-        expect_disallowed(*updated_owner_permissions)
+      end
+
+      it 'allows every maintainer permission plus creating subgroups' do
+        expect_allowed(:create_subgroup, *maintainer_permissions)
+        expect_disallowed(*(owner_permissions - [:create_subgroup]))
       end
     end
 
@@ -191,6 +188,17 @@ RSpec.describe GroupPolicy, feature_category: :system_access do
 
     it_behaves_like 'deploy token does not get confused with user' do
       let(:user_id) { maintainer.id }
+    end
+
+    context 'with maintainers_allowed_to_read_group_runners disabled' do
+      before do
+        stub_feature_flags(maintainers_allowed_to_read_group_runners: false)
+      end
+
+      it 'allows every maintainer permission plus creating subgroups minus reading group runners' do
+        expect_allowed(*(maintainer_permissions - [:read_group_runners]))
+        expect_disallowed(:read_group_runners)
+      end
     end
   end
 
@@ -354,8 +362,22 @@ RSpec.describe GroupPolicy, feature_category: :system_access do
         expect_allowed(*guest_permissions)
         expect_allowed(*reporter_permissions)
         expect_allowed(*developer_permissions)
+      end
+
+      it 'allows every maintainer permission plus creating subgroups' do
         expect_allowed(*maintainer_permissions)
         expect_disallowed(*owner_permissions)
+      end
+
+      context 'with maintainers_allowed_to_read_group_runners disabled' do
+        before do
+          stub_feature_flags(maintainers_allowed_to_read_group_runners: false)
+        end
+
+        it 'allows every maintainer permission plus creating subgroups' do
+          expect_allowed(*(maintainer_permissions - [:read_group_runners]))
+          expect_disallowed(:read_group_runners, *owner_permissions)
+        end
       end
     end
 
