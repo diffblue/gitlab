@@ -16,19 +16,21 @@ describe('diffs/components/app', () => {
 
   const createComponent = (props = {}, baseConfig = {}) => {
     store.reset();
-
     store.getters.isNotesFetched = false;
     store.getters.getNoteableData = {
       current_user: {
         can_create_note: true,
       },
     };
+    store.getters['findingsDrawer/activeDrawer'] = {};
     store.getters['diffs/flatBlobsList'] = [];
     store.getters['diffs/isBatchLoading'] = false;
     store.getters['diffs/isBatchLoadingError'] = false;
     store.getters['diffs/whichCollapsedTypes'] = { any: false };
 
     store.state.diffs.isLoading = false;
+    store.state.findingsDrawer = { activeDrawer: false };
+
     store.state.diffs.isTreeLoaded = true;
 
     store.dispatch('diffs/setBaseConfig', {
