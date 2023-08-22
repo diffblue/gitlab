@@ -24,11 +24,8 @@ module QA
           issue_settings.set_default_issue_template(template)
         end
 
-        Resource::Issue.fabricate_via_api! do |issue|
-          # Clears default description so as not to overwrite default template
-          issue.description = nil
-          issue.project = default_template_project
-        end.visit!
+        # Clears default description so as not to overwrite default template
+        create(:issue, description: nil, project: default_template_project).visit!
 
         expect(page).to have_content(template)
       end

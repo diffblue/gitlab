@@ -18,12 +18,7 @@ module QA
         end
       end
 
-      let(:issue) do
-        Resource::Issue.fabricate_via_api! do |issue|
-          issue.project = project
-          issue.title = "issue-to-test-iterations-#{SecureRandom.hex(8)}"
-        end
-      end
+      let(:issue) { create(:issue, project: project, title: "issue-to-test-iterations-#{SecureRandom.hex(8)}") }
 
       before do
         Flow::Login.sign_in

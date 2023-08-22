@@ -105,11 +105,7 @@ module QA
       end
 
       def create_issue(milestone)
-        Resource::Issue.fabricate_via_api! do |issue|
-          issue.title = 'My Test Issue'
-          issue.project = project
-          issue.milestone = milestone
-        end
+        create(:issue, title: 'My Test Issue', project: project, milestone: milestone)
       end
 
       def create_milestone(start_date, due_date)

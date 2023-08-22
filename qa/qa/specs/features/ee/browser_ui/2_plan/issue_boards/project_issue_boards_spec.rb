@@ -17,11 +17,7 @@ module QA
         end
 
         before do
-          Resource::Issue.fabricate_via_api! do |issue|
-            issue.project = label_board_list.project
-            issue.title = issue_title
-            issue.labels = [label]
-          end
+          create(:issue, project: label_board_list.project, title: issue_title, labels: [label])
 
           go_to_project_board(label_board_list.project)
         end
@@ -41,11 +37,7 @@ module QA
         end
 
         before do
-          Resource::Issue.fabricate_via_api! do |issue|
-            issue.project = milestone_board_list.project
-            issue.title = issue_title
-            issue.milestone = milestone_board_list.project_milestone
-          end
+          create(:issue, project: milestone_board_list.project, title: issue_title, milestone: milestone_board_list.project_milestone)
 
           go_to_project_board(milestone_board_list.project)
         end
@@ -69,11 +61,7 @@ module QA
 
           project.add_member(@user)
 
-          Resource::Issue.fabricate_via_api! do |issue|
-            issue.assignee_ids = [@user.id]
-            issue.project = project
-            issue.title = issue_title
-          end
+          create(:issue, assignee_ids: @user.id, project: project, title: issue_title)
 
           @assignee_board_list = EE::Resource::Board::BoardList::Project::AssigneeBoardList.fabricate_via_api! do |board_list|
             board_list.assignee = @user

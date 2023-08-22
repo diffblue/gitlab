@@ -5,9 +5,7 @@ module QA
     shared_examples 'issues analytics page' do
       let(:gitlab_address) { QA::Runtime::Scenario.gitlab_address }
 
-      let(:issue) do
-        Resource::Issue.fabricate_via_api!
-      end
+      let(:issue) { create(:issue) }
 
       before do
         Flow::Login.sign_in

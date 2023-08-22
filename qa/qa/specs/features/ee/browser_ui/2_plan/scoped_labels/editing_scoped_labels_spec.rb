@@ -11,11 +11,7 @@ module QA
       let(:new_label_same_scope_multi_colon) { 'group::car::porsche' }
       let(:new_label_different_scope_multi_colon) { 'group::truck::mercedes-bens' }
 
-      let!(:issue) do
-        Resource::Issue.fabricate_via_api! do |issue|
-          issue.labels = [initial_label, initial_label_multi_colon]
-        end
-      end
+      let!(:issue) { create(:issue, labels: [initial_label, initial_label_multi_colon]) }
 
       before do
         Flow::Login.sign_in
