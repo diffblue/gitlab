@@ -27,7 +27,7 @@ Users added through LDAP:
   even if password authentication for Git
   [is disabled](../../settings/sign_in_restrictions.md#password-authentication-enabled).
 
-The LDAP DN is associated with existing GitLab users when:
+The LDAP distinguished name (DN) is associated with existing GitLab users when:
 
 - The existing user signs in to GitLab with LDAP for the first time.
 - The LDAP email address is the primary email address of an existing GitLab user. If the LDAP email
@@ -1143,7 +1143,7 @@ read about [Helm LDAP secrets](https://docs.gitlab.com/charts/installation/secre
 
 ## Updating LDAP DN and email
 
-When an LDAP server creates a user in GitLab, the user's LDAP distinguished name (DN) is linked to their GitLab account
+When an LDAP server creates a user in GitLab, the user's LDAP DN is linked to their GitLab account
 as an identifier.
 
 When a user tries to sign in with LDAP, GitLab tries to find the user using the DN saved on that user's account.
