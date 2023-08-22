@@ -131,7 +131,14 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
     let!(:merge_request) do
       create(:merge_request, :on_train,
         source_project: project, source_branch: 'feature',
-        target_project: project, target_branch: 'master')
+        target_project: project, target_branch: 'master',
+        merge_params: {
+          'should_remove_source_branch' => true,
+          'commit_message' => 'Merge branch xyz into abc',
+          'squash_commit_message' => 'Squashed some commits',
+          'auto_merge_strategy' => 'merge_train',
+          'train_ref' => { 'commit_sha' => 'abc', 'merge_commit_sha' => 'abc' }
+        })
     end
 
     it 'cancels auto merge on the merge request' do
@@ -144,6 +151,7 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
       expect(merge_request.merge_params).not_to include('commit_message')
       expect(merge_request.merge_params).not_to include('squash_commit_message')
       expect(merge_request.merge_params).not_to include('auto_merge_strategy')
+      expect(merge_request.merge_params).not_to include('train_ref')
       expect(merge_request.merge_train_car).not_to be_present
     end
 
@@ -255,7 +263,14 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
     let!(:merge_request) do
       create(:merge_request, :on_train,
         source_project: project, source_branch: 'feature',
-        target_project: project, target_branch: 'master')
+        target_project: project, target_branch: 'master',
+        merge_params: {
+          'should_remove_source_branch' => true,
+          'commit_message' => 'Merge branch xyz into abc',
+          'squash_commit_message' => 'Squashed some commits',
+          'auto_merge_strategy' => 'merge_train',
+          'train_ref' => { 'commit_sha' => 'abc', 'merge_commit_sha' => 'abc' }
+        })
     end
 
     let(:args) { {} }
@@ -270,6 +285,7 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
       expect(merge_request.merge_params).not_to include('commit_message')
       expect(merge_request.merge_params).not_to include('squash_commit_message')
       expect(merge_request.merge_params).not_to include('auto_merge_strategy')
+      expect(merge_request.merge_params).not_to include('train_ref')
       expect(merge_request.merge_train_car).not_to be_present
     end
 

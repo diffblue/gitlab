@@ -6,16 +6,21 @@
 #
 module AutoMerge
   class MergeTrainService < AutoMerge::BaseService
-    def execute(merge_request)
-      merge_request.build_merge_train_car(user: current_user,
-                                      target_project: merge_request.target_project,
-                                      target_branch: merge_request.target_branch)
+    extend Gitlab::Utils::Override
 
+    override :execute
+    def execute(merge_request)
+      merge_request.build_merge_train_car(
+        user: current_user,
+        target_project: merge_request.target_project,
+        target_branch: merge_request.target_branch
+      )
       super do
         SystemNoteService.merge_train(merge_request, project, current_user, merge_request.merge_train_car)
       end
     end
 
+    override :process
     def process(merge_request)
       return unless merge_request.on_train?
 
@@ -23,6 +28,7 @@ module AutoMerge
         .perform_async(merge_request.target_project_id, merge_request.target_branch)
     end
 
+    override :cancel
     def cancel(merge_request)
       # Before dropping a merge request from a merge train, get the next
       # merge request in order to refresh it later.
@@ -36,6 +42,7 @@ module AutoMerge
       end
     end
 
+    override :abort
     def abort(merge_request, reason, process_next: true)
       # Before dropping a merge request from a merge train, get the next
       # merge request in order to refresh it later.
@@ -49,11 +56,19 @@ module AutoMerge
       end
     end
 
+    override :available_for?
     def available_for?(merge_request)
       super do
         merge_request.project.merge_trains_enabled? &&
           merge_request.actual_head_pipeline&.complete?
       end
+    end
+
+    private
+
+    override :clearable_auto_merge_parameters
+    def clearable_auto_merge_parameters
+      super + %w[train_ref]
     end
   end
 end
