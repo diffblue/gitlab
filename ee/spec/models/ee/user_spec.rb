@@ -645,18 +645,29 @@ RSpec.describe User, feature_category: :system_access do
       let!(:group_1) { create(:group, name: 'group-1') }
       let!(:group_2) { create(:group, name: 'group-2') }
       let!(:group_3) { create(:group, name: 'group-3') }
+      let!(:group_4) { create(:group, name: 'group-4') }
 
       let!(:subgroup_1) { create(:group, parent: group_1, name: 'subgroup-1') }
       let!(:subgroup_2) { create(:group, parent: group_2, name: 'subgroup-2') }
       let!(:subgroup_3) { create(:group, parent: group_3, name: 'subgroup-3') }
+      let!(:subgroup_4) { create(:group, parent: group_4, name: 'subgroup-4') }
+
+      let!(:subsubgroup_1) { create(:group, parent: subgroup_1, name: 'sub-subgroup-1') }
+      let!(:subsubgroup_4) { create(:group, parent: subgroup_4, name: 'sub-subgroup-4') }
 
       before do
         group_1.update!(custom_project_templates_group_id: subgroup_1.id)
         group_2.update!(custom_project_templates_group_id: subgroup_2.id)
         group_3.update!(custom_project_templates_group_id: subgroup_3.id)
 
+        subgroup_1.update!(custom_project_templates_group_id: subsubgroup_1.id)
+        subgroup_4.update!(custom_project_templates_group_id: subsubgroup_4.id)
+
         create(:project, namespace: subgroup_1)
         create(:project, namespace: subgroup_2)
+
+        create(:project, namespace: subsubgroup_1)
+        create(:project, namespace: subsubgroup_4)
       end
 
       context 'when the access level of the user is below the required one' do
@@ -674,6 +685,7 @@ RSpec.describe User, feature_category: :system_access do
           group_1.add_developer(user)
           group_2.add_maintainer(user)
           group_3.add_developer(user)
+          subgroup_4.add_developer(user)
         end
 
         context 'when a Group ID is passed' do
@@ -689,8 +701,8 @@ RSpec.describe User, feature_category: :system_access do
           it 'returns all available Groups' do
             groups = user.available_subgroups_with_custom_project_templates
 
-            expect(groups.to_a.size).to eq(2)
-            expect(groups.map(&:name)).to include('subgroup-1', 'subgroup-2')
+            expect(groups.to_a.size).to eq(4)
+            expect(groups.map(&:name)).to include('subgroup-1', 'subgroup-2', 'sub-subgroup-1', 'sub-subgroup-4')
           end
 
           it 'excludes Groups with the configured setting but without projects' do
@@ -701,17 +713,22 @@ RSpec.describe User, feature_category: :system_access do
         end
 
         context 'when namespace plan is checked', :saas do
+          let(:bronze_plan) { create(:bronze_plan) }
+          let(:ultimate_plan) { create(:ultimate_plan) }
+
           before do
-            create(:gitlab_subscription, namespace: group_1, hosted_plan: create(:bronze_plan))
-            create(:gitlab_subscription, namespace: group_2, hosted_plan: create(:ultimate_plan))
-            allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?) { true }
+            stub_ee_application_setting(should_check_namespace_plan: true)
+
+            create(:gitlab_subscription, namespace: group_1, hosted_plan: bronze_plan)
+            create(:gitlab_subscription, namespace: group_2, hosted_plan: ultimate_plan)
+            create(:gitlab_subscription, namespace: group_4, hosted_plan: ultimate_plan)
           end
 
           it 'returns groups on ultimate or premium plans' do
             groups = user.available_subgroups_with_custom_project_templates
 
-            expect(groups.to_a.size).to eq(1)
-            expect(groups.map(&:name)).to include('subgroup-2')
+            expect(groups.to_a.size).to eq(2)
+            expect(groups.map(&:name)).to match_array(%w[subgroup-2 sub-subgroup-4])
           end
         end
       end

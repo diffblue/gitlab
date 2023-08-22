@@ -34,15 +34,26 @@ RSpec.describe GitlabSubscription, :saas, feature_category: :subscription_manage
 
   describe 'scopes' do
     describe '.with_hosted_plan' do
-      let!(:ultimate_subscription) { create(:gitlab_subscription, hosted_plan: ultimate_plan) }
-      let!(:premium_subscription) { create(:gitlab_subscription, hosted_plan: premium_plan) }
-
-      let!(:trial_subscription) { create(:gitlab_subscription, hosted_plan: ultimate_plan, trial: true) }
+      let_it_be(:ultimate_subscription) { create(:gitlab_subscription, hosted_plan: ultimate_plan) }
+      let_it_be(:premium_subscription) { create(:gitlab_subscription, hosted_plan: premium_plan) }
+      let_it_be(:trial_subscription) { create(:gitlab_subscription, hosted_plan: ultimate_plan, trial: true) }
 
       it 'scopes to the plan' do
         expect(described_class.with_hosted_plan('ultimate')).to contain_exactly(ultimate_subscription)
         expect(described_class.with_hosted_plan('premium')).to contain_exactly(premium_subscription)
         expect(described_class.with_hosted_plan('bronze')).to be_empty
+      end
+    end
+
+    describe '.by_hosted_plan_ids' do
+      let_it_be(:ultimate_subscription) { create(:gitlab_subscription, hosted_plan: ultimate_plan) }
+      let_it_be(:premium_subscription) { create(:gitlab_subscription, hosted_plan: premium_plan) }
+      let_it_be(:trial_subscription) { create(:gitlab_subscription, hosted_plan: ultimate_plan, trial: true) }
+
+      it 'returns subscriptions by their plan ids' do
+        expect(described_class.by_hosted_plan_ids(ultimate_plan.id)).to match_array([ultimate_subscription, trial_subscription])
+        expect(described_class.by_hosted_plan_ids([ultimate_plan.id, premium_plan.id])).to match_array([ultimate_subscription, premium_subscription, trial_subscription])
+        expect(described_class.by_hosted_plan_ids(non_existing_record_id)).to be_empty
       end
     end
 
