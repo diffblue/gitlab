@@ -36,20 +36,7 @@ module Security
 
       user = project.security_policy_bot || schedule.owner
 
-      service_result = Security::SecurityOrchestrationPolicies::RuleScheduleService
-        .new(project: project, current_user: user)
-        .execute(schedule)
-
-      log_message(service_result.errors.join(". "), schedule, user) if service_result.error?
-    end
-
-    def log_message(message, schedule, user)
-      logger.warn(
-        worker: self.class.name,
-        security_orchestration_policy_configuration_id: schedule.security_orchestration_policy_configuration_id,
-        user_id: user.id,
-        message: message
-      )
+      Security::ScanExecutionPolicies::RuleScheduleWorker.perform_async(project.id, user.id, schedule.id)
     end
   end
 end

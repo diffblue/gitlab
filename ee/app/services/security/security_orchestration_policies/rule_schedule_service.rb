@@ -3,6 +3,8 @@
 module Security
   module SecurityOrchestrationPolicies
     class RuleScheduleService < BaseProjectService
+      include ::Gitlab::Loggable
+
       def execute(schedule)
         return ServiceResponse.error(message: "No rules") unless rules = schedule&.policy&.fetch(:rules, nil)
 
@@ -18,8 +20,18 @@ module Security
 
         # The use of .pluck here is not for an Active record model but for a hash
         # rubocop: disable CodeReuse/ActiveRecord
-        ServiceResponse.error(message: schedule_errors.pluck(:message))
+        message = schedule_errors.pluck(:message)
         # rubocop: enable CodeReuse/ActiveRecord
+
+        ::Gitlab::AppJsonLogger.warn(
+          build_structured_payload(
+            security_orchestration_policy_configuration_id: schedule.security_orchestration_policy_configuration_id,
+            user_id: current_user&.id,
+            message: message.join(", ")
+          )
+        )
+
+        ServiceResponse.error(message: message)
       end
 
       private

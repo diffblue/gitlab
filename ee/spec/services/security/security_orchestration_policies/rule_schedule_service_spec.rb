@@ -219,6 +219,17 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, fea
         expect(service_result.message).to contain_exactly('message', 'message')
       end
 
+      it 'logs the error' do
+        expect(::Gitlab::AppJsonLogger).to receive(:warn).with({
+          'class' => 'Security::SecurityOrchestrationPolicies::RuleScheduleService',
+          'security_orchestration_policy_configuration_id' => policy_configuration.id,
+          'user_id' => current_user.id,
+          'message' => 'message, message'
+        })
+
+        service.execute(schedule)
+      end
+
       context 'with one branch' do
         let(:branches) { %w[master] }
 
@@ -226,6 +237,17 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, fea
           service_result = service.execute(schedule)
 
           expect(service_result.message).to contain_exactly('message')
+        end
+
+        it 'logs the error' do
+          expect(::Gitlab::AppJsonLogger).to receive(:warn).with({
+            'class' => 'Security::SecurityOrchestrationPolicies::RuleScheduleService',
+            'security_orchestration_policy_configuration_id' => policy_configuration.id,
+            'user_id' => current_user.id,
+            'message' => 'message'
+          })
+
+          service.execute(schedule)
         end
       end
     end

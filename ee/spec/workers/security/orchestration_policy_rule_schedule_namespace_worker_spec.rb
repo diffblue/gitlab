@@ -32,22 +32,9 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature
             schedule.update_column(:next_run_at, 1.minute.ago)
           end
 
-          it 'executes the rule schedule service for all projects in the group' do
-            expect_next_instance_of(
-              Security::SecurityOrchestrationPolicies::RuleScheduleService,
-              project: project_1,
-              current_user: schedule.owner
-            ) do |service|
-              expect(service).to receive(:execute)
-            end
-
-            expect_next_instance_of(
-              Security::SecurityOrchestrationPolicies::RuleScheduleService,
-              project: project_2,
-              current_user: schedule.owner
-            ) do |service|
-              expect(service).to receive(:execute)
-            end
+          it 'invokes the rule schedule worker for all projects in the group' do
+            expect(Security::ScanExecutionPolicies::RuleScheduleWorker).to receive(:perform_async).with(project_1.id, schedule.owner.id, schedule.id)
+            expect(Security::ScanExecutionPolicies::RuleScheduleWorker).to receive(:perform_async).with(project_2.id, schedule.owner.id, schedule.id)
 
             worker.perform(schedule_id)
           end
@@ -65,22 +52,9 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature
               project_1.add_guest(security_policy_bot)
             end
 
-            it 'executes the rule schedule service as the bot and falls back to schedule owner otherwise' do
-              expect_next_instance_of(
-                Security::SecurityOrchestrationPolicies::RuleScheduleService,
-                project: project_1,
-                current_user: security_policy_bot
-              ) do |service|
-                expect(service).to receive(:execute)
-              end
-
-              expect_next_instance_of(
-                Security::SecurityOrchestrationPolicies::RuleScheduleService,
-                project: project_2,
-                current_user: schedule.owner
-              ) do |service|
-                expect(service).to receive(:execute)
-              end
+            it 'invokes the rule schedule worker as the bot and falls back to schedule owner otherwise' do
+              expect(Security::ScanExecutionPolicies::RuleScheduleWorker).to receive(:perform_async).with(project_1.id, security_policy_bot.id, schedule.id)
+              expect(Security::ScanExecutionPolicies::RuleScheduleWorker).to receive(:perform_async).with(project_2.id, schedule.owner.id, schedule.id)
 
               worker.perform(schedule_id)
             end
@@ -89,12 +63,8 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature
           context 'with namespace including project marked for deletion' do
             let_it_be(:project_pending_deletion) { create(:project, namespace: namespace, marked_for_deletion_at: Time.zone.now) }
 
-            before do
-              allow(Security::SecurityOrchestrationPolicies::RuleScheduleService).to receive(:new).and_call_original
-            end
-
-            it 'does not call RuleScheduleService for the project' do
-              expect(Security::SecurityOrchestrationPolicies::RuleScheduleService).not_to receive(:new).with(project: project_pending_deletion, current_user: anything).and_call_original
+            it 'does not call RuleScheduleWorker for the project' do
+              expect(Security::ScanExecutionPolicies::RuleScheduleWorker).not_to receive(:perform_async).with(project_pending_deletion.id, schedule.owner.id, schedule.id)
 
               worker.perform(schedule_id)
             end
@@ -107,8 +77,8 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature
           security_orchestration_policy_configuration.update!(project: project_1, namespace: nil)
         end
 
-        it 'does not execute the rule schedule service' do
-          expect(Security::SecurityOrchestrationPolicies::RuleScheduleService).not_to receive(:new)
+        it 'does not execute the rule schedule worker' do
+          expect(Security::ScanExecutionPolicies::RuleScheduleWorker).not_to receive(:perform_async)
 
           worker.perform(schedule_id)
         end
@@ -118,8 +88,8 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature
     context 'when schedule does not exist' do
       let(:schedule_id) { non_existing_record_id }
 
-      it 'does not execute the rule schedule service' do
-        expect(Security::SecurityOrchestrationPolicies::RuleScheduleService).not_to receive(:new)
+      it 'does not execute the rule schedule worker' do
+        expect(Security::ScanExecutionPolicies::RuleScheduleWorker).not_to receive(:perform_async)
 
         worker.perform(schedule_id)
       end

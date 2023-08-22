@@ -16,14 +16,8 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category
       end
 
       context 'when schedule is created for security orchestration policy configuration in project' do
-        it 'executes the rule schedule service' do
-          expect_next_instance_of(
-            Security::SecurityOrchestrationPolicies::RuleScheduleService,
-            project: schedule.security_orchestration_policy_configuration.project,
-            current_user: schedule.owner
-          ) do |service|
-            expect(service).to receive(:execute).and_return(ServiceResponse.success)
-          end
+        it 'invokes the rule schedule worker' do
+          expect(Security::ScanExecutionPolicies::RuleScheduleWorker).to receive(:perform_async).with(schedule.security_orchestration_policy_configuration.project.id, schedule.owner.id, schedule.id)
 
           worker.perform
         end
@@ -34,42 +28,6 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category
           expect(schedule.reload.next_run_at).to be > Time.zone.now
         end
 
-        context 'and RuleScheduleService returns an error result' do
-          before do
-            allow_next_instance_of(::Security::SecurityOrchestrationPolicies::RuleScheduleService) do |service|
-              allow(service).to receive(:execute).and_return(ServiceResponse.error(message: service_response_message))
-            end
-          end
-
-          let(:service_response_message) { ['message', 'message 2'] }
-
-          it 'loggs the error' do
-            expect(Sidekiq.logger).to receive(:warn).with({
-              worker: 'Security::OrchestrationPolicyRuleScheduleWorker',
-              security_orchestration_policy_configuration_id: security_orchestration_policy_configuration.id,
-              user_id: schedule.owner.id,
-              message: 'message. message 2'
-            })
-
-            worker.perform
-          end
-
-          context 'and the service response message is a string' do
-            let(:service_response_message) { 'message' }
-
-            it 'loggs the error' do
-              expect(Sidekiq.logger).to receive(:warn).with({
-                worker: 'Security::OrchestrationPolicyRuleScheduleWorker',
-                security_orchestration_policy_configuration_id: security_orchestration_policy_configuration.id,
-                user_id: schedule.owner.id,
-                message: 'message'
-              })
-
-              worker.perform
-            end
-          end
-        end
-
         context 'when project is marked for deletion' do
           before do
             stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
@@ -77,8 +35,8 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category
             security_orchestration_policy_configuration.project.update!(marked_for_deletion_at: Time.zone.now)
           end
 
-          it 'does not executes the rule schedule service' do
-            expect(Security::SecurityOrchestrationPolicies::RuleScheduleService).not_to receive(:new)
+          it 'does not invoke the rule schedule worker' do
+            expect(Security::ScanExecutionPolicies::RuleScheduleWorker).not_to receive(:perform_async)
 
             worker.perform
           end
@@ -94,14 +52,8 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category
           security_orchestration_policy_configuration.project.add_guest(security_policy_bot)
         end
 
-        it 'executes the rule schedule service with the bot user' do
-          expect_next_instance_of(
-            Security::SecurityOrchestrationPolicies::RuleScheduleService,
-            project: schedule.security_orchestration_policy_configuration.project,
-            current_user: security_policy_bot
-          ) do |service|
-            expect(service).to receive(:execute).and_return(ServiceResponse.success)
-          end
+        it 'invokes the rule schedule worker with the bot user' do
+          expect(Security::ScanExecutionPolicies::RuleScheduleWorker).to receive(:perform_async).with(schedule.security_orchestration_policy_configuration.project.id, security_policy_bot.id, schedule.id)
 
           worker.perform
         end
@@ -127,8 +79,8 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category
         schedule.update_column(:next_run_at, 1.minute.from_now)
       end
 
-      it 'does not execute the rule schedule service' do
-        expect(Security::SecurityOrchestrationPolicies::RuleScheduleService).not_to receive(:new)
+      it 'does not invoke rule schedule worker' do
+        expect(Security::ScanExecutionPolicies::RuleScheduleWorker).not_to receive(:perform_async)
 
         worker.perform
       end
