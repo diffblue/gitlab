@@ -303,7 +303,7 @@ module EE
     end
 
     def available_subgroups_with_custom_project_templates(group_id = nil)
-      found_groups = GroupsWithTemplatesFinder.new(group_id).execute
+      found_groups = GroupsWithTemplatesFinder.new(self, group_id).execute
 
       ::GroupsFinder.new(self, min_access_level: ::Gitlab::Access::DEVELOPER)
         .execute

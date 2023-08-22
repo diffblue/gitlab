@@ -28,6 +28,10 @@ class GitlabSubscription < ApplicationRecord
   delegate :name, :title, to: :hosted_plan, prefix: :plan, allow_nil: true
   delegate :exclude_guests?, to: :namespace
 
+  scope :by_hosted_plan_ids, ->(plan_ids) do
+    where(hosted_plan_id: plan_ids)
+  end
+
   scope :with_hosted_plan, -> (plan_name) do
     joins(:hosted_plan).where(trial: false, 'plans.name' => plan_name)
     .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/422013')

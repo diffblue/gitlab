@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 class GroupsWithTemplatesFinder
-  def initialize(group_id = nil)
+  def initialize(user, group_id = nil)
+    @user = user
     @group_id = group_id
   end
 
@@ -15,14 +16,22 @@ class GroupsWithTemplatesFinder
 
   private
 
-  attr_reader :group_id
+  attr_reader :user, :group_id
 
   def extended_group_search
-    Group
-      .with_project_templates
-      .self_and_ancestors
-      .with_feature_available_in_plan(:group_project_templates)
-      .self_and_descendants
+    if Feature.enabled?(:optimize_group_template_query, user) && Feature.enabled?(:use_traversal_ids)
+      plan_ids = Plan
+        .by_name(GitlabSubscriptions::Features.saas_plans_with_feature(:group_project_templates))
+        .pluck(:id) # rubocop: disable CodeReuse/ActiveRecord
+
+      Group.by_root_id(GitlabSubscription.by_hosted_plan_ids(plan_ids).select(:namespace_id))
+    else
+      Group
+        .with_project_templates
+        .self_and_ancestors
+        .with_feature_available_in_plan(:group_project_templates)
+        .self_and_descendants
+    end
   end
 
   def simple_group_search(groups)
