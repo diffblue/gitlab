@@ -1,11 +1,11 @@
 import { isObject } from 'lodash';
-import { GENIE_CHAT_MODEL_ROLES } from '../../constants';
+import { GENIE_CHAT_MODEL_ROLES, CHAT_MESSAGE_TYPES } from '../../constants';
 import * as types from './mutation_types';
 
 export default {
   [types.ADD_MESSAGE](state, newMessageData) {
     if (newMessageData && isObject(newMessageData) && Object.values(newMessageData).length) {
-      if (newMessageData.role.toLowerCase() === GENIE_CHAT_MODEL_ROLES.tool) {
+      if (newMessageData.role.toLowerCase() === GENIE_CHAT_MODEL_ROLES.system) {
         return;
       }
       const index = state.messages.findIndex((msg) => msg.requestId === newMessageData.requestId);
@@ -38,7 +38,11 @@ export default {
     state.loading = loading;
   },
   [types.ADD_TOOL_MESSAGE](state, toolMessage) {
-    if (toolMessage.role.toLowerCase() !== GENIE_CHAT_MODEL_ROLES.tool || !state.loading) {
+    if (
+      (toolMessage.role.toLowerCase() !== GENIE_CHAT_MODEL_ROLES.system &&
+        toolMessage.type !== CHAT_MESSAGE_TYPES.tool) ||
+      !state.loading
+    ) {
       return;
     }
     state.toolMessage = toolMessage;

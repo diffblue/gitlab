@@ -19,6 +19,10 @@ RSpec.describe Gitlab::Llm::Chain::Tools::ExplainCode::Executor, feature_categor
     it 'returns tool name' do
       expect(described_class::NAME).to eq('ExplainCode')
     end
+
+    it 'returns tool human name' do
+      expect(described_class::HUMAN_NAME).to eq('Explain Code')
+    end
   end
 
   describe '#description' do

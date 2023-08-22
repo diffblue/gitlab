@@ -7,6 +7,7 @@ module Gitlab
         module GitlabDocumentation
           class Executor < Tool
             NAME = 'GitlabDocumentation'
+            HUMAN_NAME = 'GitLab Documentation'
             RESOURCE_NAME = 'documentation answer'
             DESCRIPTION =
               <<-PROMPT

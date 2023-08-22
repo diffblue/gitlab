@@ -22,6 +22,7 @@ describe('Ai Commit Message component', () => {
     requestId: '123',
     role: GENIE_CHAT_MODEL_ROLES.assistant,
     timestamp: '2021-05-26T14:00:00.000Z',
+    type: null,
   };
 
   const createComponent = () => {

@@ -44,7 +44,8 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
         request_id: 'uuid',
         role: 'assistant',
         timestamp: an_instance_of(ActiveSupport::TimeWithZone),
-        errors: []
+        errors: [],
+        type: nil
       }
     end
 

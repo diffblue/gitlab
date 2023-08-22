@@ -19,6 +19,10 @@ module Types
         null: false,
         description: 'Message role.'
 
+      field :type, GraphQL::Types::String,
+        null: true,
+        description: 'Message type.'
+
       field :timestamp,
         Types::TimeType,
         null: false,

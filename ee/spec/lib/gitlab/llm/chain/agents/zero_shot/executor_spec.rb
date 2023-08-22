@@ -13,6 +13,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
   let(:extra_resource) { {} }
   let(:response_double) { "I know the final answer\nFinal Answer: FooBar" }
   let(:resource) { user }
+  let(:response_service_double) { instance_double(::Gitlab::Llm::ResponseService) }
 
   let(:context) do
     Gitlab::Llm::Chain::GitlabContext.new(
@@ -22,7 +23,14 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
     )
   end
 
-  subject(:agent) { described_class.new(user_input: input, tools: tools, context: context) }
+  subject(:agent) do
+    described_class.new(
+      user_input: input,
+      tools: tools,
+      context: context,
+      response_handler: response_service_double
+    )
+  end
 
   describe '#execute' do
     before do
@@ -45,19 +53,39 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       expect(answer.content).to include('FooBar')
     end
 
-    it 'executes associated tools and adds observations during the execution' do
-      # just limiting the number of iterations here from 10 to 2
-      stub_const("#{described_class.name}::MAX_ITERATIONS", 2)
+    context 'without final answer' do
+      before do
+        # just limiting the number of iterations here from 10 to 2
+        stub_const("#{described_class.name}::MAX_ITERATIONS", 2)
+      end
 
-      logger = instance_double(Gitlab::Llm::Logger)
+      it 'executes associated tools and adds observations during the execution' do
+        logger = instance_double(Gitlab::Llm::Logger)
 
-      expect(Gitlab::Llm::Logger).to receive(:build).at_least(:once).and_return(logger)
-      expect(logger).to receive(:info).with(hash_including(message: "Tool cycling detected")).exactly(2)
-      expect(logger).to receive(:info).at_least(:once)
-      expect(logger).to receive(:debug).at_least(:once)
-      allow(agent).to receive(:request).and_return("Action: IssueIdentifier\nAction Input: #3")
+        expect(Gitlab::Llm::Logger).to receive(:build).at_least(:once).and_return(logger)
+        expect(logger).to receive(:info).with(hash_including(message: "Tool cycling detected")).exactly(2)
+        expect(logger).to receive(:info).at_least(:once)
+        expect(logger).to receive(:debug).at_least(:once)
+        expect(response_service_double).to receive(:execute).at_least(:once)
 
-      agent.execute
+        allow(agent).to receive(:request).and_return("Action: IssueIdentifier\nAction Input: #3")
+
+        agent.execute
+      end
+
+      context 'with the ai_tool_info flag switched off' do
+        before do
+          stub_feature_flags(ai_tool_info: false)
+        end
+
+        it 'does not call response_service' do
+          expect(response_service_double).not_to receive(:execute)
+
+          allow(agent).to receive(:request).and_return("Action: IssueIdentifier\nAction Input: #3")
+
+          agent.execute
+        end
+      end
     end
 
     context 'when max iterations reached' do
@@ -66,6 +94,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
 
         allow(agent).to receive(:request).and_return("Action: IssueIdentifier\nAction Input: #3")
         expect(agent).to receive(:request).twice.times
+        expect(response_service_double).to receive(:execute).at_least(:once)
 
         answer = agent.execute
 

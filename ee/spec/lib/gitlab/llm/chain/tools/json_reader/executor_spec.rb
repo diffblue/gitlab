@@ -40,6 +40,10 @@ RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failu
     it 'returns tool name' do
       expect(described_class::NAME).to eq('ResourceReader')
     end
+
+    it 'returns tool human name' do
+      expect(described_class::HUMAN_NAME).to eq('Prepare data')
+    end
   end
 
   describe '#description' do

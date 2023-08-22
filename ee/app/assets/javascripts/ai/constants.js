@@ -54,7 +54,10 @@ export const GENIE_CHAT_MODEL_ROLES = {
   user: 'user',
   system: 'system',
   assistant: 'assistant',
-  tool: 'tool_info',
+};
+
+export const CHAT_MESSAGE_TYPES = {
+  tool: 'tool',
 };
 
 export const FEEDBACK_OPTIONS = [

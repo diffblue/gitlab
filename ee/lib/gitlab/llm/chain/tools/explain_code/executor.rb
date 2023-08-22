@@ -9,6 +9,7 @@ module Gitlab
             include Concerns::AiDependent
 
             NAME = 'ExplainCode'
+            HUMAN_NAME = 'Explain Code'
             DESCRIPTION = 'Useful tool to explain code snippets and blocks.'
             RESOURCE_NAME = 'explain code answer'
             EXAMPLE = "Question: How would you improve the " \

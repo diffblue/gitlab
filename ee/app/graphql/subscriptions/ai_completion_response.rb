@@ -19,7 +19,8 @@ module Subscriptions
         request_id: object[:request_id],
         role: object[:role],
         errors: object[:errors],
-        timestamp: object[:timestamp]
+        timestamp: object[:timestamp],
+        type: object[:type]
       }
     end
 
