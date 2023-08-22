@@ -394,22 +394,28 @@ RSpec.describe OperationsController, feature_category: :release_orchestration do
             expect(last_deployment_json['id']).to eq(deployment.id)
           end
 
-          it "returns the last deployment's deployable" do
-            environment = create(:environment, project: project)
-            ci_build = create(:ci_build, project: project)
-            create(:deployment, :success, project: project, environment: environment, deployable: ci_build)
+          shared_examples_for 'correctly handling deployable' do
+            it "returns the last deployment's deployable" do
+              environment = create(:environment, project: project)
+              create(:deployment, :success, project: project, environment: environment, deployable: job)
 
-            get_environments(:json)
+              get_environments(:json)
 
-            expect(response).to have_gitlab_http_status(:ok)
-            expect(response).to match_response_schema('dashboard/operations/environments', dir: 'ee')
+              expect(response).to have_gitlab_http_status(:ok)
+              expect(response).to match_response_schema('dashboard/operations/environments', dir: 'ee')
 
-            project_json = json_response['projects'].first
-            environment_json = project_json['environments'].first
-            deployable_json = environment_json['last_deployment']['deployable']
+              project_json = json_response['projects'].first
+              environment_json = project_json['environments'].first
+              deployable_json = environment_json['last_deployment']['deployable']
 
-            expect(deployable_json['id']).to eq(ci_build.id)
-            expect(deployable_json['build_path']).to eq(project_job_path(project, ci_build))
+              expect(deployable_json['id']).to eq(job.id)
+
+              if job.instance_of?(Ci::Build)
+                expect(deployable_json['build_path']).to eq(project_job_path(project, job))
+              else
+                expect(deployable_json['build_path']).to be_nil
+              end
+            end
           end
 
           it 'returns a failed deployment' do
@@ -426,6 +432,18 @@ RSpec.describe OperationsController, feature_category: :release_orchestration do
             last_deployment_json = environment_json['last_deployment']
 
             expect(last_deployment_json['id']).to eq(deployment.id)
+          end
+
+          context 'when deployable is build job' do
+            let(:job) { create(:ci_build, project: project) }
+
+            it_behaves_like 'correctly handling deployable'
+          end
+
+          context 'when deployable is bridge job' do
+            let(:job) { create(:ci_bridge, project: project) }
+
+            it_behaves_like 'correctly handling deployable'
           end
 
           context 'with environments pagination' do
