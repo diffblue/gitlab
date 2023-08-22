@@ -8,7 +8,7 @@ module QA
           module Component
             class AddLicense < QA::Page::Base
               view 'ee/app/views/admin/application_settings/_add_license.html.haml' do
-                element :expand_add_license_button
+                element 'expand-add-license-button'
                 element :accept_eula_checkbox
                 element :license_key_field
                 element :license_type_key_radio
@@ -18,7 +18,7 @@ module QA
               def add_new_license(key)
                 raise 'License key empty!' if key.to_s.strip.empty?
 
-                click_element(:expand_add_license_button)
+                click_element('expand-add-license-button')
                 choose_element(:license_type_key_radio, true)
                 fill_element(:license_key_field, key.strip)
                 check_element(:accept_eula_checkbox)

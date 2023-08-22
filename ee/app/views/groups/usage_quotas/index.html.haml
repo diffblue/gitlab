@@ -16,19 +16,19 @@
     = s_('UsageQuota|Usage Quotas')
 
   .row
-    .col-sm-6{ data: { qa_selector: 'group_usage_message' } }
+    .col-sm-6{ data: { testid: 'group-usage-message' } }
       %p.gl-text-secondary= s_('UsageQuota|Usage of group resources across the projects in the %{strong_start}%{group_name}%{strong_end} group').html_safe % { strong_start: '<strong>'.html_safe, strong_end: '</strong>'.html_safe, group_name: @group.name }
 
   = gl_tabs_nav({ class: 'js-storage-tabs' }) do
-    = gl_tab_link_to '#seats-quota-tab', data: { qa_selector: 'seats_tab' }, item_active: true do
+    = gl_tab_link_to '#seats-quota-tab', data: { testid: 'seats-tab' }, item_active: true do
       = s_('UsageQuota|Seats')
     - if can? current_user, :admin_ci_minutes, @group
-      = gl_tab_link_to '#pipelines-quota-tab', data: { qa_selector: 'pipelines_tab' } do
+      = gl_tab_link_to '#pipelines-quota-tab', data: { testid: 'pipelines-tab' } do
         =  s_('UsageQuota|Pipelines')
-    = gl_tab_link_to '#storage-quota-tab', data: { qa_selector: 'storage_tab' } do
+    = gl_tab_link_to '#storage-quota-tab', data: { testid: 'storage-tab' } do
       = s_('UsageQuota|Storage')
     - if Feature.enabled?(:data_transfer_monitoring, @group)
-      = gl_tab_link_to '#transfer-quota-tab', data: { qa_selector: 'transfer_tab' } do
+      = gl_tab_link_to '#transfer-quota-tab', data: { testid: 'transfer-tab' } do
         = s_('UsageQuota|Transfer')
 
   .tab-content
