@@ -49,3 +49,13 @@ export const createWorkItemMutationResponse = {
     },
   },
 };
+
+export const createWorkItemMutationErrorResponse = {
+  data: {
+    workItemCreate: {
+      __typename: 'WorkItemCreatePayload',
+      workItem: {},
+      errors: ['Title is too long (maximum is 255 characters)'],
+    },
+  },
+};
