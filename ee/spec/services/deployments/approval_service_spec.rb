@@ -11,8 +11,8 @@ RSpec.describe Deployments::ApprovalService, feature_category: :continuous_deliv
   let(:environment) { create(:environment, project: project) }
   let(:status) { 'approved' }
   let(:comment) { nil }
-  let(:ci_build) { create(:ci_build, :manual, project: project) }
-  let(:deployment) { create(:deployment, :blocked, project: project, environment: environment, deployable: ci_build) }
+  let(:job) { create(:ci_build, :manual, project: project) }
+  let(:deployment) { create(:deployment, :blocked, project: project, environment: environment, deployable: job) }
   let!(:protected_environment) { create(:protected_environment, :maintainers_can_deploy, name: environment.name, project: project, **access_level_setting) }
   let(:access_level_setting) { unified_access_level }
 
@@ -171,6 +171,14 @@ RSpec.describe Deployments::ApprovalService, feature_category: :continuous_deliv
         it 'keeps the deployment blocked' do
           expect { subject }.not_to change { deployment.status }
         end
+
+        context 'when deployable is bridge job' do
+          let(:job) { create(:ci_bridge, :manual, project: project) }
+
+          it 'enqueues the bridge' do
+            expect { subject }.to change { deployment.deployable.status }.from('manual').to('pending')
+          end
+        end
       end
 
       context 'when additional approvals are required' do
@@ -237,7 +245,7 @@ RSpec.describe Deployments::ApprovalService, feature_category: :continuous_deliv
       end
 
       context 'when environment is not protected' do
-        let(:deployment) { create(:deployment, :blocked, project: project, deployable: ci_build) }
+        let(:deployment) { create(:deployment, :blocked, project: project, deployable: job) }
 
         include_examples 'error', message: 'This environment is not protected.'
       end
@@ -309,7 +317,7 @@ RSpec.describe Deployments::ApprovalService, feature_category: :continuous_deliv
       end
 
       context 'when deployment is not waiting for approvals' do
-        let(:deployment) { create(:deployment, project: project, environment: environment, deployable: ci_build) }
+        let(:deployment) { create(:deployment, project: project, environment: environment, deployable: job) }
 
         before do
           allow(deployment).to receive(:waiting_for_approval?).and_return(false)
