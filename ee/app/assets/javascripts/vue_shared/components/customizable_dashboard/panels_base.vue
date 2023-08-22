@@ -1,18 +1,14 @@
 <script>
 import * as Sentry from '@sentry/browser';
 import { GlIcon, GlLink, GlLoadingIcon, GlPopover, GlSprintf, GlButton } from '@gitlab/ui';
+import uniqueId from 'lodash/uniqueId';
+import isString from 'lodash/isString';
 import dataSources from 'ee/analytics/analytics_dashboards/data_sources';
-import TooltipOnTruncate from '~/vue_shared/components/tooltip_on_truncate/tooltip_on_truncate.vue';
 import { isEmptyPanelData } from 'ee/vue_shared/components/customizable_dashboard/utils';
-import {
-  I18N_PANEL_EMPTY_STATE_MESSAGE,
-  I18N_PANEL_ERROR_POPOVER_MESSAGE,
-  I18N_PANEL_ERROR_POPOVER_TITLE,
-  I18N_PANEL_ERROR_STATE_MESSAGE,
-  I18N_PANEL_ERROR_POPOVER_RETRY_BUTTON_TITLE,
-  PANEL_TROUBLESHOOTING_URL,
-  PANEL_POPOVER_DELAY,
-} from './constants';
+import TooltipOnTruncate from '~/vue_shared/components/tooltip_on_truncate/tooltip_on_truncate.vue';
+import { HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
+import { s__ } from '~/locale';
+import { PANEL_POPOVER_DELAY, PANEL_TROUBLESHOOTING_URL } from './constants';
 
 export default {
   name: 'AnalyticsDashboardPanel',
@@ -56,18 +52,40 @@ export default {
     },
   },
   data() {
+    const validationErrors = this.visualization?.errors;
+
     return {
-      error: null,
+      errors: validationErrors || [],
+      hasValidationErrors: Boolean(validationErrors),
+      canRetryError: false,
       data: null,
-      loading: true,
+      loading: false,
+      popoverId: uniqueId('panel-error-popover-'),
     };
   },
   computed: {
     showEmptyState() {
-      return !this.error && isEmptyPanelData(this.visualization.type, this.data);
+      return !this.showErrorState && isEmptyPanelData(this.visualization.type, this.data);
     },
     showErrorState() {
-      return Boolean(this.error);
+      return this.errors.length > 0;
+    },
+    errorMessages() {
+      return this.errors.filter(isString);
+    },
+    errorPopoverTitle() {
+      return this.hasValidationErrors
+        ? s__('Analytics|Invalid visualization configuration')
+        : s__('Analytics|Failed to fetch data');
+    },
+    errorPopoverMessage() {
+      return this.hasValidationErrors
+        ? s__(
+            'Analytics|Something is wrong with your panel visualization configuration. See %{linkStart}troubleshooting documentation%{linkEnd}.',
+          )
+        : s__(
+            'Analytics|Something went wrong while connecting to your data source. See %{linkStart}troubleshooting documentation%{linkEnd}.',
+          );
     },
   },
   watch: {
@@ -80,10 +98,14 @@ export default {
   },
   methods: {
     async fetchData() {
+      if (this.hasValidationErrors) {
+        return;
+      }
+
       const { queryOverrides, filters } = this;
       const { type: dataType, query } = this.visualization.data;
       this.loading = true;
-      this.error = null;
+      this.errors = [];
 
       try {
         const { fetch } = await dataSources[dataType]();
@@ -96,26 +118,31 @@ export default {
           filters,
         });
       } catch (error) {
-        this.error = error;
-        Sentry.captureException(error);
+        this.handleFetchError(error);
       } finally {
         this.loading = false;
       }
     },
+    handleFetchError(error) {
+      const isCubeJsBadRequest = this.isCubeJsBadRequest(error);
+      this.canRetryError = !isCubeJsBadRequest; // bad or malformed CubeJS query, retry won't fix
+
+      this.errors = [error];
+
+      Sentry.captureException(error);
+    },
+    isCubeJsBadRequest(error) {
+      return Boolean(error.status === HTTP_STATUS_BAD_REQUEST && error.response?.message);
+    },
   },
-  I18N_PANEL_EMPTY_STATE_MESSAGE,
-  I18N_PANEL_ERROR_STATE_MESSAGE,
-  I18N_PANEL_ERROR_POPOVER_TITLE,
-  I18N_PANEL_ERROR_POPOVER_MESSAGE,
-  I18N_PANEL_ERROR_POPOVER_RETRY_BUTTON_TITLE,
-  PANEL_TROUBLESHOOTING_URL,
   PANEL_POPOVER_DELAY,
+  PANEL_TROUBLESHOOTING_URL,
 };
 </script>
 
 <template>
   <div
-    ref="panelWrapper"
+    :id="popoverId"
     class="grid-stack-item-content gl-border gl-rounded-small gl-p-4 gl-display-flex gl-flex-direction-column gl-bg-white"
     :class="{
       // TODO: simplify border colour classes once 'gl-border-t-red-500' is available: https://gitlab.com/gitlab-org/gitlab-ui/-/merge_requests/3628
@@ -129,46 +156,47 @@ export default {
       boundary="viewport"
       class="gl-pb-3 gl-text-truncate"
     >
-      <gl-icon v-if="showErrorState" name="warning" class="gl-text-red-500" />
+      <gl-icon v-if="showErrorState" name="warning" class="gl-text-red-500 gl-mr-1" />
       <strong class="gl-text-gray-700">{{ title }}</strong>
     </tooltip-on-truncate>
     <div class="gl-overflow-y-auto gl-h-full" :class="{ 'gl--flex-center': loading }">
       <gl-loading-icon v-if="loading" size="lg" />
 
       <div v-else-if="showEmptyState" class="gl-text-secondary">
-        {{ $options.I18N_PANEL_EMPTY_STATE_MESSAGE }}
+        {{ s__('Analytics|No results match your query or filter.') }}
       </div>
 
       <div v-else-if="showErrorState" class="gl-text-secondary">
-        {{ $options.I18N_PANEL_ERROR_STATE_MESSAGE }}
+        {{ s__('Analytics|Something went wrong.') }}
       </div>
 
-      <component
-        :is="visualization.type"
-        v-else-if="!error"
-        :data="data"
-        :options="visualization.options"
-      />
+      <component :is="visualization.type" v-else :data="data" :options="visualization.options" />
     </div>
 
     <gl-popover
       v-if="showErrorState"
       triggers="hover focus"
-      :title="$options.I18N_PANEL_ERROR_POPOVER_TITLE"
+      :title="errorPopoverTitle"
       :show-close-button="false"
       placement="top"
-      :target="$refs.panelWrapper"
+      :css-classes="['gl-max-w-50p']"
+      :target="popoverId"
       :delay="$options.PANEL_POPOVER_DELAY"
     >
-      <gl-sprintf :message="$options.I18N_PANEL_ERROR_POPOVER_MESSAGE">
+      <gl-sprintf :message="errorPopoverMessage">
         <template #link="{ content }">
           <gl-link :href="$options.PANEL_TROUBLESHOOTING_URL" class="gl-font-sm">{{
             content
           }}</gl-link>
         </template>
       </gl-sprintf>
-      <gl-button class="gl-display-block gl-mt-3" @click="fetchData">{{
-        $options.I18N_PANEL_ERROR_POPOVER_RETRY_BUTTON_TITLE
+      <ul v-if="errorMessages.length">
+        <li v-for="errorMessage in errorMessages" :key="errorMessage">
+          {{ errorMessage }}
+        </li>
+      </ul>
+      <gl-button v-if="canRetryError" class="gl-display-block gl-mt-3" @click="fetchData">{{
+        __('Retry')
       }}</gl-button>
     </gl-popover>
   </div>

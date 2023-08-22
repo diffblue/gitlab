@@ -6,16 +6,9 @@ import {
   GlIcon,
   GlTooltipDirective,
 } from '@gitlab/ui';
+import { n__ } from '~/locale';
 import { dateRangeOptionToFilter, getDateRangeOption } from '../utils';
-import {
-  TODAY,
-  DATE_RANGE_OPTIONS,
-  DEFAULT_SELECTED_OPTION_INDEX,
-  I18N_DATE_RANGE_FILTER_TOOLTIP,
-  I18N_DATE_RANGE_FILTER_TO,
-  I18N_DATE_RANGE_FILTER_FROM,
-  I18N_DATE_RANGE_TIMEZONE_TOOLTIP,
-} from './constants';
+import { TODAY, DATE_RANGE_OPTIONS, DEFAULT_SELECTED_OPTION_INDEX } from './constants';
 
 export default {
   name: 'DateRangeFilter',
@@ -73,7 +66,11 @@ export default {
     },
     dateRangeTooltip() {
       if (this.dateRangeLimit) {
-        return I18N_DATE_RANGE_FILTER_TOOLTIP(this.dateRangeLimit);
+        return n__(
+          'Date range limited to %d day',
+          'Date range limited to %d days',
+          this.dateRangeLimit,
+        );
       }
 
       return null;
@@ -92,9 +89,6 @@ export default {
       this.showDateRangePicker = showDateRangePicker;
     },
   },
-  I18N_DATE_RANGE_FILTER_TO,
-  I18N_DATE_RANGE_FILTER_FROM,
-  I18N_DATE_RANGE_TIMEZONE_TOOLTIP,
   DATE_RANGE_OPTIONS,
   TODAY,
 };
@@ -120,14 +114,14 @@ export default {
       :default-end-date="dateRange.endDate"
       :default-max-date="$options.TODAY"
       :max-date-range="dateRangeLimit"
-      :to-label="$options.I18N_DATE_RANGE_FILTER_TO"
-      :from-label="$options.I18N_DATE_RANGE_FILTER_FROM"
+      :to-label="__('To')"
+      :from-label="__('From')"
       :tooltip="dateRangeTooltip"
       same-day-selection
     />
     <gl-icon
       v-gl-tooltip
-      :title="$options.I18N_DATE_RANGE_TIMEZONE_TOOLTIP"
+      :title="s__('Analytics|Dates and times are displayed in the UTC timezone')"
       name="information-o"
       class="gl-align-self-center gl-text-gray-500"
     />

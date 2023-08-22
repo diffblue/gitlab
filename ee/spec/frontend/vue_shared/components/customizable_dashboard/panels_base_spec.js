@@ -1,19 +1,13 @@
 import * as Sentry from '@sentry/browser';
-import { GlLoadingIcon, GlPopover, GlButton } from '@gitlab/ui';
+import { GlButton, GlLoadingIcon, GlPopover } from '@gitlab/ui';
 import LineChart from 'ee/analytics/analytics_dashboards/components/visualizations/line_chart.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';
 import dataSources from 'ee/analytics/analytics_dashboards/data_sources';
 import waitForPromises from 'helpers/wait_for_promises';
 import TooltipOnTruncate from '~/vue_shared/components/tooltip_on_truncate/tooltip_on_truncate.vue';
-import {
-  I18N_PANEL_EMPTY_STATE_MESSAGE,
-  I18N_PANEL_ERROR_POPOVER_TITLE,
-  I18N_PANEL_ERROR_STATE_MESSAGE,
-  I18N_PANEL_ERROR_POPOVER_RETRY_BUTTON_TITLE,
-  PANEL_POPOVER_DELAY,
-} from 'ee/vue_shared/components/customizable_dashboard/constants';
-import { dashboard } from './mock_data';
+import { PANEL_POPOVER_DELAY } from 'ee/vue_shared/components/customizable_dashboard/constants';
+import { dashboard, invalidVisualization } from './mock_data';
 
 jest.mock('ee/analytics/analytics_dashboards/data_sources', () => ({
   cube_analytics: jest.fn().mockReturnValue({
@@ -63,6 +57,47 @@ describe('PanelsBase', () => {
     });
   });
 
+  describe('when a visualization does not match the analytics schema', () => {
+    beforeEach(() => {
+      createWrapper({
+        visualization: invalidVisualization,
+      });
+    });
+
+    it('should not render the loading icon', () => {
+      expect(findLoadingIcon().exists()).toBe(false);
+    });
+
+    it('should render the error state', () => {
+      expect(wrapper.text()).toContain('Something went wrong.');
+    });
+
+    it('should not render a retry button', () => {
+      expect(findPanelRetryButton().exists()).toBe(false);
+    });
+
+    it('should render a popover with more information on the error', () => {
+      const popover = findPanelErrorPopover();
+      expect(popover.exists()).toBe(true);
+      expect(popover.props('title')).toBe('Invalid visualization configuration');
+
+      // TODO: Replace with .props() once GitLab-UI adds all supported props.
+      // https://gitlab.com/gitlab-org/gitlab-ui/-/issues/428
+      expect(popover.vm.$attrs.delay).toStrictEqual(PANEL_POPOVER_DELAY);
+    });
+
+    it('should render specific validation errors', () => {
+      const popover = findPanelErrorPopover();
+
+      expect(popover.text()).toContain(invalidVisualization.errors[0]);
+      expect(popover.text()).toContain(invalidVisualization.errors[1]);
+    });
+
+    it('should not call the data source', () => {
+      expect(dataSources.cube_analytics).not.toHaveBeenCalled();
+    });
+  });
+
   describe('when fetching the data', () => {
     beforeEach(() => {
       jest.spyOn(dataSources.cube_analytics(), 'fetch').mockReturnValue(new Promise(() => {}));
@@ -94,7 +129,7 @@ describe('PanelsBase', () => {
       });
 
       it('should not render the empty state', () => {
-        expect(wrapper.text()).not.toContain(I18N_PANEL_EMPTY_STATE_MESSAGE);
+        expect(wrapper.text()).not.toContain('No results match your query or filter.');
       });
 
       it('should render the visualization with the fetched data', () => {
@@ -118,66 +153,91 @@ describe('PanelsBase', () => {
 
       it('should render the empty state', () => {
         const text = wrapper.text();
-        expect(text).toContain(I18N_PANEL_EMPTY_STATE_MESSAGE);
+        expect(text).toContain('No results match your query or filter.');
       });
     });
   });
 
   describe('when there was an error while fetching the data', () => {
-    const mockError = new Error('foo');
-    let captureExceptionSpy;
+    describe('generic or unknown error', () => {
+      const mockGenericError = new Error('foo');
 
-    beforeEach(() => {
-      jest.spyOn(dataSources.cube_analytics(), 'fetch').mockRejectedValue(mockError);
-      captureExceptionSpy = jest.spyOn(Sentry, 'captureException');
+      let captureExceptionSpy;
 
-      createWrapper();
-      return waitForPromises();
+      beforeEach(() => {
+        jest.spyOn(dataSources.cube_analytics(), 'fetch').mockRejectedValue(mockGenericError);
+        captureExceptionSpy = jest.spyOn(Sentry, 'captureException');
+
+        createWrapper();
+
+        return waitForPromises();
+      });
+
+      afterEach(() => {
+        captureExceptionSpy.mockRestore();
+      });
+
+      it('should not render the loading icon', () => {
+        expect(findLoadingIcon().exists()).toBe(false);
+      });
+
+      it('should not render the empty state', () => {
+        expect(wrapper.text()).not.toContain('No results match your query or filter.');
+      });
+
+      it('should not render the visualization', () => {
+        expect(findVisualization().exists()).toBe(false);
+      });
+
+      it('should render the error state', () => {
+        expect(wrapper.text()).toContain('Something went wrong.');
+      });
+
+      it('should render a popover with more information on the error', () => {
+        const popover = findPanelErrorPopover();
+        expect(popover.exists()).toBe(true);
+        expect(popover.props('title')).toBe('Failed to fetch data');
+
+        // TODO: Replace with .props() once GitLab-UI adds all supported props.
+        // https://gitlab.com/gitlab-org/gitlab-ui/-/issues/428
+        expect(popover.vm.$attrs.delay).toStrictEqual(PANEL_POPOVER_DELAY);
+      });
+
+      it('should log the error to Sentry', () => {
+        expect(captureExceptionSpy).toHaveBeenCalledWith(mockGenericError);
+      });
+
+      it('renders a retry button', () => {
+        expect(findPanelRetryButton().text()).toBe('Retry');
+      });
+
+      it('refetches the visualization data when the retry button is clicked', async () => {
+        findPanelRetryButton().vm.$emit('click');
+
+        await waitForPromises();
+
+        expect(dataSources.cube_analytics().fetch).toHaveBeenCalledTimes(2);
+      });
     });
 
-    afterEach(() => {
-      captureExceptionSpy.mockRestore();
-    });
+    describe('CubeJS bad request error', () => {
+      const mockBadRequestError = new Error('Bad Request');
+      mockBadRequestError.status = 400;
+      mockBadRequestError.response = {
+        message: 'Some specific CubeJS error',
+      };
 
-    it('should not render the loading icon', () => {
-      expect(findLoadingIcon().exists()).toBe(false);
-    });
+      beforeEach(() => {
+        jest.spyOn(dataSources.cube_analytics(), 'fetch').mockRejectedValue(mockBadRequestError);
 
-    it('should not render the empty state', () => {
-      expect(wrapper.text()).not.toContain(I18N_PANEL_EMPTY_STATE_MESSAGE);
-    });
+        createWrapper();
 
-    it('should not render the visualization', () => {
-      expect(findVisualization().exists()).toBe(false);
-    });
+        return waitForPromises();
+      });
 
-    it('should render the error state', () => {
-      expect(wrapper.text()).toContain(I18N_PANEL_ERROR_STATE_MESSAGE);
-    });
-
-    it('should render a popover with more information on the error', () => {
-      const popover = findPanelErrorPopover();
-      expect(popover.exists()).toBe(true);
-      expect(popover.props('title')).toBe(I18N_PANEL_ERROR_POPOVER_TITLE);
-      // TODO: Replace with .props() once GitLab-UI adds all supported props.
-      // https://gitlab.com/gitlab-org/gitlab-ui/-/issues/428
-      expect(popover.vm.$attrs.delay).toStrictEqual(PANEL_POPOVER_DELAY);
-    });
-
-    it('should log the error to Sentry', () => {
-      expect(captureExceptionSpy).toHaveBeenCalledWith(mockError);
-    });
-
-    it('renders a retry button', () => {
-      expect(findPanelRetryButton().text()).toBe(I18N_PANEL_ERROR_POPOVER_RETRY_BUTTON_TITLE);
-    });
-
-    it('refetches the visualization data when the retry button is clicked', async () => {
-      findPanelRetryButton().vm.$emit('click');
-
-      await waitForPromises();
-
-      expect(dataSources.cube_analytics().fetch).toHaveBeenCalledTimes(2);
+      it('does not render the retry button', () => {
+        expect(findPanelRetryButton().exists()).toBe(false);
+      });
     });
   });
 
