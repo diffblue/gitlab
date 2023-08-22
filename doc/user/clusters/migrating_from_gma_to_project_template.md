@@ -48,7 +48,7 @@ See also [video walk-throughs](#video-walk-throughs) with examples.
    applications that you would like to manage with this project. Although you could uncomment all the ones you want to
    managed at once, we recommend you repeat the following steps separately for each app, so you do not get lost during
    the process.
-1. Edit the associated `applications/{app}/helmfiles.yaml` to match the chart version currently deployed
+1. Edit the associated `applications/{app}/helmfiles.yaml` to match the chart version deployed
    for your app. Take a GitLab Runner Helm v3 release as an example:
 
    The following command lists the releases and their versions:
@@ -66,7 +66,7 @@ See also [video walk-throughs](#video-walk-throughs) with examples.
    Make sure you replace `gitlab-managed-apps` from the above command if you have your apps deployed to a different
    namespace.
 
-1. Edit the `applications/{app}/values.yaml` associated with your app to match the currently
+1. Edit the `applications/{app}/values.yaml` associated with your app to match the
    deployed values. For example, for GitLab Runner:
 
    1. Copy the output of the following command (it might be big):
