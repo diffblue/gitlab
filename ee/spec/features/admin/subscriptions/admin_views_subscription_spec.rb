@@ -100,6 +100,31 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
         end
       end
 
+      context 'when activating a future-dated subscription' do
+        let_it_be(:license_to_be_created) { build(:license, data: build(:gitlab_license, { starts_at: Date.current + 1.month, cloud_licensing_enabled: true, plan: License::ULTIMATE_PLAN }).export) }
+
+        before do
+          stub_request(:post, graphql_url)
+            .to_return(status: 200, body: {
+              "data": {
+                "cloudActivationActivate": {
+                  "licenseKey": license_to_be_created.data
+                }
+              }
+            }.to_json, headers: { 'Content-Type' => 'application/json' })
+
+          page.within(find('[data-testid="subscription-details"]', match: :first)) do
+            click_button('Add activation code')
+          end
+
+          fill_activation_form
+        end
+
+        it 'shows a successful future-dated activation message' do
+          expect(page).to have_content(s_('Your future dated license was successfully added'))
+        end
+      end
+
       it_behaves_like 'an "Export license usage file" button'
       it_behaves_like 'license removal'
     end
