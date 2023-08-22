@@ -102,6 +102,10 @@ module EE
       def remove_unallowed_params
         super
 
+        if params[:project_setting_attributes].present? && !can?(current_user, :pages_multiple_versions, project)
+          params[:project_setting_attributes].delete(:pages_multiple_versions_enabled)
+        end
+
         unless project.licensed_feature_available?(:external_status_checks)
           params.delete(:only_allow_merge_if_all_status_checks_passed)
         end

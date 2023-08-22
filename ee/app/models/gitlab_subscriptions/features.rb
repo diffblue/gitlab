@@ -149,6 +149,7 @@ module GitlabSubscriptions
       operations_dashboard
       package_forwarding
       pages_size_limit
+      pages_multiple_versions
       productivity_analytics
       project_aliases
       protected_environments

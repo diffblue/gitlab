@@ -8,17 +8,16 @@ module EE
 
       override :project_params_attributes
       def project_params_attributes
-        super + project_params_ee
+        return super unless can?(current_user, :update_max_pages_size)
+
+        super + %i[max_pages_size]
       end
 
-      private
+      override :project_setting_attributes
+      def project_setting_attributes
+        return super unless can?(current_user, :pages_multiple_versions, project)
 
-      def project_params_ee
-        if can?(current_user, :update_max_pages_size)
-          %i[max_pages_size]
-        else
-          []
-        end
+        super + %i[pages_multiple_versions_enabled]
       end
     end
   end

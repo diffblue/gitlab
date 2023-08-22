@@ -766,6 +766,74 @@ RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_an
     end
   end
 
+  describe 'when updating pages_multiple_versions_enabled setting', feature_category: :pages do
+    let(:params) { { project_setting_attributes: { pages_multiple_versions_enabled: true } } }
+
+    let_it_be(:maintainer) { create(:user) }
+    let_it_be(:developer) { create(:user) }
+
+    before do
+      stub_licensed_features(pages_multiple_versions: true)
+      project.add_maintainer(maintainer)
+      project.add_developer(developer)
+    end
+
+    context 'when feature flag is disabled' do
+      before do
+        stub_feature_flags(pages_multiple_versions_setting: false)
+      end
+
+      context 'when user is not project maintainer' do
+        it 'updates project pages_multiple_versions_enabled setting' do
+          expect { update_project(project, developer, params) }
+            .not_to change { project.project_setting.pages_multiple_versions_enabled }
+        end
+      end
+
+      context 'when user is project maintainer' do
+        it 'updates project pages_multiple_versions_enabled setting' do
+          expect { update_project(project, maintainer, params) }
+            .not_to change { project.project_setting.pages_multiple_versions_enabled }
+        end
+      end
+    end
+
+    context 'when licensed feature is disabled' do
+      before do
+        stub_licensed_features(pages_multiple_versions: false)
+      end
+
+      context 'when user is not project maintainer' do
+        it 'updates project pages_multiple_versions_enabled setting' do
+          expect { update_project(project, developer, params) }
+            .not_to change { project.project_setting.pages_multiple_versions_enabled }
+        end
+      end
+
+      context 'when user is project maintainer' do
+        it 'updates project pages_multiple_versions_enabled setting' do
+          expect { update_project(project, maintainer, params) }
+            .not_to change { project.project_setting.pages_multiple_versions_enabled }
+        end
+      end
+    end
+
+    context 'when user is not project maintainer' do
+      it 'updates project pages_multiple_versions_enabled setting' do
+        expect { update_project(project, developer, params) }
+          .not_to change { project.project_setting.pages_multiple_versions_enabled }
+      end
+    end
+
+    context 'when user is project maintainer' do
+      it 'updates project pages_multiple_versions_enabled setting' do
+        expect { update_project(project, maintainer, params) }
+          .to change { project.project_setting.pages_multiple_versions_enabled }
+          .from(false).to(true)
+      end
+    end
+  end
+
   def update_project(project, user, opts)
     Projects::UpdateService.new(project, user, opts).execute
   end
