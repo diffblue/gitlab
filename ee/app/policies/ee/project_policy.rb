@@ -272,6 +272,11 @@ module EE
         ::Feature.enabled?(:target_branch_rules_flag, subject)
       end
 
+      condition(:pages_multiple_versions_available) do
+        ::Feature.enabled?(:pages_multiple_versions_setting, @subject) &&
+          @subject.licensed_feature_available?(:pages_multiple_versions)
+      end
+
       rule { visual_review_bot }.policy do
         prevent :read_note
         enable :create_note
@@ -656,6 +661,10 @@ module EE
       rule do
         target_branch_rules_enabled & target_branch_rules_available & maintainer
       end.enable :create_target_branch_rule
+
+      rule do
+        (maintainer | owner | admin) & pages_multiple_versions_available
+      end.enable :pages_multiple_versions
     end
 
     override :lookup_access_level!

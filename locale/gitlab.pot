@@ -21541,6 +21541,9 @@ msgstr ""
 msgid "GitLabPages|Updating your Pages configuration..."
 msgstr ""
 
+msgid "GitLabPages|Use multiple versions"
+msgstr ""
+
 msgid "GitLabPages|Use unique domain"
 msgstr ""
 
@@ -21554,6 +21557,9 @@ msgid "GitLabPages|When enabled, a unique domain is generated to access pages."
 msgstr ""
 
 msgid "GitLabPages|When enabled, all attempts to visit your website through HTTP are automatically redirected to HTTPS using a response with status code 301. Requires a valid certificate for all domains. %{docs_link_start}Learn more.%{link_end}"
+msgstr ""
+
+msgid "GitLabPages|When enabled, you can create multiple versions of your pages site."
 msgstr ""
 
 msgid "GitLabPages|When using Pages under the general domain of a GitLab instance (%{pages_host}), you cannot use HTTPS with subdomains of subdomains. If your namespace or groupname contains a dot, it does not work. This is a limitation of the HTTP Over TLS protocol. HTTP pages work if you don't redirect HTTP to HTTPS. %{docs_link_start}Learn more.%{link_end}"
