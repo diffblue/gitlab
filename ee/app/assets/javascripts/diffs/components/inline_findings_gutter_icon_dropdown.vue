@@ -1,4 +1,6 @@
 <script>
+// eslint-disable-next-line no-restricted-imports
+import { mapActions } from 'vuex';
 import { GlIcon } from '@gitlab/ui';
 import { n__ } from '~/locale';
 import { getSeverity } from '~/ci/reports/utils';
@@ -81,8 +83,7 @@ export default {
           // https://gitlab-org.gitlab.io/gitlab-ui/?path=/docs/base-new-dropdowns-disclosure--docs#setting-disclosure-dropdown-items
           const enhancedGroupedFindings = arr;
           enhancedGroupedFindings.text = arr.description;
-          // adding mocked action until findings-drawer is introduced in follow up MR
-          enhancedGroupedFindings.href = '#';
+          enhancedGroupedFindings.action = () => this.toggleDrawer(arr);
 
           return enhancedGroupedFindings;
         });
@@ -103,6 +104,12 @@ export default {
     inlineFindingsSubItems() {
       return this.flatFindings.slice(1, inlineFindingsCountThreshold);
     },
+  },
+  methods: {
+    toggleDrawer(finding) {
+      this.setDrawer(finding);
+    },
+    ...mapActions('findingsDrawer', ['setDrawer']),
   },
 };
 </script>

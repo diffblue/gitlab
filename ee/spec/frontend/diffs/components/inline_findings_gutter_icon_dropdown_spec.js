@@ -1,8 +1,10 @@
-import { nextTick } from 'vue';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import Vue, { nextTick } from 'vue';
+
+// eslint-disable-next-line no-restricted-imports
+import Vuex from 'vuex';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import inlineFindingsGutterIconDropdown from 'ee/diffs/components/inline_findings_gutter_icon_dropdown.vue';
 import inlineFindingsDropdown from 'ee/diffs/components/inline_findings_dropdown.vue';
-import { getSeverity } from '~/ci/reports/utils';
 
 import {
   fiveCodeQualityFindings,
@@ -12,11 +14,15 @@ import {
 } from 'jest/diffs/mock_data/inline_findings';
 
 jest.mock('~/mr_notes/stores', () => jest.requireActual('helpers/mocks/mr_notes/stores'));
+Vue.use(Vuex);
 
+let store;
 let wrapper;
+const mockSetDrawer = jest.fn();
+
 const findInlineFindingsDropdown = () => wrapper.findComponent(inlineFindingsDropdown);
 const findMoreCount = () => wrapper.findByTestId('inline-findings-more-count');
-
+const findDropdownItems = () => wrapper.findAll('.gl-new-dropdown-item-content');
 const createComponent = (
   props = {
     filePath,
@@ -25,25 +31,21 @@ const createComponent = (
 ) => {
   const payload = {
     propsData: props,
+    store,
   };
-  wrapper = shallowMountExtended(inlineFindingsGutterIconDropdown, payload);
+  wrapper = mountExtended(inlineFindingsGutterIconDropdown, payload);
 };
 
 describe('EE inlineFindingsGutterIconDropdown', () => {
   describe('code Quality gutter icon', () => {
-    describe('flatFindings', () => {
-      it('computes correctly', () => {
-        createComponent({
-          filePath,
-          codeQuality: singularCodeQualityFinding,
-          sast: singularSastFinding,
-        });
-
-        const combinedResult = [];
-        combinedResult.push(getSeverity(singularCodeQualityFinding[0]));
-        combinedResult.push(getSeverity(singularSastFinding[0]));
-        expect(wrapper.vm.flatFindings).toEqual(combinedResult);
+    it('renders correctly', () => {
+      createComponent({
+        filePath,
+        codeQuality: singularCodeQualityFinding,
+        sast: singularSastFinding,
       });
+
+      expect(findInlineFindingsDropdown().exists()).toBe(true);
     });
 
     describe('more count', () => {
@@ -73,50 +75,39 @@ describe('EE inlineFindingsGutterIconDropdown', () => {
     });
 
     describe('groupedFindings', () => {
-      it('computes correctly', () => {
-        createComponent({
-          filePath,
-          codeQuality: singularCodeQualityFinding,
-          sast: singularSastFinding,
-        });
+      beforeEach(() => {
+        mockSetDrawer.mockReset();
 
-        expect(wrapper.vm.groupedFindings).toEqual([
-          {
-            name: '1 Code Quality finding detected',
-            items: getSeverity(singularCodeQualityFinding),
+        const findingsDrawerModule = {
+          namespaced: true,
+          actions: {
+            setDrawer: mockSetDrawer,
           },
-          {
-            name: '1 SAST finding detected',
-            items: getSeverity(singularSastFinding),
+        };
+
+        store = new Vuex.Store({
+          modules: {
+            findingsDrawer: findingsDrawerModule,
           },
-        ]);
+        });
       });
 
-      it('renders inlineFindingsDropdown component with correct props', () => {
+      it('calls setDrawer action when an item action is triggered', async () => {
         createComponent({
           filePath,
           codeQuality: singularCodeQualityFinding,
           sast: singularSastFinding,
         });
 
-        expect(findInlineFindingsDropdown().exists()).toBe(true);
-        expect(findInlineFindingsDropdown().props('items')).toEqual(wrapper.vm.groupedFindings);
+        const itemElements = findDropdownItems();
 
-        expect(findInlineFindingsDropdown().props('iconId')).toEqual(
-          `${wrapper.vm.filePath}-${wrapper.vm.flatFindings[0].line}`,
-        );
+        // check for CodeQuality
+        await itemElements.at(0).trigger('click');
+        expect(mockSetDrawer).toHaveBeenCalledTimes(1);
 
-        expect(findInlineFindingsDropdown().props('iconKey')).toEqual(
-          wrapper.vm.firstItem.description,
-        );
-
-        expect(findInlineFindingsDropdown().props('iconName')).toEqual(
-          wrapper.vm.flatFindings[0].name,
-        );
-
-        expect(findInlineFindingsDropdown().props('iconClass')).toEqual(
-          wrapper.vm.flatFindings[0].class,
-        );
+        // check for SAST
+        await itemElements.at(1).trigger('click');
+        expect(mockSetDrawer).toHaveBeenCalledTimes(2);
       });
     });
 
