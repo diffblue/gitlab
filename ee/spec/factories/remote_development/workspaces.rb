@@ -33,6 +33,7 @@ FactoryBot.define do
     end
 
     transient do
+      without_workspace_variables { false }
       random_string { SecureRandom.alphanumeric(6).downcase }
       # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       skip_realistic_after_create_timestamp_updates { false }
@@ -80,6 +81,21 @@ FactoryBot.define do
           responded_to_agent_at: 1.second.ago
         )
       else
+        unless evaluator.without_workspace_variables
+          workspace_variables = RemoteDevelopment::Workspaces::Create::WorkspaceVariables.variables(
+            name: workspace.name,
+            dns_zone: workspace.dns_zone,
+            personal_access_token_value: workspace.personal_access_token.token,
+            user_name: workspace.user.name,
+            user_email: workspace.user.email,
+            workspace_id: workspace.id
+          )
+
+          workspace_variables.each do |workspace_variable|
+            workspace.workspace_variables.create!(workspace_variable)
+          end
+        end
+
         if workspace.desired_state == workspace.actual_state
           # The most recent activity was a poll that reconciled the desired and actual state.
           desired_state_updated_at = 2.seconds.ago
@@ -110,6 +126,12 @@ FactoryBot.define do
       # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       responded_to_agent_at { nil }
       deployment_resource_version { nil }
+    end
+
+    trait :without_workspace_variables do
+      transient do
+        without_workspace_variables { true }
+      end
     end
   end
 end

@@ -5,70 +5,51 @@ module RemoteDevelopment
     module Create
       # noinspection RubyResolve - Rubymine isn't detecting ActiveRecord db field properties of workspace
       class Creator
-        include States
         include Messages
 
         RANDOM_STRING_LENGTH = 6
-        WORKSPACE_PORT = 60001
 
         # @param [Hash] value
         # @return [Result]
         def self.create(value)
           value => {
-            devfile_yaml: String => devfile_yaml,
-            processed_devfile: Hash => processed_devfile,
-            volume_mounts: Hash => volume_mounts,
             current_user: User => user,
             params: Hash => params,
           }
-          volume_mounts => { data_volume: Hash => data_volume }
-          data_volume => {
-            path: String => workspace_root,
-          }
           params => {
-            project: Project => project,
-            agent: Clusters::Agent => agent,
+            agent: Clusters::Agent => agent
           }
-
-          processed_devfile_yaml = YAML.dump(processed_devfile.deep_stringify_keys)
-
-          workspace = project.workspaces.build(params)
-
-          workspace.devfile = devfile_yaml
-          workspace.processed_devfile = processed_devfile_yaml
-          workspace.actual_state = CREATION_REQUESTED
-
           random_string = SecureRandom.alphanumeric(RANDOM_STRING_LENGTH).downcase
-          workspace.namespace = "gl-rd-ns-#{agent.id}-#{user.id}-#{random_string}"
           # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409774
           #       We can come maybe come up with a better/cooler way to get a unique name, for now this works
-          workspace.name = "workspace-#{agent.id}-#{user.id}-#{random_string}"
+          value[:workspace_name] = "workspace-#{agent.id}-#{user.id}-#{random_string}"
+          value[:workspace_namespace] = "gl-rd-ns-#{agent.id}-#{user.id}-#{random_string}"
+          model_errors = nil
 
-          project_dir = "#{workspace_root}/#{project.path}"
-          workspace.url = URI::HTTPS.build({
-            host: workspace_host(workspace: workspace),
-            query: {
-              folder: project_dir
-            }.to_query
-          }).to_s
+          updated_value = ApplicationRecord.transaction do
+            initial_result = Result.ok(value)
 
-          if workspace.save
-            Result.ok(
-              WorkspaceCreateSuccessful.new(
-                value.merge({
-                  workspace: workspace
-                })
-              )
-            )
-          else
-            Result.err(WorkspaceCreateFailed.new({ errors: workspace.errors }))
+            result =
+              initial_result
+                .and_then(PersonalAccessTokenCreator.method(:create))
+                .and_then(WorkspaceCreator.method(:create))
+                .and_then(WorkspaceVariablesCreator.method(:create))
+
+            case result
+            in { err: PersonalAccessTokenModelCreateFailed |
+              WorkspaceModelCreateFailed |
+              WorkspaceVariablesModelCreateFailed => message
+            }
+              model_errors = message.context[:errors]
+              raise ActiveRecord::Rollback
+            else
+              result.unwrap
+            end
           end
-        end
 
-        # @param [Workspace] workspace
-        # @return [String (frozen)]
-        def self.workspace_host(workspace:)
-          "#{WORKSPACE_PORT}-#{workspace.name}.#{workspace.dns_zone}"
+          return Result.err(WorkspaceCreateFailed.new({ errors: model_errors })) if model_errors.present?
+
+          Result.ok(WorkspaceCreateSuccessful.new(updated_value))
         end
       end
     end
