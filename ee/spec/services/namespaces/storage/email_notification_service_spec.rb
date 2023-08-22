@@ -62,7 +62,7 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
         100  | 84   | 84 | :warning           | :caution
         8192 | 6144 | 75 | :storage_remaining | :caution
         5120 | 3840 | 75 | :storage_remaining | :caution
-        5120 | 5118 | 99 | :warning           | :danger
+        5120 | 5068 | 99 | :warning           | :danger
       end
 
       with_them do
