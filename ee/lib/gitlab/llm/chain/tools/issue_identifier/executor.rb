@@ -13,6 +13,7 @@ module Gitlab
             MAX_RETRIES = 3
             RESOURCE_NAME = 'issue'
             NAME = "IssueIdentifier"
+            HUMAN_NAME = 'Issue Search'
             DESCRIPTION = 'Useful tool when you need to identify a specific issue. ' \
                           'Do not use this tool if you have already identified the issue.' \
                           'In this context, word `issue` means core building block in GitLab that enable ' \

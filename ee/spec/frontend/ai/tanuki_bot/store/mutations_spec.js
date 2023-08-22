@@ -1,7 +1,7 @@
 import * as types from 'ee/ai/tanuki_bot/store/mutation_types';
 import mutations from 'ee/ai/tanuki_bot/store/mutations';
 import createState from 'ee/ai/tanuki_bot/store/state';
-import { GENIE_CHAT_MODEL_ROLES } from 'ee/ai/constants';
+import { GENIE_CHAT_MODEL_ROLES, CHAT_MESSAGE_TYPES } from 'ee/ai/constants';
 import { MOCK_USER_MESSAGE, MOCK_TANUKI_MESSAGE } from '../mock_data';
 
 describe('GitLab Duo Chat Store Mutations', () => {
@@ -14,8 +14,8 @@ describe('GitLab Duo Chat Store Mutations', () => {
     const requestId = '123';
     const userMessageWithRequestId = { ...MOCK_USER_MESSAGE, requestId };
 
-    describe('tool message', () => {
-      it.each(['tool_info', 'TOOL_INFO'])(
+    describe('system message', () => {
+      it.each(['system', 'SYSTEM'])(
         'ignores the messages with role="%s" and does not populate the state',
         (role) => {
           const messageData = {
@@ -136,7 +136,8 @@ describe('GitLab Duo Chat Store Mutations', () => {
   describe('ADD_TOOL_MESSAGE', () => {
     const toolMessage = {
       ...MOCK_USER_MESSAGE,
-      role: GENIE_CHAT_MODEL_ROLES.tool,
+      role: GENIE_CHAT_MODEL_ROLES.system,
+      type: CHAT_MESSAGE_TYPES.tool,
     };
     it.each`
       desc              | message              | isLoading | expectedState

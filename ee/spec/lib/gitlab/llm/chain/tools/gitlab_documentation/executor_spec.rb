@@ -49,4 +49,14 @@ RSpec.describe Gitlab::Llm::Chain::Tools::GitlabDocumentation::Executor, :saas, 
       end
     end
   end
+
+  describe '#name' do
+    it 'returns tool name' do
+      expect(described_class::NAME).to eq('GitlabDocumentation')
+    end
+
+    it 'returns tool human name' do
+      expect(described_class::HUMAN_NAME).to eq('GitLab Documentation')
+    end
+  end
 end

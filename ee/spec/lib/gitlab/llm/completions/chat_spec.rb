@@ -22,7 +22,9 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
     instance_double(
       Gitlab::Llm::Chain::GitlabContext,
       tools_used: [::Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor],
-      container: container
+      container: container,
+      current_user: user,
+      resource: resource
     )
   end
 
@@ -31,6 +33,8 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
       status: :ok, context: context, content: content, tool: nil, is_final: true
     )
   end
+
+  let(:response_handler) { instance_double(Gitlab::Llm::ResponseService) }
 
   subject { described_class.new(nil, request_id: 'uuid').execute(user, resource, options) }
 
@@ -45,7 +49,8 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
       expected_params = [
         user_input: content,
         tools: match_array(tools),
-        context: context
+        context: context,
+        response_handler: response_handler
       ]
 
       expect_next_instance_of(::Gitlab::Llm::Chain::Agents::ZeroShot::Executor, *expected_params) do |instance|
@@ -55,6 +60,9 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
       expect(Gitlab::Metrics::Sli::Apdex[:llm_chat_answers])
         .to receive(:increment)
         .with(labels: { tool: "IssueIdentifier" }, success: true)
+      expect(response_handler).to receive(:execute)
+      expect(::Gitlab::Llm::ResponseService).to receive(:new).with(context, { request_id: 'uuid' })
+        .and_return(response_handler)
       expect(::Gitlab::Llm::Chain::GitlabContext).to receive(:new)
         .with(current_user: user, container: expected_container, resource: resource, ai_request: ai_request,
           extra_resource: extra_resource)
@@ -141,16 +149,19 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
         expected_params = [
           user_input: content,
           tools: match_array(tools),
-          context: context
+          context: context,
+          response_handler: response_handler
         ]
 
         expect_next_instance_of(::Gitlab::Llm::Chain::Agents::ZeroShot::Executor, *expected_params) do |instance|
           expect(instance).to receive(:execute).and_return(answer)
         end
-
+        expect(response_handler).to receive(:execute)
+        expect(::Gitlab::Llm::ResponseService).to receive(:new).with(context, { request_id: 'uuid' })
+          .and_return(response_handler)
         expect(::Gitlab::Llm::Chain::GitlabContext).to receive(:new)
-          .with(current_user: user, container: expected_container, resource: resource, ai_request: ai_request,
-            extra_resource: extra_resource)
+          .with(current_user: user, container: expected_container, resource: resource,
+            ai_request: ai_request, extra_resource: extra_resource)
           .and_return(context)
 
         subject

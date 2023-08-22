@@ -9,11 +9,12 @@ module Gitlab
             include Gitlab::Utils::StrongMemoize
             include Concerns::AiDependent
 
-            attr_reader :tools, :user_input, :context
+            attr_reader :tools, :user_input, :context, :response_handler
             attr_accessor :iterations
 
             AGENT_NAME = 'GitLab Duo Chat'
             MAX_ITERATIONS = 10
+            RESPONSE_TYPE_TOOL = 'too_info'
 
             PROVIDER_PROMPT_CLASSES = {
               anthropic: ::Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic,
@@ -23,12 +24,13 @@ module Gitlab
             # @param [String] user_input - a question from a user
             # @param [Array<Tool>] tools - an array of Tools defined in the tools module.
             # @param [GitlabContext] context - Gitlab context containing useful context information
-            def initialize(user_input:, tools:, context:)
+            def initialize(user_input:, tools:, context:, response_handler:)
               @user_input = user_input
               @tools = tools
               @context = context
               @iterations = 0
               @logger = Gitlab::Llm::Logger.build
+              @response_handler = response_handler
             end
 
             def execute
@@ -41,7 +43,8 @@ module Gitlab
                 options[:agent_scratchpad] << answer.content.to_s
 
                 tool_class = answer.tool
-                logger.info(message: "Picked tool", tool: tool_class.to_s)
+
+                picked_tool_action(tool_class)
 
                 tool = tool_class.new(
                   context: context,
@@ -52,6 +55,7 @@ module Gitlab
                 )
 
                 tool_answer = tool.execute
+
                 # track a successful tool usage, to avoid cycling through same tools multiple times
                 context.tools_used << tool_class
 
@@ -94,6 +98,16 @@ module Gitlab
                 current_code: current_code,
                 explain_current_blob: Feature.enabled?(:explain_current_blob, context.current_user)
               }
+            end
+
+            def picked_tool_action(tool_class)
+              logger.info(message: "Picked tool", tool: tool_class.to_s)
+              return unless Feature.enabled?(:ai_tool_info, context.current_user)
+
+              response_handler.execute(
+                response: Gitlab::Llm::Chain::ToolResponseModifier.new(tool_class),
+                options: { cache_response: false, role: ::Gitlab::Llm::Cache::ROLE_SYSTEM, type: RESPONSE_TYPE_TOOL }
+              )
             end
 
             def prompt_version

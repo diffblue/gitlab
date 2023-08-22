@@ -27,6 +27,10 @@ RSpec.describe Gitlab::Llm::Chain::Tools::EpicIdentifier::Executor, feature_cate
     it 'returns tool name' do
       expect(described_class::NAME).to eq('EpicIdentifier')
     end
+
+    it 'returns tool human name' do
+      expect(described_class::HUMAN_NAME).to eq('Epic Search')
+    end
   end
 
   describe '#description' do

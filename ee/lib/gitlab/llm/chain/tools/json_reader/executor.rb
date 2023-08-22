@@ -12,6 +12,7 @@ module Gitlab
             TextUtils = Gitlab::Llm::Chain::Utils::TextProcessing
 
             NAME = 'ResourceReader'
+            HUMAN_NAME = 'Prepare data'
             DESCRIPTION = 'Useful tool when you need to get information about specific resource ' \
                           'that was already identified. ' \
                           'Action Input for this tools always starts with: `data`'

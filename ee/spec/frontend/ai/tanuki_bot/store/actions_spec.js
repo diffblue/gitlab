@@ -2,7 +2,7 @@ import * as actions from 'ee/ai/tanuki_bot/store/actions';
 import * as types from 'ee/ai/tanuki_bot/store/mutation_types';
 import createState from 'ee/ai/tanuki_bot/store/state';
 import testAction from 'helpers/vuex_action_helper';
-import { GENIE_CHAT_MODEL_ROLES } from 'ee/ai/constants';
+import { GENIE_CHAT_MODEL_ROLES, CHAT_MESSAGE_TYPES } from 'ee/ai/constants';
 import { MOCK_USER_MESSAGE, MOCK_TANUKI_MESSAGE } from '../mock_data';
 
 describe('TanukiBot Store Actions', () => {
@@ -112,7 +112,11 @@ describe('TanukiBot Store Actions', () => {
 
     describe('with incoming tool message', () => {
       it('commits the correct mutation', () => {
-        const payload = { ...MOCK_USER_MESSAGE, role: GENIE_CHAT_MODEL_ROLES.tool };
+        const payload = {
+          ...MOCK_USER_MESSAGE,
+          role: GENIE_CHAT_MODEL_ROLES.system,
+          type: CHAT_MESSAGE_TYPES.tool,
+        };
         return testAction({
           action: actions.addDuoChatMessage,
           payload,

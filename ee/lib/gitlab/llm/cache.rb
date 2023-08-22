@@ -21,7 +21,8 @@ module Gitlab
 
       ROLE_USER = 'user'
       ROLE_ASSISTANT = 'assistant'
-      ALLOWED_ROLES = [ROLE_USER, ROLE_ASSISTANT].freeze
+      ROLE_SYSTEM = 'system'
+      ALLOWED_ROLES = [ROLE_USER, ROLE_ASSISTANT, ROLE_SYSTEM].freeze
 
       def initialize(user)
         @user = user

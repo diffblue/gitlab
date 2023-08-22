@@ -5,5 +5,6 @@ subscription aiCompletionResponse($userId: UserID, $resourceId: AiModelID!) {
     errors
     role
     timestamp
+    type
   }
 }

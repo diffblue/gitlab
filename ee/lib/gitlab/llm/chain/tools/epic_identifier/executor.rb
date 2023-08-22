@@ -11,6 +11,7 @@ module Gitlab
             MAX_RETRIES = 3
             RESOURCE_NAME = 'epic'
             NAME = "EpicIdentifier"
+            HUMAN_NAME = 'Epic Search'
             DESCRIPTION = 'Useful tool when you need to identify a specific epic. ' \
                           'Do not use this tool if you have already identified the epic.' \
                           'In this context, word `epic` means high-level building block in GitLab that encapsulates ' \

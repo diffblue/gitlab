@@ -32,6 +32,10 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
     it 'returns tool name' do
       expect(described_class::NAME).to eq('IssueIdentifier')
     end
+
+    it 'returns tool human name' do
+      expect(described_class::HUMAN_NAME).to eq('Issue Search')
+    end
   end
 
   describe '#description' do

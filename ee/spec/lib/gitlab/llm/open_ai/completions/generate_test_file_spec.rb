@@ -59,7 +59,8 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateTestFile, feature_categ
           request_id: nil,
           role: 'assistant',
           timestamp: an_instance_of(ActiveSupport::TimeWithZone),
-          errors: []
+          errors: [],
+          type: nil
         }
 
         expect(GraphqlTriggers).to receive(:ai_completion_response).with(
