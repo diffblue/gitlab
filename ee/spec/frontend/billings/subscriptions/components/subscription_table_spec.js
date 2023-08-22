@@ -39,7 +39,7 @@ describe('SubscriptionTable component', () => {
   const findAddSeatsButton = () => wrapper.findByTestId('add-seats-button');
   const findManageButton = () => wrapper.findByTestId('manage-button');
   const findRenewButton = () => wrapper.findByTestId('renew-button');
-  const findRefreshSeatsButton = () => wrapper.findByTestId('refresh-seats-button');
+  const findRefreshSeatsButton = () => wrapper.findByTestId('refresh-seats');
   const findSubscriptionHeader = () => wrapper.findByTestId('subscription-header');
 
   const createComponentWithStore = async ({

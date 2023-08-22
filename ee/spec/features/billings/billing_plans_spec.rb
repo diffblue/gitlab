@@ -534,20 +534,17 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :bi
       it 'updates seat counts on click' do
         visit page_path
 
-        expect(seats_in_use).to eq '0'
+        expect(seats_currently_in_use).to eq '0'
 
         click_button 'Refresh Seats'
         wait_for_requests
 
-        expect(seats_in_use).to eq '1'
+        expect(seats_currently_in_use).to eq '1'
       end
     end
 
-    def seats_in_use
-      all('[data-testid="content-cell"]').each do |cell|
-        label = cell.first('[data-testid="property-label"]')
-        break cell.find('[data-testid="property-value"]').text if label&.text == 'Seats currently in use'
-      end
+    def seats_currently_in_use
+      page.find("[data-testid='seats-currently-in-use']").text
     end
 
     def fill_hand_raise_lead_form_and_submit

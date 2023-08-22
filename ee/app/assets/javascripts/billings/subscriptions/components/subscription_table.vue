@@ -196,8 +196,7 @@ export default {
           <gl-button
             v-if="canRefreshSeats"
             :class="{ 'gl-ml-2': buttons.length !== 0 }"
-            data-testid="refresh-seats-button"
-            data-qa-selector="refresh_seats"
+            data-testid="refresh-seats"
             size="small"
             @click="refreshSeats"
             >{{ s__('SubscriptionTable|Refresh Seats') }}</gl-button

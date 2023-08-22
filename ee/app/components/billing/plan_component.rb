@@ -150,7 +150,7 @@ module Billing
           "cta_text": s_("BillingPlans|Upgrade to Premium"),
           "cta_classes": "btn-purple",
           "cta_data": {
-            "qa_selector": "upgrade_to_premium"
+            "testid": "upgrade-to-premium"
           }
         },
         'ultimate' => {
@@ -183,7 +183,7 @@ module Billing
           ],
           "cta_text": s_("BillingPlans|Upgrade to Ultimate"),
           "cta_data": {
-            "qa_selector": "upgrade_to_ultimate"
+            "testid": "upgrade-to-ultimate"
           }
         }
       }
