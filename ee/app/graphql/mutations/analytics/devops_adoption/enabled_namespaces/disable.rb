@@ -23,7 +23,7 @@ module Mutations
 
               response = service.execute
 
-              errors = response.payload[:enabled_namespaces].sum { |ns| errors_on_object(ns) }
+              errors = response.payload[:enabled_namespaces].sum([]) { |ns| errors_on_object(ns) }
 
               { errors: errors }
             end
