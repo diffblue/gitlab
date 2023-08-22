@@ -475,13 +475,13 @@ feature_category: :global_search do
       end
 
       it 'does not have N+1 queries for users' do
-        users = create_list(:user, 2)
+        users = create_list(:user, 2, :with_user_detail)
 
         described_class.track!(*users)
 
         control = ActiveRecord::QueryRecorder.new(skip_cached: false) { described_class.new.execute }
 
-        users += create_list(:user, 3)
+        users += create_list(:user, 3, :with_user_detail)
 
         described_class.track!(*users)
 
@@ -494,14 +494,14 @@ feature_category: :global_search do
         let_it_be(:project) { create(:project, group: group) }
 
         it 'does not have N+1 queries for users' do
-          users = create_list(:user, 2)
+          users = create_list(:user, 2, :with_user_detail)
           users.each { |user| project.add_developer(user) }
 
           described_class.track!(*users)
 
           control = ActiveRecord::QueryRecorder.new(skip_cached: false) { described_class.new.execute }
 
-          new_users = create_list(:user, 3)
+          new_users = create_list(:user, 3, :with_user_detail)
           new_users.each { |user| project.add_developer(user) }
 
           users += new_users

@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Project creation via Registrations::GroupsController',
   type: :request, feature_category: :onboarding do
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, :with_user_detail) }
   let_it_be(:group) { create(:group) }
 
   describe 'POST #create' do

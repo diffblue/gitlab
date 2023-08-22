@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe API::Entities::Member do
   subject(:entity_representation) { described_class.new(member).as_json }
 
-  let(:member) { build_stubbed(:group_member) }
+  let(:member) { build_stubbed(:group_member, user: build_stubbed(:user, user_detail: build_stubbed(:user_detail))) }
   let(:group_saml_identity) { build_stubbed(:group_saml_identity, extern_uid: 'TESTIDENTITY') }
 
   before do
