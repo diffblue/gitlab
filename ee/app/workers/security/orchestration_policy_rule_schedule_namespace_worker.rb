@@ -24,9 +24,7 @@ module Security
         projects.each do |project|
           user = project.security_policy_bot || schedule.owner
           with_context(project: project, user: user) do
-            Security::SecurityOrchestrationPolicies::RuleScheduleService
-              .new(project: project, current_user: user)
-              .execute(schedule)
+            Security::ScanExecutionPolicies::RuleScheduleWorker.perform_async(project.id, user.id, schedule.id)
           end
         end
       end
