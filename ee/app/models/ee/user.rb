@@ -635,6 +635,24 @@ module EE
       super
     end
 
+    # override, from Devise::Confirmable
+    def send_confirmation_instructions
+      super
+
+      ::Gitlab::Audit::Auditor.audit({
+        name: 'email_confirmation_sent',
+        author: self,
+        scope: self,
+        message: "Confirmation instructions sent to: #{unconfirmed_email}",
+        target: self,
+        additional_details: {
+          target_type: "Email",
+          current_email: email,
+          unconfirmed_email: unconfirmed_email
+        }
+      })
+    end
+
     private
 
     def gitlab_com_member?
