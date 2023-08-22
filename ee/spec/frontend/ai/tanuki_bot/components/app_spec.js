@@ -130,7 +130,7 @@ describe('GitLab Duo Chat', () => {
 
   describe('Chat', () => {
     beforeEach(() => {
-      createComponent();
+      createComponent({ loading: true });
       helpCenterState.showTanukiBotChatDrawer = true;
     });
 
@@ -197,7 +197,7 @@ describe('GitLab Duo Chat', () => {
         );
 
         it('once response arrives via GraphQL subscription with userId fallback calls addDuoChatMessage', () => {
-          createComponent({}, {}, { userId: MOCK_USER_ID, resourceId });
+          createComponent({ loading: true }, {}, { userId: MOCK_USER_ID, resourceId });
 
           expect(subscriptionHandlerMock).toHaveBeenCalledWith({
             resourceId: expectedResourceId,
@@ -242,7 +242,11 @@ describe('GitLab Duo Chat', () => {
       `(`with resourceId = $resourceId`, ({ resourceId, expectedResourceId }) => {
         beforeEach(async () => {
           subscriptionHandlerMock.mockRejectedValue(error);
-          createComponent({}, { gitlabDuo: true }, { userId: MOCK_USER_ID, resourceId });
+          createComponent(
+            { loading: true },
+            { gitlabDuo: true },
+            { userId: MOCK_USER_ID, resourceId },
+          );
 
           helpCenterState.showTanukiBotChatDrawer = true;
           await nextTick();
@@ -265,7 +269,7 @@ describe('GitLab Duo Chat', () => {
     describe('when mutation fails', () => {
       beforeEach(async () => {
         chatMutationHandlerMock = jest.fn().mockRejectedValue('foo');
-        createComponent();
+        createComponent({ loading: true });
 
         helpCenterState.showTanukiBotChatDrawer = true;
         await nextTick();

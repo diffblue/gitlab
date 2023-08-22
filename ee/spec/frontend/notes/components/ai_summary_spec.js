@@ -37,7 +37,7 @@ describe('AiSummary component', () => {
   const findCopyButton = () => wrapper.find('[data-testid="copy-ai-summary"]');
   const findRemoveButton = () => wrapper.find('[data-testid="remove-ai-summary"]');
 
-  const createWrapper = (props = { aiLoading: false }) => {
+  const createWrapper = (props = { aiLoading: true }) => {
     window.gon = { current_user_id: userId };
 
     aiResponseSubscriptionHandler = createMockSubscription();
@@ -59,7 +59,7 @@ describe('AiSummary component', () => {
 
   describe('aiLoading', () => {
     it('shows only skeleton loader while loading', () => {
-      createWrapper({ aiLoading: true });
+      createWrapper();
 
       expect(findSkeleton().exists()).toBe(true);
       expect(findIcon('eye-slash').exists()).toBe(false);
@@ -67,7 +67,7 @@ describe('AiSummary component', () => {
     });
 
     it('shows alert if request times out', () => {
-      createWrapper({ aiLoading: true });
+      createWrapper();
 
       jest.advanceTimersByTime(LONGER_THAN_MAX_REQUEST_TIMEOUT);
 
@@ -88,6 +88,8 @@ describe('AiSummary component', () => {
           },
         },
       });
+
+      wrapper.setProps({ aiLoading: false });
     });
 
     it('does not timeout once it has received a successful response', async () => {

@@ -63,6 +63,9 @@ export default {
             userId: this.userId,
           };
         },
+        skip() {
+          return !this.loading;
+        },
         result({ data }) {
           this.addDuoChatMessage(data?.aiCompletionResponse);
         },
