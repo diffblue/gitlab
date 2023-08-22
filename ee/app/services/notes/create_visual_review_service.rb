@@ -14,7 +14,7 @@ module Notes
     def execute
       raise Gitlab::Access::AccessDeniedError unless can?(current_user, :create_visual_review_note, merge_request)
 
-      Notes::CreateService.new(merge_request.project, User.visual_review_bot, note_params).execute
+      Notes::CreateService.new(merge_request.project, Users::Internal.visual_review_bot, note_params).execute
     end
 
     private

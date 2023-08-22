@@ -10,7 +10,7 @@ module ComplianceManagement
     feature_category :compliance_management
 
     def perform(_user_id, project_id, compliance_framework_id)
-      admin_bot = ::User.admin_bot
+      admin_bot = ::Users::Internal.admin_bot
       project = Project.find(project_id)
 
       ::Projects::UpdateService.new(

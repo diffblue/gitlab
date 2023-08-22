@@ -53,7 +53,7 @@ module Iterations
     end
 
     def automation_bot
-      @automation_bot_id ||= User.automation_bot
+      @automation_bot_id ||= Users::Internal.automation_bot
     end
   end
 end

@@ -17,7 +17,7 @@ module Security
         next if vulnerability.merge_request_feedback.try(:merge_request_id)
         next unless vulnerability.remediations
 
-        result = VulnerabilityFeedback::CreateService.new(project, User.security_bot, service_params(vulnerability)).execute
+        result = VulnerabilityFeedback::CreateService.new(project, Users::Internal.security_bot, service_params(vulnerability)).execute
 
         next unless result[:status] == :success
 
@@ -42,14 +42,14 @@ module Security
     end
 
     def assign_label(merge_request)
-      ::MergeRequests::UpdateService.new(project: project, current_user: User.security_bot, params: { add_label_ids: [label.id] })
+      ::MergeRequests::UpdateService.new(project: project, current_user: Users::Internal.security_bot, params: { add_label_ids: [label.id] })
         .execute(merge_request)
     end
 
     def label
       return @label if @label
 
-      service = ::Security::AutoFixLabelService.new(container: project, current_user: User.security_bot).execute
+      service = ::Security::AutoFixLabelService.new(container: project, current_user: Users::Internal.security_bot).execute
       @label = service.payload[:label]
     end
 

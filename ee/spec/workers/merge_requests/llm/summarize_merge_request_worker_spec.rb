@@ -84,7 +84,7 @@ RSpec.describe MergeRequests::Llm::SummarizeMergeRequestWorker, feature_category
       it "creates a new note by the llm_bot" do
         note = worker.perform(*params)
 
-        expect(note.author_id).to eq(User.llm_bot.id)
+        expect(note.author_id).to eq(Users::Internal.llm_bot.id)
       end
 
       it "creates a new note associated with the provided MR" do

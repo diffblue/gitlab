@@ -63,7 +63,7 @@ module Users
     strong_memoize_attr :cut_off
 
     def admin_bot_id
-      User.admin_bot&.id
+      Users::Internal.admin_bot&.id
     end
     strong_memoize_attr :admin_bot_id
   end

@@ -59,7 +59,7 @@ module Security
       end
 
       def bot_user
-        @bot_user ||= User.security_bot
+        @bot_user ||= Users::Internal.security_bot
       end
 
       def note_params(body)

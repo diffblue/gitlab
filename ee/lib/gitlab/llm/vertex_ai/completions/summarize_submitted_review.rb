@@ -38,7 +38,7 @@ module Gitlab
             ::MergeRequest::ReviewLlmSummary.create!(
               review: review,
               merge_request_diff: mr_diff,
-              user: User.llm_bot,
+              user: Users::Internal.llm_bot,
               provider: MergeRequest::ReviewLlmSummary.providers[:vertex_ai],
               content: response_modifier.response_body
             )

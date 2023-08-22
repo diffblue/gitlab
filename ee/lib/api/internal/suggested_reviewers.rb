@@ -31,7 +31,7 @@ module API
           }
 
           ::ResourceAccessTokens::CreateService.new(
-            User.suggested_reviewers_bot,
+            ::Users::Internal.suggested_reviewers_bot,
             project,
             token_params
           ).execute

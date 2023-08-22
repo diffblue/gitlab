@@ -88,7 +88,7 @@ RSpec.describe Iterations::RollOverIssuesWorker, feature_category: :team_plannin
 
       it 'avoids N+1 database queries' do
         # warm-up
-        User.automation_bot # this create the automation bot user record
+        Users::Internal.automation_bot # this create the automation bot user record
         worker.send(:automation_bot) # this will trigger the check and initiate the @automation_bot instance var
 
         representative = group1.iterations.closed.first

@@ -1138,7 +1138,7 @@ RSpec.describe EE::NotificationService, :mailer, feature_category: :team_plannin
       end
 
       context 'when user cannot receive notifications' do
-        let(:user) { User.ghost }
+        let(:user) { Users::Internal.ghost }
 
         include_examples 'does not send account activation email'
       end

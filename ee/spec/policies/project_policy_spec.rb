@@ -1352,7 +1352,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   context 'visual review bot' do
-    let(:current_user) { User.visual_review_bot }
+    let(:current_user) { Users::Internal.visual_review_bot }
 
     it { expect_allowed(:create_note) }
     it { expect_disallowed(:read_note) }
@@ -2579,7 +2579,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     let(:project) { build_stubbed(:project, namespace: namespace) }
 
     context 'when user is suggested_reviewers_bot' do
-      let(:current_user) { User.suggested_reviewers_bot }
+      let(:current_user) { Users::Internal.suggested_reviewers_bot }
 
       where(:suggested_reviewers_available, :token_creation_allowed, :allowed) do
         false | false | false

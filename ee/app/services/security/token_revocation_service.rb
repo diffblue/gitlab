@@ -48,7 +48,7 @@ module Security
       return unless AccessTokenValidationService.new(pat).validate == :valid
 
       result = PersonalAccessTokens::RevokeService.new(
-        User.security_bot,
+        Users::Internal.security_bot,
         token: pat,
         source: :secret_detection
       ).execute
@@ -59,7 +59,7 @@ module Security
 
       SystemNoteService.change_vulnerability_state(
         token[:vulnerability],
-        User.security_bot,
+        Users::Internal.security_bot,
         revocation_comment
       )
     end

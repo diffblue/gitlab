@@ -32,7 +32,7 @@ module WorkItems
       return unless parent_progress.progress_changed?
 
       parent_progress.save!
-      ::SystemNoteService.change_progress_note(parent, User.automation_bot)
+      ::SystemNoteService.change_progress_note(parent, Users::Internal.automation_bot)
       ::GraphqlTriggers.work_item_updated(parent)
     end
   end
