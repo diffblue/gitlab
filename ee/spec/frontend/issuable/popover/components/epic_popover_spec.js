@@ -61,7 +61,7 @@ describe('Epic Popover', () => {
       expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(true);
     });
 
-    it('does not show status-box or created timestamp', () => {
+    it('does not show status box or created timestamp', () => {
       expect(findStatusBox().exists()).toBe(false);
       expect(wrapper.findByTestId('created-at').exists()).toBe(false);
     });
@@ -82,7 +82,7 @@ describe('Epic Popover', () => {
       await waitForPromises();
     });
 
-    it('shows status-box', () => {
+    it('shows status box', () => {
       const statusBox = findStatusBox();
       expect(statusBox.exists()).toBe(true);
       expect(statusBox.props()).toEqual({
