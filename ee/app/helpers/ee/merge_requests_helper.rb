@@ -25,7 +25,7 @@ module EE
         show_generate_test_file_button: ::Llm::GenerateTestFileService.new(current_user, merge_request).valid?.to_s
       }
 
-      data[:endpoint_sast] = (security_reports_project_merge_request_path(project, merge_request, type: :sast) if merge_request.has_sast_reports?) if ::Feature.enabled?(:sast_reports_in_inline_diff)
+      data[:endpoint_sast] = (security_reports_project_merge_request_path(project, merge_request, type: :sast) if merge_request.has_sast_reports?) if ::Feature.enabled?(:sast_reports_in_inline_diff, project)
 
       super.merge(data)
     end
