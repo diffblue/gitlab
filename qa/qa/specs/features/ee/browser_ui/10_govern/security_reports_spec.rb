@@ -3,7 +3,7 @@
 module QA
   RSpec.describe 'Govern', :runner, :external_api_calls, product_group: :threat_insights do
     describe 'Security Reports' do
-      let(:number_of_dependencies_in_fixture) { 13 }
+      let(:number_of_dependencies_dependency_scanning) { 9 }
       let(:dependency_scan_example_vuln) { 'Prototype pollution attack in mixin-deep' }
       let(:container_scan_example_vuln) { 'CVE-2017-18269 in glibc' }
       let(:sast_scan_example_vuln) { 'Cipher with no integrity' }
@@ -13,6 +13,10 @@ module QA
       let(:secret_detection_vuln) { "Typeform API token" }
 
       let!(:gitlab_ci_yaml_path) { File.join(EE::Runtime::Path.fixture('secure_premade_reports'), '.gitlab-ci.yml') }
+      let!(:dependency_report_json) do
+        File.join(EE::Runtime::Path.fixture('secure_premade_reports'), 'gl-dependency-scanning-report.json')
+      end
+
       let!(:ci_yaml_content) do
         original_yaml = File.read(gitlab_ci_yaml_path)
         original_yaml << "\n"
@@ -28,6 +32,17 @@ module QA
       end
 
       let(:group) { create(:group, path: "govern-security-reports-#{Faker::Alphanumeric.alphanumeric(number: 6)}") }
+      let!(:dependency_scan_yaml) do
+        <<~YAML
+          dependency_scanning:
+            tags: [secure_report]
+            script:
+              - echo "Skipped"
+            artifacts:
+              reports:
+                dependency_scanning: gl-dependency-scanning-report.json
+        YAML
+      end
 
       let!(:project) do
         Resource::Project.fabricate_via_api! do |project|
@@ -222,15 +237,21 @@ module QA
         end
       end
 
-      it(
-        'displays the Dependency List',
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348035'
-      ) do
-        push_security_reports
-        project.visit!
-        wait_for_pipeline_success
-        Page::Project::Menu.perform(&:go_to_dependency_list)
+      context 'for dependency scanning' do
+        it(
+          'displays the Dependency List',
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348035'
+        ) do
+          commit_scan_files(fixture_json: dependency_report_json, ci_yaml_content: dependency_scan_yaml)
+          project.visit!
+          wait_for_pipeline_success
+          Page::Project::Menu.perform(&:go_to_dependency_list)
 
+          validate_dependency_list(number_of_dependencies_dependency_scanning)
+        end
+      end
+
+      def validate_dependency_list(expected_count_of_dependencies)
         EE::Page::Project::Secure::DependencyList.perform do |dependency_list|
           Support::Retrier.retry_on_exception(
             max_attempts: 3,
@@ -238,7 +259,7 @@ module QA
             message: "Retrying for dependency list count",
             sleep_interval: 2
           ) do
-            expect(dependency_list).to have_dependency_count_of number_of_dependencies_in_fixture
+            expect(dependency_list).to have_dependency_count_of expected_count_of_dependencies
           end
         end
       end
@@ -256,6 +277,15 @@ module QA
           commit.add_directory(Pathname.new(EE::Runtime::Path.fixture('dismissed_security_findings_mr_widget')))
           commit.add_directory(Pathname.new(EE::Runtime::Path.fixture('secure_premade_reports')))
           commit.update_files([ci_file])
+        end
+      end
+
+      def commit_scan_files(fixture_json:, ci_yaml_content:)
+        Resource::Repository::Commit.fabricate_via_api! do |commit|
+          commit.project = project
+          commit.commit_message = 'Commit dependency scanning files'
+          commit.add_files([{ file_path: File.basename(fixture_json), content: File.read(fixture_json) }])
+          commit.add_files([{ file_path: '.gitlab-ci.yml', content: ci_yaml_content }])
         end
       end
 
