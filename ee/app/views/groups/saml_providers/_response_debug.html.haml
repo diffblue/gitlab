@@ -16,7 +16,7 @@
     = s_("GroupSAML|SAML Response XML")
     .file-actions
       .btn-group
-        = clipboard_button(text: indented_xml, class: "gl-button btn btn-sm js-copy-blob-source-btn btn-default", title: s_('GroupSAML|Copy SAML Response XML'))
+        = deprecated_clipboard_button(text: indented_xml, class: "gl-button btn btn-sm js-copy-blob-source-btn btn-default", title: s_('GroupSAML|Copy SAML Response XML'))
   .file-content.code.js-syntax-highlight
     .blob-content
       %pre.code.highlight
