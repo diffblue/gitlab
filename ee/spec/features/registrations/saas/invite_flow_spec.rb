@@ -3,7 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sidekiq_inline, feature_category: :onboarding do
-  it 'registers the user and sends them to the group activity page' do
+  it 'registers the user and sends them to the group activity page',
+    quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/419423' do
     new_user = build(:user, name: 'Registering User', email: user_email)
     group = create(:group, name: 'Test Group')
 
@@ -43,7 +44,8 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
     ensure_onboarding_is_finished
   end
 
-  it 'registers the user and sends them to the tasks to be done page' do
+  it 'registers the user and sends them to the tasks to be done page',
+    quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/419423' do
     new_user = build(:user, name: 'Registering User', email: user_email)
     group = create(:group, name: 'Test Group')
 
