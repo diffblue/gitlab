@@ -10,6 +10,7 @@ RSpec.describe 'Query.vulnerabilities {...fields}', feature_category: :vulnerabi
 
   let_it_be(:fields) do
     <<~QUERY
+      uuid
       description
       descriptionHtml
       solution
@@ -54,6 +55,10 @@ RSpec.describe 'Query.vulnerabilities {...fields}', feature_category: :vulnerabi
     expect(subject.first['description']).to be_nil
     expect(subject.first['descriptionHtml']).to be_blank
     expect(subject.first['solution']).to be_nil
+  end
+
+  it 'populates required fields' do
+    expect(subject.first['uuid']).to eq(finding.uuid)
   end
 
   context 'when finding has solution' do
