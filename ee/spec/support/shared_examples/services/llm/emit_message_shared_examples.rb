@@ -9,7 +9,7 @@ RSpec.shared_examples 'service emitting message for user prompt' do
     allow(::Llm::CompletionWorker).to receive(:perform_async)
 
     expect(GraphqlTriggers).to receive(:ai_completion_response)
-      .with(user.to_global_id, resource.to_global_id, expected_subscription_params)
+      .with({ user_id: user.to_global_id, resource_id: resource.to_global_id }, expected_subscription_params)
 
     subject.execute
   end

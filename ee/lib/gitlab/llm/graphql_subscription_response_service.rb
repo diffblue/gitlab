@@ -35,7 +35,13 @@ module Gitlab
 
         unless options[:internal_request]
           Gitlab::Llm::Cache.new(user).add(response_data) if options[:cache_response]
-          GraphqlTriggers.ai_completion_response(user.to_global_id, resource&.to_global_id, data)
+
+          subscription_arguments = { user_id: user.to_global_id, resource_id: resource&.to_global_id }
+          if options[:client_subscription_id]
+            subscription_arguments[:client_subscription_id] = options[:client_subscription_id]
+          end
+
+          GraphqlTriggers.ai_completion_response(subscription_arguments, data)
         end
 
         response_data

@@ -63,7 +63,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateTestFile, feature_categ
         }
 
         expect(GraphqlTriggers).to receive(:ai_completion_response).with(
-          user.to_global_id, merge_request.to_global_id, data
+          { user_id: user.to_global_id, resource_id: merge_request.to_global_id }, data
         )
 
         generate_test_file

@@ -13,6 +13,10 @@ module Subscriptions
       required: false,
       description: 'ID of the user.'
 
+    argument :client_subscription_id, ::GraphQL::Types::String,
+      required: false,
+      description: 'Client generated ID that be subscribed to, to receive a response for the mutation.'
+
     def update(*_args)
       {
         response_body: object[:content],
@@ -23,14 +27,16 @@ module Subscriptions
       }
     end
 
-    def authorized?(user_id:, resource_id:)
-      unauthorized! if current_user.nil? || user_id != current_user.to_global_id
+    def authorized?(args)
+      unauthorized! if current_user.nil? || args[:user_id] != current_user.to_global_id
 
-      resource = force(GitlabSchema.find_by_gid(resource_id))
+      if args[:resource_id]
+        resource = force(GitlabSchema.find_by_gid(args[:resource_id]))
 
-      # unsubscribe if user cannot read the issuable anymore for any reason,
-      # e.g. and issue was set confidential, in the meantime
-      unauthorized! unless resource && Ability.allowed?(current_user, :"read_#{resource.to_ability_name}", resource)
+        # unsubscribe if user cannot read the issuable anymore for any reason,
+        # e.g. and issue was set confidential, in the meantime
+        unauthorized! unless resource && Ability.allowed?(current_user, :"read_#{resource.to_ability_name}", resource)
+      end
 
       true
     end

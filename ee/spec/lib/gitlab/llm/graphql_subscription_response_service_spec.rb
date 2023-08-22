@@ -6,9 +6,14 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:project) { create(:project, :public, group: group) }
+
   let(:response_body) { 'Some response' }
   let(:cache_response) { false }
-  let(:options) { { request_id: 'uuid', cache_response: cache_response } }
+  let(:client_subscription_id) { nil }
+
+  let(:options) do
+    { request_id: 'uuid', cache_response: cache_response, client_subscription_id: client_subscription_id }
+  end
 
   let(:ai_response_json) do
     '{
@@ -55,9 +60,24 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
     it 'triggers subscription' do
       expect(GraphqlTriggers)
         .to receive(:ai_completion_response)
-        .with(user.to_global_id, expected_resource_gid, payload)
+        .with({ user_id: user.to_global_id, resource_id: expected_resource_gid }, payload)
 
       subject
+    end
+
+    context 'when client_subscription_id is set' do
+      let(:client_subscription_id) { 'id' }
+
+      it 'triggers subscription including the client_subscription_id' do
+        expect(GraphqlTriggers)
+          .to receive(:ai_completion_response)
+          .with(
+            { user_id: user.to_global_id, resource_id: expected_resource_gid, client_subscription_id: 'id' },
+            payload
+          )
+
+        subject
+      end
     end
 
     context 'when cache_response: true' do
@@ -85,7 +105,14 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
   end
 
   shared_examples 'with a markup format option' do
-    let(:options) { { markup_format: :html, request_id: 'uuid', cache_response: cache_response } }
+    let(:options) do
+      {
+        markup_format: :html,
+        request_id: 'uuid',
+        cache_response: cache_response,
+        client_subscription_id: client_subscription_id
+      }
+    end
 
     it_behaves_like 'graphql subscription response' do
       let(:response_body) { '<p data-sourcepos="1:1-1:13" dir="auto">Some response</p>' }

@@ -12,10 +12,11 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_cha
 
   let(:current_user) { nil }
   let(:requested_user) { current_user }
-  let(:subscribe) { get_subscription(resource, requested_user, current_user) }
+  let(:subscribe) { get_subscription(requested_user, params) }
   let(:ai_completion_response) { graphql_dig_at(graphql_data(response[:result]), :ai_completion_response) }
   let(:request_id) { 'uuid' }
   let(:content) { 'Some AI response' }
+  let(:params) { { user_id: current_user&.to_gid, resource_id: resource.to_gid, client_subscription_id: 'id' } }
 
   before do
     stub_const('GitlabSchema', Graphql::Subscriptions::ActionCable::MockGitlabSchema)
@@ -34,7 +35,16 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_cha
         errors: []
       }
 
-      GraphqlTriggers.ai_completion_response(current_user&.to_gid, resource.to_gid, data)
+      GraphqlTriggers.ai_completion_response(params, data)
+    end
+  end
+
+  shared_examples 'on success' do
+    it 'receives data' do
+      expect(ai_completion_response['responseBody']).to eq(content)
+      expect(ai_completion_response['role']).to eq('ASSISTANT')
+      expect(ai_completion_response['requestId']).to eq(request_id)
+      expect(ai_completion_response['errors']).to eq([])
     end
   end
 
@@ -64,27 +74,48 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_cha
   context 'when user is authorized' do
     let(:current_user) { guest }
 
-    it 'receives data' do
-      expect(ai_completion_response['responseBody']).to eq(content)
-      expect(ai_completion_response['role']).to eq('ASSISTANT')
-      expect(ai_completion_response['requestId']).to eq(request_id)
-      expect(ai_completion_response['errors']).to eq([])
+    context 'when client_subscription_id is set' do
+      it_behaves_like 'on success'
+    end
+
+    context 'when client_subscription_id is null' do
+      let(:params) { { user_id: current_user.to_gid, resource_id: resource.to_gid, client_subscription_id: nil } }
+
+      it_behaves_like 'on success'
+    end
+
+    context 'when client_subscription_id is not part of the subscription' do
+      let(:params) { { user_id: current_user.to_gid, resource_id: resource.to_gid } }
+
+      it_behaves_like 'on success'
+    end
+
+    context 'when resourc_id is null' do
+      let(:params) { { user_id: current_user.to_gid, resource_id: nil } }
+
+      it_behaves_like 'on success'
+    end
+
+    context 'when resource_id is not part of the subscription' do
+      let(:params) { { user_id: current_user.to_gid } }
+
+      it_behaves_like 'on success'
     end
   end
 
-  def get_subscription(resource, requested_user, current_user)
+  def get_subscription(requested_user, params)
     mock_channel = Graphql::Subscriptions::ActionCable::MockActionCable.get_mock_channel
-    query = ai_completion_subscription_query(requested_user, resource)
+    query = build_subscription_query(requested_user, params)
 
     GitlabSchema.execute(query, context: { current_user: current_user, channel: mock_channel })
 
     mock_channel
   end
 
-  def ai_completion_subscription_query(user, resource)
+  def build_subscription_query(requested_user, params)
     <<~SUBSCRIPTION
       subscription {
-        aiCompletionResponse(userId:\"#{user&.to_gid}\", resourceId: \"#{resource.to_gid}\") {
+        aiCompletionResponse(#{build_arguments(params.merge(user_id: requested_user&.to_gid))}) {
           responseBody
           role
           requestId
@@ -92,5 +123,11 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_cha
         }
       }
     SUBSCRIPTION
+  end
+
+  def build_arguments(params)
+    params.reduce([]) do |acc, (k, v)|
+      acc << "#{k.to_s.camelize(:lower)}: #{v.nil? ? 'null' : "\"#{v}\""}"
+    end.join(",")
   end
 end

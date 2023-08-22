@@ -78,11 +78,9 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::ExplainCode, feature_category
 
       expect(Gitlab::Llm::VertexAi::ResponseModifiers::Predictions).to receive(:new).with(ai_response).and_call_original
       expect(::Gitlab::Llm::GraphqlSubscriptionResponseService).to receive(:new).with(*params).and_call_original
-      expect(GraphqlTriggers).to receive(:ai_completion_response) do |user_id, resource_id, data|
-        expect(user_id).to eq(user.to_global_id)
-        expect(resource_id).to eq(project.to_global_id)
-        expect(data[:content]).to eq(response_body)
-      end
+      expect(GraphqlTriggers).to receive(:ai_completion_response).with(
+        { user_id: user.to_global_id, resource_id: project.to_global_id }, hash_including({ content: response_body })
+      )
 
       explain_code
     end
