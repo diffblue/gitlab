@@ -18,7 +18,11 @@ module QA
     end
   end
 
-  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging }, product_group: :utilization do
+  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging }, product_group: :utilization,
+    quarantine: {
+      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/422005',
+      type: :stale
+    } do
     let(:admin_api_client) { Runtime::API::Client.as_admin }
     let(:owner_api_client) { Runtime::API::Client.new(:gitlab, user: user) }
     let(:hash) { SecureRandom.hex(4) }
