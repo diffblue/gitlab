@@ -53,7 +53,7 @@ module Arkose
     end
 
     def risk_band
-      response&.dig('session_risk', 'risk_band') || 'Unavailable'
+      response&.dig('session_risk', 'risk_band') || RISK_BAND_MEDIUM
     end
 
     def session_id
