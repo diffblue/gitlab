@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Project creation via Registrations::GroupsController',
-  type: :request, feature_category: :groups_and_projects do
+  type: :request, feature_category: :onboarding do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 

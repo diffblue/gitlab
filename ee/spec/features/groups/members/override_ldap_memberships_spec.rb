@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Groups > Members > Maintainer/Owner can override LDAP access levels', feature_category: :groups_and_projects do
+RSpec.describe 'Groups > Members > Maintainer/Owner can override LDAP access levels', feature_category: :system_access do
   include ListboxHelpers
   include WaitForRequests
   include Features::MembersHelpers
