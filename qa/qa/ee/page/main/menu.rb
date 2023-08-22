@@ -6,9 +6,7 @@ module QA
       module Main
         module Menu
           def go_to_operations
-            return click_element(:nav_item_link, submenu_item: 'Operations') if QA::Runtime::Env.super_sidebar_enabled?
-
-            go_to_menu_dropdown_option(:operations_link)
+            click_element(:nav_item_link, submenu_item: 'Operations')
           end
         end
       end
