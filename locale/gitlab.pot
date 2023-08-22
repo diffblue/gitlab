@@ -30764,9 +30764,6 @@ msgstr ""
 msgid "Navigation|Code"
 msgstr ""
 
-msgid "Navigation|Context navigation"
-msgstr ""
-
 msgid "Navigation|Deploy"
 msgstr ""
 
@@ -30780,9 +30777,6 @@ msgid "Navigation|Frequently visited groups"
 msgstr ""
 
 msgid "Navigation|Frequently visited projects"
-msgstr ""
-
-msgid "Navigation|Groups"
 msgstr ""
 
 msgid "Navigation|Groups you visit often will appear here."
@@ -30803,12 +30797,6 @@ msgstr ""
 msgid "Navigation|Monitor settings"
 msgstr ""
 
-msgid "Navigation|No group matches found"
-msgstr ""
-
-msgid "Navigation|No project matches found"
-msgstr ""
-
 msgid "Navigation|Operate"
 msgstr ""
 
@@ -30827,28 +30815,13 @@ msgstr ""
 msgid "Navigation|Primary"
 msgstr ""
 
-msgid "Navigation|Projects"
-msgstr ""
-
 msgid "Navigation|Projects you visit often will appear here."
 msgstr ""
 
 msgid "Navigation|Repository settings"
 msgstr ""
 
-msgid "Navigation|Retrieving search results"
-msgstr ""
-
-msgid "Navigation|Search your projects or groups"
-msgstr ""
-
 msgid "Navigation|Secure"
-msgstr ""
-
-msgid "Navigation|Switch context"
-msgstr ""
-
-msgid "Navigation|There was an error fetching search results."
 msgstr ""
 
 msgid "Navigation|Unpin %{title}"
@@ -30861,12 +30834,6 @@ msgid "Navigation|View all my groups"
 msgstr ""
 
 msgid "Navigation|View all my projects"
-msgstr ""
-
-msgid "Navigation|View all your groups"
-msgstr ""
-
-msgid "Navigation|View all your projects"
 msgstr ""
 
 msgid "Navigation|Your pinned items appear here."
