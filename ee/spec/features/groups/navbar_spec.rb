@@ -220,7 +220,6 @@ RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
 
     describe 'structure' do
       before do
-        insert_after_nav_item(_('Security and Compliance'), new_nav_item: ci_cd_nav_item)
         insert_after_nav_item(_('Analytics'), new_nav_item: settings_nav_item)
 
         visit group_path(group)
@@ -233,7 +232,6 @@ RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
       before do
         stub_licensed_features(group_saml: true, domain_verification: true)
 
-        insert_after_nav_item(_('Security and Compliance'), new_nav_item: ci_cd_nav_item)
         insert_after_nav_item(_('Analytics'), new_nav_item: settings_nav_item)
         insert_after_sub_nav_item(
           s_('UsageQuota|Usage Quotas'),
@@ -267,7 +265,6 @@ RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
           domain_verification: true
         )
 
-        insert_after_nav_item(_('Security and Compliance'), new_nav_item: ci_cd_nav_item)
         insert_after_nav_item(_('Analytics'), new_nav_item: settings_nav_item)
 
         visit group_path(group)
