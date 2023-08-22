@@ -186,6 +186,7 @@ export default {
           :title="todoActionText"
           class="sidebar-collapsed-icon"
           category="tertiary"
+          data-testid="collapsed-button"
           @click="handleTodoButtonClick"
         >
           <gl-loading-icon v-if="todoUpdateInProgress" size="sm" />
