@@ -10,7 +10,7 @@ RSpec.describe Security::ScanResultPolicies::GeneratePolicyViolationCommentServi
   describe '#execute' do
     subject(:execute) { service.execute }
 
-    let_it_be(:bot_user) { User.security_bot }
+    let_it_be(:bot_user) { Users::Internal.security_bot }
 
     let(:service) { described_class.new(merge_request, report_type, violated_policy) }
     let(:expected_violation_note) { 'Policy violation(s) detected' }

@@ -30,7 +30,7 @@ RSpec.describe Vulnerabilities::MarkDroppedAsResolvedWorker, feature_category: :
           .to('resolved')
           .and change { dismissable_vulnerability.reload.resolved_by_id }
           .from(nil)
-          .to(User.security_bot.id)
+          .to(Users::Internal.security_bot.id)
       end
 
       it 'creates state transition entry with note for each vulnerability' do
@@ -42,7 +42,7 @@ RSpec.describe Vulnerabilities::MarkDroppedAsResolvedWorker, feature_category: :
 
         transition = ::Vulnerabilities::StateTransition.last
         expect(transition.vulnerability_id).to eq(dismissable_vulnerability.id)
-        expect(transition.author_id).to eq(User.security_bot.id)
+        expect(transition.author_id).to eq(Users::Internal.security_bot.id)
         expect(transition.comment).to match(/automatically resolved/)
       end
     end

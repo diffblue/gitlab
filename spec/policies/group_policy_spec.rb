@@ -245,7 +245,7 @@ RSpec.describe GroupPolicy, feature_category: :system_access do
   end
 
   context 'migration bot' do
-    let_it_be(:migration_bot) { User.migration_bot }
+    let_it_be(:migration_bot) { Users::Internal.migration_bot }
     let_it_be(:current_user) { migration_bot }
 
     it :aggregate_failures do
@@ -1261,7 +1261,7 @@ RSpec.describe GroupPolicy, feature_category: :system_access do
 
   context 'support bot' do
     let_it_be_with_refind(:group) { create(:group, :private, :crm_enabled) }
-    let_it_be(:current_user) { User.support_bot }
+    let_it_be(:current_user) { Users::Internal.support_bot }
 
     before do
       allow(Gitlab::ServiceDesk).to receive(:supported?).and_return(true)

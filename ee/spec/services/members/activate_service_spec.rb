@@ -165,7 +165,7 @@ RSpec.describe Members::ActivateService, feature_category: :groups_and_projects 
     end
 
     context 'when skipping authorization' do
-      let_it_be(:current_user) { User.automation_bot }
+      let_it_be(:current_user) { Users::Internal.automation_bot }
 
       let_it_be(:members) { [create(:group_member, :awaiting, group: root_group, user: user)] }
 

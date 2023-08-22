@@ -39,7 +39,7 @@ module IncidentManagement
 
     def add_resource_event
       ResourceEvents::ChangeLabelsService
-        .new(incident, User.alert_bot)
+        .new(incident, Users::Internal.alert_bot)
         .execute(added_labels: [label])
     end
 

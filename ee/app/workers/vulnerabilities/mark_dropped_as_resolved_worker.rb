@@ -28,7 +28,7 @@ module Vulnerabilities
         current_time = Time.zone.now
 
         vulnerabilities.update_all(
-          resolved_by_id: User.security_bot.id,
+          resolved_by_id: Users::Internal.security_bot.id,
           resolved_at: current_time,
           updated_at: current_time,
           state: :resolved)
@@ -55,7 +55,7 @@ module Vulnerabilities
     def create_system_note(vulnerability)
       SystemNoteService.change_vulnerability_state(
         vulnerability,
-        User.security_bot,
+        Users::Internal.security_bot,
         resolution_comment
       )
     end
@@ -67,7 +67,7 @@ module Vulnerabilities
         vulnerability: vulnerability,
         from_state: vulnerability.state,
         to_state: :resolved,
-        author_id: User.security_bot.id,
+        author_id: Users::Internal.security_bot.id,
         comment: resolution_comment,
         created_at: current_time,
         updated_at: current_time

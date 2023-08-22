@@ -38,7 +38,7 @@ module EE
       def prepare_diff_summary
         return unless ::Feature.enabled?(:summarize_diff_automatically, project)
 
-        llm_service_bot = ::User.llm_bot
+        llm_service_bot = ::Users::Internal.llm_bot
 
         return unless llm_service_bot
         return if merge_head?

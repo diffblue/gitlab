@@ -141,7 +141,7 @@ RSpec.describe MergeRequestDiff, feature_category: :geo_replication do
         allow(Llm::MergeRequests::SummarizeDiffService)
           .to receive(:enabled?)
           .at_least(:once)
-          .with(group: project.root_ancestor, user: User.llm_bot)
+          .with(group: project.root_ancestor, user: Users::Internal.llm_bot)
           .and_return(false)
       end
 
@@ -157,7 +157,7 @@ RSpec.describe MergeRequestDiff, feature_category: :geo_replication do
         allow(Llm::MergeRequests::SummarizeDiffService)
           .to receive(:enabled?)
           .at_least(:once)
-          .with(group: project.root_ancestor, user: User.llm_bot)
+          .with(group: project.root_ancestor, user: Users::Internal.llm_bot)
           .and_return(true)
       end
 
@@ -167,7 +167,7 @@ RSpec.describe MergeRequestDiff, feature_category: :geo_replication do
         diff_with_commits
 
         expect(::MergeRequests::Llm::SummarizeMergeRequestWorker).to have_received(:perform_async)
-          .with(User.llm_bot.id, { type: ::MergeRequests::Llm::SummarizeMergeRequestWorker::PREPARE_DIFF_SUMMARY, diff_id: diff_with_commits.id })
+          .with(Users::Internal.llm_bot.id, { type: ::MergeRequests::Llm::SummarizeMergeRequestWorker::PREPARE_DIFF_SUMMARY, diff_id: diff_with_commits.id })
       end
     end
   end

@@ -70,7 +70,7 @@ module MergeRequests
       attr_accessor :user
 
       def llm_service_bot
-        @_llm_service_bot ||= User.llm_bot
+        @_llm_service_bot ||= Users::Internal.llm_bot
       end
 
       # Until we decide the best way to represent generated content

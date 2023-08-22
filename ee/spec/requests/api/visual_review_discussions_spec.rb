@@ -73,7 +73,7 @@ RSpec.describe API::VisualReviewDiscussions, feature_category: :review_apps do
       end
 
       it 'returns the name of the Visual Review Bot assigned as the author' do
-        expect(response_note['author']['username']).to eq(User.visual_review_bot.username)
+        expect(response_note['author']['username']).to eq(Users::Internal.visual_review_bot.username)
       end
 
       it 'returns the id of the merge request as the parent noteable_id' do
@@ -201,7 +201,7 @@ RSpec.describe API::VisualReviewDiscussions, feature_category: :review_apps do
     end
 
     context 'with visual review bot authentication' do
-      let(:token) { create(:personal_access_token, user: User.visual_review_bot) }
+      let(:token) { create(:personal_access_token, user: Users::Internal.visual_review_bot) }
       let(:headers) { { 'Private-Token' => token.token } }
 
       it 'rejects note creation' do
@@ -239,7 +239,7 @@ RSpec.describe API::VisualReviewDiscussions, feature_category: :review_apps do
     end
 
     context 'with visual review bot authentication' do
-      let(:token) { create(:personal_access_token, user: User.visual_review_bot) }
+      let(:token) { create(:personal_access_token, user: Users::Internal.visual_review_bot) }
       let(:headers) { { 'Private-Token' => token.token } }
 
       it 'rejects note creation' do

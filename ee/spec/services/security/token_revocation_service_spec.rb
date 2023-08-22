@@ -65,8 +65,8 @@ RSpec.describe Security::TokenRevocationService, '#execute', feature_category: :
 
       audit_context = {
         name: 'personal_access_token_revoked',
-        author: User.security_bot,
-        scope: User.security_bot,
+        author: Users::Internal.security_bot,
+        scope: Users::Internal.security_bot,
         target: glpat_token.user,
         message: "Revoked personal access token with id #{glpat_token.id}"
       }
@@ -77,7 +77,7 @@ RSpec.describe Security::TokenRevocationService, '#execute', feature_category: :
         .to receive(:change_vulnerability_state)
         .with(
           vulnerability,
-          User.security_bot,
+          Users::Internal.security_bot,
           s_("TokenRevocation|This Personal Access Token has been automatically revoked on detection. " \
              "Consider investigating and rotating before marking this vulnerability as resolved.")
         )

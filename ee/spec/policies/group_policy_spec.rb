@@ -86,7 +86,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     end
 
     context 'when user is support bot' do
-      let_it_be(:current_user) { User.support_bot }
+      let_it_be(:current_user) { Users::Internal.support_bot }
 
       before do
         allow(Gitlab::ServiceDesk).to receive(:supported?).and_return(true)

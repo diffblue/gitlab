@@ -8,7 +8,7 @@ RSpec.describe SystemNotes::EscalationsService, feature_category: :incident_mana
   let_it_be(:project) { create(:project) }
   let_it_be(:user) { create(:user) }
   let_it_be(:user_2) { create(:user) }
-  let_it_be(:author) { User.alert_bot }
+  let_it_be(:author) { Users::Internal.alert_bot }
   let_it_be(:escalation_policy) { create(:incident_management_escalation_policy, project: project) }
 
   describe '#notify_via_escalation' do

@@ -10,7 +10,7 @@ RSpec.describe Users::UnconfirmedUsersDeletionCronWorker, feature_category: :use
   let_it_be(:confirmed_user) { create(:user, created_at: cut_off_datetime - 1.day) }
   let_it_be(:banned_user) { create(:user, :banned, :unconfirmed, created_at: cut_off_datetime - 1.day) }
   let_it_be(:bot_user) { create(:user, :bot, :unconfirmed, created_at: cut_off_datetime - 1.day) }
-  let_it_be(:admin_bot) { ::User.admin_bot }
+  let_it_be(:admin_bot) { ::Users::Internal.admin_bot }
 
   let_it_be(:unconfirmed_user_created_after_cut_off) do
     create(:user, :unconfirmed, created_at: cut_off_datetime + 1.day)
@@ -30,7 +30,7 @@ RSpec.describe Users::UnconfirmedUsersDeletionCronWorker, feature_category: :use
       end
 
       it 'destroys unconfirmed users who never signed in & signed up before unconfirmed_users_delete_after_days days' do
-        admin_bot = ::User.admin_bot
+        admin_bot = ::Users::Internal.admin_bot
         users_to_keep = [
           unconfirmed_user_created_after_cut_off,
           unconfirmed_user_who_signed_in,
