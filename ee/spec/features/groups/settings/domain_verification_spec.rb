@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Group domain verification settings', :saas, feature_category: :groups_and_projects do
+RSpec.describe 'Group domain verification settings', :saas, feature_category: :system_access do
   let_it_be(:user) { create(:user) }
 
   let(:group) { create(:group) }

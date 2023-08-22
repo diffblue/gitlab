@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Group reporting settings', :js, feature_category: :groups_and_projects do
+RSpec.describe 'Group reporting settings', :js, feature_category: :insider_threat do
   let_it_be(:user) { create(:user) }
 
   let(:group) { create(:group) }
