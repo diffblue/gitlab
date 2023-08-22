@@ -60,11 +60,13 @@ module Types
         end
 
         def location
-          object['location'].merge(report_type: object['report_type']) if Feature.enabled?(:sast_reports_in_inline_diff)
+          return unless Feature.enabled?(:sast_reports_in_inline_diff, context[:project])
+
+          object['location'].merge(report_type: object['report_type'])
         end
 
         def identifiers
-          object['identifiers'] if Feature.enabled?(:sast_reports_in_inline_diff)
+          object['identifiers'] if Feature.enabled?(:sast_reports_in_inline_diff, context[:project])
         end
       end
       # rubocop: enable Graphql/AuthorizeTypes

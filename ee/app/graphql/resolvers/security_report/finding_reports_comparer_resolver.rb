@@ -15,6 +15,9 @@ module Resolvers
         description: 'Filter vulnerability findings by report type.'
 
       def resolve(report_type:)
+        # Necessary to use project as actor in FF check
+        context[:project] = object.project
+
         ::Security::MergeRequestSecurityReportGenerationService.execute(object, report_type)
       end
     end
