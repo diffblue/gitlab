@@ -48,7 +48,14 @@ module Llm
       ::Gitlab::Llm::Cache.new(user).add(payload) if cache_response?(options)
 
       if emit_response?(options)
-        GraphqlTriggers.ai_completion_response(user.to_global_id, resource&.to_global_id, payload)
+        # We do not add the `client_subscription_id` here on purpose for now.
+        # This subscription event happens to sync user messages on multiple open chats.
+        # If we'd use the `client_subscription_id`, which is unique to the tab,
+        # the other open tabs would not receive the message.
+        # https://gitlab.com/gitlab-org/gitlab/-/issues/422773
+        GraphqlTriggers.ai_completion_response(
+          { user_id: user.to_global_id, resource_id: resource&.to_global_id }, payload
+        )
       end
 
       return success(payload) if no_worker_message?(message)

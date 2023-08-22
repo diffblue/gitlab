@@ -19,6 +19,10 @@ module Mutations
         description: 'Indicates the response format.',
         default_value: :raw
 
+      argument :client_subscription_id, GraphQL::Types::String,
+        required: false,
+        description: 'Client generated ID that can be subscribed to, to receive a response for the mutation.'
+
       field :request_id, GraphQL::Types::String,
         null: true,
         description: 'ID of the request.'
@@ -77,7 +81,7 @@ module Mutations
       end
 
       def extract_method_params!(attributes)
-        options = attributes.extract!(:markup_format)
+        options = attributes.extract!(:markup_format, :client_subscription_id)
         methods = methods(attributes.transform_values(&:to_h))
 
         # At this point, we only have one method since we filtered it in `#ready?`

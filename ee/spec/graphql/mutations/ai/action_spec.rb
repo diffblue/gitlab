@@ -14,7 +14,9 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
   subject(:mutation) { described_class.new(object: nil, context: context, field: nil) }
 
   describe '#ready?' do
-    let(:arguments) { { summarize_comments: { resource_id: resource_id }, markup_format: :markdown } }
+    let(:arguments) do
+      { summarize_comments: { resource_id: resource_id }, markup_format: :markdown, client_subscription_id: 'id' }
+    end
 
     it { is_expected.to be_ready(**arguments) }
 
@@ -187,6 +189,14 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
       let(:input) { { summarize_comments: { resource_id: resource_id } } }
       let(:expected_method) { :summarize_comments }
       let(:expected_options) { {} }
+
+      it_behaves_like 'an AI action'
+    end
+
+    context 'when client_subscription_id input is set' do
+      let(:input) { { summarize_comments: { resource_id: resource_id }, client_subscription_id: 'id' } }
+      let(:expected_method) { :summarize_comments }
+      let(:expected_options) { { client_subscription_id: 'id' } }
 
       it_behaves_like 'an AI action'
     end
