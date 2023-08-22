@@ -124,7 +124,7 @@ class ApprovalWrappedRule
   end
 
   def name
-    return approval_rule.name unless approval_rule.scan_finding?
+    return approval_rule.name unless approval_rule.from_scan_result_policy?
 
     approval_rule.name.gsub(/\s\d+\z/, '')
   end
