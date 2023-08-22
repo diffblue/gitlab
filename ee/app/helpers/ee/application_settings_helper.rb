@@ -7,7 +7,6 @@ module EE
     override :visible_attributes
     def visible_attributes
       super + [
-        :ai_access_token,
         :allow_group_owners_to_manage_ldap,
         :automatic_purchased_storage_allocation,
         :check_namespace_plan,

@@ -1232,13 +1232,4 @@ RSpec.describe ApplicationSetting do
       it { is_expected.to eq(false) }
     end
   end
-
-  describe '#ai_access_token', feature_category: :code_suggestions do
-    it 'does not modify the token if it is unchanged in the form' do
-      setting.ai_access_token = 'foo'
-      setting.ai_access_token = ApplicationSetting::MASK_PASSWORD
-
-      expect(setting.ai_access_token).to eq('foo')
-    end
-  end
 end
