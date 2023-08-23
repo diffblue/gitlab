@@ -34,7 +34,7 @@ module QA
         def fabricate!
           group.visit!
 
-          QA::Page::Group::Menu.perform(&:click_group_epics_link)
+          QA::Page::Group::Menu.perform(&:go_to_epics)
 
           QA::EE::Page::Group::Epic::Index.perform(&:click_new_epic)
 

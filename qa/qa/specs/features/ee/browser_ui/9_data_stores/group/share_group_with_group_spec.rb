@@ -33,7 +33,7 @@ module QA
 
         target_group_with_project.visit!
 
-        Page::Group::Menu.perform(&:click_subgroup_members_item)
+        Page::Group::Menu.perform(&:go_to_members)
         Page::Group::Members.perform do |members|
           members.invite_group(source_group_with_members.path)
 

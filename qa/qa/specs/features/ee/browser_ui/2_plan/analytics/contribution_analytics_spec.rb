@@ -30,7 +30,7 @@ module QA
         Page::MergeRequest::Show.perform(&:merge!)
 
         group.visit!
-        Page::Group::Menu.perform(&:click_contribution_analytics_item)
+        Page::Group::Menu.perform(&:go_to_contribution_analytics)
       end
 
       it(

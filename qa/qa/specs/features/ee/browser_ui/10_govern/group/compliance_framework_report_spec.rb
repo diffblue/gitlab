@@ -61,7 +61,7 @@ module QA
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/396600'
       ) do
         subgroup.sandbox.visit!
-        Page::Group::Menu.perform(&:click_compliance_report_link)
+        Page::Group::Menu.perform(&:go_to_compliance_report)
         QA::EE::Page::Group::Compliance::Show.perform do |report|
           report.click_frameworks_tab
 

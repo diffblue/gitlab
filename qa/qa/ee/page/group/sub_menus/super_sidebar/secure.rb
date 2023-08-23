@@ -9,7 +9,7 @@ module QA
             module Secure
               extend QA::Page::PageConcern
 
-              def self.prepended(base)
+              def self.included(base)
                 super
 
                 base.class_eval do

@@ -22,7 +22,7 @@ module QA
 
         create(:group).visit!
 
-        Page::Group::Menu.perform(&:click_group_insights_link)
+        Page::Group::Menu.perform(&:go_to_insights)
       end
 
       it_behaves_like 'default insights page'

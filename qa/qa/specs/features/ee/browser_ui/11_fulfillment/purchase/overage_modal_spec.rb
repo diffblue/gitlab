@@ -144,7 +144,7 @@ module QA
       end
 
       def invite_member(user_name, access_level)
-        Page::Group::Menu.perform(&:click_group_members_item)
+        Page::Group::Menu.perform(&:go_to_members)
         Page::Group::Members.perform do |members_page|
           members_page.add_member(user_name, access_level, refresh_page: false)
         end
@@ -152,7 +152,7 @@ module QA
 
       def invite_group(group_path, access_level)
         group.visit! # Note that this is the parent group
-        Page::Group::Menu.perform(&:click_group_members_item)
+        Page::Group::Menu.perform(&:go_to_members)
         Page::Group::Members.perform do |members_page|
           members_page.invite_group(group_path, access_level, refresh_page: false)
         end
