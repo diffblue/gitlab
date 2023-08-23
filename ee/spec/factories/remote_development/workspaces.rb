@@ -17,11 +17,6 @@ FactoryBot.define do
     # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
     max_hours_before_termination { 24 }
 
-    # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409779
-    #       Can we make factorybot retrieve the dns_zone from the agent's remote_development_agent_config
-    #       so we can interpolate it here and ensure it is consistent?
-    url { "https://60001-#{name}.workspaces.localdev.me" }
-
     # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
     devfile_ref { 'main' }
     # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
@@ -65,6 +60,7 @@ FactoryBot.define do
       user = workspace.user
       workspace.project.add_developer(user)
       workspace.agent.project.add_developer(user)
+      workspace.url ||= "https://60001-#{workspace.name}.#{workspace.agent.remote_development_agent_config.dns_zone}"
     end
 
     after(:create) do |workspace, evaluator|

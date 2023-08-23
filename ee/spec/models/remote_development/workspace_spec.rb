@@ -23,6 +23,7 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
       expect(subject.agent).to eq(agent)
       expect(subject.remote_development_agent_config).to eq(agent.remote_development_agent_config)
       expect(agent.remote_development_agent_config.workspaces.first).to eq(subject)
+      expect(subject.url).to eq("https://60001-#{subject.name}.#{agent.remote_development_agent_config.dns_zone}")
     end
   end
 
@@ -88,7 +89,7 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
       let(:agent_with_no_remote_development_config) { create(:cluster_agent) }
 
       subject do
-        build(:workspace, user: user, agent: agent_with_no_remote_development_config, project: project)
+        build(:workspace, user: user, url: "URL", agent: agent_with_no_remote_development_config, project: project)
       end
 
       it 'validates presence of agent.remote_development_agent_config' do
