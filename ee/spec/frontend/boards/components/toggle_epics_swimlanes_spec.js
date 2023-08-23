@@ -1,4 +1,4 @@
-import { GlDropdownItem } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlListboxItem } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
@@ -7,7 +7,8 @@ import ToggleEpicsSwimlanes from 'ee/boards/components/toggle_epics_swimlanes.vu
 describe('ToggleEpicsSwimlanes', () => {
   let wrapper;
 
-  const findToggleItems = () => wrapper.findAllComponents(GlDropdownItem);
+  const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
+  const findToggleItems = () => wrapper.findAllComponents(GlListboxItem);
 
   const createComponent = ({ isSwimlanesOn = false } = {}) => {
     wrapper = shallowMountExtended(ToggleEpicsSwimlanes, {
@@ -16,6 +17,9 @@ describe('ToggleEpicsSwimlanes', () => {
       },
       provide: {
         isApolloBoard: true,
+      },
+      stubs: {
+        GlCollapsibleListbox,
       },
     });
   };
@@ -26,9 +30,9 @@ describe('ToggleEpicsSwimlanes', () => {
 
     expect(findToggleItems()).toHaveLength(2);
 
-    expect(findToggleItems().at(1).props('isChecked')).toBe(false);
+    expect(findToggleItems().at(1).props('isSelected')).toBe(false);
 
-    findToggleItems().at(1).vm.$emit('click');
+    findListbox().vm.$emit('select');
 
     expect(wrapper.emitted('toggleSwimlanes')).toHaveLength(1);
   });

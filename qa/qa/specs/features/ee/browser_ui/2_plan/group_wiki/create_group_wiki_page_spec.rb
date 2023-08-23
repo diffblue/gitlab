@@ -16,7 +16,7 @@ module QA
         it 'creates a new page', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347689' do
           group.visit!
 
-          Page::Group::Menu.perform(&:click_group_wiki_link)
+          Page::Group::Menu.perform(&:go_to_wiki)
           EE::Page::Group::Wiki::Show.perform(&:click_create_your_first_page)
 
           EE::Page::Group::Wiki::Edit.perform do |edit|

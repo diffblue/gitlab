@@ -154,7 +154,7 @@ module QA
         Flow::Login.while_signed_in_as_admin do
           @group.sandbox.visit!
 
-          Page::Group::Menu.perform(&:click_group_general_settings_item)
+          Page::Group::Menu.perform(&:go_to_general_settings)
 
           Page::Group::Settings::General.perform do |settings|
             settings.set_ip_address_restriction(ip_address)

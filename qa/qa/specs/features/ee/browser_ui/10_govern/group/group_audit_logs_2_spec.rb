@@ -19,10 +19,10 @@ module QA
         before do
           sign_in
           group.visit!
-          Page::Group::Menu.perform(&:click_group_general_settings_item)
+          Page::Group::Menu.perform(&:go_to_general_settings)
           Page::Group::Settings::General.perform(&:set_lfs_disabled)
 
-          Page::Group::Menu.perform(&:click_group_general_settings_item)
+          Page::Group::Menu.perform(&:go_to_general_settings)
           Page::Group::Settings::General.perform(&:set_lfs_enabled)
         end
 
@@ -37,10 +37,10 @@ module QA
         before do
           sign_in
           group.visit!
-          Page::Group::Menu.perform(&:click_group_general_settings_item)
+          Page::Group::Menu.perform(&:go_to_general_settings)
           Page::Group::Settings::General.perform(&:set_membership_lock_enabled)
 
-          Page::Group::Menu.perform(&:click_group_general_settings_item)
+          Page::Group::Menu.perform(&:go_to_general_settings)
           Page::Group::Settings::General.perform(&:set_membership_lock_disabled)
         end
 
@@ -55,10 +55,10 @@ module QA
         before do
           sign_in
           group.visit!
-          Page::Group::Menu.perform(&:click_group_general_settings_item)
+          Page::Group::Menu.perform(&:go_to_general_settings)
           Page::Group::Settings::General.perform(&:toggle_request_access)
 
-          Page::Group::Menu.perform(&:click_group_general_settings_item)
+          Page::Group::Menu.perform(&:go_to_general_settings)
           Page::Group::Settings::General.perform(&:toggle_request_access)
         end
 
@@ -88,12 +88,12 @@ module QA
         before do
           sign_in(as: owner_user)
           two_fa_group.visit!
-          Page::Group::Menu.perform(&:click_group_general_settings_item)
+          Page::Group::Menu.perform(&:go_to_general_settings)
           Page::Group::Settings::General.perform(&:set_require_2fa_enabled)
           Page::Profile::TwoFactorAuth.perform(&:click_configure_it_later_button)
 
           two_fa_group.visit!
-          Page::Group::Menu.perform(&:click_group_general_settings_item)
+          Page::Group::Menu.perform(&:go_to_general_settings)
           Page::Group::Settings::General.perform(&:set_require_2fa_disabled)
         end
 
@@ -108,7 +108,7 @@ module QA
         before do
           sign_in
           group.visit!
-          Page::Group::Menu.perform(&:click_group_general_settings_item)
+          Page::Group::Menu.perform(&:go_to_general_settings)
           Page::Group::Settings::General.perform do |settings|
             settings.set_project_creation_level("Maintainers")
           end
