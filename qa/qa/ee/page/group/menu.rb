@@ -11,11 +11,11 @@ module QA
             super
 
             base.class_eval do
-              include SubMenus::SuperSidebar::Main
-              include SubMenus::SuperSidebar::Secure
-              include SubMenus::SuperSidebar::Plan
-              include SubMenus::SuperSidebar::Analyze
-              include SubMenus::SuperSidebar::Settings
+              include SubMenus::Main
+              include SubMenus::Secure
+              include SubMenus::Plan
+              include SubMenus::Analyze
+              include SubMenus::Settings
             end
           end
         end
