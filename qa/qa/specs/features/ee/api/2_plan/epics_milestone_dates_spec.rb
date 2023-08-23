@@ -109,11 +109,7 @@ module QA
       end
 
       def create_milestone(start_date, due_date)
-        Resource::ProjectMilestone.fabricate_via_api! do |milestone|
-          milestone.project = project
-          milestone.start_date = start_date
-          milestone.due_date = due_date
-        end
+        create(:project_milestone, project: project, start_date: start_date, due_date: due_date)
       end
 
       def create_epic
