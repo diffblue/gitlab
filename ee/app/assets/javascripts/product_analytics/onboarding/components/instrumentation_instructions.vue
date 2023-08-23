@@ -1,6 +1,7 @@
 <script>
 import { GlLink, GlSprintf } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
+import { InternalEvents } from '~/tracking';
 
 import {
   INSTALL_NPM_PACKAGE,
@@ -16,6 +17,7 @@ export default {
     GlLink,
     GlSprintf,
   },
+  mixins: [InternalEvents.mixin()],
   inject: {
     collectorHost: {
       type: String,
@@ -30,6 +32,9 @@ export default {
       type: String,
       required: true,
     },
+  },
+  mounted() {
+    this.track_event('user_viewed_instrumentation_directions');
   },
   i18n: {
     sdkClientsTitle: s__('ProductAnalytics|SDK clients'),

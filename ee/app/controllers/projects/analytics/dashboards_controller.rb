@@ -30,11 +30,6 @@ module Projects
 
       def track_usage
         ::Gitlab::UsageDataCounters::ProductAnalyticsCounter.count(:view_dashboard)
-
-        ::Gitlab::UsageDataCounters::HLLRedisCounter.track_usage_event(
-          'user_visited_dashboard',
-          current_user.id
-        )
       end
     end
   end

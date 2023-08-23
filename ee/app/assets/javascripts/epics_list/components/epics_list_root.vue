@@ -234,7 +234,6 @@ export default {
     :tabs="$options.issuableListTabs"
     :current-tab="currentState"
     :tab-counts="epicsCount"
-    :search-input-placeholder="__('Search or filter results...')"
     :search-tokens="
       /* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */
       getFilteredSearchTokens({

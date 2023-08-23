@@ -29,7 +29,6 @@ describe('ComplianceFrameworksFilters', () => {
     it('renders a Filtered Search component with correct props', () => {
       expect(findFilteredSearch().exists()).toBe(true);
       expect(wrapper.props('rootAncestorPath')).toBe('my-group-path');
-      expect(findFilteredSearch().props('placeholder')).toBe('Search or filter results');
     });
 
     it('emits a "submit" event with the filters when Filtered Search component is submitted', () => {
