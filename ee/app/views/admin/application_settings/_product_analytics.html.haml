@@ -30,4 +30,4 @@
             = s_('AdminSettings|The URL of your Cube instance.')
         .form-group
           .js-input-copy-visibility{ data: cube_api_key_data(form_name: 'application_setting', value: @application_setting.cube_api_key) }
-      = f.submit _('Save changes'), pajamas_button: true
+      = f.submit _('Save changes'), pajamas_button: true, data: {event_tracking: 'user_edited_cluster_configuration'}

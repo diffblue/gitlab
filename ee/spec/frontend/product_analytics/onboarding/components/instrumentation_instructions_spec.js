@@ -1,5 +1,6 @@
 import InstrumentationInstructions from 'ee/product_analytics/onboarding/components/instrumentation_instructions.vue';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { mockTracking } from 'helpers/tracking_helper';
 import { IMPORT_NPM_PACKAGE, INSTALL_NPM_PACKAGE } from 'ee/product_analytics/onboarding/constants';
 import {
   TEST_COLLECTOR_HOST,
@@ -9,6 +10,7 @@ import { s__ } from '~/locale';
 
 describe('ProductAnalyticsInstrumentationInstructions', () => {
   let wrapper;
+  let trackingSpy;
 
   const findNpmInstructions = () => wrapper.findByTestId('npm-instrumentation-instructions');
   const findHtmlInstructions = () => wrapper.findByTestId('html-instrumentation-instructions');
@@ -16,6 +18,7 @@ describe('ProductAnalyticsInstrumentationInstructions', () => {
   const findSummaryText = () => wrapper.findByTestId('summary-text');
 
   const createWrapper = (mountFn = shallowMountExtended) => {
+    trackingSpy = mockTracking(undefined, window.document, jest.spyOn);
     wrapper = mountFn(InstrumentationInstructions, {
       propsData: {
         trackingKey: TEST_TRACKING_KEY,
@@ -45,6 +48,16 @@ describe('ProductAnalyticsInstrumentationInstructions', () => {
       const htmlInstructions = findHtmlInstructions().text();
       expect(htmlInstructions).toContain(expectedAppIdFragment);
       expect(htmlInstructions).toContain(expectedHostFragment);
+    });
+
+    it('tracks that instrumentation instructions has been viewed', () => {
+      createWrapper();
+
+      expect(trackingSpy).toHaveBeenCalledWith(
+        expect.any(String),
+        'user_viewed_instrumentation_directions',
+        expect.any(Object),
+      );
     });
 
     describe('static text', () => {

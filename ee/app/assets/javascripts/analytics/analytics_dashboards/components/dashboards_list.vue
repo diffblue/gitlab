@@ -1,5 +1,6 @@
 <script>
 import { GlLink, GlAlert, GlButton, GlSkeletonLoader } from '@gitlab/ui';
+import { InternalEvents } from '~/tracking';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { visitUrl, joinPaths } from '~/lib/utils/url_utility';
 import { createAlert } from '~/alert';
@@ -23,7 +24,7 @@ export default {
     GlSkeletonLoader,
     DashboardListItem,
   },
-  mixins: [glFeatureFlagsMixin()],
+  mixins: [glFeatureFlagsMixin(), InternalEvents.mixin()],
   inject: {
     isProject: {
       type: Boolean,
@@ -85,6 +86,9 @@ export default {
     unavailableFeatures() {
       return this.features.filter(this.featureDisabled).filter(this.featureRequiresOnboarding);
     },
+  },
+  mounted() {
+    this.track_event('user_viewed_dashboard_list');
   },
   apollo: {
     userDashboards: {
@@ -229,6 +233,7 @@ export default {
         v-else
         :key="dashboard.slug"
         :dashboard="dashboard"
+        data-event-tracking="user_visited_dashboard"
       />
     </ul>
   </div>
