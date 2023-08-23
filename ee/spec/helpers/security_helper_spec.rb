@@ -29,7 +29,6 @@ RSpec.describe SecurityHelper do
         instance_dashboard_settings_path: settings_security_dashboard_path,
         vulnerabilities_export_endpoint: api_v4_security_vulnerability_exports_path,
         can_admin_vulnerability: expected_can_admin_vulnerability,
-        scanners: '[]',
         false_positive_doc_url: help_page_path('user/application_security/vulnerabilities/index'),
         can_view_false_positive: 'false',
         has_projects: 'true'
