@@ -4,11 +4,7 @@ module QA
   RSpec.describe 'Create' do
     describe 'Codeowners' do
       context 'when the project is in the root group', :requires_admin, product_group: :source_code do
-        let(:approver) do
-          Resource::User.fabricate_via_api! do |resource|
-            resource.api_client = Runtime::API::Client.as_admin
-          end
-        end
+        let(:approver) { create(:user, api_client: Runtime::API::Client.as_admin) }
 
         let(:root_group) { Resource::Sandbox.fabricate_via_api! }
         let(:project) do

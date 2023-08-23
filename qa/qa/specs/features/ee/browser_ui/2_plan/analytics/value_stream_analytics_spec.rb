@@ -18,11 +18,7 @@ module QA
 
         let(:vsa_name) { "test-vsa" }
 
-        let!(:user) do
-          Resource::User.fabricate_via_api! do |resource|
-            resource.api_client = admin_api_client
-          end
-        end
+        let!(:user) { create(:user, api_client: admin_api_client) }
 
         let(:group) { create(:group, api_client: admin_api_client, path: "group-for-vsa-#{SecureRandom.hex(4)}") }
 

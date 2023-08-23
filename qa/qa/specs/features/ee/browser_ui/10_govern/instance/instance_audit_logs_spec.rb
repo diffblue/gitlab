@@ -88,10 +88,8 @@ module QA
       context 'for change password', :skip_signup_disabled, :reliable,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347917' do
         before do
-          user = Resource::User.fabricate_via_api! do |user|
-            user.username = "user_#{SecureRandom.hex(4)}"
-            user.password = "pw_#{SecureRandom.hex(4)}"
-          end
+          user = create(:user, username: "user_#{SecureRandom.hex(4)}", password: "pw_#{SecureRandom.hex(4)}")
+
           Runtime::Browser.visit(:gitlab, Page::Main::Login)
 
           Page::Main::Login.perform do |login_page|
@@ -111,7 +109,7 @@ module QA
 
       context 'for start and stop user impersonation', :reliable,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347916' do
-        let!(:user_for_impersonation) { Resource::User.fabricate_via_api! }
+        let!(:user_for_impersonation) { create(:user) }
 
         before do
           sign_in

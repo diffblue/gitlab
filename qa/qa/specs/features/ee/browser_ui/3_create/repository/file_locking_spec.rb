@@ -164,9 +164,7 @@ module QA
       end
 
       def admin_username
-        Resource::User.fabricate_via_api! do |user|
-          user.username = Runtime::User.username
-        end.name
+        create(:user, username: Runtime::User.username).name
       end
     end
   end

@@ -10,11 +10,7 @@ module QA
       let(:expected_initial_minutes) { CI_MINUTES[:ci_minutes] * purchase_quantity }
       let(:hash) { SecureRandom.hex(4) }
       let(:user) do
-        Resource::User.fabricate_via_api! do |user|
-          user.email = "test-user-#{hash}@gitlab.com"
-          user.api_client = Runtime::API::Client.as_admin
-          user.hard_delete_on_api_removal = true
-        end
+        create(:user, :hard_delete, email: "test-user-#{hash}@gitlab.com", api_client: Runtime::API::Client.as_admin)
       end
 
       # Group cannot be deleted until subscription is deleted in Zuora

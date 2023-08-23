@@ -28,11 +28,7 @@ module QA
     let(:hash) { SecureRandom.hex(4) }
 
     let(:user) do
-      Resource::User.fabricate_via_api! do |user|
-        user.email = "test-user-#{hash}@gitlab.com"
-        user.api_client = admin_api_client
-        user.hard_delete_on_api_removal = true
-      end
+      create(:user, :hard_delete, email: "test-user-#{hash}@gitlab.com", api_client: admin_api_client)
     end
 
     let(:group) do

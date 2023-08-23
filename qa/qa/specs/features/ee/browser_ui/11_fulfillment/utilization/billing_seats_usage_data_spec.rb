@@ -11,24 +11,12 @@ module QA
       let(:hash) { SecureRandom.hex(8) }
 
       let(:user) do
-        Resource::User.fabricate_via_api! do |user|
-          user.email = "test-user-#{hash}@gitlab.com"
-          user.api_client = admin_api_client
-          user.hard_delete_on_api_removal = true
-        end
+        create(:user, :hard_delete, email: "test-user-#{hash}@gitlab.com", api_client: admin_api_client)
       end
 
-      let(:guest_user) do
-        Resource::User.fabricate_via_api! do |user|
-          user.api_client = admin_api_client
-        end
-      end
+      let(:guest_user) { create(:user, api_client: admin_api_client) }
 
-      let(:developer_user) do
-        Resource::User.fabricate_via_api! do |user|
-          user.api_client = admin_api_client
-        end
-      end
+      let(:developer_user) { create(:user, api_client: admin_api_client) }
 
       # This group can't be removed while it is linked to a subscription.
       let(:group) do

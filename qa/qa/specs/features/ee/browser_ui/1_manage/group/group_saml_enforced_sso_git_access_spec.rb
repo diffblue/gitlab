@@ -13,7 +13,7 @@ module QA
 
       let!(:saml_idp_service) { Flow::Saml.run_saml_idp_service(group.path) }
 
-      let!(:developer_user) { Resource::User.fabricate_via_api! }
+      let!(:developer_user) { create(:user) }
 
       let!(:project) do
         Resource::Project.fabricate! do |project|

@@ -87,7 +87,7 @@ module QA
       end
 
       context 'when a user is created' do
-        let(:entity_path) { Resource::User.fabricate_via_api!.username }
+        let(:entity_path) { create(:user).username }
 
         it_behaves_like 'streamed events', :user_created, 'User', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/415876'
       end

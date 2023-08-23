@@ -5,11 +5,7 @@ module QA
     describe 'User with minimal access to group', :requires_admin, product_group: :authentication_and_authorization do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
 
-      let(:user_with_minimal_access) do
-        Resource::User.fabricate_via_api! do |user|
-          user.api_client = admin_api_client
-        end
-      end
+      let(:user_with_minimal_access) { create(:user, api_client: admin_api_client) }
 
       let(:group) do
         group = create(:group, api_client: admin_api_client)
