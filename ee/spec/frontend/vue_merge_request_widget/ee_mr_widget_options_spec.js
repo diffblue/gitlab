@@ -1,4 +1,3 @@
-import { mount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
@@ -7,6 +6,7 @@ import { createMockSubscription as createMockApolloSubscription } from 'mock-apo
 import approvedByCurrentUser from 'test_fixtures/graphql/merge_requests/approvals/approvals.query.graphql.json';
 import getStateQueryResponse from 'test_fixtures/graphql/merge_requests/get_state.query.graphql.json';
 import readyToMergeResponse from 'test_fixtures/graphql/merge_requests/states/ready_to_merge.query.graphql.json';
+import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 import {
   registerExtension,
@@ -19,6 +19,7 @@ import _GroupedLoadPerformanceReportsApp from 'ee/ci/reports/load_performance_re
 
 import MrWidgetOptions from 'ee/vue_merge_request_widget/mr_widget_options.vue';
 import WidgetContainer from 'ee/vue_merge_request_widget/components/widget/app.vue';
+import Approvals from '~/vue_merge_request_widget/components/approvals/approvals.vue';
 
 // EE Widget Extensions
 import licenseComplianceExtension from 'ee/vue_merge_request_widget/extensions/license_compliance';
@@ -56,8 +57,11 @@ describe('ee merge request widget options', () => {
   let mock;
 
   const findWidgetContainer = () => wrapper.findComponent(WidgetContainer);
+  const findApprovalsWidget = () => wrapper.findComponent(Approvals);
+  const findPipelineContainer = () => wrapper.findByTestId('pipeline-container');
+  const findMergedPipelineContainer = () => wrapper.findByTestId('merged-pipeline-container');
 
-  const createComponent = (options) => {
+  const createComponent = ({ mountFn = shallowMountExtended, propsData = {} }) => {
     const queryHandlers = [
       [approvalsQuery, jest.fn().mockResolvedValue(approvedByCurrentUser)],
       [getStateQuery, jest.fn().mockResolvedValue(getStateQueryResponse)],
@@ -99,8 +103,8 @@ describe('ee merge request widget options', () => {
       apolloProvider.defaultClient.setRequestHandler(query, stream);
     });
 
-    wrapper = mount(MrWidgetOptions, {
-      ...options,
+    wrapper = mountFn(MrWidgetOptions, {
+      propsData,
       apolloProvider,
       data() {
         return {
@@ -139,7 +143,7 @@ describe('ee merge request widget options', () => {
 
   describe('computed', () => {
     describe('shouldRenderApprovals', () => {
-      it('should return false when in empty state', () => {
+      it('should return false when in empty state', async () => {
         createComponent({
           propsData: {
             mrData: {
@@ -148,13 +152,14 @@ describe('ee merge request widget options', () => {
             },
           },
         });
-        wrapper.vm.mr.state = 'nothingToMerge';
-
-        expect(wrapper.vm.shouldRenderApprovals).toBe(false);
+        Vue.set(wrapper.vm.mr, 'state', 'nothingToMerge');
+        await nextTick();
+        expect(findApprovalsWidget().exists()).toBe(false);
       });
 
-      it('should return true when requiring approvals and in non-empty state', () => {
+      it('should return true when requiring approvals and in non-empty state', async () => {
         createComponent({
+          mountFn: mountExtended,
           propsData: {
             mrData: {
               ...mockData,
@@ -162,9 +167,9 @@ describe('ee merge request widget options', () => {
             },
           },
         });
-        wrapper.vm.mr.state = 'readyToMerge';
-
-        expect(wrapper.vm.shouldRenderApprovals).toBe(true);
+        Vue.set(wrapper.vm.mr, 'state', 'readyToMerge');
+        await nextTick();
+        expect(findApprovalsWidget().exists()).toBe(true);
       });
     });
   });
@@ -184,29 +189,40 @@ describe('ee merge request widget options', () => {
       status: SUCCESS,
     };
 
-    beforeEach(async () => {
+    const deploymentsMockData = [
+      deploymentMockData,
+      {
+        ...deploymentMockData,
+        id: deploymentMockData.id + 1,
+      },
+    ];
+
+    it('renders multiple deployments container', async () => {
       createComponent({
         propsData: {
           mrData: {
             ...mockData,
+            deployments: deploymentsMockData,
           },
         },
       });
-
-      wrapper.vm.mr.deployments.push(
-        {
-          ...deploymentMockData,
-        },
-        {
-          ...deploymentMockData,
-          id: deploymentMockData.id + 1,
-        },
-      );
-
       await nextTick();
+      expect(findPipelineContainer().exists()).toBe(true);
+      expect(findPipelineContainer().props('mr').deployments).toEqual(deploymentsMockData);
+      expect(findPipelineContainer().props('mr').postMergeDeployments).toHaveLength(0);
     });
 
-    it('renders multiple deployments', () => {
+    it('renders multiple deployments', async () => {
+      createComponent({
+        mountFn: mountExtended,
+        propsData: {
+          mrData: {
+            ...mockData,
+            deployments: deploymentsMockData,
+          },
+        },
+      });
+      await nextTick();
       expect(wrapper.findAll('.deploy-heading')).toHaveLength(2);
     });
   });
@@ -219,8 +235,9 @@ describe('ee merge request widget options', () => {
   });
 
   describe('CI widget', () => {
-    it('renders the branch in the pipeline widget', () => {
-      const sourceBranchLink = '<a href="/to/the/past">Link</a>';
+    const sourceBranchLink = '<a href="/to/the/past">Link</a>';
+
+    it('renders the pipeline widget', () => {
       createComponent({
         propsData: {
           mrData: {
@@ -230,8 +247,24 @@ describe('ee merge request widget options', () => {
         },
       });
 
-      const ciWidget = wrapper.find('.mr-state-widget .label-branch');
+      expect(findMergedPipelineContainer().exists()).toBe(false);
+      expect(findPipelineContainer().exists()).toBe(true);
+      expect(findPipelineContainer().props('mr').sourceBranch).toBe(mockData.source_branch);
+      expect(findPipelineContainer().props('mr').sourceBranchLink).toBe(sourceBranchLink);
+    });
 
+    it('renders the branch in the pipeline widget', () => {
+      createComponent({
+        mountFn: mountExtended,
+        propsData: {
+          mrData: {
+            ...mockData,
+            source_branch_with_namespace_link: sourceBranchLink,
+          },
+        },
+      });
+
+      const ciWidget = wrapper.find('.mr-state-widget .label-branch');
       expect(ciWidget.html()).toContain(sourceBranchLink);
     });
   });
@@ -259,42 +292,43 @@ describe('ee merge request widget options', () => {
   });
 
   describe('license scanning report', () => {
-    it.each`
-      shouldRegisterExtension | description
-      ${true}                 | ${'extension is registered'}
-      ${false}                | ${'extension is not registered'}
-    `(
-      'should render license widget is "$shouldRegisterExtension" when $description',
-      ({ shouldRegisterExtension }) => {
-        const licenseComparisonPath =
-          '/group-name/project-name/-/merge_requests/78/license_scanning_reports';
-        const licenseComparisonPathCollapsed =
-          '/group-name/project-name/-/merge_requests/78/license_scanning_reports_collapsed';
-        const fullReportPath = '/group-name/project-name/-/merge_requests/78/full_report';
-        const settingsPath = '/group-name/project-name/-/licenses#licenses';
-        const apiApprovalsPath = '/group-name/project-name/-/licenses#policies';
+    const licenseComparisonPath =
+      '/group-name/project-name/-/merge_requests/78/license_scanning_reports';
+    const licenseComparisonPathCollapsed =
+      '/group-name/project-name/-/merge_requests/78/license_scanning_reports_collapsed';
+    const fullReportPath = '/group-name/project-name/-/merge_requests/78/full_report';
+    const settingsPath = '/group-name/project-name/-/licenses#licenses';
+    const apiApprovalsPath = '/group-name/project-name/-/licenses#policies';
 
-        gl.mrWidgetData = {
-          ...mockData,
-          license_scanning_comparison_path: licenseComparisonPath,
-          license_scanning_comparison_collapsed_path: licenseComparisonPathCollapsed,
-          api_approvals_path: apiApprovalsPath,
-          license_scanning: {
-            settings_path: settingsPath,
-            full_report_path: fullReportPath,
-          },
-        };
-
-        if (shouldRegisterExtension) {
-          registerExtension(licenseComplianceExtension);
-        }
-
-        createComponent({ propsData: { mrData: gl.mrWidgetData } });
-
-        expect(wrapper.findComponent({ name: 'WidgetLicenseCompliance' }).exists()).toBe(
-          shouldRegisterExtension,
-        );
+    const mrData = {
+      ...mockData,
+      license_scanning_comparison_path: licenseComparisonPath,
+      license_scanning_comparison_collapsed_path: licenseComparisonPathCollapsed,
+      api_approvals_path: apiApprovalsPath,
+      license_scanning: {
+        settings_path: settingsPath,
+        full_report_path: fullReportPath,
       },
-    );
+    };
+
+    it('should render the license widget when the extension is registered', () => {
+      gl.mrWidgetData = mrData;
+      registerExtension(licenseComplianceExtension);
+      createComponent({
+        mountFn: mountExtended,
+        propsData: { mrData },
+      });
+
+      expect(wrapper.findComponent({ name: 'WidgetLicenseCompliance' }).exists()).toBe(true);
+    });
+
+    it('should not render the license widget when the extension is not registered', () => {
+      createComponent({
+        mountFn: mountExtended,
+        propsData: { mrData },
+      });
+
+      expect(wrapper.findComponent({ name: 'WidgetLicenseCompliance' }).exists()).toBe(false);
+    });
   });
 });
