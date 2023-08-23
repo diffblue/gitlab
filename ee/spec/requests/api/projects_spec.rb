@@ -804,11 +804,15 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
         end
 
         context 'parameters' do
-          it_behaves_like 'supports keyset pagination' do
+          it_behaves_like 'an endpoint with keyset pagination' do
             let_it_be(:admin) { create(:admin) }
             let!(:audit_event_1) { create(:project_audit_event, entity_id: project.id) }
             let!(:audit_event_2) { create(:project_audit_event, entity_id: project.id) }
+
+            let(:first_record) { audit_event_2 }
+            let(:second_record) { audit_event_1 }
             let(:url) { "/projects/#{project.id}/audit_events" }
+            let(:api_call) { api(url, admin, admin_mode: true) }
           end
 
           context 'created_before parameter' do

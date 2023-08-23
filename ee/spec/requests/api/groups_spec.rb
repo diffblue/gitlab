@@ -947,10 +947,10 @@ RSpec.describe API::Groups, :aggregate_failures, feature_category: :groups_and_p
         end
 
         context 'parameters' do
-          it_behaves_like 'supports keyset pagination' do
-            let(:url) { path }
-            let(:audit_event_1) { group_audit_event_2 }
-            let(:audit_event_2) { group_audit_event_3 }
+          it_behaves_like 'an endpoint with keyset pagination' do
+            let(:first_record) { group_audit_event_3 }
+            let(:second_record) { group_audit_event_2 }
+            let(:api_call) { api(path, admin, admin_mode: true) }
           end
 
           context 'created_before parameter' do
