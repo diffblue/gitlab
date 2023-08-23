@@ -92,9 +92,10 @@ RSpec.describe API::AuditEvents, :aggregate_failures, feature_category: :audit_e
         end
 
         context 'parameters' do
-          it_behaves_like 'supports keyset pagination' do
-            let!(:audit_event_1) { project_audit_event }
-            let!(:audit_event_2) { group_audit_event }
+          it_behaves_like 'an endpoint with keyset pagination' do
+            let(:first_record) { group_audit_event }
+            let(:second_record) { project_audit_event }
+            let(:api_call) { api(url, admin, admin_mode: true) }
           end
 
           context 'entity_type parameter' do
