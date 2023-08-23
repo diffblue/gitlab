@@ -255,7 +255,11 @@ export default {
       :user-callout-feature-id="mr.suggestPipelineFeatureId"
       @dismiss="dismissSuggestPipelines"
     />
-    <mr-widget-pipeline-container v-if="shouldRenderPipelines" :mr="mr" />
+    <mr-widget-pipeline-container
+      v-if="shouldRenderPipelines"
+      data-testid="pipeline-container"
+      :mr="mr"
+    />
     <mr-widget-approvals v-if="shouldRenderApprovals" :mr="mr" :service="service" />
     <report-widget-container>
       <extensions-container v-if="hasExtensions" :mr="mr" />
@@ -301,6 +305,7 @@ export default {
     <mr-widget-pipeline-container
       v-if="shouldRenderMergedPipeline"
       class="js-post-merge-pipeline mr-widget-workflow"
+      data-testid="merged-pipeline-container"
       :mr="mr"
       :is-post-merge="true"
     />
