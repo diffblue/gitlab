@@ -21829,9 +21829,6 @@ msgstr ""
 msgid "GlobalSearch|Search GitLab"
 msgstr ""
 
-msgid "GlobalSearch|Search GitLab %{kbdOpen}/%{kbdClose}"
-msgstr ""
-
 msgid "GlobalSearch|Search for projects, issues, etc."
 msgstr ""
 
@@ -21860,6 +21857,9 @@ msgid "GlobalSearch|There was an error fetching search autocomplete suggestions.
 msgstr ""
 
 msgid "GlobalSearch|There was an error fetching the \"Syntax Options\" document."
+msgstr ""
+
+msgid "GlobalSearch|Type %{kbdOpen}/%{kbdClose} to search"
 msgstr ""
 
 msgid "GlobalSearch|Type and press the enter key to submit search."
@@ -41802,6 +41802,9 @@ msgid "Search or filter commits"
 msgstr ""
 
 msgid "Search or filter results…"
+msgstr ""
+
+msgid "Search or go to…"
 msgstr ""
 
 msgid "Search page"
