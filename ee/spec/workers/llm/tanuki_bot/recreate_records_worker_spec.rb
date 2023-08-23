@@ -2,13 +2,13 @@
 
 require 'spec_helper'
 
-RSpec.describe Llm::TanukiBot::RecreateRecordsWorker, feature_category: :global_search do
+RSpec.describe Llm::TanukiBot::RecreateRecordsWorker, feature_category: :duo_chat do
   it_behaves_like 'worker with data consistency', described_class, data_consistency: :always
 
   describe '#perform' do
     before do
       stub_const("#{described_class}::DOC_DIRECTORY", './ee/spec/fixtures/tanuki_bot_docs')
-      allow(::Gitlab::Llm::ContentParser).to receive(:parse_and_split).and_return([item])
+      allow(::Gitlab::Llm::Embeddings::Utils::DocsContentParser).to receive(:parse_and_split).and_return([item])
       allow(::Embedding::TanukiBotMvc).to receive(:get_current_version).and_return(version)
     end
 
@@ -62,7 +62,7 @@ RSpec.describe Llm::TanukiBot::RecreateRecordsWorker, feature_category: :global_
       end
 
       it 'creates a record and enqueues workers' do
-        expect(::Gitlab::Llm::ContentParser).to receive(:parse_and_split).once
+        expect(::Gitlab::Llm::Embeddings::Utils::DocsContentParser).to receive(:parse_and_split).once
         expect(Llm::TanukiBot::UpdateWorker).to receive(:perform_in).with(anything, anything, next_version).once
 
         expect { perform }.to change { ::Embedding::TanukiBotMvc.count }.from(0).to(1)
@@ -85,11 +85,12 @@ RSpec.describe Llm::TanukiBot::RecreateRecordsWorker, feature_category: :global_
 
       context 'with more than one items' do
         before do
-          allow(::Gitlab::Llm::ContentParser).to receive(:parse_and_split).and_return([item, item])
+          allow(::Gitlab::Llm::Embeddings::Utils::DocsContentParser).to receive(:parse_and_split)
+            .and_return([item, item])
         end
 
         it 'creates two records, and enqueues workers' do
-          expect(::Gitlab::Llm::ContentParser).to receive(:parse_and_split).once
+          expect(::Gitlab::Llm::Embeddings::Utils::DocsContentParser).to receive(:parse_and_split).once
           expect(Llm::TanukiBot::UpdateWorker).to receive(:perform_in).twice
 
           expect { perform }.to change { ::Embedding::TanukiBotMvc.count }.from(0).to(2)
@@ -97,7 +98,8 @@ RSpec.describe Llm::TanukiBot::RecreateRecordsWorker, feature_category: :global_
 
         it_behaves_like 'an idempotent worker' do
           before do
-            allow(::Gitlab::Llm::ContentParser).to receive(:parse_and_split).and_return([item, item])
+            allow(::Gitlab::Llm::Embeddings::Utils::DocsContentParser).to receive(:parse_and_split)
+              .and_return([item, item])
             allow(Llm::TanukiBot::UpdateWorker).to receive(:perform_in)
           end
 

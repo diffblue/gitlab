@@ -26,7 +26,9 @@ module Llm
             content = File.read(filename)
             filename.gsub!(Rails.root.to_s, '')
 
-            items = ::Gitlab::Llm::ContentParser.parse_and_split(content, filename, DOC_DIRECTORY)
+            items = ::Gitlab::Llm::Embeddings::Utils::DocsContentParser.parse_and_split(
+              content, filename, DOC_DIRECTORY
+            )
             items.each do |item|
               record = create_record(item)
               Llm::TanukiBot::UpdateWorker.perform_in(rand(delay_in_seconds).seconds, record.id, version)
