@@ -88,7 +88,6 @@ export default {
     >
       <filtered-search-bar
         :namespace="groupFullPath"
-        :search-input-placeholder="__('Search or filter results...')"
         :tokens="getFilteredSearchTokens()"
         :sort-options="$options.availableSortOptions"
         :initial-filter-value="getFilteredSearchValue()"
