@@ -13,17 +13,25 @@ RSpec.describe Llm::MergeRequests::SummarizeDiffService, feature_category: :code
   let_it_be(:example_answer) { "This merge request includes changes to limit the transfer..." }
   let_it_be(:example_response) do
     {
-      "id" => "chatcmpl-72mX77BBH9Hgj196u7BDhKyCTiXxL",
-      "object" => "chat.completion",
-      "created" => 1680897573,
-      "model" => "gpt-3.5-turbo-0301",
-      "usage" => { "prompt_tokens" => 3447, "completion_tokens" => 57, "total_tokens" => 3504 },
-      "choices" =>
-        [{
-          "message" => { "role" => "assistant", "content" => example_answer },
-          "finish_reason" => "stop",
-          "index" => 0
-        }]
+      "predictions" => [
+        {
+          "candidates" => [
+            {
+              "author" => "",
+              "content" => example_answer
+            }
+          ],
+          "safetyAttributes" => {
+            "categories" => ["Violent"],
+            "scores" => [0.4000000059604645],
+            "blocked" => false
+          }
+        }
+      ],
+      "deployedModelId" => "1",
+      "model" => "projects/1/locations/us-central1/models/text-bison",
+      "modelDisplayName" => "text-bison",
+      "modelVersionId" => "1"
     }
   end
 
@@ -104,135 +112,51 @@ RSpec.describe Llm::MergeRequests::SummarizeDiffService, feature_category: :code
       end
     end
 
-    context 'when summarize_diff_vertex is disabled' do
+    context "when Gitlab::Llm::VertexAi::Client.text returns a typical response" do
       before do
-        stub_feature_flags(summarize_diff_vertex: false)
-      end
-
-      context "when Gitlab::Llm::OpenAi::Client.chat returns a typical response" do
-        before do
-          allow_next_instance_of(Gitlab::Llm::OpenAi::Client) do |llm_client|
-            allow(llm_client).to receive(:chat).and_return(response_double)
-          end
-        end
-
-        it "returns the content field from the OpenAI response" do
-          expect(service.execute).to eq(example_answer)
+        allow_next_instance_of(Gitlab::Llm::VertexAi::Client) do |llm_client|
+          allow(llm_client).to receive(:text).and_return(response_double)
         end
       end
 
-      context "when Gitlab::Llm::OpenAi::Client.chat returns an unsuccessful response" do
-        before do
-          allow_next_instance_of(Gitlab::Llm::OpenAi::Client) do |llm_client|
-            allow(llm_client).to receive(:chat).and_return(errored_response_double)
-          end
-        end
-
-        it "returns nil" do
-          expect(service.execute).to be_nil
-        end
-      end
-
-      context "when Gitlab::Llm::OpenAi::Client.chat returns an nil response" do
-        before do
-          allow_next_instance_of(Gitlab::Llm::OpenAi::Client) do |llm_client|
-            allow(llm_client).to receive(:chat).and_return(nil)
-          end
-        end
-
-        it "returns nil" do
-          expect(service.execute).to be_nil
-        end
-      end
-
-      context "when Gitlab::Llm::OpenAi::Client.chat returns a response without parsed_response" do
-        before do
-          allow_next_instance_of(Gitlab::Llm::OpenAi::Client) do |llm_client|
-            allow(llm_client).to receive(:chat).and_return({ message: "Foo" }.to_json)
-          end
-        end
-
-        it "returns nil" do
-          expect(service.execute).to be_nil
-        end
+      it "returns the content field from the VertexAI response" do
+        expect(service.execute).to eq(example_answer)
       end
     end
 
-    context 'when summarize_diff_vertex is enabled' do
-      let_it_be(:example_response) do
-        {
-          "predictions" => [
-            {
-              "candidates" => [
-                {
-                  "author" => "",
-                  "content" => example_answer
-                }
-              ],
-              "safetyAttributes" => {
-                "categories" => ["Violent"],
-                "scores" => [0.4000000059604645],
-                "blocked" => false
-              }
-            }
-          ],
-          "deployedModelId" => "1",
-          "model" => "projects/1/locations/us-central1/models/text-bison",
-          "modelDisplayName" => "text-bison",
-          "modelVersionId" => "1"
-        }
-      end
-
+    context "when Gitlab::Llm::VertexAi::Client.text returns an unsuccessful response" do
       before do
-        stub_feature_flags(summarize_diff_vertex: true)
-      end
-
-      context "when Gitlab::Llm::VertexAi::Client.text returns a typical response" do
-        before do
-          allow_next_instance_of(Gitlab::Llm::VertexAi::Client) do |llm_client|
-            allow(llm_client).to receive(:text).and_return(response_double)
-          end
-        end
-
-        it "returns the content field from the VertexAI response" do
-          expect(service.execute).to eq(example_answer)
+        allow_next_instance_of(Gitlab::Llm::VertexAi::Client) do |llm_client|
+          allow(llm_client).to receive(:text).and_return(errored_response_double)
         end
       end
 
-      context "when Gitlab::Llm::VertexAi::Client.text returns an unsuccessful response" do
-        before do
-          allow_next_instance_of(Gitlab::Llm::VertexAi::Client) do |llm_client|
-            allow(llm_client).to receive(:text).and_return(errored_response_double)
-          end
-        end
+      it "returns nil" do
+        expect(service.execute).to be_nil
+      end
+    end
 
-        it "returns nil" do
-          expect(service.execute).to be_nil
+    context "when Gitlab::Llm::VertexAi::Client.text returns an nil response" do
+      before do
+        allow_next_instance_of(Gitlab::Llm::VertexAi::Client) do |llm_client|
+          allow(llm_client).to receive(:text).and_return(nil)
         end
       end
 
-      context "when Gitlab::Llm::VertexAi::Client.text returns an nil response" do
-        before do
-          allow_next_instance_of(Gitlab::Llm::VertexAi::Client) do |llm_client|
-            allow(llm_client).to receive(:text).and_return(nil)
-          end
-        end
+      it "returns nil" do
+        expect(service.execute).to be_nil
+      end
+    end
 
-        it "returns nil" do
-          expect(service.execute).to be_nil
+    context "when Gitlab::Llm::VertexAi::Client.text returns a response without parsed_response" do
+      before do
+        allow_next_instance_of(Gitlab::Llm::VertexAi::Client) do |llm_client|
+          allow(llm_client).to receive(:text).and_return({ message: "Foo" }.to_json)
         end
       end
 
-      context "when Gitlab::Llm::VertexAi::Client.text returns a response without parsed_response" do
-        before do
-          allow_next_instance_of(Gitlab::Llm::VertexAi::Client) do |llm_client|
-            allow(llm_client).to receive(:text).and_return({ message: "Foo" }.to_json)
-          end
-        end
-
-        it "returns nil" do
-          expect(service.execute).to be_nil
-        end
+      it "returns nil" do
+        expect(service.execute).to be_nil
       end
     end
   end

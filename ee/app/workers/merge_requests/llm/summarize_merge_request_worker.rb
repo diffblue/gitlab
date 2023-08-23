@@ -53,15 +53,9 @@ module MergeRequests
 
           return unless summary
 
-          provider = if ::Llm::MergeRequests::SummarizeDiffService.vertex_ai?(diff.merge_request.project)
-                       :vertex_ai
-                     else
-                       :open_ai
-                     end
-
           MergeRequest::DiffLlmSummary.create!(merge_request_diff: diff,
             content: summary,
-            provider: MergeRequest::DiffLlmSummary.providers[provider])
+            provider: MergeRequest::DiffLlmSummary.providers[:vertex_ai])
         end
       end
 
