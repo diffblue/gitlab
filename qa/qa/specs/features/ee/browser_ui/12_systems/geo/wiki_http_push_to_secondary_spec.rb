@@ -50,7 +50,7 @@ module QA
             dashboard.go_to_project(project.name)
           end
 
-          Page::Project::Menu.perform(&:click_wiki)
+          Page::Project::Menu.perform(&:go_to_wiki)
 
           # Grab the HTTP URI for the secondary node and store as 'secondary_location'
           Page::Project::Wiki::Show.perform do |show|

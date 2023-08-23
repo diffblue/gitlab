@@ -107,12 +107,12 @@ module QA
           sign_in
           project.visit!
 
-          Page::Project::Menu.perform(&:click_members)
+          Page::Project::Menu.perform(&:go_to_members)
           Page::Project::Members.perform do |members|
             members.invite_group(group.path)
           end
 
-          Page::Project::Menu.perform(&:click_members)
+          Page::Project::Menu.perform(&:go_to_members)
           Page::Project::Members.perform do |members|
             members.remove_group(group.path)
           end

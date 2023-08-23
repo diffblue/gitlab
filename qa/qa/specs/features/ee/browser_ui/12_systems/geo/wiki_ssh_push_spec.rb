@@ -62,7 +62,7 @@ module QA
             end
 
             # Validate git push worked and new content is visible
-            Page::Project::Menu.perform(&:click_wiki)
+            Page::Project::Menu.perform(&:go_to_wiki)
 
             Page::Project::Wiki::Show.perform do |show|
               show.wait_for_repository_replication_with(push_content)
