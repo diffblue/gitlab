@@ -47909,6 +47909,9 @@ msgstr ""
 msgid "There was an error fetching the variables."
 msgstr ""
 
+msgid "There was an error fetching this merge request's pipelines."
+msgstr ""
+
 msgid "There was an error fetching value stream analytics stages."
 msgstr ""
 
