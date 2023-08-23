@@ -34,10 +34,7 @@ module QA
 
         it 'can create group access tokens', testcase: testcases[1] do
           expect do
-            QA::Resource::GroupAccessToken.fabricate_via_api! do |resource|
-              resource.group = group
-              resource.api_client = Runtime::API::Client.as_admin
-            end
+            create(:group_access_token, group: group, api_client: Runtime::API::Client.as_admin)
           end.not_to raise_error
         end
 
@@ -45,9 +42,7 @@ module QA
           project
 
           expect do
-            QA::Resource::ProjectAccessToken.fabricate_via_api! do |pat|
-              pat.project = project
-            end
+            create(:project_access_token, project: project)
           end.not_to raise_error
         end
       end
