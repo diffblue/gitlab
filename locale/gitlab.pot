@@ -47462,9 +47462,6 @@ msgstr ""
 msgid "The parent epic is confidential and can only contain confidential epics and issues"
 msgstr ""
 
-msgid "The parsed YAML is too big"
-msgstr ""
-
 msgid "The password for the Jenkins server."
 msgstr ""
 

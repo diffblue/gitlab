@@ -51,15 +51,13 @@ module AppSec
 
           yml_dump = project.repository.gitlab_ci_yml_for(project.default_branch)
 
-          result = ::Gitlab::Ci::Lint
-            .new(project: project, current_user: current_user)
-            .validate(yml_dump)
+          result = ::Gitlab::Ci::YamlProcessor
+            .new(yml_dump, project: project, user: current_user, sha: project.repository&.commit&.sha)
+            .execute
 
           return errors.push(*result.errors) unless result.valid?
 
-          gitlab_ci_yml = load_yml(result.merged_yaml || '{}')
-
-          dast_job = find_dast_job(gitlab_ci_yml)
+          dast_job = find_dast_job(result.jobs)
 
           return unless dast_job
 
@@ -70,14 +68,8 @@ module AppSec
           errors.push(_('DAST configuration not found'))
         end
 
-        def find_dast_job(gitlab_ci_yml)
-          gitlab_ci_yml.find { |_, v| v.instance_of?(Hash) && v[:stage] == "dast" }&.last
-        end
-
-        def load_yml(data)
-          ::Gitlab::Ci::Config::Yaml.load!(data)
-        rescue ::Gitlab::Config::Loader::FormatError
-          errors.push(_('The parsed YAML is too big'))
+        def find_dast_job(ci_jobs)
+          ci_jobs.find { |_job_name, job| job.instance_of?(Hash) && job[:stage] == "dast" }&.last
         end
       end
     end
