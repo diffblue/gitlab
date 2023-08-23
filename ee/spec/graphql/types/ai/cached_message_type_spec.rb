@@ -8,8 +8,28 @@ RSpec.describe GitlabSchema.types['AiCachedMessageType'], feature_category: :duo
   it { expect(described_class.graphql_name).to eq('AiCachedMessageType') }
 
   it 'has the expected fields' do
-    expected_fields = %w[id request_id content role timestamp errors]
+    expected_fields = %w[id request_id content content_html role timestamp errors]
 
     expect(described_class).to include_graphql_fields(*expected_fields)
+  end
+
+  describe '#content_html' do
+    let_it_be(:current_user) { create(:user) }
+
+    let(:cached_message) { Gitlab::Llm::CachedMessage.new('content' => "Hello, **World**!", 'timestamp' => '') }
+
+    it 'renders html through Banzai' do
+      allow(Banzai).to receive(:render_and_post_process).with(cached_message.content, {
+        current_user: current_user,
+        only_path: false,
+        pipeline: :full,
+        allow_comments: false,
+        skip_project_check: true
+      }).and_return('banzai_content')
+
+      resolved_field = resolve_field(:content_html, cached_message, current_user: current_user)
+
+      expect(resolved_field).to eq('banzai_content')
+    end
   end
 end

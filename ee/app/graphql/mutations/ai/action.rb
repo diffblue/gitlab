@@ -17,7 +17,8 @@ module Mutations
       argument :markup_format, EE::Types::MarkupFormatEnum,
         required: false,
         description: 'Indicates the response format.',
-        default_value: :raw
+        default_value: :raw,
+        deprecated: { reason: 'Moved to contentHtml attribute', milestone: '16.4' }
 
       argument :client_subscription_id, GraphQL::Types::String,
         required: false,

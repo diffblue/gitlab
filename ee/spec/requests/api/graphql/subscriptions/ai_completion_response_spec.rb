@@ -10,12 +10,22 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_cha
   let_it_be(:project) { create(:project) }
   let_it_be(:resource) { create(:work_item, :task, project: project) }
 
+  let_it_be(:external_issue) { create(:issue) }
+  let_it_be(:external_issue_url) do
+    project_issue_url(external_issue.project, external_issue)
+  end
+
   let(:current_user) { nil }
   let(:requested_user) { current_user }
   let(:subscribe) { get_subscription(requested_user, params) }
   let(:ai_completion_response) { graphql_dig_at(graphql_data(response[:result]), :ai_completion_response) }
   let(:request_id) { 'uuid' }
-  let(:content) { 'Some AI response' }
+  let(:content) { "Some AI response #{external_issue_url}+" }
+  let(:content_html) do
+    "<p data-sourcepos=\"1:1-1:#{content.size}\" dir=\"auto\">Some AI response " \
+      "<a href=\"#{external_issue_url}+\">#{external_issue_url}+</a></p>"
+  end
+
   let(:params) { { user_id: current_user&.to_gid, resource_id: resource.to_gid, client_subscription_id: 'id' } }
 
   before do
@@ -42,6 +52,7 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_cha
   shared_examples 'on success' do
     it 'receives data' do
       expect(ai_completion_response['responseBody']).to eq(content)
+      expect(ai_completion_response['responseBodyHtml']).to eq(content_html)
       expect(ai_completion_response['role']).to eq('ASSISTANT')
       expect(ai_completion_response['requestId']).to eq(request_id)
       expect(ai_completion_response['errors']).to eq([])
@@ -117,6 +128,7 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_cha
       subscription {
         aiCompletionResponse(#{build_arguments(params.merge(user_id: requested_user&.to_gid))}) {
           responseBody
+          responseBodyHtml
           role
           requestId
           errors
