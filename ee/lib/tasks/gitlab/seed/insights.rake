@@ -22,6 +22,8 @@ namespace :gitlab do
             end
 
             [project]
+          elsif ENV['NEW_PROJECT']
+            [Seeder::ProjectCreator.execute]
           else
             Project.find_each
           end
@@ -33,6 +35,41 @@ namespace :gitlab do
           puts "\n#{issues_created} issues created!"
         end
       end
+    end
+  end
+end
+
+module Seeder
+  class ProjectCreator
+    def self.execute
+      namespace = FactoryBot.create(
+        :group,
+        name: "Issue insights Group #{suffix}",
+        path: "group-#{suffix}"
+      )
+
+      namespace.add_owner(admin)
+
+      project = FactoryBot.create(
+        :project,
+        :repository,
+        name: "Issue insights Project #{suffix}",
+        path: "project-#{suffix}",
+        namespace: namespace,
+        creator: admin
+      )
+
+      puts "Project created - URL: #{Rails.application.routes.url_helpers.project_url(project)}"
+
+      project
+    end
+
+    def self.admin
+      @admin ||= User.admins.first
+    end
+
+    def self.suffix
+      @suffix ||= Time.now.to_i
     end
   end
 end
