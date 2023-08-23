@@ -129,6 +129,10 @@ export const ADD_STREAM_EDITOR_I18N = {
   GCP_LOGGING_DESTINATION_LOG_ID_LABEL: s__('AuditStreams|Log ID'),
   GCP_LOGGING_DESTINATION_LOG_ID_PLACEHOLDER: s__('AuditStreams|audit-events'),
   GCP_LOGGING_DESTINATION_PASSWORD_LABEL: s__('AuditStreams|Private key'),
+  GCP_LOGGING_DESTINATION_PASSWORD_SUBTEXT: s__(
+    'AuditStreams|Use the Google Cloud console to view the private key. To change the private key, replace it with a new private key.',
+  ),
+  GCP_LOGGING_DESTINATION_PASSWORD_SUBTEXT_ADD_BUTTON: s__('AuditStreams|Add a new private key'),
 };
 
 export const AUDIT_STREAMS_EMPTY_STATE_I18N = {
