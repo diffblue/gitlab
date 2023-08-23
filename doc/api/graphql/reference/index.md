@@ -16705,7 +16705,6 @@ Stores Google Cloud Logging configurations associated with IAM service accounts,
 | <a id="googlecloudloggingconfigurationtypeid"></a>`id` | [`ID!`](#id) | ID of the configuration. |
 | <a id="googlecloudloggingconfigurationtypelogidname"></a>`logIdName` | [`String!`](#string) | Log ID. |
 | <a id="googlecloudloggingconfigurationtypename"></a>`name` | [`String!`](#string) | Name of the external destination to send audit events to. |
-| <a id="googlecloudloggingconfigurationtypeprivatekey"></a>`privateKey` | [`String!`](#string) | Private key. |
 
 ### `GpgSignature`
 

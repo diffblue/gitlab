@@ -18,7 +18,6 @@ mutation createGcpLoggingDestination(
     googleCloudLoggingConfiguration {
       id
       logIdName
-      privateKey
       googleProjectIdName
       clientEmail
     }
