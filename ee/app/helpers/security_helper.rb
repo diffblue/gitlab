@@ -10,7 +10,6 @@ module SecurityHelper
       project_list_endpoint: security_projects_path,
       instance_dashboard_settings_path: settings_security_dashboard_path,
       vulnerabilities_export_endpoint: expose_path(api_v4_security_vulnerability_exports_path),
-      scanners: VulnerabilityScanners::ListService.new(instance_security_dashboard).execute.to_json,
       can_admin_vulnerability: can_admin_vulnerability?,
       false_positive_doc_url: help_page_path('user/application_security/vulnerabilities/index'),
       can_view_false_positive: can_view_false_positive?,

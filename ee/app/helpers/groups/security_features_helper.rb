@@ -24,7 +24,6 @@ module Groups::SecurityFeaturesHelper
       empty_state_svg_path: image_path('illustrations/security-dashboard-empty-state.svg'),
       security_dashboard_empty_svg_path: image_path('illustrations/security-dashboard_empty.svg'),
       vulnerabilities_export_endpoint: expose_path(api_v4_security_groups_vulnerability_exports_path(id: group.id)),
-      scanners: VulnerabilityScanners::ListService.new(group).execute.to_json,
       can_admin_vulnerability: can?(current_user, :admin_vulnerability, group).to_s,
       can_view_false_positive: group.licensed_feature_available?(:sast_fp_reduction).to_s,
       has_projects: Project.for_group_and_its_subgroups(group).any?.to_s
