@@ -32,7 +32,7 @@ module QA
             dashboard.go_to_project(snippet.project.name)
           end
 
-          Page::Project::Menu.perform(&:click_snippets)
+          Page::Project::Menu.perform(&:go_to_snippets)
 
           Page::Project::Snippet::Index.perform do |index|
             index.wait_for_snippet_replication(snippet_title)

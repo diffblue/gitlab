@@ -48,7 +48,7 @@ module QA
               dashboard.go_to_project(project.name)
             end
 
-            Page::Project::Menu.perform(&:click_wiki)
+            Page::Project::Menu.perform(&:go_to_wiki)
 
             Page::Project::Wiki::Show.perform do |show|
               expect(show).to have_content(push_content)
