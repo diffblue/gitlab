@@ -6,6 +6,7 @@ module Users
     include ActionView::Helpers::DateHelper
     include Arkose::ContentSecurityPolicy
     include IdentityVerificationHelper
+    include ::Gitlab::RackLoadBalancingHelpers
 
     EVENT_CATEGORIES = %i[email phone credit_card error toggle_phone_exemption].freeze
 
@@ -157,7 +158,7 @@ module Users
 
     def require_verification_user!
       if verification_user_id = session[:verification_user_id]
-        User.sticking.stick_or_unstick_request(request.env, :user, verification_user_id)
+        load_balancer_stick_request(::User, :user, verification_user_id)
         @user = User.find_by_id(verification_user_id)
         return if @user.present?
       end
