@@ -2537,7 +2537,12 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     context 'for a member role with read_vulnerability true' do
       let(:member_role_abilities) { { read_vulnerability: true } }
       let(:allowed_abilities) do
-        [:read_vulnerability, :read_security_resource, :create_vulnerability_export]
+        [
+          :access_security_and_compliance,
+          :create_vulnerability_export,
+          :read_security_resource,
+          :read_vulnerability
+        ]
       end
 
       it_behaves_like 'custom roles abilities'

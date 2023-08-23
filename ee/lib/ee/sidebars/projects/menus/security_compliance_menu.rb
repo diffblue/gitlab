@@ -37,8 +37,8 @@ module EE
           end
 
           def can_access_configuration?
-            can_access_security_dashboard? &&
-              context.project.licensed_feature_available?(:security_dashboard)
+            can?(context.current_user, :access_security_and_compliance, context.project) &&
+              can?(context.current_user, :read_security_configuration, context.project)
           end
 
           def can_access_license?

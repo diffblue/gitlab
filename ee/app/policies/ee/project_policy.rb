@@ -620,6 +620,7 @@ module EE
       rule { custom_roles_allowed & role_enables_read_code }.enable :read_code
 
       rule { custom_roles_allowed & role_enables_read_vulnerability }.policy do
+        enable :access_security_and_compliance
         enable :read_vulnerability
         enable :read_security_resource
         enable :create_vulnerability_export
