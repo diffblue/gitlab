@@ -2,8 +2,8 @@
 module BoardHelpers
   def load_epic_swimlanes
     page.within('.board-swimlanes-toggle-wrapper') do
-      page.find('.dropdown-toggle').click
-      page.find('.dropdown-item', text: 'Epic').click
+      page.find('.gl-new-dropdown-toggle').click
+      page.find('.gl-new-dropdown-item[role="option"]', text: 'Epic').click
     end
 
     wait_for_requests

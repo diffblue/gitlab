@@ -1,7 +1,7 @@
 <script>
 // eslint-disable-next-line no-restricted-imports
 import { mapActions } from 'vuex';
-import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { GlCollapsibleListbox } from '@gitlab/ui';
 import { __ } from '~/locale';
 import Tracking from '~/tracking';
 import { historyPushState } from '~/lib/utils/common_utils';
@@ -10,10 +10,24 @@ import { GroupByParamType } from 'ee_else_ce/boards/constants';
 
 const trackingMixin = Tracking.mixin();
 
+const EPIC_KEY = 'epic';
+const NO_GROUPING_KEY = 'no_grouping';
+
+const LIST_BOX_ITEMS = [
+  {
+    value: NO_GROUPING_KEY,
+    text: __('No grouping'),
+  },
+  {
+    value: EPIC_KEY,
+    text: __('Epic'),
+  },
+];
+
 export default {
+  LIST_BOX_ITEMS,
   components: {
-    GlDropdown,
-    GlDropdownItem,
+    GlCollapsibleListbox,
   },
   mixins: [trackingMixin],
   inject: ['isApolloBoard'],
@@ -24,14 +38,11 @@ export default {
     },
   },
   computed: {
-    groupByEpicLabel() {
-      return __('Epic');
-    },
-    groupByNoneLabel() {
-      return __('No grouping');
-    },
     dropdownLabel() {
-      return this.isSwimlanesOn ? this.groupByEpicLabel : __('None');
+      return this.isSwimlanesOn ? LIST_BOX_ITEMS[1].text : __('None');
+    },
+    selected() {
+      return this.isSwimlanesOn ? EPIC_KEY : NO_GROUPING_KEY;
     },
   },
   methods: {
@@ -80,13 +91,13 @@ export default {
     >
       {{ __('Group by') }}
     </span>
-    <gl-dropdown right :text="dropdownLabel" class="gl-ml-3" toggle-class="gl-line-height-normal!">
-      <gl-dropdown-item is-check-item :is-checked="!isSwimlanesOn" @click="onToggle">{{
-        groupByNoneLabel
-      }}</gl-dropdown-item>
-      <gl-dropdown-item is-check-item :is-checked="isSwimlanesOn" @click="onToggle">{{
-        groupByEpicLabel
-      }}</gl-dropdown-item>
-    </gl-dropdown>
+    <gl-collapsible-listbox
+      toggle-class="gl-ml-3 gl-line-height-normal!"
+      placement="right"
+      :items="$options.LIST_BOX_ITEMS"
+      :toggle-text="dropdownLabel"
+      :selected="selected"
+      @select="onToggle"
+    />
   </div>
 </template>
