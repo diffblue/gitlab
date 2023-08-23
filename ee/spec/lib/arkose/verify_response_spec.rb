@@ -182,7 +182,7 @@ RSpec.describe Arkose::VerifyResponse, feature_category: :instance_resiliency do
       where(:method, :expected_value) do
         :custom_score         | 0
         :global_score         | 0
-        :risk_band            | 'Unavailable'
+        :risk_band            | described_class::RISK_BAND_MEDIUM
         :session_id           | 'Unavailable'
         :risk_category        | 'Unavailable'
         :global_telltale_list | 'Unavailable'
