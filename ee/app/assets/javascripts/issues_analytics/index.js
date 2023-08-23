@@ -24,7 +24,6 @@ export default () => {
     endpoint,
     noDataEmptyStateSvgPath,
     filtersEmptyStateSvgPath,
-    issuesApiEndpoint,
     issuesPageEndpoint,
     hasIssuesCompletedFeature,
   } = el.dataset;
@@ -42,16 +41,16 @@ export default () => {
       fullPath,
       type,
       hasIssuesCompletedFeature: parseBoolean(hasIssuesCompletedFeature),
+      endpoint,
+      issuesPageEndpoint,
+      noDataEmptyStateSvgPath,
+      filtersEmptyStateSvgPath,
     },
     render: (createElement) =>
       createElement(IssuesAnalytics, {
         props: {
-          endpoint,
-          filterBlockEl,
-          noDataEmptyStateSvgPath,
-          filtersEmptyStateSvgPath,
-          issuesApiEndpoint,
           issuesPageEndpoint,
+          filterBlockEl,
         },
       }),
   });

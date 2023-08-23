@@ -4,14 +4,10 @@ import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { createAlert } from '~/alert';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import { TEST_HOST } from 'helpers/test_constants';
 import IssuesAnalyticsTable from 'ee/issues_analytics/components/issues_analytics_table.vue';
 import getIssuesAnalyticsData from 'ee/issues_analytics/graphql/queries/issues_analytics.query.graphql';
-import {
-  mockIssuesApiResponse,
-  tableHeaders,
-  endpoints,
-  getQueryIssuesAnalyticsResponse,
-} from '../mock_data';
+import { mockIssuesApiResponse, tableHeaders, getQueryIssuesAnalyticsResponse } from '../mock_data';
 
 Vue.use(VueApollo);
 jest.mock('~/alert');
@@ -23,6 +19,7 @@ describe('IssuesAnalyticsTable', () => {
   const getQueryIssuesAnalyticsSuccess = jest
     .fn()
     .mockResolvedValue(getQueryIssuesAnalyticsResponse);
+  const issuesPageEndpoint = `${TEST_HOST}/issues/page`;
 
   const createComponent = ({
     apolloHandlers = [getIssuesAnalyticsData, getQueryIssuesAnalyticsSuccess],
@@ -32,10 +29,7 @@ describe('IssuesAnalyticsTable', () => {
 
     wrapper = mount(IssuesAnalyticsTable, {
       apolloProvider: fakeApollo,
-      provide: { fullPath: 'gitlab-org', type },
-      propsData: {
-        endpoints,
-      },
+      provide: { fullPath: 'gitlab-org', type, issuesPageEndpoint },
     });
   };
 
