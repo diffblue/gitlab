@@ -23,10 +23,6 @@ module Llm
           ::License.feature_available?(:summarize_mr_changes)
       end
 
-      def self.vertex_ai?(project)
-        Feature.enabled?(:summarize_diff_vertex, project)
-      end
-
       private
 
       attr_reader :title, :user, :diff
@@ -71,19 +67,11 @@ module Llm
       end
 
       def response_modifier
-        if self.class.vertex_ai?(diff.merge_request.project)
-          ::Gitlab::Llm::VertexAi::ResponseModifiers::Predictions
-        else
-          ::Gitlab::Llm::OpenAi::ResponseModifiers::Chat
-        end
+        ::Gitlab::Llm::VertexAi::ResponseModifiers::Predictions
       end
 
       def response
-        if self.class.vertex_ai?(diff.merge_request.project)
-          Gitlab::Llm::VertexAi::Client.new(user).text(content: summary_message)
-        else
-          Gitlab::Llm::OpenAi::Client.new(user).chat(content: summary_message, moderated: true)
-        end
+        Gitlab::Llm::VertexAi::Client.new(user).text(content: summary_message)
       end
     end
   end
