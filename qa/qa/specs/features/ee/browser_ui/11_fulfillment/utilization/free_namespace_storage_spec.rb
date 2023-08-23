@@ -85,13 +85,12 @@ module QA
           wiki.content = content # 10.2 KiB
         end
 
-        Resource::ProjectSnippet.fabricate_via_api! do |snippet|
-          snippet.api_client = admin_api_client
-          snippet.project = project
-          snippet.title = 'Snippet to move storage of'
-          snippet.file_name = 'original_file'
-          snippet.file_content = content
-        end
+        create(:project_snippet,
+          api_client: admin_api_client,
+          project: project,
+          title: 'Snippet to move storage of',
+          file_name: 'original_file',
+          file_content: content)
       end
 
       after do
