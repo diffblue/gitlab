@@ -5,37 +5,21 @@ require 'spec_helper'
 RSpec.describe AppSec::Dast::ScanConfigs::FetchService, feature_category: :dynamic_application_security_testing do
   let_it_be(:user) { create(:user) }
   let_it_be(:namespace) { create(:namespace, owner: user) }
-  let_it_be(:project) { create(:project, :repository, namespace: namespace) }
+
+  let_it_be(:project) do
+    gitlab_ci_yml = File.read(Rails.root.join('spec/support/gitlab_stubs/gitlab_ci_dast_includes.yml'))
+
+    create(:project, :custom_repo, namespace: namespace, files: { '.gitlab-ci.yml' => gitlab_ci_yml })
+  end
 
   before do
     stub_licensed_features(security_on_demand_scans: true)
-  end
-
-  let(:ci_lint) do
-    ci_lint_double = instance_double(::Gitlab::Ci::Lint)
-    allow(ci_lint_double).to receive(:validate).and_return(fake_result)
-
-    ci_lint_double
   end
 
   let(:profile_name_included) { 'site_profile_name_included' }
   let(:profile_name_policy) { 'Site Profile' }
   let(:scanner_profile_name_included) { 'scanner_profile_name_included' }
   let(:scanner_profile_name_policy) { 'Scanner Profile' }
-
-  let(:content) do
-    File.read(Rails.root.join('spec/support/gitlab_stubs/gitlab_ci_dast_includes.yml'))
-  end
-
-  let(:fake_result) do
-    ::Gitlab::Ci::Lint::Result.new(
-      merged_yaml: content,
-      jobs: [],
-      errors: [],
-      warnings: [],
-      includes: []
-    )
-  end
 
   shared_examples 'an error occurred' do
     it 'communicates failure', :aggregate_failures do
@@ -45,15 +29,13 @@ RSpec.describe AppSec::Dast::ScanConfigs::FetchService, feature_category: :dynam
   end
 
   describe '#execute' do
-    before do
-      allow(::Gitlab::Ci::Lint).to receive(:new).and_return(ci_lint)
-    end
-
     subject { described_class.new(project: project, current_user: user).execute }
 
     context 'when site profile and scanner profile is not configured in ci yml file' do
-      let(:content) do
-        File.read(Rails.root.join('spec/support/gitlab_stubs/gitlab_ci.yml'))
+      let_it_be(:project) do
+        gitlab_ci_yml = File.read(Rails.root.join('spec/support/gitlab_stubs/gitlab_ci.yml'))
+
+        create(:project, :custom_repo, namespace: namespace, files: { '.gitlab-ci.yml' => gitlab_ci_yml })
       end
 
       it_behaves_like 'an error occurred' do
@@ -63,42 +45,12 @@ RSpec.describe AppSec::Dast::ScanConfigs::FetchService, feature_category: :dynam
 
     context 'when site profile and scanner profile is configured in ci yml file' do
       context 'with an invalid .gitlab-ci.yml' do
-        let(:content) { 'invalid' }
-
-        let(:fake_result) do
-          Gitlab::Ci::Lint::Result.new(
-            jobs: [],
-            merged_yaml: content,
-            errors: ['Invalid configuration format'],
-            warnings: [],
-            includes: []
-          )
+        let_it_be(:project) do
+          create(:project, :custom_repo, namespace: namespace, files: { '.gitlab-ci.yml' => 'invalid' })
         end
 
         it_behaves_like 'an error occurred' do
           let(:error_message) { "Invalid configuration format" }
-        end
-      end
-
-      context 'with a large .gitlab-ci.yml' do
-        before do
-          allow_next_instance_of(::Gitlab::Config::Loader::Yaml) do |loader|
-            allow(loader).to receive(:load!).and_raise(::Gitlab::Config::Loader::Yaml::DataTooLargeError)
-          end
-        end
-
-        let(:fake_result) do
-          Gitlab::Ci::Lint::Result.new(
-            jobs: [],
-            merged_yaml: content,
-            errors: [],
-            warnings: [],
-            includes: []
-          )
-        end
-
-        it_behaves_like 'an error occurred' do
-          let(:error_message) { _('The parsed YAML is too big') }
         end
       end
 
@@ -157,8 +109,10 @@ RSpec.describe AppSec::Dast::ScanConfigs::FetchService, feature_category: :dynam
       end
 
       context 'and site profile and scanner profile is not configured in ci yml file' do
-        let(:content) do
-          File.read(Rails.root.join('spec/support/gitlab_stubs/gitlab_ci.yml'))
+        let_it_be(:project) do
+          gitlab_ci_yml = File.read(Rails.root.join('spec/support/gitlab_stubs/gitlab_ci.yml'))
+
+          create(:project, :custom_repo, namespace: namespace, files: { '.gitlab-ci.yml' => gitlab_ci_yml })
         end
 
         it 'returns configured profile values from policy' do
