@@ -2,6 +2,8 @@
 
 module Dast
   class ProfilesPipeline < ApplicationRecord
+    include BulkInsertSafe
+
     extend SuppressCompositePrimaryKeyWarning
 
     self.table_name = 'dast_profiles_pipelines'
