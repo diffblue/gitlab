@@ -239,7 +239,6 @@ describe('EpicsListRoot', () => {
           closed: 0,
           opened: 5,
         },
-        searchInputPlaceholder: 'Search or filter results...',
         sortOptions: epicsSortOptions,
         initialFilterValue: ['foo'],
         initialSortBy: 'created_desc',

@@ -41801,12 +41801,6 @@ msgstr ""
 msgid "Search or filter commits"
 msgstr ""
 
-msgid "Search or filter results"
-msgstr ""
-
-msgid "Search or filter results..."
-msgstr ""
-
 msgid "Search or filter results…"
 msgstr ""
 

@@ -7,7 +7,7 @@ module EE
     PLACEHOLDER = '_PLACEHOLDER_'
 
     override :search_filter_input_options
-    def search_filter_input_options(type, placeholder = _('Search or filter results...'))
+    def search_filter_input_options(type, placeholder = _('Search or filter results…'))
       options = super
       options[:data][:'multiple-assignees'] = 'true' if search_multiple_assignees?(type)
 

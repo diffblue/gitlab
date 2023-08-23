@@ -63,7 +63,7 @@ export default {
     },
   },
   i18n: {
-    placeholder: __('Search or filter results'),
+    placeholder: __('Search or filter results…'),
     updatePopoverTitle: s__('ComplianceReport|Update filtered results?'),
     updatePopoverContent: s__(
       'ComplianceReport|Do you want to refresh the filtered results to include your change?',
