@@ -34196,8 +34196,6 @@ CREATE INDEX tmp_idx_orphaned_approval_project_rules ON approval_project_rules U
 
 CREATE INDEX tmp_idx_packages_on_project_id_when_npm_not_pending_destruction ON packages_packages USING btree (project_id) WHERE ((package_type = 2) AND (status <> 4));
 
-CREATE INDEX tmp_idx_vuln_reads_where_dismissal_reason_null ON vulnerability_reads USING btree (id) WHERE ((state = 2) AND (dismissal_reason IS NULL));
-
 CREATE INDEX tmp_idx_vulns_on_converted_uuid ON vulnerability_occurrences USING btree (id, uuid_convert_string_to_uuid) WHERE (uuid_convert_string_to_uuid = '00000000-0000-0000-0000-000000000000'::uuid);
 
 CREATE INDEX tmp_index_ci_job_artifacts_on_expire_at_where_locked_unknown ON ci_job_artifacts USING btree (expire_at, job_id) WHERE ((locked = 2) AND (expire_at IS NOT NULL));
