@@ -11,9 +11,8 @@ RSpec.describe Security::RemediationsProxy, feature_category: :vulnerability_man
     # The following byte offsets are collected by parsing the related artifact with Oj::Introspect.
     # If the specs fail due to a change in the related artifact, you can collect them again by parsing
     # the artifact again and checking the `:__oj_introspect` keys for remediations.
-    let(:remediation_1_byte_offsets) { [11842, 12008] }
-    let(:remediation_2_byte_offsets) { [12015, 12181] }
-    let(:remediation_3_byte_offsets) { remediation_2_byte_offsets }
+    let(:remediation_1_byte_offsets) { [11829, 12016] }
+    let(:remediation_2_byte_offsets) { [12023, 12211] }
 
     subject(:data_fragments) do
       model.by_byte_offsets([remediation_1_byte_offsets, remediation_2_byte_offsets, remediation_2_byte_offsets])
@@ -30,18 +29,18 @@ RSpec.describe Security::RemediationsProxy, feature_category: :vulnerability_man
           [
             {
               diff: 'dG90YWxseSBsZWdpdCBkaWZm',
-              summary: 'this remediates CVE-2137',
-              fixes: [{ cve: 'CVE-2137' }]
+              summary: 'this remediates the first vulnerability',
+              fixes: [{ id: 'vulnerability-1' }]
             },
             {
               diff: 'dG90YWxseSBsZWdpdCBkaWZm',
-              summary: 'this remediates CVE-2138',
-              fixes: [{ cve: 'CVE-2138' }]
+              summary: 'this remediates the second vulnerability',
+              fixes: [{ id: 'vulnerability-2' }]
             },
             {
               diff: 'dG90YWxseSBsZWdpdCBkaWZm',
-              summary: 'this remediates CVE-2138',
-              fixes: [{ cve: 'CVE-2138' }]
+              summary: 'this remediates the second vulnerability',
+              fixes: [{ id: 'vulnerability-2' }]
             }
           ]
         )

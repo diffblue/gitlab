@@ -15,17 +15,23 @@ module EE
               return report_data["vulnerabilities"] || [] unless report_data["remediations"]
 
               report_data["vulnerabilities"].map do |vulnerability|
-                remediation = fixes[vulnerability['id']] || fixes[vulnerability['cve']]
-                vulnerability.merge("remediations" => [remediation])
+                remediation = fixes[vulnerability['id']]
+
+                vulnerability.merge("remediations" => [remediation].compact)
               end
             end
 
             def fixes
               @fixes ||= report_data['remediations'].each_with_object({}) do |item, memo|
                 item['fixes'].each do |fix|
-                  id = fix['id'] || fix['cve']
+                  id = fix['id']
+
+                  # ID is a required property of security report schemas but
+                  # we still have some places running this logic before running
+                  # the schema validation therefore this `if` condition is kept here.
                   memo[id] = item if id
                 end
+
                 memo
               end
             end
