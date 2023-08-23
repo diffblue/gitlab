@@ -181,7 +181,7 @@ To restore the fork relationship, [use the API](../../../api/projects.md#create-
 
 To remove a fork relationship:
 
-1. On the left sidebar, at the top, select **Search GitLab** (**{search}**) to find your project.
+1. On the left sidebar, select **Search or go to** and find your project.
 1. Select **Settings > General**.
 1. Expand **Advanced**.
 1. In the **Remove fork relationship** section, select **Remove fork relationship**.

@@ -107,7 +107,7 @@ Prerequisite:
 
 To view compute usage for your group:
 
-1. On the left sidebar, at the top, select **Search GitLab** (**{search}**) to
+1. On the left sidebar, select **Search or go to** and
    find your group. The group must not be a subgroup.
 1. Select **Settings > Usage Quotas**.
 1. Select the **Pipelines** tab.
@@ -167,7 +167,7 @@ You can purchase additional compute minutes for your group.
 You cannot transfer purchased compute minutes from one group to another,
 so be sure to select the correct group.
 
-1. On the left sidebar, at the top, select **Search GitLab** (**{search}**) to find your group.
+1. On the left sidebar, select **Search or go to** and find your group.
 1. Select **Settings > Usage Quotas**.
 1. Select **Pipelines**.
 1. Select **Buy additional compute minutes**.

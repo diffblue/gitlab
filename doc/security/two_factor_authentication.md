@@ -56,7 +56,7 @@ Prerequisites:
 
 To enforce 2FA only for certain groups:
 
-1. On the left sidebar, at the top, select **Search GitLab** (**{search}**) to find your group.
+1. On the left sidebar, select **Search or go to** and find your group.
 1. Select **Settings > General**.
 1. Expand **Permissions and group features**.
 1. Select **All users in this group must set up two-factor authentication**.

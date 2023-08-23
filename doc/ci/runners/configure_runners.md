@@ -76,7 +76,7 @@ on [protected branches](../../user/project/protected_branches.md), or jobs that 
 
 To prevent runners from revealing sensitive information:
 
-1. On the left sidebar, at the top, select **Search GitLab** (**{search}**) to find your project.
+1. On the left sidebar, select **Search or go to** and find your project.
 1. Select **Settings > CI/CD**.
 1. Expand **Runners**.
 1. Find the runner you want to protect or unprotect. Make sure the runner is enabled.
@@ -111,7 +111,7 @@ That new runner may then be used to obtain the values of secret variables or to 
 
 To reset the registration token:
 
-1. On the left sidebar, at the top, select **Search GitLab** (**{search}**) to find your project.
+1. On the left sidebar, select **Search or go to** and find your project.
 1. Select **Settings > CI/CD**.
 1. Expand **Runners**.
 1. To the right of **New project runner**, select the vertical ellipsis (**{ellipsis_v}**).
