@@ -29,8 +29,8 @@ module AppSec
 
         def associate_dast_profile(pipeline, dast_profile)
           AppSec::Dast::Scans::ConsistencyWorker.perform_async(pipeline.id, dast_profile.id)
-
-          pipeline.dast_profile = dast_profile # this assignment performs an insert
+          service = AppSec::Dast::Scans::AssociateService.new(project, current_user)
+          service.execute(pipeline: pipeline, dast_profile: dast_profile)
         end
       end
     end
