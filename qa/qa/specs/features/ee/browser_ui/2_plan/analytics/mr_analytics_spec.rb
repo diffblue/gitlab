@@ -39,11 +39,7 @@ module QA
       before do
         group.add_member(user, Resource::Members::AccessLevel::MAINTAINER)
 
-        Resource::ProjectLabel.fabricate_via_api! do |resource|
-          resource.project = project
-          resource.title = label
-          resource.api_client = user_api_client
-        end
+        create(:project_label, project: project, title: label, api_client: user_api_client)
 
         mr_2.add_comment(body: "This is mr comment")
         mr_1.merge_via_api!
