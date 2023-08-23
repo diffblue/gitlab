@@ -7898,9 +7898,6 @@ msgstr ""
 msgid "BoardNewEpic|Search groups"
 msgstr ""
 
-msgid "BoardNewEpic|Select a group"
-msgstr ""
-
 msgid "BoardNewIssue|No matching results"
 msgstr ""
 

@@ -1,12 +1,7 @@
 <script>
-import {
-  GlDropdown,
-  GlDropdownItem,
-  GlDropdownText,
-  GlSearchBoxByType,
-  GlIntersectionObserver,
-  GlLoadingIcon,
-} from '@gitlab/ui';
+import { GlCollapsibleListbox } from '@gitlab/ui';
+import { debounce } from 'lodash';
+import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { s__ } from '~/locale';
 import { setError } from '~/boards/graphql/cache_updates';
 import subgroupsQuery from '../graphql/sub_groups.query.graphql';
@@ -15,7 +10,6 @@ export default {
   name: 'GroupSelect',
   i18n: {
     headerTitle: s__(`BoardNewEpic|Groups`),
-    dropdownText: s__(`BoardNewEpic|Select a group`),
     searchPlaceholder: s__(`BoardNewEpic|Search groups`),
     emptySearchResult: s__(`BoardNewEpic|No matching results`),
     errorFetchingGroups: s__('Boards|An error occurred while fetching groups. Please try again.'),
@@ -27,12 +21,7 @@ export default {
     order_by: 'similarity',
   },
   components: {
-    GlIntersectionObserver,
-    GlLoadingIcon,
-    GlDropdown,
-    GlDropdownItem,
-    GlDropdownText,
-    GlSearchBoxByType,
+    GlCollapsibleListbox,
   },
   inject: ['groupId', 'fullPath'],
   model: {
@@ -82,6 +71,9 @@ export default {
     selectedGroupName() {
       return this.selectedGroup.name || s__('BoardNewEpic|Loading groups');
     },
+    selectedGroupId() {
+      return this.selectedGroup?.id || '';
+    },
     currentGroup() {
       const { id, name, fullName, __typename } = this.group;
       return {
@@ -96,11 +88,13 @@ export default {
       const subgroups = this.group.descendantGroups?.nodes || [];
       return [this.currentGroup, ...subgroups];
     },
+    subGroupsListBox() {
+      return this.subGroups
+        .filter(({ name }) => Boolean(name))
+        .map(({ id, name, ...group }) => ({ value: id, text: name, ...group }));
+    },
     isLoading() {
       return this.$apollo.queries.group.loading && !this.isLoadingMore;
-    },
-    isFetchResultEmpty() {
-      return this.subGroups.length === 0;
     },
     pageInfo() {
       return this.group.descendantGroups?.pageInfo;
@@ -114,7 +108,13 @@ export default {
       return this.pageInfo?.hasNextPage;
     },
   },
+  created() {
+    this.debouncedSearch = debounce(this.setSearchTerm, DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
+  },
   methods: {
+    setSearchTerm(term = '') {
+      this.searchTerm = term.trim();
+    },
     selectGroup(groupId) {
       this.$emit(
         'selectGroup',
@@ -153,38 +153,29 @@ export default {
       data-testid="header-label"
       >{{ $options.i18n.headerTitle }}</label
     >
-    <gl-dropdown
+    <gl-collapsible-listbox
       id="descendant-group-select"
-      data-testid="project-select-dropdown"
-      :text="selectedGroupName"
-      :header-text="$options.i18n.headerTitle"
       block
-      menu-class="gl-w-full!"
+      fluid-width
+      data-testid="project-select-dropdown"
+      infinite-scroll
+      searchable
+      :infinite-scroll-loading="isLoading"
+      :no-results-text="$options.i18n.emptySearchResult"
+      :selected="selectedGroupId"
+      :searching="isLoading"
+      :search-placeholder="$options.i18n.searchPlaceholder"
+      :header-text="$options.i18n.headerTitle"
+      :items="subGroupsListBox"
       :loading="initialLoading"
+      :toggle-text="selectedGroupName"
+      @bottom-reached="loadMoreGroups"
+      @search="debouncedSearch"
+      @select="selectGroup"
     >
-      <gl-search-box-by-type
-        v-model.trim="searchTerm"
-        debounce="250"
-        :placeholder="$options.i18n.searchPlaceholder"
-      />
-      <gl-dropdown-item
-        v-for="item in subGroups"
-        v-show="!isLoading"
-        :key="item.id"
-        :name="group.name"
-        @click="selectGroup(item.id)"
-      >
-        {{ item.fullName }}
-      </gl-dropdown-item>
-      <gl-dropdown-text v-show="isLoading" data-testid="dropdown-text-loading-icon">
-        <gl-loading-icon class="gl-mx-auto" size="sm" />
-      </gl-dropdown-text>
-      <gl-dropdown-text v-if="isFetchResultEmpty && !isLoading">
-        <span class="gl-text-gray-500">{{ $options.i18n.emptySearchResult }}</span>
-      </gl-dropdown-text>
-      <gl-intersection-observer v-if="hasNextPage" @appear="loadMoreGroups">
-        <gl-loading-icon v-if="isLoadingMore" size="lg" />
-      </gl-intersection-observer>
-    </gl-dropdown>
+      <template #list-item="{ item }">
+        {{ item.fullName || item.name }}
+      </template>
+    </gl-collapsible-listbox>
   </div>
 </template>
