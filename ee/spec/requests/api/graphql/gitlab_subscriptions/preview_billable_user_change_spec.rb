@@ -52,7 +52,7 @@ RSpec.describe 'Query.gitlabSubscriptionsPreviewBillableUserChange', feature_cat
 
             expect(subject).to eq(
               {
-                'willIncreaseOverage' => true,
+                'willIncreaseOverage' => false,
                 'newBillableUserCount' => 2,
                 'seatsInSubscription' => 0
               }
@@ -68,7 +68,7 @@ RSpec.describe 'Query.gitlabSubscriptionsPreviewBillableUserChange', feature_cat
 
             expect(subject).to eq(
               {
-                'willIncreaseOverage' => true,
+                'willIncreaseOverage' => false,
                 'newBillableUserCount' => 2,
                 'seatsInSubscription' => 0
               }

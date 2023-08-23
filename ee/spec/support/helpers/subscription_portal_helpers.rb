@@ -52,6 +52,7 @@ module SubscriptionPortalHelpers
 
   def stub_subscription_request_seat_usage(eligible)
     stub_full_request(graphql_url, method: :post)
+      .with(body: /eligibleForSeatUsageAlerts/)
     .to_return(status: 200, body: {
       "data": {
         "subscription": {
@@ -63,6 +64,7 @@ module SubscriptionPortalHelpers
 
   def stub_reconciliation_request(eligible)
     stub_full_request(graphql_url, method: :post)
+      .with(body: /eligibleForSeatReconciliation/)
     .to_return(status: 200, body: {
       "data": {
         "reconciliation": {

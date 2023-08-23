@@ -55,6 +55,8 @@ module GitlabSubscriptions
     end
 
     def will_increase_overage?
+      return false unless reconciliation_enabled?
+
       new_billable_user_count > current_max_billable_users
     end
 
@@ -74,6 +76,11 @@ module GitlabSubscriptions
 
     def current_max_billable_users
       [target_namespace.billable_members_count, seats_in_subscription].max
+    end
+
+    def reconciliation_enabled?
+      GitlabSubscriptions::Reconciliations::CheckSeatUsageAlertsEligibilityService.new(namespace: target_namespace)
+        .execute
     end
   end
 end

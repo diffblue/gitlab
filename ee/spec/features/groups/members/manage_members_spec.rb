@@ -15,6 +15,10 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js, feature_category
   let_it_be(:enterprise_user) { create(:user, :two_factor, provisioned_by_group_id: group.id) }
   let_it_be(:ultimate_plan, reload: true) { create(:ultimate_plan) }
 
+  before do
+    stub_subscription_request_seat_usage(true)
+  end
+
   context 'with overage modal concerns' do
     let_it_be(:premium_plan) { create(:premium_plan) }
 
