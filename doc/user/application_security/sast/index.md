@@ -151,7 +151,7 @@ Advanced vulnerability tracking is available in a subset of the [supported langu
 - C++, in the Flawfinder analyzer only
 - C#, in the Semgrep-based analyzer only
 - Go, in the Semgrep-based analyzer only
-- Java, in the Semgrep-based and mobsf analyzers
+- Java, in the mobsf, Semgrep-based and SpotBugs analyzers
 - JavaScript, in the Semgrep-based and NodeJS-Scan analyzers
 - Python, in the Semgrep-based analyzer only
 - Ruby, in the Brakeman-based analyzer
