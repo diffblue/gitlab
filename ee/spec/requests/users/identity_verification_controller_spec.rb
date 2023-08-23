@@ -18,9 +18,12 @@ feature_category: :system_access do
     end
 
     it 'handles sticking, logs the error and redirects', :aggregate_failures do
+      allow(User.sticking).to receive(:find_caught_up_replica)
+        .and_call_original
+
       expect(User.sticking)
-        .to receive(:stick_or_unstick_request)
-        .with(anything, :user, invalid_verification_user_id)
+        .to receive(:find_caught_up_replica)
+        .with(:user, invalid_verification_user_id)
 
       expect(Gitlab::AppLogger).to receive(:info).with(
         hash_including(
@@ -39,6 +42,11 @@ feature_category: :system_access do
       do_request
 
       expect(response).to redirect_to(root_path)
+
+      stick_object = request.env[::Gitlab::Database::LoadBalancing::RackMiddleware::STICK_OBJECT].first
+      expect(stick_object[0]).to eq(User.sticking)
+      expect(stick_object[1]).to eq(:user)
+      expect(stick_object[2]).to eq(invalid_verification_user_id)
     end
   end
 

@@ -134,14 +134,19 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
 
         describe 'handling sticking' do
           it 'sticks or unsticks the request' do
-            allow(User.sticking).to receive(:stick_or_unstick_request)
+            allow(User.sticking).to receive(:find_caught_up_replica)
 
             create_user
 
             user = User.find_by_username(user_attrs[:username])
             expect(User.sticking)
-              .to have_received(:stick_or_unstick_request)
-              .with(request.env, :user, user.id)
+              .to have_received(:find_caught_up_replica)
+              .with(:user, user.id)
+
+            stick_object = request.env[::Gitlab::Database::LoadBalancing::RackMiddleware::STICK_OBJECT].first
+            expect(stick_object[0]).to eq(User.sticking)
+            expect(stick_object[1]).to eq(:user)
+            expect(stick_object[2]).to eq(user.id)
           end
         end
 

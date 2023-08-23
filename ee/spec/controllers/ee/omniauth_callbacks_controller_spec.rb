@@ -196,13 +196,18 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
         end
 
         expect(User.sticking)
-          .to receive(:stick_or_unstick_request)
-          .with(anything, :user, anything)
+          .to receive(:find_caught_up_replica)
+          .with(:user, anything)
 
         oauth_request
 
         expect(request.session[:verification_user_id]).not_to be_nil
         expect(response).to redirect_to(identity_verification_path)
+
+        stick_object = request.env[::Gitlab::Database::LoadBalancing::RackMiddleware::STICK_OBJECT].first
+        expect(stick_object[0]).to eq(User.sticking)
+        expect(stick_object[1]).to eq(:user)
+        expect(stick_object[2]).to eq(request.session[:verification_user_id])
       end
     end
 
@@ -212,7 +217,7 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
           expect(instance).not_to receive(:execute)
         end
 
-        expect(User.sticking).not_to receive(:stick_or_unstick_request)
+        expect(User.sticking).not_to receive(:find_caught_up_replica)
 
         oauth_request
 
