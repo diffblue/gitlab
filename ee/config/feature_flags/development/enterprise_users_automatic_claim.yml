@@ -1,0 +1,8 @@
+---
+name: enterprise_users_automatic_claim
+introduced_by_url: https://gitlab.com/groups/gitlab-org/-/epics/9675
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/421407
+milestone: '16.3'
+type: development
+group: group::authentication and authorization
+default_enabled: false

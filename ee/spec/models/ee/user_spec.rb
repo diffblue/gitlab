@@ -56,6 +56,120 @@ RSpec.describe User, feature_category: :system_access do
 
       expect(user).to be_invalid
     end
+
+    describe 'enterprise_user_email_change', :saas, :aggregate_failures do
+      let(:new_email) { 'new-email@example.com' }
+
+      before do
+        stub_licensed_features(domain_verification: true)
+      end
+
+      context 'when user is not an enterprise user' do
+        let(:user) { create(:user) }
+
+        context 'when email is not changed' do
+          it 'is not applied' do
+            expect(user).not_to receive(:enterprise_user_email_change)
+
+            expect(user).to be_valid
+          end
+        end
+
+        context 'when email is changed' do
+          it 'is not applied' do
+            user.email = new_email
+
+            expect(user).not_to receive(:enterprise_user_email_change)
+
+            expect(user).to be_valid
+          end
+        end
+      end
+
+      context 'when user is an enterprise user' do
+        let(:user) { create(:user, :enterprise_user) }
+
+        # Neither domain removal/expiration nor change in group plan disassociates related enterprise users from enterprise group
+        # see https://gitlab.com/gitlab-org/gitlab/-/issues/406277.
+        # However, in that case, the group will not be considered an owner of the existing emails of their enterprise users anymore.
+        # To prevent making enterprise users of the group invalid in that case,
+        # this validation should be only applied when an enterprise user's email is being changed.
+        context 'when email is not changed' do
+          it 'is not applied' do
+            expect(user).not_to receive(:enterprise_user_email_change)
+
+            expect(user).to be_valid
+          end
+        end
+
+        context 'when email is changed' do
+          context 'when new email is not owned by the enterprise group' do
+            it 'is applied and makes user record invalid' do
+              user.email = new_email
+
+              expect(user).to receive(:enterprise_user_email_change).and_call_original
+
+              expect(user).to be_invalid
+              expect(user.errors.full_messages).to include("Email must be owned by the user's enterprise group")
+            end
+
+            context 'when skip_enterprise_user_email_change_restrictions! is enabled' do
+              before do
+                user.skip_enterprise_user_email_change_restrictions!
+              end
+
+              it 'is not applied' do
+                user.email = new_email
+
+                expect(user).not_to receive(:enterprise_user_email_change)
+
+                expect(user).to be_valid
+              end
+            end
+
+            context 'when enterprise_users_automatic_claim FF is disabled' do
+              before do
+                stub_feature_flags(enterprise_users_automatic_claim: false)
+              end
+
+              it 'is not applied' do
+                user.email = new_email
+
+                expect(user).not_to receive(:enterprise_user_email_change)
+
+                expect(user).to be_valid
+              end
+            end
+
+            context 'when new email has invalid format' do
+              let(:new_email) { 'invalid_email_format' }
+
+              it 'is applied and makes user record invalid' do
+                user.email = new_email
+
+                expect(user).to receive(:enterprise_user_email_change).and_call_original
+
+                expect(user).to be_invalid
+                expect(user.errors.full_messages).to include("Email must be owned by the user's enterprise group")
+              end
+            end
+          end
+
+          context 'when new email is owned by the enterprise group' do
+            let(:enterprise_group_verified_domain) { create(:pages_domain, project: create(:project, group: user.user_detail.enterprise_group)) }
+            let(:new_email) { "new-email@#{enterprise_group_verified_domain.domain}" }
+
+            it 'is applied but does not make user record invalid' do
+              user.email = new_email
+
+              expect(user).to receive(:enterprise_user_email_change).and_call_original
+
+              expect(user).to be_valid
+            end
+          end
+        end
+      end
+    end
   end
 
   describe "scopes" do
@@ -275,6 +389,7 @@ RSpec.describe User, feature_category: :system_access do
               it 'schedules Groups::EnterpriseUsers::DisassociateWorker' do
                 expect(Groups::EnterpriseUsers::DisassociateWorker).to receive(:perform_async).with(user.id)
 
+                user.skip_enterprise_user_email_change_restrictions!
                 user.update!(email: 'new-email@example.com')
               end
             end
@@ -3193,6 +3308,20 @@ RSpec.describe User, feature_category: :system_access do
         })).and_call_original)
 
         user.update!(email: unconfirmed_email)
+      end
+    end
+  end
+
+  describe '#skip_enterprise_user_email_change_restrictions?' do
+    it 'returns false by default' do
+      expect(user.skip_enterprise_user_email_change_restrictions?).to be_falsey
+    end
+
+    context 'when skip_enterprise_user_email_change_restrictions! is enabled' do
+      it 'returns true' do
+        user.skip_enterprise_user_email_change_restrictions!
+
+        expect(user.skip_enterprise_user_email_change_restrictions?).to be_truthy
       end
     end
   end

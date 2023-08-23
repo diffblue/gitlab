@@ -473,8 +473,10 @@ module EE
     def owner_of_email?(email)
       return false unless domain_verification_available?
 
+      email_domain = Mail::Address.new(email).domain&.downcase
+      return false unless email_domain
+
       verified_domains = all_projects_pages_domains(only_verified: true).map(&:domain).map(&:downcase)
-      email_domain = Mail::Address.new(email).domain.downcase
 
       verified_domains.include?(email_domain)
     end

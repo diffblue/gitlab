@@ -929,6 +929,10 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       it 'returns false when the receiver is subgroup' do
         expect(subgroup.owner_of_email?(email_with_verified_domain)).to eq(false)
       end
+
+      it 'returns false when email format is invalid' do
+        expect(group.owner_of_email?('invalid_email_format')).to eq(false)
+      end
     end
 
     context 'when domain_verification feature is not licensed' do

@@ -56642,6 +56642,9 @@ msgstr ""
 msgid "must be less than the limit of %{tag_limit} tags"
 msgstr ""
 
+msgid "must be owned by the user's enterprise group"
+msgstr ""
+
 msgid "must be set for a project namespace"
 msgstr ""
 
