@@ -5017,6 +5017,9 @@ msgstr ""
 msgid "An error occurred while fetching label colors."
 msgstr ""
 
+msgid "An error occurred while fetching labels, please try again."
+msgstr ""
+
 msgid "An error occurred while fetching participants"
 msgstr ""
 
@@ -5200,6 +5203,9 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "An error occurred while saving your settings. Try saving them again."
+msgstr ""
+
+msgid "An error occurred while searching for labels, please try again."
 msgstr ""
 
 msgid "An error occurred while triggering the job."
