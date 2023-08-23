@@ -120,16 +120,19 @@ The target user is notified that 2FA has been disabled.
 
 ### For all users
 
-There may be some special situations where you want to disable 2FA for everyone
-even when forced 2FA is disabled. There is a Rake task for that:
+To disable 2FA for all users even when forced 2FA is disabled, use the following Rake task.
 
-```shell
-# Omnibus installations
-sudo gitlab-rake gitlab:two_factor:disable_for_all_users
+- For installations that use the Linux package:
 
-# Installations from source
-sudo -u git -H bundle exec rake gitlab:two_factor:disable_for_all_users RAILS_ENV=production
-```
+  ```shell
+  sudo gitlab-rake gitlab:two_factor:disable_for_all_users
+  ```
+
+- For self-compiled installations:
+
+  ```shell
+  sudo -u git -H bundle exec rake gitlab:two_factor:disable_for_all_users RAILS_ENV=production
+  ```
 
 ## 2FA for Git over SSH operations **(PREMIUM ALL)**
 
