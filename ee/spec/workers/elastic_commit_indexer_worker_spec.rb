@@ -144,7 +144,7 @@ RSpec.describe ElasticCommitIndexerWorker, feature_category: :global_search do
       it 'does not run index' do
         expect(subject).to receive(:in_lock) # Mock and don't yield
           .with("ElasticCommitIndexerWorker/#{project.id}/false",
-            ttl: (Gitlab::Elastic::Indexer.timeout + 1.minute),
+            ttl: (Gitlab::Elastic::Indexer::TIMEOUT + 1.minute),
             retries: 2,
             sleep_sec: 1)
 
@@ -156,7 +156,7 @@ RSpec.describe ElasticCommitIndexerWorker, feature_category: :global_search do
       it 'does not log anything' do
         expect(subject).to receive(:in_lock) # Mock and don't yield
           .with("ElasticCommitIndexerWorker/#{project.id}/false",
-            ttl: (Gitlab::Elastic::Indexer.timeout + 1.minute),
+            ttl: (Gitlab::Elastic::Indexer::TIMEOUT + 1.minute),
             retries: 2,
             sleep_sec: 1)
 
@@ -168,7 +168,7 @@ RSpec.describe ElasticCommitIndexerWorker, feature_category: :global_search do
       it 'does not record the apdex SLI' do
         expect(subject).to receive(:in_lock) # Mock and don't yield
           .with("ElasticCommitIndexerWorker/#{project.id}/false",
-            ttl: (Gitlab::Elastic::Indexer.timeout + 1.minute),
+            ttl: (Gitlab::Elastic::Indexer::TIMEOUT + 1.minute),
             retries: 2,
             sleep_sec: 1)
 
@@ -180,7 +180,7 @@ RSpec.describe ElasticCommitIndexerWorker, feature_category: :global_search do
       it 'does not log extra metadata' do
         expect(subject).to receive(:in_lock) # Mock and don't yield
           .with("ElasticCommitIndexerWorker/#{project.id}/false",
-            ttl: (Gitlab::Elastic::Indexer.timeout + 1.minute),
+            ttl: (Gitlab::Elastic::Indexer::TIMEOUT + 1.minute),
             retries: 2,
             sleep_sec: 1)
 

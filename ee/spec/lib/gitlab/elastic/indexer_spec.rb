@@ -46,28 +46,6 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
     end
   end
 
-  describe '.timeout' do
-    context 'when advanced_search_decrease_indexing_timeout feature flag is enabled' do
-      before do
-        stub_feature_flags(advanced_search_decrease_indexing_timeout: true)
-      end
-
-      it 'returns correct value' do
-        expect(described_class.timeout).to eq(30.minutes.to_i)
-      end
-    end
-
-    context 'when advanced_search_decrease_indexing_timeout feature flag is disabled' do
-      before do
-        stub_feature_flags(advanced_search_decrease_indexing_timeout: false)
-      end
-
-      it 'returns correct value' do
-        expect(described_class.timeout).to eq(1.day.to_i)
-      end
-    end
-  end
-
   describe '#find_indexable_commit' do
     it 'returns a commit for reachable commits' do
       expect(indexer.find_indexable_commit(project.repository.commit.sha)).to eq(project.repository.commit)
@@ -172,7 +150,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
           expect_popen.with(
             [
               TestEnv.indexer_bin_path,
-              "--timeout=#{described_class.timeout}s",
+              "--timeout=#{described_class::TIMEOUT}s",
               "--visibility-level=#{project.visibility_level}",
               "--project-id=#{project.id}",
               "--from-sha=#{expected_from_sha}",
@@ -212,7 +190,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
           expect_popen.with(
             [
               TestEnv.indexer_bin_path,
-              "--timeout=#{described_class.timeout}s",
+              "--timeout=#{described_class::TIMEOUT}s",
               "--visibility-level=#{project.visibility_level}",
               "--project-id=#{project.id}",
               '--search-curation',
@@ -252,7 +230,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
           expect_popen.with(
             [
               TestEnv.indexer_bin_path,
-              "--timeout=#{described_class.timeout}s",
+              "--timeout=#{described_class::TIMEOUT}s",
               "--visibility-level=#{project.visibility_level}",
               "--project-id=#{project.id}",
               '--search-curation',
@@ -292,7 +270,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
           expect_popen.with(
             [
               TestEnv.indexer_bin_path,
-              "--timeout=#{described_class.timeout}s",
+              "--timeout=#{described_class::TIMEOUT}s",
               "--visibility-level=#{project.visibility_level}",
               "--project-id=#{project.id}",
               '--search-curation',
@@ -330,7 +308,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
           expect_popen.with(
             [
               TestEnv.indexer_bin_path,
-              "--timeout=#{described_class.timeout}s",
+              "--timeout=#{described_class::TIMEOUT}s",
               "--visibility-level=#{project.visibility_level}",
               "--project-id=#{project.id}",
               '--search-curation',
@@ -364,7 +342,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
         expect_popen.with(
           [
             TestEnv.indexer_bin_path,
-            "--timeout=#{described_class.timeout}s",
+            "--timeout=#{described_class::TIMEOUT}s",
             "--visibility-level=#{project.visibility_level}",
             "--project-id=#{project.id}",
             '--search-curation',
@@ -499,7 +477,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
           expect_popen.with(
             [
               TestEnv.indexer_bin_path,
-              "--timeout=#{described_class.timeout}s",
+              "--timeout=#{described_class::TIMEOUT}s",
               "--visibility-level=#{project.visibility_level}",
               "--project-id=#{project.id}",
               "--from-sha=#{expected_from_sha}",
@@ -527,7 +505,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
         expect_popen.with(
           [
             TestEnv.indexer_bin_path,
-            "--timeout=#{described_class.timeout}s",
+            "--timeout=#{described_class::TIMEOUT}s",
             "--visibility-level=#{project.visibility_level}",
             "--project-id=#{project.id}",
             '--search-curation',
@@ -601,7 +579,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
           expect_popen.with(
             [
               TestEnv.indexer_bin_path,
-              "--timeout=#{described_class.timeout}s",
+              "--timeout=#{described_class::TIMEOUT}s",
               "--visibility-level=#{project.visibility_level}",
               "--project-id=#{project.id}",
               '--search-curation',
@@ -644,7 +622,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
       expect_popen.with(
         [
           TestEnv.indexer_bin_path,
-          "--timeout=#{described_class.timeout}s",
+          "--timeout=#{described_class::TIMEOUT}s",
           "--visibility-level=#{group.visibility_level}",
           "--group-id=#{group.id}",
           '--search-curation',
