@@ -26259,7 +26259,7 @@ msgstr ""
 msgid "Issues, merge requests, pushes, and comments."
 msgstr ""
 
-msgid "IssuesAnalytics|After you begin creating issues for your projects, we can start tracking and displaying metrics for them"
+msgid "IssuesAnalytics|After you begin creating issues for your projects, we can start tracking and displaying metrics for them."
 msgstr ""
 
 msgid "IssuesAnalytics|Avg/Month:"
@@ -26271,7 +26271,7 @@ msgstr ""
 msgid "IssuesAnalytics|Issues created per month"
 msgstr ""
 
-msgid "IssuesAnalytics|Last 12 months"
+msgid "IssuesAnalytics|Last 12 months (%{chartDateRange})"
 msgstr ""
 
 msgid "IssuesAnalytics|Sorry, your filter produced no results"
@@ -26280,7 +26280,7 @@ msgstr ""
 msgid "IssuesAnalytics|There are no issues for the projects in your group"
 msgstr ""
 
-msgid "IssuesAnalytics|To widen your search, change or remove filters in the filter bar above"
+msgid "IssuesAnalytics|To widen your search, change or remove filters in the filter bar above."
 msgstr ""
 
 msgid "IssuesAnalytics|Total:"

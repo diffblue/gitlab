@@ -1,5 +1,3 @@
-import { TEST_HOST } from 'helpers/test_constants';
-
 const mockIteration = {
   title: 'Iteration 1',
   __typename: 'Iteration',
@@ -73,11 +71,6 @@ export const tableHeaders = [
   'Assignees',
   'Created by',
 ];
-
-export const endpoints = {
-  api: `${TEST_HOST}/api`,
-  issuesPage: `${TEST_HOST}/issues/page`,
-};
 
 export const getQueryIssuesAnalyticsResponse = {
   data: {

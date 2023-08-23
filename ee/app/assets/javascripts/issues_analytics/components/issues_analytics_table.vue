@@ -49,13 +49,7 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
-  inject: ['fullPath', 'type'],
-  props: {
-    endpoints: {
-      type: Object,
-      required: true,
-    },
-  },
+  inject: ['fullPath', 'type', 'issuesPageEndpoint'],
   tableHeaderFields: [
     {
       key: 'issueDetails',
@@ -156,7 +150,7 @@ export default {
       return `${SYMBOL.EPIC}${id}`;
     },
     labelTarget(name) {
-      return mergeUrlParams({ 'label_name[]': name }, this.endpoints.issuesPage);
+      return mergeUrlParams({ 'label_name[]': name }, this.issuesPageEndpoint);
     },
     assigneesBadgeSrOnlyText(assignees) {
       return n__(
