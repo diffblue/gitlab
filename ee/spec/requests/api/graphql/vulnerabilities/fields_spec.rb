@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Query.vulnerabilities.description', feature_category: :vulnerability_management do
+RSpec.describe 'Query.vulnerabilities {...fields}', feature_category: :vulnerability_management do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project) }
@@ -12,6 +12,7 @@ RSpec.describe 'Query.vulnerabilities.description', feature_category: :vulnerabi
     <<~QUERY
       description
       descriptionHtml
+      solution
     QUERY
   end
 
@@ -21,24 +22,46 @@ RSpec.describe 'Query.vulnerabilities.description', feature_category: :vulnerabi
 
   let(:vulnerability_description) { nil }
   let(:finding_description) { nil }
+  let(:finding_solution) { nil }
 
-  let!(:vulnerability) { create(:vulnerability, description: vulnerability_description, project: project, report_type: :container_scanning) }
+  let!(:vulnerability) do
+    create(:vulnerability, description: vulnerability_description, project: project, report_type: :container_scanning)
+  end
 
   let!(:finding) do
     create(
       :vulnerabilities_finding,
       description: finding_description,
-      vulnerability: vulnerability
+      solution: finding_solution,
+      vulnerability: vulnerability,
+      raw_metadata: {}
     )
   end
 
   subject { graphql_data.dig('vulnerabilities', 'nodes') }
 
-  before do
+  before_all do
     project.add_developer(user)
+  end
+
+  before do
     stub_licensed_features(security_dashboard: true)
 
     post_graphql(query, current_user: user)
+  end
+
+  it 'allows nil' do
+    expect(subject.first['description']).to be_nil
+    expect(subject.first['descriptionHtml']).to be_blank
+    expect(subject.first['solution']).to be_nil
+  end
+
+  context 'when finding has solution' do
+    let(:finding_solution) { 'Upgrade this package to the latest version.' }
+
+    it 'returns solution' do
+      expect(subject.first['solution']).to eq(finding_solution)
+    end
   end
 
   context 'when vulnerability has no description and finding has description' do
@@ -46,7 +69,9 @@ RSpec.describe 'Query.vulnerabilities.description', feature_category: :vulnerabi
     let(:finding_description) { '# Finding' }
 
     it 'returns finding information' do
-      rendered_markdown = '<h1 data-sourcepos="1:1-1:9" dir="auto">&#x000A;<a id="user-content-finding" class="anchor" href="#finding" aria-hidden="true"></a>Finding</h1>'
+      rendered_markdown = '<h1 data-sourcepos="1:1-1:9" dir="auto">&#x000A;' \
+                          '<a id="user-content-finding" class="anchor" href="#finding" aria-hidden="true">' \
+                          '</a>Finding</h1>'
 
       expect(subject.first['description']).to eq('# Finding')
       expect(subject.first['descriptionHtml']).to eq(rendered_markdown)
@@ -58,7 +83,8 @@ RSpec.describe 'Query.vulnerabilities.description', feature_category: :vulnerabi
     let(:finding_description) { '# Finding' }
 
     it 'returns finding information' do
-      rendered_markdown = '<h1 data-sourcepos="1:1-1:15" dir="auto">&#x000A;<a id="user-content-vulnerability" class="anchor" href="#vulnerability" aria-hidden="true"></a>Vulnerability</h1>'
+      rendered_markdown = '<h1 data-sourcepos="1:1-1:15" dir="auto">&#x000A;<a id="user-content-vulnerability" ' \
+                          'class="anchor" href="#vulnerability" aria-hidden="true"></a>Vulnerability</h1>'
 
       expect(subject.first['description']).to eq('# Vulnerability')
       expect(subject.first['descriptionHtml']).to eq(rendered_markdown)
