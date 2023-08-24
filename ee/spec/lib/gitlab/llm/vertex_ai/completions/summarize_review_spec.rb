@@ -15,22 +15,6 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::SummarizeReview, feature_cate
   subject { described_class.new(prompt_class, options) }
 
   describe '#execute' do
-    context 'when the feature flag is disabled' do
-      before do
-        stub_feature_flags(summarize_review_vertex: false)
-      end
-
-      it 'falls back to the OpenAI implementation' do
-        allow_next_instance_of(::Gitlab::Llm::OpenAi::Completions::SummarizeReview) do |completion|
-          expect(completion).to receive(:execute).with(user, merge_request, options)
-        end
-
-        expect(::Gitlab::Llm::VertexAi::Client).not_to receive(:new)
-
-        subject.execute(user, merge_request, options)
-      end
-    end
-
     context 'when there are no draft notes authored by user' do
       it 'does not make AI request' do
         expect(Gitlab::Llm::VertexAi::Client).not_to receive(:new)
