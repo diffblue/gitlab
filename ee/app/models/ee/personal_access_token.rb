@@ -13,6 +13,11 @@ module EE
       include ::Gitlab::Utils::StrongMemoize
       include FromUnion
 
+      has_one :workspace,
+        class_name: 'RemoteDevelopment::Workspace',
+        inverse_of: :personal_access_token,
+        foreign_key: :personal_access_token_id
+
       after_create :clear_rotation_notification_cache
 
       scope :with_expires_at_after, ->(max_lifetime) { where(revoked: false).where('expires_at > ?', max_lifetime) }

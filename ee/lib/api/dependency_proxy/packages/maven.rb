@@ -19,6 +19,9 @@ module API
         helpers do
           include ::Gitlab::Utils::StrongMemoize
 
+          delegate :maven_external_registry_username, :maven_external_registry_password, :maven_external_registry_url,
+            to: :dependency_proxy_setting
+
           def project
             authorized_user_project(action: :read_package)
           end
@@ -32,6 +35,60 @@ module API
             return forbidden! if can?(current_user, :read_project, project)
           end
           strong_memoize_attr :dependency_proxy_setting
+
+          def destroy_package_file(package_file)
+            return unless package_file
+
+            ::Packages::MarkPackageFilesForDestructionService.new(
+              ::Packages::PackageFile.id_in(package_file.id)
+            ).execute
+          end
+
+          def remote_package_file_url
+            full_url = [maven_external_registry_url, declared_params[:path], declared_params[:file_name]].join('/')
+            uri = Addressable::URI.parse(full_url)
+
+            if maven_external_registry_username.present? && maven_external_registry_password.present?
+              uri.user = maven_external_registry_username
+              uri.password = maven_external_registry_password
+            end
+
+            uri.to_s
+          end
+          strong_memoize_attr :remote_package_file_url
+
+          def respond_with(package_file:, format:)
+            return package_file.file_md5 if format == 'md5'
+            return package_file.file_sha1 if format == 'sha1'
+
+            result = ::DependencyProxy::Packages::Maven::VerifyPackageFileEtagService.new(
+              remote_url: remote_package_file_url,
+              package_file: package_file
+            ).execute
+
+            if result.success? || (result.error? && result.reason != :wrong_etag)
+              present_carrierwave_file_with_head_support!(package_file)
+            elsif can?(current_user, :destroy_package, dependency_proxy_setting) &&
+                can?(current_user, :create_package, dependency_proxy_setting)
+              destroy_package_file(package_file) if package_file
+
+              send_and_upload_remote_url
+            else
+              send_remote_url(remote_package_file_url)
+            end
+          end
+
+          def send_remote_url(url)
+            header(*Gitlab::Workhorse.send_url(url, allow_redirects: true))
+            env['api.format'] = :binary
+            status :ok
+            body ''
+          end
+
+          def send_and_upload_remote_url
+            # TODO: Not implemented yet. See https://gitlab.com/gitlab-org/gitlab/-/issues/410719.
+            accepted!
+          end
         end
 
         after_validation do
@@ -78,8 +135,17 @@ module API
 
             unauthorized_or! { forbidden! } unless project.licensed_feature_available?(:dependency_proxy_for_packages)
 
-            # TODO: See https://gitlab.com/gitlab-org/gitlab/-/issues/410719.
-            accepted!
+            file_name, format = extract_format(params[:file_name])
+            package = fetch_package(project: project, file_name: file_name)
+            package_file = ::Packages::PackageFileFinder.new(package, file_name).execute if package
+
+            if package && package_file
+              respond_with(package_file: package_file, format: format)
+            elsif can?(current_user, :create_package, dependency_proxy_setting)
+              send_and_upload_remote_url
+            else
+              send_remote_url(remote_package_file_url)
+            end
           end
         end
       end

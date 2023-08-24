@@ -13,11 +13,11 @@ module DependencyProxy
         prevent(:read_package)
       end
 
-      rule { can?(:reporter_access) }.policy do
+      rule { ~project.private_project & project.guest }.policy do
         enable :read_package
       end
 
-      rule { can?(:public_access) }.policy do
+      rule { can?(:reporter_access) }.policy do
         enable :read_package
       end
 
@@ -30,7 +30,7 @@ module DependencyProxy
       end
 
       rule { project.ip_enforcement_prevents_access & ~admin & ~auditor }.policy do
-        prevent(*create_read_update_admin_destroy(:package))
+        prevent(:read_package)
       end
     end
   end

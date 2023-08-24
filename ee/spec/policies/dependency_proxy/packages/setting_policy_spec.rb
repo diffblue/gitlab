@@ -13,8 +13,8 @@ RSpec.describe DependencyProxy::Packages::SettingPolicy, feature_category: :pack
 
   describe 'read_package', :enable_admin_mode do
     where(:project, :current_user, :allowed?) do
-      ref(:public_project)   | ref(:anonymous)  | true
-      ref(:public_project)   | ref(:non_member) | true
+      ref(:public_project)   | ref(:anonymous)  | false
+      ref(:public_project)   | ref(:non_member) | false
       ref(:public_project)   | ref(:guest)      | true
       ref(:public_project)   | ref(:reporter)   | true
       ref(:public_project)   | ref(:developer)  | true
@@ -23,7 +23,7 @@ RSpec.describe DependencyProxy::Packages::SettingPolicy, feature_category: :pack
       ref(:public_project)   | ref(:admin)      | true
 
       ref(:internal_project) | ref(:anonymous)  | false
-      ref(:internal_project) | ref(:non_member) | true
+      ref(:internal_project) | ref(:non_member) | false
       ref(:internal_project) | ref(:guest)      | true
       ref(:internal_project) | ref(:reporter)   | true
       ref(:internal_project) | ref(:developer)  | true
@@ -68,6 +68,137 @@ RSpec.describe DependencyProxy::Packages::SettingPolicy, feature_category: :pack
         it { is_expected.to be_allowed(:read_package) }
       end
     end
+  end
+
+  describe 'create_package', :enable_admin_mode do
+    where(:project, :current_user, :allowed?) do
+      ref(:public_project)   | ref(:anonymous)  | false
+      ref(:public_project)   | ref(:non_member) | false
+      ref(:public_project)   | ref(:guest)      | false
+      ref(:public_project)   | ref(:reporter)   | false
+      ref(:public_project)   | ref(:developer)  | true
+      ref(:public_project)   | ref(:maintainer) | true
+      ref(:public_project)   | ref(:owner)      | true
+      ref(:public_project)   | ref(:admin)      | true
+
+      ref(:internal_project) | ref(:anonymous)  | false
+      ref(:internal_project) | ref(:non_member) | false
+      ref(:internal_project) | ref(:guest)      | false
+      ref(:internal_project) | ref(:reporter)   | false
+      ref(:internal_project) | ref(:developer)  | true
+      ref(:internal_project) | ref(:maintainer) | true
+      ref(:internal_project) | ref(:owner)      | true
+      ref(:internal_project) | ref(:admin)      | true
+
+      ref(:private_project)  | ref(:anonymous)  | false
+      ref(:private_project)  | ref(:non_member) | false
+      ref(:private_project)  | ref(:guest)      | false
+      ref(:private_project)  | ref(:reporter)   | false
+      ref(:private_project)  | ref(:developer)  | true
+      ref(:private_project)  | ref(:maintainer) | true
+      ref(:private_project)  | ref(:owner)      | true
+      ref(:private_project)  | ref(:admin)      | true
+    end
+
+    with_them do
+      if params[:allowed?]
+        it { is_expected.to be_allowed(:create_package) }
+      else
+        it { is_expected.to be_disallowed(:create_package) }
+      end
+    end
+
+    context 'with deploy token' do
+      let!(:project_deploy_token) do
+        create(:project_deploy_token, project: project, deploy_token: deploy_token)
+      end
+
+      subject { described_class.new(deploy_token, setting) }
+
+      context 'when a deploy token with read_package_registry scope' do
+        let(:deploy_token) { create(:deploy_token, read_package_registry: true) }
+
+        it { is_expected.to be_disallowed(:create_package) }
+      end
+
+      context 'when a deploy token with write_package_registry scope' do
+        let(:deploy_token) { create(:deploy_token, write_package_registry: true) }
+
+        it { is_expected.to be_allowed(:create_package) }
+      end
+    end
+  end
+
+  describe 'destroy_package', :enable_admin_mode do
+    where(:project, :current_user, :allowed?) do
+      ref(:public_project)   | ref(:anonymous)  | false
+      ref(:public_project)   | ref(:non_member) | false
+      ref(:public_project)   | ref(:guest)      | false
+      ref(:public_project)   | ref(:reporter)   | false
+      ref(:public_project)   | ref(:developer)  | false
+      ref(:public_project)   | ref(:maintainer) | true
+      ref(:public_project)   | ref(:owner)      | true
+      ref(:public_project)   | ref(:admin)      | true
+
+      ref(:internal_project) | ref(:anonymous)  | false
+      ref(:internal_project) | ref(:non_member) | false
+      ref(:internal_project) | ref(:guest)      | false
+      ref(:internal_project) | ref(:reporter)   | false
+      ref(:internal_project) | ref(:developer)  | false
+      ref(:internal_project) | ref(:maintainer) | true
+      ref(:internal_project) | ref(:owner)      | true
+      ref(:internal_project) | ref(:admin)      | true
+
+      ref(:private_project)  | ref(:anonymous)  | false
+      ref(:private_project)  | ref(:non_member) | false
+      ref(:private_project)  | ref(:guest)      | false
+      ref(:private_project)  | ref(:reporter)   | false
+      ref(:private_project)  | ref(:developer)  | false
+      ref(:private_project)  | ref(:maintainer) | true
+      ref(:private_project)  | ref(:owner)      | true
+      ref(:private_project)  | ref(:admin)      | true
+    end
+
+    with_them do
+      if params[:allowed?]
+        it { is_expected.to be_allowed(:destroy_package) }
+      else
+        it { is_expected.to be_disallowed(:destroy_package) }
+      end
+    end
+
+    context 'with deploy token' do
+      let!(:project_deploy_token) do
+        create(:project_deploy_token, project: project, deploy_token: deploy_token)
+      end
+
+      subject { described_class.new(deploy_token, setting) }
+
+      context 'when a deploy token with read_package_registry scope' do
+        let(:deploy_token) { create(:deploy_token, read_package_registry: true) }
+
+        it { is_expected.to be_disallowed(:destroy_package) }
+      end
+
+      context 'when a deploy token with write_package_registry scope' do
+        let(:deploy_token) { create(:deploy_token, write_package_registry: true) }
+
+        it { is_expected.to be_allowed(:destroy_package) }
+      end
+    end
+  end
+
+  context 'with packages disabled' do
+    let(:current_user) { owner }
+
+    before do
+      setting.project.project_feature.update!(package_registry_access_level: ProjectFeature::DISABLED)
+    end
+
+    it { is_expected.to be_disallowed(:read_package) }
+    it { is_expected.to be_disallowed(:create_package) }
+    it { is_expected.to be_disallowed(:destroy_package) }
+    it { is_expected.to be_disallowed(:admin_package) }
   end
 
   context 'with ip restriction' do

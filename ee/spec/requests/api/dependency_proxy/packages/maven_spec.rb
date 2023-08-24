@@ -32,6 +32,17 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
 
     context 'with valid parameters' do
       shared_examples 'handling different token types' do |personal_access_token_cases:|
+        let_it_be(:package) { create(:maven_package, project: project) }
+        let(:package_file) { package.package_files.find { |f| f.file_name.end_with?('.pom') } }
+        let(:path) { package.maven_metadatum.path }
+        let(:file_name) { package_file.file_name }
+
+        before do
+          allow_next_instance_of(::DependencyProxy::Packages::Maven::VerifyPackageFileEtagService) do |service|
+            allow(service).to receive(:execute).and_return(ServiceResponse.success)
+          end
+        end
+
         context 'and a personal access token' do
           where(:user_role, :valid_token, :sent_using, :expected_status) do
             personal_access_token_cases
@@ -60,9 +71,9 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
 
         context 'and a deploy token' do
           where(:valid_token, :sent_using, :expected_status) do
-            true  | :custom_header | :accepted
+            true  | :custom_header | :ok
             false | :custom_header | :unauthorized
-            true  | :basic_auth    | :accepted
+            true  | :basic_auth    | :ok
             false | :basic_auth    | :unauthorized
           end
 
@@ -85,9 +96,9 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
 
         context 'and a ci job token' do
           where(:valid_token, :sent_using, :expected_status) do
-            true  | :custom_header | :accepted
+            true  | :custom_header | :ok
             false | :custom_header | :unauthorized
-            true  | :basic_auth    | :accepted
+            true  | :basic_auth    | :ok
             false | :basic_auth    | :unauthorized
           end
 
@@ -113,6 +124,110 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
         end
       end
 
+      shared_examples 'a user pulling files' do
+        let(:headers) { { 'Private-Token' => personal_access_token.token } }
+
+        shared_examples 'returning a workhorse sendurl response' do
+          it 'returns a workhorse sendurl response' do
+            subject
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(response.headers[Gitlab::Workhorse::SEND_DATA_HEADER]).to start_with('send-url:')
+            expect(response.headers['Content-Type']).to eq('application/octet-stream')
+            expect(response.headers['Content-Length'].to_i).to eq(0)
+            expect(response.body).to eq('')
+          end
+        end
+
+        shared_examples 'pulling existing files' do |can_destroy_package_files: false|
+          let_it_be(:package) { create(:maven_package, project: project) }
+
+          let(:package_file) { package.package_files.find { |f| f.file_name.end_with?('.pom') } }
+          let(:path) { package.maven_metadatum.path }
+
+          context 'when pulling a pom file' do
+            let(:file_name) { package_file.file_name }
+
+            expected_status_for_wrong_etag = can_destroy_package_files ? :accepted : :workhorse_send_url
+
+            where(:etag_service_response, :expected_status) do
+              ServiceResponse.success                                          | :ok
+              ServiceResponse.error(message: '', reason: :response_error_code) | :ok
+              ServiceResponse.error(message: '', reason: :wrong_etag)          | expected_status_for_wrong_etag
+            end
+
+            with_them do
+              before do
+                allow_next_instance_of(::DependencyProxy::Packages::Maven::VerifyPackageFileEtagService) do |service|
+                  allow(service).to receive(:execute).and_return(etag_service_response)
+                end
+              end
+
+              if params[:expected_status] == :workhorse_send_url
+                it_behaves_like 'returning a workhorse sendurl response'
+              else
+                it_behaves_like 'returning response status', params[:expected_status]
+              end
+            end
+          end
+
+          [:md5, :sha1].each do |format|
+            context "when pulling a #{format} file" do
+              let(:file_name) { "#{package_file.file_name}.#{format}" }
+
+              it 'returns it' do
+                subject
+
+                expect(response).to have_gitlab_http_status(:successful)
+                expect(response.body).to eq(package_file["file_#{format}"])
+              end
+            end
+          end
+        end
+
+        context 'with a reporter pulling files' do
+          before_all do
+            project.add_reporter(user)
+          end
+
+          it_behaves_like 'pulling existing files'
+
+          context 'with non existing package file' do
+            let(:file_name) { 'test.pom' }
+
+            it_behaves_like 'returning a workhorse sendurl response'
+          end
+        end
+
+        context 'with a developer pulling files' do
+          before_all do
+            project.add_developer(user)
+          end
+
+          it_behaves_like 'pulling existing files'
+
+          context 'with non existing package file' do
+            let(:file_name) { 'test.pom' }
+
+            it_behaves_like 'returning response status', :accepted
+          end
+        end
+
+        context 'with a maintainer pulling files' do
+          before_all do
+            project.add_maintainer(user)
+          end
+
+          it_behaves_like 'pulling existing files', can_destroy_package_files: true
+
+          context 'with non existing package file' do
+            let(:file_name) { 'test.pom' }
+
+            it_behaves_like 'returning response status', :accepted
+          end
+        end
+      end
+
       [true, false].each do |package_registry_public_access|
         context "with package registry public access set to #{package_registry_public_access}" do
           before do
@@ -124,12 +239,13 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
           context 'with a public project' do
             it_behaves_like 'handling different token types',
               personal_access_token_cases: [
-                [:anonymous, nil,   nil,            :accepted],
-                [:guest,     true,  :custom_header, :accepted],
-                [:guest,     true,  :basic_auth,    :accepted],
+                [:anonymous, nil,   nil,            :forbidden],
+                [:guest,     true,  :custom_header, :ok],
+                [:guest,     true,  :basic_auth,    :ok],
                 [:guest,     false, :custom_header, :unauthorized],
                 [:guest,     false, :basic_auth,    :unauthorized]
               ]
+            it_behaves_like 'a user pulling files'
           end
 
           context 'with an internal project' do
@@ -140,11 +256,12 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
             it_behaves_like 'handling different token types',
               personal_access_token_cases: [
                 [:anonymous, nil,   nil,            :unauthorized],
-                [:guest,     true,  :custom_header, :accepted],
-                [:guest,     true,  :basic_auth,    :accepted],
+                [:guest,     true,  :custom_header, :ok],
+                [:guest,     true,  :basic_auth,    :ok],
                 [:guest,     false, :custom_header, :unauthorized],
                 [:guest,     false, :basic_auth,    :unauthorized]
               ]
+            it_behaves_like 'a user pulling files'
           end
 
           context 'with a private project' do
@@ -159,11 +276,12 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
                 [:guest,     true,  :basic_auth,    :forbidden],
                 [:guest,     false, :custom_header, :unauthorized],
                 [:guest,     false, :basic_auth,    :unauthorized],
-                [:reporter,  true,  :custom_header, :accepted],
-                [:reporter,  true,  :basic_auth,    :accepted],
+                [:reporter,  true,  :custom_header, :ok],
+                [:reporter,  true,  :basic_auth,    :ok],
                 [:reporter,  false, :custom_header, :unauthorized],
                 [:reporter,  false, :basic_auth,    :unauthorized]
               ]
+            it_behaves_like 'a user pulling files'
           end
         end
       end
