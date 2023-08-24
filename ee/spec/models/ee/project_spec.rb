@@ -600,6 +600,15 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
       it { is_expected.to match_array([project_with_occurrence]) }
     end
+
+    describe '.not_indexed_in_elasticsearch' do
+      it "only matches indexed projects" do
+        non_indexed_project = create(:project, :empty_repo)
+        create(:project, :empty_repo).tap { |p| create(:index_status, project: p) }
+
+        expect(described_class.not_indexed_in_elasticsearch).to match_array([non_indexed_project])
+      end
+    end
   end
 
   describe 'validations' do
