@@ -25564,6 +25564,9 @@ msgstr ""
 msgid "Integrations|can't exceed %{recipients_limit}"
 msgstr ""
 
+msgid "Integration|Branches for which notifications are to be sent"
+msgstr ""
+
 msgid "IntelliJ IDEA (HTTPS)"
 msgstr ""
 
