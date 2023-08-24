@@ -182,7 +182,7 @@ describe('Order Summary', () => {
       });
 
       it('displays the chosen plan', () => {
-        expect(selectedPlan()).toContain('Gold plan');
+        expect(selectedPlan()).toMatchInterpolatedText('Gold plan (x1)');
       });
 
       it('displays the correct formatted amount price per user', () => {
@@ -209,7 +209,7 @@ describe('Order Summary', () => {
       });
 
       it('displays the chosen plan', () => {
-        expect(selectedPlan()).toContain('Bronze plan');
+        expect(selectedPlan()).toMatchInterpolatedText('Bronze plan (x1)');
       });
 
       it('displays the correct formatted amount price per user', () => {

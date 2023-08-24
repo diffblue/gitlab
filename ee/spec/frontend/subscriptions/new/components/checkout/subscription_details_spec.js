@@ -19,8 +19,8 @@ import { mockInvoicePreviewBronze } from 'ee_jest/subscriptions/mock_data';
 jest.mock('~/lib/logger');
 
 const availablePlans = [
-  { id: 'firstPlanId', code: 'bronze', price_per_year: 48, name: 'bronze' },
-  { id: 'secondPlanId', code: 'silver', price_per_year: 228, name: 'silver' },
+  { id: 'firstPlanId', code: 'bronze', price_per_year: 48, name: 'bronze plan' },
+  { id: 'secondPlanId', code: 'silver', price_per_year: 228, name: 'silver plan' },
 ];
 const firstGroup = { id: 132, name: 'My first group', full_path: 'my-first-group' };
 const secondGroup = { id: 483, name: 'My second group', full_path: 'my-second-group' };
