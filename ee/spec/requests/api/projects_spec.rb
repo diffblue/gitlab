@@ -1752,6 +1752,80 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
     end
   end
 
+  describe 'POST /projects/:id/fork/:forked_from_id' do
+    let_it_be_with_reload(:source_group) { create(:group) }
+    let_it_be_with_reload(:project_fork_source) { create(:project, :public, namespace: source_group) }
+
+    let(:path) { "/projects/#{project_fork_target.id}/fork/#{project_fork_source.id}" }
+
+    before do
+      target_namespace.add_developer(user)
+      project_fork_target.add_maintainer(user)
+      stub_licensed_features(group_forking_protection: true)
+    end
+
+    shared_examples 'forks the project' do
+      it 'forks the project' do
+        post api(path, user)
+        expect(response).to have_gitlab_http_status(:created)
+        expect(project_fork_target.forked_from_project.id).to eq(project_fork_source.id)
+        expect(project_fork_target.fork_network_member).to be_present
+      end
+    end
+
+    shared_context 'same namespace' do
+      let_it_be_with_reload(:target_namespace) do
+        create(:group, parent: source_group, project_creation_level: ::Gitlab::Access::DEVELOPER_MAINTAINER_PROJECT_ACCESS)
+      end
+
+      let_it_be_with_reload(:project_fork_target) { create(:project, :public, namespace: target_namespace) }
+    end
+
+    shared_context 'different namespace' do
+      let_it_be_with_reload(:target_namespace) do
+        create(:group, project_creation_level: ::Gitlab::Access::DEVELOPER_MAINTAINER_PROJECT_ACCESS)
+      end
+
+      let_it_be_with_reload(:project_fork_target) { create(:project, :public, namespace: target_namespace) }
+    end
+
+    context 'when project namespace has prevent_forking_outside_group enabled' do
+      before do
+        source_group.namespace_settings.update!(prevent_forking_outside_group: true)
+      end
+
+      context 'and target namespace is inside the source group' do
+        include_context 'same namespace'
+        it_behaves_like 'forks the project'
+      end
+
+      context "and target namespace is outside the source group" do
+        include_context 'different namespace'
+        it 'renders 404' do
+          post api(path, user)
+          expect(response).to have_gitlab_http_status(:unauthorized)
+          expect(json_response['message']).to eq "401 Unauthorized - Target Namespace"
+        end
+      end
+    end
+
+    context 'when project namespace has prevent_forking_outside_group disabled' do
+      before do
+        source_group.namespace_settings.update!(prevent_forking_outside_group: false)
+      end
+
+      context 'and target namespace is inside the source group' do
+        include_context 'same namespace'
+        it_behaves_like 'forks the project'
+      end
+
+      context 'and target namespace is outside the source group' do
+        include_context 'different namespace'
+        it_behaves_like 'forks the project'
+      end
+    end
+  end
+
   describe 'POST /projects/:id/import_project_members/:project_id' do
     let_it_be(:project) { create(:project) }
     let_it_be(:target_project) { create(:project, group: create(:group)) }
