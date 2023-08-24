@@ -92,6 +92,7 @@ RSpec.describe MergeRequest, :elastic, feature_category: :global_search do
         'project_id' => merge_request.target_project.id,
         'hidden' => merge_request.author.banned?,
         'archived' => merge_request.target_project.archived?,
+        'schema_version' => Elastic::Latest::MergeRequestInstanceProxy::SCHEMA_VERSION,
         'hashed_root_namespace_id' => merge_request.target_project.namespace.hashed_root_namespace_id })
     end
 
@@ -101,12 +102,17 @@ RSpec.describe MergeRequest, :elastic, feature_category: :global_search do
 
     it 'does not include hidden if add_hidden_to_merge_requests is not finished' do
       set_elasticsearch_migration_to :add_hidden_to_merge_requests, including: false
-      expect(merge_request.__elasticsearch__.as_indexed_json).to eq(expected_hash.except('hidden', 'archived'))
+      expect(merge_request.__elasticsearch__.as_indexed_json).to eq(expected_hash.except('hidden', 'archived', 'schema_version'))
     end
 
     it 'does not include archived if add_archived_to_merge_requests is not finished' do
       set_elasticsearch_migration_to :add_archived_to_merge_requests, including: false
-      expect(merge_request.__elasticsearch__.as_indexed_json).to eq(expected_hash.except('archived'))
+      expect(merge_request.__elasticsearch__.as_indexed_json).to eq(expected_hash.except('archived', 'schema_version'))
+    end
+
+    it 'does not include schema_version if add_schema_version_to_merge_request is not finished' do
+      set_elasticsearch_migration_to :add_schema_version_to_merge_request, including: false
+      expect(merge_request.__elasticsearch__.as_indexed_json).to eq(expected_hash.except('schema_version'))
     end
 
     it 'returns json with all needed elements' do
