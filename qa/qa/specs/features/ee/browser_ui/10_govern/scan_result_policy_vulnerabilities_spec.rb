@@ -1,7 +1,12 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Govern', :runner, product_group: :security_policies do
+  RSpec.describe 'Govern', :runner, product_group: :security_policies,
+    quarantine: {
+      only: { subdomain: "staging-ref" },
+      type: :investigating,
+      issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/423032"
+    } do
     describe 'Scan result policy' do
       let!(:project) do
         Resource::Project.fabricate_via_api! do |resource|
