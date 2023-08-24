@@ -71,6 +71,7 @@ export default {
       isLoadingMore: false,
       hasMoreUnassignedIssuables: {},
       isLoadingMoreIssues: false,
+      totalIssuesCountByListId: {},
     };
   },
   apollo: {
@@ -258,6 +259,7 @@ export default {
           filterParams: this.filtersToUse,
           highlightedLists: this.highlightedLists,
           canAdminEpic: this.canAdminEpic,
+          totalIssuesCountByListId: this.totalIssuesCountByListId,
         },
       };
     },
@@ -275,6 +277,9 @@ export default {
         ...this.hasMoreUnassignedIssuables,
         [listId]: pageInfo.hasNextPage,
       };
+    },
+    setTotalIssuesCount(listId, count) {
+      this.totalIssuesCountByListId[listId] = count;
     },
   },
 };
@@ -315,6 +320,7 @@ export default {
             :is-swimlanes-header="true"
             :board-id="boardId"
             @setActiveList="$emit('setActiveList', $event)"
+            @setTotalIssuesCount="setTotalIssuesCount"
           />
         </div>
       </component>
@@ -387,6 +393,7 @@ export default {
                 :highlighted-lists-apollo="highlightedLists"
                 :can-admin-epic="canAdminEpic"
                 :lists="lists"
+                :total-issues-count="totalIssuesCountByListId[list.id]"
                 @updatePageInfo="updatePageInfo"
                 @issuesLoaded="isLoadingMoreIssues = false"
               />

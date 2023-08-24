@@ -71,6 +71,7 @@ describe('EpicLane', () => {
       lists: mockLists,
       boardId: 'gid://gitlab/Board/1',
       filterParams: {},
+      totalIssuesCountByListId: {},
     };
 
     wrapper = shallowMountExtended(EpicLane, {

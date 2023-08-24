@@ -79,6 +79,11 @@ export default {
       required: false,
       default: () => [],
     },
+    totalIssuesCount: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
   },
   data() {
     return {
@@ -190,10 +195,7 @@ export default {
     },
 
     boardItemsSizeExceedsMax() {
-      return (
-        this.list.maxIssueCount > 0 &&
-        this.fullBoardIssuesCount[this.list.id] > this.list.maxIssueCount
-      );
+      return this.list.maxIssueCount > 0 && this.totalIssuesCount > this.list.maxIssueCount;
     },
     showNewIssue() {
       return this.list.type !== STATUS_CLOSED && this.showIssueForm && this.isUnassignedIssuesLane;

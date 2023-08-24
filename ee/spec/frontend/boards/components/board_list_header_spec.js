@@ -244,25 +244,23 @@ describe('Board List Header Component', () => {
     });
   });
 
-  describe('setFullBoardIssuesCount action', () => {
+  describe('setTotalIssuesCount event', () => {
     const listId = boardListQueryResponse().data.boardList.id;
     const count = boardListQueryResponse().data.boardList.issuesCount;
 
-    it('calls setFullBoardIssuesCount when isEpicBoard is false', async () => {
+    it('emits setTotalIssuesCount when isEpicBoard is false', async () => {
       createComponent({ isEpicBoard: false });
       await waitForPromises();
 
-      expect(setFullBoardIssuesCountSpy).toHaveBeenCalledWith(expect.any(Object), {
-        listId,
-        count,
-      });
+      expect(wrapper.emitted('setTotalIssuesCount')).toHaveLength(1);
+      expect(wrapper.emitted('setTotalIssuesCount')[0]).toEqual([listId, count]);
     });
 
-    it('does not call setFullBoardIssuesCount when isEpicBoard is true', async () => {
+    it('does not emit setTotalIssuesCount when isEpicBoard is true', async () => {
       createComponent({ isEpicBoard: true, issuableType: 'epic' });
       await waitForPromises();
 
-      expect(setFullBoardIssuesCountSpy).not.toHaveBeenCalled();
+      expect(wrapper.emitted('setTotalIssuesCount')).toBeUndefined();
     });
   });
 
