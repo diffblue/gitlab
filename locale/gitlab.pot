@@ -11981,9 +11981,6 @@ msgstr ""
 msgid "CompareRevisions|There was an error while searching the branch/tag list. Please try again."
 msgstr ""
 
-msgid "CompareRevisions|There was an error while updating the branch/tag list. Please try again."
-msgstr ""
-
 msgid "CompareRevisions|View open merge request"
 msgstr ""
 
