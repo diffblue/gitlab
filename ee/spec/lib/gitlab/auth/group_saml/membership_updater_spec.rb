@@ -59,12 +59,24 @@ RSpec.describe Gitlab::Auth::GroupSaml::MembershipUpdater, feature_category: :sy
       expect(group.members.pluck(:access_level)).to eq([Gitlab::Access::MAINTAINER])
     end
 
-    it "logs an audit event" do
-      expect do
-        subject
-      end.to change { AuditEvent.by_entity('Group', group).count }.by(1)
+    context "for allowed_email_domain restrictions" do
+      before do
+        stub_licensed_features(group_allowed_email_domains: true)
+      end
 
-      expect(AuditEvent.last.details).to include(add: 'user_access', target_details: user.name, as: 'Developer')
+      it "does not log an audit event when domain restrictions are in place" do
+        create :allowed_email_domain, group: group, domain: 'somethingveryrandom.com'
+
+        expect { subject }.not_to change { AuditEvent.by_entity('Group', group).count }
+      end
+
+      it "logs an audit event if the member's email is accepted" do
+        expect do
+          subject
+        end.to change { AuditEvent.by_entity('Group', group).count }.by(1)
+
+        expect(AuditEvent.last.details).to include(add: 'user_access', target_details: user.name, as: 'Developer')
+      end
     end
 
     it_behaves_like 'not enqueueing Group SAML Group Sync worker'

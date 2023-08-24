@@ -31,7 +31,7 @@ module Gitlab
 
           member = group.add_member(user, default_membership_role)
 
-          log_audit_event(member: member)
+          log_audit_event(member: member) if member&.persisted?
         end
 
         def enqueue_group_sync
