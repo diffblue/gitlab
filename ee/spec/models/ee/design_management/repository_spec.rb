@@ -17,7 +17,7 @@ RSpec.describe DesignManagement::Repository, feature_category: :geo_replication 
 
   include_examples 'a replicable model with a separate table for verification state' do
     let(:skip_unverifiable_model_record_tests) { true }
-    let_it_be(:project) { create(:project_with_design) }
+    let_it_be(:project) { create(:project) }
     let(:verifiable_model_record) do
       build(:design_management_repository, project: project)
     end
