@@ -7,7 +7,7 @@ RSpec.describe 'Project navbar', feature_category: :navigation do
 
   include_context 'project navbar structure'
 
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, :no_super_sidebar) }
   let_it_be(:project) { create(:project, :repository, namespace: user.namespace) }
 
   before do

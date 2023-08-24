@@ -7,7 +7,7 @@ RSpec.describe '"Your work" navbar', feature_category: :navigation do
 
   include_context 'dashboard navbar structure'
 
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, :no_super_sidebar) }
 
   context 'when devops operations dashboard is available' do
     before do
