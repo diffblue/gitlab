@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Milestone, :elastic do
+RSpec.describe Milestone, :elastic, feature_category: :global_search do
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
   end
@@ -52,6 +52,7 @@ RSpec.describe Milestone, :elastic do
       'issues_access_level' => milestone.project.issues_access_level,
       'merge_requests_access_level' => milestone.project.merge_requests_access_level,
       'visibility_level' => milestone.project.visibility_level,
+      'schema_version' => Elastic::Latest::MilestoneInstanceProxy::SCHEMA_VERSION,
       'join_field' => {
         'name' => milestone.es_type,
         'parent' => milestone.es_parent
