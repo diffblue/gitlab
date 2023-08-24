@@ -361,6 +361,7 @@ RSpec.describe ApplicationHelper do
     end
 
     before do
+      stub_feature_flags(super_sidebar_logged_out: false)
       allow(helper).to receive(:current_user) { current_user }
     end
 

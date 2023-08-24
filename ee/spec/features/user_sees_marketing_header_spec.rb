@@ -2,10 +2,14 @@
 
 require "spec_helper"
 
-RSpec.describe 'User sees experimental lmarketing header', feature_category: :onboarding do
+RSpec.describe 'User sees experimental marketing header', feature_category: :onboarding do
   let_it_be(:project) { create(:project, :public) }
 
   context 'when not logged in' do
+    before do
+      stub_feature_flags(super_sidebar_logged_out: false)
+    end
+
     it 'does not show marketing header links', :aggregate_failures do
       visit project_path(project)
 
