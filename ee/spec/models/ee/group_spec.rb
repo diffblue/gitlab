@@ -1871,7 +1871,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
           allow(group).to receive(:create_or_update).and_raise(ActiveRecord::ReadOnlyRecord)
         end
 
-        it "doesn't raise an error as that could expose group existance" do
+        it "doesn't raise an error as that could expose group existence" do
           expect { group.saml_discovery_token }.not_to raise_error
         end
 
