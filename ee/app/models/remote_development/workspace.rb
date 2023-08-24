@@ -12,8 +12,11 @@ module RemoteDevelopment
     belongs_to :user, inverse_of: :workspaces
     belongs_to :project, inverse_of: :workspaces
     belongs_to :agent, class_name: 'Clusters::Agent', foreign_key: 'cluster_agent_id', inverse_of: :workspaces
+    belongs_to :personal_access_token, inverse_of: :workspace
 
     has_one :remote_development_agent_config, through: :agent, source: :remote_development_agent_config
+    has_many :workspace_variables, class_name: 'RemoteDevelopment::WorkspaceVariable', inverse_of: :workspace
+
     delegate :dns_zone, to: :remote_development_agent_config, prefix: false, allow_nil: false
 
     validates :user, presence: true

@@ -5,6 +5,7 @@ FactoryBot.define do
     project factory: [:project, :public, :in_group]
     user
     agent factory: [:ee_cluster_agent, :with_remote_development_agent_config]
+    personal_access_token
 
     name { "workspace-#{agent.id}-#{user.id}-#{random_string}" }
 

@@ -3,6 +3,24 @@
 require 'spec_helper'
 
 RSpec.describe PersonalAccessToken, feature_category: :system_access do
+  describe 'associations' do
+    subject { create(:personal_access_token) }
+
+    it do
+      is_expected
+        .to have_one(:workspace)
+              .class_name('RemoteDevelopment::Workspace')
+              .inverse_of(:personal_access_token)
+              .with_foreign_key(:personal_access_token_id)
+    end
+
+    it 'has a bidirectional relationship with a workspace' do
+      workspace = create(:workspace, personal_access_token: subject)
+
+      expect(workspace.personal_access_token).to eq(subject)
+    end
+  end
+
   describe 'scopes' do
     let_it_be(:expiration_date) { 30.days.from_now }
     let_it_be(:pat) { create(:personal_access_token, expires_at: expiration_date) }
