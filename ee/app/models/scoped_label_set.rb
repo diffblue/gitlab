@@ -5,7 +5,7 @@ class ScopedLabelSet
 
   def self.from_label_ids(ids)
     by_key = Hash.new { |hash, key| hash[key] = new(key) }
-    labels = Label.select(:id, :title).where(id: ids)
+    labels = Label.select(:id, :title, :lock_on_merge).where(id: ids)
 
     labels.each do |label|
       key = label.scoped_label_key
@@ -42,5 +42,9 @@ class ScopedLabelSet
 
   def label_ids
     labels.map(&:id)
+  end
+
+  def lock_on_merge_labels?
+    labels.any?(&:lock_on_merge)
   end
 end

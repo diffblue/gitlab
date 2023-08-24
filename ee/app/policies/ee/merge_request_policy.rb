@@ -58,6 +58,18 @@ module EE
           ::Gitlab::Llm::StageCheck.available?(subject.project.root_ancestor, :summarize_submitted_review)
       end
 
+      condition(:role_enables_admin_merge_request) do
+        next unless @user.is_a?(User)
+
+        ::Feature.enabled?(:admin_merge_request, subject&.project) &&
+          @user.custom_permission_for?(subject&.project, :admin_merge_request)
+      end
+
+      with_scope :subject
+      condition(:custom_roles_allowed) do
+        subject&.project&.custom_roles_enabled?
+      end
+
       def read_only?
         @subject.target_project&.namespace&.read_only?
       end
@@ -99,6 +111,10 @@ module EE
       rule do
         ai_features_enabled & summarize_submitted_review_enabled & can?(:read_merge_request)
       end.enable :summarize_submitted_review
+
+      rule { custom_roles_allowed & role_enables_admin_merge_request }.policy do
+        enable :approve_merge_request
+      end
     end
 
     private
