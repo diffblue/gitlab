@@ -7,11 +7,7 @@ module QA
     describe 'Parent-child pipelines dependent relationship' do
       let!(:project) { create(:project, name: 'pipelines-dependent-relationship') }
       let!(:runner) do
-        Resource::ProjectRunner.fabricate_via_api! do |runner|
-          runner.project = project
-          runner.name = project.name
-          runner.tags = ["#{project.name}"]
-        end
+        create(:project_runner, project: project, name: project.name, tags: [project.name])
       end
 
       before do

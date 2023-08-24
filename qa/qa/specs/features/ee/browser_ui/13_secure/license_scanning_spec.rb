@@ -16,12 +16,11 @@ module QA
       end
 
       let!(:runner) do
-        Resource::ProjectRunner.fabricate_via_api! do |runner|
-          runner.project = test_project
-          runner.name = "runner-for-#{test_project.name}"
-          runner.tags = ['secure_license_scanning']
-          runner.executor = :docker
-        end
+        create(:project_runner,
+          project: test_project,
+          name: "runner-for-#{test_project.name}",
+          tags: ['secure_license_scanning'],
+          executor: :docker)
       end
 
       before do
