@@ -36,6 +36,11 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
       let(:parent) { project }
     end
 
+    it_behaves_like 'existing issuable with scoped labels' do
+      let(:issuable) { create(:merge_request, :simple, :merged, source_project: project) }
+      let(:parent) { project }
+    end
+
     it_behaves_like 'service with multiple reviewers' do
       let(:opts) { {} }
       let(:execute) { update_merge_request(opts) }

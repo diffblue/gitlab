@@ -2,10 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe ScopedLabelSet do
+RSpec.describe ScopedLabelSet, feature_category: :portfolio_management do
   let_it_be(:kv_label1) { create(:label, title: 'key::label1') }
   let_it_be(:kv_label2) { create(:label, title: 'key::label2') }
-  let_it_be(:kv_label3) { create(:label, title: 'key::label3') }
+  let_it_be(:kv_label3) { create(:label, title: 'key::label3', lock_on_merge: true) }
 
   describe '.from_label_ids' do
     def get_labels(sets, key)
@@ -89,6 +89,20 @@ RSpec.describe ScopedLabelSet do
       set = described_class.new('key', [kv_label1, kv_label3])
 
       expect(set.last_id_by_order([kv_label3.id])).to eq(kv_label3.id)
+    end
+  end
+
+  describe '#lock_on_merge_labels?' do
+    it 'does not detect any locked labels' do
+      set = described_class.new('key', [kv_label1, kv_label2])
+
+      expect(set.lock_on_merge_labels?).to be_falsey
+    end
+
+    it 'detects locked labels' do
+      set = described_class.new('key', [kv_label1, kv_label2, kv_label3])
+
+      expect(set.lock_on_merge_labels?).to be_truthy
     end
   end
 end
