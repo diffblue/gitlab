@@ -2298,16 +2298,24 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     it { is_expected.to eq(pipeline_1) }
   end
 
-  describe '#latest_ingested_sbom_pipeline' do
-    let_it_be(:project, refind: true) { create(:project) }
-    let_it_be(:pipeline_1) { create(:ee_ci_pipeline, :with_dast_report, :success, project: project) }
-    let_it_be(:pipeline_2) { create(:ee_ci_pipeline, project: project) }
-    let_it_be(:pipeline_3) { create(:ee_ci_pipeline, :with_cyclonedx_report, :success, project: project) }
-    let_it_be(:pipeline_4) { create(:ee_ci_pipeline, :success, project: project) }
+  describe '#latest_ingested_sbom_pipeline', :clean_gitlab_redis_shared_state do
+    let_it_be(:project) { create(:project) }
 
     subject { project.latest_ingested_sbom_pipeline }
 
-    it { is_expected.to eq(pipeline_3) }
+    context 'when there is no record on Redis' do
+      it { is_expected.to be_nil }
+    end
+
+    context 'when there is a record on Redis' do
+      let(:pipeline) { create(:ee_ci_pipeline, project: project) }
+
+      before do
+        project.set_latest_ingested_sbom_pipeline_id(pipeline.id)
+      end
+
+      it { is_expected.to eq(pipeline) }
+    end
   end
 
   describe '#latest_default_branch_pipeline_with_reports' do

@@ -54,5 +54,19 @@ RSpec.describe Sbom::Ingestion::IngestReportsService, feature_category: :depende
           .with(pipeline, sequencer.range)
       end
     end
+
+    describe 'setting the latest ingested SBOM pipeline ID' do
+      let(:project) { pipeline.project }
+
+      before do
+        allow(project).to receive(:set_latest_ingested_sbom_pipeline_id)
+      end
+
+      it 'sets the latest ingested SBOM pipeline ID' do
+        execute
+
+        expect(project).to have_received(:set_latest_ingested_sbom_pipeline_id).with(pipeline.id)
+      end
+    end
   end
 end
