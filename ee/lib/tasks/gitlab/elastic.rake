@@ -228,18 +228,15 @@ namespace :gitlab do
 
     desc "GitLab | Elasticsearch | Display which projects are not indexed"
     task projects_not_indexed: :environment do
-      raise 'This task cannot be run on GitLab.com' if Gitlab.com?
-
       not_indexed = []
 
-      elastic_enabled_projects.joins('LEFT JOIN index_statuses ON projects.id = index_statuses.project_id')
-                              .where(index_statuses: { project_id: nil }).each_batch do |batch|
-        batch.each do |project|
+      ::Search::ElasticProjectsNotIndexedFinder.execute.each_batch do |batch|
+        batch.inc_routes.each do |project|
           not_indexed << project
         end
       end
 
-      if not_indexed.count == 0
+      if not_indexed.empty?
         puts 'All projects are currently indexed'.color(:green)
       else
         display_unindexed(not_indexed)
