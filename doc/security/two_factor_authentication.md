@@ -37,8 +37,8 @@ To enable 2FA for all users:
 
 ### Disable 2FA enforcement through Rails console
 
-Using the [Rails console](../administration/operations/rails_console.md), enforcing 2FA for
-all user can be disabled. Connect to the Rails console and run:
+To disable 2FA enforcement for all users, connect to the
+[Rails console](../administration/operations/rails_console.md) and run:
 
 ```ruby
 Gitlab::CurrentSettings.update!('require_two_factor_authentication': false)
