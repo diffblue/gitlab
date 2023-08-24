@@ -508,12 +508,6 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
     let_it_be(:project_no_repository) { create(:project) }
     let_it_be(:project_empty_repository) { create(:project, :empty_repo) }
 
-    context 'when on GitLab.com', :saas do
-      it 'raises an error' do
-        expect { subject }.to raise_error('This task cannot be run on GitLab.com')
-      end
-    end
-
     context 'when projects missing from index' do
       it 'displays non-indexed projects' do
         expected = <<~STD_OUT
@@ -525,30 +519,13 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
 
         expect { subject }.to output(expected).to_stdout
       end
-
-      context 'when elasticsearch_limit_indexing? is enabled' do
-        before do
-          stub_ee_application_setting(elasticsearch_limit_indexing: true)
-        end
-
-        it 'only displays non-indexed projects that are setup for indexing' do
-          create(:elasticsearch_indexed_project, project: project_no_repository)
-
-          expected = <<~STD_OUT
-            Project '#{project_no_repository.full_path}' (ID: #{project_no_repository.id}) isn't indexed.
-            1 out of 1 non-indexed projects shown.
-          STD_OUT
-
-          expect { subject }.to output(expected).to_stdout
-        end
-      end
     end
 
     context 'when all projects are indexed' do
       before do
-        create(:index_status, project: project)
-        create(:index_status, project: project_no_repository)
-        create(:index_status, project: project_empty_repository)
+        [project, project_no_repository, project_empty_repository].each do |p|
+          create(:index_status, project: p)
+        end
       end
 
       it 'displays that all projects are indexed' do

@@ -319,6 +319,11 @@ module EE
         where(id: Sbom::Occurrence.select(:project_id).where(component_id: id))
       end
 
+      scope :not_indexed_in_elasticsearch, -> {
+        joins('LEFT JOIN index_statuses ON projects.id = index_statuses.project_id')
+           .where(index_statuses: { project_id: nil })
+      }
+
       delegate :shared_runners_seconds, to: :statistics, allow_nil: true
 
       delegate :ci_minutes_usage, to: :shared_runners_limit_namespace
