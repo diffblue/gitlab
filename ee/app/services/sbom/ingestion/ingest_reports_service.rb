@@ -13,11 +13,15 @@ module Sbom
 
       def execute
         ingest_reports.then { |ingested_ids| delete_not_present_occurrences(ingested_ids) }
+
+        project.set_latest_ingested_sbom_pipeline_id(pipeline.id)
       end
 
       private
 
       attr_reader :pipeline
+
+      delegate :project, to: :pipeline, private: true
 
       def ingest_reports
         sbom_reports.select(&:valid?).flat_map { |report| ingest_report(report) }

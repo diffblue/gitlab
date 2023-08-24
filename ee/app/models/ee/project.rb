@@ -541,8 +541,13 @@ module EE
       vulnerability_statistic&.pipeline
     end
 
+    def set_latest_ingested_sbom_pipeline_id(pipeline_id)
+      ::Gitlab::Redis::SharedState.with { |redis| redis.set(latest_ingested_sbom_pipeline_id_redis_key, pipeline_id) }
+    end
+
     def latest_ingested_sbom_pipeline
-      latest_default_branch_pipeline_with_reports(::Ci::JobArtifact.of_report_type(:sbom))
+      ::Gitlab::Redis::SharedState.with { |redis| redis.get(latest_ingested_sbom_pipeline_id_redis_key) }
+                                  .then { |pipeline_id| ::Ci::Pipeline.find_by_id(pipeline_id) if pipeline_id }
     end
 
     def latest_default_branch_pipeline_with_reports(reports)
@@ -1202,6 +1207,10 @@ module EE
     end
 
     private
+
+    def latest_ingested_sbom_pipeline_id_redis_key
+      "latest_ingested_sbom_pipeline_id/#{id}"
+    end
 
     def lock_memberships_to_ldap_or_saml?
       ::Gitlab::CurrentSettings.lock_memberships_to_ldap? ||
