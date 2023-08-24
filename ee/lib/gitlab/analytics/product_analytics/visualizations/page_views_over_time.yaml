@@ -23,4 +23,4 @@ options:
     type: time
   yAxis:
     name: Counts
-    type: time
+    type: value
