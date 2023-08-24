@@ -33,6 +33,7 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
       :member_role,
       namespace: group_with_member_roles,
       base_access_level: ::Gitlab::Access::REPORTER,
+      admin_merge_request: true,
       read_code: true,
       read_dependency: true,
       read_vulnerability: false
@@ -101,6 +102,7 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
                   "read_code" => false,
                   "read_dependency" => false,
                   "read_vulnerability" => true,
+                  "admin_merge_request" => false,
                   "admin_vulnerability" => false,
                   "group_id" => group_id
                 },
@@ -112,6 +114,7 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
                   "read_code" => true,
                   "read_dependency" => true,
                   "read_vulnerability" => false,
+                  "admin_merge_request" => true,
                   "admin_vulnerability" => false,
                   "group_id" => group_id
                 }

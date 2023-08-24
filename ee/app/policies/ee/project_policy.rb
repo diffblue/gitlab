@@ -226,6 +226,14 @@ module EE
         @user.custom_permission_for?(@subject, :read_vulnerability)
       end
 
+      desc "Custom role on project that enables admin merge request"
+      condition(:role_enables_admin_merge_request) do
+        next unless @user.is_a?(User)
+
+        ::Feature.enabled?(:admin_merge_request, subject) &&
+          @user.custom_permission_for?(project, :admin_merge_request)
+      end
+
       desc "Custom role on project that enables admin vulnerability"
       condition(:role_enables_admin_vulnerability) do
         next unless @user.is_a?(User)
@@ -624,6 +632,11 @@ module EE
         enable :read_vulnerability
         enable :read_security_resource
         enable :create_vulnerability_export
+      end
+
+      rule { custom_roles_allowed & role_enables_admin_merge_request }.policy do
+        enable :admin_merge_request
+        enable :download_code # required to negate https://gitlab.com/gitlab-org/gitlab/-/blob/3061d30d9b3d6d4c4dd5abe68bc1e4a8a93c7966/app/policies/project_policy.rb#L603-607
       end
 
       rule { custom_roles_allowed & role_enables_admin_vulnerability }.policy do
