@@ -319,40 +319,6 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
     end
   end
 
-  describe '#license_scanning_report' do
-    subject { pipeline.license_scanning_report }
-
-    before do
-      stub_licensed_features(license_scanning: true)
-    end
-
-    context 'when pipeline has multiple builds with license scanning reports' do
-      let!(:build_1) { create(:ee_ci_build, :success, :license_scanning, pipeline: pipeline, project: project) }
-      let!(:build_2) { create(:ee_ci_build, :success, :license_scanning_feature_branch, pipeline: pipeline, project: project) }
-
-      it 'returns a license scanning report with collected data' do
-        expect(subject.licenses.map(&:name)).to match_array(['WTFPL', 'MIT', 'New BSD', 'Apache 2.0', 'unknown'])
-      end
-
-      context 'when builds are retried' do
-        before do
-          build_1.update!(retried: true)
-          build_2.update!(retried: true)
-        end
-
-        it 'does not take retried builds into account' do
-          expect(subject.licenses).to be_empty
-        end
-      end
-    end
-
-    context 'when pipeline does not have any builds with license scanning reports' do
-      it 'returns an empty license scanning report' do
-        expect(subject.licenses).to be_empty
-      end
-    end
-  end
-
   describe '#dependency_list_reports', feature_category: :dependency_management do
     subject { pipeline.dependency_list_report }
 
