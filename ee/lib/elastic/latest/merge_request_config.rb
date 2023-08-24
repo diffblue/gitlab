@@ -43,6 +43,7 @@ module Elastic
         indexes :upvotes, type: :integer
 
         indexes :hashed_root_namespace_id, type: :integer
+        indexes :schema_version, type: :short
       end
     end
   end

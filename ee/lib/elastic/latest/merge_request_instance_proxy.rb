@@ -3,6 +3,7 @@
 module Elastic
   module Latest
     class MergeRequestInstanceProxy < ApplicationInstanceProxy
+      SCHEMA_VERSION = 23_08
       def as_indexed_json(options = {})
         # We don't use as_json(only: ...) because it calls all virtual and serialized attributtes
         # https://gitlab.com/gitlab-org/gitlab/issues/349
@@ -41,6 +42,12 @@ module Elastic
 
         if ::Elastic::DataMigrationService.migration_has_finished?(:add_archived_to_merge_requests)
           data['archived'] = target.project.archived?
+        end
+
+        # Schema version. The format is Date.today.strftime('%y_%m')
+        # Please update if you're changing the schema of the document
+        if ::Elastic::DataMigrationService.migration_has_finished?(:add_schema_version_to_merge_request)
+          data['schema_version'] = SCHEMA_VERSION
         end
 
         data.merge(generic_attributes)
