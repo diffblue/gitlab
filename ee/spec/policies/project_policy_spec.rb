@@ -2574,6 +2574,24 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
       it_behaves_like 'custom roles abilities'
     end
+
+    context 'for a member role with admin_merge_request true' do
+      let(:member_role_abilities) { { admin_merge_request: true } }
+      let(:allowed_abilities) { [:admin_merge_request] }
+
+      it_behaves_like 'custom roles abilities'
+
+      context 'with `admin_merge_request` feature disabled' do
+        before do
+          stub_feature_flags(admin_merge_request: false)
+          stub_licensed_features(custom_roles: true)
+          create_member_role(group_member_guest, admin_merge_request: true)
+        end
+
+        it { is_expected.to be_disallowed(:admin_merge_request) }
+        it { is_expected.to be_disallowed(:download_code) }
+      end
+    end
   end
 
   describe 'permissions for suggested reviewers bot', :saas do
