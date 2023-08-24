@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'User searches for epics', :js, :disable_rate_limiter, feature_category: :global_search do
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, :no_super_sidebar) }
   let_it_be(:group) { create(:group) }
   let_it_be(:epic1) { create(:epic, title: 'Foo', group: group, updated_at: 6.days.ago) }
   let_it_be(:epic2) { create(:epic, :closed, :confidential, title: 'Bar', group: group) }

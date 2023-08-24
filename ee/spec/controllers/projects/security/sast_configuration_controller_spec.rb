@@ -6,8 +6,8 @@ RSpec.describe Projects::Security::SastConfigurationController,
   feature_category: :static_application_security_testing do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, :repository, namespace: group) }
-  let_it_be(:developer) { create(:user) }
-  let_it_be(:guest) { create(:user) }
+  let_it_be(:developer) { create(:user, :no_super_sidebar) }
+  let_it_be(:guest) { create(:user, :no_super_sidebar) }
 
   before_all do
     group.add_developer(developer)

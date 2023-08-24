@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Operations dropdown navbar EE', :js, feature_category: :navigation do
   include Features::TopNavSpecHelpers
 
-  let(:user) { create(:user) }
+  let(:user) { create(:user, :no_super_sidebar) }
   let(:project) { create(:project) }
 
   before do

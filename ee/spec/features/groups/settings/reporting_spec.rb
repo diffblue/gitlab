@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Group reporting settings', :js, feature_category: :insider_threat do
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, :no_super_sidebar) }
 
   let(:group) { create(:group) }
   let(:feature_flag_enabled) { true }

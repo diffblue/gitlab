@@ -5,8 +5,8 @@ require 'spec_helper'
 RSpec.describe 'Admin::AuditLogs', :js, feature_category: :audit_events do
   include AdminModeHelper
 
-  let(:user) { create(:user) }
-  let(:admin) { create(:admin, name: 'Bruce Wayne') }
+  let(:user) { create(:user, :no_super_sidebar) }
+  let(:admin) { create(:admin, :no_super_sidebar, name: 'Bruce Wayne') }
 
   before do
     sign_in(admin)

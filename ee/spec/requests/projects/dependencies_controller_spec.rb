@@ -4,8 +4,8 @@ require 'spec_helper'
 
 RSpec.describe Projects::DependenciesController, feature_category: :dependency_management do
   describe 'GET #index' do
-    let_it_be(:developer) { create(:user) }
-    let_it_be(:guest) { create(:user) }
+    let_it_be(:developer) { create(:user, :no_super_sidebar) }
+    let_it_be(:guest) { create(:user, :no_super_sidebar) }
     let_it_be(:project) { create(:project, :repository, :private) }
 
     let(:params) { {} }

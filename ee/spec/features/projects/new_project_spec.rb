@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'New project', :js, feature_category: :groups_and_projects do
-  let(:user) { create(:admin) }
+  let(:user) { create(:admin, :no_super_sidebar) }
   let(:premium_plan) { create(:license, plan: License::PREMIUM_PLAN) }
 
   before do

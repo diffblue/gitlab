@@ -4,9 +4,9 @@ require 'spec_helper'
 
 RSpec.describe 'Snippet elastic search', :js, :clean_gitlab_redis_rate_limiting, :elastic_delete_by_query, :aggregate_failures, feature_category: :global_search do
   let_it_be(:public_project) { create(:project, :public) }
-  let_it_be(:regular_user) { create(:user) }
-  let_it_be(:authorized_user) { create(:user) }
-  let_it_be(:admin_user) { create(:admin) }
+  let_it_be(:regular_user) { create(:user, :no_super_sidebar) }
+  let_it_be(:authorized_user) { create(:user, :no_super_sidebar) }
+  let_it_be(:admin_user) { create(:admin, :no_super_sidebar) }
   let_it_be(:authorized_project) { create(:project, namespace: authorized_user.namespace) }
 
   before_all do

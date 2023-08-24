@@ -7,7 +7,7 @@ RSpec.describe 'Project > Unlimited members alert', :js, :saas,
   let(:alert_selector) { '[data-testid="unlimited-members-during-trial-alert"]' }
   let_it_be(:group) { create(:group, :private, name: 'unlimited-members-during-trial-alert-group') }
   let_it_be(:project) { create(:project, group: group) }
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, :no_super_sidebar) }
 
   context 'when group not in trial' do
     it 'does not display alert' do
