@@ -8,12 +8,6 @@ module Gitlab
           DEFAULT_ERROR = 'An unexpected error has occurred.'
 
           def execute(user, merge_request, options)
-            unless vertex_ai?(merge_request)
-              return ::Gitlab::Llm::OpenAi::Completions::SummarizeReview
-                .new(ai_prompt_class)
-                .execute(user, merge_request, options)
-            end
-
             draft_notes = merge_request.draft_notes.authored_by(user)
             return if draft_notes.empty?
 
@@ -41,10 +35,6 @@ module Gitlab
             Gitlab::Llm::VertexAi::Client
               .new(user)
               .text(content: ai_prompt_class.new(draft_notes).to_prompt)
-          end
-
-          def vertex_ai?(merge_request)
-            Feature.enabled?(:summarize_review_vertex, merge_request.project)
           end
         end
       end
