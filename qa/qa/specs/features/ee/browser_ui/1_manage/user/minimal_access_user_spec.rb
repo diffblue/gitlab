@@ -14,12 +14,11 @@ module QA
       end
 
       let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.group = group
-          project.name = "project-for-minimal-access"
-          project.api_client = admin_api_client
-          project.initialize_with_readme = true
-        end
+        create(:project,
+          :with_readme,
+          name: 'project-for-minimal-access',
+          group: group,
+          api_client: admin_api_client)
       end
 
       it 'is not allowed to edit files via the UI', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347869' do

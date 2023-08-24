@@ -12,34 +12,10 @@ module QA
       end
 
       let(:group) { create(:group) }
-
-      let(:project_with_success_run) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'project-with-success-run'
-          project.group = group
-        end
-      end
-
-      let(:project_with_pending_run) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'project-with-pending-run'
-          project.group = group
-        end
-      end
-
-      let(:project_without_ci) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'project-without-ci'
-          project.group = group
-        end
-      end
-
-      let(:project_with_failed_run) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'project-with-failed-run'
-          project.group = group
-        end
-      end
+      let(:project_with_success_run) { create(:project, name: 'project-with-success-run', group: group) }
+      let(:project_with_pending_run) { create(:project, name: 'project-with-pending-run', group: group) }
+      let(:project_without_ci) { create(:project, name: 'project-without-ci', group: group) }
+      let(:project_with_failed_run) { create(:project, name: 'project-with-failed-run', group: group) }
 
       before do
         Flow::Login.sign_in

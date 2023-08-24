@@ -22,12 +22,7 @@ module QA
         create(:group, path: template_container_group_name, description: 'Instance template container group')
       end
 
-      let(:template_project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'template-project-1'
-          project.group = template_container_group
-        end
-      end
+      let(:template_project) { create(:project, name: 'template-project-1', group: template_container_group) }
 
       before do
         Resource::Repository::ProjectPush.fabricate! do |push|

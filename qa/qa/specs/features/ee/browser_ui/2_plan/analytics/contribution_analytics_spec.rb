@@ -5,12 +5,7 @@ module QA
     describe 'Contribution Analytics', product_group: :optimize do
       let(:group) { create(:group, path: "contribution_anayltics-#{SecureRandom.hex(8)}") }
 
-      let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'contribution_analytics'
-          project.group = group
-        end
-      end
+      let(:project) { create(:project, name: 'contribution_analytics', group: group) }
 
       let(:issue) { create(:issue, project: project) }
 

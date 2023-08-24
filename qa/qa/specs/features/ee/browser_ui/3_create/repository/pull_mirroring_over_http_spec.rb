@@ -15,9 +15,7 @@ module QA
         source_project_uri = source.project.repository_http_location.uri
         source_project_uri.user = CGI.escape(Runtime::User.admin_username)
 
-        target_project = Resource::Project.fabricate_via_api! do |project|
-          project.name = 'pull-mirror-target-project'
-        end
+        target_project = create(:project, name: 'pull-mirror-target-project')
         target_project.visit!
 
         Page::Project::Menu.perform(&:go_to_repository_settings)

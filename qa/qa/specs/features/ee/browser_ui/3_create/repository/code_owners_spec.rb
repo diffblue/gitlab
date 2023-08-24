@@ -16,11 +16,7 @@ module QA
         ]
       end
 
-      let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = "codeowners"
-        end
-      end
+      let(:project) { create(:project, name: 'codeowners') }
 
       let(:user) do
         Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1)

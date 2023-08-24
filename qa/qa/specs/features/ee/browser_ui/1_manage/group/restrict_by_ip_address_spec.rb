@@ -15,12 +15,7 @@ module QA
 
         @group = create(:group, path: "ip-address-restricted-group-#{SecureRandom.hex(8)}", sandbox: @sandbox_group)
 
-        @project = Resource::Project.fabricate_via_api! do |project|
-          project.group = @group
-          project.name =  'project-in-ip-restricted-group'
-          project.initialize_with_readme = true
-        end
-
+        @project = create(:project, :with_readme, name: 'project-in-ip-restricted-group', group: @group)
         @project.add_member(@user)
 
         @api_client = Runtime::API::Client.new(:gitlab, user: @user)

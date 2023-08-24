@@ -6,12 +6,7 @@ module QA
       let(:source_group_with_members) { create(:group, path: "source-group-with-members_#{SecureRandom.hex(8)}") }
       let(:target_group_with_project) { create(:group, path: "target-group-with-project_#{SecureRandom.hex(8)}") }
 
-      let!(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.group = target_group_with_project
-          project.initialize_with_readme = true
-        end
-      end
+      let!(:project) { create(:project, :with_readme, group: target_group_with_project) }
 
       let(:maintainer_user) do
         Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1)
