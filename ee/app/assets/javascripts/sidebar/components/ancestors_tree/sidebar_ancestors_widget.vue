@@ -1,6 +1,6 @@
 <script>
 import { __ } from '~/locale';
-import { ancestorsQueries } from '../../constants';
+import { ancestorsQueries } from '../../queries/constants';
 import Ancestors from './ancestors_tree.vue';
 
 export default {
