@@ -58,6 +58,10 @@ export default {
       required: false,
       default: () => [],
     },
+    totalIssuesCountByListId: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
     const { userPreferences } = this.epic;
@@ -249,6 +253,7 @@ export default {
         :highlighted-lists-apollo="highlightedLists"
         :can-admin-epic="canAdminEpic"
         :lists="lists"
+        :total-issues-count="totalIssuesCountByListId[list.id]"
       />
     </div>
   </div>
