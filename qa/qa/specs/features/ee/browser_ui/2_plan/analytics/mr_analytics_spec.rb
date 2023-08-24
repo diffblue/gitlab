@@ -11,13 +11,7 @@ module QA
 
       let(:group) { create(:group, path: "mr-analytics-#{SecureRandom.hex(8)}") }
 
-      let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'mr_analytics'
-          project.group = group
-          project.api_client = user_api_client
-        end
-      end
+      let(:project) { create(:project, name: 'mr_analytics', group: group, api_client: admin_api_client) }
 
       let(:mr_1) do
         Resource::MergeRequest.fabricate_via_api! do |mr|

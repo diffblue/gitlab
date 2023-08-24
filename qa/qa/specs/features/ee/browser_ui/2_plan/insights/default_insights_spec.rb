@@ -32,12 +32,7 @@ module QA
       before do
         Flow::Login.sign_in
 
-        project = Resource::Project.fabricate_via_api! do |project|
-          project.name = 'project-insights'
-          project.description = 'Project Insights'
-        end
-
-        project.visit!
+        create(:project, name: 'project-insights', description: 'Project Insights').visit!
 
         Page::Project::Menu.perform(&:go_to_insights)
       end

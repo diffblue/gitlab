@@ -13,11 +13,7 @@ module QA
       end
 
       let(:source_project_uri) { source.project.repository_ssh_location.uri }
-      let(:target_project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'pull-mirror-target-project'
-        end
-      end
+      let(:target_project) { create(:project, name: 'pull-mirror-target-project') }
 
       before do
         Flow::Login.sign_in

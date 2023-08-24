@@ -18,10 +18,7 @@ module QA
           end
 
           # Create a new project and wiki
-          project = Resource::Project.fabricate_via_api! do |project|
-            project.name = 'geo-wiki-ssh2-project'
-            project.description = 'Geo project for wiki SSH spec'
-          end
+          project = create(:project, name: 'geo-wiki-ssh2-project', description: 'Geo project for wiki SSH spec')
 
           wiki = Resource::Wiki::ProjectPage.fabricate_via_api! do |wiki|
             wiki.project = project

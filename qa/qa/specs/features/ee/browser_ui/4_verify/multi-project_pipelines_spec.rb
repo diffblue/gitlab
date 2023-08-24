@@ -9,19 +9,8 @@ module QA
       let(:executor) { "qa-runner-#{SecureRandom.hex(4)}" }
       let!(:group) { create(:group) }
 
-      let(:upstream_project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.group = group
-          project.name = 'upstream-project'
-        end
-      end
-
-      let(:downstream_project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.group = group
-          project.name = 'downstream-project'
-        end
-      end
+      let(:upstream_project) { create(:project, name: 'upstream-project', group: group) }
+      let(:downstream_project) { create(:project, name: 'downstream-project', group: group) }
 
       let!(:runner) do
         Resource::GroupRunner.fabricate_via_api! do |runner|

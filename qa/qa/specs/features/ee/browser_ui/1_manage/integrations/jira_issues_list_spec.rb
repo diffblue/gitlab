@@ -7,9 +7,7 @@ module QA
       before(:context) do
         jira_project_key = Vendor::Jira::JiraAPI.perform(&:create_project)
 
-        @project = Resource::Project.fabricate_via_api! do |project|
-          project.name = "jira_issue_list"
-        end
+        @project = create(:project, name: 'jira_issue_list')
 
         @summary_one = "Summary #{SecureRandom.hex(6)}"
         @description_one = 'First Description'

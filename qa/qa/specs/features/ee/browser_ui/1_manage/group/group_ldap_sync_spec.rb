@@ -13,12 +13,7 @@ module QA
 
       let(:group) { create(:group, sandbox: root_group, path: "#{group_name}-#{SecureRandom.hex(4)}") }
 
-      let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.group = group
-          project.name = "project-to-test-PrAT-#{SecureRandom.hex(8)}"
-        end
-      end
+      let(:project) { create(:project, name: "project-to-test-PrAT-#{SecureRandom.hex(8)}", group: group) }
 
       after do |example|
         # If a test fails leave the groups so we can investigate them

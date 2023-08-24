@@ -16,12 +16,7 @@ module QA
       let(:api_client) { Runtime::API::Client.new(:gitlab) }
       let(:project_file_name) { 'elasticsearch.rb' }
       let(:project_file_content) { "Some file content #{SecureRandom.hex(8)}" }
-      let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'testing_elasticsearch_indexing'
-        end
-      end
-
+      let(:project) { create(:project, name: 'testing_elasticsearch_indexing') }
       let(:elasticsearch_original_state_on?) { Runtime::Search.elasticsearch_on?(api_client) }
 
       before do

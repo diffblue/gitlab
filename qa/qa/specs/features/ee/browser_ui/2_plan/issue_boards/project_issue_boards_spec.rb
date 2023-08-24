@@ -55,10 +55,7 @@ module QA
         before do
           @user = Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1)
 
-          project = Resource::Project.fabricate_via_api! do |project|
-            project.name = 'project-to-test-assignee-issue-board-list'
-          end
-
+          project = create(:project, name: 'project-to-test-assignee-issue-board-list')
           project.add_member(@user)
 
           create(:issue, assignee_ids: @user.id, project: project, title: issue_title)

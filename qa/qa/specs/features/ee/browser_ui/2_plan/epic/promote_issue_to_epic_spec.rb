@@ -4,10 +4,7 @@ module QA
   RSpec.describe 'Plan', :reliable, product_group: :product_planning do
     describe 'promote issue to epic' do
       let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'promote-issue-to-epic'
-          project.description = 'Project to promote issue to epic'
-        end
+        create(:project, name: 'promote-issue-to-epic', description: 'Project to promote issue to epic')
       end
 
       let(:issue) { create(:issue, project: project) }

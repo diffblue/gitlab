@@ -20,12 +20,7 @@ module QA
         'test_all_the_things'
       end
 
-      let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'project-with-secure'
-          project.description = 'Project with Secure'
-        end
-      end
+      let(:project) { create(:project, name: 'project-with-secure', description: 'Project with Secure') }
 
       before do
         Resource::Repository::ProjectPush.fabricate! do |project_push|

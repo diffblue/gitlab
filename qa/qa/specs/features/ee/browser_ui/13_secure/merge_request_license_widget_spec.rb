@@ -18,10 +18,7 @@ module QA
         before do
           Flow::Login.sign_in
 
-          @project = Resource::Project.fabricate_via_api! do |project|
-            project.name = 'license-widget-project'
-            project.description = 'License widget test'
-          end
+          @project = create(:project, name: 'license-widget-project', description: 'License widget test')
 
           @runner = Resource::ProjectRunner.fabricate! do |runner|
             runner.project = @project
@@ -141,10 +138,7 @@ module QA
         before do
           Flow::Login.sign_in
 
-          @project = Resource::Project.fabricate_via_api! do |project|
-            project.name = 'license-widget-project'
-            project.description = 'License widget test'
-          end
+          @project = create(:project, name: 'license-widget-project', description: 'License widget test')
 
           @runner = Resource::ProjectRunner.fabricate! do |runner|
             runner.project = @project
