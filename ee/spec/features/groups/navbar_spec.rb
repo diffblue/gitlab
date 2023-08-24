@@ -9,7 +9,7 @@ RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
 
   include_context 'group navbar structure'
 
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, :no_super_sidebar) }
   let_it_be(:group) { create(:group) }
 
   context 'for maintainers' do
