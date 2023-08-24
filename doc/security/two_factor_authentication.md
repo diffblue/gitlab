@@ -25,7 +25,9 @@ Administrators can enforce 2FA for all users in two different ways:
   After the configured grace period has elapsed, users can sign in but
   cannot leave the 2FA configuration area at `/-/profile/two_factor_auth`.
 
-To enable 2FA for all users:
+You can use the UI or the API to enforce 2FA for all users.
+
+### Use the UI
 
 1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
 1. Select **Admin Area**.
@@ -35,14 +37,14 @@ To enable 2FA for all users:
    - In **Two-factor grace period**, enter a number of hours. If you want to
      enforce 2FA on next sign-in attempt, enter `0`.
 
-### Disable 2FA enforcement through Rails console
+### Use the API
 
-To disable 2FA enforcement for all users, connect to the
-[Rails console](../administration/operations/rails_console.md) and run:
+Use the [application settings API](../api/settings.md) to modify the following settings:
 
-```ruby
-Gitlab::CurrentSettings.update!('require_two_factor_authentication': false)
-```
+- `require_two_factor_authentication`.
+- `two_factor_grace_period`.
+
+For more information, see the [list of settings that can be accessed through API calls](../api/settings.md#list-of-settings-that-can-be-accessed-via-api-calls).
 
 ## Enforce 2FA for all users in a group **(FREE ALL)**
 
