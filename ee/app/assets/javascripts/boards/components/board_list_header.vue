@@ -71,11 +71,8 @@ export default {
   watch: {
     boardList: {
       handler() {
-        if (!this.isEpicBoard && !this.isApolloBoard) {
-          this.setFullBoardIssuesCount({
-            listId: this.boardList?.id,
-            count: this.boardList?.issuesCount ?? 0,
-          });
+        if (!this.isEpicBoard) {
+          this.$emit('setTotalIssuesCount', this.boardList?.id, this.boardList?.issuesCount ?? 0);
         }
       },
     },

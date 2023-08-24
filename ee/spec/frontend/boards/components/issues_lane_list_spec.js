@@ -47,6 +47,7 @@ describe('IssuesLaneList', () => {
     collapsed = false,
     isUnassignedIssuesLane = false,
     canAdminEpic = false,
+    totalIssuesCount = 2,
     isApolloBoard = false,
     listsIssuesQueryHandler = listIssuesQueryHandlerSuccess,
     moveIssueMutationHandler = moveIssueMutationHandlerSuccess,
@@ -116,6 +117,7 @@ describe('IssuesLaneList', () => {
         isUnassignedIssuesLane,
         filterParams: {},
         lists: mockLists,
+        totalIssuesCount,
       },
       provide: {
         fullPath: 'gitlab-org',
@@ -259,8 +261,7 @@ describe('IssuesLaneList', () => {
 
     describe('when issue count exceeds max issue count', () => {
       it('sets background to red-100', () => {
-        store.state.fullBoardIssuesCount = { [mockList.id]: 4 };
-        createComponent({ listProps: { maxIssueCount: 3 } });
+        createComponent({ listProps: { maxIssueCount: 3 }, totalIssuesCount: 4 });
         const block = wrapper.find('.gl-bg-red-100');
         expect(block.exists()).toBe(true);
         expect(block.attributes('class')).toContain('gl-rounded-base');
@@ -269,8 +270,7 @@ describe('IssuesLaneList', () => {
 
     describe('when list issue count does NOT exceed list max issue count', () => {
       it('does not set background to red-100', () => {
-        store.state.fullBoardIssuesCount = { [mockList.id]: 2 };
-        createComponent({ listProps: { maxIssueCount: 3 } });
+        createComponent({ listProps: { maxIssueCount: 3 }, totalIssuesCount: 2 });
 
         expect(wrapper.find('.gl-bg-red-100').exists()).toBe(false);
       });
