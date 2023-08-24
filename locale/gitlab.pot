@@ -13076,6 +13076,9 @@ msgstr ""
 msgid "ContributionEvent|Approved merge request %{targetLink} in %{resourceParentLink}."
 msgstr ""
 
+msgid "ContributionEvent|Archived design in %{resourceParentLink}."
+msgstr ""
+
 msgid "ContributionEvent|Closed Epic %{targetLink} in %{resourceParentLink}."
 msgstr ""
 
@@ -13145,7 +13148,16 @@ msgstr ""
 msgid "ContributionEvent|Deleted branch %{refLink} in %{resourceParentLink}."
 msgstr ""
 
+msgid "ContributionEvent|Deleted milestone in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Deleted resource."
+msgstr ""
+
 msgid "ContributionEvent|Deleted tag %{refLink} in %{resourceParentLink}."
+msgstr ""
+
+msgid "ContributionEvent|Deleted wiki page in %{resourceParentLink}."
 msgstr ""
 
 msgid "ContributionEvent|Joined project %{resourceParentLink}."
