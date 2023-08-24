@@ -86,7 +86,7 @@ export default {
         >
           {{ summary }}
           <branch-exceptions-toggle-list
-            v-if="showBranchExceptions"
+            v-if="showBranchExceptions(branchExceptions)"
             class="gl-mb-2"
             :branch-exceptions="branchExceptions"
           />
