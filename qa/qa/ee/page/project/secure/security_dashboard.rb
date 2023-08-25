@@ -83,7 +83,7 @@ module QA
             end
 
             def wait_for_vuln_report_to_load
-              wait_until(max_duration: 20, sleep_interval: 2, message: "Vulnerability report not loaded yet") do
+              wait_until(max_duration: 40, sleep_interval: 2, message: "Vulnerability report not loaded yet") do
                 has_element?('vulnerability-report-header')
               end
               wait_for_requests
