@@ -2,8 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::ProcessBookkeepingService, :clean_gitlab_redis_shared_state, :elastic,
-feature_category: :global_search do
+RSpec.describe Elastic::ProcessBookkeepingService,
+  :clean_gitlab_redis_shared_state,
+  :elastic,
+  feature_category: :global_search do
   let(:ref_class) { ::Gitlab::Elastic::DocumentReference }
 
   let(:fake_refs) { Array.new(10) { |i| ref_class.new(Issue, i, "issue_#{i}", 'project_1') } }

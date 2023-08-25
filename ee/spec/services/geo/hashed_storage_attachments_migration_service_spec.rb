@@ -18,9 +18,11 @@ RSpec.describe Geo::HashedStorageAttachmentsMigrationService, feature_category: 
   let(:new_path) { File.join(base_path(hashed_storage), upload.path) }
 
   subject(:service) do
-    described_class.new(project.id,
-                        old_attachments_path: legacy_storage.disk_path,
-                        new_attachments_path: hashed_storage.disk_path)
+    described_class.new(
+      project.id,
+      old_attachments_path: legacy_storage.disk_path,
+      new_attachments_path: hashed_storage.disk_path
+    )
   end
 
   describe '#execute' do

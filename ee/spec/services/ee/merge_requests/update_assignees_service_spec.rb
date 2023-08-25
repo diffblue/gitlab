@@ -10,10 +10,14 @@ RSpec.describe MergeRequests::UpdateAssigneesService, feature_category: :code_re
   let_it_be(:user3) { create(:user) }
 
   let(:merge_request) do
-    create(:merge_request, :simple, :unique_branches,
-           assignee_ids: [user.id],
-           source_project: project,
-           author: user)
+    create(
+      :merge_request,
+      :simple,
+      :unique_branches,
+      assignee_ids: [user.id],
+      source_project: project,
+      author: user
+    )
   end
 
   let(:service) { described_class.new(project: project, current_user: user, params: opts) }

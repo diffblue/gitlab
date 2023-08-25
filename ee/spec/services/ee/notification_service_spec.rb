@@ -35,12 +35,14 @@ RSpec.describe EE::NotificationService, :mailer, feature_category: :team_plannin
       project.add_maintainer(reviewer)
       merge_request.assignees.each { |assignee| project.add_maintainer(assignee) }
 
-      create(:diff_note_on_merge_request,
-             project: project,
-             noteable: merge_request,
-             author: reviewer,
-             review: review,
-             note: "cc @mention")
+      create(
+        :diff_note_on_merge_request,
+        project: project,
+        noteable: merge_request,
+        author: reviewer,
+        review: review,
+        note: "cc @mention"
+      )
     end
 
     it 'sends emails' do

@@ -11,8 +11,14 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures, feature_category
   let_it_be(:milestone) { create(:milestone, group: group) }
   let_it_be(:description) { 'simple description' }
   let_it_be_with_refind(:issue) do
-    create(:issue, project: project, labels: [label1, label2],
-                   milestone: milestone, description: description, weight: 3)
+    create(
+      :issue,
+      project: project,
+      labels: [label1, label2],
+      milestone: milestone,
+      description: description,
+      weight: 3
+    )
   end
 
   subject { described_class.new(container: issue.project, current_user: user) }
@@ -118,8 +124,16 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures, feature_category
           end
 
           it 'emits a snowplow event' do
-            expect_snowplow_event(category: 'epics', action: 'promote', property: 'issue_id', value: issue.id,
-                                  project: project, user: user, namespace: group, weight: 3)
+            expect_snowplow_event(
+              category: 'epics',
+              action: 'promote',
+              property: 'issue_id',
+              value: issue.id,
+              project: project,
+              user: user,
+              namespace: group,
+              weight: 3
+            )
           end
 
           context 'when issue description has mentions and has notes with mentions' do
@@ -224,8 +238,10 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures, feature_category
           shared_examples 'fails to promote issue' do
             it 'does not promote to epic and raises error' do
               expect { subject.execute(issue, new_group) }
-                .to raise_error(StandardError,
-                                'Validation failed: Parent This epic cannot be added. An epic must belong to the same group or subgroup as its parent epic.')
+                .to raise_error(
+                  StandardError,
+                  'Validation failed: Parent This epic cannot be added. An epic must belong to the same group or subgroup as its parent epic.'
+                )
 
               expect(issue.reload.state).to eq("opened")
               expect(issue.reload.promoted_to_epic_id).to be_nil
@@ -306,8 +322,16 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures, feature_category
             expect(epic.notes.count).to eq(issue.notes.count)
             expect(epic.notes.where(discussion_id: discussion.discussion_id).count).to eq(0)
             expect(issue.notes.where(discussion_id: discussion.discussion_id).count).to eq(1)
-            expect_snowplow_event(category: 'epics', action: 'promote', property: 'issue_id', value: issue.id,
-                                  project: project, user: user, namespace: group, weight: 3)
+            expect_snowplow_event(
+              category: 'epics',
+              action: 'promote',
+              property: 'issue_id',
+              value: issue.id,
+              project: project,
+              user: user,
+              namespace: group,
+              weight: 3
+            )
           end
 
           it 'copies note attachments' do
@@ -316,8 +340,16 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures, feature_category
             epic = subject.execute(issue)
 
             expect(epic.notes.user.first.attachment).to be_kind_of(AttachmentUploader)
-            expect_snowplow_event(category: 'epics', action: 'promote', property: 'issue_id', value: issue.id,
-                                  project: project, user: user, namespace: group, weight: 3)
+            expect_snowplow_event(
+              category: 'epics',
+              action: 'promote',
+              property: 'issue_id',
+              value: issue.id,
+              project: project,
+              user: user,
+              namespace: group,
+              weight: 3
+            )
           end
         end
 

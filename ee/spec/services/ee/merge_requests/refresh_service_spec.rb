@@ -105,12 +105,14 @@ RSpec.describe MergeRequests::RefreshService, feature_category: :code_review_wor
 
             context 'when on the merge train' do
               let(:merge_request) do
-                create(:merge_request,
-                   :on_train,
-                   source_project: project,
-                   source_branch: source_branch,
-                   target_branch: 'master',
-                   target_project: project)
+                create(
+                  :merge_request,
+                  :on_train,
+                  source_project: project,
+                  source_branch: source_branch,
+                  target_branch: 'master',
+                  target_project: project
+                )
               end
 
               it_behaves_like 'does not refresh the code owner rules'
@@ -595,21 +597,28 @@ RSpec.describe MergeRequests::RefreshService, feature_category: :code_review_wor
     let_it_be(:user) { create(:user) }
 
     let_it_be(:merge_request, refind: true) do
-      create(:merge_request,
-             author: author,
-             source_project: project,
-             source_branch: 'feature',
-             target_branch: 'master',
-             target_project: project,
-             auto_merge_enabled: true,
-             merge_user: user)
+      create(
+        :merge_request,
+        author: author,
+        source_project: project,
+        source_branch: 'feature',
+        target_branch: 'master',
+        target_project: project,
+        auto_merge_enabled: true,
+        merge_user: user
+      )
     end
 
     let_it_be(:newrev) do
       project
         .repository
-        .create_file(user, 'test1.txt', 'Test data',
-                     message: 'Test commit', branch_name: 'master')
+        .create_file(
+          user,
+          'test1.txt',
+          'Test data',
+          message: 'Test commit',
+          branch_name: 'master'
+        )
     end
 
     let_it_be(:oldrev) do
