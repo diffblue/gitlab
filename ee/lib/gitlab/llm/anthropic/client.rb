@@ -31,9 +31,15 @@ module Gitlab
         def stream(prompt:, **options)
           return unless enabled?
 
-          perform_completion_request(prompt: prompt, options: options.merge(stream: true)) do |fragment|
-            yield parse_sse_event(fragment) if block_given?
+          response_body = ""
+
+          perform_completion_request(prompt: prompt, options: options.merge(stream: true)) do |parsed_event|
+            response_body += parsed_event["completion"] if parsed_event["completion"]
+
+            yield parsed_event if block_given?
           end
+
+          response_body
         rescue StandardError => e
           increment_metric(client: :anthropic)
           raise e
@@ -54,7 +60,9 @@ module Gitlab
             body: request_body(prompt: prompt, options: options).to_json,
             stream_body: options.fetch(:stream, false)
           ) do |fragment|
-            yield fragment if block_given?
+            parse_sse_events(fragment).each do |parsed_event|
+              yield parsed_event if block_given?
+            end
           end
 
           logger.debug(message: "Received response from Anthropic", response: response)
@@ -96,8 +104,8 @@ module Gitlab
         # https://html.spec.whatwg.org/multipage/server-sent-events.html#event-stream-interpretation
         # and using the format from Anthropic: https://docs.anthropic.com/claude/reference/streaming#example
         # we can assume that the JSON we're looking comes after `data: `
-        def parse_sse_event(fragment)
-          Gitlab::Json.parse(fragment.split('data: ').last)
+        def parse_sse_events(fragment)
+          fragment.scan(/(?:data): (\{.*\})/i).flatten.map { |data| Gitlab::Json.parse(data) }
         end
       end
     end
