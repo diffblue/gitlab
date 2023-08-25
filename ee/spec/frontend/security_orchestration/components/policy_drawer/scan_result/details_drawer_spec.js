@@ -1,5 +1,6 @@
 import { convertToTitleCase } from '~/lib/utils/text_utility';
 import DetailsDrawer from 'ee/security_orchestration/components/policy_drawer/scan_result/details_drawer.vue';
+import BranchExceptionsToggleList from 'ee/security_orchestration/components/policy_drawer/branch_exceptions_toggle_list.vue';
 import PolicyDrawerLayout from 'ee/security_orchestration/components/policy_drawer/drawer_layout.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
@@ -15,6 +16,7 @@ describe('DetailsDrawer component', () => {
   const findSummary = () => wrapper.findByTestId('policy-summary');
   const findPolicyApprovals = () => wrapper.findComponent(PolicyApprovals);
   const findPolicyDrawerLayout = () => wrapper.findComponent(PolicyDrawerLayout);
+  const findBranchExceptionsToggleList = () => wrapper.findComponent(BranchExceptionsToggleList);
 
   const factory = ({ propsData } = {}) => {
     wrapper = shallowMountExtended(DetailsDrawer, {
@@ -52,6 +54,10 @@ describe('DetailsDrawer component', () => {
         ),
         ...mockProjectWithAllApproverTypesScanResultPolicy.userApprovers,
       ]);
+    });
+
+    it('should not render branch exceptions list without exceptions', () => {
+      expect(findBranchExceptionsToggleList().exists()).toBe(false);
     });
   });
 });
