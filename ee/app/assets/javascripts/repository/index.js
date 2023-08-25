@@ -17,7 +17,7 @@ export default () => {
     toggleBtn.addEventListener('click', async (e) => {
       e.preventDefault();
 
-      const { dataset } = e.target;
+      const { dataset } = e.currentTarget;
       const message =
         dataset.state === 'lock'
           ? __('Are you sure you want to lock this directory?')
