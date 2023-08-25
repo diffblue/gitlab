@@ -137,14 +137,50 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
             }
           )
         end
+
+        it 'returns response' do
+          expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq("Hello")
+        end
+      end
+
+      context 'when response contains multiple events' do
+        let(:expected_response) do
+          <<-DOC
+          event: completion\r
+          data: {"completion":"Hello", "stop_reason": null, "model": "claude-2.0" }\r
+          \r
+          event: completion\r
+          data: {"completion":" World", "stop_reason": null, "model": "claude-2.0" }\r
+          \r
+          DOC
+        end
+
+        it 'provides parsed streamed response' do
+          expect { |b| described_class.new(user).stream(prompt: 'anything', **options, &b) }.to yield_successive_args(
+            {
+              "completion" => "Hello",
+              "stop_reason" => nil,
+              "model" => "claude-2.0"
+            },
+            {
+              "completion" => " World",
+              "stop_reason" => nil,
+              "model" => "claude-2.0"
+            }
+          )
+        end
+
+        it 'returns response' do
+          expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq("Hello World")
+        end
       end
 
       context 'when response is an error' do
         let(:expected_response) do
           <<-DOC
-          event: error\r\n
-          data: {"error": {"type": "overloaded_error", "message": "Overloaded"}}\r\n
-          \r\n
+          event: error\r
+          data: {"error": {"type": "overloaded_error", "message": "Overloaded"}}\r
+          \r
           DOC
         end
 
@@ -155,19 +191,27 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
             }
           )
         end
+
+        it 'returns empty response' do
+          expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq("")
+        end
       end
 
       context 'when response is a ping' do
         let(:expected_response) do
           <<-DOC
-          event: ping\r\n
-          data: {}\r\n
+          event: ping\r
+          data: {}\r
           \r\n
           DOC
         end
 
         it 'provides parsed streamed response' do
           expect { |b| described_class.new(user).stream(prompt: 'anything', **options, &b) }.to yield_with_args({})
+        end
+
+        it 'returns empty response' do
+          expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq("")
         end
       end
     end
@@ -177,6 +221,10 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
 
       it 'does not provide stream response' do
         expect { |b| described_class.new(user).stream(prompt: 'anything', **options, &b) }.not_to yield_with_args
+      end
+
+      it 'returns nil' do
+        expect(described_class.new(user).stream(prompt: 'anything', **options)).to be_nil
       end
     end
   end
