@@ -2,6 +2,6 @@
 
 module ProductAnalytics
   class DashboardPolicy < BasePolicy
-    delegate { @subject.project }
+    delegate { @subject.container }
   end
 end

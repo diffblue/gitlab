@@ -36,6 +36,12 @@ module Types
             type: GraphQL::Types::Boolean,
             null: false,
             description: 'Indicates whether the dashboard is user-defined or provided by GitLab.'
+
+      field :configuration_project,
+            type: Types::ProjectType,
+            method: :config_project,
+            null: true,
+            description: 'Project which contains the dashboard definition.'
     end
   end
 end

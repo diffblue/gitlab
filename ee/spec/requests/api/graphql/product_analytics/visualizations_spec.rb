@@ -16,6 +16,7 @@ RSpec.describe 'Query.project(id).dashboards.panels(id).visualization', feature_
           customizableDashboards {
             nodes {
               title
+              slug
               description
               panels {
                 nodes {
@@ -68,6 +69,27 @@ RSpec.describe 'Query.project(id).dashboards.panels(id).visualization', feature_
     context 'when the visualization has validation errors' do
       let_it_be(:project) { create(:project, :with_product_analytics_invalid_custom_visualization) }
       let_it_be(:user) { create(:user).tap { |u| project.add_developer(u) } }
+
+      let(:slug) { "dashboard_example_invalid_vis" }
+      let(:query) do
+        <<~GRAPHQL
+          query {
+            project(fullPath: "#{project.full_path}") {
+              customizableDashboards(slug: "#{slug}") {
+                nodes {
+                  panels {
+                    nodes {
+                      visualization {
+                        errors
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        GRAPHQL
+      end
 
       it 'returns the visualization with a validation error' do
         get_graphql(query, current_user: user)

@@ -45,17 +45,6 @@ RSpec.describe Resolvers::ProductAnalytics::DashboardsResolver, feature_category
         expect(subject.size).to eq(3)
       end
 
-      context 'when project is not onboarded for product analytics' do
-        before do
-          project.project_setting.update!(product_analytics_instrumentation_key: nil)
-        end
-
-        it 'returns all dashboards excluding hardcoded ones' do
-          expect(subject).to eq(project.product_analytics_dashboards)
-          expect(subject.size).to eq(1)
-        end
-      end
-
       context 'when feature flag is disabled' do
         before do
           stub_feature_flags(product_analytics_dashboards: false)

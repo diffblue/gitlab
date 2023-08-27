@@ -13,7 +13,7 @@ module ProductAnalyticsHelpers
   def product_analytics_dashboards
     return [] unless product_analytics_enabled?
 
-    ::ProductAnalytics::Dashboard.for_project(self)
+    ::ProductAnalytics::Dashboard.for(container: self)
   end
 
   def product_analytics_funnels
@@ -26,5 +26,9 @@ module ProductAnalyticsHelpers
     return unless product_analytics_enabled?
 
     product_analytics_dashboards.find { |dashboard| dashboard.slug == slug }
+  end
+
+  def default_dashboards_configuration_source
+    is_a?(Project) ? self : nil
   end
 end
