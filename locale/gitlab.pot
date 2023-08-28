@@ -44855,9 +44855,6 @@ msgstr ""
 msgid "Something went wrong while fetching details"
 msgstr ""
 
-msgid "Something went wrong while fetching latest comments."
-msgstr ""
-
 msgid "Something went wrong while fetching projects"
 msgstr ""
 
