@@ -73,20 +73,6 @@ RSpec.describe Security::Ingestion::IngestReportsService, feature_category: :vul
         expect(Security::Ingestion::IngestReportService).to have_received(:execute).with(scan_1)
         expect(Security::Ingestion::IngestReportService).to have_received(:execute).with(scan_2)
       end
-
-      context 'with `descendant_security_scans` disabled' do
-        before do
-          stub_feature_flags(descendant_security_scans: false)
-        end
-
-        it 'ingest the scan from the parent pipeline' do
-          service_object.execute
-
-          expect(Security::Ingestion::IngestReportService).to have_received(:execute).with(parent_scan)
-          expect(Security::Ingestion::IngestReportService).not_to have_received(:execute).with(scan_1)
-          expect(Security::Ingestion::IngestReportService).not_to have_received(:execute).with(scan_2)
-        end
-      end
     end
 
     describe 'scheduling the AutoFix background job' do

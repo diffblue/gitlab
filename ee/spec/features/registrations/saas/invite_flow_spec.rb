@@ -20,7 +20,7 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
     ensure_onboarding_is_finished
   end
 
-  it 'registers the user with multiple invites and sends them to the root page' do
+  it 'registers the user with multiple invites and sends them to the last group activity page' do
     new_user = build(:user, name: 'Registering User', email: user_email)
     group = create(:group, name: 'Test Group')
 
@@ -40,7 +40,7 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
     fill_in_welcome_form
     click_on 'Get started!'
 
-    expect(page).to have_current_path(root_path)
+    expect(page).to have_current_path(activity_group_path(group), ignore_query: true)
     ensure_onboarding_is_finished
   end
 

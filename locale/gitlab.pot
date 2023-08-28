@@ -32993,6 +32993,12 @@ msgstr ""
 msgid "Organization|Copy organization ID"
 msgstr ""
 
+msgid "Organization|Frequently visited groups"
+msgstr ""
+
+msgid "Organization|Frequently visited projects"
+msgstr ""
+
 msgid "Organization|Org ID"
 msgstr ""
 
@@ -33006,6 +33012,9 @@ msgid "Organization|Public - The organization can be accessed without any authen
 msgstr ""
 
 msgid "Organization|Search or filter list"
+msgstr ""
+
+msgid "Organization|View all"
 msgstr ""
 
 msgid "Orphaned member"
