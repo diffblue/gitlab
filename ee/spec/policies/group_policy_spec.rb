@@ -2759,19 +2759,19 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
         create(:namespace_ban, user: current_user, namespace: group.root_ancestor)
       end
 
-      it { is_expected.to be_disallowed(:read_group) }
+      it { is_expected.to be_disallowed(*described_class.own_ability_map.map.keys) }
 
       context 'inside a subgroup' do
         let_it_be(:group) { create(:group, :private, :nested) }
 
-        it { is_expected.to be_disallowed(:read_group) }
+        it { is_expected.to be_disallowed(*described_class.own_ability_map.map.keys) }
 
         context 'as an owner of the subgroup' do
           before do
             group.add_owner(current_user)
           end
 
-          it { is_expected.to be_disallowed(:read_group) }
+          it { is_expected.to be_disallowed(*described_class.own_ability_map.map.keys) }
         end
       end
 

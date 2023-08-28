@@ -2327,21 +2327,21 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
         create(:namespace_ban, user: current_user, namespace: group.root_ancestor)
       end
 
-      it { is_expected.to be_disallowed(:read_project) }
+      it { is_expected.to be_disallowed(*described_class.own_ability_map.map.keys) }
 
       context 'as an owner of the project' do
         before do
           project.add_owner(current_user)
         end
 
-        it { is_expected.to be_disallowed(:read_project) }
+        it { is_expected.to be_disallowed(*described_class.own_ability_map.map.keys) }
       end
 
       context 'when project is inside subgroup' do
         let_it_be(:subgroup) { create(:group, :private, parent: group) }
         let_it_be(:project) { create(:project, :private, public_builds: false, group: subgroup) }
 
-        it { is_expected.to be_disallowed(:read_project) }
+        it { is_expected.to be_disallowed(*described_class.own_ability_map.map.keys) }
       end
 
       context 'as an admin' do
