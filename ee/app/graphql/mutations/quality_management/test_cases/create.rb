@@ -27,6 +27,10 @@ module Mutations
                  required: true,
                  description: 'Project full path to create the test case in.'
 
+        argument :confidential, GraphQL::Types::Boolean,
+                 required: false,
+                 description: 'Sets the test case confidentiality.'
+
         field :test_case, Types::IssueType,
               null: true,
               description: 'Test case created.'
@@ -38,7 +42,7 @@ module Mutations
           result = ::QualityManagement::TestCases::CreateService.new(
             project,
             context[:current_user],
-            **args
+            params: args
           ).execute
 
           {

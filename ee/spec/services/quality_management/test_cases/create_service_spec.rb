@@ -2,15 +2,50 @@
 
 require 'spec_helper'
 
-RSpec.describe QualityManagement::TestCases::CreateService do
+RSpec.describe QualityManagement::TestCases::CreateService, feature_category: :quality_management do
   let_it_be(:user) { create(:user) }
   let_it_be_with_refind(:project) { create(:project, :empty_repo) }
-  let(:description) { 'test case description' }
   let_it_be(:label) { create(:label, project: project) }
 
-  let(:service) { described_class.new(project, user, title: title, description: description, label_ids: [label.id]) }
+  let(:title) { 'test case title' }
+  let(:description) { 'test case description' }
+  let(:confidential) { true }
+  let(:new_issue) { Issue.last! }
+  let(:params) do
+    {
+      title: title,
+      description: description,
+      label_ids: [label.id],
+      confidential: confidential
+    }
+  end
+
+  let(:service) do
+    described_class.new(
+      project,
+      user,
+      params: params
+    )
+  end
 
   describe '#execute' do
+    subject { service.execute }
+
+    shared_examples 'creates a test case issue' do
+      specify :aggregate_failures do
+        expect { subject }.to change(Issue, :count).by(1)
+
+        expect(subject).to be_success
+
+        expect(new_issue.title).to eq(expected_title)
+        expect(new_issue.description).to eq(expected_description)
+        expect(new_issue.author).to eq(user)
+        expect(new_issue.issue_type).to eq('test_case')
+        expect(new_issue.labels.map(&:title)).to eq(expected_label_titles)
+        expect(new_issue.confidential).to eq(expected_confidentiality)
+      end
+    end
+
     before_all do
       project.add_reporter(user)
     end
@@ -19,46 +54,47 @@ RSpec.describe QualityManagement::TestCases::CreateService do
       stub_licensed_features(quality_management: true)
     end
 
-    context 'when test has title and description' do
-      let(:title) { 'test case title' }
-      let(:new_issue) { Issue.last! }
+    context 'when all permitted params are provided' do
+      let(:expected_title) { title }
+      let(:expected_description) { description }
+      let(:expected_label_titles) { [label.title] }
+      let(:expected_confidentiality) { confidential }
 
-      it 'responds with success' do
-        expect(service.execute).to be_success
-      end
+      it_behaves_like 'creates a test case issue'
+    end
 
-      it 'creates an test case issue' do
-        expect { service.execute }.to change(Issue, :count).by(1)
-      end
+    context 'when only required params are provided' do
+      let(:expected_title) { title }
+      let(:expected_description) { nil }
+      let(:expected_label_titles) { [] }
+      let(:expected_confidentiality) { false }
+      let(:params) { { title: title } }
 
-      it 'created issue has correct attributes' do
-        service.execute
-        aggregate_failures do
-          expect(new_issue.title).to eq(title)
-          expect(new_issue.description).to eq(description)
-          expect(new_issue.author).to eq(user)
-          expect(new_issue.issue_type).to eq('test_case')
-          expect(new_issue.labels.map(&:title)).to eq([label.title])
-        end
+      it_behaves_like 'creates a test case issue'
+    end
+
+    context 'when a param is provided that is not allowed' do
+      let(:params) { super().merge(assignee_ids: [user.id]) }
+
+      it 'creates a test case issue ignoring forbidden params' do
+        expect { subject }.to change(Issue, :count).by(1)
+
+        expect(subject).to be_success
+
+        expect(new_issue.assignees).to be_empty
       end
     end
 
     context 'when test case has no title' do
       let(:title) { '' }
 
-      it 'does not create an issue' do
-        expect { service.execute }.not_to change(Issue, :count)
-      end
+      it 'does not create an issue', :aggregate_failures do
+        expect { subject }.not_to change(Issue, :count)
 
-      it 'responds with errors' do
-        result = service.execute
+        expect(subject).to be_error
+        expect(subject.errors).to contain_exactly("Title can't be blank")
 
-        expect(result).to be_error
-        expect(result.errors).to contain_exactly("Title can't be blank")
-      end
-
-      it 'result payload contains an Issue object' do
-        expect(service.execute.payload[:issue]).to be_kind_of(Issue)
+        expect(subject.payload[:issue]).to be_kind_of(Issue)
       end
     end
   end

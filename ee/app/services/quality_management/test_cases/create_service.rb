@@ -4,32 +4,30 @@ module QualityManagement
   module TestCases
     class CreateService < BaseService
       ISSUE_TYPE = 'test_case'
+      PERMITTED_PARAMS = %i[title description label_ids confidential].freeze
 
-      def initialize(project, current_user, title:, description: nil, label_ids: [])
+      def initialize(project, current_user, params: {})
         super(project, current_user)
 
-        @title = title
-        @description = description
-        @label_ids = label_ids
+        @params = params.dup
       end
 
       def execute
         Issues::CreateService.new(
           container: project,
           current_user: current_user,
-          params: {
-            issue_type: ISSUE_TYPE,
-            title: title,
-            description: description,
-            label_ids: label_ids
-          },
+          params: sanitized_params.merge(issue_type: ISSUE_TYPE),
           perform_spam_check: false
         ).execute
       end
 
       private
 
-      attr_reader :title, :description, :label_ids
+      attr_reader :params
+
+      def sanitized_params
+        params.slice(*PERMITTED_PARAMS)
+      end
     end
   end
 end
