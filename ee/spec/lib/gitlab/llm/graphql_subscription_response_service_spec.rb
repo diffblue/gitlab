@@ -105,21 +105,6 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
     end
   end
 
-  shared_examples 'with a markup format option' do
-    let(:options) do
-      {
-        markup_format: :html,
-        request_id: 'uuid',
-        cache_response: cache_response,
-        client_subscription_id: client_subscription_id
-      }
-    end
-
-    it_behaves_like 'graphql subscription response' do
-      let(:response_body) { '<p data-sourcepos="1:1-1:13" dir="auto">Some response</p>' }
-    end
-  end
-
   describe '#execute' do
     subject { described_class.new(user, resource, response_modifier, options: options).execute }
 
@@ -140,28 +125,24 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
 
     context 'for a merge request' do
       it_behaves_like 'graphql subscription response'
-      it_behaves_like 'with a markup format option'
     end
 
     context 'for a work item' do
       let_it_be(:resource) { create(:work_item, project: project) }
 
       it_behaves_like 'graphql subscription response'
-      it_behaves_like 'with a markup format option'
     end
 
     context 'for an issue' do
       let_it_be(:resource) { create(:issue, project: project) }
 
       it_behaves_like 'graphql subscription response'
-      it_behaves_like 'with a markup format option'
     end
 
     context 'for an epic' do
       let_it_be(:resource) { create(:epic, group: group) }
 
       it_behaves_like 'graphql subscription response'
-      it_behaves_like 'with a markup format option'
     end
 
     context 'for internal request' do

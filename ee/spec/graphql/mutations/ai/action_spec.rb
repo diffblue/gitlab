@@ -15,7 +15,7 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
 
   describe '#ready?' do
     let(:arguments) do
-      { summarize_comments: { resource_id: resource_id }, markup_format: :html, client_subscription_id: 'id' }
+      { summarize_comments: { resource_id: resource_id }, client_subscription_id: 'id' }
     end
 
     it { is_expected.to be_ready(**arguments) }
