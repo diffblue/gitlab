@@ -9,24 +9,39 @@ RSpec.describe 'Create test case', feature_category: :quality_management do
   let_it_be(:current_user) { create(:user) }
   let_it_be(:label) { create(:label, project: project) }
 
-  let(:variables) { { project_path: project.full_path, title: 'foo', description: 'bar', label_ids: [label.id] } }
+  let(:project_path) { project.full_path }
+  let(:title) { 'foo' }
+  let(:description) { 'bar' }
+  let(:label_ids) { [label.id] }
+  let(:confidential) { true }
+
+  let(:variables) do
+    {
+      project_path: project_path,
+      title: title,
+      description: description,
+      label_ids: label_ids,
+      confidential: confidential
+    }
+  end
 
   let(:mutation) do
     graphql_mutation(:create_test_case, variables) do
       <<~QL
-         clientMutationId
-         errors
-         testCase {
-           title
-           description
-           labels {
-             edges {
-               node {
-                 id
-               }
-             }
-           }
-         }
+        clientMutationId
+        errors
+        testCase {
+          title
+          description
+          confidential
+          labels {
+            edges {
+              node {
+                id
+              }
+            }
+          }
+        }
       QL
     end
   end
@@ -54,18 +69,50 @@ RSpec.describe 'Create test case', feature_category: :quality_management do
       end
 
       context 'when user can create test cases' do
+        shared_examples 'creates a new test case' do
+          specify :aggregate_failures do
+            expect { post_graphql_mutation(mutation, current_user: current_user) }.to change { Issue.count }.by(1)
+            test_case = mutation_response['testCase']
+            expect(test_case).not_to be_nil
+            expect(test_case['title']).to eq(expected_title)
+            expect(test_case['description']).to eq(expected_description)
+            expect(test_case['confidential']).to eq(expected_confidentiality)
+            expect(test_case['labels']['edges']).to eq(expected_labels)
+            expect(mutation_response['errors']).to eq([])
+          end
+        end
+
+        let(:expected_title) { title }
+
         before_all do
           project.add_reporter(current_user)
         end
 
-        it 'creates new test case', :aggregate_failures do
-          expect { post_graphql_mutation(mutation, current_user: current_user) }.to change { Issue.count }.by(1)
-          test_case = mutation_response['testCase']
-          expect(test_case).not_to be_nil
-          expect(test_case['title']).to eq('foo')
-          expect(test_case['description']).to eq('bar')
-          expect(test_case['labels']['edges'][0]["node"]["id"]).to eq(label.to_global_id.to_s)
-          expect(mutation_response['errors']).to eq([])
+        context 'when all arguments are provided' do
+          let(:expected_description) { description }
+          let(:expected_confidentiality) { confidential }
+          let(:expected_labels) { [{ 'node' => { 'id' => label.to_global_id.to_s } }] }
+
+          it_behaves_like 'creates a new test case'
+        end
+
+        context 'when only required arguments are provided' do
+          let(:variables) { super().slice(:project_path, :title) }
+          let(:expected_description) { nil }
+          let(:expected_confidentiality) { false }
+          let(:expected_labels) { [] }
+
+          it_behaves_like 'creates a new test case'
+        end
+
+        context 'when no required arguments are provided' do
+          let(:variables) { super().slice(:description) }
+
+          it_behaves_like 'a mutation that returns top-level errors', errors: [
+            'Variable $createTestCaseInput of type CreateTestCaseInput! was provided '\
+            'invalid value for title (Expected value to not be null), '\
+            'projectPath (Expected value to not be null)'
+          ]
         end
 
         context 'with invalid arguments' do
