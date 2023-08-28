@@ -998,6 +998,7 @@ RSpec.describe User, feature_category: :system_access do
             (EXISTS (SELECT 1 FROM "members"
               WHERE "members"."user_id" = "users"."id"
               AND (members.access_level > 10)))
+            /* allow_cross_joins_across_databases */
           SQL
 
           expect(users.to_sql.squish).to eq(expected_sql.squish), "query was changed. Please ensure query is covered with an index and adjust this test case"

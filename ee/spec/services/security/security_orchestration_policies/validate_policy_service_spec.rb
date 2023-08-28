@@ -238,7 +238,11 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
       let(:user) { create(:user) }
 
       before do
-        container.users.delete_all
+        ::Gitlab::Database.allow_cross_joins_across_databases(url:
+          "https://gitlab.com/gitlab-org/gitlab/-/issues/422405") do
+          container.users.delete_all
+        end
+
         container.add_developer(user)
 
         policy[:actions] = [action]

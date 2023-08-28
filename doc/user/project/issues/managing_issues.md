@@ -434,7 +434,7 @@ Alternatively, you can use the `/iteration` [quick action](../quick_actions.md#i
 
 To view all issues assigned to you:
 
-1. On the left sidebar, at the top, select **Search GitLab** (**{search}**).
+1. On the left sidebar, select **Search or go to**.
 1. From the dropdown list, select **Issues assigned to me**.
 
 Or:

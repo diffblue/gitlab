@@ -64,7 +64,7 @@ If your group contains subgroups, this view also displays merge requests from th
 
 To view all merge requests assigned to you:
 
-1. On the left sidebar, at the top, select **Search GitLab** (**{search}**).
+1. On the left sidebar, select **Search or go to**.
 1. From the dropdown list, select **Merge requests assigned to me**.
 
 or:

@@ -37,7 +37,10 @@ module Elastic
     end
 
     def group_and_descendants_user_ids(namespace)
-      namespace.self_and_descendants.flat_map(&:user_ids)
+      ::Gitlab::Database.allow_cross_joins_across_databases(url:
+        "https://gitlab.com/gitlab-org/gitlab/-/issues/422405") do
+        namespace.self_and_descendants.flat_map(&:user_ids)
+      end
     end
 
     def project_user_ids(namespace)

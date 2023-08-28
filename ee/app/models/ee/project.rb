@@ -151,7 +151,9 @@ module EE
         class_name: 'Geo::ProjectState'
 
       has_many :compliance_standards_adherence, class_name: 'Projects::ComplianceStandards::Adherence'
-      has_many :security_policy_bots, -> { security_policy_bot }, through: :project_members, source: :user
+      has_many :security_policy_bots, -> {
+        security_policy_bot.allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/422405")
+      }, through: :project_members, source: :user
 
       elastic_index_dependant_association :issues, on_change: :visibility_level
       elastic_index_dependant_association :issues, on_change: :archived, depends_on_finished_migration: :add_archived_to_issues
