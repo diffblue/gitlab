@@ -80,11 +80,23 @@ module Gitlab
           )
         end
 
+        # @param [String] content - Input string
+        # @param [Hash] options - Additional options to pass to the request
+        def text_embeddings(content:, **options)
+          request(
+            content: content,
+            config: Configuration.new(
+              model_config: ModelConfigurations::TextEmbeddings.new
+            ),
+            **options
+          )
+        end
+
         private
 
         attr_reader :logger
 
-        retry_methods_with_exponential_backoff :chat, :text, :code, :messages_chat, :code_completion
+        retry_methods_with_exponential_backoff :chat, :text, :code, :messages_chat, :code_completion, :text_embeddings
 
         def request(content:, config:, **options)
           logger.info(message: "Performing request to Vertex", config: config)
