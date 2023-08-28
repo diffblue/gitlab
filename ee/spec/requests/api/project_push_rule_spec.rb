@@ -216,8 +216,8 @@ RSpec.describe API::ProjectPushRule, 'ProjectPushRule', api: true, feature_categ
           context 'when feature flag "add_validation_for_push_rules" is disabled' do
             let(:add_validation_for_push_rules_ff) { false }
 
-            it 'is successful' do
-              expect(response).to have_gitlab_http_status(:created)
+            it 'returns a server error' do
+              expect(response).to have_gitlab_http_status(:server_error)
             end
           end
         end
