@@ -30,6 +30,8 @@ module AppSec
               )
             })
 
+            remove_secret_variables! if should_remove_secret_variables?(params)
+
             if target_url = params.delete(:target_url)
               params[:dast_site] = AppSec::Dast::Sites::FindOrCreateService.new(project, current_user).execute!(url: target_url)
             end
@@ -99,6 +101,23 @@ module AppSec
           raise Rollback, response.errors if response.error?
 
           response
+        end
+
+        def should_remove_secret_variables?(params)
+          old_target_url = dast_site_profile.dast_site.url
+          new_target_url = params[:target_url]
+
+          old_auth_url = dast_site_profile.auth_url
+          new_auth_url = params[:auth_url]
+
+          (new_target_url.present? && old_target_url != new_target_url) || (new_auth_url.present? && old_auth_url != new_auth_url)
+        end
+
+        def remove_secret_variables!
+          [::Dast::SiteProfileSecretVariable::REQUEST_HEADERS,
+            ::Dast::SiteProfileSecretVariable::PASSWORD].each do |key|
+            delete_secret_variable!(key)
+          end
         end
         # rubocop: enable CodeReuse/ActiveRecord
       end

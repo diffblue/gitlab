@@ -1,16 +1,17 @@
 <script>
-import { GlFormGroup, GlFormInput, GlFormCheckbox } from '@gitlab/ui';
+import { GlFormGroup, GlFormInput, GlFormCheckbox, GlFormText } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { initFormField } from 'ee/security_configuration/utils';
 import { serializeFormObject } from '~/lib/utils/forms';
 import validation from '~/vue_shared/directives/validation';
-import { generateFormDastSiteFields } from '../constants';
+import { generateFormDastSiteFields, I18N_DAST_URL_CHANGE_WARNING } from '../constants';
 
 export default {
   components: {
     GlFormGroup,
     GlFormInput,
     GlFormCheckbox,
+    GlFormText,
   },
   directives: {
     validation: validation(),
@@ -82,6 +83,7 @@ export default {
         },
       },
       isSensitiveFieldRequired: !this.isEditMode,
+      initialUrl: url,
     };
   },
   computed: {
@@ -112,7 +114,13 @@ export default {
         state: this.form.state,
       });
     },
+    showWarningTextForTargetUrl(fieldName) {
+      return (
+        this.isEditMode && fieldName === 'url' && this.initialUrl !== this.form.fields.url.value
+      );
+    },
   },
+  I18N_DAST_URL_CHANGE_WARNING,
 };
 </script>
 
@@ -146,6 +154,9 @@ export default {
                 :required="option.isRequired"
                 :state="form.fields[option.fieldName].state"
               />
+              <gl-form-text v-if="showWarningTextForTargetUrl(option.fieldName)">{{
+                $options.I18N_DAST_URL_CHANGE_WARNING
+              }}</gl-form-text>
             </gl-form-group>
           </div>
         </div>

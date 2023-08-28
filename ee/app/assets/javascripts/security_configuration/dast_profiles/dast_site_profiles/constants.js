@@ -7,7 +7,9 @@ export const REDACTED_PASSWORD = '••••••••';
 export const REDACTED_REQUEST_HEADERS = '••••••••';
 export const DAST_API_DOC_PATH_BASE = 'user/application_security/dast_api/index';
 export const DAST_PROXY_DOC_PATH_BASE = 'user/application_security/dast/proxy-based';
-
+export const I18N_DAST_URL_CHANGE_WARNING = s__(
+  'DastProfiles|Modifying the URL will clear any previously entered values for the additional request headers and password fields.',
+);
 export const TARGET_TYPES = {
   WEBSITE: { value: 'WEBSITE', text: s__('DastProfiles|Website') },
   API: { value: 'API', text: s__('DastProfiles|API') },
