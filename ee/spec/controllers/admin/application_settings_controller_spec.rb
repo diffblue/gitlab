@@ -356,6 +356,34 @@ RSpec.describe Admin::ApplicationSettingsController do
     end
   end
 
+  describe 'PATCH #general', feature_category: :shared do
+    before do
+      sign_in(admin)
+    end
+
+    context 'when instance_level_code_suggestions_enabled is enabled' do
+      it 'triggers SeatLinkData sync' do
+        expect_next_instance_of(::Gitlab::SeatLinkData) do |sync_link_data|
+          expect(sync_link_data).to receive(:sync)
+        end
+
+        settings = { instance_level_code_suggestions_enabled: '1' }
+
+        patch :general, params: { application_setting: settings }
+      end
+    end
+
+    context 'when instance_level_code_suggestions_enabled is disabled' do
+      it 'does not trigger SeatLinkData sync' do
+        expect(::Gitlab::SeatLinkData).not_to receive(:new)
+
+        settings = { instance_level_code_suggestions_enabled: '0' }
+
+        patch :general, params: { application_setting: settings }
+      end
+    end
+  end
+
   describe '#advanced_search', feature_category: :global_search do
     before do
       sign_in(admin)
