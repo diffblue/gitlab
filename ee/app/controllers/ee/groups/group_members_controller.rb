@@ -33,7 +33,14 @@ module EE
       def index
         super
 
-        @banned = presented_banned_members # rubocop:disable Gitlab/ModuleWithInstanceVariables
+        # rubocop:disable Gitlab/ModuleWithInstanceVariables
+        @banned = presented_banned_members
+        @memberships_with_custom_role = if ::Feature.enabled?(:custom_roles_in_members_page, group)
+                                          present_group_members(group_memberships_with_custom_role)
+                                        else
+                                          []
+                                        end
+        # rubocop:enable Gitlab/ModuleWithInstanceVariables
       end
 
       # rubocop:disable Gitlab/ModuleWithInstanceVariables
@@ -113,6 +120,13 @@ module EE
         return unless group.unique_project_download_limit_enabled?
 
         present_members(banned_members(params: filter_params))
+      end
+
+      def group_memberships_with_custom_role
+        @memberships_with_custom_role ||=
+          ::GroupMembersFinder
+            .new(group, current_user, params: filter_params.merge({ non_invite: true, with_custom_role: true }))
+            .execute(include_relations: requested_relations)
       end
 
       def authorize_update_group_member!

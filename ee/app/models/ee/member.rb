@@ -37,6 +37,8 @@ module EE
         where.not(user_id: ::Namespaces::NamespaceBan.where(namespace: namespace).select(:user_id))
       end
 
+      scope :with_custom_role, -> { where.not(member_role_id: nil) }
+
       scope :elevated_guests, -> do
         where(access_level: ::Gitlab::Access::GUEST).joins(:member_role).merge(MemberRole.elevating)
       end

@@ -43,6 +43,85 @@ RSpec.describe Groups::GroupMembersController, feature_category: :groups_and_pro
         expect(count_queries).to be(false)
       end
     end
+
+    context 'when querying customizable roles' do
+      let_it_be(:root_group, reload: true) { create(:group) }
+      let_it_be(:sub_group, reload: true) { create(:group, parent: root_group) }
+      let_it_be(:sub_2_group, reload: true) { create(:group, parent: sub_group) }
+      let_it_be(:sub_3_group, reload: true) { create(:group, parent: sub_2_group) }
+
+      before do
+        sign_in(user)
+      end
+
+      context 'when there is no customizable role' do
+        it 'returns no membership' do
+          user = create(:user)
+
+          create(:group_member, user: user, group: sub_2_group, access_level: Gitlab::Access::OWNER)
+          create(:group_member, user: user, group: sub_group, access_level: Gitlab::Access::MAINTAINER)
+          create(:group_member, user: user, group: root_group, access_level: Gitlab::Access::DEVELOPER)
+
+          get :index, params: { group_id: sub_3_group }
+
+          expect(assigns(:memberships_with_custom_role)).to be_empty
+        end
+      end
+
+      context 'when there are customizable roles defined' do
+        let_it_be(:member_user) { create(:user) }
+        let_it_be(:sub_group_membership) do
+          maintainer_member_role = create(:member_role, { name: 'custom maintainer',
+                                                          namespace: root_group,
+                                                          base_access_level: ::Gitlab::Access::MAINTAINER })
+          create(:group_member, { user: member_user,
+                                  group: sub_group,
+                                  access_level: Gitlab::Access::MAINTAINER,
+                                  member_role: maintainer_member_role })
+        end
+
+        let_it_be(:custom_owner_role) do
+          create(:member_role, { name: 'custom owner',
+                                 namespace: root_group,
+                                 base_access_level: ::Gitlab::Access::OWNER })
+        end
+
+        let_it_be(:sub_2_group_membership) do
+          create(:group_member, { user: member_user,
+                                  group: sub_2_group,
+                                  access_level: Gitlab::Access::OWNER,
+                                  member_role: custom_owner_role })
+        end
+
+        let_it_be(:invited_membership) do
+          create(:group_member, :invited, { user: member_user,
+                                            group: sub_3_group,
+                                            access_level: Gitlab::Access::OWNER,
+                                            member_role: custom_owner_role })
+        end
+
+        it 'queries all customizable role of a user' do
+          create(:group_member, user: member_user, group: root_group, access_level: Gitlab::Access::DEVELOPER)
+
+          get :index, params: { group_id: sub_3_group }
+
+          expect(assigns(:memberships_with_custom_role).map(&:id))
+            .to(contain_exactly(sub_group_membership.id, sub_2_group_membership.id))
+        end
+
+        context 'when custom_roles_members_page is disabled' do
+          before do
+            stub_feature_flags(custom_roles_in_members_page: false)
+          end
+
+          it 'returns no membership' do
+            get :index, params: { group_id: sub_3_group }
+
+            expect(assigns(:memberships_with_custom_role)).to be_empty
+          end
+        end
+      end
+    end
   end
 
   describe 'DELETE #leave' do
