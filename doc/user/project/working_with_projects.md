@@ -190,8 +190,8 @@ To view the activity of a project:
 
 ## Search in projects
 
-To search through your projects, on the left sidebar, at the top, select **Search GitLab**
-(**{search}**). GitLab filters as you type.
+To search through your projects, on the left sidebar, select **Search or go to**.
+GitLab filters as you type.
 
 You can also look for the projects you [starred](#star-a-project) (**Starred projects**).
 

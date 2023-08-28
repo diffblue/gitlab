@@ -119,7 +119,7 @@ To change the location of project dashboards:
 1. On the left sidebar, select **Search or go to** and find your project,
    or select **Create new...** (**{plus}**) and **New project/repository**
    to create the project to store your dashboard files.
-1. On the left sidebar, at the top, select **Search GitLab** (**{search}**) and find the analytics project.
+1. On the left sidebar, select **Search or go to** and find the analytics project.
 1. Select **Settings > General**.
 1. Expand **Analytics**.
 1. In the **Analytics Dashboards** section, select your dashboard files project.
