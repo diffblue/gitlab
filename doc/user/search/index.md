@@ -51,7 +51,7 @@ Global search only flags with an error any search that includes more than:
 
 To search in all GitLab:
 
-1. On the left sidebar, at the top, select **Search GitLab** (**{search}**).
+1. On the left sidebar, at the top, select **Search or go to**.
 1. Type your search query. You must type at least two characters.
 1. Press <kbd>Enter</kbd> to search, or select from the list.
 
@@ -62,7 +62,7 @@ The results are displayed. To filter the results, on the left sidebar, select a 
 To search in a project:
 
 1. On the left sidebar, select **Search or go to** and find your project.
-1. Select **Search GitLab** (**{search}**) again and type the string you want to search for.
+1. Select **Search or go to** again and type the string you want to search for.
 1. Press <kbd>Enter</kbd> to search, or select from the list.
 
 The results are displayed. To filter the results, on the left sidebar, select a filter.
@@ -110,7 +110,7 @@ you must add the parameter `include_archived=true` to the URL.
 To search for code in a project:
 
 1. On the left sidebar, select **Search or go to** and find your project.
-1. Select **Search GitLab** (**{search}**) again and type the code you want to search for.
+1. Select **Search or go to** again and type the code you want to search for.
 1. Press <kbd>Enter</kbd> to search, or select from the list.
 
 Code search shows only the first result in the file.
@@ -140,7 +140,7 @@ To filter code search results by one or more languages:
 To search for a commit SHA:
 
 1. On the left sidebar, select **Search or go to** and find your project.
-1. Select **Search GitLab** (**{search}**) again and type the commit SHA you want to search for.
+1. Select **Search or go to** again and type the commit SHA you want to search for.
 1. Press <kbd>Enter</kbd> to search, or select from the list.
 
 If a single result is returned, GitLab redirects to the commit result
