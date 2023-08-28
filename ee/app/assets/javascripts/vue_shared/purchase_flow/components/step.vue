@@ -6,7 +6,6 @@ import updateStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/up
 import activeStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/active_step.query.graphql';
 import stepListQuery from 'ee/vue_shared/purchase_flow/graphql/queries/step_list.query.graphql';
 import { createAlert } from '~/alert';
-import { convertToSnakeCase, dasherize } from '~/lib/utils/text_utility';
 import { i18n, GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import StepHeader from 'ee/vue_shared/purchase_flow/components/step_header.vue';
 
@@ -75,9 +74,6 @@ export default {
       const index = this.stepList.findIndex(({ id }) => id === this.stepId);
       const activeIndex = this.stepList.findIndex(({ id }) => id === this.activeStep.id);
       return this.isFinished && index < activeIndex;
-    },
-    dasherizedStep() {
-      return dasherize(convertToSnakeCase(this.stepId));
     },
   },
   methods: {
