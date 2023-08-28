@@ -10,9 +10,11 @@ RSpec.describe AuditEvents::Streaming::EventTypeFilters::CreateService, feature_
   let(:expected_error) { [] }
 
   subject(:response) do
-    described_class.new(destination: destination,
-                        event_type_filters: event_type_filters,
-                        current_user: user).execute
+    described_class.new(
+      destination: destination,
+      event_type_filters: event_type_filters,
+      current_user: user
+    ).execute
   end
 
   describe '#execute' do

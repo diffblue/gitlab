@@ -38,9 +38,11 @@ RSpec.describe Analytics::DevopsAdoption::EnabledNamespaces::FindOrCreateService
     let!(:enabled_namespace3) { create :devops_adoption_enabled_namespace, display_namespace: display_group }
 
     it 'calls for enabled_namespace creation' do
-      expect_next_instance_of(Analytics::DevopsAdoption::EnabledNamespaces::CreateService,
-                              current_user: current_user,
-                              params: { namespace: group, display_namespace: display_group }) do |instance|
+      expect_next_instance_of(
+        Analytics::DevopsAdoption::EnabledNamespaces::CreateService,
+        current_user: current_user,
+        params: { namespace: group, display_namespace: display_group }
+      ) do |instance|
         expect(instance).to receive(:execute).and_return('create_response')
       end
 
@@ -50,14 +52,14 @@ RSpec.describe Analytics::DevopsAdoption::EnabledNamespaces::FindOrCreateService
 
   it 'authorizes for manage_devops_adoption' do
     expect(::Ability).to receive(:allowed?)
-                           .with(current_user, :manage_devops_adoption_namespaces, group)
-                           .at_least(1)
-                           .and_return(true)
+      .with(current_user, :manage_devops_adoption_namespaces, group)
+      .at_least(1)
+      .and_return(true)
 
     expect(::Ability).to receive(:allowed?)
-                           .with(current_user, :manage_devops_adoption_namespaces, display_group)
-                           .at_least(1)
-                           .and_return(true)
+      .with(current_user, :manage_devops_adoption_namespaces, display_group)
+      .at_least(1)
+      .and_return(true)
 
     response
   end

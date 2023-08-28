@@ -25,10 +25,12 @@ RSpec.describe Boards::Issues::CreateService, feature_category: :team_planning d
         project.add_developer(board_assignee)
         board_milestone = create(:milestone, project: project)
         board_label = create(:label, project: project)
-        board.update!(assignee: board_assignee,
-                      milestone: board_milestone,
-                      label_ids: [board_label.id],
-                      weight: 4)
+        board.update!(
+          assignee: board_assignee,
+          milestone: board_milestone,
+          label_ids: [board_label.id],
+          weight: 4
+        )
 
         result = service.execute
         issue = result[:issue]

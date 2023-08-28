@@ -75,9 +75,11 @@ RSpec.describe Boards::Issues::ListService, services: true, feature_category: :t
 
             issues = described_class.new(parent, user, params).execute
 
-            expect(issues).to contain_exactly(opened_issue1, # milestone from this issue is not in a list
-                                              opened_issue2, # milestone from this issue is not in a list
-                                              reopened_issue1) # has no milestone
+            expect(issues).to contain_exactly(
+              opened_issue1, # milestone from this issue is not in a list
+              opened_issue2, # milestone from this issue is not in a list
+              reopened_issue1 # has no milestone
+            )
           end
         end
       end

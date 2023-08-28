@@ -92,17 +92,19 @@ RSpec.describe Analytics::CycleAnalytics::AggregatorService do
       let!(:issue2) { create(:issue, project: project, closed_at: Time.current) }
 
       before do
-        create(:cycle_analytics_stage,
-               namespace: group,
-               start_event_identifier: :merge_request_created,
-               end_event_identifier: :merge_request_merged
-              )
+        create(
+          :cycle_analytics_stage,
+          namespace: group,
+          start_event_identifier: :merge_request_created,
+          end_event_identifier: :merge_request_merged
+        )
 
-        create(:cycle_analytics_stage,
-               namespace: group,
-               start_event_identifier: :issue_created,
-               end_event_identifier: :issue_closed
-              )
+        create(
+          :cycle_analytics_stage,
+          namespace: group,
+          start_event_identifier: :issue_created,
+          end_event_identifier: :issue_closed
+        )
       end
 
       it 'updates the aggregation record with record count and the last cursor' do
@@ -126,11 +128,12 @@ RSpec.describe Analytics::CycleAnalytics::AggregatorService do
       let!(:merge_request_2) { create(:merge_request, :with_merged_metrics, :unique_branches, project: project) }
 
       before do
-        create(:cycle_analytics_stage,
-               namespace: group,
-               start_event_identifier: :merge_request_created,
-               end_event_identifier: :merge_request_merged
-              )
+        create(
+          :cycle_analytics_stage,
+          namespace: group,
+          start_event_identifier: :merge_request_created,
+          end_event_identifier: :merge_request_merged
+        )
 
         stub_const('Analytics::CycleAnalytics::DataLoaderService::MAX_UPSERT_COUNT', 1)
         stub_const('Analytics::CycleAnalytics::DataLoaderService::UPSERT_LIMIT', 1)

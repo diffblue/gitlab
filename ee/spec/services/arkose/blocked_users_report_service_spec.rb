@@ -30,19 +30,27 @@ RSpec.describe Arkose::BlockedUsersReportService do
       let(:blocked_at) { DateTime.now - 1.day }
 
       let!(:user_custom_attributes) do
-        user.custom_attributes.create! key: 'blocked_at',
-                                       value: blocked_at, created_at: DateTime.now - 1.day,
-                                       updated_at: DateTime.now - 1.day
+        user.custom_attributes.create!(
+          key: 'blocked_at',
+          value: blocked_at, created_at: DateTime.now - 1.day,
+          updated_at: DateTime.now - 1.day
+        )
 
-        user.custom_attributes.create! key: 'arkose_session',
-                                       value: '22612c147bb418c8.2570749403'
+        user.custom_attributes.create!(
+          key: 'arkose_session',
+          value: '22612c147bb418c8.2570749403'
+        )
       end
 
       let(:non_legit_url) { Arkose::BlockedUsersReportService::NON_LEGIT_URL }
 
       it 'sends the list of blocked users to Arkose' do
-        allow(Gitlab::HTTP).to receive(:perform_request).with(Net::HTTP::Post, non_legit_url,
-                                                              body: arkose_body).and_return(response)
+        allow(Gitlab::HTTP).to receive(:perform_request).with(
+          Net::HTTP::Post,
+          non_legit_url,
+          body: arkose_body
+        ).and_return(response)
+
         expect(subject).to be_truthy
       end
     end
@@ -59,10 +67,12 @@ RSpec.describe Arkose::BlockedUsersReportService do
       let(:blocked_user_without_arkose_session) { create(:user) }
       let(:blocked_at) { DateTime.now - 1.day }
       let!(:user_custom_attributes) do
-        blocked_user_without_arkose_session.custom_attributes.create! key: 'blocked_at',
-                                                                      value: blocked_at,
-                                                                      created_at: DateTime.now - 1.day,
-                                                                      updated_at: DateTime.now - 1.day
+        blocked_user_without_arkose_session.custom_attributes.create!(
+          key: 'blocked_at',
+          value: blocked_at,
+          created_at: DateTime.now - 1.day,
+          updated_at: DateTime.now - 1.day
+        )
       end
 
       it 'does not sends the list of blocked users to Arkose' do

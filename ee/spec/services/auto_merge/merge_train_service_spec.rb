@@ -84,9 +84,10 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
       end
 
       it 'tracks the exception' do
-        expect(Gitlab::ErrorTracking)
-          .to receive(:track_exception).with(kind_of(PG::QueryCanceled),
-                                             merge_request_id: merge_request.id)
+        expect(Gitlab::ErrorTracking).to receive(:track_exception).with(
+          kind_of(PG::QueryCanceled),
+          merge_request_id: merge_request.id
+        )
 
         subject
       end
@@ -238,9 +239,10 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
       end
 
       it 'tracks the exception' do
-        expect(Gitlab::ErrorTracking)
-          .to receive(:track_exception).with(kind_of(PG::QueryCanceled),
-                                             merge_request_id: merge_request.id)
+        expect(Gitlab::ErrorTracking).to receive(:track_exception).with(
+          kind_of(PG::QueryCanceled),
+          merge_request_id: merge_request.id
+        )
 
         subject
       end
@@ -324,9 +326,10 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
       end
 
       it 'tracks the exception' do
-        expect(Gitlab::ErrorTracking)
-          .to receive(:track_exception).with(kind_of(PG::QueryCanceled),
-                                             merge_request_id: merge_request.id)
+        expect(Gitlab::ErrorTracking).to receive(:track_exception).with(
+          kind_of(PG::QueryCanceled),
+          merge_request_id: merge_request.id
+        )
 
         subject
       end

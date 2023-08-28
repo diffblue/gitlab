@@ -53,23 +53,25 @@ RSpec.describe AuditEvents::ProtectedBranchAuditEventService, :request_store do
 
           service.execute
 
-          expect(logger).to have_received(:info).with(hash_including(
-                                                        'author_id' => author.id,
-                                                        'author_name' => author.name,
-                                                        'entity_id' => entity.id,
-                                                        'entity_type' => 'Project',
-                                                        'entity_path' => entity.full_path,
-                                                        'allow_force_push' => true,
-                                                        'code_owner_approval_required' => true,
-                                                        'merge_access_levels' => [merge_level],
-                                                        'push_access_levels' => [push_level],
-                                                        'target_details' => protected_branch.name,
-                                                        'target_id' => protected_branch.id,
-                                                        'target_type' => 'ProtectedBranch',
-                                                        'custom_message' => action == :add ? /Added/ : /Unprotected/,
-                                                        'ip_address' => ip_address,
-                                                        'created_at' => anything)
-                                                     )
+          expect(logger).to have_received(:info).with(
+            hash_including(
+              'author_id' => author.id,
+              'author_name' => author.name,
+              'entity_id' => entity.id,
+              'entity_type' => 'Project',
+              'entity_path' => entity.full_path,
+              'allow_force_push' => true,
+              'code_owner_approval_required' => true,
+              'merge_access_levels' => [merge_level],
+              'push_access_levels' => [push_level],
+              'target_details' => protected_branch.name,
+              'target_id' => protected_branch.id,
+              'target_type' => 'ProtectedBranch',
+              'custom_message' => action == :add ? /Added/ : /Unprotected/,
+              'ip_address' => ip_address,
+              'created_at' => anything
+            )
+          )
         end
 
         it_behaves_like 'sends correct event type in audit event stream' do
@@ -87,9 +89,11 @@ RSpec.describe AuditEvents::ProtectedBranchAuditEventService, :request_store do
       let(:service) { described_class.new(author, protected_branch, :add) }
 
       before do
-        stub_licensed_features(audit_events: false,
-                               extended_audit_events: false,
-                               admin_audit_log: false)
+        stub_licensed_features(
+          audit_events: false,
+          extended_audit_events: false,
+          admin_audit_log: false
+        )
       end
 
       it "doesn't create an event or log to a file", :aggregate_failures do

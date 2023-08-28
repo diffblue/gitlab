@@ -193,6 +193,12 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
     it_behaves_like 'forwarding the request correctly'
   end
 
+  describe '#text_embeddings' do
+    subject(:response) { client.text_embeddings(content: 'anything', **options) }
+
+    it_behaves_like 'forwarding the request correctly'
+  end
+
   describe '#request' do
     let(:url) { 'https://example.com/api' }
     let(:config) do
