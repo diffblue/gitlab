@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require './ee/db/seeds/shared/dora_metrics'
+require_relative '../../../../db/seeds/shared/dora_metrics'
 
 module Quality
   module Seeders
