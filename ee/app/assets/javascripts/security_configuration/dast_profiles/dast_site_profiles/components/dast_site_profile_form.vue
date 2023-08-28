@@ -28,6 +28,7 @@ import {
   TARGET_TYPES,
   SCAN_METHODS,
   DAST_PROXY_DOC_PATH_BASE,
+  I18N_DAST_URL_CHANGE_WARNING,
 } from '../constants';
 import dastSiteProfileCreateMutation from '../graphql/dast_site_profile_create.mutation.graphql';
 import dastSiteProfileUpdateMutation from '../graphql/dast_site_profile_update.mutation.graphql';
@@ -70,6 +71,9 @@ export default {
     disabledProfileName: s__('DastProfiles|Profile in use and cannot be renamed'),
     dastApiDocsGraphQlHelpText: s__(
       'DastProfiles|Must allow introspection queries to request the API schema. %{linkStart}How do I enable introspection%{linkEnd}?',
+    ),
+    dastUrlChangeWarningText: s__(
+      'DastProfiles|Modifying the URL will clear any previously entered values for the additional request headers and password fields.',
     ),
   },
   name: 'DastSiteProfileForm',
@@ -214,6 +218,9 @@ export default {
         ...(this.isTargetAPI && { scanMethod, scanFilePath }),
       };
     },
+    showWarningTextForTargetUrl() {
+      return this.isEdit && this.form.fields.targetUrl.value !== this.profile.targetUrl;
+    },
   },
   methods: {
     getCharacterLimitText(value, limit) {
@@ -226,6 +233,7 @@ export default {
   },
   MAX_CHAR_LIMIT_EXCLUDED_URLS,
   MAX_CHAR_LIMIT_REQUEST_HEADERS,
+  I18N_DAST_URL_CHANGE_WARNING,
 };
 </script>
 
@@ -300,6 +308,9 @@ export default {
           type="url"
           :state="form.fields.targetUrl.state"
         />
+        <gl-form-text v-if="showWarningTextForTargetUrl">{{
+          $options.I18N_DAST_URL_CHANGE_WARNING
+        }}</gl-form-text>
       </gl-form-group>
 
       <gl-form-group
