@@ -1,0 +1,76 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "serialNumber": "urn:uuid:aec33827-20ae-40d0-ae83-18ee846364d2",
+  "version": 1,
+  "metadata": {
+    "tools": [
+      {
+        "vendor": "Gitlab",
+        "name": "Gemnasium",
+        "version": "2.34.0"
+      }
+    ],
+    "authors": [
+      {
+        "name": "Gitlab",
+        "email": "support@gitlab.com"
+      }
+    ],
+    "properties": [
+      {
+        "name": "gitlab:dependency_scanning:input_file",
+        "value": "package-lock.json"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "com.fasterxml.jackson.core/jackson-annotations",
+      "version": "2.9.0",
+      "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.9.0",
+      "type": "library",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT",
+            "url": "https://spdx.org/licenses/MIT.html"
+          }
+        }
+      ]
+    },
+    {
+      "name": "com.fasterxml.jackson.core/jackson-core",
+      "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-core@2.9.2",
+      "version": "2.9.2",
+      "type": "library",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT",
+            "url": "https://spdx.org/licenses/MIT.html"
+          }
+        },
+        {
+          "license": {
+            "id": "BSD-3-Clause",
+            "url": "https://spdx.org/licenses/BSD-3-Clause.html"
+          }
+        }
+      ]
+    },
+    {
+      "name": "com.fasterxml.jackson.core/jackson-invalid",
+      "version": "2.9.0",
+      "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-invalid@2.9.0",
+      "type": "library",
+      "licenses": [
+        {
+          "license": {
+            "name": "unknown"
+          }
+        }
+      ]
+    }
+  ]
+}
