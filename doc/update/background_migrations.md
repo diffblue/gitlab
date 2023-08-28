@@ -67,7 +67,7 @@ Prerequisites:
 
 To check the status of batched background migrations:
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select **Admin Area**.
 1. Select **Monitoring > Background Migrations**.
 1. Select **Queued** or **Finalizing** to see incomplete migrations,
@@ -209,7 +209,7 @@ Prerequisites:
 
 - You must have administrator access to the instance.
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select **Admin Area**.
 1. Select **Monitoring > Background Migrations**.
 1. Select the **Failed** tab. This displays a list of failed batched background migrations.
@@ -225,7 +225,7 @@ Prerequisites:
 
 - You must have administrator access to the instance.
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select **Admin Area**.
 1. Select **Monitoring > Background Migrations**.
 1. Select the **Failed** tab. This displays a list of failed batched background migrations.

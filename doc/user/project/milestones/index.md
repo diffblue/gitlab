@@ -66,7 +66,7 @@ You might not see some milestones because they're in projects or groups you're n
 
 To do so:
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select **Your work**.
 1. On the left sidebar, select **Milestones**.
 

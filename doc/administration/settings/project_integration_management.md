@@ -22,7 +22,7 @@ is proposed in [epic 2137](https://gitlab.com/groups/gitlab-org/-/epics/2137).
 
 To manage instance-level default settings for a project integration:
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select **Admin Area**.
 1. Select **Settings > Integrations**.
 1. Select an integration.
@@ -60,7 +60,7 @@ is proposed in [epic 2137](https://gitlab.com/groups/gitlab-org/-/epics/2137).
 
 To remove an instance-level default setting:
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select **Admin Area**.
 1. Select **Settings > Integrations**.
 1. Select an integration.
@@ -74,7 +74,7 @@ Resetting an instance-level default setting removes the integration from all pro
 
 To view projects in your instance that [use custom settings](#use-custom-settings-for-a-project-or-group-integration):
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select **Admin Area**.
 1. Select **Settings > Integrations**.
 1. Select an integration.

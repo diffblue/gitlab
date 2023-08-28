@@ -48,7 +48,7 @@ When you create a runner, it is assigned an authentication token that you use to
 
 To create a shared runner:
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select **Admin Area**.
 1. On the left sidebar, select **CI/CD > Runners**.
 1. Select **New instance runner**.
@@ -75,7 +75,7 @@ Prerequisite:
 
 To create a shared runner:
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select **Admin Area**.
 1. Select **CI/CD > Runners**.
 1. Select **Register an instance runner**.
@@ -90,7 +90,7 @@ Prerequisite:
 
 You can pause a runner so that it does not accept jobs from groups and projects in the GitLab instance.
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select **Admin Area**.
 1. Select **CI/CD > Runners**.
 1. In the search box, enter the runner description or filter the runner list.
@@ -110,7 +110,7 @@ jobs, you can [pause](#pause-or-resume-a-shared-runner) the runner instead.
 
 To delete a single or multiple shared runners:
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select **Admin Area**.
 1. Select **CI/CD > Runners**.
 1. In the search box, enter the runner description or filter the list of runners.
@@ -553,7 +553,7 @@ runners are considered.
 queued for longer than the median value, and half of the jobs queued for less than the
 median value.
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select **Admin Area**.
 1. On the left sidebar, select **CI/CD > Runners**.
 1. Select **View metrics**.
@@ -572,7 +572,7 @@ To determine which runners need to be upgraded:
      1. On the left sidebar, at the top, select **Search GitLab** (**{search}**) to find your group.
      1. Select **Build > Runners**.
    - For the instance:
-     1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+     1. On the left sidebar, select **Search or go to**.
      1. Select **Admin Area**.
      1. Select **CI/CD > Runners**.
 
@@ -602,7 +602,7 @@ Prerequisite:
 
 To determine the IP address of a shared runner:
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select **Admin Area**.
 1. On the left sidebar, select **CI/CD > Runners**.
 1. Find the runner in the table and view the **IP Address** column.

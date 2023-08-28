@@ -194,8 +194,8 @@ Prerequisites:
 - To unarchive a project, you must be an administrator or a project Owner.
 
 1. Find the archived project.
-   1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
-   1. Select **View all your projects**.
+   1. On the left sidebar, select **Search or go to**.
+   1. Select **View all my projects**.
    1. Select **Explore projects**.
    1. In the **Sort projects** dropdown list, select **Show archived projects**.
    1. In the **Filter by name** field, enter the project name.

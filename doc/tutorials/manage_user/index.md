@@ -79,8 +79,8 @@ You will now create subgroups to reflect this organization structure.
 
 > Subgroups and projects must have visibility settings that are at least as restrictive as the visibility setting of their parent group. For example, you cannot have a private parent group and a public subgroup.
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
-1. Select **View all your groups**.
+1. On the left sidebar, select **Search or go to**.
+1. Select **View all my groups**.
 1. Select **Development**. You should see an **Owner** label next to the group
    name as you have the Owner role.
 1. On the parent group's overview page, in the upper-right corner, select **New subgroup**.
@@ -106,7 +106,7 @@ for the organization.
 You will now manually create the users for your organization. These are test
 users. To create the first test user, Alex Smith:
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select **Admin Area**.
 1. On the left sidebar, select **Overview > Users**.
 1. Select **New user**.

@@ -49,14 +49,14 @@ the immediate parent group.
 
 To explore all public groups:
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
-1. Select **View all your groups**.
+1. On the left sidebar, select **Search or go to**.
+1. Select **View all my groups**.
 1. At the top right, select **Explore groups**.
 
 To view groups where you have a direct or indirect membership:
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
-1. Select **View all your groups**.
+1. On the left sidebar, select **Search or go to**.
+1. Select **View all my groups**.
 
 This page shows groups that you are a member of:
 
@@ -115,8 +115,8 @@ To remove a group and its contents:
 
 A group can also be removed from the groups dashboard:
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
-1. Select **View all your groups**.
+1. On the left sidebar, select **Search or go to**.
+1. Select **View all my groups**.
 1. Select (**{ellipsis_v}**) for the group you want to delete.
 1. Select **Delete**.
 1. In the Remove group section, select **Remove group**.
@@ -167,8 +167,8 @@ To restore a group that is marked for deletion:
 
 As a user, you can request to be a member of a group, if an administrator allows it.
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
-1. Select **View all your groups**.
+1. On the left sidebar, select **Search or go to**.
+1. Select **View all my groups**.
 1. At the top right side, select **Explore groups**.
 1. Under the group name, select **Request Access**.
 

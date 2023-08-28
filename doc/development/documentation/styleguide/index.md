@@ -1020,14 +1020,14 @@ To create a group:
 To open the Admin Area:
 
 ```markdown
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select **Admin Area**.
 ```
 
 To open the **Your work** menu item:
 
 ```markdown
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select **Your work**.
 ```
 
@@ -1049,15 +1049,15 @@ To save the selection in some dropdown lists:
 To view all your projects:
 
 ```markdown
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
-1. Select **View all your projects**.
+1. On the left sidebar, select **Search or go to**.
+1. Select **View all my projects**.
 ```
 
 To view all your groups:
 
 ```markdown
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
-1. Select **View all your groups**.
+1. On the left sidebar, select **Search or go to**.
+1. Select **View all my groups**.
 ```
 
 ### Optional steps

@@ -146,7 +146,7 @@ Linux package installations store the repositories in a `repositories` subdirect
 After you [configure](#configure-repository-storage-paths) multiple repository storage paths, you
 can choose where new repositories are stored:
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select **Admin Area**.
 1. On the left sidebar, select **Settings > Repository** and expand the **Repository storage**
    section.

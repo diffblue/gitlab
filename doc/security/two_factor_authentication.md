@@ -29,7 +29,7 @@ You can use the UI or the API to enforce 2FA for all users.
 
 ### Use the UI
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select **Admin Area**.
 1. On the left sidebar, select **Settings > General**.
 1. Expand the **Sign-in restrictions** section:

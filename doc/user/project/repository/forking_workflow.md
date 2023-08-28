@@ -59,8 +59,8 @@ or the command line. GitLab Premium and Ultimate tiers can also automate updates
 
 To update your fork from the GitLab UI:
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
-1. Select **View all your projects**.
+1. On the left sidebar, select **Search or go to**.
+1. Select **View all my projects**.
 1. Select the fork you want to update.
 1. Below the dropdown list for branch name, find the **Forked from** (**{fork}**)
    information box to determine if your fork is ahead, behind, or both. In this example,

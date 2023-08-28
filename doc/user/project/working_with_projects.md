@@ -13,7 +13,7 @@ code are saved in projects, and most features are in the scope of projects.
 
 To view all projects for the GitLab instance:
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select **Explore**.
 
 On the left sidebar, **Projects** is selected. On the right, the list shows
@@ -25,7 +25,7 @@ If you are not authenticated, then the list shows public projects only.
 
 To view projects you are a member of:
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select **Your work**.
 
 On the left sidebar, **Projects** is selected. On the list, on the **Yours** tab,
@@ -68,7 +68,7 @@ Do not include sensitive information in the name of a topic.
 
 To explore project topics:
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select **Explore**.
 1. On the left sidebar, select **Topics**.
 1. To view projects associated with a topic, select a topic.
@@ -160,8 +160,8 @@ To delete a project:
 
 To view a list of all projects that are pending deletion:
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
-1. Select **View all your projects**.
+1. On the left sidebar, select **Search or go to**.
+1. Select **View all my projects**.
 1. Based on your GitLab version:
    - GitLab 14.6 and later: select the **Pending deletion** tab.
    - GitLab 14.5 and earlier: select the **Deleted projects** tab.
@@ -214,7 +214,7 @@ You can also choose to hide or show archived projects.
 
 You can filter projects by the programming language they use. To do this:
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select either:
    - **View all your projects**, to filter your projects.
    - **Explore**, to filter all projects you can access.
