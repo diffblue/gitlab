@@ -68,6 +68,10 @@ module Gitlab
               (name && other.name && name.casecmp?(other.name))
           end
 
+          def self.unknown?(license)
+            license.name == Gitlab::LicenseScanning::PackageLicenses::UNKNOWN_LICENSE
+          end
+
           def self.spdx_url(id, url = nil)
             return url unless url.blank?
             return unless id
