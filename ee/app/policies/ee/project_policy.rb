@@ -197,6 +197,7 @@ module EE
 
       condition(:user_banned_from_namespace) do
         next unless @user.is_a?(User)
+        next if @user.can_admin_all_resources?
 
         root_namespace = @subject.root_ancestor
         next unless root_namespace.group_namespace? && root_namespace.unique_project_download_limit_enabled?
@@ -521,9 +522,7 @@ module EE
 
       rule { ~admin & owner & owner_cannot_destroy_project }.prevent :remove_project
 
-      rule { ~admin & user_banned_from_namespace }.policy do
-        prevent :read_project
-      end
+      rule { user_banned_from_namespace }.prevent_all
 
       with_scope :subject
       condition(:needs_new_sso_session) do

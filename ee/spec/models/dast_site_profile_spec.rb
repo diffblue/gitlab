@@ -547,6 +547,7 @@ RSpec.describe DastSiteProfile, :dynamic_analysis,
       context 'when user can read secrets' do
         before do
           stub_licensed_features(security_on_demand_scans: true)
+          allow(Ability).to receive(:allowed?).and_call_original
         end
 
         it 'works with policy' do
