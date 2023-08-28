@@ -54,8 +54,10 @@ RSpec.describe AuditEvents::Streaming::EventTypeFilters::DestroyService, feature
 
       context 'when destination is group level destination' do
         let_it_be(:event_type_filter) do
-          create(:audit_events_streaming_event_type_filter,
-                 external_audit_event_destination: destination)
+          create(
+            :audit_events_streaming_event_type_filter,
+            external_audit_event_destination: destination
+          )
         end
 
         it_behaves_like 'destroys event type filter' do
@@ -66,8 +68,10 @@ RSpec.describe AuditEvents::Streaming::EventTypeFilters::DestroyService, feature
       context 'when destination is instance level destination' do
         let_it_be(:destination) { create(:instance_external_audit_event_destination) }
         let_it_be(:event_type_filter) do
-          create(:audit_events_streaming_instance_event_type_filter,
-                 instance_external_audit_event_destination: destination)
+          create(
+            :audit_events_streaming_instance_event_type_filter,
+            instance_external_audit_event_destination: destination
+          )
         end
 
         it_behaves_like 'destroys event type filter' do
