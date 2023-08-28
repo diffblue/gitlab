@@ -334,10 +334,27 @@ RSpec.describe ApprovalWrappedRule, feature_category: :code_review_workflow do
     end
 
     context 'with report_type other than scan_finding' do
-      let(:report_type) { :license_scanning }
+      let(:report_type) { :code_coverage }
 
       it 'returns rule name as is' do
         expect(approval_wrapped_rule.name).to eq(rule_name)
+      end
+    end
+
+    context 'with report_type set to license_scanning' do
+      let(:report_type) { :license_scanning }
+      let(:expected_rule_name) { 'approval rule' }
+
+      let(:rule) do
+        create(:approval_merge_request_rule,
+          report_type: report_type,
+          scan_result_policy_read: create(:scan_result_policy_read),
+          name: rule_name)
+      end
+
+      it 'returns rule name without the sequential notation' do
+        expect(approval_wrapped_rule.name).not_to eq(rule_name)
+        expect(approval_wrapped_rule.name).to eq(expected_rule_name)
       end
     end
   end

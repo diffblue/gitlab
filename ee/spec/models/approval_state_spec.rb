@@ -211,6 +211,24 @@ RSpec.describe ApprovalState do
       end
     end
 
+    context 'with scan_finding and license_scanning rules together' do
+      before do
+        create_rule({ rule_type: :report_approver, report_type: :scan_finding })
+        create_rule({
+          rule_type: :report_approver,
+          report_type: :license_scanning,
+          scan_result_policy_read: create(:scan_result_policy_read)
+        })
+      end
+
+      it 'returns one rule' do
+        approval_rules = subject.wrapped_approval_rules
+
+        expect(approval_rules.count).to be(1)
+        expect(approval_rules).to all(be_instance_of(ApprovalWrappedRule))
+      end
+    end
+
     describe '#approval_needed?' do
       context 'when feature not available' do
         it 'returns false' do
