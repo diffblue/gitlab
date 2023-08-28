@@ -4,6 +4,8 @@ module EE
   module DraftNotes
     module PublishService
       def after_publish(review)
+        return unless review.notes.count > 1
+
         Llm::SummarizeSubmittedReviewService
           .new(
             current_user,
