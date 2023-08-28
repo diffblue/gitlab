@@ -9,7 +9,7 @@ module API
     helpers ::API::Helpers::AiProxyHelper
     helpers ::API::Helpers::GlobalIds
 
-    PROJECT_CODE_SUGGESTIONS_ADD_ON_CACHE_KEY = 'project-%{project_id}-code-suggestions-add-on-cache'
+    USER_CODE_SUGGESTIONS_ADD_ON_CACHE_KEY = 'user-%{user_id}-code-suggestions-add-on-cache'
 
     before do
       authenticate!
@@ -23,14 +23,11 @@ module API
         current_user.can?(:access_code_suggestions) && access_code_suggestions_when_proxied_to_saas?
       end
 
-      def active_code_suggestions_purchase?(project_id)
+      def active_code_suggestions_purchase?
         return true unless ::Feature.enabled?(:purchase_code_suggestions)
-        return false unless project_id
 
-        cache_key = format(PROJECT_CODE_SUGGESTIONS_ADD_ON_CACHE_KEY, project_id: project_id)
-        Rails.cache.fetch(cache_key, expires_in: 1.hour) do
-          ::GitlabSubscriptions::AddOnPurchase.for_project(project_id).for_code_suggestions.active.any?
-        end
+        cache_key = format(USER_CODE_SUGGESTIONS_ADD_ON_CACHE_KEY, user_id: current_user.id)
+        Rails.cache.fetch(cache_key, expires_in: 1.hour) { current_user.code_suggestions_add_on_available? }
       end
 
       def model_gateway_headers(headers, gateway_token)
@@ -114,7 +111,7 @@ module API
         post do
           if Gitlab.org_or_com?
             forbidden! unless ::Feature.enabled?(:code_suggestions_completion_api, current_user)
-            not_found! unless active_code_suggestions_purchase?(params['project_id'])
+            not_found! unless active_code_suggestions_purchase?
 
             token = Gitlab::CodeSuggestions::AccessToken.new(
               current_user,

@@ -186,7 +186,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       {
         prompt_version: 1,
         project_path: "gitlab-org/gitlab-shell",
-        project_id: 33191677,
+        project_id: 33191677, # not removed given we still might get it but we will not use it
         current_file: {
           file_name: "test.py",
           content_above_cursor: "def is_even(n: int) ->",
@@ -328,20 +328,16 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
         end
       end
 
-      context 'when project does not have active code suggestions purchase' do
+      context 'when user does not have active code suggestions purchase' do
         let(:current_user) { create(:user) }
 
         include_examples 'a not found response'
       end
 
-      context 'when project has active code suggestions purchase' do
-        let_it_be(:project) { create(:project) }
-        let_it_be(:code_suggestions_add_on) { create(:gitlab_subscription_add_on) }
-
-        let(:body) { super().merge!(project_id: project.id) }
-
+      context 'when user has active code suggestions purchase' do
         before do
-          create(:gitlab_subscription_add_on_purchase, add_on: code_suggestions_add_on, namespace: project.namespace)
+          add_on_purchase = create(:gitlab_subscription_add_on_purchase)
+          add_on_purchase.namespace.add_reporter(current_user)
         end
 
         context 'when the task is code generation' do

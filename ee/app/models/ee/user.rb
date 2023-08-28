@@ -592,6 +592,20 @@ module EE
       groups.roots.joins(:namespace_settings).where(namespace_settings: { code_suggestions: false }).any?
     end
 
+    def code_suggestions_add_on_available?
+      GitlabSubscriptions::AddOnPurchase.for_user(self).for_code_suggestions.active.any?
+    end
+
+    def billable_code_suggestions_root_group_ids
+      group_ids_from_project_authorizaton = ::Project.where(id: project_authorizations.non_guests.select(:project_id)).pluck(:namespace_id)
+      group_ids_from_memberships = ::GroupMember.with_user(self).active.non_guests.pluck(:source_id)
+      group_ids_from_linked_groups = ::GroupGroupLink.non_guests.where(shared_with_group_id: group_ids_from_memberships).pluck(:shared_group_id)
+
+      ::Group.where(
+        id: group_ids_from_project_authorizaton | group_ids_from_memberships | group_ids_from_linked_groups
+      ).pluck(Arel.sql('traversal_ids[1]')).uniq
+    end
+
     def any_group_with_ai_available?
       Rails.cache.fetch(['users', id, 'group_with_ai_enabled'], expires_in: GROUP_WITH_AI_ENABLED_CACHE_PERIOD) do
         member_namespaces.namespace_settings_with_ai_enabled.with_ai_supported_plan.any?

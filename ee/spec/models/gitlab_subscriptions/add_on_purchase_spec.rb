@@ -45,20 +45,38 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
     shared_context 'with add-on purchases' do
       let_it_be(:code_suggestions_add_on) { create(:gitlab_subscription_add_on) }
 
-      let_it_be(:code_suggestion_expired_purchase) do
+      let_it_be(:expired_code_suggestion_purchase_as_owner) do
         create(:gitlab_subscription_add_on_purchase, expires_on: 1.day.ago, add_on: code_suggestions_add_on)
       end
 
-      let_it_be(:code_suggestion_active_purchase) do
+      let_it_be(:active_code_suggestion_purchase_as_guest) do
         create(:gitlab_subscription_add_on_purchase, add_on: code_suggestions_add_on)
       end
 
-      let_it_be(:code_suggestion_active_purchase_for_project) do
+      let_it_be(:active_code_suggestion_purchase_as_reporter) do
         create(:gitlab_subscription_add_on_purchase, add_on: code_suggestions_add_on)
       end
 
-      let_it_be(:project) do
-        create(:project, group: code_suggestion_active_purchase_for_project.namespace)
+      let_it_be(:active_code_suggestion_purchase_as_developer) do
+        create(:gitlab_subscription_add_on_purchase, add_on: code_suggestions_add_on)
+      end
+
+      let_it_be(:active_code_suggestion_purchase_as_maintainer) do
+        create(:gitlab_subscription_add_on_purchase, add_on: code_suggestions_add_on)
+      end
+
+      let_it_be(:active_code_suggestion_purchase_unrelated) do
+        create(:gitlab_subscription_add_on_purchase, add_on: code_suggestions_add_on)
+      end
+
+      let_it_be(:user) { create(:user) }
+
+      before do
+        expired_code_suggestion_purchase_as_owner.namespace.add_owner(user)
+        active_code_suggestion_purchase_as_guest.namespace.add_guest(user)
+        active_code_suggestion_purchase_as_reporter.namespace.add_reporter(user)
+        active_code_suggestion_purchase_as_developer.namespace.add_developer(user)
+        active_code_suggestion_purchase_as_maintainer.namespace.add_maintainer(user)
       end
     end
 
@@ -69,20 +87,40 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
 
       it 'returns all the purchases that are not expired' do
         expect(active_purchases).to match_array(
-          [code_suggestion_active_purchase, code_suggestion_active_purchase_for_project]
+          [
+            active_code_suggestion_purchase_as_guest, active_code_suggestion_purchase_as_reporter,
+            active_code_suggestion_purchase_as_developer, active_code_suggestion_purchase_as_maintainer,
+            active_code_suggestion_purchase_unrelated
+          ]
         )
       end
     end
 
     describe '.by_add_on_name' do
+      subject(:by_name_purchases) { described_class.by_add_on_name(name) }
+
       include_context 'with add-on purchases'
 
-      it 'returns records filtered by namespace' do
-        expect(described_class.by_add_on_name('foo-bar')).to eq([])
-        expect(described_class.by_add_on_name('code_suggestions')).to match_array(
-          [code_suggestion_active_purchase, code_suggestion_active_purchase_for_project,
-            code_suggestion_expired_purchase]
-        )
+      context 'when name is: code_suggestions' do
+        let(:name) { 'code_suggestions' }
+
+        it 'returns all the purchases related to code_suggestions' do
+          expect(by_name_purchases).to match_array(
+            [
+              expired_code_suggestion_purchase_as_owner, active_code_suggestion_purchase_as_guest,
+              active_code_suggestion_purchase_as_reporter, active_code_suggestion_purchase_as_developer,
+              active_code_suggestion_purchase_as_maintainer, active_code_suggestion_purchase_unrelated
+            ]
+          )
+        end
+      end
+
+      context 'when name is set to anything else' do
+        let(:name) { 'foo-bar' }
+
+        it 'returns empty collection' do
+          expect(by_name_purchases).to eq([])
+        end
       end
     end
 
@@ -93,20 +131,26 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
 
       it 'returns all the purchases related to code_suggestions' do
         expect(code_suggestion_purchases).to match_array(
-          [code_suggestion_active_purchase, code_suggestion_active_purchase_for_project,
-            code_suggestion_expired_purchase]
+          [
+            expired_code_suggestion_purchase_as_owner, active_code_suggestion_purchase_as_guest,
+            active_code_suggestion_purchase_as_reporter, active_code_suggestion_purchase_as_developer,
+            active_code_suggestion_purchase_as_maintainer, active_code_suggestion_purchase_unrelated
+          ]
         )
       end
     end
 
-    describe '.for_project' do
-      subject(:project_purchases) { described_class.for_project(project.id) }
+    describe '.for_user' do
+      subject(:user_purchases) { described_class.for_user(user) }
 
       include_context 'with add-on purchases'
 
-      it 'returns all the purchases related to a project' do
-        expect(project_purchases).to match_array(
-          [code_suggestion_active_purchase_for_project]
+      it 'returns all the non-guest purchases related to the user top level namespaces' do
+        expect(user_purchases).to match_array(
+          [
+            expired_code_suggestion_purchase_as_owner, active_code_suggestion_purchase_as_reporter,
+            active_code_suggestion_purchase_as_developer, active_code_suggestion_purchase_as_maintainer
+          ]
         )
       end
     end
