@@ -9,21 +9,20 @@ module Namespaces
 
       def cost_factor_for(project)
         if project.forked? && (project.root_ancestor.paid? || !project.private?)
-          forks_cost_factor(project.root_ancestor)
+          forks_cost_factor
         else
           FULL_COST
         end
       end
 
-      def inverted_cost_factor_for_forks(root_namespace)
-        FULL_COST - forks_cost_factor(root_namespace)
+      def inverted_cost_factor_for_forks
+        FULL_COST - forks_cost_factor
       end
 
       private
 
-      def forks_cost_factor(root_namespace)
-        if ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
-            ::Feature.enabled?(:namespace_storage_forks_cost_factor, root_namespace)
+      def forks_cost_factor
+        if ::Gitlab::CurrentSettings.should_check_namespace_plan?
           ::Gitlab::CurrentSettings.namespace_storage_forks_cost_factor
         else
           FULL_COST

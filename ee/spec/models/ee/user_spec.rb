@@ -2647,6 +2647,206 @@ RSpec.describe User, feature_category: :system_access do
     end
   end
 
+  describe '#code_suggestions_add_on_available?' do
+    using RSpec::Parameterized::TableSyntax
+
+    let_it_be(:code_suggestions_add_on) { create(:gitlab_subscription_add_on) }
+    let_it_be(:user) { create(:user) }
+
+    let_it_be(:expired_code_suggestion_purchase) do
+      create(:gitlab_subscription_add_on_purchase, expires_on: 1.day.ago, add_on: code_suggestions_add_on)
+    end
+
+    let_it_be_with_reload(:active_code_suggestion_purchase) do
+      create(:gitlab_subscription_add_on_purchase, add_on: code_suggestions_add_on)
+    end
+
+    subject { user.code_suggestions_add_on_available? }
+
+    context 'with code suggestion purchases' do
+      before do
+        expired_code_suggestion_purchase.namespace.add_owner(user)
+      end
+
+      context 'with an active purchase for a related group' do
+        where(:group_access_level, :result) do
+          :guest      | false
+          :reporter   | true
+          :developer  | true
+          :maintainer | true
+          :owner      | true
+        end
+
+        with_them do
+          before do
+            active_code_suggestion_purchase.namespace.add_member(user, group_access_level)
+          end
+
+          it { is_expected.to eq(result) }
+        end
+      end
+
+      context 'with an active purchase for a related project' do
+        let_it_be_with_reload(:project) { create(:project, group: active_code_suggestion_purchase.namespace) }
+
+        where(:project_access_level, :result) do
+          :guest      | false
+          :reporter   | true
+          :developer  | true
+          :maintainer | true
+          :owner      | true
+        end
+
+        with_them do
+          before do
+            project.add_member(user, project_access_level)
+          end
+
+          it { is_expected.to eq(result) }
+        end
+      end
+
+      context 'with an active purchase for a shared group' do
+        let_it_be(:invited_group) { create(:group) }
+        let_it_be(:invited_reporter) { invited_group.add_reporter(create(:user)).user }
+        let_it_be(:invited_guest) { invited_group.add_guest(create(:user)).user }
+
+        context 'with user invited member to project' do
+          let_it_be(:project) { create(:project, namespace: active_code_suggestion_purchase.namespace) }
+          let_it_be(:project_group_link) { create(:project_group_link, project: project, group: invited_group) }
+
+          where(:user, :result) do
+            ref(:invited_guest)    | false
+            ref(:invited_reporter) | true
+          end
+
+          with_them do
+            it { is_expected.to eq(result) }
+          end
+        end
+
+        context 'with user invited member to group' do
+          let_it_be(:group_group_link) do
+            create(:group_group_link, shared_group: active_code_suggestion_purchase.namespace, shared_with_group: invited_group)
+          end
+
+          where(:user, :result) do
+            ref(:invited_guest)    | false
+            ref(:invited_reporter) | true
+          end
+
+          with_them do
+            it { is_expected.to eq(result) }
+          end
+        end
+      end
+
+      context 'with all expired purchases' do
+        it { is_expected.to eq(false) }
+      end
+    end
+
+    context 'without code suggestion purchases for any of the groups or projects' do
+      it { is_expected.to eq(false) }
+    end
+  end
+
+  describe '#billable_code_suggestions_root_group_ids' do
+    using RSpec::Parameterized::TableSyntax
+
+    let_it_be(:user) { create(:user) }
+    let_it_be(:root_group) { create(:group) }
+    let_it_be(:sub_group) { create(:group, parent: root_group) }
+    let_it_be(:group_project) { create(:project, group: root_group) }
+    let_it_be(:sub_group_project) { create(:project, group: sub_group) }
+
+    subject { user.billable_code_suggestions_root_group_ids }
+
+    where(:access_level, :include_group) do
+      :guest      | false
+      :reporter   | true
+      :developer  | true
+      :maintainer | true
+      :owner      | true
+    end
+
+    with_them do
+      let(:result) { include_group ? [root_group.id] : [] }
+
+      context 'when the user is a member of the top level group' do
+        before do
+          root_group.add_member(user, access_level)
+        end
+
+        it { is_expected.to eq(result) }
+      end
+
+      context 'when the user is a member of a sub group of the top level group' do
+        before do
+          sub_group.add_member(user, access_level)
+        end
+
+        it { is_expected.to eq(result) }
+      end
+
+      context 'when the user is a member of a project within the top level group' do
+        before do
+          group_project.add_member(user, access_level)
+        end
+
+        it { is_expected.to eq(result) }
+      end
+
+      context 'when the user is a member of a project within a sub group of the top level group' do
+        before do
+          sub_group_project.add_member(user, access_level)
+        end
+
+        it { is_expected.to eq(result) }
+      end
+
+      context 'when the user is a member of an invited group' do
+        let_it_be(:invited_group) { create(:group) }
+
+        before do
+          invited_group.add_member(user, access_level)
+        end
+
+        where(:shared_group_access_level, :include_group_via_link) do
+          :guest      | false
+          :reporter   | true
+          :developer  | true
+          :maintainer | true
+          :owner      | true
+        end
+
+        context 'when the group is invited to a project' do
+          with_them do
+            let(:result) { include_group && include_group_via_link ? [root_group.id] : [] }
+
+            before do
+              create(:project_group_link, project: project, group: invited_group)
+            end
+
+            it { is_expected.to eq(result) }
+          end
+        end
+
+        context 'when the group is invited to a group' do
+          with_them do
+            let(:result) { include_group && include_group_via_link ? [root_group.id] : [] }
+
+            before do
+              create(:group_group_link, shared_group: group, shared_with_group: invited_group)
+            end
+
+            it { is_expected.to eq(result) }
+          end
+        end
+      end
+    end
+  end
+
   describe '#preloaded_member_roles_for_projects' do
     let_it_be(:project) { create(:project, :private, :in_group) }
     let_it_be(:user) { create(:user) }

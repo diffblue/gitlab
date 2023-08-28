@@ -29,7 +29,7 @@ module EE
       end
 
       def inverted_cost_factor_for_forks
-        ::Namespaces::Storage::CostFactor.inverted_cost_factor_for_forks(namespace)
+        ::Namespaces::Storage::CostFactor.inverted_cost_factor_for_forks
       end
 
       override :from_namespace_statistics
