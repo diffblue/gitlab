@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'layouts/application' do
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, :no_super_sidebar) }
 
   before do
     allow(view).to receive(:session).and_return({})

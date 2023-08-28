@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Group domain verification settings', :saas, feature_category: :system_access do
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, :no_super_sidebar) }
 
   let(:group) { create(:group) }
 

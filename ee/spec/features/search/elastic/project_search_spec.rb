@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, feature_category: :global_search do
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, :no_super_sidebar) }
 
   let(:project) { create(:project, :repository, :wiki_repo, namespace: user.namespace) }
 

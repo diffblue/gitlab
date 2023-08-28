@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Groups > Usage Quotas', :saas, feature_category: :consumables_cost_management do
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, :no_super_sidebar) }
 
   let(:group) { create(:group) }
   let!(:project) do

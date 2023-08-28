@@ -25,7 +25,7 @@ RSpec.describe Vulnerabilities::SecurityFinding::CreateMergeRequestService, '#ex
     )
   end
 
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, :no_super_sidebar) }
   let_it_be(:current_user) { user }
 
   subject do

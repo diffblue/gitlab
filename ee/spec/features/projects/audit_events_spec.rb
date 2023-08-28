@@ -6,8 +6,8 @@ RSpec.describe 'Projects > Audit Events', :js, feature_category: :audit_events d
   include Features::MembersHelpers
   include ListboxHelpers
 
-  let_it_be(:user) { create(:user) }
-  let_it_be(:pete) { create(:user, name: 'Pete') }
+  let_it_be(:user) { create(:user, :no_super_sidebar) }
+  let_it_be(:pete) { create(:user, :no_super_sidebar, name: 'Pete') }
   let_it_be_with_reload(:project) { create(:project, :repository, namespace: user.namespace) }
 
   before do

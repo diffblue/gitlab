@@ -6,7 +6,7 @@ RSpec.describe 'Groups > Audit Events', :js, feature_category: :audit_events do
   include Features::MembersHelpers
   include ListboxHelpers
 
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, :no_super_sidebar) }
   let_it_be(:alex) { create(:user, name: 'Alex') }
   let_it_be_with_reload(:group) { create(:group) }
 

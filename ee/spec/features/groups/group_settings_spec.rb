@@ -5,8 +5,8 @@ require 'spec_helper'
 RSpec.describe 'Edit group settings', feature_category: :groups_and_projects do
   include ListboxHelpers
 
-  let_it_be(:user) { create(:user) }
-  let_it_be(:developer) { create(:user) }
+  let_it_be(:user) { create(:user, :no_super_sidebar) }
+  let_it_be(:developer) { create(:user, :no_super_sidebar) }
   let_it_be(:group, refind: true) { create(:group, name: 'Foo bar', path: 'foo') }
 
   before_all do

@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Projects::Analytics::MergeRequestAnalyticsController, feature_category: :value_stream_management do
-  let_it_be(:current_user) { create(:user) }
+  let_it_be(:current_user) { create(:user, :no_super_sidebar) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:feature_name) { :project_merge_request_analytics }

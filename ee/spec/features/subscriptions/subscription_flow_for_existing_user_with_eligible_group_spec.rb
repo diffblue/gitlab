@@ -6,7 +6,7 @@ RSpec.describe 'Subscription flow for existing user with eligible group', :js, f
   include SaasRegistrationHelpers
   include SubscriptionPortalHelpers
 
-  let_it_be(:user) { create(:user) }.freeze
+  let_it_be(:user) { create(:user, :no_super_sidebar) }.freeze
   let_it_be(:group) { create(:group, name: 'Existing Group').tap { |g| g.add_owner(user) } }.freeze
   let_it_be(:plans_data) { billing_plans_data }.freeze
   let_it_be(:premium_plan) { plans_data.find { |plan_data| plan_data[:id] == 'premium-external-id' } }.freeze

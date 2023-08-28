@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Groups > Contribution Analytics', :js, feature_category: :value_stream_management do
-  let(:user) { create(:user) }
+  let(:user) { create(:user, :no_super_sidebar) }
   let(:group) { create(:group) }
   let(:empty_project) { create(:project, namespace: group) }
 

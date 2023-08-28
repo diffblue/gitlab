@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Multiple Issue Boards', :js, feature_category: :team_planning do
-  let!(:user) { create(:user) }
+  let!(:user) { create(:user, :no_super_sidebar) }
   let!(:group) { create(:group, :public) }
   let!(:planning) { create(:group_label, group: group, name: 'Planning') }
   let!(:board) { create(:board, group: group, name: 'Board1') }
