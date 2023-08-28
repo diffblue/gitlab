@@ -96,8 +96,12 @@ RSpec.describe Resolvers::Analytics::ContributionAnalytics::ContributionsResolve
     end
 
     context 'when clickhouse is the data source', :click_house do
+      include ClickHouseHelpers
+
       before do
         stub_feature_flags(clickhouse_data_collection: true)
+
+        insert_events_into_click_house
       end
 
       it_behaves_like 'contributions resolver'

@@ -763,6 +763,8 @@
       changes: *backend-patterns
     - <<: *if-merge-request
       changes: *backstage-patterns
+    - <<: *if-merge-request
+      changes: ["**/*click_house*"]
 
 .rails:rules:ee-and-foss-integration:predictive:
   rules:
@@ -1986,6 +1988,8 @@
       changes: *backend-patterns
     - <<: *if-default-refs
       changes: *backstage-patterns
+    - <<: *if-merge-request
+      changes: ["**/*click_house*"]
 
 .rails:rules:ee-and-foss-integration:
   rules:
