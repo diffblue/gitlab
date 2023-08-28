@@ -58,7 +58,7 @@ which you can customize to meet the specific needs of each project.
 
 To create a workspace:
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select **Your work**.
 1. Select **Workspaces**.
 1. Select **New workspace**.

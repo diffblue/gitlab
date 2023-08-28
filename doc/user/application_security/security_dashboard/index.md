@@ -142,7 +142,7 @@ The Security Center includes:
 
 To view the Security Center:
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select **Your work**.
 1. Select **Security > Security dashboard**.
 
@@ -150,7 +150,7 @@ To view the Security Center:
 
 To add projects to the Security Center:
 
-1. On the left sidebar, expand the top-most chevron (**{chevron-down}**).
+1. On the left sidebar, select **Search or go to**.
 1. Select **Your work**.
 1. Expand **Security**.
 1. Select **Settings**.
