@@ -52209,6 +52209,9 @@ msgstr ""
 msgid "VulnerabilityExport|Detected At"
 msgstr ""
 
+msgid "VulnerabilityExport|Full Path"
+msgstr ""
+
 msgid "VulnerabilityExport|Group Name"
 msgstr ""
 
