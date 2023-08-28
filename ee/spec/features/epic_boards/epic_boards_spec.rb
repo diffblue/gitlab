@@ -117,29 +117,39 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
       end
     end
 
-    it 'moving updates weight of both lists', :aggregate_failures,
-      quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/393939' do
-      expect(find_board_list(1)).to have_content(epic3.title)
-
-      page.within(find_board_list(1)) do
-        expect(find('[data-testid="board-list-header"] [data-testid="weight"]')).to have_content(issue_with_weight.weight)
+    context 'Apollo boards' do
+      before do
+        stub_feature_flags(apollo_boards: true)
+        visit_epic_boards_page
       end
 
-      page.within(find_board_list(2)) do
-        expect(find('[data-testid="board-list-header"] [data-testid="weight"]')).to have_content('0')
-      end
+      it 'moving updates epics count and weight of both lists', :aggregate_failures do
+        expect(find_board_list(1)).to have_content(epic3.title)
 
-      drag(list_from_index: 0, list_to_index: 1, to_index: 0)
-      wait_for_all_requests
+        page.within(find_board_list(1)) do
+          expect(find('[data-testid="board-list-header"] [data-testid="item-count"]')).to have_content('2')
+          expect(find('[data-testid="board-list-header"] [data-testid="weight"]')).to have_content(issue_with_weight.weight)
+        end
 
-      expect(find_board_list(1)).not_to have_content(epic3.title)
+        page.within(find_board_list(2)) do
+          expect(find('[data-testid="board-list-header"] [data-testid="item-count"]')).to have_content('1')
+          expect(find('[data-testid="board-list-header"] [data-testid="weight"]')).to have_content('0')
+        end
 
-      page.within(find_board_list(2)) do
-        expect(find('[data-testid="board-list-header"] [data-testid="weight"]')).to have_content(issue_with_weight.weight)
-      end
+        drag(list_from_index: 0, list_to_index: 1, to_index: 0)
+        wait_for_all_requests
 
-      page.within(find_board_list(1)) do
-        expect(find('[data-testid="board-list-header"] [data-testid="weight"]')).to have_content('0')
+        expect(find_board_list(1)).not_to have_content(epic3.title)
+
+        page.within(find_board_list(2)) do
+          expect(find('[data-testid="board-list-header"] [data-testid="item-count"]')).to have_content('2')
+          expect(find('[data-testid="board-list-header"] [data-testid="weight"]')).to have_content(issue_with_weight.weight)
+        end
+
+        page.within(find_board_list(1)) do
+          expect(find('[data-testid="board-list-header"] [data-testid="item-count"]')).to have_content('1')
+          expect(find('[data-testid="board-list-header"] [data-testid="weight"]')).to have_content('0')
+        end
       end
     end
 
