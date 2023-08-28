@@ -11,7 +11,6 @@ RSpec.describe Namespaces::Storage::CostFactor, feature_category: :consumables_c
   before do
     stub_ee_application_setting(namespace_storage_forks_cost_factor: forks_cost_factor)
     stub_ee_application_setting(check_namespace_plan: true)
-    stub_feature_flags(namespace_storage_forks_cost_factor: true)
   end
 
   describe '.cost_factor_for' do
@@ -33,13 +32,6 @@ RSpec.describe Namespaces::Storage::CostFactor, feature_category: :consumables_c
       expect(described_class.cost_factor_for(project)).to eq(full_cost)
     end
 
-    it 'returns full cost when the feature flag is false' do
-      stub_feature_flags(namespace_storage_forks_cost_factor: false)
-      project = build_fork(group: paid_group)
-
-      expect(described_class.cost_factor_for(project)).to eq(full_cost)
-    end
-
     it 'returns full cost when namespace plans are not checked' do
       stub_ee_application_setting(check_namespace_plan: false)
       project = build_fork(group: paid_group)
@@ -50,19 +42,13 @@ RSpec.describe Namespaces::Storage::CostFactor, feature_category: :consumables_c
 
   describe '.inverted_cost_factor_for_forks' do
     it 'returns the inverse of the cost factor for forks' do
-      expect(described_class.inverted_cost_factor_for_forks(paid_group)).to eq(0.8)
-    end
-
-    it 'returns the inverse of full cost when the feature flag is false' do
-      stub_feature_flags(namespace_storage_forks_cost_factor: false)
-
-      expect(described_class.inverted_cost_factor_for_forks(paid_group)).to eq(0)
+      expect(described_class.inverted_cost_factor_for_forks).to eq(0.8)
     end
 
     it 'returns the inverse of full cost when namespace plans are not checked' do
       stub_ee_application_setting(check_namespace_plan: false)
 
-      expect(described_class.inverted_cost_factor_for_forks(paid_group)).to eq(0)
+      expect(described_class.inverted_cost_factor_for_forks).to eq(0)
     end
   end
 
