@@ -168,6 +168,27 @@ RSpec.describe Member, type: :model, feature_category: :groups_and_projects do
     end
   end
 
+  describe 'scopes' do
+    describe '.with_custom_role' do
+      let_it_be(:membership_with_custom_role) do
+        member_role = create(:member_role, { name: 'custom maintainer',
+                                             namespace: group,
+                                             base_access_level: ::Gitlab::Access::MAINTAINER })
+
+        create(:group_member, group: sub_group, access_level: ::Gitlab::Access::MAINTAINER, member_role: member_role)
+      end
+
+      let_it_be(:membership_without_custom_role) do
+        create(:group_member, group: sub_group, access_level: ::Gitlab::Access::MAINTAINER)
+      end
+
+      subject { described_class.with_custom_role }
+
+      it { is_expected.to include(membership_with_custom_role) }
+      it { is_expected.not_to include(membership_without_custom_role) }
+    end
+  end
+
   describe '#notification_service' do
     it 'returns a NullNotificationService instance for LDAP users' do
       member = described_class.new
