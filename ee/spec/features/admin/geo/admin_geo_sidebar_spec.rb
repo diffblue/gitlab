@@ -6,7 +6,7 @@ RSpec.describe 'admin Geo Sidebar', :js, :geo, feature_category: :geo_replicatio
   include ::EE::GeoHelpers
   include StubENV
 
-  let_it_be(:admin) { create(:admin) }
+  let_it_be(:admin) { create(:admin, :no_super_sidebar) }
   let_it_be(:primary_node) { create(:geo_node, :primary) }
 
   before do

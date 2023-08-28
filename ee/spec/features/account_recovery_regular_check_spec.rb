@@ -4,8 +4,8 @@ require 'spec_helper'
 
 RSpec.describe 'Account recovery regular check callout', feature_category: :user_management do
   context 'when signed in' do
-    let(:user_two_factor_disabled) { create(:user) }
-    let(:user_two_factor_enabled) { create(:user, :two_factor) }
+    let(:user_two_factor_disabled) { create(:user, :no_super_sidebar) }
+    let(:user_two_factor_enabled) { create(:user, :no_super_sidebar, :two_factor) }
     let(:message) { 'Ensure you have two-factor authentication recovery codes stored in a safe place.' }
     let(:action_button) { 'Manage two-factor authentication' }
 

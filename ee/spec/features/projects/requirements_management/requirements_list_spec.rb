@@ -3,8 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Requirements list', :js, feature_category: :requirements_management do
-  let_it_be(:user) { create(:user) }
-  let_it_be(:user_guest) { create(:user) }
+  let_it_be(:user) { create(:user, :no_super_sidebar) }
+  let_it_be(:user_guest) { create(:user, :no_super_sidebar) }
   let_it_be(:project) { create(:project) }
   let_it_be(:public_project) { create(:project, :public) }
   let_it_be(:requirement1) { create(:work_item, :requirement, project: project, title: 'Some requirement-1', description: 'Sample description', author: user, created_at: 5.days.ago, updated_at: 2.days.ago).requirement }

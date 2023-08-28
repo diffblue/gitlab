@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Dashboard operations', :js, feature_category: :shared do
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, :no_super_sidebar) }
 
   before do
     stub_licensed_features(operations_dashboard: true)

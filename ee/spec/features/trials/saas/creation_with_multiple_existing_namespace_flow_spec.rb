@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Trial lead submission and creation with multiple eligible namespaces', :saas_trial, :js, feature_category: :purchase do
-  let_it_be(:user) { create(:user) } # rubocop:disable Gitlab/RSpec/AvoidSetup
+  let_it_be(:user) { create(:user, :no_super_sidebar) } # rubocop:disable Gitlab/RSpec/AvoidSetup
   let_it_be(:group) do # rubocop:disable Gitlab/RSpec/AvoidSetup
     create(:group).tap { |record| record.add_owner(user) }
     create(:group, name: 'gitlab').tap { |record| record.add_owner(user) }

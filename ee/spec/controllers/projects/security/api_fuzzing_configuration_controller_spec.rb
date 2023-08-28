@@ -5,8 +5,8 @@ require 'spec_helper'
 RSpec.describe Projects::Security::ApiFuzzingConfigurationController, feature_category: :fuzz_testing do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, namespace: group) }
-  let_it_be(:developer) { create(:user) }
-  let_it_be(:guest) { create(:user) }
+  let_it_be(:developer) { create(:user, :no_super_sidebar) }
+  let_it_be(:guest) { create(:user, :no_super_sidebar) }
 
   subject(:request) { get :show, params: { namespace_id: project.namespace, project_id: project } }
 

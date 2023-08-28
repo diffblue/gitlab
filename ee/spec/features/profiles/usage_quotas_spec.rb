@@ -7,7 +7,7 @@ RSpec.describe 'Profile > Usage Quota', :js, feature_category: :consumables_cost
 
   using RSpec::Parameterized::TableSyntax
 
-  let_it_be(:user, reload: true) { create(:user) }
+  let_it_be(:user, reload: true) { create(:user, :no_super_sidebar) }
   let_it_be(:namespace, reload: true) { user.namespace }
   let_it_be(:statistics, reload: true) { create(:namespace_statistics, namespace: namespace) }
   let_it_be(:project, reload: true) { create(:project, namespace: namespace) }

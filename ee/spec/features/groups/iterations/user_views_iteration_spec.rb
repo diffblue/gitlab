@@ -8,8 +8,8 @@ RSpec.describe 'User views iteration', feature_category: :team_planning do
   let_it_be(:sub_group) { create(:group, :private, parent: group) }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:sub_project) { create(:project, group: sub_group) }
-  let_it_be(:user) { create(:group_member, :maintainer, user: create(:user), group: group).user }
-  let_it_be(:guest_user) { create(:group_member, :guest, user: create(:user), group: group).user }
+  let_it_be(:user) { create(:group_member, :maintainer, user: create(:user, :no_super_sidebar), group: group).user }
+  let_it_be(:guest_user) { create(:group_member, :guest, user: create(:user, :no_super_sidebar), group: group).user }
   let_it_be(:manual_cadence) { build(:iterations_cadence, group: group, automatic: false).tap { |cadence| cadence.save!(validate: false) } }
   let_it_be(:other_iteration) { create(:iteration, :with_due_date, iterations_cadence: manual_cadence, title: 'Wrong Iteration', start_date: 1.week.ago) }
   let_it_be(:iteration) { create(:iteration, :with_due_date, iterations_cadence: manual_cadence, title: 'Correct Iteration', description: 'iteration description', start_date: Date.today) }

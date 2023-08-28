@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe SearchController, type: :request, feature_category: :global_search do
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, :no_super_sidebar) }
   let_it_be(:group) { create(:group) }
 
   let(:project) { create(:project, :public, :repository, :wiki_repo, name: 'awesome project', group: group) }

@@ -84,7 +84,7 @@ RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management do
       end
 
       it 'creates a todo only for mentioned users' do
-        mentioned = create(:user)
+        mentioned = create(:user, :no_super_sidebar)
 
         # Add a trailing space to close mention auto-complete dialog, which might block the save button
         fill_in 'issue-description', with: "FYI #{mentioned.to_reference} "

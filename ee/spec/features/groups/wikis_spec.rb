@@ -5,7 +5,7 @@ require "spec_helper"
 RSpec.describe 'Group wikis', :js, feature_category: :wiki do
   include WikiHelpers
 
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, :no_super_sidebar) }
 
   let(:group) { create(:group) }
   let(:wiki) { create(:group_wiki, user: user, group: group) }
