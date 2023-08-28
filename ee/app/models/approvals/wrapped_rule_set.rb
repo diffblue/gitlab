@@ -7,7 +7,8 @@ module Approvals
     attr_reader :merge_request, :approval_rules
 
     def self.wrap(merge_request, rules, report_type)
-      if report_type == Security::ScanResultPolicy::SCAN_FINDING
+      if [Security::ScanResultPolicy::SCAN_FINDING,
+        Security::ScanResultPolicy::LICENSE_SCANNING].include?(report_type.to_s)
         ScanFindingWrappedRuleSet.new(merge_request, rules)
       else
         WrappedRuleSet.new(merge_request, rules)

@@ -10,6 +10,7 @@ module Security
     APPROVERS_LIMIT = 300
 
     SCAN_FINDING = 'scan_finding'
+    LICENSE_SCANNING = 'license_scanning'
     LICENSE_FINDING = 'license_finding'
 
     REQUIRE_APPROVAL = 'require_approval'
