@@ -95,7 +95,7 @@ Prerequisites:
 - You must have at least the Maintainer role for the project or group the project belongs to.
 - The project must be in a group namespace.
 
-1. On the left sidebar, at the top, select **Search GitLab** (**{search}**) to find your project.
+1. On the left sidebar, select **Search or go to** and find your project.
 1. Select **Settings > Analytics**.
 1. Expand **Configure** and enter the configuration values.
 1. Select **Save changes**.

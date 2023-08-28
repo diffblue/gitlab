@@ -77,7 +77,7 @@ runner settings:
 
 To view the rendered details:
 
-1. On the left sidebar, at the top, select **Search GitLab** (**{search}**) to find your project or group.
+1. On the left sidebar, select **Search or go to** and find your project or group.
 1. Select **Settings > CI/CD**.
 1. Expand **Runners**.
 
