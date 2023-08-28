@@ -13,7 +13,7 @@ RSpec.describe GpgKeys::DestroyService, feature_category: :source_code_managemen
         stub_licensed_features(admin_audit_log: true, audit_events: true, extended_audit_events: true)
       end
       it 'creates an audit event', :aggregate_failures do
-        key = create(:personal_key)
+        key = create(:gpg_key)
 
         expect { subject.execute(key) }.to change(AuditEvent, :count).by(1)
 
@@ -22,7 +22,6 @@ RSpec.describe GpgKeys::DestroyService, feature_category: :source_code_managemen
           entity_id: key.user.id,
           target_id: key.id,
           target_type: key.class.name,
-          target_details: key.title,
           details: include(custom_message: 'Removed GPG key')
         )
       end
@@ -34,7 +33,7 @@ RSpec.describe GpgKeys::DestroyService, feature_category: :source_code_managemen
       end
 
       it 'creates an audit event' do
-        key = create(:personal_key)
+        key = create(:gpg_key)
 
         expect { subject.execute(key) }.not_to change { AuditEvent.count }
       end
