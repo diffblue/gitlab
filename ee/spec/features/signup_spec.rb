@@ -20,9 +20,9 @@ RSpec.describe 'Signup on EE', :js, feature_category: :user_profile do
     wait_for_all_requests
   end
 
-  context 'for Gitlab.com' do
+  context 'for SaaS', :saas do
     before do
-      expect(Gitlab).to receive(:com?).and_return(true).at_least(:once)
+      stub_ee_application_setting(should_check_namespace_plan: true)
       visit new_user_registration_path
     end
 
@@ -81,7 +81,7 @@ RSpec.describe 'Signup on EE', :js, feature_category: :user_profile do
       end
     end
 
-    it 'redirects to step 2 of the signup process when not completed' do
+    it 'allows visiting of a page after initial registration' do
       fill_in_signup_form
       click_button 'Register'
       visit new_project_path
@@ -99,9 +99,8 @@ RSpec.describe 'Signup on EE', :js, feature_category: :user_profile do
     end
   end
 
-  context 'not for Gitlab.com' do
+  context 'when not for SaaS' do
     before do
-      expect(Gitlab).to receive(:com?).and_return(false).at_least(:once)
       visit new_user_registration_path
     end
 
@@ -116,19 +115,6 @@ RSpec.describe 'Signup on EE', :js, feature_category: :user_profile do
       expect(user.email_opted_in_ip).to be_blank
       expect(user.email_opted_in_source).to be_blank
       expect(user.email_opted_in_at).to be_nil
-    end
-
-    it 'redirects to step 2 of the signup process when not completed and redirects back' do
-      fill_in_signup_form
-      click_button 'Register'
-      visit new_project_path
-
-      expect(page).to have_current_path(users_sign_up_welcome_path)
-
-      select 'Software Developer', from: 'user_role'
-      click_button 'Get started!'
-
-      expect(page).to have_current_path(new_project_path)
     end
   end
 
