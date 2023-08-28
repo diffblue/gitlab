@@ -20,7 +20,7 @@ RSpec.describe API::DebianProjectPackages, feature_category: :package_registry d
   end
 
   describe 'GET projects/:id/packages/debian/pool/:codename/:letter/:package_name/:package_version/:file_name' do
-    let(:url) { "/projects/#{project.id}/packages/debian/pool/#{package.debian_distribution.codename}/#{letter}/#{package.name}/#{package.version}/#{file_name}" }  # rubocop:disable convention:Layout/LineLength
+    let(:url) { "/projects/#{project.id}/packages/debian/pool/#{package.debian_distribution.codename}/#{letter}/#{package.name}/#{package.version}/#{file_name}" } # rubocop:disable convention:Layout/LineLength
     let(:file_name) { 'sample_1.2.3~alpha2.tar.xz' }
 
     subject { get api(url), headers: headers }
