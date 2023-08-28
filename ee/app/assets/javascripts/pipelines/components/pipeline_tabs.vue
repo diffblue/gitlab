@@ -1,8 +1,10 @@
 <script>
 import { GlTab, GlBadge } from '@gitlab/ui';
+import Api from '~/api';
 import BasePipelineTabs from '~/pipelines/components/pipeline_tabs.vue';
 import { codeQualityTabName, licensesTabName, securityTabName } from '~/pipelines/constants';
 import { __ } from '~/locale';
+import { SERVICE_PING_PIPELINE_SECURITY_VISIT } from '~/tracking/constants';
 
 export default {
   i18n: {
@@ -72,6 +74,10 @@ export default {
 
       this.$router.push({ name: tabName });
     },
+    navigateToSecurity() {
+      this.navigateTo(this.$options.tabNames.security);
+      Api.trackRedisHllUserEvent(SERVICE_PING_PIPELINE_SECURITY_VISIT);
+    },
     updateCodeQualityCount(count) {
       this.codeQualityCountFetched = true;
       this.codeQualityCount = count;
@@ -91,7 +97,7 @@ export default {
       :active="isActive($options.tabNames.security)"
       data-testid="security-tab"
       lazy
-      @click="navigateTo($options.tabNames.security)"
+      @click="navigateToSecurity"
     >
       <router-view />
     </gl-tab>
