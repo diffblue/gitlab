@@ -8,6 +8,14 @@ module EE::GroupMembersFinder
     attr_reader :group
   end
 
+  override :execute
+  def execute(include_relations: ::GroupMembersFinder::DEFAULT_RELATIONS)
+    members = super
+    members = members.with_custom_role if params[:with_custom_role]
+
+    members
+  end
+
   # rubocop: disable CodeReuse/ActiveRecord
   def not_managed
     group.group_members.non_owners.joins(:user).merge(User.not_managed(group: group))
@@ -48,5 +56,10 @@ module EE::GroupMembersFinder
 
   def can_filter_by_enterprise?
     can_manage_members && group.root_ancestor.saml_enabled?
+  end
+
+  override :static_roles_only?
+  def static_roles_only?
+    !params[:with_custom_role]
   end
 end
