@@ -85,13 +85,16 @@ export default {
 </script>
 
 <template>
-  <div class="board-swimlanes-toggle-wrapper gl-md-display-flex gl-align-items-center gl-ml-3">
-    <span
-      class="board-swimlanes-toggle-text gl-white-space-nowrap gl-font-weight-bold gl-line-height-normal"
+  <div class="gl-md-display-flex gl-align-items-center gl-ml-3">
+    <label
+      for="swimlane-listbox"
+      class="gl-white-space-nowrap gl-font-weight-bold gl-line-height-normal gl-m-0"
+      data-testid="toggle-swimlanes-label"
     >
       {{ __('Group by') }}
-    </span>
+    </label>
     <gl-collapsible-listbox
+      id="swimlane-listbox"
       toggle-class="gl-ml-3 gl-line-height-normal!"
       placement="right"
       :items="$options.LIST_BOX_ITEMS"
