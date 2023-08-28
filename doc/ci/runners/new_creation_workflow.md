@@ -212,3 +212,7 @@ data:
   runner-registration-token: "" # need to leave as an empty string for compatibility reasons
   runner-token: "REDACTED"
 ```
+
+NOTE:
+If your secret management solution doesn't allow you to set an empty string for `runner-registration-token`,
+you can set it to any string - it will be ignored when `runner-token` is present.
