@@ -26,6 +26,7 @@ options:
     - users_visiting_security_dashboard
     - users_visiting_security_vulnerabilities
     - users_visiting_pipeline_security
+    - users_visiting_security_configuration_threat_management
 performance_indicator_type:
 - smau
 distribution:

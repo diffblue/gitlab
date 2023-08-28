@@ -1,9 +1,15 @@
+import { GlTabs } from '@gitlab/ui';
+import Api from '~/api';
 import { makeMockUserCalloutDismisser } from 'helpers/mock_user_callout_dismisser';
 import stubChildren from 'helpers/stub_children';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import SecurityConfigurationApp from '~/security_configuration/components/app.vue';
 import UpgradeBanner from 'ee/security_configuration/components/upgrade_banner.vue';
 import { securityFeaturesMock, provideMock } from 'jest/security_configuration/mock_data';
+import { SERVICE_PING_SECURITY_CONFIGURATION_THREAT_MANAGEMENT_VISIT } from '~/tracking/constants';
+import { TAB_VULNERABILITY_MANAGEMENT_INDEX } from '~/security_configuration/components/constants';
+
+jest.mock('~/api.js');
 
 describe('~/security_configuration/components/app', () => {
   let wrapper;
@@ -31,6 +37,7 @@ describe('~/security_configuration/components/app', () => {
   };
 
   const findUpgradeBanner = () => wrapper.findComponent(UpgradeBanner);
+  const findTabsComponent = () => wrapper.findComponent(GlTabs);
 
   describe('upgrade banner', () => {
     const makeAvailable = (available) => (feature) => ({ ...feature, available });
@@ -82,6 +89,27 @@ describe('~/security_configuration/components/app', () => {
       it('does not render the banner', () => {
         expect(findUpgradeBanner().exists()).toBe(false);
       });
+    });
+  });
+
+  describe('tab change', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
+    it('tracks "users_visiting_security_configuration_threat_management" when threat management tab is selected', () => {
+      findTabsComponent().vm.$emit('input', TAB_VULNERABILITY_MANAGEMENT_INDEX);
+
+      expect(Api.trackRedisHllUserEvent).toHaveBeenCalledTimes(1);
+      expect(Api.trackRedisHllUserEvent).toHaveBeenCalledWith(
+        SERVICE_PING_SECURITY_CONFIGURATION_THREAT_MANAGEMENT_VISIT,
+      );
+    });
+
+    it("doesn't track the metric when other tab is selected", () => {
+      findTabsComponent().vm.$emit('input', 0);
+
+      expect(Api.trackRedisHllUserEvent).not.toHaveBeenCalled();
     });
   });
 });

@@ -1,10 +1,14 @@
 import { GlTab } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { shallowMount } from '@vue/test-utils';
+import Api from '~/api';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import BasePipelineTabs from '~/pipelines/components/pipeline_tabs.vue';
 import PipelineTabs from 'ee/pipelines/components/pipeline_tabs.vue';
 import CodequalityReportApp from 'ee/codequality_report/codequality_report.vue';
+import { SERVICE_PING_PIPELINE_SECURITY_VISIT } from '~/tracking/constants';
+
+jest.mock('~/api.js');
 
 describe('The Pipeline Tabs', () => {
   let wrapper;
@@ -40,6 +44,10 @@ describe('The Pipeline Tabs', () => {
     testsCount: 123,
   };
 
+  const $router = {
+    push: jest.fn(),
+  };
+
   const createComponent = ({ propsData = {}, provide = {}, stubs = {} } = {}) => {
     wrapper = extendedWrapper(
       shallowMount(PipelineTabs, {
@@ -52,6 +60,9 @@ describe('The Pipeline Tabs', () => {
           BasePipelineTabs,
           RouterView: true,
           ...stubs,
+        },
+        mocks: {
+          $router,
         },
       }),
     );
@@ -166,6 +177,26 @@ describe('The Pipeline Tabs', () => {
       await nextTick();
 
       expect(getCodequalityCount().text()).toBe(`${newLicenseCount}`);
+    });
+  });
+
+  describe('security', () => {
+    beforeEach(() => {
+      createComponent({ provide: { exposeSecurityDashboard: true } });
+    });
+
+    it('tracks "users_visiting_pipeline_security" metric when tab is selected', () => {
+      findSecurityTab().vm.$emit('click');
+
+      expect(Api.trackRedisHllUserEvent).toHaveBeenCalledTimes(1);
+      expect(Api.trackRedisHllUserEvent).toHaveBeenCalledWith(SERVICE_PING_PIPELINE_SECURITY_VISIT);
+    });
+
+    it("doesn't track the metric when other tab is selected", () => {
+      findJobsTab().vm.$emit('click');
+      findTestsTab().vm.$emit('click');
+
+      expect(Api.trackRedisHllUserEvent).not.toHaveBeenCalled();
     });
   });
 
