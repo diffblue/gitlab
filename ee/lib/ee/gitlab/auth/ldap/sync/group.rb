@@ -221,7 +221,7 @@ module EE
                 elsif group.last_owner?(user)
                   warn_cannot_remove_last_owner(user, group)
                 else
-                  group.users.destroy(user)
+                  group.users.destroy(user.id)
                 end
               end
             end
@@ -288,6 +288,7 @@ module EE
             def select_and_preload_group_members(group)
               group.members.select(:id, :access_level, :user_id, :ldap, :override)
                 .with_identity_provider(provider).preload(:user)
+                .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/422405")
             end
             # rubocop: enable CodeReuse/ActiveRecord
 

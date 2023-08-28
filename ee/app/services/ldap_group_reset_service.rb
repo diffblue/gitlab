@@ -14,6 +14,9 @@ class LdapGroupResetService
       member.update_attribute :access_level, Gitlab::Access::GUEST
     end
 
-    group.users.ldap.update_all last_credential_check_at: nil
+    ::Gitlab::Database.allow_cross_joins_across_databases(url:
+      'https://gitlab.com/gitlab-org/gitlab/-/issues/422405') do
+      group.users.ldap.update_all last_credential_check_at: nil
+    end
   end
 end
