@@ -68,21 +68,6 @@ module EE
       self
     end
 
-    # Builds the @details attribute for a failed login
-    #
-    # @return [AuditEventService]
-    def for_failed_login
-      auth = @details[:with] || 'STANDARD'
-
-      @details = {
-        failed_login: auth.upcase,
-        author_name: @author.name,
-        target_details: @author.name
-      }
-
-      self
-    end
-
     # Builds the @details attribute for changes
     #
     # @param model [Object] the target model being audited
