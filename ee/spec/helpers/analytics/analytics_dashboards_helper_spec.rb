@@ -48,8 +48,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
 
           stub_application_setting(product_analytics_enabled: product_analytics_enabled_setting)
 
-          stub_feature_flags(product_analytics_dashboards: feature_flag_enabled,
-            product_analytics_snowplow_support: false)
+          stub_feature_flags(product_analytics_dashboards: feature_flag_enabled)
           stub_licensed_features(product_analytics: licensed_feature_enabled)
 
           allow(helper).to receive(:can?).with(user, :read_product_analytics, project).and_return(user_has_permission)
@@ -58,7 +57,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
 
         subject(:data) { helper.analytics_dashboards_list_app_data(project) }
 
-        def expected_data(snowplow_enabled)
+        def expected_data(has_permission)
           {
             is_project: 'true',
             namespace_id: project.id,
@@ -73,19 +72,9 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
             chart_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
             dashboard_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
             namespace_full_path: project.full_path,
-            features: (enabled && snowplow_enabled ? [:product_analytics] : []).to_json,
+            features: (enabled && has_permission ? [:product_analytics] : []).to_json,
             router_base: '/-/analytics/dashboards'
           }
-        end
-
-        context 'without snowplow' do
-          before do
-            stub_feature_flags(product_analytics_snowplow_support: false)
-          end
-
-          it 'returns the expected data' do
-            expect(data).to eq(expected_data(false))
-          end
         end
 
         context 'with snowplow' do

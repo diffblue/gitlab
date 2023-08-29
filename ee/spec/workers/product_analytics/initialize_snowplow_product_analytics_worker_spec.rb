@@ -13,7 +13,6 @@ RSpec.describe ProductAnalytics::InitializeSnowplowProductAnalyticsWorker, featu
     stub_licensed_features(product_analytics: true)
     stub_application_setting(product_analytics_configurator_connection_string: 'https://gl-product-analytics-configurator.gl.com:4567')
     stub_feature_flags(product_analytics_dashboards: true)
-    stub_feature_flags(product_analytics_snowplow_support: true)
   end
 
   shared_examples 'a worker that did not make any HTTP calls' do
@@ -80,14 +79,6 @@ RSpec.describe ProductAnalytics::InitializeSnowplowProductAnalyticsWorker, featu
   context 'when product_analytics_dashboards feature flag is disabled' do
     before do
       stub_feature_flags(product_analytics_dashboards: false)
-    end
-
-    it_behaves_like 'a worker that did not make any HTTP calls'
-  end
-
-  context 'when snowplow support is not enabled' do
-    before do
-      stub_feature_flags(product_analytics_snowplow_support: false)
     end
 
     it_behaves_like 'a worker that did not make any HTTP calls'

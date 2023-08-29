@@ -340,14 +340,15 @@
                 "type": {
                   "enum": [
                     "scan_finding",
-                    "license_finding"
+                    "license_finding",
+                    "any_merge_request"
                   ],
                   "type": "string",
-                  "description": "Specified a type of the policy rule. `scan_finding`/`license_finding` rule enforces the defined actions based on the provided information."
+                  "description": "Specified a type of the policy rule. `scan_finding`/`license_finding`/`any_merge_request` rule enforces the defined actions based on the provided information."
                 },
                 "branches": {
                   "type": "array",
-                  "description": "Specifies a list of protected branches that should be concidered to enforce this policy.",
+                  "description": "Specifies a list of protected branches that should be considered to enforce this policy.",
                   "additionalItems": false,
                   "items": {
                     "minLength": 1,
@@ -512,6 +513,14 @@
                       "detected"
                     ]
                   }
+                },
+                "commits": {
+                  "type": "string",
+                  "description": "Specifies the commits to match.",
+                  "enum": [
+                    "any",
+                    "unsigned"
+                  ]
                 }
               },
               "oneOf": [
@@ -559,6 +568,21 @@
                       "match_on_inclusion",
                       "license_types",
                       "license_states"
+                    ]
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "const": "any_merge_request"
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "type",
+                      "commits"
                     ]
                   }
                 }
@@ -680,6 +704,23 @@
                     "minLength": 1
                   }
                 }
+              }
+            }
+          },
+          "approval_settings": {
+            "type": "object",
+            "properties": {
+              "prevent_approval_by_author": {
+                "type": "boolean"
+              },
+              "prevent_approval_by_commit_author": {
+                "type": "boolean"
+              },
+              "remove_approvals_with_new_commit": {
+                "type": "boolean"
+              },
+              "require_password_to_approve": {
+                "type": "boolean"
               }
             }
           }

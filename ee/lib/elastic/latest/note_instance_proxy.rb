@@ -3,6 +3,10 @@
 module Elastic
   module Latest
     class NoteInstanceProxy < ApplicationInstanceProxy
+      # Schema version. The format is Date.today.strftime('%y_%m')
+      # Please update if you're changing the schema of the document
+      SCHEMA_VERSION = 23_08
+
       delegate :noteable, to: :target
 
       def as_indexed_json(options = {})
@@ -39,6 +43,10 @@ module Elastic
 
         if target.project && ::Elastic::DataMigrationService.migration_has_finished?(:add_archived_to_notes)
           data['archived'] = target.project.archived
+        end
+
+        if ::Elastic::DataMigrationService.migration_has_finished?(:add_schema_version_to_note)
+          data['schema_version'] = SCHEMA_VERSION
         end
 
         data.merge(generic_attributes)

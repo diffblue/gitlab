@@ -6,8 +6,8 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import CodeSuggestionsAddonAssignment from 'ee/usage_quotas/seats/components/code_suggestions_addon_assignment.vue';
 import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/seats/constants';
-import userAddOnAssignmentCreateMutation from 'ee/usage_quotas/graphql/queries/user_addon_assignment_create.mutation.graphql';
-import userAddOnAssignmentRemoveMutation from 'ee/usage_quotas/graphql/queries/user_addon_assignment_remove.mutation.graphql';
+import userAddOnAssignmentCreateMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_create.mutation.graphql';
+import userAddOnAssignmentRemoveMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_remove.mutation.graphql';
 
 Vue.use(VueApollo);
 

@@ -13,6 +13,11 @@ RSpec.describe License, feature_category: :sm_provisioning do
     { 'Name' => 'Team Member', 'Email' => 'team_member@gitlab.com', 'Company' => 'GitLab' }
   end
 
+  def build_license_with_add_ons(add_ons, plan: nil)
+    gl_license = build(:gitlab_license, restrictions: { add_ons: add_ons, plan: plan })
+    build(:license, data: gl_license.export)
+  end
+
   describe 'validations' do
     describe '#valid_license' do
       subject(:license) { build(:license, data: gl_license.class.encryptor.encrypt(gl_license.to_json)) }
@@ -1003,52 +1008,140 @@ RSpec.describe License, feature_category: :sm_provisioning do
         end
       end
     end
+  end
 
-    describe '#feature_available?' do
-      it 'returns true if add-on exists and have a quantity greater than 0' do
-        license = build_license_with_add_ons({ 'GitLab_FileLocks' => 1 })
+  # rubocop: disable Gitlab/FeatureAvailableUsage
+  # Disabling Cop because we are testing the instance method instead of the class method
+  # and it's a valid usage.
+  describe '.feature_available?' do
+    subject { described_class.feature_available?(feature) }
 
-        expect(license.feature_available?(:file_locks)).to eq(true)
+    def create_license(add_ons: {}, plan: nil)
+      gl_license = create(:gitlab_license, restrictions: { add_ons: add_ons, plan: plan })
+      create(:license, data: gl_license.export)
+    end
+
+    it 'returns true if add-on exists and have a quantity greater than 0' do
+      create_license(add_ons: { 'GitLab_FileLocks' => 1 })
+
+      expect(described_class.feature_available?(:file_locks)).to eq(true)
+    end
+
+    it 'returns true if the feature is included in the plan do' do
+      create_license(plan: License::PREMIUM_PLAN)
+
+      expect(described_class.feature_available?(:auditor_user)).to eq(true)
+    end
+
+    it 'returns false if add-on exists but have a quantity of 0' do
+      create_license(add_ons: { 'GitLab_FileLocks' => 0 })
+
+      expect(described_class.feature_available?(:file_locks)).to eq(false)
+    end
+
+    it 'returns false if add-on does not exists' do
+      create_license(plan: License::STARTER_PLAN)
+
+      expect(described_class.feature_available?(:file_locks)).to eq(false)
+    end
+
+    context 'with an expired trial license' do
+      before_all do
+        described_class.delete_all
+        create(:license, trial: true, expired: true)
       end
 
-      it 'returns true if the feature is included in the plan do' do
-        license = build_license_with_add_ons({}, plan: License::PREMIUM_PLAN)
-
-        expect(license.feature_available?(:auditor_user)).to eq(true)
+      ::GitlabSubscriptions::Features::ALL_STARTER_FEATURES.each do |feature|
+        it "returns false for #{feature}" do
+          expect(described_class.feature_available?(feature)).to eq(false)
+        end
       end
+    end
 
-      it 'returns false if add-on exists but have a quantity of 0' do
-        license = build_license_with_add_ons({ 'GitLab_FileLocks' => 0 })
-
-        expect(license.feature_available?(:file_locks)).to eq(false)
-      end
-
-      it 'returns false if add-on does not exists' do
-        license = build_license_with_add_ons({})
-
-        expect(license.feature_available?(:file_locks)).to eq(false)
-      end
-
-      context 'with an expired trial license' do
-        let(:license) { create(:license, trial: true, expired: true) }
-
-        before_all do
+    describe 'usage ping features' do
+      context 'without license' do
+        before do
           described_class.delete_all
         end
 
-        ::GitlabSubscriptions::Features::ALL_STARTER_FEATURES.each do |feature|
-          it "returns false for #{feature}" do
-            expect(license.feature_available?(feature)).to eq(false)
+        context 'when usage ping is disabled' do
+          before do
+            stub_application_setting(usage_ping_features_enabled: false)
+          end
+
+          it 'does not have access to any usage ping features' do
+            ::GitlabSubscriptions::Features::FEATURES_WITH_USAGE_PING.each do |feature|
+              expect(described_class.feature_available?(feature))
+                .to eq(false), "expected #{feature} not to be available"
+            end
+          end
+        end
+
+        context 'when usage ping is enabled' do
+          before do
+            stub_application_setting(usage_ping_features_enabled: true)
+          end
+
+          it 'has access to all usage ping features' do
+            ::GitlabSubscriptions::Features::FEATURES_WITH_USAGE_PING.each do |feature|
+              expect(described_class.feature_available?(feature))
+                .to eq(true), "expected #{feature} to be available"
+            end
+          end
+
+          context 'when feature flag feature_available_check_with_usage_ping is disabled' do
+            before do
+              stub_feature_flags(feature_available_check_with_usage_ping: false)
+            end
+
+            it 'does not have access to any usage ping features' do
+              ::GitlabSubscriptions::Features::FEATURES_WITH_USAGE_PING.each do |feature|
+                expect(described_class.feature_available?(feature))
+                  .to eq(false), "expected #{feature} not to be available"
+              end
+            end
+          end
+        end
+      end
+
+      context 'when license exists' do
+        before do
+          create(:license, plan: License::PREMIUM_PLAN)
+        end
+
+        context 'when usage ping is disabled' do
+          before do
+            stub_application_setting(usage_ping_features_enabled: false)
+          end
+
+          it 'has access to usage ping features part of the plan' do
+            ::GitlabSubscriptions::Features::ALL_PREMIUM_FEATURES.each do |feature|
+              expect(described_class.feature_available?(feature)).to eq(true)
+            end
+          end
+
+          it 'does not have access to higher tier usage ping features' do
+            ::GitlabSubscriptions::Features::ULTIMATE_FEATURES_WITH_USAGE_PING.each do |feature|
+              expect(described_class.feature_available?(feature)).to eq(false)
+            end
+          end
+        end
+
+        context 'when usage ping is enabled' do
+          before do
+            stub_application_setting(usage_ping_features_enabled: true)
+          end
+
+          it 'has access to all usage ping features' do
+            ::GitlabSubscriptions::Features::FEATURES_WITH_USAGE_PING.each do |feature|
+              expect(described_class.feature_available?(feature)).to eq(true)
+            end
           end
         end
       end
     end
-
-    def build_license_with_add_ons(add_ons, plan: nil)
-      gl_license = build(:gitlab_license, restrictions: { add_ons: add_ons, plan: plan })
-      build(:license, data: gl_license.export)
-    end
   end
+  # rubocop: enable Gitlab/FeatureAvailableUsage
 
   describe '#subscription_id' do
     it 'has correct subscription_id' do

@@ -20,7 +20,8 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
     ensure_onboarding_is_finished
   end
 
-  it 'registers the user with multiple invites and sends them to the last group activity page' do
+  it 'registers the user with multiple invites and sends them to the last group activity page',
+    quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/423547' do
     new_user = build(:user, name: 'Registering User', email: user_email)
     group = create(:group, name: 'Test Group')
 

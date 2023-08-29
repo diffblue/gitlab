@@ -9,8 +9,8 @@ import {
 } from 'ee/usage_quotas/error_constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_USER } from '~/graphql_shared/constants';
-import userAddOnAssignmentCreateMutation from 'ee/usage_quotas/graphql/queries/user_addon_assignment_create.mutation.graphql';
-import userAddOnAssignmentRemoveMutation from 'ee/usage_quotas/graphql/queries/user_addon_assignment_remove.mutation.graphql';
+import userAddOnAssignmentCreateMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_create.mutation.graphql';
+import userAddOnAssignmentRemoveMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_remove.mutation.graphql';
 
 export default {
   name: 'CodeSuggestionsAddonAssignment',

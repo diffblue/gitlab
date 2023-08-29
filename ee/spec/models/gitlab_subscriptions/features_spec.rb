@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSubscriptions::Features do
+RSpec.describe GitlabSubscriptions::Features, feature_category: :subscription_management do
   describe 'License -> Plan mapping' do
     (::Plan.all_plans - ::Plan.default_plans).each do |plan_name|
       describe "#{plan_name} plan" do
@@ -53,7 +53,7 @@ RSpec.describe GitlabSubscriptions::Features do
   describe '.saas_plans_with_feature' do
     subject { described_class.saas_plans_with_feature(feature) }
 
-    context 'a Starter feature' do
+    describe 'a Starter feature' do
       let(:feature) { :audit_events }
 
       it 'is present in all paid plans' do
@@ -61,7 +61,7 @@ RSpec.describe GitlabSubscriptions::Features do
       end
     end
 
-    context 'a Premium feature' do
+    describe 'a Premium feature' do
       let(:feature) { :epics }
 
       it 'is present in all Premium+ plans' do
@@ -70,7 +70,7 @@ RSpec.describe GitlabSubscriptions::Features do
       end
     end
 
-    context 'an Ultimate feature' do
+    describe 'an Ultimate feature' do
       let(:feature) { :dast }
 
       it 'is present in all top plans' do
@@ -79,7 +79,7 @@ RSpec.describe GitlabSubscriptions::Features do
       end
     end
 
-    context 'a global feature' do
+    describe 'a global feature' do
       let(:feature) { :elastic_search }
 
       it 'cannot be checked using this method' do
@@ -87,7 +87,7 @@ RSpec.describe GitlabSubscriptions::Features do
       end
     end
 
-    context 'a non existing feature' do
+    describe 'a non existing feature' do
       let(:feature) { :unknown_feature }
 
       it 'is not in any plan' do
@@ -233,6 +233,23 @@ RSpec.describe GitlabSubscriptions::Features do
       let(:feature) { :audit_events }
 
       it { is_expected.to be_falsey }
+    end
+
+    described_class::FEATURES_NOT_SUPPORTING_USAGE_PING.each do |feature|
+      context "when param is `#{feature}` and not compatible with usage ping" do
+        let(:feature) { feature }
+
+        it { is_expected.to be_falsey }
+      end
+    end
+  end
+
+  describe 'features not compatible with usage ping' do
+    it 'do not overlap with usage ping features' do
+      expect(
+        described_class::FEATURES_NOT_SUPPORTING_USAGE_PING &
+        described_class::FEATURES_WITH_USAGE_PING)
+        .to be_empty
     end
   end
 

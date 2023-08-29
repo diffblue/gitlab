@@ -9,7 +9,6 @@ RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_sha
 
   before do
     project.add_maintainer(user)
-    stub_feature_flags(product_analytics_snowplow_support: false)
   end
 
   shared_examples 'no ::ProductAnalytics::InitializeSnowplowProductAnalyticsWorker job is enqueued' do
@@ -50,10 +49,6 @@ RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_sha
     end
 
     context 'when snowplow support is enabled' do
-      before do
-        stub_feature_flags(product_analytics_snowplow_support: true)
-      end
-
       it 'enqueues a job' do
         expect(::ProductAnalytics::InitializeSnowplowProductAnalyticsWorker)
           .to receive(:perform_async).with(project.id)
@@ -75,34 +70,6 @@ RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_sha
         it 'returns an error response' do
           expect(subject).to be_error
           expect(subject.message).to eq('Product analytics initialization is already complete')
-        end
-      end
-    end
-
-    context 'when snowplow support feature flag is disabled' do
-      before do
-        stub_feature_flags(product_analytics_snowplow_support: false)
-        project.project_setting.update!(product_analytics_instrumentation_key: nil)
-      end
-
-      it_behaves_like 'no ::ProductAnalytics::InitializeSnowplowProductAnalyticsWorker job is enqueued'
-
-      it 'returns a failure response' do
-        expect(subject).to be_error
-        expect(subject.message).to eq('Product analytics snowplow support feature flag is disabled')
-      end
-
-      context 'when initialization is already in progress' do
-        before do
-          Gitlab::Redis::SharedState.with do |redis|
-            redis.set("project:#{project.id}:product_analytics_initializing", 1)
-          end
-        end
-
-        # it should not state that it's in progress, because it'll never succeed without snowplow support
-        it 'returns an error stating that feature flag is disabled' do
-          expect(subject).to be_error
-          expect(subject.message).to eq('Product analytics snowplow support feature flag is disabled')
         end
       end
     end

@@ -20,7 +20,6 @@ module ProductAnalytics
     def perform(project_id)
       @project = Project.find_by_id(project_id)
 
-      return unless ::Feature.enabled?(:product_analytics_snowplow_support, @project)
       return unless @project&.product_analytics_enabled?
 
       response = Gitlab::HTTP.post(

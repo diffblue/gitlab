@@ -72,7 +72,11 @@ class License < MainClusterwide::ApplicationRecord
     end
 
     def feature_available?(feature)
-      !!current&.feature_available?(feature)
+      # Include features available per plan + usage ping features if Usage Pings is enabled
+      # as instance setting.
+      !!current&.feature_available?(feature) ||
+        (Feature.enabled?(:feature_available_check_with_usage_ping) &&
+        GitlabSubscriptions::Features.usage_ping_feature?(feature))
     end
 
     def load_license

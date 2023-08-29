@@ -27,7 +27,7 @@ module EE
             end
           end
 
-          with_options if: -> (issue) { issue.project.feature_available?(:issuable_health_status) } do
+          with_options if: -> (issue) { issue.licensed_feature_available?(:issuable_health_status) } do
             expose :health_status
           end
         end

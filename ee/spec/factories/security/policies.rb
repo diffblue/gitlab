@@ -35,7 +35,8 @@ FactoryBot.define do
     end
   end
 
-  factory :scan_result_policy, class: Struct.new(:name, :description, :enabled, :actions, :rules) do
+  factory :scan_result_policy,
+    class: Struct.new(:name, :description, :enabled, :actions, :rules, :approval_settings) do
     skip_create
 
     initialize_with do
@@ -44,8 +45,9 @@ FactoryBot.define do
       enabled = attributes[:enabled]
       actions = attributes[:actions]
       rules = attributes[:rules]
+      approval_settings = attributes[:approval_settings]
 
-      new(name, description, enabled, actions, rules).to_h
+      new(name, description, enabled, actions, rules, approval_settings).to_h
     end
 
     transient do
@@ -74,6 +76,7 @@ FactoryBot.define do
     end
 
     actions { [{ type: 'require_approval', approvals_required: 1, user_approvers: %w[admin] }] }
+    approval_settings { {} }
 
     trait :license_finding do
       rules do

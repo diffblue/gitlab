@@ -1,4 +1,4 @@
-import { GlButton, GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlListboxItem, GlButton } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import WeightSelect from 'ee/boards/components/weight_select.vue';
 
@@ -7,9 +7,9 @@ describe('WeightSelect', () => {
 
   const editButton = () => wrapper.findComponent(GlButton);
   const valueContainer = () => wrapper.find('[data-testid="selected-weight"]');
-  const weightDropdown = () => wrapper.findComponent(GlDropdown);
+  const weightDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
   const getWeightItemAtIndex = (index) =>
-    weightDropdown().findAllComponents(GlDropdownItem).at(index);
+    weightDropdown().findAllComponents(GlListboxItem).at(index);
   const defaultProps = {
     weights: ['Any', 'None', 0, 1, 2, 3],
     board: {
@@ -37,7 +37,7 @@ describe('WeightSelect', () => {
     });
 
     it('hides the weight dropdown', () => {
-      expect(weightDropdown().isVisible()).toBe(false);
+      expect(weightDropdown().exists()).toBe(false);
     });
   });
 
@@ -57,7 +57,7 @@ describe('WeightSelect', () => {
     });
 
     it('shows the edit button', () => {
-      expect(editButton().isVisible()).toBe(true);
+      expect(editButton().exists()).toBe(true);
     });
 
     describe('and the edit button is clicked', () => {
@@ -71,7 +71,7 @@ describe('WeightSelect', () => {
         });
 
         it('shows the weight dropdown', () => {
-          expect(weightDropdown().isVisible()).toBe(true);
+          expect(weightDropdown().exists()).toBe(true);
         });
       });
 
@@ -82,11 +82,11 @@ describe('WeightSelect', () => {
         });
 
         it('shows the value text', () => {
-          expect(valueContainer().isVisible()).toBe(true);
+          expect(valueContainer().exists()).toBe(true);
         });
 
         it('hides the weight dropdown', () => {
-          expect(weightDropdown().isVisible()).toBe(false);
+          expect(weightDropdown().exists()).toBe(false);
         });
       });
     });

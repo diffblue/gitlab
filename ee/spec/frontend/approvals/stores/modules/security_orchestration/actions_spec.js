@@ -24,7 +24,7 @@ describe('security orchestration actions', () => {
           name: 'policyName',
           yaml: 'name: policyName',
           userApprovers: [{ id: 1, name: 'username' }],
-          groupApprovers: [],
+          allGroupApprovers: [],
           source: { project: { fullPath: 'path/policy' } },
         },
       ];

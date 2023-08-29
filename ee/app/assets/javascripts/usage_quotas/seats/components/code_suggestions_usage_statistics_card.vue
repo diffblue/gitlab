@@ -1,7 +1,7 @@
 <script>
 import { GlButton, GlIcon, GlLink, GlSkeletonLoader, GlSprintf } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
-import getAddOnPurchaseQuery from 'ee/usage_quotas/graphql/queries/get_add_on_purchase_query.graphql';
+import getAddOnPurchaseQuery from 'ee/usage_quotas/add_on/graphql/get_add_on_purchase.query.graphql';
 import UsageStatistics from 'ee/usage_quotas/components/usage_statistics.vue';
 import {
   ADD_ON_CODE_SUGGESTIONS,

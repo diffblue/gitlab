@@ -169,7 +169,7 @@ module EE
         length: { maximum: 512 },
         addressable_url: ::ApplicationSetting::ADDRESSABLE_URL_VALIDATION_OPTIONS.merge({ allow_localhost: true }),
         presence: true,
-        if: ->(setting) { setting.product_analytics_enabled && ::Feature.enabled?(:product_analytics_snowplow_support) }
+        if: ->(setting) { setting.product_analytics_enabled }
 
       validates :security_policy_global_group_approvers_enabled,
         inclusion: { in: [true, false], message: 'must be a boolean value' }

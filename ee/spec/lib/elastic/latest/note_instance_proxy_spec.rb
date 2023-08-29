@@ -9,7 +9,7 @@ RSpec.describe Elastic::Latest::NoteInstanceProxy, feature_category: :global_sea
     include ElasticsearchHelpers
 
     before do
-      set_elasticsearch_migration_to :add_archived_to_notes, including: true
+      set_elasticsearch_migration_to :add_schema_version_to_note, including: true
     end
 
     let(:result) { subject.as_indexed_json }
@@ -28,7 +28,8 @@ RSpec.describe Elastic::Latest::NoteInstanceProxy, feature_category: :global_sea
         archived: note.project.archived,
         visibility_level: note.project.visibility_level,
         created_at: note.created_at,
-        updated_at: note.updated_at
+        updated_at: note.updated_at,
+        schema_version: Elastic::Latest::NoteInstanceProxy::SCHEMA_VERSION
       }.with_indifferent_access
     end
 
@@ -52,7 +53,17 @@ RSpec.describe Elastic::Latest::NoteInstanceProxy, feature_category: :global_sea
         end
 
         it 'serializes the object as a hash without archived field' do
-          expect(result).to match(common_attributes.except(:archived).merge(issue_attributes))
+          expect(result).to match(common_attributes.except(:archived, :schema_version).merge(issue_attributes))
+        end
+      end
+
+      context 'when migration add_schema_version_to_note is not finished' do
+        before do
+          set_elasticsearch_migration_to :add_schema_version_to_note, including: false
+        end
+
+        it 'serializes the object as a hash without schema_version field' do
+          expect(result).to match(common_attributes.except(:schema_version).merge(issue_attributes))
         end
       end
     end

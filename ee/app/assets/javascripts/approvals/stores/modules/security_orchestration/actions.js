@@ -20,7 +20,7 @@ export const fetchScanResultPolicies = ({ commit }, { fullPath }) => {
             return {
               ...fromYaml({ manifest: rawPolicy.yaml }),
               isSelected: false,
-              approvers: [...rawPolicy.userApprovers, ...rawPolicy.groupApprovers],
+              approvers: [...rawPolicy.userApprovers, ...rawPolicy.allGroupApprovers],
               source: rawPolicy.source || { project: { fullPath } },
             };
           } catch (e) {
