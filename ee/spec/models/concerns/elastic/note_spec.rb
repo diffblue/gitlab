@@ -112,7 +112,8 @@ RSpec.describe Note, :elastic, :clean_gitlab_redis_shared_state, feature_categor
                 'hashed_root_namespace_id' => project.namespace.hashed_root_namespace_id,
                 'type' => note.es_type,
                 'visibility_level' => project.visibility_level,
-                'issues_access_level' => project.issues_access_level
+                'issues_access_level' => project.issues_access_level,
+                'schema_version' => Elastic::Latest::NoteInstanceProxy::SCHEMA_VERSION
               })
 
       expect(note.__elasticsearch__.as_indexed_json).to eq(expected_hash)
