@@ -14,7 +14,8 @@ import { __, sprintf } from '~/locale';
 import SidebarEditableItem from '~/sidebar/components/sidebar_editable_item.vue';
 import { Tracking } from '~/sidebar/constants';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
-import { weightQueries, MAX_DISPLAY_WEIGHT } from '../../constants';
+import { MAX_DISPLAY_WEIGHT } from '../../constants';
+import { weightQueries } from '../../queries/constants';
 
 export default {
   tracking: {

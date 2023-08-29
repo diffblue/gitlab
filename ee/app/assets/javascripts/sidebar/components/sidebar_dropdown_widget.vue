@@ -5,9 +5,9 @@ import { TYPE_ISSUE, TYPE_MERGE_REQUEST } from '~/issues/constants';
 import {
   IssuableAttributeType,
   IssuableAttributeState,
-  issuableAttributesQueries,
   SIDEBAR_ESCALATION_POLICY_TITLE,
 } from '../constants';
+import { issuableAttributesQueries } from '../queries/constants';
 
 const widgetTitleText = {
   [IssuableAttributeType.Milestone]: __('Milestone'),

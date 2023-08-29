@@ -8,12 +8,12 @@ import IssueHealthStatus from 'ee/related_items_tree/components/issue_health_sta
 import HealthStatusDropdown from 'ee/sidebar/components/health_status/health_status_dropdown.vue';
 import SidebarHealthStatusWidget from 'ee/sidebar/components/health_status/sidebar_health_status_widget.vue';
 import {
-  healthStatusQueries,
   healthStatusTextMap,
   HEALTH_STATUS_ON_TRACK,
   HEALTH_STATUS_NEEDS_ATTENTION,
   HEALTH_STATUS_AT_RISK,
 } from 'ee/sidebar/constants';
+import { healthStatusQueries } from 'ee/sidebar/queries/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mockTracking } from 'helpers/tracking_helper';
 import waitForPromises from 'helpers/wait_for_promises';
