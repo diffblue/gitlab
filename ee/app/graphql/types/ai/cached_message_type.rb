@@ -19,6 +19,11 @@ module Types
         null: true,
         description: 'Content of the message. Can be null for failed responses.'
 
+      field :content_html,
+        GraphQL::Types::String,
+        null: true,
+        description: 'HTML content of the message. Can be null for failed responses.'
+
       field :role,
         Types::Ai::CachedMessageRoleEnum,
         null: false,
@@ -33,6 +38,18 @@ module Types
         [GraphQL::Types::String],
         null: false,
         description: 'Errors that occurred while asynchronously fetching an AI (assistant) response.'
+
+      def content_html
+        banzai_options = {
+          current_user: current_user,
+          only_path: false,
+          pipeline: :full,
+          allow_comments: false,
+          skip_project_check: true
+        }
+
+        Banzai.render_and_post_process(object.content, banzai_options)
+      end
     end
     # rubocop: enable Graphql/AuthorizeTypes
   end
