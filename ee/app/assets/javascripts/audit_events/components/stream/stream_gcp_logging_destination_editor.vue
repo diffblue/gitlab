@@ -39,6 +39,7 @@ export default {
   },
   data() {
     return {
+      name: '',
       googleProjectIdName: '',
       logIdName: '',
       privateKey: null,
@@ -50,6 +51,7 @@ export default {
   },
   computed: {
     isSubmitButtonDisabled() {
+<<<<<<< HEAD
       const { googleProjectIdName, logIdName, clientEmail } = this.item;
 
       if (!this.googleProjectIdName || !this.logIdName || !this.clientEmail) {
@@ -77,6 +79,30 @@ export default {
       }
 
       return true;
+=======
+      if (
+        !this.name ||
+        !this.googleProjectIdName ||
+        !this.logIdName ||
+        !this.privateKey ||
+        !this.clientEmail
+      ) {
+        return true;
+      }
+
+      return this.hasNoChanges;
+    },
+    hasNoChanges() {
+      const { name, googleProjectIdName, logIdName, privateKey, clientEmail } = this.item;
+
+      return (
+        name === this.name &&
+        googleProjectIdName === this.googleProjectIdName &&
+        logIdName === this.logIdName &&
+        privateKey === this.privateKey &&
+        clientEmail === this.clientEmail
+      );
+>>>>>>> source-project/master
     },
     isEditing() {
       return !isEmpty(this.item);
@@ -96,6 +122,7 @@ export default {
     },
   },
   mounted() {
+    this.name = this.item.name;
     this.googleProjectIdName = this.item.googleProjectIdName;
     this.logIdName = this.item.logIdName;
     this.clientEmail = this.item.clientEmail;
@@ -130,6 +157,7 @@ export default {
           variables: {
             id: this.item.id,
             fullPath: this.groupPath,
+            name: this.name,
             googleProjectIdName: this.googleProjectIdName,
             clientEmail: this.clientEmail,
             privateKey: this.privateKey,
@@ -181,6 +209,7 @@ export default {
           variables: {
             id: this.item.id,
             fullPath: this.groupPath,
+            name: this.name,
             googleProjectIdName: this.googleProjectIdName,
             clientEmail: this.clientEmail,
             privateKey: this.privateKey,
@@ -251,6 +280,16 @@ export default {
     </gl-alert>
 
     <gl-form @submit.prevent="formSubmission">
+      <gl-form-group
+        :label="$options.i18n.GCP_LOGGING_DESTINATION_NAME_LABEL"
+        data-testid="name-form-group"
+      >
+        <gl-form-input
+          v-model="name"
+          data-testid="name"
+          :placeholder="$options.i18n.GCP_LOGGING_DESTINATION_NAME_PLACEHOLDER"
+        />
+      </gl-form-group>
       <gl-form-group
         :label="$options.i18n.GCP_LOGGING_DESTINATION_PROJECT_ID_LABEL"
         data-testid="project-id-form-group"
