@@ -468,18 +468,27 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
   end
 
   describe '#standalone_indices_proxies' do
-    subject { helper.standalone_indices_proxies(target_classes: classes) }
+    subject { helper.standalone_indices_proxies(target_classes: target_classes, exclude_classes: exclude_classes) }
 
-    context 'when target_classes is not provided' do
-      let(:classes) { nil }
+    let(:target_classes) { nil }
+    let(:exclude_classes) { nil }
 
+    context 'when target_classes and exclude_classes are not provided' do
       it 'creates proxies for each separate class' do
         expect(subject.count).to eq(Gitlab::Elastic::Helper::ES_SEPARATE_CLASSES.count)
       end
     end
 
+    context 'when exclude_classes is provided' do
+      let(:exclude_classes) { [Epic, Wiki] }
+
+      it 'creates proxies for each separate classes except exclude_classes' do
+        expect(subject.map(&:target)).to match_array(Gitlab::Elastic::Helper::ES_SEPARATE_CLASSES - exclude_classes)
+      end
+    end
+
     context 'when target_classes is provided' do
-      let(:classes) { [Issue] }
+      let(:target_classes) { [Issue] }
 
       it 'creates proxies for only the target classes' do
         expect(subject.count).to eq(1)
@@ -764,7 +773,7 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
         let(:rid) { "wiki_project_#{non_existing_record_id}" }
 
         it 'calls delete_by_query without routing' do
-          expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index })
+          expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index, conflicts: 'proceed' })
           helper.remove_wikis_from_the_standalone_index(non_existing_record_id, 'Project')
         end
       end
@@ -779,14 +788,14 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
           end
 
           it 'calls delete_by_query with routing' do
-            expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index, routing: "n_#{group.root_ancestor.id}" })
+            expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index, conflicts: 'proceed', routing: "n_#{group.root_ancestor.id}" })
             helper.remove_wikis_from_the_standalone_index(group.id, group.class.name)
           end
         end
 
         context 'migration reindex_wikis_to_fix_routing is not finished' do
           it 'calls delete_by_query without routing' do
-            expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index })
+            expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index, conflicts: 'proceed' })
             helper.remove_wikis_from_the_standalone_index(group.id, group.class.name)
           end
         end
@@ -802,14 +811,14 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
           end
 
           it 'calls delete_by_query with routing' do
-            expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index, routing: "n_#{project.root_ancestor.id}" })
+            expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index, conflicts: 'proceed', routing: "n_#{project.root_ancestor.id}" })
             helper.remove_wikis_from_the_standalone_index(project.id, project.class.name)
           end
         end
 
         context 'migration reindex_wikis_to_fix_routing is not finished' do
           it 'calls delete_by_query without routing' do
-            expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index })
+            expect(helper.client).to receive(:delete_by_query).with({ body: body, index: index, conflicts: 'proceed' })
             helper.remove_wikis_from_the_standalone_index(project.id, project.class.name)
           end
         end
