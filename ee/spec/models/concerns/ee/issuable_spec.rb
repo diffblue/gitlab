@@ -116,6 +116,18 @@ RSpec.describe EE::Issuable do
     it { is_expected.to be_truthy }
   end
 
+  describe '#sla_available?' do
+    where(issuable_type: [:merge_request, :epic])
+
+    with_them do
+      it 'returns false unless overriden in child class' do
+        issuable = build_stubbed(issuable_type)
+
+        expect(issuable.sla_available?).to be_falsey
+      end
+    end
+  end
+
   describe '#escalation_policies_available?' do
     where(:issuable_type, :oncall_schedules_enabled, :escalation_policies_enabled, :available) do
       [

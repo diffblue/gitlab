@@ -1126,26 +1126,30 @@ RSpec.describe Issue, feature_category: :team_planning do
   end
 
   describe '#sla_available?' do
-    let_it_be(:project) { create(:project) }
-    let_it_be_with_refind(:issue) { create(:incident, project: project) }
-
-    subject { issue.sla_available? }
-
-    where(:incident_type, :license_available, :sla_available) do
-      false | true  | false
-      true  | false | false
-      true  | true  | true
+    where(:issuable_type, :traits, :sla_available, :return_value) do
+      [
+        [:issue, [:issue], true, false],
+        [:issue, [:incident], true, true],
+        [:issue, [:incident], false, false],
+        [:work_item, [:issue], true, false],
+        [:issue, [:group_level, :issue], true, false],
+        [:issue, [:user_namespace_level, :issue], true, false],
+        [:work_item, [:group_level, :issue], true, false],
+        [:work_item, [:group_level, :incident], true, true],
+        [:work_item, [:user_namespace_level, :issue], true, false],
+        [:work_item, [:user_namespace_level, :incident], true, true]
+      ]
     end
 
     with_them do
       before do
-        stub_licensed_features(incident_sla: license_available)
-        issue_type = incident_type ? 'incident' : 'issue'
-        issue.update!(work_item_type: WorkItems::Type.default_by_type(issue_type))
+        stub_licensed_features(incident_sla: sla_available)
       end
 
-      it 'returns the expected value' do
-        expect(subject).to eq(sla_available)
+      it 'checks feature availability at the parent level' do
+        issuable = build_stubbed(issuable_type, *traits)
+
+        expect(issuable.sla_available?).to eq(return_value)
       end
     end
   end
