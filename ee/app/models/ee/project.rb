@@ -1273,6 +1273,8 @@ module EE
         globally_available &&
           (open_source_license_granted? || namespace.feature_available_in_plan?(feature))
       else
+        # TODO: the condition `|| usage_ping_feature?` may become unnecessary
+        # when removing feature_available_check_with_usage_ping FF.
         globally_available || ::GitlabSubscriptions::Features.usage_ping_feature?(feature)
       end
     end

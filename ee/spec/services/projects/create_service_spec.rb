@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::CreateService, '#execute' do
+RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_and_projects do
   include EE::GeoHelpers
 
   let(:user) { create :user }

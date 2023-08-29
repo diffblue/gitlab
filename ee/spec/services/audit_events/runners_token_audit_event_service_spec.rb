@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AuditEvents::RunnersTokenAuditEventService do
+RSpec.describe AuditEvents::RunnersTokenAuditEventService, feature_category: :runner_fleet do
   describe '#security_event' do
     let(:logger) { instance_double(Gitlab::AuditJsonLogger) }
 
@@ -66,7 +66,7 @@ RSpec.describe AuditEvents::RunnersTokenAuditEventService do
     end
 
     context 'for instance' do
-      let(:entity) { create(:application_setting) }
+      let(:entity) { Gitlab::CurrentSettings.current_application_settings }
       let(:message) { 'Reset instance runner registration token' }
       let(:entity_details) do
         {

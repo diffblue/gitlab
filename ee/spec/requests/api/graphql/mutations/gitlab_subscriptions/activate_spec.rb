@@ -15,7 +15,7 @@ RSpec.describe 'Activate a subscription', feature_category: :purchase do
 
   let!(:application_setting) do
     stub_env('IN_MEMORY_APPLICATION_SETTINGS', 'false')
-    create(:application_setting)
+    Gitlab::CurrentSettings.current_application_settings
   end
 
   let(:future_subscriptions) { [] }
