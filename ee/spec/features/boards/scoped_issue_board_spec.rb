@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
   include MobileHelpers
+  include ListboxHelpers
 
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public) }
@@ -640,8 +641,8 @@ RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
         if value.is_a?(Array)
           value.each { |value| click_on value }
         elsif filter == 'weight'
-          page.within(".dropdown-menu") do
-            click_button value
+          page.within(".gl-new-dropdown-contents") do
+            select_listbox_item(value, exact_text: true)
           end
         else
           click_on value

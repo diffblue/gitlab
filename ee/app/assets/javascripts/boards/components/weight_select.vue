@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlButton } from '@gitlab/ui';
 import { s__ } from '~/locale';
 
 const ANY_WEIGHT = 'Any weight';
@@ -8,8 +8,7 @@ const NO_WEIGHT = 'None';
 export default {
   components: {
     GlButton,
-    GlDropdown,
-    GlDropdownItem,
+    GlCollapsibleListbox,
   },
   props: {
     board: {
@@ -33,6 +32,9 @@ export default {
     };
   },
   computed: {
+    listBoxItems() {
+      return this.weights.map((item) => ({ value: item, text: item }));
+    },
     valueClass() {
       if (this.valueText === ANY_WEIGHT) {
         return 'text-secondary';
@@ -49,7 +51,10 @@ export default {
   methods: {
     showDropdown() {
       this.dropdownHidden = false;
-      this.$refs.dropdown.$children[0].show();
+
+      this.$nextTick(() => {
+        this.$refs.dropdown.open();
+      });
     },
     selectWeight(rawWeight) {
       const weight = this.weightInt(rawWeight);
@@ -75,7 +80,6 @@ export default {
   },
   i18n: {
     label: s__('BoardScope|Weight'),
-    selectWeight: s__('BoardScope|Select weight'),
     edit: s__('BoardScope|Edit'),
   },
 };
@@ -99,21 +103,15 @@ export default {
       {{ valueText }}
     </div>
 
-    <gl-dropdown
+    <gl-collapsible-listbox
+      v-if="!dropdownHidden"
       ref="dropdown"
-      :hidden="dropdownHidden"
-      :text="valueText"
-      menu-class="gl-w-full!"
-      class="gl-w-full"
-    >
-      <gl-dropdown-item
-        v-for="weight in weights"
-        :key="weight"
-        :value="weight"
-        @click="selectWeight(weight)"
-      >
-        {{ weight }}
-      </gl-dropdown-item>
-    </gl-dropdown>
+      block
+      toggle-class="gl-w-full"
+      :items="listBoxItems"
+      :selected="selected"
+      :toggle-text="valueText"
+      @select="selectWeight"
+    />
   </div>
 </template>
