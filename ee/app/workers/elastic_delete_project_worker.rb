@@ -21,7 +21,9 @@ class ElasticDeleteProjectWorker
 
   def indices
     # some standalone indices may not be created yet if pending advanced search migrations exist
-    standalone_indices = helper.standalone_indices_proxies.select do |klass|
+    # Exclude Epic as Projects can not have epics
+    # Exclude Wiki as wikis have a different routing structure
+    standalone_indices = helper.standalone_indices_proxies(exclude_classes: [Epic, Wiki]).select do |klass|
       alias_name = helper.klass_to_alias_name(klass: klass)
       helper.index_exists?(index_name: alias_name)
     end

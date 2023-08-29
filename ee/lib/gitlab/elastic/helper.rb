@@ -136,10 +136,12 @@ module Gitlab
         false
       end
 
-      def standalone_indices_proxies(target_classes: nil)
+      def standalone_indices_proxies(target_classes: nil, exclude_classes: nil)
         classes = if target_classes.present?
                     # Only allow classes from ES_SEPARATE_CLASSES
                     target_classes & ES_SEPARATE_CLASSES
+                  elsif exclude_classes.present?
+                    ES_SEPARATE_CLASSES - Array(exclude_classes)
                   else
                     ES_SEPARATE_CLASSES
                   end
@@ -437,6 +439,7 @@ module Gitlab
 
         client.delete_by_query({
           index: ::Elastic::Latest::WikiConfig.index_name,
+          conflicts: 'proceed',
           routing: route,
           body: { query: { bool: { filter: { term: { rid: "wiki_#{container_type.downcase}_#{container_id}" } } } } }
         }.compact)
