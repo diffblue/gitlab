@@ -360,22 +360,32 @@ RSpec.describe PushRule, :saas, feature_category: :source_code_management do
           stub_application_setting(check_namespace_plan: true)
         end
 
-        context 'with a Bronze plan' do
-          let(:plan) { :bronze }
+        shared_examples 'different payment plans verifications' do
+          context 'with a Bronze plan' do
+            let(:plan) { :bronze }
 
-          it_behaves_like 'an unavailable push_rule'
+            it_behaves_like 'an unavailable push_rule'
+          end
+
+          context 'with a Premium plan' do
+            let(:plan) { :premium }
+
+            it_behaves_like 'an available push_rule'
+          end
+
+          context 'with a Ultimate plan' do
+            let(:plan) { :ultimate }
+
+            it_behaves_like 'an available push_rule'
+          end
         end
 
-        context 'with a Premium plan' do
-          let(:plan) { :premium }
+        it_behaves_like 'different payment plans verifications'
 
-          it_behaves_like 'an available push_rule'
-        end
+        context 'when a push rule belongs to a group' do
+          let(:push_rule) { create(:push_rule_without_project, group: group) }
 
-        context 'with a Ultimate plan' do
-          let(:plan) { :ultimate }
-
-          it_behaves_like 'an available push_rule'
+          it_behaves_like 'different payment plans verifications'
         end
       end
     end

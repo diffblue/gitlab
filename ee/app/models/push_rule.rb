@@ -135,7 +135,7 @@ class PushRule < ApplicationRecord
     if global?
       License.feature_available?(feature_sym)
     else
-      object ||= project
+      object ||= (project || group)
       object&.feature_available?(feature_sym)
     end
   end
