@@ -101,7 +101,7 @@ gem 'rqrcode-rails3', '~> 0.1.7'
 gem 'attr_encrypted', '~> 3.2.4', path: 'vendor/gems/attr_encrypted'
 
 # GitLab Pages
-gem 'validates_hostname', '~> 1.0.11'
+gem 'validates_hostname', '~> 1.0.13'
 gem 'rubyzip', '~> 2.3.2', require: 'zip'
 # GitLab Pages letsencrypt support
 gem 'acme-client', '~> 2.0'
