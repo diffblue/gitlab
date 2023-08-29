@@ -44,6 +44,20 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
         expect_index_status(Gitlab::Git::BLANK_SHA)
       end
     end
+
+    context 'when fresh master branch is first pushed, followed by another update, then indexed' do
+      it 'indexes initial push' do
+        sha1 = project.repository.create_file(user, '12', '', message: '12', branch_name: 'master')
+        project.repository.create_file(user, '23', '', message: '23', branch_name: 'master')
+
+        described_class.new(project).run(sha1)
+
+        ensure_elasticsearch_index!
+
+        expect(indexed_file_paths_for('12')).to include('12')
+        expect(indexed_file_paths_for('23')).not_to include('23')
+      end
+    end
   end
 
   describe '#find_indexable_commit' do
@@ -395,12 +409,6 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
       context 'after reverting a change' do
         let!(:initial_commit) { project.repository.commit('master').sha }
 
-        def change_repository_and_index(project, &blk)
-          yield blk if blk
-
-          index_repository(project)
-        end
-
         def indexed_commits_for(term)
           commits = Repository.elastic_search(
             term,
@@ -530,20 +538,6 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
       end
 
       context 'when IndexStatus#last_wiki_commit is no longer in repository' do
-        def change_wiki_and_index(project, &blk)
-          yield blk if blk
-
-          current_commit = project.wiki.repository.commit('master').sha
-
-          described_class.new(project, wiki: true).run(current_commit)
-          ensure_elasticsearch_index!
-        end
-
-        def indexed_wiki_paths_for(term)
-          blobs = ProjectWiki.elastic_search(term, type: 'wiki_blob')[:wiki_blobs][:results].response
-          blobs.map { |blob| blob['_source']['path'] }
-        end
-
         it 'reindexes from scratch' do
           sha_for_reset = nil
 
@@ -825,6 +819,58 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
     end
   end
 
+  describe 'integration test', :elastic do
+    context 'for blobs' do
+      it 'correctly indexes commits which add and remove files' do
+        filename_1 = 'test-1.md'
+        filename_2 = 'test-2.md'
+        branch = project.default_branch
+
+        change_repository_and_index(project) do
+          project.repository.create_file(user, filename_1, '', message: "adding #{filename_1}", branch_name: branch)
+          project.repository.create_file(user, filename_2, '', message: "adding #{filename_2}", branch_name: branch)
+        end
+
+        expect(indexed_file_paths_for(filename_1)).to include(filename_1)
+        expect(indexed_file_paths_for(filename_2)).to include(filename_2)
+
+        change_repository_and_index(project) do
+          project.repository.update_file(user, filename_1, '', message: "#{filename_1} updated", branch_name: branch)
+          project.repository.delete_file(user, filename_2, message: "remove #{filename_2}", branch_name: branch)
+        end
+
+        expect(indexed_file_paths_for(filename_1)).to include(filename_1)
+        expect(indexed_file_paths_for(filename_2)).not_to include(filename_2)
+      end
+    end
+
+    context 'for wiki blobs' do
+      let_it_be(:project) { create(:project, :wiki_repo) }
+
+      it 'correctly indexes commits which add and remove files' do
+        filename_1 = 'test-1.md'
+        filename_2 = 'test-2.md'
+        branch = project.wiki.default_branch
+
+        change_wiki_and_index(project) do
+          project.wiki.repository.create_file(user, filename_1, '', message: "adding #{filename_1}", branch_name: branch)
+          project.wiki.repository.create_file(user, filename_2, '', message: "adding #{filename_2}", branch_name: branch)
+        end
+
+        expect(indexed_wiki_paths_for(filename_1)).to include(filename_1)
+        expect(indexed_wiki_paths_for(filename_2)).to include(filename_2)
+
+        change_wiki_and_index(project) do
+          project.wiki.repository.update_file(user, filename_1, '', message: "#{filename_1} updated", branch_name: branch)
+          project.wiki.repository.delete_file(user, filename_2, message: "remove #{filename_2}", branch_name: branch)
+        end
+
+        expect(indexed_wiki_paths_for(filename_1)).to include(filename_1)
+        expect(indexed_wiki_paths_for(filename_2)).not_to include(filename_2)
+      end
+    end
+  end
+
   def expect_popen
     expect(Gitlab::Popen).to receive(:popen)
   end
@@ -867,5 +913,25 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
 
     described_class.new(project).run(current_commit)
     ensure_elasticsearch_index!
+  end
+
+  def change_repository_and_index(project, &blk)
+    yield blk if blk
+
+    index_repository(project)
+  end
+
+  def change_wiki_and_index(project, &blk)
+    yield blk if blk
+
+    current_commit = project.wiki.repository.commit('master').sha
+
+    described_class.new(project, wiki: true).run(current_commit)
+    ensure_elasticsearch_index!
+  end
+
+  def indexed_wiki_paths_for(term)
+    blobs = ProjectWiki.elastic_search(term, type: 'wiki_blob')[:wiki_blobs][:results].response
+    blobs.map { |blob| blob['_source']['path'] }
   end
 end
