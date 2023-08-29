@@ -167,19 +167,6 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       agent.prompt
     end
 
-    context 'when ai_chat_history_context is disabled' do
-      before do
-        stub_feature_flags(ai_chat_history_context: false)
-      end
-
-      it 'includes an empty chat' do
-        expect(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
-          .to receive(:prompt).once.with(a_hash_including(conversation: []))
-
-        agent.prompt
-      end
-    end
-
     it 'includes the prompt' do
       expect(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
         .to receive(:prompt).once.with(a_hash_including(prompt_version:

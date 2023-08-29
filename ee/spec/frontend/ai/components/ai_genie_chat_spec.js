@@ -16,7 +16,7 @@ describe('AiGenieChat', () => {
     data = {},
     scopedSlots = {},
     slots = {},
-    glFeatures = { aiChatHistoryContext: true },
+    glFeatures = {},
   } = {}) => {
     jest.spyOn(AiGenieLoader.methods, 'computeTransitionWidth').mockImplementation();
 
