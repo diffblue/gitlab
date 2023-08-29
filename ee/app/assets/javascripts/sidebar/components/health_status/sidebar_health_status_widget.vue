@@ -13,10 +13,10 @@ import {
   HEALTH_STATUS_I18N_NONE,
   HEALTH_STATUS_I18N_UPDATE_ERROR,
   HEALTH_STATUS_OPEN_DROPDOWN_DELAY,
-  healthStatusQueries,
   healthStatusTextMap,
   healthStatusTracking,
 } from '../../constants';
+import { healthStatusQueries } from '../../queries/constants';
 import HealthStatusDropdown from './health_status_dropdown.vue';
 
 export default {

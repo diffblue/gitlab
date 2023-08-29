@@ -1,5 +1,4 @@
 import { invert } from 'lodash';
-import { TYPE_EPIC, TYPE_ISSUE } from '~/issues/constants';
 import { __, s__, sprintf } from '~/locale';
 import {
   STATUS_TRIGGERED,
@@ -8,28 +7,11 @@ import {
   IssuableAttributeType as IssuableAttributeTypeFoss,
   IssuableAttributeState as IssuableAttributeStateFoss,
   LocalizedIssuableAttributeType as LocalizedIssuableAttributeTypeFoss,
-  issuableAttributesQueries as issuableAttributesQueriesFoss,
   dropdowni18nText as dropdowni18nTextFoss,
   Tracking,
   defaultEpicSort,
   epicIidPattern,
 } from '~/sidebar/constants';
-import updateStatusMutation from '~/sidebar/queries/update_status.mutation.graphql';
-import issuableWeightSubscription from '../graphql_shared/subscriptions/issuable_weight.subscription.graphql';
-import epicAncestorsQuery from './queries/epic_ancestors.query.graphql';
-import groupEpicsQuery from './queries/group_epics.query.graphql';
-import groupIterationsQuery from './queries/group_iterations.query.graphql';
-import issueHealthStatusQuery from './queries/issue_health_status.query.graphql';
-import issueWeightQuery from './queries/issue_weight.query.graphql';
-import projectIssueEpicMutation from './queries/project_issue_epic.mutation.graphql';
-import projectIssueEpicQuery from './queries/project_issue_epic.query.graphql';
-import projectIssueIterationMutation from './queries/project_issue_iteration.mutation.graphql';
-import projectIssueIterationQuery from './queries/project_issue_iteration.query.graphql';
-import updateIssueWeightMutation from './queries/update_issue_weight.mutation.graphql';
-import issueEscalationPolicyQuery from './queries/issue_escalation_policy.query.graphql';
-import issueEscalationPolicyMutation from './queries/issue_escalation_policy.mutation.graphql';
-import projectEscalationPoliciesQuery from './queries/project_escalation_policies.query.graphql';
-import issuableEpicSubscription from './queries/issuable_epic.subscription.graphql';
 
 export { Tracking, defaultEpicSort, epicIidPattern };
 
@@ -118,45 +100,6 @@ export const CVE_ID_REQUEST_SIDEBAR_I18N = {
   learnMore: __('Learn more'),
 };
 
-export const issuableIterationQueries = {
-  [TYPE_ISSUE]: {
-    query: projectIssueIterationQuery,
-    mutation: projectIssueIterationMutation,
-  },
-};
-
-export const iterationsQueries = {
-  [TYPE_ISSUE]: {
-    query: groupIterationsQuery,
-  },
-};
-
-const issuableEpicQueries = {
-  [TYPE_ISSUE]: {
-    query: projectIssueEpicQuery,
-    mutation: projectIssueEpicMutation,
-  },
-};
-
-const epicsQueries = {
-  [TYPE_ISSUE]: {
-    query: groupEpicsQuery,
-  },
-};
-
-const issuableEscalationPolicyQueries = {
-  [TYPE_ISSUE]: {
-    query: issueEscalationPolicyQuery,
-    mutation: issueEscalationPolicyMutation,
-  },
-};
-
-const escalationPoliciesQueries = {
-  [TYPE_ISSUE]: {
-    query: projectEscalationPoliciesQuery,
-  },
-};
-
 export const IssuableAttributeType = {
   ...IssuableAttributeTypeFoss,
   Iteration: 'iteration',
@@ -179,48 +122,6 @@ export const IssuableAttributeState = {
   ...IssuableAttributeStateFoss,
   [IssuableAttributeType.Iteration]: 'opened',
   [IssuableAttributeType.Epic]: 'opened',
-};
-
-export const issuableAttributesQueries = {
-  ...issuableAttributesQueriesFoss,
-  [IssuableAttributeType.Iteration]: {
-    current: issuableIterationQueries,
-    list: iterationsQueries,
-  },
-  [IssuableAttributeType.Epic]: {
-    current: issuableEpicQueries,
-    list: epicsQueries,
-    subscription: issuableEpicSubscription,
-  },
-  [IssuableAttributeType.EscalationPolicy]: {
-    current: issuableEscalationPolicyQueries,
-    list: escalationPoliciesQueries,
-  },
-};
-
-export const ancestorsQueries = {
-  [TYPE_EPIC]: {
-    query: epicAncestorsQuery,
-  },
-};
-
-export const weightQueries = {
-  [TYPE_ISSUE]: {
-    query: issueWeightQuery,
-    mutation: updateIssueWeightMutation,
-    subscription: issuableWeightSubscription,
-  },
-};
-
-export const healthStatusQueries = {
-  [TYPE_ISSUE]: {
-    mutation: updateStatusMutation,
-    query: issueHealthStatusQuery,
-  },
-  [TYPE_EPIC]: {
-    mutation: updateStatusMutation,
-    query: issueHealthStatusQuery,
-  },
 };
 
 export function dropdowni18nText(issuableAttribute, issuableType) {

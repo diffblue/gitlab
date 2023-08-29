@@ -8,7 +8,8 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { TYPE_ISSUE } from '~/issues/constants';
 import groupIterationsQuery from 'ee/sidebar/queries/group_iterations.query.graphql';
 import projectIssueIterationQuery from 'ee/sidebar/queries/project_issue_iteration.query.graphql';
-import { IssuableAttributeType, issuableAttributesQueries } from 'ee/sidebar/constants';
+import { IssuableAttributeType } from 'ee/sidebar/constants';
+import { issuableAttributesQueries } from 'ee/sidebar/queries/constants';
 import { getIterationPeriod } from 'ee/iterations/utils';
 import {
   mockIssue,
