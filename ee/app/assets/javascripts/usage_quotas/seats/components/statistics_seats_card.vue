@@ -1,5 +1,5 @@
 <script>
-import { GlLink, GlIcon, GlButton } from '@gitlab/ui';
+import { GlLink, GlIcon, GlButton, GlModalDirective } from '@gitlab/ui';
 import {
   addSeatsText,
   seatsOwedHelpText,
@@ -10,10 +10,15 @@ import {
   seatsUsedText,
 } from 'ee/usage_quotas/seats/constants';
 import Tracking from '~/tracking';
+import { visitUrl } from '~/lib/utils/url_utility';
+import LimitedAccessModal from '../../components/limited_access_modal.vue';
 
 export default {
   name: 'StatisticsSeatsCard',
-  components: { GlLink, GlIcon, GlButton },
+  components: { GlLink, GlIcon, GlButton, LimitedAccessModal },
+  directives: {
+    GlModalDirective,
+  },
   helpLinks: {
     seatsUsedLink,
     seatsOwedLink,
@@ -60,6 +65,11 @@ export default {
       default: null,
     },
   },
+  data() {
+    return {
+      showLimitedAccessModal: false,
+    };
+  },
   computed: {
     shouldRenderSeatsUsedBlock() {
       return this.seatsUsed !== null;
@@ -67,10 +77,22 @@ export default {
     shouldRenderSeatsOwedBlock() {
       return this.seatsOwed !== null;
     },
+    shouldShowModal() {
+      return gon.features?.limitedAccessModal;
+    },
   },
   methods: {
     trackClick() {
       this.track('click_button', { label: 'add_seats_saas', property: 'usage_quotas_page' });
+    },
+    handleAddSeats() {
+      if (this.shouldShowModal) {
+        this.showLimitedAccessModal = true;
+        return;
+      }
+
+      this.trackClick();
+      visitUrl(this.purchaseButtonLink);
     },
   },
 };
@@ -124,16 +146,17 @@ export default {
     </div>
     <gl-button
       v-if="purchaseButtonLink"
-      :href="purchaseButtonLink"
+      v-gl-modal-directive="'limited-access-modal-id'"
       category="primary"
       target="_blank"
       variant="confirm"
       class="gl-ml-3 gl-align-self-start"
       data-testid="purchase-button"
       data-qa-selector="add_seats"
-      @click="trackClick"
+      @click="handleAddSeats"
     >
       {{ $options.i18n.addSeatsText }}
     </gl-button>
+    <limited-access-modal v-if="shouldShowModal" v-model="showLimitedAccessModal" />
   </div>
 </template>
