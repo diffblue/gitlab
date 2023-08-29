@@ -56,17 +56,6 @@ RSpec.describe Resolvers::ProductAnalytics::DashboardsResolver, feature_category
         end
       end
 
-      context 'when snowplow support is disabled' do
-        before do
-          stub_feature_flags(product_analytics_snowplow_support: false)
-        end
-
-        it 'returns all dashboards excluding hardcoded ones' do
-          expect(subject).to eq(project.product_analytics_dashboards)
-          expect(subject.size).to eq(1)
-        end
-      end
-
       context 'when feature flag is disabled' do
         before do
           stub_feature_flags(product_analytics_dashboards: false)

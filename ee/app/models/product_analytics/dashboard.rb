@@ -111,8 +111,7 @@ module ProductAnalytics
     end
 
     def self.product_analytics_available?(project)
-      ::Feature.enabled?(:product_analytics_snowplow_support, project) &&
-        project.product_analytics_enabled? &&
+      project.product_analytics_enabled? &&
         project.project_setting.product_analytics_instrumentation_key
     end
 
