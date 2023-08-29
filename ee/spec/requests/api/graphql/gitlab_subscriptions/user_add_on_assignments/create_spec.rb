@@ -124,7 +124,7 @@ RSpec.describe 'UserAddOnAssignmentCreate', feature_category: :seat_cost_managem
   context 'when user is guest' do
     let(:user_id) { global_id_of(namespace.add_guest(create(:user)).user) }
 
-    it_behaves_like 'error response', 'INVALID_USER_MEMBERSHIP'
+    it_behaves_like 'success response'
   end
 
   context 'when user does not belong to namespace' do

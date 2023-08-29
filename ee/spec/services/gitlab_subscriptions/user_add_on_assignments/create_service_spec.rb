@@ -61,7 +61,7 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignments::CreateService, feature
     context 'when user has guest role' do
       let(:user) { namespace.add_guest(create(:user)).user }
 
-      it_behaves_like 'error response', 'INVALID_USER_MEMBERSHIP'
+      it_behaves_like 'success response'
     end
 
     context 'when user is member of subgroup' do
