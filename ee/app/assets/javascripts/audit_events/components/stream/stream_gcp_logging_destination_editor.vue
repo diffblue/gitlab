@@ -51,10 +51,9 @@ export default {
   },
   computed: {
     isSubmitButtonDisabled() {
-<<<<<<< HEAD
-      const { googleProjectIdName, logIdName, clientEmail } = this.item;
+      const { googleProjectIdName, logIdName, clientEmail, name } = this.item;
 
-      if (!this.googleProjectIdName || !this.logIdName || !this.clientEmail) {
+      if (!this.googleProjectIdName || !this.logIdName || !this.clientEmail || !this.name) {
         return true;
       }
 
@@ -63,6 +62,7 @@ export default {
         (googleProjectIdName !== this.googleProjectIdName ||
           logIdName !== this.logIdName ||
           clientEmail !== this.clientEmail ||
+          name !== this.name ||
           this.privateKey)
       ) {
         return false;
@@ -73,36 +73,13 @@ export default {
         this.googleProjectIdName &&
         this.logIdName &&
         this.privateKey &&
-        this.clientEmail
+        this.clientEmail &&
+        this.name
       ) {
         return false;
       }
 
       return true;
-=======
-      if (
-        !this.name ||
-        !this.googleProjectIdName ||
-        !this.logIdName ||
-        !this.privateKey ||
-        !this.clientEmail
-      ) {
-        return true;
-      }
-
-      return this.hasNoChanges;
-    },
-    hasNoChanges() {
-      const { name, googleProjectIdName, logIdName, privateKey, clientEmail } = this.item;
-
-      return (
-        name === this.name &&
-        googleProjectIdName === this.googleProjectIdName &&
-        logIdName === this.logIdName &&
-        privateKey === this.privateKey &&
-        clientEmail === this.clientEmail
-      );
->>>>>>> source-project/master
     },
     isEditing() {
       return !isEmpty(this.item);

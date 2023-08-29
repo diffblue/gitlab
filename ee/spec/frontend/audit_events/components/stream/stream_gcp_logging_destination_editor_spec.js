@@ -274,19 +274,11 @@ describe('StreamDestinationEditor', () => {
       });
 
       it.each`
-<<<<<<< HEAD
-        name              | findInputFn
-        ${'Project ID'}   | ${findProjectId}
-        ${'Client Email'} | ${findClientEmailUrl}
-        ${'Log ID'}       | ${findLogId}
-=======
         name                  | findInputFn
         ${'Destination Name'} | ${findName}
         ${'Project ID'}       | ${findProjectId}
         ${'Client Email'}     | ${findClientEmailUrl}
         ${'Log ID'}           | ${findLogId}
-        ${'Private Key'}      | ${findPrivateKey}
->>>>>>> source-project/master
       `('enable the save button when $name is edited', async ({ findInputFn }) => {
         createComponent({ props: { item: mockGcpLoggingDestinations[0] } });
 
