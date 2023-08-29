@@ -46,6 +46,7 @@ module Elastic
         end
 
         indexes :hashed_root_namespace_id, type: :integer
+        indexes :schema_version, type: :short
 
         indexes :archived, type: :boolean
       end
