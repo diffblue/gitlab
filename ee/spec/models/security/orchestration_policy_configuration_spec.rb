@@ -702,6 +702,39 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
           end
         end
 
+        describe "approval_settings" do
+          let(:scan_result_policy) do
+            build(:scan_result_policy, rules: rules, actions: actions, approval_settings: approval_settings)
+          end
+
+          context 'with empty object' do
+            let(:approval_settings) { {} }
+
+            specify { expect(errors).to be_empty }
+          end
+
+          context 'with allowed properties' do
+            let(:approval_settings) do
+              {
+                prevent_approval_by_author: true,
+                prevent_approval_by_commit_author: false,
+                remove_approvals_with_new_commit: true,
+                require_password_to_approve: false
+              }
+            end
+
+            specify { expect(errors).to be_empty }
+          end
+
+          context 'with additional property' do
+            let(:approval_settings) { { additional_key: 'allowed' } }
+
+            specify do
+              expect(errors).to be_empty
+            end
+          end
+        end
+
         describe "actions" do
           let(:approvals_required) { 1 }
           let(:action) do
@@ -825,6 +858,59 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
         end
       end
 
+      shared_examples 'rule has branches or branch_type' do
+        context "with branches" do
+          before do
+            rule[:branches] = %w[master]
+            rule.delete(:branch_type)
+          end
+
+          specify { expect(errors).to be_empty }
+
+          context "with branch_type" do
+            before do
+              rule[:branch_type] = "protected"
+            end
+
+            specify do
+              expect(errors).to contain_exactly("property '/scan_result_policy/0/rules/0' is invalid: error_type=oneOf")
+            end
+          end
+        end
+
+        context "with branch_type" do
+          before do
+            rule.delete(:branches)
+            rule[:branch_type] = "protected"
+          end
+
+          specify { expect(errors).to be_empty }
+
+          context "with branches" do
+            before do
+              rule[:branches] = %w[main]
+            end
+
+            specify do
+              expect(errors).to contain_exactly("property '/scan_result_policy/0/rules/0' is invalid: error_type=oneOf")
+            end
+          end
+        end
+
+        context "without branches and branch_type" do
+          before do
+            rule.delete(:branches)
+            rule.delete(:branch_type)
+          end
+
+          specify do
+            expect(errors).to contain_exactly(
+              "property '/scan_result_policy/0/rules/0' is missing required keys: branch_type",
+              "property '/scan_result_policy/0/rules/0' is missing required keys: branches")
+          end
+        end
+      end
+
       context "with scan_finding type" do
         let(:rule) do
           {
@@ -841,6 +927,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
         it_behaves_like "scan result policy",
           %i[scanners vulnerabilities_allowed severity_levels vulnerability_states]
+        it_behaves_like 'rule has branches or branch_type'
 
         describe "scanners" do
           before do
@@ -933,51 +1020,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
         specify { expect(errors).to be_empty }
 
         it_behaves_like "scan result policy", %i[match_on_inclusion license_types license_states]
-
-        context "with branches" do
-          specify { expect(errors).to be_empty }
-
-          context "with branch_type" do
-            before do
-              rule[:branch_type] = "protected"
-            end
-
-            specify do
-              expect(errors).to contain_exactly("property '/scan_result_policy/0/rules/0' is invalid: error_type=oneOf")
-            end
-          end
-        end
-
-        context "with branch_type" do
-          before do
-            rule.delete(:branches)
-            rule[:branch_type] = "protected"
-          end
-
-          specify { expect(errors).to be_empty }
-
-          context "with branches" do
-            before do
-              rule[:branches] = %w[main]
-            end
-
-            specify do
-              expect(errors).to contain_exactly("property '/scan_result_policy/0/rules/0' is invalid: error_type=oneOf")
-            end
-          end
-        end
-
-        context "without branches and branch_type" do
-          before do
-            rule.delete(:branches)
-          end
-
-          specify do
-            expect(errors).to contain_exactly(
-              "property '/scan_result_policy/0/rules/0' is missing required keys: branch_type",
-              "property '/scan_result_policy/0/rules/0' is missing required keys: branches")
-          end
-        end
+        it_behaves_like 'rule has branches or branch_type'
 
         describe "license_types" do
           before do
@@ -1012,6 +1055,32 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
               expect(errors.first).to match(
                 "property '/scan_result_policy/0/rules/0/license_states/0' is not one of")
             end
+          end
+        end
+      end
+
+      context 'with any_merge_request type' do
+        let(:rule) do
+          {
+            type: 'any_merge_request',
+            branches: %w[master],
+            commits: 'any'
+          }
+        end
+
+        specify { expect(errors).to be_empty }
+
+        it_behaves_like 'scan result policy', %i[commits]
+        it_behaves_like 'rule has branches or branch_type'
+
+        describe 'commits' do
+          before do
+            rule[:commits] = 'invalid'
+          end
+
+          specify do
+            expect(errors).to contain_exactly(
+              "property '/scan_result_policy/0/rules/0/commits' is not one of: [\"any\", \"unsigned\"]")
           end
         end
       end
