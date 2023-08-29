@@ -32,6 +32,7 @@ import groupBoardMembersQuery from '~/boards/graphql/group_board_members.query.g
 import projectBoardMembersQuery from '~/boards/graphql/project_board_members.query.graphql';
 import { setError } from '~/boards/graphql/cache_updates';
 import { getListByTypeId } from '~/boards//boards_util';
+import usersAutocompleteQuery from '~/graphql_shared/queries/users_autocomplete.query.graphql';
 import searchIterationQuery from 'ee/issues/list/queries/search_iterations.query.graphql';
 
 export const listTypeInfo = {
@@ -171,15 +172,31 @@ export default {
     },
     assigneesApollo: {
       query() {
+        if (gon.features?.newGraphqlUsersAutocomplete) {
+          return usersAutocompleteQuery;
+        }
+
         if (this.boardType === BoardType.project) {
           return projectBoardMembersQuery;
         }
         return groupBoardMembersQuery;
       },
       variables() {
+        if (gon.features?.newGraphqlUsersAutocomplete) {
+          return {
+            fullPath: this.fullPath,
+            search: this.searchTerm,
+            isProject: this.boardType === BoardType.project,
+          };
+        }
+
         return { ...this.baseVariables, search: this.searchTerm };
       },
       update(data) {
+        if (gon.features?.newGraphqlUsersAutocomplete) {
+          return data[this.boardType]?.autocompleteUsers;
+        }
+
         return data.workspace.assignees.nodes.map(({ user }) => user);
       },
       skip() {
