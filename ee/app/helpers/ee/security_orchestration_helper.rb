@@ -43,7 +43,9 @@ module EE::SecurityOrchestrationHelper
       software_licenses: SoftwareLicense.all_license_names,
       global_group_approvers_enabled: Gitlab::CurrentSettings.security_policy_global_group_approvers_enabled.to_json,
       root_namespace_path: container.root_ancestor&.full_path,
-      timezones: timezone_data(format: :full).to_json
+      timezones: timezone_data(format: :full).to_json,
+      max_active_scan_execution_policies_reached: max_active_scan_execution_policies_reached(container),
+      max_active_scan_result_policies_reached: max_active_scan_result_policies_reached(container)
     }
 
     if container.is_a?(::Project)
@@ -57,5 +59,27 @@ module EE::SecurityOrchestrationHelper
 
   def security_policies_path(container)
     container.is_a?(::Project) ? project_security_policies_path(container) : group_security_policies_path(container)
+  end
+
+  def max_active_scan_execution_policies_reached(container)
+    active_scan_execution_policy_count(container) >= Security::ScanExecutionPolicy::POLICY_LIMIT
+  end
+
+  def active_scan_execution_policy_count(container)
+    container
+      &.security_orchestration_policy_configuration
+      &.active_scan_execution_policies
+      &.length || 0
+  end
+
+  def max_active_scan_result_policies_reached(container)
+    active_scan_result_policy_count(container) >= Security::ScanResultPolicy::LIMIT
+  end
+
+  def active_scan_result_policy_count(container)
+    container
+      &.security_orchestration_policy_configuration
+      &.active_scan_result_policies
+      &.length || 0
   end
 end
