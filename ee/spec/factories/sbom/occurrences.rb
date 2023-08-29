@@ -13,6 +13,32 @@ FactoryBot.define do
       packager_name { 'npm' }
     end
 
+    trait :bundler do
+      packager_name { 'bundler' }
+    end
+
+    trait :npm do
+      packager_name { 'npm' }
+    end
+
+    trait :apache_2 do
+      after(:build) do |occurrence|
+        occurrence.licenses.push({
+          'name' => 'Apache-2.0',
+          'url' => 'https://spdx.org/licenses/Apache-2.0.html'
+        })
+      end
+    end
+
+    trait :mit do
+      after(:build) do |occurrence|
+        occurrence.licenses.push({
+          'name' => 'MIT',
+          'url' => 'https://spdx.org/licenses/MIT.html'
+        })
+      end
+    end
+
     after(:build) do |occurrence|
       occurrence.uuid = Sbom::OccurrenceUUID.generate(
         project_id: occurrence.project.id,
