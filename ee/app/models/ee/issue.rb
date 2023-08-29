@@ -145,7 +145,7 @@ module EE
 
     # override
     def allows_multiple_assignees?
-      project.feature_available?(:multiple_issue_assignees)
+      licensed_feature_available?(:multiple_issue_assignees)
     end
 
     def blocked?
@@ -317,6 +317,12 @@ module EE
 
     def serialize_for_ai(user:, content_limit:)
       ::Gitlab::Llm::Serializers::IssueSerializer.serialize(issue: self, user: user, content_limit: content_limit)
+    end
+
+    def licensed_feature_available?(feature)
+      return project.licensed_feature_available?(feature) if project
+
+      namespace.licensed_feature_available?(feature)
     end
 
     private

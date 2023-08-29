@@ -437,6 +437,30 @@ RSpec.describe Issue, feature_category: :team_planning do
     let(:set_mentionable_text) { ->(txt) { subject.description = txt } }
   end
 
+  describe '#licensed_feature_available?' do
+    context 'when issue belongs to a project' do
+      it 'checks licensed feature against the project' do
+        project = create(:project)
+        issue = create(:issue, project: project)
+
+        expect(project).to receive(:licensed_feature_available?).and_return(true)
+
+        expect(issue.licensed_feature_available?(:anything)).to be_truthy
+      end
+    end
+
+    context 'when issue belongs directly to a namespace' do
+      it 'checks licensed feature against the namespace' do
+        namespace = create(:group)
+        issue = create(:issue, :group_level, namespace: namespace)
+
+        expect(namespace).to receive(:licensed_feature_available?).and_return(true)
+
+        expect(issue.licensed_feature_available?(:anything)).to be_truthy
+      end
+    end
+  end
+
   describe '#allows_multiple_assignees?' do
     it 'does not allow multiple assignees without license' do
       stub_licensed_features(multiple_issue_assignees: false)
@@ -446,12 +470,32 @@ RSpec.describe Issue, feature_category: :team_planning do
       expect(issue.allows_multiple_assignees?).to be_falsey
     end
 
-    it 'does not allow multiple assignees without license' do
+    it 'allows multiple assignees with license' do
       stub_licensed_features(multiple_issue_assignees: true)
 
       issue = build(:issue)
 
       expect(issue.allows_multiple_assignees?).to be_truthy
+    end
+
+    context 'when issue belongs to a group' do
+      it 'allows multiple assignees with license' do
+        stub_licensed_features(multiple_issue_assignees: true)
+
+        issue = build(:issue, :group_level)
+
+        expect(issue.allows_multiple_assignees?).to be_truthy
+      end
+    end
+
+    context 'when issue belongs to a personal namespace' do
+      it 'allows multiple assignees with license' do
+        stub_licensed_features(multiple_issue_assignees: true)
+
+        issue = build(:issue, :user_namespace_level)
+
+        expect(issue.allows_multiple_assignees?).to be_truthy
+      end
     end
   end
 
