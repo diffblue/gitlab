@@ -207,14 +207,16 @@ RSpec.describe Security::Orchestration::AssignService, feature_category: :securi
           expect(service).to be_success
         end
 
-        context 'when the feature is disabled' do
-          before do
-            stub_feature_flags(feature_flag => false)
-          end
+        if feature_flag
+          context 'when the feature is disabled' do
+            before do
+              stub_feature_flags(feature_flag => false)
+            end
 
-          it 'does not trigger the project bot user create worker' do
-            expect(Security::OrchestrationConfigurationCreateBotWorker).not_to receive(:perform_async)
-            expect(service).to be_success
+            it 'does not trigger the project bot user create worker' do
+              expect(Security::OrchestrationConfigurationCreateBotWorker).not_to receive(:perform_async)
+              expect(service).to be_success
+            end
           end
         end
       end
@@ -225,7 +227,7 @@ RSpec.describe Security::Orchestration::AssignService, feature_category: :securi
       let(:another_container) { another_project }
 
       it_behaves_like 'executes assign service'
-      it_behaves_like 'triggers bot user create worker', :scan_execution_bot_users do
+      it_behaves_like 'triggers bot user create worker' do
         let!(:expected_projects) { [container] }
       end
     end
