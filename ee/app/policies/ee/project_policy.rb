@@ -677,6 +677,10 @@ module EE
       end.enable :create_target_branch_rule
 
       rule do
+        target_branch_rules_enabled & target_branch_rules_available
+      end.enable :read_target_branch_rules
+
+      rule do
         (maintainer | owner | admin) & pages_multiple_versions_available
       end.enable :pages_multiple_versions
     end
