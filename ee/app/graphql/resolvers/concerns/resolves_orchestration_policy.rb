@@ -3,7 +3,7 @@
 module ResolvesOrchestrationPolicy
   extend ActiveSupport::Concern
 
-  POLICY_YAML_ATTRIBUTES = %i[name description enabled actions rules].freeze
+  POLICY_YAML_ATTRIBUTES = %i[name description enabled actions rules approval_settings].freeze
 
   included do
     include Gitlab::Graphql::Authorize::AuthorizeResource
