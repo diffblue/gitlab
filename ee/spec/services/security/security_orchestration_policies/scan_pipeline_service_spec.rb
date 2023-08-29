@@ -68,26 +68,32 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
       end
     end
 
-    context 'when action contains variables that are not allowed' do
+    context 'when action contains the SECRET_DETECTION_HISTORIC_SCAN variable' do
       let(:actions) { [{ scan: 'secret_detection', variables: { SECRET_DETECTION_HISTORIC_SCAN: 'true' } }] }
 
-      it 'ignores variables from the action and does not apply them in configuration service' do
-        expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
-          expect(ci_configuration_service).to receive(:execute).once
-            .with(actions.first, { 'SECRET_DETECTION_HISTORIC_SCAN' => 'false' }, 0).and_call_original
-        end
+      context 'when SECRET_DETECTION_HISTORIC_SCAN is provided when initializing the service' do
+        let(:service) { described_class.new(project, secret_detection: { 'SECRET_DETECTION_HISTORIC_SCAN' => 'false' }) }
 
-        subject
-      end
-
-      context 'when base variables are provided when initializing the service' do
-        let(:actions) { [{ scan: 'secret_detection', variables: { SECRET_DETECTION_HISTORIC_SCAN: 'false' } }] }
-        let(:service) { described_class.new(project, secret_detection: { 'SECRET_DETECTION_HISTORIC_SCAN' => 'true' }) }
-
-        it 'ignores variables from the action and does not apply them in configuration service' do
+        it 'ignores variables from base_variables and set the value defined in actions' do
           expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
             expect(ci_configuration_service).to receive(:execute).once
-              .with(actions.first, { 'SECRET_DETECTION_HISTORIC_SCAN' => 'true' }, 0).and_call_original
+                                                                 .with(actions.first, { 'SECRET_DETECTION_HISTORIC_SCAN' => 'true' }, 0).and_call_original
+          end
+
+          subject
+        end
+      end
+    end
+
+    context 'when actions does not contain the SECRET_DETECTION_HISTORIC_SCAN variable' do
+      let(:actions) { [{ scan: 'secret_detection', variables: {} }] }
+      let(:service) { described_class.new(project, secret_detection: { 'SECRET_DETECTION_HISTORIC_SCAN' => 'true' }) }
+
+      context 'when SECRET_DETECTION_HISTORIC_SCAN is provided when initializing the service' do
+        it 'sets the value provided when initializing the service' do
+          expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
+            expect(ci_configuration_service).to receive(:execute).once
+                                                                 .with(actions.first, { 'SECRET_DETECTION_HISTORIC_SCAN' => 'true' }, 0).and_call_original
           end
 
           subject
