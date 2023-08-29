@@ -35002,7 +35002,7 @@ msgstr ""
 msgid "Pipeline|Trigger author"
 msgstr ""
 
-msgid "Pipeline|Triggerer"
+msgid "Pipeline|Triggered by"
 msgstr ""
 
 msgid "Pipeline|Variables"
