@@ -123,8 +123,9 @@ RSpec.describe DesignManagement::SaveDesignsService, feature_category: :design_m
         )
       end
 
-      it_behaves_like 'issue_edit snowplow tracking' do
-        let(:property) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_DESIGNS_ADDED }
+      it_behaves_like 'internal event tracking' do
+        let(:action) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_DESIGNS_ADDED }
+        let(:namespace) { project.namespace }
         subject(:service_action) { run_service }
       end
 
@@ -221,8 +222,9 @@ RSpec.describe DesignManagement::SaveDesignsService, feature_category: :design_m
           run_service
         end
 
-        it_behaves_like 'issue_edit snowplow tracking' do
-          let(:property) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_DESIGNS_MODIFIED }
+        it_behaves_like 'internal event tracking' do
+          let(:action) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_DESIGNS_MODIFIED }
+          let(:namespace) { project.namespace }
           subject(:service_action) { run_service }
         end
 
