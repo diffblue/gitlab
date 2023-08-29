@@ -15,7 +15,7 @@ require 'spec_helper'
 #     Subgroup 2_1
 # Group 2
 
-RSpec.describe Projects::CreateFromTemplateService do
+RSpec.describe Projects::CreateFromTemplateService, feature_category: :importers do
   using RSpec::Parameterized::TableSyntax
 
   let(:group) { create(:group) }

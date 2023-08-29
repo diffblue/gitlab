@@ -316,6 +316,15 @@ module GitlabSubscriptions
       'GitLab_Geo' => :geo
     }.freeze
 
+    # TODO: These features currently cannot be used as Usage Ping features because
+    # their availability is checked in Gitlab::CurrentSettings/ApplicationSetting which
+    # would otherwise generate a cyclical dependency.
+    FEATURES_NOT_SUPPORTING_USAGE_PING = [
+      :custom_project_templates, # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/423237
+      :email_additional_text,    # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/423238
+      :elastic_search            # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/423240
+    ].freeze
+
     class << self
       def features(plan:, add_ons:)
         (for_plan(plan) + for_add_ons(add_ons)).to_set
@@ -326,6 +335,10 @@ module GitlabSubscriptions
       end
 
       def usage_ping_feature?(feature)
+        # By checking the values in this constants first we avoid calling
+        # Gitlab::CurrentSettings which may in turn depend on feature availability checks.
+        return false if FEATURES_NOT_SUPPORTING_USAGE_PING.include?(feature)
+
         features_with_usage_ping.include?(feature)
       end
 
