@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples "protected tags > access control > EE" do
-  let(:users) { create_list(:user, 5) }
-  let(:groups) { create_list(:group, 5) }
-  let(:roles) do
+  let_it_be(:users) { create_list(:user, 5) }
+  let_it_be(:groups) { create_list(:group, 5) }
+  let_it_be(:roles) do
     ProtectedRef::AccessLevel.human_access_levels.except(Gitlab::Access::NO_ACCESS)
   end
 
-  before do
+  before_all do
     users.each { |user| project.add_developer(user) }
     groups.each { |group| project.project_group_links.create!(group: group, group_access: Gitlab::Access::DEVELOPER) }
   end
