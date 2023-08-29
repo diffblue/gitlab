@@ -2294,6 +2294,7 @@
   rules:
     - <<: *if-merge-request
       changes: ["**/*click_house*"]
+    - <<: *if-merge-request-labels-run-all-rspec
 
 #########################
 # Static analysis rules #
