@@ -32999,6 +32999,9 @@ msgstr ""
 msgid "Organization|Frequently visited projects"
 msgstr ""
 
+msgid "Organization|New organization"
+msgstr ""
+
 msgid "Organization|Org ID"
 msgstr ""
 
@@ -33006,6 +33009,9 @@ msgid "Organization|Organization navigation"
 msgstr ""
 
 msgid "Organization|Organization overview"
+msgstr ""
+
+msgid "Organization|Organizations"
 msgstr ""
 
 msgid "Organization|Public - The organization can be accessed without any authentication."

@@ -20,6 +20,17 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
       end
     end
 
+    shared_examples 'removes rules which disable jobs' do
+      it 'removes rules matching EXCLUDED_VARIABLES_PATTERNS' do
+        subject.each do |key, configuration|
+          expect(configuration[:rules]).not_to(
+            match(array_including(hash_including(if: /_EXCLUDED_ANALYZERS|_DISABLED|_EXCLUDED_PATHS/))),
+            "expected configuration '#{key}' not to disable jobs or exclude paths"
+          )
+        end
+      end
+    end
+
     context 'when action is valid' do
       context 'when scan type is secret_detection' do
         let_it_be(:action) { { scan: 'secret_detection', tags: ['runner-tag'] } }
@@ -29,6 +40,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
         end
 
         it_behaves_like 'with template name for scan type'
+        it_behaves_like 'removes rules which disable jobs'
 
         it 'merges template variables with ci variables and returns them as string' do
           expect(subject[:'secret-detection-0']).to include(
@@ -73,6 +85,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
         let_it_be(:ci_variables) { { 'GIT_STRATEGY' => 'fetch', 'VARIABLE_1' => 10 } }
 
         it_behaves_like 'with template name for scan type'
+        it_behaves_like 'removes rules which disable jobs'
 
         it 'merges template variables with ci variables and returns them as string' do
           expect(subject[:'container-scanning-0']).to include(
@@ -158,6 +171,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
           expect(subject[:'sast-0'][:variables].stringify_keys).to include(expected_variables)
           expect(subject.keys).to match_array(expected_jobs)
         end
+
+        it_behaves_like 'removes rules which disable jobs'
       end
 
       context 'when scan type is dependency_scanning', :aggregate_failures do
@@ -187,6 +202,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
           expect(subject[:'dependency-scanning-0'][:variables]).to include(expected_variables)
           expect(subject.keys).to match_array(expected_jobs)
         end
+
+        it_behaves_like 'removes rules which disable jobs'
       end
 
       context 'when scan type is sast_iac', :aggregate_failures do
@@ -201,6 +218,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
           expect(subject[:variables]).to be_nil
           expect(subject.keys).to match_array(expected_jobs)
         end
+
+        it_behaves_like 'removes rules which disable jobs'
       end
     end
 
