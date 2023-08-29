@@ -24235,7 +24235,7 @@ msgstr ""
 msgid "Import|GitHub import details"
 msgstr ""
 
-msgid "Import|Maximum decompressed size (MiB)"
+msgid "Import|Maximum decompressed file size for archives from imports (MiB)"
 msgstr ""
 
 msgid "Import|Maximum import remote file size (MB)"
