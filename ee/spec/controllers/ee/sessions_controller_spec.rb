@@ -66,6 +66,30 @@ RSpec.describe SessionsController, :geo, feature_category: :system_access do
         it_behaves_like 'a valid oauth authentication redirect'
       end
     end
+
+    context 'when login fails' do
+      before do
+        @request.env["warden.options"] = { action: 'unauthenticated' }
+      end
+
+      it 'creates a failed authentication audit event' do
+        audit_context = {
+          name: "login_failed_with_standard_authentication",
+          message: "Failed to login with STANDARD authentication",
+          target: be_an_instance_of(Gitlab::Audit::UnauthenticatedAuthor),
+          scope: be_an_instance_of(Gitlab::Audit::InstanceScope),
+          author: be_an_instance_of(Gitlab::Audit::UnauthenticatedAuthor),
+          additional_details: {
+            failed_login: 'STANDARD'
+          }
+        }
+
+        expect(Audit::UnauthenticatedSecurityEventAuditor).to receive(:new).with('foo@bar.com').and_call_original
+        expect(Gitlab::Audit::Auditor).to receive(:audit).with(audit_context).and_call_original
+
+        get(:new, params: { user: { login: 'foo@bar.com' } })
+      end
+    end
   end
 
   describe '#create' do

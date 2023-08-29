@@ -126,8 +126,8 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
 
           context 'with existing dependencies' do
             let_it_be(:project) { create(:project, group: group) }
-            let_it_be(:sbom_occurrence_npm) { create(:sbom_occurrence, project: project, packager_name: 'npm') }
-            let_it_be(:sbom_occurrence_bundler) { create(:sbom_occurrence, project: project, packager_name: 'bundler') }
+            let_it_be(:sbom_occurrence_npm) { create(:sbom_occurrence, :mit, :npm, project: project) }
+            let_it_be(:sbom_occurrence_bundler) { create(:sbom_occurrence, :apache_2, :bundler, project: project) }
 
             let(:expected_response) do
               {
@@ -140,6 +140,12 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
                     'name' => sbom_occurrence_npm.name,
                     'packager' => sbom_occurrence_npm.packager,
                     'version' => sbom_occurrence_npm.version,
+                    'licenses' => [
+                      {
+                        'name' => 'MIT',
+                        'url' => 'https://spdx.org/licenses/MIT.html'
+                      }
+                    ],
                     'occurrence_count' => 1,
                     'project_count' => 1,
                     "project" => { "full_path" => project.full_path, "name" => project.name },
@@ -150,6 +156,12 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
                     'name' => sbom_occurrence_bundler.name,
                     'packager' => sbom_occurrence_bundler.packager,
                     'version' => sbom_occurrence_bundler.version,
+                    'licenses' => [
+                      {
+                        'name' => 'Apache-2.0',
+                        'url' => 'https://spdx.org/licenses/Apache-2.0.html'
+                      }
+                    ],
                     'occurrence_count' => 1,
                     'project_count' => 1,
                     "project" => { "full_path" => project.full_path, "name" => project.name },
@@ -157,6 +169,12 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
                   }
                 ]
               }
+            end
+
+            it 'returns the expected response' do
+              subject
+
+              expect(json_response).to eq(expected_response)
             end
 
             it 'includes pagination headers in the response' do

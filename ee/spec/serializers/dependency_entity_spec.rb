@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe DependencyEntity do
+RSpec.describe DependencyEntity, feature_category: :dependency_management do
   describe '#as_json' do
     subject { described_class.represent(dependency, request: request).as_json }
 
@@ -49,10 +49,12 @@ RSpec.describe DependencyEntity do
       end
 
       context 'with project' do
+        let(:project) { create(:project, :repository, :private, :in_group) }
         let(:dependency) { build(:dependency, project: project) }
 
         before do
           allow(request).to receive(:project).and_return(nil)
+          allow(request).to receive(:group).and_return(project.group)
         end
 
         it 'includes project name and full_path' do
@@ -70,6 +72,7 @@ RSpec.describe DependencyEntity do
 
     context 'when all required features are unavailable' do
       before do
+        stub_feature_flags(group_level_licenses: false)
         project.add_developer(user)
       end
 
@@ -87,6 +90,37 @@ RSpec.describe DependencyEntity do
         expect(location[:ancestors]).to be_nil
         expect(location[:top_level]).to be_nil
         expect(location[:path]).to eq('package_file.lock')
+      end
+    end
+
+    context 'with an Sbom::Occurrence' do
+      subject { described_class.represent(sbom_occurrence, request: request).as_json }
+
+      let(:project) { create(:project, :repository, :private, :in_group) }
+      let(:sbom_occurrence) { create(:sbom_occurrence, :mit, :bundler, project: project) }
+
+      before do
+        allow(request).to receive(:group).and_return(project.group)
+      end
+
+      it 'renders the proper representation' do
+        expect(subject.as_json).to eq({
+          "name" => sbom_occurrence.name,
+          "packager" => sbom_occurrence.packager,
+          "project" => {
+            "name" => project.name,
+            "full_path" => project.full_path
+          },
+          "version" => sbom_occurrence.version,
+          "licenses" => sbom_occurrence.licenses,
+          "component_id" => sbom_occurrence.component_id,
+          "location" => {
+            "ancestors" => nil,
+            "blob_path" => sbom_occurrence.location[:blob_path],
+            "path" => sbom_occurrence.location[:path],
+            "top_level" => sbom_occurrence.location[:top_level]
+          }
+        })
       end
     end
   end

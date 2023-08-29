@@ -15,7 +15,7 @@ RSpec.describe 'Login', feature_category: :system_access do
     user = create(:user)
 
     expect { gitlab_sign_in(user, password: 'incorrect-password') }
-      .to change { AuditEvent.where(entity_id: -1).count }.from(0).to(1)
+      .to change { AuditEvent.where(entity_type: 'Gitlab::Audit::InstanceScope').count }.from(0).to(1)
   end
 
   it 'creates a security event for an invalid OAuth login' do

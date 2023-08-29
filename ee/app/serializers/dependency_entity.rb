@@ -18,6 +18,14 @@ class DependencyEntity < Grape::Entity
 
   class LicenseEntity < Grape::Entity
     expose :name, :url
+
+    def name
+      object[:name] || object["name"]
+    end
+
+    def url
+      object[:url] || object["url"]
+    end
   end
 
   class ProjectEntity < Grape::Entity
@@ -28,8 +36,9 @@ class DependencyEntity < Grape::Entity
   expose :location, using: LocationEntity
   expose :vulnerabilities, using: VulnerabilityEntity, if: ->(_) { can_read_vulnerabilities? }
   expose :licenses, using: LicenseEntity, if: ->(_) { can_read_licenses? }
-  expose :project, using: ProjectEntity, if: ->(_) { !has_project? }
-  expose :project_count, :occurrence_count, :component_id, if: ->(_) { !has_project? }
+  expose :project, using: ProjectEntity, if: ->(_) { group? }
+  expose :project_count, :occurrence_count, if: ->(_) { group_counts? }
+  expose :component_id, if: ->(_) { group? }
 
   private
 
@@ -38,10 +47,21 @@ class DependencyEntity < Grape::Entity
   end
 
   def can_read_licenses?
-    can?(request.user, :read_licenses, request.project)
+    (group? && Feature.enabled?(:group_level_licenses, group)) ||
+      can?(request.user, :read_licenses, request.project)
   end
 
-  def has_project?
-    !request.project.nil?
+  def group
+    request.respond_to?(:group) ? request.group : nil
+  end
+
+  def group?
+    group.present?
+  end
+
+  def group_counts?
+    group? &&
+      object.respond_to?(:project_count) &&
+      object.respond_to?(:occurrence_count)
   end
 end

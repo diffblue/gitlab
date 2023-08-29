@@ -47,9 +47,10 @@ module Groups
     end
 
     def serialized_dependencies
-      DependencyListSerializer.new(
-        project: nil,
-        user: current_user).with_pagination(request, response).represent(collect_dependencies)
+      DependencyListSerializer
+        .new(project: nil, group: group, user: current_user)
+        .with_pagination(request, response)
+        .represent(collect_dependencies)
     end
 
     def render_not_authorized
