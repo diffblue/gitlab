@@ -14,7 +14,7 @@ module Gitlab
 
             AGENT_NAME = 'GitLab Duo Chat'
             MAX_ITERATIONS = 10
-            RESPONSE_TYPE_TOOL = 'too_info'
+            RESPONSE_TYPE_TOOL = 'tool'
 
             PROVIDER_PROMPT_CLASSES = {
               anthropic: ::Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic,
