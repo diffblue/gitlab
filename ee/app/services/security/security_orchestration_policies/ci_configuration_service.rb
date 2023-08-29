@@ -10,6 +10,7 @@ module Security
         'sast_iac' => 'Jobs/SAST-IaC',
         'dependency_scanning' => 'Jobs/Dependency-Scanning'
       }.freeze
+      EXCLUDED_VARIABLES_PATTERNS = %w[_DISABLED _EXCLUDED_ANALYZERS _EXCLUDED_PATHS].freeze
 
       def execute(action, ci_variables, index = 0)
         case action[:scan]
@@ -81,7 +82,9 @@ module Security
       end
 
       def remove_rule_to_disable_job!(job_configuration)
-        job_configuration[:rules]&.reject! { |rule| rule[:if]&.include?('_DISABLED') }
+        job_configuration[:rules]&.reject! do |rule|
+          EXCLUDED_VARIABLES_PATTERNS.any? { |pattern| rule[:if]&.include?(pattern) }
+        end
       end
     end
   end

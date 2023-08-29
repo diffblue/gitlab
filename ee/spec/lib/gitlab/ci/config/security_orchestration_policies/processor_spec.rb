@@ -269,7 +269,6 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
               script: ['/analyzer run'],
               image: { name: '$SAST_ANALYZER_IMAGE' },
               rules: [
-                { if: '$SAST_EXCLUDED_ANALYZERS =~ /brakeman/', when: 'never' },
                 { if: '$CI_COMMIT_BRANCH', exists: ['**/*.rb', '**/Gemfile'] }
               ]
             )
