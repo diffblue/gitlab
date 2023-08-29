@@ -13,12 +13,9 @@ import {
   seatsTooltipTrialText,
   unlimited,
 } from 'ee/usage_quotas/seats/constants';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { sprintf, n__ } from '~/locale';
-import CodeSuggestionsUsageStatisticsCard from 'ee/usage_quotas/seats/components/code_suggestions_usage_statistics_card.vue';
 import StatisticsCard from 'ee/usage_quotas/components/statistics_card.vue';
 import StatisticsSeatsCard from 'ee/usage_quotas/seats/components/statistics_seats_card.vue';
-import SubscriptionUsageStatisticsCard from 'ee/usage_quotas/seats/components/subscription_usage_statistics_card.vue';
 import SubscriptionUpgradeInfoCard from './subscription_upgrade_info_card.vue';
 import SubscriptionUserList from './subscription_user_list.vue';
 
@@ -29,15 +26,12 @@ export default {
   },
   components: {
     GlAlert,
-    CodeSuggestionsUsageStatisticsCard,
     StatisticsCard,
     StatisticsSeatsCard,
     SubscriptionUpgradeInfoCard,
-    SubscriptionUsageStatisticsCard,
     SubscriptionUserList,
     GlSkeletonLoader,
   },
-  mixins: [glFeatureFlagsMixin()],
   computed: {
     ...mapState([
       'hasError',
@@ -73,9 +67,6 @@ export default {
       return (
         this.pendingMembersCount > 0 && this.pendingMembersPagePath && !this.hasLimitedFreePlan
       );
-    },
-    shouldShowSubscriptionRelatedCards() {
-      return Boolean(this.glFeatures?.enableHamiltonInUsageQuotasUi) && !this.hasNoSubscription;
     },
     seatsInUsePercentage() {
       if (this.totalSeatsAvailable == null || this.activeTrial) {
@@ -192,14 +183,7 @@ export default {
       </div>
 
       <div v-else class="gl-display-grid gl-md-grid-template-columns-2 gl-gap-5">
-        <subscription-usage-statistics-card
-          v-if="shouldShowSubscriptionRelatedCards"
-          :percentage="seatsInUsePercentage"
-          :usage-value="String(totalSeatsInUse)"
-          :total-value="displayedTotalSeats"
-        />
         <statistics-card
-          v-else
           :help-link="$options.helpLinks.seatsInUseLink"
           :help-tooltip="seatsInUseTooltipText"
           :description="seatsInUseText"
@@ -214,7 +198,6 @@ export default {
           :explore-plans-path="explorePlansPath"
           :active-trial="activeTrial"
         />
-        <code-suggestions-usage-statistics-card v-else-if="shouldShowSubscriptionRelatedCards" />
         <statistics-seats-card
           v-else
           :seats-used="maxSeatsUsed"

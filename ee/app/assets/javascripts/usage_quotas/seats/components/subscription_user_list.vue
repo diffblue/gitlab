@@ -13,7 +13,6 @@ import {
 } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState, mapGetters } from 'vuex';
-import * as Sentry from '@sentry/browser';
 import dateFormat from '~/lib/dateformat';
 import {
   FIELDS,
@@ -23,23 +22,13 @@ import {
   CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_ID,
   CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_TITLE,
   CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT,
-  FIELD_KEY_CODE_SUGGESTIONS_ADDON,
-  ADD_ON_CODE_SUGGESTIONS,
   emailNotVisibleTooltipText,
   filterUsersPlaceholder,
 } from 'ee/usage_quotas/seats/constants';
-import {
-  ADD_ON_ERROR_DICTIONARY,
-  ADD_ON_PURCHASE_FETCH_ERROR_CODE,
-} from 'ee/usage_quotas/error_constants';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { s__, __ } from '~/locale';
 import SearchAndSortBar from 'ee/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
-import getAddOnPurchaseQuery from 'ee/usage_quotas/graphql/queries/get_add_on_purchase_query.graphql';
-import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
 import RemoveBillableMemberModal from './remove_billable_member_modal.vue';
 import SubscriptionSeatDetails from './subscription_seat_details.vue';
-import CodeSuggestionsAddonAssignment from './code_suggestions_addon_assignment.vue';
 
 export default {
   name: 'SubscriptionUserList',
@@ -48,7 +37,6 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   components: {
-    CodeSuggestionsAddonAssignment,
     GlAvatarLabeled,
     GlAvatarLink,
     GlBadge,
@@ -60,39 +48,6 @@ export default {
     RemoveBillableMemberModal,
     SearchAndSortBar,
     SubscriptionSeatDetails,
-    ErrorAlert,
-  },
-  mixins: [glFeatureFlagsMixin()],
-  inject: ['fullPath'],
-  data() {
-    return {
-      addOnPurchase: undefined,
-      codeSuggestionsAddOnError: undefined,
-    };
-  },
-  apollo: {
-    addOnPurchase: {
-      query: getAddOnPurchaseQuery,
-      variables() {
-        return {
-          fullPath: this.fullPath,
-          addOnName: ADD_ON_CODE_SUGGESTIONS,
-        };
-      },
-      update({ namespace }) {
-        return {
-          id: namespace?.addOnPurchase?.id,
-          totalValue: namespace?.addOnPurchase?.purchasedQuantity ?? null,
-        };
-      },
-      error(error) {
-        this.codeSuggestionsAddOnError = ADD_ON_PURCHASE_FETCH_ERROR_CODE;
-        Sentry.captureException(error);
-      },
-      skip() {
-        return !this.shouldFetchCodeSuggestionsAddonDetails;
-      },
-    },
   },
   computed: {
     ...mapState([
@@ -104,7 +59,6 @@ export default {
       'seatUsageExportPath',
       'billableMemberToRemove',
       'search',
-      'hasNoSubscription',
     ]),
     ...mapGetters(['tableItems', 'isLoading']),
     currentPage: {
@@ -121,21 +75,8 @@ export default {
       }
       return s__('Billing|No users to display.');
     },
-    hasPurchasedCodeSuggestionsAddon() {
-      return Boolean(this.addOnPurchase?.totalValue);
-    },
-    shouldFetchCodeSuggestionsAddonDetails() {
-      return Boolean(this.glFeatures?.enableHamiltonInUsageQuotasUi) && !this.hasNoSubscription;
-    },
     isLoaderShown() {
       return this.isLoading || this.hasError;
-    },
-    tableFields() {
-      if (this.hasPurchasedCodeSuggestionsAddon) {
-        return FIELDS;
-      }
-
-      return FIELDS.filter((field) => field.key !== FIELD_KEY_CODE_SUGGESTIONS_ADDON);
     },
   },
   methods: {
@@ -170,12 +111,6 @@ export default {
     isProjectOrGroupInvite(user) {
       return this.isGroupInvite(user) || this.isProjectInvite(user);
     },
-    handleAddOnAssignmentError(error) {
-      this.codeSuggestionsAddOnError = error;
-    },
-    hideCodeSuggestionsAddOnError() {
-      this.codeSuggestionsAddOnError = undefined;
-    },
   },
   i18n: {
     emailNotVisibleTooltipText,
@@ -187,7 +122,7 @@ export default {
   cannotRemoveModalTitle: CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_TITLE,
   cannotRemoveModalText: CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT,
   sortOptions: SORT_OPTIONS,
-  addOnErrorDictionary: ADD_ON_ERROR_DICTIONARY,
+  tableFields: FIELDS,
 };
 </script>
 
@@ -212,17 +147,9 @@ export default {
       </gl-button>
     </div>
 
-    <error-alert
-      v-if="codeSuggestionsAddOnError"
-      :error="codeSuggestionsAddOnError"
-      :error-dictionary="$options.addOnErrorDictionary"
-      :dismissible="true"
-      @dismiss="hideCodeSuggestionsAddOnError"
-    />
-
     <gl-table
       :items="tableItems"
-      :fields="tableFields"
+      :fields="$options.tableFields"
       :busy="isLoaderShown"
       :show-empty="true"
       data-testid="table"
@@ -282,15 +209,6 @@ export default {
             {{ s__('Billing|Private') }}
           </span>
         </div>
-      </template>
-
-      <template v-if="hasPurchasedCodeSuggestionsAddon" #cell(codeSuggestionsAddon)="{ item }">
-        <code-suggestions-addon-assignment
-          :user-id="item.user.id"
-          :add-ons="item.user.add_ons"
-          :add-on-purchase-id="addOnPurchase.id"
-          @handleAddOnAssignmentError="handleAddOnAssignmentError"
-        />
       </template>
 
       <template #cell(lastActivityTime)="data">
