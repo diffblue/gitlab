@@ -120,6 +120,8 @@ export const ADD_STREAM_EDITOR_I18N = {
   DELETE_BUTTON_TEXT: s__('AuditStreams|Delete destination'),
   HEADER_FILTERING: s__('AuditStreams|Event filtering (optional)'),
   FILTER_BY_AUDIT_EVENT_TYPE: s__('AuditStreams|Filter by audit event type'),
+  GCP_LOGGING_DESTINATION_NAME_LABEL: s__('AuditStreams|Destination Name'),
+  GCP_LOGGING_DESTINATION_NAME_PLACEHOLDER: s__('AuditStreams|Destination Name'),
   GCP_LOGGING_DESTINATION_PROJECT_ID_LABEL: s__('AuditStreams|Project ID'),
   GCP_LOGGING_DESTINATION_PROJECT_ID_PLACEHOLDER: s__('AuditStreams|my-google-project'),
   GCP_LOGGING_DESTINATION_CLIENT_EMAIL_LABEL: s__('AuditStreams|Client Email'),

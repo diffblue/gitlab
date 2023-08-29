@@ -60,13 +60,7 @@ export default {
       return this.groupPath === 'instance';
     },
     destinationTitle() {
-      switch (this.type) {
-        case DESTINATION_TYPE_GCP_LOGGING:
-          return this.item.googleProjectIdName;
-        case DESTINATION_TYPE_HTTP:
-        default:
-          return this.item.name;
-      }
+      return this.item.name;
     },
   },
   methods: {

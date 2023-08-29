@@ -55,6 +55,8 @@ describe('StreamDestinationEditor', () => {
   const findDeleteBtn = () => wrapper.findByTestId('stream-destination-delete-button');
   const findDeleteModal = () => wrapper.findComponent(StreamDeleteModal);
 
+  const findNameFormGroup = () => wrapper.findByTestId('name-form-group');
+  const findName = () => wrapper.findByTestId('name');
   const findProjectIdFormGroup = () => wrapper.findByTestId('project-id-form-group');
   const findProjectId = () => wrapper.findByTestId('project-id');
   const findClientEmailFormGroup = () => wrapper.findByTestId('client-email-form-group');
@@ -78,6 +80,14 @@ describe('StreamDestinationEditor', () => {
 
       it('should render the destinations warning', () => {
         expect(findWarningMessage().props('title')).toBe(ADD_STREAM_EDITOR_I18N.WARNING_TITLE);
+      });
+
+      it('should render the destination name input', () => {
+        expect(findNameFormGroup().exists()).toBe(true);
+        expect(findName().exists()).toBe(true);
+        expect(findName().attributes('placeholder')).toBe(
+          ADD_STREAM_EDITOR_I18N.GCP_LOGGING_DESTINATION_NAME_PLACEHOLDER,
+        );
       });
 
       it('should render the destination ProjectId input', () => {
@@ -127,6 +137,7 @@ describe('StreamDestinationEditor', () => {
       it('should emit add event after destination added', async () => {
         createComponent();
 
+        await findName().vm.$emit('input', mockGcpLoggingDestinations[0].name);
         await findProjectId().vm.$emit('input', mockGcpLoggingDestinations[0].googleProjectIdName);
         await findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestinations[0].clientEmail);
         await findLogId().vm.$emit('input', mockGcpLoggingDestinations[0].logIdName);
@@ -153,6 +164,7 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
+        findName().vm.$emit('input', mockGcpLoggingDestinations[0].name);
         findProjectId().vm.$emit('input', mockGcpLoggingDestinations[0].googleProjectIdName);
         findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestinations[0].clientEmail);
         findLogId().vm.$emit('input', mockGcpLoggingDestinations[0].logIdName);
@@ -175,6 +187,7 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
+        findName().vm.$emit('input', mockGcpLoggingDestinations[0].name);
         findProjectId().vm.$emit('input', mockGcpLoggingDestinations[0].googleProjectIdName);
         findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestinations[0].clientEmail);
         findLogId().vm.$emit('input', mockGcpLoggingDestinations[0].logIdName);
@@ -209,6 +222,8 @@ describe('StreamDestinationEditor', () => {
         });
 
         it('the destination fields', () => {
+          expect(findName().exists()).toBe(true);
+          expect(findName().element.value).toBe(mockGcpLoggingDestinations[0].name);
           expect(findProjectId().exists()).toBe(true);
           expect(findProjectId().element.value).toBe(
             mockGcpLoggingDestinations[0].googleProjectIdName,
@@ -259,10 +274,11 @@ describe('StreamDestinationEditor', () => {
       });
 
       it.each`
-        name              | findInputFn
-        ${'Project ID'}   | ${findProjectId}
-        ${'Client Email'} | ${findClientEmailUrl}
-        ${'Log ID'}       | ${findLogId}
+        name                  | findInputFn
+        ${'Destination Name'} | ${findName}
+        ${'Project ID'}       | ${findProjectId}
+        ${'Client Email'}     | ${findClientEmailUrl}
+        ${'Log ID'}           | ${findLogId}
       `('enable the save button when $name is edited', async ({ findInputFn }) => {
         createComponent({ props: { item: mockGcpLoggingDestinations[0] } });
 
@@ -284,6 +300,7 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
+        findName().vm.$emit('input', mockGcpLoggingDestinations[0].name);
         findProjectId().vm.$emit('input', mockGcpLoggingDestinations[1].googleProjectIdName);
         findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestinations[1].clientEmail);
         findLogId().vm.$emit('input', mockGcpLoggingDestinations[1].logIdName);
@@ -329,6 +346,7 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
+        findName().vm.$emit('input', mockGcpLoggingDestinations[0].name);
         findProjectId().vm.$emit('input', mockGcpLoggingDestinations[0].googleProjectIdName);
         findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestinations[0].clientEmail);
         findLogId().vm.$emit('input', mockGcpLoggingDestinations[0].logIdName);
@@ -351,6 +369,7 @@ describe('StreamDestinationEditor', () => {
           ],
         });
 
+        findName().vm.$emit('input', mockGcpLoggingDestinations[0].name);
         findProjectId().vm.$emit('input', mockGcpLoggingDestinations[0].googleProjectIdName);
         findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestinations[0].clientEmail);
         findLogId().vm.$emit('input', mockGcpLoggingDestinations[0].logIdName);
