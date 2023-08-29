@@ -6,7 +6,7 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics_d
   let_it_be(:project) { create(:project, :with_product_analytics_dashboard) }
   let_it_be(:user) { create(:user) }
 
-  let_it_be(:events_table) { 'TrackedEvents.pageViewsCount' }
+  let_it_be(:events_table) { 'SnowplowTrackedEvents.count' }
 
   context 'with trackingKey' do
     let_it_be(:query) do
@@ -93,7 +93,6 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics_d
       stub_application_setting(product_analytics_enabled?: true)
       stub_licensed_features(product_analytics: true)
       stub_feature_flags(product_analytics_dashboards: true)
-      stub_feature_flags(product_analytics_snowplow_support: false)
 
       allow_next_instance_of(ProjectSetting) do |instance|
         allow(instance).to receive(:product_analytics_instrumentation_key).and_return('test key')

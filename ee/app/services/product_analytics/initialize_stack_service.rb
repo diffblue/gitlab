@@ -10,10 +10,6 @@ module ProductAnalytics
         return ServiceResponse.error(message: 'User is not authorized to initialize product analytics')
       end
 
-      unless ::Feature.enabled?(:product_analytics_snowplow_support, container)
-        return ServiceResponse.error(message: 'Product analytics snowplow support feature flag is disabled')
-      end
-
       return status_error if status_error.present?
 
       lock!

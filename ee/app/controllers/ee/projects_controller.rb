@@ -18,7 +18,6 @@ module EE
       end
 
       before_action do
-        push_frontend_feature_flag(:product_analytics_snowplow_support)
         push_frontend_feature_flag(:remote_development_feature_flag)
         push_licensed_feature(:remote_development)
       end

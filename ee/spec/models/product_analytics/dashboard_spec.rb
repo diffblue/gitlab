@@ -14,7 +14,6 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
   end
 
   before do
-    stub_feature_flags(product_analytics_snowplow_support: false)
     # project_level_analytics_dashboard is used for the Value Stream Dashboard
     stub_licensed_features(product_analytics: true, project_level_analytics_dashboard: true)
   end
@@ -24,23 +23,15 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
 
     it 'returns a collection of dashboards' do
       expect(subject).to be_a(Array)
-      expect(subject.size).to eq(1)
-      expect(subject.first).to be_a(described_class)
-      expect(subject.first.title).to eq('Dashboard Example 1')
-      expect(subject.first.slug).to eq('dashboard_example_1')
-      expect(subject.first.description).to eq('North Star Metrics across all departments for the last 3 quarters.')
-      expect(subject.first.schema_version).to eq('1')
+      expect(subject.size).to eq(3)
+      expect(subject.last).to be_a(described_class)
+      expect(subject.last.title).to eq('Dashboard Example 1')
+      expect(subject.last.slug).to eq('dashboard_example_1')
+      expect(subject.last.description).to eq('North Star Metrics across all departments for the last 3 quarters.')
+      expect(subject.last.schema_version).to eq('1')
     end
 
-    it 'does not include hardcoded dashboards' do
-      expect(subject.map(&:title)).not_to include('Audience', 'Behavior')
-    end
-
-    context 'when the snowplow feature flag is enabled' do
-      before do
-        stub_feature_flags(product_analytics_snowplow_support: true)
-      end
-
+    context 'when product analytics is enabled' do
       it 'includes hardcoded dashboards' do
         expect(subject.size).to eq(3)
         expect(subject.map(&:title)).to include('Audience', 'Behavior')
@@ -77,7 +68,7 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
       end
 
       it 'excludes the dashboard from the list' do
-        expect(subject.size).to eq(1)
+        expect(subject.size).to eq(3)
       end
     end
 
