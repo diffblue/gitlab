@@ -266,6 +266,7 @@ export const gcpLoggingDestinationUpdateMutationPopulator = (errors = []) => {
     googleCloudLoggingConfiguration: {
       __typename: 'GoogleCloudLoggingConfigurationType',
       id: 'gid://gitlab/AuditEvents::GoogleCloudLoggingConfiguration/1',
+      name: 'Destination 1',
       clientEmail: 'my-email@my-google-project.iam.gservice.account.com',
       googleProjectIdName: 'my-google-project-1',
       logIdName: 'audit-events',
