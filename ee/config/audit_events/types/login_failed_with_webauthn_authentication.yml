@@ -1,0 +1,9 @@
+---
+name: login_failed_with_webauthn_authentication
+description: Triggered when login fails via WebAuthn device
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/377758
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/129595
+feature_category: system_access
+milestone: '16.4'
+saved_to_database: true
+streamed: true

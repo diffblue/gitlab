@@ -2,13 +2,20 @@
 
 RSpec.shared_examples 'an auditable failed authentication' do
   it 'log an audit event', :aggregate_failures do
-    audit_event_service = instance_spy(AuditEventService)
-    allow(AuditEventService).to receive(:new).and_return(audit_event_service)
+    audit_context = {
+      name: "login_failed_with_#{method.downcase}_authentication",
+      message: "Failed to login with #{method} authentication",
+      target: user,
+      scope: user,
+      author: user,
+      additional_details: {
+        failed_login: method
+      }
+    }
+
+    expect(Audit::UnauthenticatedSecurityEventAuditor).to receive(:new).with(user, method).and_call_original
+    expect(Gitlab::Audit::Auditor).to receive(:audit).with(audit_context).and_call_original
 
     operation
-
-    expect(AuditEventService).to have_received(:new).with(user, user, with: method)
-    expect(audit_event_service).to have_received(:for_failed_login)
-    expect(audit_event_service).to have_received(:unauth_security_event)
   end
 end

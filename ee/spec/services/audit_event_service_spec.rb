@@ -285,68 +285,6 @@ RSpec.describe AuditEventService, :request_store, feature_category: :audit_event
     end
   end
 
-  describe '#for_failed_login' do
-    let(:author_name) { 'testuser' }
-    let(:service) { described_class.new(author_name, nil) }
-    let(:event) { service.for_failed_login.unauth_security_event }
-
-    before do
-      stub_licensed_features(extended_audit_events: true)
-    end
-
-    it 'has the right type' do
-      expect(event.entity_type).to eq('User')
-    end
-
-    it 'has the right author' do
-      expect(event.details[:author_name]).to eq(author_name)
-      expect(event.author_name).to eq(author_name)
-    end
-
-    it 'has the right target_details' do
-      expect(event.details[:target_details]).to eq(author_name)
-    end
-
-    it 'has the right auth method for OAUTH' do
-      oauth_service = described_class.new(author_name, nil, ip_address: request_ip_address, with: 'ldap')
-      event = oauth_service.for_failed_login.unauth_security_event
-
-      expect(event.details[:failed_login]).to eq('LDAP')
-    end
-
-    context 'admin audit log licensed' do
-      before do
-        stub_licensed_features(extended_audit_events: true, admin_audit_log: true)
-      end
-
-      it 'has the right IP address' do
-        expect(event.ip_address).to eq(request_ip_address)
-        expect(event.details[:ip_address]).to eq(request_ip_address)
-      end
-    end
-
-    context 'admin audit log unlicensed' do
-      before do
-        stub_licensed_features(extended_audit_events: true, admin_audit_log: false)
-      end
-
-      it 'does not have the ip_address' do
-        expect(event.ip_address).to be_nil
-        expect(event.details).not_to have_key(:ip_address)
-      end
-    end
-
-    context 'on a read-only instance' do
-      before do
-        allow(Gitlab::Database).to receive(:read_only?).and_return(true)
-      end
-
-      it 'does not create an event record in the database' do
-        expect { service.for_failed_login.unauth_security_event }.not_to change(AuditEvent, :count)
-      end
-    end
-  end
-
   describe '#for_user' do
     let(:current_user) { create(:user) }
     let(:user) { create(:user) }
