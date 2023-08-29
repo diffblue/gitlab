@@ -25,14 +25,34 @@ module MergeTrains
 
       commit_message = commit_message(merge_request, previous_ref)
 
-      ::MergeRequests::CreateRefService.new(
-        current_user: merge_request.merge_user,
-        merge_request: merge_request,
-        target_ref: merge_request.train_ref_path,
-        source_sha: merge_request.diff_head_sha,
-        first_parent_ref: previous_ref,
-        merge_commit_message: commit_message
-      ).execute
+      if Feature.enabled?(:merge_trains_create_ref_service, merge_request.target_project)
+        ::MergeRequests::CreateRefService.new(
+          current_user: merge_request.merge_user,
+          merge_request: merge_request,
+          target_ref: merge_request.train_ref_path,
+          source_sha: merge_request.diff_head_sha,
+          first_parent_ref: previous_ref,
+          merge_commit_message: commit_message
+        ).execute.to_h.transform_keys do |key|
+          # TODO: Remove this transformation with FF merge_trains_create_ref_service
+          case key
+          when :commit_sha then :commit_id
+          when :source_sha then :source_id
+          when :target_sha then :target_id
+          else key
+          end
+        end
+      else
+        ::MergeRequests::MergeToRefService.new(
+          project: merge_request.target_project,
+          current_user: merge_request.merge_user,
+          params: {
+            target_ref: merge_request.train_ref_path,
+            first_parent_ref: previous_ref,
+            commit_message: commit_message
+          }
+        ).execute(merge_request)
+      end
     end
 
     def commit_message(merge_request, previous_ref)
@@ -43,9 +63,9 @@ module MergeTrains
     def create_pipeline(merge_request, merge_status)
       response = ::Ci::CreatePipelineService.new(merge_request.target_project, merge_request.merge_user,
                                                  ref: merge_request.train_ref_path,
-                                                 checkout_sha: merge_status[:commit_sha],
-                                                 target_sha: merge_status[:target_sha],
-                                                 source_sha: merge_status[:source_sha])
+                                                 checkout_sha: merge_status[:commit_id],
+                                                 target_sha: merge_status[:target_id],
+                                                 source_sha: merge_status[:source_id])
                                             .execute(:merge_request_event, merge_request: merge_request)
 
       return error(response.message) if response.error? && !response.payload.persisted?
