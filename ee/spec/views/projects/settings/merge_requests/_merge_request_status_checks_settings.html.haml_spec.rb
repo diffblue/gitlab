@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'projects/_merge_request_status_checks_settings' do
+RSpec.describe 'projects/settings/merge_requests/_merge_request_status_checks_settings' do
   let(:project) { build(:project) }
 
   before do
