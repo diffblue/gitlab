@@ -9,7 +9,6 @@ export const HEADER_PAGE_NUMBER = 'x-page';
 export const HEADER_ITEMS_PER_PAGE = 'x-per-page';
 export const PLAN_CODE_FREE = 'free';
 export const ADD_ON_CODE_SUGGESTIONS = 'CODE_SUGGESTIONS';
-export const FIELD_KEY_CODE_SUGGESTIONS_ADDON = 'codeSuggestionsAddon';
 export const FIELDS = [
   {
     key: 'disclosure',
@@ -27,12 +26,6 @@ export const FIELDS = [
   {
     key: 'email',
     label: __('Email'),
-    thClass: thWidthPercent(20),
-    tdClass: 'gl-vertical-align-middle!',
-  },
-  {
-    key: FIELD_KEY_CODE_SUGGESTIONS_ADDON,
-    label: __('Code Suggestions add-on'),
     thClass: thWidthPercent(20),
     tdClass: 'gl-vertical-align-middle!',
   },

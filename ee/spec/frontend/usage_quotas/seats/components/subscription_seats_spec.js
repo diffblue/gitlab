@@ -2,11 +2,9 @@ import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
-import CodeSuggestionsUsageStatisticsCard from 'ee/usage_quotas/seats/components/code_suggestions_usage_statistics_card.vue';
 import StatisticsCard from 'ee/usage_quotas/components/statistics_card.vue';
 import StatisticsSeatsCard from 'ee/usage_quotas/seats/components/statistics_seats_card.vue';
 import SubscriptionUpgradeInfoCard from 'ee/usage_quotas/seats/components/subscription_upgrade_info_card.vue';
-import SubscriptionUsageStatisticsCard from 'ee/usage_quotas/seats/components/subscription_usage_statistics_card.vue';
 import SubscriptionSeats from 'ee/usage_quotas/seats/components/subscription_seats.vue';
 import SubscriptionUserList from 'ee/usage_quotas/seats/components/subscription_user_list.vue';
 import { mockDataSeats, mockTableItems } from 'ee_jest/usage_quotas/seats/mock_data';
@@ -53,28 +51,18 @@ const fakeStore = ({ initialState, initialGetters }) =>
 describe('Subscription Seats', () => {
   let wrapper;
 
-  const createComponent = ({ initialState = {}, initialGetters = {}, provide = {} } = {}) => {
+  const createComponent = ({ initialState = {}, initialGetters = {} } = {}) => {
     return extendedWrapper(
       shallowMount(SubscriptionSeats, {
         store: fakeStore({ initialState, initialGetters }),
-        provide: {
-          glFeatures: {
-            enableHamiltonInUsageQuotasUi: false,
-          },
-          ...provide,
-        },
       }),
     );
   };
 
-  const findCodeSuggestionsStatisticsCard = () =>
-    wrapper.findComponent(CodeSuggestionsUsageStatisticsCard);
   const findStatisticsCard = () => wrapper.findComponent(StatisticsCard);
   const findStatisticsSeatsCard = () => wrapper.findComponent(StatisticsSeatsCard);
   const findSubscriptionUpgradeCard = () => wrapper.findComponent(SubscriptionUpgradeInfoCard);
   const findSkeletonLoaderCards = () => wrapper.findByTestId('skeleton-loader-cards');
-  const findSubscriptionUsageStatisticsCard = () =>
-    wrapper.findComponent(SubscriptionUsageStatisticsCard);
   const findSubscriptionUserList = () => wrapper.findComponent(SubscriptionUserList);
 
   describe('actions', () => {
@@ -123,17 +111,6 @@ describe('Subscription Seats', () => {
             totalValue: '3',
             usageValue: '2',
             helpTooltip: null,
-          });
-        });
-
-        describe('with `enable hamilton for usage quotas ui` enabled', () => {
-          it(`renders <subscription-usage-statistics-card> with the necessary props`, () => {
-            wrapper = createComponent({
-              initialState: defaultInitialState,
-              provide: { glFeatures: { enableHamiltonInUsageQuotasUi: true } },
-            });
-
-            expect(findSubscriptionUsageStatisticsCard().props()).toMatchObject({});
           });
         });
       });
@@ -262,23 +239,6 @@ describe('Subscription Seats', () => {
         seatsOwed: 1,
         seatsUsed: 3,
       });
-    });
-
-    it('renders <code-suggestions-usage-statistics-card>', () => {
-      wrapper = createComponent({
-        initialState: {
-          ...defaultInitialState,
-          hasNoSubscription: false,
-        },
-        provide: {
-          glFeatures: {
-            enableHamiltonInUsageQuotasUi: true,
-          },
-        },
-      });
-
-      expect(findStatisticsSeatsCard().exists()).toBe(false);
-      expect(findCodeSuggestionsStatisticsCard().exists()).toBe(true);
     });
 
     describe('for free namespace with limit', () => {
