@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Snippet, :elastic do
+RSpec.describe Snippet, :elastic, feature_category: :global_search do
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
   end
@@ -54,9 +54,7 @@ RSpec.describe Snippet, :elastic do
       'project_id',
       'author_id',
       'visibility_level'
-    ).merge({
-      'type' => snippet.es_type
-    })
+    ).merge({ 'type' => snippet.es_type, 'schema_version' => Elastic::Latest::SnippetInstanceProxy::SCHEMA_VERSION })
 
     expect(snippet.__elasticsearch__.as_indexed_json).to eq(expected_hash)
   end
