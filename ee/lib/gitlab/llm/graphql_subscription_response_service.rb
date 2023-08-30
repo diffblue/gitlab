@@ -23,7 +23,8 @@ module Gitlab
           errors: response_modifier.errors,
           role: options[:role] || Cache::ROLE_ASSISTANT,
           timestamp: Time.current,
-          type: options.fetch(:type, nil)
+          type: options.fetch(:type, nil),
+          chunk_id: options.fetch(:chunk_id, nil)
         }
 
         logger.debug(

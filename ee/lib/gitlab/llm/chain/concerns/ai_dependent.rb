@@ -11,9 +11,9 @@ module Gitlab
             provider_prompt_class.prompt(options)
           end
 
-          def request
+          def request(&block)
             logger.debug(message: "Prompt", class: self.class.to_s, content: prompt)
-            ai_request.request(prompt)
+            ai_request.request(prompt, &block)
           end
 
           private
