@@ -2,7 +2,7 @@ import { GlButton } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CiVariablesSelectors from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_filters/ci_variables_selectors.vue';
 import CiVariableSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_filters/ci_variable_selector.vue';
-import GenericBaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/generic_base_layout_component.vue';
+import SectionLayout from 'ee/security_orchestration/components/policy_editor/section_layout.vue';
 import { CI_VARIABLE } from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_filters/constants';
 
 describe('CiVariablesSelectors', () => {
@@ -17,14 +17,14 @@ describe('CiVariablesSelectors', () => {
         scanType: DEFAULT_SCAN_TYPE,
         ...propsData,
       },
-      stubs: { GenericBaseLayoutComponent },
+      stubs: { SectionLayout },
     });
   };
 
   const findAllCiVariableSelectors = () => wrapper.findAllComponents(CiVariableSelector);
   const findCiVariableSelector = () => findAllCiVariableSelectors().at(0);
   const findAddButton = () => wrapper.findComponent(GlButton);
-  const findGenericBaseLayoutComponent = () => wrapper.findComponent(GenericBaseLayoutComponent);
+  const findSectionLayout = () => wrapper.findComponent(SectionLayout);
 
   describe('default', () => {
     beforeEach(() => {
@@ -41,7 +41,7 @@ describe('CiVariablesSelectors', () => {
     });
 
     it('emits "remove" when the "remove" filter button is clicked', () => {
-      findGenericBaseLayoutComponent().vm.$emit('remove');
+      findSectionLayout().vm.$emit('remove');
       expect(wrapper.emitted('remove')).toEqual([[CI_VARIABLE]]);
     });
 

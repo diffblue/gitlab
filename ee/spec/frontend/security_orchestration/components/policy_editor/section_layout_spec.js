@@ -1,11 +1,11 @@
-import GenericBaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/generic_base_layout_component.vue';
+import SectionLayout from 'ee/security_orchestration/components/policy_editor/section_layout.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
-describe('GenericBaseLayoutComponent', () => {
+describe('SectionLayout', () => {
   let wrapper;
 
   const createComponent = (props = {}) => {
-    wrapper = shallowMountExtended(GenericBaseLayoutComponent, {
+    wrapper = shallowMountExtended(SectionLayout, {
       propsData: {
         ...props,
       },

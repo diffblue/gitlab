@@ -6,8 +6,8 @@ import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import BranchExceptionSelector from '../branch_exception_selector.vue';
 import ScanFilterSelector from '../scan_filter_selector.vue';
 import { SCAN_RESULT_BRANCH_TYPE_OPTIONS } from '../constants';
+import SectionLayout from '../section_layout.vue';
 import { getDefaultRule } from './lib';
-import BaseLayoutComponent from './base_layout/base_layout_component.vue';
 import PolicyRuleBranchSelection from './policy_rule_branch_selection.vue';
 import ScanTypeSelect from './base_layout/scan_type_select.vue';
 
@@ -21,7 +21,7 @@ export default {
   name: 'DefaultRuleBuilder',
   components: {
     BranchExceptionSelector,
-    BaseLayoutComponent,
+    SectionLayout,
     GlSprintf,
     PolicyRuleBranchSelection,
     ScanTypeSelect,
@@ -91,14 +91,9 @@ export default {
 
 <template>
   <div>
-    <base-layout-component
-      class="gl-pb-0"
-      :type="initRule.type"
-      :show-remove-button="false"
-      @changed="$emit('changed', $event)"
-    >
+    <section-layout class="gl-pb-0" :show-remove-button="false" @changed="$emit('changed', $event)">
       <template #content>
-        <base-layout-component class="gl-bg-white!" :type="initRule.type" @remove="$emit('remove')">
+        <section-layout class="gl-bg-white!" @remove="$emit('remove')">
           <template #content>
             <gl-sprintf :message="$options.emptyRuleCopy">
               <template #scanners>
@@ -128,10 +123,10 @@ export default {
               </template>
             </gl-sprintf>
           </template>
-        </base-layout-component>
+        </section-layout>
       </template>
-    </base-layout-component>
-    <base-layout-component class="gl-pt-3" :show-remove-button="false">
+    </section-layout>
+    <section-layout class="gl-pt-3" :show-remove-button="false">
       <template #content>
         <scan-filter-selector
           :disabled="true"
@@ -139,6 +134,6 @@ export default {
           class="gl-bg-white! gl-w-full"
         />
       </template>
-    </base-layout-component>
+    </section-layout>
   </div>
 </template>

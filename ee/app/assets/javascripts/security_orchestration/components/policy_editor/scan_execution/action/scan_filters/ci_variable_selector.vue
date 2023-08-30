@@ -1,7 +1,7 @@
 <script>
 import { GlCollapsibleListbox, GlDropdownDivider, GlDropdownItem, GlFormInput } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import GenericBaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/generic_base_layout_component.vue';
+import SectionLayout from 'ee/security_orchestration/components/policy_editor/section_layout.vue';
 import { RULE_MODE_SCANNERS } from 'ee/security_orchestration/components/policy_editor/constants';
 import { OPTIONS } from './ci_variable_constants';
 
@@ -17,7 +17,7 @@ export default {
     GlDropdownDivider,
     GlDropdownItem,
     GlFormInput,
-    GenericBaseLayoutComponent,
+    SectionLayout,
   },
   props: {
     scanType: {
@@ -94,7 +94,7 @@ export default {
 </script>
 
 <template>
-  <generic-base-layout-component
+  <section-layout
     class="gl-w-full gl-bg-white gl-pt-0 gl-px-0 gl-pb-2"
     content-classes="gl-justify-content-space-between"
     @remove="removeVariable"
@@ -138,5 +138,5 @@ export default {
         <gl-form-input :value="value" data-testid="value-input" @input="updateValue" />
       </div>
     </template>
-  </generic-base-layout-component>
+  </section-layout>
 </template>

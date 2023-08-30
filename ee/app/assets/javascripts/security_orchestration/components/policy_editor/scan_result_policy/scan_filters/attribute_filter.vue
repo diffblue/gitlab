@@ -2,7 +2,7 @@
 import { GlCollapsibleListbox, GlTooltipDirective, GlIcon } from '@gitlab/ui';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import { __, s__ } from '~/locale';
-import BaseLayoutComponent from '../base_layout/base_layout_component.vue';
+import SectionLayout from '../../section_layout.vue';
 import {
   FIX_AVAILABLE,
   VULNERABILITY_ATTRIBUTE_OPERATORS,
@@ -22,7 +22,7 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   components: {
-    BaseLayoutComponent,
+    SectionLayout,
     GlCollapsibleListbox,
     GlIcon,
   },
@@ -66,7 +66,7 @@ export default {
 </script>
 
 <template>
-  <base-layout-component class="gl-w-full gl-bg-white!" @remove="remove">
+  <section-layout class="gl-w-full gl-bg-white!" @remove="remove">
     <template #selector>
       <slot name="label">
         <label class="gl-mb-0" :title="$options.i18n.label">{{ $options.i18n.label }}</label>
@@ -94,5 +94,5 @@ export default {
         class="gl-text-gray-500 gl-ml-2"
       />
     </template>
-  </base-layout-component>
+  </section-layout>
 </template>

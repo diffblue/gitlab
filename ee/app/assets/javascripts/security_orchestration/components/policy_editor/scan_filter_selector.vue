@@ -1,7 +1,7 @@
 <script>
 import { GlCollapsibleListbox, GlBadge, GlTooltipDirective } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
-import GenericBaseLayoutComponent from './generic_base_layout_component.vue';
+import SectionLayout from './section_layout.vue';
 
 export default {
   i18n: {
@@ -14,7 +14,7 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   components: {
-    GenericBaseLayoutComponent,
+    SectionLayout,
     GlCollapsibleListbox,
     GlBadge,
   },
@@ -69,7 +69,7 @@ export default {
 </script>
 
 <template>
-  <generic-base-layout-component :show-remove-button="false">
+  <section-layout :show-remove-button="false">
     <template #content>
       <gl-collapsible-listbox
         v-gl-tooltip.right.viewport
@@ -106,5 +106,5 @@ export default {
         </template>
       </gl-collapsible-listbox>
     </template>
-  </generic-base-layout-component>
+  </section-layout>
 </template>

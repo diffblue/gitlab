@@ -1,5 +1,5 @@
 import { GlCollapsibleListbox } from '@gitlab/ui';
-import BaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/scan_result_policy/base_layout/base_layout_component.vue';
+import SectionLayout from 'ee/security_orchestration/components/policy_editor/section_layout.vue';
 import AgeFilter from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/age_filter.vue';
 import NumberRangeSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/number_range_select.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -24,13 +24,13 @@ describe('AgeFilter', () => {
         ...props,
       },
       stubs: {
-        BaseLayoutComponent,
+        SectionLayout,
         GlCollapsibleListbox,
       },
     });
   };
 
-  const findBaseLayoutComponent = () => wrapper.findComponent(BaseLayoutComponent);
+  const findSectionLayout = () => wrapper.findComponent(SectionLayout);
   const findNumberRangeSelect = () => wrapper.findComponent(NumberRangeSelect);
   const findIntervalSelect = () => wrapper.findComponent(GlCollapsibleListbox);
 
@@ -93,7 +93,7 @@ describe('AgeFilter', () => {
         selected: { operator: GREATER_THAN_OPERATOR, value: 1, interval: intervalDay },
       });
 
-      await findBaseLayoutComponent().vm.$emit('remove');
+      await findSectionLayout().vm.$emit('remove');
 
       expect(wrapper.emitted('remove')).toEqual([[AGE]]);
     });

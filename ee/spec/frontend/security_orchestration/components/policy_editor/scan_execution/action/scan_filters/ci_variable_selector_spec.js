@@ -1,7 +1,7 @@
 import { GlCollapsibleListbox, GlDropdownItem } from '@gitlab/ui';
+import SectionLayout from 'ee/security_orchestration/components/policy_editor/section_layout.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CiVariableSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_filters/ci_variable_selector.vue';
-import GenericBaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/generic_base_layout_component.vue';
 
 describe('CiVariableSelector', () => {
   let wrapper;
@@ -24,14 +24,14 @@ describe('CiVariableSelector', () => {
         ...DEFAULT_PROPS,
         ...propsData,
       },
-      stubs: { GenericBaseLayoutComponent, GlCollapsibleListbox },
+      stubs: { SectionLayout, GlCollapsibleListbox },
     });
   };
 
   const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
   const findValueInput = () => wrapper.findByTestId('value-input');
   const findCustomVariableInput = () => wrapper.findByTestId('custom-variable-input');
-  const findGenericBaseLayoutComponent = () => wrapper.findComponent(GenericBaseLayoutComponent);
+  const findSectionLayout = () => wrapper.findComponent(SectionLayout);
   const findCreateCustomVariableOption = () => wrapper.findComponent(GlDropdownItem);
 
   describe('empty variable', () => {
@@ -86,7 +86,7 @@ describe('CiVariableSelector', () => {
     });
 
     it('emits "remove" event when a user removes the variable', () => {
-      findGenericBaseLayoutComponent().vm.$emit('remove');
+      findSectionLayout().vm.$emit('remove');
       expect(wrapper.emitted('remove')).toEqual([['']]);
     });
 

@@ -1,8 +1,8 @@
 import { nextTick } from 'vue';
 import { GlForm, GlFormInput, GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
+import SectionLayout from 'ee/security_orchestration/components/policy_editor/section_layout.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { GROUP_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
-import BaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/scan_result_policy/base_layout/base_layout_component.vue';
 import PolicyActionApprovers from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_action_approvers.vue';
 import GroupSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/group_select.vue';
 import UserSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/user_select.vue';
@@ -39,7 +39,7 @@ describe('PolicyActionApprovers', () => {
       stubs: {
         GlForm,
         GlSprintf,
-        BaseLayoutComponent,
+        SectionLayout,
         ...stubs,
       },
     });
@@ -50,7 +50,7 @@ describe('PolicyActionApprovers', () => {
   const findGroupSelect = () => wrapper.findComponent(GroupSelect);
   const findUserSelect = () => wrapper.findComponent(UserSelect);
   const findAddButton = () => wrapper.findByTestId('add-approver');
-  const findBaseLayoutComponent = () => wrapper.findComponent(BaseLayoutComponent);
+  const findSectionLayout = () => wrapper.findComponent(SectionLayout);
   const findMessage = () => wrapper.findComponent(GlSprintf);
 
   describe('single type', () => {
@@ -81,7 +81,7 @@ describe('PolicyActionApprovers', () => {
     });
 
     it('does not render the remove button', () => {
-      expect(findBaseLayoutComponent().props('showRemoveButton')).toBe(false);
+      expect(findSectionLayout().props('showRemoveButton')).toBe(false);
     });
 
     it('does not render the user select when the "user" type approver is not selected', () => {
@@ -183,7 +183,7 @@ describe('PolicyActionApprovers', () => {
 
     it('triggers an update when removing a new type', async () => {
       expect(wrapper.emitted('removeApproverType')).toEqual(undefined);
-      await findBaseLayoutComponent().vm.$emit('remove');
+      await findSectionLayout().vm.$emit('remove');
       expect(wrapper.emitted('removeApproverType')).toEqual([['']]);
     });
 
@@ -192,13 +192,13 @@ describe('PolicyActionApprovers', () => {
     });
 
     it('renders the remove button', () => {
-      expect(findBaseLayoutComponent().props('showRemoveButton')).toBe(true);
+      expect(findSectionLayout().props('showRemoveButton')).toBe(true);
     });
   });
 
   describe('message', () => {
     it('renders the correct message for the first type added', async () => {
-      factory({ stubs: { GlSprintf: true, BaseLayoutComponent: true } });
+      factory({ stubs: { GlSprintf: true, SectionLayout: true } });
       await nextTick();
       expect(findMessage().attributes('message')).toBe(getDefaultHumanizedTemplate(1));
     });
@@ -206,7 +206,7 @@ describe('PolicyActionApprovers', () => {
     it('renders the correct text for the non-first type', async () => {
       factory({
         propsData: { approverIndex: 1, numOfApproverTypes: 2 },
-        stubs: { GlSprintf: true, BaseLayoutComponent: true },
+        stubs: { GlSprintf: true, SectionLayout: true },
       });
       await nextTick();
       expect(findMessage().attributes('message')).toBe(MULTIPLE_APPROVER_TYPES_HUMANIZED_TEMPLATE);

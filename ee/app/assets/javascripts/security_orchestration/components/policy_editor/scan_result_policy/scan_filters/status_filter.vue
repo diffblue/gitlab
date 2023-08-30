@@ -2,7 +2,7 @@
 import { GlCollapsibleListbox } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 import RuleMultiSelect from '../../rule_multi_select.vue';
-import BaseLayoutComponent from '../base_layout/base_layout_component.vue';
+import SectionLayout from '../../section_layout.vue';
 import { groupSelectedVulnerabilityStates } from '../lib';
 import {
   NEWLY_DETECTED,
@@ -21,7 +21,7 @@ export default {
   name: 'StatusFilter',
   components: {
     RuleMultiSelect,
-    BaseLayoutComponent,
+    SectionLayout,
     GlCollapsibleListbox,
   },
   props: {
@@ -78,7 +78,7 @@ export default {
 </script>
 
 <template>
-  <base-layout-component
+  <section-layout
     :key="filter"
     class="gl-w-full gl-bg-white"
     :show-remove-button="showRemoveButton"
@@ -103,5 +103,5 @@ export default {
         />
       </slot>
     </template>
-  </base-layout-component>
+  </section-layout>
 </template>

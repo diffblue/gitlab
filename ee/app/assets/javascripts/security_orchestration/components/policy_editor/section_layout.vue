@@ -2,7 +2,7 @@
 import { GlButton } from '@gitlab/ui';
 
 export default {
-  name: 'GenericBaseLayoutComponent',
+  name: 'SectionLayout',
   components: {
     GlButton,
   },
