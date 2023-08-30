@@ -21760,6 +21760,9 @@ msgstr ""
 msgid "GlobalSearch|%{count} default results provided. Use the up and down arrow keys to navigate search results list."
 msgstr ""
 
+msgid "GlobalSearch|%{link_start}Exact code search (powered by Zoekt)%{link_end} is enabled"
+msgstr ""
+
 msgid "GlobalSearch|Aggregations load error."
 msgstr ""
 

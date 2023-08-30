@@ -107,7 +107,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :ai_abstraction_la
 
       counter = instance_double(Prometheus::Client::Counter, increment: true)
 
-      allow(Gitlab::Metrics::Sli::Apdex[:llm_client_request]).to receive(:increment)
+      allow(Gitlab::Metrics::Sli::ErrorRate[:llm_client_request]).to receive(:increment)
 
       allow(Gitlab::Metrics)
         .to receive(:counter)
@@ -317,7 +317,18 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :ai_abstraction_la
           end
         end
 
-        it_behaves_like 'measured Llm request with error'
+        it_behaves_like 'measured Llm request with error', StandardError
+      end
+
+      context 'when request is retried' do
+        let(:http_status) { 429 }
+
+        before do
+          stub_const("Gitlab::Llm::Concerns::ExponentialBackoff::INITIAL_DELAY", 0.0)
+          allow(response_double).to receive(:too_many_requests?).and_return(true)
+        end
+
+        it_behaves_like 'measured Llm request with error', Gitlab::Llm::Concerns::ExponentialBackoff::RateLimitError
       end
     end
   end

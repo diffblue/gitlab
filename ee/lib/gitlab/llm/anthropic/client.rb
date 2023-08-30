@@ -5,7 +5,6 @@ module Gitlab
     module Anthropic
       class Client
         include ::Gitlab::Llm::Concerns::ExponentialBackoff
-        include ::Gitlab::Llm::Concerns::MeasuredRequest
 
         URL = 'https://api.anthropic.com'
         DEFAULT_MODEL = 'claude-2'
@@ -23,9 +22,6 @@ module Gitlab
           # We do not allow to set `stream` because the separate `#stream` method should be used for streaming.
           # The reason is that streaming the response would not work with the exponential backoff mechanism.
           perform_completion_request(prompt: prompt, options: options.except(:stream))
-        rescue StandardError => e
-          increment_metric(client: :anthropic)
-          raise e
         end
 
         def stream(prompt:, **options)
@@ -40,9 +36,6 @@ module Gitlab
           end
 
           response_body
-        rescue StandardError => e
-          increment_metric(client: :anthropic)
-          raise e
         end
 
         private
@@ -66,8 +59,6 @@ module Gitlab
           end
 
           logger.debug(message: "Received response from Anthropic", response: response)
-
-          increment_metric(client: :anthropic, response: response)
 
           response
         end

@@ -210,11 +210,13 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
       )
     end
 
+    let(:http_status) { 200 }
+
     subject { described_class.new(user).text(content: 'anything', **options) }
 
     before do
       allow(Gitlab::Llm::VertexAi::Configuration).to receive(:new).and_return(config)
-      stub_request(:post, url).to_return(status: 200, body: 'some response')
+      stub_request(:post, url).to_return(status: http_status, body: 'some response')
     end
 
     context 'when measuring request success' do
@@ -227,7 +229,17 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
           allow(Gitlab::HTTP).to receive(:post).and_raise(StandardError)
         end
 
-        it_behaves_like 'measured Llm request with error'
+        it_behaves_like 'measured Llm request with error', StandardError
+      end
+
+      context 'when request is retried' do
+        let(:http_status) { 429 }
+
+        before do
+          stub_const("Gitlab::Llm::Concerns::ExponentialBackoff::INITIAL_DELAY", 0.0)
+        end
+
+        it_behaves_like 'measured Llm request with error', Gitlab::Llm::Concerns::ExponentialBackoff::RateLimitError
       end
     end
   end

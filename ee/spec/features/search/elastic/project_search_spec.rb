@@ -125,6 +125,22 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
     end
   end
 
+  describe 'when zoekt is not enabled' do
+    before do
+      sign_in(user)
+      visit project_path(project)
+      ensure_elasticsearch_index!
+
+      submit_search('test')
+      select_search_scope('Code')
+    end
+
+    it 'does not display exact code search is enabled' do
+      expect(page).to have_selector('[data-testid="es-status-marker"][data-enabled="true"]')
+      expect(page).not_to have_text('Exact code search (powered by Zoekt) is enabled')
+    end
+  end
+
   describe 'renders error when zoekt search fails' do
     let(:query) { 'test' }
     let(:search_service) do

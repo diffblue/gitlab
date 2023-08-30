@@ -42,6 +42,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
   end
 
   let(:response_body) { expected_response.to_json }
+  let(:http_status) { 200 }
 
   before do
     stub_application_setting(anthropic_api_key: api_key)
@@ -51,7 +52,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
         headers: expected_request_headers
       )
       .to_return(
-        status: 200,
+        status: http_status,
         body: response_body,
         headers: { 'Content-Type' => 'application/json' }
       )
@@ -70,7 +71,17 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
           allow(Gitlab::HTTP).to receive(:post).and_raise(StandardError)
         end
 
-        it_behaves_like 'measured Llm request with error'
+        it_behaves_like 'measured Llm request with error', StandardError
+      end
+
+      context 'when request is retried' do
+        let(:http_status) { 429 }
+
+        before do
+          stub_const("Gitlab::Llm::Concerns::ExponentialBackoff::INITIAL_DELAY", 0.0)
+        end
+
+        it_behaves_like 'measured Llm request with error', Gitlab::Llm::Concerns::ExponentialBackoff::RateLimitError
       end
     end
 

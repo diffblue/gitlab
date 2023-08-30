@@ -39,11 +39,6 @@ module Gitlab
             stream_response_handler: stream_response_handler
           ).execute
 
-          Gitlab::Metrics::Sli::Apdex[:llm_chat_answers].increment(
-            labels: { tool: response.last_tool_name || :unknown },
-            success: response.status == :ok
-          )
-
           response_modifier = Gitlab::Llm::Chain::ResponseModifier.new(response)
 
           context.tools_used.each do |tool|
@@ -59,6 +54,8 @@ module Gitlab
           end
 
           response_handler.execute(response: response_modifier)
+
+          response_modifier
         end
 
         def tools(user)

@@ -28,12 +28,13 @@ module Gitlab
             @job = job
 
             response = request
-            content = response&.deep_symbolize_keys&.dig(:predictions, 0, :content)
-
-            return unless content
+            response_modifier = ::Gitlab::Llm::VertexAi::ResponseModifiers::Predictions.new(response)
+            return unless response_modifier.response_body
 
             analysis = Ai::JobFailureAnalysis.new(@job)
-            analysis.save_content(content)
+            analysis.save_content(response_modifier.response_body)
+
+            response_modifier
           end
 
           private

@@ -10,6 +10,7 @@ import {
 } from '@gitlab/ui';
 import { cloneDeep, uniqBy } from 'lodash';
 import { DOCS_URL_IN_EE_DIR } from 'jh_else_ce/lib/utils/url_utility';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { NAMESPACE_PROJECT, DEPENDENCIES_TABLE_I18N } from '../constants';
 import DependencyLicenseLinks from './dependency_license_links.vue';
 import DependencyLocation from './dependency_location.vue';
@@ -37,6 +38,7 @@ const sharedFields = [
     label: DEPENDENCIES_TABLE_I18N.location,
     tdClass: tdClass(['gl-md-max-w-26']),
   },
+  { key: 'license', label: DEPENDENCIES_TABLE_I18N.license, tdClass: tdClass() },
 ];
 
 export default {
@@ -55,6 +57,7 @@ export default {
     GlPopover,
     GlLink,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: ['namespaceType'],
   props: {
     dependencies: {
@@ -71,7 +74,7 @@ export default {
       return this.localDependencies.some(({ vulnerabilities }) => vulnerabilities?.length > 0);
     },
     fields() {
-      return this.isProjectNamespace ? this.$options.projectFields : this.$options.groupFields;
+      return this.isProjectNamespace ? this.$options.projectFields : this.groupFields;
     },
     isProjectNamespace() {
       return this.namespaceType === NAMESPACE_PROJECT;
@@ -80,6 +83,20 @@ export default {
       return this.isProjectNamespace
         ? this.transformDependenciesForUI(this.dependencies)
         : this.uniqueBasedOnComponentId(this.dependencies);
+    },
+    // Once the feature flag is removed, we can move this from a computed property to an option, like `projectFields`
+    // Rollout issue: https://gitlab.com/gitlab-org/gitlab/-/issues/422978
+    groupFields() {
+      const {
+        glFeatures: { groupLevelLicenses },
+      } = this;
+
+      const withoutLicenseField = (fields) => fields.filter((field) => field.key !== 'license');
+
+      return [
+        ...(groupLevelLicenses ? sharedFields : withoutLicenseField(sharedFields)),
+        { key: 'projects', label: DEPENDENCIES_TABLE_I18N.projects, tdClass: tdClass() },
+      ];
     },
   },
   methods: {
@@ -107,12 +124,7 @@ export default {
   },
   projectFields: [
     ...sharedFields,
-    { key: 'license', label: DEPENDENCIES_TABLE_I18N.license, tdClass: tdClass() },
     { key: 'isVulnerable', label: '', tdClass: tdClass(['gl-text-right']) },
-  ],
-  groupFields: [
-    ...sharedFields,
-    { key: 'projects', label: DEPENDENCIES_TABLE_I18N.projects, tdClass: tdClass() },
   ],
   DEPENDENCIES_PER_PAGE: 20,
   DEPENDENCY_PATH_LINK: `${DOCS_URL_IN_EE_DIR}/user/application_security/dependency_list/#dependency-paths`,
