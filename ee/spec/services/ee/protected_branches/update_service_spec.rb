@@ -36,6 +36,14 @@ RSpec.describe ProtectedBranches::UpdateService, feature_category: :compliance_m
       it 'adds security audit event entries' do
         expect { service.execute(protected_branch) }.to change(::AuditEvent, :count).by(2)
       end
+
+      context 'with blocking scan result policy' do
+        include_context 'with scan result policy blocking protected branches'
+
+        it 'blocks unprotecting branches' do
+          expect { service.execute(protected_branch) }.to raise_error(Gitlab::Access::AccessDeniedError)
+        end
+      end
     end
   end
 end

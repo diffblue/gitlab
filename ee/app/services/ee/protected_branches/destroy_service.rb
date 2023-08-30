@@ -5,6 +5,7 @@ module EE
     module DestroyService
       extend ::Gitlab::Utils::Override
       include Loggable
+      prepend BlockedByPolicy
 
       override :execute
       def execute(protected_branch)
