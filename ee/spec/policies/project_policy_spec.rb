@@ -2929,4 +2929,32 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       it { is_expected.to be_allowed(:create_target_branch_rule) }
     end
   end
+
+  describe 'read_target_branch_rules policy' do
+    let(:current_user) { owner }
+
+    describe 'when the target_branch_rules_flag flag is disabled' do
+      before do
+        stub_feature_flags(target_branch_rules_flag: false)
+      end
+
+      it { is_expected.to be_disallowed(:read_target_branch_rules) }
+    end
+
+    describe 'when the project does not have the correct license' do
+      before do
+        stub_licensed_features(target_branch_rules: false)
+      end
+
+      it { is_expected.to be_disallowed(:read_target_branch_rules) }
+    end
+
+    describe 'when the user has permission' do
+      before do
+        stub_licensed_features(target_branch_rules: true)
+      end
+
+      it { is_expected.to be_allowed(:read_target_branch_rules) }
+    end
+  end
 end
