@@ -142,7 +142,8 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
                     'version' => sbom_occurrence_npm.version,
                     'licenses' => [
                       {
-                        'name' => 'MIT',
+                        'spdx_identifier' => 'MIT',
+                        'name' => 'MIT License',
                         'url' => 'https://spdx.org/licenses/MIT.html'
                       }
                     ],
@@ -158,7 +159,8 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
                     'version' => sbom_occurrence_bundler.version,
                     'licenses' => [
                       {
-                        'name' => 'Apache-2.0',
+                        'spdx_identifier' => 'Apache-2.0',
+                        'name' => 'Apache 2.0 License',
                         'url' => 'https://spdx.org/licenses/Apache-2.0.html'
                       }
                     ],

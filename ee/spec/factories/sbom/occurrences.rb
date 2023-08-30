@@ -24,7 +24,8 @@ FactoryBot.define do
     trait :apache_2 do
       after(:build) do |occurrence|
         occurrence.licenses.push({
-          'name' => 'Apache-2.0',
+          'spdx_identifier' => 'Apache-2.0',
+          'name' => 'Apache 2.0 License',
           'url' => 'https://spdx.org/licenses/Apache-2.0.html'
         })
       end
@@ -33,7 +34,8 @@ FactoryBot.define do
     trait :mit do
       after(:build) do |occurrence|
         occurrence.licenses.push({
-          'name' => 'MIT',
+          'spdx_identifier' => 'MIT',
+          'name' => 'MIT License',
           'url' => 'https://spdx.org/licenses/MIT.html'
         })
       end
