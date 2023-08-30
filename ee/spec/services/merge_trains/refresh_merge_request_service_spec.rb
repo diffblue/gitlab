@@ -248,6 +248,48 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
       context 'when the merge request is the first queue' do
         it_behaves_like 'merges the merge request'
 
+        context 'when the merge method is fast forward' do
+          before do
+            project.update!(merge_method: :ff)
+            project.repository.raw_repository.write_ref(merge_request.train_ref_path, pipeline.sha)
+          end
+
+          it 'uses the FromTrainRef merge strategy', :aggregate_failures do
+            expect(merge_request).to receive(:schedule_cleanup_refs).with(only: :train)
+            expect(merge_request.merge_train_car).to receive(:start_merge!).and_call_original
+            expect(merge_request.merge_train_car).to receive(:finish_merge!).and_call_original
+            expect_next_instance_of(MergeRequests::MergeService, project: project, current_user: maintainer, params: instance_of(HashWithIndifferentAccess)) do |service|
+              expect(service).to(
+                receive(:execute).with(
+                  merge_request,
+                  skip_discussions_check: true,
+                  check_mergeability_retry_lease: true,
+                  merge_strategy: MergeRequests::MergeStrategies::FromTrainRef
+                ).and_call_original
+              )
+            end
+
+            expect { subject }.to change { merge_request.merge_train_car.status_name }.from(:fresh).to(:merged)
+            expect(subject[:status]).to eq(:success)
+            expect(subject[:message]).to eq(nil)
+            expect(merge_request.state).to eq("merged")
+          end
+
+          context 'with feature flag fast_forward_merge_trains_support disabled' do
+            before do
+              stub_feature_flags(fast_forward_merge_trains_support: false)
+            end
+
+            it 'uses the default merge strategy' do
+              expect_next_instance_of(MergeRequests::MergeService, project: project, current_user: maintainer, params: instance_of(HashWithIndifferentAccess)) do |service|
+                expect(service).to receive(:execute).with(merge_request, skip_discussions_check: true, check_mergeability_retry_lease: true)
+              end
+
+              subject
+            end
+          end
+        end
+
         context 'when it failed to merge the merge request' do
           before do
             allow(merge_request).to receive(:broken?) { false }

@@ -72,8 +72,14 @@ module MergeTrains
     def merge!
       merge_train_car.start_merge!
 
+      merge_options = { skip_discussions_check: true, check_mergeability_retry_lease: true }
+
+      if project.merge_requests_ff_only_enabled && Feature.enabled?(:fast_forward_merge_trains_support, project)
+        merge_options[:merge_strategy] = MergeRequests::MergeStrategies::FromTrainRef
+      end
+
       MergeRequests::MergeService.new(project: project, current_user: merge_user, params: merge_request.merge_params.with_indifferent_access)
-                                 .execute(merge_request, skip_discussions_check: true, check_mergeability_retry_lease: true)
+        .execute(merge_request, **merge_options)
 
       raise ProcessError, "failed to merge. #{merge_request.merge_error}" unless merge_request.merged?
 
