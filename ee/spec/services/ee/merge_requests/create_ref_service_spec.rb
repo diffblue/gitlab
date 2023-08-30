@@ -13,6 +13,7 @@ RSpec.describe MergeRequests::CreateRefService, feature_category: :merge_trains 
     let(:target_ref) { "refs/merge-requests/#{merge_request.iid}/train" }
     let(:source_sha) { project.commit(source_branch).sha }
     let(:squash) { false }
+    let(:legacy_commit_message) { MergeTrains::MergeCommitMessage.legacy_value(merge_request, first_parent_ref) }
     let(:default_commit_message) { merge_request.default_merge_commit_message(user: user) }
 
     let(:merge_request) do
@@ -162,44 +163,71 @@ RSpec.describe MergeRequests::CreateRefService, feature_category: :merge_trains 
       end
 
       shared_examples 'merge commits without squash' do
-        context 'with a custom template' do
-          let(:expected_merge_commit) { 'This is the merge commit' } # could also be default_commit_message
+        context 'when standard commits are on' do
+          context 'with a custom template' do
+            let(:expected_merge_commit) { 'This is the merge commit' } # could also be default_commit_message
 
-          before do
-            project.project_setting.update!(merge_commit_template: expected_merge_commit)
+            before do
+              project.project_setting.update!(merge_commit_template: expected_merge_commit)
+            end
+
+            it_behaves_like 'writing with a merge commit'
           end
 
-          it_behaves_like 'writing with a merge commit'
+          context 'with no custom template' do
+            let(:expected_merge_commit) { default_commit_message }
+
+            it_behaves_like 'writing with a merge commit'
+          end
         end
 
-        context 'with no custom template' do
-          let(:expected_merge_commit) { default_commit_message }
+        context 'when standard commits are off' do
+          let(:expected_merge_commit) { legacy_commit_message }
+
+          before do
+            stub_feature_flags(standard_merge_train_ref_merge_commit: false)
+          end
 
           it_behaves_like 'writing with a merge commit'
         end
       end
 
       shared_examples 'merge commits with squash' do
-        context 'when squash set' do
+        context 'when squash is requested' do
           let(:squash) { true }
           let(:expected_merge_commit) { merge_request.default_merge_commit_message(user: user) }
 
-          before do
-            project.project_setting.update!(merge_commit_template: 'This is the merge commit')
+          context 'when standard commits are on' do
+            let(:expected_merge_commit) { merge_request.default_merge_commit_message(user: user) }
+
+            before do
+              project.project_setting.update!(merge_commit_template: 'This is the merge commit')
+            end
+
+            it_behaves_like 'writing with a squash and merge commit'
           end
 
-          it_behaves_like 'writing with a squash and merge commit'
+          context 'when standard commits are off' do
+            let(:expected_merge_commit) { legacy_commit_message }
+
+            before do
+              stub_feature_flags(standard_merge_train_ref_merge_commit: false)
+            end
+
+            it_behaves_like 'writing with a squash and merge commit'
+          end
         end
       end
 
       context 'when the merge commit message is provided at time of merge' do
-        let(:expected_merge_commit) { 'something custom' }
+        let(:custom_commit) { 'something custom' }
+        let(:expected_merge_commit) { custom_commit }
 
         before do
-          merge_request.merge_params['commit_message'] = expected_merge_commit
+          merge_request.merge_params['commit_message'] = custom_commit
         end
 
-        it 'writes the merged result', :aggregate_failures do
+        it 'writes the custom commit message', :aggregate_failures do
           expect(result[:status]).to eq :success
           expect(project.repository.commits(target_ref, limit: 1, order: 'topo').map(&:message)).to(
             match([expected_merge_commit])
@@ -210,6 +238,26 @@ RSpec.describe MergeRequests::CreateRefService, feature_category: :merge_trains 
           let(:squash) { true }
 
           it_behaves_like 'writing with a squash and merge commit'
+        end
+
+        context 'with standard_merge_train_ref_merge_commit disabled' do
+          before do
+            stub_feature_flags(standard_merge_train_ref_merge_commit: false)
+          end
+
+          it 'writes the legacy commit message', :aggregate_failures do
+            expect(result[:status]).to eq :success
+            expect(project.repository.commits(target_ref, limit: 1, order: 'topo').map(&:message)).to(
+              match([legacy_commit_message])
+            )
+          end
+
+          context 'when squash set' do
+            let(:squash) { true }
+            let(:expected_merge_commit) { legacy_commit_message }
+
+            it_behaves_like 'writing with a squash and merge commit'
+          end
         end
       end
 
@@ -234,12 +282,28 @@ RSpec.describe MergeRequests::CreateRefService, feature_category: :merge_trains 
           project.save!
         end
 
-        it_behaves_like 'writing without a merge commit'
+        context 'when standard commits are on' do
+          it_behaves_like 'writing without a merge commit'
 
-        context 'when squash set' do
-          let(:squash) { true }
+          context 'when squash set' do
+            let(:squash) { true }
 
-          it_behaves_like 'writing with a squash and no merge commit'
+            it_behaves_like 'writing with a squash and no merge commit'
+          end
+        end
+
+        context 'when standard commits are off' do
+          before do
+            stub_feature_flags(standard_merge_train_ref_merge_commit: false)
+          end
+
+          it_behaves_like 'writing without a merge commit'
+
+          context 'when squash set' do
+            let(:squash) { true }
+
+            it_behaves_like 'writing with a squash and no merge commit'
+          end
         end
       end
     end

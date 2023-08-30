@@ -32,6 +32,11 @@ module Types
         null: false,
         description: 'Message timestamp.'
 
+      field :chunk_id,
+        GraphQL::Types::Int,
+        null: true,
+        description: 'Incremental ID for a chunk from a streamed response. Null when it is not a streamed response.'
+
       field :errors, [GraphQL::Types::String],
         null: true,
         description: 'Errors return by AI API as response.'

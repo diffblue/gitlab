@@ -23,16 +23,13 @@ module MergeTrains
     def create_train_ref(merge_request, previous_ref)
       return error('previous ref is not specified') unless previous_ref
 
-      commit_message = commit_message(merge_request, previous_ref)
-
       if Feature.enabled?(:merge_trains_create_ref_service, merge_request.target_project)
         ::MergeRequests::CreateRefService.new(
           current_user: merge_request.merge_user,
           merge_request: merge_request,
           target_ref: merge_request.train_ref_path,
           source_sha: merge_request.diff_head_sha,
-          first_parent_ref: previous_ref,
-          merge_commit_message: commit_message
+          first_parent_ref: previous_ref
         ).execute.to_h.transform_keys do |key|
           # TODO: Remove this transformation with FF merge_trains_create_ref_service
           case key
@@ -49,15 +46,10 @@ module MergeTrains
           params: {
             target_ref: merge_request.train_ref_path,
             first_parent_ref: previous_ref,
-            commit_message: commit_message
+            commit_message: MergeTrains::MergeCommitMessage.legacy_value(merge_request, previous_ref)
           }
         ).execute(merge_request)
       end
-    end
-
-    def commit_message(merge_request, previous_ref)
-      "Merge branch #{merge_request.source_branch} with #{previous_ref} " \
-      "into #{merge_request.train_ref_path}"
     end
 
     def create_pipeline(merge_request, merge_status)

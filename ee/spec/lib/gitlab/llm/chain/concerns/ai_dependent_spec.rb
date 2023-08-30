@@ -3,18 +3,18 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Chain::Concerns::AiDependent, feature_category: :duo_chat do
-  describe '#prompt' do
-    let(:options) { { suggestions: "", input: "" } }
-    let(:ai_request) { ::Gitlab::Llm::Chain::Requests::Anthropic.new(double) }
-    let(:context) do
-      ::Gitlab::Llm::Chain::GitlabContext.new(
-        current_user: double,
-        container: double,
-        resource: double,
-        ai_request: ai_request
-      )
-    end
+  let(:options) { { suggestions: "", input: "" } }
+  let(:ai_request) { ::Gitlab::Llm::Chain::Requests::Anthropic.new(double) }
+  let(:context) do
+    ::Gitlab::Llm::Chain::GitlabContext.new(
+      current_user: double,
+      container: double,
+      resource: double,
+      ai_request: ai_request
+    )
+  end
 
+  describe '#prompt' do
     context 'when prompt is called' do
       it 'returns provider specific prompt' do
         tool = ::Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor.new(context: context, options: options)
@@ -63,6 +63,25 @@ RSpec.describe Gitlab::Llm::Chain::Concerns::AiDependent, feature_category: :duo
 
         expect { tool.prompt }.to raise_error(NotImplementedError)
       end
+    end
+  end
+
+  describe '#request' do
+    it 'passes prompt to the ai_client' do
+      tool = ::Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor.new(context: context, options: options)
+
+      expect(ai_request).to receive(:request).with(tool.prompt)
+
+      tool.request
+    end
+
+    it 'passes blocks forward to the ai_client' do
+      b = proc { "something" }
+      tool = ::Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor.new(context: context, options: options)
+
+      expect(ai_request).to receive(:request).with(tool.prompt, &b)
+
+      tool.request(&b)
     end
   end
 end

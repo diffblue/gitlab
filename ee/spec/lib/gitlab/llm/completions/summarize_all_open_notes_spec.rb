@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category: :duo_chat do
-  let(:ai_response) { { "completion" => "some ai response text" } }
+  let(:ai_response) { "some ai response text" }
   let(:template_class) { nil }
   let(:ai_options) do
     {
@@ -76,7 +76,7 @@ RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category
 
   describe "#execute", :saas do
     let(:ai_request_class) { ::Gitlab::Llm::Anthropic::Client }
-    let(:completion_method) { :complete }
+    let(:completion_method) { :stream }
     let(:options) { { ai_provider: :anthropic } }
 
     let_it_be(:user) { create(:user) }
@@ -130,7 +130,20 @@ RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category
         let_it_be(:notes) { create_pair(:note_on_issue, project: project, noteable: issuable) }
         let_it_be(:system_note) { create(:note_on_issue, :system, project: project, noteable: issuable) }
 
-        it_behaves_like 'performs completion'
+        context 'when streaming is enabled' do
+          it_behaves_like 'performs completion'
+        end
+
+        context 'when streaming is disabled' do
+          let(:completion_method) { :complete }
+          let(:ai_response) { { "completion" => "some ai response text" } }
+
+          before do
+            stub_feature_flags(stream_gitlab_duo: false)
+          end
+
+          it_behaves_like 'performs completion'
+        end
 
         context 'with vertex_ai provider' do
           let(:options) { { ai_provider: :vertex_ai } }

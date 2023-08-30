@@ -14,6 +14,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
   let(:response_double) { "I know the final answer\nFinal Answer: FooBar" }
   let(:resource) { user }
   let(:response_service_double) { instance_double(::Gitlab::Llm::ResponseService) }
+  let(:stream_response_service_double) { nil }
 
   let(:context) do
     Gitlab::Llm::Chain::GitlabContext.new(
@@ -28,7 +29,8 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       user_input: input,
       tools: tools,
       context: context,
-      response_handler: response_service_double
+      response_handler: response_service_double,
+      stream_response_handler: stream_response_service_double
     )
   end
 
@@ -46,80 +48,117 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
               .and_return(tool_double)
     end
 
-    it 'executes associated tools and adds observations during the execution' do
-      answer = agent.execute
-
-      expect(answer.is_final).to eq(true)
-      expect(answer.content).to include('FooBar')
-    end
-
-    context 'without final answer' do
+    context 'when streaming is disabled' do
       before do
-        # just limiting the number of iterations here from 10 to 2
-        stub_const("#{described_class.name}::MAX_ITERATIONS", 2)
+        stub_feature_flags(stream_gitlab_duo: false)
       end
 
       it 'executes associated tools and adds observations during the execution' do
-        logger = instance_double(Gitlab::Llm::Logger)
+        answer = agent.execute
 
-        expect(Gitlab::Llm::Logger).to receive(:build).at_least(:once).and_return(logger)
-        expect(logger).to receive(:info).with(hash_including(message: "Tool cycling detected")).exactly(2)
-        expect(logger).to receive(:info).at_least(:once)
-        expect(logger).to receive(:debug).at_least(:once)
-        expect(response_service_double).to receive(:execute).at_least(:once)
-
-        allow(agent).to receive(:request).and_return("Action: IssueIdentifier\nAction Input: #3")
-
-        agent.execute
+        expect(answer.is_final).to eq(true)
+        expect(answer.content).to include('FooBar')
       end
 
-      context 'with the ai_tool_info flag switched off' do
+      context 'without final answer' do
         before do
-          stub_feature_flags(ai_tool_info: false)
+          # just limiting the number of iterations here from 10 to 2
+          stub_const("#{described_class.name}::MAX_ITERATIONS", 2)
         end
 
-        it 'does not call response_service' do
-          expect(response_service_double).not_to receive(:execute)
+        it 'executes associated tools and adds observations during the execution' do
+          logger = instance_double(Gitlab::Llm::Logger)
+
+          expect(Gitlab::Llm::Logger).to receive(:build).at_least(:once).and_return(logger)
+          expect(logger).to receive(:info).with(hash_including(message: "Tool cycling detected")).exactly(2)
+          expect(logger).to receive(:info).at_least(:once)
+          expect(logger).to receive(:debug).at_least(:once)
+          expect(response_service_double).to receive(:execute).at_least(:once)
 
           allow(agent).to receive(:request).and_return("Action: IssueIdentifier\nAction Input: #3")
 
           agent.execute
         end
+
+        context 'with the ai_tool_info flag switched off' do
+          before do
+            stub_feature_flags(ai_tool_info: false)
+          end
+
+          it 'does not call response_service' do
+            expect(response_service_double).not_to receive(:execute)
+
+            allow(agent).to receive(:request).and_return("Action: IssueIdentifier\nAction Input: #3")
+
+            agent.execute
+          end
+        end
+      end
+
+      context 'when max iterations reached' do
+        it 'returns' do
+          stub_const("#{described_class.name}::MAX_ITERATIONS", 2)
+
+          allow(agent).to receive(:request).and_return("Action: IssueIdentifier\nAction Input: #3")
+          expect(agent).to receive(:request).twice.times
+          expect(response_service_double).to receive(:execute).at_least(:once)
+
+          answer = agent.execute
+
+          expect(answer.is_final?).to eq(true)
+          expect(answer.content).to include(Gitlab::Llm::Chain::Answer.default_final_message)
+        end
+      end
+
+      context 'when answer is final' do
+        let(:response_content_1) { "Thought: I know final answer\nFinal Answer: Foo" }
+
+        it 'returns final answer' do
+          answer = agent.execute
+
+          expect(answer.is_final?).to eq(true)
+        end
+      end
+
+      context 'when tool answer if final' do
+        let(:tool_answer) { instance_double(Gitlab::Llm::Chain::Answer, is_final?: true) }
+
+        it 'returns final answer' do
+          answer = agent.execute
+
+          expect(answer.is_final?).to eq(true)
+        end
       end
     end
 
-    context 'when max iterations reached' do
-      it 'returns' do
-        stub_const("#{described_class.name}::MAX_ITERATIONS", 2)
+    context 'when streaming is enabled' do
+      let(:stream_response_service_double) { instance_double(::Gitlab::Llm::ResponseService) }
 
-        allow(agent).to receive(:request).and_return("Action: IssueIdentifier\nAction Input: #3")
-        expect(agent).to receive(:request).twice.times
-        expect(response_service_double).to receive(:execute).at_least(:once)
-
-        answer = agent.execute
-
-        expect(answer.is_final?).to eq(true)
-        expect(answer.content).to include(Gitlab::Llm::Chain::Answer.default_final_message)
+      before do
+        stub_feature_flags(stream_gitlab_duo: true)
+        allow(ai_request_double).to receive(:request).and_yield("Final Answer:").and_yield("Hello").and_yield(" World")
       end
-    end
 
-    context 'when answer is final' do
-      let(:response_content_1) { "Thought: I know final answer\nFinal Answer: Foo" }
+      it 'streams the final answer' do
+        first_response_double = double
+        second_response_double = double
 
-      it 'returns final answer' do
-        answer = agent.execute
+        allow(Gitlab::Llm::Chain::PlainResponseModifier).to receive(:new).with("Hello")
+          .and_return(first_response_double)
 
-        expect(answer.is_final?).to eq(true)
-      end
-    end
+        allow(Gitlab::Llm::Chain::PlainResponseModifier).to receive(:new).with(" World")
+          .and_return(second_response_double)
 
-    context 'when tool answer if final' do
-      let(:tool_answer) { instance_double(Gitlab::Llm::Chain::Answer, is_final?: true) }
+        expect(stream_response_service_double).to receive(:execute).with(
+          response: first_response_double,
+          options: { cache_response: false, role: ::Gitlab::Llm::Cache::ROLE_ASSISTANT, chunk_id: 1 }
+        )
+        expect(stream_response_service_double).to receive(:execute).with(
+          response: second_response_double,
+          options: { cache_response: false, role: ::Gitlab::Llm::Cache::ROLE_ASSISTANT, chunk_id: 2 }
+        )
 
-      it 'returns final answer' do
-        answer = agent.execute
-
-        expect(answer.is_final?).to eq(true)
+        agent.execute
       end
     end
   end

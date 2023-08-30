@@ -24,7 +24,8 @@ module Subscriptions
         role: object[:role],
         errors: object[:errors],
         timestamp: object[:timestamp],
-        type: object[:type]
+        type: object[:type],
+        chunk_id: object[:chunk_id]
       }
     end
 

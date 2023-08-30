@@ -24,18 +24,27 @@ module Gitlab
             # @param [String] user_input - a question from a user
             # @param [Array<Tool>] tools - an array of Tools defined in the tools module.
             # @param [GitlabContext] context - Gitlab context containing useful context information
-            def initialize(user_input:, tools:, context:, response_handler:)
+            # @param [ResponseService] response_handler - Handles returning the response to the client
+            # @param [ResponseService] stream_response_handler - Handles streaming chunks to the client
+            def initialize(user_input:, tools:, context:, response_handler:, stream_response_handler: nil)
               @user_input = user_input
               @tools = tools
               @context = context
               @iterations = 0
               @logger = Gitlab::Llm::Logger.build
               @response_handler = response_handler
+              @stream_response_handler = stream_response_handler
             end
 
             def execute
               MAX_ITERATIONS.times do
-                answer = Answer.from_response(response_body: "Thought: #{request}", tools: tools, context: context)
+                thought = if stream_response_handler && Feature.enabled?(:stream_gitlab_duo, context.current_user)
+                            execute_streamed_request
+                          else
+                            request
+                          end
+
+                answer = Answer.from_response(response_body: "Thought: #{thought}", tools: tools, context: context)
 
                 return answer if answer.is_final?
 
@@ -72,11 +81,30 @@ module Gitlab
 
             private
 
+            def execute_streamed_request
+              streamed_answer = StreamedAnswer.new
+
+              request do |content|
+                chunk = streamed_answer.next_chunk(content)
+
+                if chunk
+                  stream_response_handler.execute(
+                    response: Gitlab::Llm::Chain::PlainResponseModifier.new(content),
+                    options: {
+                      cache_response: false,
+                      role: ::Gitlab::Llm::Cache::ROLE_ASSISTANT,
+                      chunk_id: chunk[:id]
+                    }
+                  )
+                end
+              end
+            end
+
             def tools_cycle?
               context.tools_used.size != context.tools_used.uniq.size
             end
 
-            attr_reader :logger
+            attr_reader :logger, :stream_response_handler
 
             # This method should not be memoized because the input variables change over time
             def base_prompt

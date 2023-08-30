@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe MergeTrains::CreatePipelineService, feature_category: :continuous_integration do
-  shared_examples_for 'MergeTrains::CreatePipelineService' do |ref_creation_class|
+  shared_examples_for 'MergeTrains::CreatePipelineService' do
     let_it_be(:project) { create(:project, :repository, :auto_devops, merge_pipelines_enabled: true, merge_trains_enabled: true) }
     let_it_be(:maintainer) { create(:user) }
 
@@ -85,13 +85,13 @@ RSpec.describe MergeTrains::CreatePipelineService, feature_category: :continuous
           end
 
           it 'creates train ref' do
+            expect(expected_ref_creation_service).to receive(:new).with(hash_including(
+              expected_ref_creation_service_args
+            )).and_call_original
+
             expect { subject }
               .to change { merge_request.project.repository.ref_exists?(merge_request.train_ref_path) }
                     .from(false).to(true)
-
-            expect(project.repository.commit(merge_request.train_ref_path).message)
-              .to eq("Merge branch #{merge_request.source_branch} with #{previous_ref} " \
-                     "into #{merge_request.train_ref_path}")
           end
 
           it 'calls Ci::CreatePipelineService for creating pipeline on train ref' do
@@ -168,7 +168,7 @@ RSpec.describe MergeTrains::CreatePipelineService, feature_category: :continuous
       context 'when failed to prepare merge ref' do
         before do
           check_service = double
-          allow(ref_creation_class).to receive(:new) { check_service }
+          allow(expected_ref_creation_service).to receive(:new) { check_service }
           allow(check_service).to receive(:execute) { { status: :error, message: 'Merge ref was not found' } }
         end
 
@@ -179,13 +179,35 @@ RSpec.describe MergeTrains::CreatePipelineService, feature_category: :continuous
     end
   end
 
-  it_behaves_like 'MergeTrains::CreatePipelineService', MergeRequests::CreateRefService
+  context 'when ff :merge_trains_create_ref_service is enabled' do
+    let(:expected_ref_creation_service) { MergeRequests::CreateRefService }
+    let(:expected_ref_creation_service_args) do
+      {
+        current_user: merge_request.merge_user,
+        merge_request: merge_request,
+        target_ref: merge_request.train_ref_path,
+        source_sha: merge_request.diff_head_sha,
+        first_parent_ref: previous_ref
+      }
+    end
+
+    it_behaves_like 'MergeTrains::CreatePipelineService'
+  end
 
   context 'when ff :merge_trains_create_ref_service is disabled' do
+    let(:expected_ref_creation_service) { MergeRequests::MergeToRefService }
+    let(:expected_ref_creation_service_args) do
+      {
+        params: hash_including(
+          commit_message: MergeTrains::MergeCommitMessage.legacy_value(merge_request, previous_ref)
+        )
+      }
+    end
+
     before do
       stub_feature_flags(merge_trains_create_ref_service: false)
     end
 
-    it_behaves_like 'MergeTrains::CreatePipelineService', MergeRequests::MergeToRefService
+    it_behaves_like 'MergeTrains::CreatePipelineService'
   end
 end
