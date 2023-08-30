@@ -66,8 +66,6 @@ module Audit
     end
 
     def audit_event(options)
-      return unless audit_enabled?
-
       name = options.fetch(:event_type, 'audit_operation')
       details = additional_details(options)
       audit_context = {
@@ -92,15 +90,6 @@ module Audit
       message << "from #{details[:from]}" if details[:from].to_s.present?
       message << "to #{details[:to]}" if details[:to].to_s.present?
       message.join(' ')
-    end
-
-    # TODO: Remove this once we implement license feature checks in Auditor.
-    # issue link: https://gitlab.com/gitlab-org/gitlab/-/issues/365441
-    def audit_enabled?
-      return true if ::License.feature_available?(:admin_audit_log)
-      return true if ::License.feature_available?(:extended_audit_events)
-
-      entity.respond_to?(:licensed_feature_available?) && entity.licensed_feature_available?(:audit_events)
     end
   end
 end
