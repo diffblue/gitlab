@@ -33,8 +33,21 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     describe '#licenses' do
       subject { build(:sbom_occurrence, licenses: licenses) }
 
-      let(:apache) { { name: 'Apache-2.0', url: 'http://spdx.org/licenses/Apache-2.0.html' } }
-      let(:mit) { { name: 'MIT', url: 'http://spdx.org/licenses/MIT.html' } }
+      let(:apache) do
+        {
+          spdx_identifier: 'Apache-2.0',
+          name: 'Apache License 2.0',
+          url: 'http://spdx.org/licenses/Apache-2.0.html'
+        }
+      end
+
+      let(:mit) do
+        {
+          spdx_identifier: 'MIT',
+          name: 'MIT License',
+          url: 'http://spdx.org/licenses/MIT.html'
+        }
+      end
 
       context 'when licenses is empty' do
         let(:licenses) { [] }
@@ -48,14 +61,33 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
         it { is_expected.to be_valid }
       end
 
-      context 'when licenses has a multiple valid license' do
+      context 'when licenses has multiple valid licenses' do
         let(:licenses) { [apache, mit] }
 
         it { is_expected.to be_valid }
       end
 
+      context 'when spdx_identifier is missing' do
+        let(:licenses) { [mit.except(:spdx_identifier)] }
+
+        it { is_expected.to be_invalid }
+      end
+
+      context 'when spdx_identifier is blank' do
+        let(:licenses) { [mit.merge(spdx_identifier: '')] }
+
+        it { is_expected.to be_invalid }
+      end
+
+      context 'when spdx_identifier is too long' do
+        # max length derived from `pm_licenses`.`spdx_identifier` column
+        let(:licenses) { [mit.merge(spdx_identifier: 'X' * 51)] }
+
+        it { is_expected.to be_invalid }
+      end
+
       context 'when a license name is missing' do
-        let(:licenses) { [{ url: 'http://spdx.org/licenses/MIT.html' }] }
+        let(:licenses) { [mit.except(:name)] }
 
         it { is_expected.to be_invalid }
       end
@@ -66,14 +98,8 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
         it { is_expected.to be_invalid }
       end
 
-      context 'when a license name is too long' do
-        let(:licenses) { [mit.merge(name: 'X' * 51)] } # max length derived from `pm_licenses`.`spdx_identifier` column
-
-        it { is_expected.to be_invalid }
-      end
-
       context 'when a license url is missing' do
-        let(:licenses) { [{ name: 'MIT' }] }
+        let(:licenses) { [mit.except(:url)] }
 
         it { is_expected.to be_invalid }
       end
