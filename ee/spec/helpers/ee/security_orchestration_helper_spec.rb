@@ -113,8 +113,8 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
             Gitlab::CurrentSettings.security_policy_global_group_approvers_enabled.to_json,
           root_namespace_path: project.root_ancestor.full_path,
           timezones: timezones.to_json,
-          max_active_scan_execution_policies_reached: false,
-          max_active_scan_result_policies_reached: false
+          max_active_scan_execution_policies_reached: 'false',
+          max_active_scan_result_policies_reached: 'false'
         }
       end
 
@@ -195,8 +195,8 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
             Gitlab::CurrentSettings.security_policy_global_group_approvers_enabled.to_json,
           root_namespace_path: namespace.root_ancestor.full_path,
           timezones: timezones.to_json,
-          max_active_scan_execution_policies_reached: false,
-          max_active_scan_result_policies_reached: false
+          max_active_scan_execution_policies_reached: 'false',
+          max_active_scan_result_policies_reached: 'false'
         }
       end
 
