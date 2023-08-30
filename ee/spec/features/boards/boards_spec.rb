@@ -47,14 +47,14 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
         visit_board_page
 
         expect(page).to have_css('.filtered-search-block')
-        expect(page).not_to have_css('.board-swimlanes-toggle-wrapper')
+        expect(page).not_to have_css('[data-testid="toggle-swimlanes-label"]')
       end
 
       it 'shows Group by dropdown when user is logged in' do
         login_as(user)
         visit_board_page
 
-        expect(page).to have_css('.board-swimlanes-toggle-wrapper')
+        expect(page).to have_css('[data-testid="toggle-swimlanes-label"]')
       end
     end
 
@@ -67,7 +67,7 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
         visit_board_page
 
         expect(page).to have_css('.filtered-search-block')
-        expect(page).not_to have_css('.board-swimlanes-toggle-wrapper')
+        expect(page).not_to have_css('[data-testid="toggle-swimlanes-label"]')
       end
 
       it 'does not show Group by dropdown when user is logged in' do
@@ -75,7 +75,7 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
         visit_board_page
 
         expect(page).to have_css('.filtered-search-block')
-        expect(page).not_to have_css('.board-swimlanes-toggle-wrapper')
+        expect(page).not_to have_css('[data-testid="toggle-swimlanes-label"]')
       end
     end
   end

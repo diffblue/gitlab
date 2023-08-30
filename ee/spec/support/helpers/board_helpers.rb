@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 module BoardHelpers
   def load_epic_swimlanes
-    page.within('.board-swimlanes-toggle-wrapper') do
-      page.find('.gl-new-dropdown-toggle').click
-      page.find('.gl-new-dropdown-item[role="option"]', text: 'Epic').click
-    end
+    page.find_button(s_('None')).click
+    page.find('li[role="option"]', text: s_('Epic')).click
 
     wait_for_requests
   end
