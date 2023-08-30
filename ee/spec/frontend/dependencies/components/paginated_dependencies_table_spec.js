@@ -4,7 +4,7 @@ import DependenciesTable from 'ee/dependencies/components/dependencies_table.vue
 import PaginatedDependenciesTable from 'ee/dependencies/components/paginated_dependencies_table.vue';
 import createStore from 'ee/dependencies/store';
 import { DEPENDENCY_LIST_TYPES } from 'ee/dependencies/store/constants';
-import Pagination from '~/vue_shared/components/pagination_links.vue';
+import TablePagination from '~/vue_shared/components/pagination/table_pagination.vue';
 import mockDependenciesResponse from '../store/modules/list/data/mock_dependencies.json';
 
 describe('PaginatedDependenciesTable component', () => {
@@ -20,6 +20,8 @@ describe('PaginatedDependenciesTable component', () => {
       propsData: { ...props },
     });
   };
+
+  const findTablePagination = () => wrapper.findComponent(TablePagination);
 
   const expectComponentWithProps = (Component, props = {}) => {
     const componentWrapper = wrapper.findComponent(Component);
@@ -48,7 +50,7 @@ describe('PaginatedDependenciesTable component', () => {
   });
 
   it('passes the correct props to the pagination', () => {
-    expectComponentWithProps(Pagination, {
+    expectComponentWithProps(TablePagination, {
       change: wrapper.vm.fetchPage,
       pageInfo: store.state[namespace].pageInfo,
     });
@@ -80,7 +82,7 @@ describe('PaginatedDependenciesTable component', () => {
     });
 
     it('does not render pagination', () => {
-      expect(wrapper.findComponent(Pagination).exists()).toBe(false);
+      expect(findTablePagination().exists()).toBe(false);
     });
   });
 
@@ -103,7 +105,7 @@ describe('PaginatedDependenciesTable component', () => {
     });
 
     it('does not render pagination', () => {
-      expect(wrapper.findComponent(Pagination).exists()).toBe(false);
+      expect(findTablePagination().exists()).toBe(false);
     });
   });
 
@@ -128,8 +130,8 @@ describe('PaginatedDependenciesTable component', () => {
       });
     });
 
-    it('does not render pagination', () => {
-      expect(wrapper.findComponent(Pagination).exists()).toBe(false);
+    it('renders pagination', () => {
+      expect(findTablePagination().exists()).toBe(true);
     });
   });
 });
