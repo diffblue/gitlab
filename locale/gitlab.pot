@@ -11792,6 +11792,9 @@ msgstr ""
 msgid "Commit statistics for %{ref} %{start_time} - %{end_time}"
 msgstr ""
 
+msgid "Commit:"
+msgstr ""
+
 msgid "CommitBoxTitle|Commit"
 msgstr ""
 
@@ -27126,16 +27129,16 @@ msgstr ""
 msgid "Jobs|You're about to retry a job that failed because it attempted to deploy code that is older than the latest deployment. Retrying this job could result in overwriting the environment with the older source code."
 msgstr ""
 
-msgid "Job|%{boldStart}Pipeline%{boldEnd} %{id}"
+msgid "Job|%{boldStart}Pipeline:%{boldEnd} %{id} %{status}"
 msgstr ""
 
-msgid "Job|%{boldStart}Pipeline%{boldEnd} %{id} for %{mrId} with %{source}"
+msgid "Job|%{boldStart}Pipeline:%{boldEnd} %{id} %{status} for %{mrId} with %{source}"
 msgstr ""
 
-msgid "Job|%{boldStart}Pipeline%{boldEnd} %{id} for %{mrId} with %{source} into %{target}"
+msgid "Job|%{boldStart}Pipeline:%{boldEnd} %{id} %{status} for %{ref}"
 msgstr ""
 
-msgid "Job|%{boldStart}Pipeline%{boldEnd} %{id} for %{ref}"
+msgid "Job|%{boldStart}Pipeline:%{boldEnd} %{id} for %{mrId} with %{source} into %{target}"
 msgstr ""
 
 msgid "Job|%{searchLength} results found for %{searchTerm}"
