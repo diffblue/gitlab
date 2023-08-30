@@ -255,6 +255,25 @@ RSpec.describe SearchHelper, feature_category: :global_search do
     end
   end
 
+  describe "#advanced_search_status_marker" do
+    let_it_be(:project) { create(:project) }
+
+    context 'when a repository ref name is used' do
+      it 'renders ref name' do
+        allow(helper).to receive(:params).and_return({ repository_ref: 'my-branch' })
+
+        expect(helper.advanced_search_status_marker(project)).to match('my-branch')
+      end
+
+      it 'renders ref name safely' do
+        allow(helper).to receive(:params).and_return({ repository_ref: '<script>hey!</script>' })
+
+        expect(helper.advanced_search_status_marker(project)).not_to match('<script>hey!</script>')
+        expect(helper.advanced_search_status_marker(project)).to match('&lt;script&gt;hey!&lt;/script&gt;')
+      end
+    end
+  end
+
   describe '#highlight_and_truncate_issuable' do
     let(:description) { 'hello world' }
     let(:issue) { create(:issue, description: description) }

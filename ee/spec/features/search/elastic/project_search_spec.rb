@@ -103,7 +103,7 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
       let(:repository_ref) { Gitlab::Git::BLANK_SHA }
 
       it 'displays that advanced search is disabled' do
-        expect(page).to have_selector('[data-testid="es-status-marker"][data-enabled="false"]')
+        expect(page).to have_text('Advanced search is disabled')
         expect(page).to have_link('Learn more.', href: help_page_path('user/search/advanced_search', anchor: 'use-the-advanced-search-syntax'))
       end
     end
@@ -112,7 +112,7 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
       let(:repository_ref) { "" }
 
       it 'displays that advanced search is enabled' do
-        expect(page).to have_selector('[data-testid="es-status-marker"][data-enabled="true"]')
+        expect(page).to have_text('Advanced search is enabled')
       end
     end
 
@@ -120,7 +120,7 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
       let(:repository_ref) { project.default_branch }
 
       it 'displays that advanced search is enabled' do
-        expect(page).to have_selector('[data-testid="es-status-marker"][data-enabled="true"]')
+        expect(page).to have_text('Advanced search is enabled')
       end
     end
   end
@@ -136,7 +136,7 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
     end
 
     it 'does not display exact code search is enabled' do
-      expect(page).to have_selector('[data-testid="es-status-marker"][data-enabled="true"]')
+      expect(page).to have_text('Advanced search is enabled')
       expect(page).not_to have_text('Exact code search (powered by Zoekt) is enabled')
     end
   end
