@@ -12190,7 +12190,8 @@ CREATE TABLE approvals (
     merge_request_id integer NOT NULL,
     user_id integer NOT NULL,
     created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
+    patch_id_sha bytea
 );
 
 CREATE SEQUENCE approvals_id_seq
