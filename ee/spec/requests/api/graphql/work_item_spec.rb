@@ -593,9 +593,16 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
       end
 
       describe 'linked items widget' do
-        let_it_be(:blocked_items) { create_list(:work_item, 2, project: project) }
-        let_it_be(:blocking_items) { create_list(:work_item, 3, project: project) }
+        using RSpec::Parameterized::TableSyntax
 
+        let_it_be(:related_item) { create(:work_item, project: project) }
+        let_it_be(:blocked_item) { create(:work_item, project: project) }
+        let_it_be(:blocking_item) { create(:work_item, project: project) }
+        let_it_be(:link1) { create(:work_item_link, source: work_item, target: related_item, link_type: 'relates_to') }
+        let_it_be(:link2) { create(:work_item_link, source: work_item, target: blocked_item, link_type: 'blocks') }
+        let_it_be(:link3) { create(:work_item_link, source: blocking_item, target: work_item, link_type: 'blocks') }
+
+        let(:filter_type) { 'RELATED' }
         let(:work_item_fields) do
           <<~GRAPHQL
             id
@@ -605,48 +612,68 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
                 blocked
                 blockedByCount
                 blockingCount
+                linkedItems(filter: #{filter_type}) {
+                  nodes {
+                    linkId
+                    linkType
+                    linkCreatedAt
+                    linkUpdatedAt
+                    workItem {
+                      id
+                    }
+                  }
+                }
               }
             }
           GRAPHQL
         end
 
-        before do
-          blocked_items.each do |item|
-            create(:work_item_link, source: work_item, target: item, link_type: 'blocks')
+        context 'when request is successful' do
+          where(:filter_type, :item, :link, :expected) do
+            'RELATED'    | ref(:related_item)  | ref(:link1) | 'relates_to'
+            'BLOCKS'     | ref(:blocked_item)  | ref(:link2) | 'blocks'
+            'BLOCKED_BY' | ref(:blocking_item) | ref(:link3) | 'is_blocked_by'
           end
 
-          blocking_items.each do |item|
-            create(:work_item_link, source: item, target: work_item, link_type: 'blocks')
-          end
-        end
+          with_them do
+            it 'returns widget information' do
+              post_graphql(query, current_user: current_user)
 
-        it 'returns widget information' do
-          post_graphql(query, current_user: current_user)
-
-          expect(work_item_data).to include(
-            'widgets' => include(
-              hash_including(
-                'type' => 'LINKED_ITEMS',
-                'blocked' => true,
-                'blockedByCount' => 3,
-                'blockingCount' => 2
+              expect(work_item_data).to include(
+                'widgets' => include(
+                  hash_including(
+                    'type' => 'LINKED_ITEMS',
+                    'blocked' => true,
+                    'blockedByCount' => 1,
+                    'blockingCount' => 1,
+                    'linkedItems' => { 'nodes' => match_array(
+                      [
+                        hash_including(
+                          'linkId' => link.to_gid.to_s, 'linkType' => expected,
+                          'linkCreatedAt' => link.created_at.iso8601, 'linkUpdatedAt' => link.updated_at.iso8601,
+                          'workItem' => { 'id' => item.to_gid.to_s }
+                        )
+                      ]
+                    ) }
+                  )
+                )
               )
-            )
-          )
-        end
-
-        it 'avoids N+1 queries', :use_sql_query_cache do
-          post_graphql(query, current_user: current_user) # warmup
-          control_count = ActiveRecord::QueryRecorder.new(skip_cached: false) do
-            post_graphql(query, current_user: current_user)
+            end
           end
 
-          create_list(:work_item, 3, project: project) do |item|
-            create(:work_item_link, source: item, target: work_item, link_type: 'blocks')
-          end
+          it 'avoids N+1 queries', :use_sql_query_cache do
+            post_graphql(query, current_user: current_user) # warmup
+            control_count = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+              post_graphql(query, current_user: current_user)
+            end
 
-          expect { post_graphql(query, current_user: current_user) }.to issue_same_number_of_queries_as(control_count)
-          expect_graphql_errors_to_be_empty
+            create_list(:work_item, 3, project: project) do |item|
+              create(:work_item_link, source: item, target: work_item, link_type: 'blocks')
+            end
+
+            expect { post_graphql(query, current_user: current_user) }.to issue_same_number_of_queries_as(control_count)
+            expect_graphql_errors_to_be_empty
+          end
         end
 
         context 'when `linked_work_items` feature flag is disabled' do
@@ -662,7 +689,8 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
                   'type' => 'LINKED_ITEMS',
                   'blocked' => nil,
                   'blockedByCount' => nil,
-                  'blockingCount' => nil
+                  'blockingCount' => nil,
+                  'linkedItems' => { 'nodes' => [] }
                 )
               )
             )

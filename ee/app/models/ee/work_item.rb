@@ -3,6 +3,7 @@
 module EE
   module WorkItem
     extend ActiveSupport::Concern
+    extend ::Gitlab::Utils::Override
 
     prepended do
       include FilterableByTestReports
@@ -47,6 +48,28 @@ module EE
         widgets unless resource_parent.licensed_feature_available?(licensed_feature)
       end
       excluded.flatten
+    end
+
+    override :linked_work_items_query
+    def linked_work_items_query(link_type)
+      case link_type
+      when ::WorkItems::RelatedWorkItemLink::TYPE_BLOCKS
+        blocking_work_items_query
+      when ::WorkItems::RelatedWorkItemLink::TYPE_IS_BLOCKED_BY
+        blocking_work_items_query(inverse_direction: true)
+      else
+        super
+      end
+    end
+
+    def blocking_work_items_query(inverse_direction: false)
+      link_class = ::WorkItems::RelatedWorkItemLink
+      columns = %w[target_id source_id]
+      columns.reverse! if inverse_direction
+
+      linked_issues_select
+        .joins("INNER JOIN issue_links ON issue_links.#{columns[0]} = issues.id")
+        .where(issue_links: { columns[1] => id, link_type: link_class.link_types[link_class::TYPE_BLOCKS] })
     end
   end
 end

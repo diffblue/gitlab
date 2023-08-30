@@ -293,4 +293,48 @@ RSpec.describe WorkItem do
       create(:test_report, requirement_issue: requirement3, state: :passed)
     end
   end
+
+  describe '#linked_work_items', feature_category: :portfolio_management do
+    let_it_be(:user) { create(:user) }
+
+    let_it_be(:authorized_project) { create(:project, :private) }
+    let_it_be(:work_item) { create(:work_item, project: authorized_project) }
+    let_it_be(:authorized_item_a) { create(:work_item, project: authorized_project) }
+    let_it_be(:authorized_item_b) { create(:work_item, project: authorized_project) }
+
+    let_it_be(:unauthorized_project) { create(:project, :private) }
+    let_it_be(:unauthorized_item_a) { create(:work_item, project: unauthorized_project) }
+    let_it_be(:unauthorized_item_b) { create(:work_item, project: unauthorized_project) }
+
+    let_it_be(:link_a) { create(:work_item_link, source: work_item, target: authorized_item_a, link_type: 'blocks') }
+    let_it_be(:link_b) { create(:work_item_link, source: authorized_item_b, target: work_item, link_type: 'blocks') }
+    let_it_be(:unauthorized_link_a) do
+      create(:work_item_link, source: work_item, target: unauthorized_item_a, link_type: 'blocks')
+    end
+
+    let_it_be(:unauthorized_link_b) do
+      create(:work_item_link, source: unauthorized_item_b, target: work_item, link_type: 'blocks')
+    end
+
+    before_all do
+      authorized_project.add_guest(user)
+    end
+
+    it 'returns only authorized linked items for given user' do
+      expect(work_item.linked_work_items(user))
+        .to contain_exactly(authorized_item_a, authorized_item_b)
+    end
+
+    context 'when filtering by link type' do
+      it 'returns authorized items with link type `blocks`' do
+        expect(work_item.linked_work_items(user, link_type: 'blocks'))
+          .to contain_exactly(authorized_item_a)
+      end
+
+      it 'returns authorized items with link type `is_blocked_by`' do
+        expect(work_item.linked_work_items(user, link_type: 'is_blocked_by'))
+          .to contain_exactly(authorized_item_b)
+      end
+    end
+  end
 end
