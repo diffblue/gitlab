@@ -1,7 +1,7 @@
 <script>
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState } from 'vuex';
-import Pagination from '~/vue_shared/components/pagination_links.vue';
+import TablePagination from '~/vue_shared/components/pagination/table_pagination.vue';
 import { DEPENDENCY_LIST_TYPES } from '../store/constants';
 import DependenciesTable from './dependencies_table.vue';
 
@@ -9,7 +9,7 @@ export default {
   name: 'PaginatedDependenciesTable',
   components: {
     DependenciesTable,
-    Pagination,
+    TablePagination,
   },
   props: {
     namespace: {
@@ -26,7 +26,7 @@ export default {
       },
       shouldShowPagination() {
         const { isLoading, errorLoading, pageInfo } = this.module;
-        return Boolean(!isLoading && !errorLoading && pageInfo && pageInfo.total);
+        return Boolean(!isLoading && !errorLoading && pageInfo);
       },
     }),
   },
@@ -44,7 +44,7 @@ export default {
   <div>
     <dependencies-table :dependencies="module.dependencies" :is-loading="module.isLoading" />
 
-    <pagination
+    <table-pagination
       v-if="shouldShowPagination"
       :change="fetchPage"
       :page-info="module.pageInfo"
