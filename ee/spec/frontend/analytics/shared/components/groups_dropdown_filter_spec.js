@@ -1,4 +1,4 @@
-import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { GlButton, GlCollapsibleListbox, GlListboxItem } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import GroupsDropdownFilter from 'ee/analytics/shared/components/groups_dropdown_filter.vue';
@@ -39,15 +39,15 @@ describe('GroupsDropdownFilter component', () => {
     Api.groups.mockImplementation(() => Promise.resolve(groups));
   });
 
-  const findDropdown = () => wrapper.findComponent(GlDropdown);
+  const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
 
   const findDropdownItems = () =>
     findDropdown()
-      .findAllComponents(GlDropdownItem)
+      .findAllComponents(GlListboxItem)
       .filter((w) => w.text() !== 'No matching results');
 
   const findDropdownAtIndex = (index) => findDropdownItems().at(index);
-  const findDropdownButton = () => findDropdown().find('.dropdown-toggle');
+  const findDropdownButton = () => findDropdown().findComponent(GlButton);
   const findDropdownButtonAvatar = () => findDropdown().find('.gl-avatar');
 
   const shouldContainAvatar = ({ dropdown, hasImage = true, hasIdenticon = true }) => {
@@ -55,8 +55,7 @@ describe('GroupsDropdownFilter component', () => {
     expect(dropdown.find('div.gl-avatar-identicon').exists()).toBe(hasIdenticon);
   };
 
-  const selectDropdownAtIndex = (index) =>
-    findDropdownAtIndex(index).find('button').trigger('click');
+  const selectDropdownAtIndex = (value) => findDropdown().vm.$emit('select', value);
 
   describe('when passed a defaultGroup as prop', () => {
     beforeEach(() => {
@@ -102,26 +101,26 @@ describe('GroupsDropdownFilter component', () => {
     });
 
     it('should emit the "selected" event with the selected group', () => {
-      selectDropdownAtIndex(0);
+      selectDropdownAtIndex(groups[0].id);
 
       expect(wrapper.emitted().selected).toEqual([[groups[0]]]);
     });
 
     it('should change selection when new group is clicked', () => {
-      selectDropdownAtIndex(1);
+      selectDropdownAtIndex(groups[1].id);
 
       expect(wrapper.emitted().selected).toEqual([[groups[1]]]);
     });
 
     it('renders an avatar in the dropdown button when the group has an avatar_url', async () => {
-      selectDropdownAtIndex(0);
+      selectDropdownAtIndex(groups[0].id);
 
       await nextTick();
       shouldContainAvatar({ dropdown: findDropdownButton(), hasIdenticon: false });
     });
 
     it("renders an identicon in the dropdown button when the group doesn't have an avatar_url", async () => {
-      selectDropdownAtIndex(1);
+      selectDropdownAtIndex(groups[1].id);
 
       await nextTick();
       expect(findDropdownButton().find('img.gl-avatar').exists()).toBe(false);

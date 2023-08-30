@@ -14500,9 +14500,6 @@ msgstr ""
 msgid "CycleAnalytics|Total time"
 msgstr ""
 
-msgid "CycleAnalytics|group dropdown filter"
-msgstr ""
-
 msgid "CycleAnalytics|not allowed for the given start event"
 msgstr ""
 
