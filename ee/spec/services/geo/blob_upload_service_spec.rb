@@ -19,7 +19,11 @@ RSpec.describe Geo::BlobUploadService, feature_category: :geo_replication do
     end
 
     it 'errors with an invalid attributes' do
-      service = described_class.new(replicable_name: 'package_file', replicable_id: non_existing_record_id, decoded_params: {})
+      service = described_class.new(
+        replicable_name: 'package_file',
+        replicable_id: non_existing_record_id,
+        decoded_params: {}
+      )
 
       response = service.execute
 
@@ -27,8 +31,11 @@ RSpec.describe Geo::BlobUploadService, feature_category: :geo_replication do
     end
 
     it 'returns a file with valid attributes' do
-      service = described_class.new(replicable_name: 'package_file', replicable_id: package_file.id,
-                                    decoded_params: { checksum: package_file.verification_checksum })
+      service = described_class.new(
+        replicable_name: 'package_file',
+        replicable_id: package_file.id,
+        decoded_params: { checksum: package_file.verification_checksum }
+      )
 
       response = service.execute
 

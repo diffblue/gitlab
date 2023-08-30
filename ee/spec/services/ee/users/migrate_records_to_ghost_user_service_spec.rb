@@ -55,9 +55,12 @@ RSpec.describe Users::MigrateRecordsToGhostUserService, feature_category: :user_
 
       include_examples 'migrating records to the ghost user', ResourceIterationEvent, [:user] do
         let(:created_record) do
-          create(:resource_iteration_event, issue: create(:issue),
-                                            user: user,
-                                            iteration: create(:iteration))
+          create(
+            :resource_iteration_event,
+            issue: create(:issue),
+            user: user,
+            iteration: create(:iteration)
+          )
         end
       end
     end
@@ -67,10 +70,12 @@ RSpec.describe Users::MigrateRecordsToGhostUserService, feature_category: :user_
 
       include_examples 'migrating records to the ghost user', ::WorkItems::ResourceLinkEvent, [:user] do
         let(:created_record) do
-          create(:resource_link_event,
+          create(
+            :resource_link_event,
             issue: create(:issue),
             child_work_item: create(:work_item),
-            user: user)
+            user: user
+          )
         end
       end
     end

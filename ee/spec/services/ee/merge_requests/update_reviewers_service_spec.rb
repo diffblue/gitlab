@@ -10,10 +10,14 @@ RSpec.describe MergeRequests::UpdateReviewersService, feature_category: :code_re
   let_it_be(:user3) { create(:user) }
 
   let_it_be_with_reload(:merge_request) do
-    create(:merge_request, :simple, :unique_branches,
-           reviewer_ids: [user.id],
-           source_project: project,
-           author: user)
+    create(
+      :merge_request,
+      :simple,
+      :unique_branches,
+      reviewer_ids: [user.id],
+      source_project: project,
+      author: user
+    )
   end
 
   before do
