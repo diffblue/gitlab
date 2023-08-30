@@ -1,4 +1,4 @@
-import { GlAlert, GlDropdown, GlDropdownItem, GlEmptyState, GlSprintf } from '@gitlab/ui';
+import { GlAlert, GlDisclosureDropdown, GlEmptyState, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import axios from 'axios';
@@ -58,6 +58,8 @@ describe('Insights component', () => {
   let wrapper;
   let vuexStore;
 
+  const findGlDisclosureDropdown = () => wrapper.findComponent(GlDisclosureDropdown);
+
   beforeEach(() => {
     mock = new MockAdapter(axios);
     vuexStore = createStore();
@@ -110,13 +112,13 @@ describe('Insights component', () => {
 
       it('has the correct nav tabs', async () => {
         await nextTick();
-        expect(wrapper.findComponent(GlDropdown).exists()).toBe(true);
-        expect(wrapper.findComponent(GlDropdown).findComponent(GlDropdownItem).text()).toBe(title);
+        expect(findGlDisclosureDropdown().exists()).toBe(true);
+        expect(findGlDisclosureDropdown().props('items')[0].text).toBe(title);
       });
 
       it('should not disable the tab selector', async () => {
         await nextTick();
-        expect(wrapper.findComponent(GlDropdown).attributes().disabled).toBeUndefined();
+        expect(findGlDisclosureDropdown().attributes().disabled).toBeUndefined();
       });
     });
 
@@ -136,13 +138,13 @@ describe('Insights component', () => {
 
       it('has the correct nav tabs', async () => {
         await nextTick();
-        expect(wrapper.findComponent(GlDropdown).exists()).toBe(true);
-        expect(wrapper.findComponent(GlDropdown).findComponent(GlDropdownItem).text()).toBe(title);
+        expect(findGlDisclosureDropdown().exists()).toBe(true);
+        expect(findGlDisclosureDropdown().props('items')[0].text).toBe(title);
       });
 
       it('disables the tab selector', async () => {
         await nextTick();
-        expect(wrapper.findComponent(GlDropdown).attributes()).toMatchObject({ disabled: 'true' });
+        expect(findGlDisclosureDropdown().props('disabled')).toBe(true);
       });
     });
 
@@ -166,7 +168,7 @@ describe('Insights component', () => {
 
       it('enables the tab selector', async () => {
         await nextTick();
-        expect(wrapper.findComponent(GlDropdown).attributes()).toMatchObject({ disabled: 'true' });
+        expect(findGlDisclosureDropdown().attributes()).toMatchObject({ disabled: 'true' });
       });
     });
 
@@ -189,7 +191,7 @@ describe('Insights component', () => {
 
       it('disables the tab selector', async () => {
         await nextTick();
-        expect(wrapper.findComponent(GlDropdown).attributes()).toMatchObject({ disabled: 'true' });
+        expect(findGlDisclosureDropdown().attributes()).toMatchObject({ disabled: 'true' });
       });
     });
 
@@ -213,7 +215,7 @@ describe('Insights component', () => {
 
       it('enables the tab selector', async () => {
         await nextTick();
-        expect(wrapper.findComponent(GlDropdown).attributes().disabled).toBeUndefined();
+        expect(findGlDisclosureDropdown().attributes().disabled).toBeUndefined();
       });
     });
 
@@ -237,7 +239,7 @@ describe('Insights component', () => {
 
       it('enables the tab selector', async () => {
         await nextTick();
-        expect(wrapper.findComponent(GlDropdown).attributes().disabled).toBeUndefined();
+        expect(findGlDisclosureDropdown().attributes().disabled).toBeUndefined();
       });
     });
   });
@@ -257,7 +259,7 @@ describe('Insights component', () => {
 
     it('does not display dropdown', async () => {
       await nextTick();
-      expect(wrapper.findComponent(GlDropdown).exists()).toBe(false);
+      expect(findGlDisclosureDropdown().exists()).toBe(false);
     });
   });
 
@@ -276,14 +278,14 @@ describe('Insights component', () => {
 
     it('does not display dropdown', async () => {
       await nextTick();
-      expect(wrapper.findComponent(GlDropdown).exists()).toBe(false);
+      expect(findGlDisclosureDropdown().exists()).toBe(false);
     });
   });
 
   describe('hash fragment present', () => {
     const configData = {};
-    configData[defaultKey] = {};
-    configData[selectedKey] = {};
+    configData[defaultKey] = { title: 'title1' };
+    configData[selectedKey] = { title: 'title2' };
 
     beforeEach(() => {
       vuexStore.state.insights.configLoading = false;
@@ -327,7 +329,7 @@ describe('Insights component', () => {
       jest.runOnlyPendingTimers();
 
       await nextTick();
-      expect(wrapper.findComponent(GlDropdown).attributes('text')).toBe('Select report');
+      expect(findGlDisclosureDropdown().props('toggleText')).toBe('Select report');
     });
 
     it('sets the title when there is an active tab specified', async () => {
@@ -338,7 +340,7 @@ describe('Insights component', () => {
       jest.runOnlyPendingTimers();
 
       await nextTick();
-      expect(wrapper.findComponent(GlDropdown).attributes('text')).toBe('Selected key title');
+      expect(findGlDisclosureDropdown().props('toggleText')).toBe('Selected key title');
     });
   });
 });
