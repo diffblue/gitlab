@@ -32,7 +32,7 @@ RSpec.describe 'Subscription flow for user picking just me for paid plan', :js, 
 
       expect_to_see_group_validation_errors
 
-      fill_in 'Group name (your organization)', with: 'Registering'
+      fill_in 'Group name (your organization)', with: 'Test group'
 
       click_on 'Get started'
 

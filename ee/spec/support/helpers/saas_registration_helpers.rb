@@ -341,10 +341,19 @@ module SaasRegistrationHelpers
     expect(page).to have_content 'Faster releases. Better code. Less pain.'
   end
 
+  def super_sidebar_selector
+    '[data-testid="super-sidebar"]'
+  end
+
   def expect_to_see_group_overview_page
-    expect(page).to have_content('Welcome to GitLab, Registering!')
-    expect(page).to have_content('Group information')
-    expect(page).to have_content('Subgroups and projects')
+    page.within(super_sidebar_selector) do
+      expect(page).to have_content('Test group')
+    end
+
+    page.within('.content-wrapper') do
+      expect(page).to have_content('Welcome to GitLab, Registering!')
+      expect(page).to have_content('Subgroups and projects')
+    end
   end
 
   def welcome_form_selector
