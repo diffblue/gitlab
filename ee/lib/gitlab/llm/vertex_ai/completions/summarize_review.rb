@@ -17,6 +17,8 @@ module Gitlab
             ::Gitlab::Llm::GraphqlSubscriptionResponseService.new(
               user, merge_request, response_modifier, options: options
             ).execute
+
+            response_modifier
           rescue StandardError => error
             Gitlab::ErrorTracking.track_exception(error)
 
@@ -27,6 +29,8 @@ module Gitlab
             ::Gitlab::Llm::GraphqlSubscriptionResponseService.new(
               user, merge_request, response_modifier, options: options
             ).execute
+
+            response_modifier
           end
 
           private

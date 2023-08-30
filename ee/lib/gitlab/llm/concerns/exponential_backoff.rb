@@ -23,7 +23,7 @@ module Gitlab
 
             define_method(method_name) do |*args, **kwargs|
               run_with_circuit do
-                retry_with_exponential_backoff do
+                retry_with_monitored_exponential_backoff do
                   original_method.bind_call(self, *args, **kwargs)
                 end
               end
@@ -32,6 +32,15 @@ module Gitlab
         end
 
         private
+
+        def retry_with_monitored_exponential_backoff(&block)
+          response = retry_with_exponential_backoff(&block)
+        ensure
+          success = (200...299).cover?(response&.code)
+          client = Gitlab::Metrics::Llm.client_label(self.class)
+
+          Gitlab::Metrics::Sli::ErrorRate[:llm_client_request].increment(labels: { client: client }, error: !success)
+        end
 
         def retry_with_exponential_backoff
           retries = 0
