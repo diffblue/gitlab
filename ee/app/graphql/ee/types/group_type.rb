@@ -163,6 +163,13 @@ module EE
           description: 'Compliance standards adherence for the projects in a group and its subgroups.',
           resolver: ::Resolvers::Projects::ComplianceStandards::AdherenceResolver,
           authorize: :read_group_compliance_dashboard
+        field :value_stream_dashboard_usage_overview,
+          ::Types::Analytics::ValueStreamDashboard::CountType,
+          null: true,
+          resolver: ::Resolvers::Analytics::ValueStreamDashboard::CountResolver,
+          description: 'Aggregated usage counts within the group',
+          authorize: :read_group_analytics_dashboards,
+          alpha: { milestone: '16.4' }
 
         def billable_members_count(requested_hosted_plan: nil)
           object.billable_members_count(requested_hosted_plan)

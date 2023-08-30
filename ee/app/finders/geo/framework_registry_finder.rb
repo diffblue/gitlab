@@ -24,7 +24,7 @@ module Geo
         registry_entries = by_replication_state(registry_entries)
         registry_entries = by_verification_state(registry_entries)
         registry_entries = by_keyword(registry_entries)
-        registry_entries.ordered
+        registry_entries.ordered_by_id
       end
 
       private

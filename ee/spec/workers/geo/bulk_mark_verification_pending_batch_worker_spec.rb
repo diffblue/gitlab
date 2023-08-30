@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::BulkMarkPendingBatchWorker, :geo, feature_category: :geo_replication do
+RSpec.describe Geo::BulkMarkVerificationPendingBatchWorker, :geo, feature_category: :geo_replication do
   include EE::GeoHelpers
 
   let_it_be(:secondary) { create(:geo_node) }
@@ -17,7 +17,7 @@ RSpec.describe Geo::BulkMarkPendingBatchWorker, :geo, feature_category: :geo_rep
 
   with_them do
     it_behaves_like 'a Geo bulk mark update batch worker' do
-      let(:service) { ::Geo::BulkMarkPendingService }
+      let(:service) { ::Geo::BulkMarkVerificationPendingService }
     end
 
     include_examples 'an idempotent worker' do

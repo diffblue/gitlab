@@ -219,7 +219,7 @@ RSpec.describe Geo::ContainerRepositoryRegistry, :geo, feature_category: :geo_re
 end
 
 RSpec.describe Geo::ContainerRepositoryRegistry, :geo, type: :model, feature_category: :geo_replication do
-  let(:registry) { create(:geo_container_repository_registry) }
+  let_it_be(:registry) { build(:geo_container_repository_registry) }
 
   specify 'factory is valid' do
     expect(registry).to be_valid

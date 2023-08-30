@@ -28,6 +28,18 @@ class Geo::BaseRegistry < Geo::TrackingBase
     true
   end
 
+  def self.ordered_by_id
+    order(:id)
+  end
+
+  def self.after_bulk_mark_update_cursor(bulk_mark_update_cursor)
+    where("id > ?", bulk_mark_update_cursor)
+  end
+
+  def self.before_bulk_mark_update_row_scan_max(bulk_mark_update_cursor, bulk_mark_update_row_scan_max)
+    where("id < ?", bulk_mark_update_cursor + bulk_mark_update_row_scan_max)
+  end
+
   def self.insert_for_model_ids(ids)
     records = ids.map do |id|
       new(self::MODEL_FOREIGN_KEY => id, created_at: Time.zone.now)
