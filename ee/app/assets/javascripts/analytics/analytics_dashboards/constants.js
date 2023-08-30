@@ -131,7 +131,7 @@ export const ANALYTICS_FIELDS = [
 ];
 
 export const NEW_DASHBOARD = () => ({
-  title: s__('Analytics|New dashboard'),
+  title: '',
   panels: [],
   userDefined: true,
 });

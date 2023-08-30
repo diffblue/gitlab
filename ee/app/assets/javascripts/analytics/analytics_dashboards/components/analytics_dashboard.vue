@@ -65,12 +65,13 @@ export default {
       isSaving: false,
       backUrl: this.$router.resolve('/').href,
       editingEnabled: this.glFeatures.combinedAnalyticsDashboardsEditor,
+      changesSaved: false,
       alert: null,
     };
   },
   computed: {
     showDateRangeFilter() {
-      return !HIDE_DATE_RANGE_FILTER.includes(this.initialDashboard.slug);
+      return !HIDE_DATE_RANGE_FILTER.includes(this.initialDashboard?.slug);
     },
   },
   async created() {
@@ -161,6 +162,7 @@ export default {
     },
     async saveDashboard(dashboardSlug, dashboard) {
       try {
+        this.changesSaved = false;
         this.isSaving = true;
         const saveResult = await saveCustomDashboard({
           dashboardSlug,
@@ -184,6 +186,8 @@ export default {
               params: { slug: dashboardSlug },
             });
           }
+
+          this.changesSaved = true;
         } else {
           throw new Error(`Bad save dashboard response. Status:${saveResult?.status}`);
         }
@@ -222,6 +226,7 @@ export default {
       :sync-url-filters="!isNewDashboard"
       :is-new-dashboard="isNewDashboard"
       :show-date-range-filter="showDateRangeFilter"
+      :changes-saved="changesSaved"
       @save="saveDashboard"
     />
     <gl-empty-state

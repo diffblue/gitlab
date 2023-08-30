@@ -162,6 +162,7 @@ describe('AnalyticsDashboard', () => {
         dateRangeLimit: 0,
         showDateRangeFilter: true,
         syncUrlFilters: true,
+        changesSaved: false,
       });
 
       expect(breadcrumbState.updateName).toHaveBeenCalledWith('Audience');
@@ -312,22 +313,30 @@ describe('AnalyticsDashboard', () => {
     describe('when saving', () => {
       beforeEach(() => mockDashboardResponse(TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE));
 
-      it('custom dashboard successfully by slug', async () => {
-        createWrapper({
-          routeSlug: 'custom_dashboard',
-          glFeatures: { combinedAnalyticsDashboardsEditor: true },
+      describe('custom dashboard', () => {
+        beforeEach(() => {
+          createWrapper({
+            routeSlug: 'custom_dashboard',
+            glFeatures: { combinedAnalyticsDashboardsEditor: true },
+          });
+
+          return mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_CREATED }));
         });
 
-        await mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_CREATED }));
+        it('saves the dashboard and shows a success toast', () => {
+          expect(saveCustomDashboard).toHaveBeenCalledWith({
+            dashboardSlug: 'custom_dashboard',
+            dashboardConfig: { panels: [] },
+            projectInfo: TEST_CUSTOM_DASHBOARDS_PROJECT,
+            isNewFile: false,
+          });
 
-        expect(saveCustomDashboard).toHaveBeenCalledWith({
-          dashboardSlug: 'custom_dashboard',
-          dashboardConfig: { panels: [] },
-          projectInfo: TEST_CUSTOM_DASHBOARDS_PROJECT,
-          isNewFile: false,
+          expect(showToast).toHaveBeenCalledWith('Dashboard was saved successfully');
         });
 
-        expect(showToast).toHaveBeenCalledWith('Dashboard was saved successfully');
+        it('sets changesSaved to true on the dashboard component', () => {
+          expect(findDashboard().props('changesSaved')).toBe(true);
+        });
       });
 
       describe('dashboard errors', () => {
