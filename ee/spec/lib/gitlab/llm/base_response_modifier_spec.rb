@@ -14,7 +14,7 @@ RSpec.describe Gitlab::Llm::BaseResponseModifier, feature_category: :duo_chat do
     end
 
     describe '#response_body' do
-      it 'raies NotImplementedError' do
+      it 'raises NotImplementedError' do
         expect { subject.response_body }.to raise_error(NotImplementedError)
       end
     end
@@ -44,5 +44,13 @@ RSpec.describe Gitlab::Llm::BaseResponseModifier, feature_category: :duo_chat do
     end
 
     it_behaves_like 'handles the incoming ai_response'
+  end
+
+  describe '#extras' do
+    let(:response_json) { nil }
+
+    it 'is empty by default' do
+      expect(subject.extras).to be_nil
+    end
   end
 end

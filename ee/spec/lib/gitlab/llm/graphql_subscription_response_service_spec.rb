@@ -41,7 +41,9 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
 
   shared_examples 'graphql subscription response' do
     let(:uuid) { 'u-u-i-d' }
-    let(:payload) do
+    let(:extras) { { foo: 'bar' } }
+
+    let(:expected_payload) do
       {
         id: uuid,
         model_name: expected_resource_class_name,
@@ -51,18 +53,20 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
         timestamp: an_instance_of(ActiveSupport::TimeWithZone),
         errors: [],
         type: nil,
-        chunk_id: nil
+        chunk_id: nil,
+        extras: extras
       }
     end
 
     before do
       allow(SecureRandom).to receive(:uuid).and_return(uuid)
+      allow(response_modifier).to receive(:extras).and_return(extras)
     end
 
     it 'triggers subscription' do
       expect(GraphqlTriggers)
         .to receive(:ai_completion_response)
-        .with({ user_id: user.to_global_id, resource_id: expected_resource_gid }, payload)
+        .with({ user_id: user.to_global_id, resource_id: expected_resource_gid }, expected_payload)
 
       subject
     end
@@ -75,7 +79,7 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
           .to receive(:ai_completion_response)
           .with(
             { user_id: user.to_global_id, resource_id: expected_resource_gid, client_subscription_id: 'id' },
-            payload
+            expected_payload
           )
 
         subject
@@ -88,7 +92,7 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
       it 'caches response' do
         expect_next_instance_of(::Gitlab::Llm::ChatStorage) do |cache|
           expect(cache).to receive(:add)
-            .with(payload.slice(:request_id, :errors, :role, :timestamp).merge(content: payload[:content]))
+            .with(expected_payload.slice(:request_id, :errors, :role, :timestamp, :extras, :content))
         end
 
         subject

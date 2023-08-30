@@ -41,6 +41,11 @@ module Types
         null: true,
         description: 'Errors return by AI API as response.'
 
+      field :extras,
+        Types::Ai::MessageExtrasType,
+        null: true,
+        description: 'Extra message metadata.'
+
       def response_body_html
         banzai_options = {
           current_user: current_user,

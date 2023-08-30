@@ -26,6 +26,8 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_cha
       "<a href=\"#{external_issue_url}+\">#{external_issue_url}+</a></p>"
   end
 
+  let(:extras) { { sources: [{ source_url: 'foo', source_some_metadata: 'bar' }] }.deep_stringify_keys }
+
   let(:params) { { user_id: current_user&.to_gid, resource_id: resource.to_gid, client_subscription_id: 'id' } }
 
   before do
@@ -43,6 +45,7 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_cha
         content: content,
         role: ::Gitlab::Llm::ChatMessage::ROLE_ASSISTANT,
         errors: [],
+        extras: extras,
         chunk_id: nil
       }
 
@@ -58,6 +61,7 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_cha
       expect(ai_completion_response['requestId']).to eq(request_id)
       expect(ai_completion_response['errors']).to eq([])
       expect(ai_completion_response['chunk_id']).to eq(nil)
+      expect(ai_completion_response['extras']).to eq(extras)
     end
   end
 
@@ -103,7 +107,7 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_cha
       it_behaves_like 'on success'
     end
 
-    context 'when resourc_id is null' do
+    context 'when resource_id is null' do
       let(:params) { { user_id: current_user.to_gid, resource_id: nil } }
 
       it_behaves_like 'on success'
@@ -135,6 +139,9 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_cha
           requestId
           errors
           chunkId
+          extras {
+            sources
+          }
         }
       }
     SUBSCRIPTION

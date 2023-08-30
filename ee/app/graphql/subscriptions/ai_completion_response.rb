@@ -25,7 +25,8 @@ module Subscriptions
         errors: object[:errors],
         timestamp: object[:timestamp],
         type: object[:type],
-        chunk_id: object[:chunk_id]
+        chunk_id: object[:chunk_id],
+        extras: object[:extras]
       }
     end
 
