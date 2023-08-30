@@ -81,6 +81,12 @@ module EE
       }
     end
 
+    def show_code_suggestions_tab?(group)
+      return false unless ::Feature.enabled?(:enable_hamilton_in_usage_quotas_ui, group)
+
+      ::Gitlab.com? && !group.has_free_or_no_subscription?
+    end
+
     def saml_sso_settings_generate_helper_text(display_none:, text:)
       content_tag(:span, text, class: ['js-helper-text', 'gl-clearfix', ('gl-display-none' if display_none)])
     end
