@@ -1,8 +1,7 @@
 <script>
 import { GlIcon, GlPopover, GlSkeletonLoader, GlTooltipDirective } from '@gitlab/ui';
-
 import { humanTimeframe } from '~/lib/utils/datetime/date_format_utility';
-import StatusBox from '~/issuable/components/status_box.vue';
+import StatusBadge from '~/issuable/components/status_badge.vue';
 import timeagoMixin from '~/vue_shared/mixins/timeago';
 import { TYPE_EPIC } from '~/issues/constants';
 
@@ -14,7 +13,7 @@ export default {
     GlIcon,
     GlPopover,
     GlSkeletonLoader,
-    StatusBox,
+    StatusBadge,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -88,14 +87,14 @@ export default {
     <gl-skeleton-loader v-if="loading" :height="15">
       <rect width="250" height="15" rx="4" />
     </gl-skeleton-loader>
-    <div v-else-if="showDetails" class="gl-display-flex gl-align-items-center">
-      <status-box :issuable-type="$options.TYPE_EPIC" :initial-state="epic.state" />
+    <div v-else-if="showDetails" class="gl-display-flex gl-align-items-center gl-gap-2">
+      <status-badge :issuable-type="$options.TYPE_EPIC" :state="epic.state" />
       <gl-icon
         v-if="epic.confidential"
         v-gl-tooltip
         name="eye-slash"
         :title="__('Confidential')"
-        class="gl-text-orange-500 gl-mr-2"
+        class="gl-text-orange-500"
         :aria-label="__('Confidential')"
         data-testid="confidential-icon"
       />
