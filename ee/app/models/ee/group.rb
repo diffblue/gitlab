@@ -556,7 +556,9 @@ module EE
     end
 
     def vulnerabilities
-      ::Vulnerability.where(project: projects_for_group_and_its_subgroups_without_deleted)
+      ::Vulnerability.where(
+        project: ::Project.for_group_and_its_subgroups(self).without_deleted
+      )
     end
 
     def vulnerability_reads

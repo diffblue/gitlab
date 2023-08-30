@@ -9,6 +9,8 @@
 #   params: optional! a hash with one or more of the following:
 #     project_ids: if `vulnerable` includes multiple projects (like a Group), this filter will restrict
 #                   the vulnerabilities returned to those in the group's projects that also match these IDs
+#     include_archived_projects: defaulted to `false`. Determines if results will include vulnerabilities
+#                                 associated with archived projects
 #     image: only return vulnerabilities with these location images
 #     report_types: only return vulnerabilities from these report types
 #     severities: only return vulnerabilities with these severities
@@ -22,7 +24,7 @@ module Security
     include FinderMethods
 
     def initialize(vulnerable, params = {})
-      @params = params
+      @params = { include_archived_projects: false }.merge(params)
       @vulnerable = vulnerable
       @vulnerabilities = vulnerable.vulnerabilities
     end
@@ -31,6 +33,7 @@ module Security
       # As we are creating vulnerability with default branch set to false irrespective of feature flag
       # from user interaction (issue/mr creation and dismissal of finding), we always need to do this filtering
       filter_by_present_on_default_branch
+      filter_archived_projects
       filter_by_projects
       filter_by_image
       filter_by_report_types
@@ -58,9 +61,22 @@ module Security
                          end
     end
 
+    def filter_archived_projects
+      return if params[:include_archived_projects] == true
+      return unless vulnerable.is_a?(Group)
+
+      # `filter_by_projects` will handle archived projects
+      return if params[:project_id].present?
+
+      @vulnerabilities = vulnerabilities.without_archived_projects
+    end
+
     def filter_by_projects
       if params[:project_id].present?
-        @vulnerabilities = vulnerabilities.for_projects(params[:project_id])
+        @vulnerabilities = vulnerabilities.for_projects(
+          params[:project_id],
+          params[:include_archived_projects]
+        )
       end
     end
 
