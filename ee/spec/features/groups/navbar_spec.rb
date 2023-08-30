@@ -16,7 +16,6 @@ RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
     before do
       group.add_maintainer(user)
       stub_group_wikis(false)
-      stub_feature_flags(harbor_registry_integration: false)
       stub_feature_flags(observability_group_tab: false)
       sign_in(user)
 
@@ -183,8 +182,6 @@ RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
       before do
         group.update!(harbor_integration: harbor_integration)
 
-        stub_feature_flags(harbor_registry_integration: true)
-
         insert_harbor_registry_nav(_('Package Registry'))
 
         visit group_path(group)
@@ -210,7 +207,6 @@ RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
     before do
       group.add_owner(user)
       stub_group_wikis(false)
-      stub_feature_flags(harbor_registry_integration: false)
       stub_feature_flags(observability_group_tab: false)
       stub_feature_flags(group_level_dependencies: false)
       stub_licensed_features(domain_verification: true)
