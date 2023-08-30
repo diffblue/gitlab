@@ -148,8 +148,6 @@ module Gitlab
             strong_memoize_attr :last_conversation
 
             def conversation
-              return [] unless Feature.enabled?(:ai_chat_history_context, context.current_user)
-
               # include only messages with successful response and reorder
               # messages so each question is followed by its answer
               by_request = last_conversation
