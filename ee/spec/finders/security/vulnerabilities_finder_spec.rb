@@ -2,8 +2,15 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::VulnerabilitiesFinder do
+RSpec.describe Security::VulnerabilitiesFinder, feature_category: :vulnerability_management do
   let_it_be(:project) { create(:project) }
+  let_it_be(:group) { create(:group) }
+
+  let_it_be(:archived_project) do
+    create(:project, :archived, namespace: group).tap do |p|
+      create(:vulnerability, :with_finding, project: p)
+    end
+  end
 
   let_it_be(:vulnerability1) do
     create(:vulnerability, :with_findings, :with_issue_links, severity: :low, report_type: :sast, state: :detected, project: project)
@@ -19,6 +26,7 @@ RSpec.describe Security::VulnerabilitiesFinder do
 
   let(:filters) { {} }
   let(:vulnerable) { project }
+  let(:archive_associated_vulnerabilities) { archived_project.vulnerabilities }
 
   subject { described_class.new(vulnerable, filters).execute }
 
@@ -31,6 +39,33 @@ RSpec.describe Security::VulnerabilitiesFinder do
 
     it 'does not filter the vulnerability list' do
       expect(subject).to match_array(project.vulnerabilities)
+    end
+  end
+
+  context 'when using the include_archived_projects param' do
+    using RSpec::Parameterized::TableSyntax
+
+    let(:result_including_archived) { result_excluding_archived + archive_associated_vulnerabilities }
+    let(:result_excluding_archived) { group.vulnerabilities.without_archived_projects }
+
+    before do
+      project.update!(namespace: group)
+    end
+
+    where(:vulnerable_object, :include_archived_projects, :result) do
+      ref(:archived_project) | true   | ref(:archive_associated_vulnerabilities)
+      ref(:archived_project) | false  | ref(:archive_associated_vulnerabilities)
+      ref(:group)            | true   | ref(:result_including_archived)
+      ref(:group)            | false  | ref(:result_excluding_archived)
+    end
+
+    with_them do
+      let(:vulnerable) { vulnerable_object }
+      let(:filters) { super().merge(include_archived_projects: include_archived_projects) }
+
+      it 'filters out vulnerabilities associated with archived projects as defined' do
+        expect(subject).to match_array(result)
+      end
     end
   end
 
@@ -74,19 +109,34 @@ RSpec.describe Security::VulnerabilitiesFinder do
     end
   end
 
-  context 'when filtered by project' do
-    let(:group) { create(:group) }
-    let(:another_project) { create(:project, namespace: group) }
-    let!(:another_vulnerability) { create(:vulnerability, :with_findings, project: another_project) }
-    let(:filters) { { project_id: [another_project.id] } }
+  context 'when the vulnerable object is a Group' do
     let(:vulnerable) { group }
+    let(:another_project) { create(:project, namespace: group) }
+
+    let!(:another_vulnerability) { create(:vulnerability, :with_findings, project: another_project) }
+
+    let_it_be(:group) { create(:group) }
+    let_it_be(:archived_project) { create(:project, :archived, namespace: group) }
 
     before do
       project.update!(namespace: group)
     end
 
-    it 'only returns vulnerabilities matching the given projects' do
-      is_expected.to contain_exactly(another_vulnerability)
+    context 'when filtered by project' do
+      let!(:archived_vulnerability) { create(:vulnerability, :with_findings, project: archived_project) }
+      let(:filters) { { project_id: [another_project.id, archived_project.id] } }
+
+      it 'only returns vulnerabilities matching the given projects' do
+        is_expected.to contain_exactly(another_vulnerability)
+      end
+
+      context 'when including archived projects' do
+        let(:filters) { super().merge(include_archived_projects: true) }
+
+        it 'returns vulnerabilities matching the given projects' do
+          is_expected.to contain_exactly(another_vulnerability, archived_vulnerability)
+        end
+      end
     end
   end
 
