@@ -103,7 +103,7 @@ RSpec.describe 'Account recovery regular check callout', feature_category: :user
   end
 
   def close_callout
-    find('[data-testid="close-account-recovery-regular-check-callout"]').click
+    find_by_testid('close-account-recovery-regular-check-callout').click
     wait_for_requests
   end
 
