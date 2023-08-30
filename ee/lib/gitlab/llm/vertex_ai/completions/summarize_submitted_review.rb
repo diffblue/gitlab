@@ -14,8 +14,9 @@ module Gitlab
 
             response = response_for(user, review)
             response_modifier = ::Gitlab::Llm::VertexAi::ResponseModifiers::Predictions.new(response)
-
             store_response(response_modifier, review, mr_diff)
+
+            response_modifier
           end
           # rubocop:enable CodeReuse/ActiveRecord
 

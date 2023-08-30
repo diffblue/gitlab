@@ -29,16 +29,37 @@ module Llm
       return if resource && !user.can?("read_#{resource.to_ability_name}", resource)
 
       options[:extra_resource] = ::Llm::ExtraResourceFinder.new(user, options.delete(:referer_url)).execute
-
       params = options.extract!(:request_id, :internal_request, :cache_response, :client_subscription_id)
       logger.debug(message: "Params", params: params)
-      ai_completion = ::Gitlab::Llm::CompletionsFactory.completion(ai_action_name.to_sym, params)
-      logger.debug(message: "Getting Completion Service from factory", class_name: ai_completion.class.name)
 
-      ai_completion.execute(user, resource, options) if ai_completion
+      ai_completion = ::Gitlab::Llm::CompletionsFactory.completion(ai_action_name.to_sym, params)
+      raise NameError, "completion class for action #{ai_action_name} not found" unless ai_completion
+
+      logger.debug(message: "Getting Completion Service from factory", class_name: ai_completion.class.name)
+      response = ai_completion.execute(user, resource, options)
+      update_error_rate(ai_action_name, response)
+    rescue StandardError => err
+      update_error_rate(ai_action_name)
+
+      raise err
     end
 
     private
+
+    def update_error_rate(ai_action_name, response = nil)
+      completion = ::Gitlab::Llm::CompletionsFactory::COMPLETIONS[ai_action_name.to_sym]
+      return unless completion
+
+      success = response.try(:errors)&.empty?
+
+      Gitlab::Metrics::Sli::ErrorRate[:llm_completion].increment(
+        labels: {
+          feature_category: completion[:feature_category],
+          service_class: completion[:service_class].name
+        },
+        error: !success
+      )
+    end
 
     def logger
       @logger ||= Gitlab::Llm::Logger.build

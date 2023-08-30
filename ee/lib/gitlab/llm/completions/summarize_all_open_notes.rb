@@ -23,6 +23,8 @@ module Gitlab
           ::Gitlab::Llm::GraphqlSubscriptionResponseService.new(
             user, issuable, response_modifier, options: response_options
           ).execute
+
+          response_modifier
         end
 
         private

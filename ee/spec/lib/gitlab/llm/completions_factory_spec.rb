@@ -3,6 +3,18 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::CompletionsFactory, feature_category: :ai_abstraction_layer do
+  describe 'completion definitions' do
+    it 'has a valid :feature_category set', :aggregate_failures do
+      feature_categories = Gitlab::FeatureCategories.default.categories.map(&:to_sym).to_set
+
+      ::Gitlab::Llm::CompletionsFactory::COMPLETIONS.each do |action, completion|
+        expect(completion[:feature_category]).to be_a(Symbol)
+        expect(feature_categories)
+          .to(include(completion[:feature_category]), "expected #{action} to declare a valid feature_category")
+      end
+    end
+  end
+
   describe ".completion" do
     context 'with existing completion' do
       let(:completion_name) { :summarize_review }

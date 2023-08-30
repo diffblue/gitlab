@@ -70,6 +70,30 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateTestFile, feature_categ
 
         generate_test_file
       end
+
+      context 'when an unexpected error is raised' do
+        let(:error) { StandardError.new("Error") }
+        let(:response_modifier) { double }
+        let(:response_service) { double }
+
+        before do
+          allow_next_instance_of(Gitlab::Llm::OpenAi::Client) do |client|
+            allow(client).to receive(:chat).and_raise(error)
+          end
+        end
+
+        it 'publishes a generic error to the graphql subscription' do
+          errors = { error: { message: 'An unexpected error has occurred.' } }
+
+          expect(Gitlab::ErrorTracking).to receive(:track_exception).with(error)
+          expect(::Gitlab::Llm::OpenAi::ResponseModifiers::Chat).to receive(:new)
+            .with(errors.to_json).and_return(response_modifier)
+          expect(::Gitlab::Llm::GraphqlSubscriptionResponseService).to receive(:new).and_return(response_service)
+          expect(response_service).to receive(:execute)
+
+          generate_test_file
+        end
+      end
     end
   end
 end

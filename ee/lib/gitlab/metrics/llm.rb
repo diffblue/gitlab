@@ -4,16 +4,25 @@ module Gitlab
   module Metrics
     module Llm
       class << self
-        def initialize_slis!
-          tool_labels = Gitlab::Llm::Completions::Chat::TOOLS.map { |tool_class| { tool: tool_class::Executor::NAME } }
-          tool_labels << { tool: :unknown }
+        CLIENT_NAMES = {
+          'Gitlab::Llm::VertexAi::Client' => :vertex_ai,
+          'Gitlab::Llm::Anthropic::Client' => :anthropic,
+          'Gitlab::Llm::OpenAi::Client' => :open_ai
+        }.freeze
 
-          Gitlab::Metrics::Sli::Apdex.initialize_sli(:llm_chat_answers, tool_labels)
-          Gitlab::Metrics::Sli::Apdex.initialize_sli(:llm_client_request, [
-            { client: :anthropic },
-            { client: :vertex_ai },
-            { client: :open_ai }
-          ])
+        def initialize_slis!
+          completion_labels = Gitlab::Llm::CompletionsFactory::COMPLETIONS.values.map do |completion|
+            { feature_category: completion[:feature_category], service_class: completion[:service_class].name }
+          end
+
+          Gitlab::Metrics::Sli::ErrorRate.initialize_sli(:llm_completion, completion_labels)
+
+          client_labels = (CLIENT_NAMES.values + [:unknown]).map { |client| { client: client } }
+          Gitlab::Metrics::Sli::ErrorRate.initialize_sli(:llm_client_request, client_labels)
+        end
+
+        def client_label(cls)
+          CLIENT_NAMES.fetch(cls.name, :unknown)
         end
       end
     end

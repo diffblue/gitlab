@@ -108,8 +108,23 @@ RSpec.describe Llm::CompletionWorker, feature_category: :team_planning do
       context 'when issue type is not supported' do
         let(:resource_type) { 'invalid' }
 
-        it 'raises a NameError' do
-          expect { subject }.to raise_error(NameError, "uninitialized constant Invalid")
+        it 'raises a NameError and updates error rate' do
+          expect(Gitlab::Metrics::Sli::ErrorRate[:llm_completion])
+            .to receive(:increment)
+            .with(labels: {
+              feature_category: :ai_abstraction_layer,
+              service_class: 'Gitlab::Llm::Completions::SummarizeAllOpenNotes'
+            }, error: true)
+
+          expect { subject }.to raise_error(NameError, 'uninitialized constant Invalid')
+        end
+      end
+
+      context 'when invalid action_name is used' do
+        let(:ai_action_name) { :some_action }
+
+        it 'raises an exception' do
+          expect { subject }.to raise_error(NameError, 'completion class for action some_action not found')
         end
       end
     end

@@ -61,9 +61,6 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
         expect(instance).to receive(:execute).and_return(answer)
       end
 
-      expect(Gitlab::Metrics::Sli::Apdex[:llm_chat_answers])
-        .to receive(:increment)
-        .with(labels: { tool: "IssueIdentifier" }, success: true)
       expect(response_handler).to receive(:execute)
       expect(::Gitlab::Llm::ResponseService).to receive(:new).with(context, { request_id: 'uuid' })
         .and_return(response_handler)
@@ -127,7 +124,6 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
           expect(instance).to receive(:execute).and_return(answer)
         end
 
-        allow(Gitlab::Metrics::Sli::Apdex[:llm_chat_answers]).to receive(:increment)
         allow(::Gitlab::Llm::Chain::GitlabContext).to receive(:new).and_return(context)
 
         subject
