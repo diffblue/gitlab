@@ -50676,6 +50676,9 @@ msgstr ""
 msgid "UsageQuota|Buy storage"
 msgstr ""
 
+msgid "UsageQuota|Code Suggestions"
+msgstr ""
+
 msgid "UsageQuota|Code packages and container images."
 msgstr ""
 

@@ -22,6 +22,9 @@
   = gl_tabs_nav({ class: 'js-storage-tabs' }) do
     = gl_tab_link_to '#seats-quota-tab', data: { qa_selector: 'seats_tab' }, item_active: true do
       = s_('UsageQuota|Seats')
+    - if show_code_suggestions_tab?(@group)
+      = gl_tab_link_to '#code-suggestions-usage-tab' do
+        = s_('UsageQuota|Code Suggestions')
     - if can? current_user, :admin_ci_minutes, @group
       = gl_tab_link_to '#pipelines-quota-tab', data: { qa_selector: 'pipelines_tab' } do
         =  s_('UsageQuota|Pipelines')
@@ -42,6 +45,9 @@
         content_class: 'gl-my-3')
 
       #js-seat-usage-app{ data: group_seats_usage_quota_app_data(@group) }
+    - if show_code_suggestions_tab?(@group)
+      .tab-pane#code-suggestions-usage-tab
+        #js-code-suggestions-usage-app
     .tab-pane#pipelines-quota-tab
       #js-pipeline-usage-app{ data: pipeline_usage_app_data(@group) }
     .tab-pane#storage-quota-tab

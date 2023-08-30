@@ -289,6 +289,48 @@ RSpec.describe GroupsHelper do
     end
   end
 
+  describe '#show_code_suggestions_tab?' do
+    describe 'when enable_hamilton_in_usage_quotas_ui is enabled' do
+      where(:has_free_or_no_subscription?, :gitlab_com?, :result) do
+        true  | true  | false
+        true  | false | false
+        false | false | false
+        false | true  | true
+      end
+
+      with_them do
+        it 'returns the expected value' do
+          allow(::Gitlab).to receive(:com?) { gitlab_com? }
+          allow(group).to receive(:has_free_or_no_subscription?) { has_free_or_no_subscription? }
+
+          expect(helper.show_code_suggestions_tab?(group)).to eq(result)
+        end
+      end
+    end
+
+    describe 'when enable_hamilton_in_usage_quotas_ui is disabled' do
+      before do
+        stub_feature_flags(enable_hamilton_in_usage_quotas_ui: false)
+      end
+
+      where(:has_free_or_no_subscription?, :gitlab_com?, :result) do
+        true  | true  | false
+        true  | false | false
+        false | false | false
+        false | true  | false
+      end
+
+      with_them do
+        it 'returns the expected value' do
+          allow(::Gitlab).to receive(:com?) { gitlab_com? }
+          allow(group).to receive(:has_free_or_no_subscription?) { has_free_or_no_subscription? }
+
+          expect(helper.show_code_suggestions_tab?(group)).to eq(result)
+        end
+      end
+    end
+  end
+
   describe '#saml_sso_settings_generate_helper_text' do
     let(:text) { 'some text' }
     let(:result) { "<span class=\"js-helper-text gl-clearfix\">#{text}</span>" }
