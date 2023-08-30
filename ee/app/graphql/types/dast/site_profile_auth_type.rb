@@ -4,7 +4,7 @@ module Types
   module Dast
     class SiteProfileAuthType < BaseObject
       graphql_name 'DastSiteProfileAuth'
-      description 'Input type for DastSiteProfile authentication'
+      description 'DastSiteProfile authentication'
 
       present_using ::Dast::SiteProfilePresenter
 
