@@ -67,7 +67,6 @@ module Geo::ReplicableRegistry
     scope :failed, -> { with_state(:failed) }
     scope :needs_sync_again, -> { failed.retry_due.order(arel_table[:retry_at].asc.nulls_first) }
     scope :never_attempted_sync, -> { pending.where(last_synced_at: nil) }
-    scope :ordered, -> { order(:id) }
     scope :pending, -> { with_state(:pending) }
     scope :not_pending, -> { without_state(:pending) }
     scope :retry_due, -> { where(arel_table[:retry_at].eq(nil).or(arel_table[:retry_at].lt(Time.current))) }

@@ -476,6 +476,22 @@ RSpec.describe Geo::VerificationState, feature_category: :geo_replication do
   end
 
   context 'for registry classes' do
+    shared_context 'with Geo registries' do
+      let_it_be(:factory) { :geo_package_file_registry }
+      let_it_be(:registry_class) { Geo::PackageFileRegistry }
+
+      let_it_be(:pending) { create(factory, :synced, verification_state: registry_class.verification_state_value(:verification_pending)) }
+      let_it_be(:started) { create(factory, :synced, verification_state: registry_class.verification_state_value(:verification_started)) }
+
+      let_it_be(:succeeded) do
+        create(factory, :synced, verification_state: registry_class.verification_state_value(:verification_succeeded), verification_checksum: 'abc123')
+      end
+
+      let_it_be(:failed) do
+        create(factory, :synced, verification_state: registry_class.verification_state_value(:verification_failed), verification_failure: 'Foo bar')
+      end
+    end
+
     describe '.fail_verification_timeouts' do
       it 'sets verification state to failed' do
         registry = create(:geo_package_file_registry, :synced, verification_started_at: (described_class::VERIFICATION_TIMEOUT + 1.minute).ago, verification_state: 1)
@@ -487,17 +503,21 @@ RSpec.describe Geo::VerificationState, feature_category: :geo_replication do
     end
 
     describe '.verification_not_disabled' do
+      include_context 'with Geo registries'
+
       it 'returns available verifiables, excluding verification_disabled' do
-        factory = :geo_package_file_registry
-        pending = create(factory, :synced, verification_state: Geo::PackageFileRegistry.verification_state_value(:verification_pending))
-        started = create(factory, :synced, verification_state: Geo::PackageFileRegistry.verification_state_value(:verification_started))
-        succeeded = create(factory, :synced, verification_state: Geo::PackageFileRegistry.verification_state_value(:verification_succeeded), verification_checksum: 'abc123')
-        failed = create(factory, :synced, verification_state: Geo::PackageFileRegistry.verification_state_value(:verification_failed), verification_failure: 'Foo bar')
-
         # disabled will not be returned
-        create(factory, :synced, verification_state: Geo::PackageFileRegistry.verification_state_value(:verification_disabled))
+        create(factory, :synced, verification_state: registry_class.verification_state_value(:verification_disabled))
 
-        expect(pending.class.verification_not_disabled).to match_array([pending, started, succeeded, failed])
+        expect(registry_class.verification_not_disabled).to match_array([pending, started, succeeded, failed])
+      end
+    end
+
+    describe '.verification_not_pending' do
+      include_context 'with Geo registries'
+
+      it 'returns available verifiables, excluding verification_pending' do
+        expect(registry_class.verification_not_pending).to match_array([started, succeeded, failed])
       end
     end
 
