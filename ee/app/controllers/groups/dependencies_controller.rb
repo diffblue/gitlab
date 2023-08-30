@@ -13,6 +13,10 @@ module Groups
     # More details on https://gitlab.com/gitlab-org/gitlab/-/issues/411257#note_1508315283
     GROUP_COUNT_LIMIT = 600
 
+    before_action only: :index do
+      push_frontend_feature_flag(:group_level_licenses, group)
+    end
+
     def index
       respond_to do |format|
         format.html do
