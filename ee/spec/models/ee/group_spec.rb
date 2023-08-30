@@ -681,8 +681,8 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     let!(:archived_vulnerability) { create(:vulnerability, project: archived_project) }
     let!(:deleted_vulnerability) { create(:vulnerability, project: deleted_project) }
 
-    it 'returns vulnerabilities for all non-archived, non-deleted projects in the group and its subgroups' do
-      is_expected.to contain_exactly(group_vulnerability, subgroup_vulnerability)
+    it 'returns vulnerabilities for all non-deleted projects in the group and its subgroups' do
+      is_expected.to contain_exactly(group_vulnerability, subgroup_vulnerability, archived_vulnerability)
     end
   end
 
