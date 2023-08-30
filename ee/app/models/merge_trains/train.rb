@@ -32,7 +32,9 @@ module MergeTrains
 
     def sha_exists_in_history?(newrev, limit: 20)
       MergeRequest.where(id: completed_cars(limit: limit).select(:merge_request_id))
-        .where('merge_commit_sha = ? OR in_progress_merge_commit_sha = ?', newrev, newrev)
+        .where(
+          'merge_commit_sha = ? OR in_progress_merge_commit_sha = ? OR squash_commit_sha = ?',
+          newrev, newrev, newrev)
         .exists?
     end
 
