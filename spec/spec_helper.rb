@@ -394,8 +394,8 @@ RSpec.configure do |config|
   end
 
   config.around(:example, :quarantine) do |example|
-    # Skip tests in quarantine unless we explicitly focus on them.
-    example.run if config.inclusion_filter[:quarantine]
+    # Skip tests in quarantine unless we explicitly focus on them or not in CI
+    example.run if config.inclusion_filter[:quarantine] || !ENV['CI']
   end
 
   config.around(:example, :request_store) do |example|
