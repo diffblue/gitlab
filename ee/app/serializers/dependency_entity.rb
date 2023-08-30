@@ -17,7 +17,12 @@ class DependencyEntity < Grape::Entity
   end
 
   class LicenseEntity < Grape::Entity
+    expose :spdx_identifier, if: ->(_) { spdx_identifier? }
     expose :name, :url
+
+    def spdx_identifier
+      object[:spdx_identifier] || object["spdx_identifier"]
+    end
 
     def name
       object[:name] || object["name"]
@@ -25,6 +30,12 @@ class DependencyEntity < Grape::Entity
 
     def url
       object[:url] || object["url"]
+    end
+
+    private
+
+    def spdx_identifier?
+      object.key?(:spdx_identifier) || object.key?("spdx_identifier")
     end
   end
 

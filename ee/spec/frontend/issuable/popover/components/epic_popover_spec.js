@@ -6,7 +6,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
-import StatusBox from '~/issuable/components/status_box.vue';
+import StatusBadge from '~/issuable/components/status_badge.vue';
 import epicQuery from 'ee/issuable/popover/queries/epic.query.graphql';
 import EpicPopover from 'ee/issuable/popover/components/epic_popover.vue';
 
@@ -50,7 +50,7 @@ describe('Epic Popover', () => {
     });
   };
 
-  const findStatusBox = () => wrapper.findComponent(StatusBox);
+  const findStatusBadge = () => wrapper.findComponent(StatusBadge);
 
   describe('while popover is loading', () => {
     beforeEach(() => {
@@ -61,8 +61,8 @@ describe('Epic Popover', () => {
       expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(true);
     });
 
-    it('does not show status box or created timestamp', () => {
-      expect(findStatusBox().exists()).toBe(false);
+    it('does not show status badge or created timestamp', () => {
+      expect(findStatusBadge().exists()).toBe(false);
       expect(wrapper.findByTestId('created-at').exists()).toBe(false);
     });
 
@@ -82,12 +82,10 @@ describe('Epic Popover', () => {
       await waitForPromises();
     });
 
-    it('shows status box', () => {
-      const statusBox = findStatusBox();
-      expect(statusBox.exists()).toBe(true);
-      expect(statusBox.props()).toEqual({
+    it('shows status badge', () => {
+      expect(findStatusBadge().props()).toEqual({
         issuableType: 'epic',
-        initialState: mockEpic.state,
+        state: mockEpic.state,
       });
     });
 

@@ -6,10 +6,14 @@
     {
       "type": "object",
       "properties": {
-        "name": {
+        "spdx_identifier": {
           "type": "string",
           "minLength": 1,
           "maxLength": 50
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
         },
         "url": {
           "type": "string",
@@ -17,6 +21,7 @@
         }
       },
       "required": [
+        "spdx_identifier",
         "name",
         "url"
       ],
