@@ -1,3 +1,10 @@
 - if @search_service_presenter.advanced_search_enabled?
-  .form-text.text-muted{ **local_assigns.fetch(:attrs, {}) }
-    = advanced_search_status_marker(@project)
+  .gl-mt-2.gl-font-base.gl-mb-0.gl-text-gray-600.gl-align-self-center
+    - if @scope == 'blobs' && search_service.use_zoekt?
+      - link_url = help_page_path('user/search/exact_code_search')
+      - link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: link_url }
+      - composited_link = s_('GlobalSearch|%{link_start}Exact code search (powered by Zoekt)%{link_end} is enabled') % { link_start: link_start, link_end: '</a>' }
+      = sanitize(composited_link).html_safe
+
+    - else
+      = advanced_search_status_marker(@project)
