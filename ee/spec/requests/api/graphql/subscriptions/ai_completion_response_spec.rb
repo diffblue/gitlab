@@ -42,7 +42,8 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_cha
         request_id: request_id,
         content: content,
         role: ::Gitlab::Llm::Cache::ROLE_ASSISTANT,
-        errors: []
+        errors: [],
+        chunk_id: nil
       }
 
       GraphqlTriggers.ai_completion_response(params, data)
@@ -56,6 +57,7 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_cha
       expect(ai_completion_response['role']).to eq('ASSISTANT')
       expect(ai_completion_response['requestId']).to eq(request_id)
       expect(ai_completion_response['errors']).to eq([])
+      expect(ai_completion_response['chunk_id']).to eq(nil)
     end
   end
 
@@ -132,6 +134,7 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_cha
           role
           requestId
           errors
+          chunkId
         }
       }
     SUBSCRIPTION

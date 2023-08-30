@@ -60,7 +60,8 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateTestFile, feature_categ
           role: 'assistant',
           timestamp: an_instance_of(ActiveSupport::TimeWithZone),
           errors: [],
-          type: nil
+          type: nil,
+          chunk_id: nil
         }
 
         expect(GraphqlTriggers).to receive(:ai_completion_response).with(

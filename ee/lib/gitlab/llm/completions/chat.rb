@@ -23,13 +23,20 @@ module Gitlab
             extra_resource: options.delete(:extra_resource) || {}
           )
 
-          response_handler = ::Gitlab::Llm::ResponseService.new(context, response_options)
+          response_handler = ::Gitlab::Llm::ResponseService
+            .new(context, response_options.except(:client_subscription_id))
+
+          stream_response_handler = nil
+          if response_options[:client_subscription_id]
+            stream_response_handler = ::Gitlab::Llm::ResponseService.new(context, response_options)
+          end
 
           response = Gitlab::Llm::Chain::Agents::ZeroShot::Executor.new(
             user_input: options[:content],
             tools: tools(user),
             context: context,
-            response_handler: response_handler
+            response_handler: response_handler,
+            stream_response_handler: stream_response_handler
           ).execute
 
           Gitlab::Metrics::Sli::Apdex[:llm_chat_answers].increment(
@@ -38,8 +45,6 @@ module Gitlab
           )
 
           response_modifier = Gitlab::Llm::Chain::ResponseModifier.new(response)
-
-          response_handler.execute(response: response_modifier)
 
           context.tools_used.each do |tool|
             Gitlab::Tracking.event(
@@ -52,6 +57,8 @@ module Gitlab
               value: response.status == :ok ? 1 : 0
             )
           end
+
+          response_handler.execute(response: response_modifier)
         end
 
         def tools(user)
