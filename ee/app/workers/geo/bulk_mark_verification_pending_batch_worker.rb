@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 module Geo
-  # Worker that marks registries as pending in batches
-  # to be resynchronized by Geo periodic workers
-  class BulkMarkPendingBatchWorker
+  # Worker that marks registries as pending to verify in batches
+  # to be verified by Geo periodic workers.
+  class BulkMarkVerificationPendingBatchWorker
     include ApplicationWorker
 
     data_consistency :always # rubocop:disable SidekiqLoadBalancing/WorkerDataConsistency
@@ -30,23 +30,24 @@ module Geo
       private
 
       def restart_redis_cursor(registry_class)
-        ::Geo::BulkMarkPendingService.new(registry_class).set_bulk_mark_update_cursor(INITIAL_REDIS_CURSOR)
+        ::Geo::BulkMarkVerificationPendingService.new(registry_class)
+             .set_bulk_mark_update_cursor(INITIAL_REDIS_CURSOR)
       end
     end
 
     def perform_work(registry_class)
-      ::Geo::BulkMarkPendingService.new(registry_class).bulk_mark_update_one_batch!
+      ::Geo::BulkMarkVerificationPendingService.new(registry_class).bulk_mark_update_one_batch!
     end
 
     # Number of remaining jobs that this worker needs to perform
     #
-    # @param registry_class [String] Registry class of the data type being bulk resynced
-    # @return [Integer] The number of remaining batches of registry rows that need to be marked pending
+    # @param registry_class [String] Registry class of the data type being bulk verified
+    # @return [Integer] The number of remaining batches of registry rows that need to be marked as pending to verify
     def remaining_work_count(registry_class)
-      @remaining_work_count ||= ::Geo::BulkMarkPendingService.new(registry_class)
-        .remaining_batches_to_bulk_mark_update(
-          max_batch_count: max_running_jobs
-        )
+      @remaining_work_count ||= ::Geo::BulkMarkVerificationPendingService.new(registry_class)
+         .remaining_batches_to_bulk_mark_update(
+           max_batch_count: max_running_jobs
+         )
     end
 
     def max_running_jobs

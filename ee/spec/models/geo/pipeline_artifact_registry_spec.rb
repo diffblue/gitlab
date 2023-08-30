@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Geo::PipelineArtifactRegistry, :geo, type: :model, feature_category: :geo_replication do
-  let(:registry) { create(:geo_pipeline_artifact_registry) }
+  let_it_be(:registry) { build(:geo_pipeline_artifact_registry) }
 
   specify 'factory is valid' do
     expect(registry).to be_valid

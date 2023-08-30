@@ -90,6 +90,16 @@ RSpec.shared_examples 'a Geo framework registry' do
     end
   end
 
+  describe '.ordered_by_id' do
+    it 'orders records by id ASC' do
+      registry1 = create(registry_class_factory, :started)
+      registry2 = create(registry_class_factory, :failed)
+      registry3 = create(registry_class_factory) # rubocop:disable Rails/SaveBang
+
+      expect(described_class.ordered_by_id.to_a).to eq([registry1, registry2, registry3])
+    end
+  end
+
   describe '.fail_sync_timeouts' do
     it 'marks started records as failed if they are expired' do
       record1 = create(registry_class_factory, :started, last_synced_at: 9.hours.ago)

@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Geo::LfsObjectRegistry, :geo, type: :model, feature_category: :geo_replication do
-  let(:registry) { create(:geo_lfs_object_registry) }
+  let_it_be(:registry) { build(:geo_lfs_object_registry) }
 
   specify 'factory is valid' do
     expect(registry).to be_valid
@@ -17,10 +17,11 @@ RSpec.describe Geo::LfsObjectRegistry, :geo, type: :model, feature_category: :ge
       let_it_be(:registry2) { create(:geo_lfs_object_registry, :synced) }
       let_it_be(:registry3) { create(:geo_lfs_object_registry, :failed) }
       let_it_be(:registry4) { create(:geo_lfs_object_registry, :synced) }
+      let_it_be(:registry5) { create(:geo_lfs_object_registry) }
+      let_it_be(:registry6) { create(:geo_lfs_object_registry, :started) }
 
       let(:lfs_object_ids) do
         [
-          registry.lfs_object_id,
           registry2.lfs_object_id,
           registry3.lfs_object_id,
           registry4.lfs_object_id
