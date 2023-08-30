@@ -117,7 +117,7 @@ export default {
   async created() {
     await this.fetchChartData(this.endpoint);
 
-    if (!this.chartHasData) {
+    if (this.showNoDataEmptyState) {
       this.$emit('hasNoData');
     }
   },
