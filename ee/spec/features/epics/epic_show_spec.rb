@@ -112,7 +112,7 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
         wait_for_requests
       end
 
-      it 'shows Roadmap timeline with child epics', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/299298' do
+      it 'shows Roadmap timeline with child epics' do
         page.within('.related-items-tree-container #roadmap') do
           expect(page).to have_selector('.roadmap-container .js-roadmap-shell')
 
@@ -128,24 +128,26 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
         expect(find('#notes')).to have_selector('.js-discussion-filter-container', visible: false)
       end
 
-      it 'has no limit on container width', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/299440' do
-        expect(find('.content-wrapper .container-fluid:not(.top-bar-container)')[:class]).not_to include('container-limited')
+      it 'has no limit on container width' do
+        expect(find('.roadmap-container')[:class]).not_to include('container-limited')
       end
     end
 
-    it 'switches between Epics and Issues tab and Roadmap tab when clicking on tab links', :aggregate_failures, quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/342232' do
+    it 'switches between Epics and Issues tab and Roadmap tab when clicking on tab links' do
       click_button 'Roadmap view'
+      wait_for_all_requests
 
       page.within('.related-items-tree-container') do
-        expect(page).to have_selector('#roadmap.tab-pane', visible: true)
-        expect(page).to have_selector('#tree.tab-pane', visible: false)
+        expect(page).to have_selector('#roadmap', visible: true)
+        expect(page).not_to have_selector('[data-testid="related-items-tree"]')
       end
 
       click_button 'Tree view'
+      wait_for_all_requests
 
       page.within('.related-items-tree-container') do
-        expect(page).to have_selector('#tree.tab-pane', visible: true)
-        expect(page).to have_selector('#roadmap.tab-pane', visible: false)
+        expect(page).to have_selector('[data-testid="related-items-tree"]', visible: true)
+        expect(page).not_to have_selector('#roadmap')
       end
     end
   end
