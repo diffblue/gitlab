@@ -156,15 +156,6 @@ RSpec.describe 'epics swimlanes', :js, feature_category: :team_planning do
     find(".board:nth-child(#{list_idx}) [data-testid=\"board-list-header\"]")
   end
 
-  def select_epics
-    page.within('.board-swimlanes-toggle-wrapper') do
-      page.find('.dropdown-toggle').click
-      page.find('.dropdown-item', text: 'Epic').click
-
-      wait_for_requests
-    end
-  end
-
   def drag(selector: '.board-cell', list_from_index: 0, from_index: 0, to_index: 0, list_to_index: 0, perform_drop: true)
     # ensure there is enough horizontal space for four boards
     resize_window(2000, 1200)
