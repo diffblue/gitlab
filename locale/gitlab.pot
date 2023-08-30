@@ -11527,15 +11527,6 @@ msgstr ""
 msgid "CodeSuggestionsSM|Enable Code Suggestions for users of this instance. %{link_start}What are Code Suggestions?%{link_end}"
 msgstr ""
 
-msgid "CodeSuggestionsSM|Enter new personal access token"
-msgstr ""
-
-msgid "CodeSuggestionsSM|On GitLab.com, create a token. This token is required to use Code Suggestions on your self-managed instance. %{link_start}How do I create a token?%{link_end}"
-msgstr ""
-
-msgid "CodeSuggestionsSM|Personal access token"
-msgstr ""
-
 msgid "CodeSuggestions|%{link_start}What are code suggestions?%{link_end}"
 msgstr ""
 

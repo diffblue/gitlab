@@ -2,9 +2,6 @@
 - return unless License.feature_available?(:code_suggestions)
 
 - expanded = integration_expanded?('ai_access')
-- token_is_present = @application_setting.ai_access_token.present?
-- token_label = token_is_present ? s_('CodeSuggestionsSM|Enter new personal access token') : s_('CodeSuggestionsSM|Personal access token')
-- token_value = token_is_present ? ApplicationSetting::MASK_PASSWORD : ''
 
 %section.settings.no-animate#js-ai-access-settings{ class: ('expanded' if expanded) }
   .settings-header
@@ -24,9 +21,5 @@
           = f.gitlab_ui_checkbox_component :instance_level_code_suggestions_enabled,
             s_('CodeSuggestionsSM|Enable Code Suggestions for this instance %{beta}').html_safe % { beta: gl_badge_tag(_('Beta'), variant: :neutral, size: :sm) },
             help_text: code_suggestions_agreement
-          = f.label :ai_access_token, token_label, class: 'label-bold'
-          = f.password_field :ai_access_token, value: token_value, autocomplete: 'on', class: 'form-control gl-form-input', aria: { describedby: 'code_suggestions_token_explanation' }
-          %p.form-text.text-muted{ id: 'code_suggestions_token_explanation' }
-            = code_suggestions_token_explanation
 
       = f.submit _('Save changes'), pajamas_button: true
