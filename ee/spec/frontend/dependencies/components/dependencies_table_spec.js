@@ -31,7 +31,7 @@ describe('DependenciesTable component', () => {
         DependencyProjectCount: false,
         DependencyLocationCount: false,
       },
-      provide: { ...basicAppProps, ...provide },
+      provide: { ...basicAppProps, glFeatures: { groupLevelLicenses: true }, ...provide },
     });
   };
 
@@ -41,6 +41,8 @@ describe('DependenciesTable component', () => {
   const findDependencyLocation = () => wrapper.findComponent(DependencyLocation);
   const findDependencyLocationCount = () => wrapper.findComponent(DependencyLocationCount);
   const findDependencyProjectCount = () => wrapper.findComponent(DependencyProjectCount);
+  const findDependencyLicenseLinks = (licenseCell) =>
+    licenseCell.findComponent(DependencyLicenseLinks);
   const normalizeWhitespace = (string) => string.replace(/\s+/g, ' ');
 
   const expectDependencyRow = (rowWrapper, dependency) => {
@@ -63,9 +65,7 @@ describe('DependenciesTable component', () => {
     expect(locationLink.attributes().href).toBe(dependency.location.blobPath);
     expect(locationLink.text()).toContain(dependency.location.path);
 
-    const licenseLinks = licenseCell.findComponent(DependencyLicenseLinks);
-    expect(licenseLinks.exists()).toBe(true);
-    expect(licenseLinks.props()).toEqual({
+    expect(findDependencyLicenseLinks(licenseCell).props()).toEqual({
       licenses: dependency.licenses,
       title: dependency.name,
     });
@@ -82,9 +82,13 @@ describe('DependenciesTable component', () => {
   };
 
   const expectGroupDependencyRow = (rowWrapper, dependency) => {
-    const [componentCell, packagerCell, locationCell, projectCell] = rowWrapper.findAll(
-      'td',
-    ).wrappers;
+    const [
+      componentCell,
+      packagerCell,
+      locationCell,
+      licenseCell,
+      projectCell,
+    ] = rowWrapper.findAll('td').wrappers;
 
     expect(normalizeWhitespace(componentCell.text())).toBe(
       `${dependency.name} ${dependency.version}`,
@@ -100,6 +104,11 @@ describe('DependenciesTable component', () => {
     } = dependency;
     const locationCellText = occurrenceCount > 1 ? occurrenceCount.toString() : path;
     const projectCellText = projectCount > 1 ? projectCount.toString() : name;
+
+    expect(findDependencyLicenseLinks(licenseCell).props()).toEqual({
+      licenses: dependency.licenses,
+      title: dependency.name,
+    });
 
     expect(locationCell.text()).toContain(locationCellText);
     expect(projectCell.text()).toContain(projectCellText);
@@ -129,33 +138,39 @@ describe('DependenciesTable component', () => {
 
   describe('given an empty list of dependencies', () => {
     describe.each`
-      namespaceType | fields
-      ${'project'}  | ${DependenciesTable.projectFields}
-      ${'group'}    | ${DependenciesTable.groupFields}
-    `('with namespaceType set to $namespaceType', ({ namespaceType, fields }) => {
-      beforeEach(() => {
-        createComponent({
-          propsData: {
-            dependencies: [],
-            isLoading: false,
-          },
-          provide: { namespaceType },
+      namespaceType | expectedLabels                                                                                                                     | groupLevelLicensesFeatureFlagEnabled
+      ${'project'}  | ${['Component', 'Packager', 'Location', 'License', '' /* the last column has no heading, so the label is just an empty string */]} | ${true}
+      ${'group'}    | ${['Component', 'Packager', 'Location', 'License', 'Projects']}                                                                    | ${true}
+      ${'group'}    | ${['Component', 'Packager', 'Location', 'Projects']}                                                                               | ${false}
+    `(
+      'with namespaceType set to "$namespaceType" and groupLevelLicensesFeatureFlagEnabled set to "$groupLevelLicensesFeatureFlagEnabled"',
+      ({ namespaceType, expectedLabels, groupLevelLicensesFeatureFlagEnabled }) => {
+        beforeEach(() => {
+          createComponent({
+            propsData: {
+              dependencies: [],
+              isLoading: false,
+            },
+            provide: {
+              namespaceType,
+              glFeatures: { groupLevelLicenses: groupLevelLicensesFeatureFlagEnabled },
+            },
+          });
         });
-      });
 
-      it('renders the table header', () => {
-        const expectedLabels = fields.map(({ label }) => label);
-        const headerCells = wrapper.findAll('thead th');
+        it('renders the table header', () => {
+          const headerCells = wrapper.findAll('thead th');
 
-        expectedLabels.forEach((expectedLabel, i) => {
-          expect(headerCells.at(i).text()).toContain(expectedLabel);
+          expectedLabels.forEach((expectedLabel, i) => {
+            expect(headerCells.at(i).text()).toContain(expectedLabel);
+          });
         });
-      });
 
-      it('does not render any rows', () => {
-        expect(findTableRows()).toHaveLength(0);
-      });
-    });
+        it('does not render any rows', () => {
+          expect(findTableRows()).toHaveLength(0);
+        });
+      },
+    );
   });
 
   describe.each`
