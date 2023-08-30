@@ -3,16 +3,29 @@ PATH
   specs:
     mail-smtp_pool (0.1.0)
       connection_pool (~> 2.0)
-      mail (~> 2.7)
+      mail (~> 2.8)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    connection_pool (2.2.3)
+    connection_pool (2.4.1)
+    date (3.3.3)
     diff-lcs (1.4.4)
-    mail (2.7.1)
+    mail (2.8.1)
       mini_mime (>= 0.1.1)
-    mini_mime (1.0.2)
+      net-imap
+      net-pop
+      net-smtp
+    mini_mime (1.1.5)
+    net-imap (0.3.7)
+      date
+      net-protocol
+    net-pop (0.1.2)
+      net-protocol
+    net-protocol (0.2.1)
+      timeout
+    net-smtp (0.3.3)
+      net-protocol
     rspec (3.10.0)
       rspec-core (~> 3.10.0)
       rspec-expectations (~> 3.10.0)
@@ -26,6 +39,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.2)
+    timeout (0.4.0)
 
 PLATFORMS
   ruby
