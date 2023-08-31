@@ -301,7 +301,13 @@ describe('vulnerability actions', () => {
 
     describe('createIssue', () => {
       const vulnerability = mockDataVulnerabilities[0];
-      const data = { issue_url: 'fakepath.html' };
+      const data = {
+        securityFindingCreateIssue: {
+          issue: {
+            webUrl: 'http://gitlab.com/issue/1',
+          },
+        },
+      };
       let mock;
 
       beforeEach(() => {
@@ -314,6 +320,10 @@ describe('vulnerability actions', () => {
 
       describe('on success', () => {
         beforeEach(() => {
+          jest.spyOn(defaultClient, 'mutate').mockResolvedValue({
+            data,
+          });
+
           mock
             .onPost(vulnerability.create_vulnerability_feedback_issue_path)
             .replyOnce(HTTP_STATUS_OK, { data });
@@ -329,7 +339,7 @@ describe('vulnerability actions', () => {
               { type: 'requestCreateIssue' },
               {
                 type: 'receiveCreateIssueSuccess',
-                payload: { data },
+                payload: data,
               },
             ],
           );
@@ -338,9 +348,7 @@ describe('vulnerability actions', () => {
 
       describe('on error', () => {
         beforeEach(() => {
-          mock
-            .onPost(vulnerability.create_vulnerability_feedback_issue_path)
-            .replyOnce(HTTP_STATUS_NOT_FOUND, {});
+          jest.spyOn(defaultClient, 'mutate').mockRejectedValue();
         });
 
         it('should dispatch the request and error actions', () => {
