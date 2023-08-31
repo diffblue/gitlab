@@ -58,10 +58,40 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
     include_examples 'search results filtered by archived', 'search_merge_requests_hide_archived_projects'
   end
 
-  context 'blobs' do
-    let!(:project) { create(:project, :public, :repository, group: group) }
+  context 'blobs', :sidekiq_inline do
+    context 'filter by language' do
+      let_it_be(:project) { create(:project, :public, :repository, group: group) }
 
-    it_behaves_like 'search results filtered by language'
+      it_behaves_like 'search results filtered by language'
+    end
+
+    context 'filter by archived' do
+      before do
+        unarchived_project.repository.index_commits_and_blobs
+        archived_project.repository.index_commits_and_blobs
+
+        ensure_elasticsearch_index!
+
+        allow(Gitlab::Search::FoundBlob).to receive(:new).and_return(instance_double(Gitlab::Search::FoundBlob))
+
+        allow(Gitlab::Search::FoundBlob).to receive(:new)
+          .with(a_hash_including(project_id: unarchived_project.id, ref: unarchived_project.commit.id)).and_return(unarchived_result)
+
+        allow(Gitlab::Search::FoundBlob).to receive(:new)
+          .with(a_hash_including(project_id: archived_project.id, ref: archived_project.commit.id)).and_return(archived_result)
+      end
+
+      let_it_be(:unarchived_project) { create(:project, :public, :repository, group: group) }
+      let_it_be(:archived_project) { create(:project, :archived, :repository, :public, group: group) }
+
+      let(:unarchived_result) { instance_double(Gitlab::Search::FoundBlob, project: unarchived_project) }
+      let(:archived_result) { instance_double(Gitlab::Search::FoundBlob, project: archived_project) }
+
+      let(:scope) { 'blobs' }
+      let(:query) { 'something went wrong' }
+
+      include_examples 'search results filtered by archived', 'search_blobs_hide_archived_projects', 'backfill_archived_field_in_blob'
+    end
   end
 
   context 'for commits', :sidekiq_inline do
@@ -113,7 +143,6 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
     let_it_be(:child_group) { create(:group, :private, parent: group) }
     let_it_be(:child_of_child_group) { create(:group, :private, parent: child_group) }
     let_it_be(:another_group) { create(:group, :private, parent: public_parent_group) }
-
     let!(:parent_group_epic) { create(:epic, group: public_parent_group, title: query) }
     let!(:group_epic) { create(:epic, group: group, title: query) }
     let!(:child_group_epic) { create(:epic, group: child_group, title: query) }
