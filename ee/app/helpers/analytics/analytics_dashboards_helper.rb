@@ -15,6 +15,7 @@ module Analytics
         collector_host: can_read_product_analytics ? collector_host(namespace) : nil,
         chart_empty_state_illustration_path: image_path('illustrations/chart-empty-state.svg'),
         dashboard_empty_state_illustration_path: image_path('illustrations/security-dashboard-empty-state.svg'),
+        namespace_name: namespace.name,
         namespace_full_path: namespace.full_path,
         features: is_project ? enabled_analytics_features(namespace).to_json : [].to_json,
         router_base: router_base(namespace)

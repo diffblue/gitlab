@@ -23,7 +23,7 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
 
     it 'returns a collection of dashboards' do
       expect(subject).to be_a(Array)
-      expect(subject.size).to eq(3)
+      expect(subject.size).to eq(4)
       expect(subject.last).to be_a(described_class)
       expect(subject.last.title).to eq('Dashboard Example 1')
       expect(subject.last.slug).to eq('dashboard_example_1')
@@ -31,10 +31,15 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
       expect(subject.last.schema_version).to eq('1')
     end
 
+    it 'without the `project_level_analytics_dashboard` license does not include Value Streams Dashboard' do
+      stub_licensed_features(product_analytics: true, project_level_analytics_dashboard: false)
+      expect(subject.map(&:title)).not_to include('Value Streams Dashboard')
+    end
+
     context 'when product analytics is enabled' do
       it 'includes hardcoded dashboards' do
-        expect(subject.size).to eq(3)
-        expect(subject.map(&:title)).to include('Audience', 'Behavior')
+        expect(subject.size).to eq(4)
+        expect(subject.map(&:title)).to include('Audience', 'Behavior', 'Value Stream Dashboard')
       end
 
       context 'when project has a configuration project assigned to it' do
@@ -44,7 +49,7 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
 
         it 'has all dashboards included hardcoded' do
           expect(subject.map(&:title)).to match_array([
-            'Audience', 'Behavior', 'Dashboard Example 1'
+            'Audience', 'Behavior', 'Dashboard Example 1', 'Value Stream Dashboard'
           ])
         end
       end
@@ -52,6 +57,10 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
 
     context 'when the project does not have a dashboards directory' do
       let_it_be(:project) { create(:project, :repository) }
+
+      before do
+        stub_licensed_features(project_level_analytics_dashboard: false)
+      end
 
       it { is_expected.to be_empty }
     end
@@ -68,12 +77,16 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
       end
 
       it 'excludes the dashboard from the list' do
-        expect(subject.size).to eq(3)
+        expect(subject.size).to eq(4)
       end
     end
 
     context 'when the project does not have a dashboard directory' do
       let_it_be(:project) { create(:project) }
+
+      before do
+        stub_licensed_features(project_level_analytics_dashboard: false)
+      end
 
       it 'returns an empty array' do
         expect(subject).to be_empty
@@ -125,15 +138,6 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
     subject { dashboard_1 == dashboard_2 }
 
     it { is_expected.to be false }
-  end
-
-  describe '.product_analytics_dashboards' do
-    subject { described_class.product_analytics_dashboards(project, config_project) }
-
-    it 'returns the built in product analytics dashboards' do
-      expect(subject.size).to eq(2)
-      expect(subject.map(&:title)).to include('Audience', 'Behavior')
-    end
   end
 
   describe '.value_stream_dashboard' do

@@ -172,6 +172,25 @@ export const TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE = {
   },
 };
 
+export const TEST_CUSTOM_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE = {
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/1',
+      productAnalyticsDashboards: {
+        nodes: [
+          getGraphQLDashboard({
+            slug: 'value_stream_dashboard',
+            title: 'Value Stream Dashboard',
+            userDefined: false,
+          }),
+        ],
+        __typename: 'ProductAnalyticsDashboardConnection',
+      },
+      __typename: 'Project',
+    },
+  },
+};
+
 export const TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE = {
   data: {
     project: {

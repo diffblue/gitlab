@@ -27,6 +27,7 @@ import {
   TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE,
   TEST_DASHBOARD_GRAPHQL_404_RESPONSE,
   TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE,
+  TEST_CUSTOM_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE,
   TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE,
 } from '../mock_data';
 
@@ -454,6 +455,26 @@ describe('AnalyticsDashboard', () => {
           dashboardConfig: { panels: [] },
           projectInfo: TEST_CUSTOM_DASHBOARDS_PROJECT,
           isNewFile: true,
+        });
+      });
+    });
+
+    describe('with a value stream dashboard', () => {
+      beforeEach(async () => {
+        mockDashboardResponse(TEST_CUSTOM_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
+
+        createWrapper();
+        await waitForPromises();
+      });
+
+      it('renders the dashboard correctly', () => {
+        expect(findDashboard().props()).toMatchObject({
+          initialDashboard: {
+            ...getFirstParsedDashboard(TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE),
+            title: 'Value Stream Dashboard',
+            slug: 'value_stream_dashboard',
+          },
+          showDateRangeFilter: false,
         });
       });
     });

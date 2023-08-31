@@ -28,8 +28,10 @@ export default {
       import('ee/analytics/analytics_dashboards/components/visualizations/data_table.vue'),
     SingleStat: () =>
       import('ee/analytics/analytics_dashboards/components/visualizations/single_stat.vue'),
+    DORAChart: () =>
+      import('ee/analytics/analytics_dashboards/components/visualizations/dora_chart.vue'),
   },
-  inject: ['namespaceId'],
+  inject: ['namespaceId', 'namespaceFullPath', 'namespaceName', 'isProject'],
   props: {
     visualization: {
       type: Object,
@@ -87,6 +89,13 @@ export default {
             'Analytics|Something went wrong while connecting to your data source. See %{linkStart}troubleshooting documentation%{linkEnd}.',
           );
     },
+    namespace() {
+      return {
+        name: this.namespaceName,
+        requestPath: this.namespaceFullPath,
+        isProject: this.isProject,
+      };
+    },
   },
   watch: {
     visualization: {
@@ -110,7 +119,9 @@ export default {
       try {
         const { fetch } = await dataSources[dataType]();
         this.data = await fetch({
+          title: this.title,
           projectId: this.namespaceId,
+          namespace: this.namespace,
           query,
           queryOverrides,
           visualizationType: this.visualization.type,
