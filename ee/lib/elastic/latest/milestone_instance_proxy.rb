@@ -17,6 +17,10 @@ module Elastic
         data['visibility_level'] = target.project.visibility_level
         data['merge_requests_access_level'] = safely_read_project_feature_for_elasticsearch(:merge_requests)
         data['issues_access_level'] = safely_read_project_feature_for_elasticsearch(:issues)
+        if target.project && ::Elastic::DataMigrationService.migration_has_finished?(:add_archived_to_main_index)
+          data['archived'] = target.project.archived
+        end
+
         data['schema_version'] = SCHEMA_VERSION
         data.merge(generic_attributes)
       end

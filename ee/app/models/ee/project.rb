@@ -163,6 +163,7 @@ module EE
       elastic_index_dependant_association :notes, on_change: :visibility_level
       elastic_index_dependant_association :notes, on_change: :archived, depends_on_finished_migration: :add_archived_to_notes
       elastic_index_dependant_association :milestones, on_change: :visibility_level
+      elastic_index_dependant_association :milestones, on_change: :archived, depends_on_finished_migration: :add_archived_to_main_index
 
       scope :mirror, -> { where(mirror: true) }
 

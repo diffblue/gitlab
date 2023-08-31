@@ -36,30 +36,41 @@ RSpec.describe Milestone, :elastic, feature_category: :global_search do
     expect(described_class.elastic_search('bla-bla', options: { project_ids: :any }).total_count).to eq(3)
   end
 
-  it "returns json with all needed elements" do
-    milestone = create :milestone
+  describe 'json' do
+    let_it_be(:milestone) { create :milestone }
+    let(:expected_hash) do
+      milestone.attributes.extract!(
+        'id',
+        'iid',
+        'title',
+        'description',
+        'project_id',
+        'created_at',
+        'updated_at'
+      ).merge({
+        'type' => milestone.es_type,
+        'issues_access_level' => milestone.project.issues_access_level,
+        'merge_requests_access_level' => milestone.project.merge_requests_access_level,
+        'visibility_level' => milestone.project.visibility_level,
+        'archived' => milestone.project.archived,
+        'schema_version' => Elastic::Latest::MilestoneInstanceProxy::SCHEMA_VERSION,
+        'join_field' => { 'name' => milestone.es_type, 'parent' => milestone.es_parent }
+      })
+    end
 
-    expected_hash = milestone.attributes.extract!(
-      'id',
-      'iid',
-      'title',
-      'description',
-      'project_id',
-      'created_at',
-      'updated_at'
-    ).merge({
-      'type' => milestone.es_type,
-      'issues_access_level' => milestone.project.issues_access_level,
-      'merge_requests_access_level' => milestone.project.merge_requests_access_level,
-      'visibility_level' => milestone.project.visibility_level,
-      'schema_version' => Elastic::Latest::MilestoneInstanceProxy::SCHEMA_VERSION,
-      'join_field' => {
-        'name' => milestone.es_type,
-        'parent' => milestone.es_parent
-      }
-    })
+    it 'returns json with all needed elements' do
+      expect(milestone.__elasticsearch__.as_indexed_json).to eq(expected_hash)
+    end
 
-    expect(milestone.__elasticsearch__.as_indexed_json).to eq(expected_hash)
+    context 'when migration add_archived_to_main_index is not finished' do
+      before do
+        set_elasticsearch_migration_to :add_archived_to_main_index, including: false
+      end
+
+      it 'returns json with all needed elements except archived' do
+        expect(milestone.__elasticsearch__.as_indexed_json).to eq(expected_hash.except('archived'))
+      end
+    end
   end
 
   it_behaves_like 'no results when the user cannot read cross project' do
