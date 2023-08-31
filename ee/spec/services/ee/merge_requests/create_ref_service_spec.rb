@@ -6,7 +6,7 @@ RSpec.describe MergeRequests::CreateRefService, feature_category: :merge_trains 
   using RSpec::Parameterized::TableSyntax
 
   describe '#execute' do
-    let_it_be(:project) { create(:project, :empty_repo) }
+    let_it_be_with_reload(:project) { create(:project, :empty_repo) }
     let_it_be(:user) { project.creator }
     let_it_be(:first_parent_ref) { project.default_branch_or_main }
     let_it_be(:source_branch) { 'branch' }
@@ -86,12 +86,27 @@ RSpec.describe MergeRequests::CreateRefService, feature_category: :merge_trains 
         )
       end
 
+      context 'when the merge request fails to save' do
+        before do
+          allow(merge_request).to receive(:save!).and_raise(ActiveRecord::StatementTimeout)
+        end
+
+        it 'returns an error response' do
+          expect(result[:status]).to eq :error
+          expect(result[:message]).to eq 'Failed to update merge params'
+        end
+      end
+
       shared_examples_for 'writing with a merge commit' do
         it 'merges with a merge commit', :aggregate_failures do
           expect(result[:status]).to eq :success
           expect(result[:commit_sha]).to eq(project.repository.commit(target_ref).sha)
           expect(result[:source_sha]).to eq(project.repository.commit(source_branch).sha)
           expect(result[:target_sha]).to eq(project.repository.commit(first_parent_ref).sha)
+          expect(merge_request.reload.merge_params['train_ref']).to(
+            eq({ 'commit_sha' => result[:commit_sha],
+                 'merge_commit_sha' => result[:merge_commit_sha] })
+          )
           expect(project.repository.commits(target_ref, limit: 10, order: 'topo').map(&:message)).to(
             match(
               [
@@ -112,6 +127,11 @@ RSpec.describe MergeRequests::CreateRefService, feature_category: :merge_trains 
           expect(result[:commit_sha]).to eq(project.repository.commit(target_ref).sha)
           expect(result[:source_sha]).to eq(project.repository.commit(source_branch).sha)
           expect(result[:target_sha]).to eq(project.repository.commit(first_parent_ref).sha)
+          expect(merge_request.reload.merge_params['train_ref']).to(
+            eq({ 'commit_sha' => result[:commit_sha],
+                 'merge_commit_sha' => result[:merge_commit_sha],
+                 'squash_commit_sha' => result[:squash_commit_sha] })
+          )
           expect(project.repository.commits(target_ref, limit: 10, order: 'topo').map(&:message)).to(
             match(
               [
@@ -131,6 +151,11 @@ RSpec.describe MergeRequests::CreateRefService, feature_category: :merge_trains 
           expect(result[:commit_sha]).to eq(project.repository.commit(target_ref).sha)
           expect(result[:source_sha]).to eq(project.repository.commit(source_branch).sha)
           expect(result[:target_sha]).to eq(project.repository.commit(first_parent_ref).sha)
+          expect(merge_request.reload.merge_params['train_ref']).to(
+            eq({ 'commit_sha' => result[:commit_sha],
+                 'squash_commit_sha' => result[:squash_commit_sha] })
+          )
+
           expect(project.repository.commits(target_ref, limit: 10, order: 'topo').map(&:message)).to(
             match(
               [
@@ -149,6 +174,7 @@ RSpec.describe MergeRequests::CreateRefService, feature_category: :merge_trains 
           expect(result[:commit_sha]).to eq(project.repository.commit(target_ref).sha)
           expect(result[:source_sha]).to eq(project.repository.commit(source_branch).sha)
           expect(result[:target_sha]).to eq(project.repository.commit(first_parent_ref).sha)
+          expect(merge_request.reload.merge_params['train_ref']).to eq({ 'commit_sha' => result[:commit_sha] })
           expect(project.repository.commits(target_ref, limit: 10, order: 'topo').map(&:message)).to(
             eq(
               [
@@ -176,6 +202,10 @@ RSpec.describe MergeRequests::CreateRefService, feature_category: :merge_trains 
 
           context 'with no custom template' do
             let(:expected_merge_commit) { default_commit_message }
+
+            before do
+              project.project_setting.update!(merge_commit_template: nil)
+            end
 
             it_behaves_like 'writing with a merge commit'
           end

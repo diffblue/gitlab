@@ -232,7 +232,10 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
 
       before do
         merge_request.merge_train_car.refresh_pipeline!(pipeline.id)
-        merge_request.merge_params[:sha] = merge_request.diff_head_sha
+        merge_request.merge_params.merge!(
+          'train_ref' => { 'commit_sha' => pipeline.sha },
+          'sha' => merge_request.diff_head_sha
+        )
         merge_request.save!
       end
 

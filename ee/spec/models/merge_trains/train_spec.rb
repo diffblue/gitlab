@@ -102,6 +102,16 @@ RSpec.describe MergeTrains::Train, feature_category: :merge_trains do
         it { is_expected.to eq(true) }
       end
 
+      context 'when the merge request has been fast-forward merged from an internal ref' do
+        let!(:merge_request) { create_merge_request_on_train(status: :merged, source_branch: 'improve/awesome') }
+
+        before do
+          merge_request.update_column(:merged_commit_sha, merge_commit_sha_1)
+        end
+
+        it { is_expected.to eq(true) }
+      end
+
       context 'when there is another merge request on train and it has been merged' do
         let!(:merge_request_2) { create_merge_request_on_train(status: :merged, source_branch: 'improve/awesome') }
         let(:merge_commit_sha_2) { OpenSSL::Digest.hexdigest('SHA256', 'test-2') }
