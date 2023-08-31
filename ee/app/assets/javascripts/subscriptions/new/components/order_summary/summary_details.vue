@@ -39,7 +39,7 @@ export default {
     },
   },
   i18n: {
-    selectedPlanText: s__('Checkout|%{selectedPlanText} plan'),
+    selectedPlanText: s__('Checkout|%{selectedPlanText}'),
     numberOfUsers: s__('Checkout|(x%{numberOfUsers})'),
     pricePerUserPerYear: s__('Checkout|$%{pricePerUserPerYear} per user per year'),
     dates: s__('Checkout|%{startDate} - %{endDate}'),

@@ -264,7 +264,7 @@ export default {
     loadingText: s__('Checkout|Calculating your subscription...'),
     needMoreUsersLink: s__('Checkout|Need more users? Purchase GitLab for your %{company}.'),
     companyOrTeam: s__('Checkout|company or team'),
-    selectedPlan: s__('Checkout|%{selectedPlanText} plan'),
+    selectedPlan: s__('Checkout|%{selectedPlanText}'),
     group: s__('Checkout|Group'),
     users: s__('Checkout|Users'),
     qsrOverageMessage: __(
