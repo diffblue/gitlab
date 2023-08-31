@@ -5,7 +5,7 @@ module Projects
     include ApplicationWorker
 
     data_consistency :always
-    feature_category :workflow_automation
+    feature_category :code_review_workflow
     urgency :low
     deduplicate :until_executed
 

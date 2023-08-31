@@ -28,7 +28,6 @@ module Elastic
         when 'wiki_blob'
           results[:wiki_blobs] = search_blob(query, type: type, page: page, per: per, options: wiki_blob_options)
         end
-
         results
       end
 
@@ -394,11 +393,21 @@ module Elastic
           options[:project_ids] = repository_ids.map { |id| id.to_s[/\d+/].to_i }
         end
 
+        if type == 'blob' && archived_filter_applicable_for_blob_search?(options)
+          query_hash = context.name(:archived) { archived_filter(query_hash) }
+        end
+
         [query_hash, options]
       end
       # rubocop:enable Metrics/AbcSize
       # rubocop:enable Metrics/PerceivedComplexity
       # rubocop:enable Metrics/CyclomaticComplexity
+
+      def archived_filter_applicable_for_blob_search?(options)
+        !options[:include_archived] && options[:search_scope] != 'project' &&
+          Feature.enabled?(:search_blobs_hide_archived_projects) &&
+          ::Elastic::DataMigrationService.migration_has_finished?(:backfill_archived_field_in_blob)
+      end
 
       def use_separate_wiki_index?
         Elastic::DataMigrationService.migration_has_finished?(:migrate_wikis_to_separate_index)

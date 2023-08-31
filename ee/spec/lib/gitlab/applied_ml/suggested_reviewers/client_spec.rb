@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client, feature_category: :workflow_automation do
+RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client, feature_category: :code_review_workflow do
   include AfterNextHelpers
 
   let(:stub_class) { Gitlab::AppliedMl::SuggestedReviewers::RecommenderServicesPb::Stub }

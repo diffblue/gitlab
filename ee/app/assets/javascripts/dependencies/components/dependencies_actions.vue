@@ -7,7 +7,12 @@ import { __, s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { NAMESPACE_PROJECT } from '../constants';
 import { DEPENDENCY_LIST_TYPES } from '../store/constants';
-import { SORT_FIELDS, SORT_ASCENDING, SORT_FIELD_SEVERITY } from '../store/modules/list/constants';
+import {
+  SORT_FIELDS_PROJECT,
+  SORT_FIELDS_GROUP,
+  SORT_ASCENDING,
+  SORT_FIELD_LICENSE,
+} from '../store/modules/list/constants';
 
 export default {
   i18n: {
@@ -55,7 +60,11 @@ export default {
       return this.sortFields[this.sortField];
     },
     sortFields() {
-      return this.isProjectNamespace ? SORT_FIELDS : omit(SORT_FIELDS, SORT_FIELD_SEVERITY);
+      const groupFields = this.glFeatures.groupLevelLicenses
+        ? SORT_FIELDS_GROUP
+        : omit(SORT_FIELDS_GROUP, SORT_FIELD_LICENSE);
+
+      return this.isProjectNamespace ? SORT_FIELDS_PROJECT : groupFields;
     },
     isProjectNamespace() {
       return this.namespaceType === NAMESPACE_PROJECT;

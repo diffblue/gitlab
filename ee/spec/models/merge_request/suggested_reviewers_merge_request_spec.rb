@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeRequest, feature_category: :workflow_automation do
+RSpec.describe MergeRequest, feature_category: :code_review_workflow do
   let_it_be(:project) { build(:project) }
 
   subject(:merge_request) { build(:merge_request, project: project) }

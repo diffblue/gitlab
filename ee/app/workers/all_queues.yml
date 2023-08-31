@@ -1580,7 +1580,7 @@
   :tags: []
 - :name: merge_requests_capture_suggested_reviewers_accepted
   :worker_name: MergeRequests::CaptureSuggestedReviewersAcceptedWorker
-  :feature_category: :workflow_automation
+  :feature_category: :code_review_workflow
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
@@ -1589,7 +1589,7 @@
   :tags: []
 - :name: merge_requests_fetch_suggested_reviewers
   :worker_name: MergeRequests::FetchSuggestedReviewersWorker
-  :feature_category: :workflow_automation
+  :feature_category: :code_review_workflow
   :has_external_dependencies: true
   :urgency: :low
   :resource_boundary: :unknown
@@ -1706,7 +1706,7 @@
   :tags: []
 - :name: projects_deregister_suggested_reviewers_project
   :worker_name: Projects::DeregisterSuggestedReviewersProjectWorker
-  :feature_category: :workflow_automation
+  :feature_category: :code_review_workflow
   :has_external_dependencies: true
   :urgency: :low
   :resource_boundary: :unknown
@@ -1715,7 +1715,7 @@
   :tags: []
 - :name: projects_register_suggested_reviewers_project
   :worker_name: Projects::RegisterSuggestedReviewersProjectWorker
-  :feature_category: :workflow_automation
+  :feature_category: :code_review_workflow
   :has_external_dependencies: true
   :urgency: :low
   :resource_boundary: :unknown
