@@ -1656,6 +1656,67 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     end
   end
 
+  describe '#eligible_for_code_suggestions_seat?' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:sub_group) { create(:group, parent: group) }
+    let_it_be(:project) { create(:project, namespace: sub_group) }
+    let_it_be(:user) { create(:user) }
+
+    let(:subject) { group.eligible_for_code_suggestions_seat?(user) }
+
+    context 'when the user has non-minimal access via group' do
+      before do
+        sub_group.add_guest(user)
+      end
+
+      it { is_expected.to be true }
+    end
+
+    context 'when the user has non-minimal access via project' do
+      before do
+        project.add_guest(user)
+      end
+
+      it { is_expected.to be true }
+    end
+
+    context 'with group invite' do
+      let_it_be(:invited_group) { create(:group) }
+
+      before do
+        invited_group.add_guest(user)
+      end
+
+      context 'when the user has non-minimal access being invited to a group' do
+        before do
+          create(:group_group_link, shared_with_group: invited_group, shared_group: sub_group)
+        end
+
+        it { is_expected.to be true }
+      end
+
+      context 'when the user has non-minimal access being invited to a project' do
+        before do
+          create(:project_group_link, project: project, group: invited_group)
+        end
+
+        it { is_expected.to be true }
+      end
+    end
+
+    context 'when the user has minimal access role' do
+      before do
+        create(:group_member, :minimal_access, user: user, source: group)
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context 'when the user is not member of group' do
+      it { is_expected.to be false }
+    end
+  end
+
   describe '#capacity_left_for_user?' do
     let_it_be(:group) { create(:group) }
     let_it_be(:user) { create(:user) }

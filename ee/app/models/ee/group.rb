@@ -818,6 +818,14 @@ module EE
       billed_invited_group_to_project_users(exclude_guests: exclude_guests).exists?(id: user.id)
     end
 
+    # Helper method to check if user is eligible for code_suggestions seat
+    def eligible_for_code_suggestions_seat?(user)
+      billed_group_user?(user) ||
+        billed_project_user?(user) ||
+        billed_shared_group_user?(user) ||
+        billed_shared_project_user?(user)
+    end
+
     def parent_epic_ids_in_ancestor_groups
       ids = Set.new
       epics.has_parent.each_batch(of: EPIC_BATCH_SIZE, column: :iid) do |batch|
