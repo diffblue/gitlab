@@ -1,7 +1,7 @@
 import { shallowMount } from '@vue/test-utils';
 import { GlSprintf } from '@gitlab/ui';
 import BranchExceptionSelector from 'ee/security_orchestration/components/policy_editor/branch_exception_selector.vue';
-import BaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/scan_result_policy/base_layout/base_layout_component.vue';
+import SectionLayout from 'ee/security_orchestration/components/policy_editor/section_layout.vue';
 import DefaultRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/default_rule_builder.vue';
 import PolicyRuleBranchSelection from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_branch_selection.vue';
 import ScanTypeSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/base_layout/scan_type_select.vue';
@@ -28,7 +28,7 @@ describe('DefaultRuleBuilder', () => {
         ...provide,
       },
       stubs: {
-        BaseLayoutComponent,
+        SectionLayout,
         GlSprintf,
       },
     });

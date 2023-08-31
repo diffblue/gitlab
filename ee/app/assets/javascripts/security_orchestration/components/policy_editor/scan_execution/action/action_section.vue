@@ -3,7 +3,7 @@ import { isEmpty } from 'lodash';
 import { GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import GenericBaseLayoutComponent from '../../generic_base_layout_component.vue';
+import SectionLayout from '../../section_layout.vue';
 import { ACTION_AND_LABEL, RULE_MODE_SCANNERS } from '../../constants';
 import ScanFilterSelector from '../../scan_filter_selector.vue';
 import {
@@ -30,7 +30,7 @@ export default {
   components: {
     GlCollapsibleListbox,
     GlSprintf,
-    GenericBaseLayoutComponent,
+    SectionLayout,
     CiVariablesSelectors,
     ProjectDastProfileSelector,
     GroupDastProfileSelector,
@@ -169,9 +169,9 @@ export default {
     >
       {{ $options.ACTION_AND_LABEL }}
     </div>
-    <generic-base-layout-component class="gl-pb-0" :show-remove-button="false">
+    <section-layout class="gl-pb-0" :show-remove-button="false">
       <template #content>
-        <generic-base-layout-component class="gl-w-full gl-bg-white" @remove="$emit('remove')">
+        <section-layout class="gl-w-full gl-bg-white" @remove="$emit('remove')">
           <template #content>
             <gl-sprintf :message="$options.i18n.scannerHumanizedTemplate">
               <template #scan>
@@ -185,10 +185,10 @@ export default {
               </template>
             </gl-sprintf>
           </template>
-        </generic-base-layout-component>
+        </section-layout>
       </template>
-    </generic-base-layout-component>
-    <generic-base-layout-component class="gl-pt-3" :show-remove-button="false">
+    </section-layout>
+    <section-layout class="gl-pt-3" :show-remove-button="false">
       <template #content>
         <project-dast-profile-selector
           v-if="isProject && isDast"
@@ -229,6 +229,6 @@ export default {
           @select="selectFilter"
         />
       </template>
-    </generic-base-layout-component>
+    </section-layout>
   </div>
 </template>

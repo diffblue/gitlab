@@ -1,13 +1,13 @@
 <script>
 import { GlFormInput } from '@gitlab/ui';
-import GenericBaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/generic_base_layout_component.vue';
+import SectionLayout from 'ee/security_orchestration/components/policy_editor/section_layout.vue';
 import { DAST_PROFILE_I18N } from './constants';
 
 export default {
   i18n: { ...DAST_PROFILE_I18N },
   name: 'GroupDastProfileSelector',
   components: {
-    GenericBaseLayoutComponent,
+    SectionLayout,
     GlFormInput,
   },
   props: {
@@ -41,10 +41,7 @@ export default {
 
 <template>
   <div class="gl-w-full">
-    <generic-base-layout-component
-      class="gl-w-full gl-bg-white gl-mb-3"
-      :show-remove-button="false"
-    >
+    <section-layout class="gl-w-full gl-bg-white gl-mb-3" :show-remove-button="false">
       <template #selector>
         <label class="gl-mb-0 gl-mr-4" for="scanner-profile">
           {{ $options.i18n.scanLabel }}
@@ -59,8 +56,8 @@ export default {
           data-testid="scan-profile-selection"
         />
       </template>
-    </generic-base-layout-component>
-    <generic-base-layout-component class="gl-w-full gl-bg-white" :show-remove-button="false">
+    </section-layout>
+    <section-layout class="gl-w-full gl-bg-white" :show-remove-button="false">
       <template #selector>
         <label class="gl-mb-0 gl-mr-4" for="site-profile">
           {{ $options.i18n.siteLabel }}
@@ -75,6 +72,6 @@ export default {
           data-testid="site-profile-selection"
         />
       </template>
-    </generic-base-layout-component>
+    </section-layout>
   </div>
 </template>

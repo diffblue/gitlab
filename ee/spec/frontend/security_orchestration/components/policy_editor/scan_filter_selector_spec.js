@@ -1,5 +1,5 @@
 import { GlCollapsibleListbox, GlBadge } from '@gitlab/ui';
-import GenericBaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/generic_base_layout_component.vue';
+import SectionLayout from 'ee/security_orchestration/components/policy_editor/section_layout.vue';
 import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_filter_selector.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
@@ -15,7 +15,7 @@ describe('ScanFilterSelector', () => {
         ...props,
       },
       stubs: {
-        GenericBaseLayoutComponent,
+        SectionLayout,
         GlCollapsibleListbox,
       },
     });

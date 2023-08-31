@@ -8,7 +8,7 @@ import DastProfilesDrawerHeader from 'ee/security_configuration/dast_profiles/da
 import ProjectDastProfileSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_filters/project_dast_profile_selector.vue';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { SCANNER_TYPE, SITE_TYPE } from 'ee/on_demand_scans/constants';
-import GenericBaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/generic_base_layout_component.vue';
+import SectionLayout from 'ee/security_orchestration/components/policy_editor/section_layout.vue';
 
 describe('ProjectDastProfileSelector', () => {
   let wrapper;
@@ -22,7 +22,7 @@ describe('ProjectDastProfileSelector', () => {
         namespacePath: 'path/to/project',
       },
       stubs: {
-        GenericBaseLayoutComponent,
+        SectionLayout,
         GlSprintf,
       },
     });
