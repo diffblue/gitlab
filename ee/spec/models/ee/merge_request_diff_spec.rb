@@ -70,24 +70,25 @@ RSpec.describe MergeRequestDiff, feature_category: :geo_replication do
     end
   end
 
-  describe 'preprare_diff_summary' do
-    let(:merge_request) { create(:merge_request, :skip_diff_creation, target_project: project, source_project: project) }
+  describe 'prepare_diff_summary' do
+    let_it_be(:merge_request) { create(:merge_request, :skip_diff_creation, target_project: project, source_project: project) }
     let(:diff_with_commits) { create(:merge_request_diff, merge_request: merge_request) }
 
     before do
       stub_licensed_features(summarize_mr_changes: true)
     end
 
-    context 'when openai_experimentation feature flag is off' do
-      before do
-        stub_feature_flags(openai_experimentation: false)
+    it 'executes Llm::SummarizeMergeRequestService' do
+      expect_next_instance_of(
+        ::Llm::SummarizeMergeRequestService,
+        merge_request.author,
+        merge_request,
+        diff_id: kind_of(Numeric)
+      ) do |svc|
+        expect(svc).to receive(:execute)
       end
 
-      it 'does not call the summarize worker' do
-        expect(::MergeRequests::Llm::SummarizeMergeRequestWorker).not_to receive(:new)
-
-        diff_with_commits
-      end
+      diff_with_commits
     end
 
     context 'when summarize_diff_automatically feature flag is off' do
@@ -95,32 +96,8 @@ RSpec.describe MergeRequestDiff, feature_category: :geo_replication do
         stub_feature_flags(summarize_diff_automatically: false)
       end
 
-      it 'does not call the summarize worker' do
-        expect(::MergeRequests::Llm::SummarizeMergeRequestWorker).not_to receive(:new)
-
-        diff_with_commits
-      end
-    end
-
-    context 'when summarize_mr_change feature not avaliable' do
-      before do
-        stub_licensed_features(summarize_mr_changes: false)
-      end
-
-      it 'does not call the summarize worker' do
-        expect(::MergeRequests::Llm::SummarizeMergeRequestWorker).not_to receive(:new)
-
-        diff_with_commits
-      end
-    end
-
-    context 'when the llm_bot does not exist' do
-      before do
-        allow(User).to receive(:llm_bot).and_return(nil)
-      end
-
-      it 'does not call the summarize worker' do
-        expect(::MergeRequests::Llm::SummarizeMergeRequestWorker).not_to receive(:new)
+      it 'does not call Llm::SummarizeMergeRequestService' do
+        expect(::Llm::SummarizeMergeRequestService).not_to receive(:new)
 
         diff_with_commits
       end
@@ -129,45 +106,111 @@ RSpec.describe MergeRequestDiff, feature_category: :geo_replication do
     context 'when the diff is not merge_head' do
       let(:diff_with_commits) { create(:merge_request_diff, :merge_head) }
 
-      it 'does not call the summarize worker' do
-        expect(::MergeRequests::Llm::SummarizeMergeRequestWorker).not_to receive(:new)
+      it 'does not call Llm::SummarizeMergeRequestService' do
+        expect(::Llm::SummarizeMergeRequestService).not_to receive(:new)
 
         diff_with_commits
       end
     end
 
-    context 'when llm merge requests diff service is not enabled' do
+    context 'when summarize_diff_abstraction_layer feature flag is disabled' do
+      let_it_be(:llm_bot) { create(:user, :llm_bot) }
+
       before do
-        allow(Llm::MergeRequests::SummarizeDiffService)
-          .to receive(:enabled?)
-          .at_least(:once)
-          .with(group: project.root_ancestor, user: Users::Internal.llm_bot)
-          .and_return(false)
+        stub_feature_flags(summarize_diff_abstraction_layer: false)
       end
 
-      it 'does not call the summarize worker' do
-        expect(::MergeRequests::Llm::SummarizeMergeRequestWorker).not_to receive(:new)
+      context 'when openai_experimentation feature flag is off' do
+        before do
+          stub_feature_flags(openai_experimentation: false)
+        end
 
-        diff_with_commits
-      end
-    end
+        it 'does not call the summarize worker' do
+          expect(::MergeRequests::Llm::SummarizeMergeRequestWorker).not_to receive(:new)
 
-    context 'when all the feature flags are on and the bot available' do
-      before do
-        allow(Llm::MergeRequests::SummarizeDiffService)
-          .to receive(:enabled?)
-          .at_least(:once)
-          .with(group: project.root_ancestor, user: Users::Internal.llm_bot)
-          .and_return(true)
+          diff_with_commits
+        end
       end
 
-      it 'calls the summarize worker' do
-        allow(::MergeRequests::Llm::SummarizeMergeRequestWorker).to receive(:perform_async)
+      context 'when summarize_diff_automatically feature flag is off' do
+        before do
+          stub_feature_flags(summarize_diff_automatically: false)
+        end
 
-        diff_with_commits
+        it 'does not call the summarize worker' do
+          expect(::MergeRequests::Llm::SummarizeMergeRequestWorker).not_to receive(:new)
 
-        expect(::MergeRequests::Llm::SummarizeMergeRequestWorker).to have_received(:perform_async)
-          .with(Users::Internal.llm_bot.id, { type: ::MergeRequests::Llm::SummarizeMergeRequestWorker::PREPARE_DIFF_SUMMARY, diff_id: diff_with_commits.id })
+          diff_with_commits
+        end
+      end
+
+      context 'when summarize_mr_change feature not avaliable' do
+        before do
+          stub_licensed_features(summarize_mr_changes: false)
+        end
+
+        it 'does not call the summarize worker' do
+          expect(::MergeRequests::Llm::SummarizeMergeRequestWorker).not_to receive(:new)
+
+          diff_with_commits
+        end
+      end
+
+      context 'when the llm_bot does not exist' do
+        before do
+          allow(User).to receive(:llm_bot).and_return(nil)
+        end
+
+        it 'does not call the summarize worker' do
+          expect(::MergeRequests::Llm::SummarizeMergeRequestWorker).not_to receive(:new)
+
+          diff_with_commits
+        end
+      end
+
+      context 'when the diff is not merge_head' do
+        let(:diff_with_commits) { create(:merge_request_diff, :merge_head) }
+
+        it 'does not call the summarize worker' do
+          expect(::MergeRequests::Llm::SummarizeMergeRequestWorker).not_to receive(:new)
+
+          diff_with_commits
+        end
+      end
+
+      context 'when llm merge requests diff service is not enabled' do
+        before do
+          allow(Llm::MergeRequests::SummarizeDiffService)
+            .to receive(:enabled?)
+            .at_least(:once)
+            .with(group: project.root_ancestor, user: llm_bot)
+            .and_return(false)
+        end
+
+        it 'does not call the summarize worker' do
+          expect(::MergeRequests::Llm::SummarizeMergeRequestWorker).not_to receive(:new)
+
+          diff_with_commits
+        end
+      end
+
+      context 'when all the feature flags are on and the bot available' do
+        before do
+          allow(Llm::MergeRequests::SummarizeDiffService)
+            .to receive(:enabled?)
+            .at_least(:once)
+            .with(group: project.root_ancestor, user: llm_bot)
+            .and_return(true)
+        end
+
+        it 'calls the summarize worker' do
+          allow(::MergeRequests::Llm::SummarizeMergeRequestWorker).to receive(:perform_async)
+
+          diff_with_commits
+
+          expect(::MergeRequests::Llm::SummarizeMergeRequestWorker).to have_received(:perform_async)
+            .with(llm_bot.id, { type: ::MergeRequests::Llm::SummarizeMergeRequestWorker::PREPARE_DIFF_SUMMARY, diff_id: diff_with_commits.id })
+        end
       end
     end
   end

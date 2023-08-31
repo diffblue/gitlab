@@ -599,4 +599,83 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
       end
     end
   end
+
+  describe 'summarize_merge_request policy', :saas do
+    let_it_be(:namespace) { create(:group_with_plan, plan: :ultimate_plan) }
+    let_it_be(:project) { create(:project, group: namespace) }
+    let_it_be(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
+    let_it_be(:current_user) { developer }
+
+    subject { described_class.new(current_user, merge_request) }
+
+    before do
+      stub_ee_application_setting(should_check_namespace_plan: true)
+
+      stub_licensed_features(
+        summarize_mr_changes: true,
+        ai_features: true
+      )
+
+      stub_feature_flags(
+        openai_experimentation: true,
+        summarize_diff_automatically: true
+      )
+
+      namespace.namespace_settings.update!(
+        experiment_features_enabled: true,
+        third_party_ai_features_enabled: true
+      )
+    end
+
+    it { is_expected.to be_allowed(:summarize_merge_request) }
+
+    context 'when global AI feature flag is disabled' do
+      before do
+        stub_feature_flags(openai_experimentation: false)
+      end
+
+      it { is_expected.to be_disallowed(:summarize_merge_request) }
+    end
+
+    context 'when summarize_diff_automatically feature flag is disabled' do
+      before do
+        stub_feature_flags(
+          openai_experimentation: true,
+          summarize_diff_automatically: false
+        )
+      end
+
+      it { is_expected.to be_disallowed(:summarize_merge_request) }
+    end
+
+    context 'when license is not set' do
+      before do
+        stub_licensed_features(summarize_mr_changes: false)
+      end
+
+      it { is_expected.to be_disallowed(:summarize_merge_request) }
+    end
+
+    context 'when experiment features are disabled' do
+      before do
+        namespace.namespace_settings.update!(experiment_features_enabled: false)
+      end
+
+      it { is_expected.to be_disallowed(:summarize_merge_request) }
+    end
+
+    context 'when third party ai features are disabled' do
+      before do
+        namespace.namespace_settings.update!(third_party_ai_features_enabled: false)
+      end
+
+      it { is_expected.to be_disallowed(:summarize_merge_request) }
+    end
+
+    context 'when user cannot generate_diff_summary' do
+      let(:current_user) { guest }
+
+      it { is_expected.to be_disallowed(:summarize_merge_request) }
+    end
+  end
 end

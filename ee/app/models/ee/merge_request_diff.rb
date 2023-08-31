@@ -37,17 +37,29 @@ module EE
 
       def prepare_diff_summary
         return unless ::Feature.enabled?(:summarize_diff_automatically, project)
-
-        llm_service_bot = ::Users::Internal.llm_bot
-
-        return unless llm_service_bot
         return if merge_head?
 
-        if Llm::MergeRequests::SummarizeDiffService.enabled?(group: project.root_ancestor, user: llm_service_bot)
-          ::MergeRequests::Llm::SummarizeMergeRequestWorker.perform_async(
-            llm_service_bot.id,
-            { type: ::MergeRequests::Llm::SummarizeMergeRequestWorker::PREPARE_DIFF_SUMMARY, diff_id: id }
-          )
+        if ::Feature.enabled?(:summarize_diff_abstraction_layer, project)
+          Llm::SummarizeMergeRequestService
+            .new(
+              merge_request.author,
+              merge_request,
+              diff_id: id
+            )
+            .execute
+        else
+          # TODO: The logic here is deprecated and will be replaced when the
+          # `summarize_diff_abstraction_layer` feature flag is fully rolled out.
+          llm_service_bot = ::Users::Internal.llm_bot
+
+          return unless llm_service_bot
+
+          if Llm::MergeRequests::SummarizeDiffService.enabled?(group: project.root_ancestor, user: llm_service_bot)
+            ::MergeRequests::Llm::SummarizeMergeRequestWorker.perform_async(
+              llm_service_bot.id,
+              { type: ::MergeRequests::Llm::SummarizeMergeRequestWorker::PREPARE_DIFF_SUMMARY, diff_id: id }
+            )
+          end
         end
       end
     end
