@@ -1,9 +1,8 @@
 <script>
-import { GlIcon, GlBadge, GlTooltip, GlTooltipDirective } from '@gitlab/ui';
+import { GlIcon, GlTooltip, GlTooltipDirective } from '@gitlab/ui';
+import IssueHealthStatus from 'ee/related_items_tree/components/issue_health_status.vue';
 import WorkItemLinkChildMetadata from '~/work_items/components/shared/work_item_link_child_metadata.vue';
-import { WIDGET_TYPE_PROGRESS, WIDGET_TYPE_HEALTH_STATUS } from '~/work_items/constants';
-import { healthStatusTextMap } from 'ee/sidebar/constants';
-import { issueHealthStatusVariantMapping } from 'ee/related_items_tree/constants';
+import { WIDGET_TYPE_HEALTH_STATUS, WIDGET_TYPE_PROGRESS } from '~/work_items/constants';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import timeagoMixin from '~/vue_shared/mixins/timeago';
 
@@ -11,8 +10,8 @@ export default {
   name: 'WorkItemLinkChildEE',
   components: {
     GlIcon,
-    GlBadge,
     GlTooltip,
+    IssueHealthStatus,
     WorkItemLinkChildMetadata,
   },
   directives: {
@@ -42,15 +41,6 @@ export default {
     hasProgress() {
       return Number.isInteger(this.progress);
     },
-    hasHealthStatus() {
-      return Boolean(this.healthStatus);
-    },
-    healthStatusText() {
-      return this.hasHealthStatus ? healthStatusTextMap[this.healthStatus] : '';
-    },
-    healthStatusVariant() {
-      return this.hasHealthStatus ? issueHealthStatusVariantMapping[this.healthStatus] : '';
-    },
   },
   methods: {
     getTimestamp(rawTimestamp) {
@@ -65,15 +55,7 @@ export default {
 
 <template>
   <work-item-link-child-metadata :metadata-widgets="metadataWidgets">
-    <gl-badge
-      v-if="hasHealthStatus"
-      v-gl-tooltip.bottom
-      :variant="healthStatusVariant"
-      :title="s__('WorkItem|Health status')"
-      size="sm"
-      class="gl-cursor-help gl-align-self-center"
-      >{{ healthStatusText }}</gl-badge
-    >
+    <issue-health-status v-if="healthStatus" :health-status="healthStatus" />
     <div
       v-if="hasProgress"
       ref="progressTooltip"

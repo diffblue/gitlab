@@ -41,6 +41,12 @@ export const healthStatusTextMap = {
   [HEALTH_STATUS_AT_RISK]: __('At risk'),
 };
 
+export const healthStatusVariantMap = {
+  [HEALTH_STATUS_ON_TRACK]: 'success',
+  [HEALTH_STATUS_NEEDS_ATTENTION]: 'warning',
+  [HEALTH_STATUS_AT_RISK]: 'danger',
+};
+
 export const healthStatusForRestApi = {
   NO_STATUS: '0',
   [HEALTH_STATUS_ON_TRACK]: 'on_track',

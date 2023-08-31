@@ -1,6 +1,6 @@
 <script>
 import { GlBadge, GlTooltipDirective } from '@gitlab/ui';
-import { issueHealthStatus, issueHealthStatusVariantMapping } from '../constants';
+import { healthStatusTextMap, healthStatusVariantMap } from 'ee/sidebar/constants';
 
 export default {
   directives: {
@@ -13,30 +13,28 @@ export default {
     healthStatus: {
       type: String,
       required: true,
-      validator: (value) => Object.keys(issueHealthStatus).includes(value),
+      validator: (value) => Object.keys(healthStatusTextMap).includes(value),
     },
   },
   computed: {
     statusText() {
-      return issueHealthStatus[this.healthStatus];
+      return healthStatusTextMap[this.healthStatus];
     },
     statusClass() {
-      return issueHealthStatusVariantMapping[this.healthStatus];
+      return healthStatusVariantMap[this.healthStatus];
     },
   },
 };
 </script>
 
 <template>
-  <span ref="healthStatus" class="health-status">
-    <gl-badge
-      v-gl-tooltip
-      title="Health status"
-      class="gl-font-weight-bold"
-      size="sm"
-      :variant="statusClass"
-    >
-      {{ statusText }}
-    </gl-badge>
-  </span>
+  <gl-badge
+    v-gl-tooltip
+    class="gl-font-weight-bold"
+    size="sm"
+    :title="__('Health status')"
+    :variant="statusClass"
+  >
+    {{ statusText }}
+  </gl-badge>
 </template>

@@ -5,10 +5,10 @@ import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 
 import ItemWeight from 'ee/boards/components/issue_card_weight.vue';
-
+import EpicHealthStatus from 'ee/related_items_tree/components/epic_health_status.vue';
+import IssueHealthStatus from 'ee/related_items_tree/components/issue_health_status.vue';
 import StateTooltip from 'ee/related_items_tree/components/state_tooltip.vue';
 import TreeItemBody from 'ee/related_items_tree/components/tree_item_body.vue';
-
 import { ChildType } from 'ee/related_items_tree/constants';
 import createDefaultStore from 'ee/related_items_tree/store';
 import * as epicUtils from 'ee/related_items_tree/utils/epic_utils';
@@ -93,8 +93,8 @@ describe('RelatedItemsTree', () => {
     const findItemAssignees = () => wrapper.findComponent(ItemAssignees);
     const findAllIcons = () => wrapper.findAllComponents(GlIcon);
     const findCountBadge = () => wrapper.findComponent({ ref: 'countBadge' });
-    const findEpicHealthStatus = () => wrapper.find('[data-testid="epic-health-status"]');
-    const findIssueHealthStatus = () => wrapper.find('[data-testid="issue-health-status"]');
+    const findEpicHealthStatus = () => wrapper.findComponent(EpicHealthStatus);
+    const findIssueHealthStatus = () => wrapper.findComponent(IssueHealthStatus);
     const findIssueIcon = () => wrapper.findComponent({ ref: 'stateIconMd' });
     const findLink = () => wrapper.findComponent(GlLink);
     const enableHealthStatus = () => {

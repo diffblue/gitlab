@@ -29,11 +29,7 @@ export default {
 </script>
 
 <template>
-  <div
-    v-if="hasHealthStatus"
-    ref="healthStatus"
-    class="health-status d-inline-flex align-items-center"
-  >
+  <div v-if="hasHealthStatus" ref="healthStatus" class="d-inline-flex align-items-center">
     <gl-popover :target="() => $refs.healthStatus" placement="top">
       <span
         ><strong>{{ healthStatus.issuesOnTrack }}</strong

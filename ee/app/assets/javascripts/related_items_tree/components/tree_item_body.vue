@@ -322,13 +322,11 @@ export default {
             <epic-health-status
               v-if="showEpicHealthStatus"
               :health-status="item.healthStatus"
-              data-testid="epic-health-status"
               class="gl-mr-4 gl-mb-1"
             />
             <issue-health-status
               v-if="showIssueHealthStatus"
               :health-status="item.healthStatus"
-              data-testid="issue-health-status"
               class="gl-mr-4 gl-mb-1"
             />
 

@@ -172,11 +172,17 @@ describe('vulnerabilities module mutations', () => {
 
   describe('RECEIVE_CREATE_ISSUE_SUCCESS', () => {
     it('should visit the issue URL', () => {
-      const path = 'fakepath.html';
-      const payload = { issue_links: [{ link_type: 'created', issue_url: path }] };
+      const webUrl = "http://gitlab.com/issue/1'";
+      const payload = {
+        securityFindingCreateIssue: {
+          issue: {
+            webUrl,
+          },
+        },
+      };
       mutations[types.RECEIVE_CREATE_ISSUE_SUCCESS](state, payload);
 
-      expect(visitUrl).toHaveBeenCalledWith(path);
+      expect(visitUrl).toHaveBeenCalledWith(webUrl);
     });
   });
 
