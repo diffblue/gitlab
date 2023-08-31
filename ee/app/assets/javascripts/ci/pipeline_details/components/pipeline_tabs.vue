@@ -1,8 +1,12 @@
 <script>
 import { GlTab, GlBadge } from '@gitlab/ui';
 import Api from '~/api';
-import BasePipelineTabs from '~/pipelines/components/pipeline_tabs.vue';
-import { codeQualityTabName, licensesTabName, securityTabName } from '~/pipelines/constants';
+import BasePipelineTabs from '~/ci/pipeline_details/components/pipeline_tabs.vue';
+import {
+  codeQualityTabName,
+  licensesTabName,
+  securityTabName,
+} from '~/ci/pipeline_details/constants';
 import { __ } from '~/locale';
 import { SERVICE_PING_PIPELINE_SECURITY_VISIT } from '~/tracking/constants';
 

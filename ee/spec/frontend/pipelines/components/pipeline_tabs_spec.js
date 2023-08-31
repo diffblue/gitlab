@@ -3,8 +3,8 @@ import { nextTick } from 'vue';
 import { shallowMount } from '@vue/test-utils';
 import Api from '~/api';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import BasePipelineTabs from '~/pipelines/components/pipeline_tabs.vue';
-import PipelineTabs from 'ee/pipelines/components/pipeline_tabs.vue';
+import BasePipelineTabs from '~/ci/pipeline_details/components/pipeline_tabs.vue';
+import PipelineTabs from 'ee/ci/pipeline_details/components/pipeline_tabs.vue';
 import CodequalityReportApp from 'ee/codequality_report/codequality_report.vue';
 import { SERVICE_PING_PIPELINE_SECURITY_VISIT } from '~/tracking/constants';
 

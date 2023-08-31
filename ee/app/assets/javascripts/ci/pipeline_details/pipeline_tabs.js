@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import { merge } from 'lodash';
-import { createAppOptions as createAppOptionsCE } from '~/pipelines/pipeline_tabs';
+import { createAppOptions as createAppOptionsCE } from '~/ci/pipeline_details/pipeline_tabs';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { getPipelineReportOptions } from 'ee/security_dashboard/utils/pipeline_report_options';
 import { createAlert } from '~/alert';

@@ -1,8 +1,8 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script>
 import { GlButton } from '@gitlab/ui';
-import pipelineCancelMutation from '~/pipelines/graphql/mutations/cancel_pipeline.mutation.graphql';
-import pipelineRetryMutation from '~/pipelines/graphql/mutations/retry_pipeline.mutation.graphql';
+import pipelineCancelMutation from '~/ci/pipeline_details/graphql/mutations/cancel_pipeline.mutation.graphql';
+import pipelineRetryMutation from '~/ci/pipeline_details/graphql/mutations/retry_pipeline.mutation.graphql';
 import { __, s__ } from '~/locale';
 import { getSecurityTabPath } from 'ee/vue_shared/security_reports/utils';
 import {

@@ -1,4 +1,4 @@
-import { createAppOptions } from 'ee/pipelines/pipeline_tabs';
+import { createAppOptions } from 'ee/ci/pipeline_details/pipeline_tabs';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
 import findingsQuery from 'ee/security_dashboard/graphql/queries/pipeline_findings.query.graphql';
 import { dataset } from 'ee_jest/security_dashboard/mock_data/pipeline_report_dataset';
@@ -10,7 +10,7 @@ const mockCeOptions = {
   foo: 'bar',
 };
 
-jest.mock('~/pipelines/pipeline_tabs', () => ({
+jest.mock('~/ci/pipeline_details/pipeline_tabs', () => ({
   createAppOptions: () => mockCeOptions,
 }));
 jest.mock('~/alert');

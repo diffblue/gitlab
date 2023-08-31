@@ -18,7 +18,7 @@ import setWindowLocation from 'helpers/set_window_location_helper';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { BASE_TABS_TABLE_FIELDS, PIPELINES_POLL_INTERVAL } from 'ee/on_demand_scans/constants';
 import * as sharedGraphQLUtils from '~/graphql_shared/utils';
-import * as graphQlUtils from '~/pipelines/components/graph/utils';
+import * as graphQlUtils from '~/ci/pipeline_details/components/graph/utils';
 import { PROJECT_ON_DEMAND_SCAN_COUNTS_ETAG_MOCK } from '../../mocks';
 
 jest.mock('~/lib/utils/common_utils');

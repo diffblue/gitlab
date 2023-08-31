@@ -6,7 +6,7 @@ import ConfigurationPageLayout from 'ee/security_configuration/components/config
 import {
   getQueryHeaders,
   toggleQueryPollingByVisibility,
-} from '~/pipelines/components/graph/utils';
+} from '~/ci/pipeline_details/components/graph/utils';
 import onDemandScanCounts from '../graphql/on_demand_scan_counts.query.graphql';
 import {
   HELP_PAGE_PATH,
