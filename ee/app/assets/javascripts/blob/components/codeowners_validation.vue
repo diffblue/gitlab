@@ -78,7 +78,7 @@ export default {
       return this.errorsTotal === 0;
     },
     isLoading() {
-      return this.$apollo.queries.project.loading;
+      return this.$apollo?.queries.project.loading;
     },
   },
   collapseId: COLLAPSE_ID,
