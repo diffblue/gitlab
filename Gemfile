@@ -477,13 +477,13 @@ group :test do
 
   gem 'capybara', '~> 3.39', '>= 3.39.2'
   gem 'capybara-screenshot', '~> 1.0.26'
-  gem 'selenium-webdriver', '= 4.11.0'
+  gem 'selenium-webdriver', '= 4.12.0'
 
   gem 'graphlyte', '~> 1.0.0'
 
   gem 'shoulda-matchers', '~> 5.1.0', require: false
   gem 'email_spec', '~> 2.2.0'
-  gem 'webmock', '~> 3.19.0'
+  gem 'webmock', '~> 3.19.1'
   gem 'rails-controller-testing'
   gem 'concurrent-ruby', '~> 1.1'
   gem 'test-prof', '~> 1.2.2'
