@@ -22231,6 +22231,9 @@ msgstr ""
 msgid "Group by"
 msgstr ""
 
+msgid "Group by:"
+msgstr ""
+
 msgid "Group description (optional)"
 msgstr ""
 
