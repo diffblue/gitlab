@@ -12,4 +12,5 @@ RSpec.describe Sidebars::UserProfile::Panel, feature_category: :navigation do
 
   it_behaves_like 'a panel with uniquely identifiable menu items'
   it_behaves_like 'a panel without placeholders'
+  it_behaves_like 'a panel instantiable by the anonymous user'
 end
