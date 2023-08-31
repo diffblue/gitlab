@@ -4,7 +4,6 @@
 %h1.page-title.gl-font-size-h-display= _('Group audit events')
 %p.light
   = _("Track important events in your group.")
-  = link_to _('What are group audit events?'), help_page_path('administration/audit_events.md', anchor: 'group-events'), target: '_blank', rel: 'noopener noreferrer'
 
 #js-group-audit-events-app{ data: { form_path: group_audit_events_path(@group),
   events: @events.to_json,

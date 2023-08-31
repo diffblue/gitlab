@@ -53079,15 +53079,6 @@ msgstr ""
 msgid "Welcome, %{name}!"
 msgstr ""
 
-msgid "What are group audit events?"
-msgstr ""
-
-msgid "What are instance audit events?"
-msgstr ""
-
-msgid "What are project audit events?"
-msgstr ""
-
 msgid "What are some examples?"
 msgstr ""
 

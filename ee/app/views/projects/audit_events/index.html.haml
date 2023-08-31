@@ -6,7 +6,6 @@
     = _('Project audit events')
   %p.light
     = _('Track important events in your project.')
-    = link_to _('What are project audit events?'), help_page_path('administration/audit_events.md', anchor: 'project-events'), target: '_blank', rel: 'noopener noreferrer'
 
   - view_only = view_only_own_project_events?(@project)
 
