@@ -3,13 +3,18 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Chain::Tools::EpicIdentifier::Executor, feature_category: :duo_chat do
-  RSpec.shared_examples 'success response' do
+  RSpec.shared_examples 'success response' do |ff_off|
     it 'returns success response' do
       ai_request = double
       allow(ai_request).to receive(:request).and_return(ai_response)
       allow(context).to receive(:ai_request).and_return(ai_request)
 
-      response = "I identified the epic #{identifier}."
+      response = if ff_off
+                   "I identified the epic #{identifier}."
+                 else
+                   "I identified the epic #{identifier}. For more information use ResourceReader."
+                 end
+
       expect(tool.execute.content).to eq(response)
     end
   end
@@ -94,6 +99,21 @@ RSpec.describe Gitlab::Llm::Chain::Tools::EpicIdentifier::Executor, feature_cate
           group.add_guest(user)
           group.update!(experiment_features_enabled: true, third_party_ai_features_enabled: true)
           # rubocop: enable RSpec/BeforeAllRoleAssignment
+        end
+
+        context 'when push_ai_to_load_identified_issue_json FF is disabled' do
+          before do
+            stub_feature_flags(push_ai_to_load_identified_issue_json: false)
+          end
+
+          context 'when is epic identified with reference' do
+            let(:identifier) { epic2.to_reference(full: true) }
+            let(:ai_response) do
+              "reference\", \"ResourceIdentifier\": \"#{identifier}\"}"
+            end
+
+            it_behaves_like 'success response', true
+          end
         end
 
         context 'when ai response has invalid JSON' do

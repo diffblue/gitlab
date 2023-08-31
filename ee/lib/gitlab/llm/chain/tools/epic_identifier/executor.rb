@@ -5,10 +5,7 @@ module Gitlab
     module Chain
       module Tools
         module EpicIdentifier
-          class Executor < Tool
-            include Concerns::AiDependent
-
-            MAX_RETRIES = 3
+          class Executor < Identifier
             RESOURCE_NAME = 'epic'
             NAME = "EpicIdentifier"
             HUMAN_NAME = 'Epic Search'
@@ -108,62 +105,10 @@ module Gitlab
               Utils::Prompt.as_user("Question: %<input>s")
             ].freeze
 
-            def perform
-              MAX_RETRIES.times do
-                json = extract_json(request)
-                epic = identify_epic(json[:ResourceIdentifierType], json[:ResourceIdentifier])
-
-                # if epic not found then return an error as the answer.
-                logger.error(message: "Error finding epic", content: json) unless epic
-                return not_found unless epic
-
-                # now the epic in context is being referenced in user input.
-                context.resource = epic
-                content = "I identified the epic #{json[:ResourceIdentifier]}."
-
-                logger.debug(message: "Answer", class: self.class.to_s, content: content)
-                return Answer.new(status: :ok, context: context, content: content, tool: nil)
-              rescue JSON::ParserError
-                error_message = "\nObservation: JSON has an invalid format. Please retry"
-                logger.error(message: "Error", class: self.class.to_s, error: error_message)
-
-                options[:suggestions] += error_message
-              rescue StandardError => e
-                logger.error(message: "Error", error: e.message, class: self.class.to_s)
-                return Answer.error_answer(context: context, content: _("Unexpected error"))
-              end
-
-              not_found
-            end
-
             private
 
-            def authorize
-              Utils::Authorizer.context_authorized?(context: context)
-            end
-
-            def extract_json(response)
-              response = "```json
-                    \{
-                      \"ResourceIdentifierType\": \"" + response
-              response = (Utils::TextProcessing.text_before_stop_word(response, /Question:/) || response).to_s.strip
-              content_after_ticks = response.split(/```json/, 2).last
-              content_between_ticks = content_after_ticks&.split(/```/, 2)&.first
-
-              Gitlab::Json.parse(content_between_ticks&.strip.to_s).with_indifferent_access
-            end
-
-            def identify_epic(resource_identifier_type, resource_identifier)
-              return context.resource if current_resource?(resource_identifier_type, resource_name)
-
-              epic = case resource_identifier_type
-                     when 'iid'
-                       by_iid(resource_identifier)
-                     when 'url', 'reference'
-                       extract_epic(resource_identifier)
-                     end
-
-              epic if Utils::Authorizer.resource_authorized?(resource: epic, user: context.current_user)
+            def prompt_template
+              PROMPT_TEMPLATE
             end
 
             def by_iid(resource_identifier)
@@ -174,7 +119,7 @@ module Gitlab
               return epics.first if epics.one?
             end
 
-            def extract_epic(text)
+            def extract_resource(text, _type)
               project = extract_project
               return unless project
 
@@ -191,24 +136,6 @@ module Gitlab
               # Epics belong to a group. The `ReferenceExtractor` expects a `project`
               # but does not use it for the extraction of epics.
               context.current_user.authorized_projects.first
-            end
-
-            # This method should not be memoized because the options change each iteration, e.g options[:suggestions]
-            def base_prompt
-              {
-                prompt: Utils::Prompt.no_role_text(PROMPT_TEMPLATE, options),
-                options: {}
-              }
-            end
-
-            def already_used_answer
-              resource = context.resource
-              content = "You already have identified the epic #{resource.to_global_id}, read carefully."
-              logger.debug(message: "Answer", class: self.class.to_s, content: content)
-
-              ::Gitlab::Llm::Chain::Answer.new(
-                status: :not_executed, context: context, content: content, tool: nil, is_final: false
-              )
             end
 
             def resource_name
