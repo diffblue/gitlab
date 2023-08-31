@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Suggested Reviewers secret initialization for GitLab EE', feature_category: :workflow_automation do
+RSpec.describe 'Suggested Reviewers secret initialization for GitLab EE', feature_category: :code_review_workflow do
   subject { Gitlab::Application.config }
 
   let(:load_suggested_reviewers_secret) do

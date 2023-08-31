@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::DeregisterSuggestedReviewersProjectService, :saas, feature_category: :workflow_automation do
+RSpec.describe Projects::DeregisterSuggestedReviewersProjectService, :saas, feature_category: :code_review_workflow do
   include AfterNextHelpers
 
   let_it_be(:project) { create(:project) }

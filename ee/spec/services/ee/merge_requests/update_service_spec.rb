@@ -326,7 +326,7 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
       end
     end
 
-    describe 'capture suggested_reviewer_ids', feature_category: :workflow_automation do
+    describe 'capture suggested_reviewer_ids', feature_category: :code_review_workflow do
       shared_examples 'not capturing suggested_reviewer_ids' do
         it 'does not capture the suggested_reviewer_ids and raise update error', :aggregate_failures do
           expect(MergeRequests::CaptureSuggestedReviewersAcceptedWorker).not_to receive(:perform_async)

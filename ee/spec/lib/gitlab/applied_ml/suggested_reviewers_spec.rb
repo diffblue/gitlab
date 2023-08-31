@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::AppliedMl::SuggestedReviewers, feature_category: :workflow_automation do
+RSpec.describe Gitlab::AppliedMl::SuggestedReviewers, feature_category: :code_review_workflow do
   let(:secret) { SecureRandom.random_bytes(described_class::SECRET_LENGTH) }
 
   before do

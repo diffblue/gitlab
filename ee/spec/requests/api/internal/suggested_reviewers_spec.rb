@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Internal::SuggestedReviewers, feature_category: :workflow_automation do
+RSpec.describe API::Internal::SuggestedReviewers, feature_category: :code_review_workflow do
   describe 'POST /internal/suggested_reviewers/tokens' do
     let_it_be_with_reload(:project) { create(:project) }
     let_it_be(:secret) do
