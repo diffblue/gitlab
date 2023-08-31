@@ -9,9 +9,9 @@ RSpec.describe Resolvers::Ci::Catalog::ResourcesResolver, feature_category: :pip
   let_it_be(:project_1) { create(:project, name: 'Z', namespace: namespace) }
   let_it_be(:project_2) { create(:project, name: 'A', namespace: namespace) }
   let_it_be(:project_3) { create(:project, name: 'L', namespace: namespace) }
-  let_it_be(:resource_1) { create(:catalog_resource, project: project_1) }
-  let_it_be(:resource_2) { create(:catalog_resource, project: project_2) }
-  let_it_be(:resource_3) { create(:catalog_resource, project: project_3) }
+  let_it_be(:resource_1) { create(:ci_catalog_resource, project: project_1) }
+  let_it_be(:resource_2) { create(:ci_catalog_resource, project: project_2) }
+  let_it_be(:resource_3) { create(:ci_catalog_resource, project: project_3) }
   let_it_be(:user) { create(:user) }
 
   describe '#resolve' do
