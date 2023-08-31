@@ -7,7 +7,7 @@ class RemoveDuplicatesFromProjectRegistry < ActiveRecord::Migration[4.2]
 
   def up
     execute <<-SQL
-      WITH good_rows AS #{::Gitlab::Database::AsWithMaterialized.materialized_if_supported} (
+      WITH good_rows AS MATERIALIZED (
         SELECT project_id, MAX(id) as max_id
         FROM project_registry
         GROUP BY project_id
