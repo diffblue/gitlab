@@ -9,8 +9,8 @@ import {
   PIPELINES_GROUP_SUCCESS,
 } from 'ee/on_demand_scans/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import pipelineCancelMutation from '~/pipelines/graphql/mutations/cancel_pipeline.mutation.graphql';
-import pipelineRetryMutation from '~/pipelines/graphql/mutations/retry_pipeline.mutation.graphql';
+import pipelineCancelMutation from '~/ci/pipeline_details/graphql/mutations/cancel_pipeline.mutation.graphql';
+import pipelineRetryMutation from '~/ci/pipeline_details/graphql/mutations/retry_pipeline.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 

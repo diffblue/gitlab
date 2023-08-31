@@ -17,7 +17,7 @@ import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import {
   getQueryHeaders,
   toggleQueryPollingByVisibility,
-} from '~/pipelines/components/graph/utils';
+} from '~/ci/pipeline_details/components/graph/utils';
 import handlesErrors from '../../mixins/handles_errors';
 import Actions from '../actions.vue';
 import EmptyState from '../empty_state.vue';

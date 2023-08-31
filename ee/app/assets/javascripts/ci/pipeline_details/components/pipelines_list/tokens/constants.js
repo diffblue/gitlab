@@ -1,5 +1,5 @@
 import { s__ } from '~/locale';
-import { PIPELINE_SOURCES as CE_PIPELINE_SOURCES } from '~/pipelines/components/pipelines_list/tokens/constants';
+import { PIPELINE_SOURCES as CE_PIPELINE_SOURCES } from '~/ci/pipeline_details/components/pipelines_list/tokens/constants';
 
 const EE_PIPELINE_SOURCES = [
   {
