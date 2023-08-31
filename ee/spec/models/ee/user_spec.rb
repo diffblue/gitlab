@@ -981,60 +981,36 @@ RSpec.describe User, feature_category: :system_access do
         allow(License).to receive(:current) { license }
       end
 
-      context 'with elevated_guests FF disabled' do
-        before do
-          stub_feature_flags(elevated_guests: false)
-        end
+      it 'validates the sql matches the specific index we have' do
+        expected_sql = <<~SQL
+          SELECT "users".* FROM "users"
+          WHERE ("users"."state" IN ('active'))
+          AND
+          "users"."user_type" IN (0, 6, 4, 13)
+          AND
+          "users"."user_type" IN (0, 4, 5)
+          AND
+          (EXISTS (SELECT 1 FROM "members"
+             LEFT OUTER JOIN "member_roles" ON "member_roles"."id" = "members"."member_role_id"
+             WHERE "members"."user_id" = "users"."id"
+               AND (members.access_level > 10
+               OR "members"."access_level" = 10
+               AND (admin_merge_request = true
+               OR admin_vulnerability = true
+               OR read_dependency = true
+               OR read_vulnerability = true)))) /* allow_cross_joins_across_databases */
+        SQL
 
-        it 'validates the sql matches the specific index we have' do
-          expected_sql = <<~SQL
-            SELECT "users".* FROM "users"
-            WHERE ("users"."state" IN ('active'))
-            AND
-            "users"."user_type" IN (0, 6, 4, 13)
-            AND
-            "users"."user_type" IN (0, 4, 5)
-            AND
-            (EXISTS (SELECT 1 FROM "members"
-              WHERE "members"."user_id" = "users"."id"
-              AND (members.access_level > 10)))
-            /* allow_cross_joins_across_databases */
-          SQL
-
-          expect(users.to_sql.squish).to eq(expected_sql.squish), "query was changed. Please ensure query is covered with an index and adjust this test case"
-        end
-
-        it 'returns users' do
-          expect(users).to include(project_reporter_user)
-
-          expect(users).not_to include(regular_user)
-          expect(users).not_to include(project_guest_user)
-          expect(users).not_to include(bot_user)
-          expect(users).not_to include(service_account)
-        end
-
-        context 'with elevating role' do
-          it 'returns users with elevated roles' do
-            expect(MemberRole).not_to receive(:elevating)
-
-            expect(users).not_to include(guest_with_elevated_role)
-            expect(users).not_to include(guest_without_elevated_role)
-          end
-        end
+        expect(users.to_sql.squish).to eq(expected_sql.squish),
+          "query was changed. Please ensure query is covered with an index and adjust this test case"
       end
 
-      context 'with elevated_guests FF enabled' do
-        before do
-          stub_feature_flags(elevated_guests: true)
-        end
+      context 'with elevating role' do
+        it 'returns users with elevated roles' do
+          expect(MemberRole).to receive(:elevating).at_least(:once).and_return(MemberRole.where(id: member_role_elevating.id))
 
-        context 'with elevating role' do
-          it 'returns users with elevated roles' do
-            expect(MemberRole).to receive(:elevating).at_least(:once).and_return(MemberRole.where(id: member_role_elevating.id))
-
-            expect(users).to include(guest_with_elevated_role)
-            expect(users).not_to include(guest_without_elevated_role)
-          end
+          expect(users).to include(guest_with_elevated_role)
+          expect(users).not_to include(guest_without_elevated_role)
         end
       end
     end

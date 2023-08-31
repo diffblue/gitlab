@@ -44,8 +44,6 @@ module EE
       end
 
       scope :with_elevated_guests, -> do
-        return non_guests unless ::Feature.enabled?(:elevated_guests)
-
         non_guests.or(
           where(access_level: ::Gitlab::Access::GUEST)
           .merge(MemberRole.elevating)

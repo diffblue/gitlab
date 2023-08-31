@@ -718,26 +718,9 @@ RSpec.describe Member, type: :model, feature_category: :groups_and_projects do
     let!(:member2) { create(:group_member, :guest, source: group, member_role: member_role_elevating) }
     let!(:member3) { create(:group_member, :guest, source: group, member_role: member_role_basic) }
 
-    context 'with elevated_guests FF disabled' do
-      before do
-        stub_feature_flags(elevated_guests: false)
-      end
-
-      it 'returns only members above guest' do
-        expect(described_class.with_elevated_guests).to match_array([member1])
-        expect(described_class.with_elevated_guests).not_to include(member3, member2)
-      end
-    end
-
-    context 'with elevated_guests FF enabled' do
-      before do
-        stub_feature_flags(elevated_guests: true)
-      end
-
-      it 'returns only members above guest or guests with elevated role' do
-        expect(described_class.with_elevated_guests).to match_array([member1, member2])
-        expect(described_class.with_elevated_guests).not_to include(member3)
-      end
+    it 'returns only members above guest or guests with elevated role' do
+      expect(described_class.with_elevated_guests).to match_array([member1, member2])
+      expect(described_class.with_elevated_guests).not_to include(member3)
     end
   end
 end
