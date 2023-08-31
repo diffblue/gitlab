@@ -40,6 +40,10 @@ module ApprovalRules
     def copy_project_approval_rules
       rules_by_name = merge_request.approval_rules.index_by(&:name)
 
+      ff_enabled = Feature.enabled?(:copy_additional_properties_approval_rules, merge_request.project)
+      attributes_to_slice = %w[approvals_required name]
+      attributes_to_slice.append(*%w[rule_type report_type]) if ff_enabled
+
       merge_request.target_project.approval_rules.each do |project_rule|
         users = project_rule.approvers
         groups = project_rule.groups.public_or_visible_to_user(merge_request.author)
@@ -55,9 +59,21 @@ module ApprovalRules
         # appear as though this merge request hadn't been approved.
         next if rule
 
-        merge_request.approval_rules.create!(
-          project_rule.attributes.slice('approvals_required', 'name').merge(users: users, groups: groups)
+        new_rule = merge_request.approval_rules.new(
+          project_rule.attributes.slice(*attributes_to_slice).merge(users: users, groups: groups)
         )
+
+        # If we fail to save with the new attributes, then let's default back to the simplified ones
+        if new_rule.valid?
+          new_rule.save!
+        else
+          Gitlab::AppLogger.debug(
+            "Failed to persist approval rule: #{new_rule.errors.full_messages}. Defaulting to original rules"
+          )
+          merge_request.approval_rules.create!(
+            project_rule.attributes.slice(*%w[approvals_required name]).merge(users: users, groups: groups)
+          )
+        end
       end
     end
   end
