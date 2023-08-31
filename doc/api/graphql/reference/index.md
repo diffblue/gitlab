@@ -1152,7 +1152,6 @@ Input type: `AiActionInput`
 | <a id="mutationaiactiongeneratecommitmessage"></a>`generateCommitMessage` | [`AiGenerateCommitMessageInput`](#aigeneratecommitmessageinput) | Input for generate_commit_message AI action. |
 | <a id="mutationaiactiongeneratedescription"></a>`generateDescription` | [`AiGenerateDescriptionInput`](#aigeneratedescriptioninput) | Input for generate_description AI action. |
 | <a id="mutationaiactiongeneratetestfile"></a>`generateTestFile` | [`GenerateTestFileInput`](#generatetestfileinput) | Input for generate_test_file AI action. |
-| <a id="mutationaiactionmarkupformat"></a>`markupFormat` **{warning-solid}** | [`MarkupFormat`](#markupformat) | **Deprecated:** Moved to contentHtml attribute. Deprecated in 16.4. |
 | <a id="mutationaiactionsummarizecomments"></a>`summarizeComments` | [`AiSummarizeCommentsInput`](#aisummarizecommentsinput) | Input for summarize_comments AI action. |
 | <a id="mutationaiactionsummarizereview"></a>`summarizeReview` | [`AiSummarizeReviewInput`](#aisummarizereviewinput) | Input for summarize_review AI action. |
 | <a id="mutationaiactiontanukibot"></a>`tanukiBot` | [`AiTanukiBotInput`](#aitanukibotinput) | Input for tanuki_bot AI action. |
@@ -27205,15 +27204,6 @@ List limit metric setting.
 | <a id="listlimitmetricall_metrics"></a>`all_metrics` | Limit list by number and total weight of issues. |
 | <a id="listlimitmetricissue_count"></a>`issue_count` | Limit list by number of issues. |
 | <a id="listlimitmetricissue_weights"></a>`issue_weights` | Limit list by total weight of issues. |
-
-### `MarkupFormat`
-
-List markup formats.
-
-| Value | Description |
-| ----- | ----------- |
-| <a id="markupformathtml"></a>`HTML` | HTML format. |
-| <a id="markupformatraw"></a>`RAW` | Raw format. |
 
 ### `MeasurementIdentifier`
 

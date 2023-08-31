@@ -47,7 +47,11 @@ describe('Generate test file drawer component', () => {
     subscriptionHandlerMock = jest.fn().mockResolvedValue({
       data: {
         aiCompletionResponse: {
-          responseBody: '<pre><code>This is test code</code></pre>',
+          responseBody: `
+            \`\`\`
+            puts "This is test code"
+            \`\`\`
+          `,
           errors: [],
           ...subscriptionResponsePartial,
         },
@@ -89,7 +93,7 @@ describe('Generate test file drawer component', () => {
 
     await waitForPromises();
 
-    expect(wrapper.findByTestId('generate-test-code').text()).toContain('This is test code');
+    expect(wrapper.findByTestId('generate-test-code').text()).toContain('puts "This is test code"');
   });
 
   it('emits close event when closed', () => {

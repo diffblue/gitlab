@@ -26,7 +26,7 @@ export default {
           const responseBody = data.aiCompletionResponse?.responseBody;
 
           if (responseBody) {
-            const codeBlockRegex = /<pre(.*)><code>(.*)<\/code><\/pre>/gm;
+            const codeBlockRegex = /```(.*)```/gm;
             const codeBlock = codeBlockRegex.exec(responseBody.replaceAll('\n', '\\n'));
 
             if (codeBlock) {

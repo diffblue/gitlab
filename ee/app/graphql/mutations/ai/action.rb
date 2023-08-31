@@ -14,12 +14,6 @@ module Mutations
           description: "Input for #{method} AI action."
       end
 
-      argument :markup_format, EE::Types::MarkupFormatEnum,
-        required: false,
-        description: 'Indicates the response format.',
-        default_value: :raw,
-        deprecated: { reason: 'Moved to contentHtml attribute', milestone: '16.4' }
-
       argument :client_subscription_id, GraphQL::Types::String,
         required: false,
         description: 'Client generated ID that can be subscribed to, to receive a response for the mutation.'
@@ -82,7 +76,7 @@ module Mutations
       end
 
       def extract_method_params!(attributes)
-        options = attributes.extract!(:markup_format, :client_subscription_id)
+        options = attributes.extract!(:client_subscription_id)
         methods = methods(attributes.transform_values(&:to_h))
 
         # At this point, we only have one method since we filtered it in `#ready?`
