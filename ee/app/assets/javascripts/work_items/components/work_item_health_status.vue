@@ -1,34 +1,31 @@
 <script>
-import { GlDropdown, GlDropdownItem, GlFormGroup, GlBadge } from '@gitlab/ui';
-
+import { GlDropdown, GlDropdownItem, GlFormGroup } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
-import { s__ } from '~/locale';
+import IssueHealthStatus from 'ee/related_items_tree/components/issue_health_status.vue';
 import {
-  HEALTH_STATUS_I18N_NONE,
+  HEALTH_STATUS_I18N_HEALTH_STATUS,
   HEALTH_STATUS_I18N_NO_STATUS,
+  HEALTH_STATUS_I18N_NONE,
   healthStatusDropdownOptions,
-  healthStatusTextMap,
 } from 'ee/sidebar/constants';
-import { issueHealthStatusVariantMapping } from 'ee/related_items_tree/constants';
 import {
-  sprintfWorkItem,
   I18N_WORK_ITEM_ERROR_UPDATING,
+  sprintfWorkItem,
   TRACKING_CATEGORY_SHOW,
 } from '~/work_items/constants';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 import Tracking from '~/tracking';
 
 export default {
+  HEALTH_STATUS_I18N_HEALTH_STATUS,
   HEALTH_STATUS_I18N_NO_STATUS,
+  HEALTH_STATUS_I18N_NONE,
   healthStatusDropdownOptions,
-  i18n: {
-    HEALTH_STATUS: s__('WorkItem|Health status'),
-  },
   components: {
     GlFormGroup,
     GlDropdown,
     GlDropdownItem,
-    GlBadge,
+    IssueHealthStatus,
   },
   mixins: [Tracking.mixin()],
   inject: ['fullPath', 'hasIssuableHealthStatusFeature'],
@@ -59,6 +56,7 @@ export default {
   data() {
     return {
       isFocused: false,
+      isLoading: false,
     };
   },
   computed: {
@@ -68,19 +66,6 @@ export default {
         label: 'item_health_status',
         property: `type_${this.workItemType}`,
       };
-    },
-    healthStatusText() {
-      if (this.healthStatus === null) {
-        return HEALTH_STATUS_I18N_NONE;
-      }
-      return healthStatusTextMap[this.healthStatus];
-    },
-    healthStatusVariant() {
-      if (this.healthStatus === null) {
-        return null;
-      }
-
-      return issueHealthStatusVariantMapping[this.healthStatus];
     },
     dropdownToggleClasses() {
       return {
@@ -104,6 +89,9 @@ export default {
       }
 
       this.track('updated_health_status');
+
+      this.isLoading = true;
+
       this.$apollo
         .mutate({
           mutation: updateWorkItemMutation,
@@ -125,6 +113,9 @@ export default {
           const msg = sprintfWorkItem(I18N_WORK_ITEM_ERROR_UPDATING, this.workItemType);
           this.$emit('error', msg);
           Sentry.captureException(error);
+        })
+        .finally(() => {
+          this.isLoading = false;
         });
     },
   },
@@ -135,39 +126,33 @@ export default {
   <gl-form-group
     v-if="hasIssuableHealthStatusFeature"
     class="work-item-dropdown"
-    :label="$options.i18n.HEALTH_STATUS"
+    :label="$options.HEALTH_STATUS_I18N_HEALTH_STATUS"
     label-class="gl-pb-0! gl-mt-3 gl-overflow-wrap-break gl-display-flex gl-align-items-center work-item-field-label"
     label-cols="3"
     label-cols-lg="2"
   >
     <div v-if="!canUpdate" class="gl-ml-4 gl-mt-3 work-item-field-value">
-      <gl-badge v-if="healthStatus" :variant="healthStatusVariant">
-        {{ healthStatusText }}
-      </gl-badge>
-      <span v-else class="gl-text-secondary gl-display-inline-block gl-py-2">{{
-        healthStatusText
+      <issue-health-status v-if="healthStatus" :health-status="healthStatus" />
+      <span v-else class="gl-text-secondary gl-display-inline-block">{{
+        $options.HEALTH_STATUS_I18N_NONE
       }}</span>
     </div>
     <gl-dropdown
       v-else
       :disabled="!canUpdate"
-      :text="healthStatusText"
       class="gl-mt-3 work-item-field-value"
       data-testid="work-item-health-status-dropdown"
+      :loading="isLoading"
       :toggle-class="dropdownToggleClasses"
       @shown="onDropdownShown"
       @hide="onDropdownHide"
       @change="updateHealthStatus"
     >
       <template #button-text>
-        <gl-badge v-if="healthStatus" :variant="healthStatusVariant">
-          {{ healthStatusText }}
-        </gl-badge>
-        <span
-          v-else
-          class="gl-text-secondary gl-display-inline-block gl-py-2 work-item-field-value"
-          >{{ healthStatusText }}</span
-        >
+        <issue-health-status v-if="healthStatus" :health-status="healthStatus" />
+        <span v-else class="gl-text-secondary gl-display-inline-block work-item-field-value">{{
+          $options.HEALTH_STATUS_I18N_NONE
+        }}</span>
       </template>
       <gl-dropdown-item
         is-check-item

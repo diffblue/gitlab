@@ -1,9 +1,6 @@
 import { GlBadge } from '@gitlab/ui';
 import IssueHealthStatus from 'ee/related_items_tree/components/issue_health_status.vue';
-import {
-  issueHealthStatus,
-  issueHealthStatusVariantMapping,
-} from 'ee/related_items_tree/constants';
+import { healthStatusTextMap, healthStatusVariantMap } from 'ee/sidebar/constants';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { mockIssue1 } from '../mock_data';
@@ -29,15 +26,13 @@ describe('IssueHealthStatus', () => {
   });
 
   it('renders health status text', () => {
-    const expectedValue = issueHealthStatus[healthStatus];
+    const expectedValue = healthStatusTextMap[healthStatus];
 
     expect(findHealthStatus().text()).toBe(expectedValue);
   });
 
   it('applies correct health status class', () => {
-    expect(findHealthStatus().attributes('variant')).toBe(
-      issueHealthStatusVariantMapping[healthStatus],
-    );
+    expect(findHealthStatus().attributes('variant')).toBe(healthStatusVariantMap[healthStatus]);
   });
 
   it('contains health status tooltip', () => {

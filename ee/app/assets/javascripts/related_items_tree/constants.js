@@ -54,18 +54,6 @@ export const itemRemoveModalId = 'item-remove-confirmation';
 
 export const treeItemChevronBtnClassName = 'btn-tree-item-chevron';
 
-export const issueHealthStatus = {
-  atRisk: __('At risk'),
-  onTrack: __('On track'),
-  needsAttention: __('Needs attention'),
-};
-
-export const issueHealthStatusVariantMapping = {
-  atRisk: 'danger',
-  onTrack: 'success',
-  needsAttention: 'warning',
-};
-
 export const trackingAddedIssue = 'g_project_management_users_epic_issue_added_from_epic';
 
 export const SNOWPLOW_EPIC_ACTIVITY = {
