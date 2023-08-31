@@ -6,18 +6,18 @@ import {
   normalizeHeaders,
   convertObjectPropsToCamelCase,
 } from '~/lib/utils/common_utils';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
 import download from '~/lib/utils/downloader';
 import { s__, n__, sprintf } from '~/locale';
 import toast from '~/vue_shared/plugins/global_toast';
-import {
-  FEEDBACK_TYPE_ISSUE,
-  FEEDBACK_TYPE_MERGE_REQUEST,
-} from '~/vue_shared/security_reports/constants';
+import { FEEDBACK_TYPE_MERGE_REQUEST } from '~/vue_shared/security_reports/constants';
 import { DISMISSAL_STATES } from 'ee/security_dashboard/store/modules/filters/constants';
 import { defaultClient } from 'ee/security_dashboard/graphql/provider';
 import dismissFindingMutation from 'ee/security_dashboard/graphql/mutations/dismiss_finding.mutation.graphql';
 import revertFindingToDetectedMutation from 'ee/security_dashboard/graphql/mutations/revert_finding_to_detected.mutation.graphql';
+import createIssueMutation from 'ee/security_dashboard/graphql/mutations/finding_create_issue.mutation.graphql';
 import { getDismissalTransitionForVulnerability } from 'ee/vue_shared/security_reports/components/helpers';
+import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
 import * as types from './mutation_types';
 
 let vulnerabilitiesSource;
@@ -111,17 +111,13 @@ export const setModalData = ({ commit }, payload = {}) => {
 
 export const createIssue = ({ dispatch }, { vulnerability, flashError }) => {
   dispatch('requestCreateIssue');
-  axios
-    .post(vulnerability.create_vulnerability_feedback_issue_path, {
-      vulnerability_feedback: {
-        feedback_type: FEEDBACK_TYPE_ISSUE,
-        category: vulnerability.report_type,
-        project_fingerprint: vulnerability.project_fingerprint,
-        finding_uuid: vulnerability.uuid,
-        vulnerability_data: {
-          ...vulnerability,
-          category: vulnerability.report_type,
-        },
+
+  defaultClient
+    .mutate({
+      mutation: createIssueMutation,
+      variables: {
+        projectId: convertToGraphQLId(TYPENAME_PROJECT, vulnerability.project.id),
+        findingUuid: vulnerability.uuid,
       },
     })
     .then(({ data }) => {

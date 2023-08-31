@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { s__, __ } from '~/locale';
-import { getCreatedIssueForVulnerability } from 'ee/vue_shared/security_reports/components/helpers';
 import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 import * as types from './mutation_types';
 import { isSameVulnerability } from './utils';
@@ -61,10 +60,8 @@ export default {
     Vue.set(state.modal, 'error', null);
   },
   [types.RECEIVE_CREATE_ISSUE_SUCCESS](state, payload) {
-    const url = getCreatedIssueForVulnerability(payload).issue_url;
-
     // We don't cancel the loading state here because we're navigating away from the page
-    visitUrl(url);
+    visitUrl(payload.securityFindingCreateIssue.issue.webUrl);
   },
   [types.RECEIVE_CREATE_ISSUE_ERROR](state) {
     state.isCreatingIssue = false;
