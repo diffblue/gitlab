@@ -437,12 +437,6 @@ module EE
       }.compact
     end
 
-    def email_additional_text
-      return false unless email_additional_text_column_exists?
-
-      License.feature_available?(:email_additional_text) && super
-    end
-
     def email_additional_text_character_limit
       EMAIL_ADDITIONAL_TEXT_CHARACTER_LIMIT
     end
@@ -560,10 +554,6 @@ module EE
 
     def elasticsearch_search_column_exists?
       self.class.database.cached_column_exists?(:elasticsearch_search)
-    end
-
-    def email_additional_text_column_exists?
-      self.class.database.cached_column_exists?(:email_additional_text)
     end
 
     def check_geo_node_allowed_ips

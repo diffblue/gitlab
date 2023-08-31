@@ -1,6 +1,0 @@
-- if Gitlab::CurrentSettings.email_additional_text.present?
-  %p
-    = raw "&mdash;"
-    %br
-    %br
-      = Gitlab::Utils.nlbr(Gitlab::CurrentSettings.email_additional_text)
