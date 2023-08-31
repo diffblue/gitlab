@@ -1328,10 +1328,8 @@ describe('fetchIterationCadences', () => {
 describe('fetchAssignees', () => {
   const queryResponse = {
     data: {
-      workspace: {
-        assignees: {
-          nodes: mockAssignees.map((assignee) => ({ user: assignee })),
-        },
+      project: {
+        autocompleteUsers: mockAssignees,
       },
     },
   };
@@ -1358,16 +1356,6 @@ describe('fetchAssignees', () => {
       mutations,
     });
   }
-
-  it('throws error if state.boardType is not group or project', () => {
-    const store = createStore({
-      state: {
-        boardType: 'invalid',
-      },
-    });
-
-    expect(() => actions.fetchAssignees(store)).toThrow(new Error('Unknown board type'));
-  });
 
   it('sets assigneesLoading to true', () => {
     jest.spyOn(gqlClient, 'query').mockResolvedValue(queryResponse);

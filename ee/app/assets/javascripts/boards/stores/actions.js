@@ -7,9 +7,7 @@ import {
 } from '~/boards/boards_util';
 import eventHub from '~/boards/eventhub';
 import { defaultClient as gqlClient } from '~/graphql_shared/issuable_client';
-import groupBoardMembersQuery from '~/boards/graphql/group_board_members.query.graphql';
 import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
-import projectBoardMembersQuery from '~/boards/graphql/project_board_members.query.graphql';
 import actionsCE from '~/boards/stores/actions';
 import * as typesCE from '~/boards/stores/mutation_types';
 import { TYPENAME_ITERATION, TYPENAME_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
@@ -637,53 +635,19 @@ export default {
       search,
     };
 
-    let query;
-    if (boardType === WORKSPACE_PROJECT) {
-      query = projectBoardMembersQuery;
-    }
-    if (boardType === WORKSPACE_GROUP) {
-      query = groupBoardMembersQuery;
-    }
-
-    if (!query) {
-      // eslint-disable-next-line @gitlab/require-i18n-strings
-      throw new Error('Unknown board type');
-    }
-
-    if (gon.features?.newGraphqlUsersAutocomplete) {
-      return gqlClient
-        .query({
-          query: usersAutocompleteQuery,
-          variables: { ...variables, isProject: boardType === WORKSPACE_PROJECT },
-        })
-        .then(({ data }) => {
-          commit(types.RECEIVE_ASSIGNEES_SUCCESS, data[boardType]?.autocompleteUsers);
-        })
-        .catch((e) => {
-          commit(types.RECEIVE_ASSIGNEES_FAILURE);
-          throw e;
-        });
-    }
-
     return gqlClient
       .query({
-        query,
-        variables,
+        query: usersAutocompleteQuery,
+        variables: { ...variables, isProject: boardType === WORKSPACE_PROJECT },
       })
       .then(({ data }) => {
-        const [firstError] = data.workspace.errors || [];
-        const assignees = data.workspace.assignees.nodes
-          .filter((x) => x?.user)
-          .map(({ user }) => user);
+        const [firstError] = data[boardType]?.errors || [];
 
         if (firstError) {
           throw new Error(firstError);
         }
-        commit(
-          types.RECEIVE_ASSIGNEES_SUCCESS,
-          // User field is nullable and we only want to display non-null users
-          assignees,
-        );
+
+        commit(types.RECEIVE_ASSIGNEES_SUCCESS, data[boardType]?.autocompleteUsers);
       })
       .catch((e) => {
         commit(types.RECEIVE_ASSIGNEES_FAILURE);
