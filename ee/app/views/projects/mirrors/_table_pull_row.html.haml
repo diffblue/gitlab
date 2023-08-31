@@ -21,7 +21,7 @@
     .btn-group.mirror-actions-group{ role: 'group' }
       - ssh_public_key = @project.import_data.ssh_public_key
       - if ssh_public_key
-        = deprecated_clipboard_button(text: ssh_public_key, class: 'gl-button btn btn-default btn-icon rspec-copy-ssh-public-key', title: _('Copy SSH public key'), qa_selector: 'copy_public_key_button')
+        = clipboard_button(text: ssh_public_key, variant: :default, category: :primary, size: :medium, class: 'rspec-copy-ssh-public-key', title: _('Copy SSH public key'), testid: 'copy_public_key_button')
       - if import_state.mirror_update_due? || import_state.updating_mirror?
         = render Pajamas::ButtonComponent.new(icon: 'retry',
           button_options: { class: 'disabled', title: _('Updating'), data: { container: 'body', toggle: 'tooltip', testid: 'updating-button' } },

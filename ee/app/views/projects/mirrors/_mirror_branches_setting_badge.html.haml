@@ -1,3 +1,3 @@
 - if @project.licensed_feature_available?(:repository_mirrors)
-  %div
-    = gl_badge_tag mirror_branches_text(record), { class: 'gl-cursor-pointer', data: { toggle: 'tooltip' }, title: sanitize(record.mirror_branch_regex) }
+  .gl-mt-3
+    = gl_badge_tag mirror_branches_text(record), { size: :sm, class: 'gl-cursor-pointer', data: { toggle: 'tooltip' }, title: sanitize(record.mirror_branch_regex) }
