@@ -312,7 +312,7 @@ module Gitlab
         when :users
           base_options.merge(admin: current_user&.admin?, routing_disabled: true) # rubocop:disable Cop/UserAdmin
         when :blobs
-          base_options.merge(filters.slice(:language))
+          base_options.merge(filters.slice(:language, :include_archived))
         when :wiki_blobs
           base_options.merge(root_ancestor_ids: root_ancestor_ids, routing_disabled: !reindex_wikis_to_fix_routing_done?)
         else

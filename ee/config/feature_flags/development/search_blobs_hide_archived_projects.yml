@@ -1,0 +1,8 @@
+---
+name: search_blobs_hide_archived_projects
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/128613
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/421451
+milestone: '16.4'
+type: development
+group: group::global search
+default_enabled: false
