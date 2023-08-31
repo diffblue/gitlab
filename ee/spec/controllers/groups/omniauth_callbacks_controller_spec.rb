@@ -111,10 +111,20 @@ RSpec.describe Groups::OmniauthCallbacksController, :aggregate_failures, feature
     end
 
     shared_examples "SAML session initiated" do
-      it "redirects to RelayState" do
+      it "redirects to RelayState if its value is a subpath and starts with a slash" do
         post provider, params: { group_id: group, RelayState: '/explore' }
 
         expect(response).to redirect_to('/explore')
+      end
+
+      it "ignores RelayState that doesn't start with a slash" do
+        post provider, params: { group_id: group, RelayState: 'explore' }
+        expect(response).to redirect_to(group_path(group))
+      end
+
+      it "ignores RelayState that starts with two slashes" do
+        post provider, params: { group_id: group, RelayState: '//example.com' }
+        expect(response).to redirect_to(group_path(group))
       end
 
       it "ignores RelayState outside root domain without full URL" do
@@ -122,32 +132,20 @@ RSpec.describe Groups::OmniauthCallbacksController, :aggregate_failures, feature
         expect(response).to redirect_to(group_path(group))
       end
 
-      it "ignores RelayState outside root domain with full URL" do
+      it "ignores RelayState outside root domain with full URI" do
         post provider, params: { group_id: group, RelayState: 'https://abcd.example.com' }
         expect(response).to redirect_to(group_path(group))
       end
 
-      it "redirects RelayState within root domain with full URL" do
+      it "ignores RelayState within root domain with full URI" do
         post provider, params: { group_id: group,
                                  RelayState: "http://#{Gitlab.config.gitlab.host}:#{Gitlab.config.gitlab.port}/explore" }
-
-        expect(response).to redirect_to("http://#{Gitlab.config.gitlab.host}:#{Gitlab.config.gitlab.port}/explore")
-      end
-
-      it "ignores RelayState when invalid URI" do
-        post provider, params: { group_id: group,
-                                 RelayState: "javascript://#{Gitlab.config.gitlab.host}:#{Gitlab.config.gitlab.port}/explore" }
         expect(response).to redirect_to(group_path(group))
       end
 
-      it "redirects RelayState within root domain with full HTTP URL" do
-        post provider, params: { group_id: group, RelayState: "http://#{Gitlab.config.gitlab.host}:#{Gitlab.config.gitlab.port}/explore" }
-        expect(response).to redirect_to("http://#{Gitlab.config.gitlab.host}:#{Gitlab.config.gitlab.port}/explore")
-      end
-
-      it "redirects RelayState within root domain with full HTTPS URL" do
-        post provider, params: { group_id: group, RelayState: "https://#{Gitlab.config.gitlab.host}:#{Gitlab.config.gitlab.port}/explore" }
-        expect(response).to redirect_to("https://#{Gitlab.config.gitlab.host}:#{Gitlab.config.gitlab.port}/explore")
+      it "ignores RelayState when invalid URI" do
+        post provider, params: { group_id: group, RelayState: "javascript://#{Gitlab.config.gitlab.host}:#{Gitlab.config.gitlab.port}/explore" }
+        expect(response).to redirect_to(group_path(group))
       end
 
       it 'logs group audit event for authentication' do

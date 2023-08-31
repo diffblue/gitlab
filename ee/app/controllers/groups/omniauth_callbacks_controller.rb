@@ -2,6 +2,7 @@
 
 class Groups::OmniauthCallbacksController < OmniauthCallbacksController
   extend ::Gitlab::Utils::Override
+  include InternalRedirect
 
   skip_before_action :verify_authenticity_token, only: [:failure, :group_saml]
 
@@ -125,22 +126,7 @@ class Groups::OmniauthCallbacksController < OmniauthCallbacksController
   end
 
   def saml_redirect_path
-    return params['RelayState'] if params['RelayState'].to_s.start_with?("/")
-
-    begin
-      parsed_uri = URI.parse(params['RelayState'].to_s)
-    rescue URI::InvalidURIError
-      parsed_uri = nil
-    end
-
-    if parsed_uri.present? &&
-        (parsed_uri.scheme =~ /\Ahttps?\z/i) &&
-        (parsed_uri.host == Gitlab.config.gitlab.host) &&
-        (parsed_uri.port == Gitlab.config.gitlab.port)
-      params['RelayState']
-    else
-      group_path(@unauthenticated_group)
-    end
+    safe_redirect_path(params['RelayState']) || group_path(@unauthenticated_group)
   end
 
   override :find_message
