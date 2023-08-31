@@ -73,32 +73,44 @@ module QA
 
       it 'requires approval when a pipeline report has findings matching the scan result policy', :reliable,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/365005' do
+        # Make sure Scan result policy commit was successful before running examples
         expect(scan_result_policy_commit.api_response).to have_key(:branch)
         expect(scan_result_policy_commit.api_response[:branch]).not_to be nil
 
-        branch_name = scan_result_policy_commit.api_response[:branch]
-        Resource::MergeRequest.fabricate_via_api! do |merge_request|
-          merge_request.no_preparation = true
-          merge_request.project = policy_project
-          merge_request.target_new_branch = false
-          merge_request.source_branch = branch_name
-        end.merge_via_api!
+        create_scan_result_policy
         # Create a branch and a commit to trigger a pipeline to generate container scanning findings
-        create_commit(branch_name: commit_branch, report_name: premade_report_name, report_path: premade_report_path)
+        create_commit(branch_name: commit_branch, report_name: premade_report_name,
+          report_path: premade_report_path, severity: "Critical")
 
-        merge_request = Resource::MergeRequest.fabricate_via_api! do |merge_request|
-          merge_request.no_preparation = true
-          merge_request.project = project
-          merge_request.target_new_branch = false
-          merge_request.source_branch = commit_branch
-        end
-
+        merge_request = create_test_mr
         Flow::Pipeline.wait_for_latest_pipeline(status: 'passed')
         merge_request.visit!
 
         Page::MergeRequest::Show.perform do |mr|
           expect(mr).not_to be_mergeable
           expect(mr.approvals_required_from).to include(scan_result_policy_name)
+        end
+      end
+
+      it 'does not block merge when scan result policy does not apply for pipeline security findings',
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/423412' do
+        # Make sure Scan result policy commit was successful before running examples
+        expect(scan_result_policy_commit.api_response).to have_key(:branch)
+        expect(scan_result_policy_commit.api_response[:branch]).not_to be nil
+
+        create_scan_result_policy
+
+        # Create a branch and a commit to trigger a pipeline to generate container scanning findings
+        create_commit(branch_name: commit_branch, report_name: premade_report_name,
+          report_path: premade_report_path, severity: "High")
+
+        merge_request = create_test_mr
+        Flow::Pipeline.wait_for_latest_pipeline(status: 'passed')
+        merge_request.visit!
+
+        Page::MergeRequest::Show.perform do |mr|
+          expect(mr).to be_mergeable
+          expect(page.has_text?('Approval is optional')).to be true
         end
       end
 
@@ -124,20 +136,48 @@ module QA
         }
       end
 
-      def report_file(report_name, report_path)
+      def create_scan_result_policy
+        branch_name = scan_result_policy_commit.api_response[:branch]
+        Resource::MergeRequest.fabricate_via_api! do |merge_request|
+          merge_request.no_preparation = true
+          merge_request.project = policy_project
+          merge_request.target_new_branch = false
+          merge_request.source_branch = branch_name
+        end.merge_via_api!
+      end
+
+      def create_test_mr
+        Resource::MergeRequest.fabricate_via_api! do |merge_request|
+          merge_request.no_preparation = true
+          merge_request.project = project
+          merge_request.target_new_branch = false
+          merge_request.source_branch = commit_branch
+        end
+      end
+
+      def report_file(report_name:, report_path:, severity:)
         {
           file_path: report_name.to_s,
-          content: File.read(report_path.to_s)
+          content: container_scanning_report_content(report_path, severity)
         }
       end
 
-      def create_commit(branch_name:, report_name:, report_path: )
+      def container_scanning_report_content(report_path, severity)
+        if severity == "High"
+          File.read(report_path.to_s).gsub("Critical", severity)
+        else
+          File.read(report_path.to_s)
+        end
+      end
+
+      def create_commit(branch_name:, report_name:, report_path:, severity: )
         Resource::Repository::Commit.fabricate_via_api! do |commit|
           commit.project = project
           commit.start_branch = project.default_branch
           commit.branch = branch_name
           commit.commit_message = 'Add premade container scanning report'
-          commit.add_files([ci_file(report_name), report_file(report_name, report_path)])
+          commit.add_files([ci_file(report_name), report_file(report_name: report_name,
+            report_path: report_path, severity: severity)])
         end
       end
     end
