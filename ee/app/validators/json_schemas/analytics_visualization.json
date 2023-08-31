@@ -14,7 +14,8 @@
             "LineChart",
             "ColumnChart",
             "DataTable",
-            "SingleStat"
+            "SingleStat",
+            "DORAChart"
           ]
         },
         "options": {
@@ -37,7 +38,10 @@
       "additionalProperties": false,
       "properties": {
         "type": {
-          "const": "cube_analytics"
+          "enum": [
+            "cube_analytics",
+            "value_stream"
+          ]
         },
         "query": {
           "type": "object"

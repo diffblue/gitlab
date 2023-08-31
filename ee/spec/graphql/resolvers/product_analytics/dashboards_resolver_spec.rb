@@ -18,7 +18,7 @@ RSpec.describe Resolvers::ProductAnalytics::DashboardsResolver, feature_category
     let(:slug) { nil }
 
     before do
-      stub_licensed_features(product_analytics: true)
+      stub_licensed_features(product_analytics: true, project_level_analytics_dashboard: false)
     end
 
     context 'when user has guest access' do

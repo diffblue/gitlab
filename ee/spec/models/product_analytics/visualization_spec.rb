@@ -147,7 +147,8 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
 
     it 'captures the error' do
       vis = (subject.select { |v| v.slug == 'example_invalid_custom_visualization' }).first
-      expected = ["property '/type' is not one of: [\"LineChart\", \"ColumnChart\", \"DataTable\", \"SingleStat\"]"]
+      expected = ["property '/type' is not one of: " \
+                  "[\"LineChart\", \"ColumnChart\", \"DataTable\", \"SingleStat\", \"DORAChart\"]"]
       expect(vis&.errors).to match_array(expected)
     end
   end

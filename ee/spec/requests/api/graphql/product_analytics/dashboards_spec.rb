@@ -6,7 +6,7 @@ RSpec.describe 'Query.project(id).dashboards', feature_category: :product_analyt
   include GraphqlHelpers
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, :with_product_analytics_dashboard) }
+  let_it_be_with_reload(:project) { create(:project, :with_product_analytics_dashboard) }
 
   let(:query) do
     fields = all_graphql_fields_for('ProductAnalyticsDashboard')
@@ -19,7 +19,8 @@ RSpec.describe 'Query.project(id).dashboards', feature_category: :product_analyt
   end
 
   before do
-    stub_licensed_features(product_analytics: true)
+    stub_licensed_features(product_analytics: true, project_level_analytics_dashboard: true)
+
     project.project_setting.update!(product_analytics_instrumentation_key: 'test-key')
     project.reload
   end
@@ -32,15 +33,15 @@ RSpec.describe 'Query.project(id).dashboards', feature_category: :product_analyt
     it 'returns dashboards' do
       post_graphql(query, current_user: user)
 
-      expect(graphql_data_at(:project, :product_analytics_dashboards, :nodes, 2, :title)).to eq('Dashboard Example 1')
-      expect(graphql_data_at(:project, :product_analytics_dashboards, :nodes, 2, :slug)).to eq('dashboard_example_1')
+      expect(graphql_data_at(:project, :product_analytics_dashboards, :nodes, 3, :title)).to eq('Dashboard Example 1')
+      expect(graphql_data_at(:project, :product_analytics_dashboards, :nodes, 3, :slug)).to eq('dashboard_example_1')
     end
 
-    it 'returns two gitlab provided dashboards' do
+    it 'returns three gitlab provided dashboards' do
       post_graphql(query, current_user: user)
 
       expect(graphql_data_at(:project, :product_analytics_dashboards, :nodes).pluck('userDefined'))
-                                                                             .to eq([false, false, true])
+        .to match_array([false, false, false, true])
     end
 
     context 'when feature flag is disabled' do
@@ -65,6 +66,21 @@ RSpec.describe 'Query.project(id).dashboards', feature_category: :product_analyt
       post_graphql(query, current_user: user)
 
       expect(graphql_data_at(:project, :product_analytics_dashboards, :nodes)).to be_nil
+    end
+  end
+
+  context 'without the project_level_analytics_dashboard license' do
+    before do
+      stub_licensed_features(product_analytics: true, project_level_analytics_dashboard: false)
+
+      project.add_developer(user)
+    end
+
+    it 'does not return the Value stream dashboard' do
+      post_graphql(query, current_user: user)
+
+      expect(graphql_data_at(:project, :product_analytics_dashboards, :nodes).pluck('slug'))
+        .not_to include('value_stream_dashboard')
     end
   end
 end
