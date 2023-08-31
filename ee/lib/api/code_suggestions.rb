@@ -6,7 +6,6 @@ module API
 
     feature_category :code_suggestions
 
-    helpers ::API::Helpers::AiProxyHelper
     helpers ::API::Helpers::GlobalIds
 
     USER_CODE_SUGGESTIONS_ADD_ON_CACHE_KEY = 'user-%{user_id}-code-suggestions-add-on-cache'
@@ -93,17 +92,17 @@ module API
           ]
         end
         post do
-          with_proxy_ai_request do
-            Gitlab::Tracking.event(
-              'API::CodeSuggestions',
-              :authenticate,
-              user: current_user,
-              label: 'code_suggestions'
-            )
+          not_found! unless Gitlab.org_or_com?
 
-            token = Gitlab::CodeSuggestions::AccessToken.new(current_user, gitlab_realm: gitlab_realm)
-            present token, with: Entities::CodeSuggestionsAccessToken
-          end
+          Gitlab::Tracking.event(
+            'API::CodeSuggestions',
+            :authenticate,
+            user: current_user,
+            label: 'code_suggestions'
+          )
+
+          token = Gitlab::CodeSuggestions::AccessToken.new(current_user, gitlab_realm: gitlab_realm)
+          present token, with: Entities::CodeSuggestionsAccessToken
         end
       end
 
