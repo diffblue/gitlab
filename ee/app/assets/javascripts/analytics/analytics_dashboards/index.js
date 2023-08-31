@@ -77,12 +77,12 @@ export default () => {
           typePolicies: {
             Project: {
               fields: {
-                productAnalyticsDashboards: {
+                customizableDashboards: {
                   keyArgs: ['projectPath', 'slug'],
                 },
               },
             },
-            ProductAnalyticsDashboard: {
+            CustomizableDashboards: {
               keyFields: ['slug'],
             },
           },

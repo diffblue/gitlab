@@ -13,7 +13,7 @@ RSpec.describe 'Query.project(id).visualizations', feature_category: :product_an
       query {
         project(fullPath: "#{project.full_path}") {
           name
-          productAnalyticsVisualizations {
+          customizableDashboardVisualizations {
             nodes {
                type
                options
@@ -31,7 +31,7 @@ RSpec.describe 'Query.project(id).visualizations', feature_category: :product_an
       query {
         project(fullPath: "#{project.full_path}") {
           name
-          productAnalyticsVisualizations(slug: "cube_bar_chart") {
+          customizableDashboardVisualizations(slug: "cube_bar_chart") {
             nodes {
                type
                options
@@ -60,13 +60,13 @@ RSpec.describe 'Query.project(id).visualizations', feature_category: :product_an
         get_graphql(query, current_user: user)
 
         expect(
-          graphql_data_at(:project, :product_analytics_visualizations, :nodes).count
+          graphql_data_at(:project, :customizable_dashboard_visualizations, :nodes).count
         ).to eq(1)
         expect(
-          graphql_data_at(:project, :product_analytics_visualizations, :nodes, 0, :type)
+          graphql_data_at(:project, :customizable_dashboard_visualizations, :nodes, 0, :type)
         ).to eq('BarChart')
         expect(
-          graphql_data_at(:project, :product_analytics_visualizations, :nodes, 0, :slug)
+          graphql_data_at(:project, :customizable_dashboard_visualizations, :nodes, 0, :slug)
         ).to eq('cube_bar_chart')
       end
     end
@@ -75,16 +75,16 @@ RSpec.describe 'Query.project(id).visualizations', feature_category: :product_an
       get_graphql(query, current_user: user)
 
       expect(
-        graphql_data_at(:project, :product_analytics_visualizations, :nodes, 0, :type)
+        graphql_data_at(:project, :customizable_dashboard_visualizations, :nodes, 0, :type)
       ).to eq('BarChart')
       expect(
-        graphql_data_at(:project, :product_analytics_visualizations, :nodes, 0, :slug)
+        graphql_data_at(:project, :customizable_dashboard_visualizations, :nodes, 0, :slug)
       ).to eq('cube_bar_chart')
       expect(
-        graphql_data_at(:project, :product_analytics_visualizations, :nodes, 1, :type)
+        graphql_data_at(:project, :customizable_dashboard_visualizations, :nodes, 1, :type)
       ).to eq('LineChart')
       expect(
-        graphql_data_at(:project, :product_analytics_visualizations, :nodes, 1, :slug)
+        graphql_data_at(:project, :customizable_dashboard_visualizations, :nodes, 1, :slug)
       ).to eq('cube_line_chart')
     end
   end
@@ -97,7 +97,7 @@ RSpec.describe 'Query.project(id).visualizations', feature_category: :product_an
     it 'returns nil', :aggregate_failures do
       get_graphql(query, current_user: user)
 
-      expect(graphql_data_at(:project, :product_analytics_visualizations)).to be_nil
+      expect(graphql_data_at(:project, :customizable_dashboard_visualizations)).to be_nil
     end
   end
 
@@ -105,7 +105,7 @@ RSpec.describe 'Query.project(id).visualizations', feature_category: :product_an
     it 'returns nil', :aggregate_failures do
       get_graphql(query, current_user: nil)
 
-      expect(graphql_data_at(:project, :product_analytics_visualizations)).to be_nil
+      expect(graphql_data_at(:project, :customizable_dashboard_visualizations)).to be_nil
     end
   end
 end

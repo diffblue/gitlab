@@ -2,7 +2,8 @@
 
 module ProductAnalytics
   class Dashboard
-    attr_reader :title, :description, :schema_version, :panels, :project, :config_project, :slug, :path, :user_defined
+    attr_reader :title, :description, :schema_version, :panels, :project,
+      :config_project, :slug, :path, :user_defined, :category
 
     DASHBOARD_ROOT_LOCATION = '.gitlab/analytics/dashboards'
 
@@ -33,6 +34,7 @@ module ProductAnalytics
       @config_project = config_project
       @slug = slug
       @user_defined = user_defined
+      @category = 'analytics'
     end
 
     def self.local_dashboards(project, trees)

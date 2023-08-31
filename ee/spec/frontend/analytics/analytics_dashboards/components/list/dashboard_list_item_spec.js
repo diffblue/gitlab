@@ -11,9 +11,7 @@ jest.mock('~/lib/utils/url_utility', () => ({
   visitUrl: jest.fn().mockName('visitUrlMock'),
 }));
 
-const {
-  nodes,
-} = TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE.data.project.productAnalyticsDashboards;
+const { nodes } = TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE.data.project.customizableDashboards;
 const USER_DEFINED_DASHBOARD = nodes.find((dashboard) => dashboard.userDefined);
 const BUILT_IN_DASHBOARD = nodes.find((dashboard) => !dashboard.userDefined);
 const REDIRECTED_DASHBOARD = {

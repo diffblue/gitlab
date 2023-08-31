@@ -106,7 +106,7 @@ export default {
         return this.isNewDashboard;
       },
       update(data) {
-        const dashboard = data?.project?.productAnalyticsDashboards?.nodes[0];
+        const dashboard = data?.project?.customizableDashboards?.nodes[0];
 
         if (!dashboard) {
           this.showEmptyState = true;
@@ -140,7 +140,7 @@ export default {
         );
       },
       update(data) {
-        const visualizations = data?.project?.productAnalyticsVisualizations?.nodes;
+        const visualizations = data?.project?.customizableDashboardVisualizations?.nodes;
         return {
           ...this.availableVisualizations,
           [PRODUCT_ANALYTICS_TITLE]: {

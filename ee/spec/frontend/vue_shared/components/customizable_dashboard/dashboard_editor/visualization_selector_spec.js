@@ -11,7 +11,8 @@ describe('VisualizationSelector', () => {
   const dataSource = 'foo';
 
   const visualizations =
-    TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE.data.project.productAnalyticsVisualizations.nodes;
+    TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE.data.project.customizableDashboardVisualizations
+      .nodes;
 
   const availableVisualizations = (options) => ({
     [dataSource]: {
