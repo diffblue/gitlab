@@ -8,7 +8,7 @@ module Llm
 
       idempotent!
       data_consistency :always # rubocop: disable SidekiqLoadBalancing/WorkerDataConsistency
-      feature_category :global_search
+      feature_category :duo_chat
       urgency :throttled
 
       BATCH_SIZE = 1000

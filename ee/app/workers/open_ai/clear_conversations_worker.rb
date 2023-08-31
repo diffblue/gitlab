@@ -12,7 +12,7 @@ module OpenAi
     # rubocop:enable Scalability/CronWorkerContext
 
     idempotent!
-    feature_category :not_owned # rubocop:disable Gitlab/AvoidFeatureCategoryNotOwned
+    feature_category :ai_abstraction_layer
     data_consistency :sticky
     deduplicate :until_executed, including_scheduled: true
     urgency :low
