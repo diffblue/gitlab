@@ -70,6 +70,13 @@ module EE
         subject&.project&.custom_roles_enabled?
       end
 
+      with_scope :subject
+      condition(:summarize_merge_request_enabled) do
+        ::Feature.enabled?(:summarize_diff_automatically, subject.project) &&
+          subject.project.licensed_feature_available?(:summarize_mr_changes) &&
+          ::Gitlab::Llm::StageCheck.available?(subject.project.root_ancestor, :summarize_diff)
+      end
+
       def read_only?
         @subject.target_project&.namespace&.read_only?
       end
@@ -115,6 +122,10 @@ module EE
       rule { custom_roles_allowed & role_enables_admin_merge_request }.policy do
         enable :approve_merge_request
       end
+
+      rule do
+        ai_features_enabled & summarize_merge_request_enabled & can?(:generate_diff_summary)
+      end.enable :summarize_merge_request
     end
 
     private

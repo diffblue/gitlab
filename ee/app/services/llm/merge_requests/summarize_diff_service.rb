@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# TODO: This service is deprecated and will be removed in the future in
+# https://gitlab.com/gitlab-org/gitlab/-/issues/423210.
 module Llm
   module MergeRequests
     class SummarizeDiffService

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# TODO: This worker is deprecated and will be removed in the future in
+# https://gitlab.com/gitlab-org/gitlab/-/issues/423210.
 module MergeRequests
   module Llm
     class SummarizeMergeRequestWorker
