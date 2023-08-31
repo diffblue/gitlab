@@ -61,10 +61,10 @@ module GitlabSubscriptions
       end
 
       def billed_member_of_namespace?
-        namespace.billed_group_user?(user, exclude_guests: true) ||
-          namespace.billed_project_user?(user, exclude_guests: true) ||
-          namespace.billed_shared_group_user?(user, exclude_guests: true) ||
-          namespace.billed_shared_project_user?(user, exclude_guests: true)
+        namespace.billed_group_user?(user) ||
+          namespace.billed_project_user?(user) ||
+          namespace.billed_shared_group_user?(user) ||
+          namespace.billed_shared_project_user?(user)
       end
       strong_memoize_attr :billed_member_of_namespace?
 
