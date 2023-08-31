@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Llm::CompletionWorker, feature_category: :team_planning do
+RSpec.describe Llm::CompletionWorker, feature_category: :ai_abstraction_layer do
   include FakeBlobHelpers
   include AfterNextHelpers
 

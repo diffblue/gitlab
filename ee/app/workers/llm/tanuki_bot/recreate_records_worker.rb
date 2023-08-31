@@ -9,7 +9,7 @@ module Llm
 
       idempotent!
       data_consistency :always # rubocop: disable SidekiqLoadBalancing/WorkerDataConsistency
-      feature_category :global_search
+      feature_category :duo_chat
       urgency :throttled
       sidekiq_options retry: 3
 

@@ -437,7 +437,7 @@
   :tags: []
 - :name: cronjob:llm_tanuki_bot_recreate_records
   :worker_name: Llm::TanukiBot::RecreateRecordsWorker
-  :feature_category: :global_search
+  :feature_category: :duo_chat
   :has_external_dependencies: false
   :urgency: :throttled
   :resource_boundary: :unknown
@@ -446,7 +446,7 @@
   :tags: []
 - :name: cronjob:llm_tanuki_bot_remove_previous_records
   :worker_name: Llm::TanukiBot::RemovePreviousRecordsWorker
-  :feature_category: :global_search
+  :feature_category: :duo_chat
   :has_external_dependencies: false
   :urgency: :throttled
   :resource_boundary: :unknown
@@ -455,7 +455,7 @@
   :tags: []
 - :name: cronjob:open_ai_clear_conversations
   :worker_name: OpenAi::ClearConversationsWorker
-  :feature_category: :not_owned
+  :feature_category: :ai_abstraction_layer
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown

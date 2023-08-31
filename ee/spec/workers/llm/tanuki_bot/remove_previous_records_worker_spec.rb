@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Llm::TanukiBot::RemovePreviousRecordsWorker, feature_category: :global_search do
+RSpec.describe Llm::TanukiBot::RemovePreviousRecordsWorker, feature_category: :duo_chat do
   it_behaves_like 'worker with data consistency', described_class, data_consistency: :always
 
   describe '#perform' do
