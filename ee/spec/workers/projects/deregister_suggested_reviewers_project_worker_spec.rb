@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::DeregisterSuggestedReviewersProjectWorker, feature_category: :workflow_automation do
+RSpec.describe Projects::DeregisterSuggestedReviewersProjectWorker, feature_category: :code_review_workflow do
   let(:project) { build_stubbed(:project) }
   let(:user) { build_stubbed(:user) }
   let(:service) { instance_spy(::Projects::DeregisterSuggestedReviewersProjectService) }

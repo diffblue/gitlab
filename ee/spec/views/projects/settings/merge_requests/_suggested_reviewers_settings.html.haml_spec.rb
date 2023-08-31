@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'projects/settings/merge_requests/_suggested_reviewers_settings',
-  feature_category: :workflow_automation do
+  feature_category: :code_review_workflow do
   let_it_be(:user) { build(:user) }
   let_it_be(:project) { build(:project) }
 

@@ -4,7 +4,7 @@ module API
   # Suggested Reviewers Internal API
   module Internal
     class SuggestedReviewers < ::API::Base
-      feature_category :workflow_automation
+      feature_category :code_review_workflow
 
       before do
         check_feature_enabled
