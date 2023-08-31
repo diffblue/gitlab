@@ -13,23 +13,37 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
   end
 
   describe 'associations' do
-    it { is_expected.to belong_to(:user) }
-    it { is_expected.to belong_to(:personal_access_token) }
-    it { is_expected.to have_many(:workspace_variables) }
-    it { is_expected.to have_one(:remote_development_agent_config) }
+    context "for has_one" do
+      it { is_expected.to have_one(:remote_development_agent_config) }
+    end
 
-    # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409786
-    #       This expectation no longer works after the introduction of RemoteDevelopmentAgentConfig, don't know why.
-    # it { is_expected.to belong_to(:agent).with_foreign_key('cluster_agent_id').class_name('Clusters::Agent') }
+    context "for has_many" do
+      it { is_expected.to have_many(:workspace_variables) }
+    end
 
-    it 'has correct associations from factory' do
-      expect(subject.user).to eq(user)
-      expect(subject.project).to eq(project)
-      expect(subject.agent).to eq(agent)
-      expect(subject.personal_access_token).to eq(personal_access_token)
-      expect(subject.remote_development_agent_config).to eq(agent.remote_development_agent_config)
-      expect(agent.remote_development_agent_config.workspaces.first).to eq(subject)
-      expect(subject.url).to eq("https://60001-#{subject.name}.#{agent.remote_development_agent_config.dns_zone}")
+    context "for belongs_to" do
+      it { is_expected.to belong_to(:user) }
+      it { is_expected.to belong_to(:personal_access_token) }
+
+      it do
+        is_expected
+          .to belong_to(:agent)
+                .class_name('Clusters::Agent')
+                .with_foreign_key(:cluster_agent_id)
+                .inverse_of(:workspaces)
+      end
+    end
+
+    context "when from factory" do
+      it 'has correct associations from factory' do
+        expect(subject.user).to eq(user)
+        expect(subject.project).to eq(project)
+        expect(subject.agent).to eq(agent)
+        expect(subject.personal_access_token).to eq(personal_access_token)
+        expect(subject.remote_development_agent_config).to eq(agent.remote_development_agent_config)
+        expect(agent.remote_development_agent_config.workspaces.first).to eq(subject)
+        expect(subject.url).to eq("https://60001-#{subject.name}.#{agent.remote_development_agent_config.dns_zone}")
+      end
     end
   end
 
