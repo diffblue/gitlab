@@ -6,7 +6,6 @@ query getGoogleCloudLoggingDestinations($fullPath: ID!) {
         id
         name
         logIdName
-        privateKey
         googleProjectIdName
         clientEmail
       }

@@ -183,6 +183,7 @@ module EE
 
       condition(:user_banned_from_namespace) do
         next unless @user.is_a?(User)
+        next if @user.can_admin_all_resources?
 
         root_namespace = @subject.root_ancestor
         next unless root_namespace.unique_project_download_limit_enabled?
@@ -239,9 +240,7 @@ module EE
         Ability.allowed?(@user, :developer_access, security_orchestration_policy_configuration.security_policy_management_project)
       end
 
-      rule { ~admin & user_banned_from_namespace }.policy do
-        prevent :read_group
-      end
+      rule { user_banned_from_namespace }.prevent_all
 
       rule { public_group | logged_in_viewable }.policy do
         enable :read_wiki

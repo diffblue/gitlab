@@ -245,7 +245,6 @@ export const gcpLoggingDestinationCreateMutationPopulator = (errors = []) => {
       clientEmail: 'my-email@my-google-project.iam.gservice.account.com',
       googleProjectIdName: 'my-google-project',
       logIdName: 'audit-events',
-      privateKey: 'PRIVATE_KEY',
     },
   };
 
@@ -264,7 +263,14 @@ export const gcpLoggingDestinationCreateMutationPopulator = (errors = []) => {
 export const gcpLoggingDestinationUpdateMutationPopulator = (errors = []) => {
   const correctData = {
     errors,
-    googleCloudLoggingConfiguration: mockGcpLoggingDestinations[0],
+    googleCloudLoggingConfiguration: {
+      __typename: 'GoogleCloudLoggingConfigurationType',
+      id: 'gid://gitlab/AuditEvents::GoogleCloudLoggingConfiguration/1',
+      name: 'Destination 1',
+      clientEmail: 'my-email@my-google-project.iam.gservice.account.com',
+      googleProjectIdName: 'my-google-project-1',
+      logIdName: 'audit-events',
+    },
   };
 
   const errorData = {

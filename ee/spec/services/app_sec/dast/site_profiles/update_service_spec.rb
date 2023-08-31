@@ -213,8 +213,33 @@ RSpec.describe AppSec::Dast::SiteProfiles::UpdateService do
           end
         end
 
+        context 'when target URL is changed' do
+          let(:params) { default_params.merge(target_url: 'https://newurl.com') }
+
+          it 'deletes the variable' do
+            variable = Dast::SiteProfileSecretVariable.find_by(key: key, dast_site_profile: dast_site_profile)
+
+            subject
+
+            expect { variable.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          end
+        end
+
+        context 'when auth URL is changed' do
+          let(:params) { default_params.merge(auth_url: 'https://newurl.com') }
+
+          it 'deletes the variable' do
+            variable = Dast::SiteProfileSecretVariable.find_by(key: key, dast_site_profile: dast_site_profile)
+
+            subject
+
+            expect { variable.reload }.to raise_error(ActiveRecord::RecordNotFound)
+          end
+        end
+
         context 'when the input value is absent' do
-          let(:params) { default_params.except(argument) }
+          let(:original_urls) { { target_url: dast_site_profile.dast_site.url, auth_url: dast_site_profile.auth_url } }
+          let(:params) { default_params.except(argument).merge(original_urls) }
 
           it 'does not delete the secret variable' do
             variable = Dast::SiteProfileSecretVariable.find_by(key: key, dast_site_profile: dast_site_profile)

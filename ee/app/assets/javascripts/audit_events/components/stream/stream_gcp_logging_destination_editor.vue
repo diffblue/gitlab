@@ -42,36 +42,44 @@ export default {
       name: '',
       googleProjectIdName: '',
       logIdName: '',
-      privateKey: '',
+      privateKey: null,
       clientEmail: '',
       errors: [],
       loading: false,
+      addingPrivateKey: false,
     };
   },
   computed: {
     isSubmitButtonDisabled() {
-      if (
-        !this.name ||
-        !this.googleProjectIdName ||
-        !this.logIdName ||
-        !this.privateKey ||
-        !this.clientEmail
-      ) {
+      const { googleProjectIdName, logIdName, clientEmail, name } = this.item;
+
+      if (!this.googleProjectIdName || !this.logIdName || !this.clientEmail || !this.name) {
         return true;
       }
 
-      return this.hasNoChanges;
-    },
-    hasNoChanges() {
-      const { name, googleProjectIdName, logIdName, privateKey, clientEmail } = this.item;
+      if (
+        this.isEditing &&
+        (googleProjectIdName !== this.googleProjectIdName ||
+          logIdName !== this.logIdName ||
+          clientEmail !== this.clientEmail ||
+          name !== this.name ||
+          this.privateKey)
+      ) {
+        return false;
+      }
 
-      return (
-        name === this.name &&
-        googleProjectIdName === this.googleProjectIdName &&
-        logIdName === this.logIdName &&
-        privateKey === this.privateKey &&
-        clientEmail === this.clientEmail
-      );
+      if (
+        !this.isEditing &&
+        this.googleProjectIdName &&
+        this.logIdName &&
+        this.privateKey &&
+        this.clientEmail &&
+        this.name
+      ) {
+        return false;
+      }
+
+      return true;
     },
     isEditing() {
       return !isEmpty(this.item);
@@ -86,12 +94,14 @@ export default {
         ? ADD_STREAM_EDITOR_I18N.SAVE_BUTTON_TEXT
         : ADD_STREAM_EDITOR_I18N.ADD_BUTTON_TEXT;
     },
+    showPrivateKey() {
+      return !this.isEditing || (this.isEditing && this.addingPrivateKey);
+    },
   },
   mounted() {
     this.name = this.item.name;
     this.googleProjectIdName = this.item.googleProjectIdName;
     this.logIdName = this.item.logIdName;
-    this.privateKey = this.item.privateKey;
     this.clientEmail = this.item.clientEmail;
   },
   methods: {
@@ -202,6 +212,7 @@ export default {
         this.errors.push(UPDATING_ERROR);
         this.$emit('error');
       } finally {
+        this.addingPrivateKey = false;
         this.loading = false;
       }
     },
@@ -290,7 +301,27 @@ export default {
         :label="$options.i18n.GCP_LOGGING_DESTINATION_PASSWORD_LABEL"
         data-testid="private-key-form-group"
       >
+        <div v-if="isEditing" class="gl-pb-3">
+          {{ $options.i18n.GCP_LOGGING_DESTINATION_PASSWORD_SUBTEXT }}
+          <gl-button
+            size="small"
+            category="secondary"
+            variant="confirm"
+            data-testid="private-key-add-button"
+            :disabled="showPrivateKey"
+            @click="addingPrivateKey = !addingPrivateKey"
+            >{{ $options.i18n.GCP_LOGGING_DESTINATION_PASSWORD_SUBTEXT_ADD_BUTTON }}</gl-button
+          >
+          <gl-button
+            v-if="showPrivateKey"
+            size="small"
+            data-testid="private-key-cancel-button"
+            @click="addingPrivateKey = !addingPrivateKey"
+            >{{ $options.i18n.CANCEL_BUTTON_TEXT }}</gl-button
+          >
+        </div>
         <gl-form-textarea
+          v-if="showPrivateKey"
           v-model="privateKey"
           rows="16"
           :formatter="privateKeyFormatter"

@@ -147,6 +147,20 @@ describe('DastSiteProfileForm', () => {
 
       expect(wrapper.text()).not.toContain(errorMessage);
     });
+
+    it('shows a help text when value is changed', async () => {
+      createComponent({
+        propsData: {
+          profile: siteProfileWithSecrets,
+        },
+      });
+
+      await setFieldValue(findTargetUrlInput(), targetUrl);
+
+      expect(wrapper.text()).toContain(
+        'Modifying the URL will clear any previously entered values for the additional request headers and password fields.',
+      );
+    });
   });
 
   describe('additional fields', () => {

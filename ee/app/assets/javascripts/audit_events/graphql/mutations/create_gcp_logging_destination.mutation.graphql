@@ -21,7 +21,6 @@ mutation createGcpLoggingDestination(
       id
       name
       logIdName
-      privateKey
       googleProjectIdName
       clientEmail
     }

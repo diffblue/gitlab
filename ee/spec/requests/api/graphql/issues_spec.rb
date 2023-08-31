@@ -77,7 +77,10 @@ RSpec.describe 'getting an issue list at root level', feature_category: :team_pl
           child_group = create(:group, :private, parent: root_group)
           create(:issue, project: create(:project, :private, group: child_group))
 
+          # Added a treshold here because a nested issue was created, which involves another query for preloading the
+          # child group's parent namespaces used for the `user_banned_from_namespace` policy.
           expect { post_graphql(query, current_user: current_user) }.not_to exceed_all_query_limit(control)
+            .with_threshold(1)
           expect_graphql_errors_to_be_empty
         end
       end

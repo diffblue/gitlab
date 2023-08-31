@@ -3,7 +3,7 @@ mutation updateGcpLoggingDestination(
   $name: String!
   $googleProjectIdName: String!
   $clientEmail: String!
-  $privateKey: String!
+  $privateKey: String
   $logIdName: String!
 ) {
   googleCloudLoggingConfigurationUpdate(
@@ -21,7 +21,6 @@ mutation updateGcpLoggingDestination(
       id
       name
       logIdName
-      privateKey
       googleProjectIdName
       clientEmail
     }

@@ -12,6 +12,7 @@ describe('DastSiteAuthSection', () => {
     fields = {},
     disabled = false,
     isTargetApi = false,
+    isEditMode = false,
   } = {}) => {
     wrapper = extendedWrapper(
       mountFn(DastSiteAuthSection, {
@@ -19,6 +20,7 @@ describe('DastSiteAuthSection', () => {
           disabled,
           value: { fields },
           isTargetApi,
+          isEditMode,
         },
       }),
     );
@@ -113,6 +115,20 @@ describe('DastSiteAuthSection', () => {
 
       const optionalInput = findByNameAttribute('submitField');
       expect(optionalInput.attributes('required')).toBe(undefined);
+    });
+
+    it('shows a help text when url field is changed', async () => {
+      createComponent({ isEditMode: true });
+      await setAuthentication({ enabled: true });
+
+      const input = findByNameAttribute('url');
+      const newValue = 'http://foo';
+
+      await input.setValue(newValue);
+
+      expect(findParentFormGroup().text()).toContain(
+        'Modifying the URL will clear any previously entered values for the additional request headers and password fields',
+      );
     });
 
     describe('validity', () => {

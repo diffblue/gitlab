@@ -65,6 +65,8 @@ describe('StreamDestinationEditor', () => {
   const findLogId = () => wrapper.findByTestId('log-id');
   const findPrivateKeyFormGroup = () => wrapper.findByTestId('private-key-form-group');
   const findPrivateKey = () => wrapper.findByTestId('private-key');
+  const findPrivateKeyAddButton = () => wrapper.findByTestId('private-key-add-button');
+  const findPrivateKeyCancelButton = () => wrapper.findByTestId('private-key-cancel-button');
 
   afterEach(() => {
     createAlert.mockClear();
@@ -232,8 +234,9 @@ describe('StreamDestinationEditor', () => {
           );
           expect(findLogId().exists()).toBe(true);
           expect(findLogId().element.value).toBe(mockGcpLoggingDestinations[0].logIdName);
-          expect(findPrivateKey().exists()).toBe(true);
-          expect(findPrivateKey().element.value).toBe(mockGcpLoggingDestinations[0].privateKey);
+          expect(findPrivateKey().exists()).toBe(false);
+          expect(findPrivateKeyAddButton().exists()).toBe(true);
+          expect(findPrivateKeyCancelButton().exists()).toBe(false);
         });
 
         it('the delete button', () => {
@@ -250,6 +253,24 @@ describe('StreamDestinationEditor', () => {
         it('disables the save button at first', () => {
           expect(findAddStreamBtn().props('disabled')).toBe(true);
         });
+
+        it('displays the private key field when adding', async () => {
+          await findPrivateKeyAddButton().trigger('click');
+
+          expect(findPrivateKeyAddButton().props('disabled')).toBe(true);
+          expect(findPrivateKeyCancelButton().exists()).toBe(true);
+          expect(findPrivateKey().element.value).toBe('');
+        });
+
+        it('removes the private key field when cancelled', async () => {
+          await findPrivateKeyAddButton().trigger('click');
+          await findPrivateKeyCancelButton().trigger('click');
+
+          expect(findPrivateKeyAddButton().props('disabled')).toBe(false);
+          expect(findPrivateKey().exists()).toBe(false);
+          expect(findPrivateKeyAddButton().exists()).toBe(true);
+          expect(findPrivateKeyCancelButton().exists()).toBe(false);
+        });
       });
 
       it.each`
@@ -258,7 +279,6 @@ describe('StreamDestinationEditor', () => {
         ${'Project ID'}       | ${findProjectId}
         ${'Client Email'}     | ${findClientEmailUrl}
         ${'Log ID'}           | ${findLogId}
-        ${'Private Key'}      | ${findPrivateKey}
       `('enable the save button when $name is edited', async ({ findInputFn }) => {
         createComponent({ props: { item: mockGcpLoggingDestinations[0] } });
 
@@ -284,6 +304,27 @@ describe('StreamDestinationEditor', () => {
         findProjectId().vm.$emit('input', mockGcpLoggingDestinations[1].googleProjectIdName);
         findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestinations[1].clientEmail);
         findLogId().vm.$emit('input', mockGcpLoggingDestinations[1].logIdName);
+        findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
+        await waitForPromises();
+
+        expect(findAlertErrors()).toHaveLength(0);
+        expect(wrapper.emitted('error')).toBeUndefined();
+        expect(wrapper.emitted('updated')).toBeDefined();
+      });
+
+      it('should emit updated event after destination private key updated', async () => {
+        createComponent({
+          props: { item: mockGcpLoggingDestinations[0] },
+          apolloHandlers: [
+            [
+              googleCloudLoggingConfigurationUpdate,
+              jest.fn().mockResolvedValue(gcpLoggingDestinationUpdateMutationPopulator()),
+            ],
+          ],
+        });
+
+        await findPrivateKeyAddButton().trigger('click');
+
         findPrivateKey().vm.$emit('input', mockGcpLoggingDestinations[1].privateKey);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
@@ -309,7 +350,6 @@ describe('StreamDestinationEditor', () => {
         findProjectId().vm.$emit('input', mockGcpLoggingDestinations[0].googleProjectIdName);
         findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestinations[0].clientEmail);
         findLogId().vm.$emit('input', mockGcpLoggingDestinations[0].logIdName);
-        findPrivateKey().vm.$emit('input', mockGcpLoggingDestinations[0].privateKey);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
@@ -333,7 +373,6 @@ describe('StreamDestinationEditor', () => {
         findProjectId().vm.$emit('input', mockGcpLoggingDestinations[0].googleProjectIdName);
         findClientEmailUrl().vm.$emit('input', mockGcpLoggingDestinations[0].clientEmail);
         findLogId().vm.$emit('input', mockGcpLoggingDestinations[0].logIdName);
-        findPrivateKey().vm.$emit('input', mockGcpLoggingDestinations[0].privateKey);
         findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
         await waitForPromises();
 
