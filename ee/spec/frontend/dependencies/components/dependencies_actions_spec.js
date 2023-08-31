@@ -3,7 +3,10 @@ import { nextTick } from 'vue';
 import DependenciesActions from 'ee/dependencies/components/dependencies_actions.vue';
 import createStore from 'ee/dependencies/store';
 import { DEPENDENCY_LIST_TYPES } from 'ee/dependencies/store/constants';
-import { SORT_FIELDS } from 'ee/dependencies/store/modules/list/constants';
+import {
+  SORT_FIELDS_GROUP,
+  SORT_FIELDS_PROJECT,
+} from 'ee/dependencies/store/modules/list/constants';
 import { TEST_HOST } from 'helpers/test_constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
@@ -26,7 +29,7 @@ describe('DependenciesActions component', () => {
       stubs: {
         GlSortingItem,
       },
-      provide: { ...objectBasicProp, ...provide },
+      provide: { ...objectBasicProp, glFeatures: { groupLevelLicenses: true }, ...provide },
     });
   };
 
@@ -52,7 +55,7 @@ describe('DependenciesActions component', () => {
 
     expect(store.dispatch.mock.calls).toEqual(
       expect.arrayContaining(
-        Object.keys(SORT_FIELDS).map((field) => [`${namespace}/setSortField`, field]),
+        Object.keys(SORT_FIELDS_PROJECT).map((field) => [`${namespace}/setSortField`, field]),
       ),
     );
   });
@@ -67,16 +70,41 @@ describe('DependenciesActions component', () => {
       await nextTick();
     });
 
-    it('dispatches the right setSortField action apart from severity', () => {
+    it('dispatches the right setSortField action on clicking each item in the dropdown', () => {
       const sortingItems = wrapper.findAllComponents(GlSortingItem).wrappers;
 
       sortingItems.forEach((item) => {
         item.vm.$emit('click');
       });
 
-      expect(store.dispatch.mock.calls).not.toEqual(
-        expect.arrayContaining([[`${namespace}/setSortField`, 'severity']]),
+      expect(store.dispatch.mock.calls).toEqual(
+        expect.arrayContaining(
+          Object.keys(SORT_FIELDS_GROUP).map((field) => [`${namespace}/setSortField`, field]),
+        ),
       );
+    });
+
+    describe('with the "groupLevelLicenses" feature flag disabled', () => {
+      beforeEach(async () => {
+        factory({
+          propsData: { namespace },
+          provide: { namespaceType: 'group', glFeatures: { groupLevelLicenses: false } },
+        });
+        store.state[namespace].endpoint = `${TEST_HOST}/dependencies.json`;
+        await nextTick();
+      });
+
+      it('does not dispatch the "license" action', () => {
+        const sortingItems = wrapper.findAllComponents(GlSortingItem).wrappers;
+
+        sortingItems.forEach((item) => {
+          item.vm.$emit('click');
+        });
+
+        expect(store.dispatch.mock.calls).not.toEqual(
+          expect.arrayContaining([[`${namespace}/setSortField`, 'license']]),
+        );
+      });
     });
   });
 
