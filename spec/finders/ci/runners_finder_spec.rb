@@ -373,7 +373,7 @@ RSpec.describe Ci::RunnersFinder, feature_category: :runner_fleet do
               let(:target_group) { nil }
 
               it 'raises Gitlab::Access::AccessDeniedError' do
-                # Query should run against all runners, however since user is not admin, query returns no results
+                # Query should run against all runners, however since user is not admin, we raise an error
                 expect { execute }.to raise_error(Gitlab::Access::AccessDeniedError)
               end
             end
