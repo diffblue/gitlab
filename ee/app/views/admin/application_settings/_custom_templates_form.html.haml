@@ -6,8 +6,8 @@
       = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
         = expanded ? _('Collapse') : _('Expand')
       %p.gl-text-secondary
-        - link_start = '<a href="%{url}">'.html_safe % { url: help_page_path('administration/custom_project_templates.md') }
-        = s_('AdminSettings|Select a group to use as a source of custom templates for new projects. %{link_start}Learn more%{link_end}.').html_safe % { link_start: link_start, link_end: "</a>".html_safe }
+        - link = link_to('', help_page_path('administration/custom_project_templates.md'))
+        = safe_format(s_('AdminSettings|Select a group to use as a source of custom templates for new projects. %{link_start}Learn more%{link_end}.'), tag_pair(link, :link_start, :link_end))
     .settings-content
 
       = gitlab_ui_form_for @application_setting, url: templates_admin_application_settings_path(anchor: 'js-custom-project-templates-settings') do |f|
