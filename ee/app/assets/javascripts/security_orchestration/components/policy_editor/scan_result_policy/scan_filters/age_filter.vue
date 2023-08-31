@@ -1,7 +1,7 @@
 <script>
 import { GlCollapsibleListbox } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
-import BaseLayoutComponent from '../base_layout/base_layout_component.vue';
+import SectionLayout from '../../section_layout.vue';
 import NumberRangeSelect from '../number_range_select.vue';
 import { ANY_OPERATOR, VULNERABILITY_AGE_OPERATORS } from '../../constants';
 import { enforceIntValue } from '../../utils';
@@ -14,7 +14,7 @@ export default {
   },
   name: 'AgeFilter',
   components: {
-    BaseLayoutComponent,
+    SectionLayout,
     NumberRangeSelect,
     GlCollapsibleListbox,
   },
@@ -57,10 +57,9 @@ export default {
 </script>
 
 <template>
-  <base-layout-component
+  <section-layout
     class="gl-w-full gl-bg-white"
     content-class="gl-bg-white gl-rounded-base gl-p-5"
-    :show-label="false"
     :show-remove-button="showRemoveButton"
     @remove="remove"
   >
@@ -83,5 +82,5 @@ export default {
         @select="emitChange({ interval: $event })"
       />
     </template>
-  </base-layout-component>
+  </section-layout>
 </template>

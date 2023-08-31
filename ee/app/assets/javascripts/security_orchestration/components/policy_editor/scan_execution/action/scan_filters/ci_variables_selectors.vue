@@ -2,7 +2,7 @@
 import { isEmpty, uniqueId } from 'lodash';
 import { GlButton, GlTooltipDirective } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import GenericBaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/generic_base_layout_component.vue';
+import SectionLayout from 'ee/security_orchestration/components/policy_editor/section_layout.vue';
 import { CI_VARIABLE } from './constants';
 import CiVariableSelector from './ci_variable_selector.vue';
 
@@ -18,7 +18,7 @@ export default {
   components: {
     GlButton,
     CiVariableSelector,
-    GenericBaseLayoutComponent,
+    SectionLayout,
   },
   directives: { GlTooltip: GlTooltipDirective },
   props: {
@@ -82,7 +82,7 @@ export default {
 </script>
 
 <template>
-  <generic-base-layout-component @remove="remove">
+  <section-layout @remove="remove">
     <template #selector>
       <label class="gl-mb-0" :title="$options.i18n.label">
         {{ $options.i18n.label }}
@@ -110,5 +110,5 @@ export default {
         </gl-button>
       </span>
     </template>
-  </generic-base-layout-component>
+  </section-layout>
 </template>

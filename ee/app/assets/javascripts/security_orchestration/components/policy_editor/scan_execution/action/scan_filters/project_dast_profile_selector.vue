@@ -3,7 +3,7 @@ import { GlButton, GlTruncate } from '@gitlab/ui';
 import DastProfilesDrawer from 'ee/security_configuration/dast_profiles/dast_profiles_drawer/dast_profiles_drawer.vue';
 import dastProfileConfiguratorMixin from 'ee/security_configuration/dast_profiles/dast_profiles_configurator_mixin';
 import { SCANNER_TYPE, SITE_TYPE, DRAWER_VIEW_MODE } from 'ee/on_demand_scans/constants';
-import GenericBaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/generic_base_layout_component.vue';
+import SectionLayout from 'ee/security_orchestration/components/policy_editor/section_layout.vue';
 import { DAST_PROFILE_I18N } from './constants';
 
 export default {
@@ -16,7 +16,7 @@ export default {
     GlButton,
     GlTruncate,
     DastProfilesDrawer,
-    GenericBaseLayoutComponent,
+    SectionLayout,
   },
   mixins: [dastProfileConfiguratorMixin()],
   provide() {
@@ -96,10 +96,7 @@ export default {
 
 <template>
   <div class="gl-w-full">
-    <generic-base-layout-component
-      class="gl-w-full gl-bg-white gl-mb-3"
-      :show-remove-button="false"
-    >
+    <section-layout class="gl-w-full gl-bg-white gl-mb-3" :show-remove-button="false">
       <template #selector>
         <label class="gl-mb-0 gl-mr-4" for="scanner-profile">
           {{ $options.i18n.scanLabel }}
@@ -121,8 +118,8 @@ export default {
           <gl-truncate :text="scannerProfileButtonText" />
         </gl-button>
       </template>
-    </generic-base-layout-component>
-    <generic-base-layout-component class="gl-w-full gl-bg-white" :show-remove-button="false">
+    </section-layout>
+    <section-layout class="gl-w-full gl-bg-white" :show-remove-button="false">
       <template #selector>
         <label class="gl-mb-0 gl-mr-4" for="site-profile">
           {{ $options.i18n.siteLabel }}
@@ -144,7 +141,7 @@ export default {
           <gl-truncate :text="siteProfileButtonText" />
         </gl-button>
       </template>
-    </generic-base-layout-component>
+    </section-layout>
 
     <dast-profiles-drawer
       :active-profile="activeProfile"

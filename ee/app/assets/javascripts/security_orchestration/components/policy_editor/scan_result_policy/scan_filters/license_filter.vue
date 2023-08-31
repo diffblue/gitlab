@@ -2,7 +2,7 @@
 import { GlCollapsibleListbox } from '@gitlab/ui';
 import { sprintf, __, s__ } from '~/locale';
 import { parseBoolean } from '~/lib/utils/common_utils';
-import BaseLayoutComponent from '../base_layout/base_layout_component.vue';
+import SectionLayout from '../../section_layout.vue';
 import { EXCEPT, MATCHING } from '../lib/rules';
 import { UNKNOWN_LICENSE } from './constants';
 
@@ -27,7 +27,7 @@ export default {
     },
   ],
   components: {
-    BaseLayoutComponent,
+    SectionLayout,
     GlCollapsibleListbox,
   },
   inject: ['parsedSoftwareLicenses'],
@@ -112,7 +112,7 @@ export default {
 </script>
 
 <template>
-  <base-layout-component class="gl-w-full gl-pt-3" :show-remove-button="false">
+  <section-layout class="gl-w-full gl-pt-3" :show-remove-button="false">
     <template #selector>
       <label class="gl-mb-0 gl-mr-4" :title="$options.i18n.label">{{ $options.i18n.label }}</label>
       <slot>
@@ -140,5 +140,5 @@ export default {
         />
       </slot>
     </template>
-  </base-layout-component>
+  </section-layout>
 </template>

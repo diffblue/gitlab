@@ -11,9 +11,9 @@ module QA
             super
 
             base.class_eval do
-              prepend SubMenus::SuperSidebar::Secure
-              prepend SubMenus::SuperSidebar::Code
-              prepend SubMenus::SuperSidebar::Analyze
+              prepend SubMenus::Secure
+              prepend SubMenus::Code
+              prepend SubMenus::Analyze
             end
           end
         end

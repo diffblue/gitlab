@@ -1,7 +1,7 @@
 <script>
 import { GlButton, GlForm, GlFormInput, GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
 import { GROUP_TYPE, ROLE_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
-import BaseLayoutComponent from './base_layout/base_layout_component.vue';
+import SectionLayout from '../section_layout.vue';
 import GroupSelect from './group_select.vue';
 import RoleSelect from './role_select.vue';
 import UserSelect from './user_select.vue';
@@ -15,7 +15,7 @@ import {
 
 export default {
   components: {
-    BaseLayoutComponent,
+    SectionLayout,
     GlButton,
     GlForm,
     GlFormInput,
@@ -129,7 +129,7 @@ export default {
 </script>
 
 <template>
-  <base-layout-component
+  <section-layout
     class="gl-py-0 gl-rounded-0"
     :show-remove-button="showRemoveButton"
     @remove="handleRemoveApprover"
@@ -195,5 +195,5 @@ export default {
         {{ $options.i18n.ADD_APPROVER_LABEL }}
       </gl-button>
     </template>
-  </base-layout-component>
+  </section-layout>
 </template>

@@ -7,11 +7,11 @@ import BranchExceptionSelector from '../branch_exception_selector.vue';
 import ScanFilterSelector from '../scan_filter_selector.vue';
 import { SCAN_RESULT_BRANCH_TYPE_OPTIONS } from '../constants';
 import RuleMultiSelect from '../rule_multi_select.vue';
+import SectionLayout from '../section_layout.vue';
 import PolicyRuleBranchSelection from './policy_rule_branch_selection.vue';
 import ScanTypeSelect from './base_layout/scan_type_select.vue';
 import StatusFilter from './scan_filters/status_filter.vue';
 import LicenseFilter from './scan_filters/license_filter.vue';
-import BaseLayoutComponent from './base_layout/base_layout_component.vue';
 import { getDefaultRule, LICENSE_STATES } from './lib/rules';
 import { FILTERS, FILTERS_STATUS_INDEX, STATUS } from './scan_filters/constants';
 
@@ -20,7 +20,7 @@ export default {
   STATUS,
   components: {
     BranchExceptionSelector,
-    BaseLayoutComponent,
+    SectionLayout,
     GlSprintf,
     LicenseFilter,
     PolicyRuleBranchSelection,
@@ -83,14 +83,9 @@ export default {
 
 <template>
   <div>
-    <base-layout-component
-      class="gl-pb-0"
-      :type="initRule.type"
-      :show-scan-type-dropdown="false"
-      :show-remove-button="false"
-    >
+    <section-layout class="gl-pb-0" :show-remove-button="false">
       <template #content>
-        <base-layout-component class="gl-bg-white!" :type="initRule.type" @remove="$emit('remove')">
+        <section-layout class="gl-bg-white!" @remove="$emit('remove')">
           <template #content>
             <gl-sprintf :message="$options.i18n.licenseScanResultRuleCopy">
               <template #scanType>
@@ -115,11 +110,11 @@ export default {
               </template>
             </gl-sprintf>
           </template>
-        </base-layout-component>
+        </section-layout>
       </template>
-    </base-layout-component>
+    </section-layout>
 
-    <base-layout-component class="gl-pt-3" :show-remove-button="false">
+    <section-layout class="gl-pt-3" :show-remove-button="false">
       <template #content>
         <status-filter :show-remove-button="false" class="gl-bg-white!">
           <rule-multi-select
@@ -140,6 +135,6 @@ export default {
           class="gl-bg-white gl-w-full"
         />
       </template>
-    </base-layout-component>
+    </section-layout>
   </div>
 </template>

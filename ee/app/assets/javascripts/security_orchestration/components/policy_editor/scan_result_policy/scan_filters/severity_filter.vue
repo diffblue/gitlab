@@ -2,7 +2,7 @@
 import { s__ } from '~/locale';
 import { SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import RuleMultiSelect from '../../rule_multi_select.vue';
-import BaseLayoutComponent from '../base_layout/base_layout_component.vue';
+import SectionLayout from '../../section_layout.vue';
 import { SEVERITY } from './constants';
 
 export default {
@@ -14,7 +14,7 @@ export default {
   name: 'SeverityFilter',
   components: {
     RuleMultiSelect,
-    BaseLayoutComponent,
+    SectionLayout,
   },
   props: {
     selected: {
@@ -46,7 +46,7 @@ export default {
 </script>
 
 <template>
-  <base-layout-component class="gl-w-full" :show-remove-button="showRemoveButton" @remove="remove">
+  <section-layout class="gl-w-full" :show-remove-button="showRemoveButton" @remove="remove">
     <template #selector>
       <label class="gl-mb-0 gl-mr-2" :title="$options.i18n.label">{{ $options.i18n.label }}</label>
       <rule-multi-select
@@ -57,5 +57,5 @@ export default {
         @input="selectSeverities"
       />
     </template>
-  </base-layout-component>
+  </section-layout>
 </template>

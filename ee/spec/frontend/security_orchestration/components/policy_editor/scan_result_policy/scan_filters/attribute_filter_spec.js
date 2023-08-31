@@ -3,7 +3,7 @@ import {
   FIX_AVAILABLE,
   FALSE_POSITIVE,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/constants';
-import BaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/scan_result_policy/base_layout/base_layout_component.vue';
+import SectionLayout from 'ee/security_orchestration/components/policy_editor/section_layout.vue';
 import AttributeFilter from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/attribute_filter.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
@@ -22,14 +22,14 @@ describe('AttributeFilter', () => {
         ...props,
       },
       stubs: {
-        BaseLayoutComponent,
+        SectionLayout,
         GlCollapsibleListbox,
         GlIcon,
       },
     });
   };
 
-  const findBaseLayoutComponent = () => wrapper.findComponent(BaseLayoutComponent);
+  const findSectionLayout = () => wrapper.findComponent(SectionLayout);
   const findOperatorValueSelect = () =>
     wrapper.findByTestId('vulnerability-attribute-operator-select');
   const findAttributeSelect = () => wrapper.findByTestId('vulnerability-attribute-select');
@@ -81,7 +81,7 @@ describe('AttributeFilter', () => {
   it('emits remove event', async () => {
     createComponent();
 
-    await findBaseLayoutComponent().vm.$emit('remove');
+    await findSectionLayout().vm.$emit('remove');
 
     expect(wrapper.emitted('remove')).toEqual([[FALSE_POSITIVE]]);
   });

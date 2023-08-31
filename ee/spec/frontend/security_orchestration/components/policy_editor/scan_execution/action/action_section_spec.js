@@ -1,4 +1,5 @@
 import { GlSprintf, GlCollapsibleListbox } from '@gitlab/ui';
+import SectionLayout from 'ee/security_orchestration/components/policy_editor/section_layout.vue';
 import { __ } from '~/locale';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import PolicyActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_execution/action/action_section.vue';
@@ -6,7 +7,6 @@ import ProjectDastProfileSelector from 'ee/security_orchestration/components/pol
 import projectRunnerTags from 'ee/vue_shared/components/runner_tags_dropdown/graphql/get_project_runner_tags.query.graphql';
 import groupRunnerTags from 'ee/vue_shared/components/runner_tags_dropdown/graphql/get_group_runner_tags.query.graphql';
 import GroupDastProfileSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_filters/group_dast_profile_selector.vue';
-import GenericBaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/generic_base_layout_component.vue';
 import RunnerTagsFilter from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_filters/runner_tags_filter.vue';
 import CiVariablesSelectors from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_filters/ci_variables_selectors.vue';
 import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_filter_selector.vue';
@@ -67,7 +67,7 @@ describe('PolicyActionBuilder', () => {
         ...provide,
       },
       stubs: {
-        GenericBaseLayoutComponent,
+        SectionLayout,
         GlSprintf,
         ...stubs,
       },
@@ -76,8 +76,7 @@ describe('PolicyActionBuilder', () => {
 
   const findActionSeperator = () => wrapper.findByTestId('action-and-label');
   const findCiVariablesSelectors = () => wrapper.findComponent(CiVariablesSelectors);
-  const findGenericBaseLayoutComponent = () =>
-    wrapper.findAllComponents(GenericBaseLayoutComponent).at(1);
+  const findSectionLayout = () => wrapper.findAllComponents(SectionLayout).at(1);
   const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
   const findScanFilterSelector = () => wrapper.findComponent(ScanFilterSelector);
   const findSprintf = () => wrapper.findComponent(GlSprintf);
@@ -136,7 +135,7 @@ describe('PolicyActionBuilder', () => {
     factory();
     expect(wrapper.emitted('remove')).toBe(undefined);
 
-    await findGenericBaseLayoutComponent().vm.$emit('remove');
+    await findSectionLayout().vm.$emit('remove');
     expect(wrapper.emitted('remove')).toStrictEqual([[]]);
   });
 

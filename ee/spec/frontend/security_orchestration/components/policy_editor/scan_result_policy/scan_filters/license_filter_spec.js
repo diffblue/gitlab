@@ -1,4 +1,4 @@
-import BaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/scan_result_policy/base_layout/base_layout_component.vue';
+import SectionLayout from 'ee/security_orchestration/components/policy_editor/section_layout.vue';
 import LicenseFilter from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/license_filter.vue';
 import { UNKNOWN_LICENSE } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -29,7 +29,7 @@ describe('LicenseFilter', () => {
         parsedSoftwareLicenses,
       },
       stubs: {
-        BaseLayoutComponent,
+        SectionLayout,
       },
     });
   };

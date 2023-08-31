@@ -146,32 +146,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
         context 'when not on .org and .com' do
           let(:is_gitlab_org_or_com) { false }
-          let(:ai_access_token) { 'ai_access_token' }
 
-          before do
-            stub_ee_application_setting(ai_access_token: ai_access_token)
-          end
-
-          it 'proxy request to saas' do
-            expect(Gitlab::Workhorse).to receive(:send_url)
-              .with(
-                "#{Gitlab::Saas.com_url}/api/v4/code_suggestions/tokens",
-                include(headers: include("Authorization" => ["Bearer ai_access_token"]))
-              )
-
-            post_api
-          end
-
-          context 'when request was proxied from self managed instance' do
-            let(:headers) { { 'User-Agent' => 'gitlab-workhorse' } }
-
-            include_examples 'a response', '500' do
-              let(:result) { 500 }
-              let(:body) do
-                { "message" => include('Proxying is only supported under .org or .com') }
-              end
-            end
-          end
+          include_examples 'a not found response'
         end
       end
     end

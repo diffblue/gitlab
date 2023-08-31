@@ -1,5 +1,5 @@
 import { GlCollapsibleListbox } from '@gitlab/ui';
-import BaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/scan_result_policy/base_layout/base_layout_component.vue';
+import SectionLayout from 'ee/security_orchestration/components/policy_editor/section_layout.vue';
 import StatusFilter from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/status_filter.vue';
 import RuleMultiSelect from 'ee/security_orchestration/components/policy_editor/rule_multi_select.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -22,14 +22,14 @@ describe('StatusFilter', () => {
         ...props,
       },
       stubs: {
-        BaseLayoutComponent,
+        SectionLayout,
         GlCollapsibleListbox,
         RuleMultiSelect,
       },
     });
   };
 
-  const findBaseLayoutComponent = () => wrapper.findComponent(BaseLayoutComponent);
+  const findSectionLayout = () => wrapper.findComponent(SectionLayout);
   const findListBox = () => wrapper.findComponent(GlCollapsibleListbox);
   const findPolicyRuleMultiSelect = () => wrapper.findComponent(RuleMultiSelect);
   const findAllSelectedItem = () => wrapper.findByTestId('listbox-select-all-button');
@@ -111,7 +111,7 @@ describe('StatusFilter', () => {
     it('should remove filter when only one is present', async () => {
       createComponent({ selected: [testStateNew1] });
 
-      await findBaseLayoutComponent().vm.$emit('remove');
+      await findSectionLayout().vm.$emit('remove');
 
       expect(wrapper.emitted('remove')).toHaveLength(1);
     });

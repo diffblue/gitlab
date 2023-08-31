@@ -1,7 +1,7 @@
 <script>
 import { GlIcon, GlTooltipDirective as GlTooltip } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import GenericBaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/generic_base_layout_component.vue';
+import SectionLayout from 'ee/security_orchestration/components/policy_editor/section_layout.vue';
 import RunnerTagsList from './runner_tags_list.vue';
 
 export default {
@@ -12,7 +12,7 @@ export default {
     ),
   },
   components: {
-    GenericBaseLayoutComponent,
+    SectionLayout,
     GlIcon,
     RunnerTagsList,
   },
@@ -40,7 +40,7 @@ export default {
 </script>
 
 <template>
-  <generic-base-layout-component class="gl-w-full gl-bg-white" :show-remove-button="false">
+  <section-layout class="gl-w-full gl-bg-white" :show-remove-button="false">
     <template #selector>
       <label class="gl-mb-0 gl-mr-4" for="policy-tags" :title="$options.i18n.label">
         {{ $options.i18n.label }}
@@ -64,5 +64,5 @@ export default {
         />
       </div>
     </template>
-  </generic-base-layout-component>
+  </section-layout>
 </template>

@@ -14,12 +14,12 @@ import {
 import { enforceIntValue } from '../utils';
 import ScanFilterSelector from '../scan_filter_selector.vue';
 import RuleMultiSelect from '../rule_multi_select.vue';
+import SectionLayout from '../section_layout.vue';
 import { getDefaultRule, groupSelectedVulnerabilityStates } from './lib';
 import SeverityFilter from './scan_filters/severity_filter.vue';
 import AgeFilter from './scan_filters/age_filter.vue';
 import StatusFilters from './scan_filters/status_filters.vue';
 import AttributeFilters from './scan_filters/attribute_filters.vue';
-import BaseLayoutComponent from './base_layout/base_layout_component.vue';
 import PolicyRuleBranchSelection from './policy_rule_branch_selection.vue';
 import {
   FILTERS,
@@ -49,8 +49,8 @@ export default {
     'ScanResultPolicy|When %{scanType} %{scanners} runs against the %{branches} %{branchExceptions} and find(s) %{vulnerabilitiesNumber} %{boldDescription} of the following criteria:',
   ),
   components: {
-    BaseLayoutComponent,
     BranchExceptionSelector,
+    SectionLayout,
     GlSprintf,
     PolicyRuleBranchSelection,
     RuleMultiSelect,
@@ -316,14 +316,9 @@ export default {
 
 <template>
   <div>
-    <base-layout-component
-      class="gl-pb-0"
-      :type="initRule.type"
-      :show-remove-button="false"
-      @changed="$emit('changed', $event)"
-    >
+    <section-layout class="gl-pb-0" :show-remove-button="false" @changed="$emit('changed', $event)">
       <template #content>
-        <base-layout-component class="gl-bg-white!" :type="initRule.type" @remove="$emit('remove')">
+        <section-layout class="gl-bg-white!" @remove="$emit('remove')">
           <template #content>
             <gl-sprintf :message="$options.scanResultRuleCopy">
               <template #scanType>
@@ -374,11 +369,11 @@ export default {
               </template>
             </gl-sprintf>
           </template>
-        </base-layout-component>
+        </section-layout>
       </template>
-    </base-layout-component>
+    </section-layout>
 
-    <base-layout-component class="gl-pt-3" :show-remove-button="false">
+    <section-layout class="gl-pt-3" :show-remove-button="false">
       <template #content>
         <severity-filter
           v-if="isSeverityFilterSelected"
@@ -418,6 +413,6 @@ export default {
           @select="selectFilter"
         />
       </template>
-    </base-layout-component>
+    </section-layout>
   </div>
 </template>
