@@ -2,7 +2,7 @@ import { nextTick } from 'vue';
 import { GridStack } from 'gridstack';
 import * as Sentry from '@sentry/browser';
 import { RouterLinkStub } from '@vue/test-utils';
-import { GlForm } from '@gitlab/ui';
+import { GlForm, GlLink } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
 import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';
@@ -92,6 +92,7 @@ describe('CustomizableDashboard', () => {
   const findUrlSync = () => wrapper.findComponent(UrlSync);
   const findForm = () => wrapper.findComponent(GlForm);
   const findVisualizationSelector = () => wrapper.findComponent(VisualizationSelector);
+  const findDashboardDescription = () => wrapper.findByTestId('dashboard-description');
 
   describe('when being created an error occurs while loading the CSS', () => {
     beforeEach(() => {
@@ -211,6 +212,39 @@ describe('CustomizableDashboard', () => {
 
     it('shows Code Button', () => {
       expect(findCodeButton().exists()).toBe(true);
+    });
+
+    it('does not show a dashboard description', () => {
+      expect(findDashboardDescription().exists()).toBe(false);
+    });
+  });
+
+  describe('when the dashboard has a description loaded', () => {
+    const description = 'This is a description of the greatest dashboard';
+    beforeEach(() => {
+      loadCSSFile.mockResolvedValue();
+    });
+
+    it('shows the dashboard description', () => {
+      createWrapper({}, { ...builtinDashboard, description });
+
+      expect(findDashboardDescription().text()).toBe(description);
+    });
+
+    it('does not show a dashboard documentation link', () => {
+      createWrapper({}, { ...builtinDashboard, description });
+
+      expect(findDashboardDescription().findComponent(GlLink).exists()).toBe(false);
+    });
+
+    describe('when a documentation link exists', () => {
+      it('shows the dashboard documentation link', () => {
+        createWrapper({}, { ...builtinDashboard, description, slug: 'value_stream_dashboard' });
+
+        expect(findDashboardDescription().findComponent(GlLink).attributes('href')).toBe(
+          '/help/user/analytics/value_streams_dashboard',
+        );
+      });
     });
   });
 

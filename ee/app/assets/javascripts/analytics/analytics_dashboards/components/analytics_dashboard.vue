@@ -15,6 +15,9 @@ import { NEW_DASHBOARD, PRODUCT_ANALYTICS_TITLE } from '../constants';
 import getProductAnalyticsDashboardQuery from '../graphql/queries/get_product_analytics_dashboard.query.graphql';
 import getAvailableVisualizations from '../graphql/queries/get_all_product_analytics_visualizations.query.graphql';
 
+const BUILT_IN_VALUE_STREAM_DASHBOARD = 'value_stream_dashboard';
+const HIDE_DATE_RANGE_FILTER = [BUILT_IN_VALUE_STREAM_DASHBOARD];
+
 export default {
   name: 'AnalyticsDashboard',
   components: {
@@ -64,6 +67,11 @@ export default {
       editingEnabled: this.glFeatures.combinedAnalyticsDashboardsEditor,
       alert: null,
     };
+  },
+  computed: {
+    showDateRangeFilter() {
+      return !HIDE_DATE_RANGE_FILTER.includes(this.initialDashboard.slug);
+    },
   },
   async created() {
     if (!this.isNewDashboard) {
@@ -213,7 +221,7 @@ export default {
       :date-range-limit="0"
       :sync-url-filters="!isNewDashboard"
       :is-new-dashboard="isNewDashboard"
-      show-date-range-filter
+      :show-date-range-filter="showDateRangeFilter"
       @save="saveDashboard"
     />
     <gl-empty-state

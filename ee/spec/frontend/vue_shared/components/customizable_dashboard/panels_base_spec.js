@@ -22,7 +22,12 @@ describe('PanelsBase', () => {
 
   const createWrapper = (props = {}) => {
     wrapper = shallowMountExtended(PanelsBase, {
-      provide: { namespaceId: '1' },
+      provide: {
+        namespaceId: '1',
+        namespaceName: 'Namespace name',
+        namespaceFullPath: 'namespace/full/path',
+        isProject: true,
+      },
       propsData: {
         title: panelConfig.title,
         visualization: panelConfig.visualization,

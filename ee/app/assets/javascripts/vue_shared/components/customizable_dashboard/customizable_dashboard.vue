@@ -2,9 +2,10 @@
 import { GridStack } from 'gridstack';
 import * as Sentry from '@sentry/browser';
 import cloneDeep from 'lodash/cloneDeep';
-import { GlButton, GlFormInput, GlForm } from '@gitlab/ui';
+import { GlButton, GlFormInput, GlForm, GlLink } from '@gitlab/ui';
 import { loadCSSFile } from '~/lib/utils/css_utils';
 import { slugify } from '~/lib/utils/text_utility';
+import { __ } from '~/locale';
 import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/url_sync.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { createNewVisualizationPanel } from 'ee/analytics/analytics_dashboards/utils';
@@ -16,6 +17,7 @@ import {
   GRIDSTACK_MIN_ROW,
   CURSOR_GRABBING_CLASS,
   NEW_DASHBOARD_SLUG,
+  DASHBOARD_DOCUMENTATION_LINKS,
 } from './constants';
 import VisualizationSelector from './dashboard_editor/visualization_selector.vue';
 import { filtersToQueryParams, getDashboardConfig } from './utils';
@@ -27,6 +29,7 @@ export default {
     GlButton,
     GlFormInput,
     GlForm,
+    GlLink,
     PanelsBase,
     UrlSync,
     VisualizationSelector,
@@ -61,7 +64,7 @@ export default {
     syncUrlFilters: {
       type: Boolean,
       required: false,
-      default: () => {},
+      default: false,
     },
     isSaving: {
       type: Boolean,
@@ -95,10 +98,23 @@ export default {
       return this.showDateRangeFilter;
     },
     queryParams() {
-      return filtersToQueryParams(this.filters);
+      return this.showFilters ? filtersToQueryParams(this.filters) : {};
     },
     dashboardConfig() {
       return getDashboardConfig(this.dashboard);
+    },
+    showDashboardDescription() {
+      return Boolean(this.dashboard.description);
+    },
+    showEditDashboardButton() {
+      const { editingEnabled, editing, dashboard } = this;
+      return editingEnabled && !editing && dashboard.userDefined;
+    },
+    dashboardDescription() {
+      return this.dashboard.description;
+    },
+    documentationLink() {
+      return DASHBOARD_DOCUMENTATION_LINKS[this.dashboard.slug];
     },
   },
   watch: {
@@ -261,66 +277,81 @@ export default {
     },
   },
   HISTORY_REPLACE_UPDATE_METHOD,
+  I18N_DOCUMENTATION_LINK_TEXT: __('Learn more'),
 };
 </script>
 
 <template>
   <div>
-    <section class="gl-display-flex gl-align-items-center gl-py-5">
-      <h3 v-if="!editing" class="gl-my-0 flex-fill">{{ dashboard.title }}</h3>
-      <gl-form v-else class="gl-display-flex flex-fill" @submit="saveEdit">
-        <gl-form-input
-          v-model="dashboard.title"
-          dir="auto"
-          type="text"
-          :placeholder="s__('Analytics|Dashboard Title')"
-          :aria-label="s__('Analytics|Dashboard Title')"
-          class="form-control gl-mr-4 gl-border-gray-200"
-          data-testid="dashboard-title-tb"
-          required
-        />
+    <section class="gl-flex-direction-column gl-display-flex gl-py-5">
+      <div class="gl-display-flex gl-align-items-center">
+        <h3 v-if="!editing" class="gl-my-0 flex-fill">{{ dashboard.title }}</h3>
+        <gl-form v-else class="gl-display-flex flex-fill" @submit="saveEdit">
+          <gl-form-input
+            v-model="dashboard.title"
+            dir="auto"
+            type="text"
+            :placeholder="s__('Analytics|Dashboard Title')"
+            :aria-label="s__('Analytics|Dashboard Title')"
+            class="form-control gl-mr-4 gl-border-gray-200"
+            data-testid="dashboard-title-tb"
+            required
+          />
+          <gl-button
+            :loading="isSaving"
+            class="gl-mr-2"
+            category="primary"
+            variant="confirm"
+            data-testid="dashboard-save-btn"
+            type="submit"
+            >{{ s__('Analytics|Save') }}</gl-button
+          >
+        </gl-form>
         <gl-button
-          :loading="isSaving"
+          v-if="showEditDashboardButton"
+          icon="pencil"
           class="gl-mr-2"
-          category="primary"
-          variant="confirm"
-          data-testid="dashboard-save-btn"
-          type="submit"
-          >{{ s__('Analytics|Save') }}</gl-button
+          data-testid="dashboard-edit-btn"
+          @click="startEdit"
+          >{{ s__('Analytics|Edit') }}</gl-button
         >
-      </gl-form>
-      <gl-button
-        v-if="editingEnabled && !editing && dashboard.userDefined"
-        icon="pencil"
-        class="gl-mr-2"
-        data-testid="dashboard-edit-btn"
-        @click="startEdit"
-        >{{ s__('Analytics|Edit') }}</gl-button
+        <gl-button
+          v-if="editing || !dashboard.userDefined"
+          :selected="showCode"
+          icon="code"
+          class="gl-mr-2"
+          data-testid="dashboard-code-btn"
+          @click="toggleCodeDisplay"
+          >{{ s__('Analytics|Code') }}</gl-button
+        >
+        <gl-button
+          v-if="editing && !isNewDashboard"
+          class="gl-mr-2"
+          category="secondary"
+          data-testid="dashboard-cancel-edit-btn"
+          @click="cancelEdit"
+          >{{ s__('Analytics|Cancel') }}</gl-button
+        >
+        <router-link
+          v-if="!editing || isNewDashboard"
+          to="/"
+          class="gl-button btn btn-default btn-md"
+        >
+          {{ s__('ProductAnalytics|Go back') }}
+        </router-link>
+      </div>
+      <div
+        v-if="showDashboardDescription"
+        class="gl-display-flex gl-mt-5"
+        data-testid="dashboard-description"
       >
-      <gl-button
-        v-if="editing || !dashboard.userDefined"
-        :selected="showCode"
-        icon="code"
-        class="gl-mr-2"
-        data-testid="dashboard-code-btn"
-        @click="toggleCodeDisplay"
-        >{{ s__('Analytics|Code') }}</gl-button
-      >
-      <gl-button
-        v-if="editing && !isNewDashboard"
-        class="gl-mr-2"
-        category="secondary"
-        data-testid="dashboard-cancel-edit-btn"
-        @click="cancelEdit"
-        >{{ s__('Analytics|Cancel') }}</gl-button
-      >
-      <router-link
-        v-if="!editing || isNewDashboard"
-        to="/"
-        class="gl-button btn btn-default btn-md"
-      >
-        {{ s__('ProductAnalytics|Go back') }}
-      </router-link>
+        <p>
+          {{ dashboardDescription }}
+          <gl-link v-if="documentationLink" :href="documentationLink" rel="noopener">
+            {{ $options.I18N_DOCUMENTATION_LINK_TEXT }}
+          </gl-link>
+        </p>
+      </div>
     </section>
     <div
       class="grid-stack-container gl-mx-n5 gl-pl-2 gl-pr-2 gl-border-t-1 gl-border-t-solid gl-border-t-gray-100"

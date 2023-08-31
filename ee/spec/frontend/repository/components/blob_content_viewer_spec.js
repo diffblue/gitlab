@@ -6,7 +6,6 @@ import VueApollo from 'vue-apollo';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import AiGenie from 'ee_component/ai/components/ai_genie.vue';
-import CodeownersValidation from 'ee_component/blob/components/codeowners_validation.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import BlobButtonGroup from '~/repository/components/blob_button_group.vue';
@@ -106,7 +105,6 @@ const createComponent = async (mockData = {}) => {
 };
 
 const findAiGenie = () => wrapper.findComponent(AiGenie);
-const findCodeownersValidation = () => wrapper.findComponent(CodeownersValidation);
 
 describe('Blob content viewer component', () => {
   const findBlobButtonGroup = () => wrapper.findComponent(BlobButtonGroup);
@@ -189,18 +187,6 @@ describe('Blob content viewer component', () => {
           expect(findBlobButtonGroup().props('canLock')).toBe(canLock);
         },
       );
-    });
-  });
-  describe('Codeowners validation', () => {
-    it('does not render codeowners validation when file is not CODEOWNERS', async () => {
-      await createComponent();
-      expect(findCodeownersValidation().exists()).toBe(false);
-    });
-    it('renders codeowners validation when validateCodeownerFile is present', async () => {
-      await createComponent({
-        path: 'doc/CODEOWNERS',
-      });
-      expect(findCodeownersValidation().exists()).toBe(true);
     });
   });
 });

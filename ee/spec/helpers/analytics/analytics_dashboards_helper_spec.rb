@@ -71,6 +71,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
             collector_host: user_has_permission ? 'https://new-collector.example.com' : nil,
             chart_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
             dashboard_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
+            namespace_name: project.name,
             namespace_full_path: project.full_path,
             features: (enabled && has_permission ? [:product_analytics] : []).to_json,
             router_base: '/-/analytics/dashboards'
@@ -106,6 +107,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           collector_host: collector_host ? 'https://new-collector.example.com' : nil,
           chart_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
           dashboard_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
+          namespace_name: group.name,
           namespace_full_path: group.full_path,
           features: [].to_json,
           router_base: "/groups/#{group.full_path}/-/analytics/dashboards"
