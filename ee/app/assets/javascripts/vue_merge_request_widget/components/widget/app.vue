@@ -36,6 +36,7 @@ export default {
     widgets() {
       return [
         this.codeQualityWidget,
+        this.testReportWidget,
         this.metricsWidget,
         this.statusChecksWidget,
         this.terraformPlansWidget,
