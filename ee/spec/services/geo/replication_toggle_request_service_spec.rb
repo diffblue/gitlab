@@ -18,9 +18,11 @@ RSpec.describe Geo::ReplicationToggleRequestService, :geo, feature_category: :ge
   it_behaves_like 'a geo RequestService'
 
   it 'expires the geo cache on success' do
-    response = double(success?: true,
-                      code: 200,
-                      parsed_response: { 'message' => 'Test' } )
+    response = double(
+      success?: true,
+      code: 200,
+      parsed_response: { 'message' => 'Test' }
+    )
     allow(Gitlab::HTTP).to receive(:perform_request).and_return(response)
     expect(Gitlab::Geo).to receive(:expire_cache!)
 
@@ -28,10 +30,12 @@ RSpec.describe Geo::ReplicationToggleRequestService, :geo, feature_category: :ge
   end
 
   it 'does not expire the geo cache on failure' do
-    response = double(success?: false,
-                      code: 401,
-                      message: 'Unauthorized',
-                      parsed_response: { 'message' => 'Test' } )
+    response = double(
+      success?: false,
+      code: 401,
+      message: 'Unauthorized',
+      parsed_response: { 'message' => 'Test' }
+    )
 
     allow(Gitlab::HTTP).to receive(:perform_request).and_return(response)
     expect(Gitlab::Geo).not_to receive(:expire_cache!)

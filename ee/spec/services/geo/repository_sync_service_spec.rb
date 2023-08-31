@@ -270,12 +270,13 @@ RSpec.describe Geo::RepositorySyncService, :geo, feature_category: :geo_replicat
         it 'sets correct values for registry record' do
           subject.execute
 
-          expect(registry).to have_attributes(last_repository_synced_at: be_present,
-                                              last_repository_successful_sync_at: nil,
-                                              repository_retry_count: 1,
-                                              repository_retry_at: be_present,
-                                              last_repository_sync_failure: 'Error syncing repository: shell error'
-                                             )
+          expect(registry).to have_attributes(
+            last_repository_synced_at: be_present,
+            last_repository_successful_sync_at: nil,
+            repository_retry_count: 1,
+            repository_retry_at: be_present,
+            last_repository_sync_failure: 'Error syncing repository: shell error'
+          )
         end
       end
     end

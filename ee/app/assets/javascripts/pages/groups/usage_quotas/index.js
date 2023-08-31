@@ -1,5 +1,6 @@
 import initUsageQuotas from '~/usage_quotas';
 import initSeatUsageApp from 'ee/usage_quotas/seats';
+import initCodeSuggestionsUsageApp from 'ee/usage_quotas/code_suggestions';
 import initPipelineUsageApp from 'ee/usage_quotas/pipelines';
 import initNamespaceStorage from 'ee/usage_quotas/storage/init_namespace_storage';
 import { GlTabsBehavior, HISTORY_TYPE_HASH, TAB_SHOWN_EVENT } from '~/tabs';
@@ -17,6 +18,10 @@ const legacyInitUsageQuotas = () => {
     'seats-quota-tab': {
       wasInited: false,
       init: initSeatUsageApp,
+    },
+    'code-suggestions-usage-tab': {
+      wasInited: false,
+      init: initCodeSuggestionsUsageApp,
     },
     'pipelines-quota-tab': {
       wasInited: false,
