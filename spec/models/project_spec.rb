@@ -8090,14 +8090,6 @@ RSpec.describe Project, factory_default: :keep, feature_category: :groups_and_pr
     it { is_expected.not_to include(user) }
   end
 
-  describe "#metrics_setting" do
-    let(:project) { build(:project) }
-
-    it 'creates setting if it does not exist' do
-      expect(project.metrics_setting).to be_an_instance_of(ProjectMetricsSetting)
-    end
-  end
-
   describe '#enabled_group_deploy_keys' do
     let_it_be(:project) { create(:project) }
 
