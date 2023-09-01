@@ -48,16 +48,18 @@ The Jenkins integration requires configuration in both GitLab and Jenkins.
 
 ## Configure the Jenkins server
 
-Install and configure the Jenkins plugin. The plugin must be installed and configured to
-authorize the connection to GitLab.
+Install and configure the Jenkins plugin to authorize the connection to GitLab.
 
 1. On the Jenkins server, select **Manage Jenkins > Manage Plugins**.
-1. Install the [Jenkins GitLab Plugin](https://wiki.jenkins.io/display/JENKINS/GitLab+Plugin).
+1. Select the **Available** tab. Search for `gitlab-plugin` and select it to install.
+   See the [Jenkins GitLab documentation](https://wiki.jenkins.io/display/JENKINS/GitLab+Plugin)
+   for other ways to install the plugin.
 1. Select **Manage Jenkins > Configure System**.
 1. In the **GitLab** section, select **Enable authentication for '/project' end-point**.
 1. Select **Add**, then choose **Jenkins Credential Provider**.
 1. Select **GitLab API token** as the token type.
-1. In **API Token**, [paste the value you copied from GitLab](#grant-jenkins-access-to-the-gitlab-project) and select **Add**.
+1. In **API Token**, [paste the access token value you copied from GitLab](#grant-jenkins-access-to-the-gitlab-project)
+   and select **Add**.
 1. Enter the GitLab server's URL in **GitLab host URL**.
 1. To test the connection, select **Test Connection**.
 
