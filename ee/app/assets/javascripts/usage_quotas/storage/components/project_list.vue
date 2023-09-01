@@ -20,6 +20,7 @@ export default {
     StorageTypeHelpLink,
     StorageTypeWarning,
   },
+  inject: ['isNamespaceUnderProjectLimits'],
   props: {
     projects: {
       type: Array,
@@ -35,12 +36,38 @@ export default {
     },
     sortBy: {
       type: String,
-      required: true,
+      required: false,
+      default: undefined,
     },
     sortDesc: {
       type: Boolean,
-      required: true,
+      required: false,
+      default: undefined,
     },
+  },
+  created() {
+    this.fields = [
+      { key: 'name', label: __('Project') },
+      { key: 'storage', label: __('Total'), sortable: !this.isNamespaceUnderProjectLimits },
+      { key: 'repository', label: __('Repository') },
+      { key: 'snippets', label: __('Snippets') },
+      { key: 'buildArtifacts', label: __('Jobs') },
+      { key: 'lfsObjects', label: __('LFS') },
+      { key: 'packages', label: __('Packages') },
+      { key: 'wiki', label: __('Wiki') },
+      {
+        key: 'containerRegistry',
+        label: __('Containers'),
+        thClass: 'gl-border-l!',
+        tdClass: 'gl-border-l!',
+      },
+    ].map((f) => ({
+      ...f,
+      // eslint-disable-next-line @gitlab/require-i18n-strings
+      thClass: `${f.thClass ?? ''} gl-px-3!`,
+      // eslint-disable-next-line @gitlab/require-i18n-strings
+      tdClass: `${f.tdClass ?? ''} gl-px-3!`,
+    }));
   },
   methods: {
     /**
@@ -65,28 +92,6 @@ export default {
       return project.statistics.storageSize !== project.statistics.costFactoredStorageSize;
     },
   },
-  fields: [
-    { key: 'name', label: __('Project') },
-    { key: 'storage', label: __('Total'), sortable: true },
-    { key: 'repository', label: __('Repository') },
-    { key: 'snippets', label: __('Snippets') },
-    { key: 'buildArtifacts', label: __('Jobs') },
-    { key: 'lfsObjects', label: __('LFS') },
-    { key: 'packages', label: __('Packages') },
-    { key: 'wiki', label: __('Wiki') },
-    {
-      key: 'containerRegistry',
-      label: __('Containers'),
-      thClass: 'gl-border-l!',
-      tdClass: 'gl-border-l!',
-    },
-  ].map((f) => ({
-    ...f,
-    // eslint-disable-next-line @gitlab/require-i18n-strings
-    thClass: `${f.thClass ?? ''} gl-px-3!`,
-    // eslint-disable-next-line @gitlab/require-i18n-strings
-    tdClass: `${f.tdClass ?? ''} gl-px-3!`,
-  })),
   containerRegistryPopover,
   forksCostFactorHelpLink: helpPagePath('user/usage_quotas.html', {
     anchor: 'view-project-fork-storage-usage',
@@ -96,7 +101,7 @@ export default {
 
 <template>
   <gl-table
-    :fields="$options.fields"
+    :fields="fields"
     :items="projects"
     :busy="isLoading"
     show-empty
@@ -109,7 +114,7 @@ export default {
     no-sort-reset
     @sort-changed="$emit('sortChanged', $event)"
   >
-    <template v-for="field in $options.fields" #[getHeaderSlotName(field.key)]>
+    <template v-for="field in fields" #[getHeaderSlotName(field.key)]>
       <div :key="field.key" :data-testid="'th-' + field.key">
         {{ field.label }}
 

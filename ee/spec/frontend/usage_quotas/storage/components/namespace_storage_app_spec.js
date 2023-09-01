@@ -1,6 +1,7 @@
 import { GlAlert, GlButton } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
 import Vue from 'vue';
+import { cloneDeep } from 'lodash';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { captureException } from '~/ci/runner/sentry_utils';
@@ -27,40 +28,9 @@ Vue.use(VueApollo);
 describe('NamespaceStorageApp', () => {
   /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
-  let requestHandler;
 
-  function createMockApolloProvider(
-    response = mockedNamespaceStorageResponse,
-    proxyResponse = mockDependencyProxyResponse,
-  ) {
-    requestHandler = jest.fn().mockResolvedValue(response);
-    const requestHandlers = [
-      [getNamespaceStorageQuery, requestHandler],
-      [getDependencyProxyTotalSizeQuery, jest.fn().mockResolvedValue(proxyResponse)],
-    ];
-
-    return createMockApollo(requestHandlers);
-  }
-
-  function createPendingMockApolloProvider() {
-    const successHandler = new Promise(() => {});
-    const requestHandlers = [
-      [getNamespaceStorageQuery, successHandler],
-      [getDependencyProxyTotalSizeQuery, jest.fn().mockResolvedValue(mockDependencyProxyResponse)],
-    ];
-
-    return createMockApollo(requestHandlers);
-  }
-
-  function createFailedMockApolloProvider() {
-    const failedHandler = jest.fn().mockRejectedValue(new Error('Network error!'));
-    const requestHandlers = [
-      [getNamespaceStorageQuery, failedHandler],
-      [getDependencyProxyTotalSizeQuery, jest.fn().mockResolvedValue(mockDependencyProxyResponse)],
-    ];
-
-    return createMockApollo(requestHandlers);
-  }
+  const getNamespaceStorageHandler = jest.fn();
+  const getDependencyProxyTotalSizeHandler = jest.fn();
 
   const findDependencyProxy = () => wrapper.findComponent(DependencyProxyUsage);
   const findStorageUsageStatistics = () => wrapper.findComponent(StorageUsageStatistics);
@@ -72,9 +42,12 @@ describe('NamespaceStorageApp', () => {
   const findContainerRegistry = () => wrapper.findComponent(ContainerRegistryUsage);
   const findAlert = () => wrapper.findComponent(GlAlert);
 
-  const createComponent = ({ provide = {}, mockApollo = {} } = {}) => {
+  const createComponent = ({ provide = {} } = {}) => {
     wrapper = mountExtended(NamespaceStorageApp, {
-      apolloProvider: mockApollo,
+      apolloProvider: createMockApollo([
+        [getNamespaceStorageQuery, getNamespaceStorageHandler],
+        [getDependencyProxyTotalSizeQuery, getDependencyProxyTotalSizeHandler],
+      ]),
       provide: {
         ...defaultNamespaceProvideValues,
         ...provide,
@@ -82,13 +55,14 @@ describe('NamespaceStorageApp', () => {
     });
   };
 
-  let mockApollo;
+  beforeEach(() => {
+    getNamespaceStorageHandler.mockResolvedValue(mockedNamespaceStorageResponse);
+    getDependencyProxyTotalSizeHandler.mockResolvedValue(mockDependencyProxyResponse);
+  });
 
   describe('Namespace usage overview', () => {
     beforeEach(async () => {
-      mockApollo = createMockApolloProvider();
       createComponent({
-        mockApollo,
         provide: {
           purchaseStorageUrl: 'some-fancy-url',
         },
@@ -109,17 +83,8 @@ describe('NamespaceStorageApp', () => {
   });
 
   describe('Dependency proxy usage', () => {
-    beforeEach(() => {
-      mockDependencyProxyResponse.data.group.dependencyProxyTotalSizeBytes = '512';
-      mockApollo = createMockApolloProvider(
-        mockedNamespaceStorageResponse,
-        mockDependencyProxyResponse,
-      );
-    });
-
     it('shows the dependency proxy usage component', async () => {
       createComponent({
-        mockApollo,
         provide: { userNamespace: false },
       });
       await waitForPromises();
@@ -129,7 +94,6 @@ describe('NamespaceStorageApp', () => {
 
     it('does not display the dependency proxy for personal namespaces', () => {
       createComponent({
-        mockApollo,
         provide: { userNamespace: true },
       });
 
@@ -139,14 +103,7 @@ describe('NamespaceStorageApp', () => {
 
   describe('Container registry usage', () => {
     beforeEach(async () => {
-      mockDependencyProxyResponse.data.group.dependencyProxyTotalSizeBytes = '512';
-      mockApollo = createMockApolloProvider(
-        mockedNamespaceStorageResponse,
-        mockDependencyProxyResponse,
-      );
-      createComponent({
-        mockApollo,
-      });
+      createComponent();
       await waitForPromises();
     });
 
@@ -168,42 +125,26 @@ describe('NamespaceStorageApp', () => {
 
   describe('project list', () => {
     beforeEach(async () => {
-      mockApollo = createMockApolloProvider();
-      createComponent({ mockApollo });
+      createComponent();
       await waitForPromises();
     });
 
     it('renders the 2 projects', () => {
-      const projectList = findProjectList();
-      expect(projectList.props('projects')).toHaveLength(2);
+      expect(findProjectList().props('projects')).toHaveLength(2);
     });
   });
 
   describe('sorting projects', () => {
-    let namespaceQuerySuccessHandler;
-
-    function createSpiedMockApolloProvider(response = mockedNamespaceStorageResponse) {
-      namespaceQuerySuccessHandler = jest.fn().mockResolvedValue(response);
-      const requestHandlers = [
-        [getNamespaceStorageQuery, namespaceQuerySuccessHandler],
-        [
-          getDependencyProxyTotalSizeQuery,
-          jest.fn().mockResolvedValue(mockDependencyProxyResponse),
-        ],
-      ];
-
-      return createMockApollo(requestHandlers);
-    }
-
     beforeEach(() => {
-      mockApollo = createSpiedMockApolloProvider();
       createComponent({
-        mockApollo,
+        provide: {
+          isNamespaceUnderProjectLimits: false,
+        },
       });
     });
 
     it('sets default sorting', () => {
-      expect(namespaceQuerySuccessHandler).toHaveBeenCalledWith(
+      expect(getNamespaceStorageHandler).toHaveBeenCalledWith(
         expect.objectContaining({
           sortKey: 'STORAGE_SIZE_DESC',
         }),
@@ -214,10 +155,9 @@ describe('NamespaceStorageApp', () => {
     });
 
     it('forms a sorting order string for STORAGE sorting', async () => {
-      const projectList = findProjectList();
-      projectList.vm.$emit('sortChanged', { sortBy: 'storage', sortDesc: false });
+      findProjectList().vm.$emit('sortChanged', { sortBy: 'storage', sortDesc: false });
       await waitForPromises();
-      expect(namespaceQuerySuccessHandler).toHaveBeenCalledWith(
+      expect(getNamespaceStorageHandler).toHaveBeenCalledWith(
         expect.objectContaining({
           sortKey: 'STORAGE_SIZE_ASC',
         }),
@@ -225,57 +165,53 @@ describe('NamespaceStorageApp', () => {
     });
 
     it('ignores invalid sorting types', async () => {
-      const projectList = findProjectList();
-      projectList.vm.$emit('sortChanged', { sortBy: 'yellow', sortDesc: false });
+      findProjectList().vm.$emit('sortChanged', { sortBy: 'yellow', sortDesc: false });
       await waitForPromises();
-      expect(namespaceQuerySuccessHandler).toHaveBeenCalledTimes(1);
+      expect(getNamespaceStorageHandler).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('filtering projects', () => {
-    let searchAndSortBar;
     const sampleSearchTerm = 'GitLab';
 
     beforeEach(() => {
-      mockApollo = createMockApolloProvider();
-      createComponent({
-        mockApollo,
-      });
-      searchAndSortBar = findSearchAndSortBar();
+      createComponent();
     });
 
     it('triggers search if user enters search input', async () => {
-      expect(requestHandler).toHaveBeenNthCalledWith(
+      expect(getNamespaceStorageHandler).toHaveBeenNthCalledWith(
         1,
         expect.objectContaining({ searchTerm: '' }),
       );
       findSearchAndSortBar().vm.$emit('onFilter', sampleSearchTerm);
       await waitForPromises();
 
-      expect(requestHandler).toHaveBeenNthCalledWith(
+      expect(getNamespaceStorageHandler).toHaveBeenNthCalledWith(
         2,
         expect.objectContaining({ searchTerm: sampleSearchTerm }),
       );
     });
 
     it('triggers search if user clears the entered search input', async () => {
-      searchAndSortBar.vm.$emit('onFilter', sampleSearchTerm);
+      findSearchAndSortBar().vm.$emit('onFilter', sampleSearchTerm);
       await waitForPromises();
 
-      expect(requestHandler).toHaveBeenCalledWith(
+      expect(getNamespaceStorageHandler).toHaveBeenCalledWith(
         expect.objectContaining({ searchTerm: sampleSearchTerm }),
       );
 
-      searchAndSortBar.vm.$emit('onFilter', '');
+      findSearchAndSortBar().vm.$emit('onFilter', '');
       await waitForPromises();
 
-      expect(requestHandler).toHaveBeenCalledWith(expect.objectContaining({ searchTerm: '' }));
+      expect(getNamespaceStorageHandler).toHaveBeenCalledWith(
+        expect.objectContaining({ searchTerm: '' }),
+      );
     });
 
     it('triggers search with empty string if user enters short search input', async () => {
-      searchAndSortBar.vm.$emit('onFilter', sampleSearchTerm);
+      findSearchAndSortBar().vm.$emit('onFilter', sampleSearchTerm);
       await waitForPromises();
-      expect(requestHandler).toHaveBeenCalledWith(
+      expect(getNamespaceStorageHandler).toHaveBeenCalledWith(
         expect.objectContaining({ searchTerm: sampleSearchTerm }),
       );
 
@@ -283,42 +219,47 @@ describe('NamespaceStorageApp', () => {
       findSearchAndSortBar().vm.$emit('onFilter', sampleShortSearchTerm);
       await waitForPromises();
 
-      expect(requestHandler).toHaveBeenCalledWith(expect.objectContaining({ searchTerm: '' }));
+      expect(getNamespaceStorageHandler).toHaveBeenCalledWith(
+        expect.objectContaining({ searchTerm: '' }),
+      );
     });
   });
 
   describe('projects table pagination component', () => {
-    const namespaceWithPageInfo = { ...mockedNamespaceStorageResponse };
+    const namespaceWithPageInfo = cloneDeep(mockedNamespaceStorageResponse);
     namespaceWithPageInfo.data.namespace.projects.pageInfo.hasNextPage = true;
 
-    beforeEach(async () => {
-      mockApollo = createMockApolloProvider(namespaceWithPageInfo);
-      createComponent({ mockApollo });
-      await waitForPromises();
+    beforeEach(() => {
+      getNamespaceStorageHandler.mockResolvedValue(namespaceWithPageInfo);
     });
 
-    it('has "Prev" button disabled', () => {
+    it('has "Prev" button disabled', async () => {
+      createComponent();
+      await waitForPromises();
+
       expect(findPrevButton().attributes().disabled).toBe('disabled');
     });
 
-    it('has "Next" button enabled', () => {
+    it('has "Next" button enabled', async () => {
+      createComponent();
+      await waitForPromises();
+
       expect(findNextButton().attributes().disabled).toBeUndefined();
     });
 
     describe('apollo calls', () => {
       beforeEach(async () => {
         namespaceWithPageInfo.data.namespace.projects.pageInfo.hasPreviousPage = true;
-        namespaceWithPageInfo.data.namespace.projects.pageInfo.hasNextPage = true;
-        mockApollo = createMockApolloProvider(namespaceWithPageInfo);
-        createComponent({ mockApollo });
+        getDependencyProxyTotalSizeHandler.mockResolvedValue(namespaceWithPageInfo);
+        createComponent();
 
         await waitForPromises();
       });
 
       it('contains correct `first` and `last` values when clicking "Prev" button', () => {
         findPrevButton().trigger('click');
-        expect(requestHandler).toHaveBeenCalledTimes(2);
-        expect(requestHandler).toHaveBeenNthCalledWith(
+        expect(getNamespaceStorageHandler).toHaveBeenCalledTimes(2);
+        expect(getNamespaceStorageHandler).toHaveBeenNthCalledWith(
           2,
           expect.objectContaining({ first: undefined, last: expect.any(Number) }),
         );
@@ -326,8 +267,8 @@ describe('NamespaceStorageApp', () => {
 
       it('contains `first` value when clicking "Next" button', () => {
         findNextButton().trigger('click');
-        expect(requestHandler).toHaveBeenCalledTimes(2);
-        expect(requestHandler).toHaveBeenNthCalledWith(
+        expect(getNamespaceStorageHandler).toHaveBeenCalledTimes(2);
+        expect(getNamespaceStorageHandler).toHaveBeenNthCalledWith(
           2,
           expect.objectContaining({ first: expect.any(Number) }),
         );
@@ -336,9 +277,8 @@ describe('NamespaceStorageApp', () => {
 
     describe('handling failed apollo requests', () => {
       beforeEach(async () => {
-        mockApollo = createFailedMockApolloProvider();
-        createComponent({ mockApollo });
-
+        getNamespaceStorageHandler.mockRejectedValue(new Error('Network error!'));
+        createComponent();
         await waitForPromises();
       });
 
@@ -356,11 +296,7 @@ describe('NamespaceStorageApp', () => {
 
   describe('storage-usage-statistics', () => {
     beforeEach(async () => {
-      mockApollo = createMockApolloProvider();
-
-      createComponent({
-        mockApollo,
-      });
+      createComponent();
       await waitForPromises();
     });
 
@@ -385,22 +321,36 @@ describe('NamespaceStorageApp', () => {
         async ({ loadingError, queryLoading, expectedValue }) => {
           // change mockApollo provider based on loadingError and queryLoading
           if (loadingError) {
-            mockApollo = createFailedMockApolloProvider();
+            getNamespaceStorageHandler.mockRejectedValue(new Error('Network error!'));
           } else if (queryLoading) {
-            mockApollo = createPendingMockApolloProvider();
-          } else {
-            mockApollo = createMockApolloProvider();
+            getNamespaceStorageHandler.mockImplementation(() => new Promise(() => {}));
           }
 
-          createComponent({
-            mockApollo,
-          });
-
+          createComponent();
           await waitForPromises();
 
           expect(findStorageUsageStatistics().props('loading')).toBe(expectedValue);
         },
       );
+    });
+  });
+
+  // https://docs.gitlab.com/ee/user/usage_quotas#project-storage-limit
+  describe('Namespace under Project type storage enforcement', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
+    it('sets default sorting', () => {
+      expect(getNamespaceStorageHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sortKey: 'STORAGE',
+        }),
+      );
+
+      const projectList = findProjectList();
+      expect(projectList.props('sortBy')).toBe(null);
+      expect(projectList.props('sortDesc')).toBe(true);
     });
   });
 });

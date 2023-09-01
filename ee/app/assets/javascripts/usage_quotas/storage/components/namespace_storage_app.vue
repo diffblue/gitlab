@@ -27,7 +27,14 @@ export default {
     ContainerRegistryUsage,
     SearchAndSortBar,
   },
-  inject: ['namespaceId', 'namespacePath', 'helpLinks', 'defaultPerPage', 'userNamespace'],
+  inject: [
+    'namespaceId',
+    'namespacePath',
+    'helpLinks',
+    'defaultPerPage',
+    'userNamespace',
+    'isNamespaceUnderProjectLimits',
+  ],
   apollo: {
     namespace: {
       query: NamespaceStorageQuery,
@@ -75,7 +82,8 @@ export default {
       firstFetch: true,
       dependencyProxyTotalSizeBytes: '0',
       loadingError: false,
-      sortKey: 'STORAGE_SIZE_DESC',
+      sortKey: this.isNamespaceUnderProjectLimits ? 'STORAGE' : 'STORAGE_SIZE_DESC',
+      initialSortBy: this.isNamespaceUnderProjectLimits ? null : 'storage',
     };
   },
   computed: {
@@ -197,7 +205,7 @@ export default {
         :projects="namespaceProjects"
         :is-loading="isQueryLoading"
         :help-links="helpLinks"
-        sort-by="storage"
+        :sort-by="initialSortBy"
         :sort-desc="true"
         @sortChanged="onSortChanged($event)"
       />
