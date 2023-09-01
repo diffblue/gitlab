@@ -2,6 +2,8 @@ import AdminRunnersDashboardApp from 'ee/ci/runner/admin_runners_dashboard/admin
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 import RunnerActiveList from 'ee/ci/runner/components/runner_active_list.vue';
+import RunnerJobFailures from 'ee/ci/runner/components/runner_job_failures.vue';
+import RunnerWaitTimes from 'ee/ci/runner/components/runner_wait_times.vue';
 
 describe('AdminRunnersDashboardApp', () => {
   let wrapper;
@@ -10,9 +12,13 @@ describe('AdminRunnersDashboardApp', () => {
     wrapper = shallowMountExtended(AdminRunnersDashboardApp);
   };
 
-  it('shows active runners list', () => {
+  beforeEach(() => {
     createComponent();
+  });
 
+  it('shows dashboard panels', () => {
     expect(wrapper.findComponent(RunnerActiveList).exists()).toBe(true);
+    expect(wrapper.findComponent(RunnerJobFailures).exists()).toBe(true);
+    expect(wrapper.findComponent(RunnerWaitTimes).exists()).toBe(true);
   });
 });

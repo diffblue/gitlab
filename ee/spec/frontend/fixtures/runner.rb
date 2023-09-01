@@ -76,5 +76,23 @@ RSpec.describe 'Runner EE (JavaScript fixtures)', feature_category: :runner_flee
         expect_graphql_errors_to_be_empty
       end
     end
+
+    describe 'runner_failed_jobs.graphql', type: :request do
+      query_name = 'performance/runner_failed_jobs.graphql'
+
+      let_it_be(:query) do
+        get_graphql_query_as_string("#{query_path}#{query_name}", ee: true)
+      end
+
+      let_it_be(:runner) { create(:ci_runner, :instance, description: 'Runner 1') }
+      let!(:build) { create(:ci_build, :failed, :trace_live, runner: runner) }
+      let!(:build2) { create(:ci_build, :failed, :trace_live, runner: runner) }
+
+      it "#{fixtures_path}#{query_name}.json" do
+        post_graphql(query, current_user: admin)
+
+        expect_graphql_errors_to_be_empty
+      end
+    end
   end
 end

@@ -40707,6 +40707,9 @@ msgstr ""
 msgid "Runners|Minor version upgrades are available."
 msgstr ""
 
+msgid "Runners|Most recent failures"
+msgstr ""
+
 msgid "Runners|Multiple tags must be separated by a comma. For example, %{example}."
 msgstr ""
 
@@ -41074,6 +41077,9 @@ msgid "Runners|The time it takes for an instance runner to pick up a job. Jobs w
 msgstr ""
 
 msgid "Runners|The unique ID for each runner that uses this configuration."
+msgstr ""
+
+msgid "Runners|There are no recent runner failures for your instance runners. Error messages will populate here if runners fail."
 msgstr ""
 
 msgid "Runners|There are no runners running jobs right now. Active runners will populate here as they pick up jobs."
