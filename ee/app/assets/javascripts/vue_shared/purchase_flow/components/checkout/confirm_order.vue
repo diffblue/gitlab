@@ -1,4 +1,5 @@
 <script>
+import { v4 as uuid } from 'uuid';
 import { GlButton, GlLoadingIcon } from '@gitlab/ui';
 import Api from 'ee/api';
 import { STEPS } from 'ee/subscriptions/constants';
@@ -15,9 +16,41 @@ export default {
   },
   data() {
     return {
+      idempotencyKey: uuid(),
       isActive: false,
       isLoading: false,
+      orderParams: {},
     };
+  },
+  computed: {
+    confirmOrderParams() {
+      return { ...this.orderParams, idempotency_key: this.idempotencyKey };
+    },
+    idempotencyKeyParams() {
+      return [this.paymentMethodId, this.planId, this.quantity, this.selectedGroup, this.zipCode];
+    },
+    paymentMethodId() {
+      return this.orderParams?.subscription?.payment_method_id;
+    },
+    planId() {
+      return this.orderParams?.subscription?.plan_id;
+    },
+    quantity() {
+      return this.orderParams?.subscription?.quantity;
+    },
+    selectedGroup() {
+      return this.orderParams?.selected_group;
+    },
+    zipCode() {
+      return this.orderParams?.customer?.zip_code;
+    },
+  },
+  watch: {
+    idempotencyKeyParams: {
+      handler() {
+        this.idempotencyKey = uuid();
+      },
+    },
   },
   apollo: {
     isActive: {
@@ -27,7 +60,7 @@ export default {
         this.$emit(PurchaseEvent.ERROR, error);
       },
     },
-    confirmOrderParams: {
+    orderParams: {
       query: stateQuery,
       skip() {
         return !this.isActive;
@@ -61,17 +94,28 @@ export default {
     },
   },
   methods: {
+    isClientSideError(status) {
+      return status >= 400 && status < 500;
+    },
     confirmOrder() {
       this.isLoading = true;
       return Api.confirmOrder(this.confirmOrderParams)
         .then(({ data }) => {
-          if (data.location) {
+          if (data?.location) {
             redirectTo(data.location); // eslint-disable-line import/no-deprecated
-          } else {
+            return;
+          }
+          if (data?.errors) {
             throw new Error(JSON.stringify(data.errors));
           }
         })
         .catch((error) => {
+          const { status } = error?.response || {};
+          // Regenerate the idempotency key on client-side errors, to ensure the server regards the new request.
+          // Context: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/129830#note_1522796835.
+          if (this.isClientSideError(status)) {
+            this.idempotencyKey = uuid();
+          }
           this.$emit(PurchaseEvent.ERROR, error);
         })
         .finally(() => {
