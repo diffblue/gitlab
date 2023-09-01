@@ -49,6 +49,7 @@ query projectIssues(
         updatedAt
         webUrl
         type
+        confidential
         author {
           ...Author
         }
