@@ -62,7 +62,8 @@ module Vulnerabilities
         report_type: finding.report_type,
         dismissed_at: determine_dismissed_at,
         dismissed_by_id: determine_dismissed_by_id,
-        present_on_default_branch: @present_on_default_branch
+        present_on_default_branch: @present_on_default_branch,
+        finding_id: finding.id
       )
 
       vulnerability.save && vulnerability.findings << finding
