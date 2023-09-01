@@ -1,7 +1,6 @@
 <script>
 import { GlCard, GlProgressBar, GlSkeletonLoader, GlIcon, GlLink } from '@gitlab/ui';
 import { sprintf } from '~/locale';
-import { numberToHumanSizeSplit } from '~/lib/utils/number_utils';
 import { usageQuotasHelpPaths } from '~/usage_quotas/storage/constants';
 import {
   STORAGE_STATISTICS_PERCENTAGE_REMAINING,
@@ -43,20 +42,6 @@ export default {
     },
   },
   computed: {
-    storageUsed() {
-      if (!this.usedStorage) {
-        // if there is no used storage, we want
-        // to show `0` instead of the formatted `0.0`
-        return '0';
-      }
-      return numberToHumanSizeSplit(this.usedStorage, 1);
-    },
-    storageTotal() {
-      if (!this.totalStorage) {
-        return null;
-      }
-      return numberToHumanSizeSplit(this.totalStorage, 1);
-    },
     percentageUsed() {
       // don't show the progress bar if there's no total storage
       if (!this.totalStorage || this.usedStorage === null) {
@@ -108,8 +93,7 @@ export default {
         </gl-link>
       </div>
       <div class="gl-font-size-h-display gl-font-weight-bold gl-line-height-ratio-1000 gl-my-3">
-        {{ storageUsed[0] }}
-        <span v-if="storageUsed[1]" class="gl-font-lg">{{ storageUsed[1] }}</span>
+        <number-to-human-size label-class="gl-font-lg" :value="Number(usedStorage)" plain-zero />
       </div>
       <hr class="gl-my-4" />
       <p>{{ $options.i18n.PROJECT_ENFORCEMENT_TYPE_CARD_SUBTITLE }}</p>
@@ -134,12 +118,10 @@ export default {
         </gl-link>
       </div>
       <div class="gl-font-size-h-display gl-font-weight-bold gl-line-height-ratio-1000 gl-my-3">
-        {{ storageUsed[0] }}
-        <span v-if="storageUsed[1]" class="gl-font-lg">{{ storageUsed[1] }}</span>
-        <template v-if="storageTotal">
+        <number-to-human-size label-class="gl-font-lg" :value="Number(usedStorage)" plain-zero />
+        <template v-if="totalStorage">
           /
-          {{ storageTotal[0] }}
-          <span class="gl-font-lg">{{ storageTotal[1] }}</span>
+          <number-to-human-size label-class="gl-font-lg" :value="Number(totalStorage)" plain-zero />
         </template>
       </div>
       <template v-if="percentageUsed !== null">

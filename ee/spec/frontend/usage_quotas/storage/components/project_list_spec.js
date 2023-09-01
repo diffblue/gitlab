@@ -8,6 +8,7 @@ import StorageTypeWarning from 'ee/usage_quotas/storage/components/storage_type_
 import { storageTypeHelpPaths } from '~/usage_quotas/storage/constants';
 import { projects } from '../mock_data';
 
+/** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
 let wrapper;
 
 const createComponent = ({ props = {} } = {}) => {
@@ -131,8 +132,7 @@ describe('ProjectList', () => {
         statistics: { storageSize: 200, costFactoredStorageSize: 200 },
       });
       createComponent({ props: { projects: [project] } });
-
-      expect(wrapper.findByText('200 B').exists()).toBe(true);
+      expect(wrapper.text()).toContain('200 B');
     });
 
     it('renders a fork when the storage size and the cost factored storage size differ', () => {
