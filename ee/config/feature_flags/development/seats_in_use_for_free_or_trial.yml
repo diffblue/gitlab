@@ -1,8 +1,0 @@
----
-name: seats_in_use_for_free_or_trial
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/44973
-rollout_issue_url: 
-milestone: '13.6'
-type: development
-group: group::provision
-default_enabled: false

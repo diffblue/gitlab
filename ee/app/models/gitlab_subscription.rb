@@ -128,7 +128,6 @@ class GitlabSubscription < ApplicationRecord
   # We need to show seats in use for free or trial subscriptions
   # in order to make it easy for customers to get this information.
   def seats_in_use
-    return super unless Feature.enabled?(:seats_in_use_for_free_or_trial)
     return super if has_a_paid_hosted_plan?
 
     seats_in_use_now
