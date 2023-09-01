@@ -24,6 +24,8 @@ RSpec.describe Gitlab::ContributionAnalytics::DataCollector, feature_category: :
         # in the range
         create(:event, :pushed, project: project1, target: nil, created_at: 1.year.ago)
 
+        prepare_data
+
         data_collector = described_class.new(group: group, from: 14.months.ago, to: 5.months.ago)
 
         all_event_count = data_collector.totals[:total_events].values.sum
@@ -43,6 +45,8 @@ RSpec.describe Gitlab::ContributionAnalytics::DataCollector, feature_category: :
         create(:event, :approved, project: project2, target: mr, author: user)
         create(:event, :closed, project: project2, target: mr, author: user)
 
+        prepare_data
+
         data_collector = described_class.new(group: group)
         expect(data_collector.totals).to eq({
           issues_closed: { user.id => 1 },
@@ -58,11 +62,17 @@ RSpec.describe Gitlab::ContributionAnalytics::DataCollector, feature_category: :
     end
   end
 
-  describe 'data retrieval', :click_house do
+  describe 'data retrieval' do
     # clickhouse_data_collection is disabled by default, but enabled for this annotation
-    context 'when clickhouse_data_collection feature flag is enabled' do
+    context 'when clickhouse_data_collection feature flag is enabled', :click_house do
+      include ClickHouseHelpers
+
       before do
         stub_feature_flags(clickhouse_data_collection: true)
+      end
+
+      def prepare_data
+        insert_events_into_click_house
       end
 
       it_behaves_like 'filters and groups data properly'
@@ -82,6 +92,8 @@ RSpec.describe Gitlab::ContributionAnalytics::DataCollector, feature_category: :
       before do
         stub_feature_flags(clickhouse_data_collection: false)
       end
+
+      def prepare_data; end
 
       it_behaves_like 'filters and groups data properly'
 
