@@ -68,12 +68,19 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
           it 'creates a new vulnerability_reads row' do
             expect { create_finding_record }.to change { Vulnerabilities::Read.count }.from(0).to(1)
             expect(created_vulnerability_read.has_issues).to eq(false)
+            expect(created_vulnerability_read.has_merge_request).to eq(false)
           end
 
           it 'sets has_issues to true when there are issue links' do
             create(:vulnerabilities_issue_link, vulnerability: vulnerability2)
             create_finding_record
             expect(created_vulnerability_read.has_issues).to eq(true)
+          end
+
+          it 'sets has_merge_request to true when there are merge request links' do
+            create(:vulnerabilities_merge_request_link, vulnerability: vulnerability2)
+            create_finding_record
+            expect(created_vulnerability_read.has_merge_request).to eq(true)
           end
         end
       end
@@ -95,13 +102,22 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
           expect do
             finding.update!(vulnerability_id: vulnerability.id)
           end.to change { Vulnerabilities::Read.count }.from(0).to(1)
+
           expect(created_vulnerability_read.has_issues).to eq(false)
+
+          expect(created_vulnerability_read.has_merge_request).to eq(false)
         end
 
         it 'sets has_issues when the vulnerability has issue links' do
           create(:vulnerabilities_issue_link, vulnerability: vulnerability)
           finding.update!(vulnerability_id: vulnerability.id)
           expect(created_vulnerability_read.has_issues).to eq(true)
+        end
+
+        it 'sets has_merge_request when the vulnerability has merge request links' do
+          create(:vulnerabilities_merge_request_link, vulnerability: vulnerability)
+          finding.update!(vulnerability_id: vulnerability.id)
+          expect(created_vulnerability_read.has_merge_request).to eq(true)
         end
       end
 
@@ -213,12 +229,19 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
         it 'creates a new `vulnerability_reads` record' do
           expect { update_vulnerability }.to change { Vulnerabilities::Read.count }.by(1)
           expect(created_vulnerability_read.has_issues).to eq(false)
+          expect(created_vulnerability_read.has_merge_request).to eq(false)
         end
 
         it 'sets has_issues when the created vulnerability has issue links' do
           create(:vulnerabilities_issue_link, vulnerability: vulnerability)
           update_vulnerability
           expect(created_vulnerability_read.has_issues).to eq(true)
+        end
+
+        it 'sets has_merge_request when the created vulnerability has merge request links' do
+          create(:vulnerabilities_merge_request_link, vulnerability: vulnerability)
+          update_vulnerability
+          expect(created_vulnerability_read.has_merge_request).to eq(true)
         end
       end
     end
