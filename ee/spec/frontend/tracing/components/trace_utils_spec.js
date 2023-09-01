@@ -5,7 +5,7 @@ import {
   formatDurationMs,
   formatTraceDuration,
   assignColorToServices,
-} from '~/tracing/components/trace_utils';
+} from 'ee/tracing/components/trace_utils';
 
 describe('trace_utils', () => {
   describe('durationNanoToMs', () => {

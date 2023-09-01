@@ -1,8 +1,8 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import TracingList from '~/tracing/components/tracing_list.vue';
-import TracingEmptyState from '~/tracing/components/tracing_empty_state.vue';
-import TracingTableList from '~/tracing/components/tracing_table_list.vue';
+import TracingList from 'ee/tracing/components/tracing_list.vue';
+import TracingEmptyState from 'ee/tracing/components/tracing_empty_state.vue';
+import TracingTableList from 'ee/tracing/components/tracing_table_list.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
 import * as urlUtility from '~/lib/utils/url_utility';
@@ -11,13 +11,13 @@ import {
   filterObjToQuery,
   filterObjToFilterToken,
   filterTokensToFilterObj,
-} from '~/tracing/filters';
-import FilteredSearch from '~/tracing/components/tracing_list_filtered_search.vue';
+} from 'ee/tracing/filters';
+import FilteredSearch from 'ee/tracing/components/tracing_list_filtered_search.vue';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import setWindowLocation from 'helpers/set_window_location_helper';
 
 jest.mock('~/alert');
-jest.mock('~/tracing/filters');
+jest.mock('ee/tracing/filters');
 
 describe('TracingList', () => {
   let wrapper;

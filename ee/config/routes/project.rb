@@ -148,6 +148,8 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
         namespace :settings do
           resource :analytics, only: [:show, :update]
         end
+
+        resources :tracing, only: [:index, :show], controller: :tracing
       end
       # End of the /-/ scope.
 

@@ -261,6 +261,7 @@ module GitlabSubscriptions
       status_page
       suggested_reviewers
       subepics
+      tracing
       unique_project_download_limit
       vulnerability_auto_fix
       vulnerability_finding_signatures

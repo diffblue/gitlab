@@ -1,11 +1,11 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import TracingDetails from '~/tracing/components/tracing_details.vue';
+import TracingDetails from 'ee/tracing/components/tracing_details.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
 import { visitUrl, isSafeURL } from '~/lib/utils/url_utility';
-import TracingDetailsChart from '~/tracing/components/tracing_details_chart.vue';
-import TracingDetailsHeader from '~/tracing/components/tracing_details_header.vue';
+import TracingDetailsChart from 'ee/tracing/components/tracing_details_chart.vue';
+import TracingDetailsHeader from 'ee/tracing/components/tracing_details_header.vue';
 
 jest.mock('~/alert');
 jest.mock('~/lib/utils/url_utility');

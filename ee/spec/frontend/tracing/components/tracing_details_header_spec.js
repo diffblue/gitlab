@@ -1,5 +1,5 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import TracingDetailsHeader from '~/tracing/components/tracing_details_header.vue';
+import TracingDetailsHeader from 'ee/tracing/components/tracing_details_header.vue';
 
 describe('TracingDetailsHeader', () => {
   let wrapper;

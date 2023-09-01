@@ -1,6 +1,6 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import DetailsIndex from '~/tracing/details_index.vue';
-import TracingDetails from '~/tracing/components/tracing_details.vue';
+import DetailsIndex from 'ee/tracing/details_index.vue';
+import TracingDetails from 'ee/tracing/components/tracing_details.vue';
 import ObservabilityContainer from '~/observability/components/observability_container.vue';
 
 describe('DetailsIndex', () => {

@@ -1,6 +1,6 @@
 import { nextTick } from 'vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
-import TracingTableList from '~/tracing/components/tracing_table_list.vue';
+import TracingTableList from 'ee/tracing/components/tracing_table_list.vue';
 
 describe('TracingTableList', () => {
   let wrapper;
