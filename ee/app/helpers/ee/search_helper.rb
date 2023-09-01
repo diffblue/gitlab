@@ -103,8 +103,7 @@ module EE
 
         tags[:default_branch_link_start], tags[:default_branch_link_end] = link_to(
           PLACEHOLDER,
-          search_path(safe_params.except(:repository_ref)),
-          data: { testid: 'es-search-default-branch' }
+          search_path(safe_params.except(:repository_ref))
         ).split(PLACEHOLDER)
 
         tags[:docs_link] = link_to(
@@ -123,8 +122,7 @@ module EE
           _('%{doc_link_start}Advanced search%{doc_link_end} is disabled since %{ref_elem} is not the default branch. %{docs_link}')
         end % tags.transform_values(&:html_safe)
 
-      # wrap it inside a `div` for testing purposes
-      tag.div(message.html_safe, data: { testid: 'es-status-marker', enabled: enabled })
+      message.html_safe
     end
 
     override :search_sort_options
