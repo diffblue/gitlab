@@ -515,6 +515,46 @@
         "description": "Pipeline artifacts verified count",
         "type": "number"
       },
+      "project_repositories_checksum_failed_count": {
+        "description": "Project repositories checksum failed count",
+        "type": "number"
+      },
+      "project_repositories_checksum_total_count": {
+        "description": "Project repositories checksum total count",
+        "type": "number"
+      },
+      "project_repositories_checksummed_count": {
+        "description": "Project repositories checksummed count",
+        "type": "number"
+      },
+      "project_repositories_count": {
+        "description": "Project repositories count",
+        "type": "number"
+      },
+      "project_repositories_failed_count": {
+        "description": "Project repositories failed count",
+        "type": "number"
+      },
+      "project_repositories_registry_count": {
+        "description": "Project repositories registry count",
+        "type": "number"
+      },
+      "project_repositories_synced_count": {
+        "description": "Project repositories synced count",
+        "type": "number"
+      },
+      "project_repositories_verification_failed_count": {
+        "description": "Project repositories verification failed count",
+        "type": "number"
+      },
+      "project_repositories_verification_total_count": {
+        "description": "Project repositories verification total count",
+        "type": "number"
+      },
+      "project_repositories_verified_count": {
+        "description": "Project repositories verified count",
+        "type": "number"
+      },
       "project_wiki_repositories_checksum_failed_count": {
         "description": "Project wiki repositories checksum failed count",
         "type": "number"
@@ -733,46 +773,6 @@
       },
       "uploads_verified_count": {
         "description": "Uploads verified count",
-        "type": "number"
-      },
-      "wikis_checksum_failed_count": {
-        "description": "Wikis checksum failed count",
-        "type": "number"
-      },
-      "wikis_checksum_mismatch_count": {
-        "description": "Wikis checksum mismatch count",
-        "type": "number"
-      },
-      "wikis_checksum_total_count": {
-        "description": "Wikis checksum total count",
-        "type": "number"
-      },
-      "wikis_checksummed_count": {
-        "description": "Wikis checksummed count",
-        "type": "number"
-      },
-      "wikis_failed_count": {
-        "description": "Wikis failed count",
-        "type": "number"
-      },
-      "wikis_retrying_verification_count": {
-        "description": "Wikis retrying verification count",
-        "type": "number"
-      },
-      "wikis_synced_count": {
-        "description": "Wikis synced count",
-        "type": "number"
-      },
-      "wikis_verification_failed_count": {
-        "description": "Wikis verification failed count",
-        "type": "number"
-      },
-      "wikis_verification_total_count": {
-        "description": "Wikis verification total count",
-        "type": "number"
-      },
-      "wikis_verified_count": {
-        "description": "Wikis verified count",
         "type": "number"
       }
     }
