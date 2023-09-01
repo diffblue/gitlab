@@ -33,8 +33,6 @@ The Jenkins integration requires configuration in both GitLab and Jenkins.
 
 ## Grant Jenkins access to the GitLab project
 
-To grant Jenkins access to the GitLab project:
-
 1. Create a personal, project, or group access token.
 
    - [Create a personal access token](../user/profile/personal_access_tokens.md#create-a-personal-access-token)
@@ -46,7 +44,7 @@ To grant Jenkins access to the GitLab project:
      to use the token for all Jenkins integrations in all projects of that group.
 
 1. Set the access token scope to **API**.
-1. Copy the access token value to [configure the Jenkins server](#configure-the-jenkins-server).
+1. Copy the access token value to configure the Jenkins server.
 
 ## Configure the Jenkins server
 
