@@ -22,9 +22,7 @@ module EE
     end
 
     def sla_available?
-      return false unless ::IncidentManagement::IncidentSla.available_for?(project)
-
-      supports_sla?
+      false
     end
 
     def escalation_policies_available?

@@ -325,6 +325,13 @@ module EE
       namespace.licensed_feature_available?(feature)
     end
 
+    override :sla_available?
+    def sla_available?
+      return false unless ::IncidentManagement::IncidentSla.available_for?(self)
+
+      supports_sla?
+    end
+
     private
 
     def blocking_issues_ids
