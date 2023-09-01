@@ -138,8 +138,8 @@ export const codeSuggestionsIntroDescriptionText = __('Introducing the Code Sugg
 export const codeSuggestionsAssignedDescriptionText = s__(
   'Billing|Code Suggestions add-on assigned',
 );
-export const codeSuggestionsInfoText = __(
-  `Enhance your coding experience with intelligent recommendations. %{linkStart}Code Suggestions%{linkEnd} uses generative AI to suggest code while you're developing. Not available for users with the Guest role.`,
+export const codeSuggestionsInfoText = s__(
+  `CodeSuggestions|Enhance your coding experience with intelligent recommendations. %{linkStart}Code Suggestions%{linkEnd} uses generative AI to suggest code while you're developing. Not available for users with the Guest role.`,
 );
 export const learnMoreText = __('Learn more');
 export const codeSuggestionsLearnMoreLink = `${PROMO_URL}/solutions/code-suggestions/`;

@@ -27,6 +27,7 @@ export const sendHandRaiseLead = async (createHandRaiseLeadPath, params) => {
     state: params.state,
     comment: params.comment,
     glm_content: params.glmContent,
+    product_interaction: params.productInteraction,
   };
 
   return axios.post(url, formParams);

@@ -105,6 +105,7 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
               days_remaining: 15,
               first_name: user.first_name,
               glm_content: "trial-status-show-group",
+              product_interaction: 'Hand Raise PQL',
               last_name: user.last_name,
               namespace_id: nil,
               plan_name: nil,

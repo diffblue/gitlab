@@ -11,6 +11,7 @@ export const initHandRaiseLeadButton = (el) => {
     lastName,
     companyName,
     glmContent,
+    productInteraction,
     trackAction,
     trackLabel,
     trackProperty,
@@ -35,6 +36,7 @@ export const initHandRaiseLeadButton = (el) => {
         lastName,
         companyName,
         glmContent,
+        productInteraction,
       },
       ctaTracking: {
         action: trackAction,

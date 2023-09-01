@@ -77,6 +77,18 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :bi
     end
   end
 
+  shared_examples 'code_suggestions connect with sales' do
+    before do
+      visit page_path
+    end
+
+    it 'renders in-app hand raise lead for code suggestions' do
+      find_by_testid('code_suggestions_hand_raise_lead_button').click
+
+      fill_in_and_submit_code_suggestions_hand_raise_lead
+    end
+  end
+
   shared_examples 'non-upgradable plan' do
     before do
       visit page_path
@@ -383,6 +395,7 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :bi
           "namespace_id" => namespace.id,
           "comment" => '',
           "glm_content" => 'billing-group',
+          "product_interaction" => 'Hand Raise PQL',
           "work_email" => user.email,
           "uid" => user.id,
           "setup_for_company" => user.setup_for_company,
@@ -419,6 +432,7 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :bi
         end
 
         it_behaves_like 'does not display the billing plans'
+        it_behaves_like 'code_suggestions connect with sales'
         it_behaves_like 'plan with subscription table'
         it_behaves_like 'subscription table with management buttons'
       end
@@ -448,10 +462,11 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :bi
           include_context 'hand raise lead form setup'
 
           it 'displays the in-app hand raise lead' do
-            click_premium_contact_sales_button_and_submit_form
+            click_premium_contact_sales_button_and_submit_form(form_data)
           end
         end
 
+        it_behaves_like 'code_suggestions connect with sales'
         it_behaves_like 'plan with subscription table'
       end
 
@@ -465,7 +480,7 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :bi
 
           click_button 'Talk to an expert today'
 
-          fill_hand_raise_lead_form_and_submit
+          fill_hand_raise_lead_form_and_submit(form_data)
         end
       end
 
@@ -543,11 +558,50 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :bi
       end
     end
 
+    def fill_in_and_submit_code_suggestions_hand_raise_lead
+      form_data = {
+        first_name: user.first_name,
+        last_name: user.last_name,
+        phone_number: '+1 23 456-78-90',
+        company_size: '1 - 99',
+        company_name: user.organization,
+        country: { id: 'US', name: 'United States of America' },
+        state: { id: 'CA', name: 'California' }
+      }
+
+      hand_raise_lead_params = {
+        "first_name" => form_data[:first_name],
+        "last_name" => form_data[:last_name],
+        "company_name" => form_data[:company_name],
+        "company_size" => form_data[:company_size].delete(' '),
+        "phone_number" => form_data[:phone_number],
+        "country" => form_data.dig(:country, :id),
+        "state" => form_data.dig(:state, :id),
+        "namespace_id" => namespace.id,
+        "comment" => '',
+        "glm_content" => 'code-suggestions',
+        "product_interaction" => 'Requested Contact-Code Suggestions Add-On',
+        "work_email" => user.email,
+        "uid" => user.id,
+        "setup_for_company" => user.setup_for_company,
+        "provider" => "gitlab",
+        "glm_source" => 'gitlab.com'
+      }
+
+      lead_params = ActionController::Parameters.new(hand_raise_lead_params).permit!
+
+      expect_next_instance_of(GitlabSubscriptions::CreateHandRaiseLeadService) do |service|
+        expect(service).to receive(:execute).with(lead_params).and_return(double('lead', success?: true))
+      end
+
+      fill_hand_raise_lead_form_and_submit(form_data)
+    end
+
     def seats_currently_in_use
       page.find("[data-testid='seats-currently-in-use']").text
     end
 
-    def fill_hand_raise_lead_form_and_submit
+    def fill_hand_raise_lead_form_and_submit(form_data)
       page.within('[data-testid="hand-raise-lead-modal"]') do
         aggregate_failures do
           expect(page).to have_content('Contact our Sales team')

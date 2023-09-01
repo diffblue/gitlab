@@ -28,7 +28,7 @@ module Subscriptions
     def hand_raise_lead_params
       params.permit(
         :first_name, :last_name, :company_name, :company_size, :phone_number, :country,
-        :state, :namespace_id, :comment, :glm_content
+        :state, :namespace_id, :comment, :glm_content, :product_interaction
       ).merge(hand_raise_lead_extra_params)
     end
 

@@ -22,6 +22,19 @@
       = render 'top_level_billing_plan_header', namespace: @group, current_plan: current_plan
 
     = render 'shared/billings/billing_plans', plans_data: @plans_data, namespace: @group, current_plan: current_plan, read_only: read_only
+    - if show_code_suggestions_card?(@group)
+      = render Pajamas::CardComponent.new do |c|
+        - c.with_body do
+          %h5
+            = sprite_icon('tanuki-ai', css_class: 'gl-mr-2')
+            = s_('CodeSuggestions|Introducing the Code Suggestions add-on')
+          %p
+            - docs_link_url = help_page_path('user/project/repository/code_suggestions')
+            - docs_link = link_to('', docs_link_url, target: '_blank', rel: 'noopener noreferrer')
+            = safe_format(s_('CodeSuggestions|Enhance your coding experience with intelligent recommendations. %{linkStart}Code Suggestions%{linkEnd} uses generative AI to suggest code while you\'re developing. Not available for users with the Guest role.'),
+              tag_pair(docs_link, :linkStart, :linkEnd))
+          .js-hand-raise-lead-button{ data: code_suggestions_hand_raise_props(@group) }
+
     - data_attributes = subscription_plan_data_attributes(@group, current_plan, read_only: read_only)
     #js-billing-plans{ data: data_attributes }
   - else

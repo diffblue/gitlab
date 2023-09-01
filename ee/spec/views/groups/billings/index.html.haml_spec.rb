@@ -88,6 +88,31 @@ RSpec.describe 'groups/billings/index', :saas, :aggregate_failures, feature_cate
         expect(rendered).to render_template('shared/billings/_billing_plans')
         expect(rendered).to have_selector('#js-billing-plans')
       end
+
+      context 'with code suggestions' do
+        it 'renders the code suggestions component' do
+          render
+
+          expect(rendered).to have_content(s_('CodeSuggestions|Introducing the Code Suggestions add-on'))
+          expect(rendered).to have_content('Enhance your coding experience with intelligent recommendations')
+          href = help_page_path('user/project/repository/code_suggestions')
+          expect(rendered).to have_link('Code Suggestions', href: href)
+          hand_raise_selector = '.js-hand-raise-lead-button[data-track-label="code_suggestions_hand_raise_lead_form"]'
+          expect(rendered).to have_selector(hand_raise_selector)
+        end
+      end
+
+      context 'without code suggestions' do
+        before do
+          stub_feature_flags(cs_connect_with_sales: false)
+        end
+
+        it 'does not render the code suggestions component' do
+          render
+
+          expect(rendered).not_to have_content(s_('CodeSuggestions|Introducing the Code Suggestions add-on'))
+        end
+      end
     end
 
     context 'when purchasing a plan' do
