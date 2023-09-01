@@ -6,6 +6,7 @@ module Gitlab
       include ActionView::Helpers::NumberHelper
       include Gitlab::Utils::StrongMemoize
 
+      ZOEKT_COUNT_LIMIT = 5_000
       DEFAULT_PER_PAGE = Gitlab::SearchResults::DEFAULT_PER_PAGE
 
       attr_reader :current_user, :query, :public_and_internal_projects, :order_by, :sort, :filters, :error
@@ -102,7 +103,13 @@ module Gitlab
       end
 
       def limited_counter_with_delimiter(count)
-        number_with_delimiter(count)
+        if count.nil?
+          number_with_delimiter(0)
+        elsif count >= ZOEKT_COUNT_LIMIT
+          "#{number_with_delimiter(ZOEKT_COUNT_LIMIT)}+"
+        else
+          number_with_delimiter(count)
+        end
       end
 
       def search_as_found_blob(query, repositories, page:, per_page:, options:, preload_method:)
@@ -114,10 +121,35 @@ module Gitlab
         end
       end
 
+      def zoekt_extract_results(search_result, per_page:, offset:)
+        results = []
+
+        i = 0
+        (search_result[:Result][:Files] || []).each do |r|
+          project_id = r[:Repository].to_i
+
+          r[:LineMatches].each do |match|
+            i += 1
+
+            next if i <= offset
+            return results if i > offset + per_page
+
+            results << {
+              project_id: project_id,
+              content: [match[:Before], match[:Line], match[:After]].compact.map { |l| Base64.decode64(l) }.join("\n"),
+              line: match[:LineNumber],
+              path: r[:FileName]
+            }
+          end
+        end
+
+        results
+      end
+
       def zoekt_search_and_wrap(query, page: 1, per_page: 20, options: {}, preload_method: nil, &blk)
         search_result = ::Gitlab::Search::Zoekt::Client.search(
           query,
-          num: (per_page * page),
+          num: ZOEKT_COUNT_LIMIT,
           project_ids: options[:project_ids]
         )
 
@@ -127,24 +159,12 @@ module Gitlab
           return Kaminari.paginate_array([])
         end
 
-        total_count = search_result[:Result][:MatchCount]
-
-        response = (search_result[:Result][:Files] || []).flat_map do |r|
-          project_id = r[:Repository].to_i
-
-          r[:LineMatches].map do |match|
-            {
-              project_id: project_id,
-              content: [match[:Before], match[:Line], match[:After]].compact.map { |l| Base64.decode64(l) }.join("\n"),
-              line: match[:LineNumber],
-              path: r[:FileName]
-            }
-          end
-        end
-
-        items, total_count = yield_each_zoekt_search_result(response, preload_method, total_count, &blk)
-
+        total_count = search_result[:Result][:MatchCount].clamp(0, ZOEKT_COUNT_LIMIT)
         offset = (page - 1) * per_page
+
+        results = zoekt_extract_results(search_result, per_page: per_page, offset: offset)
+        items, total_count = yield_each_zoekt_search_result(results, preload_method, total_count, &blk)
+
         Kaminari.paginate_array(items, total_count: total_count, limit: per_page, offset: offset)
       end
 
