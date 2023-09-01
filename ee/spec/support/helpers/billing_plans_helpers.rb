@@ -9,12 +9,12 @@ module BillingPlansHelpers
       visible: false)
   end
 
-  def click_premium_contact_sales_button_and_submit_form
+  def click_premium_contact_sales_button_and_submit_form(form_data)
     page.within('[data-testid="plan-card-premium"]') do
       click_button 'Contact sales'
     end
 
-    fill_hand_raise_lead_form_and_submit
+    fill_hand_raise_lead_form_and_submit(form_data)
   end
 end
 

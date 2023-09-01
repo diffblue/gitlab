@@ -28,6 +28,7 @@ describe('SubscriptionsApi', () => {
         state: 'CA',
         comment: 'A comment',
         glmContent: 'some-content',
+        productInteraction: '_product_interaction_',
       };
       const formParams = {
         namespace_id: 1000,
@@ -40,6 +41,7 @@ describe('SubscriptionsApi', () => {
         state: 'CA',
         comment: 'A comment',
         glm_content: 'some-content',
+        product_interaction: '_product_interaction_',
       };
 
       it('sends hand raise lead parameters', async () => {

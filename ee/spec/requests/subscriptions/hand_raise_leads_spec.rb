@@ -20,7 +20,8 @@ RSpec.describe 'Hand Raise Leads', :saas, feature_category: :purchase do
         country: 'US',
         state: 'CA',
         comment: 'I want to talk to sales.',
-        glm_content: 'group-billing'
+        glm_content: 'group-billing',
+        product_interaction: '_product_interaction_'
       }
     end
 

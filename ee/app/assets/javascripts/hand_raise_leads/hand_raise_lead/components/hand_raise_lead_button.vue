@@ -160,6 +160,7 @@ export default {
         state: this.stateRequired ? this.state : null,
         comment: this.comment,
         glmContent: this.user.glmContent,
+        productInteraction: this.user.productInteraction,
       };
     },
   },

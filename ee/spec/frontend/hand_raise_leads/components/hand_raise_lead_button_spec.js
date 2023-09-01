@@ -35,6 +35,7 @@ describe('HandRaiseLeadButton', () => {
           lastName: 'Doe',
           companyName: 'ACME',
           glmContent: 'some-content',
+          productInteraction: '_product_interaction_',
         },
         ctaTracking: {},
         ...providers,
@@ -222,6 +223,25 @@ describe('HandRaiseLeadButton', () => {
       });
     });
 
+    describe('when provided with only tracking label', () => {
+      beforeEach(() => {
+        wrapper = createComponent({
+          ctaTracking: { label },
+        });
+        trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+      });
+
+      it('does not track when action is missing', () => {
+        const button = findButton();
+
+        expect(button.attributes()).toMatchObject({ 'data-track-label': label });
+
+        button.trigger('click');
+
+        expect(trackingSpy).not.toHaveBeenCalled();
+      });
+    });
+
     describe('when provided with none of the CTA tracking options', () => {
       beforeEach(() => {
         wrapper = createComponent();
@@ -276,6 +296,7 @@ describe('HandRaiseLeadButton', () => {
             namespaceId: 1,
             comment: 'comment',
             glmContent: 'some-content',
+            productInteraction: '_product_interaction_',
             ...FORM_DATA,
           },
         );
