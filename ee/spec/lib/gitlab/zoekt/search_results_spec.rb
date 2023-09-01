@@ -42,6 +42,13 @@ RSpec.describe ::Gitlab::Zoekt::SearchResults, :zoekt, feature_category: :global
       expect(results.blobs_count).to eq 5
     end
 
+    it 'limits to the zoekt count limit' do
+      stub_const("#{described_class}::ZOEKT_COUNT_LIMIT", 2)
+
+      results = described_class.new(user, 'test', limit_project_ids)
+      expect(results.blobs_count).to eq 2
+    end
+
     it 'finds blobs from searched projects only' do
       project_3 = create :project, :repository, :private
       zoekt_ensure_project_indexed!(project_3)
