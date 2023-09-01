@@ -5,13 +5,14 @@ import { formatNumber, s__ } from '~/locale';
 
 import mostActiveRunnersQuery from 'ee/ci/runner/graphql/performance/most_active_runners.graphql';
 
-import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { captureException } from '~/ci/runner/sentry_utils';
 import { fetchPolicies } from '~/lib/graphql';
 import { createAlert } from '~/alert';
 import { I18N_FETCH_ERROR, JOBS_ROUTE_PATH } from '~/ci/runner/constants';
 import { tableField } from '~/ci/runner/utils';
 import CiIcon from '~/vue_shared/components/ci_icon.vue';
+
+import RunnerFullName from './runner_full_name.vue';
 
 export default {
   name: 'RunnerActiveList',
@@ -20,6 +21,7 @@ export default {
     GlTable,
     CiIcon,
     GlSkeletonLoader,
+    RunnerFullName,
   },
   data() {
     return {
@@ -46,9 +48,6 @@ export default {
     },
   },
   methods: {
-    runnerSummary({ id, shortSha, description }) {
-      return `#${getIdFromGraphQLId(id)} (${shortSha}) - ${description}`;
-    },
     jobsUrl({ adminUrl }) {
       const url = new URL(adminUrl);
       url.hash = JOBS_ROUTE_PATH;
@@ -87,7 +86,7 @@ export default {
         <span class="gl-font-size-h2 gl-text-gray-500">{{ index + 1 }}</span>
       </template>
       <template #cell(runner)="{ item = {} }">
-        {{ runnerSummary(item) }}
+        <runner-full-name :runner="item" />
       </template>
       <template #cell(runningJobCount)="{ item = {}, value }">
         <gl-link :href="jobsUrl(item)">

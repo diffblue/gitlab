@@ -1,0 +1,37 @@
+query getRunnerFailedJobsEE($first: Int = 2) {
+  jobs(first: $first, statuses: [FAILED]) {
+    nodes {
+      id
+      runner {
+        id
+        shortSha
+        description
+        adminUrl
+      }
+      finishedAt
+      detailedStatus {
+        id
+        detailsPath
+        group
+        icon
+        label
+        text
+        tooltip
+        action {
+          id
+          buttonTitle
+          icon
+          method
+          path
+          title
+        }
+      }
+      trace {
+        htmlSummary
+      }
+      userPermissions {
+        readBuild
+      }
+    }
+  }
+}
