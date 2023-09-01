@@ -650,24 +650,49 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   describe 'access_security_and_compliance' do
-    context 'when the user is auditor' do
-      let(:current_user) { create(:user, :auditor) }
-
+    shared_examples 'correct access to security and compliance' do
       before do
         project.project_feature.update!(security_and_compliance_access_level: access_level)
       end
 
-      context 'when the "Security and Compliance" is not enabled' do
+      context 'when "Security and Compliance" is disabled' do
         let(:access_level) { Featurable::DISABLED }
 
         it { is_expected.to be_disallowed(:access_security_and_compliance) }
+        it { is_expected.to be_disallowed(:admin_vulnerability) }
+        it { is_expected.to be_disallowed(:read_vulnerability) }
       end
 
-      context 'when the "Security and Compliance" is enabled' do
+      context 'when "Security and Compliance" is enabled' do
         let(:access_level) { Featurable::PRIVATE }
 
         it { is_expected.to be_allowed(:access_security_and_compliance) }
       end
+    end
+
+    context 'when the user is developer' do
+      let(:current_user) { developer }
+
+      it_behaves_like 'correct access to security and compliance'
+    end
+
+    context 'when the user has a custom role that enables read_vulnerability' do
+      let(:current_user) { guest }
+      let_it_be(:project) { create(:project, :in_group) }
+
+      before do
+        stub_licensed_features(custom_roles: true)
+        project_member = create(:project_member, :guest, user: current_user, source: project)
+        create(:member_role, :guest, read_vulnerability: true, members: [project_member], namespace: project.group)
+      end
+
+      it_behaves_like 'correct access to security and compliance'
+    end
+
+    context 'when the user is auditor' do
+      let(:current_user) { create(:user, :auditor) }
+
+      it_behaves_like 'correct access to security and compliance'
     end
   end
 
@@ -758,7 +783,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
         let(:current_user) { developer }
 
         include_context 'when security dashboard feature is not available'
-
         it { is_expected.to be_disallowed(:admin_vulnerability) }
         it { is_expected.to be_disallowed(:read_vulnerability) }
         it { is_expected.to be_disallowed(:create_vulnerability_export) }
