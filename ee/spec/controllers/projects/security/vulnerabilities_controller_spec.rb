@@ -15,24 +15,12 @@ RSpec.describe Projects::Security::VulnerabilitiesController, feature_category: 
     sign_in(user)
   end
 
-  shared_examples 'security and compliance disabled' do
-    before do
-      project.project_feature.update!(security_and_compliance_access_level: Featurable::DISABLED)
-    end
-
-    it { is_expected.to have_gitlab_http_status(:not_found) }
-
-    it_behaves_like "doesn't track govern usage event", 'users_visiting_security_vulnerabilities' do
-      let(:request) { subject }
-    end
-  end
-
   describe 'GET #new' do
     subject(:request_new_vulnerability_page) do
       get :new, params: { namespace_id: project.namespace, project_id: project }
     end
 
-    it_behaves_like 'security and compliance disabled'
+    it_behaves_like 'security and compliance feature'
 
     it 'checks if the user can create a vulnerability' do
       allow(controller).to receive(:can?).and_call_original
@@ -63,11 +51,11 @@ RSpec.describe Projects::Security::VulnerabilitiesController, feature_category: 
 
   describe 'GET #show' do
     let_it_be(:pipeline) { create(:ci_pipeline, sha: project.commit.id, project: project, user: user) }
-    let_it_be(:vulnerability) { create(:vulnerability, project: project) }
+    let_it_be(:vulnerability) { create(:vulnerability, :with_finding, project: project) }
 
     subject(:show_vulnerability) { get :show, params: { namespace_id: project.namespace, project_id: project, id: vulnerability.id } }
 
-    it_behaves_like 'security and compliance disabled'
+    it_behaves_like 'security and compliance feature'
 
     context "when there's an attached pipeline" do
       let_it_be(:finding) { create(:vulnerabilities_finding, :with_pipeline, vulnerability: vulnerability) }
@@ -114,7 +102,7 @@ RSpec.describe Projects::Security::VulnerabilitiesController, feature_category: 
 
     subject(:show_vulnerability_discussion_list) { get :discussions, params: { namespace_id: project.namespace, project_id: project, id: vulnerability } }
 
-    it_behaves_like 'security and compliance disabled'
+    it_behaves_like 'security and compliance feature'
 
     it 'renders discussions' do
       show_vulnerability_discussion_list

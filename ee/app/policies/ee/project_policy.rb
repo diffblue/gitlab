@@ -400,12 +400,17 @@ module EE
         enable :admin_vulnerability_external_issue_link
       end
 
-      rule { can?(:read_security_resource) & ~security_and_compliance_disabled }.policy do
+      rule { can?(:read_security_resource) }.policy do
         enable :read_vulnerability
       end
 
-      rule { can?(:read_security_resource) & ~security_and_compliance_disabled & can?(:developer_access) }.policy do
+      rule { can?(:read_security_resource) & can?(:developer_access) }.policy do
         enable :admin_vulnerability
+      end
+
+      rule { security_and_compliance_disabled }.policy do
+        prevent :admin_vulnerability
+        prevent :read_vulnerability
       end
 
       rule { security_bot & auto_fix_enabled }.policy do
@@ -470,7 +475,7 @@ module EE
         enable :read_project_runners
       end
 
-      rule { ~security_and_compliance_disabled & auditor }.policy do
+      rule { auditor }.policy do
         enable :access_security_and_compliance
       end
 
