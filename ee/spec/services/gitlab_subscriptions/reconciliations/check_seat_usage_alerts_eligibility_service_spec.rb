@@ -68,5 +68,20 @@ RSpec.describe GitlabSubscriptions::Reconciliations::CheckSeatUsageAlertsEligibi
 
       it { is_expected.to be false }
     end
+
+    context 'with skip_cached: true' do
+      let(:response) { { success: true, eligible_for_seat_usage_alerts: true } }
+
+      subject(:execute_service) { described_class.new(namespace: namespace, skip_cached: true).execute }
+
+      it 'does not use cache' do
+        allow(Gitlab::SubscriptionPortal::Client)
+          .to receive(:subscription_seat_usage_alerts_eligibility)
+          .and_return(response)
+
+        expect(Rails.cache).not_to receive(:fetch).with(cache_key, expires_in: 1.day)
+        expect(execute_service).to be true
+      end
+    end
   end
 end

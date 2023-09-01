@@ -79,8 +79,10 @@ module GitlabSubscriptions
     end
 
     def reconciliation_enabled?
-      GitlabSubscriptions::Reconciliations::CheckSeatUsageAlertsEligibilityService.new(namespace: target_namespace)
-        .execute
+      GitlabSubscriptions::Reconciliations::CheckSeatUsageAlertsEligibilityService.new(
+        namespace: target_namespace,
+        skip_cached: true
+      ).execute
     end
   end
 end
