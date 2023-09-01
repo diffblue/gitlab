@@ -110,8 +110,7 @@ module EE
       end
 
       def create_security_policy_project_bot
-        return unless ::Feature.enabled?(:scan_execution_group_bot_users, project.group) &&
-          group_security_orchestration_policy_configurations.any?
+        return unless group_security_orchestration_policy_configurations.any?
 
         ::Security::OrchestrationConfigurationCreateBotWorker.perform_async(project.id, current_user.id)
       end

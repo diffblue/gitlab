@@ -106,7 +106,7 @@ module Security
       def create_security_policy_project_bot
         if container.is_a?(Project)
           Security::OrchestrationConfigurationCreateBotWorker.perform_async(container.id, current_user.id)
-        elsif container.is_a?(Group) && Feature.enabled?(:scan_execution_group_bot_users, container)
+        elsif container.is_a?(Group)
           container.all_project_ids.each do |project_id|
             Security::OrchestrationConfigurationCreateBotWorker.perform_async(project_id, current_user.id)
           end
