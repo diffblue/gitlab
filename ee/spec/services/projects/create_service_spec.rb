@@ -751,18 +751,6 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
             expect(project.security_policy_bot).to be_present
           end
         end
-
-        context 'when feature flag "scan_execution_group_bot_users" is disabled' do
-          before do
-            stub_feature_flags(scan_execution_group_bot_users: false)
-          end
-
-          it 'does not invoke OrchestrationConfigurationCreateBotWorker' do
-            expect(::Security::OrchestrationConfigurationCreateBotWorker).not_to receive(:perform_async)
-
-            create_project(user, { name: 'GitLab', namespace_id: group.id })
-          end
-        end
       end
 
       context 'when group does not have security_orchestration_policy_configuration' do

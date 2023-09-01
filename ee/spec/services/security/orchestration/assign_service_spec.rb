@@ -193,7 +193,7 @@ RSpec.describe Security::Orchestration::AssignService, feature_category: :securi
       end
     end
 
-    shared_examples 'triggers bot user create worker' do |feature_flag|
+    shared_examples 'triggers bot user create worker' do
       context 'with owner access' do
         before do
           container.add_owner(current_user)
@@ -205,19 +205,6 @@ RSpec.describe Security::Orchestration::AssignService, feature_category: :securi
           end
 
           expect(service).to be_success
-        end
-
-        if feature_flag
-          context 'when the feature is disabled' do
-            before do
-              stub_feature_flags(feature_flag => false)
-            end
-
-            it 'does not trigger the project bot user create worker' do
-              expect(Security::OrchestrationConfigurationCreateBotWorker).not_to receive(:perform_async)
-              expect(service).to be_success
-            end
-          end
         end
       end
     end
@@ -237,7 +224,7 @@ RSpec.describe Security::Orchestration::AssignService, feature_category: :securi
       let(:another_container) { another_namespace }
 
       it_behaves_like 'executes assign service'
-      it_behaves_like 'triggers bot user create worker', :scan_execution_group_bot_users do
+      it_behaves_like 'triggers bot user create worker' do
         let!(:expected_projects) { create_list(:project, 2, group: container) }
       end
     end
