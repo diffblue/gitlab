@@ -21,7 +21,6 @@ module EE
 
         # Aliased from :project_count
         expose :repositories_count
-        expose :wikis_count
 
         expose :replication_slots_count
         expose :replication_slots_used_count

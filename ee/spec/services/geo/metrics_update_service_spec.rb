@@ -20,8 +20,6 @@ RSpec.describe Geo::MetricsUpdateService, :geo, :prometheus, feature_category: :
       projects_count: 10,
       repositories_synced_count: 1,
       repositories_failed_count: 2,
-      wikis_synced_count: 2,
-      wikis_failed_count: 3,
       lfs_objects_count: 100,
       lfs_objects_synced_count: 50,
       lfs_objects_failed_count: 12,
@@ -141,8 +139,6 @@ RSpec.describe Geo::MetricsUpdateService, :geo, :prometheus, feature_category: :
         expect(metric_value(:geo_repositories)).to eq(10)
         expect(metric_value(:geo_repositories_synced)).to eq(1)
         expect(metric_value(:geo_repositories_failed)).to eq(2)
-        expect(metric_value(:geo_wikis_synced)).to eq(2)
-        expect(metric_value(:geo_wikis_failed)).to eq(3)
         expect(metric_value(:geo_lfs_objects)).to eq(100)
         expect(metric_value(:geo_lfs_objects_synced)).to eq(50)
         expect(metric_value(:geo_lfs_objects_failed)).to eq(12)

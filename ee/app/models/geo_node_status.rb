@@ -1,7 +1,23 @@
 # frozen_string_literal: true
 
 class GeoNodeStatus < ApplicationRecord
+  include IgnorableColumns
   include ShaAttribute
+
+  ignore_columns(
+    %i[
+      wikis_checksum_failed_count
+      wikis_checksum_mismatch_count
+      wikis_checksummed_count
+      wikis_failed_count
+      wikis_retrying_verification_count
+      wikis_synced_count
+      wikis_verification_failed_count
+      wikis_verified_count
+    ],
+    remove_with: '16.5',
+    remove_after: '2023-09-22'
+  )
 
   belongs_to :geo_node
 
@@ -22,7 +38,6 @@ class GeoNodeStatus < ApplicationRecord
   sha_attribute :storage_configuration_digest
 
   alias_attribute :repositories_count, :projects_count
-  alias_attribute :wikis_count, :projects_count
 
   attribute_method_suffix '_timestamp', '_timestamp='
 
@@ -63,25 +78,15 @@ class GeoNodeStatus < ApplicationRecord
     repositories_replication_enabled
     repositories_synced_count
     repositories_failed_count
-    wikis_synced_count
-    wikis_failed_count
     repositories_verified_count
     repositories_verification_failed_count
     repositories_verification_total_count
-    wikis_verified_count
-    wikis_verification_failed_count
-    wikis_verification_total_count
     job_artifacts_synced_missing_on_primary_count
     repositories_checksummed_count
     repositories_checksum_failed_count
     repositories_checksum_mismatch_count
     repositories_checksum_total_count
-    wikis_checksummed_count
-    wikis_checksum_failed_count
-    wikis_checksum_mismatch_count
-    wikis_checksum_total_count
     repositories_retrying_verification_count
-    wikis_retrying_verification_count
     projects_count
     container_repositories_replication_enabled
     design_repositories_replication_enabled
@@ -105,18 +110,11 @@ class GeoNodeStatus < ApplicationRecord
     repositories_count: 'Total number of repositories available on primary',
     repositories_synced_count: 'Number of repositories synced on secondary',
     repositories_failed_count: 'Number of repositories failed to sync on secondary',
-    wikis_synced_count: 'Number of wikis synced on secondary',
-    wikis_failed_count: 'Number of wikis failed to sync on secondary',
     repositories_checksummed_count: 'Number of repositories checksummed on primary',
     repositories_checksum_failed_count: 'Number of repositories failed to calculate the checksum on primary',
-    wikis_checksummed_count: 'Number of wikis checksummed on primary',
-    wikis_checksum_failed_count: 'Number of wikis failed to calculate the checksum on primary',
     repositories_verified_count: 'Number of repositories verified on secondary',
     repositories_verification_failed_count: 'Number of repositories failed to verify on secondary',
     repositories_checksum_mismatch_count: 'Number of repositories that checksum mismatch on secondary',
-    wikis_verified_count: 'Number of wikis verified on secondary',
-    wikis_verification_failed_count: 'Number of wikis failed to verify on secondary',
-    wikis_checksum_mismatch_count: 'Number of wikis that checksum mismatch on secondary',
     job_artifacts_synced_missing_on_primary_count: 'Number of job artifacts marked as synced due to the file missing on the primary',
     replication_slots_count: 'Total number of replication slots on the primary',
     replication_slots_used_count: 'Number of replication slots in use on the primary',
@@ -138,7 +136,6 @@ class GeoNodeStatus < ApplicationRecord
     repositories_checked_count: 'Number of repositories checked',
     repositories_checked_failed_count: 'Number of failed repositories checked',
     repositories_retrying_verification_count: 'Number of repositories verification failures that Geo is actively trying to correct on secondary',
-    wikis_retrying_verification_count: 'Number of wikis verification failures that Geo is actively trying to correct on secondary',
     container_repositories_replication_enabled: 'Boolean denoting if replication is enabled for Container Repositories',
     design_repositories_replication_enabled: 'Boolean denoting if replication is enabled for Design Repositories',
     design_repositories_count: 'Total number of syncable design repositories available on primary',
@@ -353,9 +350,6 @@ class GeoNodeStatus < ApplicationRecord
   attr_in_percentage :repositories_checksummed,      :repositories_checksummed_count,      :repositories_count
   attr_in_percentage :repositories_verified,         :repositories_verified_count,         :repositories_count
   attr_in_percentage :repositories_checked,          :repositories_checked_count,          :repositories_count
-  attr_in_percentage :wikis_synced,                  :wikis_synced_count,                  :wikis_count
-  attr_in_percentage :wikis_checksummed,             :wikis_checksummed_count,             :wikis_count
-  attr_in_percentage :wikis_verified,                :wikis_verified_count,                :wikis_count
   attr_in_percentage :replication_slots_used,        :replication_slots_used_count,        :replication_slots_count
   attr_in_percentage :design_repositories_synced,    :design_repositories_synced_count,    :design_repositories_count
 

@@ -100,18 +100,11 @@
     "repositories_count",
     "repositories_failed_count",
     "repositories_synced_count",
-    "wikis_count",
-    "wikis_failed_count",
-    "wikis_synced_count",
     "repository_verification_enabled",
     "repositories_checksummed_count",
     "repositories_checksum_failed_count",
     "repositories_checksum_total_count",
     "repositories_checksummed_in_percentage",
-    "wikis_checksummed_count",
-    "wikis_checksum_failed_count",
-    "wikis_checksum_total_count",
-    "wikis_checksummed_in_percentage",
     "merge_request_diffs_count",
     "merge_request_diffs_checksum_failed_count",
     "merge_request_diffs_checksum_total_count",
@@ -189,13 +182,7 @@
     "repositories_verification_total_count",
     "repositories_verified_in_percentage",
     "repositories_checksum_mismatch_count",
-    "wikis_verified_count",
-    "wikis_verification_failed_count",
-    "wikis_verification_total_count",
-    "wikis_verified_in_percentage",
-    "wikis_checksum_mismatch_count",
     "repositories_retrying_verification_count",
-    "wikis_retrying_verification_count",
     "pipeline_artifacts_count",
     "pipeline_artifacts_checksum_total_count",
     "pipeline_artifacts_checksummed_count",
@@ -816,24 +803,6 @@
     "repositories_synced_in_percentage": {
       "type": "string"
     },
-    "wikis_count": {
-      "type": "integer"
-    },
-    "wikis_failed_count": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "wikis_synced_count": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "wikis_synced_in_percentage": {
-      "type": "string"
-    },
     "repositories_checksummed_count": {
       "type": [
         "integer",
@@ -853,27 +822,6 @@
       ]
     },
     "repositories_checksummed_in_percentage": {
-      "type": "string"
-    },
-    "wikis_checksummed_count": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "wikis_checksum_failed_count": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "wikis_checksum_total_count": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "wikis_checksummed_in_percentage": {
       "type": "string"
     },
     "merge_request_diffs_count": {
@@ -1560,40 +1508,7 @@
     "uploads_verified_in_percentage": {
       "type": "string"
     },
-    "wikis_verified_count": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "wikis_verification_failed_count": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "wikis_verification_total_count": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "wikis_verified_in_percentage": {
-      "type": "string"
-    },
-    "wikis_checksum_mismatch_count": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
     "repositories_retrying_verification_count": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "wikis_retrying_verification_count": {
       "type": [
         "integer",
         "null"
