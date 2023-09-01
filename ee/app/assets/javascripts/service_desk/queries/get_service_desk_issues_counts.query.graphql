@@ -1,5 +1,4 @@
 query getServiceDeskIssuesCountEE(
-  $isProject: Boolean = false
   $fullPath: ID!
   $iid: String
   $search: String
@@ -18,12 +17,10 @@ query getServiceDeskIssuesCountEE(
   $iterationWildcardId: IterationWildcardId
   $weight: String
   $healthStatusFilter: HealthStatusFilter
-  $crmContactId: String
-  $crmOrganizationId: String
   $not: NegatedIssueFilterInput
   $or: UnionedIssueFilterInput
 ) {
-  project(fullPath: $fullPath) @include(if: $isProject) {
+  project(fullPath: $fullPath) {
     id
     openedIssues: issues(
       state: opened
@@ -44,8 +41,6 @@ query getServiceDeskIssuesCountEE(
       iterationWildcardId: $iterationWildcardId
       weight: $weight
       healthStatusFilter: $healthStatusFilter
-      crmContactId: $crmContactId
-      crmOrganizationId: $crmOrganizationId
       not: $not
       or: $or
     ) {
@@ -70,8 +65,6 @@ query getServiceDeskIssuesCountEE(
       iterationWildcardId: $iterationWildcardId
       weight: $weight
       healthStatusFilter: $healthStatusFilter
-      crmContactId: $crmContactId
-      crmOrganizationId: $crmOrganizationId
       not: $not
       or: $or
     ) {
@@ -96,8 +89,6 @@ query getServiceDeskIssuesCountEE(
       iterationWildcardId: $iterationWildcardId
       weight: $weight
       healthStatusFilter: $healthStatusFilter
-      crmContactId: $crmContactId
-      crmOrganizationId: $crmOrganizationId
       not: $not
       or: $or
     ) {

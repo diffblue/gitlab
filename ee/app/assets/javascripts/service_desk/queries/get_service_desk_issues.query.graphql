@@ -3,7 +3,6 @@
 
 query getServiceDeskIssuesEE(
   $hideUsers: Boolean = false
-  $isProject: Boolean = false
   $isSignedIn: Boolean = false
   $fullPath: ID!
   $iid: String
@@ -26,8 +25,6 @@ query getServiceDeskIssuesEE(
   $iterationWildcardId: IterationWildcardId
   $weight: String
   $healthStatusFilter: HealthStatusFilter
-  $crmContactId: String
-  $crmOrganizationId: String
   $not: NegatedIssueFilterInput
   $or: UnionedIssueFilterInput
   $beforeCursor: String
@@ -35,7 +32,7 @@ query getServiceDeskIssuesEE(
   $firstPageSize: Int
   $lastPageSize: Int
 ) {
-  project(fullPath: $fullPath) @include(if: $isProject) @persist {
+  project(fullPath: $fullPath) @persist {
     id
     issues(
       iid: $iid
@@ -58,8 +55,6 @@ query getServiceDeskIssuesEE(
       iterationWildcardId: $iterationWildcardId
       weight: $weight
       healthStatusFilter: $healthStatusFilter
-      crmContactId: $crmContactId
-      crmOrganizationId: $crmOrganizationId
       not: $not
       or: $or
       before: $beforeCursor
