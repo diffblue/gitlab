@@ -11,6 +11,7 @@ module EE
           def configure_menu_items
             return false unless super
 
+            insert_item_before(:error_tracking, tracing_menu_item)
             insert_item_after(:incidents, on_call_schedules_menu_item)
             insert_item_after(:on_call_schedules, escalation_policies_menu_item)
 
@@ -44,6 +45,20 @@ module EE
               super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::MonitorMenu,
               active_routes: { controller: :escalation_policies },
               item_id: :escalation_policies
+            )
+          end
+
+          def tracing_menu_item
+            unless ::Gitlab::Observability.tracing_enabled?(context.project)
+              return ::Sidebars::NilMenuItem.new(item_id: :tracing)
+            end
+
+            ::Sidebars::MenuItem.new(
+              title: _('Tracing'),
+              link: project_tracing_index_path(context.project),
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::MonitorMenu,
+              active_routes: { controller: :tracing },
+              item_id: :tracing
             )
           end
         end

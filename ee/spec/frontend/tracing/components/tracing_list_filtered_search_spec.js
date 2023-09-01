@@ -1,7 +1,7 @@
 import { GlFilteredSearch } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
-import TracingListFilteredSearch from '~/tracing/components/tracing_list_filtered_search.vue';
+import TracingListFilteredSearch from 'ee/tracing/components/tracing_list_filtered_search.vue';
 
 describe('TracingListFilteredSearch', () => {
   let wrapper;

@@ -1,13 +1,13 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import TracingDetailsChart from '~/tracing/components/tracing_details_chart.vue';
-import TracingDetailsSpansChart from '~/tracing/components/tracing_details_spans_chart.vue';
+import TracingDetailsChart from 'ee/tracing/components/tracing_details_chart.vue';
+import TracingDetailsSpansChart from 'ee/tracing/components/tracing_details_spans_chart.vue';
 import {
   mapTraceToTreeRoot,
   assignColorToServices,
   durationNanoToMs,
-} from '~/tracing/components/trace_utils';
+} from 'ee/tracing/components/trace_utils';
 
-jest.mock('~/tracing/components/trace_utils');
+jest.mock('ee/tracing/components/trace_utils');
 
 describe('TracingDetailsChart', () => {
   let wrapper;

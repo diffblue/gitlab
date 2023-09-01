@@ -16,7 +16,7 @@ import {
   filterObjToQuery,
   filterObjToFilterToken,
   filterTokensToFilterObj,
-} from '~/tracing/filters';
+} from 'ee/tracing/filters';
 
 jest.mock('~/vue_shared/components/filtered_search_bar/filtered_search_utils');
 

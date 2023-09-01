@@ -15,6 +15,7 @@ RSpec.describe Projects::TracingController, feature_category: :tracing do
   end
 
   before do
+    stub_licensed_features(tracing: true)
     stub_feature_flags(observability_tracing: observability_tracing_ff)
     sign_in(user)
   end

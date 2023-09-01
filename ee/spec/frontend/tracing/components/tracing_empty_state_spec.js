@@ -1,6 +1,6 @@
 import { GlButton, GlEmptyState } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import TracingEmptyState from '~/tracing/components/tracing_empty_state.vue';
+import TracingEmptyState from 'ee/tracing/components/tracing_empty_state.vue';
 
 describe('TracingEmptyState', () => {
   let wrapper;

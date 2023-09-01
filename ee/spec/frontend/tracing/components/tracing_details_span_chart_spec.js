@@ -1,6 +1,6 @@
 import { GlButton, GlTruncate } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import TracingDetailsSpansChart from '~/tracing/components/tracing_details_spans_chart.vue';
+import TracingDetailsSpansChart from 'ee/tracing/components/tracing_details_spans_chart.vue';
 
 describe('TracingDetailsSpansChart', () => {
   const mockSpans = [

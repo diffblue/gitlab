@@ -17,7 +17,7 @@ module Projects
     private
 
     def check_tracing_enabled
-      render_404 unless Gitlab::Observability.tracing_enabled?(project)
+      render_404 unless ::Gitlab::Observability.tracing_enabled?(project)
     end
   end
 end

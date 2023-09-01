@@ -41,5 +41,23 @@ RSpec.describe Sidebars::Projects::Menus::MonitorMenu do
         specify { is_expected.to be_nil }
       end
     end
+
+    describe 'Tracing' do
+      let(:item_id) { :tracing }
+
+      before do
+        allow(Gitlab::Observability).to receive(:tracing_enabled?).and_return(true)
+      end
+
+      specify { is_expected.not_to be_nil }
+
+      describe 'when feature is disabled' do
+        before do
+          allow(Gitlab::Observability).to receive(:tracing_enabled?).and_return(false)
+        end
+
+        specify { is_expected.to be_nil }
+      end
+    end
   end
 end
