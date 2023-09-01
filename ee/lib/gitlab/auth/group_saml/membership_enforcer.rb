@@ -11,17 +11,12 @@ module Gitlab
         def can_add_user?(user)
           return true unless root_group.saml_provider&.enforced_sso?
           return true if user.project_bot?
-
-          return false if skip_delete_saml_identity_feature_enabled? && inactive_scim_identity_for_group?(user)
+          return false if inactive_scim_identity_for_group?(user)
 
           GroupSamlIdentityFinder.new(user: user).find_linked(group: root_group)
         end
 
         private
-
-        def skip_delete_saml_identity_feature_enabled?
-          Feature.enabled?(:skip_saml_identity_destroy_during_scim_deprovision)
-        end
 
         def root_group
           @root_group ||= @group.root_ancestor
