@@ -6,13 +6,18 @@ import { numberToHumanSize } from '~/lib/utils/number_utils';
 import StorageTypeHelpLink from 'ee/usage_quotas/storage/components/storage_type_help_link.vue';
 import StorageTypeWarning from 'ee/usage_quotas/storage/components/storage_type_warning.vue';
 import { storageTypeHelpPaths } from '~/usage_quotas/storage/constants';
+import { stubComponent } from 'helpers/stub_component';
 import { projects } from '../mock_data';
 
 /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
 let wrapper;
 
-const createComponent = ({ props = {} } = {}) => {
+const createComponent = ({ provide = {}, props = {}, stubs } = {}) => {
   wrapper = mountExtended(ProjectList, {
+    provide: {
+      isNamespaceUnderProjectLimits: false,
+      ...provide,
+    },
     propsData: {
       projects,
       helpLinks: storageTypeHelpPaths,
@@ -21,6 +26,7 @@ const createComponent = ({ props = {} } = {}) => {
       sortDesc: true,
       ...props,
     },
+    stubs,
   });
 };
 
@@ -87,6 +93,41 @@ describe('ProjectList', () => {
         .findComponent(StorageTypeWarning);
 
       expect(storageTypeWarning.exists()).toBe(true);
+    });
+  });
+
+  describe('Initial sorting', () => {
+    const createComponentWithTableStub = ({ provide } = {}) => {
+      createComponent({
+        provide,
+        stubs: {
+          GlTable: merge({}, stubComponent(GlTable), {
+            props: {
+              fields: {
+                type: Array,
+                required: true,
+              },
+            },
+          }),
+        },
+      });
+    };
+
+    it('will sort by storage field', () => {
+      createComponentWithTableStub();
+      expect(findTable().props('fields')).toEqual(
+        expect.arrayContaining([expect.objectContaining({ key: 'storage', sortable: true })]),
+      );
+    });
+
+    // https://docs.gitlab.com/ee/user/usage_quotas#project-storage-limit
+    describe('Namespace under Project type storage enforcement', () => {
+      it('will disable sorting by storage field', () => {
+        createComponentWithTableStub({ provide: { isNamespaceUnderProjectLimits: true } });
+        expect(findTable().props('fields')).toEqual(
+          expect.arrayContaining([expect.objectContaining({ key: 'storage', sortable: false })]),
+        );
+      });
     });
   });
 
