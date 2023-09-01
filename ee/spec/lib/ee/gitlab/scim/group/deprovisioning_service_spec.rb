@@ -41,16 +41,6 @@ RSpec.describe ::EE::Gitlab::Scim::Group::DeprovisioningService, feature_categor
         it 'preserves the saml identity' do
           expect { service.execute }.to change { user.reload.identities.count }.by(0)
         end
-
-        context 'with skip_saml_identity_destroy_during_scim_deprovision flag disabled' do
-          before do
-            stub_feature_flags(skip_saml_identity_destroy_during_scim_deprovision: false)
-          end
-
-          it 'deletes the saml identity' do
-            expect { service.execute }.to change { user.reload.identities.count }.by(-1)
-          end
-        end
       end
     end
 

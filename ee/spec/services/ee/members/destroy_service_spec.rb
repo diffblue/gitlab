@@ -38,16 +38,6 @@ RSpec.describe Members::DestroyService, feature_category: :groups_and_projects d
           it 'preserves linked SAML identity' do
             expect { destroy_service.execute(member, skip_saml_identity: true) }.to change { member_user.reload.identities.count }.by(0)
           end
-
-          context 'with skip_saml_identity_destroy_during_scim_deprovision flag disabled' do
-            before do
-              stub_feature_flags(skip_saml_identity_destroy_during_scim_deprovision: false)
-            end
-
-            it 'deletes the saml identity' do
-              expect { destroy_service.execute(member, skip_saml_identity: true) }.to change { member_user.reload.identities.count }.by(-1)
-            end
-          end
         end
       end
 

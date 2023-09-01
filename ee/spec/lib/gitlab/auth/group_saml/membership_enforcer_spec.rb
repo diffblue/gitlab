@@ -20,16 +20,6 @@ RSpec.describe Gitlab::Auth::GroupSaml::MembershipEnforcer, feature_category: :s
     expect(described_class.new(group).can_add_user?(non_saml_user)).to be_falsey
   end
 
-  context "when skip_saml_identity_destroy_during_scim_deprovision disabled" do
-    it 'allows adding a user with an inactive scim identity for the group' do
-      stub_feature_flags(skip_saml_identity_destroy_during_scim_deprovision: false)
-
-      create(:scim_identity, group: group, user: user, active: false)
-
-      expect(described_class.new(group).can_add_user?(user)).to be_truthy
-    end
-  end
-
   it 'does not allow adding a user with an inactive scim identity for the group' do
     create(:scim_identity, group: group, user: user, active: false)
 
