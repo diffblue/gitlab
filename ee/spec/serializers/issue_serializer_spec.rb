@@ -39,4 +39,19 @@ RSpec.describe IssueSerializer do
       expect(json_entity.to_json).to match_schema('entities/issue_sidebar_extras', dir: 'ee')
     end
   end
+
+  context 'ai issue serialization' do
+    let(:serializer) { 'ai' }
+
+    let(:json_entity) do
+      described_class.new(current_user: user)
+                     .represent(resource,
+                       serializer: serializer, resource: Ai::AiResource::Issue.new(resource))
+                     .with_indifferent_access
+    end
+
+    it 'matches issue_ai_entity json schema' do
+      expect(json_entity.to_json).to match_schema('entities/issue_ai_entity', dir: 'ee')
+    end
+  end
 end

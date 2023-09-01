@@ -78,9 +78,11 @@ RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failu
 
         describe 'processing answer' do
           let(:ai_response) do
-            "Please use this information about this resource: #{issue.serialize_for_ai(
-              user: context.current_user,
-              content_limit: ::Gitlab::Llm::Chain::Tools::JsonReader::Prompts::Anthropic::MAX_CHARACTERS).to_json}"
+            "Please use this information about this resource: #{Ai::AiResource::Issue.new(issue)
+              .serialize_for_ai(
+                user: context.current_user,
+                content_limit: ::Gitlab::Llm::Chain::Tools::JsonReader::Prompts::Anthropic::MAX_CHARACTERS
+              ).to_json}"
           end
 
           it "returns a final answer even if the response doesn't contain a 'final answer' token" do

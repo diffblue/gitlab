@@ -267,7 +267,8 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       described_class.new(
         user_input: input,
         tools: Gitlab::Llm::Completions::Chat::TOOLS,
-        context: context
+        context: context,
+        response_handler: response_service_double
       )
     end
 
@@ -280,6 +281,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         experiment_features_enabled: true
       )
       stub_licensed_features(ai_tanuki_bot: true)
+      allow(response_service_double).to receive(:execute).at_least(:once)
     end
 
     shared_examples_for 'successful prompt processing' do
