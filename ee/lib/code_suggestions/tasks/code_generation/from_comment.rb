@@ -72,11 +72,12 @@ module CodeSuggestions
         def prompt
           extension = File.extname(file_name).delete_prefix('.')
           language = SUPPORTED_LANGUAGES.find { |_, extensions| extensions.include?(extension) }&.first
+          file_path_info = File.path(file_name)
 
           <<~PROMPT
-            This is a task to write new #{language} code in a file '<TODO: file_path_info>' based on a given description.
+            This is a task to write new #{language} code in a file '#{file_path_info}' based on a given description.
             You get first the already existing code file and then the description of the code that needs to be created.
-            It is your task to write valid and working Javascript code.
+            It is your task to write valid and working #{language} code.
             Only return in your response new code.
 
             Already existing code:
