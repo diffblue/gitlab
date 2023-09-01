@@ -217,10 +217,13 @@ RSpec.describe PostReceive, feature_category: :shared do
     context 'with a design repository' do
       let(:gl_repository) { "design-#{project.design_management_repository.id}" }
 
+      before do
+        project.design_repository
+      end
+
       context 'when on a Geo primary site' do
         before do
-          stub_current_geo_node(primary)
-          project.create_design_management_repository
+          stub_primary_node
         end
 
         it 'calls replicator to update Geo' do
