@@ -54,4 +54,85 @@ RSpec.shared_examples 'ee protected ref access' do |association|
       end
     end
   end
+
+  describe 'group membership validation' do
+    subject do
+      described_class.new(
+        association => protected_ref,
+        user: user,
+        group: group,
+        access_level: access_level
+      )
+    end
+
+    let(:protected_ref) { create(association, project: project) }
+    let(:user) { create :user }
+    let(:access_level) { nil }
+    let(:project) { create :project, :empty_repo }
+    let(:group) { nil }
+
+    context 'when project is not linked to group' do
+      let(:group) { create :group }
+
+      it 'adds an error' do
+        subject.valid?
+        expect(subject.errors.messages[:group]).to include('does not have access to the project')
+      end
+    end
+
+    context 'when the project belongs to a group' do
+      let(:project) { create :project, :empty_repo, namespace: create(:group) }
+      let(:group) { project.group }
+
+      it 'does not add an error' do
+        subject.valid?
+        expect(subject.errors.messages[:group]).to be_empty
+      end
+    end
+
+    context 'when project is in a subgroup' do
+      let(:project) { create :project, :empty_repo, :in_subgroup }
+      let(:group) { project.group.parent }
+
+      it 'does not add an error' do
+        subject.valid?
+        expect(subject.errors.messages[:group]).to be_empty
+      end
+    end
+
+    context 'when group is invited to the project' do
+      let(:project) { create :project }
+      let(:group) { create :group }
+
+      before do
+        project.invited_groups << group
+      end
+
+      it 'does not add an error' do
+        subject.valid?
+        expect(subject.errors.messages[:group]).to be_empty
+      end
+    end
+
+    context 'when importing' do
+      before do
+        subject.importing = true
+      end
+
+      it 'does not validate group membership' do
+        expect(subject).not_to receive(:validate_group_membership)
+        subject.valid?
+      end
+    end
+
+    context 'when type is role' do
+      let(:group) { nil }
+      let(:user) { nil }
+
+      it 'does not validate group membership' do
+        expect(subject).not_to receive(:validate_group_membership)
+        subject.valid?
+      end
+    end
+  end
 end
