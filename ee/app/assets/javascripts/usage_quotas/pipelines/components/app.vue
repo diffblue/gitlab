@@ -262,7 +262,7 @@ export default {
             :target="buyAdditionalMinutesTarget"
             :aria-label="$options.LABEL_BUY_ADDITIONAL_MINUTES"
             :data-track-label="namespaceActualPlanName"
-            data-qa-selector="buy_ci_minutes"
+            data-testid="buy-ci-minutes"
             data-track-action="click_buy_ci_minutes"
             data-track-property="pipeline_quota_page"
             category="primary"

@@ -4,7 +4,7 @@
   .settings-header{ data: { testid: 'expand_add_license_header' } }
     %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
       = _('Add License')
-    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle', data: { qa_selector: 'expand_add_license_button' } }) do
+    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle', data: { testid: 'expand-add-license-button' } }) do
       = expanded_by_default? ? _('Collapse') : _('Expand')
     %p.gl-text-secondary
       - if License.current
