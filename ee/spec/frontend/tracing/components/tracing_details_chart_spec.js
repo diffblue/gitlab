@@ -41,21 +41,31 @@ describe('TracingDetailsChart', () => {
     wrapper = shallowMountExtended(TracingDetailsChart, {
       propsData: {
         trace: mockTrace,
+        selectedSpanId: 'foo',
       },
     });
   });
 
+  const getTracingDetailsSpansChart = () => wrapper.findComponent(TracingDetailsSpansChart);
+
   it('renders the TracingDetailsSpansChart component', () => {
-    expect(wrapper.findComponent(TracingDetailsSpansChart).exists()).toBe(true);
+    expect(getTracingDetailsSpansChart().exists()).toBe(true);
   });
 
   it('passes the correct props to the TracingDetailsSpansChart component', () => {
-    const tracingDetailsSpansChart = wrapper.findComponent(TracingDetailsSpansChart);
+    const tracingDetailsSpansChart = getTracingDetailsSpansChart();
 
     expect(mapTraceToTreeRoot).toHaveBeenCalledWith(mockTrace);
 
     expect(tracingDetailsSpansChart.props('spans')).toEqual([mockTrace.spans[0]]);
     expect(tracingDetailsSpansChart.props('traceDurationMs')).toBe(100);
     expect(tracingDetailsSpansChart.props('serviceToColor')).toEqual({ tracegen: 'red' });
+    expect(tracingDetailsSpansChart.props('selectedSpanId')).toEqual('foo');
+  });
+
+  it('emits span-selected upon span selection', () => {
+    getTracingDetailsSpansChart().vm.$emit('span-selected', { spanId: 'foo' });
+
+    expect(wrapper.emitted('span-selected')).toStrictEqual([[{ spanId: 'foo' }]]);
   });
 });

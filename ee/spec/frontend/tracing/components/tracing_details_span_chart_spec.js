@@ -1,4 +1,5 @@
 import { GlButton, GlTruncate } from '@gitlab/ui';
+import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import TracingDetailsSpansChart from 'ee/tracing/components/tracing_details_spans_chart.vue';
 
@@ -7,12 +8,14 @@ describe('TracingDetailsSpansChart', () => {
     {
       operation: 'operation-1',
       service: 'service-1',
+      spanId: 'span1',
       startTimeMs: 100,
       durationMs: 150,
       children: [
         {
           operation: 'operation-3',
           service: 'service-3',
+          spanId: 'span3',
           startTimeMs: 0,
           durationMs: 100,
           children: [],
@@ -22,6 +25,7 @@ describe('TracingDetailsSpansChart', () => {
     {
       operation: 'operation-2',
       service: 'service-2',
+      spanId: 'span2',
       startTimeMs: 100,
       durationMs: 200,
       children: [],
@@ -39,7 +43,12 @@ describe('TracingDetailsSpansChart', () => {
 
   let wrapper;
 
-  const getSpan = (index, depth = 0) => wrapper.findByTestId(`span-container-${depth}-${index}`);
+  const getSpanWrapper = (index, depth = 0) =>
+    wrapper.findByTestId(`span-wrapper-${depth}-${index}`);
+
+  const getSpan = (index, depth = 0) =>
+    getSpanWrapper(index, depth).find('[data-testid="span-inner-container"]');
+
   const getSpanDetails = (index, depth = 0) =>
     getSpan(index, depth).find('[data-testid="span-details"]');
 
@@ -52,6 +61,12 @@ describe('TracingDetailsSpansChart', () => {
   const getSpanDurationBar = (index, depth = 0) =>
     getSpanDuration(index, depth).find('[data-testid="span-duration-bar"]');
 
+  const getSpanChildren = (index, depth = 0) =>
+    getSpanWrapper(index, depth).findComponent(TracingDetailsSpansChart);
+
+  const toggleExpandButton = (index) =>
+    getToggleButton(index).vm.$emit('click', { stopPropagation: jest.fn() });
+
   beforeEach(() => {
     wrapper = shallowMountExtended(TracingDetailsSpansChart, {
       propsData: {
@@ -61,13 +76,11 @@ describe('TracingDetailsSpansChart', () => {
   });
 
   it('renders the correct number of spans', () => {
-    expect(wrapper.findAll('[data-testid^="span-container-"]')).toHaveLength(
-      mockProps.spans.length,
-    );
+    expect(wrapper.findAll('[data-testid^="span-wrapper-"]')).toHaveLength(mockProps.spans.length);
   });
 
   it('renders tracing-details-spans-chart only if span has children', () => {
-    const childrenChart = getSpan(0).findComponent(TracingDetailsSpansChart);
+    const childrenChart = getSpanChildren(0);
 
     expect(childrenChart.exists()).toBe(true);
     expect(childrenChart.props('depth')).toBe(1);
@@ -76,27 +89,50 @@ describe('TracingDetailsSpansChart', () => {
     expect(childrenChart.props('spans')).toBe(mockProps.spans[0].children);
 
     // span with no children
-    expect(getSpan(1).findComponent(TracingDetailsSpansChart).exists()).toBe(false);
+    expect(getSpanChildren(1).exists()).toBe(false);
   });
 
   it('toggle the children spans when clicking the expand button', async () => {
-    await getToggleButton(0).vm.$emit('click');
+    await toggleExpandButton(0);
 
     expect(getToggleButton(0).props('icon')).toBe('chevron-up');
-    expect(getSpan(0).findComponent(TracingDetailsSpansChart).exists()).toBe(false);
+    expect(getSpanChildren(0).exists()).toBe(false);
 
-    await getToggleButton(0).vm.$emit('click');
+    await toggleExpandButton(0);
 
     expect(getToggleButton(0).props('icon')).toBe('chevron-down');
-    expect(getSpan(0).findComponent(TracingDetailsSpansChart).exists()).toBe(true);
+    expect(getSpanChildren(0).exists()).toBe(true);
+  });
+
+  it('should stop click event propagation when the toggle button is pressed', async () => {
+    const stopPropagation = jest.fn();
+
+    await getToggleButton(0).vm.$emit('click', { stopPropagation });
+
+    expect(stopPropagation).toHaveBeenCalled();
+  });
+
+  it('emits span-selected upon selection', async () => {
+    await getSpan(0).trigger('click');
+
+    expect(wrapper.emitted('span-selected')).toStrictEqual([[{ spanId: 'span1' }]]);
+  });
+
+  it('sets the proper class on the selected span', async () => {
+    expect(getSpan(0).classes()).not.toContain('gl-bg-blue-100');
+
+    wrapper.setProps({ selectedSpanId: 'span1' });
+    await nextTick();
+
+    expect(getSpan(0).classes()).toContain('gl-bg-blue-100');
   });
 
   it('reset the expanded state when the spans change', async () => {
-    await getToggleButton(0).vm.$emit('click');
-    expect(getSpan(0).findComponent(TracingDetailsSpansChart).exists()).toBe(false);
+    await toggleExpandButton(0);
+    expect(getSpanChildren(0).exists()).toBe(false);
 
     await wrapper.setProps({ spans: [...mockSpans] });
-    expect(getSpan(0).findComponent(TracingDetailsSpansChart).exists()).toBe(true);
+    expect(getSpanChildren(0).exists()).toBe(true);
   });
 
   describe('span details', () => {
@@ -123,18 +159,11 @@ describe('TracingDetailsSpansChart', () => {
 
   describe('span duration', () => {
     it('renders the duration value', () => {
-      expect(
-        wrapper.findByTestId('span-container-0-0').find('[data-testid="span-duration"]').text(),
-      ).toBe('150 ms');
+      expect(getSpanDuration(0).text()).toBe('150 ms');
     });
 
     it('renders the proper color based on service', () => {
-      expect(
-        wrapper
-          .findByTestId('span-container-0-0')
-          .find('[data-testid="span-duration-bar"]')
-          .classes(),
-      ).toContain('gl-bg-data-viz-blue-500');
+      expect(getSpanDurationBar(0).classes()).toContain('gl-bg-data-viz-blue-500');
     });
 
     it('renders the bar with the proper style', () => {

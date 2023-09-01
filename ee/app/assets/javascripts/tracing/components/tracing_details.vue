@@ -5,15 +5,17 @@ import { createAlert } from '~/alert';
 import { visitUrl, isSafeURL } from '~/lib/utils/url_utility';
 import TracingDetailsChart from './tracing_details_chart.vue';
 import TracingDetailsHeader from './tracing_details_header.vue';
+import TracingDetailsDrawer from './tracing_details_drawer.vue';
 
 export default {
+  i18n: {
+    error: s__('Tracing|Failed to load trace details.'),
+  },
   components: {
     GlLoadingIcon,
     TracingDetailsChart,
     TracingDetailsHeader,
-  },
-  i18n: {
-    error: s__('Tracing|Failed to load trace details.'),
+    TracingDetailsDrawer,
   },
   props: {
     observabilityClient: {
@@ -34,6 +36,8 @@ export default {
     return {
       trace: null,
       loading: false,
+      isDrawerOpen: false,
+      selectedSpan: null,
     };
   },
   created() {
@@ -77,6 +81,19 @@ export default {
     goToTracingIndex() {
       visitUrl(this.tracingIndexUrl);
     },
+    onToggleDrawer({ spanId }) {
+      if (this.isDrawerOpen) {
+        this.closeDrawer();
+      } else {
+        const span = this.trace.spans.find((s) => s.span_id === spanId);
+        this.selectedSpan = span;
+        this.isDrawerOpen = true;
+      }
+    },
+    closeDrawer() {
+      this.selectedSpan = null;
+      this.isDrawerOpen = false;
+    },
   },
 };
 </script>
@@ -88,6 +105,12 @@ export default {
 
   <div v-else-if="trace" data-testid="trace-details" class="gl-mx-7">
     <tracing-details-header :trace="trace" />
-    <tracing-details-chart :trace="trace" />
+    <tracing-details-chart
+      :trace="trace"
+      :selected-span-id="selectedSpan && selectedSpan.span_id"
+      @span-selected="onToggleDrawer"
+    />
+
+    <tracing-details-drawer :span="selectedSpan" :open="isDrawerOpen" @close="closeDrawer" />
   </div>
 </template>

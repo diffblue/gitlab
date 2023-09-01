@@ -6,6 +6,7 @@ import { createAlert } from '~/alert';
 import { visitUrl, isSafeURL } from '~/lib/utils/url_utility';
 import TracingDetailsChart from 'ee/tracing/components/tracing_details_chart.vue';
 import TracingDetailsHeader from 'ee/tracing/components/tracing_details_header.vue';
+import TracingDetailsDrawer from 'ee/tracing/components/tracing_details_drawer.vue';
 
 jest.mock('~/alert');
 jest.mock('~/lib/utils/url_utility');
@@ -18,7 +19,13 @@ describe('TracingDetails', () => {
   const TRACING_INDEX_URL = 'https://www.gitlab.com/flightjs/Flight/-/tracing';
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+
   const findTraceDetails = () => wrapper.findComponentByTestId('trace-details');
+  const findTraceDetailsChart = () => wrapper.findComponent(TracingDetailsChart);
+
+  const findDrawer = () => wrapper.findComponent(TracingDetailsDrawer);
+  const isDrawerOpen = () => findDrawer().props('open');
+  const getDrawerSpan = () => findDrawer().props('span');
 
   const props = {
     traceId: TRACE_ID,
@@ -52,7 +59,7 @@ describe('TracingDetails', () => {
   });
 
   describe('when tracing is enabled', () => {
-    const mockTrace = { traceId: 'test-trace-id', foo: 'bar' };
+    const mockTrace = { traceId: 'test-trace-id', spans: [{ span_id: 'span-1' }] };
     beforeEach(async () => {
       observabilityClientMock.isTracingEnabled.mockResolvedValueOnce(true);
       observabilityClientMock.fetchTrace.mockResolvedValueOnce(mockTrace);
@@ -69,8 +76,51 @@ describe('TracingDetails', () => {
 
     it('renders the correct components', () => {
       const details = findTraceDetails();
-      expect(details.findComponent(TracingDetailsChart).exists()).toBe(true);
+      expect(findTraceDetailsChart().exists()).toBe(true);
       expect(details.findComponent(TracingDetailsHeader).exists()).toBe(true);
+    });
+
+    describe('details drawer', () => {
+      it('renders the details drawer initially closed', () => {
+        expect(findDrawer().exists()).toBe(true);
+        expect(isDrawerOpen()).toBe(false);
+        expect(getDrawerSpan()).toBe(null);
+      });
+
+      const selectSpan = () =>
+        findTraceDetailsChart().vm.$emit('span-selected', { spanId: 'span-1' });
+
+      it('opens the drawer and set the selected span, upond selection', async () => {
+        await selectSpan();
+
+        expect(isDrawerOpen()).toBe(true);
+        expect(getDrawerSpan()).toEqual({ span_id: 'span-1' });
+      });
+
+      it('closes the drawer upon receiving the close event', async () => {
+        await selectSpan();
+
+        await findDrawer().vm.$emit('close');
+
+        expect(isDrawerOpen()).toBe(false);
+        expect(getDrawerSpan()).toBe(null);
+      });
+
+      it('closes the drawer on row selection, if drawer is already open', async () => {
+        await selectSpan();
+
+        expect(isDrawerOpen()).toBe(true);
+
+        await selectSpan();
+
+        expect(isDrawerOpen()).toBe(false);
+      });
+
+      it('set the selected-span-in on the chart component', async () => {
+        expect(findTraceDetailsChart().props('selectedSpanId')).toBeNull();
+        await selectSpan();
+        expect(findTraceDetailsChart().props('selectedSpanId')).toBe('span-1');
+      });
     });
   });
 
