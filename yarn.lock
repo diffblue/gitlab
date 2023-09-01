@@ -1262,10 +1262,10 @@
   resolved "https://registry.yarnpkg.com/@gitlab/svgs/-/svgs-3.61.0.tgz#2434d429db1d22e128a1401a9735afab82275e0c"
   integrity sha512-GhryK81FA5NPisJjuwiCpZVALUBi6meg9njeIRLtKUuRDdp/DuaRC3WJFRtSXxVN+RG5HtUZrmv9dUQzKSZ2ZA==
 
-"@gitlab/ui@66.1.0":
-  version "66.1.0"
-  resolved "https://registry.yarnpkg.com/@gitlab/ui/-/ui-66.1.0.tgz#93e30977d45155952fb882227785662c5b1631d7"
-  integrity sha512-JGXyfdIbAoDLuRtekti5+chh9QelZd9ACgO0ZzeMcmt9DaLkqZpItwjp9+UVgxVtSph+TY7RGwF1G4jIPZtxog==
+"@gitlab/ui@66.3.0":
+  version "66.3.0"
+  resolved "https://registry.yarnpkg.com/@gitlab/ui/-/ui-66.3.0.tgz#8a81c6e3b9a227f7296ec60017df0f35a08bc7a7"
+  integrity sha512-6q/0nhqLlgoi75rDc/XZRAzXoMeqGXzpU7IIQyruUnx7mVJFURS3F1qe0pZtK7rXA03IgCj3QKy5Pjy7zVclxA==
   dependencies:
     "@floating-ui/dom" "1.2.9"
     bootstrap-vue "2.23.1"
@@ -10778,7 +10778,7 @@ postcss-value-parser@^4.2.0:
   resolved "https://registry.yarnpkg.com/postcss-value-parser/-/postcss-value-parser-4.2.0.tgz#723c09920836ba6d3e5af019f92bc0971c02e514"
   integrity sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==
 
-postcss@8.4.28, postcss@^8.4.25:
+postcss@8.4.28, postcss@^8.1.10, postcss@^8.2.1, postcss@^8.4.14, postcss@^8.4.25, postcss@^8.4.27:
   version "8.4.28"
   resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.28.tgz#c6cc681ed00109072816e1557f889ef51cf950a5"
   integrity sha512-Z7V5j0cq8oEKyejIKfpD8b4eBy9cwW2JWPk0+fB1HOAMsfHbnAXLLS+PfVWlzMSLQaWttKDt607I0XHmpE67Vw==
@@ -10794,15 +10794,6 @@ postcss@^7.0.14, postcss@^7.0.36, postcss@^7.0.5, postcss@^7.0.6:
   dependencies:
     picocolors "^0.2.1"
     source-map "^0.6.1"
-
-postcss@^8.1.10, postcss@^8.2.1, postcss@^8.4.14, postcss@^8.4.27:
-  version "8.4.27"
-  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.27.tgz#234d7e4b72e34ba5a92c29636734349e0d9c3057"
-  integrity sha512-gY/ACJtJPSmUFPDCHtX78+01fHa64FaU4zaaWfuh1MhGJISufJAH4cun6k/8fwsHYeK4UQmENQK+tRLCFJE8JQ==
-  dependencies:
-    nanoid "^3.3.6"
-    picocolors "^1.0.0"
-    source-map-js "^1.0.2"
 
 prelude-ls@^1.2.1:
   version "1.2.1"
