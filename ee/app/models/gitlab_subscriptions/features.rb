@@ -321,7 +321,6 @@ module GitlabSubscriptions
     # would otherwise generate a cyclical dependency.
     FEATURES_NOT_SUPPORTING_USAGE_PING = [
       :custom_project_templates, # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/423237
-      :email_additional_text,    # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/423238
       :elastic_search            # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/423240
     ].freeze
 
