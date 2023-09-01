@@ -1,0 +1,162 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "iid": {
+      "type": "integer"
+    },
+    "group_id": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "lock_version": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "description": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "confidential": {
+      "type": "boolean"
+    },
+    "state": {
+      "type": "string"
+    },
+    "start_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "start_date_fixed": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "start_date_is_fixed": {
+      "type": "boolean"
+    },
+    "start_date_from_milestones": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "end_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "due_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "due_date_fixed": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "due_date_from_milestones": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "due_date_is_fixed": {
+      "type": "boolean"
+    },
+    "web_url": {
+      "type": "string"
+    },
+    "labels": {
+      "type": [
+        "array",
+        "null"
+      ]
+    },
+    "group_name": {
+      "type": "string"
+    },
+    "group_full_name": {
+      "type": "string"
+    },
+    "group_full_path": {
+      "type": "string"
+    },
+    "current_user": {
+      "can_create_note": {
+        "type": "boolean"
+      }
+    },
+    "create_note_path": {
+      "type": "string"
+    },
+    "preview_note_path": {
+      "type": "string"
+    },
+    "color": {
+      "type": "string"
+    },
+    "text_color": {
+      "type": "string"
+    },
+    "epic_comments": {
+      "type": [
+        "array",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "iid",
+    "group_id",
+    "title",
+    "lock_version",
+    "description",
+    "state",
+    "start_date",
+    "start_date_fixed",
+    "start_date_is_fixed",
+    "start_date_from_milestones",
+    "end_date",
+    "due_date",
+    "due_date_fixed",
+    "due_date_from_milestones",
+    "due_date_is_fixed",
+    "web_url",
+    "labels",
+    "group_name",
+    "group_full_name",
+    "group_full_path",
+    "current_user",
+    "create_note_path",
+    "preview_note_path",
+    "epic_comments"
+  ],
+  "additionalProperties": false
+}

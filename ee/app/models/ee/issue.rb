@@ -315,10 +315,6 @@ module EE
       epic_issue.present?
     end
 
-    def serialize_for_ai(user:, content_limit:)
-      ::Gitlab::Llm::Serializers::IssueSerializer.serialize(issue: self, user: user, content_limit: content_limit)
-    end
-
     def licensed_feature_available?(feature)
       return project.licensed_feature_available?(feature) if project
 

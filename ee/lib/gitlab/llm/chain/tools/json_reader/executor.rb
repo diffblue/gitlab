@@ -38,17 +38,19 @@ module Gitlab
             end
 
             def execute
-              # We need to implement it on all models we want to take into considerations
-              unless resource.respond_to?(:serialize_for_ai)
+              resource_wrapper_class = "Ai::AiResource::#{resource.class}".safe_constantize
+              # We need to implement it for all models we want to take into considerations
+              unless resource_wrapper_class
                 return Answer.error_answer(context: context,
                   content: _("Unexpected error: Cannot serialize resource", resource_class: resource.class)
                 )
               end
 
-              resource_json = resource.serialize_for_ai(
-                user: context.current_user,
-                content_limit: provider_prompt_class::MAX_CHARACTERS
-              ).to_json
+              resource_json = resource_wrapper_class.new(resource)
+                .serialize_for_ai(
+                  user: context.current_user,
+                  content_limit: provider_prompt_class::MAX_CHARACTERS
+                ).to_json
               # todo: not ideal as we load the entire json into memory,
               # todo: follow-up: https://gitlab.com/gitlab-org/gitlab/-/issues/414848
               @data = Gitlab::Json.parse(resource_json)

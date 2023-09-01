@@ -20,7 +20,7 @@ RSpec.describe Gitlab::Llm::BaseResponseModifier, feature_category: :duo_chat do
     end
 
     describe '#errors' do
-      it 'raies NotImplementedError' do
+      it 'raises NotImplementedError' do
         expect { subject.errors }.to raise_error(NotImplementedError)
       end
     end
