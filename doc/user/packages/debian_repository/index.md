@@ -12,7 +12,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 WARNING:
 The Debian package registry for GitLab is under development and isn't ready for production use. This [epic](https://gitlab.com/groups/gitlab-org/-/epics/6057) details the remaining
-work and timelines to make it production ready.
+work and timelines to make it production ready. Support for [Debian packages is an experiment](../package_registry/supported_package_managers.md), and has known security vulnerabilities.
 
 Publish Debian packages in your project's Package Registry. Then install the
 packages whenever you need to use them as a dependency.
