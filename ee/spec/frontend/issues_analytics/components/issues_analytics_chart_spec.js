@@ -19,6 +19,7 @@ describe('IssuesAnalyticsChart', () => {
   let axiosMock;
   let mockDispatch;
   const mockChartData = { '2017-11': 0, '2017-12': 2 };
+  const mockChartEmptyData = { '2017-11': 0, '2017-12': 0 };
   const mockBarsData = [
     {
       name: 'Issues created',
@@ -28,6 +29,7 @@ describe('IssuesAnalyticsChart', () => {
       ],
     },
   ];
+  const mockFilters = { foo: 'bar' };
   const defaultProvide = {
     endpoint: TEST_HOST,
     filterBlockEl: document.querySelector('#mock-filter'),
@@ -35,7 +37,12 @@ describe('IssuesAnalyticsChart', () => {
     filtersEmptyStateSvgPath: 'svg',
   };
 
-  const createComponent = ({ provide = defaultProvide } = {}) => {
+  const createComponent = async ({
+    provide = defaultProvide,
+    loading = false,
+    chartData = mockChartData,
+    filters = {},
+  } = {}) => {
     axiosMock = new MockAdapter(axios);
     store = createStore();
     mockDispatch = jest.spyOn(store, 'dispatch').mockImplementation();
@@ -44,6 +51,14 @@ describe('IssuesAnalyticsChart', () => {
       provide,
       store,
     });
+
+    store.state.issueAnalytics = {
+      loading,
+      chartData,
+      filters,
+    };
+
+    await nextTick();
   };
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
@@ -51,76 +66,73 @@ describe('IssuesAnalyticsChart', () => {
   const findEmptyState = () => wrapper.findComponent(IssuesAnalyticsEmptyState);
   const findColumnChart = () => wrapper.findComponent(GlColumnChart);
 
-  beforeEach(() => {
-    createComponent();
-  });
-
   afterEach(() => {
     axiosMock.restore();
   });
 
-  it('fetches chart data when mounted', () => {
+  it('fetches chart data when mounted', async () => {
+    await createComponent();
+
     expect(mockDispatch).toHaveBeenCalledWith('issueAnalytics/fetchChartData', TEST_HOST);
   });
 
-  it('renders chart when data is present', async () => {
-    store.state.issueAnalytics.chartData = mockChartData;
-
-    await nextTick();
-
-    expect(findChartContainer().exists()).toBe(true);
-  });
-
-  it('correctly sets the chart `bars` prop', async () => {
-    store.state.issueAnalytics.chartData = mockChartData;
-
-    await nextTick();
-
-    expect(findColumnChart().props('bars')).toEqual(mockBarsData);
-  });
-
   it('fetches data when filters are applied', async () => {
-    store.state.issueAnalytics.filters = '?hello=world';
-
-    await nextTick();
+    await createComponent({ filters: mockFilters });
 
     expect(mockDispatch).toHaveBeenCalledTimes(2);
     expect(mockDispatch.mock.calls[1]).toEqual(['issueAnalytics/fetchChartData', TEST_HOST]);
   });
 
-  it('renders loading state when loading', async () => {
-    store.state.issueAnalytics.loading = true;
+  describe('when there is data', () => {
+    beforeEach(async () => {
+      await createComponent();
+    });
 
-    await nextTick();
+    it('renders chart', () => {
+      expect(findChartContainer().exists()).toBe(true);
+    });
+
+    it('correctly sets the chart `bars` prop', () => {
+      expect(findColumnChart().props('bars')).toEqual(mockBarsData);
+    });
+  });
+
+  it('renders loading state when loading', async () => {
+    await createComponent({ loading: true });
 
     expect(findLoadingIcon().exists()).toBe(true);
     expect(findChartContainer().exists()).toBe(false);
   });
 
-  it('renders empty state when chart data is empty', async () => {
-    store.state.issueAnalytics.chartData = {};
+  describe('when chart data is empty', () => {
+    describe('and filters have not been applied', () => {
+      beforeEach(async () => {
+        await createComponent({ chartData: mockChartEmptyData });
+      });
 
-    await nextTick();
+      it('should render "no data" empty state', () => {
+        expect(findEmptyState().props('emptyStateType')).toBe('noData');
+        expect(findChartContainer().exists()).toBe(false);
+      });
 
-    expect(findEmptyState().props('emptyStateType')).toBe('noData');
-    expect(findChartContainer().exists()).toBe(false);
-  });
+      it('emits "hasNoData" event', () => {
+        expect(wrapper.emitted('hasNoData')).toBeDefined();
+      });
+    });
 
-  it('renders filters empty state when filters are applied and chart data is empty', async () => {
-    store.state.issueAnalytics.chartData = {};
-    store.state.issueAnalytics.filters = '?hello=world';
+    describe('and filters have been applied', () => {
+      beforeEach(async () => {
+        await createComponent({ chartData: mockChartEmptyData, filters: mockFilters });
+      });
 
-    await nextTick();
+      it('should render "filters" empty state', () => {
+        expect(findEmptyState().props('emptyStateType')).toBe('noDataWithFilters');
+        expect(findChartContainer().exists()).toBe(false);
+      });
 
-    expect(findEmptyState().props('emptyStateType')).toBe('noDataWithFilters');
-    expect(findChartContainer().exists()).toBe(false);
-  });
-
-  it('emits "hasNoData" event when chart data is empty', async () => {
-    store.state.issueAnalytics.chartData = {};
-
-    await nextTick();
-
-    expect(wrapper.emitted('hasNoData')).toBeDefined();
+      it('does not emit "hasNoData" event', () => {
+        expect(wrapper.emitted('hasNoData')).toBeUndefined();
+      });
+    });
   });
 });
