@@ -60,6 +60,26 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout, feature_category: :geo_r
       expect(current_node.primary?).to be_truthy
       expect(GeoNode.count).to eq(1)
     end
+
+    context 'with the ENABLE_SILENT_MODE env var set' do
+      it 'enables silent mode' do
+        stub_env('ENABLE_SILENT_MODE' => true)
+
+        expect { run_rake_task('geo:set_secondary_as_primary') }
+          .to change { Gitlab::CurrentSettings.silent_mode_enabled? }
+          .from(false)
+          .to(true)
+      end
+    end
+
+    context 'when the ENABLE_SILENT_MODE env var is unset' do
+      it 'does not enable silent mode' do
+        stub_env('ENABLE_SILENT_MODE' => nil)
+
+        expect { run_rake_task('geo:set_secondary_as_primary') }
+          .not_to change { Gitlab::CurrentSettings.silent_mode_enabled? }
+      end
+    end
   end
 
   describe 'geo:update_primary_node_url' do
