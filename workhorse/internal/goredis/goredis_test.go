@@ -13,8 +13,7 @@ import (
 )
 
 func mockRedisServer(t *testing.T, connectReceived *atomic.Value) string {
-	// go-redis does not deal with port 0
-	ln, err := net.Listen("tcp", "127.0.0.1:6389")
+	ln, err := net.Listen("tcp", "127.0.0.1:0")
 
 	require.Nil(t, err)
 
