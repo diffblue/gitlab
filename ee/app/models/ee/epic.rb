@@ -177,7 +177,7 @@ module EE
 
       scope :with_group_route, -> { preload([group: :route]) }
 
-      def etag_caching_enabled?
+      def real_time_notes_enabled?
         true
       end
 

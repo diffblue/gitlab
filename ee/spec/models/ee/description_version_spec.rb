@@ -53,10 +53,10 @@ RSpec.describe DescriptionVersion do
         .count
     end
 
-    it 'expires issuable etag cache' do
+    it 'broadcasts notes update' do
       version = epic.description_versions.last
 
-      expect(epic).to receive(:expire_note_etag_cache)
+      expect(epic).to receive(:broadcast_notes_changed)
 
       version.delete!
     end
