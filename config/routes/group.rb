@@ -161,7 +161,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
 
     resources :achievements, only: [:index, :new, :edit]
 
-    resources :work_items, only: [:index]
+    resources :work_items, only: [:index, :show], param: :iid
   end
 
   scope(
