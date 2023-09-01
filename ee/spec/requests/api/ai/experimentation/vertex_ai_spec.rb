@@ -24,7 +24,6 @@ RSpec.describe API::Ai::Experimentation::VertexAi, feature_category: :ai_abstrac
       allow(configuration).to receive(:access_token).and_return(token)
     end
 
-    stub_feature_flags(explain_vulnerability_vertex: true)
     stub_feature_flags(ai_experimentation_api: current_user)
     stub_application_setting(vertex_ai_host: host)
     stub_application_setting(vertex_ai_project: 'llm')
@@ -32,7 +31,7 @@ RSpec.describe API::Ai::Experimentation::VertexAi, feature_category: :ai_abstrac
 
   shared_examples 'invalid request' do
     it 'returns an error' do
-      post api("/ai/experimentation/tofa/#{endpoint}", current_user), params: params
+      post api("/ai/experimentation/vertex/#{endpoint}", current_user), params: params
 
       expect(response).to have_gitlab_http_status(:bad_request)
     end
@@ -40,7 +39,7 @@ RSpec.describe API::Ai::Experimentation::VertexAi, feature_category: :ai_abstrac
 
   shared_examples 'proxies request to ai api endpoint' do
     it 'responds with Workhorse send-url headers' do
-      post api("/ai/experimentation/tofa/#{endpoint}", current_user), params: params
+      post api("/ai/experimentation/vertex/#{endpoint}", current_user), params: params
 
       expect(response.body).to eq('""')
       expect(response).to have_gitlab_http_status(:ok)
@@ -59,7 +58,7 @@ RSpec.describe API::Ai::Experimentation::VertexAi, feature_category: :ai_abstrac
     end
   end
 
-  describe 'POST /ai/experimentation/tofa/chat' do
+  describe 'POST /ai/experimentation/vertex/chat' do
     let(:endpoint) { 'chat' }
     let(:content) { 'Who won the world series in 2020?' }
     let(:context) { 'Some extra context' }
@@ -98,43 +97,14 @@ RSpec.describe API::Ai::Experimentation::VertexAi, feature_category: :ai_abstrac
 
     let(:params) { base_params.merge(content: content) }
 
-    context 'when feature flag not enabled for user' do
-      let(:not_authorized_user) { create :user }
+    context 'when ai_experimentation_api feature flag not enabled for user' do
+      let(:not_authorized_user) { create(:user) }
       let(:token) { create(:personal_access_token, user: not_authorized_user) }
 
       it 'returns not found' do
-        post api("/ai/experimentation/tofa/#{endpoint}", not_authorized_user), params: params
+        post api("/ai/experimentation/vertex/#{endpoint}", not_authorized_user), params: params
 
         expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
-
-    context 'when general feature flag not enabled' do
-      before do
-        stub_feature_flags(tofa_experimentation_main_flag: false)
-      end
-
-      it 'returns not found' do
-        post api("/ai/experimentation/tofa/#{endpoint}", current_user), params: params
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
-
-    context 'when TOFA_ACCESS_TOKEN variable is set' do
-      before do
-        stub_env('TOFA_ACCESS_TOKEN', 'env token')
-      end
-
-      it 'uses token from the environment variable' do
-        post api("/ai/experimentation/tofa/#{endpoint}", current_user), params: params
-
-        expect(response).to have_gitlab_http_status(:ok)
-
-        _, encoded_data = response.headers['Gitlab-Workhorse-Send-Data'].split(':')
-        data = Gitlab::Json.parse(Base64.urlsafe_decode64(encoded_data))
-
-        expect(data['Header']['Authorization']).to eq(['Bearer env token'])
       end
     end
 

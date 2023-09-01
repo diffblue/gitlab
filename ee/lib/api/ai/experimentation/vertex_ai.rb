@@ -14,14 +14,13 @@ module API
 
         helpers do
           def check_feature_enabled
-            not_found!('REST API endpoint not found') unless Feature.enabled?(:tofa_experimentation_main_flag) &&
-              Feature.enabled?(:ai_experimentation_api, current_user)
+            not_found!('REST API endpoint not found') unless Feature.enabled?(:ai_experimentation_api, current_user)
           end
 
           def vertex_ai_post(_endpoint, json_body: nil)
             headers = {
               "Accept" => ["application/json"],
-              "Authorization" => ["Bearer #{tofa_api_token}"],
+              "Authorization" => ["Bearer #{configuration.access_token}"],
               "Host" => [host],
               "Content-Type" => ["application/json"]
             }
@@ -79,14 +78,6 @@ module API
             end
           end
 
-          def tofa_api_token
-            if !Rails.env.production? && ENV.fetch('TOFA_ACCESS_TOKEN', nil)
-              ENV.fetch('TOFA_ACCESS_TOKEN')
-            else
-              configuration.access_token
-            end
-          end
-
           delegate(
             :host,
             :url,
@@ -94,7 +85,7 @@ module API
           )
         end
 
-        namespace 'ai/experimentation/tofa' do
+        namespace 'ai/experimentation/vertex' do
           desc 'Proxies request to Vertex AI chat endpoint'
           params do
             optional :content, type: String, desc: 'Single message/question to ask'
