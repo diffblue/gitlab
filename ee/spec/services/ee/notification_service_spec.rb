@@ -964,9 +964,15 @@ RSpec.describe EE::NotificationService, :mailer, feature_category: :team_plannin
         added_user.user_detail.update!(provisioned_by_group_id: group.id)
       end
 
-      it 'sends a notification' do
-        group.add_guest(added_user)
-        should_only_email(added_user)
+      context 'when enterprise_users_automatic_claim FF is disabled' do
+        before do
+          stub_feature_flags(enterprise_users_automatic_claim: false)
+        end
+
+        it 'sends a notification' do
+          group.add_guest(added_user)
+          should_only_email(added_user)
+        end
       end
     end
   end

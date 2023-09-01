@@ -2,8 +2,13 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::EnterpriseUsers::DisassociateWorker, feature_category: :onboarding do
+RSpec.describe Groups::EnterpriseUsers::DisassociateWorker, feature_category: :user_management do
   subject(:worker) { described_class.new }
+
+  it_behaves_like 'an idempotent worker' do
+    let(:user) { create(:user) }
+    let(:job_args) { [user.id] }
+  end
 
   describe '#perform' do
     let(:user) { create(:user) }

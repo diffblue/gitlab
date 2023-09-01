@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::EnterpriseUsers::AssociateService, :saas, feature_category: :system_access do
+RSpec.describe Groups::EnterpriseUsers::AssociateService, :saas, feature_category: :user_management do
   let_it_be(:group) { create(:group) }
   let_it_be(:subgroup) { create(:group, parent: group) }
   let_it_be(:project1) { create(:project, group: group) }
@@ -73,15 +73,17 @@ RSpec.describe Groups::EnterpriseUsers::AssociateService, :saas, feature_categor
         service.execute
       end
 
-      context 'when the user detail cannot be updated' do
+      context 'when the user detail update fails' do
         before do
           user.user_detail.pronouns = 'x' * 51
         end
 
-        include_examples(
-          'does not mark the user as an enterprise user of the group',
-          'The user detail cannot be updated', :user_detail_cannot_be_updated
-        )
+        it 'raises active record error' do
+          expect(Notify).not_to receive(:user_associated_with_enterprise_group_email)
+          expect(Gitlab::AppLogger).not_to receive(:info)
+
+          expect { service.execute }.to raise_error(ActiveRecord::RecordInvalid)
+        end
       end
     end
 

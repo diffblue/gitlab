@@ -17,15 +17,13 @@ module Groups
           return error(s_('EnterpriseUsers|The user does not match the "Enterprise User" definition for the group'))
         end
 
-        if @user.user_detail.update(enterprise_group_id: @group.id, enterprise_group_associated_at: Time.current)
-          Notify.user_associated_with_enterprise_group_email(@user.id).deliver_later
+        @user.user_detail.update!(enterprise_group_id: @group.id, enterprise_group_associated_at: Time.current)
 
-          log_info(message: 'Associated the user with the enterprise group')
+        Notify.user_associated_with_enterprise_group_email(@user.id).deliver_later
 
-          success
-        else
-          error(s_('EnterpriseUsers|The user detail cannot be updated'), reason: :user_detail_cannot_be_updated)
-        end
+        log_info(message: 'Associated the user with the enterprise group')
+
+        success
       end
     end
   end
