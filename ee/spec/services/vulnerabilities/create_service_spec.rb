@@ -72,7 +72,8 @@ RSpec.describe Vulnerabilities::CreateService, feature_category: :vulnerability_
           confidence: finding.confidence,
           confidence_overridden: false,
           report_type: finding.report_type,
-          present_on_default_branch: true
+          present_on_default_branch: true,
+          finding_id: finding.id
         ))
     end
 
@@ -138,6 +139,10 @@ RSpec.describe Vulnerabilities::CreateService, feature_category: :vulnerability_
 
       it 'adds expected error to the response' do
         expect(subject.errors.messages).to eq(expected_error_messages)
+      end
+
+      it 'does not associate vulnerability with the finding' do
+        expect(Vulnerability.where(finding_id: finding.id).count).to eq(0)
       end
     end
 
