@@ -34,6 +34,8 @@ module Integrations
       end
 
       expose :labels do |jira_issue|
+        next [] unless jira_issue.labels
+
         jira_issue.labels.map do |name|
           {
             id: name,
