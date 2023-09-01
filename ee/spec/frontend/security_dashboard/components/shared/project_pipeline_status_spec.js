@@ -14,6 +14,10 @@ const defaultPipeline = {
   path: '/mixed-vulnerabilities/dependency-list-test-01/-/pipelines/214',
 };
 
+const emptySbomPipeline = {
+  id: null,
+};
+
 const sbomPipeline = {
   createdAt: '2021-09-05T20:08:07Z',
   id: '245',
@@ -27,11 +31,12 @@ describe('Project Pipeline Status Component', () => {
     wrapper.findByTestId('pipeline').findComponent(PipelineStatusBadge);
   const findTimeAgoTooltip = () => wrapper.findByTestId('pipeline').findComponent(TimeAgoTooltip);
   const findLink = () => wrapper.findByTestId('pipeline').findComponent(GlLink);
+  const findPipelineDivider = () => wrapper.findByTestId('pipeline-divider');
+  const findSbomPipelineContainer = () => wrapper.findByTestId('sbom-pipeline');
   const findSbomPipelineStatusBadge = () =>
-    wrapper.findByTestId('sbom-pipeline').findComponent(PipelineStatusBadge);
-  const findSbomTimeAgoTooltip = () =>
-    wrapper.findByTestId('sbom-pipeline').findComponent(TimeAgoTooltip);
-  const findSbomLink = () => wrapper.findByTestId('sbom-pipeline').findComponent(GlLink);
+    findSbomPipelineContainer().findComponent(PipelineStatusBadge);
+  const findSbomTimeAgoTooltip = () => findSbomPipelineContainer().findComponent(TimeAgoTooltip);
+  const findSbomLink = () => findSbomPipelineContainer().findComponent(GlLink);
   const findParsingStatusNotice = () => wrapper.findByTestId('parsing-status-notice');
   const findAutoFixMrsLink = () => wrapper.findByTestId('auto-fix-mrs-link');
 
@@ -43,7 +48,7 @@ describe('Project Pipeline Status Component', () => {
           {
             propsData: {
               pipeline: defaultPipeline,
-              sbomPipeline,
+              sbomPipeline: emptySbomPipeline,
             },
             provide: {
               projectFullPath: '/group/project',
@@ -85,6 +90,11 @@ describe('Project Pipeline Status Component', () => {
 
     it('should show the pipeline status badge component', () => {
       expect(findPipelineStatusBadge().props('pipeline')).toBe(defaultPipeline);
+    });
+
+    it('should not show sbom pipeline status if it has no id', () => {
+      expect(findPipelineDivider().exists()).toBe(false);
+      expect(findSbomPipelineContainer().exists()).toBe(false);
     });
   });
 
@@ -144,9 +154,13 @@ describe('Project Pipeline Status Component', () => {
     });
   });
 
-  describe('sbom pipeline', () => {
+  describe('has sbom pipeline data', () => {
     beforeEach(() => {
-      createWrapper();
+      createWrapper({ propsData: { sbomPipeline } });
+    });
+
+    it('should display the pipeline divider as visible', () => {
+      expect(findPipelineDivider().isVisible()).toBe(true);
     });
 
     it('should show the timeAgoTooltip component', () => {
@@ -168,7 +182,7 @@ describe('Project Pipeline Status Component', () => {
     });
 
     it('should show the pipeline status badge component', () => {
-      expect(findSbomPipelineStatusBadge().props('pipeline')).toBe(sbomPipeline);
+      expect(findSbomPipelineStatusBadge().props('pipeline')).toMatchObject(sbomPipeline);
     });
   });
 });
