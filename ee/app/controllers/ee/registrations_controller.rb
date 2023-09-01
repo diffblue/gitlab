@@ -54,8 +54,6 @@ module EE
 
       custom_confirmation_instructions_service.set_token(save: false)
 
-      return if registered_with_invite_email?
-
       start_onboarding(after_sign_up_path, resource)
     end
 
