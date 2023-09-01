@@ -71,11 +71,11 @@ export const stateData = {
   redirectAfterSuccess: '/path/to/redirect/',
   selectedNamespaceId: '30',
   selectedPlan: {
-    id: null,
+    id: 1,
     isAddon: true,
   },
   paymentMethod: {
-    id: null,
+    id: 1,
     creditCardExpirationMonth: null,
     creditCardExpirationYear: null,
     creditCardType: null,
@@ -88,7 +88,7 @@ export const stateData = {
     address2: null,
     city: null,
     state: null,
-    zipCode: null,
+    zipCode: 94100,
     company: null,
     __typename: CUSTOMER_TYPE,
   },
