@@ -2,10 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['AiCachedMessageType'], feature_category: :duo_chat do
+RSpec.describe GitlabSchema.types['AiChatMessage'], feature_category: :duo_chat do
   include GraphqlHelpers
 
-  it { expect(described_class.graphql_name).to eq('AiCachedMessageType') }
+  it { expect(described_class.graphql_name).to eq('AiChatMessage') }
 
   it 'has the expected fields' do
     expected_fields = %w[id request_id content content_html role timestamp errors]

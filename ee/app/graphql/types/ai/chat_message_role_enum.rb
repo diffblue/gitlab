@@ -2,8 +2,8 @@
 
 module Types
   module Ai
-    class CachedMessageRoleEnum < BaseEnum
-      graphql_name 'AiCachedMessageRole'
+    class ChatMessageRoleEnum < BaseEnum
+      graphql_name 'AiChatMessageRole'
       description 'Roles to filter in chat message.'
 
       ::Gitlab::Llm::Cache::ALLOWED_ROLES.each do |role|
