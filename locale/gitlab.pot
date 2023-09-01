@@ -49768,6 +49768,18 @@ msgstr ""
 msgid "Tracing|Service"
 msgstr ""
 
+msgid "Tracing|Span Details"
+msgstr ""
+
+msgid "Tracing|Span ID"
+msgstr ""
+
+msgid "Tracing|Status Code"
+msgstr ""
+
+msgid "Tracing|Toggle children spans"
+msgstr ""
+
 msgid "Tracing|Trace ID"
 msgstr ""
 

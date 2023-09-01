@@ -11,6 +11,11 @@ export default {
       required: true,
       type: Object,
     },
+    selectedSpanId: {
+      required: false,
+      type: String,
+      default: null,
+    },
   },
   computed: {
     spans() {
@@ -24,6 +29,11 @@ export default {
       return assignColorToServices(this.trace);
     },
   },
+  methods: {
+    onSelect({ spanId }) {
+      this.$emit('span-selected', { spanId });
+    },
+  },
 };
 </script>
 
@@ -32,5 +42,7 @@ export default {
     :spans="spans"
     :trace-duration-ms="traceDurationMs"
     :service-to-color="serviceToColor"
+    :selected-span-id="selectedSpanId"
+    @span-selected="onSelect"
   />
 </template>

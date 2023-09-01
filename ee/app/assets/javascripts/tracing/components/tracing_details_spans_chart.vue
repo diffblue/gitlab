@@ -1,6 +1,7 @@
 <script>
 import { GlButton, GlTruncate } from '@gitlab/ui';
 import { clamp } from 'lodash';
+import { s__ } from '~/locale';
 import { formatDurationMs } from './trace_utils';
 
 export default {
@@ -8,6 +9,9 @@ export default {
   components: {
     GlButton,
     GlTruncate,
+  },
+  i18n: {
+    toggleChildrenSpans: s__('Tracing|Toggle children spans'),
   },
   props: {
     spans: {
@@ -26,6 +30,11 @@ export default {
     serviceToColor: {
       required: true,
       type: Object,
+    },
+    selectedSpanId: {
+      required: false,
+      type: String,
+      default: null,
     },
   },
   data() {
@@ -77,6 +86,12 @@ export default {
     durationValue(span) {
       return formatDurationMs(span.durationMs);
     },
+    onSelect({ spanId }) {
+      this.$emit('span-selected', { spanId });
+    },
+    isSpanSelected(span) {
+      return span.spanId === this.selectedSpanId;
+    },
   },
 };
 </script>
@@ -85,10 +100,18 @@ export default {
   <div class="span-tree">
     <div
       v-for="(span, index) in spans"
-      :key="span.span_id"
-      :data-testid="`span-container-${depth}-${index}`"
+      :key="span.spanId"
+      :data-testid="`span-wrapper-${depth}-${index}`"
     >
-      <div class="gl-display-flex gl-border-b gl-hover-bg-t-gray-a-08">
+      <div
+        data-testid="span-inner-container"
+        class="gl-display-flex gl-border-b gl-cursor-pointer"
+        :class="{
+          'gl-bg-blue-100': isSpanSelected(span),
+          'gl-hover-bg-t-gray-a-08': !isSpanSelected(span),
+        }"
+        @click="onSelect({ spanId: span.spanId })"
+      >
         <div
           data-testid="span-details"
           class="gl-w-30p gl-min-w-20 gl-display-flex gl-flex-direction-row gl-p-3 gl-border-r"
@@ -96,12 +119,13 @@ export default {
         >
           <div>
             <gl-button
+              :aria-label="$options.i18n.toggleChildrenSpans"
               class="gl-mr-1"
               :class="{ invisible: !hasChildrenSpans(index) }"
               :icon="`chevron-${isExpanded(index) ? 'down' : 'up'}`"
               category="tertiary"
               size="small"
-              @click="toggleExpand(index)"
+              @click.stop="toggleExpand(index)"
             />
           </div>
 
@@ -135,6 +159,8 @@ export default {
         :depth="depth + 1"
         :trace-duration-ms="traceDurationMs"
         :service-to-color="serviceToColor"
+        :selected-span-id="selectedSpanId"
+        @span-selected="onSelect"
       />
     </div>
   </div>
