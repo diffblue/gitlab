@@ -71,6 +71,7 @@ module Gitlab
         incr
         incrby
         mapped_hmset
+        publish
         rpush
         sadd
         sadd?
