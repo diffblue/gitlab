@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Create', only: { subdomain: %i[staging] }, product_group: :ide do
+  RSpec.describe 'Create', only: { pipeline: %i[staging] }, product_group: :ide do
     describe 'Remote Development' do
       include Runtime::Fixtures
 
