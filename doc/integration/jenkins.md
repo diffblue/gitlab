@@ -161,14 +161,16 @@ If you cannot [provide GitLab with your Jenkins server URL and authentication in
 
 ### Error during GitLab configuration - "Connection failed. Please check your settings"
 
-If you get this error message while configuring GitLab, the following are possible causes:
+While configuring GitLab, you might get an error that states "Connection failed. Please check your settings".
 
-- GitLab is unable to reach your Jenkins instance at the address. If your GitLab instance is self-managed, try pinging the
-  Jenkins instance at the domain provided on the GitLab instance.
-- The Jenkins instance is at a local address and is not included in the
-  [GitLab installation's allowlist](../security/webhooks.md#allow-outbound-requests-to-certain-ip-addresses-and-domains).
-- The credentials for the Jenkins instance do not have sufficient access or are invalid.
-- The **Enable authentication for `/project` end-point** checkbox is not selected in your [Jenkins plugin configuration](#configure-the-jenkins-server).
+This issue has multiple possible causes and solutions:
+
+| Cause                                                            | Workaround  |
+|------------------------------------------------------------------|-------------|
+| GitLab is unable to reach your Jenkins instance at the address.  | If your GitLab instance is self-managed, ping the Jenkins instance at the domain provided on the GitLab instance.  |
+| The Jenkins instance is at a local address and is not included in the [GitLab installation's allowlist](../security/webhooks.md#allow-outbound-requests-to-certain-ip-addresses-and-domains).| Add the instance to the GitLab installation's allowlist.  |
+| The credentials for the Jenkins instance do not have sufficient access or are invalid.| Grant the credentials sufficient access or create valid credentials.  |
+|The **Enable authentication for `/project` end-point** checkbox is not selected in your [Jenkins plugin configuration](#configure-the-jenkins-server)| Select the checkbox.  |
 
 ### Error in merge requests - "Could not connect to the CI server"
 
