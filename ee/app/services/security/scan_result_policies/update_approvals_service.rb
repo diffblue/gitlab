@@ -18,9 +18,8 @@ module Security
 
         log_update_approval_rule('Evaluating MR approval rules from scan result policies',
           merge_request_id: merge_request.id,
-          pipeline_ids: multi_pipeline_scan_result_policies_enabled? ? related_pipeline_ids : pipeline.id,
-          target_pipeline_ids:
-            multi_pipeline_scan_result_policies_enabled? ? related_target_pipeline_ids : target_pipeline&.id
+          pipeline_ids: related_pipeline_ids,
+          target_pipeline_ids: related_target_pipeline_ids
         )
 
         violated_rules, unviolated_rules = partition_rules(approval_rules)
@@ -85,16 +84,12 @@ module Security
       end
 
       def pipeline_security_scan_types
-        return security_scan_types(related_pipeline_ids) if multi_pipeline_scan_result_policies_enabled?
-
-        pipeline.security_scan_types
+        security_scan_types(related_pipeline_ids)
       end
       strong_memoize_attr :pipeline_security_scan_types
 
       def target_pipeline_security_scan_types
-        return security_scan_types(related_target_pipeline_ids) if multi_pipeline_scan_result_policies_enabled?
-
-        target_pipeline&.security_scan_types || []
+        security_scan_types(related_target_pipeline_ids)
       end
       strong_memoize_attr :target_pipeline_security_scan_types
 
@@ -176,19 +171,12 @@ module Security
       end
       strong_memoize_attr :related_pipeline_ids
 
-      def multi_pipeline_scan_result_policies_enabled?
-        Feature.enabled?(:multi_pipeline_scan_result_policies, pipeline.project)
-      end
-      strong_memoize_attr :multi_pipeline_scan_result_policies_enabled?
-
       def target_pipeline_findings_uuids(approval_rule)
-        pipeline_ids = related_target_pipeline_ids if multi_pipeline_scan_result_policies_enabled?
-        findings_uuids(target_pipeline, approval_rule, pipeline_ids)
+        findings_uuids(target_pipeline, approval_rule, related_target_pipeline_ids)
       end
 
       def pipeline_findings_uuids(approval_rule)
-        pipeline_ids = related_pipeline_ids if multi_pipeline_scan_result_policies_enabled?
-        findings_uuids(pipeline, approval_rule, pipeline_ids, true)
+        findings_uuids(pipeline, approval_rule, related_pipeline_ids, true)
       end
 
       def findings_uuids(pipeline, approval_rule, pipeline_ids, check_dismissed = false)

@@ -56,14 +56,6 @@ RSpec.describe Security::ScanResultPolicies::SyncFindingsToApprovalRulesService,
 
       it_behaves_like 'calls UpdateApprovalsService'
 
-      context 'when multi_pipeline_scan_result_policies is disabled' do
-        before do
-          stub_feature_flags(multi_pipeline_scan_result_policies: false)
-        end
-
-        it_behaves_like 'calls UpdateApprovalsService'
-      end
-
       context 'when merge_request is closed' do
         before do
           merge_request.update!(state_id: MergeRequest.available_states[:closed])

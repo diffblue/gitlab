@@ -22,10 +22,6 @@ module Security
       end
 
       def merge_requests_for_pipeline
-        unless Feature.enabled?(:multi_pipeline_scan_result_policies, pipeline.project)
-          return pipeline.merge_requests_as_head_pipeline.opened
-        end
-
         return MergeRequest.none unless pipeline.latest?
 
         pipeline.all_merge_requests.opened
