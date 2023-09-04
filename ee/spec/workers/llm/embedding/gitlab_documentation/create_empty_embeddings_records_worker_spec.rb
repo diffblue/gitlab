@@ -2,14 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe Llm::TanukiBot::RecreateRecordsWorker, feature_category: :duo_chat do
+RSpec.describe Llm::Embedding::GitlabDocumentation::CreateEmptyEmbeddingsRecordsWorker, feature_category: :duo_chat do
   it_behaves_like 'worker with data consistency', described_class, data_consistency: :always
 
   describe '#perform' do
     before do
       stub_const("#{described_class}::DOC_DIRECTORY", './ee/spec/fixtures/gitlab_documentation')
       allow(::Gitlab::Llm::Embeddings::Utils::DocsContentParser).to receive(:parse_and_split).and_return([item])
-      allow(::Embedding::TanukiBotMvc).to receive(:get_current_version).and_return(version)
+      allow(::Embedding::Vertex::GitlabDocumentation).to receive(:get_current_version).and_return(version)
     end
 
     let(:logger) { described_class.new.send(:logger) }
@@ -27,7 +27,7 @@ RSpec.describe Llm::TanukiBot::RecreateRecordsWorker, feature_category: :duo_cha
     subject(:perform) { class_instance.perform }
 
     it 'does not enqueue any workers' do
-      expect(Llm::TanukiBot::UpdateWorker).not_to receive(:perform_in)
+      expect(Llm::Embedding::GitlabDocumentation::SetEmbeddingsOnTheRecordWorker).not_to receive(:perform_in)
 
       perform
     end
@@ -35,47 +35,52 @@ RSpec.describe Llm::TanukiBot::RecreateRecordsWorker, feature_category: :duo_cha
     describe 'checks' do
       using RSpec::Parameterized::TableSyntax
 
-      where(:openai_experimentation_enabled, :tanuki_bot_enabled, :feature_available) do
-        false | false | false
-        false | true | false
-        true | false | false
+      where(:openai_experimentation_enabled, :gitlab_duo_enabled, :vertex_embeddings_enabled, :feature_available) do
+        false | false | false | false
+        false | false | false | true
+        false | false | true  | false
+        false | true  | false | false
+        true  | false | false | false
       end
 
       with_them do
         before do
           stub_feature_flags(openai_experimentation: openai_experimentation_enabled)
-          stub_feature_flags(tanuki_bot: tanuki_bot_enabled)
-          allow(License).to receive(:feature_available?).with(:ai_tanuki_bot).and_return(feature_available)
+          stub_feature_flags(gitlab_duo: gitlab_duo_enabled)
+          stub_feature_flags(create_embeddings_with_vertex_ai: vertex_embeddings_enabled)
+          allow(License).to receive(:feature_available?).with(:ai_chat).and_return(feature_available)
         end
 
         it 'does not create any records or enqueue any workers' do
-          expect(Llm::TanukiBot::UpdateWorker).not_to receive(:perform_in)
+          expect(Llm::Embedding::GitlabDocumentation::SetEmbeddingsOnTheRecordWorker).not_to receive(:perform_in)
 
-          expect { perform }.not_to change { ::Embedding::TanukiBotMvc.count }
+          expect { perform }.not_to change { ::Embedding::Vertex::GitlabDocumentation.count }
         end
       end
     end
 
     context 'with the feature available' do
       before do
-        allow(License).to receive(:feature_available?).with(:ai_tanuki_bot).and_return(true)
+        allow(License).to receive(:feature_available?).with(:ai_chat).and_return(true)
       end
 
       it 'creates a record and enqueues workers' do
         expect(::Gitlab::Llm::Embeddings::Utils::DocsContentParser).to receive(:parse_and_split).once
-        expect(Llm::TanukiBot::UpdateWorker).to receive(:perform_in).with(anything, anything, next_version).once
+        expect(Llm::Embedding::GitlabDocumentation::SetEmbeddingsOnTheRecordWorker).to receive(:perform_in).with(
+          anything, anything, next_version
+        ).once
 
-        expect { perform }.to change { ::Embedding::TanukiBotMvc.count }.from(0).to(1)
+        expect { perform }.to change { ::Embedding::Vertex::GitlabDocumentation.count }.from(0).to(1)
       end
 
       it 'has the correct attributes' do
-        allow(Llm::TanukiBot::UpdateWorker).to receive(:perform_in)
+        allow(Llm::Embedding::GitlabDocumentation::SetEmbeddingsOnTheRecordWorker).to receive(:perform_in)
 
         perform
 
-        expect(::Embedding::TanukiBotMvc.count).to eq(1)
+        expect(::Embedding::Vertex::GitlabDocumentation.count).to eq(1)
 
-        record = ::Embedding::TanukiBotMvc.first
+        record = ::Embedding::Vertex::GitlabDocumentation.first
         expect(record.metadata).to eq(item[:metadata].deep_stringify_keys)
         expect(record.embedding).to eq(nil)
         expect(record.content).to eq(item[:content])
@@ -91,20 +96,20 @@ RSpec.describe Llm::TanukiBot::RecreateRecordsWorker, feature_category: :duo_cha
 
         it 'creates two records, and enqueues workers' do
           expect(::Gitlab::Llm::Embeddings::Utils::DocsContentParser).to receive(:parse_and_split).once
-          expect(Llm::TanukiBot::UpdateWorker).to receive(:perform_in).twice
+          expect(Llm::Embedding::GitlabDocumentation::SetEmbeddingsOnTheRecordWorker).to receive(:perform_in).twice
 
-          expect { perform }.to change { ::Embedding::TanukiBotMvc.count }.from(0).to(2)
+          expect { perform }.to change { ::Embedding::Vertex::GitlabDocumentation.count }.from(0).to(2)
         end
 
         it_behaves_like 'an idempotent worker' do
           before do
             allow(::Gitlab::Llm::Embeddings::Utils::DocsContentParser).to receive(:parse_and_split)
               .and_return([item, item])
-            allow(Llm::TanukiBot::UpdateWorker).to receive(:perform_in)
+            allow(Llm::Embedding::GitlabDocumentation::SetEmbeddingsOnTheRecordWorker).to receive(:perform_in)
           end
 
           it 'creates two records' do
-            expect { perform }.to change { ::Embedding::TanukiBotMvc.count }.from(0).to(2)
+            expect { perform }.to change { ::Embedding::Vertex::GitlabDocumentation.count }.from(0).to(2)
           end
         end
       end
@@ -116,9 +121,9 @@ RSpec.describe Llm::TanukiBot::RecreateRecordsWorker, feature_category: :duo_cha
         end
 
         it 'does nothing' do
-          expect(Llm::TanukiBot::UpdateWorker).not_to receive(:perform_in)
+          expect(Llm::Embedding::GitlabDocumentation::SetEmbeddingsOnTheRecordWorker).not_to receive(:perform_in)
 
-          expect { perform }.not_to change { ::Embedding::TanukiBotMvc.count }
+          expect { perform }.not_to change { ::Embedding::Vertex::GitlabDocumentation.count }
         end
       end
     end

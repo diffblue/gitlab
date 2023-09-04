@@ -435,6 +435,24 @@
   :weight: 1
   :idempotent: false
   :tags: []
+- :name: cronjob:llm_embedding_gitlab_documentation_cleanup_previous_versions_records
+  :worker_name: Llm::Embedding::GitlabDocumentation::CleanupPreviousVersionsRecordsWorker
+  :feature_category: :duo_chat
+  :has_external_dependencies: false
+  :urgency: :throttled
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: cronjob:llm_embedding_gitlab_documentation_create_empty_embeddings_records
+  :worker_name: Llm::Embedding::GitlabDocumentation::CreateEmptyEmbeddingsRecordsWorker
+  :feature_category: :duo_chat
+  :has_external_dependencies: false
+  :urgency: :throttled
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: cronjob:llm_tanuki_bot_recreate_records
   :worker_name: Llm::TanukiBot::RecreateRecordsWorker
   :feature_category: :duo_chat
@@ -1556,6 +1574,15 @@
   :feature_category: :ai_abstraction_layer
   :has_external_dependencies: false
   :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: llm_embedding_gitlab_documentation_set_embeddings_on_the_record
+  :worker_name: Llm::Embedding::GitlabDocumentation::SetEmbeddingsOnTheRecordWorker
+  :feature_category: :duo_chat
+  :has_external_dependencies: false
+  :urgency: :throttled
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
