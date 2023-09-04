@@ -53013,6 +53013,12 @@ msgstr ""
 msgid "Webhooks|Releases events"
 msgstr ""
 
+msgid "Webhooks|Response body is empty"
+msgstr ""
+
+msgid "Webhooks|Response headers data is empty"
+msgstr ""
+
 msgid "Webhooks|SSL verification"
 msgstr ""
 
