@@ -221,20 +221,23 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
         expect(page).to have_selector(selector, text: label.title, count: 1)
       end
 
-      it 'allows user to delete list from list settings sidebar', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/409989' do
-        expect(page).to have_content(label.name)
+      it 'allows user to delete list from list settings sidebar' do
+        selector = '[data-testid="board-list-header"]'
+        expect(page).to have_selector(selector, text: label.title, count: 1)
 
         page.within(find('.board:nth-child(2)')) do
           click_button 'Edit list settings'
         end
 
-        click_button 'Remove list'
-
-        page.within('.modal') do
+        page.within('.gl-drawer-sidebar') do
           click_button('Remove list', match: :first)
         end
 
-        expect(page).not_to have_content(label.name)
+        page.within('.modal-dialog') do
+          click_button('Remove list')
+        end
+
+        expect(page).not_to have_selector(selector, text: label.title)
       end
     end
   end
