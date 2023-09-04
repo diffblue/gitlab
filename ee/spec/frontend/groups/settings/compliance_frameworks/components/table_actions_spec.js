@@ -91,11 +91,10 @@ describe('TableActions', () => {
 
     it('displays a remove default button', () => {
       expect(findRemoveDefaultButton().text()).toBe(REMOVE_DEFAULT_BUTTON_LABEL);
-      expect(findRemoveDefaultButton().attributes('aria-label')).toBe(REMOVE_DEFAULT_BUTTON_LABEL);
     });
 
     it('emits "removeDefault" event when the remove default button is clicked', () => {
-      findRemoveDefaultButton().vm.$emit('click');
+      findRemoveDefaultButton().vm.$emit('action');
       expect(wrapper.emitted('removeDefault')[0]).toStrictEqual([
         { framework: defaultFramework, defaultVal: false },
       ]);
@@ -109,22 +108,20 @@ describe('TableActions', () => {
 
     it('displays a set default button', () => {
       expect(findSetDefaultButton().text()).toBe(SET_DEFAULT_BUTTON_LABEL);
-      expect(findSetDefaultButton().attributes('aria-label')).toBe(SET_DEFAULT_BUTTON_LABEL);
     });
 
     it('emits "setDefault" event when the set default button is clicked', () => {
-      findSetDefaultButton().vm.$emit('click');
+      findSetDefaultButton().vm.$emit('action');
 
       expect(wrapper.emitted('setDefault')[0]).toStrictEqual([{ framework, defaultVal: true }]);
     });
 
     it('displays a delete button', () => {
       expect(findDeleteButton().text()).toBe(DELETE_BUTTON_LABEL);
-      expect(findDeleteButton().attributes('aria-label')).toBe(DELETE_BUTTON_LABEL);
     });
 
     it('emits "delete" event when the delete button is clicked', () => {
-      findDeleteButton().vm.$emit('click');
+      findDeleteButton().vm.$emit('action');
 
       expect(wrapper.emitted('delete')[0]).toStrictEqual([framework]);
     });
