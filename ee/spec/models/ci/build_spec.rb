@@ -915,6 +915,36 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
     end
   end
 
+  describe '#pages_path_prefix', feature_category: :pages do
+    where(:result, :option, :pages_generator, :multiple_versions_enabled) do
+      nil | nil | false | false
+      nil | nil | false | true
+      nil | nil | true | false
+      nil | nil | true | true
+      nil | '' | true | true
+      'foo' | 'foo' | true | true
+      'master' | '$CI_COMMIT_BRANCH' | true | true
+    end
+
+    with_them do
+      before do
+        job.options[:pages_path_prefix] = option
+
+        allow(job)
+          .to receive(:pages_generator?)
+          .and_return(pages_generator)
+
+        allow(::Gitlab::Pages)
+          .to receive(:multiple_versions_enabled_for?)
+          .and_return(multiple_versions_enabled)
+      end
+
+      subject { job.pages_path_prefix }
+
+      it { is_expected.to eq(result) }
+    end
+  end
+
   context 'with loose foreign keys for partitioned tables' do
     before do
       create(:security_scan, build: job)
