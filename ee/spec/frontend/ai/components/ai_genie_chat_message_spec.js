@@ -1,3 +1,4 @@
+import { nextTick } from 'vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import AiGenieChatMessage from 'ee/ai/components/ai_genie_chat_message.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -9,6 +10,8 @@ jest.mock('~/rest_api');
 
 describe('AiGenieChatMessage', () => {
   let wrapper;
+
+  const findContent = () => wrapper.findComponent({ ref: 'content' });
 
   const createComponent = ({
     propsData = { message: MOCK_USER_MESSAGE },
@@ -93,6 +96,157 @@ describe('AiGenieChatMessage', () => {
         });
         expect(wrapper.text()).toContain(`Hello ${slotContent} and foo`);
       });
+    });
+  });
+
+  describe('message output', () => {
+    it('hydrates the message with GLFM when mounting the component', () => {
+      createComponent();
+      expect(getMarkdown).toHaveBeenCalledWith({ text: MOCK_USER_MESSAGE.content, gfm: true });
+    });
+
+    it('listens to the message changes', async () => {
+      const newContent = 'new foo content';
+      createComponent();
+      // setProps is justified here because we are testing the component's
+      // reactive behavior which consistutes an exception
+      // See https://docs.gitlab.com/ee/development/fe_guide/style/vue.html#setting-component-state
+      wrapper.setProps({
+        message: {
+          ...MOCK_USER_MESSAGE,
+          content: newContent,
+        },
+      });
+      await nextTick();
+      expect(findContent().text()).not.toContain(MOCK_USER_MESSAGE.content);
+      expect(findContent().text()).toContain(newContent);
+    });
+  });
+
+  describe('updates to the message', () => {
+    const content1 = 'chunk #1';
+    const content2 = ' chunk #2';
+    const content3 = ' chunk #3';
+    const chunk1 = {
+      ...MOCK_USER_MESSAGE,
+      content: content1,
+      chunkId: 1,
+    };
+    const chunk2 = {
+      ...MOCK_USER_MESSAGE,
+      content: content2,
+      chunkId: 2,
+    };
+    const chunk3 = {
+      ...MOCK_USER_MESSAGE,
+      content: content3,
+      chunkId: 3,
+    };
+
+    beforeEach(() => {
+      createComponent();
+    });
+
+    it('does not fail if the message has no chunkId', async () => {
+      // setProps is justified here because we are testing the component's
+      // reactive behavior which consistutes an exception
+      // See https://docs.gitlab.com/ee/development/fe_guide/style/vue.html#setting-component-state
+      wrapper.setProps({
+        message: {
+          ...MOCK_USER_MESSAGE,
+          content: content1,
+        },
+      });
+      await nextTick();
+      expect(findContent().text()).toBe(content1);
+    });
+
+    it('renders chunks correctly when the chunks arrive out of order', async () => {
+      // setProps is justified here because we are testing the component's
+      // reactive behavior which consistutes an exception
+      // See https://docs.gitlab.com/ee/development/fe_guide/style/vue.html#setting-component-state
+      wrapper.setProps({
+        message: chunk2,
+      });
+      await nextTick();
+      expect(findContent().text()).toBe('');
+
+      wrapper.setProps({
+        message: chunk1,
+      });
+      await nextTick();
+      expect(findContent().text()).toBe(content1 + content2);
+
+      wrapper.setProps({
+        message: chunk3,
+      });
+      await nextTick();
+      expect(findContent().text()).toBe(content1 + content2 + content3);
+    });
+
+    it('renders the chunks as they arrive', async () => {
+      const consolidatedContent = content1 + content2;
+
+      // setProps is justified here because we are testing the component's
+      // reactive behavior which consistutes an exception
+      // See https://docs.gitlab.com/ee/development/fe_guide/style/vue.html#setting-component-state
+      wrapper.setProps({
+        message: chunk1,
+      });
+      await nextTick();
+      expect(findContent().text()).toBe(content1);
+
+      wrapper.setProps({
+        message: chunk2,
+      });
+      await nextTick();
+      expect(findContent().text()).toBe(consolidatedContent);
+    });
+
+    it('treats the initial message content as chunk if message has chunkId', async () => {
+      createComponent({
+        propsData: {
+          message: chunk1,
+        },
+      });
+      expect(findContent().text()).toBe(content1);
+
+      // setProps is justified here because we are testing the component's
+      // reactive behavior which consistutes an exception
+      // See https://docs.gitlab.com/ee/development/fe_guide/style/vue.html#setting-component-state
+      wrapper.setProps({
+        message: chunk2,
+      });
+      await nextTick();
+      expect(findContent().text()).toBe(content1 + content2);
+    });
+
+    it('hydrates the message with GLFM when the updated message is not a chunk', async () => {
+      createComponent({
+        propsData: {
+          message: chunk1,
+        },
+      });
+      getMarkdown.mockClear();
+      expect(getMarkdown).not.toHaveBeenCalled();
+
+      // setProps is justified here because we are testing the component's
+      // reactive behavior which consistutes an exception
+      // See https://docs.gitlab.com/ee/development/fe_guide/style/vue.html#setting-component-state
+      wrapper.setProps({
+        message: chunk2,
+      });
+      await nextTick();
+      expect(getMarkdown).not.toHaveBeenCalled();
+
+      wrapper.setProps({
+        message: {
+          ...chunk3,
+          chunkId: null,
+        },
+      });
+      await nextTick();
+      expect(getMarkdown).toHaveBeenCalledWith({ text: content3, gfm: true });
     });
   });
 });

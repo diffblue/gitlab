@@ -43,8 +43,37 @@ describe('GitLab Duo Chat Store Mutations', () => {
     });
 
     describe('when there is a message with the same requestId', () => {
+      const updatedContent = 'Updated content';
+      it('updates the correct message based on the role', () => {
+        state.messages.push(
+          {
+            ...MOCK_USER_MESSAGE,
+            requestId,
+          },
+          {
+            ...MOCK_TANUKI_MESSAGE,
+            requestId,
+          },
+        );
+        mutations[types.ADD_MESSAGE](state, {
+          requestId,
+          role: MOCK_TANUKI_MESSAGE.role,
+          content: updatedContent,
+        });
+        expect(state.messages.length).toBe(2);
+        expect(state.messages).toStrictEqual([
+          {
+            ...MOCK_USER_MESSAGE,
+            requestId,
+          },
+          {
+            ...MOCK_TANUKI_MESSAGE,
+            requestId,
+            content: updatedContent,
+          },
+        ]);
+      });
       describe('when the message is of the same role', () => {
-        const updatedContent = 'Updated content';
         it('updates the message object if it is of exactly the same role', () => {
           state.messages.push({ ...MOCK_USER_MESSAGE, requestId });
           mutations[types.ADD_MESSAGE](state, {

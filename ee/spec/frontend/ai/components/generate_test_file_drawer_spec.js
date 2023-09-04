@@ -36,6 +36,7 @@ const subscriptionResponsePartial = {
   role: GENIE_CHAT_MODEL_ROLES.assistant,
   timestamp: '2021-05-26T14:00:00.000Z',
   type: null,
+  chunkId: null,
 };
 
 describe('Generate test file drawer component', () => {

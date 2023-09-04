@@ -1,5 +1,10 @@
-mutation chat($question: String!, $resourceId: AiModelID!) {
-  aiAction(input: { chat: { resourceId: $resourceId, content: $question } }) {
+mutation chat($question: String!, $resourceId: AiModelID!, $clientSubscriptionId: String) {
+  aiAction(
+    input: {
+      chat: { resourceId: $resourceId, content: $question }
+      clientSubscriptionId: $clientSubscriptionId
+    }
+  ) {
     requestId
     errors
   }

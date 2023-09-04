@@ -20,6 +20,17 @@ export const addDuoChatMessage = async ({ commit }, messageData = { content: '' 
     let parsedResponse;
     try {
       parsedResponse = JSON.parse(msgContent);
+
+      // JSON.parse does not throw when parsing Strings that are coerced to primary data types, like Number or Boolean.
+      // JSON.parse("1") would return 1 (Number), same as JSON.parse("false"), which returns false (Boolean).
+      // We therefore check if the parsed response is really an Object.
+      // This will be solved with https://gitlab.com/gitlab-org/gitlab/-/issues/423315 when we no longer receive
+      // potential JSON as a string.
+      if (typeof parsedResponse !== 'object') {
+        parsedResponse = {
+          content: msgContent,
+        };
+      }
     } catch {
       parsedResponse = { content: msgContent };
     }
