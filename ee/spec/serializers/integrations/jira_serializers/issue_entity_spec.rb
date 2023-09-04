@@ -24,15 +24,13 @@ RSpec.describe Integrations::JiraSerializers::IssueEntity, feature_category: :in
     }
   end
 
-  let(:labels) { ['backend'] }
-
-  let(:jira_issue) do
-    double(
+  let(:jira_issue_attributes) do
+    {
       summary: 'Title with <h1>HTML</h1>',
       created: '2020-06-25T15:39:30.000+0000',
       updated: '2020-06-26T15:38:32.000+0000',
       resolutiondate: '2020-06-27T13:23:51.000+0000',
-      labels: labels,
+      labels: ['backend'],
       fields: {
         'reporter' => reporter,
         'assignee' => assignee
@@ -40,8 +38,10 @@ RSpec.describe Integrations::JiraSerializers::IssueEntity, feature_category: :in
       project: double(key: 'GL'),
       key: 'GL-5',
       status: double(name: 'To Do')
-    )
+    }
   end
+
+  let(:jira_issue) { double(jira_issue_attributes) }
 
   subject { described_class.new(jira_issue, project: project).as_json }
 
@@ -83,7 +83,9 @@ RSpec.describe Integrations::JiraSerializers::IssueEntity, feature_category: :in
   end
 
   context 'when labels are not present' do
-    let(:labels) { nil }
+    before do
+      jira_issue_attributes.delete(:labels)
+    end
 
     it 'returns an empty array' do
       expect(subject).to include(labels: [])
