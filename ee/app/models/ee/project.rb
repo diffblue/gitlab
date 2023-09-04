@@ -963,11 +963,7 @@ module EE
         wiki.repository.log_geo_updated_event
       end
 
-      if ::Geo::DesignManagementRepositoryReplicator.enabled?
-        design_management_repository.geo_handle_after_update if design_management_repository
-      else
-        design_repository.log_geo_updated_event
-      end
+      design_management_repository.geo_handle_after_update if design_management_repository
     end
 
     override :import?

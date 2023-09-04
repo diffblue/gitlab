@@ -15,7 +15,6 @@ RSpec.describe Geo::RepositoryUpdatedEvent, type: :model, feature_category: :geo
     using RSpec::Parameterized::TableSyntax
 
     where(:source, :consumer_klass_name) do
-      :design | 'DesignRepositoryUpdatedEvent'
       :repository | 'RepositoryUpdatedEvent'
       :wiki | 'RepositoryUpdatedEvent'
     end

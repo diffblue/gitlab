@@ -45,12 +45,10 @@ RSpec.describe Geo::RepositoryDestroyService, :geo, feature_category: :geo_repli
 
       it 'removes the tracking entries' do
         create(:geo_project_registry, project: project)
-        create(:geo_design_registry, project: project)
 
         service.execute
 
         expect(Geo::ProjectRegistry.where(project: project)).to be_empty
-        expect(Geo::DesignRegistry.where(project: project)).to be_empty
       end
     end
 
@@ -81,12 +79,10 @@ RSpec.describe Geo::RepositoryDestroyService, :geo, feature_category: :geo_repli
 
       it 'removes the tracking entries' do
         create(:geo_project_registry, project: project)
-        create(:geo_design_registry, project: project)
 
         service.execute
 
         expect(Geo::ProjectRegistry.where(project: project)).to be_empty
-        expect(Geo::DesignRegistry.where(project: project)).to be_empty
       end
     end
 
@@ -105,19 +101,16 @@ RSpec.describe Geo::RepositoryDestroyService, :geo, feature_category: :geo_repli
 
       it 'removes the tracking entries' do
         create(:geo_project_registry, project: project)
-        create(:geo_design_registry, project: project)
 
         expect { service.execute }.to raise_error RuntimeError, 'storage not found: "broken"'
 
         expect(Geo::ProjectRegistry.where(project: project)).to be_empty
-        expect(Geo::DesignRegistry.where(project: project)).to be_empty
       end
     end
 
     context 'with an unused registry' do
       let!(:project) { create(:project_empty_repo, :legacy_storage) }
       let!(:unused_project_registry) { create(:geo_project_registry, project_id: project.id) }
-      let!(:unused_design_registry) { create(:geo_design_registry, project_id: project.id) }
 
       subject(:service) { described_class.new(project.id) }
 
@@ -136,7 +129,6 @@ RSpec.describe Geo::RepositoryDestroyService, :geo, feature_category: :geo_repli
           service.execute
 
           expect(Geo::ProjectRegistry.where(project: project)).to be_empty
-          expect(Geo::DesignRegistry.where(project: project)).to be_empty
         end
       end
 
@@ -155,7 +147,6 @@ RSpec.describe Geo::RepositoryDestroyService, :geo, feature_category: :geo_repli
           service.execute
 
           expect(Geo::ProjectRegistry.where(project: project)).to be_empty
-          expect(Geo::DesignRegistry.where(project: project)).to be_empty
         end
       end
     end

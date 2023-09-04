@@ -20,7 +20,6 @@ module Geo
 
       REGISTRY_CLASSES = [
         Geo::ContainerRepositoryRegistry,
-        Geo::DesignRegistry,
         Geo::DesignManagementRepositoryRegistry,
         Geo::JobArtifactRegistry,
         Geo::LfsObjectRegistry,

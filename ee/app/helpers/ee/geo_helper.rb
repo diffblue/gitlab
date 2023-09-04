@@ -175,17 +175,6 @@ module EE
           name_plural: 'repositories',
           custom_replication_url: 'admin/geo/replication/projects',
           verification_enabled: true
-        },
-        {
-          data_type: 'repository',
-          data_type_title: _('Git'),
-          data_type_sort_order: 0,
-          title: _('Design repository'),
-          title_plural: _('Design repositories'),
-          name: 'design_repository',
-          name_plural: 'design_repositories',
-          custom_replication_url: 'admin/geo/replication/designs',
-          verification_enabled: false
         }
       ]
 

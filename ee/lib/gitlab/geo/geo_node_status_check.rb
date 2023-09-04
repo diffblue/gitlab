@@ -27,7 +27,6 @@ module Gitlab
         print_repositories_status
         print_verified_repositories
         print_container_repositories_status
-        print_design_repositories_status
         print_replicators_status
         print_repositories_checked_status
         print_replicators_verification_status
@@ -44,7 +43,6 @@ module Gitlab
         print_repositories_status
         print_verified_repositories
         print_container_repositories_status
-        print_design_repositories_status
         print_replicators_status
         print_replicators_verification_status
       end
@@ -64,8 +62,7 @@ module Gitlab
       def legacy_replication_and_verification_checks_status
         replicables = [
           ["repositories", Gitlab::Geo.repository_verification_enabled?],
-          ["job_artifacts", false],
-          ["design_repositories", false]
+          ["job_artifacts", false]
         ]
 
         [].tap do |status|
@@ -245,18 +242,6 @@ module Gitlab
             percentage: current_node_status.container_repositories_synced_in_percentage
           )
         end
-      end
-
-      def print_design_repositories_status
-        return if ::Geo::DesignManagementRepositoryReplicator.enabled?
-
-        print_counts_row(
-          description: 'Design repositories',
-          failed: current_node_status.design_repositories_failed_count,
-          succeeded: current_node_status.design_repositories_synced_count,
-          total: current_node_status.design_repositories_count,
-          percentage: current_node_status.design_repositories_synced_in_percentage
-        )
       end
 
       def print_repositories_checked_status

@@ -59,9 +59,6 @@ module EE
 
     override :replicate_design_management_repository_changes
     def replicate_design_management_repository_changes(design_management_repository)
-      return unless ::Gitlab::Geo.primary?
-      return unless ::Geo::DesignManagementRepositoryReplicator.enabled?
-
       design_management_repository.geo_handle_after_update if design_management_repository
     end
   end

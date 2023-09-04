@@ -326,57 +326,6 @@ RSpec.describe GeoNodeStatus, :geo, feature_category: :geo_replication do
     end
   end
 
-  describe '#design_repositories_count' do
-    it 'counts number of registries for repositories' do
-      create(:geo_design_registry, :sync_failed)
-      create(:geo_design_registry)
-      create(:geo_design_registry, :synced)
-
-      expect(subject.design_repositories_count).to eq(3)
-    end
-  end
-
-  describe '#design_repositories_synced_count' do
-    it 'counts synced repositories' do
-      create(:geo_design_registry, :synced)
-      create(:geo_design_registry, :sync_failed)
-
-      expect(subject.design_repositories_synced_count).to eq(1)
-    end
-  end
-
-  describe '#design_repositories_failed_count' do
-    it 'counts failed to sync repositories' do
-      create(:geo_design_registry, :sync_failed)
-      create(:geo_design_registry, :synced)
-
-      expect(subject.design_repositories_failed_count).to eq(1)
-    end
-  end
-
-  describe '#design_repositories_registry_count' do
-    it 'counts number of registries for repositories' do
-      create(:geo_design_registry, :sync_failed)
-      create(:geo_design_registry)
-      create(:geo_design_registry, :synced)
-
-      expect(subject.design_repositories_registry_count).to eq(3)
-    end
-  end
-
-  describe '#design_repositories_synced_in_percentage' do
-    it 'returns 0 when no objects are available' do
-      expect(subject.design_repositories_synced_in_percentage).to eq(0)
-    end
-
-    it 'returns the right percentage' do
-      create(:geo_design_registry, :synced)
-      create(:geo_design_registry, :sync_failed)
-
-      expect(subject.design_repositories_synced_in_percentage).to be_within(0.0001).of(50)
-    end
-  end
-
   describe '#repositories_verified_count' do
     before do
       stub_current_geo_node(secondary)
@@ -989,11 +938,11 @@ RSpec.describe GeoNodeStatus, :geo, feature_category: :geo_replication do
       end
 
       it 'uses column counters when calculates percents using attr_in_percentage' do
-        subject.write_attribute(:design_repositories_count, 10)
-        subject.write_attribute(:design_repositories_synced_count, 5)
+        subject.write_attribute(:projects_count, 10)
+        subject.write_attribute(:repositories_synced_count, 5)
         subject.status = {}
 
-        expect(subject.design_repositories_synced_in_percentage).to be_within(0.0001).of(50)
+        expect(subject.repositories_synced_in_percentage).to be_within(0.0001).of(50)
       end
     end
 

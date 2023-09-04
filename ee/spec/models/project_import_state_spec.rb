@@ -45,7 +45,6 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
 
     context 'state transition: [:started] => [:finished]' do
       context 'Geo repository update events' do
-        let(:design_updated_service) { instance_double('::Geo::RepositoryUpdatedService') }
         let(:repository_updated_service) { instance_double('::Geo::RepositoryUpdatedService') }
 
         before do
@@ -53,24 +52,16 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
             .to receive(:new)
             .with(project.repository)
             .and_return(repository_updated_service)
-
-          allow(::Geo::RepositoryUpdatedService)
-            .to receive(:new)
-            .with(project.design_repository)
-            .and_return(design_updated_service)
         end
 
-        context 'with geo_design_management_repository_replication feature flag disabled' do
+        context 'when on a Geo primary site' do
           before do
-            stub_feature_flags(geo_design_management_repository_replication: false)
+            stub_primary_node
             stub_feature_flags(geo_project_repository_replication: false)
           end
 
           it 'calls Geo::RepositoryUpdatedService when running on a Geo primary node', :aggregate_failures do
-            stub_primary_node
-
             expect(repository_updated_service).to receive(:execute).once
-            expect(design_updated_service).to receive(:execute).once
 
             import_state.finish
           end
@@ -79,29 +70,8 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
             stub_secondary_node
 
             expect(repository_updated_service).not_to receive(:execute)
-            expect(design_updated_service).not_to receive(:execute)
 
             import_state.finish
-          end
-        end
-
-        context 'with geo_design_management_repository_replication feature flag enabled' do
-          before do
-            stub_feature_flags(geo_design_management_repository_replication: true)
-            stub_feature_flags(geo_project_repository_replication: false)
-          end
-
-          context 'when on a Geo primary site' do
-            before do
-              stub_primary_node
-            end
-
-            it 'does not call Geo::RepositoryUpdatedService for the wiki repository', :aggregate_failures do
-              expect(repository_updated_service).to receive(:execute).once
-              expect_next_instance_of(::Geo::RepositoryUpdatedService, project.design_repository).never
-
-              import_state.finish
-            end
           end
         end
 

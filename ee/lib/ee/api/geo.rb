@@ -115,7 +115,6 @@ module EE
               optional :version, type: String, desc: 'Gitlab version'
               optional :revision, type: String, desc: 'Gitlab revision'
               optional :lfs_objects_synced_missing_on_primary_count, type: Integer, desc: 'LFS objects synced and missing on primary count'
-              optional :design_repositories_registry_count, type: Integer, desc: 'Design repositories registry count'
               optional :status, type: Hash do
                 # GeoNodeStatus::RESOURCE_STATUS_FIELDS
                 optional :repository_verification_enabled, type: Grape::API::Boolean, desc: 'Repository verification enabled'
@@ -133,10 +132,6 @@ module EE
                 optional :repositories_retrying_verification_count, type: Integer, desc: 'Repositories retrying verification count'
                 optional :projects_count, type: Integer, desc: 'Projects count'
                 optional :container_repositories_replication_enabled, type: Grape::API::Boolean, desc: 'Container repositories replication enabled'
-                optional :design_repositories_replication_enabled, type: Grape::API::Boolean, desc: 'Design repositories replication enabled'
-                optional :design_repositories_count, type: Integer, desc: 'Design repositories count'
-                optional :design_repositories_synced_count, type: Integer, desc: 'Design repositories synced count'
-                optional :design_repositories_failed_count, type: Integer, desc: 'Design repositories failed count'
                 optional :lfs_objects_count, type: Integer, desc: 'LFS objects count'
                 optional :lfs_objects_checksum_total_count, type: Integer, desc: 'LFS objects checksum total count'
                 optional :lfs_objects_checksummed_count, type: Integer, desc: 'LFS objects checksummed count'

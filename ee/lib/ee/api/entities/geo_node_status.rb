@@ -35,7 +35,6 @@ module EE
         expose :db_replication_lag_seconds
 
         expose :container_repositories_replication_enabled
-        expose :design_repositories_replication_enabled
         expose :repositories_replication_enabled
 
         expose :repository_verification_enabled
