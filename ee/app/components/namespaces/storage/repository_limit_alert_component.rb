@@ -5,7 +5,7 @@ module Namespaces
     class RepositoryLimitAlertComponent < LimitAlertComponent
       def usage_percentage_alert_title
         text_args = {
-          usage_in_percent: usage_in_percent,
+          usage_in_percent: used_storage_percentage(root_storage_size.usage_ratio),
           namespace_name: root_namespace.name
         }
 

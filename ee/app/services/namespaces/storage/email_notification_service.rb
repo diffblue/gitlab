@@ -41,7 +41,7 @@ module Namespaces
         usage_values = {
           current_size: root_storage_size.current_size,
           limit: root_storage_size.limit,
-          used_storage_percentage: root_storage_size.used_storage_percentage
+          usage_ratio: root_storage_size.usage_ratio
         }
 
         if level == :exceeded

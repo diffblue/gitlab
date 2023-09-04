@@ -19,7 +19,7 @@ RSpec.describe Emails::NamespaceStorageUsageMailer do
         usage_values: {
           current_size: 101.megabytes,
           limit: 100.megabytes,
-          used_storage_percentage: 101
+          usage_ratio: 1.01
         })
 
       expect(mail).to have_subject "Action required: Storage has been exceeded for #{namespace.name}"
@@ -37,7 +37,7 @@ RSpec.describe Emails::NamespaceStorageUsageMailer do
         usage_values: {
           current_size: 75.megabytes,
           limit: 100.megabytes,
-          used_storage_percentage: 75
+          usage_ratio: 0.75
         })
 
       expect(mail).to have_subject "You have used 75% of the storage quota for #{namespace.name}"

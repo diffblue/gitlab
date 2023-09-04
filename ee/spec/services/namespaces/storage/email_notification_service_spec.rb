@@ -20,12 +20,12 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
         group.add_owner(owner)
       end
 
-      where(:limit, :current_size, :used_storage_percentage, :last_notification_level, :expected_level) do
-        100 | 100 | 100 | :storage_remaining | :exceeded
-        100 | 200 | 200 | :storage_remaining | :exceeded
-        100 | 100 | 100 | :caution           | :exceeded
-        100 | 100 | 100 | :warning           | :exceeded
-        100 | 100 | 100 | :danger            | :exceeded
+      where(:limit, :current_size, :usage_ratio, :last_notification_level, :expected_level) do
+        100 | 100 | 1.0 | :storage_remaining | :exceeded
+        100 | 200 | 2.0 | :storage_remaining | :exceeded
+        100 | 100 | 1.0 | :caution           | :exceeded
+        100 | 100 | 1.0 | :warning           | :exceeded
+        100 | 100 | 1.0 | :danger            | :exceeded
       end
 
       with_them do
@@ -38,7 +38,7 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
             usage_values: {
               current_size: current_size.megabytes,
               limit: limit.megabytes,
-              used_storage_percentage: used_storage_percentage
+              usage_ratio: usage_ratio
             })
             .and_return(action_mailer)
           expect(action_mailer).to receive(:deliver_later)
@@ -49,20 +49,19 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
         end
       end
 
-      where(:limit, :current_size, :used_storage_percentage, :last_notification_level, :expected_level) do
-        100  | 70   | 70 | :storage_remaining | :caution
-        100  | 85   | 85 | :storage_remaining | :warning
-        100  | 95   | 95 | :storage_remaining | :danger
-        100  | 77   | 77 | :storage_remaining | :caution
-        1000 | 971  | 97 | :storage_remaining | :danger
-        100  | 85   | 85 | :caution           | :warning
-        100  | 95   | 95 | :warning           | :danger
-        100  | 99   | 99 | :exceeded          | :danger
-        100  | 94   | 94 | :danger            | :warning
-        100  | 84   | 84 | :warning           | :caution
-        8192 | 6144 | 75 | :storage_remaining | :caution
-        5120 | 3840 | 75 | :storage_remaining | :caution
-        5120 | 5068 | 99 | :warning           | :danger
+      where(:limit, :current_size, :usage_ratio, :last_notification_level, :expected_level) do
+        100  | 70   | 0.70 | :storage_remaining | :caution
+        100  | 85   | 0.85 | :storage_remaining | :warning
+        100  | 95   | 0.95 | :storage_remaining | :danger
+        100  | 77   | 0.77 | :storage_remaining | :caution
+        1000 | 971  | 0.971 | :storage_remaining | :danger
+        100  | 85   | 0.85 | :caution           | :warning
+        100  | 95   | 0.95 | :warning           | :danger
+        100  | 99   | 0.99 | :exceeded          | :danger
+        100  | 94   | 0.94 | :danger            | :warning
+        100  | 84   | 0.84 | :warning           | :caution
+        8192 | 6144 | 0.75 | :storage_remaining | :caution
+        5120 | 3840 | 0.75 | :storage_remaining | :caution
       end
 
       with_them do
@@ -75,7 +74,7 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
             usage_values: {
               current_size: current_size.megabytes,
               limit: limit.megabytes,
-              used_storage_percentage: used_storage_percentage
+              usage_ratio: usage_ratio
             })
             .and_return(action_mailer)
           expect(action_mailer).to receive(:deliver_later)
@@ -152,7 +151,7 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
           usage_values: {
             current_size: 200.megabytes,
             limit: 100.megabytes,
-            used_storage_percentage: 200
+            usage_ratio: 2.0
           })
           .and_return(action_mailer)
         expect(action_mailer).to receive(:deliver_later)
@@ -216,7 +215,7 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
             usage_values: {
               current_size: 85.megabytes,
               limit: 100.megabytes,
-              used_storage_percentage: 85
+              usage_ratio: 0.85
             })
             .and_return(action_mailer)
           expect(action_mailer).to receive(:deliver_later)
@@ -233,7 +232,7 @@ RSpec.describe Namespaces::Storage::EmailNotificationService, feature_category: 
             usage_values: {
               current_size: 550.megabytes,
               limit: 100.megabytes,
-              used_storage_percentage: 550
+              usage_ratio: 5.50
             })
             .and_return(action_mailer)
           expect(action_mailer).to receive(:deliver_later)
