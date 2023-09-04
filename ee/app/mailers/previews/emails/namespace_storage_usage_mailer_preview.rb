@@ -7,9 +7,9 @@ module Emails
         namespace: Group.last,
         recipients: %w(bob@example.com),
         usage_values: {
-          current_size: 100.megabytes,
-          limit: 101.megabytes,
-          used_storage_percentage: 101
+          current_size: 101.megabytes,
+          limit: 100.megabytes,
+          usage_ratio: 1.01
         })
     end
 
@@ -20,7 +20,7 @@ module Emails
         usage_values: {
           current_size: 74.megabytes,
           limit: 100.megabytes,
-          used_storage_percentage: 74
+          usage_ratio: 0.74
         })
     end
   end

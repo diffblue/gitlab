@@ -34,7 +34,7 @@ RSpec.describe Namespaces::RootStatisticsWorker, '#perform', :saas, feature_cate
           usage_values: {
             current_size: 9.megabytes,
             limit: 10.megabytes,
-            used_storage_percentage: 90
+            usage_ratio: 0.9
           })
           .and_return(action_mailer)
         expect(action_mailer).to receive(:deliver_later)

@@ -2,10 +2,12 @@
 
 module Emails
   class NamespaceStorageUsageMailer < ApplicationMailer
+    include Namespaces::StorageHelper
     include NamespacesHelper
     include GitlabRoutingHelper
 
     helper EmailsHelper
+    helper Namespaces::StorageHelper
 
     layout 'mailer'
 
@@ -15,7 +17,7 @@ module Emails
       @buy_storage_url = buy_storage_url(namespace)
       @current_size = usage_values[:current_size]
       @limit = usage_values[:limit]
-      @used_storage_percentage = usage_values[:used_storage_percentage]
+      @usage_ratio = usage_values[:usage_ratio]
 
       mail_with_locale(
         bcc: recipients,
@@ -29,12 +31,12 @@ module Emails
       @buy_storage_url = buy_storage_url(namespace)
       @current_size = usage_values[:current_size]
       @limit = usage_values[:limit]
-      @used_storage_percentage = usage_values[:used_storage_percentage]
+      @usage_ratio = usage_values[:usage_ratio]
 
       mail_with_locale(
         bcc: recipients,
-        subject: s_("NamespaceStorage|You have used %{used_storage_percentage}%% of the storage quota for %{namespace_name}" %
-          { used_storage_percentage: @used_storage_percentage, namespace_name: namespace.name })
+        subject: s_("NamespaceStorage|You have used %{used_storage_percentage} of the storage quota for %{namespace_name}" %
+          { used_storage_percentage: used_storage_percentage(@usage_ratio), namespace_name: namespace.name })
       )
     end
   end

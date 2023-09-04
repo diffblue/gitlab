@@ -3,6 +3,8 @@
 module Namespaces
   module Storage
     class LimitAlertComponent < ViewComponent::Base
+      include ::Namespaces::StorageHelper
+
       # @param [Namespace, Group or Project] context
       # @param [User] user
       def initialize(context:, user:)
@@ -152,7 +154,7 @@ module Namespaces
 
       def usage_percentage_alert_title
         text_args = {
-          usage_in_percent: usage_in_percent,
+          usage_in_percent: used_storage_percentage(root_storage_size.usage_ratio),
           namespace_name: root_namespace.name,
           used_storage: formatted(root_storage_size.current_size),
           storage_limit: formatted(root_storage_size.limit)
@@ -270,10 +272,6 @@ module Namespaces
 
       def formatted(number)
         number_to_human_size(number, delimiter: ',', precision: 2)
-      end
-
-      def usage_in_percent
-        number_to_percentage(root_storage_size.usage_ratio * 100, precision: 0)
       end
     end
   end
