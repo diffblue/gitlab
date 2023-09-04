@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# DEPRECATED: This is to be removed once we move over to Vertex embeddings
+# see https://gitlab.com/gitlab-org/gitlab/-/issues/420939
 module Llm
   module TanukiBot
     class RecreateRecordsWorker
