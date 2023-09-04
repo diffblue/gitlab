@@ -26,12 +26,15 @@ module EE
       def send_notification(project, user)
         super
 
-        ::AuditEventService.new(
-          user,
-          project,
-          action: :custom,
-          custom_message: "Project is scheduled to be deleted on #{deletion_date} due to inactivity."
-        ).for_project.security_event
+        audit_context = {
+          name: 'inactive_project_scheduled_for_deletion',
+          author: user,
+          scope: project,
+          target: project,
+          message: "Project is scheduled to be deleted on #{deletion_date} due to inactivity."
+        }
+
+        ::Gitlab::Audit::Auditor.audit(audit_context)
       end
     end
   end

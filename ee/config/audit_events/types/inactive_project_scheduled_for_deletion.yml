@@ -1,0 +1,9 @@
+---
+name: inactive_project_scheduled_for_deletion
+description: Triggered when inactive project is scheduled for deletion
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/423263
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/130699
+feature_category: compliance_management
+milestone: '16.4'
+saved_to_database: true
+streamed: true

@@ -60,6 +60,13 @@ RSpec.describe Projects::InactiveProjectsDeletionCronWorker, feature_category: :
     end
 
     it 'invokes Projects::InactiveProjectsDeletionNotificationWorker for inactive projects and logs audit event' do
+      audit_context = {
+        name: "inactive_project_scheduled_for_deletion",
+        message: "Project is scheduled to be deleted on #{deletion_date} due to inactivity.",
+        target: inactive_large_project,
+        scope: inactive_large_project,
+        author: admin_bot
+      }
       Gitlab::Redis::SharedState.with do |redis|
         expect(redis).to receive(:hset).with(
           'inactive_projects_deletion_warning_email_notified',
@@ -70,6 +77,7 @@ RSpec.describe Projects::InactiveProjectsDeletionCronWorker, feature_category: :
       expect(::Projects::InactiveProjectsDeletionNotificationWorker).to receive(:perform_async).with(
         inactive_large_project.id, deletion_date).and_call_original
       expect(::Projects::DestroyService).not_to receive(:new)
+      expect(Gitlab::Audit::Auditor).to receive(:audit).with(audit_context).and_call_original
 
       expect { worker.perform }
         .to change { AuditEvent.count }.by(1)
