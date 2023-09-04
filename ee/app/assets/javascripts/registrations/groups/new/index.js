@@ -8,6 +8,9 @@ import createStore from './store';
 const importButtonsSubmit = () => {
   const buttons = document.querySelectorAll('.js-import-project-buttons a');
   const form = document.querySelector('.js-import-project-form');
+
+  if (!form) return;
+
   const submit = form.querySelector('input[type="submit"]');
   const importUrlField = form.querySelector('.js-import-url');
 
