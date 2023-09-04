@@ -2,8 +2,7 @@
 <script>
 import {
   GlAlert,
-  GlDropdown,
-  GlDropdownItem,
+  GlDisclosureDropdown,
   GlEmptyState,
   GlLoadingIcon,
   GlLink,
@@ -28,8 +27,7 @@ export default {
     GlLoadingIcon,
     InsightsPage,
     GlEmptyState,
-    GlDropdown,
-    GlDropdownItem,
+    GlDisclosureDropdown,
     GlLink,
     GlSprintf,
   },
@@ -92,9 +90,8 @@ export default {
       }
 
       return Object.keys(configData).map((key) => ({
-        name: configData[key].title,
-        scope: key,
-        isActive: this.activeTab === key,
+        text: configData[key].title,
+        action: () => this.onChangePage(key),
       }));
     },
     allItemsAreFilteredOut() {
@@ -111,6 +108,9 @@ export default {
         (this.activeTab && this.configData[this.activeTab]?.title) ||
         INSIGHTS_REPORT_DROPDOWN_EMPTY_TEXT
       );
+    },
+    showAlert() {
+      return this.note !== '';
     },
   },
   mounted() {
@@ -158,23 +158,15 @@ export default {
       <gl-alert>{{ $options.i18n.insightsPageFilteredOut }}</gl-alert>
     </div>
     <div v-else-if="configPresent" class="insights-wrapper">
-      <gl-dropdown
+      <gl-disclosure-dropdown
         class="js-insights-dropdown"
         data-qa-selector="insights_dashboard_dropdown"
         toggle-class="dropdown-menu-toggle gl-field-error-outline"
-        :text="pageDropdownTitle"
         :disabled="pageLoading"
-      >
-        <gl-dropdown-item
-          v-for="page in pages"
-          :key="page.scope"
-          is-check-item
-          :is-checked="page.isActive"
-          @click="onChangePage(page.scope)"
-          >{{ page.name }}</gl-dropdown-item
-        >
-      </gl-dropdown>
-      <gl-alert v-if="notice != ''" :dismissible="false">
+        :items="pages"
+        :toggle-text="pageDropdownTitle"
+      />
+      <gl-alert v-if="showAlert" :dismissible="false">
         {{ notice }}
       </gl-alert>
       <insights-page :query-endpoint="queryEndpoint" :page-config="activePage" />
