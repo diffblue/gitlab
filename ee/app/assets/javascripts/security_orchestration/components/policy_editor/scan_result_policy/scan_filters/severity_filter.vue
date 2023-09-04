@@ -3,7 +3,6 @@ import { s__ } from '~/locale';
 import { SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import RuleMultiSelect from '../../rule_multi_select.vue';
 import SectionLayout from '../../section_layout.vue';
-import { SEVERITY } from './constants';
 
 export default {
   SEVERITY_LEVELS,
@@ -22,35 +21,21 @@ export default {
       required: false,
       default: () => [],
     },
-    showRemoveButton: {
-      type: Boolean,
-      required: false,
-      default: true,
-    },
-  },
-  data() {
-    return {
-      severityLevelsToAdd: this.selected,
-    };
   },
   methods: {
-    remove() {
-      this.$emit('remove', SEVERITY);
-    },
     selectSeverities(states) {
-      this.severityLevelsToAdd = states;
-      this.$emit('input', this.severityLevelsToAdd);
+      this.$emit('input', states.length > 0 ? states : null);
     },
   },
 };
 </script>
 
 <template>
-  <section-layout class="gl-w-full" :show-remove-button="showRemoveButton" @remove="remove">
+  <section-layout class="gl-w-full" :show-remove-button="false">
     <template #selector>
       <label class="gl-mb-0 gl-mr-2" :title="$options.i18n.label">{{ $options.i18n.label }}</label>
       <rule-multi-select
-        v-model="severityLevelsToAdd"
+        :value="selected"
         :item-type-name="$options.i18n.severityLevels"
         :items="$options.SEVERITY_LEVELS"
         data-testid="severities-select"

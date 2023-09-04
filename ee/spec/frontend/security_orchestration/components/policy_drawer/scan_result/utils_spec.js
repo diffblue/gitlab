@@ -17,14 +17,6 @@ import {
   AGE_WEEK,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/constants';
 
-jest.mock('~/locale', () => ({
-  getPreferredLocales: jest.fn().mockReturnValue(['en']),
-  sprintf: jest.requireActual('~/locale').sprintf,
-  s__: jest.requireActual('~/locale').s__, // eslint-disable-line no-underscore-dangle
-  n__: jest.requireActual('~/locale').n__, // eslint-disable-line no-underscore-dangle
-  __: jest.requireActual('~/locale').__,
-}));
-
 const {
   branch_type: defaultSecurityScanBranchType,
   ...securityScanBuildRuleWithoutBranchType

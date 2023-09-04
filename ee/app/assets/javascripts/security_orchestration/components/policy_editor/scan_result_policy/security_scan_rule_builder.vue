@@ -74,11 +74,10 @@ export default {
     const vulnerabilityStateGroups = groupSelectedVulnerabilityStates(
       this.initRule.vulnerability_states,
     );
-    const { vulnerability_age: vulnerabilityAge, severity_levels: severityLevels } = this.initRule;
+    const { vulnerability_age: vulnerabilityAge } = this.initRule;
     const vulnerabilityAttributes = this.initRule.vulnerability_attributes || {};
 
     const filters = {
-      [SEVERITY]: severityLevels.length ? severityLevels : null,
       [AGE]: Boolean(Object.keys(vulnerabilityAge || {}).length),
       [NEWLY_DETECTED]: vulnerabilityStateGroups[NEWLY_DETECTED] || null,
       [PREVIOUSLY_EXISTING]: vulnerabilityStateGroups[PREVIOUSLY_EXISTING] || null,
@@ -96,12 +95,22 @@ export default {
     isProject() {
       return this.namespaceType === NAMESPACE_TYPES.PROJECT;
     },
-    severityLevelsToAdd: {
+    severityLevels: {
       get() {
-        return this.initRule.severity_levels;
+        const { severity_levels: severityLevels = [] } = this.initRule;
+
+        if (!Array.isArray(severityLevels)) {
+          return [];
+        }
+
+        return severityLevels.length === 0
+          ? Object.keys(this.$options.SEVERITY_LEVELS)
+          : severityLevels;
       },
       set(value) {
-        this.triggerChanged({ severity_levels: value });
+        const numberOfPossibleLevels = Object.keys(this.$options.SEVERITY_LEVELS).length;
+        const newValue = value?.length === numberOfPossibleLevels ? [] : value;
+        this.triggerChanged({ severity_levels: newValue });
       },
     },
     branchTypes() {
@@ -159,9 +168,6 @@ export default {
           this.triggerChanged({ vulnerability_attributes: value });
         }
       },
-    },
-    isSeverityFilterSelected() {
-      return this.isFilterSelected(this.$options.SEVERITY) || this.severityLevelsToAdd.length > 0;
     },
     isAgeFilterSelected() {
       return this.isFilterSelected(this.$options.AGE) || this.vulnerabilityAge;
@@ -223,10 +229,6 @@ export default {
       const rule = getDefaultRule(value);
       this.$emit('set-scan-type', rule);
     },
-    removeSeverityFilter() {
-      this.filters[SEVERITY] = null;
-      this.emitSeverityFilterChanges();
-    },
     removeAgeFilter() {
       this.filters[AGE] = false;
       this.vulnerabilityAge = null;
@@ -276,10 +278,6 @@ export default {
       ];
 
       this.triggerChanged({ vulnerability_states: states });
-    },
-    emitSeverityFilterChanges() {
-      const states = [...(this.filters[SEVERITY] || [])];
-      this.triggerChanged({ severity_levels: states });
     },
     shouldDisableFilterSelector(filter) {
       if (filter !== AGE) {
@@ -376,11 +374,9 @@ export default {
     <section-layout class="gl-pt-3" :show-remove-button="false">
       <template #content>
         <severity-filter
-          v-if="isSeverityFilterSelected"
-          :selected="severityLevelsToAdd"
+          :selected="severityLevels"
           class="gl-bg-white!"
-          @remove="removeSeverityFilter"
-          @input="severityLevelsToAdd = $event"
+          @input="severityLevels = $event"
         />
 
         <status-filters

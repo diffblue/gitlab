@@ -22,11 +22,6 @@ const AGE_TOOLTIPS = {
 
 export const FILTERS = [
   {
-    text: s__('ScanResultPolicy|New severity'),
-    value: SEVERITY,
-    tooltip: s__('ScanResultPolicy|Only 1 severity is allowed'),
-  },
-  {
     text: s__('ScanResultPolicy|New status'),
     value: STATUS,
     tooltip: s__('ScanResultPolicy|Only 2 status criteria are allowed'),
