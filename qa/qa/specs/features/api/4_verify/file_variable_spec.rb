@@ -116,9 +116,7 @@ module QA
       end
 
       def trigger_pipeline
-        Resource::Pipeline.fabricate_via_api! do |pipeline|
-          pipeline.project = project
-        end
+        create(:pipeline, project: project)
       end
 
       def wait_for_pipeline
