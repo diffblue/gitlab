@@ -53,18 +53,11 @@ RSpec.describe 'New/edit issue', :js, feature_category: :team_planning do
         visit new_project_issue_path(project)
 
         click_button 'Unassigned'
-
-        wait_for_requests
       end
 
-      it 'displays selected users even if they are not part of the original API call', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/28634' do
-        find('.dropdown-input-field').native.send_keys user2.name
-
-        page.within '.dropdown-menu-user' do
-          expect(page).to have_content user2.name
-          click_link user2.name
-        end
-
+      it 'displays selected users even if they are not part of the original API call' do
+        fill_in 'Search users', with: user2.name
+        click_link user2.name
         find('.js-dropdown-input-clear').click
 
         page.within '.dropdown-menu-user' do
@@ -77,104 +70,82 @@ RSpec.describe 'New/edit issue', :js, feature_category: :team_planning do
     describe 'multiple assignees' do
       before do
         click_button 'Unassigned'
-
-        wait_for_requests
       end
 
       it 'unselects other assignees when unassigned is selected' do
-        page.within '.dropdown-menu-user' do
-          click_link user2.name
-        end
-
-        page.within '.dropdown-menu-user' do
-          click_link 'Unassigned'
-        end
+        click_link user2.name
+        click_link 'Unassigned'
 
         expect(find('input[name="issue[assignee_ids][]"]', visible: false).value).to match('0')
       end
 
       it 'toggles assign to me when current user is selected and unselected' do
-        page.within '.dropdown-menu-user' do
-          click_link user.name
-        end
+        click_link user.name
 
-        expect(find('a', text: 'Assign to me', visible: false)).not_to be_visible
+        expect(page).not_to have_link 'Assign to me'
 
-        page.within('.dropdown-menu-user') do
-          click_link user.name
-        end
+        click_link user.name
 
-        expect(find('a', text: 'Assign to me')).to be_visible
+        expect(page).to have_link 'Assign to me'
       end
     end
 
     it 'allows user to create new issue' do
-      fill_in 'issue_title', with: 'title'
-      fill_in 'issue_description', with: 'title'
+      fill_in 'Title (required)', with: 'title'
+      fill_in 'Description', with: 'title'
 
-      expect(find('a', text: 'Assign to me')).to be_visible
+      expect(page).to have_link 'Assign to me'
+
       click_button 'Unassigned'
+      click_link user2.name
 
-      wait_for_requests
-
-      page.within '.dropdown-menu-user' do
-        click_link user2.name
-      end
       expect(find('input[name="issue[assignee_ids][]"]', visible: false).value).to match(user2.id.to_s)
-      page.within '.js-assignee-search' do
-        expect(page).to have_content user2.name
-      end
-      find('.dropdown-menu-user .dropdown-menu-close').click
+      expect(page).to have_button user2.name
 
-      find('a', text: 'Assign to me').click
+      click_button 'Close'
+      click_link 'Assign to me'
+
       assignee_ids = page.all('input[name="issue[assignee_ids][]"]', visible: false)
-
       expect(assignee_ids[0].value).to match(user2.id.to_s)
       expect(assignee_ids[1].value).to match(user.id.to_s)
 
-      page.within '.js-assignee-search' do
-        expect(page).to have_content "#{user2.name} + 1 more"
-      end
-      expect(find('a', text: 'Assign to me', visible: false)).not_to be_visible
+      expect(page).to have_button "#{user2.name} + 1 more"
+      expect(page).not_to have_link 'Assign to me'
 
       click_button 'Select milestone'
       click_button milestone.title
+
       expect(find('input[name="issue[milestone_id]"]', visible: false).value).to match(milestone.id.to_s)
       expect(page).to have_button milestone.title
 
       click_button 'Labels'
-      page.within '.dropdown-menu-labels' do
-        click_link label.title
-        click_link label2.title
+      click_link label.title
+      click_link label2.title
+      click_button 'Close'
 
-        find('.dropdown-menu-close').click
-      end
-      page.within '.js-label-select' do
-        expect(page).to have_content label.title
-      end
+      expect(page).to have_button label.title
       expect(page.all('input[name="issue[label_ids][]"]', visible: false)[1].value).to match(label.id.to_s)
       expect(page.all('input[name="issue[label_ids][]"]', visible: false)[2].value).to match(label2.id.to_s)
 
       fill_in 'issue_weight', with: '1'
-
       click_button 'Create issue'
 
       page.within '.issuable-sidebar' do
         page.within '.assignee' do
-          expect(page).to have_content "2 Assignees"
+          expect(page).to have_text "2 Assignees"
         end
 
         page.within '.milestone' do
-          expect(page).to have_content milestone.title
+          expect(page).to have_text milestone.title
         end
 
         page.within '.labels' do
-          expect(page).to have_content label.title
-          expect(page).to have_content label2.title
+          expect(page).to have_text label.title
+          expect(page).to have_text label2.title
         end
 
         page.within '.weight' do
-          expect(page).to have_content '1'
+          expect(page).to have_text '1'
         end
       end
 
@@ -187,24 +158,15 @@ RSpec.describe 'New/edit issue', :js, feature_category: :team_planning do
 
     it 'correctly updates the selected user when changing assignee' do
       click_button 'Unassigned'
+      click_link user.name
 
-      wait_for_requests
+      expect(page).to have_button(user.name)
 
-      page.within '.dropdown-menu-user' do
-        click_link user.name
-      end
-
-      expect(find('.js-assignee-search')).to have_content(user.name)
-
-      page.within '.dropdown-menu-user' do
-        click_link user2.name
-      end
+      click_link user2.name
 
       expect(page.all('input[name="issue[assignee_ids][]"]', visible: false)[0].value).to match(user.id.to_s)
       expect(page.all('input[name="issue[assignee_ids][]"]', visible: false)[1].value).to match(user2.id.to_s)
-
       expect(page.all('.dropdown-menu-user a.is-active').length).to eq(2)
-
       expect(page.all('.dropdown-menu-user a.is-active')[0].first(:xpath, '..')['data-user-id']).to eq(user.id.to_s)
       expect(page.all('.dropdown-menu-user a.is-active')[1].first(:xpath, '..')['data-user-id']).to eq(user2.id.to_s)
     end
