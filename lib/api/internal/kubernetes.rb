@@ -4,14 +4,14 @@ module API
   # Kubernetes Internal API
   module Internal
     class Kubernetes < ::API::Base
-      include Gitlab::Utils::StrongMemoize
-
       before do
         check_feature_enabled
         authenticate_gitlab_kas_request!
       end
 
       helpers do
+        include Gitlab::Utils::StrongMemoize
+
         def authenticate_gitlab_kas_request!
           render_api_error!('KAS JWT authentication invalid', 401) unless Gitlab::Kas.verify_api_request(headers)
         end
@@ -116,12 +116,11 @@ module API
         end
 
         def access_token
-          strong_memoize(:access_token) do # rubocop:disable Gitlab/StrongMemoizeAttr
-            next unless params[:access_key].present?
+          return unless params[:access_key].present?
 
-            PersonalAccessToken.find_by_token(params[:access_key])
-          end
+          PersonalAccessToken.find_by_token(params[:access_key])
         end
+        strong_memoize_attr :access_token
       end
 
       namespace 'internal' do
