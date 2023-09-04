@@ -3,5 +3,5 @@
 %p
   =  n_('The following personal access token: %{token_names} was revoked, because a new policy to expire personal access tokens were set.', 'The following personal access tokens: %{token_names} were revoked, because a new policy to expire personal access tokens were set.', @revoked_token_names.size) % { token_names: @revoked_token_names.to_sentence }
 %p
-  - pat_link_start =  '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: @target_url }
-  = _('You can create new ones at your %{pat_link_start}Personal Access Tokens%{pat_link_end} settings').html_safe % { pat_link_start: pat_link_start, pat_link_end: '</a>'.html_safe }
+  - link = link_to('', @target_url, target: '_blank', rel: 'noopener noreferrer')
+  = safe_format(_('You can create new ones at your %{pat_link_start}Personal Access Tokens%{pat_link_end} settings'), tag_pair(link, :pat_link_start, :pat_link_end))
