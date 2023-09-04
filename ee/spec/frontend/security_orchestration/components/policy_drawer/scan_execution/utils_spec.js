@@ -9,12 +9,8 @@ import {
 } from 'ee/security_orchestration/components/policy_editor/constants';
 
 jest.mock('~/locale', () => ({
+  ...jest.requireActual('~/locale'),
   getPreferredLocales: jest.fn().mockReturnValue(['en']),
-  sprintf: jest.requireActual('~/locale').sprintf,
-  languageCode: jest.requireActual('~/locale').languageCode,
-  s__: jest.requireActual('~/locale').s__, // eslint-disable-line no-underscore-dangle
-  n__: jest.requireActual('~/locale').n__, // eslint-disable-line no-underscore-dangle
-  __: jest.requireActual('~/locale').__,
 }));
 
 const mockActions = [

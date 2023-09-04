@@ -82,8 +82,8 @@ describe('DefaultRuleBuilder', () => {
         {
           type: SCAN_FINDING,
           scanners: [],
-          vulnerabilities_allowed: 0,
           severity_levels: [],
+          vulnerabilities_allowed: 0,
           vulnerability_states: [],
           branches: ['main'],
         },
@@ -103,8 +103,8 @@ describe('DefaultRuleBuilder', () => {
         {
           type: SCAN_FINDING,
           scanners: [],
-          vulnerabilities_allowed: 0,
           severity_levels: [],
+          vulnerabilities_allowed: 0,
           vulnerability_states: [],
           branch_type: 'protected',
         },

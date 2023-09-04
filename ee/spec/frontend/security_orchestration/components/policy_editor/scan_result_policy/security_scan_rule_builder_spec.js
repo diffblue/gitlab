@@ -13,6 +13,7 @@ import AttributeFilters from 'ee/security_orchestration/components/policy_editor
 import ScanTypeSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/base_layout/scan_type_select.vue';
 import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_filter_selector.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+import { SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import {
   securityScanBuildRule,
   SCAN_FINDING,
@@ -81,8 +82,8 @@ describe('SecurityScanRuleBuilder', () => {
   const findAllPolicyRuleMultiSelect = () => wrapper.findAllComponents(RuleMultiSelect);
   const findScanFilterSelector = () => wrapper.findComponent(ScanFilterSelector);
   const findStatusFilter = () => wrapper.findComponent(StatusFilter);
-  const findAllStatusFilters = () => wrapper.findAllComponents(StatusFilter);
   const findSeverityFilter = () => wrapper.findComponent(SeverityFilter);
+  const findAllStatusFilters = () => wrapper.findAllComponents(StatusFilter);
   const findAttributeFilters = () => wrapper.findComponent(AttributeFilters);
   const findScanTypeSelect = () => wrapper.findComponent(ScanTypeSelect);
   const findAgeFilter = () => wrapper.findComponent(AgeFilter);
@@ -104,7 +105,7 @@ describe('SecurityScanRuleBuilder', () => {
       expect(findBranches().exists()).toBe(true);
       expect(findGroupLevelBranches().exists()).toBe(false);
       expect(findScanners().exists()).toBe(true);
-      expect(findSeverities().exists()).toBe(false);
+      expect(findSeverities().exists()).toBe(true);
       expect(findVulnStates().exists()).toBe(false);
       expect(findVulnAllowedOperator().exists()).toBe(true);
       expect(findVulnAllowed().exists()).toBe(false);
@@ -255,11 +256,60 @@ describe('SecurityScanRuleBuilder', () => {
       age: true,
       previously_existing: ['detected'],
       newly_detected: null,
-      severity: ['high'],
       status: false,
       false_positive: true,
       fix_available: false,
       attribute: false,
+    });
+  });
+
+  describe('severity filter', () => {
+    const severityLevels = Object.keys(SEVERITY_LEVELS);
+
+    describe('displaying values', () => {
+      it('displays selected scanners', () => {
+        const selectedLevel = ['critical'];
+        factory({ initRule: { ...securityScanBuildRule(), severity_levels: selectedLevel } });
+        expect(findSeverityFilter().props('selected')).toEqual(selectedLevel);
+      });
+
+      it('displays all values if the property is an empty array', () => {
+        factory();
+        expect(findSeverityFilter().props('selected')).toEqual(severityLevels);
+      });
+
+      it('displays all values if the property does not exist', () => {
+        const initRuleWithoutSeverityLevels = {
+          ...securityScanBuildRule(),
+        };
+        delete initRuleWithoutSeverityLevels.severity_levels;
+        factory({ initRule: initRuleWithoutSeverityLevels });
+        expect(findSeverityFilter().props('selected')).toEqual(severityLevels);
+      });
+
+      it('displays no values if the property is null', () => {
+        factory({ initRule: { ...securityScanBuildRule(), severity_levels: null } });
+        expect(findSeverityFilter().props('selected')).toEqual([]);
+      });
+    });
+
+    describe('updating value', () => {
+      it('sets selected values', async () => {
+        const selectedLevel = ['high'];
+        factory();
+        await findSeverityFilter().vm.$emit('input', selectedLevel);
+        expect(wrapper.emitted('changed')).toEqual([
+          [expect.objectContaining({ severity_levels: selectedLevel })],
+        ]);
+      });
+
+      it('sets an empty array if all items are selected', async () => {
+        factory();
+        await findSeverityFilter().vm.$emit('input', severityLevels);
+        expect(wrapper.emitted('changed')).toEqual([
+          [expect.objectContaining({ severity_levels: [] })],
+        ]);
+      });
     });
   });
 
@@ -277,7 +327,6 @@ describe('SecurityScanRuleBuilder', () => {
       age: true,
       previously_existing: ['detected'],
       newly_detected: [],
-      severity: ['high'],
       status: true,
       false_positive: true,
       fix_available: false,
@@ -290,7 +339,6 @@ describe('SecurityScanRuleBuilder', () => {
       age: true,
       newly_detected: null,
       previously_existing: ['detected'],
-      severity: ['high'],
       status: false,
       false_positive: true,
       fix_available: false,
@@ -308,7 +356,6 @@ describe('SecurityScanRuleBuilder', () => {
 
   it.each`
     currentComponent        | selectedFilter         | existingFilters
-    ${findSeverityFilter}   | ${SEVERITY}            | ${{}}
     ${findStatusFilter}     | ${NEWLY_DETECTED}      | ${{}}
     ${findStatusFilter}     | ${PREVIOUSLY_EXISTING} | ${{}}
     ${findAgeFilter}        | ${AGE}                 | ${{ vulnerability_states: ['detected'] }}
@@ -368,7 +415,6 @@ describe('SecurityScanRuleBuilder', () => {
 
   it.each`
     currentComponent        | selectedFilter         | emittedPayload
-    ${findSeverityFilter}   | ${SEVERITY}            | ${{ ...UPDATED_RULE, severity_levels: [] }}
     ${findStatusFilter}     | ${PREVIOUSLY_EXISTING} | ${{ ...UPDATED_RULE, vulnerability_states: [] }}
     ${findAgeFilter}        | ${AGE}                 | ${updatedRuleWithoutFilter('vulnerability_age')}
     ${findAttributeFilters} | ${FALSE_POSITIVE}      | ${updatedRuleWithoutFilter('vulnerability_attributes')}
