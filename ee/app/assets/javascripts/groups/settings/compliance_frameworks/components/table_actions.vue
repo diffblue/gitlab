@@ -1,5 +1,10 @@
 <script>
-import { GlButton, GlDropdown, GlDropdownItem, GlTooltipDirective } from '@gitlab/ui';
+import {
+  GlDisclosureDropdown,
+  GlDisclosureDropdownItem,
+  GlButton,
+  GlTooltipDirective,
+} from '@gitlab/ui';
 
 import {
   OPTIONS_BUTTON_LABEL,
@@ -15,8 +20,8 @@ export default {
   },
   components: {
     GlButton,
-    GlDropdown,
-    GlDropdownItem,
+    GlDisclosureDropdown,
+    GlDisclosureDropdownItem,
   },
   inject: ['canAddEdit'],
   props: {
@@ -61,42 +66,45 @@ export default {
         category="tertiary"
         @click="onEdit"
       />
-      <gl-dropdown
+      <gl-disclosure-dropdown
         v-gl-tooltip.hover.focus="$options.i18n.optionsFramework"
-        right
         category="tertiary"
-        :aria-label="$options.i18n.optionsFramework"
         icon="ellipsis_v"
         no-caret
+        placement="right"
         data-testid="compliance-framework-dropdown-button"
+        :aria-label="$options.i18n.optionsFramework"
         :disabled="loading"
       >
-        <gl-dropdown-item
-          v-if="!isDefault"
-          data-testid="compliance-framework-set-default-button"
-          :aria-label="$options.i18n.setDefaultFramework"
-          @click="$emit('setDefault', { framework, defaultVal: true })"
-        >
-          {{ $options.i18n.setDefaultFramework }}
-        </gl-dropdown-item>
-        <gl-dropdown-item
-          v-if="isDefault"
-          data-testid="compliance-framework-remove-default-button"
-          :aria-label="$options.i18n.removeDefaultFramework"
-          @click="$emit('removeDefault', { framework, defaultVal: false })"
-        >
-          {{ $options.i18n.removeDefaultFramework }}
-        </gl-dropdown-item>
-        <gl-dropdown-item
-          v-if="!isDefault"
-          class="gl-text-red-500"
-          data-testid="compliance-framework-delete-button"
-          :aria-label="$options.i18n.deleteFramework"
-          @click="$emit('delete', framework)"
-        >
-          {{ $options.i18n.deleteFramework }}
-        </gl-dropdown-item>
-      </gl-dropdown>
+        <template v-if="isDefault">
+          <gl-disclosure-dropdown-item
+            data-testid="compliance-framework-remove-default-button"
+            @action="$emit('removeDefault', { framework, defaultVal: false })"
+          >
+            <template #list-item>
+              {{ $options.i18n.removeDefaultFramework }}
+            </template>
+          </gl-disclosure-dropdown-item>
+        </template>
+        <template v-else>
+          <gl-disclosure-dropdown-item
+            data-testid="compliance-framework-set-default-button"
+            @action="$emit('setDefault', { framework, defaultVal: true })"
+          >
+            <template #list-item>
+              {{ $options.i18n.setDefaultFramework }}
+            </template>
+          </gl-disclosure-dropdown-item>
+          <gl-disclosure-dropdown-item
+            data-testid="compliance-framework-delete-button"
+            @action="$emit('delete', framework)"
+          >
+            <template #list-item>
+              <span class="gl-text-red-500">{{ $options.i18n.deleteFramework }}</span>
+            </template>
+          </gl-disclosure-dropdown-item>
+        </template>
+      </gl-disclosure-dropdown>
     </div>
   </div>
 </template>
