@@ -210,10 +210,12 @@ module API
             user = if params[:access_type] == 'session_cookie'
                      retrieve_user_from_session_cookie
                    elsif params[:access_type] == 'personal_access_token'
-                     retrieve_user_from_personal_access_token
+                     u = retrieve_user_from_personal_access_token
+                     bad_request!('PAT authentication is not enabled') unless Feature.enabled?(:k8s_proxy_pat, u)
+                     u
                    end
 
-            bad_request!('Unable to get user from request data') if user.nil? || Feature.disabled?(:k8s_proxy_pat, user)
+            bad_request!('Unable to get user from request data') if user.nil?
 
             # Load agent
             agent = ::Clusters::Agent.find(params[:agent_id])
