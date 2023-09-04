@@ -12,6 +12,7 @@ module Ci
       AiFetchError = Class.new(StandardError)
 
       TOTAL_MODEL_TOKEN_LIMIT = 4096
+      TRACKING_CONTEXT = { action: 'generate_config' }.freeze
 
       def initialize(ai_message:)
         @ai_message = ai_message
@@ -114,7 +115,7 @@ module Ci
       end
 
       def client
-        Gitlab::Llm::OpenAi::Client.new(@user)
+        Gitlab::Llm::OpenAi::Client.new(@user, tracking_context: TRACKING_CONTEXT)
       end
       strong_memoize_attr :client
 

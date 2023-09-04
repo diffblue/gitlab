@@ -11,9 +11,9 @@ module Gitlab
           STOP_WORDS = ["\n\nHuman", "Observation:"].freeze
           PROMPT_SIZE = 30_000
 
-          def initialize(user)
+          def initialize(user, tracking_context: {})
             @user = user
-            @ai_client = ::Gitlab::Llm::Anthropic::Client.new(user)
+            @ai_client = ::Gitlab::Llm::Anthropic::Client.new(user, tracking_context: tracking_context)
             @logger = Gitlab::Llm::Logger.build
           end
 

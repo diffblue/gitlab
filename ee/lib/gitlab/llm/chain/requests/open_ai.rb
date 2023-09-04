@@ -10,8 +10,8 @@ module Gitlab
           TEMPERATURE = 0.2
           MAX_TOKENS = 4096
 
-          def initialize(user)
-            @ai_client = ::Gitlab::Llm::OpenAi::Client.new(user)
+          def initialize(user, tracking_context: {})
+            @ai_client = ::Gitlab::Llm::OpenAi::Client.new(user, tracking_context: tracking_context)
           end
 
           def request(prompt)

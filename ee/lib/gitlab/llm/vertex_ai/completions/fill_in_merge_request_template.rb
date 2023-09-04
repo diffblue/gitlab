@@ -25,7 +25,7 @@ module Gitlab
 
           def request(user, template)
             ::Gitlab::Llm::VertexAi::Client
-              .new(user)
+              .new(user, tracking_context: tracking_context)
               .text(content: template.to_prompt)
           end
         end

@@ -37,7 +37,7 @@ module Gitlab
 
           def response_for(user, draft_notes)
             Gitlab::Llm::VertexAi::Client
-              .new(user)
+              .new(user, tracking_context: tracking_context)
               .text(content: ai_prompt_class.new(draft_notes).to_prompt)
           end
         end

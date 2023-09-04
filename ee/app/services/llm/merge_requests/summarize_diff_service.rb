@@ -5,6 +5,8 @@
 module Llm
   module MergeRequests
     class SummarizeDiffService
+      TRACKING_CONTEXT = { action: 'summarize_diff' }.freeze
+
       def initialize(title:, user:, diff:)
         @title = title
         @user = user
@@ -73,7 +75,8 @@ module Llm
       end
 
       def response
-        Gitlab::Llm::VertexAi::Client.new(user).text(content: summary_message)
+        Gitlab::Llm::VertexAi::Client.new(user, tracking_context: TRACKING_CONTEXT)
+          .text(content: summary_message)
       end
     end
   end

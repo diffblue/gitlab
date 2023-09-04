@@ -7,8 +7,9 @@ RSpec.describe Gitlab::Llm::Anthropic::Completions::TanukiBot, feature_category:
 
   let(:question) { 'A question' }
   let(:options) { { question: question } }
-  let(:params) { { request_id: 'uuid' } }
+  let(:params) { { request_id: 'uuid', action: :tanuki_bot } }
   let(:template_class) { ::Gitlab::Llm::Anthropic::Templates::TanukiBot }
+  let(:tracking_context) { { request_id: 'uuid', action: :tanuki_bot } }
 
   let(:ai_response_body) do
     {
@@ -30,16 +31,20 @@ RSpec.describe Gitlab::Llm::Anthropic::Completions::TanukiBot, feature_category:
   subject(:tanuki_bot) { described_class.new(template_class, params).execute(user, user, options) }
 
   describe '#execute' do
+    let(:tanuki_instance) { instance_double(::Gitlab::Llm::TanukiBot) }
+
     it 'makes a call to ::Gitlab::Llm::TanukiBot' do
-      expect(::Gitlab::Llm::TanukiBot).to receive(:execute)
-        .with(current_user: user, question: question).and_return(ai_response)
+      expect(::Gitlab::Llm::TanukiBot).to receive(:new)
+        .with(current_user: user, question: question, tracking_context: tracking_context).and_return(tanuki_instance)
+      expect(tanuki_instance).to receive(:execute).and_return(ai_response)
 
       tanuki_bot
     end
 
     it 'calls ResponseService' do
-      allow(::Gitlab::Llm::TanukiBot).to receive(:execute)
-        .with(current_user: user, question: question).and_return(ai_response)
+      allow(::Gitlab::Llm::TanukiBot).to receive(:new)
+        .with(current_user: user, question: question, tracking_context: tracking_context).and_return(tanuki_instance)
+      allow(tanuki_instance).to receive(:execute).and_return(ai_response)
 
       response_modifier = double
       response_service = double

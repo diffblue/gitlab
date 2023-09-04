@@ -16,6 +16,10 @@ module Gitlab
         def response_options
           params.slice(:request_id, :internal_request, :cache_response, :client_subscription_id)
         end
+
+        def tracking_context
+          params.slice(:request_id, :action)
+        end
       end
     end
   end

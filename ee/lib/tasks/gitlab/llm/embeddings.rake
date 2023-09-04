@@ -13,7 +13,7 @@ namespace :gitlab do
         ]
 
         openai_client = ::Gitlab::Llm::OpenAi::Client.new(User.first,
-          request_timeout: ::Gitlab::Llm::TanukiBot::REQUEST_TIMEOUT)
+          request_timeout: ::Gitlab::Llm::TanukiBot::REQUEST_TIMEOUT, tracking_context: { action: 'openai_embeddings' })
         embedding_ids = questions
           .map { |q| ::Gitlab::Llm::TanukiBot.embedding_for_question(openai_client, q) }
           .flat_map { |e| ::Gitlab::Llm::TanukiBot.get_nearest_neighbors(e) }

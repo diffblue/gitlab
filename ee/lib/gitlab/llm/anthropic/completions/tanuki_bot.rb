@@ -10,7 +10,11 @@ module Gitlab
           def execute(user, resource, options)
             question = options[:question]
 
-            response = ::Gitlab::Llm::TanukiBot.execute(current_user: user, question: question)
+            response = ::Gitlab::Llm::TanukiBot.new(
+              current_user: user,
+              question: question,
+              tracking_context: tracking_context
+            ).execute
 
             response_modifier = if response.empty?
                                   Gitlab::Llm::ResponseModifiers::EmptyResponseModifier.new(response)

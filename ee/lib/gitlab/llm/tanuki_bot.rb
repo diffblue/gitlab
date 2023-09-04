@@ -11,10 +11,6 @@ module Gitlab
       RECORD_LIMIT = 4
       MODEL = 'claude-instant-1.1'
 
-      def self.execute(current_user:, question:, logger: nil)
-        new(current_user: current_user, question: question, logger: logger).execute
-      end
-
       def self.enabled_for?(user:)
         return false unless user
         return false unless ::License.feature_available?(:ai_tanuki_bot)
@@ -59,11 +55,12 @@ module Gitlab
         end
       end
 
-      def initialize(current_user:, question:, logger: nil)
+      def initialize(current_user:, question:, logger: nil, tracking_context: {})
         @current_user = current_user
         @question = question
         @logger = logger || Gitlab::Llm::Logger.build
         @correlation_id = Labkit::Correlation::CorrelationId.current_id
+        @tracking_context = tracking_context
       end
 
       def execute
@@ -86,14 +83,18 @@ module Gitlab
 
       private
 
-      attr_reader :current_user, :question, :logger, :correlation_id
+      attr_reader :current_user, :question, :logger, :correlation_id, :tracking_context
 
       def openai_client
-        @openai_client ||= ::Gitlab::Llm::OpenAi::Client.new(current_user, request_timeout: REQUEST_TIMEOUT)
+        @openai_client ||= ::Gitlab::Llm::OpenAi::Client.new(
+          current_user,
+          request_timeout: REQUEST_TIMEOUT,
+          tracking_context: tracking_context
+        )
       end
 
       def client
-        @client ||= ::Gitlab::Llm::Anthropic::Client.new(current_user)
+        @client ||= ::Gitlab::Llm::Anthropic::Client.new(current_user, tracking_context: tracking_context)
       end
 
       def get_completions(search_documents)

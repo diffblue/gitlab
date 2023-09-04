@@ -30,7 +30,7 @@ RSpec.describe Llm::CompletionWorker, feature_category: :ai_abstraction_layer do
     subject { described_class.new.perform(user_id, resource_id, resource_type, ai_action_name, params) }
 
     shared_examples 'performs successfully' do
-      it 'calls Gitlab::Llm::CompletionsFactory' do
+      it 'calls Gitlab::Llm::CompletionsFactory and tracks event', :aggregate_failures do
         completion = instance_double(Gitlab::Llm::Completions::SummarizeAllOpenNotes)
         extra_resource_finder = instance_double(::Llm::ExtraResourceFinder)
 
@@ -47,6 +47,14 @@ RSpec.describe Llm::CompletionWorker, feature_category: :ai_abstraction_layer do
           .with(user, resource, options.symbolize_keys.merge(extra_resource: extra_resource))
 
         subject
+
+        expect_snowplow_event(
+          category: described_class.to_s,
+          action: 'perform_completion_worker',
+          label: ai_action_name.to_s,
+          property: 'uuid',
+          user: user
+        )
       end
     end
 

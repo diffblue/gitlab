@@ -5,14 +5,16 @@ module Gitlab
     module Anthropic
       class Client
         include ::Gitlab::Llm::Concerns::ExponentialBackoff
+        include ::Gitlab::Llm::Concerns::EventTracking
 
         URL = 'https://api.anthropic.com'
         DEFAULT_MODEL = 'claude-2'
         DEFAULT_TEMPERATURE = 0
         DEFAULT_MAX_TOKENS = 2048
 
-        def initialize(user)
+        def initialize(user, tracking_context: {})
           @user = user
+          @tracking_context = tracking_context
           @logger = Gitlab::Llm::Logger.build
         end
 
@@ -21,7 +23,14 @@ module Gitlab
 
           # We do not allow to set `stream` because the separate `#stream` method should be used for streaming.
           # The reason is that streaming the response would not work with the exponential backoff mechanism.
-          perform_completion_request(prompt: prompt, options: options.except(:stream))
+          response = retry_with_exponential_backoff do
+            perform_completion_request(prompt: prompt, options: options.except(:stream))
+          end
+
+          track_prompt_size(token_size(prompt))
+          track_response_size(token_size(response["completion"]))
+
+          response
         end
 
         def stream(prompt:, **options)
@@ -35,14 +44,15 @@ module Gitlab
             yield parsed_event if block_given?
           end
 
+          track_prompt_size(token_size(prompt))
+          track_response_size(token_size(response_body))
+
           response_body
         end
 
         private
 
-        attr_reader :user, :logger
-
-        retry_methods_with_exponential_backoff :complete
+        attr_reader :user, :logger, :tracking_context
 
         def perform_completion_request(prompt:, options:)
           logger.info(message: "Performing request to Anthropic", options: options)
@@ -89,6 +99,13 @@ module Gitlab
             max_tokens_to_sample: DEFAULT_MAX_TOKENS,
             temperature: DEFAULT_TEMPERATURE
           }.merge(options)
+        end
+
+        def token_size(content)
+          # Anthropic's APIs don't send used tokens as part of the response, so
+          # instead we estimate the number of tokens based on typical token size -
+          # one token is roughly 4 chars.
+          content.to_s.size / 4
         end
 
         # Following the SSE spec

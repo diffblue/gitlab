@@ -8,6 +8,8 @@ module Llm
       include ApplicationWorker
       include Gitlab::ExclusiveLeaseHelpers
 
+      TRACKING_CONTEXT = { action: 'tanuki_bot_embeddings' }.freeze
+
       idempotent!
       data_consistency :delayed
       feature_category :ai_abstraction_layer
@@ -23,7 +25,7 @@ module Llm
         record = ::Embedding::TanukiBotMvc.find_by_id(id)
         return unless record
 
-        client = ::Gitlab::Llm::OpenAi::Client.new(nil)
+        client = ::Gitlab::Llm::OpenAi::Client.new(nil, tracking_context: TRACKING_CONTEXT)
 
         result = client.embeddings(input: record.content, moderated: false)
 

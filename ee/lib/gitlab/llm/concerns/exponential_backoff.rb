@@ -17,24 +17,16 @@ module Gitlab
           base.extend(ExponentialBackoff)
         end
 
-        def retry_methods_with_exponential_backoff(*method_names)
-          method_names.each do |method_name|
-            original_method = instance_method(method_name)
-
-            define_method(method_name) do |*args, **kwargs|
-              run_with_circuit do
-                retry_with_monitored_exponential_backoff do
-                  original_method.bind_call(self, *args, **kwargs)
-                end
-              end
-            end
+        def retry_with_exponential_backoff(&block)
+          run_with_circuit do
+            retry_with_monitored_exponential_backoff(&block)
           end
         end
 
         private
 
         def retry_with_monitored_exponential_backoff(&block)
-          response = retry_with_exponential_backoff(&block)
+          response = run_retry_with_exponential_backoff(&block)
         ensure
           success = (200...299).cover?(response&.code)
           client = Gitlab::Metrics::Llm.client_label(self.class)
@@ -42,7 +34,7 @@ module Gitlab
           Gitlab::Metrics::Sli::ErrorRate[:llm_client_request].increment(labels: { client: client }, error: !success)
         end
 
-        def retry_with_exponential_backoff
+        def run_retry_with_exponential_backoff
           retries = 0
           delay = INITIAL_DELAY
 
@@ -62,6 +54,7 @@ module Gitlab
             raise RateLimitError, "Maximum number of retries (#{MAX_RETRIES}) exceeded." if retries >= MAX_RETRIES
 
             delay *= EXPONENTIAL_BASE * (1 + Random.rand)
+            logger.info(message: "Too many requests, will retry in #{delay} seconds")
             sleep delay
             next
           end

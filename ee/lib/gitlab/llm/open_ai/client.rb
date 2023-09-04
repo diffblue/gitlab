@@ -7,13 +7,15 @@ module Gitlab
     module OpenAi
       class Client
         include ::Gitlab::Llm::Concerns::ExponentialBackoff
+        include ::Gitlab::Llm::Concerns::EventTracking
 
         InputModerationError = Class.new(StandardError)
         OutputModerationError = Class.new(StandardError)
 
-        def initialize(user, request_timeout: nil)
+        def initialize(user, request_timeout: nil, tracking_context: {})
           @user = user
           @request_timeout = request_timeout
+          @tracking_context = tracking_context
           @logger = Gitlab::Llm::Logger.build
         end
 
@@ -70,9 +72,7 @@ module Gitlab
 
         private
 
-        retry_methods_with_exponential_backoff :chat, :completions, :edits, :embeddings, :moderations
-
-        attr_reader :user, :request_timeout, :logger
+        attr_reader :user, :request_timeout, :logger, :tracking_context
 
         def client
           @client ||= OpenAI::Client.new(access_token: access_token, request_timeout: request_timeout)
@@ -113,7 +113,9 @@ module Gitlab
 
           moderate!(:input, moderation_input(endpoint, options)) if should_moderate?(:input, moderated)
 
-          response = client.public_send(endpoint, **options) # rubocop:disable GitlabSecurity/PublicSend
+          response = retry_with_exponential_backoff do
+            client.public_send(endpoint, **options) # rubocop:disable GitlabSecurity/PublicSend
+          end
 
           logger.debug(message: "Received response from OpenAI", response: response)
 
@@ -131,6 +133,9 @@ module Gitlab
 
           track_cost_metric("#{endpoint}/prompt", usage_data['prompt_tokens'])
           track_cost_metric("#{endpoint}/completion", usage_data['completion_tokens'])
+
+          track_prompt_size(usage_data['prompt_tokens'])
+          track_response_size(usage_data['completion_tokens'])
         end
 
         def track_cost_metric(context, amount)

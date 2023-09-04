@@ -49,8 +49,10 @@ RSpec.describe Ci::Llm::GenerateConfigService, feature_category: :continuous_int
   describe '#execute' do
     subject { service.execute }
 
+    let(:tracking_context) { { action: "generate_config" } }
+
     it 'gets the ai response and persists it' do
-      expect_next_instance_of(Gitlab::Llm::OpenAi::Client, user) do |instance|
+      expect_next_instance_of(Gitlab::Llm::OpenAi::Client, user, tracking_context: tracking_context) do |instance|
         expect(instance).to receive(:messages_chat).with(messages:
           [
             { role: Gitlab::Llm::OpenAi::Options::SYSTEM_ROLE, content: service.send(:gitlab_prompt) },
@@ -68,7 +70,7 @@ RSpec.describe Ci::Llm::GenerateConfigService, feature_category: :continuous_int
       it 'deletes content' do
         create_list(:message, 20, content: 'a' * 1000, user: user, project: project)
 
-        expect_next_instance_of(Gitlab::Llm::OpenAi::Client, user) do |instance|
+        expect_next_instance_of(Gitlab::Llm::OpenAi::Client, user, tracking_context: tracking_context) do |instance|
           expect(instance).to receive(:messages_chat).and_return(example_response)
         end
 

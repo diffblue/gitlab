@@ -64,13 +64,14 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::ExplainCode, feature_category
     }.to_json
   end
 
+  let(:tracking_context) { { request_id: 'uuid' } }
   let(:params) { { request_id: 'uuid' } }
 
   subject(:explain_code) { described_class.new(template_class, params).execute(user, project, options) }
 
   describe "#execute" do
     it 'performs an Vertex AI request' do
-      expect_next_instance_of(Gitlab::Llm::VertexAi::Client, user) do |instance|
+      expect_next_instance_of(Gitlab::Llm::VertexAi::Client, user, tracking_context: tracking_context) do |instance|
         expect(instance).to receive(:chat).with(content: nil, **ai_template).and_return(ai_response)
       end
 
