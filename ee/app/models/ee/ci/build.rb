@@ -9,6 +9,7 @@ module EE
     module Build
       extend ActiveSupport::Concern
       extend ::Gitlab::Utils::Override
+      include ::Gitlab::Utils::StrongMemoize
 
       VALIDATE_SCHEMA_VARIABLE_NAME = 'VALIDATE_SCHEMA'
       LICENSED_PARSER_FEATURES = {
@@ -212,6 +213,16 @@ module EE
       def resource_parent
         project
       end
+
+      override :pages_path_prefix
+      def pages_path_prefix
+        return unless pages_generator?
+        return unless options[:pages_path_prefix].present?
+        return unless ::Gitlab::Pages.multiple_versions_enabled_for?(project)
+
+        ExpandVariables.expand(options[:pages_path_prefix], -> { simple_variables })
+      end
+      strong_memoize_attr :pages_path_prefix
 
       private
 
