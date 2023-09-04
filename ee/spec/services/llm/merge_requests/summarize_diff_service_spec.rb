@@ -35,6 +35,7 @@ RSpec.describe Llm::MergeRequests::SummarizeDiffService, feature_category: :code
     }
   end
 
+  let(:tracking_context) { { action: 'summarize_diff' } }
   let(:response_double) { example_response.to_json }
   let(:errored_response_double) { { error: "true" }.to_json }
 
@@ -114,7 +115,7 @@ RSpec.describe Llm::MergeRequests::SummarizeDiffService, feature_category: :code
 
     context "when Gitlab::Llm::VertexAi::Client.text returns a typical response" do
       before do
-        allow_next_instance_of(Gitlab::Llm::VertexAi::Client) do |llm_client|
+        allow_next_instance_of(Gitlab::Llm::VertexAi::Client, user, tracking_context: tracking_context) do |llm_client|
           allow(llm_client).to receive(:text).and_return(response_double)
         end
       end
@@ -126,7 +127,7 @@ RSpec.describe Llm::MergeRequests::SummarizeDiffService, feature_category: :code
 
     context "when Gitlab::Llm::VertexAi::Client.text returns an unsuccessful response" do
       before do
-        allow_next_instance_of(Gitlab::Llm::VertexAi::Client) do |llm_client|
+        allow_next_instance_of(Gitlab::Llm::VertexAi::Client, user, tracking_context: tracking_context) do |llm_client|
           allow(llm_client).to receive(:text).and_return(errored_response_double)
         end
       end
@@ -138,7 +139,7 @@ RSpec.describe Llm::MergeRequests::SummarizeDiffService, feature_category: :code
 
     context "when Gitlab::Llm::VertexAi::Client.text returns an nil response" do
       before do
-        allow_next_instance_of(Gitlab::Llm::VertexAi::Client) do |llm_client|
+        allow_next_instance_of(Gitlab::Llm::VertexAi::Client, user, tracking_context: tracking_context) do |llm_client|
           allow(llm_client).to receive(:text).and_return(nil)
         end
       end
@@ -150,7 +151,7 @@ RSpec.describe Llm::MergeRequests::SummarizeDiffService, feature_category: :code
 
     context "when Gitlab::Llm::VertexAi::Client.text returns a response without parsed_response" do
       before do
-        allow_next_instance_of(Gitlab::Llm::VertexAi::Client) do |llm_client|
+        allow_next_instance_of(Gitlab::Llm::VertexAi::Client, user, tracking_context: tracking_context) do |llm_client|
           allow(llm_client).to receive(:text).and_return({ message: "Foo" }.to_json)
         end
       end

@@ -14,7 +14,7 @@ module Gitlab
           # we should be able to switch between different providers that we know agent supports, by initializing the
           # one we like. At the moment Anthropic is default and some features may not be supported
           # by other providers.
-          ai_request = ::Gitlab::Llm::Chain::Requests::Anthropic.new(user)
+          ai_request = ::Gitlab::Llm::Chain::Requests::Anthropic.new(user, tracking_context: tracking_context)
           context = ::Gitlab::Llm::Chain::GitlabContext.new(
             current_user: user,
             container: resource.try(:resource_parent)&.root_ancestor,

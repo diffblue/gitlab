@@ -29,6 +29,8 @@ module Llm
       return if resource && !user.can?("read_#{resource.to_ability_name}", resource)
 
       options[:extra_resource] = ::Llm::ExtraResourceFinder.new(user, options.delete(:referer_url)).execute
+      track_snowplow_event(user, ai_action_name, options)
+
       params = options.extract!(:request_id, :internal_request, :cache_response, :client_subscription_id)
       logger.debug(message: "Params", params: params)
 
@@ -69,6 +71,16 @@ module Llm
       return unless resource_id
 
       resource_class.classify.constantize.find_by_id(resource_id)
+    end
+
+    def track_snowplow_event(user, action_name, options)
+      Gitlab::Tracking.event(
+        self.class.to_s,
+        "perform_completion_worker",
+        label: action_name.to_s,
+        property: options[:request_id],
+        user: user
+      )
     end
   end
 end

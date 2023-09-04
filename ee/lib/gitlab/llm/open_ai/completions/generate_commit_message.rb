@@ -35,7 +35,7 @@ module Gitlab
           def response_for(user, merge_request)
             template = ai_prompt_class.new(merge_request)
             client_class = ::Gitlab::Llm::OpenAi::Client
-            client_class.new(user)
+            client_class.new(user, tracking_context: tracking_context)
               .chat(content: template.to_prompt, **template.options(client_class))
           end
         end

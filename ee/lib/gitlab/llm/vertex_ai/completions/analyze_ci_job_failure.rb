@@ -18,6 +18,7 @@ module Gitlab
           PROMPT
 
           MAX_INPUT_TOKENS = 8_192
+          TRACKING_CONTEXT = { action: 'analyze_ci_job_failure' }.freeze
 
           def initialize(_prompt_class, _params)
             @delimiter = generate_delimiter
@@ -41,7 +42,7 @@ module Gitlab
 
           def request
             ::Gitlab::Llm::VertexAi::Client
-              .new(@user)
+              .new(@user, tracking_context: TRACKING_CONTEXT)
               .text(content: chat_content)
           end
 

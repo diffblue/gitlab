@@ -41,12 +41,17 @@ RSpec.describe Gitlab::Llm::Concerns::ExponentialBackoff, feature_category: :ai_
 
   let(:dummy_class) do
     Class.new do
+      def logger
+        @logger ||= Logger.new(File::NULL)
+      end
+
       def dummy_method(response_caller)
-        response_caller.call
+        retry_with_exponential_backoff do
+          response_caller.call
+        end
       end
 
       include Gitlab::Llm::Concerns::ExponentialBackoff
-      retry_methods_with_exponential_backoff :dummy_method
     end
   end
 
@@ -55,15 +60,6 @@ RSpec.describe Gitlab::Llm::Concerns::ExponentialBackoff, feature_category: :ai_
   it_behaves_like 'has circuit breaker' do
     let(:service) { dummy_class.new }
     let(:subject) { service.dummy_method(response_caller) }
-  end
-
-  describe '.wrap_method' do
-    it 'wraps the instance method and retries with exponential backoff' do
-      service = dummy_class.new
-
-      expect(service).to receive(:retry_with_exponential_backoff).and_call_original
-      expect(service.dummy_method(response_caller)).to be_success
-    end
   end
 
   describe '.retry_with_exponential_backoff' do
@@ -95,26 +91,15 @@ RSpec.describe Gitlab::Llm::Concerns::ExponentialBackoff, feature_category: :ai_
     end
 
     context 'when a custom retry function is defined' do
-      let(:dummy_class) do
-        Class.new do
-          def dummy_method(response_caller)
-            response_caller.call
-          end
+      before do
+        dummy_class.define_method(:retry_immediately?) do |response|
+          parsed_response = if response.parsed_response.is_a?(Hash)
+                              response.parsed_response
+                            else
+                              Gitlab::Json.parse(response.parsed_response)
+                            end
 
-          include Gitlab::Llm::Concerns::ExponentialBackoff
-          retry_methods_with_exponential_backoff :dummy_method
-
-          private
-
-          def retry_immediately?(response)
-            parsed_response = if response.parsed_response.is_a?(Hash)
-                                response.parsed_response
-                              else
-                                Gitlab::Json.parse(response.parsed_response)
-                              end
-
-            parsed_response.dig("safetyAttributes", "blocked")
-          end
+          parsed_response.dig("safetyAttributes", "blocked")
         end
       end
 

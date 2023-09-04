@@ -80,7 +80,7 @@ module Gitlab
         return unless COMPLETIONS.key?(name)
 
         service_class, prompt_class = COMPLETIONS[name].values_at(:service_class, :prompt_class)
-        service_class.new(prompt_class, params)
+        service_class.new(prompt_class, params.merge(action: name))
       end
     end
   end

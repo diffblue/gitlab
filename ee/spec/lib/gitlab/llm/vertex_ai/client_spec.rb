@@ -9,6 +9,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
   let(:url) { 'https://example.com/api' }
   let(:host) { 'example.com' }
   let(:options) { {} }
+  let(:tracking_context) { { request_id: 'uuid', action: 'chat' } }
   let(:model_config) do
     instance_double(
       ::Gitlab::Llm::VertexAi::ModelConfigurations::CodeChat,
@@ -47,11 +48,11 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
     }
   end
 
-  let(:client) { described_class.new(user) }
+  let(:client) { described_class.new(user, tracking_context: tracking_context) }
 
   shared_examples 'forwarding the request correctly' do
     let(:successful_response) do
-      { safetyAttributes: { blocked: false }, predictions: [candidates: [{ content: "Sure, ..." }]] }
+      { safetyAttributes: { blocked: false }, predictions: [candidates: [{ content: "Hello, world" }]] }
     end
 
     before do
@@ -75,6 +76,8 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
         expect(::Gitlab::Json.parse(response.body, symbolize_names: true))
           .to match(hash_including(successful_response))
       end
+
+      it_behaves_like 'tracks events for AI requests', 2, 3
     end
 
     context 'when a failed response is returned from the API' do
@@ -111,6 +114,8 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
         expect(response).to be_present
         expect(response.code).to eq(200)
       end
+
+      it_behaves_like 'tracks events for AI requests', 2, 3
     end
 
     context 'when a content blocked response is returned from the API' do
@@ -164,9 +169,9 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
   describe '#messages_chat' do
     let(:messages) do
       [
-        { author: 'user', content: 'foo' },
-        { author: 'content', content: 'bar' },
-        { author: 'user', content: 'baz' }
+        { author: 'user', content: 'any' },
+        { author: 'content', content: 'th' },
+        { author: 'user', content: 'ing' }
       ]
     end
 
@@ -188,7 +193,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
   end
 
   describe '#code_completion' do
-    subject(:response) { client.code_completion(content: 'anything', **options) }
+    subject(:response) { client.code_completion(content: { prefix: "any", suffix: "thing" }, **options) }
 
     it_behaves_like 'forwarding the request correctly'
   end
@@ -201,6 +206,11 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
 
   describe '#request' do
     let(:url) { 'https://example.com/api' }
+
+    let(:successful_response) do
+      { safetyAttributes: { blocked: false }, predictions: [candidates: [{ content: "Hello, world" }]] }
+    end
+
     let(:config) do
       instance_double(
         ::Gitlab::Llm::VertexAi::Configuration,
@@ -216,7 +226,9 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
 
     before do
       allow(Gitlab::Llm::VertexAi::Configuration).to receive(:new).and_return(config)
-      stub_request(:post, url).to_return(status: http_status, body: 'some response')
+      stub_request(:post, url).to_return(
+        status: http_status, body: successful_response.to_json, headers: response_headers
+      )
     end
 
     context 'when measuring request success' do

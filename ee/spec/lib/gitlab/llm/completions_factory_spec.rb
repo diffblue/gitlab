@@ -23,7 +23,7 @@ RSpec.describe Gitlab::Llm::CompletionsFactory, feature_category: :ai_abstractio
         completion_class = ::Gitlab::Llm::VertexAi::Completions::SummarizeReview
         template_class = ::Gitlab::Llm::Templates::SummarizeReview
 
-        expect(completion_class).to receive(:new).with(template_class, {}).and_call_original
+        expect(completion_class).to receive(:new).with(template_class, { action: :summarize_review }).and_call_original
 
         completion = described_class.completion(completion_name)
 
@@ -34,7 +34,9 @@ RSpec.describe Gitlab::Llm::CompletionsFactory, feature_category: :ai_abstractio
         completion_class = ::Gitlab::Llm::Completions::ExplainVulnerability
         template_class = ::Gitlab::Llm::Templates::ExplainVulnerability
 
-        expect(completion_class).to receive(:new).with(template_class, { include_source_code: true }).and_call_original
+        expect(completion_class).to receive(:new)
+          .with(template_class, { include_source_code: true, action: :explain_vulnerability })
+          .and_call_original
 
         completion = described_class.completion(:explain_vulnerability, { include_source_code: true })
 

@@ -8,6 +8,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::ExplainCode, feature_category: 
 
   let(:content) { "some random content" }
   let(:template_class) { ::Gitlab::Llm::OpenAi::Templates::ExplainCode }
+  let(:tracking_context) { { request_id: "uuid" } }
   let(:options) do
     {
       messages: [{
@@ -44,7 +45,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::ExplainCode, feature_category: 
 
   describe "#execute" do
     it 'performs an openai request' do
-      expect_next_instance_of(Gitlab::Llm::OpenAi::Client, user) do |instance|
+      expect_next_instance_of(Gitlab::Llm::OpenAi::Client, user, tracking_context: tracking_context) do |instance|
         expect(instance).to receive(:chat).with(content: nil, **ai_template).and_return(ai_response)
       end
 

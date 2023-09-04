@@ -31,7 +31,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
 
   let(:expected_response) do
     {
-      'completion' => 'Response',
+      'completion' => 'Completion Response',
       'stop' => nil,
       'stop_reason' => 'max_tokens',
       'truncated' => false,
@@ -41,8 +41,10 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
     }
   end
 
+  let(:tracking_context) { { request_id: 'uuid', action: 'chat' } }
   let(:response_body) { expected_response.to_json }
   let(:http_status) { 200 }
+  let(:response_headers) { { 'Content-Type' => 'application/json' } }
 
   before do
     stub_application_setting(anthropic_api_key: api_key)
@@ -54,12 +56,14 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
       .to_return(
         status: http_status,
         body: response_body,
-        headers: { 'Content-Type' => 'application/json' }
+        headers: response_headers
       )
   end
 
   describe '#complete' do
-    subject(:complete) { described_class.new(user).complete(prompt: 'anything', **options) }
+    subject(:complete) do
+      described_class.new(user, tracking_context: tracking_context).complete(prompt: 'anything', **options)
+    end
 
     context 'when measuring request success' do
       let(:client) { :anthropic }
@@ -83,7 +87,21 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
 
         it_behaves_like 'measured Llm request with error', Gitlab::Llm::Concerns::ExponentialBackoff::RateLimitError
       end
+
+      context 'when request is retried once' do
+        before do
+          stub_request(:post, "#{described_class::URL}/v1/complete")
+            .to_return(status: 429, body: '', headers: response_headers)
+            .then.to_return(status: 200, body: response_body, headers: response_headers)
+
+          stub_const("Gitlab::Llm::Concerns::ExponentialBackoff::INITIAL_DELAY", 0.0)
+        end
+
+        it_behaves_like 'tracks events for AI requests', 2, 4
+      end
     end
+
+    it_behaves_like 'tracks events for AI requests', 2, 4
 
     context 'when feature flag and API key is set' do
       it 'returns response' do
@@ -125,6 +143,8 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
   end
 
   describe '#stream' do
+    subject { described_class.new(user, tracking_context: tracking_context).stream(prompt: 'anything', **options) }
+
     context 'when streaming the request' do
       let(:response_body) { expected_response }
       let(:options) { { stream: true } }
@@ -152,6 +172,8 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
         it 'returns response' do
           expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq("Hello")
         end
+
+        it_behaves_like 'tracks events for AI requests', 2, 1
       end
 
       context 'when response contains multiple events' do

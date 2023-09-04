@@ -9,8 +9,8 @@ module Gitlab
 
           TEMPERATURE = 0.2
 
-          def initialize(user)
-            @ai_client = ::Gitlab::Llm::VertexAi::Client.new(user)
+          def initialize(user, tracking_context: {})
+            @ai_client = ::Gitlab::Llm::VertexAi::Client.new(user, tracking_context: tracking_context)
           end
 
           def request(prompt)

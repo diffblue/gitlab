@@ -10,6 +10,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :ai_abstraction_la
   let(:expected_options) { {} }
   let(:options) { {} }
   let(:response) { instance_double(Net::HTTPResponse, body: example_response.to_json) }
+  let(:tracking_context) { { request_id: 'uuid', action: 'chat' } }
   let(:example_response) do
     {
       'model' => 'model',
@@ -108,11 +109,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :ai_abstraction_la
       counter = instance_double(Prometheus::Client::Counter, increment: true)
 
       allow(Gitlab::Metrics::Sli::ErrorRate[:llm_client_request]).to receive(:increment)
-
-      allow(Gitlab::Metrics)
-        .to receive(:counter)
-        .with(:gitlab_cloud_cost_spend_entry_total, anything)
-        .and_return(counter)
+      allow(Gitlab::Metrics).to receive(:counter).and_return(counter)
 
       expect(counter)
         .to receive(:increment)
@@ -139,6 +136,30 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :ai_abstraction_la
         )
 
       subject
+    end
+  end
+
+  shared_examples 'event tracking' do
+    it 'tracks a snowplow event' do
+      subject
+
+      expect_snowplow_event(
+        category: described_class.to_s,
+        action: 'tokens_per_user_request_prompt',
+        property: 'uuid',
+        label: 'chat',
+        user: user,
+        value: example_response['usage']['prompt_tokens']
+      )
+
+      expect_snowplow_event(
+        category: described_class.to_s,
+        action: 'tokens_per_user_request_response',
+        property: 'uuid',
+        label: 'chat',
+        user: user,
+        value: example_response['usage']['completion_tokens']
+      )
     end
   end
 
@@ -295,12 +316,16 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :ai_abstraction_la
   end
 
   describe '#chat' do
-    subject(:chat) { described_class.new(user).chat(content: 'anything', **options) }
+    subject(:chat) do
+      described_class.new(user, tracking_context: tracking_context).chat(content: 'anything', **options)
+    end
 
     let(:method) { :chat }
 
     it_behaves_like 'forwarding the request correctly'
+    it_behaves_like 'tracks events for AI requests', 1, 2
     include_examples 'cost tracking'
+    include_examples 'event tracking'
     include_examples 'input moderation'
     include_examples 'output moderation'
 
@@ -337,7 +362,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :ai_abstraction_la
     stub_feature_flags(openai_experimentation: true)
 
     subject(:messages_chat) do
-      described_class.new(user).messages_chat(
+      described_class.new(user, tracking_context: tracking_context).messages_chat(
         messages: messages,
         **options
       )
@@ -356,7 +381,9 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :ai_abstraction_la
     let(:expected_options) { { parameters: hash_including({ messages: messages, temperature: 0.1 }) } }
 
     it_behaves_like 'forwarding the request correctly'
+    it_behaves_like 'tracks events for AI requests', 1, 2
     include_examples 'cost tracking'
+    include_examples 'event tracking'
     include_examples 'input moderation'
     include_examples 'output moderation'
 
@@ -375,29 +402,39 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :ai_abstraction_la
   end
 
   describe '#completions' do
-    subject(:completions) { described_class.new(user).completions(prompt: 'anything', **options) }
+    subject(:completions) do
+      described_class.new(user, tracking_context: tracking_context).completions(prompt: 'anything', **options)
+    end
 
     let(:method) { :completions }
 
     it_behaves_like 'forwarding the request correctly'
+    it_behaves_like 'tracks events for AI requests', 1, 2
     include_examples 'cost tracking'
+    include_examples 'event tracking'
     include_examples 'input moderation'
     include_examples 'output moderation'
   end
 
   describe '#edits' do
-    subject(:edits) { described_class.new(user).edits(input: 'foo', instruction: 'bar', **options) }
+    subject(:edits) do
+      described_class.new(user, tracking_context: tracking_context).edits(input: 'foo', instruction: 'bar', **options)
+    end
 
     let(:method) { :edits }
 
     it_behaves_like 'forwarding the request correctly'
+    it_behaves_like 'tracks events for AI requests', 1, 2
     include_examples 'cost tracking'
+    include_examples 'event tracking'
     include_examples 'input moderation'
     include_examples 'output moderation'
   end
 
   describe '#embeddings' do
-    subject(:embeddings) { described_class.new(user).embeddings(input: 'foo', **options) }
+    subject(:embeddings) do
+      described_class.new(user, tracking_context: tracking_context).embeddings(input: 'foo', **options)
+    end
 
     let(:method) { :embeddings }
     let(:example_response) do
@@ -420,12 +457,16 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :ai_abstraction_la
     end
 
     it_behaves_like 'forwarding the request correctly'
+    it_behaves_like 'tracks events for AI requests', 1, 2
     include_examples 'cost tracking'
+    include_examples 'event tracking'
     include_examples 'input moderation'
   end
 
   describe '#moderations' do
-    subject(:moderations) { described_class.new(user).moderations(input: 'foo', **options) }
+    subject(:moderations) do
+      described_class.new(user, tracking_context: tracking_context).moderations(input: 'foo', **options)
+    end
 
     let(:method) { :moderations }
     let(:example_response) do
