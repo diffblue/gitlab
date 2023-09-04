@@ -124,6 +124,14 @@ RSpec.describe GitlabSubscriptions::ActivateService, feature_category: :sm_provi
       end
 
       it_behaves_like 'call service to handle the provision of code suggestions'
+
+      it 'triggers SeatLinkData sync' do
+        expect_next_instance_of(::Gitlab::SeatLinkData) do |sync_link_data|
+          expect(sync_link_data).to receive(:sync)
+        end
+
+        subject
+      end
     end
 
     context 'when the current license key does not match the one returned from activation' do

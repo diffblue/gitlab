@@ -23,6 +23,7 @@ module GitlabSubscriptions
       if license.save
         save_future_subscriptions(response[:future_subscriptions])
         update_code_suggestions_add_on_purchase
+        ::Gitlab::SeatLinkData.new.sync
 
         {
           success: true,
