@@ -32828,9 +32828,6 @@ msgstr ""
 msgid "Only active projects show up in the search and on the dashboard."
 msgstr ""
 
-msgid "Only effective when remote storage is enabled. Set to 0 for no size limit."
-msgstr ""
-
 msgid "Only include features new to your current subscription tier."
 msgstr ""
 
