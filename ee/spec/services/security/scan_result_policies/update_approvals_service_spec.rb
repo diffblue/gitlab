@@ -105,15 +105,6 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
     context 'when security scan is removed in current pipeline' do
       let_it_be(:pipeline) { create(:ee_ci_pipeline, :success, project: project, ref: merge_request.source_branch) }
 
-      context 'when multi_pipeline_scan_result_policies is disabled' do
-        before do
-          stub_feature_flags(multi_pipeline_scan_result_policies: false)
-        end
-
-        it_behaves_like 'does not update approvals_required'
-        it_behaves_like 'triggers policy bot comment', :scan_finding, true
-      end
-
       context 'when approval rule scanners is empty' do
         let(:scanners) { [] }
 
