@@ -78,21 +78,15 @@ module QA
       ) do
         let!(:user) { Runtime::User.admin }
 
-        let!(:group) do
-          Resource::Sandbox.init do |resource|
-            resource.api_client = admin_api_client
-            resource.path = "optimize-vsa-test"
-          end.reload!
-        end
+        let!(:group) { build(:sandbox, api_client: admin_api_client, path: 'optimize-vsa-test').reload! }
 
         let!(:project) do
-          Resource::Project.init do |resource|
-            resource.add_name_uuid = false
-            resource.api_client = admin_api_client
-            resource.group = group
-            resource.path = "optimize-sandbox"
-            resource.name = "optimize-sandbox"
-          end.reload!
+          build(:project,
+            add_name_uuid: false,
+            api_client: admin_api_client,
+            group: group,
+            path: 'optimize-sandbox',
+            name: 'optimize-sandbox').reload!
         end
 
         before do

@@ -34,10 +34,7 @@ module QA
         end
 
         let!(:devfile_project) do
-          Resource::Project.init do |project|
-            project.add_name_uuid = false
-            project.name = ENV['DEVFILE_PROJECT'] || "devfile-project"
-          end
+          build(:project, add_name_uuid: false, name: ENV['DEVFILE_PROJECT'] || "devfile-project")
         end
 
         before do
