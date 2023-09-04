@@ -207,22 +207,6 @@
         "description": "Design management repositories verified count",
         "type": "number"
       },
-      "design_repositories_count": {
-        "description": "Design repositories count",
-        "type": "number"
-      },
-      "design_repositories_failed_count": {
-        "description": "Design repositories failed count",
-        "type": "number"
-      },
-      "design_repositories_replication_enabled": {
-        "description": "Design repositories replication enabled",
-        "type": "number"
-      },
-      "design_repositories_synced_count": {
-        "description": "Design repositories synced count",
-        "type": "number"
-      },
       "git_fetch_event_count_weekly": {
         "description": "Git fetch event count weekly",
         "type": "number"

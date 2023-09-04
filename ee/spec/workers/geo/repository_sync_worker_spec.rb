@@ -11,7 +11,6 @@ RSpec.describe Geo::RepositorySyncWorker, :geo, :clean_gitlab_redis_cache, featu
   let!(:project_in_synced_group) { create(:project, group: synced_group) }
   let!(:unsynced_project) { create(:project) }
   let(:healthy_shard_name) { project_in_synced_group.repository.storage }
-  let(:design_worker) { Geo::DesignRepositoryShardSyncWorker }
   let(:repository_worker) { Geo::RepositoryShardSyncWorker }
 
   before do
@@ -33,7 +32,6 @@ RSpec.describe Geo::RepositorySyncWorker, :geo, :clean_gitlab_redis_cache, featu
       end
 
       expect(repository_worker).not_to receive(:perform_async).with('broken')
-      expect(design_worker).not_to receive(:perform_async).with('broken')
 
       subject.perform
     end
@@ -46,9 +44,7 @@ RSpec.describe Geo::RepositorySyncWorker, :geo, :clean_gitlab_redis_cache, featu
         .and_return([result(true, healthy_shard_name), result(true, 'broken')])
 
       expect(repository_worker).to receive(:perform_async).with('default')
-      expect(design_worker).to receive(:perform_async).with('default')
       expect(repository_worker).not_to receive(:perform_async).with('broken')
-      expect(design_worker).not_to receive(:perform_async).with('broken')
 
       subject.perform
     end
@@ -65,9 +61,7 @@ RSpec.describe Geo::RepositorySyncWorker, :geo, :clean_gitlab_redis_cache, featu
       stub_storage_settings({})
 
       expect(repository_worker).to receive(:perform_async).with(project_in_synced_group.repository.storage)
-      expect(design_worker).to receive(:perform_async).with(project_in_synced_group.repository.storage)
       expect(repository_worker).not_to receive(:perform_async).with('unknown')
-      expect(design_worker).not_to receive(:perform_async).with('unknown')
 
       subject.perform
     end
@@ -83,9 +77,7 @@ RSpec.describe Geo::RepositorySyncWorker, :geo, :clean_gitlab_redis_cache, featu
         .and_return([result(true, healthy_shard_name), result(false, 'broken')])
 
       expect(repository_worker).to receive(:perform_async).with(healthy_shard_name)
-      expect(design_worker).to receive(:perform_async).with(healthy_shard_name)
       expect(repository_worker).not_to receive(:perform_async).with('broken')
-      expect(design_worker).not_to receive(:perform_async).with('broken')
 
       subject.perform
     end

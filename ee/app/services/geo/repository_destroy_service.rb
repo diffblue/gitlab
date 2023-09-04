@@ -42,7 +42,6 @@ module Geo
 
     def destroy_registry_entries
       ::Geo::ProjectRegistry.model_id_in(id).delete_all
-      ::Geo::DesignRegistry.model_id_in(id).delete_all
 
       log_info('Registry entries removed', project_id: id)
     end

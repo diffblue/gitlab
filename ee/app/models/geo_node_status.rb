@@ -14,6 +14,10 @@ class GeoNodeStatus < ApplicationRecord
       wikis_synced_count
       wikis_verification_failed_count
       wikis_verified_count
+      design_repositories_count
+      design_repositories_synced_count
+      design_repositories_failed_count
+      design_repositories_registry_count
     ],
     remove_with: '16.5',
     remove_after: '2023-09-22'
@@ -89,10 +93,6 @@ class GeoNodeStatus < ApplicationRecord
     repositories_retrying_verification_count
     projects_count
     container_repositories_replication_enabled
-    design_repositories_replication_enabled
-    design_repositories_count
-    design_repositories_synced_count
-    design_repositories_failed_count
   ) + replicator_class_status_fields + usage_data_fields).freeze
 
   # Why are disabled classes included? See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/38959#note_402656534
@@ -136,12 +136,7 @@ class GeoNodeStatus < ApplicationRecord
     repositories_checked_count: 'Number of repositories checked',
     repositories_checked_failed_count: 'Number of failed repositories checked',
     repositories_retrying_verification_count: 'Number of repositories verification failures that Geo is actively trying to correct on secondary',
-    container_repositories_replication_enabled: 'Boolean denoting if replication is enabled for Container Repositories',
-    design_repositories_replication_enabled: 'Boolean denoting if replication is enabled for Design Repositories',
-    design_repositories_count: 'Total number of syncable design repositories available on primary',
-    design_repositories_synced_count: 'Number of syncable design repositories synced on secondary',
-    design_repositories_failed_count: 'Number of syncable design repositories failed to sync on secondary',
-    design_repositories_registry_count: 'Number of design repositories in the registry'
+    container_repositories_replication_enabled: 'Boolean denoting if replication is enabled for Container Repositories'
   }.merge(replicator_class_prometheus_metrics).freeze
 
   EXPIRATION_IN_MINUTES = 10
@@ -254,7 +249,6 @@ class GeoNodeStatus < ApplicationRecord
 
     if Gitlab::Geo.secondary?
       self.container_repositories_replication_enabled = Geo::ContainerRepositoryRegistry.replication_enabled?
-      self.design_repositories_replication_enabled = Geo::DesignRegistry.replication_enabled?
       self.repositories_replication_enabled = Geo::ProjectRegistry.replication_enabled?
     end
   end
@@ -351,7 +345,6 @@ class GeoNodeStatus < ApplicationRecord
   attr_in_percentage :repositories_verified,         :repositories_verified_count,         :repositories_count
   attr_in_percentage :repositories_checked,          :repositories_checked_count,          :repositories_count
   attr_in_percentage :replication_slots_used,        :replication_slots_used_count,        :replication_slots_count
-  attr_in_percentage :design_repositories_synced,    :design_repositories_synced_count,    :design_repositories_count
 
   add_attr_in_percentage_for_replicable_classes
 
@@ -421,7 +414,6 @@ class GeoNodeStatus < ApplicationRecord
     self.cursor_last_event_date = Geo::EventLog.find_by(id: self.cursor_last_event_id)&.created_at
 
     load_repositories_data
-    load_designs_data
     load_ssf_replicable_data
     load_secondary_usage_data
   end
@@ -430,15 +422,6 @@ class GeoNodeStatus < ApplicationRecord
     self.projects_count = Geo::ProjectRegistry.count
     self.repositories_synced_count = Geo::ProjectRegistry.synced(:repository).count
     self.repositories_failed_count = Geo::ProjectRegistry.sync_failed(:repository).count
-  end
-
-  def load_designs_data
-    return unless design_repositories_replication_enabled
-
-    self.design_repositories_count = design_registry_finder.registry_count
-    self.design_repositories_synced_count = design_registry_finder.synced_count
-    self.design_repositories_failed_count = design_registry_finder.failed_count
-    self.design_repositories_registry_count = design_registry_finder.registry_count
   end
 
   def load_ssf_replicable_data
@@ -509,10 +492,6 @@ class GeoNodeStatus < ApplicationRecord
 
   def primary_storage_digest
     @primary_storage_digest ||= Gitlab::Geo.primary_node.find_or_build_status.storage_configuration_digest
-  end
-
-  def design_registry_finder
-    @design_registry_finder ||= Geo::DesignRegistryFinder.new
   end
 
   def repository_verification_finder

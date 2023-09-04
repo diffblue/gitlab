@@ -55,10 +55,6 @@
     "container_repositories_verification_total_count",
     "container_repositories_verified_count",
     "container_repositories_verified_in_percentage",
-    "design_repositories_replication_enabled",
-    "design_repositories_count",
-    "design_repositories_failed_count",
-    "design_repositories_synced_count",
     "design_management_repositories_count",
     "design_management_repositories_checksum_failed_count",
     "design_management_repositories_checksum_total_count",
@@ -612,30 +608,6 @@
       "type": "string"
     },
     "dependency_proxy_blobs_verified_in_percentage": {
-      "type": "string"
-    },
-    "design_repositories_replication_enabled": {
-      "type": [
-        "boolean",
-        "null"
-      ]
-    },
-    "design_repositories_count": {
-      "type": "integer"
-    },
-    "design_repositories_failed_count": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "design_repositories_synced_count": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "design_repositories_synced_in_percentage": {
       "type": "string"
     },
     "design_management_repositories_count": {

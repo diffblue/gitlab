@@ -89,11 +89,14 @@ class Geo::BaseRegistry < Geo::TrackingBase
       .limit(batch_size)
   end
 
-  # Overridden for legacy Geo::ProjectRegistry, Geo::DesignRegistry
+  def self.has_create_events?
+    true
+  end
+
+  # Overridden for legacy Geo::ProjectRegistry
   # and Geo::GroupWikiRepositoryRegistry which is not yet verifiable
   # TODO: Remove after
   # https://gitlab.com/gitlab-org/gitlab/-/issues/367926
-  # https://gitlab.com/gitlab-org/gitlab/-/issues/391189
   # https://gitlab.com/gitlab-org/gitlab/-/issues/323897
   def self.graphql_mutable?
     true

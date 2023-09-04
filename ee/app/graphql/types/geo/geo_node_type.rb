@@ -28,8 +28,7 @@ module Types
       field :design_management_repository_registries, ::Types::Geo::DesignManagementRepositoryRegistryType.connection_type,
             null: true,
             resolver: ::Resolvers::Geo::DesignManagementRepositoryRegistriesResolver,
-            description: 'Find Design Repository registries on this Geo node. ' \
-                         'Ignored if `geo_design_management_repository_replication` feature flag is disabled.',
+            description: 'Find Design Management Repository registries on this Geo node.',
             alpha: { milestone: '16.1' }
       field :enabled, GraphQL::Types::Boolean, null: true, description: 'Indicates whether this Geo node is enabled.'
       field :files_max_capacity, GraphQL::Types::Int, null: true, description: 'Maximum concurrency of LFS/attachment backfill for this secondary node.'

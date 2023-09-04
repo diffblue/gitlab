@@ -56,7 +56,6 @@ module EE
       default_factory_name = registry_class::MODEL_CLASS.underscore.tr('/', '_').to_sym
 
       {
-        Geo::DesignRegistry => :project_with_design,
         Geo::MergeRequestDiffRegistry => :external_merge_request_diff,
         Geo::PackageFileRegistry => :package_file,
         Geo::UploadRegistry => :upload,

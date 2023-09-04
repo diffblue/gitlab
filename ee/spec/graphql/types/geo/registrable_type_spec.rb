@@ -31,7 +31,7 @@ RSpec.describe Types::Geo::RegistrableType, feature_category: :geo_replication d
 
       it 'raises a TypeNotSupportedError for other registry type' do
         expect do
-          described_class.resolve_type(build(:geo_design_registry), {})
+          described_class.resolve_type(build(:geo_project_registry), {})
         end.to raise_error(Types::Geo::RegistrableType::RegistryTypeNotSupportedError)
       end
     end

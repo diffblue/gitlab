@@ -34,10 +34,6 @@ FactoryBot.define do
       cache_invalidation_event factory: :geo_cache_invalidation_event
     end
 
-    trait :design_repository_updated_event do
-      repository_updated_event factory: :geo_design_repository_updated_event
-    end
-
     trait :geo_event do
       event factory: :geo_event
     end
@@ -56,14 +52,6 @@ FactoryBot.define do
     project
 
     source { Geo::RepositoryUpdatedEvent::REPOSITORY }
-    branches_affected { 0 }
-    tags_affected { 0 }
-  end
-
-  factory :geo_design_repository_updated_event, class: 'Geo::RepositoryUpdatedEvent' do
-    project
-
-    source { Geo::RepositoryUpdatedEvent::DESIGN }
     branches_affected { 0 }
     tags_affected { 0 }
   end

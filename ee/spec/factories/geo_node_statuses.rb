@@ -8,9 +8,6 @@ FactoryBot.define do
     trait :healthy do
       status_message { nil }
       job_artifacts_synced_missing_on_primary_count { 91 }
-      design_repositories_count { 400 }
-      design_repositories_failed_count { 3 }
-      design_repositories_synced_count { 200 }
       projects_count { 10 }
       repositories_count { 10 }
       repositories_synced_count { 5 }
@@ -32,7 +29,6 @@ FactoryBot.define do
       version { Gitlab::VERSION }
       revision { Gitlab.revision }
       container_repositories_replication_enabled { false }
-      design_repositories_replication_enabled { true }
       repositories_replication_enabled { true }
       repository_verification_enabled { true }
 
@@ -46,7 +42,6 @@ FactoryBot.define do
     end
 
     trait :replicated_and_verified do
-      design_repositories_failed_count { 0 }
       repositories_failed_count { 0 }
       repositories_verification_failed_count { 0 }
       repositories_checked_failed_count { 0 }
@@ -58,11 +53,9 @@ FactoryBot.define do
       repositories_verification_total_count { 10 }
       repositories_checked_count { 10 }
       replication_slots_used_count { 10 }
-      design_repositories_synced_count { 10 }
 
       repositories_count { 10 }
       replication_slots_count { 10 }
-      design_repositories_count { 10 }
 
       GeoNodeStatus.replicator_class_status_fields.each do |field|
         send(field) { 10 }

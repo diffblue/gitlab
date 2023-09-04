@@ -25,38 +25,20 @@ RSpec.describe Admin::Geo::DesignsController, :geo, feature_category: :geo_repli
       end
     end
 
-    context 'when feature flag geo_design_management_repository_replication is enabled' do
+    context 'on primary' do
       before do
-        stub_feature_flags(geo_design_management_repository_replication: true)
+        stub_primary_node
       end
 
-      context 'on primary' do
-        before do
-          stub_primary_node
-        end
-
-        it_behaves_like 'redirects /admin/geo/replication/designs'
-      end
-
-      context 'on secondary' do
-        before do
-          stub_secondary_node
-        end
-
-        it_behaves_like 'redirects /admin/geo/replication/designs'
-      end
+      it_behaves_like 'redirects /admin/geo/replication/designs'
     end
 
-    context 'when feature flag geo_design_management_repository_replication is disabled' do
+    context 'on secondary' do
       before do
-        stub_feature_flags(geo_design_management_repository_replication: false)
+        stub_secondary_node
       end
 
-      it 'retuns status ok' do
-        get :index
-
-        expect(response).to have_gitlab_http_status(:ok)
-      end
+      it_behaves_like 'redirects /admin/geo/replication/designs'
     end
   end
 end

@@ -141,11 +141,7 @@ RSpec.describe API::Geo, :aggregate_failures, feature_category: :geo_replication
           container_repositories_count: 100,
           container_repositories_synced_count: 50,
           container_repositories_failed_count: 12,
-          design_repositories_count: 100,
-          design_repositories_synced_count: 50,
-          design_repositories_failed_count: 12,
           container_repositories_replication_enabled: true,
-          design_repositories_replication_enabled: false,
           repositories_replication_enabled: true,
           repository_verification_enabled: true
         }
