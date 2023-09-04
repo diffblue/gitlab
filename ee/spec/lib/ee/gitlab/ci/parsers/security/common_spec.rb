@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Parsers::Security::Common do
+RSpec.describe Gitlab::Ci::Parsers::Security::Common, feature_category: :vulnerability_management do
   describe '#parse!' do
     where(signatures_enabled: [true, false])
     with_them do
@@ -74,31 +74,31 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common do
 
         context 'when one remediation closes two CVEs' do
           it 'assigns it to both findings' do
-            vulnerability1 = report.findings.find { |x| x.compare_key == "CVE-2139" }
-            vulnerability2 = report.findings.find { |x| x.compare_key == "CVE-2140" }
+            vulnerability1 = report.findings[2]
+            vulnerability2 = report.findings[3]
 
             remediation = {
               'fixes' => [
                 {
-                  'cve' => 'CVE-2139',
+                  'id' => 'vulnerability-3',
                   __oj_introspection: {
-                    start_byte: 12215,
-                    end_byte: 12253
+                    start_byte: 12245,
+                    end_byte: 12289
                   }
                 },
                 {
-                  'cve' => 'CVE-2140',
+                  'id' => 'vulnerability-4',
                   __oj_introspection: {
-                    start_byte: 12264,
-                    end_byte: 12302
+                    start_byte: 12300,
+                    end_byte: 12344
                   }
                 }
               ],
-              'summary' => 'this remediates CVE-2139 and CVE-2140',
+              'summary' => 'this remediates the third and fourth vulnerability',
               'diff' => 'dG90YWxseSBsZWdpdGltYXRlIGRpZmYsIDEwLzEwIHdvdWxkIGFwcGx5',
               __oj_introspection: {
-                start_byte: 12188,
-                end_byte: 12448
+                start_byte: 12218,
+                end_byte: 12503
               }
             }.deep_stringify_keys
 
@@ -107,48 +107,24 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common do
           end
         end
 
-        it 'finds remediation with same cve' do
-          finding = report.findings.find { |x| x.compare_key == "CVE-1020" }
-          remediation = {
-            'fixes' => [
-              {
-                'cve' => 'CVE-1020',
-                __oj_introspection: {
-                  start_byte: 12482,
-                  end_byte: 12520
-                }
-              }
-            ],
-            'summary' => 'this fixes CVE-1020',
-            'diff' => 'dG90YWxseSBsZWdpdGltYXRlIGRpZmYsIDEwLzEwIHdvdWxkIGFwcGx5',
-            __oj_introspection: {
-              start_byte: 12455,
-              end_byte: 12648
-            }
-          }.deep_stringify_keys
-
-          expect(Gitlab::Json.parse(finding.raw_metadata).dig('remediations').first).to include remediation
-          expect(finding.remediations.first.checksum).to eq(expected_remediation.checksum)
-        end
-
         it 'finds remediation with same id' do
-          finding = report.findings.find { |x| x.compare_key == "CVE-1030" }
+          finding = report.findings[5]
+
           remediation = {
             'fixes' => [
               {
-                'cve' => 'CVE',
-                'id' => 'bb2fbeb1b71ea360ce3f86f001d4e84823c3ffe1a1f7d41ba7466b14cfa953d3',
+                'id' => 'vulnerability-6',
                 __oj_introspection: {
-                  start_byte: 12956,
-                  end_byte: 13073
+                  start_byte: 12959,
+                  end_byte: 13003
                 }
               }
             ],
             'summary' => 'this fixed CVE',
             'diff' => 'dG90YWxseSBsZWdpdGltYXRlIGRpZmYsIDEwLzEwIHdvdWxkIGFwcGx5',
             __oj_introspection: {
-              start_byte: 12929,
-              end_byte: 13196
+              start_byte: 12932,
+              end_byte: 13126
             }
           }.deep_stringify_keys
 
@@ -157,27 +133,10 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common do
         end
 
         it 'does not assign any remediation to the finding if there exists no related remediation' do
-          finding = report.findings.find { |x| x.compare_key == 'yarn/yarn.lock:saml2-js:gemnasium:9952e574-7b5b-46fa-a270-aeb694198a98' }
+          finding = report.findings[6]
 
           expect(Gitlab::Json.parse(finding.raw_metadata).dig('remediations').first).to be_nil
           expect(finding.remediations).to match([])
-        end
-
-        it 'does not find remediation with different id' do
-          fix_with_id = {
-            "fixes": [
-              {
-               "id": "2134",
-               "cve": "CVE-1"
-              }
-            ],
-            "summary": "",
-            "diff": ""
-          }
-
-          report.findings.map do |finding|
-            expect(Gitlab::Json.parse(finding.raw_metadata).dig('remediations')).not_to include(fix_with_id)
-          end
         end
       end
 
