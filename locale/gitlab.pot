@@ -31422,6 +31422,9 @@ msgstr ""
 msgid "No label"
 msgstr ""
 
+msgid "No labels found"
+msgstr ""
+
 msgid "No labels with such name or description"
 msgstr ""
 
@@ -31471,6 +31474,9 @@ msgid "No more than %{max_issues} issues can be updated at the same time"
 msgstr ""
 
 msgid "No more than %{max_work_items} work items can be modified at the same time."
+msgstr ""
+
+msgid "No options found"
 msgstr ""
 
 msgid "No other labels with such name or description"
