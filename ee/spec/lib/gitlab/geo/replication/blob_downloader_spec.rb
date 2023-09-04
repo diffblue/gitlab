@@ -70,6 +70,8 @@ RSpec.describe Gitlab::Geo::Replication::BlobDownloader, feature_category: :geo_
           let(:sync_object_storage) { true }
 
           context 'when the primary proxies remote storage' do
+            let(:model_record) { create(:package_file) }
+
             it 'returns success' do
               content = replicator.carrierwave_uploader.file.read
               size = content.bytesize
@@ -87,6 +89,7 @@ RSpec.describe Gitlab::Geo::Replication::BlobDownloader, feature_category: :geo_
             let(:content) { replicator.carrierwave_uploader.file.read }
             let(:size) { content.bytesize }
             let(:remote_url) { replicator.carrierwave_uploader.url }
+            let(:model_record) { create(:package_file) }
 
             before do
               # Set up to ensure that our redirect follow implementation does
@@ -221,6 +224,29 @@ RSpec.describe Gitlab::Geo::Replication::BlobDownloader, feature_category: :geo_
         it 'returns a successful result' do
           expect(replicator).to receive(:primary_checksum).and_return(nil)
           content = 'foo'
+          stub_request(:get, subject.resource_url)
+            .to_return(status: 200, body: content)
+
+          result = subject.execute
+
+          expect_blob_downloader_result(result, success: true, bytes_downloaded: content.bytesize, primary_missing_file: false)
+        end
+      end
+
+      context 'when file is in object storage and has the filesize as a checksum on primary' do
+        let!(:secondary_object_storage) { create(:geo_node, sync_object_storage: true) }
+
+        before do
+          stub_package_file_object_storage(enabled: true, direct_upload: true)
+          stub_current_geo_node(secondary_object_storage)
+        end
+
+        let!(:model_record) { create(:package_file, :npm, :object_storage) }
+
+        it 'returns a successful result' do
+          allow(replicator).to receive(:primary_checksum).and_return("3")
+
+          content = 'foo' # 3 bytes
           stub_request(:get, subject.resource_url)
             .to_return(status: 200, body: content)
 

@@ -12,6 +12,10 @@
 RSpec.shared_examples 'a replicable model with a separate table for verification state' do
   include EE::GeoHelpers
 
+  before do
+    stub_feature_flags(geo_object_storage_verification: false)
+  end
+
   context 'on a primary node' do
     before do
       stub_primary_node

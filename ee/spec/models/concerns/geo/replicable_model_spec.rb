@@ -69,23 +69,40 @@ RSpec.describe Geo::ReplicableModel, feature_category: :geo_replication do
   end
 
   describe '.verifiables' do
-    context 'when the model can be filtered by locally stored files' do
-      it 'filters by locally stored files' do
-        allow(DummyModel).to receive(:respond_to?).with(:all).and_call_original
-        allow(DummyModel).to receive(:respond_to?).with(:with_files_stored_locally).and_return(true)
+    context 'when geo_object_storage_verification feature flag is disabled' do
+      before do
+        stub_feature_flags(geo_object_storage_verification: false)
+      end
 
-        expect(DummyModel).to receive(:with_files_stored_locally)
+      context 'when the model can be filtered by locally stored files' do
+        it 'filters by locally stored files' do
+          allow(DummyModel).to receive(:respond_to?).with(:all).and_call_original
+          allow(DummyModel).to receive(:respond_to?).with(:with_files_stored_locally).and_return(true)
 
-        DummyModel.verifiables
+          expect(DummyModel).to receive(:with_files_stored_locally)
+
+          DummyModel.verifiables
+        end
+      end
+
+      context 'when the model cannot be filtered by locally stored files' do
+        it 'does not filter by locally stored files' do
+          allow(DummyModel).to receive(:respond_to?).with(:all).and_call_original
+          allow(DummyModel).to receive(:respond_to?).with(:with_files_stored_locally).and_return(false)
+
+          expect(DummyModel).not_to receive(:with_files_stored_locally)
+
+          DummyModel.verifiables
+        end
       end
     end
 
-    context 'when the model cannot be filtered by locally stored files' do
-      it 'does not filter by locally stored files' do
-        allow(DummyModel).to receive(:respond_to?).with(:all).and_call_original
-        allow(DummyModel).to receive(:respond_to?).with(:with_files_stored_locally).and_return(false)
-
-        expect(DummyModel).not_to receive(:with_files_stored_locally)
+    # We don't need to test the case when geo_object_storage_verification is enabled
+    # because the whole .verifiables method won't be needed anymore after the FF is removed.
+    # This one has only symbolic meaning before the removal
+    context 'when geo_object_storage_verification feature flag is enabled' do
+      it 'aliasses to .available_replicables' do
+        expect(DummyModel).to receive(:available_replicables)
 
         DummyModel.verifiables
       end
