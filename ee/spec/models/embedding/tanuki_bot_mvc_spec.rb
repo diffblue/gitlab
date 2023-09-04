@@ -38,6 +38,32 @@ RSpec.describe Embedding::TanukiBotMvc, :clean_gitlab_redis_shared_state, type: 
             expect(neighbors).to match_array(near)
           end
         end
+
+        context 'when looking for neighbour on a specific version' do
+          subject(:neighbors) do
+            described_class.current.neighbor_for(question.embedding, limit: limit)
+          end
+
+          context 'when current version is the same as embeddings version' do
+            before do
+              allow(described_class).to receive(:get_current_version).and_return(0)
+            end
+
+            it 'returns neighbours for a specific version' do
+              expect(neighbors).to match_array([near, far])
+            end
+          end
+
+          context 'when current version is different from embeddings version' do
+            before do
+              allow(described_class).to receive(:get_current_version).and_return(1)
+            end
+
+            it 'returns neighbours for a specific version' do
+              expect(neighbors).to match_array([])
+            end
+          end
+        end
       end
     end
 

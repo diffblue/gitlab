@@ -12,7 +12,7 @@ module Embedding
     scope :nil_embeddings_for_version, ->(version) { where(version: version, embedding: nil) }
 
     scope :neighbor_for, ->(embedding, limit:) do
-      ::Embedding::TanukiBotMvc.nearest_neighbors(:embedding, embedding, distance: 'cosine').limit(limit)
+      nearest_neighbors(:embedding, embedding, distance: 'cosine').limit(limit)
     end
 
     def self.current_version_cache_key
