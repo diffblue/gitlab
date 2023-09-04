@@ -1,5 +1,6 @@
 import { GlSprintf } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
+import { v4 as uuidv4 } from 'uuid';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import VueApollo from 'vue-apollo';
@@ -34,6 +35,7 @@ Vue.use(Vuex);
 Vue.use(VueApollo);
 
 jest.mock('~/rest_api');
+jest.mock('uuid');
 
 describe('GitLab Duo Chat', () => {
   let wrapper;
@@ -90,7 +92,14 @@ describe('GitLab Duo Chat', () => {
   const findAllUserFeedback = () => wrapper.findAllComponents(UserFeedback);
 
   beforeEach(() => {
+    uuidv4.mockImplementation(() => '123');
     getMarkdown.mockImplementation(({ text }) => Promise.resolve({ data: { html: text } }));
+  });
+
+  it('generates unique `clientSubscriptionId` using v4', () => {
+    createComponent();
+    expect(uuidv4).toHaveBeenCalled();
+    expect(wrapper.vm.clientSubscriptionId).toBe('123');
   });
 
   describe('rendering', () => {
@@ -192,6 +201,7 @@ describe('GitLab Duo Chat', () => {
             expect(expectedMutation).toHaveBeenCalledWith({
               resourceId: expectedResourceId,
               question: MOCK_USER_MESSAGE.msg,
+              clientSubscriptionId: '123',
             });
           },
         );

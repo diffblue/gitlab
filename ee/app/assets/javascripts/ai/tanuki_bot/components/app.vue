@@ -2,6 +2,7 @@
 import { GlIcon, GlLink } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState } from 'vuex';
+import { v4 as uuidv4 } from 'uuid';
 import { __, s__, n__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { helpCenterState } from '~/super_sidebar/constants';
@@ -75,6 +76,24 @@ export default {
           });
         },
       },
+      aiCompletionResponseStream: {
+        query: aiResponseSubscription,
+        variables() {
+          return {
+            userId: this.userId,
+            resourceId: this.resourceId || this.userId,
+            clientSubscriptionId: this.clientSubscriptionId,
+          };
+        },
+        result({ data }) {
+          this.addDuoChatMessage(data?.aiCompletionResponse);
+        },
+        error(err) {
+          this.addDuoChatMessage({
+            errors: [err],
+          });
+        },
+      },
     },
     aiMessages: {
       query: getAiMessages,
@@ -93,6 +112,7 @@ export default {
   data() {
     return {
       helpCenterState,
+      clientSubscriptionId: uuidv4(),
     };
   },
   computed: {
@@ -111,6 +131,7 @@ export default {
           variables: {
             question,
             resourceId: this.resourceId || this.userId,
+            clientSubscriptionId: this.clientSubscriptionId,
           },
         })
         .then(({ data: { aiAction = {} } = {} }) => {

@@ -1,10 +1,19 @@
-subscription aiCompletionResponse($userId: UserID, $resourceId: AiModelID!) {
-  aiCompletionResponse(userId: $userId, resourceId: $resourceId) {
+subscription aiCompletionResponse(
+  $userId: UserID
+  $resourceId: AiModelID!
+  $clientSubscriptionId: String
+) {
+  aiCompletionResponse(
+    userId: $userId
+    resourceId: $resourceId
+    clientSubscriptionId: $clientSubscriptionId
+  ) {
     requestId
     responseBody
     errors
     role
     timestamp
     type
+    chunkId
   }
 }

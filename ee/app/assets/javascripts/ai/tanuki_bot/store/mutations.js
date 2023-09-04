@@ -8,23 +8,39 @@ export default {
       if (newMessageData.role.toLowerCase() === GENIE_CHAT_MODEL_ROLES.system) {
         return;
       }
-      const index = state.messages.findIndex((msg) => msg.requestId === newMessageData.requestId);
-      const hasMsgWithRequestId = index > -1;
-      const msgWithRequestId = hasMsgWithRequestId && state.messages[index];
       let isLastMessage = false;
 
-      if (hasMsgWithRequestId) {
-        if (msgWithRequestId.role.toLowerCase() === newMessageData.role.toLowerCase()) {
-          // We update the existing message object instead of pushing a new one
-          state.messages[index] = {
-            ...msgWithRequestId,
-            ...newMessageData,
-          };
-        } else {
-          // We add the new ASSISTANT message
-          isLastMessage = index === state.messages.length - 1;
-          state.messages.splice(index + 1, 0, newMessageData);
-        }
+      const getExistingMesagesIndex = (role) =>
+        state.messages.findIndex(
+          (msg) => msg.requestId === newMessageData.requestId && msg.role.toLowerCase() === role,
+        );
+      const userMessageWithRequestIdIndex = getExistingMesagesIndex(GENIE_CHAT_MODEL_ROLES.user);
+      const assistantMessageWithRequestIdIndex = getExistingMesagesIndex(
+        GENIE_CHAT_MODEL_ROLES.assistant,
+      );
+      const assistantMessageExists = assistantMessageWithRequestIdIndex > -1;
+      const userMessageExists = userMessageWithRequestIdIndex > -1;
+
+      const isUserMesasge = newMessageData.role.toLowerCase() === GENIE_CHAT_MODEL_ROLES.user;
+      const isAssistantMessage =
+        newMessageData.role.toLowerCase() === GENIE_CHAT_MODEL_ROLES.assistant;
+
+      if (assistantMessageExists && isAssistantMessage) {
+        // We update the existing ASSISTANT message object instead of pushing a new one
+        state.messages.splice(assistantMessageWithRequestIdIndex, 1, {
+          ...state.messages[assistantMessageWithRequestIdIndex],
+          ...newMessageData,
+        });
+      } else if (userMessageExists && isUserMesasge) {
+        // We update the existing USER message object instead of pushing a new one
+        state.messages.splice(userMessageWithRequestIdIndex, 1, {
+          ...state.messages[userMessageWithRequestIdIndex],
+          ...newMessageData,
+        });
+      } else if (userMessageExists && isAssistantMessage) {
+        // We add the new ASSISTANT message
+        isLastMessage = userMessageWithRequestIdIndex === state.messages.length - 1;
+        state.messages.splice(userMessageWithRequestIdIndex + 1, 0, newMessageData);
       } else {
         // It's the new message, so just push it to the end of the Array
         state.messages.push(newMessageData);

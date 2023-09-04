@@ -50,6 +50,7 @@ export const GENERATE_MOCK_TANUKI_RES = (body = JSON.stringify(MOCK_TANUKI_MESSA
         role: MOCK_TANUKI_MESSAGE.role,
         timestamp: '2021-04-21T12:00:00.000Z',
         type: null,
+        chunkId: null,
       },
     },
   };
