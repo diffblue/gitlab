@@ -6,6 +6,6 @@ FactoryBot.define do
 
     key { 'my_key' }
     value { 'my_value' }
-    variable_type { RemoteDevelopment::WorkspaceVariable.variable_types[:file] }
+    variable_type { RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_FILE }
   end
 end

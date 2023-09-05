@@ -45,5 +45,10 @@ module RemoteDevelopment
     WorkspaceCreateSuccessful = Class.new(Message)
     WorkspaceUpdateSuccessful = Class.new(Message)
     WorkspaceReconcileSuccessful = Class.new(Message)
+
+    # Workspace DB events
+    PersonalAccessTokenModelCreateFailed = Class.new(Message)
+    WorkspaceModelCreateFailed = Class.new(Message)
+    WorkspaceVariablesModelCreateFailed = Class.new(Message)
   end
 end
