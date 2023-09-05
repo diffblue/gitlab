@@ -22,6 +22,7 @@ RSpec.describe Llm::CompletionWorker, feature_category: :ai_abstraction_layer do
     let(:ai_action_name) { :summarize_comments }
     let(:referer_url) { nil }
     let(:extra_resource) { {} }
+    let(:completion) { instance_double(Gitlab::Llm::Completions::SummarizeAllOpenNotes) }
 
     let(:params) do
       options.merge(request_id: 'uuid', internal_request: true, cache_response: false, referer_url: referer_url)
@@ -61,6 +62,19 @@ RSpec.describe Llm::CompletionWorker, feature_category: :ai_abstraction_layer do
     context 'with valid parameters' do
       before do
         group.add_reporter(user)
+      end
+
+      it 'updates duration metric' do
+        allow(Gitlab::Llm::CompletionsFactory)
+          .to receive(:completion)
+          .and_return(completion)
+        allow(completion).to receive(:execute)
+
+        expect(Gitlab::Metrics::Sli::Apdex[:llm_completion])
+          .to receive(:increment)
+          .with(labels: { feature_category: anything, service_class: an_instance_of(String) }, success: true)
+
+        subject
       end
 
       context 'when extra resource is found' do

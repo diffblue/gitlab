@@ -16,6 +16,7 @@ module Gitlab
           end
 
           Gitlab::Metrics::Sli::ErrorRate.initialize_sli(:llm_completion, completion_labels)
+          Gitlab::Metrics::Sli::Apdex.initialize_sli(:llm_completion, completion_labels)
 
           client_labels = (CLIENT_NAMES.values + [:unknown]).map { |client| { client: client } }
           Gitlab::Metrics::Sli::ErrorRate.initialize_sli(:llm_client_request, client_labels)
