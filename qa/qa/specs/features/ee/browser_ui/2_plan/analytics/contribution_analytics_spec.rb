@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Plan' do
-    describe 'Contribution Analytics', product_group: :optimize do
+    describe 'Contribution Analytics', :reliable, product_group: :optimize do
       let(:group) { create(:group, path: "contribution_anayltics-#{SecureRandom.hex(8)}") }
 
       let(:project) { create(:project, name: 'contribution_analytics', group: group) }
