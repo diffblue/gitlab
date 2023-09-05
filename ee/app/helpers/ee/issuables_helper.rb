@@ -34,20 +34,25 @@ module EE
       data
     end
 
+    private
+
     override :issue_only_initial_data
     def issue_only_initial_data(issuable)
       return {} unless issuable.is_a?(Issue)
 
-      data = super.merge(
+      super.merge(
         publishedIncidentUrl: ::Gitlab::StatusPage::Storage.details_url(issuable),
         slaFeatureAvailable: issuable.sla_available?.to_s,
         uploadMetricsFeatureAvailable: issuable.metric_images_available?.to_s,
         projectId: issuable.project_id
       )
+    end
 
-      data.tap do |d|
+    override :issue_header_data
+    def issue_header_data(issuable)
+      super.tap do |data|
         if issuable.promoted? && can?(current_user, :read_epic, issuable.promoted_to_epic)
-          d[:promotedToEpicUrl] =
+          data[:promotedToEpicUrl] =
             url_for([issuable.promoted_to_epic.group, issuable.promoted_to_epic, { only_path: false }])
         end
       end
