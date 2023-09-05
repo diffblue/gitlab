@@ -7,7 +7,7 @@ module EE
 
       override :perform_spam_check?
       def perform_spam_check?
-        return false if user.has_paid_namespace?(exclude_trials: true)
+        return false if user.belongs_to_paid_namespace?(exclude_trials: true)
 
         super
       end

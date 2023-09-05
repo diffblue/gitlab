@@ -1785,13 +1785,13 @@ RSpec.describe User, feature_category: :system_access do
 
     let(:user) { create(:user, namespace: create(:user_namespace)) }
 
-    describe '#has_paid_namespace?' do
+    describe '#belongs_to_paid_namespace?' do
       context 'when the user has Reporter or higher on at least one paid group' do
         it 'returns true' do
           ultimate_group.add_reporter(user)
           bronze_group.add_guest(user)
 
-          expect(user.has_paid_namespace?).to eq(true)
+          expect(user.belongs_to_paid_namespace?).to eq(true)
         end
       end
 
@@ -1801,7 +1801,7 @@ RSpec.describe User, feature_category: :system_access do
           bronze_group.add_guest(user)
           free_group.add_owner(user)
 
-          expect(user.has_paid_namespace?).to eq(false)
+          expect(user.belongs_to_paid_namespace?).to eq(false)
         end
       end
 
@@ -1809,7 +1809,7 @@ RSpec.describe User, feature_category: :system_access do
         it 'returns false' do
           group_without_plan.add_owner(user)
 
-          expect(user.has_paid_namespace?).to eq(false)
+          expect(user.belongs_to_paid_namespace?).to eq(false)
         end
       end
 
@@ -1817,8 +1817,8 @@ RSpec.describe User, feature_category: :system_access do
         it 'returns true', :aggregate_failures do
           bronze_group.add_reporter(user)
 
-          expect(user.has_paid_namespace?(plans: [::Plan::BRONZE])).to eq(true)
-          expect(user.has_paid_namespace?(plans: [::Plan::ULTIMATE])).to eq(false)
+          expect(user.belongs_to_paid_namespace?(plans: [::Plan::BRONZE])).to eq(true)
+          expect(user.belongs_to_paid_namespace?(plans: [::Plan::ULTIMATE])).to eq(false)
         end
       end
 
@@ -1826,7 +1826,7 @@ RSpec.describe User, feature_category: :system_access do
         it 'returns false' do
           free_group.add_owner(user)
 
-          expect(user.has_paid_namespace?(plans: [::Plan::ULTIMATE, ::Plan::FREE])).to eq(false)
+          expect(user.belongs_to_paid_namespace?(plans: [::Plan::ULTIMATE, ::Plan::FREE])).to eq(false)
         end
       end
 
@@ -1836,7 +1836,7 @@ RSpec.describe User, feature_category: :system_access do
         it 'returns false' do
           trial_group.add_owner(user)
 
-          expect(user.has_paid_namespace?(exclude_trials: true)).to eq(false)
+          expect(user.belongs_to_paid_namespace?(exclude_trials: true)).to eq(false)
         end
       end
     end
@@ -1845,14 +1845,14 @@ RSpec.describe User, feature_category: :system_access do
       it 'calculates association for that plan' do
         bronze_group.add_reporter(user)
 
-        expect(user.has_paid_namespace?(plans: [::Plan::BRONZE])).to eq(true)
-        expect(user.has_paid_namespace?(plans: [::Plan::ULTIMATE])).to eq(false)
+        expect(user.belongs_to_paid_namespace?(plans: [::Plan::BRONZE])).to eq(true)
+        expect(user.belongs_to_paid_namespace?(plans: [::Plan::ULTIMATE])).to eq(false)
       end
 
       it 'calculates association to multiple plans' do
         free_group.add_owner(user)
 
-        expect(user.has_paid_namespace?(plans: [::Plan::ULTIMATE, ::Plan::FREE])).to eq(false)
+        expect(user.belongs_to_paid_namespace?(plans: [::Plan::ULTIMATE, ::Plan::FREE])).to eq(false)
       end
     end
 
@@ -3222,7 +3222,7 @@ RSpec.describe User, feature_category: :system_access do
 
       context 'when user is not a member of a namespace with a paid plan subscription (excluding trials)' do
         it 'schedules the user for deletion with delay' do
-          expect(user).to receive(:has_paid_namespace?).with(exclude_trials: true).and_return(false)
+          expect(user).to receive(:belongs_to_paid_namespace?).with(exclude_trials: true).and_return(false)
           expect(DeleteUserWorker).to receive(:perform_in)
           expect(DeleteUserWorker).not_to receive(:perform_async)
 
@@ -3232,7 +3232,7 @@ RSpec.describe User, feature_category: :system_access do
 
       context 'when user is a member of a namespace with a paid plan subscription (excluding trials)' do
         it 'schedules user for deletion without delay' do
-          expect(user).to receive(:has_paid_namespace?).with(exclude_trials: true).and_return(true)
+          expect(user).to receive(:belongs_to_paid_namespace?).with(exclude_trials: true).and_return(true)
           expect(DeleteUserWorker).to receive(:perform_async)
           expect(DeleteUserWorker).not_to receive(:perform_in)
 

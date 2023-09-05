@@ -7,7 +7,7 @@ module EE
 
       override :allow_possible_spam?
       def allow_possible_spam?
-        return true if user.has_paid_namespace?(exclude_trials: true)
+        return true if user.belongs_to_paid_namespace?(exclude_trials: true)
 
         super
       end

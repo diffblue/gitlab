@@ -29,7 +29,7 @@ RSpec.describe Issues::ImportCsvService, feature_category: :team_planning do
 
     context 'when the user is a paid user' do
       before do
-        allow(user).to receive(:has_paid_namespace?).and_return(true)
+        allow(user).to receive(:belongs_to_paid_namespace?).and_return(true)
       end
 
       it_behaves_like 'performs a spam check', false
