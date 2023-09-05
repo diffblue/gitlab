@@ -1,25 +1,13 @@
 # frozen_string_literal: true
 
-RSpec.shared_examples 'behind AI related feature flags' do |provider_flag|
-  context "when #{provider_flag} is disabled" do
-    before do
-      stub_feature_flags(provider_flag => false)
-    end
-
-    it 'responds as not found' do
-      post api(url, current_user), params: input_params
-
-      expect(response).to have_gitlab_http_status(:not_found)
-    end
-  end
-
+RSpec.shared_examples 'behind AI experimentation API feature flag' do
   context 'when ai_experimentation_api is disabled' do
     before do
       stub_feature_flags(ai_experimentation_api: false)
     end
 
     it 'responds as not found' do
-      post api(url, current_user), params: input_params
+      make_request
 
       expect(response).to have_gitlab_http_status(:not_found)
     end
@@ -28,7 +16,7 @@ end
 
 RSpec.shared_examples 'delegates AI request to Workhorse' do
   it 'responds with Workhorse send-url headers' do
-    post api(url, current_user), params: input_params
+    make_request
 
     expect(response.body).to eq('""')
     expect(response).to have_gitlab_http_status(:ok)

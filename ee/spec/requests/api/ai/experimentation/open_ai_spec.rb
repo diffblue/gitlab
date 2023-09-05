@@ -3,46 +3,22 @@
 require 'spec_helper'
 
 RSpec.describe API::Ai::Experimentation::OpenAi, feature_category: :ai_abstraction_layer do
-  let_it_be(:current_user) { create :user }
+  let_it_be(:current_user) { create(:user) }
   let(:header) { { 'Authorization' => ['Bearer test-key'], 'Content-Type' => ['application/json'] } }
-  let(:body) { { 'test' => 'test' } }
+  let(:make_request) { post api(url, current_user), params: input_params }
 
   before do
     stub_application_setting(openai_api_key: 'test-key')
-    stub_feature_flags(openai_experimentation: true)
     stub_feature_flags(ai_experimentation_api: current_user)
   end
 
-  describe 'when feature flag not enabled for user' do
-    let(:not_authorized_user) { create :user }
-
-    [:completions, :embeddings, 'chat/completions'].each do |endpoint|
-      it 'returns not found' do
-        post api("/ai/experimentation/openai/#{endpoint}", not_authorized_user)
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
-  end
-
-  describe 'when general feature flag not enabled' do
-    before do
-      stub_feature_flags(openai_experimentation: false)
-    end
-
-    [:completions, :embeddings, 'chat/completions'].each do |endpoint|
-      it 'returns not found' do
-        post api("/ai/experimentation/openai/#{endpoint}", current_user)
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
-  end
-
   describe 'POST /ai/experimentation/openai/completions' do
+    let(:input_params) { { prompt: 'test', model: 'text-davinci-003' } }
+    let(:url) { '/ai/experimentation/openai/completions' }
+
+    it_behaves_like 'behind AI experimentation API feature flag'
+
     it_behaves_like 'delegates AI request to Workhorse' do
-      let(:input_params) { { prompt: 'test', model: 'text-davinci-003' } }
-      let(:url) { '/ai/experimentation/openai/completions' }
       let(:expected_params) do
         {
           'URL' => "#{described_class::OPEN_AI_API_URL}/completions",
@@ -61,9 +37,12 @@ RSpec.describe API::Ai::Experimentation::OpenAi, feature_category: :ai_abstracti
   end
 
   describe 'POST /ai/experimentation/openai/embeddings' do
+    let(:input_params) { { input: 'test', model: 'text-davinci-003' } }
+    let(:url) { '/ai/experimentation/openai/embeddings' }
+
+    it_behaves_like 'behind AI experimentation API feature flag'
+
     it_behaves_like 'delegates AI request to Workhorse' do
-      let(:input_params) { { input: 'test', model: 'text-davinci-003' } }
-      let(:url) { '/ai/experimentation/openai/embeddings' }
       let(:expected_params) do
         {
           'URL' => "#{described_class::OPEN_AI_API_URL}/embeddings",
@@ -75,18 +54,21 @@ RSpec.describe API::Ai::Experimentation::OpenAi, feature_category: :ai_abstracti
   end
 
   describe 'POST /ai/experimentation/openai/chat/completions' do
-    it_behaves_like 'delegates AI request to Workhorse' do
-      let(:messages) do
-        [
-          { role: "system", content: "You are a helpful assistant." },
-          { role: "user", content: "Who won the world series in 2020?" },
-          { role: "assistant", content: "The Los Angeles Dodgers won the World Series in 2020." },
-          { role: "user", content: "Where was it played?" }
-        ]
-      end
+    let(:messages) do
+      [
+        { role: "system", content: "You are a helpful assistant." },
+        { role: "user", content: "Who won the world series in 2020?" },
+        { role: "assistant", content: "The Los Angeles Dodgers won the World Series in 2020." },
+        { role: "user", content: "Where was it played?" }
+      ]
+    end
 
-      let(:input_params) { { messages: messages, model: 'gpt-3.5-turbo' } }
-      let(:url) { '/ai/experimentation/openai/chat/completions' }
+    let(:url) { '/ai/experimentation/openai/chat/completions' }
+    let(:input_params) { { messages: messages, model: 'gpt-3.5-turbo' } }
+
+    it_behaves_like 'behind AI experimentation API feature flag'
+
+    it_behaves_like 'delegates AI request to Workhorse' do
       let(:expected_params) do
         {
           'URL' => "#{described_class::OPEN_AI_API_URL}/chat/completions",

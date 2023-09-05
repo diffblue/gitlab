@@ -15,15 +15,11 @@ module API
 
         before do
           authenticate!
-          check_feature_enabled
+          check_feature_enabled!
         end
 
+        helpers ::API::Helpers::AiHelper
         helpers do
-          def check_feature_enabled
-            not_found!('REST API endpoint not found') unless Feature.enabled?(:anthropic_experimentation) &&
-              Feature.enabled?(:ai_experimentation_api, current_user)
-          end
-
           def anthropic_post(endpoint, json_body: nil)
             url = URI.join(Gitlab::Llm::Anthropic::Client::URL, endpoint).to_s
 

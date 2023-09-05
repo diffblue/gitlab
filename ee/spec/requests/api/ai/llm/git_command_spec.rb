@@ -8,6 +8,7 @@ RSpec.describe API::Ai::Llm::GitCommand, :saas, feature_category: :source_code_m
   let(:url) { '/ai/llm/git_command' }
   let(:model) { 'vertexai' }
   let(:input_params) { { prompt: 'list 10 commit titles', model: model } }
+  let(:make_request) { post api(url, current_user), params: input_params }
 
   before do
     stub_licensed_features(ai_git_command: true)
@@ -110,7 +111,7 @@ RSpec.describe API::Ai::Llm::GitCommand, :saas, feature_category: :source_code_m
       end
 
       it 'returns bad request' do
-        post api(url, current_user), params: input_params
+        make_request
 
         expect(response).to have_gitlab_http_status(:bad_request)
       end
@@ -122,7 +123,7 @@ RSpec.describe API::Ai::Llm::GitCommand, :saas, feature_category: :source_code_m
       end
 
       it 'returns bad request' do
-        post api(url, current_user), params: input_params
+        make_request
 
         expect(response).to have_gitlab_http_status(:bad_request)
       end
@@ -134,7 +135,7 @@ RSpec.describe API::Ai::Llm::GitCommand, :saas, feature_category: :source_code_m
           receive(:throttled?).with(:ai_action, scope: [current_user]).and_return(true)
         )
 
-        post api(url, current_user), params: input_params
+        make_request
 
         expect(response).to have_gitlab_http_status(:too_many_requests)
       end
