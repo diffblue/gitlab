@@ -184,11 +184,6 @@ RSpec.describe VulnerabilitiesHelper, feature_category: :vulnerability_managemen
       end
 
       it 'includes translated dismissal descriptions' do
-        Gitlab::I18n.with_locale(:en) do
-          # Force loading of the class and configured translations
-          Vulnerabilities::DismissalReasonEnum.translated_descriptions
-        end
-
         Gitlab::I18n.with_locale(:zh_CN) do
           expect(subject[:dismissal_descriptions].keys).to eq(expected_descriptions.keys)
           expect(subject[:dismissal_descriptions].values).to eq(translated_descriptions)
