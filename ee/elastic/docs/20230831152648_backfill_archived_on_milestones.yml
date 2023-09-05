@@ -1,0 +1,10 @@
+---
+name: BackfillArchivedOnMilestones
+version: '20230831152648'
+description: Backfill the archived value for milestones
+group: group::global search
+milestone: '16.4'
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/130639
+obsolete: false
+marked_obsolete_by_url:
+marked_obsolete_in_milestone:
