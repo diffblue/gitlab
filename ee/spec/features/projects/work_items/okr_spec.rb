@@ -134,15 +134,15 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
 
       it 'toggles widget body', :aggregate_failures do
         page.within('[data-testid="work-item-tree"]') do
-          expect(page).to have_selector('[data-testid="widget-body"]')
+          expect(page).to have_selector('[data-testid="work-item-tree"] [data-testid="widget-body"]')
 
           click_button 'Collapse'
 
-          expect(page).not_to have_selector('[data-testid="widget-body"]')
+          expect(page).not_to have_selector('[data-testid="work-item-tree"] [data-testid="widget-body"]')
 
           click_button 'Expand'
 
-          expect(page).to have_selector('[data-testid="widget-body"]')
+          expect(page).to have_selector('[data-testid="work-item-tree"] [data-testid="widget-body"]')
         end
       end
 
@@ -249,7 +249,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
       close_rich_text_promo_popover_if_present
       wait_for_all_requests
 
-      page.within('[data-testid="widget-body"]') do
+      page.within('[data-testid="work-item-tree"] [data-testid="widget-body"]') do
         click_button 'Expand'
 
         wait_for_all_requests
