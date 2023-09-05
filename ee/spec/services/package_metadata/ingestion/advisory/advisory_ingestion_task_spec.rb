@@ -33,7 +33,11 @@ RSpec.describe PackageMetadata::Ingestion::Advisory::AdvisoryIngestionTask, feat
 
       it 'returns the advisory database id values as a map' do
         actual_advisory_map = execute
-        expected_advisory_map = PackageMetadata::Advisory.all.to_h { |advisory| [advisory.advisory_xid, advisory.id] }
+        expected_advisory_map = {}
+        PackageMetadata::Advisory.all.each do |advisory|
+          expected_advisory_map[advisory.advisory_xid] =
+            Hashie::Mash.new({ id: advisory.id, published_date: advisory.published_date })
+        end
         expect(actual_advisory_map).to eq(expected_advisory_map)
       end
     end
