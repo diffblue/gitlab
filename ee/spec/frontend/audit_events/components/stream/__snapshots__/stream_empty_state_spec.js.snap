@@ -98,6 +98,7 @@ exports[`StreamEmptyState should render correctly 1`] = `
                 >
                   <button
                     class="gl-new-dropdown-item-content"
+                    data-testid="add-http-destination"
                     tabindex="-1"
                     type="button"
                   >
@@ -115,6 +116,7 @@ exports[`StreamEmptyState should render correctly 1`] = `
                 >
                   <button
                     class="gl-new-dropdown-item-content"
+                    data-testid="add-gcp-destination"
                     tabindex="-1"
                     type="button"
                   >

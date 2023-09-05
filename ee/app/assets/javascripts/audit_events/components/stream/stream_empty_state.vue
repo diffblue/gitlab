@@ -26,11 +26,17 @@ export default {
           action: () => {
             this.$emit('add', DESTINATION_TYPE_HTTP);
           },
+          extraAttrs: {
+            'data-testid': 'add-http-destination',
+          },
         },
         {
           text: ADD_GCP_LOGGING,
           action: () => {
             this.$emit('add', DESTINATION_TYPE_GCP_LOGGING);
+          },
+          extraAttrs: {
+            'data-testid': 'add-gcp-destination',
           },
         },
       ];
