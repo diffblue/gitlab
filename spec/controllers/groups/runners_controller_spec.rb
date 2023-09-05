@@ -227,6 +227,12 @@ RSpec.describe Groups::RunnersController, feature_category: :runner_fleet do
         expect(response).to render_template(:edit)
       end
 
+      it 'renders 404 for non-existing runner' do
+        get :edit, params: { group_id: group, id: non_existing_record_id }
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+
       it 'renders 404 for instance runner' do
         get :edit, params: { group_id: group, id: instance_runner }
 
