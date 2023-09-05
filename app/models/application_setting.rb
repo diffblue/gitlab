@@ -15,12 +15,18 @@ class ApplicationSetting < MainClusterwide::ApplicationRecord
   ignore_column :web_ide_clientside_preview_enabled, remove_with: '15.11', remove_after: '2023-04-22'
   ignore_columns %i[instance_administration_project_id instance_administrators_group_id], remove_with: '16.2', remove_after: '2023-06-22'
   ignore_column :database_apdex_settings, remove_with: '16.4', remove_after: '2023-08-22'
+
   ignore_columns %i[
     dashboard_notification_limit
     dashboard_enforcement_limit
     dashboard_limit_new_namespace_creation_enforcement_date
   ], remove_with: '16.5', remove_after: '2023-08-22'
-  ignore_column :relay_state_domain_allowlist, remove_with: '16.6', remove_after: '2023-10-22'
+
+  ignore_column %i[
+    relay_state_domain_allowlist
+    in_product_marketing_emails_enabled
+  ], remove_with: '16.6', remove_after: '2023-10-22'
+
   ignore_columns %i[
     encrypted_product_analytics_clickhouse_connection_string
     encrypted_product_analytics_clickhouse_connection_string_iv
