@@ -149,7 +149,6 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
     protected_tag_create_access_level
     release
     release_link
-    self_managed_prometheus_alert_event
     shard
     users_star_project
     vulnerabilities_finding_identifier
