@@ -69,14 +69,13 @@ module Gitlab
           end
 
           def self.unknown?(license)
-            license.name == Gitlab::LicenseScanning::PackageLicenses::UNKNOWN_LICENSE
+            license.name == Gitlab::LicenseScanning::PackageLicenses::UNKNOWN_LICENSE[:name]
           end
 
           def self.spdx_url(id, url = nil)
             return url unless url.blank?
-            return unless id
 
-            "https://spdx.org/licenses/#{id}.html"
+            Gitlab::LicenseScanning::PackageLicenses.url_for(id)
           end
         end
       end

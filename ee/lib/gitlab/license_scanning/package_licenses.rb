@@ -4,7 +4,11 @@ module Gitlab
   module LicenseScanning
     class PackageLicenses
       BATCH_SIZE = 700
-      UNKNOWN_LICENSE = "unknown"
+      UNKNOWN_LICENSE = {
+        spdx_identifier: "unknown",
+        name: "unknown",
+        url: nil
+      }.freeze
 
       def initialize(project:, components:)
         @components = components
@@ -20,6 +24,12 @@ module Gitlab
         return compressed_fetch if Feature.enabled?(:compressed_package_metadata_query, project)
 
         uncompressed_fetch
+      end
+
+      def self.url_for(spdx_id)
+        return if spdx_id.blank? || spdx_id == "unknown"
+
+        "https://spdx.org/licenses/#{spdx_id}.html"
       end
 
       private
@@ -130,12 +140,16 @@ module Gitlab
       end
 
       def licenses_with_names_for(license_ids:)
-        return [{ spdx_identifier: UNKNOWN_LICENSE, name: UNKNOWN_LICENSE }] if license_ids.blank?
+        return [UNKNOWN_LICENSE] if license_ids.blank?
 
         license_ids.map do |license_id|
           spdx_id = spdx_id_for(license_id: license_id)
 
-          { spdx_identifier: spdx_id, name: license_name_for(spdx_id: spdx_id) }
+          {
+            spdx_identifier: spdx_id,
+            name: license_name_for(spdx_id: spdx_id),
+            url: self.class.url_for(spdx_id)
+          }
         end
       end
 
@@ -172,7 +186,7 @@ module Gitlab
 
         all_records[key] = Hashie::Mash.new(
           purl_type: component.purl_type, name: component.name, version: component.version,
-          licenses: [{ spdx_identifier: UNKNOWN_LICENSE, name: UNKNOWN_LICENSE }])
+          licenses: [UNKNOWN_LICENSE])
       end
 
       # Takes an array of components containing purl_type, name, and version fields and returns an array

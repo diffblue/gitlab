@@ -99,15 +99,11 @@ module Sbom
           def map_from(license)
             return if license[:spdx_identifier] == "unknown"
 
-            license.slice(:name, :spdx_identifier).merge(url: url_for(license))
+            license.slice(:name, :spdx_identifier, :url)
           end
 
           def key_for(result)
             [result.name, result.version, result.purl_type]
-          end
-
-          def url_for(license)
-            "https://spdx.org/licenses/#{license[:spdx_identifier]}.html"
           end
         end
       end

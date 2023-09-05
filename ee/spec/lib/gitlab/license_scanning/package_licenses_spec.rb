@@ -58,18 +58,56 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
       context 'and components to fetch are not empty' do
         it 'returns only the items that matched the fetched components' do
           expect(fetch).to contain_exactly(
-            have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0", path: "",
-              licenses: contain_exactly(
-                { name: "Open LDAP Public License v2.1", spdx_identifier: "OLDAP-2.1" },
-                { name: "Open LDAP Public License v2.2", spdx_identifier: "OLDAP-2.2" })),
-            have_attributes(name: "camelcase", purl_type: "npm", version: "1.2.1", path: "",
-              licenses: [{ "name" => "Open LDAP Public License v2.1", "spdx_identifier" => "OLDAP-2.1" }]),
-            have_attributes(name: "camelcase", purl_type: "npm", version: "4.1.0", path: "package-lock.json",
-              licenses: [{ "name" => "Open LDAP Public License v2.2", "spdx_identifier" => "OLDAP-2.2" }]),
-            have_attributes(name: "cliui", purl_type: "npm", version: "2.1.0", path: "package-lock.json",
-              licenses: [{ "name" => "Open LDAP Public License v2.3", "spdx_identifier" => "OLDAP-2.3" }]),
-            have_attributes(name: "cliui", purl_type: "golang", version: "2.1.0", path: "package-lock.json",
-              licenses: [{ "name" => "Open LDAP Public License v2.6", "spdx_identifier" => "OLDAP-2.6" }])
+            have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0", path: "", licenses: contain_exactly(
+              {
+                name: "Open LDAP Public License v2.1",
+                spdx_identifier: "OLDAP-2.1",
+                url: "https://spdx.org/licenses/OLDAP-2.1.html"
+              },
+              {
+                name: "Open LDAP Public License v2.2",
+                spdx_identifier: "OLDAP-2.2",
+                url: "https://spdx.org/licenses/OLDAP-2.2.html"
+              }
+            )),
+            have_attributes(name: "camelcase", purl_type: "npm", version: "1.2.1", path: "", licenses: contain_exactly({
+              name: "Open LDAP Public License v2.1",
+              spdx_identifier: "OLDAP-2.1",
+              url: "https://spdx.org/licenses/OLDAP-2.1.html"
+            })),
+            have_attributes(
+              name: "camelcase",
+              purl_type: "npm",
+              version: "4.1.0",
+              path: "package-lock.json",
+              licenses: contain_exactly({
+                name: "Open LDAP Public License v2.2",
+                spdx_identifier: "OLDAP-2.2",
+                url: "https://spdx.org/licenses/OLDAP-2.2.html"
+              })
+            ),
+            have_attributes(
+              name: "cliui",
+              purl_type: "npm",
+              version: "2.1.0",
+              path: "package-lock.json",
+              licenses: contain_exactly({
+                name: "Open LDAP Public License v2.3",
+                spdx_identifier: "OLDAP-2.3",
+                url: "https://spdx.org/licenses/OLDAP-2.3.html"
+              })
+            ),
+            have_attributes(
+              name: "cliui",
+              purl_type: "golang",
+              version: "2.1.0",
+              path: "package-lock.json",
+              licenses: contain_exactly({
+                name: "Open LDAP Public License v2.6",
+                spdx_identifier: "OLDAP-2.6",
+                url: "https://spdx.org/licenses/OLDAP-2.6.html"
+              })
+            )
           )
         end
 
@@ -87,20 +125,63 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
 
           it 'returns elements in the same order as the components to fetch' do
             expect(fetch).to match([
-              have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0",
-                              licenses: contain_exactly(
-                                { name: "Open LDAP Public License v2.1", spdx_identifier: "OLDAP-2.1" },
-                                { name: "Open LDAP Public License v2.2", spdx_identifier: "OLDAP-2.2" })),
-              have_attributes(name: "package1-without-license", purl_type: "npm", version: "1.2.1",
-                licenses: [{ "name" => "unknown", "spdx_identifier" => "unknown" }]),
-              have_attributes(name: "camelcase", purl_type: "npm", version: "4.1.0",
-                licenses: [{ "name" => "Open LDAP Public License v2.2", "spdx_identifier" => "OLDAP-2.2" }]),
-              have_attributes(name: "package2-without-license", purl_type: "npm", version: "2.1.0",
-                licenses: [{ "name" => "unknown", "spdx_identifier" => "unknown" }]),
-              have_attributes(name: "cliui", purl_type: "golang", version: "2.1.0",
-                licenses: [{ "name" => "Open LDAP Public License v2.6", "spdx_identifier" => "OLDAP-2.6" }]),
-              have_attributes(name: "package3-without-license", purl_type: "golang", version: "2.1.0",
-                licenses: [{ "name" => "unknown", "spdx_identifier" => "unknown" }])
+              have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0", licenses: contain_exactly(
+                {
+                  name: "Open LDAP Public License v2.1",
+                  spdx_identifier: "OLDAP-2.1",
+                  url: "https://spdx.org/licenses/OLDAP-2.1.html"
+                },
+                {
+                  name: "Open LDAP Public License v2.2",
+                  spdx_identifier: "OLDAP-2.2",
+                  url: "https://spdx.org/licenses/OLDAP-2.2.html"
+                }
+              )),
+              have_attributes(
+                name: "package1-without-license",
+                purl_type: "npm",
+                version: "1.2.1",
+                licenses: contain_exactly({
+                  name: "unknown",
+                  spdx_identifier: "unknown",
+                  url: nil
+                })
+              ),
+              have_attributes(name: "camelcase", purl_type: "npm", version: "4.1.0", licenses: contain_exactly({
+                name: "Open LDAP Public License v2.2",
+                spdx_identifier: "OLDAP-2.2",
+                url: "https://spdx.org/licenses/OLDAP-2.2.html"
+              })),
+              have_attributes(
+                name: "package2-without-license",
+                purl_type: "npm",
+                version: "2.1.0",
+                licenses: contain_exactly({
+                  name: "unknown",
+                  spdx_identifier: "unknown",
+                  url: nil
+                })
+              ),
+              have_attributes(
+                name: "cliui",
+                purl_type: "golang",
+                version: "2.1.0",
+                licenses: contain_exactly({
+                  name: "Open LDAP Public License v2.6",
+                  spdx_identifier: "OLDAP-2.6",
+                  url: "https://spdx.org/licenses/OLDAP-2.6.html"
+                })
+              ),
+              have_attributes(
+                name: "package3-without-license",
+                purl_type: "golang",
+                version: "2.1.0",
+                licenses: contain_exactly({
+                  name: "unknown",
+                  spdx_identifier: "unknown",
+                  url: nil
+                })
+              )
             ])
           end
         end
@@ -130,18 +211,38 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
 
           it 'still returns only the items that matched the fetched components' do
             expect(fetch).to contain_exactly(
-              have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0",
-                              licenses: contain_exactly(
-                                { name: "Open LDAP Public License v2.1", spdx_identifier: "OLDAP-2.1" },
-                                { name: "Open LDAP Public License v2.2", spdx_identifier: "OLDAP-2.2" })),
-              have_attributes(name: "camelcase", purl_type: "npm", version: "1.2.1",
-                licenses: [{ "name" => "Open LDAP Public License v2.1", "spdx_identifier" => "OLDAP-2.1" }]),
-              have_attributes(name: "camelcase", purl_type: "npm", version: "4.1.0",
-                licenses: [{ "name" => "Open LDAP Public License v2.2", "spdx_identifier" => "OLDAP-2.2" }]),
-              have_attributes(name: "cliui", purl_type: "npm", version: "2.1.0",
-                licenses: [{ "name" => "Open LDAP Public License v2.3", "spdx_identifier" => "OLDAP-2.3" }]),
-              have_attributes(name: "cliui", purl_type: "golang", version: "2.1.0",
-                licenses: [{ "name" => "Open LDAP Public License v2.6", "spdx_identifier" => "OLDAP-2.6" }])
+              have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0", licenses: contain_exactly(
+                {
+                  name: "Open LDAP Public License v2.1",
+                  spdx_identifier: "OLDAP-2.1",
+                  url: "https://spdx.org/licenses/OLDAP-2.1.html"
+                },
+                {
+                  name: "Open LDAP Public License v2.2",
+                  spdx_identifier: "OLDAP-2.2",
+                  url: "https://spdx.org/licenses/OLDAP-2.2.html"
+                }
+              )),
+              have_attributes(name: "camelcase", purl_type: "npm", version: "1.2.1", licenses: contain_exactly({
+                name: "Open LDAP Public License v2.1",
+                spdx_identifier: "OLDAP-2.1",
+                url: "https://spdx.org/licenses/OLDAP-2.1.html"
+              })),
+              have_attributes(name: "camelcase", purl_type: "npm", version: "4.1.0", licenses: contain_exactly({
+                name: "Open LDAP Public License v2.2",
+                spdx_identifier: "OLDAP-2.2",
+                url: "https://spdx.org/licenses/OLDAP-2.2.html"
+              })),
+              have_attributes(name: "cliui", purl_type: "npm", version: "2.1.0", licenses: contain_exactly({
+                name: "Open LDAP Public License v2.3",
+                spdx_identifier: "OLDAP-2.3",
+                url: "https://spdx.org/licenses/OLDAP-2.3.html"
+              })),
+              have_attributes(name: "cliui", purl_type: "golang", version: "2.1.0", licenses: contain_exactly({
+                name: "Open LDAP Public License v2.6",
+                spdx_identifier: "OLDAP-2.6",
+                url: "https://spdx.org/licenses/OLDAP-2.6.html"
+              }))
             )
           end
         end
@@ -169,26 +270,60 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
               components: components_to_fetch + additional_components_to_fetch).fetch
 
             expect(fetch).to contain_exactly(
-              have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0",
-                              licenses: contain_exactly(
-                                { name: "Open LDAP Public License v2.1", spdx_identifier: "OLDAP-2.1" },
-                                { name: "Open LDAP Public License v2.2", spdx_identifier: "OLDAP-2.2" })),
-              have_attributes(name: "camelcase", purl_type: "npm", version: "1.2.1",
-                licenses: [{ "name" => "Open LDAP Public License v2.1", "spdx_identifier" => "OLDAP-2.1" }]),
-              have_attributes(name: "camelcase", purl_type: "npm", version: "4.1.0",
-                licenses: [{ "name" => "Open LDAP Public License v2.2", "spdx_identifier" => "OLDAP-2.2" }]),
-              have_attributes(name: "cliui", purl_type: "npm", version: "2.1.0",
-                licenses: [{ "name" => "Open LDAP Public License v2.3", "spdx_identifier" => "OLDAP-2.3" }]),
-              have_attributes(name: "cliui", purl_type: "golang", version: "2.1.0",
-                licenses: [{ "name" => "Open LDAP Public License v2.6", "spdx_identifier" => "OLDAP-2.6" }]),
-              have_attributes(name: "jst", purl_type: "npm", version: "3.0.2",
-                              licenses: contain_exactly(
-                                { name: "Open LDAP Public License v2.4", spdx_identifier: "OLDAP-2.4" },
-                                { name: "Open LDAP Public License v2.5", spdx_identifier: "OLDAP-2.5" })),
-              have_attributes(name: "jsbn", purl_type: "npm", version: "0.1.1",
-                licenses: [{ "name" => "Open LDAP Public License v2.4", "spdx_identifier" => "OLDAP-2.4" }]),
-              have_attributes(name: "jsdom", purl_type: "npm", version: "11.12.0",
-                licenses: [{ "name" => "Open LDAP Public License v2.5", "spdx_identifier" => "OLDAP-2.5" }])
+              have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0", licenses: contain_exactly(
+                {
+                  name: "Open LDAP Public License v2.1",
+                  spdx_identifier: "OLDAP-2.1",
+                  url: "https://spdx.org/licenses/OLDAP-2.1.html"
+                },
+                {
+                  name: "Open LDAP Public License v2.2",
+                  spdx_identifier: "OLDAP-2.2",
+                  url: "https://spdx.org/licenses/OLDAP-2.2.html"
+                }
+              )),
+              have_attributes(name: "camelcase", purl_type: "npm", version: "1.2.1", licenses: contain_exactly({
+                name: "Open LDAP Public License v2.1",
+                spdx_identifier: "OLDAP-2.1",
+                url: "https://spdx.org/licenses/OLDAP-2.1.html"
+              })),
+              have_attributes(name: "camelcase", purl_type: "npm", version: "4.1.0", licenses: contain_exactly({
+                name: "Open LDAP Public License v2.2",
+                spdx_identifier: "OLDAP-2.2",
+                url: "https://spdx.org/licenses/OLDAP-2.2.html"
+              })),
+              have_attributes(name: "cliui", purl_type: "npm", version: "2.1.0", licenses: contain_exactly({
+                name: "Open LDAP Public License v2.3",
+                spdx_identifier: "OLDAP-2.3",
+                url: "https://spdx.org/licenses/OLDAP-2.3.html"
+              })),
+              have_attributes(name: "cliui", purl_type: "golang", version: "2.1.0", licenses: contain_exactly({
+                name: "Open LDAP Public License v2.6",
+                spdx_identifier: "OLDAP-2.6",
+                url: "https://spdx.org/licenses/OLDAP-2.6.html"
+              })),
+              have_attributes(name: "jst", purl_type: "npm", version: "3.0.2", licenses: contain_exactly(
+                {
+                  name: "Open LDAP Public License v2.4",
+                  spdx_identifier: "OLDAP-2.4",
+                  url: "https://spdx.org/licenses/OLDAP-2.4.html"
+                },
+                {
+                  name: "Open LDAP Public License v2.5",
+                  spdx_identifier: "OLDAP-2.5",
+                  url: "https://spdx.org/licenses/OLDAP-2.5.html"
+                }
+              )),
+              have_attributes(name: "jsbn", purl_type: "npm", version: "0.1.1", licenses: contain_exactly({
+                name: "Open LDAP Public License v2.4",
+                spdx_identifier: "OLDAP-2.4",
+                url: "https://spdx.org/licenses/OLDAP-2.4.html"
+              })),
+              have_attributes(name: "jsdom", purl_type: "npm", version: "11.12.0", licenses: contain_exactly({
+                name: "Open LDAP Public License v2.5",
+                spdx_identifier: "OLDAP-2.5",
+                url: "https://spdx.org/licenses/OLDAP-2.5.html"
+              }))
             )
           end
 
@@ -213,12 +348,21 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
 
           it 'returns "unknown" license for all the matching components' do
             expect(fetch).to contain_exactly(
-              have_attributes(name: "jstom", purl_type: nil, version: "11.12.0",
-                licenses: [{ "name" => "unknown", "spdx_identifier" => "unknown" }]),
-              have_attributes(name: nil, purl_type: "npm", version: "11.12.0",
-                licenses: [{ "name" => "unknown", "spdx_identifier" => "unknown" }]),
-              have_attributes(name: nil, purl_type: nil, version: nil,
-                licenses: [{ "name" => "unknown", "spdx_identifier" => "unknown" }])
+              have_attributes(name: "jstom", purl_type: nil, version: "11.12.0", licenses: contain_exactly({
+                name: "unknown",
+                spdx_identifier: "unknown",
+                url: nil
+              })),
+              have_attributes(name: nil, purl_type: "npm", version: "11.12.0", licenses: contain_exactly({
+                name: "unknown",
+                spdx_identifier: "unknown",
+                url: nil
+              })),
+              have_attributes(name: nil, purl_type: nil, version: nil, licenses: contain_exactly({
+                name: "unknown",
+                spdx_identifier: "unknown",
+                url: nil
+              }))
             )
           end
         end
@@ -238,10 +382,16 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
 
           it 'returns "unknown" license for all the matching components' do
             expect(fetch).to contain_exactly(
-              have_attributes(name: "pg", purl_type: "gem", version: "1.2.3",
-                licenses: [{ "name" => "unknown", "spdx_identifier" => "unknown" }]),
-              have_attributes(name: "JUnit", purl_type: "maven", version: "4.5.6",
-                licenses: [{ "name" => "unknown", "spdx_identifier" => "unknown" }])
+              have_attributes(name: "pg", purl_type: "gem", version: "1.2.3", licenses: contain_exactly({
+                name: "unknown",
+                spdx_identifier: "unknown",
+                url: nil
+              })),
+              have_attributes(name: "JUnit", purl_type: "maven", version: "4.5.6", licenses: contain_exactly({
+                name: "unknown",
+                spdx_identifier: "unknown",
+                url: nil
+              }))
             )
           end
         end
@@ -263,7 +413,7 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
             it "returns 'unknown' as the license" do
               expect(fetch).to eq([
                 "name" => name, "purl_type" => purl_type, "version" => version,
-                "licenses" => [{ "name" => "unknown", "spdx_identifier" => "unknown" }]
+                "licenses" => [{ "name" => "unknown", "spdx_identifier" => "unknown", "url" => nil }]
               ])
             end
           end
@@ -285,7 +435,11 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
             it "returns the default licenses" do
               expect(fetch).to eq([
                 "name" => "beego", "purl_type" => "golang", "version" => "invalid-version", "path" => "",
-                "licenses" => [{ "name" => "Default License 2.1", "spdx_identifier" => "DEFAULT-2.1" }]
+                "licenses" => [{
+                  "name" => "Default License 2.1",
+                  "spdx_identifier" => "DEFAULT-2.1",
+                  "url" => "https://spdx.org/licenses/DEFAULT-2.1.html"
+                }]
               ])
             end
           end
@@ -298,7 +452,11 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
             it "returns the default licenses" do
               expect(fetch).to eq([
                 "name" => "beego", "purl_type" => "golang", "version" => "123.456.789", "path" => "",
-                "licenses" => [{ "name" => "Default License 2.1", "spdx_identifier" => "DEFAULT-2.1" }]
+                "licenses" => [{
+                  "name" => "Default License 2.1",
+                  "spdx_identifier" => "DEFAULT-2.1",
+                  "url" => "https://spdx.org/licenses/DEFAULT-2.1.html"
+                }]
               ])
             end
           end
@@ -320,8 +478,11 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
 
           it 'returns spdx identifier instead of license name' do
             expect(fetch).to contain_exactly(
-              have_attributes(name: 'beego_custom', purl_type: 'golang', version: 'v1.10.0',
-                licenses: [{ "name" => "CUSTOM-0.1", "spdx_identifier" => "CUSTOM-0.1" }])
+              have_attributes(name: 'beego_custom', purl_type: 'golang', version: 'v1.10.0', licenses: [{
+                "name" => "CUSTOM-0.1",
+                "spdx_identifier" => "CUSTOM-0.1",
+                "url" => "https://spdx.org/licenses/CUSTOM-0.1.html"
+              }])
             )
           end
         end
@@ -365,18 +526,56 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
       context 'and components to fetch are not empty' do
         it 'returns only the items that matched the fetched components' do
           expect(fetch).to contain_exactly(
-            have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0", path: "",
-              licenses: contain_exactly(
-                { name: "Open LDAP Public License v2.1", spdx_identifier: "OLDAP-2.1" },
-                { name: "Open LDAP Public License v2.2", spdx_identifier: "OLDAP-2.2" })),
-            have_attributes(name: "camelcase", purl_type: "npm", version: "1.2.1", path: "",
-              licenses: [{ "name" => "Open LDAP Public License v2.1", "spdx_identifier" => "OLDAP-2.1" }]),
-            have_attributes(name: "camelcase", purl_type: "npm", version: "4.1.0", path: "package-lock.json",
-              licenses: [{ "name" => "Open LDAP Public License v2.2", "spdx_identifier" => "OLDAP-2.2" }]),
-            have_attributes(name: "cliui", purl_type: "npm", version: "2.1.0", path: "package-lock.json",
-              licenses: [{ "name" => "Open LDAP Public License v2.3", "spdx_identifier" => "OLDAP-2.3" }]),
-            have_attributes(name: "cliui", purl_type: "golang", version: "2.1.0", path: "package-lock.json",
-              licenses: [{ "name" => "Open LDAP Public License v2.6", "spdx_identifier" => "OLDAP-2.6" }])
+            have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0", path: "", licenses: contain_exactly(
+              {
+                name: "Open LDAP Public License v2.1",
+                spdx_identifier: "OLDAP-2.1",
+                url: "https://spdx.org/licenses/OLDAP-2.1.html"
+              },
+              {
+                name: "Open LDAP Public License v2.2",
+                spdx_identifier: "OLDAP-2.2",
+                url: "https://spdx.org/licenses/OLDAP-2.2.html"
+              }
+            )),
+            have_attributes(name: "camelcase", purl_type: "npm", version: "1.2.1", path: "", licenses: contain_exactly({
+              name: "Open LDAP Public License v2.1",
+              spdx_identifier: "OLDAP-2.1",
+              url: "https://spdx.org/licenses/OLDAP-2.1.html"
+            })),
+            have_attributes(
+              name: "camelcase",
+              purl_type: "npm",
+              version: "4.1.0",
+              path: "package-lock.json",
+              licenses: contain_exactly({
+                name: "Open LDAP Public License v2.2",
+                spdx_identifier: "OLDAP-2.2",
+                url: "https://spdx.org/licenses/OLDAP-2.2.html"
+              })
+            ),
+            have_attributes(
+              name: "cliui",
+              purl_type: "npm",
+              version: "2.1.0",
+              path: "package-lock.json",
+              licenses: contain_exactly({
+                name: "Open LDAP Public License v2.3",
+                spdx_identifier: "OLDAP-2.3",
+                url: "https://spdx.org/licenses/OLDAP-2.3.html"
+              })
+            ),
+            have_attributes(
+              name: "cliui",
+              purl_type: "golang",
+              version: "2.1.0",
+              path: "package-lock.json",
+              licenses: contain_exactly({
+                name: "Open LDAP Public License v2.6",
+                spdx_identifier: "OLDAP-2.6",
+                url: "https://spdx.org/licenses/OLDAP-2.6.html"
+              })
+            )
           )
         end
 
@@ -394,20 +593,58 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
 
           it 'returns elements in the same order as the components to fetch' do
             expect(fetch).to match([
-              have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0",
-                              licenses: contain_exactly(
-                                { name: "Open LDAP Public License v2.1", spdx_identifier: "OLDAP-2.1" },
-                                { name: "Open LDAP Public License v2.2", spdx_identifier: "OLDAP-2.2" })),
-              have_attributes(name: "package1-without-license", purl_type: "npm", version: "1.2.1",
-                licenses: [{ "name" => "unknown", "spdx_identifier" => "unknown" }]),
-              have_attributes(name: "camelcase", purl_type: "npm", version: "4.1.0",
-                licenses: [{ "name" => "Open LDAP Public License v2.2", "spdx_identifier" => "OLDAP-2.2" }]),
-              have_attributes(name: "package2-without-license", purl_type: "npm", version: "2.1.0",
-                licenses: [{ "name" => "unknown", "spdx_identifier" => "unknown" }]),
-              have_attributes(name: "cliui", purl_type: "golang", version: "2.1.0",
-                licenses: [{ "name" => "Open LDAP Public License v2.6", "spdx_identifier" => "OLDAP-2.6" }]),
-              have_attributes(name: "package3-without-license", purl_type: "golang", version: "2.1.0",
-                licenses: [{ "name" => "unknown", "spdx_identifier" => "unknown" }])
+              have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0", licenses: contain_exactly(
+                {
+                  name: "Open LDAP Public License v2.1",
+                  spdx_identifier: "OLDAP-2.1",
+                  url: "https://spdx.org/licenses/OLDAP-2.1.html"
+                },
+                {
+                  name: "Open LDAP Public License v2.2",
+                  spdx_identifier: "OLDAP-2.2",
+                  url: "https://spdx.org/licenses/OLDAP-2.2.html"
+                }
+              )),
+              have_attributes(
+                name: "package1-without-license",
+                purl_type: "npm",
+                version: "1.2.1",
+                licenses: contain_exactly({
+                  name: "unknown",
+                  spdx_identifier: "unknown",
+                  url: nil
+                })
+              ),
+              have_attributes(name: "camelcase", purl_type: "npm", version: "4.1.0", licenses: contain_exactly({
+                name: "Open LDAP Public License v2.2",
+                spdx_identifier: "OLDAP-2.2",
+                url: "https://spdx.org/licenses/OLDAP-2.2.html"
+              })),
+              have_attributes(
+                name: "package2-without-license",
+                purl_type: "npm",
+                version: "2.1.0",
+                licenses: contain_exactly({
+                  name: "unknown",
+                  spdx_identifier: "unknown",
+                  url: nil
+                })
+              ),
+              have_attributes(name: "cliui", purl_type: "golang", version: "2.1.0", licenses: contain_exactly({
+                name: "Open LDAP Public License v2.6",
+                spdx_identifier: "OLDAP-2.6",
+                url: "https://spdx.org/licenses/OLDAP-2.6.html"
+              })),
+              have_attributes(
+                name: "package3-without-license",
+                purl_type: "golang",
+                version: "2.1.0",
+                licenses: contain_exactly({
+                  name: "unknown",
+                  spdx_identifier: "unknown",
+                  url: nil
+                })
+              )
             ])
           end
         end
@@ -434,18 +671,38 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
 
           it 'still returns only the items that matched the fetched components' do
             expect(fetch).to contain_exactly(
-              have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0",
-                              licenses: contain_exactly(
-                                { name: "Open LDAP Public License v2.1", spdx_identifier: "OLDAP-2.1" },
-                                { name: "Open LDAP Public License v2.2", spdx_identifier: "OLDAP-2.2" })),
-              have_attributes(name: "camelcase", purl_type: "npm", version: "1.2.1",
-                licenses: [{ "name" => "Open LDAP Public License v2.1", "spdx_identifier" => "OLDAP-2.1" }]),
-              have_attributes(name: "camelcase", purl_type: "npm", version: "4.1.0",
-                licenses: [{ "name" => "Open LDAP Public License v2.2", "spdx_identifier" => "OLDAP-2.2" }]),
-              have_attributes(name: "cliui", purl_type: "npm", version: "2.1.0",
-                licenses: [{ "name" => "Open LDAP Public License v2.3", "spdx_identifier" => "OLDAP-2.3" }]),
-              have_attributes(name: "cliui", purl_type: "golang", version: "2.1.0",
-                licenses: [{ "name" => "Open LDAP Public License v2.6", "spdx_identifier" => "OLDAP-2.6" }])
+              have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0", licenses: contain_exactly(
+                {
+                  name: "Open LDAP Public License v2.1",
+                  spdx_identifier: "OLDAP-2.1",
+                  url: "https://spdx.org/licenses/OLDAP-2.1.html"
+                },
+                {
+                  name: "Open LDAP Public License v2.2",
+                  spdx_identifier: "OLDAP-2.2",
+                  url: "https://spdx.org/licenses/OLDAP-2.2.html"
+                }
+              )),
+              have_attributes(name: "camelcase", purl_type: "npm", version: "1.2.1", licenses: contain_exactly({
+                name: "Open LDAP Public License v2.1",
+                spdx_identifier: "OLDAP-2.1",
+                url: "https://spdx.org/licenses/OLDAP-2.1.html"
+              })),
+              have_attributes(name: "camelcase", purl_type: "npm", version: "4.1.0", licenses: contain_exactly({
+                name: "Open LDAP Public License v2.2",
+                spdx_identifier: "OLDAP-2.2",
+                url: "https://spdx.org/licenses/OLDAP-2.2.html"
+              })),
+              have_attributes(name: "cliui", purl_type: "npm", version: "2.1.0", licenses: contain_exactly({
+                name: "Open LDAP Public License v2.3",
+                spdx_identifier: "OLDAP-2.3",
+                url: "https://spdx.org/licenses/OLDAP-2.3.html"
+              })),
+              have_attributes(name: "cliui", purl_type: "golang", version: "2.1.0", licenses: contain_exactly({
+                name: "Open LDAP Public License v2.6",
+                spdx_identifier: "OLDAP-2.6",
+                url: "https://spdx.org/licenses/OLDAP-2.6.html"
+              }))
             )
           end
         end
@@ -473,26 +730,60 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
               components: components_to_fetch + additional_components_to_fetch).fetch
 
             expect(fetch).to contain_exactly(
-              have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0",
-                              licenses: contain_exactly(
-                                { name: "Open LDAP Public License v2.1", spdx_identifier: "OLDAP-2.1" },
-                                { name: "Open LDAP Public License v2.2", spdx_identifier: "OLDAP-2.2" })),
-              have_attributes(name: "camelcase", purl_type: "npm", version: "1.2.1",
-                licenses: [{ "name" => "Open LDAP Public License v2.1", "spdx_identifier" => "OLDAP-2.1" }]),
-              have_attributes(name: "camelcase", purl_type: "npm", version: "4.1.0",
-                licenses: [{ "name" => "Open LDAP Public License v2.2", "spdx_identifier" => "OLDAP-2.2" }]),
-              have_attributes(name: "cliui", purl_type: "npm", version: "2.1.0",
-                licenses: [{ "name" => "Open LDAP Public License v2.3", "spdx_identifier" => "OLDAP-2.3" }]),
-              have_attributes(name: "cliui", purl_type: "golang", version: "2.1.0",
-                licenses: [{ "name" => "Open LDAP Public License v2.6", "spdx_identifier" => "OLDAP-2.6" }]),
-              have_attributes(name: "jst", purl_type: "npm", version: "3.0.2",
-                              licenses: contain_exactly(
-                                { name: "Open LDAP Public License v2.4", spdx_identifier: "OLDAP-2.4" },
-                                { name: "Open LDAP Public License v2.5", spdx_identifier: "OLDAP-2.5" })),
-              have_attributes(name: "jsbn", purl_type: "npm", version: "0.1.1",
-                licenses: [{ "name" => "Open LDAP Public License v2.4", "spdx_identifier" => "OLDAP-2.4" }]),
-              have_attributes(name: "jsdom", purl_type: "npm", version: "11.12.0",
-                licenses: [{ "name" => "Open LDAP Public License v2.5", "spdx_identifier" => "OLDAP-2.5" }])
+              have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0", licenses: contain_exactly(
+                {
+                  name: "Open LDAP Public License v2.1",
+                  spdx_identifier: "OLDAP-2.1",
+                  url: "https://spdx.org/licenses/OLDAP-2.1.html"
+                },
+                {
+                  name: "Open LDAP Public License v2.2",
+                  spdx_identifier: "OLDAP-2.2",
+                  url: "https://spdx.org/licenses/OLDAP-2.2.html"
+                }
+              )),
+              have_attributes(name: "camelcase", purl_type: "npm", version: "1.2.1", licenses: contain_exactly({
+                name: "Open LDAP Public License v2.1",
+                spdx_identifier: "OLDAP-2.1",
+                url: "https://spdx.org/licenses/OLDAP-2.1.html"
+              })),
+              have_attributes(name: "camelcase", purl_type: "npm", version: "4.1.0", licenses: contain_exactly({
+                name: "Open LDAP Public License v2.2",
+                spdx_identifier: "OLDAP-2.2",
+                url: "https://spdx.org/licenses/OLDAP-2.2.html"
+              })),
+              have_attributes(name: "cliui", purl_type: "npm", version: "2.1.0", licenses: contain_exactly({
+                name: "Open LDAP Public License v2.3",
+                spdx_identifier: "OLDAP-2.3",
+                url: "https://spdx.org/licenses/OLDAP-2.3.html"
+              })),
+              have_attributes(name: "cliui", purl_type: "golang", version: "2.1.0", licenses: contain_exactly({
+                name: "Open LDAP Public License v2.6",
+                spdx_identifier: "OLDAP-2.6",
+                url: "https://spdx.org/licenses/OLDAP-2.6.html"
+              })),
+              have_attributes(name: "jst", purl_type: "npm", version: "3.0.2", licenses: contain_exactly(
+                {
+                  name: "Open LDAP Public License v2.4",
+                  spdx_identifier: "OLDAP-2.4",
+                  url: "https://spdx.org/licenses/OLDAP-2.4.html"
+                },
+                {
+                  name: "Open LDAP Public License v2.5",
+                  spdx_identifier: "OLDAP-2.5",
+                  url: "https://spdx.org/licenses/OLDAP-2.5.html"
+                }
+              )),
+              have_attributes(name: "jsbn", purl_type: "npm", version: "0.1.1", licenses: contain_exactly({
+                name: "Open LDAP Public License v2.4",
+                spdx_identifier: "OLDAP-2.4",
+                url: "https://spdx.org/licenses/OLDAP-2.4.html"
+              })),
+              have_attributes(name: "jsdom", purl_type: "npm", version: "11.12.0", licenses: contain_exactly({
+                name: "Open LDAP Public License v2.5",
+                spdx_identifier: "OLDAP-2.5",
+                url: "https://spdx.org/licenses/OLDAP-2.5.html"
+              }))
             )
           end
 
@@ -517,12 +808,21 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
 
           it 'returns all the items that matched the fetched components with unknown licenses' do
             expect(fetch).to contain_exactly(
-              have_attributes(name: "jstom", purl_type: nil, version: "11.12.0",
-                licenses: [{ "name" => "unknown", "spdx_identifier" => "unknown" }]),
-              have_attributes(name: nil, purl_type: "npm", version: "11.12.0",
-                licenses: [{ "name" => "unknown", "spdx_identifier" => "unknown" }]),
-              have_attributes(name: nil, purl_type: nil, version: nil,
-                licenses: [{ "name" => "unknown", "spdx_identifier" => "unknown" }])
+              have_attributes(name: "jstom", purl_type: nil, version: "11.12.0", licenses: contain_exactly({
+                name: "unknown",
+                spdx_identifier: "unknown",
+                url: nil
+              })),
+              have_attributes(name: nil, purl_type: "npm", version: "11.12.0", licenses: contain_exactly({
+                name: "unknown",
+                spdx_identifier: "unknown",
+                url: nil
+              })),
+              have_attributes(name: nil, purl_type: nil, version: nil, licenses: contain_exactly({
+                name: "unknown",
+                spdx_identifier: "unknown",
+                url: nil
+              }))
             )
           end
         end
@@ -542,7 +842,11 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
             it "returns 'unknown' as the license" do
               expect(fetch).to eq([
                 "name" => name, "purl_type" => purl_type, "version" => version,
-                "licenses" => [{ "name" => "unknown", "spdx_identifier" => "unknown" }]
+                "licenses" => [{
+                  "name" => "unknown",
+                  "spdx_identifier" => "unknown",
+                  "url" => nil
+                }]
               ])
             end
           end
@@ -563,8 +867,11 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
 
           it 'returns spdx identifier instead of license name' do
             expect(fetch).to contain_exactly(
-              have_attributes(name: 'beego_custom', purl_type: 'golang', version: 'v1.10.0',
-                licenses: [{ "name" => "CUSTOM-0.1", "spdx_identifier" => "CUSTOM-0.1" }])
+              have_attributes(name: 'beego_custom', purl_type: 'golang', version: 'v1.10.0', licenses: [{
+                name: "CUSTOM-0.1",
+                spdx_identifier: "CUSTOM-0.1",
+                url: "https://spdx.org/licenses/CUSTOM-0.1.html"
+              }])
             )
           end
         end
