@@ -4,13 +4,18 @@ module Llm
   class CompletionWorker
     include ApplicationWorker
 
+    MAX_RUN_TIME = 20.seconds
+
     idempotent!
     data_consistency :delayed
     feature_category :ai_abstraction_layer
     urgency :low
     deduplicate :until_executed
+    loggable_arguments 0, 1, 2, 3
 
     def perform(user_id, resource_id, resource_class, ai_action_name, options = {})
+      start_time = ::Gitlab::Metrics::System.monotonic_time
+
       logger.debug(
         message: "Performing CompletionWorker",
         user_id: user_id,
@@ -40,6 +45,7 @@ module Llm
       logger.debug(message: "Getting Completion Service from factory", class_name: ai_completion.class.name)
       response = ai_completion.execute(user, resource, options)
       update_error_rate(ai_action_name, response)
+      update_duration_metric(ai_action_name, ::Gitlab::Metrics::System.monotonic_time - start_time)
     rescue StandardError => err
       update_error_rate(ai_action_name)
 
@@ -60,6 +66,20 @@ module Llm
           service_class: completion[:service_class].name
         },
         error: !success
+      )
+    end
+
+    def update_duration_metric(ai_action_name, duration)
+      completion = ::Gitlab::Llm::CompletionsFactory::COMPLETIONS[ai_action_name.to_sym]
+      return unless completion
+
+      labels = {
+        feature_category: completion[:feature_category],
+        service_class: completion[:service_class].name
+      }
+      Gitlab::Metrics::Sli::Apdex[:llm_completion].increment(
+        labels: labels,
+        success: duration <= MAX_RUN_TIME
       )
     end
 

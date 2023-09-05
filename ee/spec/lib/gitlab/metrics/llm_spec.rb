@@ -13,6 +13,10 @@ RSpec.describe Gitlab::Metrics::Llm, feature_category: :ai_abstraction_layer do
         :llm_client_request,
         a_kind_of(Array)
       )
+      expect(Gitlab::Metrics::Sli::Apdex).to receive(:initialize_sli).with(
+        :llm_completion,
+        a_kind_of(Array)
+      )
 
       described_class.initialize_slis!
     end
