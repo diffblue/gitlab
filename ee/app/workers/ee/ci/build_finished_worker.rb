@@ -16,6 +16,8 @@ module EE
         if ::Gitlab.com? && build.has_security_reports?
           ::Security::TrackSecureScansWorker.perform_async(build.id)
         end
+
+        ::Ci::InstanceRunnerFailedJobs.track(build) if build.failed?
       end
 
       private
