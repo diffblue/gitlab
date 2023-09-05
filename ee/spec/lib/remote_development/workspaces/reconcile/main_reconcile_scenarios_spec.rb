@@ -206,18 +206,24 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, 'Partial Update S
             current_actual_state = actual_state_update_fixture_args[1].to_s.camelize
             workspace_exists = actual_state_update_fixture_args[2]
             deployment_resource_version_from_agent = (deployment_resource_version_from_agent.to_i + 1).to_s
+            workspace_variables_env_var = get_workspace_variables_env_var(
+              workspace_variables: workspace.workspace_variables
+            )
+            workspace_variables_file = get_workspace_variables_file(
+              workspace_variables: workspace.workspace_variables
+            )
             [
               create_workspace_agent_info_hash(
                 workspace_id: workspace.id,
                 workspace_name: workspace.name,
                 workspace_namespace: workspace.namespace,
+                workspace_variables_env_var: workspace_variables_env_var,
+                workspace_variables_file: workspace_variables_file,
                 agent_id: workspace.agent.id,
                 resource_version: deployment_resource_version_from_agent,
                 current_actual_state: current_actual_state,
                 previous_actual_state: previous_actual_state,
-                workspace_exists: workspace_exists,
-                user_name: user.name,
-                user_email: user.email
+                workspace_exists: workspace_exists
               )
             ]
           else

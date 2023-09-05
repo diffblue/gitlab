@@ -72,6 +72,12 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
         id = workspace.id
         name = workspace.name
         namespace = workspace.namespace
+        workspace_variables_env_var = get_workspace_variables_env_var(
+          workspace_variables: workspace.workspace_variables
+        )
+        workspace_variables_file = get_workspace_variables_file(
+          workspace_variables: workspace.workspace_variables
+        )
 
         # ASSERT ON NEW WORKSPACE IN LIST
         page.find('td', text: name)
@@ -83,11 +89,22 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
         expect(page).to have_button('Terminate')
 
         # SIMULATE FIRST POLL FROM AGENTK TO PICK UP NEW WORKSPACE
-        simulate_first_poll(id: id, name: name, namespace: namespace)
+        simulate_first_poll(
+          id: id,
+          name: name,
+          namespace: namespace,
+          workspace_variables_env_var: workspace_variables_env_var,
+          workspace_variables_file: workspace_variables_file
+        )
 
         # SIMULATE SECOND POLL FROM AGENTK TO UPDATE WORKSPACE TO RUNNING STATE
-
-        simulate_second_poll(id: id, name: name, namespace: namespace)
+        simulate_second_poll(
+          id: id,
+          name: name,
+          namespace: namespace,
+          workspace_variables_env_var: workspace_variables_env_var,
+          workspace_variables_file: workspace_variables_file
+        )
 
         # ASSERT WORKSPACE SHOWS RUNNING STATE IN UI AND UPDATES URL
         expect_workspace_state_indicator(RemoteDevelopment::Workspaces::States::RUNNING)
@@ -101,8 +118,13 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
         click_button 'Stop'
 
         # SIMULATE THIRD POLL FROM AGENTK TO UPDATE WORKSPACE TO STOPPING STATE
-
-        simulate_third_poll(id: id, name: name, namespace: namespace)
+        simulate_third_poll(
+          id: id,
+          name: name,
+          namespace: namespace,
+          workspace_variables_env_var: workspace_variables_env_var,
+          workspace_variables_file: workspace_variables_file
+        )
 
         # ASSERT WORKSPACE SHOWS STOPPING STATE IN UI
         expect_workspace_state_indicator(RemoteDevelopment::Workspaces::States::STOPPING)
@@ -112,8 +134,13 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
         expect(page).to have_button('Terminate')
 
         # SIMULATE FOURTH POLL FROM AGENTK TO UPDATE WORKSPACE TO STOPPED STATE
-
-        simulate_fourth_poll(id: id, name: name, namespace: namespace)
+        simulate_fourth_poll(
+          id: id,
+          name: name,
+          namespace: namespace,
+          workspace_variables_env_var: workspace_variables_env_var,
+          workspace_variables_file: workspace_variables_file
+        )
 
         # ASSERT WORKSPACE SHOWS STOPPED STATE IN UI
         expect_workspace_state_indicator(RemoteDevelopment::Workspaces::States::STOPPED)
@@ -123,7 +150,13 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
         expect(page).to have_button('Terminate')
       end
 
-      def simulate_first_poll(id:, name:, namespace:)
+      def simulate_first_poll(
+        id:,
+        name:,
+        namespace:,
+        workspace_variables_env_var:,
+        workspace_variables_file:
+      )
         # SIMULATE FIRST POLL REQUEST FROM AGENTK TO GET NEW WORKSPACE
 
         reconcile_post_response = simulate_agentk_reconcile_post(workspace_agent_infos: [])
@@ -145,17 +178,24 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
           workspace_id: id,
           workspace_name: name,
           workspace_namespace: namespace,
+          workspace_variables_env_var: workspace_variables_env_var,
+          workspace_variables_file: workspace_variables_file,
           agent_id: agent.id,
           started: true,
-          user_name: user.name,
-          user_email: user.email
+          include_secrets: true
         )
 
         config_to_apply = info.fetch(:config_to_apply)
         expect(config_to_apply).to eq(expected_config_to_apply)
       end
 
-      def simulate_second_poll(id:, name:, namespace:)
+      def simulate_second_poll(
+        id:,
+        name:,
+        namespace:,
+        workspace_variables_env_var:,
+        workspace_variables_file:
+      )
         # SIMULATE SECOND POLL REQUEST FROM AGENTK TO UPDATE WORKSPACE TO RUNNING STATE
 
         resource_version = '1'
@@ -163,13 +203,13 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
           workspace_id: id,
           workspace_name: name,
           workspace_namespace: namespace,
+          workspace_variables_env_var: workspace_variables_env_var,
+          workspace_variables_file: workspace_variables_file,
           agent_id: agent.id,
           resource_version: resource_version,
           previous_actual_state: RemoteDevelopment::Workspaces::States::STARTING,
           current_actual_state: RemoteDevelopment::Workspaces::States::RUNNING,
-          workspace_exists: false,
-          user_name: user.name,
-          user_email: user.email
+          workspace_exists: false
         )
         reconcile_post_response =
           simulate_agentk_reconcile_post(workspace_agent_infos: [workspace_agent_info])
@@ -189,7 +229,13 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
         expect(info.fetch(:config_to_apply)).to be_nil
       end
 
-      def simulate_third_poll(id:, name:, namespace:)
+      def simulate_third_poll(
+        id:,
+        name:,
+        namespace:,
+        workspace_variables_env_var:,
+        workspace_variables_file:
+      )
         # SIMULATE THIRD POLL REQUEST FROM AGENTK TO UPDATE WORKSPACE TO STOPPING STATE
 
         resource_version = '1'
@@ -197,13 +243,13 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
           workspace_id: id,
           workspace_name: name,
           workspace_namespace: namespace,
+          workspace_variables_env_var: workspace_variables_env_var,
+          workspace_variables_file: workspace_variables_file,
           agent_id: agent.id,
           resource_version: resource_version,
           previous_actual_state: RemoteDevelopment::Workspaces::States::RUNNING,
           current_actual_state: RemoteDevelopment::Workspaces::States::STOPPING,
-          workspace_exists: true,
-          user_name: user.name,
-          user_email: user.email
+          workspace_exists: true
         )
         reconcile_post_response =
           simulate_agentk_reconcile_post(workspace_agent_infos: [workspace_agent_info])
@@ -225,17 +271,23 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
           workspace_id: id,
           workspace_name: name,
           workspace_namespace: namespace,
+          workspace_variables_env_var: workspace_variables_env_var,
+          workspace_variables_file: workspace_variables_file,
           agent_id: agent.id,
-          started: false,
-          user_name: user.name,
-          user_email: user.email
+          started: false
         )
 
         config_to_apply = info.fetch(:config_to_apply)
         expect(config_to_apply).to eq(expected_config_to_apply)
       end
 
-      def simulate_fourth_poll(id:, name:, namespace:)
+      def simulate_fourth_poll(
+        id:,
+        name:,
+        namespace:,
+        workspace_variables_env_var:,
+        workspace_variables_file:
+      )
         # SIMULATE FOURTH POLL REQUEST FROM AGENTK TO UPDATE WORKSPACE TO STOPPED STATE
 
         resource_version = '2'
@@ -243,13 +295,13 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
           workspace_id: id,
           workspace_name: name,
           workspace_namespace: namespace,
+          workspace_variables_env_var: workspace_variables_env_var,
+          workspace_variables_file: workspace_variables_file,
           agent_id: agent.id,
           resource_version: resource_version,
           previous_actual_state: RemoteDevelopment::Workspaces::States::STOPPING,
           current_actual_state: RemoteDevelopment::Workspaces::States::STOPPED,
-          workspace_exists: true,
-          user_name: user.name,
-          user_email: user.email
+          workspace_exists: true
         )
         reconcile_post_response =
           simulate_agentk_reconcile_post(workspace_agent_infos: [workspace_agent_info])

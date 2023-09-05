@@ -40,6 +40,7 @@ module RemoteDevelopment
           workspace.processed_devfile = YAML.dump(processed_devfile.deep_stringify_keys)
           # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
           workspace.actual_state = CREATION_REQUESTED
+          workspace.config_version = RemoteDevelopment::Workspaces::ConfigVersion::VERSION_2
           workspace.url = URI::HTTPS.build({
             host: workspace_host(workspace: workspace),
             query: {

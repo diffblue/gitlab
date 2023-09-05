@@ -17,6 +17,15 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
 
   let_it_be(:user) { create(:user) }
   let_it_be(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
+  let(:workspace_variables) { workspace.workspace_variables }
+  let(:workspace_variables_env_var) do
+    get_workspace_variables_env_var(workspace_variables: workspace_variables)
+  end
+
+  let(:workspace_variables_file) do
+    get_workspace_variables_file(workspace_variables: workspace_variables)
+  end
+
   let(:logger) { instance_double(::Logger) }
 
   let(:expected_value_for_started) { true }
@@ -75,13 +84,13 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
           workspace_id: workspace.id,
           workspace_name: workspace.name,
           workspace_namespace: workspace.namespace,
+          workspace_variables_env_var: workspace_variables_env_var,
+          workspace_variables_file: workspace_variables_file,
           agent_id: workspace.agent.id,
           resource_version: deployment_resource_version_from_agent,
           previous_actual_state: previous_actual_state,
           current_actual_state: current_actual_state,
           workspace_exists: workspace_exists,
-          user_name: user.name,
-          user_email: user.email,
           error_details: error_from_agent
         )
       end
@@ -201,18 +210,20 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
             agent: agent, user: user)
         end
 
+        let(:workspace_variables) { workspace2.workspace_variables }
+
         let(:workspace2_agent_info) do
           create_workspace_agent_info_hash(
             workspace_id: workspace2.id,
             workspace_name: workspace2.name,
             workspace_namespace: workspace2.namespace,
+            workspace_variables_env_var: workspace_variables_env_var,
+            workspace_variables_file: workspace_variables_file,
             agent_id: workspace2.agent.id,
             resource_version: deployment_resource_version_from_agent,
             previous_actual_state: previous_actual_state,
             current_actual_state: current_actual_state,
-            workspace_exists: workspace_exists,
-            user_name: user.name,
-            user_email: user.email
+            workspace_exists: workspace_exists
           )
         end
 
@@ -348,10 +359,10 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
               workspace_id: workspace.id,
               workspace_name: workspace.name,
               workspace_namespace: workspace.namespace,
+              workspace_variables_env_var: workspace_variables_env_var,
+              workspace_variables_file: workspace_variables_file,
               agent_id: workspace.agent.id,
-              started: expected_value_for_started,
-              user_name: user.name,
-              user_email: user.email
+              started: expected_value_for_started
             )
           end
 
@@ -466,10 +477,10 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
                 workspace_id: workspace.id,
                 workspace_name: workspace.name,
                 workspace_namespace: workspace.namespace,
+                workspace_variables_env_var: workspace_variables_env_var,
+                workspace_variables_file: workspace_variables_file,
                 agent_id: workspace.agent.id,
-                started: expected_value_for_started,
-                user_name: user.name,
-                user_email: user.email
+                started: expected_value_for_started
               )
             end
 
@@ -506,13 +517,13 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
           workspace_id: 1,
           workspace_name: workspace_name,
           workspace_namespace: workspace_namespace,
+          workspace_variables_env_var: {},
+          workspace_variables_file: {},
           agent_id: '1',
           resource_version: '42',
           previous_actual_state: RemoteDevelopment::Workspaces::States::STOPPING,
           current_actual_state: RemoteDevelopment::Workspaces::States::STOPPED,
-          workspace_exists: false,
-          user_name: user.name,
-          user_email: user.email
+          workspace_exists: false
         )
       end
 
@@ -538,6 +549,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
       end
 
       let(:workspace_agent_infos) { [] }
+      let(:workspace_variables) { unprovisioned_workspace.workspace_variables }
 
       # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       let(:expected_config_to_apply) do
@@ -545,10 +557,11 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
           workspace_id: unprovisioned_workspace.id,
           workspace_name: unprovisioned_workspace.name,
           workspace_namespace: unprovisioned_workspace.namespace,
+          workspace_variables_env_var: workspace_variables_env_var,
+          workspace_variables_file: workspace_variables_file,
           agent_id: unprovisioned_workspace.agent.id,
           started: expected_value_for_started,
-          user_name: user.name,
-          user_email: user.email
+          include_secrets: true
         )
       end
 

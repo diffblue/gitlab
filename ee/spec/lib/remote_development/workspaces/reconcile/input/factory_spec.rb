@@ -1,27 +1,34 @@
 # frozen_string_literal: true
 
-require_relative '../../../fast_spec_helper'
+require 'spec_helper'
 
 RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::Factory, feature_category: :remote_development do
   include_context 'with remote development shared fixtures'
 
-  let(:namespace) { "namespace" }
   let(:agent) { instance_double("Clusters::Agent", id: 1) }
   let(:user) { instance_double("User", name: "name", email: "name@example.com") }
-  let(:workspace) { instance_double("RemoteDevelopment::Workspace", id: 1, name: "name", namespace: namespace) }
+  let(:workspace) { create(:workspace) }
+  let(:namespace) { workspace.namespace }
+  let(:workspace_variables_env_var) do
+    get_workspace_variables_env_var(workspace_variables: workspace.workspace_variables)
+  end
+
+  let(:workspace_variables_file) do
+    get_workspace_variables_file(workspace_variables: workspace.workspace_variables)
+  end
 
   let(:workspace_agent_info_hash) do
     create_workspace_agent_info_hash(
       workspace_id: workspace.id,
       workspace_name: workspace.name,
       workspace_namespace: namespace,
-      agent_id: agent.id,
+      workspace_variables_env_var: workspace_variables_env_var,
+      workspace_variables_file: workspace_variables_file,
+      agent_id: workspace.agent.id,
       resource_version: "1",
       previous_actual_state: previous_actual_state,
       current_actual_state: current_actual_state,
-      workspace_exists: false,
-      user_name: user.name,
-      user_email: user.email
+      workspace_exists: false
     )
   end
 
