@@ -8,10 +8,6 @@ RSpec.describe Ci::BuildFinishedWorker, feature_category: :continuous_integratio
   let_it_be(:project) { build.project }
   let_it_be(:namespace) { project.shared_runners_limit_namespace }
 
-  subject do
-    described_class.new.perform(build.id)
-  end
-
   def namespace_stats
     namespace.namespace_statistics || namespace.create_namespace_statistics
   end
@@ -21,6 +17,10 @@ RSpec.describe Ci::BuildFinishedWorker, feature_category: :continuous_integratio
   end
 
   describe '#perform' do
+    subject(:perform) do
+      described_class.new.perform(build.id)
+    end
+
     context 'when on .com' do
       before do
         allow(Gitlab).to receive(:com?).and_return(true)
@@ -30,7 +30,7 @@ RSpec.describe Ci::BuildFinishedWorker, feature_category: :continuous_integratio
       it 'tracks secure scans' do
         expect(::Security::TrackSecureScansWorker).to receive(:perform_async)
 
-        subject
+        perform
       end
 
       context 'when exception is raised in `super`' do
@@ -38,7 +38,7 @@ RSpec.describe Ci::BuildFinishedWorker, feature_category: :continuous_integratio
           allow(Ci::Build).to receive(:find_by_id).with(build.id).and_return(build)
           allow(build).to receive(:execute_hooks).and_raise(ArgumentError)
 
-          expect { subject }.to raise_error(ArgumentError)
+          expect { perform }.to raise_error(ArgumentError)
 
           expect(::Security::TrackSecureScansWorker).not_to receive(:perform_async)
         end
@@ -50,8 +50,14 @@ RSpec.describe Ci::BuildFinishedWorker, feature_category: :continuous_integratio
         it 'does not track secure scans' do
           expect(::Security::TrackSecureScansWorker).not_to receive(:perform_async)
 
-          subject
+          perform
         end
+      end
+
+      it 'does not track job on InstanceRunnerFailedJobs' do
+        expect(Ci::InstanceRunnerFailedJobs).not_to receive(:track)
+
+        perform
       end
     end
 
@@ -63,13 +69,19 @@ RSpec.describe Ci::BuildFinishedWorker, feature_category: :continuous_integratio
       it 'does not notify the owners of Groups' do
         expect(::Ci::Minutes::EmailNotificationService).not_to receive(:new)
 
-        subject
+        perform
       end
 
       it 'does not track secure scans' do
         expect(::Security::TrackSecureScansWorker).not_to receive(:perform_async)
 
-        subject
+        perform
+      end
+
+      it 'does not track job on InstanceRunnerFailedJobs' do
+        expect(Ci::InstanceRunnerFailedJobs).not_to receive(:track)
+
+        perform
       end
     end
 
@@ -83,14 +95,14 @@ RSpec.describe Ci::BuildFinishedWorker, feature_category: :continuous_integratio
       it 'does not scan security reports for token revocation' do
         expect(ScanSecurityReportSecretsWorker).not_to receive(:perform_async)
 
-        subject
+        perform
       end
     end
 
     it 'does not schedule processing of requirement reports by default' do
       expect(RequirementsManagement::ProcessRequirementsReportsWorker).not_to receive(:perform_async)
 
-      subject
+      perform
     end
 
     context 'with requirements' do
@@ -106,7 +118,7 @@ RSpec.describe Ci::BuildFinishedWorker, feature_category: :continuous_integratio
         it do
           expect(RequirementsManagement::ProcessRequirementsReportsWorker).not_to receive(:perform_async)
 
-          subject
+          perform
         end
       end
 
@@ -118,7 +130,7 @@ RSpec.describe Ci::BuildFinishedWorker, feature_category: :continuous_integratio
         it 'schedules processing of requirement reports' do
           expect(RequirementsManagement::ProcessRequirementsReportsWorker).to receive(:perform_async)
 
-          subject
+          perform
         end
 
         context 'when user has insufficient permissions to create test reports' do
@@ -136,6 +148,22 @@ RSpec.describe Ci::BuildFinishedWorker, feature_category: :continuous_integratio
         end
 
         it_behaves_like 'does not schedule processing of requirement reports'
+      end
+    end
+
+    it 'does not save job on Ci::InstanceRunnerFailedJobs by default' do
+      expect(Ci::InstanceRunnerFailedJobs).not_to receive(:track)
+
+      perform
+    end
+
+    context 'when job failed', feature_category: :runner_fleet do
+      let(:build) { create(:ee_ci_build, :sast, :failed, runner: ci_runner) }
+
+      it 'tracks job on InstanceRunnerFailedJobs' do
+        expect(Ci::InstanceRunnerFailedJobs).to receive(:track).once
+
+        perform
       end
     end
   end
