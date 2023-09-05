@@ -22095,7 +22095,7 @@ Network Policies of the project.
 
 WARNING:
 **Deprecated** in 14.8.
-Network policies are deprecated and will be removed in GitLab 16.0. Since GitLab 15.0 this field returns no data.
+Network policies are deprecated and will be removed in GitLab 17.0. This field returns no data in GitLab 15.0 and later.
 
 Returns [`NetworkPolicyConnection`](#networkpolicyconnection).
 

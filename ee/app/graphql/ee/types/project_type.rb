@@ -191,8 +191,8 @@ module EE
               ::Types::NetworkPolicyType.connection_type,
               null: true,
               deprecated: {
-                reason: 'Network policies are deprecated and will be removed in GitLab 16.0. Since GitLab 15.0 ' \
-                        'this field returns no data',
+                reason: 'Network policies are deprecated and will be removed in GitLab 17.0. This field returns ' \
+                        'no data in GitLab 15.0 and later',
                 milestone: '14.8'
               },
               description: 'Network Policies of the project',
