@@ -36,7 +36,12 @@ export default {
 </script>
 
 <template>
-  <gl-tabs v-if="showTabs" content-class="gl-pt-5" :sync-active-tab-with-query-params="true">
+  <gl-tabs
+    v-if="showTabs"
+    content-class="gl-pt-5"
+    :sync-active-tab-with-query-params="true"
+    data-testid="audit-events-tabs"
+  >
     <gl-tab :title="$options.i18n.LOG" query-param-value="log">
       <audit-events-log />
     </gl-tab>
@@ -45,6 +50,9 @@ export default {
       query-param-value="streams"
       lazy
       data-testid="streams-tab"
+      :title-link-attributes="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
+        'data-testid': 'streams-tab-button',
+      } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
       @click="onTabClick"
     >
       <audit-events-stream />
