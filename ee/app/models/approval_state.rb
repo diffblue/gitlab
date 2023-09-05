@@ -47,7 +47,13 @@ class ApprovalState
     strong_memoize(:wrapped_approval_rules) do
       next [] unless approval_feature_available?
 
-      user_defined_rules + code_owner_rules + report_approver_rules
+      if Feature.enabled?(:use_merge_approval_rules_when_merged, merge_request.project) && merge_request.merged?
+        # After merging, we have historical data that we contain invalid approval rules assoiciated with
+        # the merge request. We should remove any of these invalid approver rules.
+        all_approval_rules - invalid_approvers_rules
+      else
+        all_approval_rules
+      end
     end
   end
 
@@ -201,7 +207,7 @@ class ApprovalState
 
   def user_defined_rules
     strong_memoize(:user_defined_rules) do
-      if approval_rules_overwritten?
+      if approval_rules_overwritten? || (Feature.enabled?(:use_merge_approval_rules_when_merged, merge_request.project) && merge_request.merged? && user_defined_merge_request_rules.any?)
         user_defined_merge_request_rules
       else
         project.visible_user_defined_rules(branch: target_branch).map do |rule|
@@ -218,7 +224,7 @@ class ApprovalState
 
   def invalid_approvers_rules
     strong_memoize(:invalid_approvers_rules) do
-      wrapped_approval_rules.select do |rule|
+      all_approval_rules.select do |rule|
         next if rule.any_approver?
         next if rule.approvers.any? && rule.approvers.size >= rule.approvals_required
 
@@ -293,6 +299,14 @@ class ApprovalState
       grouped_merge_request_rules.flat_map do |report_type, merge_request_rules|
         Approvals::WrappedRuleSet.wrap(merge_request, merge_request_rules, report_type).wrapped_rules
       end
+    end
+  end
+
+  def all_approval_rules
+    strong_memoize(:all_approval_rules) do
+      next [] unless approval_feature_available?
+
+      user_defined_rules + code_owner_rules + report_approver_rules
     end
   end
 end
