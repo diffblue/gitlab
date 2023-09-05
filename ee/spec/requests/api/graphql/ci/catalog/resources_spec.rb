@@ -20,7 +20,7 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
     )
   end
 
-  let_it_be(:resource1) { create(:catalog_resource, project: project1) }
+  let_it_be(:resource1) { create(:ci_catalog_resource, project: project1) }
 
   let(:query) do
     <<~GQL
@@ -44,7 +44,7 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
         run_with_clean_state(query, context: ctx)
       end
 
-      create(:catalog_resource, project: project2)
+      create(:ci_catalog_resource, project: project2)
 
       expect do
         run_with_clean_state(query, context: ctx)
@@ -79,7 +79,7 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
 
       context 'when there are two resources visible to the current user in the namespace' do
         it 'returns both resources with the expected data' do
-          resource2 = create(:catalog_resource, project: project2)
+          resource2 = create(:ci_catalog_resource, project: project2)
 
           post_query
 
@@ -203,7 +203,7 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
 
     context 'when there are multiple resources visible to the current user in the namespace' do
       it 'limits the request to 1 resource at a time' do
-        create(:catalog_resource, project: project2)
+        create(:ci_catalog_resource, project: project2)
 
         post_query
 
@@ -282,7 +282,7 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
 
       context 'when there are multiple resources visible to the current user in the namespace' do
         let_it_be(:project0) { create(:project, namespace: namespace) }
-        let_it_be(:resource0) { create(:catalog_resource, project: project0) }
+        let_it_be(:resource0) { create(:ci_catalog_resource, project: project0) }
         let_it_be(:author0) { create(:user, name: 'author0') }
 
         let_it_be(:version0) do
@@ -290,7 +290,7 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
         end
 
         it 'returns all resources with the latest version data' do
-          resource2 = create(:catalog_resource, project: project2)
+          resource2 = create(:ci_catalog_resource, project: project2)
 
           post_query
 
@@ -379,7 +379,7 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
 
     shared_examples 'returns the correct root namespace for both resources' do
       it do
-        resource2 = create(:catalog_resource, project: project2)
+        resource2 = create(:ci_catalog_resource, project: project2)
 
         post_query
 
@@ -436,10 +436,10 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
         # policies. Here we preemptively create another resource with a 'User' type root namespace so
         # that the control_count in the N+1 test includes this extra query.
         let_it_be(:namespace3) { create(:user).namespace }
-        let_it_be(:resource3) { create(:catalog_resource, project: create(:project, namespace: namespace3)) }
+        let_it_be(:resource3) { create(:ci_catalog_resource, project: create(:project, namespace: namespace3)) }
 
         it 'returns the correct root namespace for all resources' do
-          resource2 = create(:catalog_resource, project: project2)
+          resource2 = create(:ci_catalog_resource, project: project2)
 
           post_query
 
@@ -482,7 +482,7 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
       end
 
       it 'returns the correct count' do
-        create(:catalog_resource, project: project2)
+        create(:ci_catalog_resource, project: project2)
 
         post_query
 
@@ -523,7 +523,7 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
       end
 
       it 'returns the correct count' do
-        create(:catalog_resource, project: project2)
+        create(:ci_catalog_resource, project: project2)
 
         post_query
 

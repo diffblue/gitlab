@@ -19,7 +19,7 @@ RSpec.describe 'Ci Catalog', :js, feature_category: :pipeline_composition do
 
   before do
     ci_resource_projects.each do |current_project|
-      create(:catalog_resource, project: current_project)
+      create(:ci_catalog_resource, project: current_project)
     end
 
     namespace.add_developer(user)

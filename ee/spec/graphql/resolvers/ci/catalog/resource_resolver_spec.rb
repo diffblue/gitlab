@@ -7,7 +7,7 @@ RSpec.describe Resolvers::Ci::Catalog::ResourceResolver, feature_category: :pipe
 
   let_it_be(:namespace) { create(:group) }
   let_it_be(:project) { create(:project, namespace: namespace) }
-  let_it_be(:resource) { create(:catalog_resource, project: project) }
+  let_it_be(:resource) { create(:ci_catalog_resource, project: project) }
   let_it_be(:user) { create(:user) }
 
   describe '#resolve' do

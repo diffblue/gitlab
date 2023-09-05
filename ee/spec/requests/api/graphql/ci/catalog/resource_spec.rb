@@ -19,7 +19,7 @@ RSpec.describe 'Query.ciCatalogResource', feature_category: :pipeline_compositio
     )
   end
 
-  let_it_be(:resource) { create(:catalog_resource, project: project) }
+  let_it_be(:resource) { create(:ci_catalog_resource, project: project) }
 
   let(:query) do
     <<~GQL

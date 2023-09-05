@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Ci::Catalog::Resource, feature_category: :pipeline_composition do
   let_it_be(:project) { create(:project) }
-  let_it_be(:catalog_resource) { build(:catalog_resource, project: project) }
+  let_it_be(:ci_catalog_resource) { build(:ci_catalog_resource, project: project) }
 
   describe 'elasticsearch indexing' do
     before do
@@ -15,7 +15,7 @@ RSpec.describe Ci::Catalog::Resource, feature_category: :pipeline_composition do
       it 'calls maintain_elasticsearch_update' do
         expect(project).to receive(:maintain_elasticsearch_update)
 
-        catalog_resource.save!
+        ci_catalog_resource.save!
       end
     end
   end

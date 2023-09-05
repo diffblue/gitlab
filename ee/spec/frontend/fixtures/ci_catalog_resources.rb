@@ -44,7 +44,7 @@ RSpec.describe "GraphQL CI/CD catalog resources", '(JavaScript fixtures)', type:
 
     before do
       projects.each do |current_project|
-        create(:catalog_resource, project: current_project)
+        create(:ci_catalog_resource, project: current_project)
       end
     end
 
@@ -72,7 +72,7 @@ RSpec.describe "GraphQL CI/CD catalog resources", '(JavaScript fixtures)', type:
 
     before do
       projects.each do |current_project|
-        create(:catalog_resource, project: current_project)
+        create(:ci_catalog_resource, project: current_project)
       end
     end
 
