@@ -8,11 +8,21 @@ RSpec.describe Elastic::Latest::EpicClassProxy, feature_category: :global_search
   let(:query) { 'test' }
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :private) }
-  let_it_be(:project) { create(:project, group: group) }
+  let_it_be(:public_group) { create(:group, :public) }
+  let(:options_without_user) do
+    {
+      current_user: nil,
+      public_and_internal_projects: false,
+      order_by: nil,
+      sort: nil,
+      group_ids: [public_group.id],
+      count_only: false
+    }
+  end
+
   let(:options) do
     {
       current_user: user,
-      project_ids: [project.id],
       public_and_internal_projects: false,
       order_by: nil,
       sort: nil,
@@ -22,7 +32,6 @@ RSpec.describe Elastic::Latest::EpicClassProxy, feature_category: :global_search
   end
 
   let(:elastic_search) { subject.elastic_search(query, options: options) }
-  let(:hits) { elastic_search.response.dig('hits', 'hits') }
   let(:response) do
     Elasticsearch::Model::Response::Response.new(Epic, Elasticsearch::Model::Searching::SearchRequest.new(Epic, '*'))
   end
@@ -30,10 +39,33 @@ RSpec.describe Elastic::Latest::EpicClassProxy, feature_category: :global_search
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
     stub_licensed_features(epics: true)
-    allow(subject).to receive(:search).and_return(response)
   end
 
   describe '#elastic_search' do
+    context 'for anonymous user' do
+      let(:options) { options_without_user }
+
+      it 'performs anonymous epic search and returns correct results' do
+        query_hash = hash_including(
+          query: {
+            bool: {
+              filter: [
+                { term: { type: hash_including(value: 'epic') } },
+                { bool: { should: [
+                  { term: { confidential: hash_including(value: false) } }
+                ] } }
+              ],
+              must: [
+                { simple_query_string: hash_including(fields: ['title^2', 'description'], query: query) }
+              ]
+            }
+          }
+        )
+        expect(subject).to receive(:search).with(query_hash, anything).and_return(response)
+        expect(elastic_search).to eq(response)
+      end
+    end
+
     it 'calls search with the correct arguments' do
       expect(subject).to receive(:search).with({ query: { match_none: {} }, size: 0 }, anything).and_return(response)
 
