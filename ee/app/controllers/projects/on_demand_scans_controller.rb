@@ -5,6 +5,7 @@ module Projects
     include SecurityAndCompliancePermissions
     include API::Helpers::GraphqlHelpers
 
+    before_action :check_fips_mode
     before_action :authorize_read_on_demand_dast_scan!, only: :index
     before_action :authorize_create_on_demand_dast_scan!, only: [:new]
     before_action :authorize_edit_on_demand_dast_scan!, only: [:edit]
@@ -57,6 +58,12 @@ module Projects
       )
 
       return render_404 unless @dast_profile
+    end
+
+    private
+
+    def check_fips_mode
+      render_404 if ::Gitlab::FIPS.enabled?
     end
   end
 end

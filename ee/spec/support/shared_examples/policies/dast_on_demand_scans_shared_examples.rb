@@ -81,6 +81,13 @@ RSpec.shared_examples 'a dast on-demand scan policy' do
 
         it { is_expected.to be_disallowed(*policies) }
       end
+
+      context 'when FIPS mode is enabled' do
+        it 'is disallowed' do
+          expect(::Gitlab::FIPS).to receive(:enabled?).and_return(true)
+          is_expected.to be_disallowed(*policies)
+        end
+      end
     end
   end
 end

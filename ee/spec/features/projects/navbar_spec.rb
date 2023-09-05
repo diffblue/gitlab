@@ -95,6 +95,29 @@ RSpec.describe 'Project navbar', feature_category: :navigation do
     end
 
     it_behaves_like 'verified navigation bar'
+
+    context 'when FIPS mode is enabled' do
+      let(:security_and_compliance_nav_item) do
+        {
+          nav_item: _('Security and Compliance'),
+          nav_sub_items: [
+            _('Security dashboard'),
+            _('Vulnerability report'),
+            _('Audit events'),
+            _('Security configuration')
+          ]
+        }
+      end
+
+      before do
+        allow(::Gitlab::FIPS).to receive(:enabled?).exactly(3).times.and_return(true)
+        stub_licensed_features(security_dashboard: true, security_on_demand_scans: true)
+
+        visit project_path(project)
+      end
+
+      it_behaves_like 'verified navigation bar'
+    end
   end
 
   context 'when packages are available' do
