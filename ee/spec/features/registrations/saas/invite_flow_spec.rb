@@ -3,8 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sidekiq_inline, feature_category: :onboarding do
-  it 'registers the user and sends them to the group activity page',
-    quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/419423' do
+  it 'registers the user and sends them to the group activity page' do
     new_user = build(:user, name: 'Registering User', email: user_email)
     group = create(:group, name: 'Test Group')
 
@@ -20,8 +19,7 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
     ensure_onboarding_is_finished
   end
 
-  it 'registers the user with multiple invites and sends them to the last group activity page',
-    quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/423547' do
+  it 'registers the user with multiple invites and sends them to the last group activity page' do
     new_user = build(:user, name: 'Registering User', email: user_email)
     group = create(:group, name: 'Test Group')
 
@@ -45,8 +43,7 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
     ensure_onboarding_is_finished
   end
 
-  it 'registers the user and sends them to the tasks to be done page',
-    quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/419423' do
+  it 'registers the user and sends them to the tasks to be done page' do
     new_user = build(:user, name: 'Registering User', email: user_email)
     group = create(:group, name: 'Test Group')
 
@@ -83,7 +80,13 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
 
     wait_for_all_requests
 
+    expect_username_to_be_validated
+
     click_button 'Register'
+  end
+
+  def expect_username_to_be_validated
+    expect(page).to have_selector('[data-testid="new_user_username_field"].gl-field-success-outline')
   end
 
   def fill_in_welcome_form
