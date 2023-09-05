@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe MergeRequests::BuildService, feature_category: :code_review_workflow do
   let(:source_project) { project }
   let(:target_project) { project }
-  let(:user) { create(:user) }
+  let_it_be(:user) { create(:user) }
   let(:description) { nil }
   let(:source_branch) { 'feature' }
   let(:target_branch) { 'master' }
@@ -105,6 +105,45 @@ RSpec.describe MergeRequests::BuildService, feature_category: :code_review_workf
         it 'appends closing reference once' do
           expect(merge_request.description).to eq(template + "\n\nCloses ##{issue.iid}")
         end
+      end
+    end
+  end
+
+  describe 'target branch rules' do
+    let_it_be(:project) { create(:project, :repository) }
+    let(:target_branch) { nil }
+
+    before_all do
+      project.add_owner(user)
+
+      create(:target_branch_rule, project: project, name: 'feature', target_branch: 'other-branch')
+    end
+
+    context 'with target branch from params' do
+      let(:target_branch) { 'master' }
+
+      it 'does not use target branch rule' do
+        expect(merge_request.target_branch).to eq('master')
+      end
+    end
+
+    context 'when project does not have licensed feature' do
+      before do
+        stub_licensed_features(target_branch_rules: false)
+      end
+
+      it 'does not use target branch rule' do
+        expect(merge_request.target_branch).to eq('master')
+      end
+    end
+
+    context 'when project has licensed feature' do
+      before do
+        stub_licensed_features(target_branch_rules: true)
+      end
+
+      it 'sets target branch from target branch rule' do
+        expect(merge_request.target_branch).to eq('other-branch')
       end
     end
   end
