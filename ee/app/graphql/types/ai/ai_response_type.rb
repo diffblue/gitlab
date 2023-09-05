@@ -19,7 +19,7 @@ module Types
         description: 'ID of the original request.'
 
       field :role,
-        Types::Ai::CachedMessageRoleEnum,
+        Types::Ai::ChatMessageRoleEnum,
         null: false,
         description: 'Message role.'
 

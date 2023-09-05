@@ -3,8 +3,9 @@
 module Types
   module Ai
     # rubocop: disable Graphql/AuthorizeTypes
-    class CachedMessageType < Types::BaseObject
-      graphql_name 'AiCachedMessageType'
+    class ChatMessageType < Types::BaseObject
+      graphql_name 'AiChatMessage'
+      description "Duo Chat message"
 
       field :id,
         GraphQL::Types::ID,
@@ -12,7 +13,7 @@ module Types
 
       field :request_id,
         GraphQL::Types::ID,
-        description: 'UUID of the original request message.'
+        description: 'UUID of the original request message. Shared between chat prompt and response.'
 
       field :content,
         GraphQL::Types::String,
@@ -22,10 +23,10 @@ module Types
       field :content_html,
         GraphQL::Types::String,
         null: true,
-        description: 'HTML content of the message. Can be null for failed responses.'
+        description: 'Content of the message in HTML format. Can be null for failed responses.'
 
       field :role,
-        Types::Ai::CachedMessageRoleEnum,
+        Types::Ai::ChatMessageRoleEnum,
         null: false,
         description: 'Message role.'
 
