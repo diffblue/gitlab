@@ -14,7 +14,6 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::SelfManaged::ProvisionCodeSu
       )
     end
 
-    let(:expires_at) { Date.current + 6.months }
     let(:purchased_add_on_quantity) { 5 }
     let(:subscription_name) { 'A-S00000002' }
 
