@@ -5,10 +5,6 @@ module Security
     layout 'instance_security'
     include GovernUsageTracking
 
-    before_action do
-      push_frontend_feature_flag(:expose_dismissal_reason, @project)
-    end
-
     track_govern_activity 'security_vulnerabilities', :index
 
     private

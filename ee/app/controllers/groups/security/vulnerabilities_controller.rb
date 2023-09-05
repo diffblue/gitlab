@@ -7,10 +7,6 @@ module Groups
 
       layout 'group'
 
-      before_action do
-        push_frontend_feature_flag(:expose_dismissal_reason, @project)
-      end
-
       feature_category :vulnerability_management
       urgency :low
       track_govern_activity 'security_vulnerabilities', :index, conditions: :dashboard_available?
