@@ -29,6 +29,9 @@ RSpec.describe 'Project creation via Registrations::GroupsController',
 
     context 'with an authenticated user', :saas do
       before do
+        # Stubbed not to break query budget. Should be safe as the query only happens on SaaS and the result is cached
+        allow(Gitlab::Com).to receive(:gitlab_com_group_member?).and_return(nil)
+
         sign_in(user)
       end
 

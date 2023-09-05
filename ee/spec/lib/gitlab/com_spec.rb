@@ -7,9 +7,10 @@ RSpec.describe Gitlab::Com, feature_category: :shared do
   it { expect(described_class.l2_cache_backend).to eq(Rails.cache) }
 
   describe '.gitlab_com_group_member?' do
-    subject { described_class.gitlab_com_group_member?(user) }
+    subject { described_class.gitlab_com_group_member?(user_or_id) }
 
     let(:user) { create(:user) }
+    let(:user_or_id) { user }
 
     before do
       allow(Gitlab).to receive(:com?).and_return(true)
@@ -20,6 +21,12 @@ RSpec.describe Gitlab::Com, feature_category: :shared do
       include_context 'gitlab team member'
 
       it { is_expected.to be true }
+
+      context 'when passed an user id' do
+        let(:user_or_id) { user.id }
+
+        it { is_expected.to be true }
+      end
 
       describe 'caching of allowed user IDs' do
         before do
@@ -49,6 +56,12 @@ RSpec.describe Gitlab::Com, feature_category: :shared do
     context 'when user is not a gitlab team member' do
       it { is_expected.to be false }
 
+      context 'when passed an user id' do
+        let(:user_or_id) { user.id }
+
+        it { is_expected.to be false }
+      end
+
       describe 'caching of allowed user IDs' do
         before do
           described_class.gitlab_com_group_member?(user)
@@ -64,10 +77,10 @@ RSpec.describe Gitlab::Com, feature_category: :shared do
       it { is_expected.to be false }
     end
 
-    context 'when subject is not a user' do
+    context 'when subject is not a user or integer' do
       include_context 'gitlab team member'
 
-      let(:user) { build_stubbed(:group_member, source: namespace) }
+      let(:user_or_id) { build_stubbed(:group_member, source: namespace) }
 
       it { is_expected.to be false }
     end
