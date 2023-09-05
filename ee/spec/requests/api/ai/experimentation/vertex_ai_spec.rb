@@ -100,12 +100,9 @@ RSpec.describe API::Ai::Experimentation::VertexAi, feature_category: :ai_abstrac
     context 'when ai_experimentation_api feature flag not enabled for user' do
       let(:not_authorized_user) { create(:user) }
       let(:token) { create(:personal_access_token, user: not_authorized_user) }
+      let(:make_request) { post api("/ai/experimentation/vertex/#{endpoint}", not_authorized_user), params: params }
 
-      it 'returns not found' do
-        post api("/ai/experimentation/vertex/#{endpoint}", not_authorized_user), params: params
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
+      it_behaves_like 'behind AI experimentation API feature flag'
     end
 
     context 'when neither content nor messages param is passed' do

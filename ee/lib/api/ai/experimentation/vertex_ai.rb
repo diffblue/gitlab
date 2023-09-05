@@ -9,14 +9,11 @@ module API
 
         before do
           authenticate!
-          check_feature_enabled
+          check_feature_enabled!
         end
 
+        helpers ::API::Helpers::AiHelper
         helpers do
-          def check_feature_enabled
-            not_found!('REST API endpoint not found') unless Feature.enabled?(:ai_experimentation_api, current_user)
-          end
-
           def vertex_ai_post(_endpoint, json_body: nil)
             headers = {
               "Accept" => ["application/json"],
@@ -52,8 +49,8 @@ module API
             examples = params.delete(:examples)
             json[:instances][0][:examples] = Gitlab::Json.parse(examples) if examples
 
-            tofa_params = params.transform_keys { |name| name.camelize(:lower) }
-            json[:parameters].merge!(tofa_params)
+            vertex_params = params.transform_keys { |name| name.camelize(:lower) }
+            json[:parameters].merge!(vertex_params)
             json
           rescue JSON::ParserError => error
             render_api_error!("Failed to parse JSON input: #{error.message}", 400)

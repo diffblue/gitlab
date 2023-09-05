@@ -13,6 +13,7 @@ module API
           https://platform.openai.com/docs/models/overview to chose the right model, depeinding on costs, level
           of experimentation, endpoint etc.
         DESC
+
         before do
           authenticate!
           check_feature_enabled!
