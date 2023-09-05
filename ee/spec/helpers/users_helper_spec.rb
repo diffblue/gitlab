@@ -10,7 +10,7 @@ RSpec.describe UsersHelper, feature_category: :user_profile do
       using RSpec::Parameterized::TableSyntax
 
       where(
-        has_paid_namespace?: [true, false],
+        belongs_to_paid_namespace?: [true, false],
         user?: [true, false],
         check_namespace_plan?: [true, false],
         group_without_trial?: [true, false]
@@ -22,10 +22,10 @@ RSpec.describe UsersHelper, feature_category: :user_profile do
         before do
           stub_ee_application_setting(should_check_namespace_plan: check_namespace_plan?)
           allow(user).to receive(:owns_group_without_trial?) { group_without_trial? }
-          allow(user).to receive(:has_paid_namespace?) { has_paid_namespace? }
+          allow(user).to receive(:belongs_to_paid_namespace?) { belongs_to_paid_namespace? }
         end
 
-        let(:expected_result) { !has_paid_namespace? && user? && check_namespace_plan? && group_without_trial? }
+        let(:expected_result) { !belongs_to_paid_namespace? && user? && check_namespace_plan? && group_without_trial? }
 
         subject { helper.trials_allowed?(local_user) }
 
@@ -37,13 +37,13 @@ RSpec.describe UsersHelper, feature_category: :user_profile do
       before do
         stub_ee_application_setting(should_check_namespace_plan: true)
         allow(user).to receive(:owns_group_without_trial?).and_return(true)
-        allow(user).to receive(:has_paid_namespace?).and_return(false)
+        allow(user).to receive(:belongs_to_paid_namespace?).and_return(false)
       end
 
       it 'uses cache for result on next running of the method same user' do
         expect(helper.trials_allowed?(user)).to eq(true)
 
-        allow(user).to receive(:has_paid_namespace?).and_return(true)
+        allow(user).to receive(:belongs_to_paid_namespace?).and_return(true)
 
         expect(helper.trials_allowed?(user)).to eq(true)
       end

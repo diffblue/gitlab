@@ -27,7 +27,7 @@ RSpec.describe Spam::SpamVerdictService, feature_category: :instance_resiliency 
 
     context 'when user is on a paid plan' do
       before do
-        allow(user).to receive(:has_paid_namespace?).with(exclude_trials: true).and_return(true)
+        allow(user).to receive(:belongs_to_paid_namespace?).with(exclude_trials: true).and_return(true)
       end
 
       it 'overrides and renders the override verdict' do

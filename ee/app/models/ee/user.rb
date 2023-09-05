@@ -336,27 +336,8 @@ module EE
 
     # Returns true if the user is a Reporter or higher on any namespace
     # currently on a paid plan
-    def has_paid_namespace?(plans: ::Plan::PAID_HOSTED_PLANS, exclude_trials: false)
+    def belongs_to_paid_namespace?(plans: ::Plan::PAID_HOSTED_PLANS, exclude_trials: false)
       paid_namespaces(plans: plans, exclude_trials: exclude_trials).any?
-    end
-
-    def paid_namespaces(plans: ::Plan::PAID_HOSTED_PLANS, exclude_trials: false)
-      paid_hosted_plans = ::Plan::PAID_HOSTED_PLANS & plans
-
-      namespaces_with_plans = ::Namespace
-        .from("(#{namespace_union_for_reporter_developer_maintainer_owned}) #{::Namespace.table_name}")
-        .include_gitlab_subscription
-        .where(gitlab_subscriptions: { hosted_plan: ::Plan.where(name: paid_hosted_plans) })
-        .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/419988")
-
-      if exclude_trials
-        return namespaces_with_plans
-          .where(gitlab_subscriptions: { trial: [nil, false] })
-          .or(namespaces_with_plans.where(gitlab_subscriptions: { trial_ends_on: ..Date.yesterday }))
-          .select(:id)
-      end
-
-      namespaces_with_plans.select(:id)
     end
 
     # Returns true if the user is an Owner on any namespace currently on
@@ -727,6 +708,25 @@ module EE
       end
     end
 
+    def paid_namespaces(plans: ::Plan::PAID_HOSTED_PLANS, exclude_trials: false)
+      paid_hosted_plans = ::Plan::PAID_HOSTED_PLANS & plans
+
+      namespaces_with_plans = ::Namespace
+        .from("(#{namespace_union_for_reporter_developer_maintainer_owned}) #{::Namespace.table_name}")
+        .include_gitlab_subscription
+        .where(gitlab_subscriptions: { hosted_plan: ::Plan.where(name: paid_hosted_plans) })
+        .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/419988")
+
+      if exclude_trials
+        return namespaces_with_plans
+          .where(gitlab_subscriptions: { trial: [nil, false] })
+          .or(namespaces_with_plans.where(gitlab_subscriptions: { trial_ends_on: ..Date.yesterday }))
+          .select(:id)
+      end
+
+      namespaces_with_plans.select(:id)
+    end
+
     def namespace_union_for_owned(select = :id)
       ::Gitlab::SQL::Union.new(
         [
@@ -775,7 +775,7 @@ module EE
 
     override :should_delay_delete?
     def should_delay_delete?(*args)
-      super && !has_paid_namespace?(exclude_trials: true)
+      super && !belongs_to_paid_namespace?(exclude_trials: true)
     end
 
     override :audit_lock_access

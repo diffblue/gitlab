@@ -79,10 +79,10 @@ module EE
         @user.code_suggestions_disabled_by_group?
       end
 
-      condition(:user_has_paid_namespace) do
+      condition(:user_belongs_to_paid_namespace) do
         next false unless @user
 
-        @user.has_paid_namespace?
+        @user.belongs_to_paid_namespace?
       end
 
       rule { ~anonymous & operations_dashboard_available }.enable :read_operations_dashboard
@@ -132,7 +132,7 @@ module EE
         .enable :access_code_suggestions
       rule { code_suggestions_disabled_by_group }.prevent :access_code_suggestions
 
-      rule { runner_upgrade_management_available | user_has_paid_namespace }.enable :read_runner_upgrade_status
+      rule { runner_upgrade_management_available | user_belongs_to_paid_namespace }.enable :read_runner_upgrade_status
     end
   end
 end
