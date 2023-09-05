@@ -21,12 +21,16 @@ RSpec.describe PackageMetadata::Ingestion::Advisory::IngestionService, feature_c
             .and change { PackageMetadata::AffectedPackage.count }.by(10)
         end
 
-        context 'and advisory scanning is enabled' do
+        context 'and advisory scanning is enabled', :freeze_time do
+          let(:recent) { build_list(:pm_advisory_data_object, 5, published_date: Time.zone.now - 13.days) }
+          let(:old) { build_list(:pm_advisory_data_object, 5, published_date: Time.zone.now - 14.days - 1.second) }
+          let(:import_data) { recent + old }
+
           before do
             stub_feature_flags(dependency_scanning_on_advisory_ingestion: true)
           end
 
-          it 'publishes all ingested advisories to the event store' do
+          it 'publishes only recently ingested advisories to the event store' do
             received_events = []
             allow(Gitlab::EventStore).to receive(:publish) do |event|
               received_events << event
@@ -37,9 +41,9 @@ RSpec.describe PackageMetadata::Ingestion::Advisory::IngestionService, feature_c
             received_advisory_ids = received_events.map { |event| event.data[:advisory_id] }
             received_advisories = PackageMetadata::Advisory.where(id: received_advisory_ids)
               .pluck(:source_xid, :advisory_xid).sort
-            imported_advisories = import_data.map { |obj| [obj.source_xid, obj.advisory_xid] }.sort
+            recent_advisories = recent.map { |obj| [obj.source_xid, obj.advisory_xid] }.sort
 
-            expect(received_advisories).to eq(imported_advisories)
+            expect(received_advisories).to eq(recent_advisories)
           end
         end
 
