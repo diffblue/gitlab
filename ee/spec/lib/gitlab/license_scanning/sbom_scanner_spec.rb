@@ -354,7 +354,7 @@ RSpec.describe ::Gitlab::LicenseScanning::SbomScanner, feature_category: :softwa
           { name: "activesupport", package_manager: "bundler", version: "5.1.4", id: 1,
             licenses: [{ name: "Open LDAP Public License v2.3", url: "https://spdx.org/licenses/OLDAP-2.3.html" }] },
           { name: "non-matching-package", package_manager: "bundler", version: "1.2.3", id: 2,
-            licenses: [{ name: "unknown", url: "https://spdx.org/licenses/unknown.html" }] },
+            licenses: [{ name: "unknown", url: nil }] },
           { name: "acorn", package_manager: "yarn", version: "5.7.3", id: 3,
             licenses: match_array([
               { name: "Open LDAP Public License v2.1", url: "https://spdx.org/licenses/OLDAP-2.1.html" },
@@ -365,13 +365,13 @@ RSpec.describe ::Gitlab::LicenseScanning::SbomScanner, feature_category: :softwa
           { name: "activesupport", package_manager: "bundler", version: "5.1.4", id: 5,
             licenses: [{ name: "Open LDAP Public License v2.3", url: "https://spdx.org/licenses/OLDAP-2.3.html" }] },
           { name: "jquery-ui", package_manager: "", version: "1.10.2", id: 6,
-            licenses: [{ name: "unknown", url: "https://spdx.org/licenses/unknown.html" }] },
+            licenses: [{ name: "unknown", url: nil }] },
           { name: "pytz", package_manager: "Python (python-pkg)", version: "2023.3", id: 7,
             licenses: [{ name: "BSD-4-Clause", url: "https://spdx.org/licenses/BSD.html" }] },
           { name: "github.com/google/uuid", package_manager: "analyzer (gobinary)", version: "v1.3.0", id: 8,
             licenses: [{ name: "Open LDAP Public License v2.4", url: "https://spdx.org/licenses/OLDAP-2.4.html" }] },
           { name: "adduser", package_manager: "debian:12.1 (apt)", version: "3.134", id: 9,
-            licenses: [{ name: "unknown", url: "https://spdx.org/licenses/unknown.html" }] }
+            licenses: [{ name: "unknown", url: nil }] }
         ])
       end
     end
@@ -401,7 +401,7 @@ RSpec.describe ::Gitlab::LicenseScanning::SbomScanner, feature_category: :softwa
           { name: "activesupport", package_manager: "bundler", version: "5.1.4", id: 1,
             licenses: [{ name: "Open LDAP Public License v2.3", url: "https://spdx.org/licenses/OLDAP-2.3.html" }] },
           { name: "non-matching-package", package_manager: "bundler", version: "1.2.3", id: 2,
-            licenses: [{ name: "unknown", url: "https://spdx.org/licenses/unknown.html" }] },
+            licenses: [{ name: "unknown", url: nil }] },
           { name: "acorn", package_manager: "yarn", version: "5.7.3", id: 3,
             licenses: match_array([
               { name: "Open LDAP Public License v2.1", url: "https://spdx.org/licenses/OLDAP-2.1.html" },
@@ -412,13 +412,13 @@ RSpec.describe ::Gitlab::LicenseScanning::SbomScanner, feature_category: :softwa
           { name: "activesupport", package_manager: "bundler", version: "5.1.4", id: 5,
             licenses: [{ name: "Open LDAP Public License v2.3", url: "https://spdx.org/licenses/OLDAP-2.3.html" }] },
           { name: "jquery-ui", package_manager: "", version: "1.10.2", id: 6,
-            licenses: [{ name: "unknown", url: "https://spdx.org/licenses/unknown.html" }] },
+            licenses: [{ name: "unknown", url: nil }] },
           { name: "pytz", package_manager: "Python (python-pkg)", version: "2023.3", id: 7,
             licenses: [{ name: "BSD-4-Clause", url: "https://spdx.org/licenses/BSD.html" }] },
           { name: "github.com/google/uuid", package_manager: "analyzer (gobinary)", version: "v1.3.0", id: 8,
             licenses: [{ name: "Open LDAP Public License v2.4", url: "https://spdx.org/licenses/OLDAP-2.4.html" }] },
           { name: "adduser", package_manager: "debian:12.1 (apt)", version: "3.134", id: 9,
-            licenses: [{ name: "unknown", url: "https://spdx.org/licenses/unknown.html" }] }
+            licenses: [{ name: "unknown", url: nil }] }
         ])
       end
     end

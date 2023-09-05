@@ -19,7 +19,10 @@ module Gitlab
           package_licenses.each do |package_license|
             package_license.licenses.each do |license_hash|
               license = license_scanning_report.add_license(
-                id: license_hash["spdx_identifier"], name: license_hash["name"])
+                id: license_hash["spdx_identifier"],
+                name: license_hash["name"],
+                url: license_hash["url"]
+              )
 
               license.add_dependency(
                 name: package_license.name,
