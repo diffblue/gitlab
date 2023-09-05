@@ -299,35 +299,6 @@ Before upgrading to GitLab 15, see [GitLab 15 changes](versions/gitlab_15_change
 
 Before upgrading to GitLab 14, see [GitLab 14 changes](versions/gitlab_14_changes.md).
 
-### User profile data loss bug in 15.9.x
-
-There is a database migration bug in 15.9.0, 15.9.1, and 15.9.2 that can cause data loss from the user profile fields `linkedin`, `twitter`, `skype`, `website_url`, `location`, and `organization`.
-
-This bug is fixed in patch releases 15.9.3 and later.
-
-The following upgrade path also works around the bug:
-
-1. Upgrade to GitLab 15.6.x, 15.7.x, or 15.8.x.
-1. [Ensure batched background migrations](background_migrations.md#batched-background-migrations) are complete.
-1. Upgrade to an earlier GitLab 15.9 patch release that doesn't have the bug fix.
-
-It is not then required to upgrade to 15.9.3 or later for this issue.
-
-[Read the issue](https://gitlab.com/gitlab-org/gitlab/-/issues/393216) for more information.
-
-### Change to Praefect-generated replica paths in GitLab 15.3
-
-New Git repositories created in Gitaly cluster no longer use the `@hashed` storage path.
-
-Praefect now generates replica paths for use by Gitaly cluster.
-This change is a pre-requisite for Gitaly cluster atomically creating, deleting, and
-renaming Git repositories.
-
-To identify the replica path, [query the Praefect repository metadata](../administration/gitaly/troubleshooting.md#view-repository-metadata)
-and pass the `@hashed` storage path to `-relative-path`.
-
-With this information, you can correctly install [server hooks](../administration/server_hooks.md).
-
 ### PostgreSQL segmentation fault issue
 
 If you run GitLab with external PostgreSQL, particularly AWS RDS, ensure you upgrade PostgreSQL
