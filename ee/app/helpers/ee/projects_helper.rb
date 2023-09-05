@@ -167,9 +167,15 @@ module EE
     end
 
     def group_project_templates_count(group_id)
-      allowed_subgroups = current_user.available_subgroups_with_custom_project_templates(group_id)
+      projects_not_aimed_for_deletions_for(group_id).count do |project|
+        can?(current_user, :download_code, project)
+      end
+    end
 
-      ::Project.in_namespace(allowed_subgroups).not_aimed_for_deletion.count
+    def group_project_templates(group_id)
+      projects_not_aimed_for_deletions_for(group_id).select do |project|
+        can?(current_user, :download_code, project)
+      end
     end
 
     def project_security_dashboard_config(project)
@@ -329,6 +335,14 @@ module EE
       end
 
       pipelines
+    end
+
+    def allowed_subgroups(group_id)
+      current_user.available_subgroups_with_custom_project_templates(group_id)
+    end
+
+    def projects_not_aimed_for_deletions_for(group_id)
+      ::Project.in_namespace(allowed_subgroups(group_id)).not_aimed_for_deletion
     end
   end
 end
