@@ -1425,6 +1425,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: gitlab_subscriptions_add_on_purchases_refresh_user_assignments
+  :worker_name: GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker
+  :feature_category: :seat_cost_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: gitlab_subscriptions_refresh_seats
   :worker_name: GitlabSubscriptions::RefreshSeatsWorker
   :feature_category: :seat_cost_management

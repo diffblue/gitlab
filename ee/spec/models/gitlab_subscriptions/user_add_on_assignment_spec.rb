@@ -22,12 +22,17 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignment, feature_category: :seat
   describe 'scopes' do
     describe '.by_user' do
       let(:user) { create(:user) }
-      let(:user_assignment) { create(:gitlab_subscription_user_add_on_assignment, user: user) }
-      let(:other_assignment) { create(:gitlab_subscription_user_add_on_assignment) }
+      let(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase) }
+      let!(:other_assignment) { create(:gitlab_subscription_user_add_on_assignment, add_on_purchase: add_on_purchase) }
+      let!(:user_assignment) do
+        create(:gitlab_subscription_user_add_on_assignment, add_on_purchase: add_on_purchase, user: user)
+      end
 
       subject(:user_assignments) { described_class.by_user(user) }
 
       it 'returns assignments associated with user' do
+        expect(described_class.count).to eq(2)
+
         expect(user_assignments).to match_array([user_assignment])
       end
     end
