@@ -299,7 +299,7 @@ class ApplicationSetting < MainClusterwide::ApplicationRecord
     if: :auto_devops_enabled?
 
   validates :enabled_git_access_protocol,
-    inclusion: { in: %w(ssh http), allow_blank: true }
+    inclusion: { in: %w[ssh http], allow_blank: true }
 
   validates :domain_denylist,
     presence: { message: 'Domain denylist cannot be empty if denylist is enabled.' },
@@ -540,7 +540,7 @@ class ApplicationSetting < MainClusterwide::ApplicationRecord
     if: :external_authorization_service_enabled
 
   validates :spam_check_endpoint_url,
-    addressable_url: ADDRESSABLE_URL_VALIDATION_OPTIONS.merge({ schemes: %w(tls grpc) }), allow_blank: true
+    addressable_url: ADDRESSABLE_URL_VALIDATION_OPTIONS.merge({ schemes: %w[tls grpc] }), allow_blank: true
 
   validates :spam_check_endpoint_url,
     presence: true,
@@ -953,7 +953,7 @@ class ApplicationSetting < MainClusterwide::ApplicationRecord
   end
 
   def parsed_kroki_url
-    @parsed_kroki_url ||= Gitlab::UrlBlocker.validate!(kroki_url, schemes: %w(http https), enforce_sanitization: true)[0]
+    @parsed_kroki_url ||= Gitlab::UrlBlocker.validate!(kroki_url, schemes: %w[http https], enforce_sanitization: true)[0]
   rescue Gitlab::UrlBlocker::BlockedUrlError => e
     self.errors.add(
       :kroki_url,
