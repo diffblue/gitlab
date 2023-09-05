@@ -10,7 +10,7 @@ import projectBoardMilestonesQuery from '~/boards/graphql/project_board_mileston
 import searchIterationQuery from 'ee/issues/list/queries/search_iterations.query.graphql';
 import createBoardListMutation from 'ee_else_ce/boards/graphql/board_list_create.mutation.graphql';
 import boardLabelsQuery from '~/boards/graphql/board_labels.query.graphql';
-import projectBoardMembersQuery from '~/boards/graphql/project_board_members.query.graphql';
+import usersAutocompleteQuery from '~/graphql_shared/queries/users_autocomplete.query.graphql';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import BoardAddNewColumnForm from '~/boards/components/board_add_new_column_form.vue';
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
@@ -83,7 +83,7 @@ describe('BoardAddNewColumn', () => {
   } = {}) => {
     mockApollo = createMockApollo([
       [boardLabelsQuery, labelsHandler],
-      [projectBoardMembersQuery, assigneesHandler],
+      [usersAutocompleteQuery, assigneesHandler],
       [projectBoardMilestonesQuery, milestonesHandler],
       [searchIterationQuery, iterationHandler],
       [createBoardListMutation, createBoardListQueryHandler],

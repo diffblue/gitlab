@@ -28,8 +28,6 @@ import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 import boardLabelsQuery from '~/boards/graphql/board_labels.query.graphql';
 import groupBoardMilestonesQuery from '~/boards/graphql/group_board_milestones.query.graphql';
 import projectBoardMilestonesQuery from '~/boards/graphql/project_board_milestones.query.graphql';
-import groupBoardMembersQuery from '~/boards/graphql/group_board_members.query.graphql';
-import projectBoardMembersQuery from '~/boards/graphql/project_board_members.query.graphql';
 import { setError } from '~/boards/graphql/cache_updates';
 import { getListByTypeId } from '~/boards//boards_util';
 import usersAutocompleteQuery from '~/graphql_shared/queries/users_autocomplete.query.graphql';
@@ -172,32 +170,17 @@ export default {
     },
     assigneesApollo: {
       query() {
-        if (gon.features?.newGraphqlUsersAutocomplete) {
-          return usersAutocompleteQuery;
-        }
-
-        if (this.boardType === BoardType.project) {
-          return projectBoardMembersQuery;
-        }
-        return groupBoardMembersQuery;
+        return usersAutocompleteQuery;
       },
       variables() {
-        if (gon.features?.newGraphqlUsersAutocomplete) {
-          return {
-            fullPath: this.fullPath,
-            search: this.searchTerm,
-            isProject: this.boardType === BoardType.project,
-          };
-        }
-
-        return { ...this.baseVariables, search: this.searchTerm };
+        return {
+          fullPath: this.fullPath,
+          search: this.searchTerm,
+          isProject: this.boardType === BoardType.project,
+        };
       },
       update(data) {
-        if (gon.features?.newGraphqlUsersAutocomplete) {
-          return data[this.boardType]?.autocompleteUsers;
-        }
-
-        return data.workspace.assignees.nodes.map(({ user }) => user);
+        return data[this.boardType]?.autocompleteUsers;
       },
       skip() {
         return !this.isApolloBoard || this.columnType !== ListType.assignee;
