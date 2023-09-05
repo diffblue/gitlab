@@ -68,6 +68,13 @@ RSpec.describe Projects::OnDemandScansController,
 
         expect(response).to have_gitlab_http_status(:not_found)
       end
+
+      it "sees a 404 error if FIPS mode is enabled" do
+        expect(::Gitlab::FIPS).to receive(:enabled?).and_return(true).twice
+        get path
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
     end
   end
 
