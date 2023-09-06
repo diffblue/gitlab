@@ -17,7 +17,6 @@ module Security
         return if approval_rules.empty?
 
         log_update_approval_rule('Evaluating MR approval rules from scan result policies',
-          merge_request_id: merge_request.id,
           pipeline_ids: related_pipeline_ids,
           target_pipeline_ids: related_target_pipeline_ids
         )
@@ -40,8 +39,9 @@ module Security
             log_update_approval_rule(
               'Updating MR approval rule',
               reason: 'Scanner removed by MR',
-              merge_request_id: merge_request.id,
-              approval_rule_id: approval_rule.id
+              approval_rule_id: approval_rule.id,
+              approval_rule_name: approval_rule.name,
+              missing_scans: missing_scans(approval_rule)
             )
 
             next true
@@ -52,8 +52,8 @@ module Security
             log_update_approval_rule(
               'Updating MR approval rule',
               reason: 'scan_finding rule violated',
-              merge_request_id: merge_request.id,
-              approval_rule_id: approval_rule.id
+              approval_rule_id: approval_rule.id,
+              approval_rule_name: approval_rule.name
             )
           end
 
@@ -62,7 +62,13 @@ module Security
       end
 
       def log_update_approval_rule(message, **attributes)
-        Gitlab::AppJsonLogger.info(message: message, **attributes)
+        default_attributes = {
+          event: 'update_approvals',
+          merge_request_id: merge_request.id,
+          merge_request_iid: merge_request.iid,
+          project_path: project.full_path
+        }
+        Gitlab::AppJsonLogger.info(message: message, **default_attributes.merge(attributes))
       end
 
       def violates_approval_rule?(approval_rule)
@@ -74,13 +80,17 @@ module Security
         false
       end
 
-      def scan_removed?(approval_rule)
+      def missing_scans(approval_rule)
         scan_types_diff = target_pipeline_security_scan_types - pipeline_security_scan_types
         scanners = approval_rule.scanners
 
-        return scan_types_diff.any? if scanners.empty?
+        return scan_types_diff if scanners.empty?
 
-        (scan_types_diff & scanners).any?
+        scan_types_diff & scanners
+      end
+
+      def scan_removed?(approval_rule)
+        missing_scans(approval_rule).any?
       end
 
       def pipeline_security_scan_types

@@ -120,19 +120,27 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
           expect(::Gitlab::AppJsonLogger)
             .to receive(:info).once.ordered
             .with(
+              event: 'update_approvals',
               merge_request_id: merge_request.id,
+              merge_request_iid: merge_request.iid,
               message: 'Evaluating MR approval rules from scan result policies',
               pipeline_ids: [pipeline.id],
-              target_pipeline_ids: [target_pipeline.id]
+              target_pipeline_ids: [target_pipeline.id],
+              project_path: 'namespace1/project-1'
             ).and_call_original
 
           expect(::Gitlab::AppJsonLogger)
             .to receive(:info).once.ordered
             .with(
+              event: 'update_approvals',
               approval_rule_id: report_approver_rule.id,
+              approval_rule_name: report_approver_rule.name,
               message: 'Updating MR approval rule',
               merge_request_id: merge_request.id,
-              reason: 'Scanner removed by MR'
+              merge_request_iid: merge_request.iid,
+              reason: 'Scanner removed by MR',
+              missing_scans: ['dependency_scanning'],
+              project_path: 'namespace1/project-1'
             ).and_call_original
 
           execute
@@ -201,19 +209,26 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
           expect(::Gitlab::AppJsonLogger)
             .to receive(:info).once.ordered
             .with(
+              event: 'update_approvals',
               merge_request_id: merge_request.id,
+              merge_request_iid: merge_request.iid,
               message: 'Evaluating MR approval rules from scan result policies',
               pipeline_ids: [pipeline.id],
-              target_pipeline_ids: [target_pipeline.id]
+              target_pipeline_ids: [target_pipeline.id],
+              project_path: 'namespace1/project-1'
             ).and_call_original
 
           expect(::Gitlab::AppJsonLogger)
             .to receive(:info).once.ordered
             .with(
+              event: 'update_approvals',
               approval_rule_id: report_approver_rule.id,
+              approval_rule_name: report_approver_rule.name,
               message: 'Updating MR approval rule',
               merge_request_id: merge_request.id,
-              reason: 'scan_finding rule violated'
+              merge_request_iid: merge_request.iid,
+              reason: 'scan_finding rule violated',
+              project_path: 'namespace1/project-1'
             ).and_call_original
 
           execute

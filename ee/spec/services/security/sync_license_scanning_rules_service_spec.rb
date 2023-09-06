@@ -131,6 +131,16 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
             expect { execute }.to change { license_finding_rule.reload.approvals_required }.from(1).to(0)
           end
         end
+
+        it 'logs only violated rules' do
+          if result
+            expect(Gitlab::AppJsonLogger).to receive(:info).with(hash_including(message: 'Updating MR approval rule'))
+          else
+            expect(Gitlab::AppJsonLogger).not_to receive(:info)
+          end
+
+          execute
+        end
       end
     end
   end

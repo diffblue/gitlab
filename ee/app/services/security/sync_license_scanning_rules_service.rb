@@ -48,6 +48,7 @@ module Security
       end
       ApprovalMergeRequestRule.remove_required_approved(unviolated_rules)
       generate_policy_bot_comment(merge_request, violated_rules.any?)
+      log_violated_rules(merge_request, violated_rules)
     end
 
     ## Checks if a policy rule violates the following conditions:
@@ -147,6 +148,29 @@ module Security
         { 'report_type' => Security::ScanResultPolicies::PolicyViolationComment::REPORT_TYPES[:license_scanning],
           'violated_policy' => violated_policy }
       )
+    end
+
+    def log_violated_rules(merge_request, rules)
+      return unless rules.any?
+
+      rules.each do |approval_rule|
+        log_update_approval_rule(
+          merge_request,
+          approval_rule_id: approval_rule.id,
+          approval_rule_name: approval_rule.name
+        )
+      end
+    end
+
+    def log_update_approval_rule(merge_request, **attributes)
+      default_attributes = {
+        reason: 'license_finding rule violated',
+        event: 'update_approvals',
+        merge_request_id: merge_request.id,
+        merge_request_iid: merge_request.iid,
+        project_path: project.full_path
+      }
+      Gitlab::AppJsonLogger.info(message: 'Updating MR approval rule', **default_attributes.merge(attributes))
     end
   end
 end
