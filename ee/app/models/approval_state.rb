@@ -48,7 +48,7 @@ class ApprovalState
       next [] unless approval_feature_available?
 
       if Feature.enabled?(:use_merge_approval_rules_when_merged, merge_request.project) && merge_request.merged?
-        # After merging, we have historical data that we contain invalid approval rules assoiciated with
+        # After merging, we have historical data that we contain invalid approval rules associated with
         # the merge request. We should remove any of these invalid approver rules.
         all_approval_rules - invalid_approvers_rules
       else
