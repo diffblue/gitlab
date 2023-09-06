@@ -2,10 +2,21 @@
 
 require 'spec_helper'
 
-RSpec.describe ApplicationSetting do
+RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
   using RSpec::Parameterized::TableSyntax
 
   subject(:setting) { described_class.create_from_defaults }
+
+  describe 'cyclical dependency ApplicationSetting <-> License' do
+    before do
+      described_class.delete_all # ensure no records exist
+    end
+
+    it 'does not depend on License.feature_available? check on creation' do
+      expect(License).not_to receive(:feature_available?)
+      described_class.create_from_defaults
+    end
+  end
 
   describe 'validations' do
     describe 'mirror', feature_category: :source_code_management do
