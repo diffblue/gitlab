@@ -1,5 +1,6 @@
 import { GlAlert, GlSprintf } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import AnyMergeRequestRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/any_merge_request_rule_builder.vue';
 import DefaultRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/default_rule_builder.vue';
 import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_builder.vue';
 import SecurityScanRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/security_scan_rule_builder.vue';
@@ -10,6 +11,7 @@ import {
   LICENSE_FINDING,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib';
 import {
+  anyMergeRequestBuildRule,
   emptyBuildRule,
   securityScanBuildRule,
   licenseScanBuildRule,
@@ -34,6 +36,10 @@ describe('PolicyRuleBuilder', () => {
     license_states: ['newly_detected', 'detected'],
   };
 
+  const ANY_MERGE_REQUEST_RULE = {
+    ...anyMergeRequestBuildRule(),
+  };
+
   const factory = ({ propsData = {}, provide = {} } = {}) => {
     wrapper = shallowMountExtended(PolicyRuleBuilder, {
       propsData: {
@@ -43,6 +49,9 @@ describe('PolicyRuleBuilder', () => {
       provide: {
         namespaceId: '1',
         namespaceType: NAMESPACE_TYPES.PROJECT,
+        glFeatures: {
+          scanResultAnyMergeRequest: true,
+        },
         ...provide,
       },
       stubs: {
@@ -52,28 +61,35 @@ describe('PolicyRuleBuilder', () => {
   };
 
   const findAlert = () => wrapper.findComponent(GlAlert);
+  const findAnyMergeRequestRule = () => wrapper.findComponent(AnyMergeRequestRuleBuilder);
   const findEmptyScanRuleBuilder = () => wrapper.findComponent(DefaultRuleBuilder);
   const findSecurityScanRule = () => wrapper.findComponent(SecurityScanRuleBuilder);
   const findLicenseScanRule = () => wrapper.findComponent(LicenseScanRuleBuilder);
 
   describe('when a rule type is selected', () => {
     it.each`
-      ruleType           | rule                     | showSecurityRule | showLicenseRule
-      ${'unselected'}    | ${emptyBuildRule()}      | ${false}         | ${false}
-      ${'security scan'} | ${SECURITY_SCAN_RULE}    | ${true}          | ${false}
-      ${'license scan'}  | ${LICENSE_SCANNING_RULE} | ${false}         | ${true}
-    `('renders the $ruleType policy', ({ rule, showSecurityRule, showLicenseRule }) => {
-      factory({ propsData: { initRule: rule } });
-      expect(findSecurityScanRule().exists()).toBe(showSecurityRule);
-      expect(findLicenseScanRule().exists()).toBe(showLicenseRule);
-    });
+      ruleType               | rule                      | showSecurityRule | showLicenseRule | showAnyMergeRequestRule
+      ${'unselected'}        | ${emptyBuildRule()}       | ${false}         | ${false}        | ${false}
+      ${'security scan'}     | ${SECURITY_SCAN_RULE}     | ${true}          | ${false}        | ${false}
+      ${'license scan'}      | ${LICENSE_SCANNING_RULE}  | ${false}         | ${true}         | ${false}
+      ${'any merge request'} | ${ANY_MERGE_REQUEST_RULE} | ${false}         | ${false}        | ${true}
+    `(
+      'renders the $ruleType policy',
+      ({ rule, showSecurityRule, showLicenseRule, showAnyMergeRequestRule }) => {
+        factory({ propsData: { initRule: rule } });
+        expect(findSecurityScanRule().exists()).toBe(showSecurityRule);
+        expect(findLicenseScanRule().exists()).toBe(showLicenseRule);
+        expect(findAnyMergeRequestRule().exists()).toBe(showAnyMergeRequestRule);
+      },
+    );
   });
 
-  describe('selects correct rule', () => {
+  describe('change to different rule', () => {
     it.each`
-      initialRule                | findComponent           | expectedRule
-      ${licenseScanBuildRule()}  | ${findLicenseScanRule}  | ${securityScanBuildRule()}
-      ${securityScanBuildRule()} | ${findSecurityScanRule} | ${licenseScanBuildRule()}
+      initialRule                   | findComponent              | expectedRule
+      ${licenseScanBuildRule()}     | ${findLicenseScanRule}     | ${securityScanBuildRule()}
+      ${securityScanBuildRule()}    | ${findSecurityScanRule}    | ${licenseScanBuildRule()}
+      ${anyMergeRequestBuildRule()} | ${findAnyMergeRequestRule} | ${licenseScanBuildRule()}
     `('selects correct rule for scan type', ({ initialRule, findComponent, expectedRule }) => {
       factory({
         propsData: {
@@ -111,10 +127,11 @@ describe('PolicyRuleBuilder', () => {
 
   describe('removing a rule', () => {
     it.each`
-      ruleType           | rule                     | findComponent
-      ${'unselected'}    | ${emptyBuildRule()}      | ${findEmptyScanRuleBuilder}
-      ${'security scan'} | ${SECURITY_SCAN_RULE}    | ${findSecurityScanRule}
-      ${'license scan'}  | ${LICENSE_SCANNING_RULE} | ${findLicenseScanRule}
+      ruleType               | rule                      | findComponent
+      ${'unselected'}        | ${emptyBuildRule()}       | ${findEmptyScanRuleBuilder}
+      ${'security scan'}     | ${SECURITY_SCAN_RULE}     | ${findSecurityScanRule}
+      ${'license scan'}      | ${LICENSE_SCANNING_RULE}  | ${findLicenseScanRule}
+      ${'any merge request'} | ${ANY_MERGE_REQUEST_RULE} | ${findAnyMergeRequestRule}
     `(
       'emits the remove event when removing the $ruleType rule',
       async ({ findComponent, rule }) => {

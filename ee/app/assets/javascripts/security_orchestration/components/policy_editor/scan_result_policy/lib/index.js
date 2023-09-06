@@ -12,6 +12,7 @@ export {
   invalidVulnerabilityAge,
   humanizeInvalidBranchesError,
   invalidVulnerabilityAttributes,
+  ANY_MERGE_REQUEST,
   SCAN_FINDING,
   LICENSE_FINDING,
 } from './rules';

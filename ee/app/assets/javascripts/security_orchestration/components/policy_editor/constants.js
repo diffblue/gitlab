@@ -116,6 +116,9 @@ export const ALL_PROTECTED_BRANCHES = {
   value: 'protected',
 };
 
+export const ANY_COMMIT = 'any';
+export const ANY_UNSIGNED_COMMIT = 'unsigned';
+
 export const ANY_OPERATOR = 'ANY';
 
 export const GREATER_THAN_OPERATOR = 'greater_than';

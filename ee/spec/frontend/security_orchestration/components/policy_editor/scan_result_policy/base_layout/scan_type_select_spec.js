@@ -1,6 +1,7 @@
 import { GlCollapsibleListbox, GlListboxItem } from '@gitlab/ui';
 import ScanTypeSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/base_layout/scan_type_select.vue';
 import {
+  ANY_MERGE_REQUEST,
   LICENSE_FINDING,
   SCAN_FINDING,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib';
@@ -14,6 +15,11 @@ describe('ScanTypeSelect', () => {
       propsData: {
         ...props,
       },
+      provide: {
+        glFeatures: {
+          scanResultAnyMergeRequest: true,
+        },
+      },
       stubs: {
         GlCollapsibleListbox,
       },
@@ -25,7 +31,12 @@ describe('ScanTypeSelect', () => {
 
   it('can render defaultOptions', () => {
     createComponent();
-    expect(findListBoxItems()).toHaveLength(2);
+    expect(findListBoxItems()).toHaveLength(3);
+    expect(
+      findListBox()
+        .props('items')
+        .map(({ value }) => value),
+    ).toStrictEqual([ANY_MERGE_REQUEST, SCAN_FINDING, LICENSE_FINDING]);
   });
 
   it('can select scan type', () => {
@@ -40,8 +51,8 @@ describe('ScanTypeSelect', () => {
       items: [{ text: 'test', value: 'test' }],
     });
 
-    expect(findListBoxItems()).toHaveLength(3);
-    expect(findListBoxItems().at(0).text('')).toEqual('test');
+    expect(findListBoxItems()).toHaveLength(4);
+    expect(findListBoxItems().at(1).text('')).toEqual('test');
   });
 
   it('can preselect existing scan', () => {

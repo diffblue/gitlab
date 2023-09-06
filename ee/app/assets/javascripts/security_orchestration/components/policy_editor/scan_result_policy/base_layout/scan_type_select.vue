@@ -1,7 +1,8 @@
 <script>
 import { GlCollapsibleListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import { SCAN_FINDING, LICENSE_FINDING } from '../lib';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { ANY_MERGE_REQUEST, SCAN_FINDING, LICENSE_FINDING } from '../lib';
 
 export default {
   scanTypeOptions: [
@@ -21,6 +22,7 @@ export default {
   components: {
     GlCollapsibleListbox,
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
     scanType: {
       type: String,
@@ -37,8 +39,18 @@ export default {
     scanRuleTypeToggleText() {
       return this.scanType ? '' : this.$options.i18n.scanRuleTypeToggleText;
     },
+    anyMergeRequestItem() {
+      return this.glFeatures.scanResultAnyMergeRequest
+        ? [
+            {
+              value: ANY_MERGE_REQUEST,
+              text: s__('SecurityOrchestration|Any merge request'),
+            },
+          ]
+        : [];
+    },
     listBoxItems() {
-      return [...this.items, ...this.$options.scanTypeOptions];
+      return [...this.anyMergeRequestItem, ...this.items, ...this.$options.scanTypeOptions];
     },
   },
   methods: {
