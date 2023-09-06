@@ -27,12 +27,14 @@ RSpec.describe API::Settings, 'EE Settings', :aggregate_failures, feature_catego
       put api(path, admin, admin_mode: true),
         params: {
           help_text: 'Help text',
-          file_template_project_id: project.id
+          file_template_project_id: project.id,
+          package_metadata_purl_types: [1]
         }
 
       expect(response).to have_gitlab_http_status(:ok)
       expect(json_response['help_text']).to eq('Help text')
       expect(json_response['file_template_project_id']).to eq(project.id)
+      expect(json_response['package_metadata_purl_types']).to eq([1])
     end
 
     context 'elasticsearch settings' do

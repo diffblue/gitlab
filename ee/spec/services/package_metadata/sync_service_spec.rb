@@ -181,15 +181,17 @@ RSpec.describe PackageMetadata::SyncService, feature_category: :software_composi
 
     subject(:execute) { described_class.execute(data_type: data_type, lease: lease) }
 
+    before do
+      allow(PackageMetadata::StopSignal).to receive(:new)
+        .with(lease, described_class::MAX_LEASE_LENGTH, described_class::MAX_SYNC_DURATION)
+        .and_return(stop_signal)
+    end
+
     shared_examples_for 'it calls #execute for each enabled config' do
       let(:should_stop) { false }
 
       before do
-        stub_application_setting(package_metadata_purl_types: Enums::PackageMetadata.purl_types.values)
         stub_feature_flags(compressed_package_metadata_synchronization: false)
-        allow(PackageMetadata::StopSignal).to receive(:new)
-          .with(lease, described_class::MAX_LEASE_LENGTH, described_class::MAX_SYNC_DURATION)
-          .and_return(stop_signal)
       end
 
       specify do
