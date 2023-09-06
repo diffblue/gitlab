@@ -60,11 +60,27 @@ RSpec.describe ::EE::Gitlab::Scim::ProvisioningService, feature_category: :syste
         expect(user).to be_a(User)
       end
 
-      it 'user record requires confirmation' do
-        service.execute
+      context 'when email confirmation setting is set' do
+        using RSpec::Parameterized::TableSyntax
 
-        expect(user).to be_present
-        expect(user).not_to be_confirmed
+        where(:email_confirmation_setting, :confirmed) do
+          'soft' | false
+          'hard' | false
+          'off' | true
+        end
+
+        with_them do
+          before do
+            stub_application_setting_enum('email_confirmation_setting', email_confirmation_setting)
+          end
+
+          it "sets user confirmation according to setting" do
+            service.execute
+
+            expect(user).to be_present
+            expect(user.reload.confirmed?).to be(confirmed)
+          end
+        end
       end
 
       context 'when the current minimum password length is different from the default minimum password length' do

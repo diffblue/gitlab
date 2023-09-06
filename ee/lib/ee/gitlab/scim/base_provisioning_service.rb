@@ -41,6 +41,14 @@ module EE
         def missing_params
           @missing_params ||= ([:extern_uid, :email, :username] - @parsed_hash.keys)
         end
+
+        def user_params
+          @parsed_hash.tap do |hash|
+            hash[:username] = valid_username
+            hash[:password] = hash[:password_confirmation] = random_password
+            hash[:password_automatically_set] = PASSWORD_AUTOMATICALLY_SET
+          end
+        end
       end
     end
   end

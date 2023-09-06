@@ -54,6 +54,12 @@ RSpec.describe ::EE::Gitlab::Scim::Group::ProvisioningService, :saas,
     end
 
     context 'when valid params' do
+      before do
+        # By default SAAS version setting is hard as per docs
+        # https://docs.gitlab.com/ee/user/gitlab_com/#email-confirmation
+        stub_application_setting_enum('email_confirmation_setting', 'hard')
+      end
+
       def user
         User.find_by(email: service_params[:email])
       end
