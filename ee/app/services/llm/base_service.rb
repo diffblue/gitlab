@@ -40,12 +40,12 @@ module Llm
       message = content(action_name)
       payload = {
         request_id: request_id,
-        role: ::Gitlab::Llm::Cache::ROLE_USER,
+        role: ::Gitlab::Llm::ChatMessage::ROLE_USER,
         content: message,
         timestamp: Time.current
       }
 
-      ::Gitlab::Llm::Cache.new(user).add(payload) if cache_response?(options)
+      ::Gitlab::Llm::ChatStorage.new(user).add(payload) if cache_response?(options)
 
       if emit_response?(options)
         # We do not add the `client_subscription_id` here on purpose for now.
@@ -106,7 +106,7 @@ module Llm
     end
 
     def no_worker_message?(content)
-      content == ::Gitlab::Llm::CachedMessage::RESET_MESSAGE
+      content == ::Gitlab::Llm::ChatMessage::RESET_MESSAGE
     end
 
     def cache_response?(options)

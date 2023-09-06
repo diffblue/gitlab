@@ -2,7 +2,7 @@
 
 module Gitlab
   module Llm
-    class Cache
+    class ChatStorage
       # Expiration time of user messages should not be more than 90 days.
       # EXPIRE_TIME sets expiration time for the whole chat history stream (not
       # for individual messages) - so the stream is deleted after 3 days since
@@ -19,17 +19,14 @@ module Gitlab
       # sufficient.
       MAX_TEXT_LIMIT = 20_000
 
-      ROLE_USER = 'user'
-      ROLE_ASSISTANT = 'assistant'
-      ROLE_SYSTEM = 'system'
-      ALLOWED_ROLES = [ROLE_USER, ROLE_ASSISTANT, ROLE_SYSTEM].freeze
-
       def initialize(user)
         @user = user
       end
 
       def add(payload)
-        raise ArgumentError, "Invalid role '#{payload[:role]}'" unless ALLOWED_ROLES.include?(payload[:role])
+        unless ChatMessage::ALLOWED_ROLES.include?(payload[:role])
+          raise ArgumentError, "Invalid role '#{payload[:role]}'"
+        end
 
         data = {
           id: SecureRandom.uuid,
@@ -43,16 +40,16 @@ module Gitlab
         cache_data(data)
       end
 
-      def find_all(filters = {})
+      def messages(filters = {})
         with_redis do |redis|
           redis.xrange(key).filter_map do |_id, data|
-            CachedMessage.new(data) if matches_filters?(data, filters)
+            ChatMessage.new(data) if matches_filters?(data, filters)
           end
         end
       end
 
       def last_conversation
-        all = find_all
+        all = messages
         idx = all.rindex(&:conversation_reset?)
         return all unless idx
         return [] unless idx + 1 < all.size

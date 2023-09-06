@@ -92,7 +92,7 @@ module Gitlab
                     response: Gitlab::Llm::Chain::PlainResponseModifier.new(content),
                     options: {
                       cache_response: false,
-                      role: ::Gitlab::Llm::Cache::ROLE_ASSISTANT,
+                      role: ::Gitlab::Llm::ChatMessage::ROLE_ASSISTANT,
                       chunk_id: chunk[:id]
                     }
                   )
@@ -134,7 +134,8 @@ module Gitlab
 
               response_handler.execute(
                 response: Gitlab::Llm::Chain::ToolResponseModifier.new(tool_class),
-                options: { cache_response: false, role: ::Gitlab::Llm::Cache::ROLE_SYSTEM, type: RESPONSE_TYPE_TOOL }
+                options: { cache_response: false, role: ::Gitlab::Llm::ChatMessage::ROLE_SYSTEM,
+                           type: RESPONSE_TYPE_TOOL }
               )
             end
 
@@ -143,7 +144,7 @@ module Gitlab
             end
 
             def last_conversation
-              Cache.new(context.current_user).last_conversation
+              ChatStorage.new(context.current_user).last_conversation
             end
             strong_memoize_attr :last_conversation
 

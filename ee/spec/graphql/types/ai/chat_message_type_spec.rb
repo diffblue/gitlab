@@ -16,10 +16,10 @@ RSpec.describe GitlabSchema.types['AiChatMessage'], feature_category: :duo_chat 
   describe '#content_html' do
     let_it_be(:current_user) { create(:user) }
 
-    let(:cached_message) { Gitlab::Llm::CachedMessage.new('content' => "Hello, **World**!", 'timestamp' => '') }
+    let(:message) { Gitlab::Llm::ChatMessage.new('content' => "Hello, **World**!", 'timestamp' => '') }
 
     it 'renders html through Banzai' do
-      allow(Banzai).to receive(:render_and_post_process).with(cached_message.content, {
+      allow(Banzai).to receive(:render_and_post_process).with(message.content, {
         current_user: current_user,
         only_path: false,
         pipeline: :full,
@@ -27,7 +27,7 @@ RSpec.describe GitlabSchema.types['AiChatMessage'], feature_category: :duo_chat 
         skip_project_check: true
       }).and_return('banzai_content')
 
-      resolved_field = resolve_field(:content_html, cached_message, current_user: current_user)
+      resolved_field = resolve_field(:content_html, message, current_user: current_user)
 
       expect(resolved_field).to eq('banzai_content')
     end

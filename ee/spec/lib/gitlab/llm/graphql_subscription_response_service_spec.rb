@@ -86,7 +86,7 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
       let(:cache_response) { true }
 
       it 'caches response' do
-        expect_next_instance_of(::Gitlab::Llm::Cache) do |cache|
+        expect_next_instance_of(::Gitlab::Llm::ChatStorage) do |cache|
           expect(cache).to receive(:add)
             .with(payload.slice(:request_id, :errors, :role, :timestamp).merge(content: payload[:content]))
         end
@@ -99,7 +99,7 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
       let(:cache_response) { false }
 
       it 'does not cache the response' do
-        expect(Gitlab::Llm::Cache).not_to receive(:new)
+        expect(Gitlab::Llm::ChatStorage).not_to receive(:new)
 
         subject
       end
@@ -151,7 +151,7 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
 
       it 'returns response but does not cache or broadcast' do
         expect(GraphqlTriggers).not_to receive(:ai_completion_response)
-        expect(Gitlab::Llm::Cache).not_to receive(:new)
+        expect(Gitlab::Llm::ChatStorage).not_to receive(:new)
 
         expect(subject[:content]).to eq(response_body)
       end

@@ -20,7 +20,7 @@ module Gitlab
           model_name: resource&.class&.name,
           content: response_modifier.response_body,
           errors: response_modifier.errors,
-          role: options[:role] || Cache::ROLE_ASSISTANT,
+          role: options[:role] || ChatMessage::ROLE_ASSISTANT,
           timestamp: Time.current,
           type: options.fetch(:type, nil),
           chunk_id: options.fetch(:chunk_id, nil)
@@ -35,7 +35,7 @@ module Gitlab
         response_data = data.slice(:request_id, :errors, :role, :content, :timestamp)
 
         unless options[:internal_request]
-          Gitlab::Llm::Cache.new(user).add(response_data) if options[:cache_response]
+          Gitlab::Llm::ChatStorage.new(user).add(response_data) if options[:cache_response]
 
           subscription_arguments = { user_id: user.to_global_id, resource_id: resource&.to_global_id }
           if options[:client_subscription_id]

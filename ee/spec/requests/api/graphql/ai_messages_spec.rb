@@ -36,10 +36,10 @@ RSpec.describe 'Querying user AI messages', :clean_gitlab_redis_cache, feature_c
   subject { graphql_data.dig('aiMessages', 'nodes') }
 
   before do
-    ::Gitlab::Llm::Cache.new(user).add(request_id: 'uuid1', role: 'user', content: 'question 1')
-    ::Gitlab::Llm::Cache.new(user).add(request_id: 'uuid1', role: 'assistant', content: response_content)
+    ::Gitlab::Llm::ChatStorage.new(user).add(request_id: 'uuid1', role: 'user', content: 'question 1')
+    ::Gitlab::Llm::ChatStorage.new(user).add(request_id: 'uuid1', role: 'assistant', content: response_content)
     # should not be included in response because it's for other user
-    ::Gitlab::Llm::Cache.new(other_user).add(request_id: 'uuid1', role: 'user', content: 'question 2')
+    ::Gitlab::Llm::ChatStorage.new(other_user).add(request_id: 'uuid1', role: 'user', content: 'question 2')
   end
 
   context 'when user is not logged in' do
