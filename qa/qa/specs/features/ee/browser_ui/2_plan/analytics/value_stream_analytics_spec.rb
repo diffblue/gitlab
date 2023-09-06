@@ -6,7 +6,7 @@ module QA
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:default_stage_names) { %w[Issue Plan Code Test Review Staging] }
 
-      context "without pre-existing dashboard" do
+      context "without pre-existing dashboard", :reliable do
         shared_examples "value stream analytics" do
           it "shows vsa dashboard" do
             EE::Page::Group::ValueStreamAnalytics.perform do |vsa_page|
@@ -72,10 +72,7 @@ module QA
         end
       end
 
-      context("with pre-existing dashboard",
-        testcase: "https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/417268",
-        only: { subdomain: :staging }
-      ) do
+      context "with pre-existing dashboard", only: { subdomain: :staging } do
         let!(:user) { Runtime::User.admin }
 
         let!(:group) { build(:sandbox, api_client: admin_api_client, path: 'optimize-vsa-test').reload! }
@@ -95,7 +92,10 @@ module QA
           Page::Project::Menu.perform(&:go_to_value_stream_analytics)
         end
 
-        it "displays VSA page with correct lifecycle metrics and overview chart" do
+        it(
+          "displays VSA page with correct lifecycle metrics and overview chart",
+          testcase: "https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/417268"
+        ) do
           EE::Page::Project::ValueStreamAnalytics.perform do |vsa_page|
             aggregate_failures do
               expect(vsa_page).to have_stages(default_stage_names)
