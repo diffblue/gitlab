@@ -14,10 +14,7 @@ import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { DAST_SHORT_NAME } from '~/security_configuration/components/constants';
 import { __, s__ } from '~/locale';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-import {
-  getQueryHeaders,
-  toggleQueryPollingByVisibility,
-} from '~/ci/pipeline_details/components/graph/utils';
+import { getQueryHeaders, toggleQueryPollingByVisibility } from '~/ci/pipeline_details/graph/utils';
 import handlesErrors from '../../mixins/handles_errors';
 import Actions from '../actions.vue';
 import EmptyState from '../empty_state.vue';

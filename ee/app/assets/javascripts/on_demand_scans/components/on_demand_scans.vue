@@ -3,10 +3,7 @@ import { GlButton, GlLink, GlSprintf, GlScrollableTabs, GlAlert } from '@gitlab/
 import { s__ } from '~/locale';
 import { VARIANT_WARNING } from '~/alert';
 import ConfigurationPageLayout from 'ee/security_configuration/components/configuration_page_layout.vue';
-import {
-  getQueryHeaders,
-  toggleQueryPollingByVisibility,
-} from '~/ci/pipeline_details/components/graph/utils';
+import { getQueryHeaders, toggleQueryPollingByVisibility } from '~/ci/pipeline_details/graph/utils';
 import onDemandScanCounts from '../graphql/on_demand_scan_counts.query.graphql';
 import {
   HELP_PAGE_PATH,
