@@ -3,50 +3,55 @@
 require 'spec_helper'
 
 RSpec.describe 'Merge request > User approves via custom role', :js, feature_category: :code_review_workflow do
-  let_it_be(:current_user) { create(:user) }
-  let_it_be(:project) { create(:project, :public, :repository, :in_group) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:project) { create(:project, :repository, :in_group) }
   let_it_be(:merge_request) { create(:merge_request, source_project: project) }
+  let_it_be(:role) { create(:member_role, :guest, namespace: project.group) }
+  let_it_be(:membership) { create(:project_member, :guest, member_role: role, user: user, project: project) }
 
   before do
     stub_licensed_features(custom_roles: true)
-    sign_in(current_user)
+    sign_in(user)
   end
 
-  context 'when the user has `admin_merge_request` enabled at the project level' do
-    let_it_be(:admin_merge_request_role) do
-      create(:member_role, :guest, namespace: project.group, admin_merge_request: true)
+  shared_examples_for '`admin_merge_request` custom role' do |project_visibility:|
+    before do
+      project.update!(visibility: project_visibility)
+      role.update!(admin_merge_request: has_admin_merge_request_role?)
     end
 
-    let_it_be(:project_member) do
-      create(:project_member, :guest, member_role: admin_merge_request_role, user: current_user, project: project)
+    context 'when the user has `admin_merge_request` enabled at the project level' do
+      let(:has_admin_merge_request_role?) { true }
+
+      it 'allows approving and revoking approval' do
+        visit project_merge_request_path(project, merge_request)
+        expect(page).to have_button('Approve', exact: true)
+
+        click_approval_button('Approve')
+        expect(page).to have_content('Approved by you')
+
+        click_approval_button('Revoke approval')
+        expect(page).to have_content('Approval is optional')
+      end
     end
 
-    it 'allows approving and revoking approval' do
-      visit project_merge_request_path(project, merge_request)
-      expect(page).to have_button('Approve', exact: true)
+    context 'when the user does not have the `admin_merge_request` permission enabled' do
+      let(:has_admin_merge_request_role?) { false }
 
-      click_approval_button('Approve')
-      expect(page).to have_content('Approved by you')
+      it 'prevents approving' do
+        visit project_merge_request_path(project, merge_request)
 
-      click_approval_button('Revoke approval')
-      expect(page).to have_content('Approval is optional')
+        expect(page).not_to have_button('Approve', exact: true)
+      end
     end
   end
 
-  context 'when the user does not have the `admin_merge_request` permission enabled' do
-    let_it_be(:non_admin_merge_request_role) do
-      create(:member_role, :guest, namespace: project.group, admin_merge_request: false)
-    end
+  context 'with a public project' do
+    it_behaves_like '`admin_merge_request` custom role', project_visibility: Gitlab::VisibilityLevel::PUBLIC
+  end
 
-    let_it_be(:project_member) do
-      create(:project_member, :guest, member_role: non_admin_merge_request_role, user: current_user, project: project)
-    end
-
-    it 'prevents approving' do
-      visit project_merge_request_path(project, merge_request)
-
-      expect(page).not_to have_button('Approve', exact: true)
-    end
+  context 'with a private project' do
+    it_behaves_like '`admin_merge_request` custom role', project_visibility: Gitlab::VisibilityLevel::PRIVATE
   end
 
   def click_approval_button(action)
