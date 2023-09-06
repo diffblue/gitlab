@@ -51,7 +51,7 @@ describe('PendingMembersApp', () => {
     );
   };
 
-  const findMemberRows = () => wrapper.findAllByTestId('pending-members-row');
+  const findPendingMembers = () => wrapper.findAllByTestId('pending-members');
   const findPagination = () => wrapper.findComponent(GlPagination);
 
   beforeEach(() => {
@@ -98,10 +98,10 @@ describe('PendingMembersApp', () => {
   });
 
   it('renders pending members', () => {
-    const memberRows = findMemberRows();
+    const pendingMembers = findPendingMembers();
 
-    expect(memberRows.length).toBe(mockDataMembers.data.length);
-    expect(findMemberRows().wrappers.map((w) => w.html())).toMatchSnapshot();
+    expect(pendingMembers.length).toBe(mockDataMembers.data.length);
+    expect(findPendingMembers().wrappers.map((w) => w.html())).toMatchSnapshot();
   });
 
   it('pagination is rendered and passed correct values', () => {

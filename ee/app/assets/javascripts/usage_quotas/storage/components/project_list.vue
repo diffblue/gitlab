@@ -187,24 +187,15 @@ export default {
     </template>
 
     <template #cell(lfsObjects)="{ item: project }">
-      <number-to-human-size
-        :value="project.statistics.lfsObjectsSize"
-        data-testid="project-lfs-object-size"
-      />
+      <number-to-human-size :value="project.statistics.lfsObjectsSize" />
     </template>
 
     <template #cell(buildArtifacts)="{ item: project }">
-      <number-to-human-size
-        :value="project.statistics.buildArtifactsSize"
-        data-testid="project-build-artifact-size"
-      />
+      <number-to-human-size :value="project.statistics.buildArtifactsSize" />
     </template>
 
     <template #cell(packages)="{ item: project }">
-      <number-to-human-size
-        :value="project.statistics.packagesSize"
-        data-testid="project-packages-size"
-      />
+      <number-to-human-size :value="project.statistics.packagesSize" />
     </template>
 
     <template #cell(wiki)="{ item: project }">

@@ -36,7 +36,7 @@ export default {
 };
 </script>
 <template>
-  <usage-banner :loading="loading" data-qa-selector="dependency_proxy_usage">
+  <usage-banner :loading="loading">
     <template #left-primary-text>
       {{ $options.i18n.dependencyProxy }}
     </template>
@@ -55,8 +55,7 @@ export default {
     <template #right-secondary-text>
       <number-to-human-size
         :value="Number(dependencyProxyTotalSize)"
-        data-testid="total-size-section"
-        data-qa-selector="dependency_proxy_size"
+        data-testid="dependency-proxy-size"
       />
     </template>
   </usage-banner>

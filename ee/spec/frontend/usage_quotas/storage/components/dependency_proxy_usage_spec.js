@@ -11,7 +11,7 @@ describe('Dependency proxy usage component', () => {
     dependencyProxyTotalSize: '512',
   };
 
-  const findTotalSizeSection = () => wrapper.findByTestId('total-size-section');
+  const findDependencyProxySizeSection = () => wrapper.findByTestId('dependency-proxy-size');
   const findMoreInformation = () => wrapper.findByTestId('dependency-proxy-description');
 
   const createComponent = ({ props = {} } = {}) => {
@@ -31,8 +31,8 @@ describe('Dependency proxy usage component', () => {
     createComponent();
   });
 
-  it('displays the total size section when prop is provided', () => {
-    expect(findTotalSizeSection().props('value')).toBe(512);
+  it('displays the dependency proxy size section when prop is provided', () => {
+    expect(findDependencyProxySizeSection().props('value')).toBe(512);
   });
 
   describe('when `dependencyProxyTotalSize` has BigInt value', () => {
@@ -46,8 +46,8 @@ describe('Dependency proxy usage component', () => {
       });
     });
 
-    it('displays the total size section when prop is provided', () => {
-      expect(findTotalSizeSection().props('value')).toBe(Number.MAX_SAFE_INTEGER);
+    it('displays the dependency proxy size section when prop is provided', () => {
+      expect(findDependencyProxySizeSection().props('value')).toBe(Number.MAX_SAFE_INTEGER);
     });
   });
 

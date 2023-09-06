@@ -4,8 +4,7 @@ exports[`PendingMembersApp renders pending members 1`] = `
 Array [
   <div
     class="gl-border-0 gl-border-b-1! gl-border-gray-100 gl-border-solid gl-display-flex gl-justify-content-space-between gl-p-5"
-    data-qa-selector="pending_members"
-    data-testid="pending-members-row"
+    data-testid="pending-members"
   >
     <gl-avatar-link-stub
       alt="334050-1 334050-1"
@@ -24,7 +23,7 @@ Array [
     <gl-button-stub
       buttontextclasses=""
       category="primary"
-      data-qa-selector="approve_member"
+      data-testid="approve-member"
       icon=""
       role="button"
       size="medium"
@@ -35,7 +34,6 @@ Array [
     </gl-button-stub>
     <gl-modal-stub
       arialabel=""
-      data-qa-selector="approve_member_confirmation_modal"
       dismisslabel="Close"
       modalclass=""
       modalid="approve-confirmation-modal-177"
@@ -51,8 +49,7 @@ Array [
   </div>,
   <div
     class="gl-border-0 gl-border-b-1! gl-border-gray-100 gl-border-solid gl-display-flex gl-justify-content-space-between gl-p-5"
-    data-qa-selector="pending_members"
-    data-testid="pending-members-row"
+    data-testid="pending-members"
   >
     <gl-avatar-link-stub
       target="blank"
@@ -69,7 +66,7 @@ Array [
     <gl-button-stub
       buttontextclasses=""
       category="primary"
-      data-qa-selector="approve_member"
+      data-testid="approve-member"
       icon=""
       role="button"
       size="medium"
@@ -80,7 +77,6 @@ Array [
     </gl-button-stub>
     <gl-modal-stub
       arialabel=""
-      data-qa-selector="approve_member_confirmation_modal"
       dismisslabel="Close"
       modalclass=""
       modalid="approve-confirmation-modal-178"
