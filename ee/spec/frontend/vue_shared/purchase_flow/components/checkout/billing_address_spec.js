@@ -18,7 +18,7 @@ describe('Billing Address', () => {
   let wrapper;
   let updateState = jest.fn();
 
-  const findCountrySelect = () => wrapper.findByTestId('country-select');
+  const findCountrySelect = () => wrapper.findByTestId('country');
 
   const createComponent = (apolloLocalState = {}) => {
     const apolloResolvers = {

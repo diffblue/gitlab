@@ -39,7 +39,7 @@ exports[`Buy Addons Shared App CI Minutes labels does not show labels if input i
       >
         <gl-form-input-stub
           class="gl-w-15"
-          data-qa-selector="quantity"
+          data-testid="quantity"
           min="1"
           name="quantity"
           type="number"
@@ -304,7 +304,7 @@ exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 1 pa
       >
         <gl-form-input-stub
           class="gl-w-15"
-          data-qa-selector="quantity"
+          data-testid="quantity"
           min="1"
           name="quantity"
           state="true"
@@ -584,7 +584,7 @@ exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 2 pa
       >
         <gl-form-input-stub
           class="gl-w-15"
-          data-qa-selector="quantity"
+          data-testid="quantity"
           min="1"
           name="quantity"
           state="true"
@@ -850,7 +850,7 @@ exports[`Buy Addons Shared App Storage labels does not show labels if input is i
       >
         <gl-form-input-stub
           class="gl-w-15"
-          data-qa-selector="quantity"
+          data-testid="quantity"
           min="1"
           name="quantity"
           type="number"
@@ -1128,7 +1128,7 @@ exports[`Buy Addons Shared App Storage labels shows labels correctly for 1 pack 
       >
         <gl-form-input-stub
           class="gl-w-15"
-          data-qa-selector="quantity"
+          data-testid="quantity"
           min="1"
           name="quantity"
           state="true"
@@ -1421,7 +1421,7 @@ exports[`Buy Addons Shared App Storage labels shows labels correctly for 2 packs
       >
         <gl-form-input-stub
           class="gl-w-15"
-          data-qa-selector="quantity"
+          data-testid="quantity"
           min="1"
           name="quantity"
           state="true"
