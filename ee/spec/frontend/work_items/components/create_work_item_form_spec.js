@@ -7,10 +7,11 @@ import waitForPromises from 'helpers/wait_for_promises';
 import CreateWorkItemForm from 'ee/work_items/components/create_work_item_form.vue';
 import { __ } from '~/locale';
 import { WORK_ITEM_TYPE_VALUE_OBJECTIVE } from '~/work_items/constants';
+import groupWorkItemTypesQuery from '~/work_items/graphql/group_work_item_types.query.graphql';
 import projectWorkItemTypesQuery from '~/work_items/graphql/project_work_item_types.query.graphql';
 import createWorkItemMutation from '~/work_items/graphql/create_work_item.mutation.graphql';
 import {
-  projectWorkItemTypesQueryResponse,
+  groupOrProjectWorkItemTypesQueryResponse,
   createWorkItemMutationResponse,
   createWorkItemMutationErrorResponse,
 } from '../mock_data';
@@ -20,7 +21,12 @@ Vue.use(VueApollo);
 describe('Create work item Objective component', () => {
   let wrapper;
 
-  const querySuccessHandler = jest.fn().mockResolvedValue(projectWorkItemTypesQueryResponse);
+  const groupQuerySuccessHandler = jest
+    .fn()
+    .mockResolvedValue(groupOrProjectWorkItemTypesQueryResponse);
+  const projectQuerySuccessHandler = jest
+    .fn()
+    .mockResolvedValue(groupOrProjectWorkItemTypesQueryResponse);
   const mutationSuccessHandler = jest.fn().mockResolvedValue(createWorkItemMutationResponse);
   const mutationErrorHandler = jest.fn().mockResolvedValue(createWorkItemMutationErrorResponse);
 
@@ -36,15 +42,19 @@ describe('Create work item Objective component', () => {
   };
 
   const createComponent = ({
-    queryHandler = querySuccessHandler,
+    isGroup = false,
+    groupQueryHandler = groupQuerySuccessHandler,
+    projectQueryHandler = projectQuerySuccessHandler,
     mutationHandler = mutationSuccessHandler,
   } = {}) => {
     wrapper = shallowMount(CreateWorkItemForm, {
       apolloProvider: createMockApollo([
-        [projectWorkItemTypesQuery, queryHandler],
+        [groupWorkItemTypesQuery, groupQueryHandler],
+        [projectWorkItemTypesQuery, projectQueryHandler],
         [createWorkItemMutation, mutationHandler],
       ]),
       propsData: {
+        isGroup,
         workItemType: WORK_ITEM_TYPE_VALUE_OBJECTIVE,
       },
       provide: {
@@ -87,7 +97,7 @@ describe('Create work item Objective component', () => {
   });
 
   it('hides the alert on dismissing the error', async () => {
-    createComponent({ queryHandler: jest.fn().mockRejectedValue('oh no') });
+    createComponent({ projectQueryHandler: jest.fn().mockRejectedValue('oh no') });
     await waitForPromises();
 
     expect(findAlert().exists()).toBe(true);
@@ -114,7 +124,7 @@ describe('Create work item Objective component', () => {
         input: {
           title: mockTitle,
           confidential: false,
-          projectPath: 'full-path',
+          namespacePath: 'full-path',
         },
       });
     });
@@ -127,13 +137,43 @@ describe('Create work item Objective component', () => {
         input: {
           title: mockTitle,
           confidential: true,
-          projectPath: 'full-path',
+          namespacePath: 'full-path',
         },
       });
     });
 
     it('renders an enabled create button', () => {
       expect(findCreateButton().props('disabled')).toBe(false);
+    });
+  });
+
+  describe('work item types query', () => {
+    describe('when project context', () => {
+      beforeEach(() => {
+        createComponent({ isGroup: false });
+      });
+
+      it('calls project query', () => {
+        expect(projectQuerySuccessHandler).toHaveBeenCalled();
+      });
+
+      it('does not call group query', () => {
+        expect(groupQuerySuccessHandler).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('when group context', () => {
+      beforeEach(() => {
+        createComponent({ isGroup: true });
+      });
+
+      it('calls group query', () => {
+        expect(groupQuerySuccessHandler).toHaveBeenCalled();
+      });
+
+      it('does not call project query', () => {
+        expect(projectQuerySuccessHandler).not.toHaveBeenCalled();
+      });
     });
   });
 

@@ -17,6 +17,7 @@ module EE
     override :work_items_list_data
     def work_items_list_data(group)
       super.merge(
+        has_epics_feature: group.licensed_feature_available?(:epics).to_s,
         has_issuable_health_status_feature: group.licensed_feature_available?(:issuable_health_status).to_s,
         has_issue_weights_feature: group.licensed_feature_available?(:issue_weights).to_s
       )

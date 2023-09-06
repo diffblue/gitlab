@@ -169,12 +169,11 @@ export default {
 <template>
   <issues-list-app
     ref="issuesListApp"
-    :ee-is-okrs-enabled="isOkrsEnabled"
     :ee-work-item-types="workItemTypes"
     :ee-type-token-options="typeTokenOptions"
     :ee-search-tokens="searchTokens"
   >
-    <template v-if="isOkrsEnabled" #new-objective-button>
+    <template v-if="isOkrsEnabled" #new-issuable-button>
       <new-issue-dropdown
         :work-item-type="$options.WORK_ITEM_TYPE_VALUE_OBJECTIVE"
         @select-new-work-item="showForm"

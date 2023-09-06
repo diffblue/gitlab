@@ -2,6 +2,7 @@
 import { GlAlert, GlButton, GlForm, GlFormCheckbox, GlFormGroup, GlFormInput } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import createWorkItemMutation from '~/work_items/graphql/create_work_item.mutation.graphql';
+import groupWorkItemTypesQuery from '~/work_items/graphql/group_work_item_types.query.graphql';
 import projectWorkItemTypesQuery from '~/work_items/graphql/project_work_item_types.query.graphql';
 import {
   I18N_WORK_ITEM_CONFIDENTIALITY_CHECKBOX_LABEL,
@@ -22,6 +23,11 @@ export default {
   },
   inject: ['fullPath'],
   props: {
+    isGroup: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     workItemType: {
       type: String,
       required: true,
@@ -38,7 +44,9 @@ export default {
   },
   apollo: {
     workItemTypes: {
-      query: projectWorkItemTypesQuery,
+      query() {
+        return this.isGroup ? groupWorkItemTypesQuery : projectWorkItemTypesQuery;
+      },
       variables() {
         return {
           fullPath: this.fullPath,
@@ -79,7 +87,7 @@ export default {
           variables: {
             input: {
               title: this.title,
-              projectPath: this.fullPath,
+              namespacePath: this.fullPath,
               workItemTypeId: this.workItemTypeId,
               confidential: this.confidential,
             },

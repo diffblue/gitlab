@@ -1,4 +1,4 @@
-export const projectWorkItemTypesQueryResponse = {
+export const groupOrProjectWorkItemTypesQueryResponse = {
   data: {
     workspace: {
       id: 'gid://gitlab/WorkItem/1',
