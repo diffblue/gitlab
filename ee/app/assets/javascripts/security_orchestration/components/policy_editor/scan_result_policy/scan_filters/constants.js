@@ -90,6 +90,10 @@ export const APPROVAL_VULNERABILITY_STATES = {
   },
 };
 
+export const DEFAULT_VULNERABILITY_STATES = Object.keys(
+  APPROVAL_VULNERABILITY_STATES[NEWLY_DETECTED],
+);
+
 export const APPROVAL_VULNERABILITY_STATES_FLAT = Object.values(
   APPROVAL_VULNERABILITY_STATES,
 ).reduce((acc, states) => ({ ...acc, ...states }), {});
