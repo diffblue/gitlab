@@ -18548,6 +18548,8 @@ CREATE TABLE merge_request_review_llm_summaries (
     updated_at timestamp with time zone NOT NULL,
     provider smallint NOT NULL,
     content text NOT NULL,
+    cached_markdown_version integer,
+    content_html text,
     CONSTRAINT check_72802358e9 CHECK ((char_length(content) <= 2056))
 );
 
