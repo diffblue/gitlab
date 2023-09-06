@@ -29,8 +29,8 @@ describe('StatisticsSeatsCard', () => {
     });
   };
 
-  const findSeatsUsedBlock = () => wrapper.findByTestId('seats-used-block');
-  const findSeatsOwedBlock = () => wrapper.findByTestId('seats-owed-block');
+  const findSeatsUsedBlock = () => wrapper.findByTestId('seats-used');
+  const findSeatsOwedBlock = () => wrapper.findByTestId('seats-owed');
   const findPurchaseButton = () => wrapper.findByTestId('purchase-button');
   const findLimitedAccessModal = () => wrapper.findComponent(LimitedAccessModal);
 

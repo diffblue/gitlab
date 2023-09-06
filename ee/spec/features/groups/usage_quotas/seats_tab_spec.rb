@@ -316,7 +316,7 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category
   end
 
   def member_table_selector
-    '[data-testid="table"]'
+    '[data-testid="subscription-users"]'
   end
 
   def user_to_remove_row

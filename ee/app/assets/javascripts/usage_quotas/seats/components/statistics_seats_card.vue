@@ -106,8 +106,7 @@ export default {
       <p
         v-if="shouldRenderSeatsUsedBlock"
         class="gl-font-size-h-display gl-font-weight-bold gl-mb-3"
-        data-testid="seats-used-block"
-        data-qa-selector="seats_used"
+        data-testid="seats-used"
       >
         <span class="gl-relative gl-top-1">
           {{ seatsUsed }}
@@ -126,8 +125,7 @@ export default {
       <p
         v-if="shouldRenderSeatsOwedBlock"
         class="gl-font-size-h-display gl-font-weight-bold gl-mb-0"
-        data-testid="seats-owed-block"
-        data-qa-selector="seats_owed"
+        data-testid="seats-owed"
       >
         <span class="gl-relative gl-top-1">
           {{ seatsOwed }}
@@ -152,7 +150,6 @@ export default {
       variant="confirm"
       class="gl-ml-3 gl-align-self-start"
       data-testid="purchase-button"
-      data-qa-selector="add_seats"
       @click="handleAddSeats"
     >
       {{ $options.i18n.addSeatsText }}

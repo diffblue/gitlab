@@ -37,7 +37,7 @@ export default {
 };
 </script>
 <template>
-  <usage-banner data-qa-selector="container_registry_usage">
+  <usage-banner>
     <template #left-primary-text>
       {{ $options.i18n.containerRegistry }}
     </template>
@@ -53,11 +53,7 @@ export default {
       {{ $options.i18n.storageUsed }}
     </template>
     <template #right-secondary-text>
-      <number-to-human-size
-        :value="containerRegistrySize"
-        data-testid="total-size-section"
-        data-qa-selector="container_registry_size"
-      />
+      <number-to-human-size :value="containerRegistrySize" data-testid="total-size-section" />
       <storage-type-warning v-if="containerRegistrySizeIsEstimated">
         {{ $options.i18n.estimatedWarningTooltip }}
         <help-page-link

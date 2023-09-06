@@ -103,7 +103,7 @@ export default {
         :target="buyAddonTargetAttr"
         category="primary"
         variant="confirm"
-        data-qa-selector="purchase_more_storage"
+        data-testid="purchase-more-storage"
       >
         {{ $options.i18n.purchaseButtonText }}
       </gl-button>
@@ -121,7 +121,7 @@ export default {
         :used-storage="usedStorage"
         :total-storage="totalStorage"
         :loading="loading"
-        data-qa-selector="namespace_usage_total"
+        data-testid="namespace-usage-total"
         class="gl-w-full"
       />
       <total-storage-available-breakdown-card

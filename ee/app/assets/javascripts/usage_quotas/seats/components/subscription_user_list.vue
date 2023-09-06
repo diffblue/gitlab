@@ -152,8 +152,7 @@ export default {
       :fields="$options.tableFields"
       :busy="isLoaderShown"
       :show-empty="true"
-      data-testid="table"
-      data-qa-selector="subscription_users"
+      data-testid="subscription-users"
       :empty-text="emptyText"
     >
       <template #cell(disclosure)="{ item, toggleDetails, detailsShowing }">
@@ -229,7 +228,6 @@ export default {
           category="secondary"
           variant="danger"
           data-testid="remove-user"
-          data-qa-selector="remove_user"
           @click="displayRemoveMemberModal(data.item.user)"
         >
           {{ __('Remove user') }}

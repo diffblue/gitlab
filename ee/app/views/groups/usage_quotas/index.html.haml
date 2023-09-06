@@ -31,7 +31,7 @@
     = gl_tab_link_to '#storage-quota-tab', data: { testid: 'storage-tab' } do
       = s_('UsageQuota|Storage')
     - if Feature.enabled?(:data_transfer_monitoring, @group)
-      = gl_tab_link_to '#transfer-quota-tab', data: { testid: 'transfer-tab' } do
+      = gl_tab_link_to '#transfer-quota-tab' do
         = s_('UsageQuota|Transfer')
 
   .tab-content

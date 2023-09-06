@@ -118,7 +118,6 @@ export default {
           size="small"
           variant="default"
           data-testid="add-seats"
-          data-qa-selector="add_seats"
         >
           {{ $options.i18n.addSeatsText }}
         </gl-button>
@@ -144,7 +143,7 @@ export default {
       </template>
       <template #additional-info>
         <div class="gl-mt-5 gl-mb-3 gl-display-grid gl-grid-template-columns-2 gl-gap-3">
-          <div class="gl-font-weight-bold" data-qa-selector="seats_used" data-testid="seats-used">
+          <div class="gl-font-weight-bold" data-testid="seats-used">
             <span class="gl-display-inline-block gl-mr-3">{{ maxSeatsUsed }}</span>
             <span>{{ $options.i18n.seatsUsedText }}</span>
             <gl-link
@@ -161,7 +160,7 @@ export default {
             }}</span>
             <span data-testid="subscription-start-date">{{ formattedStartDate }}</span>
           </div>
-          <div class="gl-font-weight-bold" data-qa-selector="seats_owed" data-testid="seats-owed">
+          <div class="gl-font-weight-bold" data-testid="seats-owed">
             <span class="gl-display-inline-block gl-mr-3">{{ seatsOwed }}</span>
             <span>{{ $options.i18n.seatsOwedText }}</span>
             <gl-link
