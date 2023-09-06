@@ -2,15 +2,15 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::TrainingProviders::KontraUrlFinder do
+RSpec.describe Security::TrainingProviders::KontraUrlFinder, feature_category: :vulnerability_management do
   include ReactiveCachingHelpers
 
   let_it_be(:provider_name) { 'Kontra' }
   let_it_be(:provider) { create(:security_training_provider, name: provider_name) }
   let_it_be(:identifier) { create(:vulnerabilities_identifier, external_type: 'cwe', external_id: 2, name: "cwe-2") }
   let_it_be(:dummy_url) { 'http://test.host/test' }
-  let_it_be(:identifier_external_id) { "[#{identifier.external_type}]-[#{identifier.external_id}]-[#{identifier.name}]" }
 
+  let(:identifier_external_id) { "[#{identifier.external_type}]-[#{identifier.external_id}]-[#{identifier.name}]" }
   let(:finder) { described_class.new(identifier.project, provider, identifier_external_id) }
 
   describe '#calculate_reactive_cache' do
@@ -42,7 +42,6 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder do
 
     context "when external_type is not present in allowed list" do
       let_it_be(:identifier) { create(:vulnerabilities_identifier, external_type: 'invalid type', external_id: "A1", name: "A1. Injection") }
-      let_it_be(:identifier_external_id) { "[#{identifier.external_type}]-[#{identifier.external_id}]-[#{identifier.name}]" }
 
       it 'returns nil' do
         expect(finder.execute).to be_nil
@@ -57,8 +56,6 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder do
       end
 
       context "when identifier contains CWE-{number} format" do
-        let_it_be(:identifier) { create(:vulnerabilities_identifier, external_type: 'cwe', external_id: "CWE-2") }
-
         it 'returns full url path with proper mapping key' do
           expect(finder.full_url).to eq('https://example.com/?cwe=2')
         end
