@@ -6,6 +6,9 @@ module Ci
     # This class ensures that we keep 1 record per project per month.
     class ProjectMonthlyUsage < Ci::ApplicationRecord
       include Ci::NamespacedModelName
+      include IgnorableColumns
+
+      ignore_column :shared_runners_duration_convert_to_bigint, remove_with: '16.5', remove_after: '2023-09-22'
 
       belongs_to :project
 

@@ -341,11 +341,29 @@ BEGIN
 END;
 $$;
 
+CREATE FUNCTION trigger_bbb95b2d6929() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  NEW."shared_runners_duration_convert_to_bigint" := NEW."shared_runners_duration";
+  RETURN NEW;
+END;
+$$;
+
 CREATE FUNCTION trigger_bfad0e2b9c86() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
   NEW."pipeline_id_convert_to_bigint" := NEW."pipeline_id";
+  RETURN NEW;
+END;
+$$;
+
+CREATE FUNCTION trigger_c0353bbb6145() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  NEW."shared_runners_duration_convert_to_bigint" := NEW."shared_runners_duration";
   RETURN NEW;
 END;
 $$;
@@ -13709,6 +13727,7 @@ CREATE TABLE ci_namespace_monthly_usages (
     shared_runners_duration integer DEFAULT 0 NOT NULL,
     created_at timestamp with time zone,
     amount_used numeric(18,4) DEFAULT 0.0 NOT NULL,
+    shared_runners_duration_convert_to_bigint bigint DEFAULT 0 NOT NULL,
     CONSTRAINT ci_namespace_monthly_usages_year_month_constraint CHECK ((date = date_trunc('month'::text, (date)::timestamp with time zone)))
 );
 
@@ -13995,6 +14014,7 @@ CREATE TABLE ci_project_monthly_usages (
     shared_runners_duration integer DEFAULT 0 NOT NULL,
     created_at timestamp with time zone,
     amount_used numeric(18,4) DEFAULT 0.0 NOT NULL,
+    shared_runners_duration_convert_to_bigint bigint DEFAULT 0 NOT NULL,
     CONSTRAINT ci_project_monthly_usages_year_month_constraint CHECK ((date = date_trunc('month'::text, (date)::timestamp with time zone)))
 );
 
@@ -35969,7 +35989,11 @@ CREATE TRIGGER trigger_7f3d66a7d7f5 BEFORE INSERT OR UPDATE ON ci_pipeline_varia
 
 CREATE TRIGGER trigger_b2d852e1e2cb BEFORE INSERT OR UPDATE ON ci_pipelines FOR EACH ROW EXECUTE FUNCTION trigger_b2d852e1e2cb();
 
+CREATE TRIGGER trigger_bbb95b2d6929 BEFORE INSERT OR UPDATE ON ci_project_monthly_usages FOR EACH ROW EXECUTE FUNCTION trigger_bbb95b2d6929();
+
 CREATE TRIGGER trigger_bfad0e2b9c86 BEFORE INSERT OR UPDATE ON ci_pipeline_messages FOR EACH ROW EXECUTE FUNCTION trigger_bfad0e2b9c86();
+
+CREATE TRIGGER trigger_c0353bbb6145 BEFORE INSERT OR UPDATE ON ci_namespace_monthly_usages FOR EACH ROW EXECUTE FUNCTION trigger_c0353bbb6145();
 
 CREATE TRIGGER trigger_delete_project_namespace_on_project_delete AFTER DELETE ON projects FOR EACH ROW WHEN ((old.project_namespace_id IS NOT NULL)) EXECUTE FUNCTION delete_associated_project_namespace();
 
