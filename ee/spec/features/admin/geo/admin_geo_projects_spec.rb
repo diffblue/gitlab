@@ -21,6 +21,7 @@ RSpec.describe 'admin Geo Projects', :js, :geo, feature_category: :geo_replicati
   end
 
   before do
+    stub_feature_flags(geo_project_repository_replication: false)
     stub_current_geo_node(geo_node)
     allow(Gitlab::Geo).to receive(:license_allows?).and_return(true)
     admin = create(:admin)

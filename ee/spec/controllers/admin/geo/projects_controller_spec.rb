@@ -6,7 +6,7 @@ RSpec.describe Admin::Geo::ProjectsController, :geo, feature_category: :geo_repl
   include EE::GeoHelpers
 
   let_it_be(:admin) { create(:admin) }
-  let_it_be(:geo_primary) { create(:geo_node, :primary) }
+  let_it_be(:geo_node) { create(:geo_node, :primary) }
 
   let(:synced_registry) { create(:geo_project_registry, :synced) }
 
@@ -32,49 +32,92 @@ RSpec.describe Admin::Geo::ProjectsController, :geo, feature_category: :geo_repl
 
       before do
         stub_licensed_features(geo: true)
-        stub_current_geo_node(create(:geo_node))
+        stub_current_geo_node(geo_node)
       end
 
-      it 'displays a different read-only message based on skip_readonly_message' do
-        expect(subject.body).to match('You may be able to make a limited amount of changes or perform a limited amount of actions on this page')
-        expect(subject.body).to include(geo_primary.url)
-      end
+      context 'with geo_project_repository_replication feature flag disabled' do
+        before do
+          stub_feature_flags(geo_project_repository_replication: false)
+        end
 
-      context 'without sync_status specified' do
-        it 'renders all template when no extra get params is specified' do
-          expect(subject).to have_gitlab_http_status(:ok)
-          expect(subject).to render_template(:index)
-          expect(subject).to render_template(partial: 'admin/geo/projects/_all')
+        context 'on secondary' do
+          before do
+            stub_secondary_node
+          end
+
+          it 'displays a different read-only message based on skip_readonly_message' do
+            expect(subject.body).to match(
+              'You may be able to make a limited amount of changes or perform a limited amount of actions on this page'
+            )
+            expect(subject.body).to include(geo_node.url)
+          end
+        end
+
+        context 'without sync_status specified' do
+          it 'renders all template when no extra get params is specified' do
+            expect(subject).to have_gitlab_http_status(:ok)
+            expect(subject).to render_template(:index)
+            expect(subject).to render_template(partial: 'admin/geo/projects/_all')
+          end
+        end
+
+        context 'with sync_status=pending' do
+          subject { get :index, params: { sync_status: 'pending' } }
+
+          it 'renders pending template' do
+            expect(subject).to have_gitlab_http_status(:ok)
+            expect(subject).to render_template(:index)
+            expect(subject).to render_template(partial: 'admin/geo/projects/_pending')
+          end
+        end
+
+        context 'with sync_status=failed' do
+          subject { get :index, params: { sync_status: 'failed' } }
+
+          it 'renders failed template' do
+            expect(subject).to have_gitlab_http_status(:ok)
+            expect(subject).to render_template(:index)
+            expect(subject).to render_template(partial: 'admin/geo/projects/_failed')
+          end
+        end
+
+        context 'with sync_status=synced' do
+          subject { get :index, params: { sync_status: 'synced' } }
+
+          it 'renders synced template' do
+            expect(subject).to have_gitlab_http_status(:ok)
+            expect(subject).to render_template(:index)
+            expect(subject).to render_template(partial: 'admin/geo/projects/_synced')
+          end
         end
       end
 
-      context 'with sync_status=pending' do
-        subject { get :index, params: { sync_status: 'pending' } }
+      context 'with geo_project_repository_replication feature flag enabled' do
+        shared_examples 'redirects /admin/geo/replication/projects' do
+          it do
+            get :index
 
-        it 'renders pending template' do
-          expect(subject).to have_gitlab_http_status(:ok)
-          expect(subject).to render_template(:index)
-          expect(subject).to render_template(partial: 'admin/geo/projects/_pending')
+            expect(response).to have_gitlab_http_status(:redirect)
+            expect(response).to redirect_to(
+              "/admin/geo/sites/#{geo_node.id}/replication/project_repositories"
+            )
+          end
         end
-      end
 
-      context 'with sync_status=failed' do
-        subject { get :index, params: { sync_status: 'failed' } }
+        context 'on primary' do
+          before do
+            stub_primary_node
+          end
 
-        it 'renders failed template' do
-          expect(subject).to have_gitlab_http_status(:ok)
-          expect(subject).to render_template(:index)
-          expect(subject).to render_template(partial: 'admin/geo/projects/_failed')
+          it_behaves_like 'redirects /admin/geo/replication/projects'
         end
-      end
 
-      context 'with sync_status=synced' do
-        subject { get :index, params: { sync_status: 'synced' } }
+        context 'on secondary' do
+          before do
+            stub_secondary_node
+          end
 
-        it 'renders synced template' do
-          expect(subject).to have_gitlab_http_status(:ok)
-          expect(subject).to render_template(:index)
-          expect(subject).to render_template(partial: 'admin/geo/projects/_synced')
+          it_behaves_like 'redirects /admin/geo/replication/projects'
         end
       end
     end
