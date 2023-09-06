@@ -31603,6 +31603,8 @@ CREATE INDEX index_ci_secure_files_on_project_id ON ci_secure_files USING btree 
 
 CREATE INDEX index_ci_sources_pipelines_on_pipeline_id ON ci_sources_pipelines USING btree (pipeline_id);
 
+CREATE INDEX index_ci_sources_pipelines_on_pipeline_id_bigint ON ci_sources_pipelines USING btree (pipeline_id_convert_to_bigint);
+
 CREATE INDEX index_ci_sources_pipelines_on_project_id ON ci_sources_pipelines USING btree (project_id);
 
 CREATE INDEX index_ci_sources_pipelines_on_source_job_id ON ci_sources_pipelines USING btree (source_job_id);
@@ -31610,6 +31612,8 @@ CREATE INDEX index_ci_sources_pipelines_on_source_job_id ON ci_sources_pipelines
 CREATE INDEX index_ci_sources_pipelines_on_source_partition_id_source_job_id ON ci_sources_pipelines USING btree (source_partition_id, source_job_id);
 
 CREATE INDEX index_ci_sources_pipelines_on_source_pipeline_id ON ci_sources_pipelines USING btree (source_pipeline_id);
+
+CREATE INDEX index_ci_sources_pipelines_on_source_pipeline_id_bigint ON ci_sources_pipelines USING btree (source_pipeline_id_convert_to_bigint);
 
 CREATE INDEX index_ci_sources_pipelines_on_source_project_id ON ci_sources_pipelines USING btree (source_project_id);
 
