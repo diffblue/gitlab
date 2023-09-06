@@ -62,6 +62,7 @@ module EE
         :throttle_incident_management_notification_enabled,
         :throttle_incident_management_notification_per_period,
         :throttle_incident_management_notification_period_in_seconds,
+        :package_metadata_purl_types,
         :product_analytics_enabled,
         :product_analytics_data_collector_host,
         :product_analytics_configurator_connection_string,
