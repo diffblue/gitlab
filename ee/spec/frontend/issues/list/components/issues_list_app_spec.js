@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 import { cloneDeep } from 'lodash';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import getIssuesQuery from 'ee_else_ce/issues/list/queries/get_issues.query.graphql';
 import getIssuesCountsQuery from 'ee_else_ce/issues/list/queries/get_issues_counts.query.graphql';
@@ -41,6 +41,8 @@ import {
 } from 'ee/vue_shared/components/filtered_search_bar/constants';
 import BlockingIssuesCount from 'ee/issues/components/blocking_issues_count.vue';
 import IssuesListApp from 'ee/issues/list/components/issues_list_app.vue';
+import NewIssueDropdown from 'ee/issues/list/components/new_issue_dropdown.vue';
+import CreateWorkItemForm from 'ee/work_items/components/create_work_item_form.vue';
 
 describe('EE IssuesListApp component', () => {
   let wrapper;
@@ -89,8 +91,9 @@ describe('EE IssuesListApp component', () => {
   defaultQueryResponse.data.project.issues.nodes[0].weight = 5;
 
   const findIssuableList = () => wrapper.findComponent(IssuableList);
-
   const findIssueListApp = () => wrapper.findComponent(CEIssuesListApp);
+  const findCreateWorkItemForm = () => wrapper.findComponent(CreateWorkItemForm);
+  const findNewIssueDropdown = () => wrapper.findComponent(NewIssueDropdown);
 
   const mountComponent = ({
     provide = {},
@@ -182,31 +185,6 @@ describe('EE IssuesListApp component', () => {
     );
   });
 
-  describe('isOkrsEnabled', () => {
-    describe.each`
-      hasOkrsFeature | okrsMvc  | eeIsOkrsEnabled | message
-      ${false}       | ${true}  | ${false}        | ${'false'}
-      ${true}        | ${false} | ${false}        | ${'false'}
-      ${true}        | ${true}  | ${true}         | ${'true'}
-    `(
-      'when hasOkrsFeature is "$hasOkrsFeature" and okrsMvc is "$okrsMvc"',
-      ({ hasOkrsFeature, okrsMvc, eeIsOkrsEnabled, message }) => {
-        beforeEach(() => {
-          wrapper = mountComponent({
-            provide: {
-              hasOkrsFeature,
-            },
-            okrsMvc,
-          });
-        });
-
-        it(`should have eeIsOkrsEnabled value to be ${message} `, () => {
-          expect(findIssueListApp().props('eeIsOkrsEnabled')).toBe(eeIsOkrsEnabled);
-        });
-      },
-    );
-  });
-
   describe('tokens', () => {
     const mockCurrentUser = {
       id: 1,
@@ -275,6 +253,82 @@ describe('EE IssuesListApp component', () => {
           { type: TOKEN_TYPE_TYPE },
           { type: TOKEN_TYPE_WEIGHT },
         ]);
+      });
+    });
+  });
+
+  describe('NewIssueDropdown component', () => {
+    describe('when okrs is enabled', () => {
+      beforeEach(() => {
+        wrapper = mountComponent({
+          provide: { hasOkrsFeature: true },
+          okrsMvc: true,
+        });
+      });
+
+      it('renders', () => {
+        expect(findNewIssueDropdown().props()).toEqual({ workItemType: 'Objective' });
+      });
+    });
+
+    describe('when okrs is disabled', () => {
+      beforeEach(() => {
+        wrapper = mountComponent({
+          provide: { hasOkrsFeature: false },
+          okrsMvc: false,
+        });
+      });
+
+      it('does not render', () => {
+        expect(findNewIssueDropdown().exists()).toBe(false);
+      });
+    });
+  });
+
+  describe('CreateWorkItemForm component', () => {
+    describe('when okrs is enabled', () => {
+      beforeEach(() => {
+        wrapper = mountComponent({
+          provide: { hasOkrsFeature: true },
+          okrsMvc: true,
+        });
+      });
+
+      it('does not render initially', () => {
+        expect(findCreateWorkItemForm().exists()).toBe(false);
+      });
+
+      describe('when "New Objective" button is clicked', () => {
+        beforeEach(() => {
+          findNewIssueDropdown().vm.$emit('select-new-work-item');
+        });
+
+        it('renders', () => {
+          expect(findCreateWorkItemForm().props()).toEqual({
+            isGroup: false,
+            workItemType: 'Objective',
+          });
+        });
+
+        it('hides form when "hide" event is emitted', async () => {
+          findCreateWorkItemForm().vm.$emit('hide');
+          await nextTick();
+
+          expect(findCreateWorkItemForm().exists()).toBe(false);
+        });
+      });
+    });
+
+    describe('when okrs is disabled', () => {
+      beforeEach(() => {
+        wrapper = mountComponent({
+          provide: { hasOkrsFeature: false },
+          okrsMvc: false,
+        });
+      });
+
+      it('does not render', () => {
+        expect(findCreateWorkItemForm().exists()).toBe(false);
       });
     });
   });

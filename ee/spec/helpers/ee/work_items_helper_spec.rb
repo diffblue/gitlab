@@ -55,6 +55,7 @@ RSpec.describe EE::WorkItemsHelper, feature_category: :team_planning do
 
     before do
       stub_licensed_features(
+        epics: feature_available,
         issuable_health_status: feature_available,
         issue_weights: feature_available
       )
@@ -66,6 +67,7 @@ RSpec.describe EE::WorkItemsHelper, feature_category: :team_planning do
       it 'returns true for the features' do
         expect(work_items_list_data).to include(
           {
+            has_epics_feature: "true",
             has_issuable_health_status_feature: "true",
             has_issue_weights_feature: "true"
           }
@@ -79,6 +81,7 @@ RSpec.describe EE::WorkItemsHelper, feature_category: :team_planning do
       it 'returns false for the features' do
         expect(work_items_list_data).to include(
           {
+            has_epics_feature: "false",
             has_issuable_health_status_feature: "false",
             has_issue_weights_feature: "false"
           }
