@@ -7,6 +7,9 @@ module Ci
     class NamespaceMonthlyUsage < Ci::ApplicationRecord
       include Ci::NamespacedModelName
       include AfterCommitQueue
+      include IgnorableColumns
+
+      ignore_column :shared_runners_duration_convert_to_bigint, remove_with: '16.5', remove_after: '2023-09-22'
 
       belongs_to :namespace
 
