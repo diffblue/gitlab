@@ -57,6 +57,10 @@ export default {
       return Boolean(this.frameworksCsvExportPath) && this.isFrameworksReport;
     },
     tabIndex() {
+      if (this.adherenceReportUiEnabled) {
+        return [ROUTE_STANDARDS_ADHERENCE].concat(TABS).indexOf(this.$route.name);
+      }
+
       return TABS.indexOf(this.$route.name);
     },
   },
