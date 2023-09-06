@@ -156,8 +156,7 @@ export default {
     :id="popoverId"
     class="grid-stack-item-content gl-border gl-rounded-small gl-p-4 gl-display-flex gl-flex-direction-column gl-bg-white"
     :class="{
-      // TODO: simplify border colour classes once 'gl-border-t-red-500' is available: https://gitlab.com/gitlab-org/gitlab-ui/-/merge_requests/3628
-      'gl-border-t-2 gl-border-t-solid gl-border-red-500 gl-border-l-gray-100 gl-border-r-gray-100 gl-border-b-gray-100': showErrorState,
+      'gl-border-t-2 gl-border-t-solid gl-border-t-red-500': showErrorState,
     }"
   >
     <tooltip-on-truncate
