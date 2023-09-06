@@ -30,7 +30,7 @@ RSpec.describe Gitlab::Metrics::Llm, feature_category: :ai_abstraction_layer do
     end
 
     it 'returns :unknwon for other classes' do
-      expect(described_class.client_label(Gitlab::Llm::Cache)).to eq(:unknown)
+      expect(described_class.client_label(Gitlab::Llm::ChatStorage)).to eq(:unknown)
     end
   end
 end

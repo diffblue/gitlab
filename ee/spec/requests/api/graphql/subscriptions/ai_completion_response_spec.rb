@@ -41,7 +41,7 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_cha
         model_name: resource.class.name,
         request_id: request_id,
         content: content,
-        role: ::Gitlab::Llm::Cache::ROLE_ASSISTANT,
+        role: ::Gitlab::Llm::ChatMessage::ROLE_ASSISTANT,
         errors: [],
         chunk_id: nil
       }

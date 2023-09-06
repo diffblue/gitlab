@@ -151,11 +151,11 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
 
         expect(stream_response_service_double).to receive(:execute).with(
           response: first_response_double,
-          options: { cache_response: false, role: ::Gitlab::Llm::Cache::ROLE_ASSISTANT, chunk_id: 1 }
+          options: { cache_response: false, role: ::Gitlab::Llm::ChatMessage::ROLE_ASSISTANT, chunk_id: 1 }
         )
         expect(stream_response_service_double).to receive(:execute).with(
           response: second_response_double,
-          options: { cache_response: false, role: ::Gitlab::Llm::Cache::ROLE_ASSISTANT, chunk_id: 2 }
+          options: { cache_response: false, role: ::Gitlab::Llm::ChatMessage::ROLE_ASSISTANT, chunk_id: 2 }
         )
 
         agent.execute
@@ -168,26 +168,26 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       allow(agent).to receive(:provider_prompt_class)
                         .and_return(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
 
-      Gitlab::Llm::Cache.new(user).add(request_id: 'uuid1', role: 'user', content: 'question 1')
-      Gitlab::Llm::Cache.new(user).add(request_id: 'uuid1', role: 'assistant', content: 'response 1')
+      Gitlab::Llm::ChatStorage.new(user).add(request_id: 'uuid1', role: 'user', content: 'question 1')
+      Gitlab::Llm::ChatStorage.new(user).add(request_id: 'uuid1', role: 'assistant', content: 'response 1')
       # this should be ignored because response contains an error
-      Gitlab::Llm::Cache.new(user).add(request_id: 'uuid2', role: 'user', content: 'question 2')
-      Gitlab::Llm::Cache.new(user)
+      Gitlab::Llm::ChatStorage.new(user).add(request_id: 'uuid2', role: 'user', content: 'question 2')
+      Gitlab::Llm::ChatStorage.new(user)
                         .add(request_id: 'uuid2', role: 'assistant', content: 'response 2', errors: ['error'])
       # this should be ignored because it doesn't contain response
-      Gitlab::Llm::Cache.new(user).add(request_id: 'uuid3', role: 'user', content: 'question 3')
+      Gitlab::Llm::ChatStorage.new(user).add(request_id: 'uuid3', role: 'user', content: 'question 3')
 
       travel(2.minutes) do
-        Gitlab::Llm::Cache.new(user).add(request_id: 'uuid4', role: 'user', content: 'question 4')
+        Gitlab::Llm::ChatStorage.new(user).add(request_id: 'uuid4', role: 'user', content: 'question 4')
       end
       travel(2.minutes) do
-        Gitlab::Llm::Cache.new(user).add(request_id: 'uuid5', role: 'user', content: 'question 5')
+        Gitlab::Llm::ChatStorage.new(user).add(request_id: 'uuid5', role: 'user', content: 'question 5')
       end
       travel(3.minutes) do
-        Gitlab::Llm::Cache.new(user).add(request_id: 'uuid4', role: 'assistant', content: 'response 4')
+        Gitlab::Llm::ChatStorage.new(user).add(request_id: 'uuid4', role: 'assistant', content: 'response 4')
       end
       travel(4.minutes) do
-        Gitlab::Llm::Cache.new(user).add(request_id: 'uuid5', role: 'assistant', content: 'response 5')
+        Gitlab::Llm::ChatStorage.new(user).add(request_id: 'uuid5', role: 'assistant', content: 'response 5')
       end
     end
 
@@ -414,7 +414,8 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
           uuid = SecureRandom.uuid
 
           history.each do |message|
-            Gitlab::Llm::Cache.new(user).add({ request_id: uuid, role: message[:role], content: message[:content] })
+            Gitlab::Llm::ChatStorage.new(user).add({ request_id: uuid, role: message[:role],
+content: message[:content] })
           end
         end
 
@@ -542,7 +543,8 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
             uuid = SecureRandom.uuid
 
             history.each do |message|
-              Gitlab::Llm::Cache.new(user).add({ request_id: uuid, role: message[:role], content: message[:content] })
+              Gitlab::Llm::ChatStorage.new(user).add({ request_id: uuid, role: message[:role],
+content: message[:content] })
             end
           end
 

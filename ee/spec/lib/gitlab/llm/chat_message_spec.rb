@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::CachedMessage, feature_category: :duo_chat do
+RSpec.describe Gitlab::Llm::ChatMessage, feature_category: :duo_chat do
   let(:timestamp) { Time.current }
   let(:data) do
     {
@@ -19,7 +19,7 @@ RSpec.describe Gitlab::Llm::CachedMessage, feature_category: :duo_chat do
 
   describe '#to_global_id' do
     it 'returns global ID' do
-      expect(subject.to_global_id.to_s).to eq('gid://gitlab/Gitlab::Llm::CachedMessage/uuid')
+      expect(subject.to_global_id.to_s).to eq('gid://gitlab/Gitlab::Llm::ChatMessage/uuid')
     end
   end
 

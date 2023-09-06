@@ -12,16 +12,16 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic, feature
         user_input: 'foo?',
         agent_scratchpad: "some observation",
         conversation: [
-          Gitlab::Llm::CachedMessage.new(
+          Gitlab::Llm::ChatMessage.new(
             'request_id' => 'uuid1', 'role' => 'user', 'content' => 'question 1', 'timestamp' => Time.current.to_s
           ),
-          Gitlab::Llm::CachedMessage.new(
+          Gitlab::Llm::ChatMessage.new(
             'request_id' => 'uuid1', 'role' => 'assistant', 'content' => 'response 1', 'timestamp' => Time.current.to_s
           ),
-          Gitlab::Llm::CachedMessage.new(
+          Gitlab::Llm::ChatMessage.new(
             'request_id' => 'uuid1', 'role' => 'user', 'content' => 'question 2', 'timestamp' => Time.current.to_s
           ),
-          Gitlab::Llm::CachedMessage.new(
+          Gitlab::Llm::ChatMessage.new(
             'request_id' => 'uuid1', 'role' => 'assistant', 'content' => 'response 2', 'timestamp' => Time.current.to_s
           )
         ],

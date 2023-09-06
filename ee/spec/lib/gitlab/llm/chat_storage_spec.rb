@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Cache, :clean_gitlab_redis_chat, feature_category: :duo_chat do
+RSpec.describe Gitlab::Llm::ChatStorage, :clean_gitlab_redis_chat, feature_category: :duo_chat do
   let_it_be(:user) { create(:user) }
   let(:request_id) { 'uuid' }
   let(:timestamp) { Time.current.to_s }
@@ -30,11 +30,11 @@ RSpec.describe Gitlab::Llm::Cache, :clean_gitlab_redis_chat, feature_category: :
       uuid = 'unique_id'
 
       expect(SecureRandom).to receive(:uuid).once.and_return(uuid)
-      expect(subject.find_all).to be_empty
+      expect(subject.messages).to be_empty
 
       subject.add(payload)
 
-      last = subject.find_all.last
+      last = subject.messages.last
       expect(last.id).to eq(uuid)
       expect(last.request_id).to eq(request_id)
       expect(last.errors).to eq(['some error1. another error'])
@@ -48,7 +48,7 @@ RSpec.describe Gitlab::Llm::Cache, :clean_gitlab_redis_chat, feature_category: :
 
       subject.add(payload)
 
-      last = subject.find_all.last
+      last = subject.messages.last
       expect(last.errors).to eq([])
     end
 
@@ -66,23 +66,23 @@ RSpec.describe Gitlab::Llm::Cache, :clean_gitlab_redis_chat, feature_category: :
 
     context 'with MAX_MESSAGES limit' do
       before do
-        stub_const('Gitlab::Llm::Cache::MAX_MESSAGES', 2)
+        stub_const('Gitlab::Llm::ChatStorage::MAX_MESSAGES', 2)
       end
 
       it 'removes oldes messages if we reach maximum message limit' do
         subject.add(payload.merge(content: 'msg1'))
         subject.add(payload.merge(content: 'msg2'))
 
-        expect(subject.find_all.map(&:content)).to eq(%w[msg1 msg2])
+        expect(subject.messages.map(&:content)).to eq(%w[msg1 msg2])
 
         subject.add(payload.merge(content: 'msg3'))
 
-        expect(subject.find_all.map(&:content)).to eq(%w[msg2 msg3])
+        expect(subject.messages.map(&:content)).to eq(%w[msg2 msg3])
       end
     end
   end
 
-  describe '#find_all' do
+  describe '#messages' do
     let(:filters) { {} }
 
     before do
@@ -92,14 +92,14 @@ RSpec.describe Gitlab::Llm::Cache, :clean_gitlab_redis_chat, feature_category: :
     end
 
     it 'returns all records for this user' do
-      expect(subject.find_all(filters).map(&:content)).to eq(%w[msg1 msg2 msg3])
+      expect(subject.messages(filters).map(&:content)).to eq(%w[msg1 msg2 msg3])
     end
 
     context 'when filtering by role' do
       let(:filters) { { roles: ['user'] } }
 
       it 'returns only records for this role' do
-        expect(subject.find_all(filters).map(&:content)).to eq(%w[msg1])
+        expect(subject.messages(filters).map(&:content)).to eq(%w[msg1])
       end
     end
 
@@ -107,7 +107,7 @@ RSpec.describe Gitlab::Llm::Cache, :clean_gitlab_redis_chat, feature_category: :
       let(:filters) { { request_ids: %w[2 3] } }
 
       it 'returns only records with the same request_id' do
-        expect(subject.find_all(filters).map(&:content)).to eq(%w[msg2 msg3])
+        expect(subject.messages(filters).map(&:content)).to eq(%w[msg2 msg3])
       end
     end
   end

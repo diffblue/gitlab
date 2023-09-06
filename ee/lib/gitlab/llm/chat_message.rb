@@ -2,7 +2,12 @@
 
 module Gitlab
   module Llm
-    class CachedMessage
+    class ChatMessage
+      ROLE_USER = 'user'
+      ROLE_ASSISTANT = 'assistant'
+      ROLE_SYSTEM = 'system'
+      ALLOWED_ROLES = [ROLE_USER, ROLE_ASSISTANT, ROLE_SYSTEM].freeze
+
       attr_reader :id, :request_id, :content, :role, :timestamp, :error
 
       RESET_MESSAGE = '/reset'
