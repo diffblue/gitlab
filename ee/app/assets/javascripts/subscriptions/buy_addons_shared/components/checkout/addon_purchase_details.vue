@@ -113,7 +113,7 @@ export default {
           type="number"
           :min="1"
           :state="isValid"
-          data-qa-selector="quantity"
+          data-testid="quantity"
           class="gl-w-15"
         />
         <div class="gl-ml-3" data-testid="addon-quantity-text">
