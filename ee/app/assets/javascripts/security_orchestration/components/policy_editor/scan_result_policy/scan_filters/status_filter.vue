@@ -8,6 +8,7 @@ import {
   NEWLY_DETECTED,
   APPROVAL_VULNERABILITY_STATE_GROUPS,
   APPROVAL_VULNERABILITY_STATES,
+  DEFAULT_VULNERABILITY_STATES,
 } from './constants';
 
 export default {
@@ -66,7 +67,7 @@ export default {
     },
     selectVulnerabilityStateGroup(value) {
       this.selectedFilter = value;
-      this.filters = [];
+      this.filters = value === NEWLY_DETECTED ? DEFAULT_VULNERABILITY_STATES : [];
       this.$emit('change-group', value);
     },
     emitVulnerabilityStates() {

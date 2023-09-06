@@ -1,6 +1,6 @@
 <script>
 import StatusFilter from './status_filter.vue';
-import { NEWLY_DETECTED, PREVIOUSLY_EXISTING } from './constants';
+import { DEFAULT_VULNERABILITY_STATES, NEWLY_DETECTED, PREVIOUSLY_EXISTING } from './constants';
 
 export default {
   NEWLY_DETECTED,
@@ -10,6 +10,11 @@ export default {
     StatusFilter,
   },
   props: {
+    filters: {
+      type: Object,
+      required: false,
+      default: () => ({}),
+    },
     selected: {
       type: Object,
       required: false,
@@ -18,20 +23,25 @@ export default {
   },
   computed: {
     selectionDisabled() {
-      return Boolean(this.selected[NEWLY_DETECTED] && this.selected[PREVIOUSLY_EXISTING]);
+      return Boolean(this.filters[NEWLY_DETECTED] && this.filters[PREVIOUSLY_EXISTING]);
     },
   },
   methods: {
     isFilterSelected(filter) {
-      return Boolean(this.selected[filter]);
+      return Boolean(this.filters[filter]);
     },
     setStatusFilter(filter) {
-      const oppositeKey = filter === NEWLY_DETECTED ? PREVIOUSLY_EXISTING : NEWLY_DETECTED;
+      const oppositeMap = {
+        [NEWLY_DETECTED]: [PREVIOUSLY_EXISTING, DEFAULT_VULNERABILITY_STATES],
+        [PREVIOUSLY_EXISTING]: [NEWLY_DETECTED, []],
+      };
 
-      this.$emit('input', {
+      const [oppositeKey, emittedValue] = oppositeMap[filter];
+
+      this.$emit('change-status-group', {
         ...this.selected,
         [oppositeKey]: null,
-        [filter]: [],
+        [filter]: emittedValue,
       });
     },
     removeFilter(filter) {
@@ -52,6 +62,7 @@ export default {
     <status-filter
       v-if="isFilterSelected($options.NEWLY_DETECTED)"
       :disabled="selectionDisabled"
+      :show-remove-button="selectionDisabled"
       :filter="$options.NEWLY_DETECTED"
       :selected="selected[$options.NEWLY_DETECTED]"
       @input="setStatuses($event, $options.NEWLY_DETECTED)"
@@ -61,6 +72,7 @@ export default {
     <status-filter
       v-if="isFilterSelected($options.PREVIOUSLY_EXISTING)"
       :disabled="selectionDisabled"
+      :show-remove-button="selectionDisabled"
       :filter="$options.PREVIOUSLY_EXISTING"
       :selected="selected[$options.PREVIOUSLY_EXISTING]"
       @input="setStatuses($event, $options.PREVIOUSLY_EXISTING)"

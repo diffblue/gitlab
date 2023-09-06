@@ -1,4 +1,5 @@
 <script>
+import { xor, isEmpty } from 'lodash';
 import { GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { REPORT_TYPES_DEFAULT, SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
@@ -15,7 +16,7 @@ import { enforceIntValue } from '../utils';
 import ScanFilterSelector from '../scan_filter_selector.vue';
 import RuleMultiSelect from '../rule_multi_select.vue';
 import SectionLayout from '../section_layout.vue';
-import { getDefaultRule, groupSelectedVulnerabilityStates } from './lib';
+import { getDefaultRule, groupVulnerabilityStatesWithDefaults } from './lib';
 import SeverityFilter from './scan_filters/severity_filter.vue';
 import AgeFilter from './scan_filters/age_filter.vue';
 import StatusFilters from './scan_filters/status_filters.vue';
@@ -33,6 +34,7 @@ import {
   AGE,
   AGE_TOOLTIP_NO_PREVIOUSLY_EXISTING_VULNERABILITY,
   AGE_TOOLTIP_MAXIMUM_REACHED,
+  DEFAULT_VULNERABILITY_STATES,
 } from './scan_filters/constants';
 import NumberRangeSelect from './number_range_select.vue';
 import ScanTypeSelect from './base_layout/scan_type_select.vue';
@@ -71,16 +73,18 @@ export default {
     },
   },
   data() {
-    const vulnerabilityStateGroups = groupSelectedVulnerabilityStates(
-      this.initRule.vulnerability_states,
-    );
-    const { vulnerability_age: vulnerabilityAge } = this.initRule;
+    const {
+      vulnerability_age: vulnerabilityAge,
+      vulnerability_states: vulnerabilityStates,
+    } = this.initRule;
+    const vulnerabilityStateGroups = groupVulnerabilityStatesWithDefaults(vulnerabilityStates);
     const vulnerabilityAttributes = this.initRule.vulnerability_attributes || {};
 
     const filters = {
-      [AGE]: Boolean(Object.keys(vulnerabilityAge || {}).length),
-      [NEWLY_DETECTED]: vulnerabilityStateGroups[NEWLY_DETECTED] || null,
-      [PREVIOUSLY_EXISTING]: vulnerabilityStateGroups[PREVIOUSLY_EXISTING] || null,
+      [AGE]: !isEmpty(vulnerabilityAge),
+      [NEWLY_DETECTED]:
+        Boolean(vulnerabilityStateGroups[NEWLY_DETECTED]) || isEmpty(vulnerabilityStateGroups),
+      [PREVIOUSLY_EXISTING]: Boolean(vulnerabilityStateGroups[PREVIOUSLY_EXISTING]),
       [FALSE_POSITIVE]: vulnerabilityAttributes[FALSE_POSITIVE] !== undefined,
       [FIX_AVAILABLE]: vulnerabilityAttributes[FIX_AVAILABLE] !== undefined,
     };
@@ -111,6 +115,29 @@ export default {
         const numberOfPossibleLevels = Object.keys(this.$options.SEVERITY_LEVELS).length;
         const newValue = value?.length === numberOfPossibleLevels ? [] : value;
         this.triggerChanged({ severity_levels: newValue });
+      },
+    },
+    vulnerabilityStates: {
+      get() {
+        const vulnerabilityStateGroups = groupVulnerabilityStatesWithDefaults(
+          this.initRule.vulnerability_states,
+        );
+        return {
+          [PREVIOUSLY_EXISTING]: vulnerabilityStateGroups[PREVIOUSLY_EXISTING],
+          [NEWLY_DETECTED]: vulnerabilityStateGroups[NEWLY_DETECTED],
+        };
+      },
+      set(values) {
+        const states = [...(values[NEWLY_DETECTED] || []), ...(values[PREVIOUSLY_EXISTING] || [])];
+        if (!states.length) {
+          this.triggerChanged({ vulnerability_states: null });
+          return;
+        }
+
+        const statesMatchDefault = xor([...states], [...DEFAULT_VULNERABILITY_STATES]).length === 0;
+        this.triggerChanged({
+          vulnerability_states: statesMatchDefault ? [] : states,
+        });
       },
     },
     branchTypes() {
@@ -169,9 +196,6 @@ export default {
         }
       },
     },
-    isAgeFilterSelected() {
-      return this.isFilterSelected(this.$options.AGE) || this.vulnerabilityAge;
-    },
     isStatusFilterSelected() {
       return (
         this.isFilterSelected(this.$options.NEWLY_DETECTED) ||
@@ -187,8 +211,8 @@ export default {
   },
   watch: {
     filters: {
-      handler(value) {
-        if (!value[PREVIOUSLY_EXISTING]?.length && this.isFilterSelected(AGE)) {
+      handler() {
+        if (!this.vulnerabilityStates[PREVIOUSLY_EXISTING]?.length && this.isFilterSelected(AGE)) {
           this.removeAgeFilter();
         }
       },
@@ -208,10 +232,8 @@ export default {
     selectFilter(filter) {
       if (filter === STATUS) {
         const statusKey = this.filters[NEWLY_DETECTED] ? PREVIOUSLY_EXISTING : NEWLY_DETECTED;
-        this.filters[statusKey] = [];
-        this.filters[STATUS] = Boolean(
-          this.filters[NEWLY_DETECTED] && this.filters[PREVIOUSLY_EXISTING],
-        );
+        this.filters[statusKey] = true;
+        this.updateCombinedFilters();
       } else if (filter === ATTRIBUTE) {
         const attributeKey =
           Object.keys(this.vulnerabilityAttributes)[0] === FIX_AVAILABLE
@@ -234,15 +256,19 @@ export default {
       this.vulnerabilityAge = null;
     },
     removeStatusFilter(filter) {
-      this.filters[filter] = null;
+      this.filters = {
+        ...this.filters,
+        [filter]: false,
+      };
+      this.vulnerabilityStates = {
+        ...this.vulnerabilityStates,
+        [filter]: null,
+      };
       this.updateCombinedFilters();
-      this.emitStatusFilterChanges();
     },
     removeAttributesFilter(attribute) {
       const { [attribute]: deletedAttribute, ...otherAttributes } = this.vulnerabilityAttributes;
-      this.filters[attribute] = false;
       this.vulnerabilityAttributes = otherAttributes;
-      this.updateCombinedFilters();
     },
     updateCombinedFilters() {
       this.filters = {
@@ -250,6 +276,14 @@ export default {
         [STATUS]: Boolean(this.filters[NEWLY_DETECTED] && this.filters[PREVIOUSLY_EXISTING]),
         [ATTRIBUTE]: this.filters[FIX_AVAILABLE] && this.filters[FALSE_POSITIVE],
       };
+    },
+    changeStatusGroup(states) {
+      this.filters = {
+        ...this.filters,
+        [NEWLY_DETECTED]: Boolean(states[NEWLY_DETECTED]),
+        [PREVIOUSLY_EXISTING]: Boolean(states[PREVIOUSLY_EXISTING]),
+      };
+      this.vulnerabilityStates = states;
     },
     removeFilterFromRule(filter) {
       const { [filter]: deletedFilter, ...otherFilters } = this.initRule;
@@ -267,29 +301,17 @@ export default {
       }
       this.vulnerabilityAge = { ...this.vulnerabilityAge, ...ageValues };
     },
-    setStatus(updatedFilters) {
-      this.filters = updatedFilters;
-      this.emitStatusFilterChanges();
-    },
-    emitStatusFilterChanges() {
-      const states = [
-        ...(this.filters[NEWLY_DETECTED] || []),
-        ...(this.filters[PREVIOUSLY_EXISTING] || []),
-      ];
-
-      this.triggerChanged({ vulnerability_states: states });
-    },
     shouldDisableFilterSelector(filter) {
       if (filter !== AGE) {
         return false;
       }
 
-      return !this.filters[PREVIOUSLY_EXISTING]?.length;
+      return !this.vulnerabilityStates[PREVIOUSLY_EXISTING]?.length;
     },
     customFilterSelectorTooltip(filter) {
       switch (filter.value) {
         case AGE:
-          if (!this.filters[PREVIOUSLY_EXISTING]?.length) {
+          if (!this.vulnerabilityStates[PREVIOUSLY_EXISTING]?.length) {
             return filter.tooltip[AGE_TOOLTIP_NO_PREVIOUSLY_EXISTING_VULNERABILITY];
           }
           return filter.tooltip[AGE_TOOLTIP_MAXIMUM_REACHED];
@@ -381,13 +403,15 @@ export default {
 
         <status-filters
           v-if="isStatusFilterSelected"
-          :selected="filters"
+          :filters="filters"
+          :selected="vulnerabilityStates"
           @remove="removeStatusFilter"
-          @input="setStatus"
+          @change-status-group="changeStatusGroup"
+          @input="vulnerabilityStates = $event"
         />
 
         <age-filter
-          v-if="isAgeFilterSelected"
+          v-if="isFilterSelected($options.AGE)"
           :selected="vulnerabilityAge"
           @remove="removeAgeFilter"
           @input="handleVulnerabilityAgeChanges"

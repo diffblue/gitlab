@@ -11,9 +11,13 @@ describe('StatusFilters', () => {
 
   const testStateNew = 'new_needs_triage';
   const testStatePreviouslyDetected = 'detected';
-  const selectedNewlyDetected = { [NEWLY_DETECTED]: [testStateNew] };
-  const selectedPreviouslyExisting = { [PREVIOUSLY_EXISTING]: [testStatePreviouslyDetected] };
-  const selectedBothFilters = { ...selectedNewlyDetected, ...selectedPreviouslyExisting };
+  const selectedBothFilters = {
+    [NEWLY_DETECTED]: [testStateNew],
+    [PREVIOUSLY_EXISTING]: [testStatePreviouslyDetected],
+  };
+  const filtersNewlyDetected = { [NEWLY_DETECTED]: true };
+  const filtersPreviouslyExisting = { [PREVIOUSLY_EXISTING]: true };
+  const filtersBoth = { ...filtersNewlyDetected, ...filtersPreviouslyExisting };
 
   const createComponent = (props = {}) => {
     wrapper = shallowMountExtended(StatusFilters, {
@@ -33,21 +37,21 @@ describe('StatusFilters', () => {
 
   describe('select', () => {
     it.each`
-      selected                      | filtersCount
-      ${selectedNewlyDetected}      | ${1}
-      ${selectedPreviouslyExisting} | ${1}
-      ${selectedBothFilters}        | ${2}
+      filters                      | filtersCount
+      ${filtersNewlyDetected}      | ${1}
+      ${filtersPreviouslyExisting} | ${1}
+      ${filtersBoth}               | ${2}
     `(
-      'renders $filtersCount filter(s) based for selected $selected',
-      ({ selected, filtersCount }) => {
-        createComponent({ selected });
+      'renders $filtersCount filter(s) based for selected $filters',
+      ({ filters, filtersCount }) => {
+        createComponent({ filters });
 
         expect(findStatusFilters()).toHaveLength(filtersCount);
       },
     );
 
     it('should emit input events on statuses changes', () => {
-      createComponent({ selected: selectedBothFilters });
+      createComponent({ filters: filtersBoth, selected: selectedBothFilters });
 
       findStatusFilters().at(0).vm.$emit('input', []);
       findStatusFilters().at(1).vm.$emit('input', []);
@@ -68,23 +72,42 @@ describe('StatusFilters', () => {
       ]);
     });
 
-    it('should select PREVIOUSLY_EXISTING vulnerability state and emit input event', async () => {
-      createComponent({ selected: selectedNewlyDetected });
+    describe('change status group', () => {
+      it('should select PREVIOUSLY_EXISTING vulnerability state and emit change-status-group event', async () => {
+        createComponent({ filters: filtersNewlyDetected });
 
-      await findStatusFilters().at(0).vm.$emit('change-group', PREVIOUSLY_EXISTING);
+        await findStatusFilters().at(0).vm.$emit('change-group', PREVIOUSLY_EXISTING);
 
-      expect(wrapper.emitted('input')).toEqual([
-        [{ [NEWLY_DETECTED]: null, [PREVIOUSLY_EXISTING]: [] }],
-      ]);
+        expect(wrapper.emitted('change-status-group')).toEqual([
+          [{ [NEWLY_DETECTED]: null, [PREVIOUSLY_EXISTING]: [] }],
+        ]);
+      });
+
+      it('should select NEWLY_DETECTED with default vulnerability states and emit change-status-group event', async () => {
+        createComponent({
+          filters: filtersPreviouslyExisting,
+        });
+
+        await findStatusFilters().at(0).vm.$emit('change-group', NEWLY_DETECTED);
+
+        expect(wrapper.emitted('change-status-group')).toEqual([
+          [
+            {
+              [PREVIOUSLY_EXISTING]: null,
+              [NEWLY_DETECTED]: ['new_needs_triage', 'new_dismissed'],
+            },
+          ],
+        ]);
+      });
     });
 
     it.each`
-      selected                      | disabled
-      ${selectedNewlyDetected}      | ${undefined}
-      ${selectedPreviouslyExisting} | ${undefined}
-      ${selectedBothFilters}        | ${'true'}
-    `('renders filter with disabled=$disabled for states $selected', ({ selected, disabled }) => {
-      createComponent({ selected });
+      filters                      | disabled
+      ${filtersNewlyDetected}      | ${undefined}
+      ${filtersPreviouslyExisting} | ${undefined}
+      ${filtersBoth}               | ${'true'}
+    `('renders filter with disabled=$disabled for $filters', ({ filters, disabled }) => {
+      createComponent({ filters });
 
       for (let i = 0; i < findStatusFilters().length; i += 1) {
         expect(findStatusFilters().at(i).attributes('disabled')).toEqual(disabled);
@@ -94,11 +117,11 @@ describe('StatusFilters', () => {
 
   describe('remove', () => {
     it('should remove filter', async () => {
-      createComponent({ selected: selectedNewlyDetected });
+      createComponent({ filters: filtersBoth });
 
-      await findStatusFilters().at(0).vm.$emit('remove');
+      await findStatusFilters().at(1).vm.$emit('remove', PREVIOUSLY_EXISTING);
 
-      expect(wrapper.emitted('remove')).toHaveLength(1);
+      expect(wrapper.emitted('remove')).toContainEqual([PREVIOUSLY_EXISTING]);
     });
   });
 });

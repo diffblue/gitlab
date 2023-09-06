@@ -106,7 +106,7 @@ describe('SecurityScanRuleBuilder', () => {
       expect(findGroupLevelBranches().exists()).toBe(false);
       expect(findScanners().exists()).toBe(true);
       expect(findSeverities().exists()).toBe(true);
-      expect(findVulnStates().exists()).toBe(false);
+      expect(findVulnStates().exists()).toBe(true);
       expect(findVulnAllowedOperator().exists()).toBe(true);
       expect(findVulnAllowed().exists()).toBe(false);
       expect(findAttributeFilters().exists()).toBe(false);
@@ -254,8 +254,8 @@ describe('SecurityScanRuleBuilder', () => {
 
     expect(findScanFilterSelector().props('selected')).toEqual({
       age: true,
-      previously_existing: ['detected'],
-      newly_detected: null,
+      previously_existing: true,
+      newly_detected: false,
       status: false,
       false_positive: true,
       fix_available: false,
@@ -313,36 +313,60 @@ describe('SecurityScanRuleBuilder', () => {
     });
   });
 
-  it('can add and remove second status filter', async () => {
-    factory({ initRule: UPDATED_RULE });
+  describe('status filter', () => {
+    it('renders new filter if `null` value is provided in vulnerability_states', () => {
+      factory({ initRule: { ...UPDATED_RULE, vulnerability_states: null } });
 
-    await findScanFilterSelector().vm.$emit('select', STATUS);
-
-    const statusFilters = findAllStatusFilters();
-
-    expect(statusFilters).toHaveLength(2);
-    expect(statusFilters.at(0).props('filter')).toEqual(NEWLY_DETECTED);
-    expect(statusFilters.at(1).props('filter')).toEqual(PREVIOUSLY_EXISTING);
-    expect(findScanFilterSelector().props('selected')).toEqual({
-      age: true,
-      previously_existing: ['detected'],
-      newly_detected: [],
-      status: true,
-      false_positive: true,
-      fix_available: false,
-      attribute: false,
+      expect(findAllStatusFilters()).toHaveLength(1);
+      expect(findStatusFilter().props('filter')).toEqual(NEWLY_DETECTED);
+      expect(findScanFilterSelector().props('selected')).toEqual(
+        expect.objectContaining({
+          previously_existing: false,
+          newly_detected: true,
+        }),
+      );
     });
 
-    await statusFilters.at(1).vm.$emit('remove', NEWLY_DETECTED);
+    it('can change the status group', async () => {
+      factory({ initRule: { ...UPDATED_RULE, vulnerability_states: [] } });
 
-    expect(findScanFilterSelector().props('selected')).toEqual({
-      age: true,
-      newly_detected: null,
-      previously_existing: ['detected'],
-      status: false,
-      false_positive: true,
-      fix_available: false,
-      attribute: false,
+      expect(findAllStatusFilters()).toHaveLength(1);
+      expect(findStatusFilter().props('filter')).toEqual(NEWLY_DETECTED);
+      await findStatusFilter().vm.$emit('change-group', PREVIOUSLY_EXISTING);
+      expect(findStatusFilter().props('filter')).toEqual(PREVIOUSLY_EXISTING);
+    });
+
+    it('can add and remove second status filter', async () => {
+      factory({ initRule: UPDATED_RULE });
+
+      await findScanFilterSelector().vm.$emit('select', STATUS);
+
+      const statusFilters = findAllStatusFilters();
+
+      expect(statusFilters).toHaveLength(2);
+      expect(statusFilters.at(0).props('filter')).toEqual(NEWLY_DETECTED);
+      expect(statusFilters.at(1).props('filter')).toEqual(PREVIOUSLY_EXISTING);
+      expect(findScanFilterSelector().props('selected')).toEqual({
+        age: true,
+        previously_existing: true,
+        newly_detected: true,
+        status: true,
+        false_positive: true,
+        fix_available: false,
+        attribute: false,
+      });
+
+      await statusFilters.at(1).vm.$emit('remove', NEWLY_DETECTED);
+
+      expect(findScanFilterSelector().props('selected')).toEqual({
+        age: true,
+        newly_detected: false,
+        previously_existing: true,
+        status: false,
+        false_positive: true,
+        fix_available: false,
+        attribute: false,
+      });
     });
   });
 
@@ -357,7 +381,7 @@ describe('SecurityScanRuleBuilder', () => {
   it.each`
     currentComponent        | selectedFilter         | existingFilters
     ${findStatusFilter}     | ${NEWLY_DETECTED}      | ${{}}
-    ${findStatusFilter}     | ${PREVIOUSLY_EXISTING} | ${{}}
+    ${findStatusFilter}     | ${PREVIOUSLY_EXISTING} | ${{ vulnerability_states: ['detected'] }}
     ${findAgeFilter}        | ${AGE}                 | ${{ vulnerability_states: ['detected'] }}
     ${findAttributeFilters} | ${ATTRIBUTE}           | ${{}}
   `(
@@ -376,36 +400,47 @@ describe('SecurityScanRuleBuilder', () => {
     },
   );
 
-  it('handles age filter specific behavior in combination previously existing filter', async () => {
-    factory({ initRule: securityScanBuildRule() });
+  describe('age filter specific behavior in combination with previously existing filter', () => {
+    it('shows badge on scan filter selector with no previously existing filter', () => {
+      factory({ initRule: securityScanBuildRule() });
 
-    expect(findScanFilterSelectorBadge().attributes('title')).toEqual(
-      'Age criteria can only be added for pre-existing vulnerabilities',
-    );
-
-    await findScanFilterSelector().vm.$emit('select', PREVIOUSLY_EXISTING);
-    await findStatusFilter().vm.$emit('input', ['detected']);
-
-    expect(findScanFilterSelectorBadge().exists()).toBe(false);
-
-    await findScanFilterSelector().vm.$emit('select', AGE);
-
-    expect(findScanFilterSelectorBadge().attributes('title')).toEqual(
-      'Only 1 age criteria is allowed',
-    );
-
-    await findAgeFilter().vm.$emit('input', {
-      operator: GREATER_THAN_OPERATOR,
-      value: 1,
-      interval: AGE_DAY,
+      expect(findScanFilterSelectorBadge().attributes('title')).toEqual(
+        'Age criteria can only be added for pre-existing vulnerabilities',
+      );
     });
-    expect(wrapper.emitted('changed')).toHaveLength(2);
 
-    await findStatusFilter().vm.$emit('remove', PREVIOUSLY_EXISTING);
+    it('has no the badge on scan filter selector with previously existing filter', async () => {
+      factory({ initRule: { ...securityScanBuildRule(), vulnerability_states: ['detected'] } });
 
-    expect(findAgeFilter().exists()).toBe(false);
-    expect(findStatusFilter().exists()).toBe(false);
-    expect(wrapper.emitted('changed')).toHaveLength(4);
+      expect(findScanFilterSelectorBadge().exists()).toBe(false);
+
+      await findScanFilterSelector().vm.$emit('select', AGE);
+
+      expect(findScanFilterSelectorBadge().attributes('title')).toEqual(
+        'Only 1 age criteria is allowed',
+      );
+
+      await findAgeFilter().vm.$emit('input', {
+        operator: GREATER_THAN_OPERATOR,
+        value: 1,
+        interval: AGE_DAY,
+      });
+      expect(wrapper.emitted('changed')).toHaveLength(1);
+    });
+
+    it('removes age filter when there is no previously existing filter', async () => {
+      factory({
+        initRule: UPDATED_RULE,
+      });
+
+      await wrapper.setProps({
+        initRule: { ...UPDATED_RULE, vulnerability_states: [] },
+      });
+      await findStatusFilter().vm.$emit('change-group', NEWLY_DETECTED);
+
+      expect(findAgeFilter().exists()).toBe(false);
+      expect(wrapper.emitted('changed')).toHaveLength(2);
+    });
   });
 
   const updatedRuleWithoutFilter = (filter) => {
@@ -415,7 +450,7 @@ describe('SecurityScanRuleBuilder', () => {
 
   it.each`
     currentComponent        | selectedFilter         | emittedPayload
-    ${findStatusFilter}     | ${PREVIOUSLY_EXISTING} | ${{ ...UPDATED_RULE, vulnerability_states: [] }}
+    ${findStatusFilter}     | ${PREVIOUSLY_EXISTING} | ${{ ...UPDATED_RULE, vulnerability_states: null }}
     ${findAgeFilter}        | ${AGE}                 | ${updatedRuleWithoutFilter('vulnerability_age')}
     ${findAttributeFilters} | ${FALSE_POSITIVE}      | ${updatedRuleWithoutFilter('vulnerability_attributes')}
   `(
