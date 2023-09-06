@@ -42,9 +42,6 @@ module RemoteDevelopment
             if [ ! -d '#{clone_dir}' ];
             then
               git clone --branch #{Shellwords.shellescape(project_ref)} #{Shellwords.shellescape(project_url)} #{Shellwords.shellescape(clone_dir)};
-              cd #{Shellwords.shellescape(clone_dir)};
-              git config user.name "${GIT_AUTHOR_NAME}";
-              git config user.email "${GIT_AUTHOR_EMAIL}";
             fi
           SH
 

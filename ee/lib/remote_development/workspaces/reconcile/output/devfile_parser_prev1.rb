@@ -7,8 +7,7 @@ module RemoteDevelopment
     module Reconcile
       module Output
         # noinspection RubyClassMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
-        class DevfileParser
-          # rubocop:disable Metrics/ParameterLists
+        class DevfileParserPrev1
           # @param [String] processed_devfile
           # @param [String] name
           # @param [String] namespace
@@ -16,22 +15,10 @@ module RemoteDevelopment
           # @param [String] domain_template
           # @param [Hash] labels
           # @param [Hash] annotations
-          # @param [Array<String>] env_secret_names
-          # @param [Array<String>] file_secret_names
+          # @param [User] user
           # @param [RemoteDevelopment::Logger] logger
           # @return [Array<Hash>]
-          def self.get_all(
-            processed_devfile:,
-            name:,
-            namespace:,
-            replicas:,
-            domain_template:,
-            labels:,
-            annotations:,
-            env_secret_names:,
-            file_secret_names:,
-            logger:
-          )
+          def self.get_all(processed_devfile:, name:, namespace:, replicas:, domain_template:, labels:, annotations:, user:, logger:) # rubocop:disable Metrics/ParameterLists
             begin
               workspace_resources_yaml = Devfile::Parser.get_all(
                 processed_devfile,
@@ -56,13 +43,12 @@ module RemoteDevelopment
 
             workspace_resources = YAML.load_stream(workspace_resources_yaml)
             workspace_resources = set_security_context(workspace_resources: workspace_resources)
-            inject_secrets(
+            workspace_resources = set_git_configuration(workspace_resources: workspace_resources, user: user)
+            set_workspace_environment_variables(
               workspace_resources: workspace_resources,
-              env_secret_names: env_secret_names,
-              file_secret_names: file_secret_names
+              domain_template: domain_template
             )
           end
-          # rubocop:enable Metrics/ParameterLists
 
           # Devfile library allows specifying the security context of pods/containers as mentioned in
           # https://github.com/devfile/api/issues/920 through `pod-overrides` and `container-overrides` attributes.
@@ -79,71 +65,84 @@ module RemoteDevelopment
             workspace_resources.each do |workspace_resource|
               next unless workspace_resource['kind'] == 'Deployment'
 
-              pod_security_context = {
+              pod_spec = workspace_resource['spec']['template']['spec']
+              # Explicitly set security context for the pod
+              pod_spec['securityContext'] = {
                 'runAsNonRoot' => true,
                 'runAsUser' => RUN_AS_USER,
                 'fsGroup' => 0,
                 'fsGroupChangePolicy' => 'OnRootMismatch'
               }
-              container_security_context = {
-                'allowPrivilegeEscalation' => false,
-                'privileged' => false,
-                'runAsNonRoot' => true,
-                'runAsUser' => RUN_AS_USER
-              }
-
-              pod_spec = workspace_resource['spec']['template']['spec']
-              # Explicitly set security context for the pod
-              pod_spec['securityContext'] = pod_security_context
               # Explicitly set security context for all containers
               pod_spec['containers'].each do |container|
-                container['securityContext'] = container_security_context
+                container['securityContext'] = {
+                  'allowPrivilegeEscalation' => false,
+                  'privileged' => false,
+                  'runAsNonRoot' => true,
+                  'runAsUser' => RUN_AS_USER
+                }
               end
               # Explicitly set security context for all init containers
               pod_spec['initContainers'].each do |init_container|
-                init_container['securityContext'] = container_security_context
+                init_container['securityContext'] = {
+                  'allowPrivilegeEscalation' => false,
+                  'privileged' => false,
+                  'runAsNonRoot' => true,
+                  'runAsUser' => RUN_AS_USER
+                }
               end
             end
             workspace_resources
           end
 
           # @param [Array<Hash>] workspace_resources
-          # @param [Array<String>] env_secret_names
-          # @param [Array<String>] file_secret_names
+          # @param [User] user
           # @return [Array<Hash>]
-          def self.inject_secrets(workspace_resources:, env_secret_names:, file_secret_names:)
+          def self.set_git_configuration(workspace_resources:, user:)
             workspace_resources.each do |workspace_resource|
               next unless workspace_resource.fetch('kind') == 'Deployment'
 
-              volume_name = 'gl-workspace-variables'
-              volumes = [
-                {
-                  'name' => volume_name,
-                  'projected' => {
-                    'defaultMode' => 0o774,
-                    'sources' => file_secret_names.map { |v| { 'secret' => { 'name' => v } } }
-                  }
-                }
-              ]
-              volume_mounts = [
-                {
-                  'name' => volume_name,
-                  'mountPath' => RemoteDevelopment::Workspaces::FileMounts::VARIABLES_FILE_DIR
-                }
-              ]
-              env_from = env_secret_names.map { |v| { 'secretRef' => { 'name' => v } } }
-
+              # Set git configuration for the `gl-cloner-injector-*`
               pod_spec = workspace_resource.fetch('spec').fetch('template').fetch('spec')
-              pod_spec.fetch('volumes').concat(volumes) unless file_secret_names.empty?
-
               pod_spec.fetch('initContainers').each do |init_container|
-                init_container.fetch('volumeMounts').concat(volume_mounts) unless file_secret_names.empty?
-                init_container['envFrom'] = env_from unless env_secret_names.empty?
+                next unless init_container.fetch('name').starts_with?('gl-cloner-injector-')
+
+                init_container.fetch('env').concat([
+                  {
+                    'name' => 'GIT_AUTHOR_NAME',
+                    'value' => user.name
+                  },
+                  {
+                    'name' => 'GIT_AUTHOR_EMAIL',
+                    'value' => user.email
+                  }
+                ])
+              end
+            end
+            workspace_resources
+          end
+
+          # @param [Array<Hash>] workspace_resources
+          # @param [String] domain_template
+          # @return [Array<Hash>]
+          def self.set_workspace_environment_variables(workspace_resources:, domain_template:)
+            env_variables = [
+              {
+                'name' => 'GL_WORKSPACE_DOMAIN_TEMPLATE',
+                'value' => domain_template.sub(/{{.port}}/, "${PORT}")
+              }
+            ]
+            workspace_resources.each do |workspace_resource|
+              next unless workspace_resource['kind'] == 'Deployment'
+
+              pod_spec = workspace_resource['spec']['template']['spec']
+
+              pod_spec['initContainers'].each do |init_containers|
+                init_containers.fetch('env').concat(env_variables)
               end
 
-              pod_spec.fetch('containers').each do |container|
-                container.fetch('volumeMounts').concat(volume_mounts) unless file_secret_names.empty?
-                container['envFrom'] = env_from unless env_secret_names.empty?
+              pod_spec['containers'].each do |container|
+                container.fetch('env').concat(env_variables)
               end
             end
             workspace_resources

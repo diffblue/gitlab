@@ -44,7 +44,25 @@ module RemoteDevelopment
           def self.config_to_apply(workspace:, update_type:, logger:)
             return unless should_include_config_to_apply?(update_type: update_type, workspace: workspace)
 
-            workspace_resources = DesiredConfigGenerator.generate_desired_config(workspace: workspace, logger: logger)
+            include_secrets = false
+
+            if update_type == FULL || (update_type == PARTIAL && workspace.actual_state == States::CREATION_REQUESTED)
+              include_secrets = true
+            end
+
+            workspace_resources = case workspace.config_version
+                                  when ConfigVersion::VERSION_2
+                                    DesiredConfigGenerator.generate_desired_config(
+                                      workspace: workspace,
+                                      include_secrets: include_secrets,
+                                      logger: logger
+                                    )
+                                  else
+                                    DesiredConfigGeneratorPrev1.generate_desired_config(
+                                      workspace: workspace,
+                                      logger: logger
+                                    )
+                                  end
 
             desired_config_to_apply_array = workspace_resources.map do |resource|
               YAML.dump(resource.deep_stringify_keys)

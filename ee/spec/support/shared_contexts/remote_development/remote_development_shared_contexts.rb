@@ -11,6 +11,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
     workspace_id:,
     workspace_name:,
     workspace_namespace:,
+    workspace_variables_env_var:,
+    workspace_variables_file:,
     agent_id:,
     resource_version:,
     # NOTE: previous_actual_state is the actual state of the workspace IMMEDIATELY prior to the current state. We don't
@@ -19,8 +21,6 @@ RSpec.shared_context 'with remote development shared fixtures' do
     current_actual_state:,
     # NOTE: workspace_exists is whether the workspace exists in the cluster at the time of the current_actual_state.
     workspace_exists:,
-    user_name:,
-    user_email:,
     dns_zone: 'workspaces.localdev.me',
     error_details: nil
   )
@@ -258,12 +258,13 @@ RSpec.shared_context 'with remote development shared fixtures' do
       workspace_id: workspace_id,
       workspace_name: workspace_name,
       workspace_namespace: workspace_namespace,
+      workspace_variables_env_var: workspace_variables_env_var,
+      workspace_variables_file: workspace_variables_file,
       agent_id: agent_id,
       started: started,
-      user_name: user_name,
-      user_email: user_email,
       include_inventory: false,
       include_network_policy: false,
+      include_secrets: false,
       dns_zone: dns_zone
     )
     config_to_apply = YAML.load_stream(config_to_apply)
@@ -305,6 +306,100 @@ RSpec.shared_context 'with remote development shared fixtures' do
     workspace_id:,
     workspace_name:,
     workspace_namespace:,
+    workspace_variables_env_var:,
+    workspace_variables_file:,
+    agent_id:,
+    started:,
+    include_inventory: true,
+    include_network_policy: true,
+    include_secrets: false,
+    dns_zone: 'workspaces.localdev.me'
+  )
+    spec_replicas = started == true ? 1 : 0
+    host_template_annotation = get_workspace_host_template_annotation(workspace_name, dns_zone)
+
+    workspace_inventory = workspace_inventory(
+      workspace_name: workspace_name,
+      workspace_namespace: workspace_namespace,
+      agent_id: agent_id
+    )
+
+    workspace_deployment = workspace_deployment(
+      workspace_id: workspace_id,
+      workspace_name: workspace_name,
+      workspace_namespace: workspace_namespace,
+      agent_id: agent_id,
+      spec_replicas: spec_replicas,
+      host_template_annotation: host_template_annotation
+    )
+
+    workspace_service = workspace_service(
+      workspace_id: workspace_id,
+      workspace_name: workspace_name,
+      workspace_namespace: workspace_namespace,
+      agent_id: agent_id,
+      host_template_annotation: host_template_annotation
+    )
+
+    workspace_pvc = workspace_pvc(
+      workspace_id: workspace_id,
+      workspace_name: workspace_name,
+      workspace_namespace: workspace_namespace,
+      agent_id: agent_id,
+      host_template_annotation: host_template_annotation
+    )
+
+    workspace_network_policy = workspace_network_policy(
+      workspace_id: workspace_id,
+      workspace_name: workspace_name,
+      workspace_namespace: workspace_namespace,
+      agent_id: agent_id,
+      host_template_annotation: host_template_annotation
+    )
+
+    workspace_secrets_inventory = workspace_secrets_inventory(
+      workspace_name: workspace_name,
+      workspace_namespace: workspace_namespace,
+      agent_id: agent_id
+    )
+
+    workspace_secret_env_var = workspace_secret_env_var(
+      workspace_id: workspace_id,
+      workspace_name: workspace_name,
+      workspace_namespace: workspace_namespace,
+      agent_id: agent_id,
+      host_template_annotation: host_template_annotation,
+      workspace_variables_env_var: workspace_variables_env_var
+    )
+
+    workspace_secret_file = workspace_secret_file(
+      workspace_id: workspace_id,
+      workspace_name: workspace_name,
+      workspace_namespace: workspace_namespace,
+      agent_id: agent_id,
+      host_template_annotation: host_template_annotation,
+      workspace_variables_file: workspace_variables_file
+    )
+
+    resources = []
+    resources << workspace_inventory if include_inventory
+    resources << workspace_deployment
+    resources << workspace_service
+    resources << workspace_pvc
+    resources << workspace_network_policy if include_network_policy
+    resources << workspace_secrets_inventory if include_secrets && include_inventory
+    resources << workspace_secret_env_var if include_secrets
+    resources << workspace_secret_file if include_secrets
+
+    resources.map do |resource|
+      YAML.dump(resource.deep_stringify_keys)
+    end.join
+  end
+
+  def create_config_to_apply_prev1(
+    workspace_id:,
+    workspace_name:,
+    workspace_namespace:,
     agent_id:,
     started:,
     user_name:,
@@ -323,7 +418,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
       agent_id: agent_id
     )
 
-    workspace_deployment = workspace_deployment(
+    workspace_deployment = workspace_deployment_prev1(
       workspace_id: workspace_id,
       workspace_name: workspace_name,
       workspace_namespace: workspace_namespace,
@@ -391,9 +486,280 @@ RSpec.shared_context 'with remote development shared fixtures' do
     }
   end
 
-  # noinspection RubyParameterNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
-  # rubocop:disable Metrics/ParameterLists
   def workspace_deployment(
+    workspace_id:,
+    workspace_name:,
+    workspace_namespace:,
+    agent_id:,
+    spec_replicas:,
+    host_template_annotation:
+  )
+    variables_file_mount_path = RemoteDevelopment::Workspaces::FileMounts::VARIABLES_FILE_DIR
+    {
+      apiVersion: "apps/v1",
+      kind: "Deployment",
+      metadata: {
+        annotations: {
+          "config.k8s.io/owning-inventory": "#{workspace_name}-workspace-inventory",
+          "workspaces.gitlab.com/host-template": host_template_annotation.to_s,
+          "workspaces.gitlab.com/id": workspace_id.to_s
+        },
+        creationTimestamp: nil,
+        labels: {
+          "agent.gitlab.com/id": agent_id.to_s
+        },
+        name: workspace_name.to_s,
+        namespace: workspace_namespace.to_s
+      },
+      spec: {
+        replicas: spec_replicas,
+        selector: {
+          matchLabels: {
+            "agent.gitlab.com/id": agent_id.to_s
+          }
+        },
+        strategy: {
+          type: "Recreate"
+        },
+        template: {
+          metadata: {
+            annotations: {
+              "config.k8s.io/owning-inventory": "#{workspace_name}-workspace-inventory",
+              "workspaces.gitlab.com/host-template": host_template_annotation.to_s,
+              "workspaces.gitlab.com/id": workspace_id.to_s
+            },
+            creationTimestamp: nil,
+            labels: {
+              "agent.gitlab.com/id": agent_id.to_s
+            },
+            name: workspace_name.to_s,
+            namespace: workspace_namespace.to_s
+          },
+          spec: {
+            containers: [
+              {
+                command: [
+                  "/projects/.gl-editor/start_server.sh"
+                ],
+                env: [
+                  {
+                    name: "EDITOR_VOLUME_DIR",
+                    value: "/projects/.gl-editor"
+                  },
+                  {
+                    name: "EDITOR_PORT",
+                    value: "60001"
+                  },
+                  {
+                    name: "SSH_PORT",
+                    value: "60022"
+                  },
+                  {
+                    name: "PROJECTS_ROOT",
+                    value: "/projects"
+                  },
+                  {
+                    name: "PROJECT_SOURCE",
+                    value: "/projects"
+                  }
+                ],
+                image: "quay.io/mloriedo/universal-developer-image:ubi8-dw-demo",
+                imagePullPolicy: "Always",
+                name: "tooling-container",
+                ports: [
+                  {
+                    containerPort: 60001,
+                    name: "editor-server",
+                    protocol: "TCP"
+                  },
+                  {
+                    containerPort: 60022,
+                    name: "ssh-server",
+                    protocol: "TCP"
+                  }
+                ],
+                resources: {},
+                volumeMounts: [
+                  {
+                    mountPath: "/projects",
+                    name: "gl-workspace-data"
+                  },
+                  {
+                    name: "gl-workspace-variables",
+                    mountPath: variables_file_mount_path.to_s
+                  }
+                ],
+                securityContext: {
+                  allowPrivilegeEscalation: false,
+                  privileged: false,
+                  runAsNonRoot: true,
+                  runAsUser: 5001
+                },
+                envFrom: [
+                  {
+                    secretRef: {
+                      name: "#{workspace_name}-env-var"
+                    }
+                  }
+                ]
+              }
+            ],
+            initContainers: [
+              {
+                args: [
+                  <<~ARGS.chomp
+                    if [ ! -d '/projects/test-project' ];
+                    then
+                      git clone --branch master #{root_url}test-group/test-project.git /projects/test-project;
+                    fi
+                  ARGS
+                ],
+                command: %w[/bin/sh -c],
+                env: [
+                  {
+                    name: "PROJECTS_ROOT",
+                    value: "/projects"
+                  },
+                  {
+                    name: "PROJECT_SOURCE",
+                    value: "/projects"
+                  }
+                ],
+                image: "alpine/git:2.36.3",
+                imagePullPolicy: "Always",
+                name: "gl-cloner-injector-gl-cloner-injector-command-1",
+                resources: {
+                  limits: {
+                    cpu: "500m",
+                    memory: "256Mi"
+                  },
+                  requests: {
+                    cpu: "100m",
+                    memory: "128Mi"
+                  }
+                },
+                volumeMounts: [
+                  {
+                    mountPath: "/projects",
+                    name: "gl-workspace-data"
+                  },
+                  {
+                    name: "gl-workspace-variables",
+                    mountPath: variables_file_mount_path.to_s
+                  }
+                ],
+                securityContext: {
+                  allowPrivilegeEscalation: false,
+                  privileged: false,
+                  runAsNonRoot: true,
+                  runAsUser: 5001
+                },
+                envFrom: [
+                  {
+                    secretRef: {
+                      name: "#{workspace_name}-env-var"
+                    }
+                  }
+                ]
+              },
+              {
+                env: [
+                  {
+                    name: "EDITOR_VOLUME_DIR",
+                    value: "/projects/.gl-editor"
+                  },
+                  {
+                    name: "EDITOR_PORT",
+                    value: "60001"
+                  },
+                  {
+                    name: "SSH_PORT",
+                    value: "60022"
+                  },
+                  {
+                    name: "PROJECTS_ROOT",
+                    value: "/projects"
+                  },
+                  {
+                    name: "PROJECT_SOURCE",
+                    value: "/projects"
+                  }
+                ],
+                image: "registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:2",
+                imagePullPolicy: "Always",
+                name: "gl-editor-injector-gl-editor-injector-command-2",
+                resources: {
+                  limits: {
+                    cpu: "500m",
+                    memory: "256Mi"
+                  },
+                  requests: {
+                    cpu: "100m",
+                    memory: "128Mi"
+                  }
+                },
+                volumeMounts: [
+                  {
+                    mountPath: "/projects",
+                    name: "gl-workspace-data"
+                  },
+                  {
+                    name: "gl-workspace-variables",
+                    mountPath: variables_file_mount_path.to_s
+                  }
+                ],
+                securityContext: {
+                  allowPrivilegeEscalation: false,
+                  privileged: false,
+                  runAsNonRoot: true,
+                  runAsUser: 5001
+                },
+                envFrom: [
+                  {
+                    secretRef: {
+                      name: "#{workspace_name}-env-var"
+                    }
+                  }
+                ]
+              }
+            ],
+            volumes: [
+              {
+                name: "gl-workspace-data",
+                persistentVolumeClaim: {
+                  claimName: "#{workspace_name}-gl-workspace-data"
+                }
+              },
+              {
+                name: "gl-workspace-variables",
+                projected: {
+                  defaultMode: 508,
+                  sources: [
+                    {
+                      secret: {
+                        name: "#{workspace_name}-file"
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            securityContext: {
+              runAsNonRoot: true,
+              runAsUser: 5001,
+              fsGroup: 0,
+              fsGroupChangePolicy: "OnRootMismatch"
+            }
+          }
+        }
+      },
+      status: {}
+    }
+  end
+
+  # noinspection RubyParameterNamingConvention
+  # rubocop:disable Metrics/ParameterLists
+  def workspace_deployment_prev1(
     workspace_id:,
     workspace_name:,
     workspace_namespace:,
@@ -807,6 +1173,118 @@ RSpec.shared_context 'with remote development shared fixtures' do
     }
   end
 
+  def workspace_secrets_inventory(
+    workspace_name:,
+    workspace_namespace:,
+    agent_id:
+  )
+    {
+      kind: "ConfigMap",
+      apiVersion: "v1",
+      metadata: {
+        name: "#{workspace_name}-secrets-inventory",
+        namespace: workspace_namespace.to_s,
+        labels: {
+          "cli-utils.sigs.k8s.io/inventory-id": "#{workspace_name}-secrets-inventory",
+          "agent.gitlab.com/id": agent_id.to_s
+        }
+      }
+    }
+  end
+
+  def workspace_secret_env_var(
+    workspace_id:,
+    workspace_name:,
+    workspace_namespace:,
+    agent_id:,
+    host_template_annotation:,
+    workspace_variables_env_var:
+  )
+    git_config_count = workspace_variables_env_var.fetch('GIT_CONFIG_COUNT', '')
+    git_config_key_0 = workspace_variables_env_var.fetch('GIT_CONFIG_KEY_0', '')
+    git_config_value_0 = workspace_variables_env_var.fetch('GIT_CONFIG_VALUE_0', '')
+    git_config_key_1 = workspace_variables_env_var.fetch('GIT_CONFIG_KEY_1', '')
+    git_config_value_1 = workspace_variables_env_var.fetch('GIT_CONFIG_VALUE_1', '')
+    git_config_key_2 = workspace_variables_env_var.fetch('GIT_CONFIG_KEY_2', '')
+    git_config_value_2 = workspace_variables_env_var.fetch('GIT_CONFIG_VALUE_2', '')
+    gl_git_credential_store_file_path = workspace_variables_env_var.fetch('GL_GIT_CREDENTIAL_STORE_FILE_PATH', '')
+    gl_token_file_path = workspace_variables_env_var.fetch('GL_TOKEN_FILE_PATH', '')
+    gl_workspace_domain_template = workspace_variables_env_var.fetch('GL_WORKSPACE_DOMAIN_TEMPLATE', '')
+    # TODO: figure out why there is flakiness in the order of the environment variables?
+    {
+      kind: "Secret",
+      apiVersion: "v1",
+      metadata: {
+        name: "#{workspace_name}-env-var",
+        namespace: workspace_namespace.to_s,
+        labels: {
+          "agent.gitlab.com/id": agent_id.to_s
+        },
+        annotations: {
+          "config.k8s.io/owning-inventory": "#{workspace_name}-secrets-inventory",
+          "workspaces.gitlab.com/host-template": host_template_annotation.to_s,
+          "workspaces.gitlab.com/id": workspace_id.to_s
+        }
+      },
+      data: {
+        GIT_CONFIG_COUNT: Base64.strict_encode64(git_config_count).to_s,
+        GIT_CONFIG_KEY_0: Base64.strict_encode64(git_config_key_0).to_s,
+        GIT_CONFIG_VALUE_0: Base64.strict_encode64(git_config_value_0).to_s,
+        GIT_CONFIG_KEY_1: Base64.strict_encode64(git_config_key_1).to_s,
+        GIT_CONFIG_VALUE_1: Base64.strict_encode64(git_config_value_1).to_s,
+        GIT_CONFIG_KEY_2: Base64.strict_encode64(git_config_key_2).to_s,
+        GIT_CONFIG_VALUE_2: Base64.strict_encode64(git_config_value_2).to_s,
+        GL_GIT_CREDENTIAL_STORE_FILE_PATH: Base64.strict_encode64(gl_git_credential_store_file_path).to_s,
+        GL_TOKEN_FILE_PATH: Base64.strict_encode64(gl_token_file_path).to_s,
+        GL_WORKSPACE_DOMAIN_TEMPLATE: Base64.strict_encode64(gl_workspace_domain_template).to_s
+      }
+    }
+  end
+
+  def workspace_secret_file(
+    workspace_id:,
+    workspace_name:,
+    workspace_namespace:,
+    agent_id:,
+    host_template_annotation:,
+    workspace_variables_file:
+  )
+    gl_git_credential_store = workspace_variables_file.fetch('gl_git_credential_store.sh', '')
+    gl_token = workspace_variables_file.fetch('gl_token', '')
+    {
+      kind: "Secret",
+      apiVersion: "v1",
+      metadata: {
+        name: "#{workspace_name}-file",
+        namespace: workspace_namespace.to_s,
+        labels: {
+          "agent.gitlab.com/id": agent_id.to_s
+        },
+        annotations: {
+          "config.k8s.io/owning-inventory": "#{workspace_name}-secrets-inventory",
+          "workspaces.gitlab.com/host-template": host_template_annotation.to_s,
+          "workspaces.gitlab.com/id": workspace_id.to_s
+        }
+      },
+      data: {
+        gl_token: Base64.strict_encode64(gl_token).to_s,
+        "gl_git_credential_store.sh": Base64.strict_encode64(gl_git_credential_store).to_s
+      }
+    }
+  end
+
+  def get_workspace_variables_env_var(workspace_variables:)
+    workspace_variables.with_variable_type_env_var.each_with_object({}) do |workspace_variable, hash|
+      hash[workspace_variable.key] = workspace_variable.value
+    end
+  end
+
+  def get_workspace_variables_file(workspace_variables:)
+    workspace_variables.with_variable_type_file.each_with_object({}) do |workspace_variable, hash|
+      hash[workspace_variable.key] = workspace_variable.value
+    end
+  end
+
   # noinspection RubyInstanceMethodNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
   def get_workspace_host_template_annotation(workspace_name, dns_zone)
     "{{.port}}-#{workspace_name}.#{dns_zone}"
@@ -826,15 +1304,15 @@ RSpec.shared_context 'with remote development shared fixtures' do
   end
 
   def example_processed_devfile
-    devfile_contents = read_devfile('example.processed-devfile.yaml')
-    devfile_contents.gsub!('http://localhost/', root_url)
-    devfile_contents
+    read_devfile('example.processed-devfile.yaml')
   end
 
   # TODO: Rename this method and all methods which use it to end in `_yaml`, to clearly distinguish between
   #       a String YAML representation of a devfile, and a devfile which has been converted to a Hash.
   def read_devfile(filename)
-    File.read(Rails.root.join('ee/spec/fixtures/remote_development', filename).to_s)
+    devfile_contents = File.read(Rails.root.join('ee/spec/fixtures/remote_development', filename).to_s)
+    devfile_contents.gsub!('http://localhost/', root_url)
+    devfile_contents
   end
 
   def root_url

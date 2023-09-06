@@ -8,128 +8,65 @@ module RemoteDevelopment
         # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         # noinspection RubyClassMethodNamingConvention,RubyLocalVariableNamingConvention,RubyParameterNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
         # rubocop:enable Layout/LineLength
-        class DesiredConfigGenerator
+        class DesiredConfigGeneratorPrev1
           include States
 
           # @param [RemoteDevelopment::Workspaces::Workspace] workspace
-          # @param [Boolean] include_secrets
           # @param [RemoteDevelopment::Logger] logger
           # @return [Array<Hash>]
-          def self.generate_desired_config(workspace:, include_secrets:, logger:)
-            desired_config = []
-            env_secret_name = "#{workspace.name}-env-var"
-            file_secret_name = "#{workspace.name}-file"
-            env_secret_names = [env_secret_name]
-            file_secret_names = [file_secret_name]
-            replicas = get_workspace_replicas(desired_state: workspace.desired_state)
-            domain_template = get_domain_template_annotation(name: workspace.name, dns_zone: workspace.dns_zone)
-            inventory_name = "#{workspace.name}-workspace-inventory"
+          def self.generate_desired_config(workspace:, logger:)
+            name = workspace.name
+            namespace = workspace.namespace
+            agent = workspace.agent
+            desired_state = workspace.desired_state
+            user = workspace.user
+
+            domain_template = "{{.port}}-#{name}.#{workspace.dns_zone}"
+
+            workspace_inventory_config_map, owning_inventory =
+              create_workspace_inventory_config_map(name: name, namespace: namespace, agent_id: agent.id)
+            replicas = get_workspace_replicas(desired_state: desired_state)
             labels, annotations = get_labels_and_annotations(
-              agent_id: workspace.agent.id,
+              agent_id: agent.id,
+              owning_inventory: owning_inventory,
               domain_template: domain_template,
-              owning_inventory: inventory_name,
               workspace_id: workspace.id
             )
 
-            k8s_inventory_for_workspace_core = get_inventory_config_map(
-              name: inventory_name,
-              namespace: workspace.namespace,
-              agent_id: workspace.agent.id
-            )
-
             # TODO: https://gitlab.com/groups/gitlab-org/-/epics/10461 - handle error
-            k8s_resources_for_workspace_core = DevfileParser.get_all(
+            workspace_resources = DevfileParserPrev1.get_all(
               processed_devfile: workspace.processed_devfile,
-              name: workspace.name,
-              namespace: workspace.namespace,
+              name: name,
+              namespace: namespace,
               replicas: replicas,
               domain_template: domain_template,
               labels: labels,
               annotations: annotations,
-              env_secret_names: env_secret_names,
-              file_secret_names: file_secret_names,
+              user: user,
               logger: logger
             )
             # If we got no resources back from the devfile parser, this indicates some error was encountered in parsing
             # the processed_devfile. So we return an empty array which will result in no updates being applied by the
             # agent. We should not continue on and try to add anything else to the resources, as this would result
             # in an invalid configuration being applied to the cluster.
-            return [] if k8s_resources_for_workspace_core.empty?
+            return [] if workspace_resources.empty?
 
-            desired_config.append(k8s_inventory_for_workspace_core, *k8s_resources_for_workspace_core)
+            workspace_resources.insert(0, workspace_inventory_config_map)
 
             remote_development_agent_config = workspace.agent.remote_development_agent_config
             if remote_development_agent_config.network_policy_enabled
               gitlab_workspaces_proxy_namespace = remote_development_agent_config.gitlab_workspaces_proxy_namespace
               network_policy = get_network_policy(
-                name: workspace.name,
-                namespace: workspace.namespace,
+                name: name,
+                namespace: namespace,
                 labels: labels,
                 annotations: annotations,
                 gitlab_workspaces_proxy_namespace: gitlab_workspaces_proxy_namespace
               )
-              desired_config.append(network_policy)
+              workspace_resources.append(network_policy)
             end
 
-            if include_secrets
-              k8s_resources_for_secrets = get_k8s_resources_for_secrets(
-                workspace: workspace,
-                env_secret_name: env_secret_name,
-                file_secret_name: file_secret_name
-              )
-              desired_config.append(*k8s_resources_for_secrets)
-            end
-
-            desired_config
-          end
-
-          # @param [RemoteDevelopment::Workspaces::Workspace] workspace
-          # @param [String] env_secret_name
-          # @param [String] file_secret_name
-          # @param [String] env_secret_name
-          # @param [String] file_secret_name
-          # @return [Array<(Hash)>]
-          def self.get_k8s_resources_for_secrets(workspace:, env_secret_name:, file_secret_name:)
-            inventory_name = "#{workspace.name}-secrets-inventory"
-            domain_template = get_domain_template_annotation(name: workspace.name, dns_zone: workspace.dns_zone)
-            labels, annotations = get_labels_and_annotations(
-              agent_id: workspace.agent.id,
-              domain_template: domain_template,
-              owning_inventory: inventory_name,
-              workspace_id: workspace.id
-            )
-
-            k8s_inventory = get_inventory_config_map(
-              name: inventory_name,
-              namespace: workspace.namespace,
-              agent_id: workspace.agent.id
-            )
-
-            data_for_env_var = workspace.workspace_variables.with_variable_type_env_var
-            data_for_env_var = data_for_env_var.each_with_object({}) do |workspace_variable, hash|
-              hash[workspace_variable.key] = workspace_variable.value
-            end
-            k8s_secret_for_env_var = get_secret(
-              name: env_secret_name,
-              namespace: workspace.namespace,
-              labels: labels,
-              annotations: annotations,
-              data: data_for_env_var
-            )
-
-            data_for_file = workspace.workspace_variables.with_variable_type_file
-            data_for_file = data_for_file.each_with_object({}) do |workspace_variable, hash|
-              hash[workspace_variable.key] = workspace_variable.value
-            end
-            k8s_secret_for_file = get_secret(
-              name: file_secret_name,
-              namespace: workspace.namespace,
-              labels: labels,
-              annotations: annotations,
-              data: data_for_file
-            )
-
-            [k8s_inventory, k8s_secret_for_env_var, k8s_secret_for_file]
+            workspace_resources
           end
 
           # @param [String] desired_state
@@ -146,34 +83,30 @@ module RemoteDevelopment
           # @param [String] name
           # @param [String] namespace
           # @param [Integer] agent_id
-          # @return [Hash]
-          def self.get_inventory_config_map(name:, namespace:, agent_id:)
-            {
+          # @return [Array(Hash, String (frozen))]
+          def self.create_workspace_inventory_config_map(name:, namespace:, agent_id:)
+            owning_inventory = "#{name}-workspace-inventory"
+            workspace_inventory_config_map = {
               kind: 'ConfigMap',
               apiVersion: 'v1',
               metadata: {
-                name: name,
+                name: owning_inventory,
                 namespace: namespace,
                 labels: {
-                  'cli-utils.sigs.k8s.io/inventory-id': name,
+                  'cli-utils.sigs.k8s.io/inventory-id': owning_inventory,
                   'agent.gitlab.com/id': agent_id.to_s
                 }
               }
             }.deep_stringify_keys.to_h
+            [workspace_inventory_config_map, owning_inventory]
           end
 
           # @param [Integer] agent_id
-          # @param [String] domain_template
           # @param [String] owning_inventory
-          # @param [String] object_type
+          # @param [String] domain_template
           # @param [Integer] workspace_id
-          # @return [Array<Hash, Hash>]
-          def self.get_labels_and_annotations(
-            agent_id:,
-            domain_template:,
-            owning_inventory:,
-            workspace_id:
-          )
+          # @return [Array<(Hash, Hash)>]
+          def self.get_labels_and_annotations(agent_id:, owning_inventory:, domain_template:, workspace_id:)
             labels = {
               'agent.gitlab.com/id' => agent_id.to_s
             }
@@ -183,33 +116,6 @@ module RemoteDevelopment
               'workspaces.gitlab.com/id' => workspace_id.to_s
             }
             [labels, annotations]
-          end
-
-          # @param [String] name
-          # @param [String] namespace
-          # @param [Hash] labels
-          # @param [Hash] annotations
-          # @param [Hash] data
-          # @return [Hash]
-          def self.get_secret(name:, namespace:, labels:, annotations:, data:)
-            {
-              kind: 'Secret',
-              apiVersion: 'v1',
-              metadata: {
-                name: name,
-                namespace: namespace,
-                labels: labels,
-                annotations: annotations
-              },
-              data: data.transform_values { |v| Base64.strict_encode64(v) }
-            }.deep_stringify_keys.to_h
-          end
-
-          # @param [String] name
-          # @param [String] dns_zone
-          # @return [String]
-          def self.get_domain_template_annotation(name:, dns_zone:)
-            "{{.port}}-#{name}.#{dns_zone}"
           end
 
           # @param [String] name

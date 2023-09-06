@@ -3,9 +3,12 @@
 require_relative '../../../fast_spec_helper'
 
 RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::WorkspacesToRailsInfosConverter, feature_category: :remote_development do
+  include_context 'with remote development shared fixtures'
+
   let(:logger) { instance_double(Logger) }
   let(:desired_state) { RemoteDevelopment::Workspaces::States::RUNNING }
   let(:actual_state) { RemoteDevelopment::Workspaces::States::STOPPED }
+  let(:processed_devfile) { example_processed_devfile }
   let(:config_to_apply) { { foo: "bar" } }
   let(:config_to_apply_yaml) { "---\nfoo: bar\n" }
   let(:workspace1) do
@@ -16,7 +19,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::WorkspacesToRai
       namespace: "namespace1",
       deployment_resource_version: "1",
       desired_state: desired_state,
-      actual_state: actual_state
+      actual_state: actual_state,
+      processed_devfile: processed_devfile,
+      config_version: RemoteDevelopment::Workspaces::ConfigVersion::VERSION_2
     )
   end
 
@@ -28,11 +33,47 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::WorkspacesToRai
       namespace: "namespace2",
       deployment_resource_version: "2",
       desired_state: desired_state,
-      actual_state: actual_state
+      actual_state: actual_state,
+      processed_devfile: processed_devfile,
+      config_version: RemoteDevelopment::Workspaces::ConfigVersion::VERSION_2
     )
   end
 
-  let(:value) { { update_type: update_type, workspaces_to_be_returned: [workspace1, workspace2], logger: logger } }
+  let(:prev1_workspace1) do
+    instance_double(
+      "RemoteDevelopment::Workspace",
+      id: 1,
+      name: "workspace_prev1",
+      namespace: "namespace1",
+      deployment_resource_version: "1",
+      desired_state: desired_state,
+      actual_state: actual_state,
+      processed_devfile: processed_devfile,
+      config_version: RemoteDevelopment::Workspaces::ConfigVersion::VERSION_1
+    )
+  end
+
+  let(:prev1_workspace2) do
+    instance_double(
+      "RemoteDevelopment::Workspace",
+      id: 1,
+      name: "workspace_prev2",
+      namespace: "namespace2",
+      deployment_resource_version: "2",
+      desired_state: desired_state,
+      actual_state: actual_state,
+      processed_devfile: processed_devfile,
+      config_version: RemoteDevelopment::Workspaces::ConfigVersion::VERSION_1
+    )
+  end
+
+  let(:value) do
+    {
+      update_type: update_type,
+      workspaces_to_be_returned: [workspace1, workspace2, prev1_workspace1, prev1_workspace2],
+      logger: logger
+    }
+  end
 
   subject do
     described_class.convert(value)
@@ -40,6 +81,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::WorkspacesToRai
 
   before do
     allow(RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGenerator)
+      .to receive(:generate_desired_config) { [config_to_apply] }
+    allow(RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGeneratorPrev1)
       .to receive(:generate_desired_config) { [config_to_apply] }
   end
 
@@ -65,6 +108,22 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::WorkspacesToRai
               desired_state: desired_state,
               actual_state: actual_state,
               config_to_apply: config_to_apply_yaml
+            },
+            {
+              name: "workspace_prev1",
+              namespace: "namespace1",
+              deployment_resource_version: "1",
+              desired_state: desired_state,
+              actual_state: actual_state,
+              config_to_apply: config_to_apply_yaml
+            },
+            {
+              name: "workspace_prev2",
+              namespace: "namespace2",
+              deployment_resource_version: "2",
+              desired_state: desired_state,
+              actual_state: actual_state,
+              config_to_apply: config_to_apply_yaml
             }
           ]
         )
@@ -76,9 +135,18 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::WorkspacesToRai
     let(:update_type) { RemoteDevelopment::Workspaces::Reconcile::UpdateTypes::PARTIAL }
 
     before do
-      allow(workspace1).to receive(:desired_state_updated_more_recently_than_last_response_to_agent?).and_return(true)
+      allow(workspace1)
+        .to receive(:desired_state_updated_more_recently_than_last_response_to_agent?)
+              .and_return(true)
       allow(workspace2)
-        .to receive(:desired_state_updated_more_recently_than_last_response_to_agent?).and_return(false)
+        .to receive(:desired_state_updated_more_recently_than_last_response_to_agent?)
+              .and_return(false)
+      allow(prev1_workspace1)
+        .to receive(:desired_state_updated_more_recently_than_last_response_to_agent?)
+              .and_return(true)
+      allow(prev1_workspace2)
+        .to receive(:desired_state_updated_more_recently_than_last_response_to_agent?)
+              .and_return(false)
     end
 
     context "when workspace.desired_state_updated_more_recently_than_last_response_to_agent == true" do
