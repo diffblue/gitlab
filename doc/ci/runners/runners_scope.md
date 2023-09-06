@@ -273,18 +273,19 @@ To create a group runner:
 Alternately, you can copy the registration token and follow the documentation for
 how to [register a runner](https://docs.gitlab.com/runner/register/).
 
-### View and manage group runners
+### View group runners
 
 > Ability for users with the Maintainer role to view group runners [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/384179) in GitLab 16.4.
 
-You can view and manage all runners for a group, its subgroups, and projects.
+Prerequisite:
+
+- You must have the Maintainer or Owner role for the group.
+
+You can view all runners for a group and its subgroups and projects.
 You can do this for your self-managed GitLab instance or for GitLab.com.
-You must have the Maintainer role for the group.
 
 1. On the left sidebar, select **Search or go to** and find your group.
 1. Select **Build > Runners**.
-
-From this page, you can edit, pause, and remove runners from the group, its subgroups, and projects.
 
 #### Filter group runners to show only inherited
 
