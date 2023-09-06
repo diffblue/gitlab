@@ -1088,19 +1088,6 @@ RSpec.describe License, feature_category: :sm_provisioning do
                 .to eq(true), "expected #{feature} to be available"
             end
           end
-
-          context 'when feature flag feature_available_check_with_usage_ping is disabled' do
-            before do
-              stub_feature_flags(feature_available_check_with_usage_ping: false)
-            end
-
-            it 'does not have access to any usage ping features' do
-              ::GitlabSubscriptions::Features::FEATURES_WITH_USAGE_PING.each do |feature|
-                expect(described_class.feature_available?(feature))
-                  .to eq(false), "expected #{feature} not to be available"
-              end
-            end
-          end
         end
       end
 

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Licenses::SubmitLicenseUsageDataBanner do
+RSpec.describe Gitlab::Licenses::SubmitLicenseUsageDataBanner, feature_category: :sm_provisioning do
   include ActionView::Helpers::SanitizeHelper
 
   let_it_be(:feature_name) { described_class::SUBMIT_LICENSE_USAGE_DATA_BANNER }
@@ -67,7 +67,7 @@ RSpec.describe Gitlab::Licenses::SubmitLicenseUsageDataBanner do
       let(:starts_at) { Date.tomorrow }
 
       before do
-        ::License.current.destroy!
+        ::License.current&.destroy!
       end
 
       include_examples 'skips resetting the submit license usage data'
@@ -200,7 +200,7 @@ RSpec.describe Gitlab::Licenses::SubmitLicenseUsageDataBanner do
       let(:starts_at) { Date.tomorrow }
 
       before do
-        ::License.current.destroy!
+        ::License.current&.destroy!
       end
 
       it { is_expected.to eq(false) }

@@ -321,8 +321,7 @@ module GitlabSubscriptions
     # their availability is checked in Gitlab::CurrentSettings/ApplicationSetting which
     # would otherwise generate a cyclical dependency.
     FEATURES_NOT_SUPPORTING_USAGE_PING = [
-      :custom_project_templates, # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/423237
-      :elastic_search            # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/423240
+      :custom_project_templates # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/423237
     ].freeze
 
     class << self

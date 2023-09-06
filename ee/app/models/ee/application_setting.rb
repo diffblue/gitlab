@@ -76,7 +76,7 @@ module EE
 
       validates :elasticsearch_aws_region,
         presence: { message: "can't be blank when using aws hosted elasticsearch" },
-        if: ->(setting) { setting.elasticsearch_indexing? && setting.elasticsearch_aws? }
+        if: ->(setting) { setting.elasticsearch_aws? && setting.elasticsearch_indexing? }
 
       validates :elasticsearch_worker_number_of_shards,
         presence: true,
@@ -352,7 +352,7 @@ module EE
     def elasticsearch_indexing
       return false unless elasticsearch_indexing_column_exists?
 
-      License.feature_available?(:elastic_search) && super
+      super && License.feature_available?(:elastic_search)
     end
     alias_method :elasticsearch_indexing?, :elasticsearch_indexing
 
@@ -482,8 +482,8 @@ module EE
 
     override :personal_access_tokens_disabled?
     def personal_access_tokens_disabled?
-      License.feature_available?(:disable_personal_access_tokens) &&
-        ::Gitlab::CurrentSettings.disable_personal_access_tokens
+      ::Gitlab::CurrentSettings.disable_personal_access_tokens &&
+        License.feature_available?(:disable_personal_access_tokens)
     end
 
     def disable_feed_token
