@@ -40,7 +40,7 @@ module EE
           strong_memoize_attr :user
 
           def build_user
-            ::Users::AuthorizedBuildService.new(nil, user_params).execute
+            ::Users::AuthorizedBuildService.new(nil, group_user_params).execute
           end
 
           def build_scim_identity
@@ -63,15 +63,11 @@ module EE
             @group.saml_provider.default_membership_role
           end
 
-          def user_params
-            @parsed_hash.tap do |hash|
-              hash[:skip_confirmation] = SKIP_EMAIL_CONFIRMATION
+          def group_user_params
+            user_params.tap do |hash|
               hash[:saml_provider_id] = @group.saml_provider.id
               hash[:group_id] = @group&.id
               hash[:provider] = ::Users::BuildService::GROUP_SCIM_PROVIDER
-              hash[:username] = valid_username
-              hash[:password] = hash[:password_confirmation] = random_password
-              hash[:password_automatically_set] = PASSWORD_AUTOMATICALLY_SET
             end
           end
 

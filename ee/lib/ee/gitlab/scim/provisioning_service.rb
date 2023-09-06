@@ -44,15 +44,6 @@ module EE
           )
         end
 
-        def user_params
-          @parsed_hash.tap do |hash|
-            hash[:skip_confirmation] = SKIP_EMAIL_CONFIRMATION
-            hash[:username] = valid_username
-            hash[:password] = hash[:password_confirmation] = random_password
-            hash[:password_automatically_set] = PASSWORD_AUTOMATICALLY_SET
-          end
-        end
-
         def existing_identity?
           identity&.persisted?
         end
