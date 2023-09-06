@@ -51566,6 +51566,9 @@ msgstr ""
 msgid "Username or email"
 msgstr ""
 
+msgid "Username or primary email"
+msgstr ""
+
 msgid "Username:"
 msgstr ""
 
