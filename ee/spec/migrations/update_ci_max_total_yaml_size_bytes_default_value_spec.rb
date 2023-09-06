@@ -32,5 +32,18 @@ RSpec.describe UpdateCiMaxTotalYamlSizeBytesDefaultValue, feature_category: :pip
 
       expect(setting.ci_max_total_yaml_size_bytes).to eq(new_limit)
     end
+
+    context 'when the value is larger than 2147483647 (max int value)' do
+      # when ci_max_includes was increased by the self-hosted admin
+      let(:default_ci_max_total_yaml_size_bytes) { 157286400 }
+      let(:setting) { application_setting.create!(ci_max_includes: 2048) }
+
+      it 'sets it to 2147483647' do
+        # max_yaml_size_bytes * ci_max_includes = 21474836480
+        expect { migrate! }.to change {
+                                 setting.reload.ci_max_total_yaml_size_bytes
+                               }.from(default_ci_max_total_yaml_size_bytes).to(2147483647)
+      end
+    end
   end
 end
