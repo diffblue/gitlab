@@ -52,15 +52,24 @@ To create a shared runner:
 1. Select **Admin Area**.
 1. On the left sidebar, select **CI/CD > Runners**.
 1. Select **New instance runner**.
-1. Select a platform.
-1. Optional. Enter configurations for the runner.
-1. Select **Submit**.
-1. Follow the on-screen instructions to register the runner from the command line.
+1. Select the operating system where GitLab Runner is installed.
+1. In the **Tags** section, in the **Tags** field, enter the job tags to specify jobs the runner can run.
+   If there are no job tags for this runner, select **Run untagged**.
+1. Optional. In the **Runner description** field, to add a runner description
+   that displays in GitLab, enter a runner description.
+1. Optional. In the **Configuration** section, add additional configurations.
+1. Select **Create runner**.
+1. Follow the on-screen instructions to register the runner from the command line. When prompted by the command line:
+   - For the `GitLab instance URL`, use the URL for your GitLab instance. For example, if your project
+     is hosted on `gitlab.example.com/yourname/yourproject`, your GitLab instance URL is `https://gitlab.example.com`.
+   - For the `executor`, enter the type of [executor](https://docs.gitlab.com/runner/executors/). The executor is the
+     environment where the runner executes the job.
 
-You can also [create a runner](../../api/users.md#create-a-runner) with the API to generate a runner authentication token.
+You can also [use the API](../../api/users.md#create-a-runner) to create a runner.
 
 NOTE:
-The runner authentication token displays in the UI for only a short period of time during registration.
+The runner authentication token displays in the UI for a limited period of time during registration. After you register the runner,
+the authentication token is stored in the `config.toml`.
 
 ### Create a shared runner with a registration token (deprecated)
 
@@ -233,19 +242,28 @@ Prerequisites:
 - You must have the Owner role for the group.
 
 You can create a group runner for your self-managed GitLab instance or for GitLab.com.
-When you create a runner, it is assigned a runner authentication token that you use to register it. The runner uses the token to authenticate with GitLab when picking up jobs from the job queue.
+When you create a runner, it is assigned a runner authentication token that you use to register it.
+The runner uses the token to authenticate with GitLab when it picks up jobs from the job queue.
 
 To create a group runner:
 
 1. On the left sidebar, select **Search or go to** and find your group.
 1. Select **Build > Runners**.
 1. Select **New group runner**.
-1. Select a platform.
-1. Optional. Enter configurations for the runner.
-1. Select **Submit**.
-1. Follow the on-screen instructions to register the runner from the command line.
+1. Select the operating system where GitLab Runner is installed.
+1. In the **Tags** section, in the **Tags** field, enter the job tags to specify jobs the runner can run.
+   If there are no job tags for this runner, select **Run untagged**.
+1. Optional. In the **Runner description** field, add a runner description
+   that displays in GitLab.
+1. Optional. In the **Configuration** section, add additional configurations.
+1. Select **Create runner**.
+1. Follow the on-screen instructions to register the runner from the command line. When prompted by the command line:
+   - For the `GitLab instance URL`, use the URL for your GitLab instance. For example, if your project
+     is hosted on `gitlab.example.com/yourname/yourproject`, your GitLab instance URL is `https://gitlab.example.com`.
+   - For the `executor`, enter the type of [executor](https://docs.gitlab.com/runner/executors/). The executor is the
+     environment where the runner executes the job.
 
-You can also [create a runner](../../api/users.md#create-a-runner) with the API to generate an authentication token.
+You can also [use the API](../../api/users.md#create-a-runner) to create a runner.
 
 NOTE:
 The runner authentication token displays in the UI for only a short period of time during registration.
@@ -412,7 +430,9 @@ Prerequisites:
 
 - You must have the Maintainer role for the project.
 
-You can create a project runner for your self-managed GitLab instance or for GitLab.com. When you create a runner, it is assigned a runner authentication token that you use to register to the runner. The runner uses the token to authenticate with GitLab when picking up jobs from the job queue.
+You can create a project runner for your self-managed GitLab instance or for GitLab.com. When you create a runner,
+it is assigned a runner authentication token that you use to register to the runner. The runner uses the token to
+authenticate with GitLab when it picks up jobs from the job queue.
 
 To create a project runner:
 
@@ -420,12 +440,20 @@ To create a project runner:
 1. Select **Settings > CI/CD**.
 1. Expand the **Runners** section.
 1. Select **New project runner**.
-1. Select a platform.
-1. Optional. Enter configurations for the runner.
-1. Select **Submit**.
-1. Follow the on-screen instructions to register the runner from the command line.
+1. Select the operating system where GitLab Runner is installed.
+1. In the **Tags** section, in the **Tags** field, enter the job tags to specify jobs the runner can run.
+   If there are no job tags for this runner, select **Run untagged**.
+1. Optional. In the **Runner description** field, add a description for the runner
+   that displays in GitLab.
+1. Optional. In the **Configuration** section, add additional configurations.
+1. Select **Create runner**.
+1. Follow the on-screen instructions to register the runner from the command line. When prompted by the command line:
+   - For the `GitLab instance URL`, use the URL for your GitLab instance. For example, if your project
+     is hosted on `gitlab.example.com/yourname/yourproject`, your GitLab instance URL is `https://gitlab.example.com`.
+   - For the `executor`, enter the type of [executor](https://docs.gitlab.com/runner/executors/). The executor is the
+     environment where the runner executes the job.
 
-You can also [create a runner](../../api/users.md#create-a-runner) with the API to generate a runner authentication token.
+You can also [use the API](../../api/users.md#create-a-runner) to create a runner.
 
 NOTE:
 The runner authentication token displays in the UI for only a short period of time during registration.
