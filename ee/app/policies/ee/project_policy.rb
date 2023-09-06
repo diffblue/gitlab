@@ -640,6 +640,7 @@ module EE
       end
 
       rule { custom_roles_allowed & role_enables_admin_merge_request }.policy do
+        enable :read_merge_request
         enable :admin_merge_request
         enable :download_code # required to negate https://gitlab.com/gitlab-org/gitlab/-/blob/3061d30d9b3d6d4c4dd5abe68bc1e4a8a93c7966/app/policies/project_policy.rb#L603-607
       end
