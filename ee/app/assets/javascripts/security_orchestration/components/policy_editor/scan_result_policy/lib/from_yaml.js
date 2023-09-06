@@ -25,6 +25,7 @@ export const fromYaml = ({ manifest, validateRuleMode = false, glFeatures = {} }
         'branches',
         'branch_type',
         'branch_exceptions',
+        'commits',
         'license_states',
         'license_types',
         'match_on_inclusion',

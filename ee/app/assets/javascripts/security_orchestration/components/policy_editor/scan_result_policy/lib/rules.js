@@ -5,6 +5,7 @@ import { REPORT_TYPES_DEFAULT } from 'ee/security_dashboard/store/constants';
 import { isPositiveInteger } from '~/lib/utils/number_utils';
 import {
   ALL_PROTECTED_BRANCHES,
+  ANY_COMMIT,
   BRANCH_TYPE_KEY,
   INVALID_PROTECTED_BRANCHES,
   VALID_SCAN_RESULT_BRANCH_TYPE_OPTIONS,
@@ -26,7 +27,7 @@ export const VULNERABILITY_STATE_KEYS = [
   ...Object.keys(APPROVAL_VULNERABILITY_STATES[NEWLY_DETECTED]),
   ...Object.keys(APPROVAL_VULNERABILITY_STATES[PREVIOUSLY_EXISTING]),
 ];
-
+export const ANY_MERGE_REQUEST = 'any_merge_request';
 export const SCAN_FINDING = 'scan_finding';
 export const LICENSE_FINDING = 'license_finding';
 export const MATCHING = s__('ScanResultPolicy|Matching');
@@ -55,6 +56,12 @@ export const licenseScanBuildRule = () => ({
   license_types: [],
   license_states: [],
   branch_type: ALL_PROTECTED_BRANCHES.value,
+});
+
+export const anyMergeRequestBuildRule = () => ({
+  type: ANY_MERGE_REQUEST,
+  branch_type: ALL_PROTECTED_BRANCHES.value,
+  commits: ANY_COMMIT,
 });
 
 /*
@@ -156,6 +163,8 @@ export const getDefaultRule = (scanType) => {
       return securityScanBuildRule();
     case LICENSE_FINDING:
       return licenseScanBuildRule();
+    case ANY_MERGE_REQUEST:
+      return anyMergeRequestBuildRule();
     default:
       return emptyBuildRule();
   }

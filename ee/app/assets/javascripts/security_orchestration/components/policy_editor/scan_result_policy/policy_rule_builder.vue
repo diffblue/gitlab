@@ -1,6 +1,8 @@
 <script>
 import { GlAlert, GlSprintf } from '@gitlab/ui';
-import { SCAN_FINDING, LICENSE_FINDING } from './lib';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { ANY_MERGE_REQUEST, SCAN_FINDING, LICENSE_FINDING } from './lib';
+import AnyMergeRequestRuleBuilder from './any_merge_request_rule_builder.vue';
 import SecurityScanRuleBuilder from './security_scan_rule_builder.vue';
 import LicenseScanRuleBuilder from './license_scan_rule_builder.vue';
 import DefaultRuleBuilder from './default_rule_builder.vue';
@@ -10,9 +12,11 @@ export default {
     GlAlert,
     GlSprintf,
     DefaultRuleBuilder,
+    AnyMergeRequestRuleBuilder,
     SecurityScanRuleBuilder,
     LicenseScanRuleBuilder,
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
     initRule: {
       type: Object,
@@ -21,6 +25,7 @@ export default {
   },
   data() {
     const previousRules = {
+      [ANY_MERGE_REQUEST]: null,
       [SCAN_FINDING]: null,
       [LICENSE_FINDING]: null,
     };
@@ -39,6 +44,9 @@ export default {
     };
   },
   computed: {
+    isAnyMergeRequestRule() {
+      return this.initRule.type === ANY_MERGE_REQUEST;
+    },
     isSecurityRule() {
       return this.initRule.type === SCAN_FINDING;
     },
@@ -87,6 +95,14 @@ export default {
       v-if="isEmptyRule"
       :init-rule="initRule"
       @error="handleError"
+      @changed="updateRule"
+      @remove="removeRule"
+      @set-scan-type="setScanType"
+    />
+
+    <any-merge-request-rule-builder
+      v-else-if="isAnyMergeRequestRule && glFeatures.scanResultAnyMergeRequest"
+      :init-rule="initRule"
       @changed="updateRule"
       @remove="removeRule"
       @set-scan-type="setScanType"

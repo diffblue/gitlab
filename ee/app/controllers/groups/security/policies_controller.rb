@@ -11,6 +11,7 @@ module Groups
 
       before_action do
         push_frontend_feature_flag(:scan_result_policy_settings, group)
+        push_frontend_feature_flag(:scan_result_any_merge_request, group)
       end
 
       feature_category :security_policy_management

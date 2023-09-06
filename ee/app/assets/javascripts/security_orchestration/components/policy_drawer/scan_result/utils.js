@@ -302,7 +302,7 @@ const humanizeRule = (rule) => {
     }
   };
 
-  addCriteria(rule.severity_levels.length, () =>
+  addCriteria(rule.severity_levels?.length, () =>
     sprintf(s__('SecurityOrchestration|Severity is %{severity}.'), {
       severity: humanizeItems({
         items: rule.severity_levels,
@@ -310,7 +310,7 @@ const humanizeRule = (rule) => {
     }),
   );
 
-  addCriteria(rule.vulnerability_states.length, () =>
+  addCriteria(rule.vulnerability_states?.length, () =>
     sprintf(s__('SecurityOrchestration|Vulnerabilities are %{vulnerabilityStates}.'), {
       vulnerabilityStates: humanizeVulnerabilityStates(rule.vulnerability_states),
     }),
