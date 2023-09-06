@@ -1,0 +1,61 @@
+- return unless can?(current_user, :read_target_branch_rules, @project)
+
+%section.settings.merge-requests-feature.no-animate#js-target-branch-rules.expanded
+  .settings-header
+    %h4= _('Target branch rules')
+
+  .settings-content
+    = render Pajamas::CardComponent.new(card_options: { class: 'gl-new-card js-toggle-container' }, header_options: { class: 'gl-new-card-header gl-flex-direction-column' }, body_options: { class: 'gl-new-card-body gl-px-0' }) do |c|
+      - c.with_header do
+        .gl-new-card-title-wrapper.gl-justify-content-space-between
+          %h3.gl-new-card-title
+            = _("Target branch rules")
+            .gl-new-card-count
+              = sprite_icon('branch', css_class: 'gl-mr-2')
+              %span= @project.target_branch_rules.size
+          - if can?(current_user, :create_target_branch_rule, @project)
+            .gl-new-card-actions
+              = render Pajamas::ButtonComponent.new(size: :small, button_options: { class: 'js-toggle-button js-toggle-content' }) do
+                = _('Add target branch rule')
+        .gl-new-card-description.gl-mt-2.gl-sm-mt-0
+          = _('Create rules for target branches in merge requests.')
+      - c.with_body do
+        - if can?(current_user, :create_target_branch_rule, @project)
+          .gl-new-card-add-form.gl-m-3.gl-display-none.js-toggle-content
+            = gitlab_ui_form_for [@project] do |f|
+              %h4.gl-mt-0= _("Target branch rule")
+              .form-group.row
+                = f.label :name, _('Rule name'), class: 'col-sm-12'
+                .col-sm-6
+                  = f.text_field :name, class: 'form-control gl-form-input', placeholder: _('eg. dev/*')
+              .form-group.row
+                = f.label :target_branch, _("Targe branch"), class: 'col-sm-12'
+                .col-sm-6
+                  #js-target-branch{ data: { project_id: @project.id } }
+              = f.submit _('Save'), pajamas_button: true
+              = render Pajamas::ButtonComponent.new(button_options: { type: 'reset', class: 'gl-ml-2 js-toggle-button' }) do
+                = _('Cancel')
+
+        %div
+          - if @project.target_branch_rules.empty?
+            %p.gl-new-card-empty.gl-px-5.gl-py-4.js-toggle-content
+              = _("There are currently no target branch rules")
+          - else
+            %table.table.b-table.gl-table.b-table-stacked-md
+              %colgroup
+                %col{ width: "30%" }
+                %col{ width: "40%" }
+                %col
+              %thead
+                %tr
+                  %th
+                    = _("Rule name")
+                  %th
+                    = _('Target branch')
+                  %th
+              %tbody
+                - @project.target_branch_rules.each do |rule|
+                  %tr
+                    %td.ref-name{ class: "gl-vertical-align-middle!" }= rule.name
+                    %td.ref-name{ class: "gl-vertical-align-middle!" }= rule.target_branch
+                    %td{ class: "gl-vertical-align-middle!" }

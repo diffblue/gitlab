@@ -2968,6 +2968,9 @@ msgstr ""
 msgid "Add tag"
 msgstr ""
 
+msgid "Add target branch rule"
+msgstr ""
+
 msgid "Add text to the sign-in page. Markdown enabled."
 msgstr ""
 
@@ -13797,6 +13800,9 @@ msgid "Create release"
 msgstr ""
 
 msgid "Create requirement"
+msgstr ""
+
+msgid "Create rules for target branches in merge requests."
 msgstr ""
 
 msgid "Create service account"
@@ -40289,6 +40295,9 @@ msgstr ""
 msgid "Ruby"
 msgstr ""
 
+msgid "Rule name"
+msgstr ""
+
 msgid "Rule name is already taken."
 msgstr ""
 
@@ -46665,6 +46674,9 @@ msgstr ""
 msgid "TanukiBot|What is a fork?"
 msgstr ""
 
+msgid "Targe branch"
+msgstr ""
+
 msgid "Target"
 msgstr ""
 
@@ -46675,6 +46687,12 @@ msgid "Target Path"
 msgstr ""
 
 msgid "Target branch"
+msgstr ""
+
+msgid "Target branch rule"
+msgstr ""
+
+msgid "Target branch rules"
 msgstr ""
 
 msgid "Target branch: %{target_branch}"
@@ -47679,6 +47697,9 @@ msgid "The vulnerability is no longer detected. Verify the vulnerability has bee
 msgstr ""
 
 msgid "There are currently no mirrored repositories."
+msgstr ""
+
+msgid "There are currently no target branch rules"
 msgstr ""
 
 msgid "There are merge conflicts"
@@ -55882,6 +55903,9 @@ msgid "e.g. %{token}"
 msgstr ""
 
 msgid "eg party_tanuki"
+msgstr ""
+
+msgid "eg. dev/*"
 msgstr ""
 
 msgid "element is not a hierarchy"
