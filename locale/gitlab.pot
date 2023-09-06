@@ -56789,6 +56789,9 @@ msgstr ""
 msgid "must not contain commonly used combinations of words and letters"
 msgstr ""
 
+msgid "must only contain letters, digits, forward-slash, underscore, hyphen or period"
+msgstr ""
+
 msgid "my-awesome-group"
 msgstr ""
 
