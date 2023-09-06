@@ -11,7 +11,6 @@ RSpec.describe "groups/security/compliance_dashboards/show", type: :view, featur
   before do
     allow(view).to receive(:current_user).and_return(user)
     assign(:group, group)
-    render
   end
 
   it 'renders with the correct data attributes', :aggregate_failures do
@@ -25,6 +24,43 @@ RSpec.describe "groups/security/compliance_dashboards/show", type: :view, featur
     expect(rendered).to have_selector("[data-root-ancestor-path='#{group.root_ancestor.full_path}']")
     expect(rendered).to have_selector("[data-base-path='#{group_security_compliance_dashboard_path(group)}']")
     expect(rendered).to have_selector("[data-pipeline-configuration-enabled='false']")
-    expect(rendered).to have_selector("[data-adherence-report-ui-enabled='true']")
+  end
+
+  context 'for `adherence-report-ui-enabled` selector' do
+    before do
+      Feature.disable(:adherence_report_ui)
+    end
+
+    context 'when feature `adherence_report_ui` is not enabled' do
+      it 'renders with the correct selector value' do
+        render
+
+        expect(rendered).to have_selector("[data-adherence-report-ui-enabled='false']")
+      end
+    end
+
+    context 'when feature `adherence_report_ui` is enabled for a group' do
+      before do
+        Feature.enable(:adherence_report_ui, group)
+      end
+
+      it 'renders with the correct selector value' do
+        render
+
+        expect(rendered).to have_selector("[data-adherence-report-ui-enabled='true']")
+      end
+    end
+
+    context 'when feature `adherence_report_ui` is globally enabled' do
+      before do
+        Feature.enable(:adherence_report_ui)
+      end
+
+      it 'renders with the correct selector value' do
+        render
+
+        expect(rendered).to have_selector("[data-adherence-report-ui-enabled='true']")
+      end
+    end
   end
 end
