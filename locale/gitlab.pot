@@ -14783,6 +14783,9 @@ msgstr ""
 msgid "DORA4Metrics|To help us improve the Show forecast feature, please share feedback about your experience in %{linkStart}this issue%{linkEnd}."
 msgstr ""
 
+msgid "DORA4Metrics|To help us improve the Value Stream Management Dashboard, please share feedback about your experience in this %{linkStart}survey%{linkEnd}."
+msgstr ""
+
 msgid "DORA4Metrics|Took 1 day or less to restore service when a service incident or a defect that impacts users occurs."
 msgstr ""
 

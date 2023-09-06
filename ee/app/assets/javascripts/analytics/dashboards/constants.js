@@ -120,6 +120,8 @@ export const DASHBOARD_TITLE = s__('DORA4Metrics|Value Streams Dashboard');
 export const DASHBOARD_DESCRIPTION = s__(
   'DORA4Metrics|The Value Streams Dashboard allows all stakeholders from executives to individual contributors to identify trends, patterns, and opportunities for software development improvements.',
 );
+export const DASHBOARD_SURVEY_LINK =
+  'https://gitlab.fra1.qualtrics.com/jfe/form/SV_50guMGNU2HhLeT4';
 export const DASHBOARD_DOCS_LINK = helpPagePath('user/analytics/value_streams_dashboard');
 export const DASHBOARD_DESCRIPTION_GROUP = s__('DORA4Metrics|Metrics comparison for %{name} group');
 export const DASHBOARD_DESCRIPTION_PROJECT = s__(
@@ -154,6 +156,10 @@ export const CHART_TOOLTIP_UNITS = {
 export const YAML_CONFIG_PATH = '.gitlab/analytics/dashboards/value_streams/value_streams.yaml';
 export const YAML_CONFIG_LOAD_ERROR = s__(
   'DORA4Metrics|Failed to load YAML config from Project: %{fullPath}',
+);
+
+export const ALERT_TEXT = s__(
+  'DORA4Metrics|To help us improve the Value Stream Management Dashboard, please share feedback about your experience in this %{linkStart}survey%{linkEnd}.',
 );
 
 export const CLICK_METRIC_DRILLDOWN_LINK_ACTION = 'click_link';

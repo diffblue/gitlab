@@ -1,10 +1,13 @@
 <script>
 import { isEmpty } from 'lodash';
-import { GlLink, GlSkeletonLoader, GlAlert } from '@gitlab/ui';
+import { GlLink, GlSkeletonLoader, GlSprintf, GlAlert } from '@gitlab/ui';
 import { __, sprintf } from '~/locale';
+import UserCalloutDismisser from '~/vue_shared/components/user_callout_dismisser.vue';
 import {
+  ALERT_TEXT,
   DASHBOARD_TITLE,
   DASHBOARD_DESCRIPTION,
+  DASHBOARD_SURVEY_LINK,
   DASHBOARD_DOCS_LINK,
   MAX_PANELS_LIMIT,
   YAML_CONFIG_LOAD_ERROR,
@@ -22,8 +25,10 @@ export default {
     GlAlert,
     GlLink,
     GlSkeletonLoader,
+    GlSprintf,
     DoraVisualization,
     DoraPerformersScore,
+    UserCalloutDismisser,
   },
   props: {
     fullPath: {
@@ -43,6 +48,7 @@ export default {
   },
   i18n: {
     learnMore: __('Learn more'),
+    alertText: ALERT_TEXT,
   },
   data: () => ({
     loading: true,
@@ -92,37 +98,57 @@ export default {
     this.loading = false;
   },
   DASHBOARD_DOCS_LINK,
+  DASHBOARD_SURVEY_LINK,
 };
 </script>
 <template>
-  <div v-if="loading" class="gl-mt-5">
-    <gl-skeleton-loader :lines="2" />
-  </div>
-  <div v-else>
-    <gl-alert v-if="loadError" class="gl-mt-5" variant="warning" :dismissible="false">
-      {{ loadError }}
-    </gl-alert>
+  <div>
+    <user-callout-dismisser feature-name="vsd_feedback_banner">
+      <template #default="{ dismiss, shouldShowCallout }">
+        <gl-alert v-if="shouldShowCallout" data-testid="alert-banner" @dismiss="dismiss">
+          <gl-sprintf :message="$options.i18n.alertText">
+            <template #link="{ content }">
+              <gl-link :href="$options.DASHBOARD_SURVEY_LINK">{{ content }}</gl-link>
+            </template>
+          </gl-sprintf>
+        </gl-alert>
+      </template>
+    </user-callout-dismisser>
+    <div v-if="loading" class="gl-mt-5">
+      <gl-skeleton-loader :lines="2" />
+    </div>
+    <div v-else>
+      <gl-alert
+        v-if="loadError"
+        data-testid="alert-error"
+        class="gl-mt-5"
+        variant="warning"
+        :dismissible="false"
+      >
+        {{ loadError }}
+      </gl-alert>
 
-    <h3 class="page-title" data-testid="dashboard-title">{{ dashboardTitle }}</h3>
-    <p data-testid="dashboard-description">
-      {{ dashboardDescription }}
-      <gl-link v-if="isDefaultDescription" :href="$options.DASHBOARD_DOCS_LINK" target="_blank">
-        {{ $options.i18n.learnMore }}.
-      </gl-link>
-    </p>
+      <h3 class="page-title" data-testid="dashboard-title">{{ dashboardTitle }}</h3>
+      <p data-testid="dashboard-description">
+        {{ dashboardDescription }}
+        <gl-link v-if="isDefaultDescription" :href="$options.DASHBOARD_DOCS_LINK" target="_blank">
+          {{ $options.i18n.learnMore }}.
+        </gl-link>
+      </p>
 
-    <dora-visualization
-      v-for="({ title, data }, index) in panels"
-      :key="index"
-      :title="title"
-      :data="data"
-    />
+      <dora-visualization
+        v-for="({ title, data }, index) in panels"
+        :key="index"
+        :title="title"
+        :data="data"
+      />
 
-    <dora-performers-score
-      v-for="({ data }, index) in groupPanels"
-      :key="`dora-performers-score-panel-${index}`"
-      :data="data"
-      class="gl-mt-5"
-    />
+      <dora-performers-score
+        v-for="({ data }, index) in groupPanels"
+        :key="`dora-performers-score-panel-${index}`"
+        :data="data"
+        class="gl-mt-5"
+      />
+    </div>
   </div>
 </template>
