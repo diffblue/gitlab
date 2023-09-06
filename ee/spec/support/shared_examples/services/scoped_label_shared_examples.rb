@@ -105,8 +105,7 @@ RSpec.shared_examples 'existing issuable with scoped labels' do
             **described_class.constructor_container_arg(parent), current_user: user, params: { label_ids: [label1.id, label3.id] }
           ).execute(issuable)
 
-          expected = issuable.supports_lock_on_merge? ? [label1] : [label3]
-          expect(issuable.reload.labels).to match_array(expected)
+          expect(issuable.reload.labels).to match_array([label3])
         end
       end
 
@@ -121,8 +120,7 @@ RSpec.shared_examples 'existing issuable with scoped labels' do
             **described_class.constructor_container_arg(parent), current_user: user, params: { labels: [label1.title, label3.title] }
           ).execute(issuable)
 
-          expected = issuable.supports_lock_on_merge? ? [label1] : [label3]
-          expect(issuable.reload.labels).to match_array(expected)
+          expect(issuable.reload.labels).to match_array([label3])
         end
       end
 
@@ -159,6 +157,66 @@ RSpec.shared_examples 'existing issuable with scoped labels' do
         ).execute(issuable)
 
         expect(issuable.reload.labels).to match_array([label1, label2, label3])
+      end
+    end
+  end
+end
+
+RSpec.shared_examples 'merged MR with scoped labels and lock_on_merge' do
+  include_context 'exclusive labels creation' do
+    let(:label1) { create_label('key::label1') }
+    let(:label2) { create_label('key::label2') }
+    let(:label3) { create_label('key::label3') }
+
+    context 'when scoped labels are available' do
+      before do
+        stub_licensed_features(scoped_labels: true, epics: true)
+      end
+
+      context 'when using label_ids parameter' do
+        it 'does not remove or add a label' do
+          create(:label_link, label: label1, target: issuable)
+          create(:label_link, label: label2, target: issuable)
+
+          issuable.reload
+
+          described_class.new(
+            **described_class.constructor_container_arg(parent), current_user: user, params: { label_ids: [label1.id, label3.id] }
+          ).execute(issuable)
+
+          expect(issuable.reload.labels).to match_array([label1, label2])
+        end
+      end
+
+      context 'when using label parameter' do
+        it 'does not remove or add a label' do
+          create(:label_link, label: label1, target: issuable)
+          create(:label_link, label: label2, target: issuable)
+
+          issuable.reload
+
+          described_class.new(
+            **described_class.constructor_container_arg(parent), current_user: user, params: { labels: [label1.title, label3.title] }
+          ).execute(issuable)
+
+          expect(issuable.reload.labels).to match_array([label1, label2])
+        end
+      end
+
+      context 'when only removing labels' do
+        it 'does not remove or add a label' do
+          create(:label_link, label: label1, target: issuable)
+          create(:label_link, label: label2, target: issuable)
+          create(:label_link, label: label3, target: issuable)
+
+          issuable.reload
+
+          described_class.new(
+            **described_class.constructor_container_arg(parent), current_user: user, params: { label_ids: [label2.id, label3.id] }
+          ).execute(issuable)
+
+          expect(issuable.reload.labels).to match_array([label1, label2, label3])
+        end
       end
     end
   end

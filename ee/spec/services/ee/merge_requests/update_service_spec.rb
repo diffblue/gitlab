@@ -36,9 +36,19 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
       let(:parent) { project }
     end
 
-    it_behaves_like 'existing issuable with scoped labels' do
+    context 'when MR is merged' do
       let(:issuable) { create(:merge_request, :simple, :merged, source_project: project) }
       let(:parent) { project }
+
+      it_behaves_like 'merged MR with scoped labels and lock_on_merge'
+
+      context 'when feature flag is disabled' do
+        before do
+          stub_feature_flags(enforce_locked_labels_on_merge: false)
+        end
+
+        it_behaves_like 'existing issuable with scoped labels'
+      end
     end
 
     it_behaves_like 'service with multiple reviewers' do
