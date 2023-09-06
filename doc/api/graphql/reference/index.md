@@ -18557,6 +18557,7 @@ Represents an SSH key.
 | <a id="labeldescription"></a>`description` | [`String`](#string) | Description of the label (Markdown rendered as HTML for caching). |
 | <a id="labeldescriptionhtml"></a>`descriptionHtml` | [`String`](#string) | GitLab Flavored Markdown rendering of `description`. |
 | <a id="labelid"></a>`id` | [`ID!`](#id) | Label ID. |
+| <a id="labellockonmerge"></a>`lockOnMerge` | [`Boolean!`](#boolean) | Indicates this label is locked for merge requests that have been merged. |
 | <a id="labeltextcolor"></a>`textColor` | [`String!`](#string) | Text color of the label. |
 | <a id="labeltitle"></a>`title` | [`String!`](#string) | Content of the label. |
 | <a id="labelupdatedat"></a>`updatedAt` | [`Time!`](#time) | When this label was last updated. |
@@ -18741,6 +18742,7 @@ Defines which user roles, users, or groups can merge into a protected branch.
 | <a id="mergerequeststate"></a>`state` | [`MergeRequestState!`](#mergerequeststate) | State of the merge request. |
 | <a id="mergerequestsubscribed"></a>`subscribed` | [`Boolean!`](#boolean) | Indicates if the currently logged in user is subscribed to this merge request. |
 | <a id="mergerequestsuggestedreviewers"></a>`suggestedReviewers` **{warning-solid}** | [`SuggestedReviewersType`](#suggestedreviewerstype) | **Introduced** in 15.4. This feature is an Experiment. It can be changed or removed at any time. Suggested reviewers for merge request. Returns `null` if `suggested_reviewers` feature flag is disabled. This flag is disabled by default and only available on GitLab.com because the feature is experimental and is subject to change without notice. |
+| <a id="mergerequestsupportslockonmerge"></a>`supportsLockOnMerge` | [`Boolean!`](#boolean) | Indicates if the merge request supports locked labels. |
 | <a id="mergerequesttargetbranch"></a>`targetBranch` | [`String!`](#string) | Target branch of the merge request. |
 | <a id="mergerequesttargetbranchexists"></a>`targetBranchExists` | [`Boolean!`](#boolean) | Indicates if the target branch of the merge request exists. |
 | <a id="mergerequesttargetproject"></a>`targetProject` | [`Project!`](#project) | Target project of the merge request. |
