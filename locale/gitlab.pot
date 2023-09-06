@@ -21238,6 +21238,9 @@ msgstr ""
 msgid "Get a support subscription"
 msgstr ""
 
+msgid "Get more information about troubleshooting pipelines"
+msgstr ""
+
 msgid "Get started"
 msgstr ""
 
