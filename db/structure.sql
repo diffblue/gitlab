@@ -36390,6 +36390,9 @@ ALTER TABLE ONLY approval_merge_request_rules
 ALTER TABLE ONLY deploy_keys_projects
     ADD CONSTRAINT fk_58a901ca7e FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY ci_pipeline_chat_data
+    ADD CONSTRAINT fk_5b21bde562 FOREIGN KEY (pipeline_id_convert_to_bigint) REFERENCES ci_pipelines(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY dependency_list_exports
     ADD CONSTRAINT fk_5b3d11e1ef FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL;
 
