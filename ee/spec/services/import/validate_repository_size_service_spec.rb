@@ -16,30 +16,20 @@ RSpec.describe Import::ValidateRepositorySizeService, feature_category: :importe
       end
     end
 
-    context 'when `post_import_repository_size_check` feature flag is enabled' do
-      context 'when repository size is over the limit' do
-        let(:above_size_limit) { true }
+    context 'when repository size is over the limit' do
+      let(:above_size_limit) { true }
 
-        it 'schedules worker to destroy repository and raises error' do
-          expect(::Projects::RepositoryDestroyWorker).to receive(:perform_async).with(project.id)
+      it 'schedules worker to destroy repository and raises error' do
+        expect(::Projects::RepositoryDestroyWorker).to receive(:perform_async).with(project.id)
 
-          expect { service.execute }
-            .to raise_error(::Projects::ImportService::Error, 'Repository above permitted size limit.')
-        end
-      end
-
-      context 'when repository size is not over the limit' do
-        let(:above_size_limit) { false }
-
-        it 'does nothing' do
-          expect(::Projects::RepositoryDestroyWorker).not_to receive(:perform_async)
-
-          expect(service.execute).to eq(nil)
-        end
+        expect { service.execute }
+          .to raise_error(::Projects::ImportService::Error, 'Repository above permitted size limit.')
       end
     end
 
-    context 'when `post_import_repository_size_check` feature flag is disabled' do
+    context 'when repository size is not over the limit' do
+      let(:above_size_limit) { false }
+
       it 'does nothing' do
         expect(::Projects::RepositoryDestroyWorker).not_to receive(:perform_async)
 
