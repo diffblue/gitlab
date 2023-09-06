@@ -88,7 +88,7 @@ describe('GeoSiteFormNamespaces', () => {
       });
 
       it('renders an instance for each namespace', () => {
-        expect(findDropdownItemsText()).toStrictEqual(MOCK_SYNC_NAMESPACES.map((n) => n.name));
+        expect(findDropdownItemsText()).toStrictEqual(MOCK_SYNC_NAMESPACES.map((n) => n.full_name));
       });
 
       it('hides GlIcon if namespace not in selectedNamespaces', () => {
