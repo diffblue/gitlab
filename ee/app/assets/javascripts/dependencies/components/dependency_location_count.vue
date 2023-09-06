@@ -5,6 +5,7 @@ import { s__, sprintf } from '~/locale';
 import axios from '~/lib/utils/axios_utils';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { filterPathBySearchTerm } from '../store/utils';
+import { SEARCH_MIN_THRESHOLD } from './constants';
 
 const mapItemToListboxFormat = (item, index) => ({
   ...item,
@@ -33,7 +34,7 @@ export default {
   },
   data() {
     return {
-      loading: false,
+      loading: true,
       locations: [],
       searchTerm: '',
     };
@@ -46,6 +47,9 @@ export default {
     },
     availableLocations() {
       return filterPathBySearchTerm(this.locations, this.searchTerm);
+    },
+    searchEnabled() {
+      return this.loading || this.locationCount > SEARCH_MIN_THRESHOLD;
     },
   },
   created() {
@@ -85,7 +89,7 @@ export default {
     :header-text="locationText"
     :items="availableLocations"
     :searching="loading"
-    searchable
+    :searchable="searchEnabled"
     @hidden="onHide"
     @search="search"
     @shown="onShown"

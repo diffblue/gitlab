@@ -7,6 +7,7 @@ import DependencyProjectCount from 'ee/dependencies/components/dependency_projec
 import DependencyProjectCountPopover from 'ee/dependencies/components/dependency_project_count_popover.vue';
 import dependenciesProjectsQuery from 'ee/dependencies/graphql/projects.query.graphql';
 import waitForPromises from 'helpers/wait_for_promises';
+import { SEARCH_MIN_THRESHOLD } from 'ee/dependencies/components/constants';
 
 Vue.use(VueApollo);
 
@@ -97,10 +98,29 @@ describe('Dependency Project Count component', () => {
     it('renders the listbox', () => {
       expect(findProjectList().props()).toMatchObject({
         headerText: '2 projects',
-        searchable: true,
+        searchable: false,
         items: [],
         loading: false,
         searching: false,
+      });
+    });
+
+    describe.each`
+      projectCount                | searchable
+      ${SEARCH_MIN_THRESHOLD - 1} | ${false}
+      ${SEARCH_MIN_THRESHOLD + 1} | ${true}
+    `('with project count equal to $projectCount', ({ projectCount, searchable }) => {
+      beforeEach(() => {
+        createComponent({
+          propsData: { projectCount },
+        });
+      });
+
+      it(`renders listbox with searchable set to ${searchable}`, () => {
+        expect(findProjectList().props()).toMatchObject({
+          headerText: `${projectCount} projects`,
+          searchable,
+        });
       });
     });
 

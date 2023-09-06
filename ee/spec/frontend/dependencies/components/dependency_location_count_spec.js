@@ -5,6 +5,7 @@ import axios from '~/lib/utils/axios_utils';
 import waitForPromises from 'helpers/wait_for_promises';
 import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import DependencyLocationCount from 'ee/dependencies/components/dependency_location_count.vue';
+import { SEARCH_MIN_THRESHOLD } from 'ee/dependencies/components/constants';
 
 describe('Dependency Location Count component', () => {
   let wrapper;
@@ -32,8 +33,11 @@ describe('Dependency Location Count component', () => {
   const createComponent = ({ propsData, mountFn = shallowMount, ...options } = {}) => {
     wrapper = mountFn(DependencyLocationCount, {
       propsData: {
-        locationCount: 2,
-        componentId: 1,
+        ...{
+          locationCount: 2,
+          componentId: 1,
+        },
+        ...propsData,
       },
       provide: { locationsEndpoint: endpoint },
       ...options,
@@ -59,7 +63,7 @@ describe('Dependency Location Count component', () => {
       searchable: true,
       items: [],
       loading: false,
-      searching: false,
+      searching: true,
     });
   });
 
@@ -77,8 +81,6 @@ describe('Dependency Location Count component', () => {
     });
 
     it('sets searching based on the data being fetched', async () => {
-      expect(findLocationList().props('searching')).toBe(false);
-
       await findLocationList().vm.$emit('shown');
 
       expect(findLocationList().props('searching')).toBe(true);
@@ -107,6 +109,28 @@ describe('Dependency Location Count component', () => {
       expect(findLocationInfo().attributes('href')).toBe(blobPath);
       expect(findLocationInfo().text()).toContain(path);
       expect(wrapper.text()).toContain(projectName);
+    });
+
+    describe.each`
+      locationCount               | searchable
+      ${SEARCH_MIN_THRESHOLD - 1} | ${false}
+      ${SEARCH_MIN_THRESHOLD + 1} | ${true}
+    `('with location count equal to $locationCount', ({ locationCount, searchable }) => {
+      beforeEach(() => {
+        createComponent({
+          propsData: { locationCount },
+        });
+      });
+
+      it(`renders listbox with searchable set to ${searchable}`, async () => {
+        await findLocationList().vm.$emit('shown');
+        await waitForPromises();
+
+        expect(findLocationList().props()).toMatchObject({
+          headerText: `${locationCount} locations`,
+          searchable,
+        });
+      });
     });
   });
 });
