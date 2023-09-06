@@ -31,9 +31,7 @@ import {
 
 export const i18n = {
   title: s__('Workspaces|New workspace'),
-  subtitle: s__(
-    'Workspaces|A workspace is a virtual sandbox environment for your code in GitLab. You can create a workspace for a public project.',
-  ),
+  subtitle: s__('Workspaces|A workspace is a virtual sandbox environment for your code in GitLab.'),
   betaBadge: __('Beta'),
   form: {
     devfileProject: s__('Workspaces|Select project'),
@@ -41,9 +39,6 @@ export const i18n = {
     editor: s__('Workspaces|Select default editor'),
     maxHoursBeforeTermination: s__('Workspaces|Time before automatic termination'),
     maxHoursSuffix: __('hours'),
-    help: {
-      devfileProjectHelp: s__('Workspaces|You can create a workspace for public projects only.'),
-    },
   },
   invalidProjectAlert: {
     title: s__("Workspaces|You can't create a workspace for this project"),
@@ -219,12 +214,10 @@ export default {
     <gl-form class="gl-mt-6 gl-flex-basis-two-thirds" @submit.prevent="createWorkspace">
       <gl-form-group
         :label="$options.i18n.form.devfileProject"
-        :label-description="$options.i18n.form.help.devfileProjectHelp"
         label-for="workspace-devfile-project-id"
       >
         <search-projects-listbox
           :value="selectedProject"
-          :visibility="$options.PROJECT_VISIBILITY.public"
           data-qa-selector="workspace_devfile_project_id_field"
           @input="onSelectProjectFromListbox"
         />

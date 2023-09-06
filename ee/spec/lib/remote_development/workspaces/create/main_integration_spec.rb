@@ -23,7 +23,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Main, :freeze_time, feat
 
   let(:project) do
     files = { devfile_path => devfile_yaml }
-    create(:project, :public, :in_group, :custom_repo, path: 'test-project', files: files, namespace: group)
+    create(:project, :in_group, :custom_repo, path: 'test-project', files: files, namespace: group)
   end
 
   let(:agent) do

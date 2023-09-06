@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_development do
   let_it_be(:user) { create(:user) }
   let_it_be(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
-  let_it_be(:project) { create(:project, :public, :in_group) }
+  let_it_be(:project) { create(:project, :in_group) }
   let_it_be(:personal_access_token) { create(:personal_access_token, user: user) }
 
   subject do
@@ -118,26 +118,6 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
 
         expect(subject).not_to be_valid
         expect(subject.errors[:agent]).to include('for Workspace must have an associated RemoteDevelopmentAgentConfig')
-      end
-    end
-
-    context 'on project' do
-      context 'when the project is not public' do
-        let_it_be(:private_project) do
-          create(:project, visibility_level: Gitlab::VisibilityLevel::PRIVATE)
-        end
-
-        subject do
-          build(:workspace, user: user, project: private_project)
-        end
-
-        it 'validates project is public' do
-          # sanity check of fixture
-          expect(private_project).to be_private
-
-          expect(subject).not_to be_valid
-          expect(subject.errors[:project]).to include('for Workspace is required to be public')
-        end
       end
     end
   end

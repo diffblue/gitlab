@@ -27,9 +27,6 @@ module RemoteDevelopment
     # to be used to create a new workspace
     validate :validate_agent_config_presence
 
-    # We do not yet support workspaces for private projects, so validate that the associated project is currently public
-    validate :validate_project_is_public
-
     # See https://gitlab.com/gitlab-org/remote-development/gitlab-remote-development-docs/blob/main/doc/architecture.md?plain=0#workspace-states
     # for state validation rules
     # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409773
@@ -73,12 +70,6 @@ module RemoteDevelopment
       return true if agent&.remote_development_agent_config
 
       errors.add(:agent, _('for Workspace must have an associated RemoteDevelopmentAgentConfig'))
-    end
-
-    def validate_project_is_public
-      return true if project.public?
-
-      errors.add(:project, _('for Workspace is required to be public'))
     end
 
     def touch_desired_state_updated_at

@@ -12,7 +12,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::DevfileFetcher, feature_
   end
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, :public, :in_group, :repository) }
+  let_it_be(:project) { create(:project, :in_group, :repository) }
   let_it_be(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
   let(:random_string) { 'abcdef' }
   let(:devfile_path) { '.devfile.yaml' }
