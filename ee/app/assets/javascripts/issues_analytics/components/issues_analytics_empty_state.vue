@@ -37,9 +37,9 @@ export default {
     },
   },
   [NO_DATA_EMPTY_STATE_TYPE]: {
-    title: s__('IssuesAnalytics|There are no issues for the projects in your group'),
+    title: s__('IssuesAnalytics|Get started with issue analytics'),
     description: s__(
-      'IssuesAnalytics|After you begin creating issues for your projects, we can start tracking and displaying metrics for them.',
+      'IssuesAnalytics|Create issues for projects in your group to track and see metrics for them.',
     ),
   },
   [NO_DATA_WITH_FILTERS_EMPTY_STATE_TYPE]: {
