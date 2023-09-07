@@ -29,7 +29,6 @@ RSpec.describe 'Standard flow for user picking just me and joining a project', :
     fill_in 'Why are you signing up? (optional)', with: 'My reason'
 
     choose 'Just me'
-    check 'I\'d like to receive updates about GitLab via email'
     choose 'Join a project'
   end
 

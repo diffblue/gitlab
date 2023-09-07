@@ -37,11 +37,4 @@ RSpec.describe 'registrations/welcome/show', :saas, feature_category: :onboardin
       is_expected.to have_selector('input[name="jobs_to_be_done_other"]', visible: false)
     end
   end
-
-  context 'for rendering the hidden email opt in checkbox' do
-    subject { render }
-
-    it { is_expected.to have_selector('input[name="user[email_opted_in]"]') }
-    it { is_expected.to have_css('.js-email-opt-in.hidden') }
-  end
 end

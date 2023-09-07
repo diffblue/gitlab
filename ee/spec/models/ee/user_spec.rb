@@ -606,32 +606,6 @@ RSpec.describe User, feature_category: :system_access do
     end
   end
 
-  describe '#email_opted_in_source' do
-    context 'for GitLab.com' do
-      let(:user) { build(:user, email_opted_in_source_id: 1) }
-
-      it 'returns GitLab.com' do
-        expect(user.email_opted_in_source).to eq('GitLab.com')
-      end
-    end
-
-    context 'for nil source id' do
-      let(:user) { build(:user, email_opted_in_source_id: nil) }
-
-      it 'returns blank' do
-        expect(user.email_opted_in_source).to be_blank
-      end
-    end
-
-    context 'for non-existent source id' do
-      let(:user) { build(:user, email_opted_in_source_id: 2) }
-
-      it 'returns blank' do
-        expect(user.email_opted_in_source).to be_blank
-      end
-    end
-  end
-
   describe '#available_custom_project_templates' do
     let(:user) { create(:user) }
 
@@ -946,21 +920,29 @@ RSpec.describe User, feature_category: :system_access do
     let_it_be(:member_role_basic) { create(:member_role, :guest, namespace: group) }
     let_it_be(:guest_with_elevated_role) { create(:group_member, :guest, source: group, member_role: member_role_elevating).user }
     let_it_be(:guest_without_elevated_role) { create(:group_member, :guest, source: group, member_role: member_role_basic).user }
+    let_it_be(:users_select) { 'SELECT "users".* FROM "users"' }
+    let_it_be(:users_select_with_ignored_columns) { 'SELECT ("users"."\w+", )+("users"."\w+") FROM "users"' }
+
+    let(:expected_sql_regexp) do
+      Regexp.new(
+        "(#{users_select} #{expected_where}|#{users_select_with_ignored_columns} #{expected_where})"
+      )
+    end
 
     subject(:users) { described_class.billable }
 
     context 'with guests' do
-      it 'validates the sql matches the specific index we have' do
-        expected_sql = <<~SQL
-          SELECT "users".* FROM "users"
-          WHERE ("users"."state" IN ('active'))
-          AND
-          "users"."user_type" IN (0, 6, 4, 13)
-          AND
-          "users"."user_type" IN (0, 4, 5)
-        SQL
+      let(:expected_where) do
+        'WHERE \("users"."state" IN \(\'active\'\)\)
+        AND
+        "users"."user_type" IN \(0, 6, 4, 13\)
+        AND
+        "users"."user_type" IN \(0, 4, 5\)'.squish
+      end
 
-        expect(users.to_sql.squish).to eq(expected_sql.squish), "query was changed. Please ensure query is covered with an index and adjust this test case"
+      it 'validates the sql matches the specific index we have' do
+        expect(users.to_sql.squish).to match(expected_sql_regexp),
+          "query was changed. Please ensure query is covered with an index and adjust this test case"
       end
 
       it 'returns users' do
@@ -976,32 +958,31 @@ RSpec.describe User, feature_category: :system_access do
     end
 
     context 'without guests' do
+      let(:expected_where) do
+        'WHERE \("users"."state" IN \(\'active\'\)\)
+        AND
+        "users"."user_type" IN \(0, 6, 4, 13\)
+        AND
+        "users"."user_type" IN \(0, 4, 5\)
+        AND
+        \(EXISTS \(SELECT 1 FROM "members"
+           LEFT OUTER JOIN "member_roles" ON "member_roles"."id" = "members"."member_role_id"
+           WHERE "members"."user_id" = "users"."id"
+             AND \(members.access_level > 10
+             OR "members"."access_level" = 10
+             AND \(admin_merge_request = true
+             OR admin_vulnerability = true
+             OR read_dependency = true
+             OR read_vulnerability = true\)\)\)\)'.squish # allow_cross_joins_across_databases
+      end
+
       before do
         license = double('License', exclude_guests_from_active_count?: true)
         allow(License).to receive(:current) { license }
       end
 
       it 'validates the sql matches the specific index we have' do
-        expected_sql = <<~SQL
-          SELECT "users".* FROM "users"
-          WHERE ("users"."state" IN ('active'))
-          AND
-          "users"."user_type" IN (0, 6, 4, 13)
-          AND
-          "users"."user_type" IN (0, 4, 5)
-          AND
-          (EXISTS (SELECT 1 FROM "members"
-             LEFT OUTER JOIN "member_roles" ON "member_roles"."id" = "members"."member_role_id"
-             WHERE "members"."user_id" = "users"."id"
-               AND (members.access_level > 10
-               OR "members"."access_level" = 10
-               AND (admin_merge_request = true
-               OR admin_vulnerability = true
-               OR read_dependency = true
-               OR read_vulnerability = true)))) /* allow_cross_joins_across_databases */
-        SQL
-
-        expect(users.to_sql.squish).to eq(expected_sql.squish),
+        expect(users.to_sql.squish).to match(expected_sql_regexp),
           "query was changed. Please ensure query is covered with an index and adjust this test case"
       end
 

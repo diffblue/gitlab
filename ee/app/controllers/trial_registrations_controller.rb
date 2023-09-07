@@ -44,7 +44,7 @@ class TrialRegistrationsController < RegistrationsController
   end
 
   def sign_up_params_attributes
-    [:first_name, :last_name, :username, :email, :password, :skip_confirmation, :email_opted_in]
+    [:first_name, :last_name, :username, :email, :password, :skip_confirmation]
   end
 
   def resource

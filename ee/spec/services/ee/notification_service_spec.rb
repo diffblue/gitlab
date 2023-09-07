@@ -1066,7 +1066,7 @@ RSpec.describe EE::NotificationService, :mailer, feature_category: :team_plannin
   describe '#pipeline_finished' do
     let_it_be(:project, reload: true) { create(:project, :repository) }
 
-    let(:user) { create(:user, email_opted_in: true) }
+    let(:user) { create(:user) }
     let(:has_required_credit_card_to_run_pipelines) { false }
     let(:failure_reason) { 'user_not_verified' }
     let(:pipeline) do
@@ -1117,12 +1117,6 @@ RSpec.describe EE::NotificationService, :mailer, feature_category: :team_plannin
         before do
           allow(::Gitlab).to receive(:com?).and_return(false)
         end
-
-        include_examples 'does not send account activation email'
-      end
-
-      context 'when user is not opted in to marketing emails' do
-        let(:user) { create(:user, email_opted_in: false) }
 
         include_examples 'does not send account activation email'
       end

@@ -1,4 +1,4 @@
 - group_managed_account = @user.group_managed_account?
 - help_text = group_managed_account ? s_("Your account uses dedicated credentials for the \"%{group_name}\" group and can only be updated through SSO.").html_safe % { group_name: @user.managing_group.name } : nil
-= render_ce 'profiles/notifications/email_settings', email_change_disabled: group_managed_account, help_text: help_text, form: form
+= render_ce 'profiles/notifications/email_settings', email_change_disabled: group_managed_account, help_text: help_text
 

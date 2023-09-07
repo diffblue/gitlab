@@ -38,7 +38,6 @@ RSpec.describe 'Standard flow for user picking just me and importing a project',
     fill_in 'Why are you signing up? (optional)', with: 'My reason'
 
     choose 'Just me'
-    check 'I\'d like to receive updates about GitLab via email'
     choose 'Create a new project'
   end
 
@@ -56,8 +55,6 @@ RSpec.describe 'Standard flow for user picking just me and importing a project',
   end
 
   def expect_to_see_group_and_project_creation_form
-    expect(user).to be_email_opted_in # minor item that isn't important to see in the example itself
-
     expect(page).to have_content('Create or import your first project')
     expect(page).to have_content('Projects help you organize your work')
     expect(page).to have_content('Your project will be created at:')

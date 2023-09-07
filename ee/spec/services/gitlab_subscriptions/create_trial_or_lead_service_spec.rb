@@ -15,7 +15,6 @@ RSpec.describe GitlabSubscriptions::CreateTrialOrLeadService, feature_category: 
         last_name: user.last_name,
         work_email: user.email,
         setup_for_company: user.setup_for_company,
-        newsletter_segment: user.email_opted_in,
         provider: 'gitlab',
         skip_email_confirmation: true,
         gitlab_com_trial: true,

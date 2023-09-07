@@ -28,8 +28,7 @@ RSpec.describe 'Trial lead form submission and validation', :saas, :js, feature_
         "setup_for_company" => user.setup_for_company,
         "skip_email_confirmation" => true,
         "gitlab_com_trial" => true,
-        "provider" => "gitlab",
-        "newsletter_segment" => user.email_opted_in
+        "provider" => "gitlab"
       }
 
       { trial_user: ActionController::Parameters.new(trial_user_params).permit! }

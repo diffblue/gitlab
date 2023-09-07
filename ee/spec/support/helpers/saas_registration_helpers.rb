@@ -284,8 +284,6 @@ module SaasRegistrationHelpers
   end
 
   def expect_to_see_group_and_project_creation_form
-    expect(user).to be_email_opted_in # minor item that isn't important to see in the example itself
-
     expect(page).to have_content('Create or import your first project')
     expect(page).to have_content('Projects help you organize your work')
     expect(page).to have_content('Your project will be created at:')
@@ -328,15 +326,10 @@ module SaasRegistrationHelpers
   end
 
   def expect_to_be_on_projects_dashboard
-    # we set email opted in at the controller layer if setup for company is true
-    expect(user).to be_email_opted_in # minor item that isn't important to see in the example itself
-
     expect(page).to have_content 'There are no projects available to be displayed here.'
   end
 
   def expect_to_be_on_projects_dashboard_with_zero_authorized_projects
-    expect(user).to be_email_opted_in # minor item that isn't important to see in the example itself
-
     expect(page).to have_content 'Welcome to GitLab'
     expect(page).to have_content 'Faster releases. Better code. Less pain.'
   end
@@ -370,7 +363,6 @@ module SaasRegistrationHelpers
       expect(page).to have_content('I\'m signing up for GitLab because:')
       expect(page).to have_content('Who will be using this GitLab subscription?')
       expect(page).to have_content('What would you like to do?')
-      expect(page).not_to have_content('I\'d like to receive updates about GitLab via email')
     end
   end
 
