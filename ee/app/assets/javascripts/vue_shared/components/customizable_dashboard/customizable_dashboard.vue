@@ -1,11 +1,11 @@
 <script>
 import { GridStack } from 'gridstack';
 import * as Sentry from '@sentry/browser';
-import cloneDeep from 'lodash/cloneDeep';
-import { GlButton, GlFormInput, GlForm, GlLink } from '@gitlab/ui';
+import { GlButton, GlFormInput, GlEmptyState, GlFormGroup, GlLink } from '@gitlab/ui';
+import { createAlert } from '~/alert';
 import { loadCSSFile } from '~/lib/utils/css_utils';
 import { slugify } from '~/lib/utils/text_utility';
-import { __ } from '~/locale';
+import { s__ } from '~/locale';
 import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/url_sync.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { createNewVisualizationPanel } from 'ee/analytics/analytics_dashboards/utils';
@@ -20,7 +20,7 @@ import {
   DASHBOARD_DOCUMENTATION_LINKS,
 } from './constants';
 import VisualizationSelector from './dashboard_editor/visualization_selector.vue';
-import { filtersToQueryParams, getDashboardConfig } from './utils';
+import { filtersToQueryParams } from './utils';
 
 export default {
   name: 'CustomizableDashboard',
@@ -28,13 +28,20 @@ export default {
     DateRangeFilter: () => import('./filters/date_range_filter.vue'),
     GlButton,
     GlFormInput,
-    GlForm,
     GlLink,
+    GlEmptyState,
+    GlFormGroup,
     PanelsBase,
     UrlSync,
     VisualizationSelector,
   },
   mixins: [glFeatureFlagsMixin()],
+  inject: {
+    dashboardEmptyStateIllustrationPath: {
+      type: Object,
+      default: null,
+    },
+  },
   props: {
     initialDashboard: {
       type: Object,
@@ -71,6 +78,11 @@ export default {
       required: false,
       default: false,
     },
+    changesSaved: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     isNewDashboard: {
       type: Boolean,
       required: false,
@@ -79,15 +91,14 @@ export default {
   },
   data() {
     return {
-      dashboard: cloneDeep(this.initialDashboard),
+      dashboard: JSON.parse(JSON.stringify(this.initialDashboard)),
       grid: undefined,
       cssLoaded: false,
       mounted: true,
       editing: this.isNewDashboard,
-      showCode: false,
       filters: this.defaultFilters,
-      editingEnabled: this.glFeatures.combinedAnalyticsDashboardsEditor,
       alert: null,
+      titleValidationState: null,
     };
   },
   computed: {
@@ -95,20 +106,25 @@ export default {
       return this.cssLoaded && this.mounted;
     },
     showFilters() {
-      return this.showDateRangeFilter;
+      return this.showDateRangeFilter && !this.editing;
     },
     queryParams() {
       return this.showFilters ? filtersToQueryParams(this.filters) : {};
     },
-    dashboardConfig() {
-      return getDashboardConfig(this.dashboard);
+    editingEnabled() {
+      return this.glFeatures.combinedAnalyticsDashboardsEditor && this.dashboard.userDefined;
+    },
+    showEditControls() {
+      return this.editingEnabled && this.editing;
+    },
+    showEmptyState() {
+      return this.dashboard.panels.length < 1 && this.showEditControls && this.isNewDashboard;
     },
     showDashboardDescription() {
-      return Boolean(this.dashboard.description);
+      return Boolean(this.dashboard.description) && !this.editing;
     },
     showEditDashboardButton() {
-      const { editingEnabled, editing, dashboard } = this;
-      return editingEnabled && !editing && dashboard.userDefined;
+      return this.editingEnabled && !this.editing;
     },
     dashboardDescription() {
       return this.dashboard.description;
@@ -127,6 +143,14 @@ export default {
     isNewDashboard(isNew) {
       this.editing = isNew;
     },
+    changesSaved: {
+      handler(saved) {
+        if (saved && this.editing) {
+          this.editing = false;
+        }
+      },
+      immediate: true,
+    },
     '$route.params.editing': {
       handler(editing) {
         if (editing !== undefined) {
@@ -134,6 +158,9 @@ export default {
         }
       },
       immediate: true,
+    },
+    editing(editing) {
+      this.grid?.setStatic(!editing);
     },
   },
   async created() {
@@ -167,6 +194,12 @@ export default {
     this.alert?.dismiss();
   },
   methods: {
+    onTitleInput() {
+      // Don't validate if the title has not been submitted
+      if (this.titleValidationState !== null) {
+        this.titleValidationState = this.dashboard.title.length > 0;
+      }
+    },
     initGridStack() {
       if (this.loaded) {
         this.grid = GridStack.init({
@@ -225,38 +258,42 @@ export default {
       };
     },
     startEdit() {
-      if (!this.editing) {
-        this.editing = true;
-        if (this.grid) this.grid.setStatic(false);
-      }
+      this.editing = true;
     },
     routeToVisualizationDesigner() {
       const dashboard = this.isNewDashboard ? NEW_DASHBOARD_SLUG : this.dashboard.slug;
       this.$router.push({ name: 'visualization-designer', params: { dashboard } });
     },
-    async saveEdit(submitEvent) {
-      submitEvent.preventDefault();
+    async saveEdit() {
+      this.titleValidationState = this.dashboard.title.length > 0;
+
+      if (!this.titleValidationState) {
+        this.$refs.titleInput.$el.focus();
+        return;
+      }
+
+      if (this.dashboard.panels.length < 1) {
+        this.alert = createAlert({
+          message: s__('Analytics|Add a visualization'),
+        });
+        return;
+      }
+
+      this.alert?.dismiss();
 
       if (this.isNewDashboard) {
-        this.showCode = false;
+        this.dashboard.slug = slugify(this.dashboard.title, '_');
       }
 
-      const dashboardSlug = this.dashboard.slug || slugify(this.dashboard.title, '_');
-      this.$emit('save', dashboardSlug, this.dashboard);
+      this.$emit('save', this.dashboard.slug, this.dashboard);
     },
     cancelEdit() {
-      this.editing = false;
-      if (this.grid) this.grid.setStatic(true);
-    },
-    async toggleCodeDisplay() {
-      this.showCode = !this.showCode;
-      if (!this.showCode) {
-        setTimeout(() => {
-          this.initGridStack();
-        }, 200);
-      } else {
-        this.grid.destroy();
+      if (this.isNewDashboard) {
+        this.$router.push('/');
+        return;
       }
+
+      this.editing = false;
     },
     updatePanelWithGridStackItem(item) {
       const updatedPanel = this.dashboard.panels.at(Number(item.id));
@@ -277,92 +314,89 @@ export default {
     },
   },
   HISTORY_REPLACE_UPDATE_METHOD,
-  I18N_DOCUMENTATION_LINK_TEXT: __('Learn more'),
 };
 </script>
 
 <template>
   <div>
-    <section class="gl-flex-direction-column gl-display-flex gl-py-5">
-      <div class="gl-display-flex gl-align-items-center">
-        <h3 v-if="!editing" class="gl-my-0 flex-fill">{{ dashboard.title }}</h3>
-        <gl-form v-else class="gl-display-flex flex-fill" @submit="saveEdit">
-          <gl-form-input
-            v-model="dashboard.title"
-            dir="auto"
-            type="text"
-            :placeholder="s__('Analytics|Dashboard Title')"
-            :aria-label="s__('Analytics|Dashboard Title')"
-            class="form-control gl-mr-4 gl-border-gray-200"
-            data-testid="dashboard-title-tb"
-            required
-          />
-          <gl-button
-            :loading="isSaving"
-            class="gl-mr-2"
-            category="primary"
-            variant="confirm"
-            data-testid="dashboard-save-btn"
-            type="submit"
-            >{{ s__('Analytics|Save') }}</gl-button
+    <section class="gl-display-flex gl-align-items-center gl-py-6">
+      <div class="gl-display-flex gl-flex-direction-column gl-w-full">
+        <h2 v-if="showEditControls" data-testid="edit-mode-title" class="gl-mt-0 gl-mb-6">
+          {{
+            isNewDashboard
+              ? s__('Analytics|Create your dashboard')
+              : s__('Analytics|Edit your dashboard')
+          }}
+        </h2>
+        <h2 v-else data-testid="dashboard-title" class="gl-my-0">{{ dashboard.title }}</h2>
+        <div
+          v-if="showDashboardDescription"
+          class="gl-display-flex gl-mt-5"
+          data-testid="dashboard-description"
+        >
+          <p class="gl-mb-0">
+            {{ dashboardDescription }}
+            <gl-link v-if="documentationLink" :href="documentationLink" rel="noopener">
+              {{ __('Learn more') }}
+            </gl-link>
+          </p>
+        </div>
+
+        <div v-if="showEditControls" class="gl-display-flex flex-fill">
+          <gl-form-group
+            :label="s__('Analytics|Dashboard title')"
+            label-for="title"
+            class="gl-w-30p gl-min-w-20 gl-m-0 gl-xs-w-full"
+            data-testid="dashboard-title-form-group"
+            :invalid-feedback="__('This field is required.')"
+            :state="titleValidationState"
           >
-        </gl-form>
-        <gl-button
-          v-if="showEditDashboardButton"
-          icon="pencil"
-          class="gl-mr-2"
-          data-testid="dashboard-edit-btn"
-          @click="startEdit"
-          >{{ s__('Analytics|Edit') }}</gl-button
-        >
-        <gl-button
-          v-if="editing || !dashboard.userDefined"
-          :selected="showCode"
-          icon="code"
-          class="gl-mr-2"
-          data-testid="dashboard-code-btn"
-          @click="toggleCodeDisplay"
-          >{{ s__('Analytics|Code') }}</gl-button
-        >
-        <gl-button
-          v-if="editing && !isNewDashboard"
-          class="gl-mr-2"
-          category="secondary"
-          data-testid="dashboard-cancel-edit-btn"
-          @click="cancelEdit"
-          >{{ s__('Analytics|Cancel') }}</gl-button
-        >
-        <router-link
-          v-if="!editing || isNewDashboard"
-          to="/"
-          class="gl-button btn btn-default btn-md"
-        >
-          {{ s__('ProductAnalytics|Go back') }}
-        </router-link>
+            <gl-form-input
+              id="title"
+              ref="titleInput"
+              v-model="dashboard.title"
+              dir="auto"
+              type="text"
+              :placeholder="s__('Analytics|Enter a dashboard title')"
+              :aria-label="s__('Analytics|Dashboard title')"
+              class="form-control gl-mr-4 gl-border-gray-200"
+              data-testid="dashboard-title-input"
+              :state="titleValidationState"
+              required
+              @input="onTitleInput"
+            />
+          </gl-form-group>
+        </div>
       </div>
-      <div
-        v-if="showDashboardDescription"
-        class="gl-display-flex gl-mt-5"
-        data-testid="dashboard-description"
+
+      <gl-button
+        v-if="showEditDashboardButton"
+        icon="pencil"
+        class="gl-mr-2"
+        data-testid="dashboard-edit-btn"
+        @click="startEdit"
+        >{{ s__('Analytics|Edit') }}</gl-button
       >
-        <p>
-          {{ dashboardDescription }}
-          <gl-link v-if="documentationLink" :href="documentationLink" rel="noopener">
-            {{ $options.I18N_DOCUMENTATION_LINK_TEXT }}
-          </gl-link>
-        </p>
-      </div>
     </section>
     <div
       class="grid-stack-container gl-mx-n5 gl-pl-2 gl-pr-2 gl-border-t-1 gl-border-t-solid gl-border-t-gray-100"
-      :class="{ 'gl-bg-gray-10': editing }"
     >
       <div class="grid-stack-container gl-display-flex">
-        <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 gl-py-3">
+        <div
+          class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 gl-py-3"
+          :class="{ 'gl-justify-content-center': !dashboard.panels.length }"
+        >
+          <gl-empty-state
+            v-if="showEmptyState"
+            class="gl-m-0 gl-mt-20"
+            :svg-path="dashboardEmptyStateIllustrationPath"
+            :title="s__('Analytics|Add a visualization')"
+            :description="s__('Analytics|Select a visualization from the sidebar to get started.')"
+          />
           <section
             v-if="showFilters"
             data-testid="dashboard-filters"
-            class="gl-display-flex gl-pt-4 gl-px-3"
+            class="gl-display-flex gl-pt-4 gl-px-3 gl-justify-content-space-between"
           >
             <date-range-filter
               v-if="showDateRangeFilter"
@@ -378,7 +412,7 @@ export default {
             :query="queryParams"
             :history-update-method="$options.HISTORY_REPLACE_UPDATE_METHOD"
           />
-          <div v-if="!showCode" class="grid-stack">
+          <div v-show="!showEmptyState" data-testid="gridstack-grid" class="grid-stack">
             <div
               v-for="(panel, index) in dashboard.panels"
               :id="panelDomId(index)"
@@ -404,11 +438,6 @@ export default {
               />
             </div>
           </div>
-          <div v-if="showCode" class="gl-m-4">
-            <pre
-              class="code highlight gl-display-flex"
-            ><code data-testid="dashboard-code">{{ dashboardConfig }}</code></pre>
-          </div>
         </div>
         <div
           v-if="editing"
@@ -424,5 +453,19 @@ export default {
         </div>
       </div>
     </div>
+    <template v-if="editing">
+      <gl-button
+        :loading="isSaving"
+        class="gl-my-4 gl-mr-2"
+        category="primary"
+        variant="confirm"
+        data-testid="dashboard-save-btn"
+        @click="saveEdit"
+        >{{ s__('Analytics|Save your dashboard') }}</gl-button
+      >
+      <gl-button category="secondary" data-testid="dashboard-cancel-edit-btn" @click="cancelEdit">{{
+        s__('Analytics|Cancel')
+      }}</gl-button>
+    </template>
   </div>
 </template>
