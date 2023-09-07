@@ -1,0 +1,22 @@
+- diff_llm_summary = diff_llm_summary(@merge_request)
+
+- if summarize_llm_enabled?(@merge_request.project, current_user) && diff_llm_summary.present?
+  .mr-section-container.gl-mt-4.js-toggle-container
+    .gl-display-flex.gl-align-items-center.gl-pl-5.gl-pr-4.gl-py-4
+      .gl-w-6.gl-h-6.gl-display-flex.gl-align-self-center.gl-mr-1
+        .gl-my-auto
+          = sprite_icon('tanuki-ai', css_class: 'gl-text-gray-500!')
+      .gl-display-flex.gl-w-full
+        .gl-line-height-normal.gl-md-display-flex.gl-align-items-center.gl-flex-grow-1
+          %span.gl-font-weight-bold= _('Latest AI-generated summary')
+          = render Pajamas::BadgeComponent.new(_('Experiment'), size: 'sm', variant: 'neutral', class: 'gl-ml-3')
+        .gl-border-l-1.gl-border-l-solid.gl-border-gray-100.gl-ml-3.gl-pl-3.gl-h-6
+          = render Pajamas::ButtonComponent.new(variant: :default, category: :tertiary, size: :small, button_options: { class: 'btn-icon js-toggle-button has-tooltip', title: _('Expand AI-generated summary'), 'data-expand-title': _('Expand AI-generated summary'), 'data-collapse-title': _('Collapse AI-generated summary'), 'data-triggers': 'hover', 'data-toggle-open-class': 'is-selected' }) do
+            .js-sidebar-expand= sprite_icon('chevron-lg-down')
+            .js-sidebar-collapse.hidden= sprite_icon('chevron-lg-up')
+    #diff-summary.gl-border-t.gl-pl-5.gl-pr-4.gl-py-4.js-toggle-content{ style: 'display: none;' }
+      %p.gl-mb-3= diff_llm_summary.content
+      .gl-text-gray-600
+        = time_ago_with_tooltip(diff_llm_summary.created_at, placement: 'bottom')
+        &middot;
+        = link_to _('Leave feedback'), 'https://gitlab.com/gitlab-org/gitlab/-/issues/408726', target: '_blank', rel: 'noopener noreferrer', class: 'gl-link'
