@@ -94,6 +94,42 @@ module QA
           GQL
         end
 
+        # Graphql mutation to add event type filters
+        #
+        # @return [Hash]
+        def add_filters(filters)
+          mutation = <<~GQL
+            mutation {
+              auditEventsStreamingDestinationInstanceEventsAdd(input: {
+                destinationId: "#{gid}",
+                eventTypeFilters: ["#{filters.join('","')}"]
+              }) {
+                errors
+                eventTypeFilters
+              }
+            }
+          GQL
+          api_post_to(api_get_path, mutation)
+        end
+
+        # Graphql mutation to add custom headers to the streamed events
+        #
+        # @return [void]
+        def add_headers(headers)
+          headers.each do |k, v|
+            mutation = <<~GQL
+              mutation {
+                auditEventsStreamingInstanceHeadersCreate(input: {
+                  destinationId: "#{gid}", key: "#{k}", value: "#{v}"
+                }) {
+                  errors
+                }
+              }
+            GQL
+            api_post_to(api_get_path, mutation)
+          end
+        end
+
         protected
 
         # Return fields for comparing issues
