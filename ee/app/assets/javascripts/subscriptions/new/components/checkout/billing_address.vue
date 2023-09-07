@@ -176,7 +176,7 @@ export default {
           v-autofocusonshow
           :options="countryOptionsWithDefault"
           class="js-country"
-          data-qa-selector="country"
+          data-testid="country"
           @change="fetchStates"
         />
       </gl-form-group>
@@ -184,28 +184,28 @@ export default {
         <gl-form-input
           v-model="streetAddressLine1Model"
           type="text"
-          data-qa-selector="street_address_1"
+          data-testid="street-address-1"
         />
         <gl-form-input
           v-model="streetAddressLine2Model"
           type="text"
-          data-qa-selector="street_address_2"
+          data-testid="street-address-2"
           class="gl-mt-3"
         />
       </gl-form-group>
       <gl-form-group :label="$options.i18n.cityLabel" label-size="sm" class="mb-3">
-        <gl-form-input v-model="cityModel" type="text" data-qa-selector="city" />
+        <gl-form-input v-model="cityModel" type="text" data-testid="city" />
       </gl-form-group>
       <div class="combined d-flex">
         <gl-form-group :label="$options.i18n.stateLabel" label-size="sm" class="mr-3 w-50">
           <gl-form-select
             v-model="countryStateModel"
             :options="stateOptionsWithDefault"
-            data-qa-selector="state"
+            data-testid="state"
           />
         </gl-form-group>
         <gl-form-group :label="$options.i18n.zipCodeLabel" label-size="sm" class="w-50">
-          <gl-form-input v-model="zipCodeModel" type="text" data-qa-selector="zip_code" />
+          <gl-form-input v-model="zipCodeModel" type="text" data-testid="zip-code" />
         </gl-form-group>
       </div>
     </template>
