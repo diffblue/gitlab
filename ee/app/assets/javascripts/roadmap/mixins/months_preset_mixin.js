@@ -53,7 +53,8 @@ export default {
         // Epic startDate is undefined AND Epic endDate is out of timeframe range
         // no offset is needed.
         return '';
-      } else if (startDate === 1) {
+      }
+      if (startDate === 1) {
         // If Epic startDate is first day of the month
         // Set offset to 0.
         /* eslint-disable-next-line @gitlab/require-i18n-strings */

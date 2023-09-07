@@ -67,7 +67,8 @@ export default {
     timelineBarWidth() {
       if (this.presetType === PRESET_TYPES.QUARTERS) {
         return this.getTimelineBarWidthForQuarters(this.epic);
-      } else if (this.presetType === PRESET_TYPES.MONTHS) {
+      }
+      if (this.presetType === PRESET_TYPES.MONTHS) {
         return this.getTimelineBarWidthForMonths();
       }
 

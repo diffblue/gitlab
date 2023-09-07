@@ -21,9 +21,11 @@ const validateIP = (data) => {
 export const validateTimeout = (data) => {
   if (!data && data !== 0) {
     return i18n.timeoutBlankError;
-  } else if (data && Number.isNaN(Number(data))) {
+  }
+  if (data && Number.isNaN(Number(data))) {
     return i18n.timeoutNanError;
-  } else if (data < 1 || data > 120) {
+  }
+  if (data < 1 || data > 120) {
     return i18n.timeoutLengthError;
   }
 
@@ -33,9 +35,11 @@ export const validateTimeout = (data) => {
 export const validateAllowedIp = (data) => {
   if (!data) {
     return i18n.allowedIpBlankError;
-  } else if (data.length > 255) {
+  }
+  if (data.length > 255) {
     return i18n.allowedIpLengthError;
-  } else if (!validateIP(data)) {
+  }
+  if (!validateIP(data)) {
     return i18n.allowedIpFormatError;
   }
 

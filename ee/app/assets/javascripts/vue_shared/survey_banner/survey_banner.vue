@@ -57,7 +57,7 @@ export default {
         return false;
       }
       // Date is invalid, we should show the survey.
-      else if (Number.isNaN(date.getDate())) {
+      if (Number.isNaN(date.getDate())) {
         return true;
       }
 

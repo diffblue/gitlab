@@ -47,11 +47,14 @@ export const fractionDigits = (value) => {
   const absVal = Math.abs(value);
   if (absVal === 0) {
     return 1;
-  } else if (absVal < 0.01) {
+  }
+  if (absVal < 0.01) {
     return 4;
-  } else if (absVal < 0.1) {
+  }
+  if (absVal < 0.1) {
     return 3;
-  } else if (absVal < 1) {
+  }
+  if (absVal < 1) {
     return 2;
   }
 

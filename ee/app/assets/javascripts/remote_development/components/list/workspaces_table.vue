@@ -16,7 +16,8 @@ const sortWorkspacesByTerminatedState = (workspaceA, workspaceB) => {
 
   if (isWorkspaceATerminated === isWorkspaceBTerminated) {
     return 0; // Preserve default order when neither workspace is terminated, or both workspaces are terminated.
-  } else if (isWorkspaceATerminated) {
+  }
+  if (isWorkspaceATerminated) {
     return 1; // Place workspaceA after workspaceB since it is terminated.
   }
 

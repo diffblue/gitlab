@@ -83,7 +83,8 @@ export default {
     whenCommitIsAddedRadioGroupValue() {
       if (this.removeApprovalsOnPush.value) {
         return this.$options.whenCommitIsAddedRadios.removeApprovalsOnPush;
-      } else if (this.selectiveCodeOwnerRemovals.value) {
+      }
+      if (this.selectiveCodeOwnerRemovals.value) {
         return this.$options.whenCommitIsAddedRadios.selectiveCodeOwnerRemovals;
       }
 

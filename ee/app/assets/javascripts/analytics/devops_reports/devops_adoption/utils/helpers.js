@@ -12,7 +12,8 @@ import { GROUP_DEVOPS_PATH } from '../constants';
 export const shouldPollTableData = ({ enabledNamespaces, openModal }) => {
   if (openModal) {
     return false;
-  } else if (!enabledNamespaces.length) {
+  }
+  if (!enabledNamespaces.length) {
     return true;
   }
 

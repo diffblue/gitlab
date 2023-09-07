@@ -84,7 +84,8 @@ export default {
     getAriaLabel(reg) {
       if (this.checkValidity(reg)) {
         return I18N.PASSWORD_SATISFIED;
-      } else if (this.submitted) {
+      }
+      if (this.submitted) {
         return I18N.PASSWORD_NOT_SATISFIED;
       }
       return I18N.PASSWORD_TO_BE_SATISFIED;

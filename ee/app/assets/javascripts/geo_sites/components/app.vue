@@ -67,7 +67,8 @@ export default {
           showLearnMoreButton: true,
         };
         // User has searched and returned nothing
-      } else if (this.filteredSites.length === 0) {
+      }
+      if (this.filteredSites.length === 0) {
         return {
           title: this.$options.i18n.noResultsTitle,
           description: this.$options.i18n.noResultsDescription,

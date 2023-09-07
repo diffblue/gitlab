@@ -63,9 +63,11 @@ export const totalAmount = (state, getters) => {
 export const name = (state, getters) => {
   if (state.isSetupForCompany && state.organizationName) {
     return state.organizationName;
-  } else if (getters.isGroupSelected && getters.isSelectedGroupPresent) {
+  }
+  if (getters.isGroupSelected && getters.isSelectedGroupPresent) {
     return getters.selectedGroupName;
-  } else if (state.isSetupForCompany) {
+  }
+  if (state.isSetupForCompany) {
     return s__('Checkout|Your organization');
   }
 

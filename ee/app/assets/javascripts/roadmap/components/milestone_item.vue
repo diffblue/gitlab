@@ -71,7 +71,8 @@ export default {
       const { subgroupMilestone, projectMilestone } = this.milestone;
       if (projectMilestone) {
         return __('Project milestone');
-      } else if (subgroupMilestone) {
+      }
+      if (subgroupMilestone) {
         return __('Subgroup milestone');
       }
 
@@ -81,7 +82,8 @@ export default {
       const { subgroupMilestone, projectMilestone } = this.milestone;
       if (projectMilestone) {
         return 'project';
-      } else if (subgroupMilestone) {
+      }
+      if (subgroupMilestone) {
         return 'subgroup';
       }
 

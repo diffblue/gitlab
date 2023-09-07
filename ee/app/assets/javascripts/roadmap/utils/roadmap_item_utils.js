@@ -141,7 +141,8 @@ export const timeframeStartDate = (presetType, timeframe) => {
 export const timeframeEndDate = (presetType, timeframe) => {
   if (presetType === PRESET_TYPES.QUARTERS) {
     return timeframe[lastTimeframeIndex(timeframe)].range[2];
-  } else if (presetType === PRESET_TYPES.MONTHS) {
+  }
+  if (presetType === PRESET_TYPES.MONTHS) {
     return timeframe[lastTimeframeIndex(timeframe)];
   }
   const endDate = newDate(timeframe[lastTimeframeIndex(timeframe)]);

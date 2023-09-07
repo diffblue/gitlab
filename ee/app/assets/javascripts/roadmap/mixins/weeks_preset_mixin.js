@@ -66,7 +66,8 @@ export default {
         (roadmapItem.startDateUndefined && roadmapItem.endDateOutOfRange)
       ) {
         return '';
-      } else if (startDate === firstDayOfWeek) {
+      }
+      if (startDate === firstDayOfWeek) {
         /* eslint-disable-next-line @gitlab/require-i18n-strings */
         return 'left: 0;';
       }

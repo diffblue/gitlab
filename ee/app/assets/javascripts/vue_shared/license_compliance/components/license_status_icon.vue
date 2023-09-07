@@ -22,7 +22,8 @@ export default {
     iconName() {
       if (this.isStatusFailed) {
         return 'status-failed';
-      } else if (this.isStatusSuccess) {
+      }
+      if (this.isStatusSuccess) {
         return 'status-success';
       }
 

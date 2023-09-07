@@ -187,9 +187,11 @@ export default {
       if (!startsAt || !endsAt) {
         // If start or end is not present, we consider the end date valid
         return true;
-      } else if (startsAt < endsAt) {
+      }
+      if (startsAt < endsAt) {
         return true;
-      } else if (startsAt === endsAt) {
+      }
+      if (startsAt === endsAt) {
         return this.form.startsAt.time < this.form.endsAt.time;
       }
       return false;

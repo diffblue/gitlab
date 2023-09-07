@@ -78,13 +78,15 @@ export default {
           'LicenseCompliance|License Compliance detected %d new licenses',
           this.licenseReportCount(),
         );
-      } else if (this.hasBaseReportLicenses() && this.hasDeniedLicense()) {
+      }
+      if (this.hasBaseReportLicenses() && this.hasDeniedLicense()) {
         return n__(
           'LicenseCompliance|License Compliance detected %d new license and policy violation',
           'LicenseCompliance|License Compliance detected %d new licenses and policy violations',
           this.licenseReportCount(),
         );
-      } else if (!this.hasBaseReportLicenses() && this.hasDeniedLicense()) {
+      }
+      if (!this.hasBaseReportLicenses() && this.hasDeniedLicense()) {
         return n__(
           'LicenseCompliance|License Compliance detected %d license and policy violation for the source branch only',
           'LicenseCompliance|License Compliance detected %d licenses and policy violations for the source branch only',

@@ -49,7 +49,8 @@ export default {
     mergeDisabledText() {
       if (this.mr.isApprovalNeeded) {
         return MERGE_DISABLED_TEXT_UNAPPROVED;
-      } else if (this.hasBlockingMergeRequests) {
+      }
+      if (this.hasBlockingMergeRequests) {
         return MERGE_DISABLED_DEPENDENCIES_TEXT;
       }
 

@@ -31,7 +31,8 @@ export default {
           text: __('satisfied'),
           tooltipTitle: __('Passed on'),
         };
-      } else if (this.testReport.state === STATE_FAILED) {
+      }
+      if (this.testReport.state === STATE_FAILED) {
         return {
           variant: 'danger',
           icon: 'status-failed',

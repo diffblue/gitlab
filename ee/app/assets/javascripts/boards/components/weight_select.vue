@@ -65,7 +65,8 @@ export default {
     weightInt(weight) {
       if (weight >= 0) {
         return weight;
-      } else if (weight === NO_WEIGHT) {
+      }
+      if (weight === NO_WEIGHT) {
         return -2;
       }
       return null;

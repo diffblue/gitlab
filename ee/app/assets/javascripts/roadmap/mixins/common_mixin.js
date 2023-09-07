@@ -51,9 +51,11 @@ export default {
     hasStartDate() {
       if (this.presetTypeQuarters) {
         return this.hasStartDateForQuarter(this.timeframeItem);
-      } else if (this.presetTypeMonths) {
+      }
+      if (this.presetTypeMonths) {
         return this.hasStartDateForMonth(this.timeframeItem);
-      } else if (this.presetTypeWeeks) {
+      }
+      if (this.presetTypeWeeks) {
         return this.hasStartDateForWeek(this.timeframeItem);
       }
       return false;
@@ -65,9 +67,11 @@ export default {
       return this.timeframe.findIndex((item) => {
         if (this.presetTypeQuarters) {
           return this.hasStartDateForQuarter(item);
-        } else if (this.presetTypeMonths) {
+        }
+        if (this.presetTypeMonths) {
           return this.hasStartDateForMonth(item);
-        } else if (this.presetTypeWeeks) {
+        }
+        if (this.presetTypeWeeks) {
           return this.hasStartDateForWeek(item);
         }
         return false;
@@ -80,7 +84,8 @@ export default {
         return (
           this.currentDate >= timeframeItem.range[0] && this.currentDate <= timeframeItem.range[2]
         );
-      } else if (this.presetTypeMonths) {
+      }
+      if (this.presetTypeMonths) {
         return (
           this.currentDate.getMonth() === timeframeItem.getMonth() &&
           this.currentDate.getFullYear() === timeframeItem.getFullYear()
@@ -127,11 +132,13 @@ export default {
     timeframeString(roadmapItem) {
       if (roadmapItem.startDateUndefined && roadmapItem.endDateUndefined) {
         return sprintf(s__('GroupRoadmap|No start and end date'));
-      } else if (roadmapItem.startDateUndefined) {
+      }
+      if (roadmapItem.startDateUndefined) {
         return sprintf(s__('GroupRoadmap|No start date – %{dateWord}'), {
           dateWord: dateInWords(this.endDate, true),
         });
-      } else if (roadmapItem.endDateUndefined) {
+      }
+      if (roadmapItem.endDateUndefined) {
         return sprintf(s__('GroupRoadmap|%{dateWord} – No end date'), {
           dateWord: dateInWords(this.startDate, true),
         });

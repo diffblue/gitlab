@@ -58,7 +58,8 @@ export default {
         currentDateTime <= lastDayOfCurrentWeekTime
       ) {
         return 'label-dark label-bold';
-      } else if (currentDateTime < lastDayOfCurrentWeekTime) {
+      }
+      if (currentDateTime < lastDayOfCurrentWeekTime) {
         return 'label-dark';
       }
       return '';

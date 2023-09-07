@@ -64,7 +64,8 @@ export default {
           return sprintf(this.$options.i18n.additional_approvers, {
             count: remainingApprovers,
           });
-        } else if (index < this.displayedApprovers.length - 1) {
+        }
+        if (index < this.displayedApprovers.length - 1) {
           return this.$options.i18n.comma;
         }
       } else if (index === this.displayedApprovers.length - 2) {

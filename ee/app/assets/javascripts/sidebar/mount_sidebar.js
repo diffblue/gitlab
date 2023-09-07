@@ -267,7 +267,8 @@ export function mountIterationDropdown() {
 
         if (iteration === null) {
           return noChangeIterationValue;
-        } else if (iteration.id === null) {
+        }
+        if (iteration.id === null) {
           return unSetIterationValue;
         }
 
