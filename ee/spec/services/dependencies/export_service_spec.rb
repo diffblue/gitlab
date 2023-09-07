@@ -23,6 +23,10 @@ RSpec.describe Dependencies::ExportService, feature_category: :dependency_manage
     let(:finished_status) { 2 }
     let(:service_class) { described_class.new(dependency_list_export) }
 
+    before do
+      allow(Time).to receive(:current).and_return(Time.new(2023, 11, 14, 0, 0, 0, '+00:00'))
+    end
+
     shared_examples_for 'export service' do |serializer_service|
       subject(:export) { service_class.execute }
 
@@ -65,6 +69,7 @@ RSpec.describe Dependencies::ExportService, feature_category: :dependency_manage
 
           it 'attaches the file to export' do
             expect { export }.to change { dependency_list_export.file.read }.from(nil).to('"Foo"')
+            expect(dependency_list_export.file.filename).to eq(expected_filename)
           end
 
           it 'schedules the export deletion job' do
@@ -77,17 +82,75 @@ RSpec.describe Dependencies::ExportService, feature_category: :dependency_manage
       end
     end
 
-    context 'when the exportable is a project' do
-      it_behaves_like 'export service', Dependencies::ExportSerializers::ProjectDependenciesService do
-        let(:dependency_list_export) { create(:dependency_list_export, status: status) }
+    context 'when export type is dependency_list' do
+      let(:export_type) { :dependency_list }
+
+      context 'when the exportable is a project' do
+        let_it_be(:project) { create(:project) }
+
+        let(:expected_filename) do
+          [
+            project.full_path.parameterize,
+            '_dependencies_',
+            Time.current.utc.strftime('%FT%H%M'),
+            '.',
+            'json'
+          ].join
+        end
+
+        it_behaves_like 'export service', Dependencies::ExportSerializers::ProjectDependenciesService do
+          let(:dependency_list_export) do
+            create(:dependency_list_export, exportable: project, status: status, export_type: export_type)
+          end
+        end
+      end
+
+      context 'when the exportable is a group' do
+        let_it_be(:group) { create(:group) }
+
+        let(:expected_filename) do
+          [
+            group.full_path.parameterize,
+            '_dependencies_',
+            Time.current.utc.strftime('%FT%H%M'),
+            '.',
+            'json'
+          ].join
+        end
+
+        it_behaves_like 'export service', Dependencies::ExportSerializers::GroupDependenciesService do
+          let(:dependency_list_export) do
+            create(:dependency_list_export, exportable: group, status: status, export_type: export_type)
+          end
+        end
       end
     end
 
-    context 'when the exportable is a group' do
-      let_it_be(:group) { create(:group) }
+    context 'when export type is sbom' do
+      let(:export_type) { :sbom }
 
-      it_behaves_like 'export service', Dependencies::ExportSerializers::GroupDependenciesService do
-        let(:dependency_list_export) { create(:dependency_list_export, exportable: group, status: status) }
+      context 'when the exportable is a pipeline' do
+        let_it_be(:pipeline) { create(:ci_pipeline) }
+
+        let(:expected_filename) do
+          [
+            'gl-',
+            'pipeline-',
+            pipeline.id,
+            '-merged-',
+            Time.current.utc.strftime('%FT%H%M'),
+            '-sbom.',
+            'cdx',
+            '.',
+            'json'
+          ].join
+        end
+
+        it_behaves_like 'export service', Dependencies::ExportSerializers::Sbom::PipelineService do
+          let(:dependency_list_export) do
+            create(:dependency_list_export, exportable: pipeline, status: status, export_type: export_type)
+          end
+        end
       end
     end
   end

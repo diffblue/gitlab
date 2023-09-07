@@ -6,9 +6,12 @@ RSpec.describe API::DependencyListExports, feature_category: :dependency_managem
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project) }
+  let_it_be(:pipeline) { create(:ci_pipeline, project: project) }
+  let(:export_type) { nil }
+  let(:params) { export_type }
 
   shared_examples_for 'creating dependency list export' do
-    subject(:create_dependency_list_export) { post api(request_path, user) }
+    subject(:create_dependency_list_export) { post api(request_path, user), params: params }
 
     context 'with user without permission' do
       before do
@@ -50,8 +53,14 @@ RSpec.describe API::DependencyListExports, feature_category: :dependency_managem
           stub_licensed_features(dependency_scanning: true, security_dashboard: true)
         end
 
+        let(:args) do
+          args = [exportable, user]
+          args << params[:export_type] if Hash(params)[:export_type]
+          args
+        end
+
         it 'creates and returns a dependency_list_export' do
-          expect(::Dependencies::CreateExportService).to receive(:new).with(resource, user).and_call_original
+          expect(::Dependencies::CreateExportService).to receive(:new).with(*args).and_call_original
 
           create_dependency_list_export
 
@@ -68,6 +77,7 @@ RSpec.describe API::DependencyListExports, feature_category: :dependency_managem
   describe 'POST /projects/:id/dependency_list_exports' do
     let(:request_path) { "/projects/#{project.id}/dependency_list_exports" }
     let(:resource) { project }
+    let(:exportable) { project }
 
     it_behaves_like 'creating dependency list export'
   end
@@ -75,12 +85,34 @@ RSpec.describe API::DependencyListExports, feature_category: :dependency_managem
   describe 'POST /groups/:id/dependency_list_exports' do
     let(:request_path) { "/groups/#{group.id}/dependency_list_exports" }
     let(:resource) { group }
+    let(:exportable) { group }
 
     it_behaves_like 'creating dependency list export'
 
     context 'when the `group_level_dependencies` feature flag is disabled' do
       before do
         stub_feature_flags(group_level_dependencies: false)
+      end
+
+      it 'returns 404' do
+        post api(request_path, user)
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+  end
+
+  describe 'POST /pipelines/:id/dependency_list_exports' do
+    let(:request_path) { "/pipelines/#{pipeline.id}/dependency_list_exports" }
+    let(:resource) { project }
+    let(:exportable) { pipeline }
+    let(:params) { { export_type: 'sbom' } }
+
+    it_behaves_like 'creating dependency list export'
+
+    context 'when the `merge_sbom_api` feature flag is disabled' do
+      before do
+        stub_feature_flags(merge_sbom_api: false)
       end
 
       it 'returns 404' do

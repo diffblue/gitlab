@@ -131,6 +131,47 @@ RSpec.describe EE::API::Helpers do
     end
   end
 
+  describe '#find_pipeline!' do
+    let(:pipeline) { create(:ci_pipeline) }
+
+    let(:helper) do
+      stub_const('API::MockHelpers', Module.new)
+
+      API::MockHelpers.module_eval do
+        def find_pipeline!(id)
+          Ci::Pipeline.find(id)
+        end
+      end
+      klass = Class.new do
+        include API::MockHelpers
+        include EE::API::Helpers
+      end
+
+      klass.new
+    end
+
+    subject(:find_pipeline!) { helper.find_pipeline!(pipeline.id) }
+
+    context 'when authenticated using job token' do
+      before do
+        allow(helper).to receive(:job_token_authentication?).and_return(true)
+        allow(helper).to receive(:not_found!).and_raise(ActiveRecord::RecordNotFound)
+      end
+
+      it 'returns not found' do
+        expect { find_pipeline! }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    context 'when not authenticated using job token' do
+      before do
+        allow(helper).to receive(:job_token_authentication?).and_return(false)
+      end
+
+      it { is_expected.to eq pipeline }
+    end
+  end
+
   describe '#find_subscription_add_on!' do
     subject(:find_or_create_subscription_add_on!) { helper.find_or_create_subscription_add_on!(name) }
 
