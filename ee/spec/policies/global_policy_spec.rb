@@ -544,22 +544,21 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
     end
 
     context 'when not on .org or .com' do
-      where(:licensed, :instance_level_code_suggestions_enabled, :ai_access_token, :cs_matcher) do
-        true  | false | nil                  | be_disallowed(:access_code_suggestions)
-        true  | true  | nil                  | be_allowed(:access_code_suggestions)
-        true  | false | 'glpat-access_token' | be_disallowed(:access_code_suggestions)
-        true  | true  | 'glpat-access_token' | be_allowed(:access_code_suggestions)
-        false | false | nil                  | be_disallowed(:access_code_suggestions)
-        false | true  | nil                  | be_disallowed(:access_code_suggestions)
-        false | false | 'glpat-access_token' | be_disallowed(:access_code_suggestions)
-        false | true  | 'glpat-access_token' | be_disallowed(:access_code_suggestions)
+      where(:licensed, :instance_level_code_suggestions_enabled, :cs_matcher) do
+        true  | false | be_disallowed(:access_code_suggestions)
+        true  | true  | be_allowed(:access_code_suggestions)
+        true  | false | be_disallowed(:access_code_suggestions)
+        true  | true  | be_allowed(:access_code_suggestions)
+        false | false | be_disallowed(:access_code_suggestions)
+        false | true  | be_disallowed(:access_code_suggestions)
+        false | false | be_disallowed(:access_code_suggestions)
+        false | true  | be_disallowed(:access_code_suggestions)
       end
 
       with_them do
         before do
           allow(::Gitlab).to receive(:org_or_com?).and_return(false)
           stub_ee_application_setting(instance_level_code_suggestions_enabled: instance_level_code_suggestions_enabled)
-          stub_ee_application_setting(ai_access_token: ai_access_token)
           stub_licensed_features(code_suggestions: licensed)
         end
 
