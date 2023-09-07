@@ -174,6 +174,21 @@ RSpec.describe PostReceiveService, :geo, feature_category: :team_planning do
             }
           ])
         end
+
+        context 'when on a self-managed instance' do
+          before do
+            stub_ee_application_setting(automatic_purchased_storage_allocation: false)
+            stub_ee_application_setting(should_check_namespace_plan: false)
+
+            allow_next_instance_of(Namespaces::Storage::RootExcessSize) do |root_storage_size|
+              allow(root_storage_size).to receive(:usage_ratio).and_return(1)
+            end
+          end
+
+          it 'returns no messages' do
+            expect(subject).to be_empty
+          end
+        end
       end
 
       context 'when namespace size limit enforcement' do
