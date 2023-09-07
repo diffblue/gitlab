@@ -292,7 +292,10 @@ module QA
       end
 
       def latest_pipeline
-        create(:pipeline, project: project, id: project.pipelines.empty? ? nil : project.pipelines.first[:id])
+        Support::Waiter.wait_until(sleep_interval: 2, message: "Waiting for pipelines api endpoint to populate") do
+          !project.pipelines.empty?
+        end
+        create(:pipeline, project: project, id: project.latest_pipeline[:id]) # Fetch existing pipeline object
       end
 
       def ci_file
