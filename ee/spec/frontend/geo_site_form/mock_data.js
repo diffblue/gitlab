@@ -31,14 +31,17 @@ export const MOCK_SYNC_SHARDS = [
 export const MOCK_SYNC_NAMESPACES = [
   {
     name: 'Namespace 1',
+    full_name: 'Namespace 1',
     id: 'namespace1',
   },
   {
     name: 'Namespace 2',
+    full_name: 'Parent Group / Namespace 2',
     id: 'namespace2',
   },
   {
     name: 'namespace 3',
+    full_name: 'Namespace 3',
     id: 'Namespace3',
   },
 ];

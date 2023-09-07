@@ -67,7 +67,7 @@ export default {
         :class="[{ 'gl-visibility-hidden': !isSelected(namespace) }]"
         name="mobile-issue-close"
       />
-      <span class="gl-ml-2">{{ namespace.name }}</span>
+      <span class="gl-ml-2">{{ namespace.full_name }}</span>
     </button>
     <div v-if="noSyncNamespaces" class="gl-text-gray-500 gl-p-3">
       {{ $options.i18n.nothingFound }}
