@@ -2,6 +2,8 @@
 
 module Sbom
   class PossiblyAffectedOccurrencesFinder
+    include Gitlab::Utils::StrongMemoize
+
     BATCH_SIZE = 100
 
     def initialize(purl_type:, package_name:)
@@ -30,5 +32,6 @@ module Sbom
         .select(:id)
         .first
     end
+    strong_memoize_attr :component_id
   end
 end
