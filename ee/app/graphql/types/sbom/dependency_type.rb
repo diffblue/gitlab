@@ -22,6 +22,9 @@ module Types
 
       field :location, Types::Sbom::LocationType,
         null: true, description: 'Information about where the dependency is located.'
+
+      field :licenses, [Types::Sbom::LicenseType],
+        null: true, description: 'Licenses associated to the dependency.'
     end
   end
 end

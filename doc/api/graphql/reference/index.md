@@ -15032,6 +15032,7 @@ A software dependency used by a project.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="dependencyid"></a>`id` | [`GlobalID!`](#globalid) | ID of the dependency. |
+| <a id="dependencylicenses"></a>`licenses` | [`[License!]`](#license) | Licenses associated to the dependency. |
 | <a id="dependencylocation"></a>`location` | [`Location`](#location) | Information about where the dependency is located. |
 | <a id="dependencyname"></a>`name` | [`String!`](#string) | Name of the dependency. |
 | <a id="dependencypackager"></a>`packager` | [`PackageManager`](#packagemanager) | Description of the tool used to manage the dependency. |
@@ -18627,6 +18628,15 @@ Represents the Geo sync and verification state of an LFS object.
 | <a id="lfsobjectregistryverificationstartedat"></a>`verificationStartedAt` | [`Time`](#time) | Timestamp when the verification started of LfsObjectRegistry. |
 | <a id="lfsobjectregistryverificationstate"></a>`verificationState` | [`VerificationStateEnum`](#verificationstateenum) | Verification state of the LfsObjectRegistry. |
 | <a id="lfsobjectregistryverifiedat"></a>`verifiedAt` | [`Time`](#time) | Timestamp of the most recent successful verification of the LfsObjectRegistry. |
+
+### `License`
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="licensename"></a>`name` | [`String!`](#string) | Name of the license. |
+| <a id="licenseurl"></a>`url` | [`String!`](#string) | License URL in relation to SPDX. |
 
 ### `LicenseHistoryEntry`
 
