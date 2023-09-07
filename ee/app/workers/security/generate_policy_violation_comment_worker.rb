@@ -16,8 +16,6 @@ module Security
         return
       end
 
-      return if Feature.disabled?(:security_policy_approval_notification, merge_request.project)
-
       result = Security::ScanResultPolicies::GeneratePolicyViolationCommentService.new(
         merge_request,
         params['report_type'],

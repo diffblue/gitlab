@@ -94,8 +94,6 @@ module Security
       strong_memoize_attr :target_pipeline_security_scan_types
 
       def generate_policy_bot_comment(violated_policy)
-        return if Feature.disabled?(:security_policy_approval_notification, pipeline.project)
-
         Security::GeneratePolicyViolationCommentWorker.perform_async(
           merge_request.id,
           { 'report_type' => Security::ScanResultPolicies::PolicyViolationComment::REPORT_TYPES[:scan_finding],
