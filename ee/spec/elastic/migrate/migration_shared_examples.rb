@@ -187,7 +187,7 @@ RSpec.shared_examples 'migration reindex based on schema_version' do
     context 'when migration is already completed' do
       it 'does not modify data' do
         expect(::Elastic::ProcessInitialBookkeepingService).not_to receive(:track!)
-        expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] == described_class::NEW_SCHEMA_VERSION }).to be true
+        expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] >= described_class::NEW_SCHEMA_VERSION }).to be true
 
         subject
       end
@@ -231,7 +231,7 @@ RSpec.shared_examples 'migration reindex based on schema_version' do
 
           ensure_elasticsearch_index!
 
-          expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] == described_class::NEW_SCHEMA_VERSION }).to be true
+          expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] >= described_class::NEW_SCHEMA_VERSION }).to be true
           expect(migration.completed?).to be_truthy
         end
       end
@@ -252,7 +252,7 @@ RSpec.shared_examples 'migration reindex based on schema_version' do
 
           ensure_elasticsearch_index!
 
-          expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] == described_class::NEW_SCHEMA_VERSION }).to be true
+          expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] >= described_class::NEW_SCHEMA_VERSION }).to be true
           expect(migration.completed?).to be_truthy
         end
       end
@@ -272,7 +272,7 @@ RSpec.shared_examples 'migration reindex based on schema_version' do
 
         ensure_elasticsearch_index!
 
-        expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] == described_class::NEW_SCHEMA_VERSION }).to be true
+        expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] >= described_class::NEW_SCHEMA_VERSION }).to be true
         expect(migration.completed?).to be_truthy
       end
     end
@@ -288,7 +288,7 @@ RSpec.shared_examples 'migration reindex based on schema_version' do
         subject
         ensure_elasticsearch_index!
         expect(migration).to be_completed
-        expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] == described_class::NEW_SCHEMA_VERSION }).to be true
+        expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] >= described_class::NEW_SCHEMA_VERSION }).to be true
       end
     end
   end
@@ -300,12 +300,12 @@ RSpec.shared_examples 'migration reindex based on schema_version' do
       end
 
       it { expect(migration).not_to be_completed }
-      it { expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] == described_class::NEW_SCHEMA_VERSION }).to be true }
+      it { expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] >= described_class::NEW_SCHEMA_VERSION }).to be true }
     end
 
     context 'when no documents have old schema_version' do
       it { expect(migration).to be_completed }
-      it { expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] == described_class::NEW_SCHEMA_VERSION }).to be true }
+      it { expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] >= described_class::NEW_SCHEMA_VERSION }).to be true }
     end
   end
 

@@ -3,7 +3,7 @@
 module Elastic
   module Latest
     class IssueInstanceProxy < ApplicationInstanceProxy
-      SCHEMA_VERSION = 23_08
+      SCHEMA_VERSION = 23_09
 
       def as_indexed_json(options = {})
         data = {}
