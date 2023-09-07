@@ -22,7 +22,8 @@ module ApprovalRuleLike
     has_and_belongs_to_many :groups,
       class_name: 'Group', join_table: "#{self.table_name}_groups",
       after_add: :audit_add, after_remove: :audit_remove
-    has_many :group_users, -> { distinct }, through: :groups, source: :users
+    has_many :group_users, -> { distinct.allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417457") },
+      through: :groups, source: :users
 
     belongs_to :security_orchestration_policy_configuration, class_name: 'Security::OrchestrationPolicyConfiguration', optional: true
     belongs_to :scan_result_policy_read,
@@ -55,10 +56,6 @@ module ApprovalRuleLike
     scope :for_policy_configuration, -> (configuration_id) do
       where(security_orchestration_policy_configuration_id: configuration_id)
     end
-  end
-
-  def group_users
-    super.loaded? ? super : super.allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/417457")
   end
 
   def vulnerability_attribute_false_positive
