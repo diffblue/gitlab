@@ -36,6 +36,9 @@ const subscriptionResponsePartial = {
   requestId: '123',
   role: GENIE_CHAT_MODEL_ROLES.assistant,
   timestamp: '2021-05-26T14:00:00.000Z',
+  content: null,
+  contentHtml: null,
+  extras: null,
   type: null,
   chunkId: null,
 };
@@ -51,9 +54,9 @@ describe('Generate test file drawer component', () => {
     subscriptionHandlerMock = jest.fn().mockResolvedValue({
       data: {
         aiCompletionResponse: {
-          responseBody: 'This is a summary',
-          errors: [],
           ...subscriptionResponsePartial,
+          content: 'This is a summary',
+          errors: [],
         },
       },
     });
@@ -85,13 +88,12 @@ describe('Generate test file drawer component', () => {
     expect(wrapper.emitted()).toEqual({ input: [['This is a summary']] });
   });
 
-  it('calls createAlert when subsription returns an error', async () => {
+  it('calls createAlert when subscription returns an error', async () => {
     subscriptionHandlerMock = jest.fn().mockResolvedValue({
       data: {
         aiCompletionResponse: {
-          responseBody: null,
-          errors: ['Error'],
           ...subscriptionResponsePartial,
+          errors: ['Error'],
         },
       },
     });

@@ -92,8 +92,8 @@ export default {
             return;
           }
 
-          if (data?.aiCompletionResponse?.responseBody) {
-            this.insertResponse(data.aiCompletionResponse.responseBody);
+          if (data?.aiCompletionResponse?.content) {
+            this.insertResponse(data.aiCompletionResponse.content);
             this.loading = false;
           }
         },

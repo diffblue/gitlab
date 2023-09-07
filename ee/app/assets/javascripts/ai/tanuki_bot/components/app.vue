@@ -180,10 +180,10 @@ export default {
       return this.$options.i18n.source;
     },
     messageHasSources(msg) {
-      return msg.sources?.length > 0;
+      return msg.extras?.sources?.length > 0;
     },
     messageSourceLabel(msg) {
-      return n__('TanukiBot|Source', 'TanukiBot|Sources', msg.sources?.length);
+      return n__('TanukiBot|Source', 'TanukiBot|Sources', msg.extras?.sources?.length);
     },
   },
 };
@@ -214,7 +214,7 @@ export default {
           <span>{{ messageSourceLabel(message) }}:</span>
           <ul class="gl-list-style-none gl-p-0 gl-m-0">
             <li
-              v-for="(source, index) in message.sources"
+              v-for="(source, index) in message.extras.sources"
               :key="index"
               class="gl-display-flex gl-pt-3"
             >

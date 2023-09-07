@@ -84,7 +84,7 @@ describe('AiSummary component', () => {
       aiResponseSubscriptionHandler.next({
         data: {
           aiCompletionResponse: {
-            responseBody: '**yay**',
+            content: '**yay**',
           },
         },
       });

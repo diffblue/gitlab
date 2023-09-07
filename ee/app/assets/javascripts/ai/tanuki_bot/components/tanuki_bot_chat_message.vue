@@ -32,10 +32,10 @@ export default {
       return this.message.role === MESSAGE_TYPES.TANUKI;
     },
     hasSources() {
-      return this.message.sources?.length > 0;
+      return this.message.extras?.sources?.length > 0;
     },
     sourceLabel() {
-      return n__('TanukiBot|Source', 'TanukiBot|Sources', this.message.sources?.length);
+      return n__('TanukiBot|Source', 'TanukiBot|Sources', this.message.extras?.sources?.length);
     },
   },
   mounted() {
@@ -98,7 +98,7 @@ export default {
       >
         <span>{{ sourceLabel }}</span>
         <ul class="gl-pl-5 gl-my-0">
-          <li v-for="(source, index) in message.sources" :key="index">
+          <li v-for="(source, index) in message.extras.sources" :key="index">
             <gl-icon v-if="source.source_type" :name="getSourceIcon(source.source_type)" />
             <gl-link :href="source.source_url">{{ getSourceTitle(source) }}</gl-link>
           </li>

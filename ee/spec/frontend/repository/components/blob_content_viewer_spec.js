@@ -35,7 +35,7 @@ Vue.use(Vuex);
 Vue.use(VueApollo);
 
 const explainCodeSubscriptionResponse = {
-  data: { aiCompletionResponse: { responseBody: 'test' } },
+  data: { aiCompletionResponse: { content: 'test' } },
 };
 const subscriptionHandlerMock = jest.fn().mockResolvedValue(explainCodeSubscriptionResponse);
 

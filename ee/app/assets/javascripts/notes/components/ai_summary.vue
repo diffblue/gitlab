@@ -87,14 +87,14 @@ export default {
             return;
           }
 
-          if (data?.aiCompletionResponse?.responseBody) {
+          if (data?.aiCompletionResponse?.content) {
             clearTimeout(this.timeout);
             const markdownResponse = await getMarkdown({
-              text: data.aiCompletionResponse.responseBody,
+              text: data.aiCompletionResponse.content,
               gfm: true,
             });
             this.markdown = markdownResponse.data.html;
-            this.textForClipboard = data.aiCompletionResponse.responseBody;
+            this.textForClipboard = data.aiCompletionResponse.content;
 
             this.$nextTick(() => {
               this.$emit('set-ai-loading', false);

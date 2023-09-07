@@ -23,8 +23,11 @@ describe('Ai Commit Message component', () => {
     requestId: '123',
     role: GENIE_CHAT_MODEL_ROLES.assistant,
     timestamp: '2021-05-26T14:00:00.000Z',
+    content: null,
+    contentHtml: null,
     type: null,
     chunkId: null,
+    extras: null,
   };
 
   const createComponent = () => {
@@ -67,9 +70,9 @@ describe('Ai Commit Message component', () => {
     aiResponseSubscriptionHandler.next({
       data: {
         aiCompletionResponse: {
-          responseBody: 'commit message',
-          errors: [],
           ...subscriptionResponsePartial,
+          content: 'commit message',
+          errors: [],
         },
       },
     });

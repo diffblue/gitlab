@@ -89,7 +89,7 @@ describe('TanukiBotChatMessage', () => {
     describe('Sources', () => {
       describe('when no sources available', () => {
         beforeEach(() => {
-          createComponent({ message: { ...MOCK_TANUKI_MESSAGE, sources: [] } });
+          createComponent({ message: { ...MOCK_TANUKI_MESSAGE, extras: null } });
         });
 
         it('does not render sources', () => {
@@ -114,7 +114,9 @@ describe('TanukiBotChatMessage', () => {
         ${SOURCE_TYPES.BLOG}     | ${MOCK_SOURCE_TYPES.BLOG}     | ${`${MOCK_SOURCE_TYPES.BLOG.date} / ${MOCK_SOURCE_TYPES.BLOG.author}`}
       `('when provided source is $sourceType.value', ({ sourceType, mockSource, expectedText }) => {
         beforeEach(() => {
-          createComponent({ message: { ...MOCK_TANUKI_MESSAGE, sources: [mockSource] } });
+          createComponent({
+            message: { ...MOCK_TANUKI_MESSAGE, extras: { sources: [mockSource] } },
+          });
         });
 
         it('renders the correct icon', () => {
