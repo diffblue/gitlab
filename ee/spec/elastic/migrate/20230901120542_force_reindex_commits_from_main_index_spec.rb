@@ -91,11 +91,12 @@ RSpec.describe ForceReindexCommitsFromMainIndex, :elastic_delete_by_query, :side
     context 'if migration is not completed' do
       it 'calls ElasticCommitIndexerWorker and performs force indexing' do
         delay = a_value_between(0, migration.throttle_delay.seconds.to_i)
-        expect(indexed_documents_count).to be_zero
+        initial_documents_left_to_be_indexed_count = documents_left_to_be_indexed_count
+        expect(initial_documents_left_to_be_indexed_count).to be > 0 # Ensure that the migration is not already finished
         expect(ElasticCommitIndexerWorker).to receive(:perform_in).with(delay, anything, false, force: true)
         expect(migration).not_to be_completed
         migration.migrate
-        expect(indexed_documents_count).to eq batch_size
+        expect(initial_documents_left_to_be_indexed_count - documents_left_to_be_indexed_count).to eq batch_size
         expect(migration).not_to be_completed
         expect(ElasticCommitIndexerWorker).to receive(:perform_in).with(delay, anything, false, force: true).twice
         10.times do
@@ -132,6 +133,15 @@ RSpec.describe ForceReindexCommitsFromMainIndex, :elastic_delete_by_query, :side
   def indexed_documents_count
     query = { bool: { filter: [{ term: { type: 'commit' } },
       { term: { schema_version: described_class::SCHEMA_VERSION } }] } }
+    get_documents_count(query)
+  end
+
+  def documents_left_to_be_indexed_count
+    query = { bool: { filter: { term: { type: 'commit' } }, must_not: { exists: { field: 'schema_version' } } } }
+    get_documents_count(query)
+  end
+
+  def get_documents_count(query)
     refresh_index!
     client.count(index: helper.target_name, body: { query: query })['count']
   end
