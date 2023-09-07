@@ -6,6 +6,7 @@ module CodeSuggestions
       DEFAULT_CODE_SUGGESTIONS_URL = 'https://codesuggestions.gitlab.com'
 
       def initialize(params)
+        @prefix = params.delete(:prefix)
         @params = params
       end
 
@@ -21,11 +22,7 @@ module CodeSuggestions
 
       private
 
-      attr_reader :params
-
-      def prefix
-        params.dig('current_file', 'content_above_cursor')
-      end
+      attr_reader :params, :prefix
 
       def endpoint_name
         raise NotImplementedError
