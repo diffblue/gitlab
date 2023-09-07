@@ -81,7 +81,13 @@ RSpec.describe Vulnerabilities::SecurityFinding::CreateMergeRequestService, '#ex
     end
 
     let_it_be(:vulnerability) do
-      create(:vulnerability, report_type: :dependency_scanning, project: project, findings: [vulnerability_finding])
+      create(
+        :vulnerability,
+        report_type: :dependency_scanning,
+        project: project,
+        findings: [vulnerability_finding],
+        present_on_default_branch: true
+      )
     end
 
     before do
@@ -98,6 +104,10 @@ RSpec.describe Vulnerabilities::SecurityFinding::CreateMergeRequestService, '#ex
        .and(change(Vulnerabilities::MergeRequestLink, :count).by(1))
     end
 
+    it 'does not change the vulnerability present_on_default_branch value' do
+      expect { subject }.not_to change { vulnerability.reload.present_on_default_branch }
+    end
+
     it 'returns a successful response' do
       response = subject
       expect(response.message).to be_blank
@@ -112,6 +122,15 @@ RSpec.describe Vulnerabilities::SecurityFinding::CreateMergeRequestService, '#ex
       }.by(1)
        .and(change(MergeRequest, :count).by(1))
        .and(change(Vulnerabilities::MergeRequestLink, :count).by(1))
+    end
+
+    it 'sets the new vulnerability present_on_default_branch to false' do
+      service_response = subject
+
+      merge_request = service_response.payload.fetch(:merge_request)
+      vulnerability = Vulnerabilities::MergeRequestLink.find_by(merge_request: merge_request).vulnerability
+
+      expect(vulnerability.present_on_default_branch).to eq false
     end
   end
 

@@ -65,7 +65,14 @@ feature_category: :vulnerability_management do
 
   context 'when there is no vulnerability finding and vulnerability for the security finding' do
     it 'does create a new Vulnerability' do
-      expect { subject }.to change { project.vulnerabilities.count }.by(1)
+      expect { subject }.to change { project.vulnerabilities.count }.from(0).to(1)
+      expect(project.vulnerabilities.last.present_on_default_branch).to eq false
+    end
+
+    it 'sets the new vulnerability present_on_default_branch to false' do
+      service_response = subject
+      vulnerability = service_response.payload.fetch(:issue).vulnerability_links.first.vulnerability
+      expect(vulnerability.present_on_default_branch).to eq false
     end
 
     it 'does create a new Issue' do
@@ -84,11 +91,15 @@ feature_category: :vulnerability_management do
     end
 
     let_it_be(:vulnerability) do
-      create(:vulnerability, report_type: :sast, project: project, findings: [finding])
+      create(:vulnerability, report_type: :sast, project: project, findings: [finding], present_on_default_branch: true)
     end
 
     it 'does not create a new Vulnerability' do
       expect { subject }.not_to change { project.vulnerabilities.count }
+    end
+
+    it 'does not change the Vulnerability present_on_default_branch value' do
+      expect { subject }.not_to change { vulnerability.reload.present_on_default_branch }
     end
 
     it 'does create a new Issue' do

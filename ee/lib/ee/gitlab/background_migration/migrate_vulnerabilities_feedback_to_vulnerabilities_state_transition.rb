@@ -200,6 +200,7 @@ module EE
                 current_user: author,
                 params: params,
                 state: 'dismissed',
+                present_on_default_branch: true,
                 skip_permission_check: true
               ).execute
 

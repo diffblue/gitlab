@@ -43,22 +43,16 @@ feature_category: :vulnerability_management do
 
   subject { service.execute }
 
-  # Modification of this class may carry unintended risk for self-managed users by breaking unapplied
-  # Background Migrations.
-  # Please consult https://gitlab.com/gitlab-org/gitlab/-/issues/389600 for further information.
-  it 'matches an expected checksum' do
-    code_file_path = Rails.root.join("ee/app/services/vulnerabilities/find_or_create_from_security_finding_service.rb")
-    code_definition = File.read(code_file_path)
-    expected_checksum = "0633c251bf0e23ef17c2f64ca4df7e666de169eb43d605711d3a6f31a4457871"
-    expect(Digest::SHA256.hexdigest(code_definition)).to eq(expected_checksum)
-  end
-
   context 'when there is an existing vulnerability for the security finding' do
     let_it_be(:security_finding) { create(:security_finding) }
 
     let!(:vulnerability) do
-      create(:vulnerability,
-        project: project, findings: [create(:vulnerabilities_finding, uuid: security_finding_uuid)])
+      create(
+        :vulnerability,
+        project: project,
+        findings: [create(:vulnerabilities_finding, uuid: security_finding_uuid)],
+        present_on_default_branch: true
+      )
     end
 
     it 'does not create a new Vulnerability' do
@@ -68,6 +62,10 @@ feature_category: :vulnerability_management do
     it 'returns the existing Vulnerability' do
       expect(subject).to be_success
       expect(subject.payload[:vulnerability].id).to eq(vulnerability.id)
+    end
+
+    it 'does not modify the present_on_default_branch value on the existing vulnerability' do
+      expect { subject }.not_to change { vulnerability.reload.present_on_default_branch }
     end
 
     context 'when the vulnerability state is different from the requested one' do
