@@ -7,5 +7,10 @@ module Sbom
 
     validates :component_type, presence: true
     validates :name, presence: true, length: { maximum: 255 }
+
+    scope :libraries, -> { where(component_type: :library) }
+    scope :by_purl_type_and_name, ->(purl_type, name) do
+      where(name: name, purl_type: purl_type)
+    end
   end
 end

@@ -37,6 +37,10 @@ module Sbom
       where(package_manager: package_managers)
     end
 
+    scope :filter_by_components, ->(components) do
+      where(component: components)
+    end
+
     scope :filter_by_component_names, ->(component_names) do
       joins(:component).where(sbom_components: { name: component_names })
     end
@@ -49,6 +53,10 @@ module Sbom
     scope :with_component, -> { includes(:component) }
     scope :with_source, -> { includes(:source) }
     scope :with_version, -> { includes(:component_version) }
+    scope :with_component_source_version_project_and_pipeline, -> do
+      includes(:component, :source, :component_version, :project).preload(:pipeline)
+    end
+    scope :filter_by_non_nil_component_version, -> { where.not(component_version: nil) }
 
     def location
       {

@@ -118,6 +118,46 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     end
   end
 
+  describe '.filter_by_components scope' do
+    let_it_be(:matching_occurrence) { create(:sbom_occurrence, component: create(:sbom_component)) }
+    let_it_be(:non_matching_occurrence) { create(:sbom_occurrence, component: create(:sbom_component)) }
+
+    it 'returns occurrences matching the given components' do
+      expect(described_class.filter_by_components([matching_occurrence.component])).to eq([matching_occurrence])
+    end
+
+    it 'returns occurrences matching the given component ids' do
+      expect(described_class.filter_by_components([matching_occurrence.component.id])).to eq([matching_occurrence])
+    end
+  end
+
+  describe '.with_component_source_version_project_and_pipeline scope' do
+    let_it_be(:occurrence) { create(:sbom_occurrence, component: create(:sbom_component)) }
+
+    it 'pre-loads relations to avoid executing additional queries' do
+      record = described_class.with_component_source_version_project_and_pipeline.first
+
+      queries = ActiveRecord::QueryRecorder.new do
+        record.component
+        record.component_version
+        record.source
+        record.pipeline
+        record.project
+      end
+
+      expect(queries.count).to be_zero
+    end
+  end
+
+  describe '.filter_by_non_nil_component_version scope' do
+    let_it_be(:matching_occurrence) { create(:sbom_occurrence) }
+    let_it_be(:non_matching_occurrence) { create(:sbom_occurrence, component_version: nil) }
+
+    it 'returns occurrences with a non-nil component_version' do
+      expect(described_class.filter_by_non_nil_component_version).to eq([matching_occurrence])
+    end
+  end
+
   describe '.order_by_id' do
     let_it_be(:first) { create(:sbom_occurrence) }
     let_it_be(:second) { create(:sbom_occurrence) }
