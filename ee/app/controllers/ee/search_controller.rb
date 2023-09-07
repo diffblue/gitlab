@@ -84,7 +84,6 @@ module EE
 
     # rubocop:disable Gitlab/ModuleWithInstanceVariables
     def no_results_for_group_or_project_blobs_advanced_search?
-      return false unless ::Feature.enabled?(:search_index_integrity)
       return false unless @scope == 'blobs'
       return false unless @project || @group
       return false unless search_service.use_elasticsearch?

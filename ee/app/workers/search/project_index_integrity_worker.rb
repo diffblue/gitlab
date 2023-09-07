@@ -12,7 +12,6 @@ module Search
     urgency :throttled
 
     def perform(project_id)
-      return if Feature.disabled?(:search_index_integrity)
       return if project_id.blank?
 
       project = Project.find_by_id(project_id)

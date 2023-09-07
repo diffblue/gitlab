@@ -18,7 +18,6 @@ module Search
 
     def perform(namespace_id)
       return if namespace_id.blank?
-      return if Feature.disabled?(:search_index_integrity)
 
       namespace = Namespace.find_by_id(namespace_id)
 
