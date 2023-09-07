@@ -6,7 +6,7 @@ module Gitlab
       attr_accessor :ai_response
 
       # Due to a difference in the implementation of the Anthropic
-      # and VertexAi clients where the `stream_body` paramter is
+      # and VertexAi clients where the `stream_body` parameter is
       # only passed to one of them, it is possible for the ai_response
       # to behave as a parsed Hash object, or an unparsed json string object.
       #
@@ -28,6 +28,10 @@ module Gitlab
 
       def errors
         raise NotImplementedError
+      end
+
+      def extras
+        nil
       end
     end
   end

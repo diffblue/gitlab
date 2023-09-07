@@ -23,7 +23,8 @@ module Gitlab
           role: options[:role] || ChatMessage::ROLE_ASSISTANT,
           timestamp: Time.current,
           type: options.fetch(:type, nil),
-          chunk_id: options.fetch(:chunk_id, nil)
+          chunk_id: options.fetch(:chunk_id, nil),
+          extras: response_modifier.extras
         }
 
         logger.debug(
@@ -32,7 +33,7 @@ module Gitlab
           options: options
         )
 
-        response_data = data.slice(:request_id, :errors, :role, :content, :timestamp)
+        response_data = data.slice(:request_id, :errors, :role, :content, :timestamp, :extras)
 
         unless options[:internal_request]
           Gitlab::Llm::ChatStorage.new(user).add(response_data) if options[:cache_response]

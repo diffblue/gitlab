@@ -12,6 +12,23 @@ module Gitlab
           NO_ANSWER_REGEX = /i do.*n.+know/i
 
           def response_body
+            # TODO: replace with parsed_response[:content] when FE migrates to `extras` field.
+            parsed_response && parsed_response.to_json
+          end
+
+          def extras
+            return parsed_response.except(:content) if parsed_response
+
+            super
+          end
+
+          def errors
+            @errors ||= [ai_response&.dig(:error)].compact
+          end
+
+          private
+
+          def parsed_response
             text = ai_response&.dig(:completion).to_s.strip
 
             return unless text.present?
@@ -32,13 +49,9 @@ module Gitlab
             {
               content: msg,
               sources: sources
-            }.to_json
+            }
           end
-          strong_memoize_attr :response_body
-
-          def errors
-            @errors ||= [ai_response&.dig(:error)].compact
-          end
+          strong_memoize_attr :parsed_response
         end
       end
     end

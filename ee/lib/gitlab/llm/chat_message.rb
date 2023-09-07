@@ -8,7 +8,7 @@ module Gitlab
       ROLE_SYSTEM = 'system'
       ALLOWED_ROLES = [ROLE_USER, ROLE_ASSISTANT, ROLE_SYSTEM].freeze
 
-      attr_reader :id, :request_id, :content, :role, :timestamp, :error
+      attr_reader :id, :request_id, :content, :role, :timestamp, :error, :extras
 
       RESET_MESSAGE = '/reset'
 
@@ -19,6 +19,7 @@ module Gitlab
         @role = data['role']
         @error = data['error']
         @timestamp = Time.zone.parse(data['timestamp'])
+        @extras = ::Gitlab::Json.parse(data['extras']) if data['extras']
       end
 
       def to_global_id

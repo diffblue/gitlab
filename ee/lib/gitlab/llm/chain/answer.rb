@@ -4,7 +4,7 @@ module Gitlab
   module Llm
     module Chain
       class Answer
-        attr_accessor :status, :content, :context, :tool, :suggestions, :is_final
+        attr_accessor :status, :content, :context, :tool, :suggestions, :is_final, :extras
         alias_method :is_final?, :is_final
 
         def self.from_response(response_body:, tools:, context:)
@@ -38,7 +38,7 @@ module Gitlab
           )
         end
 
-        def self.final_answer(context:, content:)
+        def self.final_answer(context:, content:, extras: nil)
           logger.debug(message: "Final answer", content: content)
 
           new(
@@ -47,7 +47,8 @@ module Gitlab
             content: content,
             tool: nil,
             suggestions: nil,
-            is_final: true
+            is_final: true,
+            extras: extras
           )
         end
 
@@ -73,13 +74,14 @@ module Gitlab
           )
         end
 
-        def initialize(status:, context:, content:, tool:, suggestions: nil, is_final: false)
+        def initialize(status:, context:, content:, tool:, suggestions: nil, is_final: false, extras: nil)
           @status = status
           @context = context
           @content = content
           @tool = tool
           @suggestions = suggestions
           @is_final = is_final
+          @extras = extras
         end
 
         def last_tool_name

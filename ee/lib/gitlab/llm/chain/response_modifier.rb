@@ -12,6 +12,10 @@ module Gitlab
           @response_body ||= ai_response.content
         end
 
+        def extras
+          @extras ||= ai_response.extras
+        end
+
         def errors
           @errors ||= ai_response.status == :error ? [ai_response.content] : []
         end

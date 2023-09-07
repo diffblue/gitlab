@@ -40,6 +40,11 @@ module Types
         null: false,
         description: 'Errors that occurred while asynchronously fetching an AI (assistant) response.'
 
+      field :extras,
+        Types::Ai::MessageExtrasType,
+        null: true,
+        description: 'Extra message metadata.'
+
       def content_html
         banzai_options = {
           current_user: current_user,
