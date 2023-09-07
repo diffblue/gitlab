@@ -29,18 +29,6 @@ RSpec.describe Security::GeneratePolicyViolationCommentWorker, feature_category:
       worker.perform(merge_request.id, params)
     end
 
-    context 'when feature flag "security_policy_approval_notification" is disabled' do
-      before do
-        stub_feature_flags(security_policy_approval_notification: false)
-      end
-
-      it 'does nothing' do
-        expect(Security::ScanResultPolicies::GeneratePolicyViolationCommentService).not_to receive(:new)
-
-        worker.perform(merge_request.id, params)
-      end
-    end
-
     context 'with a non-existing merge request' do
       it 'does nothing' do
         expect(Security::ScanResultPolicies::GeneratePolicyViolationCommentService).not_to receive(:new)

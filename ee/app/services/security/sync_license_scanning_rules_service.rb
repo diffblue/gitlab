@@ -140,8 +140,6 @@ module Security
     strong_memoize_attr :license_names_from_report
 
     def generate_policy_bot_comment(merge_request, violated_policy)
-      return if Feature.disabled?(:security_policy_approval_notification, pipeline.project)
-
       Security::GeneratePolicyViolationCommentWorker.perform_async(
         merge_request.id,
         { 'report_type' => Security::ScanResultPolicies::PolicyViolationComment::REPORT_TYPES[:license_scanning],
