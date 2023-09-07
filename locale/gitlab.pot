@@ -29061,6 +29061,9 @@ msgstr ""
 msgid "Merge conflicts"
 msgstr ""
 
+msgid "Merge date & time could not be determined"
+msgstr ""
+
 msgid "Merge details"
 msgstr ""
 
