@@ -1,5 +1,5 @@
 #import "~/graphql_shared/fragments/page_info.fragment.graphql"
-#import "~/service_desk/queries/issue.fragment.graphql"
+#import "~/issues/service_desk/queries/issue.fragment.graphql"
 
 query getServiceDeskIssuesEE(
   $hideUsers: Boolean = false
