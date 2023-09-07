@@ -20,7 +20,7 @@ module AuditEvents
       end
 
       def headers_hash
-        { STREAMING_TOKEN_HEADER_KEY => verification_token }.merge(headers.map(&:to_hash).inject(:merge).to_h)
+        { STREAMING_TOKEN_HEADER_KEY => verification_token }.merge(headers.active.map(&:to_hash).inject(:merge).to_h)
       end
 
       # TODO: Remove audit_operation.present? guard clause once we implement names for all the audit event types.

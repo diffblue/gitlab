@@ -65,9 +65,11 @@ RSpec.describe AuditEvents::ExternalAuditEventDestination, feature_category: :au
       before do
         create(:audit_events_streaming_header, external_audit_event_destination: destination, key: 'X-GitLab-Hello')
         create(:audit_events_streaming_header, external_audit_event_destination: destination, key: 'X-GitLab-World')
+        create(:audit_events_streaming_header, external_audit_event_destination: destination, key: 'X-GitLab-Inactive',
+          active: false)
       end
 
-      it do
+      it 'return active headers' do
         is_expected.to eq({ 'X-GitLab-Hello' => 'bar',
                             'X-GitLab-World' => 'bar',
                             'X-Gitlab-Event-Streaming-Token' => destination.verification_token })

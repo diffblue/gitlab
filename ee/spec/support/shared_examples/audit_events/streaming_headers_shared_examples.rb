@@ -6,6 +6,9 @@ RSpec.shared_examples 'audit event streaming header' do
     it { is_expected.to validate_presence_of(:value) }
     it { is_expected.to validate_length_of(:key).is_at_most(255) }
     it { is_expected.to validate_length_of(:value).is_at_most(255) }
+
+    it { is_expected.not_to allow_value(nil).for(:active) }
+    it { is_expected.to allow_value(true, false).for(:active) }
   end
 
   describe '#to_hash' do

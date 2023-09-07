@@ -12869,6 +12869,7 @@ Represents a HTTP header key/value that belongs to an audit streaming destinatio
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="auditeventstreamingheaderactive"></a>`active` | [`Boolean!`](#boolean) | Header is active or not. |
 | <a id="auditeventstreamingheaderid"></a>`id` | [`ID!`](#id) | ID of the header. |
 | <a id="auditeventstreamingheaderkey"></a>`key` | [`String!`](#string) | Key of the header. |
 | <a id="auditeventstreamingheadervalue"></a>`value` | [`String!`](#string) | Value of the header. |
@@ -12881,6 +12882,7 @@ Represents a HTTP header key/value that belongs to an instance level audit strea
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="auditeventsstreaminginstanceheaderactive"></a>`active` | [`Boolean!`](#boolean) | Header is active or not. |
 | <a id="auditeventsstreaminginstanceheaderid"></a>`id` | [`ID!`](#id) | ID of the header. |
 | <a id="auditeventsstreaminginstanceheaderkey"></a>`key` | [`String!`](#string) | Key of the header. |
 | <a id="auditeventsstreaminginstanceheadervalue"></a>`value` | [`String!`](#string) | Value of the header. |
@@ -29478,6 +29480,7 @@ Implementations:
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="baseheaderinterfaceactive"></a>`active` | [`Boolean!`](#boolean) | Header is active or not. |
 | <a id="baseheaderinterfaceid"></a>`id` | [`ID!`](#id) | ID of the header. |
 | <a id="baseheaderinterfacekey"></a>`key` | [`String!`](#string) | Key of the header. |
 | <a id="baseheaderinterfacevalue"></a>`value` | [`String!`](#string) | Value of the header. |
