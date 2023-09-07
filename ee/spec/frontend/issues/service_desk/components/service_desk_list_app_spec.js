@@ -20,13 +20,13 @@ import {
   TOKEN_TYPE_SEARCH_WITHIN,
   TOKEN_TYPE_WEIGHT,
 } from 'ee/vue_shared/components/filtered_search_bar/constants';
-import getServiceDeskIssuesQuery from 'ee_else_ce/service_desk/queries/get_service_desk_issues.query.graphql';
-import getServiceDeskIssuesCountsQuery from 'ee_else_ce/service_desk/queries/get_service_desk_issues_counts.query.graphql';
-import ServiceDeskListApp from 'ee/service_desk/components/service_desk_list_app.vue';
+import getServiceDeskIssuesQuery from 'ee_else_ce/issues/service_desk/queries/get_service_desk_issues.query.graphql';
+import getServiceDeskIssuesCountsQuery from 'ee_else_ce/issues/service_desk/queries/get_service_desk_issues_counts.query.graphql';
+import ServiceDeskListApp from 'ee/issues/service_desk/components/service_desk_list_app.vue';
 import {
   getServiceDeskIssuesQueryResponse,
   getServiceDeskIssuesCountsQueryResponse,
-} from 'jest/service_desk/mock_data';
+} from 'jest/issues/service_desk/mock_data';
 
 describe('EE ServiceDeskListApp', () => {
   let wrapper;

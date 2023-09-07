@@ -14,8 +14,8 @@ import {
   TOKEN_TITLE_HEALTH,
   TOKEN_TYPE_HEALTH,
 } from 'ee/vue_shared/components/filtered_search_bar/constants';
-import ServiceDeskListApp from '~/service_desk/components/service_desk_list_app.vue';
-import { WORKSPACE_PROJECT } from '~/service_desk/constants';
+import ServiceDeskListApp from '~/issues/service_desk/components/service_desk_list_app.vue';
+import { WORKSPACE_PROJECT } from '~/issues/service_desk/constants';
 
 const EpicToken = () =>
   import('ee/vue_shared/components/filtered_search_bar/tokens/epic_token.vue');
