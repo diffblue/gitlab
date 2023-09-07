@@ -644,6 +644,7 @@ OmniAuth
 onboarding
 OpenID
 OpenShift
+OpenTelemetry
 Opsgenie
 Opstrace
 ORMs
