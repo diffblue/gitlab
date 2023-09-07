@@ -17,6 +17,10 @@ module Types
         field :value, GraphQL::Types::String,
           null: false,
           description: 'Value of the header.'
+
+        field :active, GraphQL::Types::Boolean,
+          null: false,
+          description: 'Header is active or not.'
       end
     end
   end
