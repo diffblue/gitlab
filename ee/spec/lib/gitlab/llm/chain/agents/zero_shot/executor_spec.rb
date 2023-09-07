@@ -263,10 +263,13 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         ai_request: ai_request,
         extra_resource: extra_resource
       )
+      all_tools = Gitlab::Llm::Completions::Chat::TOOLS.dup
+      all_tools << ::Gitlab::Llm::Chain::Tools::EpicIdentifier
+      all_tools << ::Gitlab::Llm::Chain::Tools::CiEditorAssistant
 
       described_class.new(
         user_input: input,
-        tools: Gitlab::Llm::Completions::Chat::TOOLS,
+        tools: all_tools,
         context: context,
         response_handler: response_service_double
       )
@@ -571,6 +574,23 @@ content: message[:content] })
             it_behaves_like 'successful prompt processing'
           end
         end
+      end
+    end
+
+    context 'when asked about CI/CD' do
+      where(:input_template, :tools, :answer_match) do
+        'How do I configure CI/CD pipeline to deploy a ruby application to k8s?' |
+          ['CiEditorAssistant'] | /gitlab-ci/
+        'Please help me configure a CI/CD pipeline for node application that would run lint and unit tests.' |
+          ['CiEditorAssistant'] | /gitlab-ci/
+        'Please provide a .gitlab-ci.yaml config for running a review app for merge requests?' |
+          ['CiEditorAssistant'] | /gitlab-ci/
+      end
+
+      with_them do
+        let(:input) { format(input_template) }
+
+        it_behaves_like 'successful prompt processing'
       end
     end
 

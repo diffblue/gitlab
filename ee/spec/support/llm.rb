@@ -4,7 +4,7 @@ RSpec.configure do |config|
   config.around(:each, :real_ai_request) do |example|
     unless ENV['REAL_AI_REQUEST'] && ENV['ANTHROPIC_API_KEY'] && ENV['OPENAI_API_KEY']
       puts "skipping '#{example.description}' because it does real third-party requests, set " \
-           "REAL_AI_REQUEST=true and ANTHROPIC_API_KEY='<key>' and OPEN_API_KEY='<key>' environment variables " \
+           "REAL_AI_REQUEST=true and ANTHROPIC_API_KEY='<key>' and OPENAI_API_KEY='<key>' environment variables " \
            "if you really want to run the test"
       next
     end
