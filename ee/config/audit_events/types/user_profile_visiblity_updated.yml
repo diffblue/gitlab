@@ -1,0 +1,9 @@
+---
+name: user_profile_visiblity_updated
+description: Triggered when user toggles private profile user setting
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/129149
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/129149
+feature_category: user_profile
+milestone: '16.3'
+saved_to_database: false
+streamed: true
