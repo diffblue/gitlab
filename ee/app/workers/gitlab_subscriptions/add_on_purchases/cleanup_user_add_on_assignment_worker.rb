@@ -22,6 +22,8 @@ module GitlabSubscriptions
         return if eligible_for_seat?
 
         assignment.destroy!
+
+        log_event
       end
 
       private
@@ -46,6 +48,15 @@ module GitlabSubscriptions
 
       def eligible_for_seat?
         root_namespace.eligible_for_code_suggestions_seat?(user)
+      end
+
+      def log_event
+        Gitlab::AppLogger.info(
+          message: 'AddOnPurchase user assignment destroyed',
+          user: user.username.to_s,
+          add_on: add_on_purchase.add_on.name,
+          namespace: root_namespace.path
+        )
       end
     end
   end

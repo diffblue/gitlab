@@ -17,6 +17,7 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::CleanupUserAddOnAssignmentWo
 
     shared_examples 'returns early' do
       it 'doest not remove seat assignment' do
+        expect(Gitlab::AppLogger).not_to receive(:info)
         expect do
           expect(subject.perform(root_namespace_id, user_id)).to be_nil
         end.not_to change { GitlabSubscriptions::UserAddOnAssignment.count }
@@ -73,6 +74,17 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::CleanupUserAddOnAssignmentWo
           end
         end
       end
+    end
+
+    it 'logs an info about user assignment destroyed' do
+      expect(Gitlab::AppLogger).to receive(:info).with(
+        message: 'AddOnPurchase user assignment destroyed',
+        user: remove_user.username.to_s,
+        add_on: add_on_purchase.add_on.name,
+        namespace: namespace.path
+      )
+
+      subject.perform(root_namespace_id, user_id)
     end
   end
 end
