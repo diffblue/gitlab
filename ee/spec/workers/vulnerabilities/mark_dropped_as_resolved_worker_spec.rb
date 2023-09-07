@@ -45,6 +45,22 @@ RSpec.describe Vulnerabilities::MarkDroppedAsResolvedWorker, feature_category: :
         expect(transition.author_id).to eq(Users::Internal.security_bot.id)
         expect(transition.comment).to match(/automatically resolved/)
       end
+
+      it 'includes a link to documentation on SAST rules changes' do
+        expect { subject }.to change(::Vulnerabilities::StateTransition, :count)
+          .from(0)
+          .to(1)
+          .and change(Note, :count)
+          .by(1)
+
+        transition = ::Vulnerabilities::StateTransition.last
+        expect(transition.comment).to eq(
+          "This vulnerability was automatically resolved because its vulnerability type was disabled in this project " \
+          "or removed from GitLab's default ruleset. " \
+          "For details about SAST rule changes, " \
+          "see https://docs.gitlab.com/ee/user/application_security/sast/rules#important-rule-changes."
+        )
+      end
     end
   end
 end
