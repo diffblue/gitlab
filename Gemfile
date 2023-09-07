@@ -536,7 +536,7 @@ gem 'kas-grpc', '~> 0.2.0'
 
 gem 'grpc', '~> 1.55.0'
 
-gem 'google-protobuf', '~> 3.24', '>= 3.24.2'
+gem 'google-protobuf', '~> 3.24', '>= 3.24.3'
 
 gem 'toml-rb', '~> 2.2.0'
 
