@@ -30937,9 +30937,6 @@ msgstr ""
 msgid "Navigation|Leave admin mode"
 msgstr ""
 
-msgid "Navigation|Main navigation"
-msgstr ""
-
 msgid "Navigation|Manage"
 msgstr ""
 
@@ -30962,6 +30959,9 @@ msgid "Navigation|Pinned"
 msgstr ""
 
 msgid "Navigation|Plan"
+msgstr ""
+
+msgid "Navigation|Primary"
 msgstr ""
 
 msgid "Navigation|Projects"
@@ -35669,6 +35669,9 @@ msgid "Previous unresolved discussion"
 msgstr ""
 
 msgid "Primary Action"
+msgstr ""
+
+msgid "Primary navigation sidebar"
 msgstr ""
 
 msgid "Print as PDF"
