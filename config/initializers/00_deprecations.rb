@@ -45,6 +45,7 @@ else
     /Merging .* no longer maintain both conditions, and will be replaced by the latter in Rails 7\.0/,
     # https://gitlab.com/gitlab-org/gitlab/-/issues/415890
     /(Date|Time|TimeWithZone)#to_s.+ is deprecated/,
+    # https://gitlab.com/gitlab-org/gitlab/-/merge_requests/129686
     /Sum of non-numeric elements requires an initial argument/
   ]
 
