@@ -8,7 +8,7 @@ RSpec.describe 'Test cases', :js, feature_category: :quality_management do
   let_it_be(:label) { create(:label, project: project, title: 'bug') }
   let_it_be(:test_case1) { create(:quality_test_case, project: project, author: user, created_at: 5.days.ago, updated_at: 2.days.ago, labels: [label]) }
   let_it_be(:test_case2) { create(:quality_test_case, project: project, author: user, created_at: 6.days.ago, updated_at: 2.days.ago) }
-  let_it_be(:test_case3) { create(:quality_test_case, project: project, author: user, created_at: 7.days.ago, updated_at: 2.days.ago) }
+  let_it_be(:test_case_confidential) { create(:quality_test_case, project: project, author: user, created_at: 7.days.ago, updated_at: 2.days.ago, confidential: true) }
   let_it_be(:test_case_archived) { create(:quality_test_case, project: project, author: user, created_at: 7.days.ago, updated_at: 2.days.ago, state: :closed) }
 
   before do
@@ -66,6 +66,8 @@ RSpec.describe 'Test cases', :js, feature_category: :quality_management do
     end
 
     context 'open tab' do
+      let(:confidential_icon_selector) { '[data-testid="eye-slash-icon"]' }
+
       it 'shows list of all open test cases' do
         page.within('.issuable-list-container .issuable-list') do
           expect(page).to have_selector('li.issue', count: 3)
@@ -74,11 +76,18 @@ RSpec.describe 'Test cases', :js, feature_category: :quality_management do
 
       it 'shows test cases title and metadata' do
         page.within('.issuable-list-container .issuable-list li.issue', match: :first) do
+          expect(page).not_to have_selector(confidential_icon_selector)
           expect(page).to have_link(test_case1.title)
           expect(page).to have_text("##{test_case1.iid}")
           expect(page).to have_link(label.title, href: "?label_name[]=#{label.title}")
           expect(page).to have_text("created 5 days ago by #{user.name}")
           expect(page).to have_text('updated 2 days ago')
+        end
+      end
+
+      it 'shows confidential icon for confidential test case' do
+        page.within(".issuable-list-container .issuable-list #issuable_#{test_case_confidential.id}") do
+          expect(page).to have_selector(confidential_icon_selector)
         end
       end
     end
