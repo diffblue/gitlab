@@ -3,6 +3,7 @@
 module EE
   module SubscribableBannerHelper
     extend ::Gitlab::Utils::Override
+    include ::ButtonHelper
 
     def gitlab_subscription_or_license
       return decorated_subscription if display_subscription_banner?
@@ -38,7 +39,7 @@ module EE
     end
 
     def link_to_button_style(path:, track_property:)
-      link_to _('Renew subscription'), path, class: 'btn gl-button btn-confirm gl-mr-3 gl-mb-2', data: { track_event: 'click_text', track_label: 'subscribable_action', track_property: track_property }
+      link_button_to _('Renew subscription'), path, class: 'gl-mr-3 gl-mb-2', variant: :confirm, data: { track_event: 'click_text', track_label: 'subscribable_action', track_property: track_property }
     end
 
     private
