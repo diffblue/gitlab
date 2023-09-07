@@ -157,15 +157,15 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     let(:access_code_suggestions) { true }
     let(:global_instance_id) { 'instance-ABC' }
     let(:global_user_id) { 'user-ABC' }
+    let(:prefix) { 'def is_even(n: int) ->' }
 
     let(:body) do
       {
-        prompt_version: 1,
         project_path: "gitlab-org/gitlab-shell",
         project_id: 33191677, # not removed given we still might get it but we will not use it
         current_file: {
           file_name: "test.py",
-          content_above_cursor: "def is_even(n: int) ->",
+          content_above_cursor: prefix,
           content_below_cursor: ""
         }
       }
@@ -216,7 +216,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           expect(params).to eq({
             'URL' => 'https://codesuggestions.gitlab.com/v2/code/completions',
             'AllowRedirects' => false,
-            'Body' => body.to_json,
+            'Body' => body.merge(prompt_version: 1).to_json,
             'Header' => {
               'X-Gitlab-Authentication-Type' => ['oidc'],
               'X-Gitlab-Instance-Id' => [global_instance_id],
@@ -318,17 +318,20 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
         context 'when the task is code generation' do
           let(:current_user) { create(:user) }
-
-          before do
-            allow_next_instance_of(::CodeSuggestions::ModelSelector) do |selector|
-              allow(selector).to receive(:endpoint_name).and_return("generations")
-            end
-          end
+          let(:prefix) { '# GitLab Duo Generate: A function that outputs the first 20 fibonacci numbers' }
 
           it 'sends requests to the code generation endpoint' do
+            expected_body = body.merge(
+              prompt_version: 2,
+              prompt: "```py\n#{prefix}\n```\n"
+            )
+
             expect(Gitlab::Workhorse)
               .to receive(:send_url)
-              .with('https://codesuggestions.gitlab.com/v2/code/generations', an_instance_of(Hash))
+              .with(
+                'https://codesuggestions.gitlab.com/v2/code/generations',
+                hash_including(body: expected_body.to_json)
+              )
 
             post_api
           end
