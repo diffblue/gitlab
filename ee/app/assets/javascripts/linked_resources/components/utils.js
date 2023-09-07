@@ -26,9 +26,11 @@ export const getLinkIcon = (type) => {
 export const identifyLinkType = (link) => {
   if (zoomRegex.test(link)) {
     return 'zoom';
-  } else if (slackRegex.test(link)) {
+  }
+  if (slackRegex.test(link)) {
     return 'slack';
-  } else if (pagerdutyRegex.test(link)) {
+  }
+  if (pagerdutyRegex.test(link)) {
     return 'pagerduty';
   }
   return 'general';

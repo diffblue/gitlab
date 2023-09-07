@@ -20,7 +20,8 @@ export const createInvalidProjectMessage = (invalidProjects) => {
       s__('SecurityReports|%{firstProject}, %{secondProject}, and %{rest}'),
       translationValues,
     );
-  } else if (secondProject) {
+  }
+  if (secondProject) {
     return sprintf(s__('SecurityReports|%{firstProject} and %{secondProject}'), translationValues);
   }
   return firstProject;

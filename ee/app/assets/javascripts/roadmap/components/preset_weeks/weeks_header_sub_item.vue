@@ -47,7 +47,8 @@ export default {
       // Show dark color text only for current & upcoming dates
       if (subItem.getTime() === this.currentDate.getTime()) {
         return 'label-dark label-bold';
-      } else if (subItem > this.currentDate) {
+      }
+      if (subItem > this.currentDate) {
         return 'label-dark';
       }
       return '';

@@ -45,7 +45,8 @@ const mockApolloResponses = (shouldReject) => {
           },
         },
       });
-    } else if (mutation === createScanExecutionPolicy) {
+    }
+    if (mutation === createScanExecutionPolicy) {
       return Promise.resolve({
         data: {
           scanExecutionPolicyCommit: {
@@ -54,7 +55,8 @@ const mockApolloResponses = (shouldReject) => {
           },
         },
       });
-    } else if (mutation === createMergeRequestMutation) {
+    }
+    if (mutation === createMergeRequestMutation) {
       return Promise.resolve({
         data: { mergeRequestCreate: { mergeRequest: { iid: '01' }, errors: [] } },
       });

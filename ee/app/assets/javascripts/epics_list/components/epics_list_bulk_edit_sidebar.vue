@@ -69,17 +69,20 @@ export default {
       if (commonLabels.length === allLabels.length) {
         // Selected epics have same set of labels
         return commonLabels;
-      } else if (uncommonLabels.length === allLabels.length) {
+      }
+      if (uncommonLabels.length === allLabels.length) {
         // Selected epics have distinct set of labels
         return uncommonLabels;
-      } else if (commonLabels.length || uncommonLabels.length) {
+      }
+      if (commonLabels.length || uncommonLabels.length) {
         // Selected epics have only some labels in common
         return commonLabels.concat(
           xorBy(commonLabels, allLabels, 'id').map((label) =>
             transformLabelFn(label, { indeterminate: true }),
           ),
         );
-      } else if (hasEpicWithNoLabels || !commonLabels.length || !uncommonLabels.length) {
+      }
+      if (hasEpicWithNoLabels || !commonLabels.length || !uncommonLabels.length) {
         // Selected epics have no label in common
         return allLabels.map((label) => transformLabelFn(label, { indeterminate: true }));
       }

@@ -15,7 +15,8 @@ const fetchUsersForRuleForProject = (
 ) => {
   if (userId != null) {
     return getUser(userId).then(({ data }) => [data]);
-  } else if (groupId != null) {
+  }
+  if (groupId != null) {
     return getGroupMembers(groupId, groupInheritanceType?.toString() === INHERITED_GROUPS).then(
       ({ data }) => data,
     );

@@ -129,7 +129,8 @@ export default {
       return [...this.selectedCoverageData].sort((a, b) => {
         if (a.codeCoverageSummary.lastUpdatedOn > b.codeCoverageSummary.lastUpdatedOn) {
           return -1;
-        } else if (a.codeCoverageSummary.lastUpdatedOn < b.codeCoverageSummary.lastUpdatedOn) {
+        }
+        if (a.codeCoverageSummary.lastUpdatedOn < b.codeCoverageSummary.lastUpdatedOn) {
           return 1;
         }
         return 0;

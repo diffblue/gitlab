@@ -36,7 +36,8 @@ export default {
 
       if (this.hasFiltersApplied) {
         return titleWhenFilters;
-      } else if (this.hasIssues) {
+      }
+      if (this.hasIssues) {
         return filterStateEmptyMessage[this.currentState];
       }
 
@@ -47,7 +48,8 @@ export default {
 
       if (this.hasFiltersApplied) {
         return descriptionWhenFilters;
-      } else if (!this.hasIssues) {
+      }
+      if (!this.hasIssues) {
         return descriptionWhenNoIssues;
       }
 

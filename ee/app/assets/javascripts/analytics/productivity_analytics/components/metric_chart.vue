@@ -69,7 +69,8 @@ export default {
         return s__(
           'MetricChart|There is too much data to calculate. Please change your selection.',
         );
-      } else if (!this.hasChartData) {
+      }
+      if (!this.hasChartData) {
         return s__('MetricChart|There is no data available. Please change your selection.');
       }
 

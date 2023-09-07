@@ -13,7 +13,8 @@ const i18n = {
 export const validateName = (data) => {
   if (!data) {
     return i18n.nameBlankError;
-  } else if (data.length > 255) {
+  }
+  if (data.length > 255) {
     return i18n.nameLengthError;
   }
 
@@ -23,7 +24,8 @@ export const validateName = (data) => {
 export const validateUrl = (data) => {
   if (!data) {
     return i18n.urlBlankError;
-  } else if (!isSafeURL(data)) {
+  }
+  if (!isSafeURL(data)) {
     return i18n.urlFormatError;
   }
 
@@ -33,7 +35,8 @@ export const validateUrl = (data) => {
 export const validateCapacity = ({ data, label }) => {
   if (!data && data !== 0) {
     return sprintf(i18n.capacityBlankError, { label });
-  } else if (data < 1 || data > 999) {
+  }
+  if (data < 1 || data > 999) {
     return sprintf(i18n.capacityLengthError, { label });
   }
 

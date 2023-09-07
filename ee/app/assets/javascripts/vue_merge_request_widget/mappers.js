@@ -16,7 +16,8 @@ function mapApprovalRule(rule, settings) {
       name: __('All Members'),
       fallback: true,
     };
-  } else if (rule.rule_type === RULE_TYPE_REGULAR && !settings.multiple_approval_rules_available) {
+  }
+  if (rule.rule_type === RULE_TYPE_REGULAR && !settings.multiple_approval_rules_available) {
     // Give a friendly name to the single rule
     return {
       ...rule,

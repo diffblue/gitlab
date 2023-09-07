@@ -52,7 +52,8 @@ export default {
 
       if (this.hasOptionalRules) {
         return __('Approvals are optional.');
-      } else if (rulesLength === 1 && firstRule.ruleType === 'any_approver') {
+      }
+      if (rulesLength === 1 && firstRule.ruleType === 'any_approver') {
         return sprintf(
           n__(
             '%{strong_start}%{count} member%{strong_end} must approve to merge. Anyone with role Developer or higher can approve.',
@@ -66,7 +67,8 @@ export default {
           },
           false,
         );
-      } else if (rulesLength === 1 && firstRule.ruleType !== 'any_approver') {
+      }
+      if (rulesLength === 1 && firstRule.ruleType !== 'any_approver') {
         return sprintf(
           n__(
             '%{strong_start}%{count} eligible member%{strong_end} must approve to merge.',
@@ -80,7 +82,8 @@ export default {
           },
           false,
         );
-      } else if (rulesLength > 1) {
+      }
+      if (rulesLength > 1) {
         return sprintf(
           n__(
             '%{strong_start}%{count} approval rule%{strong_end} requires eligible members to approve before merging.',

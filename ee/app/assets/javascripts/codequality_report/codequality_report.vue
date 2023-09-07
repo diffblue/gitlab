@@ -85,7 +85,8 @@ export default {
 
       if (count === 0) {
         return s__('ciReport|No code quality issues found');
-      } else if (count > 0) {
+      }
+      if (count > 0) {
         return sprintf(s__('ciReport|Found %{issuesWithCount}'), {
           issuesWithCount: n__('%d code quality issue', '%d code quality issues', count),
         });

@@ -54,7 +54,8 @@ export default {
         (roadmapItem.startDateUndefined && roadmapItem.endDateOutOfRange)
       ) {
         return '';
-      } else if (startDay === 1) {
+      }
+      if (startDay === 1) {
         /* eslint-disable-next-line @gitlab/require-i18n-strings */
         return 'left: 0;';
       }

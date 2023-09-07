@@ -236,7 +236,8 @@ export const sortEpics = (epics, sortedBy) => {
     // Sort in ascending or descending order
     if (aDate < bDate) {
       return sortOrderAsc ? -1 : 1;
-    } else if (aDate > bDate) {
+    }
+    if (aDate > bDate) {
       return sortOrderAsc ? 1 : -1;
     }
     return 0;

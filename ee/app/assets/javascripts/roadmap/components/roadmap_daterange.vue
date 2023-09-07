@@ -52,7 +52,8 @@ export default {
 
       if (this.selectedDaterange === DATE_RANGES.CURRENT_YEAR) {
         return [months, weeks];
-      } else if (this.selectedDaterange === DATE_RANGES.THREE_YEARS) {
+      }
+      if (this.selectedDaterange === DATE_RANGES.THREE_YEARS) {
         return [quarters, months, weeks];
       }
       return [];

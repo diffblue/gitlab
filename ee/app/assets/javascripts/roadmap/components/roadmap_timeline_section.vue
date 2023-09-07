@@ -38,9 +38,11 @@ export default {
     headerItemComponentForPreset() {
       if (this.presetTypeQuarters) {
         return 'quarters-header-item';
-      } else if (this.presetTypeMonths) {
+      }
+      if (this.presetTypeMonths) {
         return 'months-header-item';
-      } else if (this.presetTypeWeeks) {
+      }
+      if (this.presetTypeWeeks) {
         return 'weeks-header-item';
       }
       return '';

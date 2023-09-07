@@ -30,7 +30,8 @@ const formatter = (value, key, item) => {
 
   if (item.latestSnapshot && item.latestSnapshot[key] === false) {
     return 1;
-  } else if (item.latestSnapshot && item.latestSnapshot[key]) {
+  }
+  if (item.latestSnapshot && item.latestSnapshot[key]) {
     return 2;
   }
 

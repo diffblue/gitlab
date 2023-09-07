@@ -31,7 +31,8 @@ const thClass = ['gl-bg-white!', 'gl-text-gray-400'];
 const formatter = (value, key, item) => {
   if (key === OVERVIEW_TABLE_NAME_KEY) {
     return item.group?.namespace?.fullName;
-  } else if (item.adoption[key]) return item.adoption[key].adopted;
+  }
+  if (item.adoption[key]) return item.adoption[key].adopted;
 
   return 0;
 };

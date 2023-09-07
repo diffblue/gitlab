@@ -53,7 +53,8 @@ export default {
         this.currentDate.getMonth() === subItem.getMonth()
       ) {
         return 'label-dark label-bold';
-      } else if (subItem >= this.currentDate) {
+      }
+      if (subItem >= this.currentDate) {
         return 'label-dark';
       }
       return '';

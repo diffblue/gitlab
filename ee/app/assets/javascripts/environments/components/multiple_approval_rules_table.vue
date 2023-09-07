@@ -51,7 +51,8 @@ export default {
     getRuleName(rule) {
       if (rule.group) {
         return { name: rule.group.name, link: rule.group.webUrl };
-      } else if (rule.user) {
+      }
+      if (rule.user) {
         return { name: rule.user.name, link: rule.user.webUrl };
       }
 
