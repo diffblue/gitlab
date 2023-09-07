@@ -13,6 +13,32 @@ RSpec.describe PasswordsController, feature_category: :system_access do
 
     subject(:post_create) { post :create, params: { user: { email: email } } }
 
+    describe "#update" do
+      context "when there is error updating the password" do
+        subject do
+          put :update, params: {
+            user: {
+              password: password,
+              password_confirmation: password_confirmation,
+              reset_password_token: reset_password_token
+            }
+          }
+        end
+
+        let(:password) { "short" } # short invalid password
+        let(:password_confirmation) { password }
+        let(:reset_password_token) { user.send_reset_password_instructions }
+        let(:user) { create(:user, password_automatically_set: true, password_expires_at: 10.minutes.ago) }
+
+        it "calls `::Audit::UserPasswordResetAuditor` with correct args" do
+          expect(::Audit::UserPasswordResetAuditor).to receive(:new).with(user, user,
+            instance_of(String)).and_call_original
+
+          subject
+        end
+      end
+    end
+
     context "when email exists" do
       let(:email) { user.email }
 

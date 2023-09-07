@@ -3,9 +3,15 @@
 module EE
   module PasswordsController
     extend ActiveSupport::Concern
+    extend ::Gitlab::Utils::Override
 
     prepended do
       before_action :log_audit_event, only: [:create]
+    end
+
+    override :log_audit_reset_failure
+    def log_audit_reset_failure(user)
+      ::Audit::UserPasswordResetAuditor.new(user, user, request.remote_ip).audit_reset_failure
     end
 
     private
