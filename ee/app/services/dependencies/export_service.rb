@@ -3,9 +3,14 @@
 module Dependencies
   class ExportService
     SERIALIZER_SERVICES = {
-      Project => ExportSerializers::ProjectDependenciesService,
-      Group => ExportSerializers::GroupDependenciesService
-    }.freeze
+      dependency_list: {
+        Project => ExportSerializers::ProjectDependenciesService,
+        Group => ExportSerializers::GroupDependenciesService
+      },
+      sbom: {
+        Ci::Pipeline => ExportSerializers::Sbom::PipelineService
+      }
+    }.with_indifferent_access.freeze
 
     def self.execute(dependency_list_export)
       new(dependency_list_export).execute
@@ -34,7 +39,7 @@ module Dependencies
       create_export_file
 
       dependency_list_export.finish!
-    rescue StandardError
+    rescue StandardError, Dependencies::ExportSerializers::Sbom::PipelineService::SchemaValidationError
       dependency_list_export.reset_state!
 
       raise
@@ -50,18 +55,42 @@ module Dependencies
     end
 
     def file_content
-      ::Gitlab::Json.dump(dependencies)
+      ::Gitlab::Json.dump(exported_object)
     end
 
-    def dependencies
+    def exported_object
       serializer_service.execute(dependency_list_export)
     end
 
     def serializer_service
-      SERIALIZER_SERVICES.fetch(exportable.class)
+      SERIALIZER_SERVICES.fetch(dependency_list_export.export_type).fetch(exportable.class)
     end
 
     def filename
+      if dependency_list_export.export_type == 'sbom'
+        sbom_filename
+      else
+        dependency_list_filename
+      end
+    end
+
+    def sbom_filename
+      # Assuming dependency_list_export.export_type is sbom
+      # as we don't support dependency_list export_type for pipeline yet.
+      [
+        'gl-',
+        'pipeline-',
+        exportable.id,
+        '-merged-',
+        Time.current.utc.strftime('%FT%H%M'),
+        '-sbom.',
+        'cdx',
+        '.',
+        'json'
+      ].join
+    end
+
+    def dependency_list_filename
       [
         exportable.full_path.parameterize,
         '_dependencies_',

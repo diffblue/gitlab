@@ -17,7 +17,7 @@ module Dependencies
     validate :only_one_exportable
 
     enum export_type: {
-      json: 0,
+      dependency_list: 0,
       sbom: 1
     }
 

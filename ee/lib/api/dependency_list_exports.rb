@@ -39,6 +39,28 @@ module API
       end
     end
 
+    resource :pipelines do
+      params do
+        requires :id, types: [String, Integer], desc: 'The ID of the pipeline'
+
+        optional :export_type, type: String, values: %w[sbom dependency_list], desc: 'The type of the export file'
+      end
+      desc 'Generate a dependency list export on a pipeline-level'
+      post ':id/dependency_list_exports' do
+        not_found! unless Feature.enabled?(:merge_sbom_api, user_pipeline&.project)
+
+        # Currently, we only support sbom export type for this endpoint.
+        not_found! if params[:export_type] != 'sbom'
+
+        authorize! :read_dependency, user_pipeline
+
+        dependency_list_export = ::Dependencies::CreateExportService.new(
+          user_pipeline, current_user, params[:export_type]).execute
+
+        present dependency_list_export, with: EE::API::Entities::DependencyListExport
+      end
+    end
+
     params do
       requires :export_id, types: [Integer, String], desc: 'The ID of the dependency list export'
     end

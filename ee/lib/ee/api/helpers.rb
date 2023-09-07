@@ -88,6 +88,15 @@ module EE
         end
       end
 
+      override :find_pipeline!
+      def find_pipeline!(id)
+        if job_token_authentication?
+          not_found!('Pipeline')
+        else
+          super
+        end
+      end
+
       # rubocop: disable CodeReuse/ActiveRecord
       def find_group_epic(iid)
         EpicsFinder.new(current_user, group_id: user_group.id).find_by!(iid: iid)
@@ -110,6 +119,10 @@ module EE
         )
       end
       # rubocop: enable CodeReuse/ActiveRecord
+
+      def user_pipeline
+        @pipeline ||= find_pipeline!(params[:id])
+      end
 
       private
 
