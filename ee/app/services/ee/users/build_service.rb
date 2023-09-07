@@ -31,16 +31,7 @@ module EE
 
       override :signup_params
       def signup_params
-        super + email_opted_in_params + name_params
-      end
-
-      def email_opted_in_params
-        [
-          :email_opted_in,
-          :email_opted_in_ip,
-          :email_opted_in_source_id,
-          :email_opted_in_at
-        ]
+        super + name_params
       end
 
       def name_params

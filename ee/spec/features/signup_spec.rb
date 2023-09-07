@@ -26,61 +26,6 @@ RSpec.describe 'Signup on EE', :js, feature_category: :user_profile do
       visit new_user_registration_path
     end
 
-    context 'when the user sets it up for the company' do
-      it 'creates the user and sets the email_opted_in field truthy' do
-        fill_in_signup_form
-        click_button "Register"
-
-        select 'Software Developer', from: 'user_role'
-        choose 'user_setup_for_company_true'
-        choose 'Join a project'
-        click_button 'Continue'
-
-        user = User.find_by_username!(new_user[:username])
-        expect(user.email_opted_in).to be_truthy
-        expect(user.email_opted_in_ip).to be_present
-        expect(user.email_opted_in_source).to eq('GitLab.com')
-        expect(user.email_opted_in_at).not_to be_nil
-      end
-    end
-
-    context 'when the user checks the opt-in to email updates box' do
-      it 'creates the user and sets the email_opted_in field truthy' do
-        fill_in_signup_form
-        click_button "Register"
-
-        select 'Software Developer', from: 'user_role'
-        choose 'user_setup_for_company_false'
-        choose 'Join a project'
-        check 'user_email_opted_in'
-        click_button 'Continue'
-
-        user = User.find_by_username!(new_user[:username])
-        expect(user.email_opted_in).to be_truthy
-        expect(user.email_opted_in_ip).to be_present
-        expect(user.email_opted_in_source).to eq('GitLab.com')
-        expect(user.email_opted_in_at).not_to be_nil
-      end
-    end
-
-    context 'when the user does not check the opt-in to email updates box' do
-      it 'creates the user and sets the email_opted_in field falsey' do
-        fill_in_signup_form
-        click_button "Register"
-
-        select 'Software Developer', from: 'user_role'
-        choose 'user_setup_for_company_false'
-        choose 'Join a project'
-        click_button 'Continue'
-
-        user = User.find_by_username!(new_user[:username])
-        expect(user.email_opted_in).to be_falsey
-        expect(user.email_opted_in_ip).to be_blank
-        expect(user.email_opted_in_source).to be_blank
-        expect(user.email_opted_in_at).to be_nil
-      end
-    end
-
     it 'allows visiting of a page after initial registration' do
       fill_in_signup_form
       click_button 'Register'
@@ -96,25 +41,6 @@ RSpec.describe 'Signup on EE', :js, feature_category: :user_profile do
 
       expect(user.software_developer_role?).to be_truthy
       expect(user.setup_for_company).to be_truthy
-    end
-  end
-
-  context 'when not for SaaS' do
-    before do
-      visit new_user_registration_path
-    end
-
-    it 'does not have a opt-in checkbox, it creates the user and sets email_opted_in to falsey' do
-      expect(page).not_to have_selector("[name='new_user_email_opted_in']")
-
-      fill_in_signup_form
-      click_button "Register"
-
-      user = User.find_by_username!(new_user[:username])
-      expect(user.email_opted_in).to be_falsey
-      expect(user.email_opted_in_ip).to be_blank
-      expect(user.email_opted_in_source).to be_blank
-      expect(user.email_opted_in_at).to be_nil
     end
   end
 

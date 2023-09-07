@@ -78,8 +78,7 @@ module GitlabSubscriptions
           setup_for_company: user.setup_for_company,
           skip_email_confirmation: true,
           gitlab_com_trial: true,
-          provider: PROVIDER,
-          newsletter_segment: user.email_opted_in
+          provider: PROVIDER
         }
 
         lead_params.merge(attrs)

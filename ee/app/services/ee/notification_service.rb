@@ -161,7 +161,6 @@ module EE
       user = pipeline.user
       return if user.has_required_credit_card_to_run_pipelines?(pipeline.project)
       return unless user.can?(:receive_notifications)
-      return unless user.email_opted_in?
 
       email = user.notification_email_or_default
       mailer.account_validation_email(pipeline, email).deliver_later

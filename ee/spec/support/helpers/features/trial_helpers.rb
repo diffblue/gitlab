@@ -84,7 +84,6 @@ module Features
         skip_email_confirmation: true,
         gitlab_com_trial: true,
         provider: 'gitlab',
-        newsletter_segment: user.email_opted_in,
         state: form_data.dig(:state, :id)
       }.merge(extra_params)
 

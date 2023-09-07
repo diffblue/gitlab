@@ -416,7 +416,6 @@ RSpec.describe GitlabSubscriptions::Trials::CreateService, feature_category: :pu
       skip_email_confirmation: true,
       gitlab_com_trial: true,
       provider: 'gitlab',
-      newsletter_segment: user.email_opted_in,
       state: 'CA'
     }.merge(extra_lead_params)
   end

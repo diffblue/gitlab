@@ -34,8 +34,7 @@ module GitlabSubscriptions
       {
         uid: user.id,
         work_email: user.email,
-        setup_for_company: user.setup_for_company,
-        newsletter_segment: user.email_opted_in
+        setup_for_company: user.setup_for_company
       }
     end
 
