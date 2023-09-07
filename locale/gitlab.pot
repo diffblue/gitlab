@@ -26945,6 +26945,9 @@ msgstr ""
 msgid "Jobs|Root cause analysis"
 msgstr ""
 
+msgid "Jobs|Stage"
+msgstr ""
+
 msgid "Jobs|There was a problem fetching the failed jobs."
 msgstr ""
 
