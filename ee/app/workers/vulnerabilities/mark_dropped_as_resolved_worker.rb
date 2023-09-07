@@ -75,8 +75,12 @@ module Vulnerabilities
     end
 
     def resolution_comment
+      # rubocop:disable Gitlab/DocUrl
       _("This vulnerability was automatically resolved because its vulnerability type was disabled in this project " \
-        "or removed from GitLab's default ruleset.")
+        "or removed from GitLab's default ruleset. " \
+        "For details about SAST rule changes, " \
+        "see https://docs.gitlab.com/ee/user/application_security/sast/rules#important-rule-changes.")
+      # rubocop:enable Gitlab/DocUrl
     end
   end
   # rubocop:enable Scalability/IdempotentWorker
