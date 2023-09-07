@@ -11,7 +11,6 @@ module EE
 
       override :execute
       def execute
-        return super if project.respond_to?(:archived?) && project.archived?
         return zoekt_search_results if use_zoekt? && use_default_branch?
         return super unless use_elasticsearch? && use_default_branch?
 
