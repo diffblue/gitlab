@@ -17,19 +17,6 @@ module Subscriptions
       required: false,
       description: 'Client generated ID that be subscribed to, to receive a response for the mutation.'
 
-    def update(*_args)
-      {
-        response_body: object[:content],
-        request_id: object[:request_id],
-        role: object[:role],
-        errors: object[:errors],
-        timestamp: object[:timestamp],
-        type: object[:type],
-        chunk_id: object[:chunk_id],
-        extras: object[:extras]
-      }
-    end
-
     def authorized?(args)
       unauthorized! if current_user.nil? || args[:user_id] != current_user.to_global_id
 

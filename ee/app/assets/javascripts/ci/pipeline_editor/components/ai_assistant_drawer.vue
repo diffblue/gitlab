@@ -100,7 +100,7 @@ export default {
             __typename: 'CiAiGenerateConfigPayload',
             errors: [],
             userMessage: {
-              __typename: 'AiMessageType',
+              __typename: 'AiMessage',
               id: 'unknown',
               role: 'user',
               content: value,

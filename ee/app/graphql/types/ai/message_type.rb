@@ -3,7 +3,7 @@
 module Types
   module Ai
     class MessageType < Types::BaseObject
-      graphql_name 'AiMessageType'
+      graphql_name 'AiMessage'
 
       authorize :read_ai_message
 

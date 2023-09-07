@@ -44,6 +44,7 @@ export const GENERATE_MOCK_TANUKI_RES = (body = JSON.stringify(MOCK_TANUKI_MESSA
   return {
     data: {
       aiCompletionResponse: {
+        id: '123',
         responseBody: body,
         errors: [],
         requestId: '987',
