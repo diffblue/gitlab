@@ -1,6 +1,6 @@
 <script>
 import { createAlert, VARIANT_INFO } from '~/alert';
-import Api from 'ee/api';
+import { updateApplicationSettings } from '~/rest_api';
 import { SUCCESS_MESSAGE, SAVE_ERROR_MESSAGE } from '../constants';
 import SettingsForm from './settings_form.vue';
 
@@ -46,7 +46,7 @@ export default {
       try {
         this.isLoading = true;
 
-        await Api.updateApplicationSettings({
+        await updateApplicationSettings({
           max_number_of_repository_downloads: maxDownloads,
           max_number_of_repository_downloads_within_time_period: timePeriod,
           git_rate_limit_users_allowlist: allowlist,

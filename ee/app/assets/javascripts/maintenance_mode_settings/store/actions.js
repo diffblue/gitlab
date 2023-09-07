@@ -1,11 +1,11 @@
-import Api from 'ee/api';
+import { updateApplicationSettings } from '~/rest_api';
 import { createAlert } from '~/alert';
 import { __ } from '~/locale';
 import * as types from './mutation_types';
 
 export const updateMaintenanceModeSettings = ({ commit, state }) => {
   commit(types.REQUEST_UPDATE_MAINTENANCE_MODE_SETTINGS);
-  Api.updateApplicationSettings({
+  updateApplicationSettings({
     maintenance_mode: state.maintenanceEnabled,
     maintenance_mode_message: state.bannerMessage,
   })

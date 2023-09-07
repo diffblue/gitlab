@@ -25,7 +25,6 @@ export default {
   vulnerabilityPath: '/api/:version/vulnerabilities/:id',
   vulnerabilityActionPath: '/api/:version/vulnerabilities/:id/:action',
   vulnerabilityIssueLinksPath: '/api/:version/vulnerabilities/:id/issue_links',
-  applicationSettingsPath: '/api/:version/application/settings',
   descendantGroupsPath: '/api/:version/groups/:group_id/descendant_groups',
   projectDeploymentFrequencyAnalyticsPath:
     '/api/:version/projects/:id/analytics/deployment_frequency',
@@ -182,16 +181,6 @@ export default {
   removeGeoSite(id) {
     const url = Api.buildUrl(this.geoSitePath).replace(':id', encodeURIComponent(id));
     return axios.delete(url);
-  },
-
-  getApplicationSettings() {
-    const url = Api.buildUrl(this.applicationSettingsPath);
-    return axios.get(url);
-  },
-
-  updateApplicationSettings(data) {
-    const url = Api.buildUrl(this.applicationSettingsPath);
-    return axios.put(url, data);
   },
 
   deploymentFrequencies(projectId, params = {}) {
