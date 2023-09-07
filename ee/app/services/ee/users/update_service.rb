@@ -32,6 +32,8 @@ module EE
 
         audit_changes(:admin, as: 'admin status',
                               event_type: 'user_admin_status_updated')
+
+        log_audit_events
       end
 
       def model
@@ -85,6 +87,10 @@ module EE
             group&.saml_provider&.id
           end
         end
+      end
+
+      def log_audit_events
+        Audit::UserSettingChangesAuditor.new(current_user).execute
       end
     end
   end
