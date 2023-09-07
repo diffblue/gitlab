@@ -1,5 +1,15 @@
-query getRunnerFailedJobsEE($first: Int = 2) {
-  jobs(first: $first, statuses: [FAILED]) {
+query getRunnerFailedJobsEE(
+  $runnerTypes: [CiRunnerType!] = [INSTANCE_TYPE]
+  $failureReason: CiJobFailureReason = RUNNER_SYSTEM_FAILURE
+  $logLastLineCount: Int = 2
+  $first: Int = 2
+) {
+  jobs(
+    first: $first
+    statuses: [FAILED]
+    runnerTypes: $runnerTypes
+    failureReason: $failureReason
+  ) {
     nodes {
       id
       runner {
@@ -27,7 +37,7 @@ query getRunnerFailedJobsEE($first: Int = 2) {
         }
       }
       trace {
-        htmlSummary
+        htmlSummary(lastLines: $logLastLineCount)
       }
       userPermissions {
         readBuild

@@ -85,13 +85,28 @@ RSpec.describe 'Runner EE (JavaScript fixtures)', feature_category: :runner_flee
       end
 
       let_it_be(:runner) { create(:ci_runner, :instance, description: 'Runner 1') }
-      let!(:build) { create(:ci_build, :failed, :trace_live, runner: runner) }
-      let!(:build2) { create(:ci_build, :failed, :trace_live, runner: runner) }
+      let_it_be(:build) do
+        create(:ci_build, :failed, :trace_live, runner: runner, failure_reason: :runner_system_failure)
+      end
 
-      it "#{fixtures_path}#{query_name}.json" do
+      let_it_be(:build2) do
+        create(:ci_build, :failed, :trace_live, runner: runner, failure_reason: :runner_system_failure)
+      end
+
+      before do
+        stub_licensed_features(runner_performance_insights: true)
+
+        Ci::Build.all.each { |build| ::Ci::InstanceRunnerFailedJobs.track(build) }
+      end
+
+      it "#{fixtures_path}#{query_name}.json", :aggregate_failures do
         post_graphql(query, current_user: admin)
 
         expect_graphql_errors_to_be_empty
+        expect(graphql_data_at(:jobs, :nodes)).to contain_exactly(
+          a_graphql_entity_for(build),
+          a_graphql_entity_for(build2)
+        )
       end
     end
   end
