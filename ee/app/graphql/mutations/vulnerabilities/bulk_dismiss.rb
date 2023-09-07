@@ -12,7 +12,8 @@ module Mutations
         prepare: ->(vulnerability_ids, ctx) {
           ::Mutations::Vulnerabilities::BulkDismiss.prepare(vulnerability_ids, ctx)
         },
-        description: "IDs of the vulnerabilities to be dismissed."
+        description: "IDs of the vulnerabilities to be dismissed (maximum " \
+                     "#{::Vulnerabilities::BulkDismissService::MAX_BATCH} entries)."
 
       argument :comment,
         GraphQL::Types::String,
