@@ -9,9 +9,8 @@ describe('IssuesAnalyticsEmptyState', () => {
   const mockNoDataSvgPath = 'no-data.svg';
   const mockNoDataWithFiltersSvgPath = 'no-data-with-filters.svg';
   const mockNoDataEmptyState = {
-    title: 'There are no issues for the projects in your group',
-    description:
-      'After you begin creating issues for your projects, we can start tracking and displaying metrics for them.',
+    title: 'Get started with issue analytics',
+    description: 'Create issues for projects in your group to track and see metrics for them.',
     svgPath: mockNoDataSvgPath,
     svgHeight,
   };
