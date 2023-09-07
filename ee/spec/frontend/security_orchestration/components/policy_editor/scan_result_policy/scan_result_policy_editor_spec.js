@@ -1,6 +1,7 @@
 import { GlEmptyState } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import SettingsSection from 'ee/security_orchestration/components/policy_editor/scan_result_policy/settings_section.vue';
 import EditorLayout from 'ee/security_orchestration/components/policy_editor/editor_layout.vue';
 import {
   DEFAULT_SCAN_RESULT_POLICY,
@@ -31,7 +32,6 @@ import {
 import DimDisableContainer from 'ee/security_orchestration/components/policy_editor/dim_disable_container.vue';
 import PolicyActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_action_builder.vue';
 import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_builder.vue';
-import ApprovalSettings from 'ee/security_orchestration/components/policy_editor/scan_result_policy/approval_settings.vue';
 
 jest.mock('ee/security_orchestration/components/policy_editor/scan_result_policy/lib', () => ({
   ...jest.requireActual(
@@ -111,7 +111,7 @@ describe('ScanResultPolicyEditor', () => {
   const findAddRuleButton = () => wrapper.findByTestId('add-rule');
   const findAllDisabledComponents = () => wrapper.findAllComponents(DimDisableContainer);
   const findAllRuleBuilders = () => wrapper.findAllComponents(PolicyRuleBuilder);
-  const findApprovalSettings = () => wrapper.findComponent(ApprovalSettings);
+  const findSettingsSection = () => wrapper.findComponent(SettingsSection);
 
   const changesToRuleMode = () =>
     findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_RULE);
@@ -478,20 +478,20 @@ describe('ScanResultPolicyEditor', () => {
     it('does not display the settings section', () => {
       factory();
 
-      expect(findApprovalSettings().exists()).toBe(false);
+      expect(findSettingsSection().exists()).toBe(false);
     });
 
     describe('with "scanResultPolicySettings" feature flag enabled', () => {
       it('displays setting section', () => {
         factory({ glFeatures: { scanResultPolicySettings: true } });
 
-        expect(findApprovalSettings().exists()).toBe(true);
+        expect(findSettingsSection().exists()).toBe(true);
       });
 
       it('updates the policy when a change is emitted', async () => {
         factory({ glFeatures: { scanResultPolicySettings: true } });
 
-        await findApprovalSettings().vm.$emit('changed', {
+        await findSettingsSection().vm.$emit('changed', {
           block_protected_branch_modification: {
             enabled: false,
           },

@@ -19,7 +19,7 @@ import {
 import EditorLayout from '../editor_layout.vue';
 import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
 import DimDisableContainer from '../dim_disable_container.vue';
-import ApprovalSettings from './approval_settings.vue';
+import SettingsSection from './settings_section.vue';
 import PolicyActionBuilder from './policy_action_builder.vue';
 import PolicyRuleBuilder from './policy_rule_builder.vue';
 
@@ -59,13 +59,13 @@ export default {
     ACTIONS_LABEL,
   },
   components: {
-    ApprovalSettings,
     DimDisableContainer,
     GlButton,
     GlEmptyState,
     PolicyActionBuilder,
     EditorLayout,
     PolicyRuleBuilder,
+    SettingsSection,
   },
   mixins: [glFeatureFlagsMixin()],
   inject: [
@@ -376,17 +376,14 @@ export default {
     <template #settings>
       <dim-disable-container v-if="shouldShowSettings" :disabled="hasParsingError">
         <template #title>
-          <h5>{{ $options.i18n.settingsTitle }}</h5>
+          <h4>{{ $options.i18n.settingsTitle }}</h4>
         </template>
 
         <template #disabled>
           <div class="gl-bg-gray-10 gl-rounded-base gl-p-6"></div>
         </template>
 
-        <approval-settings
-          :approval-settings="policy.approval_settings"
-          @changed="updateApprovalSettings"
-        />
+        <settings-section :settings="policy.approval_settings" @changed="updateApprovalSettings" />
       </dim-disable-container>
     </template>
   </editor-layout>
