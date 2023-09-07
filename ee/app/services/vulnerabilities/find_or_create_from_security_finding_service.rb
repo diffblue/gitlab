@@ -3,7 +3,7 @@
 module Vulnerabilities
   class FindOrCreateFromSecurityFindingService < ::BaseProjectService
     def initialize(
-      project:, current_user:, params:, state:, present_on_default_branch: true,
+      project:, current_user:, params:, state:, present_on_default_branch:,
       skip_permission_check: false)
       super(project: project, current_user: current_user, params: params)
       @state = state

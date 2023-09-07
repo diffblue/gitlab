@@ -45,7 +45,7 @@ module Vulnerabilities
           Vulnerabilities::FindOrCreateFromSecurityFindingService
             .new(project: project, current_user: current_user, params: {
               security_finding_uuid: params[:security_finding].uuid
-            }, state: 'confirmed')
+            }, state: 'confirmed', present_on_default_branch: false)
         ).payload[:vulnerability]
       end
 
