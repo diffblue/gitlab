@@ -50,6 +50,7 @@ else
   ]
 
   view_component_3_warnings = [
+    # https://gitlab.com/gitlab-org/gitlab/-/issues/408988
     /Setting a slot with `#\w+` is deprecated and will be removed from ViewComponent 3.0.0/
   ]
   ActiveSupport::Deprecation.disallowed_warnings = rails7_deprecation_warnings + view_component_3_warnings
