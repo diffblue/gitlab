@@ -290,6 +290,7 @@ describe('TestCaseShowRoot', () => {
           taskCompletionStatus: {},
           taskListUpdatePath: updatePath,
           taskListLockVersion: lockVersion,
+          workspaceType: 'project',
         });
       });
 
