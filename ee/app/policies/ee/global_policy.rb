@@ -50,8 +50,7 @@ module EE
       end
 
       condition(:instance_external_audit_events_enabled) do
-        ::License.feature_available?(:external_audit_events) &&
-          ::Feature.enabled?(:ff_external_audit_events)
+        ::License.feature_available?(:external_audit_events)
       end
 
       condition(:code_suggestions_licensed) do

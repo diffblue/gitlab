@@ -40,87 +40,67 @@ RSpec.describe 'Create an instance external audit event destination header', fea
       stub_licensed_features(external_audit_events: true)
     end
 
-    context 'when feature flag `ff_external_audit_events` is enabled' do
-      context 'when current user is instance admin' do
-        it 'creates the header with the correct attributes', :aggregate_failures do
-          expect { subject }
-            .to change { destination.headers.count }.by(1)
+    context 'when current user is instance admin' do
+      it 'creates the header with the correct attributes', :aggregate_failures do
+        expect { subject }
+          .to change { destination.headers.count }.by(1)
 
-          header = AuditEvents::Streaming::InstanceHeader.last
+        header = AuditEvents::Streaming::InstanceHeader.last
 
-          expect(header.key).to eq('foo')
-          expect(header.value).to eq('bar')
-          expect(mutation_response['errors']).to be_empty
-        end
-
-        context 'when the header attributes are invalid' do
-          let_it_be(:invalid_headers_input) do
-            {
-              destinationId: destination.to_gid,
-              key: '',
-              value: 'bar'
-            }
-          end
-
-          let(:mutation) { graphql_mutation(:audit_events_streaming_instance_headers_create, invalid_headers_input) }
-
-          it 'returns correct errors' do
-            subject
-
-            expect(mutation_response['header']).to be_nil
-            expect(mutation_response['errors']).to contain_exactly("Key can't be blank")
-          end
-
-          it_behaves_like 'a mutation that does not create a header' do
-            let_it_be(:current_user) { admin }
-          end
-        end
-
-        context 'when the destination id is wrong' do
-          let_it_be(:invalid_destination_input) do
-            {
-              destinationId: "gid://gitlab/AuditEvents::InstanceExternalAuditEventDestination/14566",
-              key: 'foo',
-              value: 'bar'
-            }
-          end
-
-          let(:mutation) do
-            graphql_mutation(:audit_events_streaming_instance_headers_create, invalid_destination_input)
-          end
-
-          it_behaves_like 'a mutation that returns top-level errors',
-            errors: [Mutations::AuditEvents::Streaming::InstanceHeaders::Base::DESTINATION_ERROR_MESSAGE]
-
-          it 'does not create any header' do
-            expect { post_graphql_mutation(mutation, current_user: current_user) }
-              .not_to change { AuditEvents::Streaming::InstanceHeader.count }
-          end
-        end
+        expect(header.key).to eq('foo')
+        expect(header.value).to eq('bar')
+        expect(mutation_response['errors']).to be_empty
       end
 
-      context 'when current user is not instance admin' do
-        it_behaves_like 'a mutation that does not create a header' do
-          let_it_be(:current_user) { user }
+      context 'when the header attributes are invalid' do
+        let_it_be(:invalid_headers_input) do
+          {
+            destinationId: destination.to_gid,
+            key: '',
+            value: 'bar'
+          }
         end
-      end
-    end
 
-    context 'when feature flag `ff_external_audit_events` is disabled' do
-      before do
-        stub_feature_flags(ff_external_audit_events: false)
-      end
+        let(:mutation) { graphql_mutation(:audit_events_streaming_instance_headers_create, invalid_headers_input) }
 
-      context 'when current user is instance admin' do
+        it 'returns correct errors' do
+          subject
+
+          expect(mutation_response['header']).to be_nil
+          expect(mutation_response['errors']).to contain_exactly("Key can't be blank")
+        end
+
         it_behaves_like 'a mutation that does not create a header' do
           let_it_be(:current_user) { admin }
         end
       end
 
-      context 'when current user is not instance admin' do
-        it_behaves_like 'a mutation that does not create a header' do
-          let_it_be(:current_user) { user }
+      context 'when the destination id is wrong' do
+        let_it_be(:invalid_destination_input) do
+          {
+            destinationId: "gid://gitlab/AuditEvents::InstanceExternalAuditEventDestination/14566",
+            key: 'foo',
+            value: 'bar'
+          }
         end
+
+        let(:mutation) do
+          graphql_mutation(:audit_events_streaming_instance_headers_create, invalid_destination_input)
+        end
+
+        it_behaves_like 'a mutation that returns top-level errors',
+          errors: [Mutations::AuditEvents::Streaming::InstanceHeaders::Base::DESTINATION_ERROR_MESSAGE]
+
+        it 'does not create any header' do
+          expect { post_graphql_mutation(mutation, current_user: current_user) }
+            .not_to change { AuditEvents::Streaming::InstanceHeader.count }
+        end
+      end
+    end
+
+    context 'when current user is not instance admin' do
+      it_behaves_like 'a mutation that does not create a header' do
+        let_it_be(:current_user) { user }
       end
     end
   end

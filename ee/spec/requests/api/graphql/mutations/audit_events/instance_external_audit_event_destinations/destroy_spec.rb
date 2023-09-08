@@ -42,47 +42,37 @@ RSpec.describe 'Destroy an instance external audit event destination', feature_c
     end
 
     context 'when current user is an instance admin' do
-      context 'when feature flag ff_external_audit_events is enabled' do
-        it 'destroys the destination' do
-          expect { post_graphql_mutation(mutation, current_user: admin) }
-            .to change { AuditEvents::InstanceExternalAuditEventDestination.count }.by(-1)
-        end
-
-        it 'audits the destruction' do
-          expect { post_graphql_mutation(mutation, current_user: admin) }
-            .to change { AuditEvent.count }.by(1)
-
-          expect(AuditEvent.last.details[:custom_message])
-            .to eq("Destroy instance event streaming destination #{destination.destination_url}")
-        end
-
-        context 'when the destination id is invalid' do
-          let_it_be(:invalid_destination_input) do
-            {
-              id: "gid://gitlab/AuditEvents::InstanceExternalAuditEventDestination/-1"
-            }
-          end
-
-          let(:mutation) do
-            graphql_mutation(:instance_external_audit_event_destination_destroy, invalid_destination_input)
-          end
-
-          it 'does not destroy the destination' do
-            expect { post_graphql_mutation(mutation, current_user: admin) }
-              .to change { AuditEvents::InstanceExternalAuditEventDestination.count }.by(0)
-          end
-
-          it_behaves_like 'a mutation that returns top-level errors',
-            errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
-        end
+      it 'destroys the destination' do
+        expect { post_graphql_mutation(mutation, current_user: admin) }
+          .to change { AuditEvents::InstanceExternalAuditEventDestination.count }.by(-1)
       end
 
-      context 'when feature flag ff_external_audit_events is disabled' do
-        before do
-          stub_feature_flags(ff_external_audit_events: false)
+      it 'audits the destruction' do
+        expect { post_graphql_mutation(mutation, current_user: admin) }
+          .to change { AuditEvent.count }.by(1)
+
+        expect(AuditEvent.last.details[:custom_message])
+          .to eq("Destroy instance event streaming destination #{destination.destination_url}")
+      end
+
+      context 'when the destination id is invalid' do
+        let_it_be(:invalid_destination_input) do
+          {
+            id: "gid://gitlab/AuditEvents::InstanceExternalAuditEventDestination/-1"
+          }
         end
 
-        it_behaves_like 'a mutation that does not destroy a destination'
+        let(:mutation) do
+          graphql_mutation(:instance_external_audit_event_destination_destroy, invalid_destination_input)
+        end
+
+        it 'does not destroy the destination' do
+          expect { post_graphql_mutation(mutation, current_user: admin) }
+            .to change { AuditEvents::InstanceExternalAuditEventDestination.count }.by(0)
+        end
+
+        it_behaves_like 'a mutation that returns top-level errors',
+          errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
       end
     end
 

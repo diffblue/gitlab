@@ -168,40 +168,18 @@ RSpec.describe AuditEventsHelper, feature_category: :audit_events do
       ]
     end
 
-    context 'when compliance_pipeline_configuration is off' do
-      before do
-        stub_feature_flags(ff_external_audit_events: false)
-      end
-
-      it 'returns the correct data' do
-        expect(helper.audit_log_app_data(true, events, audit_event_definitions)).to contain_exactly(
-          [:form_path, "/admin/audit_logs"],
-          [:events, events.to_json],
-          [:is_last_page, "true"],
-          [:filter_token_options, admin_audit_event_tokens.to_json],
-          [:export_url, export_url]
-        )
-      end
-    end
-
-    context 'when compliance_pipeline_configuration is on' do
-      before do
-        stub_feature_flags(ff_external_audit_events: true)
-      end
-
-      it 'returns the correct data' do
-        expect(helper.audit_log_app_data(true, events, audit_event_definitions)).to contain_exactly(
-          [:form_path, "/admin/audit_logs"],
-          [:events, events.to_json],
-          [:is_last_page, "true"],
-          [:filter_token_options, admin_audit_event_tokens.to_json],
-          [:export_url, export_url],
-          [:empty_state_svg_path, ActionController::Base.helpers.image_path('illustrations/cloud.svg')],
-          [:group_path, "instance"],
-          [:show_streams, "true"],
-          [:audit_event_definitions, audit_event_definitions.to_json]
-        )
-      end
+    it 'returns the correct data' do
+      expect(helper.audit_log_app_data(true, events, audit_event_definitions)).to contain_exactly(
+        [:form_path, "/admin/audit_logs"],
+        [:events, events.to_json],
+        [:is_last_page, "true"],
+        [:filter_token_options, admin_audit_event_tokens.to_json],
+        [:export_url, export_url],
+        [:empty_state_svg_path, ActionController::Base.helpers.image_path('illustrations/cloud.svg')],
+        [:group_path, "instance"],
+        [:show_streams, "true"],
+        [:audit_event_definitions, audit_event_definitions.to_json]
+      )
     end
   end
 end

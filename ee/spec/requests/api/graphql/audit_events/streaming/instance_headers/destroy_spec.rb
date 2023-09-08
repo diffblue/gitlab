@@ -37,63 +37,49 @@ RSpec.describe 'Destroy an external audit event destination header', feature_cat
       stub_licensed_features(external_audit_events: true)
     end
 
-    context 'when feature flag `ff_external_audit_events` is enabled' do
-      context 'when current user is instance admin' do
-        it 'destroys the header' do
-          expect { subject }
-            .to change { destination.headers.count }.by(-1)
+    context 'when current user is instance admin' do
+      it 'destroys the header' do
+        expect { subject }
+          .to change { destination.headers.count }.by(-1)
+      end
+
+      context 'when the header id is wrong' do
+        let_it_be(:invalid_header_input) do
+          {
+            headerId: "gid://gitlab/AuditEvents::Streaming::InstanceHeader/#{non_existing_record_id}"
+          }
         end
 
-        context 'when the header id is wrong' do
-          let_it_be(:invalid_header_input) do
-            {
-              headerId: "gid://gitlab/AuditEvents::Streaming::InstanceHeader/#{non_existing_record_id}"
-            }
-          end
+        let(:mutation) { graphql_mutation(:audit_events_streaming_instance_headers_destroy, invalid_header_input) }
 
-          let(:mutation) { graphql_mutation(:audit_events_streaming_instance_headers_destroy, invalid_header_input) }
+        it_behaves_like 'a mutation that returns top-level errors',
+          errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
 
-          it_behaves_like 'a mutation that returns top-level errors',
-            errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
-
-          it_behaves_like 'a mutation that does not destroy a header' do
-            let_it_be(:actioner) { admin }
-          end
-        end
-
-        context 'when there is an error while deleting header' do
-          before do
-            allow_next_found_instance_of(AuditEvents::Streaming::InstanceHeader) do |instance|
-              allow(instance).to receive(:destroy).and_return(false)
-              allow(instance).to receive(:errors).and_return('foo_error')
-            end
-          end
-
-          it 'returns correct error' do
-            expect { subject }
-              .to change { destination.headers.count }.by(0)
-
-            expect(mutation_response['errors']).to contain_exactly("foo_error")
-          end
+        it_behaves_like 'a mutation that does not destroy a header' do
+          let_it_be(:actioner) { admin }
         end
       end
 
-      context 'when current user is not instance admin' do
-        it_behaves_like 'a mutation that does not destroy a header' do
-          let_it_be(:actioner) { user }
+      context 'when there is an error while deleting header' do
+        before do
+          allow_next_found_instance_of(AuditEvents::Streaming::InstanceHeader) do |instance|
+            allow(instance).to receive(:destroy).and_return(false)
+            allow(instance).to receive(:errors).and_return('foo_error')
+          end
+        end
+
+        it 'returns correct error' do
+          expect { subject }
+            .to change { destination.headers.count }.by(0)
+
+          expect(mutation_response['errors']).to contain_exactly("foo_error")
         end
       end
     end
 
-    context 'when feature flag `ff_external_audit_events` is disabled' do
-      before do
-        stub_feature_flags(ff_external_audit_events: false)
-      end
-
-      context 'when current user is instance admin' do
-        it_behaves_like 'a mutation that does not destroy a header' do
-          let_it_be(:actioner) { admin }
-        end
+    context 'when current user is not instance admin' do
+      it_behaves_like 'a mutation that does not destroy a header' do
+        let_it_be(:actioner) { user }
       end
     end
   end

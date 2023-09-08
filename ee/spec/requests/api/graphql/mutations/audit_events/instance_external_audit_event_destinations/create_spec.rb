@@ -59,8 +59,32 @@ RSpec.describe 'Create an instance external audit event destination', feature_ca
     end
 
     context 'when user is instance admin' do
-      context 'when feature flag ff_external_audit_events is enabled' do
-        subject { post_graphql_mutation(mutation, current_user: admin) }
+      subject { post_graphql_mutation(mutation, current_user: admin) }
+
+      it 'creates the destination' do
+        expect { subject }
+          .to change { AuditEvents::InstanceExternalAuditEventDestination.count }.by(1)
+
+        destination = AuditEvents::InstanceExternalAuditEventDestination.last
+        expect(destination.destination_url).to eq(destination_url)
+        expect(destination.verification_token).to be_present
+
+        expect(mutation_response['errors']).to be_empty
+        expect(mutation_response['instanceExternalAuditEventDestination']['destinationUrl']).to eq(destination_url)
+        expect(mutation_response['instanceExternalAuditEventDestination']['id']).not_to be_empty
+        expect(mutation_response['instanceExternalAuditEventDestination']['name']).not_to be_empty
+        expect(mutation_response['instanceExternalAuditEventDestination']['verificationToken']).not_to be_empty
+      end
+
+      context 'when overriding default name' do
+        name = "My Destination"
+
+        let(:input) do
+          {
+            destinationUrl: destination_url,
+            name: name
+          }
+        end
 
         it 'creates the destination' do
           expect { subject }
@@ -68,58 +92,22 @@ RSpec.describe 'Create an instance external audit event destination', feature_ca
 
           destination = AuditEvents::InstanceExternalAuditEventDestination.last
           expect(destination.destination_url).to eq(destination_url)
-          expect(destination.verification_token).to be_present
-
-          expect(mutation_response['errors']).to be_empty
-          expect(mutation_response['instanceExternalAuditEventDestination']['destinationUrl']).to eq(destination_url)
-          expect(mutation_response['instanceExternalAuditEventDestination']['id']).not_to be_empty
-          expect(mutation_response['instanceExternalAuditEventDestination']['name']).not_to be_empty
-          expect(mutation_response['instanceExternalAuditEventDestination']['verificationToken']).not_to be_empty
-        end
-
-        context 'when overriding default name' do
-          name = "My Destination"
-
-          let(:input) do
-            {
-              destinationUrl: destination_url,
-              name: name
-            }
-          end
-
-          it 'creates the destination' do
-            expect { subject }
-              .to change { AuditEvents::InstanceExternalAuditEventDestination.count }.by(1)
-
-            destination = AuditEvents::InstanceExternalAuditEventDestination.last
-            expect(destination.destination_url).to eq(destination_url)
-            expect(destination.name).to eq(name)
-          end
-        end
-
-        it_behaves_like 'creates an audit event'
-
-        context 'when destination is invalid' do
-          let(:mutation) { graphql_mutation(:instance_external_audit_event_destination_create, invalid_input) }
-
-          it 'returns correct errors' do
-            expect { post_graphql_mutation(mutation, current_user: admin) }
-              .not_to change { AuditEvents::InstanceExternalAuditEventDestination.count }
-
-            expect(mutation_response['instanceExternalAuditEventDestination']).to be_nil
-            expect(mutation_response['errors']).to contain_exactly(
-              'Destination url is blocked: Only allowed schemes are http, https')
-          end
+          expect(destination.name).to eq(name)
         end
       end
 
-      context 'when feature flag ff_external_audit_events is disabled' do
-        before do
-          stub_feature_flags(ff_external_audit_events: false)
-        end
+      it_behaves_like 'creates an audit event'
 
-        it_behaves_like 'a mutation that does not create a destination' do
-          let_it_be(:current_user) { admin }
+      context 'when destination is invalid' do
+        let(:mutation) { graphql_mutation(:instance_external_audit_event_destination_create, invalid_input) }
+
+        it 'returns correct errors' do
+          expect { post_graphql_mutation(mutation, current_user: admin) }
+            .not_to change { AuditEvents::InstanceExternalAuditEventDestination.count }
+
+          expect(mutation_response['instanceExternalAuditEventDestination']).to be_nil
+          expect(mutation_response['errors']).to contain_exactly(
+            'Destination url is blocked: Only allowed schemes are http, https')
         end
       end
     end
@@ -136,28 +124,12 @@ RSpec.describe 'Create an instance external audit event destination', feature_ca
       stub_licensed_features(external_audit_events: false)
     end
 
-    context 'when feature flag ff_external_audit_events is enabled' do
-      it_behaves_like 'a mutation that does not create a destination' do
-        let_it_be(:current_user) { admin }
-      end
-
-      it_behaves_like 'a mutation that does not create a destination' do
-        let_it_be(:current_user) { user }
-      end
+    it_behaves_like 'a mutation that does not create a destination' do
+      let_it_be(:current_user) { admin }
     end
 
-    context 'when feature flag ff_external_audit_events is disabled' do
-      before do
-        stub_feature_flags(ff_external_audit_events: false)
-      end
-
-      it_behaves_like 'a mutation that does not create a destination' do
-        let_it_be(:current_user) { admin }
-      end
-
-      it_behaves_like 'a mutation that does not create a destination' do
-        let_it_be(:current_user) { user }
-      end
+    it_behaves_like 'a mutation that does not create a destination' do
+      let_it_be(:current_user) { user }
     end
   end
 end

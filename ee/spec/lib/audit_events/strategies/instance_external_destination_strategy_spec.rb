@@ -19,27 +19,16 @@ RSpec.describe AuditEvents::Strategies::InstanceExternalDestinationStrategy, fea
         stub_licensed_features(external_audit_events: true)
       end
 
-      context 'when feature flag ff_external_audit_events is enabled' do
-        context 'when there is no InstanceExternalAuditEventDestination' do
-          it { is_expected.to be_falsey }
-        end
-
-        context 'when there is at least one InstanceExternalAuditEventDestination' do
-          before do
-            create(:instance_external_audit_event_destination)
-          end
-
-          it { is_expected.to be_truthy }
-        end
+      context 'when there is no InstanceExternalAuditEventDestination' do
+        it { is_expected.to be_falsey }
       end
 
-      context 'when feature flag ff_external_audit_events is disabled' do
+      context 'when there is at least one InstanceExternalAuditEventDestination' do
         before do
-          stub_feature_flags(ff_external_audit_events: false)
           create(:instance_external_audit_event_destination)
         end
 
-        it { is_expected.to be_falsey }
+        it { is_expected.to be_truthy }
       end
     end
   end

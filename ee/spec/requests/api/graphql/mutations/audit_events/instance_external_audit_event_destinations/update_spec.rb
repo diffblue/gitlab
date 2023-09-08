@@ -54,65 +54,53 @@ RSpec.describe 'Update an instance external audit event destination', feature_ca
     end
 
     context 'when current user is instance admin' do
-      context 'when feature flag ff_external_audit_events is enabled' do
+      it 'updates the destination with correct response' do
+        expect { post_graphql_mutation(mutation, current_user: admin) }
+          .to change { destination.reload.destination_url }.to("https://example.com/test")
+
+        expect(mutation_response['errors']).to be_empty
+        expect(mutation_response['instanceExternalAuditEventDestination']['destinationUrl']).to eq(destination_url)
+        expect(mutation_response['instanceExternalAuditEventDestination']['id']).not_to be_empty
+        expect(mutation_response['instanceExternalAuditEventDestination']['name']).to eq(name)
+        expect(mutation_response['instanceExternalAuditEventDestination']['verificationToken']).not_to be_empty
+      end
+
+      it_behaves_like 'audits update to external streaming destination'
+
+      context 'when destination is same as previous one' do
+        let(:input) { super().merge(destinationUrl: old_destination_url) }
+
         it 'updates the destination with correct response' do
           expect { post_graphql_mutation(mutation, current_user: admin) }
-            .to change { destination.reload.destination_url }.to("https://example.com/test")
+            .not_to change { destination.reload.destination_url }
 
           expect(mutation_response['errors']).to be_empty
-          expect(mutation_response['instanceExternalAuditEventDestination']['destinationUrl']).to eq(destination_url)
+          expect(mutation_response['instanceExternalAuditEventDestination']['destinationUrl'])
+            .to eq(old_destination_url)
           expect(mutation_response['instanceExternalAuditEventDestination']['id']).not_to be_empty
-          expect(mutation_response['instanceExternalAuditEventDestination']['name']).to eq(name)
           expect(mutation_response['instanceExternalAuditEventDestination']['verificationToken']).not_to be_empty
-        end
-
-        it_behaves_like 'audits update to external streaming destination'
-
-        context 'when destination is same as previous one' do
-          let(:input) { super().merge(destinationUrl: old_destination_url) }
-
-          it 'updates the destination with correct response' do
-            expect { post_graphql_mutation(mutation, current_user: admin) }
-              .not_to change { destination.reload.destination_url }
-
-            expect(mutation_response['errors']).to be_empty
-            expect(mutation_response['instanceExternalAuditEventDestination']['destinationUrl'])
-              .to eq(old_destination_url)
-            expect(mutation_response['instanceExternalAuditEventDestination']['id']).not_to be_empty
-            expect(mutation_response['instanceExternalAuditEventDestination']['verificationToken']).not_to be_empty
-          end
-        end
-
-        context 'when the destination id is invalid' do
-          let_it_be(:invalid_destination_input) do
-            {
-              id: "gid://gitlab/AuditEvents::InstanceExternalAuditEventDestination/-1",
-              destinationUrl: destination_url
-            }
-          end
-
-          let(:mutation) do
-            graphql_mutation(:instance_external_audit_event_destination_update, invalid_destination_input)
-          end
-
-          it 'does not update destination' do
-            expect { post_graphql_mutation(mutation, current_user: admin) }
-              .not_to change { destination.reload.destination_url }
-          end
-
-          it_behaves_like 'a mutation that returns top-level errors',
-            errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
         end
       end
 
-      context 'when feature flag ff_external_audit_events is disabled' do
-        before do
-          stub_feature_flags(ff_external_audit_events: false)
+      context 'when the destination id is invalid' do
+        let_it_be(:invalid_destination_input) do
+          {
+            id: "gid://gitlab/AuditEvents::InstanceExternalAuditEventDestination/-1",
+            destinationUrl: destination_url
+          }
         end
 
-        it_behaves_like 'a mutation that does not update destination' do
-          let_it_be(:current_user) { admin }
+        let(:mutation) do
+          graphql_mutation(:instance_external_audit_event_destination_update, invalid_destination_input)
         end
+
+        it 'does not update destination' do
+          expect { post_graphql_mutation(mutation, current_user: admin) }
+            .not_to change { destination.reload.destination_url }
+        end
+
+        it_behaves_like 'a mutation that returns top-level errors',
+          errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
       end
     end
 
