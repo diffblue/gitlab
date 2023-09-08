@@ -20116,6 +20116,32 @@ CREATE TABLE packages_nuget_metadata (
     CONSTRAINT packages_nuget_metadata_project_url_constraint CHECK ((char_length(project_url) <= 255))
 );
 
+CREATE TABLE packages_nuget_symbols (
+    id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    package_id bigint,
+    size integer NOT NULL,
+    file_store smallint DEFAULT 1,
+    file text NOT NULL,
+    file_path text NOT NULL,
+    signature text NOT NULL,
+    object_storage_key text NOT NULL,
+    CONSTRAINT check_0e93ca58b7 CHECK ((char_length(file) <= 255)),
+    CONSTRAINT check_28b82b08fa CHECK ((char_length(object_storage_key) <= 255)),
+    CONSTRAINT check_30b0ef2ca2 CHECK ((char_length(file_path) <= 255)),
+    CONSTRAINT check_8dc7152679 CHECK ((char_length(signature) <= 255))
+);
+
+CREATE SEQUENCE packages_nuget_symbols_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE packages_nuget_symbols_id_seq OWNED BY packages_nuget_symbols.id;
+
 CREATE TABLE packages_package_file_build_infos (
     id bigint NOT NULL,
     package_file_id bigint NOT NULL,
@@ -26058,6 +26084,8 @@ ALTER TABLE ONLY packages_maven_metadata ALTER COLUMN id SET DEFAULT nextval('pa
 
 ALTER TABLE ONLY packages_npm_metadata_caches ALTER COLUMN id SET DEFAULT nextval('packages_npm_metadata_caches_id_seq'::regclass);
 
+ALTER TABLE ONLY packages_nuget_symbols ALTER COLUMN id SET DEFAULT nextval('packages_nuget_symbols_id_seq'::regclass);
+
 ALTER TABLE ONLY packages_package_file_build_infos ALTER COLUMN id SET DEFAULT nextval('packages_package_file_build_infos_id_seq'::regclass);
 
 ALTER TABLE ONLY packages_package_files ALTER COLUMN id SET DEFAULT nextval('packages_package_files_id_seq'::regclass);
@@ -28391,6 +28419,9 @@ ALTER TABLE ONLY packages_nuget_dependency_link_metadata
 
 ALTER TABLE ONLY packages_nuget_metadata
     ADD CONSTRAINT packages_nuget_metadata_pkey PRIMARY KEY (package_id);
+
+ALTER TABLE ONLY packages_nuget_symbols
+    ADD CONSTRAINT packages_nuget_symbols_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY packages_package_file_build_infos
     ADD CONSTRAINT packages_package_file_build_infos_pkey PRIMARY KEY (id);
@@ -32801,6 +32832,12 @@ CREATE UNIQUE INDEX index_packages_npm_metadata_caches_on_object_storage_key ON 
 CREATE INDEX index_packages_npm_metadata_caches_on_project_id ON packages_npm_metadata_caches USING btree (project_id);
 
 CREATE INDEX index_packages_nuget_dl_metadata_on_dependency_link_id ON packages_nuget_dependency_link_metadata USING btree (dependency_link_id);
+
+CREATE UNIQUE INDEX index_packages_nuget_symbols_on_object_storage_key ON packages_nuget_symbols USING btree (object_storage_key);
+
+CREATE INDEX index_packages_nuget_symbols_on_package_id ON packages_nuget_symbols USING btree (package_id);
+
+CREATE UNIQUE INDEX index_packages_nuget_symbols_on_signature_and_file_path ON packages_nuget_symbols USING btree (signature, file_path);
 
 CREATE INDEX index_packages_on_available_pypi_packages ON packages_packages USING btree (project_id, id) WHERE ((status = ANY (ARRAY[0, 1])) AND (package_type = 5) AND (version IS NOT NULL));
 
@@ -37766,6 +37803,9 @@ ALTER TABLE ONLY ci_running_builds
 
 ALTER TABLE ONLY epic_issues
     ADD CONSTRAINT fk_rails_5d942936b4 FOREIGN KEY (epic_id) REFERENCES epics(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY packages_nuget_symbols
+    ADD CONSTRAINT fk_rails_5df972da14 FOREIGN KEY (package_id) REFERENCES packages_packages(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY resource_weight_events
     ADD CONSTRAINT fk_rails_5eb5cb92a1 FOREIGN KEY (issue_id) REFERENCES issues(id) ON DELETE CASCADE;
