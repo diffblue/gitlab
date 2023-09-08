@@ -18,6 +18,10 @@ FactoryBot.modify do
       association :work_item_type, :default, :key_result
     end
 
+    trait :epic do
+      association :work_item_type, :default, :epic
+    end
+
     trait :satisfied_status do
       association :work_item_type, :default, :requirement
 

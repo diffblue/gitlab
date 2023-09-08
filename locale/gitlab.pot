@@ -54946,6 +54946,9 @@ msgstr ""
 msgid "allowed to fail"
 msgstr ""
 
+msgid "already assigned to an epic"
+msgstr ""
+
 msgid "already banned from namespace"
 msgstr ""
 

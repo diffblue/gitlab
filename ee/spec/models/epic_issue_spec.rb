@@ -60,6 +60,24 @@ RSpec.describe EpicIssue, feature_category: :portfolio_management do
         it { is_expected.to be_valid }
       end
     end
+
+    context 'work items parent link' do
+      let_it_be_with_reload(:issue) { create(:issue, project: project) }
+
+      subject { described_class.new(epic: epic, issue: issue) }
+
+      it 'is valid for an issue with no existing parent link epic' do
+        expect(subject).to be_valid
+      end
+
+      it 'is not valid for an issue with a parent link epic', :aggregate_failures do
+        work_item_epic = create(:work_item, :epic, project: project)
+        create(:parent_link, work_item_parent: work_item_epic, work_item: WorkItem.find(issue.id))
+
+        expect(subject).to be_invalid
+        expect(subject.errors.full_messages).to include('Issue already assigned to an epic')
+      end
+    end
   end
 
   context "relative positioning" do

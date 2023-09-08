@@ -18,6 +18,7 @@ class EpicIssue < ApplicationRecord
   scope :in_epic, ->(epic_id) { where(epic_id: epic_id) }
 
   validate :validate_confidential_epic
+  validate :check_existing_parent_link
   after_destroy :set_epic_id_to_update_cache
   after_save :set_epic_id_to_update_cache
 
@@ -51,5 +52,17 @@ class EpicIssue < ApplicationRecord
     register_epic_id_for_cache_update(epic_id)
 
     register_epic_id_for_cache_update(epic_id_previously_was) if epic_id_previously_changed? && epic_id_previously_was
+  end
+
+  def check_existing_parent_link
+    return unless epic && issue
+
+    existing_parent_epic = WorkItems::ParentLink.for_children(issue).any? do |parent_link|
+      parent_link.work_item_parent.work_item_type.base_type == 'epic'
+    end
+
+    return unless existing_parent_epic
+
+    errors.add(:issue, _('already assigned to an epic'))
   end
 end
