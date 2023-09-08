@@ -250,7 +250,7 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
     end
 
     describe 'index_users' do
-      let_it_be(:users) { create_list(:user, 2) }
+      let!(:users) { create_list(:user, 2) }
 
       it 'queues jobs for all users' do
         expect(Elastic::ProcessInitialBookkeepingService).to receive(:track!).with(*users).once
@@ -260,7 +260,7 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
     end
 
     describe 'index_epics' do
-      let_it_be(:epic) { create(:epic) }
+      let!(:epic) { create(:epic) }
 
       context 'when on GitLab.com', :saas do
         it 'raises an error' do
@@ -276,9 +276,9 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
       end
 
       context 'with limited indexing enabled' do
-        let_it_be(:group1) { create(:group) }
-        let_it_be(:group2) { create(:group) }
-        let_it_be(:group3) { create(:group) }
+        let!(:group1) { create(:group) }
+        let!(:group2) { create(:group) }
+        let!(:group3) { create(:group) }
 
         before do
           create(:elasticsearch_indexed_namespace, namespace: group1)
@@ -504,9 +504,9 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
   describe 'projects_not_indexed' do
     subject { run_rake_task('gitlab:elastic:projects_not_indexed') }
 
-    let_it_be(:project) { create(:project, :repository) }
-    let_it_be(:project_no_repository) { create(:project) }
-    let_it_be(:project_empty_repository) { create(:project, :empty_repo) }
+    let!(:project) { create(:project, :repository) }
+    let!(:project_no_repository) { create(:project) }
+    let!(:project_empty_repository) { create(:project, :empty_repo) }
 
     context 'when projects missing from index' do
       it 'displays non-indexed projects' do
@@ -537,9 +537,9 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
   describe 'index_projects_status' do
     subject { run_rake_task('gitlab:elastic:index_projects_status') }
 
-    let_it_be_with_reload(:project) { create(:project, :repository) }
-    let_it_be_with_reload(:project_no_repository) { create(:project) }
-    let_it_be_with_reload(:project_empty_repository) { create(:project, :empty_repo) }
+    let!(:project) { create(:project, :repository) }
+    let!(:project_no_repository) { create(:project) }
+    let!(:project_empty_repository) { create(:project, :empty_repo) }
 
     context 'when on GitLab.com', :saas do
       it 'raises an error' do

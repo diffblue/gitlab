@@ -36,7 +36,7 @@ RSpec.describe 'gitlab:license namespace rake tasks', :silence_stdout do
   end
 
   describe 'load' do
-    let_it_be(:license_path) { 'arbitrary_file_name' }
+    let(:license_path) { 'arbitrary_file_name' }
 
     let(:mode) { 'default' }
 
