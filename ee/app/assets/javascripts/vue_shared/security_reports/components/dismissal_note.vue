@@ -1,7 +1,7 @@
 <script>
 import { GlButton, GlSprintf, GlLink } from '@gitlab/ui';
 import EventItem from 'ee/vue_shared/security_reports/components/event_item.vue';
-import { __ } from '~/locale';
+import { __, s__ } from '~/locale';
 import { DISMISSAL_REASONS } from 'ee/vulnerabilities/constants';
 import { getDismissalNoteEventText } from './helpers';
 
@@ -22,7 +22,7 @@ export default {
       required: false,
       default: () => ({}),
     },
-    isCommentingOnDismissal: {
+    isEditingDismissal: {
       type: Boolean,
       required: false,
       default: false,
@@ -32,12 +32,17 @@ export default {
       required: false,
       default: false,
     },
-    showDismissalCommentActions: {
+    showDismissalActions: {
       type: Boolean,
       required: false,
       default: false,
     },
     isDismissingVulnerability: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    hasDismissalReasonSupport: {
       type: Boolean,
       required: false,
       default: false,
@@ -62,12 +67,25 @@ export default {
     commentDetails() {
       return this.feedback.comment_details;
     },
-    vulnDismissalActionButtons() {
+    feedbackActionButtons() {
+      return this.hasDismissalReasonSupport
+        ? [
+            {
+              iconName: 'pencil',
+              onClick: () => this.$emit('editDismissal'),
+              title: s__('SecurityReports|Edit dismissal'),
+            },
+          ]
+        : [];
+    },
+    commentActionButtons() {
       return [
         {
           iconName: 'pencil',
-          onClick: () => this.$emit('editVulnerabilityDismissalComment'),
-          title: __('Edit Comment'),
+          onClick: () => this.$emit('editDismissal'),
+          title: this.hasDismissalReasonSupport
+            ? s__('SecurityReports|Edit dismissal')
+            : __('Edit Comment'),
         },
         {
           iconName: 'remove',
@@ -76,6 +94,9 @@ export default {
         },
       ];
     },
+    showFeedbackActions() {
+      return this.hasDismissalReasonSupport && this.showDismissalActions && !this.commentDetails;
+    },
   },
 };
 </script>
@@ -83,8 +104,10 @@ export default {
 <template>
   <div>
     <event-item
+      :action-buttons="feedbackActionButtons"
       :author="feedback.author"
       :created-at="feedback.created_at"
+      :show-action-buttons="showFeedbackActions"
       icon-name="cancel"
       icon-class="ci-status-icon-pending"
     >
@@ -103,14 +126,14 @@ export default {
         </gl-sprintf>
       </div>
     </event-item>
-    <template v-if="commentDetails && !isCommentingOnDismissal">
+    <template v-if="commentDetails && !isEditingDismissal">
       <hr class="my-3" />
       <event-item
-        :action-buttons="vulnDismissalActionButtons"
+        :action-buttons="commentActionButtons"
         :author="commentDetails.comment_author"
         :created-at="commentDetails.comment_timestamp"
         :show-right-slot="isShowingDeleteButtons"
-        :show-action-buttons="showDismissalCommentActions"
+        :show-action-buttons="showDismissalActions"
         icon-name="comment"
         icon-class="ci-status-icon-pending"
       >

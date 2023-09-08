@@ -231,11 +231,11 @@ export default {
       <div v-if="showDismissalCard" class="card card-body my-4">
         <dismissal-note
           :feedback="dismissalDataOrCurrentUser"
-          :is-commenting-on-dismissal="modal.isCommentingOnDismissal"
+          :is-editing-dismissal="modal.isCommentingOnDismissal"
           :is-showing-delete-buttons="modal.isShowingDeleteButtons"
           :project="project"
-          :show-dismissal-comment-actions="showDismissalCommentActions"
-          @editVulnerabilityDismissalComment="$emit('editVulnerabilityDismissalComment')"
+          :show-dismissal-actions="showDismissalCommentActions"
+          @editDismissal="$emit('editVulnerabilityDismissalComment')"
           @showDismissalDeleteButtons="$emit('showDismissalDeleteButtons')"
           @hideDismissalDeleteButtons="$emit('hideDismissalDeleteButtons')"
           @deleteDismissalComment="$emit('deleteDismissalComment')"

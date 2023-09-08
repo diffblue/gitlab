@@ -45,6 +45,10 @@ describe('dismissal note', () => {
       expect(wrapper.findComponent(EventItem).props('createdAt')).toBe(feedback.created_at);
     });
 
+    it('should pass no action buttons', () => {
+      expect(wrapper.findComponent(EventItem).props('actionButtons')).toMatchObject([]);
+    });
+
     it('should return the event text with no project data', () => {
       expect(wrapper.text()).toBe('Dismissed');
     });
@@ -163,6 +167,20 @@ describe('dismissal note', () => {
     });
   });
 
+  describe('with dismissal reason support', () => {
+    beforeEach(() => {
+      mountComponent({
+        propsData: { feedback, hasDismissalReasonSupport: true },
+      });
+    });
+
+    it('should pass edit dismissal action button', () => {
+      expect(wrapper.findComponent(EventItem).props('actionButtons')).toMatchObject([
+        { iconName: 'pencil', title: 'Edit dismissal' },
+      ]);
+    });
+  });
+
   describe('with a comment', () => {
     const commentDetails = {
       comment: 'How many times have I said we need locking mechanisms on the vehicle doors!',
@@ -199,6 +217,13 @@ describe('dismissal note', () => {
       it('should render the comment timestamp', () => {
         expect(commentItem.props().createdAt).toBe(commentDetails.comment_timestamp);
       });
+
+      it('should pass action buttons', () => {
+        expect(commentItem.props('actionButtons')).toMatchObject([
+          { iconName: 'pencil', title: 'Edit Comment' },
+          { iconName: 'remove', title: 'Delete Comment' },
+        ]);
+      });
     });
 
     describe('with confirm deletion buttons', () => {
@@ -223,6 +248,29 @@ describe('dismissal note', () => {
         const buttons = commentItem.findAll('button');
         expect(buttons.at(1).text()).toEqual('Cancel');
         expect(buttons.at(0).text()).toEqual('Delete comment');
+      });
+    });
+
+    describe('with dismissal reason support', () => {
+      beforeEach(() => {
+        mountComponent({
+          propsData: {
+            feedback: {
+              ...feedback,
+              comment_details: commentDetails,
+            },
+            project,
+            hasDismissalReasonSupport: true,
+          },
+        });
+        commentItem = wrapper.findAllComponents(EventItem).at(1);
+      });
+
+      it('should pass action buttons', () => {
+        expect(commentItem.props('actionButtons')).toMatchObject([
+          { iconName: 'pencil', title: 'Edit dismissal' },
+          { iconName: 'remove', title: 'Delete Comment' },
+        ]);
       });
     });
   });
