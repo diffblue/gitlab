@@ -19,7 +19,6 @@ module MergeTrains
     job1:
       script:
         - echo "This job runs in merge request pipelines"
-        - sleep 10
       rules:
         - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     YML
@@ -62,7 +61,7 @@ module MergeTrains
 
     def create_branch(user, project, mr_number)
       branch_name = "#{mr_number}-#{SecureRandom.uuid}"
-      project.repository.add_branch(user, branch_name, DEFAULT_BRANCH, expire_cache: true)
+      project.repository.add_branch(user, branch_name, project.default_branch_or_main, expire_cache: true)
 
       branch_name
     end
