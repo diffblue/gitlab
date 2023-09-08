@@ -363,6 +363,7 @@ describe('JobArtifactsTable component', () => {
     it('is disabled when job has no metadata.gz', async () => {
       const jobWithoutMetadata = {
         ...job,
+        hasArtifacts: true,
         artifacts: { nodes: [archiveArtifact] },
       };
 
@@ -379,6 +380,7 @@ describe('JobArtifactsTable component', () => {
     it('is disabled when job has no artifacts', async () => {
       const jobWithoutArtifacts = {
         ...job,
+        hasArtifacts: false,
         artifacts: { nodes: [] },
       };
 
