@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category: :seat_cost_management do
   include Spec::Support::Helpers::ModalHelpers
   include Features::MembersHelpers
+  include SubscriptionPortalHelpers
 
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
@@ -15,9 +16,11 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category
   let_it_be(:shared_group_developer) { create(:user) }
 
   before do
+    stub_signing_key
     stub_feature_flags(usage_quotas_for_all_editions: false)
     stub_application_setting(check_namespace_plan: true)
     stub_feature_flags(enable_hamilton_in_usage_quotas_ui: false)
+    stub_subscription_management_data(group.id)
 
     group.add_owner(user)
     group.add_maintainer(maintainer)
@@ -172,6 +175,54 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category
         end
 
         expect(page).to have_content('Cannot remove user')
+      end
+    end
+  end
+
+  context 'when adding seats' do
+    before do
+      stub_feature_flags(limited_access_modal: false)
+
+      visit group_seat_usage_path(group)
+      wait_for_requests
+
+      click_button 'Add seats'
+    end
+
+    it 'does not open modal', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/424582' do
+      expect(page).not_to have_selector('[data-testid="limited-access-modal-id"]')
+    end
+
+    context 'with limited_access_modal FF enabled' do
+      before do
+        stub_feature_flags(limited_access_modal: true)
+
+        visit group_seat_usage_path(group)
+        wait_for_requests
+
+        click_button 'Add seats'
+      end
+
+      context 'when user is allowed to add seats' do
+        it 'does not open modal', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/424582' do
+          expect(page).not_to have_selector('[data-testid="limited-access-modal-id"]')
+        end
+      end
+
+      context 'when user is not allowed to add seats' do
+        before do
+          stub_subscription_management_data(group.id, can_add_seats: false, can_renew: false)
+
+          visit group_seat_usage_path(group)
+          wait_for_requests
+
+          click_button 'Add seats'
+        end
+
+        it 'opens limited access modal' do
+          expect(page).to have_selector('[data-testid="limited-access-modal-id"]')
+          expect(page).to have_content('Your subscription is in read-only mode')
+        end
       end
     end
   end

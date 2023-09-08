@@ -17,6 +17,7 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
   shared_context 'when user is allowed to see usage quotas' do
     before do
       stub_feature_flags(usage_quotas_for_all_editions: false)
+      stub_feature_flags(limited_access_modal: false)
       stub_ee_application_setting(should_check_namespace_plan: gitlab_dot_com)
 
       group.add_owner(user)
