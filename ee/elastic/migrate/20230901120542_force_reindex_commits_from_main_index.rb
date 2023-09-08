@@ -44,7 +44,7 @@ class ForceReindexCommitsFromMainIndex < Elastic::Migration
     q = query
     q[:bool][:filter] << { term: { 'commit.rid' => rid } }
     client.update_by_query(index: index_name, routing: "project_#{rid}",
-      wait_for_completion: false, timeout: ELASTIC_TIMEOUT, conflicts: 'proceed',
+      wait_for_completion: true, timeout: ELASTIC_TIMEOUT, conflicts: 'proceed',
       body: { query: q, script: { source: "ctx._source.schema_version = #{SCHEMA_VERSION}" } }
     )
   end
