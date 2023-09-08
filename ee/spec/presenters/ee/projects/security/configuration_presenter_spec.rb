@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::Security::ConfigurationPresenter do
+RSpec.describe Projects::Security::ConfigurationPresenter, feature_category: :software_composition_analysis do
   include Gitlab::Routing.url_helpers
 
   let_it_be(:project) { create(:project, :repository) }
@@ -26,6 +26,10 @@ RSpec.describe Projects::Security::ConfigurationPresenter do
       allow(project).to receive(:security_training_available?).and_return(true)
 
       expect(result[:security_training_enabled]).to be_truthy
+    end
+
+    it 'includes a default value for continuous_vulnerabiltiy_scans_enabled' do
+      expect(result[:continuous_vulnerability_scans_enabled]).to eq(false)
     end
   end
 
