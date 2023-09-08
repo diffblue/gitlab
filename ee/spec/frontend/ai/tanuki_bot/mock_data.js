@@ -40,6 +40,15 @@ export const MOCK_USER_MESSAGE = {
   timestamp: '2021-04-21T12:00:00.000Z',
 };
 
+export const MOCK_CHUNK_MESSAGE = {
+  chunkId: 1,
+  content: 'chunk',
+  role: MESSAGE_TYPES.TANUKI,
+  requestId: '987',
+  errors: [],
+  timestamp: '2021-04-21T12:00:00.000Z',
+};
+
 export const GENERATE_MOCK_TANUKI_RES = (body = JSON.stringify(MOCK_TANUKI_MESSAGE)) => {
   return {
     data: {

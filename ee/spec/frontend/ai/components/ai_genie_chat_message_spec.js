@@ -4,7 +4,11 @@ import AiGenieChatMessage from 'ee/ai/components/ai_genie_chat_message.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { GENIE_CHAT_MODEL_ROLES } from 'ee/ai/constants';
 import { getMarkdown } from '~/rest_api';
-import { MOCK_USER_MESSAGE, MOCK_TANUKI_MESSAGE } from '../tanuki_bot/mock_data';
+import {
+  MOCK_USER_MESSAGE,
+  MOCK_TANUKI_MESSAGE,
+  MOCK_CHUNK_MESSAGE,
+} from '../tanuki_bot/mock_data';
 
 jest.mock('~/rest_api');
 
@@ -16,8 +20,10 @@ describe('AiGenieChatMessage', () => {
   const createComponent = ({
     propsData = { message: MOCK_USER_MESSAGE },
     scopedSlots = {},
+    options = {},
   } = {}) => {
     wrapper = shallowMountExtended(AiGenieChatMessage, {
+      ...options,
       propsData,
       scopedSlots,
     });
@@ -100,6 +106,23 @@ describe('AiGenieChatMessage', () => {
   });
 
   describe('message output', () => {
+    it('clears `messageChunks` buffer', () => {
+      createComponent({ options: { messageChunks: ['foo', 'bar'] } });
+
+      expect(wrapper.vm.$options.messageChunks).toEqual([]);
+    });
+
+    describe('when `message` contains a chunk', () => {
+      it('adds the message chunk to the `messageChunks` buffer', () => {
+        createComponent({
+          propsData: { message: MOCK_CHUNK_MESSAGE },
+          options: { messageChunks: ['foo', 'bar'] },
+        });
+
+        expect(wrapper.vm.$options.messageChunks).toEqual([undefined, 'chunk']);
+      });
+    });
+
     it('hydrates the message with GLFM when mounting the component', () => {
       createComponent();
       expect(getMarkdown).toHaveBeenCalledWith({ text: MOCK_USER_MESSAGE.content, gfm: true });
