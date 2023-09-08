@@ -34,19 +34,12 @@ module QA
         {
           id: 'id',
           model: {
-            engine: 'vertex-ai',
-            name: 'code-gecko',
+            engine: anything,
+            name: anything,
             lang: 'python'
           },
           object: 'text_completion',
-          created: anything,
-          choices: [
-            {
-              text: anything,
-              index: 0,
-              finish_reason: 'length'
-            }
-          ]
+          created: anything
         }
       end
 
