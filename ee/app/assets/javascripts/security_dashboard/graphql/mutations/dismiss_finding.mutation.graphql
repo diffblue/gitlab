@@ -1,5 +1,11 @@
-mutation dismissFinding($uuid: String!, $comment: String) {
-  securityFindingDismiss(input: { uuid: $uuid, comment: $comment }) {
+mutation dismissFinding(
+  $uuid: String!
+  $comment: String
+  $dismissalReason: VulnerabilityDismissalReason
+) {
+  securityFindingDismiss(
+    input: { uuid: $uuid, comment: $comment, dismissalReason: $dismissalReason }
+  ) {
     errors
     securityFinding {
       vulnerability {
