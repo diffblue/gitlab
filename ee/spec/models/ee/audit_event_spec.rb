@@ -166,20 +166,10 @@ RSpec.describe AuditEvent, type: :model, feature_category: :audit_events do
           stub_licensed_features(external_audit_events: true)
         end
 
-        context 'when feature flag ff_external_audit_events is enabled' do
-          it 'enqueues one worker' do
-            expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).once
+        it 'enqueues one worker' do
+          expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).once
 
-            event.stream_to_external_destinations
-          end
-        end
-
-        context 'when feature flag ff_external_audit_events is disabled' do
-          before do
-            stub_feature_flags(ff_external_audit_events: false)
-          end
-
-          it_behaves_like 'no stream event gets created'
+          event.stream_to_external_destinations
         end
       end
 

@@ -462,43 +462,23 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
         stub_licensed_features(external_audit_events: true)
       end
 
-      context 'when feature flag ff_external_audit_events is enabled' do
-        context 'when user is instance admin' do
-          context 'when admin mode enabled', :enable_admin_mode do
-            it { expect(described_class.new(admin, nil)).to be_allowed(:admin_instance_external_audit_events) }
-          end
-
-          context 'when admin mode disabled' do
-            it { expect(described_class.new(admin, nil)).to be_disallowed(:admin_instance_external_audit_events) }
-          end
+      context 'when user is instance admin' do
+        context 'when admin mode enabled', :enable_admin_mode do
+          it { expect(described_class.new(admin, nil)).to be_allowed(:admin_instance_external_audit_events) }
         end
 
-        context 'when user is not instance admin' do
-          it { expect(described_class.new(user, nil)).to be_disallowed(:admin_instance_external_audit_events) }
+        context 'when admin mode disabled' do
+          it { expect(described_class.new(admin, nil)).to be_disallowed(:admin_instance_external_audit_events) }
         end
       end
 
-      context 'when feature flag ff_external_audit_events is disabled' do
-        before do
-          stub_feature_flags(ff_external_audit_events: false)
-        end
-
-        it_behaves_like 'admin external events is not allowed'
+      context 'when user is not instance admin' do
+        it { expect(described_class.new(user, nil)).to be_disallowed(:admin_instance_external_audit_events) }
       end
     end
 
     context 'when licence is not enabled' do
-      context 'when feature flag ff_external_audit_events is enabled' do
-        it_behaves_like 'admin external events is not allowed'
-      end
-
-      context 'when feature flag ff_external_audit_events is disabled' do
-        before do
-          stub_feature_flags(ff_external_audit_events: false)
-        end
-
-        it_behaves_like 'admin external events is not allowed'
-      end
+      it_behaves_like 'admin external events is not allowed'
     end
   end
 
