@@ -1,5 +1,7 @@
 import { sprintf, s__, n__, __ } from '~/locale';
 import {
+  ANY_COMMIT,
+  ANY_UNSIGNED_COMMIT,
   INVALID_RULE_MESSAGE,
   NO_RULE_MESSAGE,
   BRANCH_TYPE_KEY,
@@ -16,7 +18,11 @@ import {
   FIX_AVAILABLE,
   FALSE_POSITIVE,
 } from '../../policy_editor/scan_result_policy/scan_filters/constants';
-import { LICENSE_FINDING, LICENSE_STATES } from '../../policy_editor/scan_result_policy/lib/rules';
+import {
+  ANY_MERGE_REQUEST,
+  LICENSE_FINDING,
+  LICENSE_STATES,
+} from '../../policy_editor/scan_result_policy/lib/rules';
 import { groupSelectedVulnerabilityStates } from '../../policy_editor/scan_result_policy/lib';
 import { buildBranchExceptionsString, humanizedBranchExceptions } from '../utils';
 
@@ -240,6 +246,20 @@ const humanizeLicenses = (originalLicenses) => {
   });
 };
 
+/**
+ * Validate commits type
+ * @param type commit type
+ * @returns {*|string}
+ */
+const humanizeCommitType = (type) => {
+  const stringMap = {
+    [ANY_COMMIT]: s__('SecurityOrchestration| for any commits'),
+    [ANY_UNSIGNED_COMMIT]: s__('SecurityOrchestration| for unsigned commits'),
+  };
+
+  return stringMap[type] || '';
+};
+
 const hasBranchType = (rule) => BRANCH_TYPE_KEY in rule;
 
 const hasValidBranchType = (rule) => {
@@ -288,6 +308,21 @@ const humanizeRule = (rule) => {
         detection: humanizeLicenseDetection(rule.license_states),
         branches: humanizedValue,
         targeting: targetingValue,
+        branchExceptionsString: branchExceptions.length ? branchExceptionsString : '.',
+      }),
+      branchExceptions,
+    };
+  }
+
+  if (rule.type === ANY_MERGE_REQUEST) {
+    const summaryText = s__(
+      'SecurityOrchestration|For any merge request on %{branches}%{commitType}%{branchExceptionsString}',
+    );
+
+    return {
+      summary: sprintf(summaryText, {
+        branches: humanizedValue,
+        commitType: humanizeCommitType(rule.commits),
         branchExceptionsString: branchExceptions.length ? branchExceptionsString : '.',
       }),
       branchExceptions,

@@ -1,5 +1,6 @@
 import { GlSprintf } from '@gitlab/ui';
 import AnyMergeRequestRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/any_merge_request_rule_builder.vue';
+import BranchExceptionSelector from 'ee/security_orchestration/components/policy_editor/branch_exception_selector.vue';
 import SectionLayout from 'ee/security_orchestration/components/policy_editor/section_layout.vue';
 import PolicyRuleBranchSelection from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_branch_selection.vue';
 import ScanTypeSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/base_layout/scan_type_select.vue';
@@ -27,7 +28,7 @@ describe('AnyMergeRequestRuleBuilder', () => {
     commits: ANY_UNSIGNED_COMMIT,
   };
 
-  const createComponent = ({ props = {} } = {}) => {
+  const createComponent = ({ props = {}, provide = {} } = {}) => {
     wrapper = shallowMountExtended(AnyMergeRequestRuleBuilder, {
       propsData: {
         initRule: anyMergeRequestBuildRule(),
@@ -35,6 +36,10 @@ describe('AnyMergeRequestRuleBuilder', () => {
       },
       provide: {
         namespaceType: NAMESPACE_TYPES.GROUP,
+        glFeatures: {
+          securityPoliciesBranchExceptions: true,
+        },
+        ...provide,
       },
       stubs: {
         GlSprintf,
@@ -46,6 +51,7 @@ describe('AnyMergeRequestRuleBuilder', () => {
   const findCommitsTypeListBox = () => wrapper.findByTestId('commits-type');
   const findScanTypeSelect = () => wrapper.findComponent(ScanTypeSelect);
   const findBranches = () => wrapper.findComponent(PolicyRuleBranchSelection);
+  const findBranchExceptionSelector = () => wrapper.findComponent(BranchExceptionSelector);
 
   describe('initial rendering', () => {
     beforeEach(() => {
@@ -104,5 +110,60 @@ describe('AnyMergeRequestRuleBuilder', () => {
     expect(findCommitsTypeListBox().props('selected')).toBe(UPDATED_RULE.commits);
 
     expect(findScanTypeSelect().props('scanType')).toBe(ANY_MERGE_REQUEST);
+  });
+
+  describe('adding branch exceptions', () => {
+    const exceptions = { branch_exceptions: ['main', 'test'] };
+
+    it.each`
+      namespaceType              | expectedResult
+      ${NAMESPACE_TYPES.PROJECT} | ${true}
+      ${NAMESPACE_TYPES.GROUP}   | ${false}
+    `('should select exceptions only on project level', ({ namespaceType, expectedResult }) => {
+      createComponent({
+        provide: {
+          namespaceType,
+        },
+      });
+
+      expect(findBranchExceptionSelector().exists()).toBe(expectedResult);
+    });
+
+    it('should select exceptions', () => {
+      createComponent({
+        provide: {
+          namespaceType: NAMESPACE_TYPES.PROJECT,
+        },
+      });
+
+      findBranchExceptionSelector().vm.$emit('select', exceptions);
+
+      expect(wrapper.emitted('changed')).toEqual([
+        [
+          {
+            ...anyMergeRequestBuildRule(),
+            ...exceptions,
+          },
+        ],
+      ]);
+    });
+
+    it('should display saved exceptions', () => {
+      createComponent({
+        props: {
+          initRule: {
+            ...anyMergeRequestBuildRule(),
+            ...exceptions,
+          },
+        },
+        provide: {
+          namespaceType: NAMESPACE_TYPES.PROJECT,
+        },
+      });
+
+      expect(findBranchExceptionSelector().props('selectedExceptions')).toEqual(
+        exceptions.branch_exceptions,
+      );
+    });
   });
 });

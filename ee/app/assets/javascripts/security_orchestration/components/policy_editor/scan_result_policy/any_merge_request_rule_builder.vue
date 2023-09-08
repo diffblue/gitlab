@@ -1,7 +1,10 @@
 <script>
 import { GlSprintf, GlCollapsibleListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { ANY_COMMIT, ANY_UNSIGNED_COMMIT, SCAN_RESULT_BRANCH_TYPE_OPTIONS } from '../constants';
+import BranchExceptionSelector from '../branch_exception_selector.vue';
 import SectionLayout from '../section_layout.vue';
 import PolicyRuleBranchSelection from './policy_rule_branch_selection.vue';
 import ScanTypeSelect from './base_layout/scan_type_select.vue';
@@ -22,17 +25,19 @@ export default {
   COMMIT_LISTBOX_ITEMS,
   i18n: {
     anyMergeRequestRuleCopy: s__(
-      'ScanResultPolicy|When %{scanType} in an open that targets %{branches} with %{commitType}',
+      'ScanResultPolicy|When %{scanType} in an open that targets %{branches} %{branchExceptions} with %{commitType}',
     ),
   },
   name: 'AnyMergeRequestRuleBuilder',
   components: {
+    BranchExceptionSelector,
     ScanTypeSelect,
     SectionLayout,
     GlCollapsibleListbox,
     GlSprintf,
     PolicyRuleBranchSelection,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: ['namespaceType'],
   props: {
     initRule: {
@@ -41,8 +46,14 @@ export default {
     },
   },
   computed: {
+    isProject() {
+      return this.namespaceType === NAMESPACE_TYPES.PROJECT;
+    },
     branchTypes() {
       return SCAN_RESULT_BRANCH_TYPE_OPTIONS(this.namespaceType);
+    },
+    branchExceptions() {
+      return this.initRule.branch_exceptions;
     },
     selectedCommitType() {
       return this.initRule.commits || ANY_COMMIT;
@@ -82,6 +93,14 @@ export default {
                 :branch-types="branchTypes"
                 @changed="triggerChanged"
                 @set-branch-type="setBranchType"
+              />
+            </template>
+
+            <template #branchExceptions>
+              <branch-exception-selector
+                v-if="isProject && glFeatures.securityPoliciesBranchExceptions"
+                :selected-exceptions="branchExceptions"
+                @select="triggerChanged"
               />
             </template>
 
