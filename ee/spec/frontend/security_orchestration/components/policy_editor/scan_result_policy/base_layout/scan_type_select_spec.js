@@ -51,8 +51,8 @@ describe('ScanTypeSelect', () => {
       items: [{ text: 'test', value: 'test' }],
     });
 
-    expect(findListBoxItems()).toHaveLength(4);
-    expect(findListBoxItems().at(1).text('')).toEqual('test');
+    expect(findListBoxItems()).toHaveLength(1);
+    expect(findListBoxItems().at(0).text('')).toEqual('test');
   });
 
   it('can preselect existing scan', () => {

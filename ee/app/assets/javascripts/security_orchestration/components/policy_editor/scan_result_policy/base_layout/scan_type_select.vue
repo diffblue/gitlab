@@ -50,7 +50,11 @@ export default {
         : [];
     },
     listBoxItems() {
-      return [...this.anyMergeRequestItem, ...this.items, ...this.$options.scanTypeOptions];
+      if (this.items?.length > 0) {
+        return this.items;
+      }
+
+      return [...this.anyMergeRequestItem, ...this.$options.scanTypeOptions];
     },
   },
   methods: {
