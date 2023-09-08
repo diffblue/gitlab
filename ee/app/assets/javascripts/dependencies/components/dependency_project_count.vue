@@ -10,6 +10,7 @@ import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { extractGroupNamespace } from 'ee/dependencies/store/utils';
 import getProjects from '../graphql/projects.query.graphql';
 import DependencyProjectCountPopover from './dependency_project_count_popover.vue';
+import { SEARCH_MIN_THRESHOLD } from './constants';
 
 const mapItemToListboxFormat = (item) => ({ ...item, value: item.id, text: item.name });
 
@@ -66,6 +67,9 @@ export default {
     targetId() {
       return `dependency-count-${this.componentId}`;
     },
+    searchEnabled() {
+      return this.loading || this.projectCount > SEARCH_MIN_THRESHOLD;
+    },
   },
   methods: {
     search: debounce(function debouncedSearch(searchTerm) {
@@ -121,7 +125,7 @@ export default {
       :header-text="projectText"
       :items="availableProjects"
       :searching="loading"
-      searchable
+      :searchable="searchEnabled"
       @hidden="onHide"
       @search="search"
       @shown="onShown"
