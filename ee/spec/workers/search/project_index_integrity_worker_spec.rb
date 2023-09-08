@@ -8,18 +8,6 @@ RSpec.describe ::Search::ProjectIndexIntegrityWorker, feature_category: :global_
   subject(:worker) { described_class.new }
 
   describe '#perform' do
-    context 'when search_index_integrity feature flag is disabled' do
-      before do
-        stub_feature_flags(search_index_integrity: false)
-      end
-
-      it 'does nothing' do
-        expect(::Search::IndexRepairService).not_to receive(:execute)
-
-        worker.perform(project.id)
-      end
-    end
-
     context 'when and project_id is not provided' do
       it 'does nothing' do
         expect(::Search::IndexRepairService).not_to receive(:execute)

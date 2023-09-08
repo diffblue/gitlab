@@ -232,19 +232,6 @@ RSpec.describe SearchController, type: :request, feature_category: :global_searc
             end
           end
 
-          context 'when search_index_integrity feature flag is not enabled' do
-            before do
-              stub_feature_flags(search_index_integrity: false)
-            end
-
-            it 'does nothing' do
-              expect(::Search::NamespaceIndexIntegrityWorker).not_to receive(:perform_async)
-              expect(::Search::ProjectIndexIntegrityWorker).not_to receive(:perform_async)
-
-              send_search_request(params)
-            end
-          end
-
           context 'when scope is not blobs' do
             let(:params) { { search: 'test', scope: 'issues', project_id: project.id, group_id: group.id } }
 

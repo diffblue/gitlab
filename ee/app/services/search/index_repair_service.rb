@@ -11,7 +11,6 @@ module Search
     end
 
     def execute
-      return unless Feature.enabled?(:search_index_integrity)
       return unless project.should_check_index_integrity?
 
       repair_index_for_blobs if should_repair_index_for_blobs?

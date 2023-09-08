@@ -67,14 +67,6 @@ RSpec.describe ::Search::IndexRepairService, feature_category: :global_search do
       stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
     end
 
-    context 'when search_index_integrity feature flag is disabled' do
-      before do
-        stub_feature_flags(search_index_integrity: false)
-      end
-
-      it_behaves_like 'a service that does not call the search client'
-    end
-
     context 'when project.should_check_index_integrity? is false' do
       before do
         allow(project).to receive(:should_check_index_integrity?).and_return(false)

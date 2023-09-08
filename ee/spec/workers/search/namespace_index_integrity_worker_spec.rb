@@ -11,18 +11,6 @@ RSpec.describe ::Search::NamespaceIndexIntegrityWorker, feature_category: :globa
   subject(:worker) { described_class.new }
 
   describe '#perform' do
-    context 'when search_index_integrity feature flag is disabled' do
-      before do
-        stub_feature_flags(search_index_integrity: false)
-      end
-
-      it 'does nothing' do
-        expect(::Search::ProjectIndexIntegrityWorker).not_to receive(:perform_in)
-
-        worker.perform(group.id)
-      end
-    end
-
     context 'when namespace_id is not provided' do
       it 'does nothing' do
         expect(::Search::ProjectIndexIntegrityWorker).not_to receive(:perform_in)
