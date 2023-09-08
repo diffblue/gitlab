@@ -16,16 +16,15 @@ module QA
         let(:imported_subgroup) { build(:group, api_client: api_client, sandbox: imported_group, path: subgroup.path) }
 
         before do
-          Resource::GroupLabel.fabricate_via_api! do |label|
-            label.api_client = source_admin_api_client
-            label.group = source_group
-            label.title = "source-group-#{SecureRandom.hex(4)}"
-          end
-          Resource::GroupLabel.fabricate_via_api! do |label|
-            label.api_client = source_admin_api_client
-            label.group = subgroup
-            label.title = "subgroup-#{SecureRandom.hex(4)}"
-          end
+          create(:group_label,
+            api_client: source_admin_api_client,
+            group: source_group,
+            title: "source-group-label-#{SecureRandom.hex(4)}")
+
+          create(:group_label,
+            api_client: source_admin_api_client,
+            group: subgroup,
+            title: "source-group-label-#{SecureRandom.hex(4)}")
 
           imported_group # trigger import
         end

@@ -39,10 +39,7 @@ module QA
           milestone.project = project
         end
 
-        label = Resource::ProjectLabel.fabricate_via_api! do |label|
-          label.project = project
-          label.title = 'foo::label'
-        end
+        label = create(:project_label, project: project, title: 'foo::label')
 
         Resource::MergeRequest.fabricate_via_browser_ui! do |merge_request|
           merge_request.title = merge_request_title

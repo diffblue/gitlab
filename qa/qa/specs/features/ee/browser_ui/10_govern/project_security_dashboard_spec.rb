@@ -12,12 +12,7 @@ module QA
         end
       end
 
-      let!(:label) do
-        Resource::ProjectLabel.fabricate_via_api! do |new_label|
-          new_label.project = project
-          new_label.title = "test severity 3"
-        end
-      end
+      let!(:label) { create(:project_label, project: project, title: "test severity 3") }
 
       let(:vuln_severity) { :CRITICAL }
 

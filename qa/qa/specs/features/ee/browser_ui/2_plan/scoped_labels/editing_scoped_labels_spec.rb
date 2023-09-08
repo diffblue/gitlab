@@ -22,10 +22,7 @@ module QA
           new_label_same_scope_multi_colon,
           new_label_different_scope_multi_colon
         ].each do |label|
-          Resource::ProjectLabel.fabricate_via_api! do |l|
-            l.project = issue.project
-            l.title = label
-          end
+          create(:project_label, project: issue.project, title: label)
         end
 
         issue.visit!
