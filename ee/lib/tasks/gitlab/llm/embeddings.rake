@@ -15,9 +15,9 @@ namespace :gitlab do
         openai_client = ::Gitlab::Llm::OpenAi::Client.new(User.first,
           request_timeout: ::Gitlab::Llm::TanukiBot::REQUEST_TIMEOUT, tracking_context: { action: 'openai_embeddings' })
         embedding_ids = questions
-          .map { |q| ::Gitlab::Llm::TanukiBot.embedding_for_question(openai_client, q) }
-          .flat_map { |e| ::Gitlab::Llm::TanukiBot.get_nearest_neighbors(e) }
-          .filter_map { |h| h[:id] }
+                          .map { |q| ::Gitlab::Llm::TanukiBot.embedding_for_question(openai_client, q) }
+                          .flat_map { |e| ::Gitlab::Llm::TanukiBot.get_nearest_neighbors(e) }
+                          .filter_map { |h| h[:id] }
 
         sql = ::Embedding::TanukiBotMvc.select("*").where(id: embedding_ids).to_sql
         fixture_path = Rails.root.join("ee/spec/fixtures/embeddings")
@@ -29,53 +29,80 @@ namespace :gitlab do
       # Warning: the task will TRUNCATE the embeddings table.
       desc 'Seed embeddings test database with pre-generated embeddings'
       task :seed_pre_generated, [] => [:environment] do |_t, _args|
-        sha = 'f7bfb0bd48fbb33c620146f5df5a88d54e489127'
         number_of_rows = 12739
-        url = "https://gitlab.com/gitlab-org/enablement-section/tanuki-bot/-/raw/#{sha}/pgvector/tanuki_bot_mvc.json?inline=false"
+        filename = "tanuki_bot_mvc.json"
+        sha = 'f7bfb0bd48fbb33c620146f5df5a88d54e489127'
+        url = "https://gitlab.com/gitlab-org/enablement-section/tanuki-bot/-/raw/#{sha}/pgvector/#{filename}?inline=false"
 
         Dir.mktmpdir do |dir|
-          WebMock.allow_net_connect! if ENV['RAILS_ENV'] == 'test'
+          embeddings_model = ::Embedding::TanukiBotMvc
 
-          puts "> Fetching `tanuki_bot_mvc.json` file size"
-          content_length = Gitlab::HTTP.head(url).headers.fetch('content-length').to_i
-
-          File.open("#{dir}/tanuki_bot_mvc.json", "wb") do |file|
-            puts "> Downloading `tanuki_bot_mvc.json` containing pre-generated embeddings"
-            cursor = 0
-            i = 0
-            Gitlab::HTTP.get(url, stream_body: true) do |fragment|
-              file.write(fragment)
-              cursor += fragment.length
-              i += 1
-              if i % 1000 == 0 || cursor == content_length
-                puts "#{cursor / (2**20)}MiB (#{((cursor / content_length.to_f) * 100).round(2)}%)"
-              end
-            end
-          end
-
-          puts "> Reading and adding embeddings from `tanuki_bot_mvc.json`"
-          ::Embedding::TanukiBotMvc.connection.execute("TRUNCATE TABLE #{::Embedding::TanukiBotMvc.table_name}")
-
-          i = 0
-          File.open("#{dir}/tanuki_bot_mvc.json").each_line do |line|
-            attributes = ::Gitlab::Json.parse(line)
-            ::Embedding::TanukiBotMvc.create!(attributes)
-            i += 1
-
-            count = ::Embedding::TanukiBotMvc.count
-            if i % 100 == 0 || i == number_of_rows
-              puts "#{count}/#{number_of_rows} (#{((count / number_of_rows.to_f) * 100).round(2)}%)"
-            end
-          end
+          file_path = download_embeddings_file(dir, filename, url)
+          create_embeddings(embeddings_model, file_path, number_of_rows)
 
           # Delete records with no meaningful content
-          ::Embedding::TanukiBotMvc.where.not("content ~ ?", '\w').delete_all
+          embeddings_model.where.not("content ~ ?", '\w').delete_all
           # Delete records without titles as these likely no longer exist
-          ::Embedding::TanukiBotMvc.where("metadata -> 'title' IS NULL").delete_all
+          embeddings_model.where("metadata -> 'title' IS NULL").delete_all
 
-          puts "Number of records: #{::Embedding::TanukiBotMvc.count}"
+          puts "Number of records: #{embeddings_model.count}"
         end
       end
+
+      namespace :vertex do
+        desc 'Extract the embeddings for selected questions into a fixture'
+        task :seed, [] => [:environment] do |_t, _args|
+          number_of_rows = 14010
+          filename = "vertex_gitlab_docs.json"
+          sha = 'da2fdc03eb702357c6104ab4a95ed998ae8febda'
+          url = "https://gitlab.com/gitlab-org/enablement-section/tanuki-bot/-/raw/#{sha}/pgvector/vertex/#{filename}?inline=false"
+
+          Dir.mktmpdir do |dir|
+            embeddings_model = ::Embedding::Vertex::GitlabDocumentation
+
+            file_path = download_embeddings_file(dir, filename, url)
+            create_embeddings(embeddings_model, file_path, number_of_rows)
+          end
+        end
+      end
+    end
+  end
+end
+
+def download_embeddings_file(dir, filename, url)
+  puts "> Fetching `#{filename}` file size"
+  content_length = Gitlab::HTTP.head(url).headers.fetch('content-length').to_i
+  file_path = "#{dir}/#{filename}"
+
+  File.open(file_path, "wb") do |file|
+    puts "> Downloading `#{filename}` containing pre-generated embeddings"
+    cursor = 0
+    i = 0
+    Gitlab::HTTP.get(url, stream_body: true) do |fragment|
+      file.write(fragment)
+      cursor += fragment.length
+      i += 1
+      if i % 1000 == 0 || cursor == content_length
+        puts "#{cursor / (2**20)}MiB (#{((cursor / content_length.to_f) * 100).round(2)}%)"
+      end
+    end
+  end
+
+  puts "> Download complete\n\n"
+
+  file_path
+end
+
+def create_embeddings(embeddings_model, file_path, number_of_rows)
+  puts "> #{number_of_rows} embedding records are to be created"
+  embeddings_model.connection.execute("TRUNCATE TABLE #{embeddings_model.table_name}")
+
+  File.open(file_path).each_line.with_index do |line, idx|
+    attributes = ::Gitlab::Json.parse(line)
+    embeddings_model.create!(attributes)
+
+    if idx % 100 == 0 || idx == number_of_rows
+      puts "#{idx}/#{number_of_rows} (#{((idx / number_of_rows.to_f) * 100).round(2)}%)"
     end
   end
 end
