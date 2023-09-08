@@ -1,7 +1,7 @@
 - return unless @new_license.present?
 
 %section.settings#js-add-license-toggle{ class: ('expanded' if expanded_by_default?) }
-  .settings-header{ data: { testid: 'expand_add_license_header' } }
+  .settings-header
     %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
       = _('Add License')
     = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle', data: { testid: 'expand-add-license-button' } }) do
@@ -25,10 +25,10 @@
           #js-license-new-app
 
         .gl-my-4
-          = f.gitlab_ui_radio_component :license_type, :key, _('Enter license key'), radio_options: { checked: @new_license.data.present?, name: 'license_type', data: { qa_selector: 'license_type_key_radio' } }
+          = f.gitlab_ui_radio_component :license_type, :key, _('Enter license key'), label_options: { data: { testid: 'license-type-key-radio-label' } }, radio_options: { checked: @new_license.data.present?, name: 'license_type' }
         .form-group.license-key.hidden
           = f.label :data, _('License key'), class: 'gl-sr-only'
-          = f.text_area :data, class: "form-control license-key-field", data: { qa_selector: 'license_key_field' }, rows: 20
+          = f.text_area :data, class: "form-control license-key-field", data: { testid: 'license-key-field' }, rows: 20
 
       %hr
 
@@ -38,8 +38,8 @@
         = render Pajamas::CheckboxTagComponent.new(name: :accept_eula,
           value: nil,
           checked: false,
-          checkbox_options: { data: { qa_selector: 'accept_eula_checkbox'} }) do |c|
+          label_options: { data: { testid: 'accept-eula-checkbox-label' } }) do |c|
           - c.with_label do
             = _('Unless otherwise agreed to in writing with GitLab, by clicking "Upload License" you agree that your use of GitLab Software is subject to the %{eula_link_start}Terms of Service%{eula_link_end}.').html_safe % { eula_link_start: eula_link_start, eula_url: eula_url, eula_link_end: '</a>'.html_safe }
       .form-actions
-        = f.submit _('Add license'), pajamas_button: true, data: { qa_selector: 'license_upload_button' }, disabled: true
+        = f.submit _('Add license'), pajamas_button: true, data: { testid: 'license-upload-button' }, disabled: true
