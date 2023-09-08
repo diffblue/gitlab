@@ -35,9 +35,7 @@ module QA
       ) do
         gitlab_account_user_name = Resource::User.default.reload!.name
 
-        milestone = Resource::ProjectMilestone.fabricate_via_api! do |milestone|
-          milestone.project = project
-        end
+        milestone = create(:project_milestone, project: project)
 
         label = create(:project_label, project: project, title: 'foo::label')
 

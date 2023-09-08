@@ -7,10 +7,7 @@ module QA
         Flow::Login.sign_in
       end
 
-      let(:milestone) do
-        Resource::ProjectMilestone.fabricate_via_api!
-      end
-
+      let(:milestone) { create(:project_milestone) }
       let(:weight) { 1000 }
       let(:issue) { create(:issue, milestone: milestone, project: milestone.project, weight: weight) }
 

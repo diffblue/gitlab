@@ -46,12 +46,7 @@ module QA
       end
 
       context 'with milestones and badges' do
-        let(:source_milestone) do
-          Resource::GroupMilestone.fabricate_via_api! do |milestone|
-            milestone.api_client = source_admin_api_client
-            milestone.group = source_group
-          end
-        end
+        let(:source_milestone) { create(:group_milestone, api_client: source_admin_api_client, group: source_group) }
 
         before do
           source_milestone

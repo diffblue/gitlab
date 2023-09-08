@@ -6,10 +6,7 @@ module QA
       include ::QA::Support::Dates
 
       let(:milestone) do
-        Resource::ProjectMilestone.fabricate_via_api! do |m|
-          m.start_date = current_date_yyyy_mm_dd
-          m.due_date = next_month_yyyy_mm_dd
-        end
+        create(:project_milestone, start_date: current_date_yyyy_mm_dd, due_date: next_month_yyyy_mm_dd)
       end
 
       before do
