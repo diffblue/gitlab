@@ -84,4 +84,10 @@ RSpec.describe 'EE-specific project routing' do
       end
     end
   end
+
+  describe Projects::TargetBranchRulesController, 'routing' do
+    it "to #create" do
+      expect(post("/gitlab/gitlabhq/-/target_branch_rules")).to route_to('projects/target_branch_rules#create', namespace_id: 'gitlab', project_id: 'gitlabhq')
+    end
+  end
 end
