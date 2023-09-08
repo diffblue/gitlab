@@ -46,17 +46,10 @@ export default {
       return this.isWorkspacesDropdownGroupAvailable && this.isDropdownVisible;
     },
     shouldRenderWorkspacesDropdownGroupBeforeActions() {
-      return (
-        this.shouldRenderWorkspacesDropdownGroup &&
-        (!this.projectDetailsLoaded || this.supportsWorkspaces)
-      );
+      return this.shouldRenderWorkspacesDropdownGroup && this.supportsWorkspaces;
     },
     shouldRenderWorkspacesDropdownGroupAfterActions() {
-      return (
-        this.shouldRenderWorkspacesDropdownGroup &&
-        this.projectDetailsLoaded &&
-        !this.supportsWorkspaces
-      );
+      return this.shouldRenderWorkspacesDropdownGroup && !this.supportsWorkspaces;
     },
   },
   methods: {
@@ -103,13 +96,22 @@ export default {
       </div>
     </template>
     <template v-if="shouldRenderWorkspacesDropdownGroupAfterActions" #after-actions>
+      <get-project-details-query
+        :project-full-path="projectPath"
+        @result="onProjectDetailsResult"
+        @error="onProjectDetailsError"
+      />
       <workspaces-dropdown-group
+        v-if="projectDetailsLoaded"
         :new-workspace-path="newWorkspacePath"
         :project-id="projectId"
         :project-full-path="projectPath"
         :supports-workspaces="supportsWorkspaces"
         border-position="top"
       />
+      <div v-else class="gl-my-3">
+        <gl-loading-icon />
+      </div>
     </template>
   </ce-web-ide-link>
 </template>
