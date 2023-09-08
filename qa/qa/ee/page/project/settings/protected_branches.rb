@@ -16,11 +16,9 @@ module QA
                   element :code_owner_toggle_button
                 end
 
-                view 'ee/app/views/protected_branches/ee/_create_protected_branch.html.haml' do
-                  element :select_allowed_to_push_dropdown
-                  element :allowed_to_push_dropdown_content
-                  element :select_allowed_to_merge_dropdown
-                  element :allowed_to_merge_dropdown_content
+                view 'app/assets/javascripts/protected_branches/protected_branch_create.js' do
+                  element 'allowed-to-push-dropdown'
+                  element 'allowed-to-merge-dropdown'
                 end
               end
             end
@@ -36,7 +34,9 @@ module QA
               super
 
               # Click the select element again to close the dropdown
-              click_element(:"select_allowed_to_#{action}_dropdown")
+              within_element("allowed-to-#{action}-dropdown") do
+                click_element ".js-allowed-to-#{action}"
+              end
             end
           end
         end
