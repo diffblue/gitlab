@@ -265,12 +265,15 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group, feature_category: :system_ac
           ldap_group_entry(user_dn('some_user'))
         end
 
-        it 'removes the user from the group' do
+        it 'removes the group member' do
           group.add_member(user, Gitlab::Access::MAINTAINER)
 
           sync_group.update_permissions
 
           expect(group.members.find_by(user_id: user.id)).to be_nil
+
+          # Sanity check that the user record is not deleted
+          expect(User.find_by_id(user.id)).to be_present
         end
 
         it 'refuses to delete the last owner' do
@@ -433,6 +436,9 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group, feature_category: :system_ac
           sync_group.update_permissions
 
           expect(group.members.find_by(user_id: user.id)).to be_nil
+
+          # Sanity check that the user record is not deleted
+          expect(User.find_by_id(user.id)).to be_present
         end
       end
 
