@@ -25236,7 +25236,7 @@ CREATE TABLE x509_certificates (
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     subject_key_identifier character varying(255) NOT NULL,
-    subject character varying(512) NOT NULL,
+    subject character varying(512),
     email character varying(255) NOT NULL,
     serial_number bytea NOT NULL,
     certificate_status smallint DEFAULT 0 NOT NULL,
@@ -25277,8 +25277,8 @@ CREATE TABLE x509_issuers (
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     subject_key_identifier character varying(255) NOT NULL,
-    subject character varying(255) NOT NULL,
-    crl_url character varying(255) NOT NULL
+    subject character varying(255),
+    crl_url character varying(255)
 );
 
 CREATE SEQUENCE x509_issuers_id_seq
