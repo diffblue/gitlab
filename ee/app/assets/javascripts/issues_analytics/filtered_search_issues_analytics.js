@@ -15,9 +15,12 @@ import issueAnalyticsStore from './stores';
 
 export default class FilteredSearchIssueAnalytics extends FilteredSearchManager {
   constructor({ hasIssuesCompletedFeature = false }) {
+    const supportsIssuesCompletedFeature =
+      gon.features?.issuesCompletedAnalyticsFeatureFlag && hasIssuesCompletedFeature;
+
     let excludedTokenKeys = [TOKEN_TYPE_RELEASE];
 
-    if (gon.features?.issuesCompletedAnalyticsFeatureFlag && hasIssuesCompletedFeature) {
+    if (supportsIssuesCompletedFeature) {
       // these tokens will be excluded until https://gitlab.com/gitlab-org/gitlab/-/issues/419925 is completed
       const issuesCompletedExcludedTokenKeys = [
         TOKEN_TYPE_EPIC,
@@ -27,12 +30,21 @@ export default class FilteredSearchIssueAnalytics extends FilteredSearchManager 
       ];
 
       excludedTokenKeys = [...excludedTokenKeys, ...issuesCompletedExcludedTokenKeys];
+
+      IssuableFilteredSearchTokenKeys.enableMultipleAssignees();
     }
 
+    const filteredTokenKeys = IssuableFilteredSearchTokenKeys.tokenKeys.filter(
+      ({ key }) => !excludedTokenKeys.includes(key),
+    );
+    const tokenKeysWithoutNotEqual = filteredTokenKeys.map((tokenKey) => ({
+      ...tokenKey,
+      hideNotEqual: true,
+    }));
+    const tokenKeys = supportsIssuesCompletedFeature ? tokenKeysWithoutNotEqual : filteredTokenKeys;
+
     const issuesAnalyticsTokenKeys = new FilteredSearchTokenKeys(
-      IssuableFilteredSearchTokenKeys.tokenKeys.filter(
-        ({ key }) => !excludedTokenKeys.includes(key),
-      ),
+      tokenKeys,
       IssuableFilteredSearchTokenKeys.alternativeTokenKeys,
       IssuableFilteredSearchTokenKeys.conditions,
     );

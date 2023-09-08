@@ -49,7 +49,6 @@ export default () => {
     render: (createElement) =>
       createElement(IssuesAnalytics, {
         props: {
-          issuesPageEndpoint,
           filterBlockEl,
         },
       }),

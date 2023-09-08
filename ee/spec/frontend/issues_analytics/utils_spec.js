@@ -1,18 +1,12 @@
 import { transformFilters } from 'ee/issues_analytics/utils';
+import { mockOriginalFilters, mockFilters } from './mock_data';
 
-const originalFilters = {
-  label_name: ['one', 'two'],
-  milestone_title: 'title',
-  author_username: 'root',
-};
-const tranformedFilters = { labels: ['one', 'two'], milestone: 'title', author_username: 'root' };
-
-describe('issue analytics utils', () => {
+describe('Issues Analytics utils', () => {
   describe('transformFilters', () => {
     it('transforms the object keys as expected', () => {
-      const filters = transformFilters(originalFilters);
+      const filters = transformFilters(mockOriginalFilters);
 
-      expect(filters).toStrictEqual(tranformedFilters);
+      expect(filters).toStrictEqual(mockFilters);
     });
   });
 });

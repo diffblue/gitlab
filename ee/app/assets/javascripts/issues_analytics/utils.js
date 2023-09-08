@@ -8,11 +8,15 @@
  * @returns {Object} the transformed filters for the public api
  */
 export const transformFilters = ({
-  label_name: labels = null,
-  milestone_title: milestone = null,
-  ...restOfFilters
+  assignee_username: assigneeUsernames = null,
+  author_username: authorUsername = null,
+  label_name: labelNames = null,
+  milestone_title: milestoneTitle = null,
+  months_back: monthsBack = null,
 }) => ({
-  ...restOfFilters,
-  labels,
-  milestone,
+  assigneeUsernames,
+  authorUsername,
+  labelNames,
+  milestoneTitle,
+  monthsBack,
 });
