@@ -2859,7 +2859,7 @@ Input type: `DeleteAnnotationInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationdeleteannotationclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationdeleteannotationid"></a>`id` | [`MetricsDashboardAnnotationID!`](#metricsdashboardannotationid) | Global ID of the annotation to delete. |
+| <a id="mutationdeleteannotationid"></a>`id` | [`String!`](#string) | Global ID of the annotation to delete. |
 
 #### Fields
 
@@ -29098,12 +29098,6 @@ An example `ListID` is: `"gid://gitlab/List/1"`.
 A `MergeRequestID` is a global ID. It is encoded as a string.
 
 An example `MergeRequestID` is: `"gid://gitlab/MergeRequest/1"`.
-
-### `MetricsDashboardAnnotationID`
-
-A `MetricsDashboardAnnotationID` is a global ID. It is encoded as a string.
-
-An example `MetricsDashboardAnnotationID` is: `"gid://gitlab/Metrics::Dashboard::Annotation/1"`.
 
 ### `MilestoneID`
 
