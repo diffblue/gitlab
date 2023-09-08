@@ -1,4 +1,4 @@
-import Api from 'ee/api';
+import { getApplicationSettings, updateApplicationSettings } from '~/rest_api';
 import { createAlert } from '~/alert';
 import { s__ } from '~/locale';
 import * as types from './mutation_types';
@@ -10,7 +10,7 @@ const i18n = {
 
 export const fetchGeoSettings = ({ commit }) => {
   commit(types.REQUEST_GEO_SETTINGS);
-  Api.getApplicationSettings()
+  getApplicationSettings()
     .then(({ data }) => {
       // `geo_node_allowed_ips` to be renamed `geo_site_allowed_ips` => https://gitlab.com/gitlab-org/gitlab/-/issues/396748
       commit(types.RECEIVE_GEO_SETTINGS_SUCCESS, {
@@ -29,7 +29,7 @@ export const fetchGeoSettings = ({ commit }) => {
 export const updateGeoSettings = ({ commit, state }) => {
   commit(types.REQUEST_UPDATE_GEO_SETTINGS);
   // `geo_node_allowed_ips` to be renamed `geo_site_allowed_ips` => https://gitlab.com/gitlab-org/gitlab/-/issues/396748
-  Api.updateApplicationSettings({
+  updateApplicationSettings({
     geo_status_timeout: state.timeout,
     geo_node_allowed_ips: state.allowedIp,
   })

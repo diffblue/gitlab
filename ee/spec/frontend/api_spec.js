@@ -274,39 +274,6 @@ describe('Api', () => {
     });
   });
 
-  describe('Application Settings', () => {
-    const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/application/settings`;
-    const apiResponse = { mock_setting: 1, mock_setting2: 2, mock_setting3: 3 };
-
-    describe('getApplicationSettings', () => {
-      it('fetches applications settings', () => {
-        jest.spyOn(Api, 'buildUrl').mockReturnValue(expectedUrl);
-        jest.spyOn(axios, 'get');
-        mock.onGet(expectedUrl).replyOnce(HTTP_STATUS_OK, apiResponse);
-
-        return Api.getApplicationSettings().then(({ data }) => {
-          expect(data).toEqual(apiResponse);
-          expect(axios.get).toHaveBeenCalledWith(expectedUrl);
-        });
-      });
-    });
-
-    describe('updateApplicationSettings', () => {
-      const mockReq = { mock_setting: 10 };
-
-      it('updates applications settings', () => {
-        jest.spyOn(Api, 'buildUrl').mockReturnValue(expectedUrl);
-        jest.spyOn(axios, 'put');
-        mock.onPut(expectedUrl).replyOnce(HTTP_STATUS_CREATED, apiResponse);
-
-        return Api.updateApplicationSettings(mockReq).then(({ data }) => {
-          expect(data).toEqual(apiResponse);
-          expect(axios.put).toHaveBeenCalledWith(expectedUrl, mockReq);
-        });
-      });
-    });
-  });
-
   describe('Project analytics: deployment frequency', () => {
     const projectPath = 'test/project';
     const encodedProjectPath = encodeURIComponent(projectPath);

@@ -1,7 +1,7 @@
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { createAlert, VARIANT_INFO } from '~/alert';
-import Api from 'ee/api';
+import { updateApplicationSettings } from '~/rest_api';
 import SettingsForm from 'ee/admin/application_settings/reporting/git_abuse_settings/components/settings_form.vue';
 import SettingsFormContainer from 'ee/admin/application_settings/reporting/git_abuse_settings/components/settings_form_container.vue';
 import {
@@ -9,7 +9,7 @@ import {
   SAVE_ERROR_MESSAGE,
 } from 'ee/admin/application_settings/reporting/git_abuse_settings/constants';
 
-jest.mock('ee/api.js');
+jest.mock('~/rest_api.js');
 jest.mock('~/alert');
 
 describe('SettingsFormContainer', () => {
@@ -52,11 +52,11 @@ describe('SettingsFormContainer', () => {
       autoBanUsers: false,
     };
 
-    it('calls Api.updateApplicationSettings with the correct payload', () => {
+    it('calls updateApplicationSettings with the correct payload', () => {
       wrapper.findComponent(SettingsForm).vm.$emit('submit', payload);
 
-      expect(Api.updateApplicationSettings).toHaveBeenCalledTimes(1);
-      expect(Api.updateApplicationSettings).toHaveBeenCalledWith({
+      expect(updateApplicationSettings).toHaveBeenCalledTimes(1);
+      expect(updateApplicationSettings).toHaveBeenCalledWith({
         max_number_of_repository_downloads: 1,
         max_number_of_repository_downloads_within_time_period: 2,
         git_rate_limit_users_allowlist: ['user2'],
@@ -73,9 +73,9 @@ describe('SettingsFormContainer', () => {
       expect(createAlert).toHaveBeenCalledWith({ message: SUCCESS_MESSAGE, variant: VARIANT_INFO });
     });
 
-    describe('Api.updateApplicationSettings fails', () => {
+    describe('updateApplicationSettings fails', () => {
       it('creates an alert with the correct message and type', async () => {
-        Api.updateApplicationSettings.mockImplementation(() => Promise.reject());
+        updateApplicationSettings.mockImplementation(() => Promise.reject());
 
         wrapper.findComponent(SettingsForm).vm.$emit('submit', payload);
 
