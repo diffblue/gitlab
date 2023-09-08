@@ -24,7 +24,11 @@ module QA
       end
 
       it 'has many pipelines with appropriate statuses',
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348072' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348072',
+        quarantine: {
+          type: :flaky,
+          issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/424230"
+        } do
         add_projects_to_board
 
         EE::Page::OperationsDashboard.perform do |operation|
