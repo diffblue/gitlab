@@ -2,7 +2,6 @@ import MockAdapter from 'axios-mock-adapter';
 import mockProjects from 'test_fixtures_static/projects.json';
 import {
   ChildType,
-  SNOWPLOW_EPIC_ACTIVITY,
   trackingAddedIssue,
   EPIC_CREATE_ERROR_MESSAGE,
 } from 'ee/related_items_tree/constants';
@@ -12,7 +11,7 @@ import createDefaultState from 'ee/related_items_tree/store/state';
 
 import * as epicUtils from 'ee/related_items_tree/utils/epic_utils';
 
-import Tracking from '~/tracking';
+import { InternalEvents } from '~/tracking';
 
 import testAction from 'helpers/vuex_action_helper';
 import { TEST_HOST } from 'spec/test_constants';
@@ -1051,7 +1050,7 @@ describe('RelatedItemTree', () => {
         });
 
         it('should track Snowplow event', async () => {
-          jest.spyOn(Tracking, 'event');
+          jest.spyOn(InternalEvents, 'track_event');
           state.epicsEndpoint = '/foo/bar';
           state.parentItem = { groupId: 1 };
 
@@ -1064,15 +1063,9 @@ describe('RelatedItemTree', () => {
           actions.addItem({ state, dispatch: () => {}, getters });
           await axios.waitForAll();
 
-          expect(Tracking.event).toHaveBeenCalledWith(
-            SNOWPLOW_EPIC_ACTIVITY.CATEGORY,
-            SNOWPLOW_EPIC_ACTIVITY.ACTION,
-            {
-              label: SNOWPLOW_EPIC_ACTIVITY.LABEL,
-              property: trackingAddedIssue,
-              namespace: 1,
-            },
-          );
+          expect(InternalEvents.track_event).toHaveBeenCalledWith(trackingAddedIssue, {
+            extra: { namespace: 1 },
+          });
         });
 
         it('should dispatch `requestAddItem` and `receiveAddItemFailure` actions on request failure', () => {
@@ -1680,8 +1673,8 @@ describe('RelatedItemTree', () => {
         });
 
         describe('for successful request', () => {
-          it('should track Snowplow event', async () => {
-            jest.spyOn(Tracking, 'event');
+          it('should track Internal Event', async () => {
+            jest.spyOn(InternalEvents, 'track_event');
             state.parentItem = { id: '1' };
             const data = { author: { id: 1 }, epic: { group_id: 2 } };
 
@@ -1691,16 +1684,9 @@ describe('RelatedItemTree', () => {
             actions.createNewIssue({ state, dispatch: () => {} }, { issuesEndpoint, title: '' });
             await axios.waitForAll();
 
-            expect(Tracking.event).toHaveBeenCalledWith(
-              SNOWPLOW_EPIC_ACTIVITY.CATEGORY,
-              SNOWPLOW_EPIC_ACTIVITY.ACTION,
-              {
-                label: SNOWPLOW_EPIC_ACTIVITY.LABEL,
-                property: trackingAddedIssue,
-                namespace: 2,
-                user: 1,
-              },
-            );
+            expect(InternalEvents.track_event).toHaveBeenCalledWith(trackingAddedIssue, {
+              extra: { namespace: 2, user: 1 },
+            });
           });
 
           beforeEach(() => {

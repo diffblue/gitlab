@@ -5,7 +5,7 @@ import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { HTTP_STATUS_CONFLICT, HTTP_STATUS_NOT_FOUND } from '~/lib/utils/http_status';
 import { s__, __ } from '~/locale';
-import Tracking from '~/tracking';
+import { InternalEvents } from '~/tracking';
 import {
   itemAddFailureTypesMap,
   pathIndeterminateErrorMap,
@@ -18,7 +18,6 @@ import {
   idProp,
   relativePositions,
   trackingAddedIssue,
-  SNOWPLOW_EPIC_ACTIVITY,
   EPIC_CREATE_ERROR_MESSAGE,
 } from '../constants';
 
@@ -27,11 +26,8 @@ import { processQueryResponse, formatChildItem, gqClient } from '../utils/epic_u
 
 import * as types from './mutation_types';
 
-const trackEpicActivity = (params) => {
-  Api.trackRedisHllUserEvent(trackingAddedIssue);
-
-  const { CATEGORY, ACTION, LABEL } = SNOWPLOW_EPIC_ACTIVITY;
-  Tracking.event(CATEGORY, ACTION, { label: LABEL, property: trackingAddedIssue, ...params });
+const trackEpicActivity = (params = {}) => {
+  InternalEvents.track_event(trackingAddedIssue, { extra: params });
 };
 export const setInitialConfig = ({ commit }, data) => commit(types.SET_INITIAL_CONFIG, data);
 
