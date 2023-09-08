@@ -29493,9 +29493,6 @@ msgstr ""
 msgid "Metrics:"
 msgstr ""
 
-msgid "MetricsDashboardAnnotation|can't be before starting_at time"
-msgstr ""
-
 msgid "Metrics|Create metric"
 msgstr ""
 
