@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Projects::ComplianceStandards::AdherenceFinder, feature_category: :compliance_management do
   let_it_be(:group) { create(:group) }
+  let_it_be(:group_2) { create(:group) }
   let_it_be(:sub_group) { create(:group, parent: group) }
   let_it_be(:user) { create(:user) }
 
@@ -23,6 +24,7 @@ RSpec.describe Projects::ComplianceStandards::AdherenceFinder, feature_category:
 
     let_it_be(:project_1) { create(:project, namespace: group) }
     let_it_be(:project_2) { create(:project, namespace: group) }
+    let_it_be(:project_3) { create(:project, namespace: group_2) }
 
     let_it_be(:adherence_1) do
       create(:compliance_standards_adherence, :gitlab, project: project_1,
@@ -32,6 +34,11 @@ RSpec.describe Projects::ComplianceStandards::AdherenceFinder, feature_category:
     let_it_be(:adherence_2) do
       create(:compliance_standards_adherence, :gitlab, project: project_2,
         check_name: :prevent_approval_by_merge_request_author)
+    end
+
+    let_it_be(:adherence_3) do
+      create(:compliance_standards_adherence, :gitlab, project: project_3,
+        check_name: :prevent_approval_by_merge_request_committers)
     end
 
     context 'when the user does not have permission to view the adherence report' do
@@ -99,6 +106,42 @@ RSpec.describe Projects::ComplianceStandards::AdherenceFinder, feature_category:
 
       context 'when false' do
         let(:params) { { include_subgroups: false } }
+
+        it 'returns the adherence records for projects within the group only' do
+          is_expected.to match_array([adherence_1, adherence_2])
+        end
+      end
+
+      context 'when not set' do
+        it 'returns the adherence records for projects within the group only' do
+          is_expected.to match_array([adherence_1, adherence_2])
+        end
+      end
+    end
+
+    context 'for skip_group_check param' do
+      context 'when true' do
+        let(:params) { { skip_group_check: true } }
+
+        context 'when project_id filter not set' do
+          it 'returns []' do
+            is_expected.to eq([])
+          end
+        end
+
+        context 'when project_id filter is passed' do
+          before do
+            params[:project_ids] = project_3.id
+          end
+
+          it 'returns records for that project' do
+            is_expected.to match_array([adherence_3])
+          end
+        end
+      end
+
+      context 'when false' do
+        let(:params) { { skip_group_check: false } }
 
         it 'returns the adherence records for projects within the group only' do
           is_expected.to match_array([adherence_1, adherence_2])

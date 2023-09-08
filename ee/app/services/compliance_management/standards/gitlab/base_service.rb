@@ -21,7 +21,7 @@ module ComplianceManagement
             project_group,
             current_user,
             { project_ids: project.id, check_name: self.class::CHECK_NAME,
-              standard: self.class::STANDARD, skip_authorization: true }
+              standard: self.class::STANDARD, skip_authorization: true, skip_group_check: true }
           ).execute.first || ::Projects::ComplianceStandards::Adherence.new
         end
 

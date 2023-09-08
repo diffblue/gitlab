@@ -286,4 +286,23 @@ RSpec.describe Projects::TransferService do
       end
     end
   end
+
+  context 'update_compliance_standards_adherence' do
+    let_it_be(:old_group) { create(:group) }
+    let_it_be(:project) { create(:project, group: old_group) }
+    let!(:adherence) { create(:compliance_standards_adherence, :gitlab, project: project) }
+
+    before do
+      stub_licensed_features(group_level_compliance_dashboard: true)
+      old_group.add_owner(user)
+    end
+
+    it "updates the project's compliance standards adherence with new namespace id" do
+      expect(project.compliance_standards_adherence.first.namespace_id).to eq(old_group.id)
+
+      subject.execute(group)
+
+      expect(project.reload.compliance_standards_adherence.first.namespace_id).to eq(group.id)
+    end
+  end
 end

@@ -33,6 +33,13 @@ module Projects
       def init_collection
         if params[:include_subgroups].present?
           ::Projects::ComplianceStandards::Adherence.for_group_and_its_subgroups(group)
+        elsif params[:skip_group_check].present?
+          # group check cannot be skipped unless we have project_ids filter
+          if params[:project_ids].present?
+            ::Projects::ComplianceStandards::Adherence
+          else
+            ::Projects::ComplianceStandards::Adherence.none
+          end
         else
           ::Projects::ComplianceStandards::Adherence.for_group(group)
         end
