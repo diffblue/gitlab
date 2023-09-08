@@ -56,16 +56,6 @@ RSpec.describe Llm::ExtraResourceFinder, feature_category: :ai_abstraction_layer
             expect(execute[:blob].id).to eq(expected_blob.id)
           end
 
-          context 'when the feature flag :explain_current_blob is disabled for user' do
-            before do
-              stub_feature_flags(explain_current_blob: guest)
-            end
-
-            it 'returns an empty hash' do
-              expect(execute).to be_empty
-            end
-          end
-
           context "when user is not authorized to read code for the blob's project" do
             context 'when user is a guest' do
               let(:current_user) { guest }

@@ -123,8 +123,7 @@ module Gitlab
                 agent_scratchpad: +"",
                 conversation: conversation,
                 prompt_version: prompt_version,
-                current_code: current_code,
-                explain_current_blob: Feature.enabled?(:explain_current_blob, context.current_user)
+                current_code: current_code
               }
             end
 
@@ -160,8 +159,6 @@ module Gitlab
             end
 
             def current_code
-              return "" unless Feature.enabled?(:explain_current_blob, context.current_user)
-
               blob = @context.extra_resource[:blob]
               return "" unless blob
 

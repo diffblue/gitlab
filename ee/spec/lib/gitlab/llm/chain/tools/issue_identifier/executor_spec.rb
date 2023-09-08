@@ -148,21 +148,6 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
           it_behaves_like 'success response'
         end
 
-        context 'when push_ai_to_load_identified_issue_json FF is disabled' do
-          before do
-            stub_feature_flags(push_ai_to_load_identified_issue_json: false)
-          end
-
-          context 'when is issue identified with reference' do
-            let(:identifier) { issue2.to_reference(full: true) }
-            let(:ai_response) do
-              "reference\", \"ResourceIdentifier\": \"#{identifier}\"}"
-            end
-
-            it_behaves_like 'success response', true
-          end
-        end
-
         # Skipped pending https://gitlab.com/gitlab-org/gitlab/-/issues/413509
         xcontext 'when is issue identified with url' do
           let(:identifier) { Gitlab::Saas.com_url + Gitlab::Routing.url_helpers.project_issue_path(project, issue2) }
