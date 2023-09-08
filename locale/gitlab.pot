@@ -46692,6 +46692,9 @@ msgstr ""
 msgid "Target branch rule"
 msgstr ""
 
+msgid "Target branch rule created."
+msgstr ""
+
 msgid "Target branch rules"
 msgstr ""
 

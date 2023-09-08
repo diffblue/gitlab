@@ -1,6 +1,6 @@
 - return unless can?(current_user, :read_target_branch_rules, @project)
 
-%section.settings.merge-requests-feature.no-animate#js-target-branch-rules.expanded
+%section.settings.merge-requests-feature.no-animate#target-branch-rules.expanded
   .settings-header
     %h4= _('Target branch rules')
 
@@ -12,7 +12,7 @@
             = _("Target branch rules")
             .gl-new-card-count
               = sprite_icon('branch', css_class: 'gl-mr-2')
-              %span= @project.target_branch_rules.size
+              %span= @target_branch_rules&.total_count
           - if can?(current_user, :create_target_branch_rule, @project)
             .gl-new-card-actions
               = render Pajamas::ButtonComponent.new(size: :small, button_options: { class: 'js-toggle-button js-toggle-content' }) do
@@ -22,7 +22,7 @@
       - c.with_body do
         - if can?(current_user, :create_target_branch_rule, @project)
           .gl-new-card-add-form.gl-m-3.gl-display-none.js-toggle-content
-            = gitlab_ui_form_for [@project] do |f|
+            = gitlab_ui_form_for @project.target_branch_rules.new, url: project_target_branch_rules_path(@project) do |f|
               %h4.gl-mt-0= _("Target branch rule")
               .form-group.row
                 = f.label :name, _('Rule name'), class: 'col-sm-12'
@@ -31,13 +31,14 @@
               .form-group.row
                 = f.label :target_branch, _("Targe branch"), class: 'col-sm-12'
                 .col-sm-6
+                  = f.hidden_field :target_branch
                   #js-target-branch{ data: { project_id: @project.id } }
               = f.submit _('Save'), pajamas_button: true
               = render Pajamas::ButtonComponent.new(button_options: { type: 'reset', class: 'gl-ml-2 js-toggle-button' }) do
                 = _('Cancel')
 
         %div
-          - if @project.target_branch_rules.empty?
+          - if @target_branch_rules&.empty?
             %p.gl-new-card-empty.gl-px-5.gl-py-4.js-toggle-content
               = _("There are currently no target branch rules")
           - else
@@ -54,8 +55,10 @@
                     = _('Target branch')
                   %th
               %tbody
-                - @project.target_branch_rules.each do |rule|
+                - @target_branch_rules&.each do |rule|
                   %tr
                     %td.ref-name{ class: "gl-vertical-align-middle!" }= rule.name
                     %td.ref-name{ class: "gl-vertical-align-middle!" }= rule.target_branch
                     %td{ class: "gl-vertical-align-middle!" }
+            - if @target_branch_rules
+              = paginate @target_branch_rules, theme: 'gitlab'
