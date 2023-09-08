@@ -1,10 +1,16 @@
 import { GlLink } from '@gitlab/ui';
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import StatisticsSeatsCard from 'ee/usage_quotas/seats/components/statistics_seats_card.vue';
 import Tracking from '~/tracking';
 import { visitUrl } from '~/lib/utils/url_utility';
 import LimitedAccessModal from 'ee/usage_quotas/components/limited_access_modal.vue';
+import waitForPromises from 'helpers/wait_for_promises';
+import { getSubscriptionData } from 'ee/fulfillment/shared_queries/subscription_actions.customer.query.graphql';
+import { createMockClient } from 'helpers/mock_apollo_helper';
+
+Vue.use(VueApollo);
 
 jest.mock('~/lib/utils/url_utility', () => ({
   ...jest.requireActual('~/lib/utils/url_utility'),
@@ -17,12 +23,28 @@ describe('StatisticsSeatsCard', () => {
   const defaultProps = {
     seatsUsed: 20,
     seatsOwed: 5,
+    namespaceId: '4321',
     purchaseButtonLink,
   };
 
-  const createComponent = (props = {}) => {
+  const defaultApolloData = { subscription: { canAddSeats: true, canRenew: true } };
+
+  const createComponent = (options = {}) => {
+    const { props = {}, apolloData = defaultApolloData } = options;
+
+    const queryHandlerMock = jest.fn().mockResolvedValue({
+      data: apolloData,
+    });
+    const mockCustomersDotClient = createMockClient([[getSubscriptionData, queryHandlerMock]]);
+    const mockGitlabClient = createMockClient();
+    const mockApollo = new VueApollo({
+      defaultClient: mockGitlabClient,
+      clients: { customersDotClient: mockCustomersDotClient, gitlabClient: mockGitlabClient },
+    });
+
     wrapper = shallowMountExtended(StatisticsSeatsCard, {
       propsData: { ...defaultProps, ...props },
+      apolloProvider: mockApollo,
       stubs: {
         LimitedAccessModal,
       },
@@ -46,7 +68,7 @@ describe('StatisticsSeatsCard', () => {
     });
 
     it('does not render seats used block if seatsUsed is not passed', () => {
-      createComponent({ seatsUsed: null });
+      createComponent({ props: { seatsUsed: null } });
 
       expect(findSeatsUsedBlock().exists()).toBe(false);
     });
@@ -64,7 +86,7 @@ describe('StatisticsSeatsCard', () => {
     });
 
     it('does not render seats owed block if seatsOwed is not passed', () => {
-      createComponent({ seatsOwed: null });
+      createComponent({ props: { seatsOwed: null } });
 
       expect(findSeatsOwedBlock().exists()).toBe(false);
     });
@@ -80,7 +102,7 @@ describe('StatisticsSeatsCard', () => {
     });
 
     it('does not render purchase button if purchase link is not passed', () => {
-      createComponent({ purchaseButtonLink: null });
+      createComponent({ props: { purchaseButtonLink: null } });
 
       expect(findPurchaseButton().exists()).toBe(false);
     });
@@ -110,20 +132,44 @@ describe('StatisticsSeatsCard', () => {
     });
 
     describe('when limitedAccessModal FF is on', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         gon.features = { limitedAccessModal: true };
-        createComponent();
-
-        findPurchaseButton().vm.$emit('click');
-        await nextTick();
       });
 
-      it('shows modal', () => {
-        expect(findLimitedAccessModal().isVisible()).toBe(true);
+      describe('when canAddSeats is false', () => {
+        beforeEach(async () => {
+          createComponent({ apolloData: { subscription: { canAddSeats: false, canRenew: true } } });
+          await waitForPromises();
+
+          findPurchaseButton().vm.$emit('click');
+          await nextTick();
+        });
+
+        it('shows modal', () => {
+          expect(findLimitedAccessModal().isVisible()).toBe(true);
+        });
+
+        it('does not navigate to URL', () => {
+          expect(visitUrl).not.toHaveBeenCalled();
+        });
       });
 
-      it('does not navigate to URL', () => {
-        expect(visitUrl).not.toHaveBeenCalled();
+      describe('when canAddSeats is true', () => {
+        beforeEach(async () => {
+          createComponent();
+          await waitForPromises();
+
+          findPurchaseButton().vm.$emit('click');
+          await nextTick();
+        });
+
+        it('does not show modal', () => {
+          expect(findLimitedAccessModal().exists()).toBe(false);
+        });
+
+        it('navigates to URL', () => {
+          expect(visitUrl).toHaveBeenCalledWith(purchaseButtonLink);
+        });
       });
     });
 

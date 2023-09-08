@@ -1,5 +1,6 @@
 <script>
 import { GlLink, GlIcon, GlButton, GlModalDirective } from '@gitlab/ui';
+import { getSubscriptionData } from 'ee/fulfillment/shared_queries/subscription_actions.customer.query.graphql';
 import {
   addSeatsText,
   seatsOwedHelpText,
@@ -64,11 +65,34 @@ export default {
       required: false,
       default: null,
     },
+    /**
+     * Id of the attached namespace
+     */
+    namespaceId: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
+      subscriptionPermissions: null,
       showLimitedAccessModal: false,
     };
+  },
+  apollo: {
+    subscriptionPermissions: {
+      query: getSubscriptionData,
+      client: 'customersDotClient',
+      variables() {
+        return {
+          namespaceId: parseInt(this.namespaceId, 10),
+        };
+      },
+      skip() {
+        return !gon.features?.limitedAccessModal;
+      },
+      update: (data) => data.subscription,
+    },
   },
   computed: {
     shouldRenderSeatsUsedBlock() {
@@ -77,8 +101,11 @@ export default {
     shouldRenderSeatsOwedBlock() {
       return this.seatsOwed !== null;
     },
+    canAddSeats() {
+      return this.subscriptionPermissions?.canAddSeats ?? true;
+    },
     shouldShowModal() {
-      return gon.features?.limitedAccessModal;
+      return !this.canAddSeats && gon.features?.limitedAccessModal;
     },
   },
   methods: {
