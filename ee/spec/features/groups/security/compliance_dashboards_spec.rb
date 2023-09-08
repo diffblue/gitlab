@@ -17,6 +17,60 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
     sign_in(user)
   end
 
+  context 'tab selection' do
+    before do
+      visit group_security_compliance_dashboard_path(group)
+    end
+
+    context 'with feature flag `adherence_report_ui` enabled' do
+      let(:adherence_ff) { true }
+
+      it 'has the `Standards Adherence` tab selected by default' do
+        page.within('.gl-tabs') do
+          expect(find('[aria-selected="true"]').text).to eq('Standards Adherence')
+        end
+      end
+
+      context 'when `Violations` tab is clicked' do
+        it 'has the violations tab selected' do
+          page.within('.gl-tabs') do
+            click_link _('Violations')
+
+            expect(find('[aria-selected="true"]').text).to eq('Violations')
+          end
+        end
+      end
+
+      context 'when `Frameworks` tab is clicked' do
+        it 'has the violations tab selected' do
+          page.within('.gl-tabs') do
+            click_link _('Frameworks')
+
+            expect(find('[aria-selected="true"]').text).to eq('Frameworks')
+          end
+        end
+      end
+    end
+
+    context 'with feature flag `adherence_report_ui` disabled' do
+      it 'has the `Violations` tab selected by default' do
+        page.within('.gl-tabs') do
+          expect(find('[aria-selected="true"]').text).to eq('Violations')
+        end
+      end
+
+      context 'when `Frameworks` tab is clicked' do
+        it 'has the violations tab selected' do
+          page.within('.gl-tabs') do
+            click_link _('Frameworks')
+
+            expect(find('[aria-selected="true"]').text).to eq('Frameworks')
+          end
+        end
+      end
+    end
+  end
+
   context 'standards adherence tab' do
     let(:expected_path) { group_security_compliance_dashboard_path(group, vueroute: :standards_adherence) }
 
