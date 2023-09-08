@@ -830,6 +830,18 @@ module EE
         billed_shared_project_user?(user)
     end
 
+    # returns user_ids that are ineligible for code_suggestions
+    def filter_ineligible_user_ids_for_code_suggestions(user_ids)
+      eligible_user_ids = Set.new(
+        billed_group_users.where(id: user_ids).pluck(:id) +
+        billed_project_users.where(id: user_ids).pluck(:id) +
+        billed_shared_group_users.where(id: user_ids).pluck(:id) +
+        billed_invited_group_to_project_users.where(id: user_ids).pluck(:id)
+      )
+
+      user_ids - eligible_user_ids.to_a
+    end
+
     def parent_epic_ids_in_ancestor_groups
       ids = Set.new
       epics.has_parent.each_batch(of: EPIC_BATCH_SIZE, column: :iid) do |batch|

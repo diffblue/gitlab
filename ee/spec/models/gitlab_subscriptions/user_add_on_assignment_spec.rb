@@ -20,17 +20,19 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignment, feature_category: :seat
   end
 
   describe 'scopes' do
+    let_it_be(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase) }
+
     describe '.by_user' do
       let(:user) { create(:user) }
-      let(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase) }
-      let!(:other_assignment) { create(:gitlab_subscription_user_add_on_assignment, add_on_purchase: add_on_purchase) }
-      let!(:user_assignment) do
-        create(:gitlab_subscription_user_add_on_assignment, add_on_purchase: add_on_purchase, user: user)
-      end
 
       subject(:user_assignments) { described_class.by_user(user) }
 
       it 'returns assignments associated with user' do
+        user_assignment = create(
+          :gitlab_subscription_user_add_on_assignment, add_on_purchase: add_on_purchase, user: user
+        )
+        create(:gitlab_subscription_user_add_on_assignment, add_on_purchase: add_on_purchase) # second assignment
+
         expect(described_class.count).to eq(2)
 
         expect(user_assignments).to match_array([user_assignment])
@@ -116,6 +118,14 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignment, feature_category: :seat
             .to match_array [assignment]
         end
       end
+    end
+  end
+
+  describe '.pluck_user_ids' do
+    it 'returns user_ids' do
+      assignment = create(:gitlab_subscription_user_add_on_assignment)
+
+      expect(described_class.pluck_user_ids).to match_array([assignment.user_id])
     end
   end
 end

@@ -2,6 +2,8 @@
 
 module GitlabSubscriptions
   class UserAddOnAssignment < ApplicationRecord
+    include EachBatch
+
     belongs_to :user, inverse_of: :assigned_add_ons
     belongs_to :add_on_purchase, class_name: 'GitlabSubscriptions::AddOnPurchase', inverse_of: :assigned_users
 
@@ -15,6 +17,10 @@ module GitlabSubscriptions
     scope :for_active_add_on_purchase_ids, ->(add_on_purchase_ids) do
       joins(:add_on_purchase)
         .merge(::GitlabSubscriptions::AddOnPurchase.where(id: add_on_purchase_ids).active)
+    end
+
+    def self.pluck_user_ids
+      pluck(:user_id)
     end
   end
 end

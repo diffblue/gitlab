@@ -7,6 +7,7 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker
     let_it_be(:namespace) { create(:group) }
     let_it_be(:add_on) { create(:gitlab_subscription_add_on) }
     let_it_be(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase, namespace: namespace, add_on: add_on) }
+    let_it_be(:other_add_on_purchase) { create(:gitlab_subscription_add_on_purchase, add_on: add_on) }
 
     let(:root_namespace_id) { namespace.id }
 
@@ -16,6 +17,8 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker
     before_all do
       add_on_purchase.assigned_users.create!(user: user_1)
       add_on_purchase.assigned_users.create!(user: user_2)
+
+      other_add_on_purchase.assigned_users.create!(user: create(:user))
     end
 
     shared_examples 'does not remove seat assignment' do
@@ -47,6 +50,9 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker
             subject
           end.to change { GitlabSubscriptions::UserAddOnAssignment.where(add_on_purchase: add_on_purchase).count }
             .by(-2)
+
+          # other not related user assignments remain intact
+          expect(other_add_on_purchase.assigned_users.count).to eq(1)
         end
 
         context 'when some user is still eligible for assignment' do
@@ -63,6 +69,17 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker
           end
         end
       end
+    end
+
+    it 'logs an info about assignments refreshed' do
+      expect(Gitlab::AppLogger).to receive(:info).with(
+        message: 'AddOnPurchase user assignments refreshed in bulk',
+        batch: 1,
+        add_on: add_on_purchase.add_on.name,
+        namespace: namespace.path
+      )
+
+      subject.perform(root_namespace_id)
     end
   end
 end
