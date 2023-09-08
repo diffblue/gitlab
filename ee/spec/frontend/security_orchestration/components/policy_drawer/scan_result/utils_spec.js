@@ -1,9 +1,11 @@
 import { humanizeRules } from 'ee/security_orchestration/components/policy_drawer/scan_result/utils';
 import {
+  anyMergeRequestBuildRule,
   securityScanBuildRule,
   licenseScanBuildRule,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/rules';
 import {
+  ANY_UNSIGNED_COMMIT,
   ALL_PROTECTED_BRANCHES,
   HUMANIZED_BRANCH_TYPE_TEXT_DICT,
   INVALID_RULE_MESSAGE,
@@ -104,6 +106,29 @@ const noCriteriaSecurityScannerRule = {
     summary:
       'When SAST scanner finds more than 1 vulnerability in an open merge request targeting the staging or main branches.',
     criteriaList: [],
+  },
+};
+
+const anyMergeRequestDefaultRule = {
+  rule: {
+    ...anyMergeRequestBuildRule(),
+  },
+  humanized: {
+    branchExceptions: [],
+    summary: 'For any merge request on targeting any protected branch for any commits.',
+  },
+};
+
+const anyMergeRequestUnsignedCommitsWithExceptionsRule = {
+  rule: {
+    ...anyMergeRequestBuildRule(),
+    commits: ANY_UNSIGNED_COMMIT,
+    branch_exceptions: ['main', 'test'],
+  },
+  humanized: {
+    branchExceptions: ['main', 'test'],
+    summary:
+      'For any merge request on targeting any protected branch for unsigned commits except branches:',
   },
 };
 
@@ -341,5 +366,18 @@ describe('humanizeRules', () => {
         humanizeRules([branchExceptionLicenseScanRule(['test', 'test1']).rule]),
       ).toStrictEqual([branchExceptionLicenseScanRule(['test', 'test1']).humanized]);
     });
+  });
+
+  describe('any merge request rule', () => {
+    it.each`
+      description                                          | expectedRule
+      ${'rules with commit type'}                          | ${anyMergeRequestDefaultRule}
+      ${'rules with unsigned commits and with exceptions'} | ${anyMergeRequestUnsignedCommitsWithExceptionsRule}
+    `(
+      'returns a single rule as a human-readable string for any merge request $description',
+      ({ expectedRule }) => {
+        expect(humanizeRules([expectedRule.rule])).toStrictEqual([expectedRule.humanized]);
+      },
+    );
   });
 });
