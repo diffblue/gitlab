@@ -2656,6 +2656,9 @@ msgstr ""
 msgid "Action"
 msgstr ""
 
+msgid "Action '%{action}' in registries is not supported."
+msgstr ""
+
 msgid "Action '%{action}' in registry %{registry_id} entry is not supported."
 msgstr ""
 
@@ -5224,6 +5227,12 @@ msgid "An error occurred while trying to run a new pipeline for this merge reque
 msgstr ""
 
 msgid "An error occurred while trying to unfollow this user, please try again."
+msgstr ""
+
+msgid "An error occurred while trying to update the registries: '%{error_message}'."
+msgstr ""
+
+msgid "An error occurred while trying to update the registry: '%{error_message}'."
 msgstr ""
 
 msgid "An error occurred while updating approvers"
@@ -38609,6 +38618,12 @@ msgid "RegistrationFeatures|send emails to users"
 msgstr ""
 
 msgid "RegistrationFeatures|use this feature"
+msgstr ""
+
+msgid "Registries enqueued to be resynced"
+msgstr ""
+
+msgid "Registries enqueued to be reverified"
 msgstr ""
 
 msgid "Registry entry enqueued to be resynced"
