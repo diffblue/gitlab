@@ -58,9 +58,15 @@ export default {
           );
         }
       },
-      immediate: true,
       deep: true,
     },
+  },
+  mounted() {
+    this.$options.messageChunks = [];
+    if (this.message.chunkId) {
+      this.$options.messageChunks[this.message.chunkId] = this.message.content;
+    }
+    this.hydrateContentWithGFM();
   },
   methods: {
     async hydrateContentWithGFM() {
