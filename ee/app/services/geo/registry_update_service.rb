@@ -1,30 +1,21 @@
 # frozen_string_literal: true
 
 module Geo
-  # Accepts a registry id if the update affects one unique registry entry.
+  # Updates a Geo registry entry through reverify or resync actions
   class RegistryUpdateService
     include ::Gitlab::Geo::LogHelpers
 
-    attr_reader :registry_class, :registry
+    attr_reader :registry
 
     delegate :replicator, to: :registry
     delegate :model_record, to: :replicator
 
-    def initialize(action, registry_class, registry)
+    def initialize(action, registry)
       @action = action
-      @registry_class = registry_class.safe_constantize
       @registry = registry
     end
 
     def execute
-      update_registry
-    end
-
-    private
-
-    attr_reader :action
-
-    def update_registry
       case action.to_sym
       when :reverify
         reverify
@@ -37,28 +28,44 @@ module Geo
       error_in_action(e)
     end
 
+    private
+
+    attr_reader :action
+
     def reverify
       replicator.verify_async
 
-      ServiceResponse.success(message: _('Registry entry enqueued to be reverified'), payload: { registry: registry })
+      success_response(_('Registry entry enqueued to be reverified'))
     end
 
     def resync
       replicator.enqueue_sync
 
-      ServiceResponse.success(message: _('Registry entry enqueued to be resynced'), payload: { registry: registry })
+      success_response(_('Registry entry enqueued to be resynced'))
     end
 
     def action_not_supported
       ServiceResponse.error(
         message: format(_("Action '%{action}' in registry %{registry_id} entry is not supported."),
-          action: action, registry_id: registry&.id)
+          action: action, registry_id: registry.id)
       )
     end
 
     def error_in_action(error)
-      log_error("Could not update registry entry with action: #{action}", error.message, registry_id: registry&.id)
-      ServiceResponse.error(message: format(_(error.message)))
+      log_error(
+        "Could not update registry entry with action: #{action}",
+        error.message,
+        registry_id: registry.id
+      )
+
+      ServiceResponse.error(
+        message: format(_("An error occurred while trying to update the registry: '%{error_message}'."),
+          error_message: error.message)
+      )
+    end
+
+    def success_response(message)
+      ServiceResponse.success(message: message, payload: { registry: registry })
     end
   end
 end

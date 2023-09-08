@@ -6,6 +6,6 @@ RSpec.describe GitlabSchema.types['GeoRegistryAction'], feature_category: :geo_r
   it { expect(described_class.graphql_name).to eq('GeoRegistryAction') }
 
   it 'exposes the correct registry actions' do
-    expect(described_class.values.keys).to include(*%w[REVERIFY RESYNC])
+    expect(described_class.values.keys).to contain_exactly(*%w[REVERIFY RESYNC])
   end
 end
