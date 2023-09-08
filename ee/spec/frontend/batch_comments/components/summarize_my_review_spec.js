@@ -1,5 +1,6 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
+import { v4 as uuidv4 } from 'uuid';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -10,6 +11,7 @@ import summarizeReviewMutation from 'ee/batch_comments/graphql/summarize_review.
 import { GENIE_CHAT_MODEL_ROLES } from 'ee/ai/constants';
 
 jest.mock('~/alert');
+jest.mock('uuid');
 
 Vue.use(VueApollo);
 
@@ -45,6 +47,7 @@ const findButton = () => wrapper.findByTestId('mutation-trigger');
 describe('Generate test file drawer component', () => {
   beforeEach(() => {
     window.gon.current_user_id = 1;
+    uuidv4.mockImplementation(() => 'uuid');
     mutationHandlerMock = jest
       .fn()
       .mockResolvedValue({ data: { aiAction: { errors: [], __typename: 'AiActionPayload' } } });
@@ -71,7 +74,10 @@ describe('Generate test file drawer component', () => {
 
     await nextTick();
 
-    expect(mutationHandlerMock).toHaveBeenCalledWith({ resourceId: 'gid://gitlab/MergeRequest/1' });
+    expect(mutationHandlerMock).toHaveBeenCalledWith({
+      resourceId: 'gid://gitlab/MergeRequest/1',
+      clientSubscriptionId: 'uuid',
+    });
   });
 
   it('emits input event when subscription returns value', async () => {
@@ -103,6 +109,11 @@ describe('Generate test file drawer component', () => {
     await nextTick();
     await waitForPromises();
 
+    expect(subscriptionHandlerMock).toHaveBeenCalledWith({
+      userId: 'gid://gitlab/User/1',
+      resourceId: 'gid://gitlab/MergeRequest/1',
+      clientSubscriptionId: 'uuid',
+    });
     expect(createAlert).toHaveBeenCalledWith({ message: 'Error' });
   });
 });

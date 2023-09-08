@@ -1,6 +1,7 @@
 <script>
 import { GlButton } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
+import { v4 as uuidv4 } from 'uuid';
 import { __ } from '~/locale';
 import { createAlert } from '~/alert';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
@@ -11,12 +12,13 @@ import aiSummarizeReviewMutation from '../graphql/summarize_review.mutation.grap
 export default {
   apollo: {
     $subscribe: {
-      testFile: {
+      summarizeReview: {
         query: aiResponseSubscription,
         variables() {
           return {
             resourceId: this.resourceId,
             userId: convertToGraphQLId(TYPENAME_USER, window.gon.current_user_id),
+            clientSubscriptionId: this.clientSubscriptionId,
           };
         },
         skip() {
@@ -50,6 +52,7 @@ export default {
   data() {
     return {
       loading: false,
+      clientSubscriptionId: uuidv4(),
     };
   },
   computed: {
@@ -66,6 +69,7 @@ export default {
           mutation: aiSummarizeReviewMutation,
           variables: {
             resourceId: this.resourceId,
+            clientSubscriptionId: this.clientSubscriptionId,
           },
         });
       } catch (e) {
