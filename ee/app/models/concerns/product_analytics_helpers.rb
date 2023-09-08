@@ -10,6 +10,17 @@ module ProductAnalyticsHelpers
     true
   end
 
+  def value_streams_dashboard_available?
+    licensed_feature =
+      if is_a?(Project)
+        :project_level_analytics_dashboard
+      else
+        :group_level_analytics_dashboard
+      end
+
+    licensed_feature_available?(licensed_feature)
+  end
+
   def product_analytics_dashboards
     return [] unless product_analytics_enabled?
 
