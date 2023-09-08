@@ -25,7 +25,7 @@ module Llm
     private
 
     def find_blob_resource
-      return unless Feature.enabled?(:explain_current_blob, @current_user) && @referer_url
+      return unless @referer_url
 
       project_fullpath, resource_path = parse_referer(@referer_url)
       return unless project_fullpath && resource_path

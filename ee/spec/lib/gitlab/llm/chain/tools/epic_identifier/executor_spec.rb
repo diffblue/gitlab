@@ -101,21 +101,6 @@ RSpec.describe Gitlab::Llm::Chain::Tools::EpicIdentifier::Executor, feature_cate
           # rubocop: enable RSpec/BeforeAllRoleAssignment
         end
 
-        context 'when push_ai_to_load_identified_issue_json FF is disabled' do
-          before do
-            stub_feature_flags(push_ai_to_load_identified_issue_json: false)
-          end
-
-          context 'when is epic identified with reference' do
-            let(:identifier) { epic2.to_reference(full: true) }
-            let(:ai_response) do
-              "reference\", \"ResourceIdentifier\": \"#{identifier}\"}"
-            end
-
-            it_behaves_like 'success response', true
-          end
-        end
-
         context 'when ai response has invalid JSON' do
           it 'retries the ai call' do
             input_variables = { input: "user input", suggestions: "" }

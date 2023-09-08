@@ -27,8 +27,8 @@ module Gitlab
 
               # now the resource in context is being referenced in user input.
               context.resource = resource
-              content = "I identified the #{resource_name} #{json[:ResourceIdentifier]}."
-              content += " For more information use ResourceReader." if load_json?
+
+              content = "I identified the #{resource_name} #{json[:ResourceIdentifier]}. For more information use ResourceReader." # rubocop:disable Layout/LineLength
 
               logger.debug(message: "Answer", class: self.class.to_s, content: content)
               return Answer.new(status: :ok, context: context, content: content, tool: nil)
@@ -65,10 +65,6 @@ module Gitlab
 
           def extract_resource
             raise NotImplementedError
-          end
-
-          def load_json?
-            Feature.enabled?(:push_ai_to_load_identified_issue_json)
           end
 
           def authorize

@@ -223,24 +223,8 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         "The current code file that user sees is #{blob.path} and has the following content\n#{blob.data}"
       end
 
-      before do
-        stub_feature_flags(explain_current_blob: user)
-      end
-
       it 'includes the blob data in the prompt' do
         expect(agent.prompt[:prompt]).to include injected_prompt
-      end
-
-      context 'when the feature flag explain_current_blob is disabled for current user' do
-        let(:other_user) { create(:user) }
-
-        before do
-          stub_feature_flags(explain_current_blob: other_user)
-        end
-
-        it 'omits the blob data in the prompt' do
-          expect(agent.prompt[:prompt]).to exclude injected_prompt
-        end
       end
     end
   end
@@ -300,44 +284,17 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       let(:blob) { project.repository.blob_at("master", "files/ruby/popen.rb") }
       let(:extra_resource) { { blob: blob } }
 
-      context 'when the feature flag :explain_current_blob is enabled for user' do
-        where(:input_template, :tools, :answer_match) do
-          'Explain the code'          | [] | /ruby|popen/i
-          'Explain this code'         | [] | /ruby|popen/i
-          'What is this code doing?'  | [] | /ruby|popen/i
-          'Can you explain the code ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""?' | [] | /hello/i
-        end
-
-        with_them do
-          let(:input) { input_template }
-
-          before do
-            stub_feature_flags(explain_current_blob: user)
-          end
-
-          it_behaves_like 'successful prompt processing'
-        end
+      where(:input_template, :tools, :answer_match) do
+        'Explain the code'          | [] | /ruby|popen/i
+        'Explain this code'         | [] | /ruby|popen/i
+        'What is this code doing?'  | [] | /ruby|popen/i
+        'Can you explain the code ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""?' | [] | /hello/i
       end
 
-      context 'when the feature flag :explain_current_blob is disabled for user' do
-        let_it_be(:other_user) { create(:user) }
+      with_them do
+        let(:input) { input_template }
 
-        where(:input_template, :tools, :answer_match) do
-          'Explain the code'          | [] | /react/i # Hallucinates by making up react code
-          'Explain this code'         | [] | /react/i # Hallucinates by making up react code
-          'What is this code doing?'  | [] | /react/i # Hallucinates by making up react code
-          'Can you explain the code ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""?' | [] | /hello/i
-        end
-
-        with_them do
-          let(:input) { input_template }
-
-          before do
-            stub_feature_flags(explain_current_blob: other_user)
-          end
-
-          it_behaves_like 'successful prompt processing'
-        end
+        it_behaves_like 'successful prompt processing'
       end
     end
 
