@@ -33,6 +33,7 @@ import {
   approversOutOfSync,
   emptyBuildRule,
   invalidScanners,
+  invalidSeverities,
   invalidVulnerabilitiesAllowed,
   invalidVulnerabilityStates,
   invalidVulnerabilityAge,
@@ -293,6 +294,7 @@ export default {
       return (
         invalidApprovers ||
         invalidScanners(rules) ||
+        invalidSeverities(rules) ||
         invalidVulnerabilitiesAllowed(rules) ||
         invalidVulnerabilityStates(rules) ||
         invalidBranchType(rules) ||

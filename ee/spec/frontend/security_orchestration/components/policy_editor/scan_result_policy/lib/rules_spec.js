@@ -4,6 +4,7 @@ import axios from '~/lib/utils/axios_utils';
 import {
   getInvalidBranches,
   invalidScanners,
+  invalidSeverities,
   invalidVulnerabilitiesAllowed,
   invalidVulnerabilityStates,
   invalidBranchType,
@@ -48,10 +49,38 @@ describe('invalidScanners', () => {
     });
   });
 
+  describe('with rules with duplicate scanners', () => {
+    it('returns true', () => {
+      expect(invalidScanners([{ scanners: ['sast', 'sast'] }])).toBe(true);
+    });
+  });
+
   describe('with rules with invalid scanners', () => {
     it('returns true', () => {
       expect(invalidScanners([{ scanners: ['notValid'] }])).toBe(true);
     });
+  });
+});
+
+describe('invalidSeverities', () => {
+  it('returns false with undefined rules', () => {
+    expect(invalidSeverities(undefined)).toBe(false);
+  });
+
+  it('returns false with empty rules', () => {
+    expect(invalidSeverities([])).toBe(false);
+  });
+
+  it('returns false with rules with valid severities', () => {
+    expect(invalidSeverities([{ severity_levels: ['high'] }])).toBe(false);
+  });
+
+  it('returns true with rules with duplicate severities', () => {
+    expect(invalidSeverities([{ severity_levels: ['critical', 'critical'] }])).toBe(true);
+  });
+
+  it('returns true with rules with invalid severities', () => {
+    expect(invalidSeverities([{ severity_levels: ['invalid'] }])).toBe(true);
   });
 });
 
@@ -124,17 +153,18 @@ describe('invalidVulnerabilityStates', () => {
   const previouslyExistingStates = Object.keys(APPROVAL_VULNERABILITY_STATES[PREVIOUSLY_EXISTING]);
 
   it.each`
-    rules                                                                   | expectedResult
-    ${null}                                                                 | ${false}
-    ${[]}                                                                   | ${false}
-    ${[{}]}                                                                 | ${false}
-    ${[{ vulnerability_states: [] }]}                                       | ${false}
-    ${[{ vulnerability_states: newlyDetectedStates }]}                      | ${false}
-    ${[{ vulnerability_states: previouslyExistingStates }]}                 | ${false}
-    ${[{ vulnerability_states: VULNERABILITY_STATE_KEYS }]}                 | ${false}
-    ${[{ vulnerability_states: ['invalid'] }]}                              | ${true}
-    ${[{ vulnerability_states: [...newlyDetectedStates, 'invalid'] }]}      | ${true}
-    ${[{ vulnerability_states: [...previouslyExistingStates, 'invalid'] }]} | ${true}
+    rules                                                                           | expectedResult
+    ${null}                                                                         | ${false}
+    ${[]}                                                                           | ${false}
+    ${[{}]}                                                                         | ${false}
+    ${[{ vulnerability_states: [] }]}                                               | ${false}
+    ${[{ vulnerability_states: newlyDetectedStates }]}                              | ${false}
+    ${[{ vulnerability_states: previouslyExistingStates }]}                         | ${false}
+    ${[{ vulnerability_states: VULNERABILITY_STATE_KEYS }]}                         | ${false}
+    ${[{ vulnerability_states: [newlyDetectedStates[0], newlyDetectedStates[0]] }]} | ${true}
+    ${[{ vulnerability_states: ['invalid'] }]}                                      | ${true}
+    ${[{ vulnerability_states: [...newlyDetectedStates, 'invalid'] }]}              | ${true}
+    ${[{ vulnerability_states: [...previouslyExistingStates, 'invalid'] }]}         | ${true}
   `('returns $expectedResult with $rules', ({ rules, expectedResult }) => {
     expect(invalidVulnerabilityStates(rules)).toStrictEqual(expectedResult);
   });
@@ -147,8 +177,8 @@ describe('invalidVulnerabilityStates', () => {
       ${''}                                                                                 | ${false}
       ${[{}]}                                                                               | ${false}
       ${[{ branches: [] }]}                                                                 | ${false}
-      ${[{ branch_type: 'invalid' }]}                                                       | ${true}
       ${[{ branch_type: 'protected' }, { branch_type: 'default' }]}                         | ${false}
+      ${[{ branch_type: 'invalid' }]}                                                       | ${true}
       ${[{ branch_type: 'protected' }, { branch_type: 'default' }, { branch_type: 'all' }]} | ${true}
     `('returns $expectedResult with $rules', ({ rules, expectedResult }) => {
       expect(invalidBranchType(rules)).toBe(expectedResult);
