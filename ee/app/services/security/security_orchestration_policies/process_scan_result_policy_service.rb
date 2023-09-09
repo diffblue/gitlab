@@ -3,6 +3,11 @@
 module Security
   module SecurityOrchestrationPolicies
     class ProcessScanResultPolicyService
+      REPORT_TYPE_MAPPING = {
+        Security::ScanResultPolicy::LICENSE_FINDING => :license_scanning,
+        Security::ScanResultPolicy::ANY_MERGE_REQUEST => :any_merge_request
+      }.freeze
+
       def initialize(project:, policy_configuration:, policy:, policy_index:)
         @policy_configuration = policy_configuration
         @policy = policy
@@ -26,14 +31,23 @@ module Security
         policy[:rules].first(Security::ScanResultPolicy::LIMIT).each_with_index do |rule, rule_index|
           next unless rule_type_allowed?(rule[:type])
 
-          scan_result_policy_read = create_scan_result_policy(rule, action_info, project, rule_index)
+          scan_result_policy_read = create_scan_result_policy(
+            rule, action_info, policy[:approval_settings], project, rule_index
+          )
 
           create_software_license_policies(rule, rule_index, scan_result_policy_read) if license_finding?(rule)
+
+          next unless create_approval_rule?(rule)
 
           ::ApprovalRules::CreateService
             .new(project, author, rule_params(rule, rule_index, action_info, scan_result_policy_read))
             .execute
         end
+      end
+
+      def create_approval_rule?(rule)
+        rule[:type] != Security::ScanResultPolicy::ANY_MERGE_REQUEST ||
+          Feature.enabled?(:scan_result_any_merge_request, project)
       end
 
       def license_finding?(rule)
@@ -54,7 +68,7 @@ module Security
         end
       end
 
-      def create_scan_result_policy(rule, action_info, project, rule_index)
+      def create_scan_result_policy(rule, action_info, project_approval_settings, project, rule_index)
         policy_configuration.scan_result_policy_reads.create!(
           orchestration_policy_idx: policy_index,
           rule_idx: rule_index,
@@ -65,7 +79,9 @@ module Security
           project_id: project.id,
           age_operator: rule.dig(:vulnerability_age, :operator),
           age_interval: rule.dig(:vulnerability_age, :interval),
-          age_value: rule.dig(:vulnerability_age, :value)
+          age_value: rule.dig(:vulnerability_age, :value),
+          commits: rule[:commits],
+          project_approval_settings: project_approval_settings || {}
         )
       end
 
@@ -117,12 +133,13 @@ module Security
       def rule_type_allowed?(rule_type)
         [
           Security::ScanResultPolicy::SCAN_FINDING,
-          Security::ScanResultPolicy::LICENSE_FINDING
+          Security::ScanResultPolicy::LICENSE_FINDING,
+          Security::ScanResultPolicy::ANY_MERGE_REQUEST
         ].include?(rule_type)
       end
 
       def report_type(rule_type)
-        rule_type == Security::ScanResultPolicy::LICENSE_FINDING ? :license_scanning : :scan_finding
+        REPORT_TYPE_MAPPING.fetch(rule_type, :scan_finding)
       end
 
       def rule_name(policy_name, rule_index)

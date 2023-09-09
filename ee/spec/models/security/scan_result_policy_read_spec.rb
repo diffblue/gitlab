@@ -29,6 +29,17 @@ RSpec.describe Security::ScanResultPolicyRead, feature_category: :security_polic
       is_expected.to allow_value({ false_positive: true, fix_available: false }).for(:vulnerability_attributes)
     end
 
+    it { is_expected.not_to allow_value("string").for(:project_approval_settings) }
+    it { is_expected.to allow_value({}).for(:project_approval_settings) }
+
+    it do
+      is_expected.to allow_value(
+        { prevent_approval_by_author: true, prevent_approval_by_commit_author: false,
+          remove_approvals_with_new_commit: true, require_password_to_approve: false,
+          block_unprotecting_branches: true }
+      ).for(:project_approval_settings)
+    end
+
     it do
       is_expected.to(
         validate_uniqueness_of(:rule_idx)

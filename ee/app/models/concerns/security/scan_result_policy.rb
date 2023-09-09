@@ -12,6 +12,7 @@ module Security
     SCAN_FINDING = 'scan_finding'
     LICENSE_SCANNING = 'license_scanning'
     LICENSE_FINDING = 'license_finding'
+    ANY_MERGE_REQUEST = 'any_merge_request'
 
     REQUIRE_APPROVAL = 'require_approval'
 
