@@ -68,15 +68,21 @@ export default {
 </script>
 <template>
   <div class="issues-analytics-wrapper">
-    <total-issues-analytics-chart
-      v-if="supportsIssuesCompletedAnalytics"
-      :start-date="startDate"
-      :end-date="endDate"
-      :filters="filters"
-      class="gl-mt-6"
-      @hideFilteredSearchBar="hideFilteredSearchBar"
-    />
-    <issues-analytics-chart v-else @hasNoData="hideFilteredSearchBar" />
+    <div class="gl-mt-6" data-testid="issues_analytics_chart_wrapper">
+      <total-issues-analytics-chart
+        v-if="supportsIssuesCompletedAnalytics"
+        data-testid="issues_analytics_graph"
+        :start-date="startDate"
+        :end-date="endDate"
+        :filters="filters"
+        @hideFilteredSearchBar="hideFilteredSearchBar"
+      />
+      <issues-analytics-chart
+        v-else
+        data-testid="issues_analytics_graph"
+        @hasNoData="hideFilteredSearchBar"
+      />
+    </div>
     <issues-analytics-table class="gl-mt-6" />
   </div>
 </template>
