@@ -52,10 +52,8 @@ FactoryBot.define do
 
     transient do
       branches { ['master'] }
-    end
-
-    transient do
       vulnerability_attributes { {} }
+      commits { 'unsigned' }
     end
 
     sequence(:name) { |n| "test-policy-#{n}" }
@@ -89,6 +87,29 @@ FactoryBot.define do
             license_states: %w[newly_detected detected]
           }
         ]
+      end
+    end
+
+    trait :any_merge_request do
+      rules do
+        [
+          {
+            type: 'any_merge_request',
+            branches: branches,
+            commits: commits
+          }
+        ]
+      end
+    end
+
+    trait :with_approval_settings do
+      approval_settings do
+        {
+          prevent_approval_by_author: true,
+          prevent_approval_by_commit_author: true,
+          remove_approvals_with_new_commit: true,
+          require_password_to_approve: true
+        }
       end
     end
   end

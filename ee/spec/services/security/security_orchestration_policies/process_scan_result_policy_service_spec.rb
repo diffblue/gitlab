@@ -432,6 +432,36 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       end
     end
 
+    context 'with approval_settings' do
+      let(:rule) do
+        {
+          type: 'scan_finding',
+          branches: %w[master],
+          scanners: %w[container_scanning],
+          vulnerabilities_allowed: 0,
+          severity_levels: %w[critical],
+          vulnerability_states: %w[detected]
+        }
+      end
+
+      let(:policy) do
+        build(:scan_result_policy, :with_approval_settings, name: 'Test Policy', rules: [rule])
+      end
+
+      it 'creates new approval rules' do
+        expect { subject }.to change { project.approval_rules.count }.by(1)
+      end
+
+      it 'creates scan_result_policy_read' do
+        subject
+
+        scan_result_policy_read = project.approval_rules.first.scan_result_policy_read
+        expect(scan_result_policy_read.project_approval_settings).to(
+          eq policy[:approval_settings].with_indifferent_access
+        )
+      end
+    end
+
     describe 'rule params `protected_branch_ids`' do
       let(:protected_branch_name) { 'protected-branch-name' }
       let(:rule) do
@@ -521,6 +551,45 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
         approval_rule = project.approval_rules.first
 
         expect(approval_rule.severity_levels).to be_empty
+      end
+    end
+
+    context 'with any_merge_request rule_type' do
+      let(:policy) { build(:scan_result_policy, :any_merge_request, commits: 'unsigned') }
+
+      it 'creates new approval rules with provided params' do
+        expect { subject }.to change { project.approval_rules.count }.by(1)
+
+        approval_rule = project.approval_rules.first
+
+        expect(approval_rule).to be_any_merge_request
+      end
+
+      it 'creates scan_result_policy_read' do
+        subject
+
+        scan_result_policy_read = project.approval_rules.first.scan_result_policy_read
+        expect(scan_result_policy_read).to eq(Security::ScanResultPolicyRead.first)
+        expect(scan_result_policy_read).to be_commits_unsigned
+        expect(scan_result_policy_read.rule_idx).to be(0)
+      end
+
+      context 'when feature flag "scan_result_any_merge_request" is disabled' do
+        before do
+          stub_feature_flags(scan_result_any_merge_request: false)
+        end
+
+        it "doesn't create new approval rules" do
+          expect { subject }.not_to change { project.approval_rules.count }
+        end
+
+        it 'creates scan_result_policy_read' do
+          expect { subject }.to change { project.scan_result_policy_reads.count }.by(1)
+
+          scan_result_policy_read = project.scan_result_policy_reads.first
+          expect(scan_result_policy_read).to be_commits_unsigned
+          expect(scan_result_policy_read.rule_idx).to be(0)
+        end
       end
     end
 

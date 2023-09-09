@@ -36,7 +36,8 @@ module ApprovalRuleLike
       vulnerability: 1, # To be removed after all MRs (related to https://gitlab.com/gitlab-org/gitlab/-/issues/356996) get merged
       license_scanning: 2,
       code_coverage: 3,
-      scan_finding: 4
+      scan_finding: 4,
+      any_merge_request: 5
     }
 
     validates :name, presence: true

@@ -8,6 +8,7 @@ module Security
 
     enum age_operator: { greater_than: 0, less_than: 1 }
     enum age_interval: { day: 0, week: 1, month: 2, year: 3 }
+    enum commits: { any: 0, unsigned: 1 }, _prefix: true
 
     belongs_to :security_orchestration_policy_configuration, class_name: 'Security::OrchestrationPolicyConfiguration'
     belongs_to :project, optional: true
@@ -21,6 +22,8 @@ module Security
     validates :rule_idx,
       uniqueness: { scope: %i[security_orchestration_policy_configuration_id project_id orchestration_policy_idx] },
       numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
+    validates :project_approval_settings, json_schema: { filename: 'scan_result_policy_project_approval_settings' },
+      allow_blank: true
 
     def newly_detected?
       license_states.include?(ApprovalProjectRule::NEWLY_DETECTED)
