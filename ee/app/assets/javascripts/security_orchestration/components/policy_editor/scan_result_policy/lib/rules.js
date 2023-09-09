@@ -1,7 +1,7 @@
 import { isEmpty } from 'lodash';
 import { s__, sprintf } from '~/locale';
 import Api from 'ee/api';
-import { REPORT_TYPES_DEFAULT } from 'ee/security_dashboard/store/constants';
+import { REPORT_TYPES_DEFAULT, SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import { isPositiveInteger } from '~/lib/utils/number_utils';
 import {
   ALL_PROTECTED_BRANCHES,
@@ -65,7 +65,7 @@ export const anyMergeRequestBuildRule = () => ({
 });
 
 /*
-  Construct a new rule object for when the licenseScanningPolocies flag is on
+  Construct a new rule object for when the licenseScanningPolicies flag is on
 */
 export const emptyBuildRule = () => ({
   type: '',
@@ -76,20 +76,29 @@ export const emptyBuildRule = () => ({
  * @param {Array} rules - List of rules
  * @param {String} key - Rule key to check
  * @param {Array} allowedValues - List of possible values
+ * @param {Boolean} areDuplicatesAllowed - check for duplicates in array
  * @returns
  */
-const invalidRuleValues = (rules, key, allowedValues) => {
+const invalidRuleValues = (rules, key, allowedValues, areDuplicatesAllowed = false) => {
   if (!rules) {
     return false;
   }
 
-  return rules
-    .filter((rule) => rule[key])
-    .flatMap((rule) => rule[key])
-    .some((value) => !allowedValues.includes(value));
+  const hasDuplicates = (items = []) => new Set(items).size !== items.length;
+
+  const flattenedValues = rules.filter((rule) => rule[key]).flatMap((rule) => rule[key]);
+
+  if (!areDuplicatesAllowed && hasDuplicates(flattenedValues)) {
+    return true;
+  }
+
+  return flattenedValues.some((value) => !allowedValues.includes(value));
 };
 
 export const invalidScanners = (rules) => invalidRuleValues(rules, 'scanners', REPORT_TYPES_KEYS);
+
+export const invalidSeverities = (rules) =>
+  invalidRuleValues(rules, 'severity_levels', Object.keys(SEVERITY_LEVELS));
 
 export const invalidVulnerabilityStates = (rules) =>
   invalidRuleValues(rules, 'vulnerability_states', VULNERABILITY_STATE_KEYS);

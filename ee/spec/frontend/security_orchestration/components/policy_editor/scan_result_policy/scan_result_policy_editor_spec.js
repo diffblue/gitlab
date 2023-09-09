@@ -383,6 +383,13 @@ describe('ScanResultPolicyEditor', () => {
       verifiesParsingError();
     });
 
+    it('creates an error when policy severity_levels are invalid', async () => {
+      factoryWithExistingPolicy({ rules: [{ severity_levels: ['non-existent'] }] });
+
+      await changesToRuleMode();
+      verifiesParsingError();
+    });
+
     it('creates an error when vulnerabilities_allowed are invalid', async () => {
       factoryWithExistingPolicy({ rules: [{ vulnerabilities_allowed: 'invalid' }] });
 
