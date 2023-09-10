@@ -80,7 +80,7 @@ export default {
       let groups = [];
       let totalPages = 0;
       try {
-        const { data = [], headers } = await axios.get(Api.buildUrl(groupsPath()), {
+        const { data = [], headers } = await axios.get(groupsPath(), {
           params: {
             search: searchString,
             per_page: DEFAULT_PER_PAGE,
