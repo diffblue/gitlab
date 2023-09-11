@@ -36,7 +36,7 @@ module Elastic
         end
 
         if migration.halted?
-          logger.info(structured_payload(message: "MigrationWorker: migration[#{migration.name}] has been halted. All future migrations will be halted because of that. Exiting"))
+          logger.error(structured_payload(message: "MigrationWorker: migration[#{migration.name}] has been halted. All future migrations will be halted because of that. Exiting"))
           unpause_indexing!(migration)
 
           break false
