@@ -40,9 +40,9 @@ export const TEST_DASHBOARD_GRAPHQL_404_RESPONSE = {
   data: {
     project: {
       id: 'gid://gitlab/Project/1',
-      productAnalyticsDashboards: {
+      customizableDashboards: {
         nodes: [],
-        __typename: 'ProductAnalyticsDashboardConnection',
+        __typename: 'CustomizableDashboardConnection',
       },
       __typename: 'Project',
     },
@@ -55,7 +55,7 @@ export const getGraphQLDashboard = (options = {}, withPanels = true) => {
     title: '',
     userDefined: false,
     description: 'Understand your audience',
-    __typename: 'ProductAnalyticsDashboard',
+    __typename: 'CustomizableDashboard',
     ...options,
   };
 
@@ -105,12 +105,12 @@ export const getGraphQLDashboard = (options = {}, withPanels = true) => {
                 },
               },
               errors: null,
-              __typename: 'ProductAnalyticsDashboardVisualization',
+              __typename: 'CustomizableDashboardVisualization',
             },
-            __typename: 'ProductAnalyticsDashboardPanel',
+            __typename: 'CustomizableDashboardPanel',
           },
         ],
-        __typename: 'ProductAnalyticsDashboardPanelConnection',
+        __typename: 'CustomizableDashboardPanelConnection',
       },
     };
   }
@@ -122,7 +122,7 @@ export const TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE = {
   data: {
     project: {
       id: 'gid://gitlab/Project/73',
-      productAnalyticsVisualizations: {
+      customizableDashboardVisualizations: {
         nodes: [
           {
             slug: 'another_one',
@@ -145,7 +145,7 @@ export const TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE = {
               },
             },
             options: {},
-            __typename: 'ProductAnalyticsDashboardVisualization',
+            __typename: 'CustomizableDashboardVisualization',
           },
         ],
       },
@@ -157,7 +157,7 @@ export const TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE = {
   data: {
     project: {
       id: 'gid://gitlab/Project/1',
-      productAnalyticsDashboards: {
+      customizableDashboards: {
         nodes: [
           getGraphQLDashboard({
             slug: 'custom_dashboard',
@@ -165,7 +165,7 @@ export const TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE = {
             userDefined: true,
           }),
         ],
-        __typename: 'ProductAnalyticsDashboardConnection',
+        __typename: 'CustomizableDashboardConnection',
       },
       __typename: 'Project',
     },
@@ -176,7 +176,7 @@ export const TEST_CUSTOM_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE = {
   data: {
     project: {
       id: 'gid://gitlab/Project/1',
-      productAnalyticsDashboards: {
+      customizableDashboards: {
         nodes: [
           getGraphQLDashboard({
             slug: 'value_stream_dashboard',
@@ -184,7 +184,7 @@ export const TEST_CUSTOM_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE = {
             userDefined: false,
           }),
         ],
-        __typename: 'ProductAnalyticsDashboardConnection',
+        __typename: 'CustomizableDashboardConnection',
       },
       __typename: 'Project',
     },
@@ -195,9 +195,9 @@ export const TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE = {
   data: {
     project: {
       id: 'gid://gitlab/Project/1',
-      productAnalyticsDashboards: {
+      customizableDashboards: {
         nodes: [getGraphQLDashboard({ slug: 'audience', title: 'Audience' })],
-        __typename: 'ProductAnalyticsDashboardConnection',
+        __typename: 'CustomizableDashboardConnection',
       },
       __typename: 'Project',
     },
@@ -208,7 +208,7 @@ export const TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE = {
   data: {
     project: {
       id: 'gid://gitlab/Project/1',
-      productAnalyticsDashboards: {
+      customizableDashboards: {
         nodes: [
           getGraphQLDashboard({ slug: 'audience', title: 'Audience' }, false),
           getGraphQLDashboard({ slug: 'behavior', title: 'Behavior' }, false),
@@ -217,7 +217,7 @@ export const TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE = {
             false,
           ),
         ],
-        __typename: 'ProductAnalyticsDashboardConnection',
+        __typename: 'CustomizableDashboardConnection',
       },
       __typename: 'Project',
     },

@@ -4,7 +4,7 @@
 module Types
   module ProductAnalytics
     class PanelType < BaseObject
-      graphql_name 'ProductAnalyticsDashboardPanel'
+      graphql_name 'CustomizableDashboardPanel'
       description 'Represents a product analytics dashboard panel.'
 
       field :title,

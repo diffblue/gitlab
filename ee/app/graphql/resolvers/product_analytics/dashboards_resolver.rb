@@ -14,11 +14,16 @@ module Resolvers
                required: false,
                description: 'Find by dashboard slug.'
 
-      def resolve(slug: nil)
+      argument :category, ::Types::ProductAnalytics::CategoryEnum,
+               required: false,
+               description: 'Find by dashboard type.',
+               default_value: ::Types::ProductAnalytics::StateEnum.values['ANALYTICS']
+
+      def resolve(slug: nil, category: 'analytics')
         return unless object.product_analytics_enabled?
         return object.product_analytics_dashboards unless slug.present?
 
-        [object.product_analytics_dashboard(slug)]
+        category.nil? || category == 'analytics' ? [object.product_analytics_dashboard(slug)] : []
       end
     end
   end

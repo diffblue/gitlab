@@ -3,7 +3,7 @@
 module Types
   module ProductAnalytics
     class VisualizationType < BaseObject # rubocop:disable Graphql/AuthorizeTypes
-      graphql_name 'ProductAnalyticsDashboardVisualization'
+      graphql_name 'CustomizableDashboardVisualization'
       description 'Represents a product analytics dashboard visualization.'
 
       field :type,

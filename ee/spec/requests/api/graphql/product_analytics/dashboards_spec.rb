@@ -9,12 +9,12 @@ RSpec.describe 'Query.project(id).dashboards', feature_category: :product_analyt
   let_it_be_with_reload(:project) { create(:project, :with_product_analytics_dashboard) }
 
   let(:query) do
-    fields = all_graphql_fields_for('ProductAnalyticsDashboard')
+    fields = all_graphql_fields_for('CustomizableDashboard')
 
     graphql_query_for(
       :project,
       { full_path: project.full_path },
-      query_nodes(:product_analytics_dashboards, fields)
+      query_nodes(:customizable_dashboards, fields)
     )
   end
 
@@ -33,14 +33,14 @@ RSpec.describe 'Query.project(id).dashboards', feature_category: :product_analyt
     it 'returns dashboards' do
       post_graphql(query, current_user: user)
 
-      expect(graphql_data_at(:project, :product_analytics_dashboards, :nodes, 3, :title)).to eq('Dashboard Example 1')
-      expect(graphql_data_at(:project, :product_analytics_dashboards, :nodes, 3, :slug)).to eq('dashboard_example_1')
+      expect(graphql_data_at(:project, :customizable_dashboards, :nodes, 3, :title)).to eq('Dashboard Example 1')
+      expect(graphql_data_at(:project, :customizable_dashboards, :nodes, 3, :slug)).to eq('dashboard_example_1')
     end
 
     it 'returns three gitlab provided dashboards' do
       post_graphql(query, current_user: user)
 
-      expect(graphql_data_at(:project, :product_analytics_dashboards, :nodes).pluck('userDefined'))
+      expect(graphql_data_at(:project, :customizable_dashboards, :nodes).pluck('userDefined'))
         .to match_array([false, false, false, true])
     end
 
@@ -52,7 +52,7 @@ RSpec.describe 'Query.project(id).dashboards', feature_category: :product_analyt
       it 'returns nil' do
         post_graphql(query, current_user: user)
 
-        expect(graphql_data_at(:project, :product_analytics_dashboards, :nodes)).to be_nil
+        expect(graphql_data_at(:project, :customizable_dashboards, :nodes)).to be_nil
       end
     end
   end
@@ -65,7 +65,7 @@ RSpec.describe 'Query.project(id).dashboards', feature_category: :product_analyt
     it 'returns no dashboards' do
       post_graphql(query, current_user: user)
 
-      expect(graphql_data_at(:project, :product_analytics_dashboards, :nodes)).to be_nil
+      expect(graphql_data_at(:project, :customizable_dashboards, :nodes)).to be_nil
     end
   end
 
@@ -79,7 +79,7 @@ RSpec.describe 'Query.project(id).dashboards', feature_category: :product_analyt
     it 'does not return the Value stream dashboard' do
       post_graphql(query, current_user: user)
 
-      expect(graphql_data_at(:project, :product_analytics_dashboards, :nodes).pluck('slug'))
+      expect(graphql_data_at(:project, :customizable_dashboards, :nodes).pluck('slug'))
         .not_to include('value_stream_dashboard')
     end
   end

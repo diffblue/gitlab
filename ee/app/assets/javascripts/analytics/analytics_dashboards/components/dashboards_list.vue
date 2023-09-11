@@ -101,7 +101,7 @@ export default {
         };
       },
       update(data) {
-        return data?.project?.productAnalyticsDashboards?.nodes
+        return data?.project?.customizableDashboards?.nodes
           .map((dashboard) => {
             // TODO: Simplify checks when backend returns dashboards only for onboarded features
             // https://gitlab.com/gitlab-org/gitlab/-/issues/411608

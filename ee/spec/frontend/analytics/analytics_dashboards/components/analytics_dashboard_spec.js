@@ -68,7 +68,7 @@ describe('AnalyticsDashboard', () => {
   };
 
   const getFirstParsedDashboard = (dashboards) => {
-    const firstDashboard = dashboards.data.project.productAnalyticsDashboards.nodes[0];
+    const firstDashboard = dashboards.data.project.customizableDashboards.nodes[0];
 
     const panels = firstDashboard.panels?.nodes || [];
 
@@ -233,7 +233,7 @@ describe('AnalyticsDashboard', () => {
         glFeatures: {
           combinedAnalyticsDashboardsEditor: true,
         },
-        routeSlug: slug || dashboardResponse.data.project.productAnalyticsDashboards.nodes[0]?.slug,
+        routeSlug: slug || dashboardResponse.data.project.customizableDashboards.nodes[0]?.slug,
       });
 
       return waitForPromises();
@@ -247,8 +247,8 @@ describe('AnalyticsDashboard', () => {
       });
 
       const visualizations =
-        TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE.data.project.productAnalyticsVisualizations
-          .nodes;
+        TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE.data.project
+          .customizableDashboardVisualizations.nodes;
 
       expect(findDashboard().props().availableVisualizations).toMatchObject({
         'Product analytics': {

@@ -1,11 +1,11 @@
-#import "../fragments/product_analytics_dashboard.fragment.graphql"
+#import "../fragments/customizable_dashboard.fragment.graphql"
 
 query getProductAnalyticsDashboard($projectPath: ID!, $slug: String) {
   project(fullPath: $projectPath) {
     id
-    productAnalyticsDashboards(slug: $slug) {
+    customizableDashboards(slug: $slug, category: ANALYTICS) {
       nodes {
-        ...ProductAnalyticsDashboardFragment
+        ...CustomizableDashboardFragment
       }
     }
   }

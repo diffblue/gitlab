@@ -228,14 +228,14 @@ module EE
               description: 'Preview Billable User Changes',
               resolver: ::Resolvers::GitlabSubscriptions::PreviewBillableUserChangeResolver
 
-        field :product_analytics_dashboards, ::Types::ProductAnalytics::DashboardType.connection_type,
-              description: 'Product Analytics dashboards of the project.',
+        field :customizable_dashboards, ::Types::ProductAnalytics::DashboardType.connection_type,
+              description: 'Customizable dashboards for the project.',
               null: true,
               calls_gitaly: true,
               alpha: { milestone: '15.6' },
               resolver: ::Resolvers::ProductAnalytics::DashboardsResolver
 
-        field :product_analytics_visualizations, ::Types::ProductAnalytics::VisualizationType.connection_type,
+        field :customizable_dashboard_visualizations, ::Types::ProductAnalytics::VisualizationType.connection_type,
               description: 'Visualizations of the project or associated configuration project.',
               null: true,
               calls_gitaly: true,

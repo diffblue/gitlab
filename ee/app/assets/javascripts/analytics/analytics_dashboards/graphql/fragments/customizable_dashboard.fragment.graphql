@@ -1,4 +1,4 @@
-fragment ProductAnalyticsDashboardFragment on ProductAnalyticsDashboard {
+fragment CustomizableDashboardFragment on CustomizableDashboard {
   slug
   title
   description

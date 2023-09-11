@@ -269,7 +269,7 @@ describe('DashboardsList', () => {
 
         it('renders a list item for each custom and feature dashboard', () => {
           const expectedDashboards =
-            TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE.data?.project?.productAnalyticsDashboards
+            TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE.data?.project?.customizableDashboards
               ?.nodes;
 
           expect(findListItems()).toHaveLength(expectedDashboards.length);

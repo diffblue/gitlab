@@ -13,7 +13,7 @@ RSpec.describe 'Query.project(id).dashboards.panels(id).visualization', feature_
       query {
         project(fullPath: "#{project.full_path}") {
           name
-          productAnalyticsDashboards {
+          customizableDashboards {
             nodes {
               title
               description
@@ -47,7 +47,7 @@ RSpec.describe 'Query.project(id).dashboards.panels(id).visualization', feature_
       get_graphql(query, current_user: user)
 
       expect(
-        graphql_data_at(:project, :product_analytics_dashboards, :nodes, 0, :panels, :nodes, 0, :visualization, :type)
+        graphql_data_at(:project, :customizable_dashboards, :nodes, 0, :panels, :nodes, 0, :visualization, :type)
       ).to eq('LineChart')
     end
 
@@ -73,7 +73,7 @@ RSpec.describe 'Query.project(id).dashboards.panels(id).visualization', feature_
         get_graphql(query, current_user: user)
 
         expect(
-          graphql_data_at(:project, :product_analytics_dashboards, :nodes, 0,
+          graphql_data_at(:project, :customizable_dashboards, :nodes, 0,
             :panels, :nodes, 0, :visualization, :errors, 0))
           .to eq("property '/type' is not one of: " \
                  "[\"LineChart\", \"ColumnChart\", \"DataTable\", \"SingleStat\", \"DORAChart\"]")

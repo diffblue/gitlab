@@ -14,7 +14,7 @@ import {
   DATE_RANGE_OPTIONS,
   DEFAULT_SELECTED_OPTION_INDEX,
 } from 'ee/vue_shared/components/customizable_dashboard/filters/constants';
-import productAnalyticsDashboardFragment from 'ee/analytics/analytics_dashboards/graphql/fragments/product_analytics_dashboard.fragment.graphql';
+import customizableDashboardFragment from 'ee/analytics/analytics_dashboards/graphql/fragments/customizable_dashboard.fragment.graphql';
 
 import { createMockClient } from 'helpers/mock_apollo_helper';
 import { TYPENAME_PRODUCT_ANALYTICS_DASHBOARD } from 'ee/analytics/analytics_dashboards/graphql/constants';
@@ -215,7 +215,7 @@ describe('updateApolloCache', () => {
     expect(mockWriteFragment).toHaveBeenCalledWith(
       expect.objectContaining({
         id: dashboardRef,
-        fragment: productAnalyticsDashboardFragment,
+        fragment: customizableDashboardFragment,
         data: expect.objectContaining({
           slug: dashboardSlug,
           title: dashboard.title,
@@ -253,8 +253,7 @@ describe('updateApolloCache', () => {
       }),
     );
 
-    const modifyCallback =
-      apolloClient.cache.modify.mock.calls[0][0].fields.productAnalyticsDashboards;
+    const modifyCallback = apolloClient.cache.modify.mock.calls[0][0].fields.customizableDashboards;
 
     const modifiedData = modifyCallback({ nodes: [{ __ref: 'some/existing/dashboardRef' }] });
     expect(modifiedData).toEqual({

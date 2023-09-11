@@ -1,6 +1,6 @@
 import isEmpty from 'lodash/isEmpty';
 import uniqueId from 'lodash/uniqueId';
-import productAnalyticsDashboardFragment from 'ee/analytics/analytics_dashboards/graphql/fragments/product_analytics_dashboard.fragment.graphql';
+import customizableDashboardFragment from 'ee/analytics/analytics_dashboards/graphql/fragments/customizable_dashboard.fragment.graphql';
 import {
   TYPENAME_PRODUCT_ANALYTICS_DASHBOARD,
   TYPENAME_PRODUCT_ANALYTICS_DASHBOARD_CONNECTION,
@@ -101,7 +101,7 @@ export const getDashboardConfig = (hydratedDashboard) => {
 const updateDashboardDetailsApolloCache = (apolloClient, projectRef, dashboardRef, dashboard) => {
   apolloClient.writeFragment({
     id: dashboardRef,
-    fragment: productAnalyticsDashboardFragment,
+    fragment: customizableDashboardFragment,
     data: {
       project: { id: projectRef },
       ...dashboard,
@@ -122,7 +122,7 @@ const updateDashboardsListApolloCache = (apolloClient, projectRef, dashboardRef)
   apolloClient.cache.modify({
     id: projectRef,
     fields: {
-      productAnalyticsDashboards(existing) {
+      customizableDashboards(existing) {
         // eslint-disable-next-line no-underscore-dangle
         if (existing.nodes.find((existingDashboard) => existingDashboard.__ref === dashboardRef)) {
           return existing;

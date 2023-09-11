@@ -1,7 +1,7 @@
 query getAllProductAnalyticsDashboards($projectPath: ID!) {
   project(fullPath: $projectPath) {
     id
-    productAnalyticsDashboards {
+    customizableDashboards {
       nodes {
         slug
         title
