@@ -318,12 +318,36 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
         context 'when the task is code generation' do
           let(:current_user) { create(:user) }
-          let(:prefix) { '# GitLab Duo Generate: A function that outputs the first 20 fibonacci numbers' }
+          let(:instruction) { 'A function that outputs the first 20 fibonacci numbers' }
+          let(:prefix) do
+            <<~PREFIX
+              def is_even(n: int) ->
+              # Gitlab Duo Generate: #{instruction}
+            PREFIX
+          end
+
+          let(:prompt) do
+            <<~PROMPT
+              This is a task to write new Python code in a file 'test.py' based on a given description.
+              You get first the already existing code file and then the description of the code that needs to be created.
+              It is your task to write valid and working Python code.
+              Only return in your response new code.
+
+              Already existing code:
+
+              ```py
+              def is_even(n: int) ->
+              ```
+
+              Create new code for the following description:
+              `#{instruction}`
+            PROMPT
+          end
 
           it 'sends requests to the code generation endpoint' do
             expected_body = body.merge(
               prompt_version: 2,
-              prompt: "```py\n#{prefix}\n```\n"
+              prompt: prompt
             )
 
             expect(Gitlab::Workhorse)
