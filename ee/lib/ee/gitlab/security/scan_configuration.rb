@@ -21,6 +21,11 @@ module EE
           scans_with_meta_info[type] if can_access_security_on_demand_scans? && can_configure_scan_in_ui?
         end
 
+        override :on_demand_available?
+        def on_demand_available?
+          type == :dast && !::Gitlab::FIPS.enabled?
+        end
+
         private
 
         def can_configure_scan_in_ui?
