@@ -670,6 +670,55 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
     end
   end
 
+  describe '.recently_failed_on_instance_runner', :clean_gitlab_redis_shared_state, feature_category: :runner_fleet do
+    subject(:recently_failed_on_instance_runner) do
+      described_class.recently_failed_on_instance_runner(failure_reason)
+    end
+
+    before do
+      stub_licensed_features(runner_performance_insights: true)
+    end
+
+    let_it_be(:instance_runner) { create(:ci_runner, :instance) }
+    let_it_be(:job_args) { { runner: instance_runner, failure_reason: :runner_system_failure } }
+    let_it_be(:job1) { create(:ci_build, :failed, finished_at: 1.minute.ago, **job_args) }
+    let_it_be(:job2) { create(:ci_build, :failed, finished_at: 2.minutes.ago, **job_args) }
+
+    context 'with failure_reason set to :runner_system_failure' do
+      let(:failure_reason) { :runner_system_failure }
+
+      it 'returns no builds' do
+        is_expected.to be_empty
+      end
+
+      context 'with 2 jobs tracked' do
+        before do
+          ::Ci::InstanceRunnerFailedJobs.track(job2)
+          ::Ci::InstanceRunnerFailedJobs.track(job1)
+        end
+
+        it 'returns builds tracked by InstanceRunnerFailedJobs' do
+          is_expected.to match([
+            an_object_having_attributes(id: job1.id),
+            an_object_having_attributes(id: job2.id)
+          ])
+        end
+
+        it 'overrides the order of returned builds' do
+          expect(described_class.order(id: :asc).recently_failed_on_instance_runner(failure_reason)).to match([
+            an_object_having_attributes(id: job1.id),
+            an_object_having_attributes(id: job2.id)
+          ])
+
+          expect(described_class.order(id: :desc).recently_failed_on_instance_runner(failure_reason)).to match([
+            an_object_having_attributes(id: job1.id),
+            an_object_having_attributes(id: job2.id)
+          ])
+        end
+      end
+    end
+  end
+
   describe 'ci_secrets_management_available?' do
     subject { job.ci_secrets_management_available? }
 
