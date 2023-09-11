@@ -1,14 +1,12 @@
 import { thWidthPercent } from '~/lib/utils/table_utility';
 import { __, s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import { PROMO_URL } from 'jh_else_ce/lib/utils/url_utility';
 
 // Billable Seats HTTP headers
 export const HEADER_TOTAL_ENTRIES = 'x-total';
 export const HEADER_PAGE_NUMBER = 'x-page';
 export const HEADER_ITEMS_PER_PAGE = 'x-per-page';
 export const PLAN_CODE_FREE = 'free';
-export const ADD_ON_CODE_SUGGESTIONS = 'CODE_SUGGESTIONS';
 export const FIELDS = [
   {
     key: 'disclosure',
@@ -109,9 +107,6 @@ export const seatsOwedLink = helpPagePath('subscriptions/gitlab_com/index', {
 export const seatsUsedLink = helpPagePath('subscriptions/gitlab_com/index', {
   anchor: 'view-your-gitlab-saas-subscription',
 });
-export const codeSuggestionsInfoLink = helpPagePath(
-  'user/project/repository/code_suggestions.html',
-);
 export const emailNotVisibleTooltipText = s__(
   'Billing|An email address is only visible for users with public emails.',
 );
@@ -134,12 +129,4 @@ export const addSeatsText = s__('Billing|Add seats');
 export const subscriptionEndDateText = s__('Billing|Subscription end');
 export const subscriptionStartDateText = s__('Billing|Subscription start');
 export const seatsUsedDescriptionText = s__('Billing|%{plan} SaaS Plan seats used');
-export const codeSuggestionsIntroDescriptionText = __('Introducing the Code Suggestions add-on');
-export const codeSuggestionsAssignedDescriptionText = s__(
-  'Billing|Code Suggestions add-on assigned',
-);
-export const codeSuggestionsInfoText = s__(
-  `CodeSuggestions|Enhance your coding experience with intelligent recommendations. %{linkStart}Code Suggestions%{linkEnd} uses generative AI to suggest code while you're developing. Not available for users with the Guest role.`,
-);
 export const learnMoreText = __('Learn more');
-export const codeSuggestionsLearnMoreLink = `${PROMO_URL}/solutions/code-suggestions/`;

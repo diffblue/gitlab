@@ -81,6 +81,12 @@ module EE
       }
     end
 
+    def code_suggestions_usage_app_data(group)
+      {
+        full_path: group.full_path
+      }
+    end
+
     def show_code_suggestions_tab?(group)
       return false unless ::Feature.enabled?(:enable_hamilton_in_usage_quotas_ui, group)
 

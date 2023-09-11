@@ -1,22 +1,30 @@
 <script>
 import { GlButton, GlIcon, GlLink, GlSkeletonLoader, GlSprintf } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
+import { s__ } from '~/locale';
 import getAddOnPurchaseQuery from 'ee/usage_quotas/add_on/graphql/get_add_on_purchase.query.graphql';
 import UsageStatistics from 'ee/usage_quotas/components/usage_statistics.vue';
 import {
   ADD_ON_CODE_SUGGESTIONS,
-  codeSuggestionsAssignedDescriptionText,
-  codeSuggestionsInfoLink,
-  codeSuggestionsInfoText,
-  codeSuggestionsIntroDescriptionText,
+  codeSuggestionsDescriptionLink,
   codeSuggestionsLearnMoreLink,
-  learnMoreText,
-} from 'ee/usage_quotas/seats/constants';
-
-const COMPONENT_NAME = 'CodeSuggestionsUsageStatisticsCard';
+} from 'ee/usage_quotas/code_suggestions/constants';
+import { learnMoreText } from 'ee/usage_quotas/seats/constants';
 
 export default {
-  name: COMPONENT_NAME,
+  name: 'CodeSuggestionsUsageStatisticsCard',
+  helpLinks: {
+    codeSuggestionsDescriptionLink,
+    codeSuggestionsLearnMoreLink,
+  },
+  i18n: {
+    codeSuggestionsAssignedInfoText: s__('CodeSuggestions|Code Suggestions add-on assigned'),
+    codeSuggestionsInfoText: s__('CodeSuggestions|Introducing the Code Suggestions add-on'),
+    codeSuggestionsIntroDescriptionText: s__(
+      `CodeSuggestions|Enhance your coding experience with intelligent recommendations. %{linkStart}Code Suggestions%{linkEnd} uses generative AI to suggest code while you're developing.`,
+    ),
+    learnMoreText,
+  },
   components: {
     GlButton,
     GlIcon,
@@ -55,10 +63,10 @@ export default {
     },
   },
   computed: {
-    descriptionText() {
+    infoText() {
       return this.shouldShowUsageStatistics
-        ? this.$options.i18n.codeSuggestionsAssignedDescriptionText
-        : this.$options.i18n.codeSuggestionsIntroDescriptionText;
+        ? this.$options.i18n.codeSuggestionsAssignedInfoText
+        : this.$options.i18n.codeSuggestionsInfoText;
     },
     isLoading() {
       return this.$apollo.loading;
@@ -73,20 +81,10 @@ export default {
   methods: {
     reportError(error) {
       Sentry.withScope((scope) => {
-        scope.setTag('vue_component', COMPONENT_NAME);
+        scope.setTag('vue_component', this.$options.name);
         Sentry.captureException(error);
       });
     },
-  },
-  helpLinks: {
-    codeSuggestionsInfoLink,
-    codeSuggestionsLearnMoreLink,
-  },
-  i18n: {
-    codeSuggestionsAssignedDescriptionText,
-    codeSuggestionsInfoText,
-    codeSuggestionsIntroDescriptionText,
-    learnMoreText,
   },
 };
 </script>
@@ -104,18 +102,18 @@ export default {
       :usage-value="`${addOnPurchase.usageValue}`"
     >
       <template #description>
-        <p class="gl-font-weight-bold gl-mb-0" data-testid="code-suggestions-description">
-          <gl-icon name="tanuki-ai" class="gl-text-purple-600 gl-mr-3" />{{ descriptionText }}
+        <p class="gl-font-weight-bold gl-mb-0" data-testid="code-suggestions-info">
+          <gl-icon name="tanuki-ai" class="gl-text-purple-600 gl-mr-3" />{{ infoText }}
         </p>
       </template>
       <template #additional-info>
-        <p class="gl-mt-5" data-testid="code-suggestions-info">
-          <gl-sprintf :message="$options.i18n.codeSuggestionsInfoText">
+        <p class="gl-mt-5" data-testid="code-suggestions-description">
+          <gl-sprintf :message="$options.i18n.codeSuggestionsIntroDescriptionText">
             <template #link="{ content }">
               <gl-link
-                :href="$options.helpLinks.codeSuggestionsInfoLink"
+                :href="$options.helpLinks.codeSuggestionsDescriptionLink"
                 target="_blank"
-                data-testid="code-suggestions-info-link"
+                data-testid="code-suggestions-description-link"
                 >{{ content }}</gl-link
               >
             </template>
@@ -125,20 +123,16 @@ export default {
     </usage-statistics>
     <div v-else class="gl-display-flex gl-sm-flex-direction-column">
       <section>
-        <p
-          v-if="descriptionText"
-          class="gl-font-weight-bold gl-mb-3"
-          data-testid="code-suggestions-description"
-        >
-          <gl-icon name="tanuki-ai" class="gl-text-purple-600 gl-mr-3" />{{ descriptionText }}
+        <p v-if="infoText" class="gl-font-weight-bold gl-mb-3" data-testid="code-suggestions-info">
+          <gl-icon name="tanuki-ai" class="gl-text-purple-600 gl-mr-3" />{{ infoText }}
         </p>
-        <p data-testid="code-suggestions-info">
-          <gl-sprintf :message="$options.i18n.codeSuggestionsInfoText">
+        <p data-testid="code-suggestions-description">
+          <gl-sprintf :message="$options.i18n.codeSuggestionsIntroDescriptionText">
             <template #link="{ content }">
               <gl-link
-                :href="$options.helpLinks.codeSuggestionsInfoLink"
+                :href="$options.helpLinks.codeSuggestionsDescriptionLink"
                 target="_blank"
-                data-testid="code-suggestions-info-link"
+                data-testid="code-suggestions-description-link"
                 >{{ content }}</gl-link
               >
             </template>

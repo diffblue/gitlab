@@ -1,7 +1,7 @@
 <script>
 import { GlToggle, GlTooltip } from '@gitlab/ui';
 import { __ } from '~/locale';
-import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/seats/constants';
+import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/code_suggestions/constants';
 import {
   CANNOT_ASSIGN_ADDON_ERROR_CODE,
   CANNOT_UNASSIGN_ADDON_ERROR_CODE,
