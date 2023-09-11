@@ -24,6 +24,7 @@ export default {
     class="gl-mt-0"
     :title="$options.i18n.title"
     :svg-path="emptyStateSvgPath"
+    :svg-height="150"
     :primary-button-link="$options.DOC_PATH_SECURITY_CONFIGURATION"
     :primary-button-text="$options.i18n.primaryButtonText"
     :description="$options.i18n.description"
