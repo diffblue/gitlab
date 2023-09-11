@@ -648,4 +648,70 @@ RSpec.describe Notes::QuickActionsService, feature_category: :team_planning do
       end
     end
   end
+
+  context '/checkin_reminder' do
+    context 'with and objective' do
+      let_it_be_with_reload(:noteable) { create(:work_item, :objective, project: project) }
+      let_it_be(:progress) { create(:progress, work_item: noteable) }
+      let_it_be(:note_text) { '/checkin_reminder weekly' }
+      let(:note) { create(:note_on_issue, noteable: noteable, project: project, note: note_text) }
+
+      before do
+        group.add_developer(user)
+        stub_feature_flags(okr_checkin_reminders: checkin_reminders_enabled)
+      end
+
+      context 'when checkin reminder feature is enabled' do
+        let(:checkin_reminders_enabled) { true }
+
+        it 'sets the checkin reminder to weekly' do
+          expect { execute(note) }
+            .to change { noteable.progress.reminder_frequency }.from('never').to('weekly')
+        end
+
+        context 'when the frequency is capitalized' do
+          let_it_be(:note_text) { '/checkin_reminder WEEKLY' }
+
+          it 'sets the checkin reminder to weekly' do
+            expect { execute(note) }
+              .to change { noteable.progress.reminder_frequency }.from('never').to('weekly')
+          end
+        end
+
+        context 'when the frequency is not a valid option' do
+          let_it_be(:note_text) { '/checkin_reminder foo' }
+
+          it 'does not set the checkin reminder' do
+            expect { execute(note) }.not_to change { noteable.progress.reminder_frequency }
+          end
+        end
+
+        context 'when the frequency contains a hypen' do
+          let_it_be(:note_text) { '/checkin_reminder twice-monthly' }
+
+          it 'does not set the checkin reminder' do
+            expect { execute(note) }
+              .to change { noteable.progress.reminder_frequency }.from('never').to('twice_monthly')
+          end
+        end
+
+        context 'when the frequency contains an underscore' do
+          let_it_be(:note_text) { '/checkin_reminder twice_monthly' }
+
+          it 'does not set the checkin reminder' do
+            expect { execute(note) }
+              .to change { noteable.progress.reminder_frequency }.from('never').to('twice_monthly')
+          end
+        end
+      end
+
+      context 'when checkin reminder feature is not enabled' do
+        let(:checkin_reminders_enabled) { false }
+
+        it 'does not set the checkin reminder' do
+          expect { execute(note) }.not_to change { noteable.progress.reminder_frequency }
+        end
+      end
+    end
+  end
 end

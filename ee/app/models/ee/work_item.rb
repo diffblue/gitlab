@@ -9,6 +9,8 @@ module EE
       include FilterableByTestReports
 
       has_one :progress, class_name: 'WorkItems::Progress', foreign_key: 'issue_id', inverse_of: :work_item
+
+      delegate :reminder_frequency, to: :progress, allow_nil: true
     end
 
     LICENSED_WIDGETS = {

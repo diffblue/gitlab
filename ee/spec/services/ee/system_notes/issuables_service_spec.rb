@@ -73,6 +73,35 @@ RSpec.describe ::SystemNotes::IssuablesService, feature_category: :team_planning
     end
   end
 
+  describe '#change_checkin_reminder_note' do
+    let_it_be(:noteable) { create(:work_item, :objective, project: project) }
+    let_it_be(:progress) { create(:progress, work_item: noteable) }
+
+    subject { service.change_checkin_reminder_note }
+
+    context 'with a weekly frequency' do
+      before do
+        progress.reminder_frequency = :weekly
+      end
+
+      it_behaves_like 'a system note' do
+        let(:action) { 'checkin_reminder' }
+      end
+
+      it 'sets the checkin reminder note' do
+        expect(subject.note).to eq "set a **#{progress&.reminder_frequency&.humanize(capitalize: false)}** checkin reminder"
+      end
+    end
+
+    context 'with a frequency of never' do
+      it 'sets the checkin reminder note' do
+        progress.reminder_frequency = :never
+
+        expect(subject.note).to eq "removed the checkin reminder"
+      end
+    end
+  end
+
   describe '#publish_issue_to_status_page' do
     let_it_be(:noteable) { create(:issue, project: project) }
 
