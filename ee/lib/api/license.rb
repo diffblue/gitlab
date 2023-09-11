@@ -21,6 +21,19 @@ module API
         present license, with: EE::API::Entities::GitlabLicenseWithActiveUsers
       end
 
+      resource :usage_export do
+        desc 'Retrieve license usage data' do
+          detail 'Get usage data on the currently active license'
+          tags LICENSES_TAGS
+        end
+        get do
+          license = ::License.current
+          content_type MIME::Types.type_for('csv').first
+          env['api.format'] = :txt
+          body HistoricalUserData::CsvService.new(license.historical_data).generate
+        end
+      end
+
       desc 'Add a new license' do
         detail 'Adds a new licence'
         success EE::API::Entities::GitlabLicenseWithActiveUsers

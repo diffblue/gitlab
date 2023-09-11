@@ -49,6 +49,29 @@ RSpec.describe API::License, :aggregate_failures, api: true, feature_category: :
     end
   end
 
+  describe 'GET /license/usage_export' do
+    let(:path) { '/license/usage_export' }
+    let(:csv) { 'csv,response' }
+
+    it_behaves_like 'GET request permissions for admin mode'
+
+    it 'retrieves the license usage data if admin is logged in' do
+      expect_next_instance_of(HistoricalUserData::CsvService, license.historical_data) do |service|
+        expect(service).to receive(:generate).and_return(csv)
+      end
+
+      get api(path, admin, admin_mode: true)
+      expect(response).to have_gitlab_http_status(:ok)
+
+      expect(response.body).to eq(csv)
+    end
+
+    it 'denies access if not admin' do
+      get api(path, user)
+      expect(response).to have_gitlab_http_status(:forbidden)
+    end
+  end
+
   describe 'POST /license' do
     it_behaves_like 'POST request permissions for admin mode' do
       let(:path) { '/license' }
