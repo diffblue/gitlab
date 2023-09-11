@@ -30,7 +30,8 @@ module Gitlab
               logger.info(message: "Calling TanukiBot", class: self.class.to_s)
               response = Gitlab::Llm::TanukiBot.new(
                 current_user: context.current_user,
-                question: options[:input]
+                question: options[:input],
+                tracking_context: { action: 'chat_documentation' }
               ).execute
               response_modifier = Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot.new(response.body)
 

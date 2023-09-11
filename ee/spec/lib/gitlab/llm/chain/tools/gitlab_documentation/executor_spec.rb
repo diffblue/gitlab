@@ -33,8 +33,12 @@ RSpec.describe Gitlab::Llm::Chain::Tools::GitlabDocumentation::Executor, :saas, 
     context 'when context is authorized' do
       include_context 'with ai features enabled for group'
 
+      let(:expected_params) do
+        { current_user: user, question: options[:input], tracking_context: { action: 'chat_documentation' } }
+      end
+
       it 'responds with the message from TanukiBot' do
-        expect_next_instance_of(Gitlab::Llm::TanukiBot, current_user: user, question: options[:input]) do |instance|
+        expect_next_instance_of(Gitlab::Llm::TanukiBot, **expected_params) do |instance|
           expect(instance).to receive(:execute).and_return(response)
         end
 
