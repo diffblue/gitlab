@@ -6,4 +6,4 @@ introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/108247
 feature_category: environment_management
 milestone: '15.8'
 saved_to_database: true
-streamed: false
+streamed: true
