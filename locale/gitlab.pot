@@ -21271,6 +21271,9 @@ msgstr ""
 msgid "Get a support subscription"
 msgstr ""
 
+msgid "Get free trial"
+msgstr ""
+
 msgid "Get more information about troubleshooting pipelines"
 msgstr ""
 
