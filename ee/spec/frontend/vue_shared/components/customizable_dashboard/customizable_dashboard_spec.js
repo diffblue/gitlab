@@ -46,6 +46,7 @@ jest.mock('gridstack', () => ({
         destroy: jest.fn(),
         makeWidget: jest.fn(),
         setStatic: mockGridSetStatic,
+        removeWidget: jest.fn(),
       };
     }),
   },
@@ -99,6 +100,7 @@ describe('CustomizableDashboard', () => {
   const findEditModeTitle = () => wrapper.findByTestId('edit-mode-title');
   const findGridStackPanels = () => wrapper.findAllByTestId('grid-stack-panel');
   const findPanels = () => wrapper.findAllComponents(PanelsBase);
+  const findPanelById = (panelId) => wrapper.find(`#${panelId}`);
   const findEditButton = () => wrapper.findByTestId('dashboard-edit-btn');
   const findTitleInput = () => wrapper.findByTestId('dashboard-title-input');
   const findTitleFormGroup = () => wrapper.findByTestId('dashboard-title-form-group');
@@ -190,7 +192,7 @@ describe('CustomizableDashboard', () => {
         });
 
         expect(findGridStackPanels().at(index).attributes()).toMatchObject({
-          'gs-id': `${index}`,
+          'gs-id': expect.stringContaining('panel-'),
           'gs-h': `${gridAttributes.height}`,
           'gs-w': `${gridAttributes.width}`,
         });
@@ -318,11 +320,18 @@ describe('CustomizableDashboard', () => {
           expect(findSaveButton().props('loading')).toBe(false);
         });
 
-        it('updates panels when their values change', async () => {
-          await wrapper.vm.updatePanelWithGridStackItem({ id: '0', x: 10, y: 20, w: 30, h: 40 });
+        it('updates grid panels when their values change', async () => {
+          const gridPanel = findGridStackPanels().at(0);
 
-          expect(findGridStackPanels().at(0).attributes()).toMatchObject({
-            id: 'panel-0',
+          await wrapper.vm.updatePanelWithGridStackItem({
+            id: gridPanel.attributes('id'),
+            x: 10,
+            y: 20,
+            w: 30,
+            h: 40,
+          });
+
+          expect(gridPanel.attributes()).toMatchObject({
             'gs-h': '40',
             'gs-w': '30',
             'gs-x': '10',
@@ -669,5 +678,28 @@ describe('CustomizableDashboard', () => {
         expect(findEditModeTitle().exists()).toBe(newState);
       },
     );
+  });
+
+  describe('when panel emits "delete" event', () => {
+    beforeEach(() => {
+      loadCSSFile.mockResolvedValue();
+
+      createWrapper();
+    });
+
+    it('should remove the panel from the dashboard', async () => {
+      const gridPanel = findGridStackPanels().at(0);
+      const panelId = gridPanel.attributes('id');
+      const panel = gridPanel.findComponent(PanelsBase);
+
+      expect(findPanels()).toHaveLength(2);
+      expect(findPanelById(panelId).exists()).toBe(true);
+
+      panel.vm.$emit('delete', { id: panelId });
+      await nextTick();
+
+      expect(findPanels()).toHaveLength(1);
+      expect(findPanelById(panelId).exists()).toBe(false);
+    });
   });
 });

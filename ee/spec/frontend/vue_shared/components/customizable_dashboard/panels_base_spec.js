@@ -1,7 +1,14 @@
+import { nextTick } from 'vue';
 import * as Sentry from '@sentry/browser';
-import { GlButton, GlLoadingIcon, GlPopover } from '@gitlab/ui';
+import {
+  GlButton,
+  GlDisclosureDropdown,
+  GlDisclosureDropdownItem,
+  GlLoadingIcon,
+  GlPopover,
+} from '@gitlab/ui';
 import LineChart from 'ee/analytics/analytics_dashboards/components/visualizations/line_chart.vue';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';
 import dataSources from 'ee/analytics/analytics_dashboards/data_sources';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -20,8 +27,8 @@ describe('PanelsBase', () => {
 
   let wrapper;
 
-  const createWrapper = (props = {}) => {
-    wrapper = shallowMountExtended(PanelsBase, {
+  const createWrapper = (props = {}, mountFn = shallowMountExtended) => {
+    wrapper = mountFn(PanelsBase, {
       provide: {
         namespaceId: '1',
         namespaceName: 'Namespace name',
@@ -42,6 +49,12 @@ describe('PanelsBase', () => {
   const findPanelTitle = () => wrapper.findComponent(TooltipOnTruncate);
   const findPanelErrorPopover = () => wrapper.findComponent(GlPopover);
   const findPanelRetryButton = () => wrapper.findComponent(GlButton);
+  const findPanelActionsDropdown = () => wrapper.findComponent(GlDisclosureDropdown);
+  const findDeleteButton = () =>
+    findPanelActionsDropdown()
+      .findAllComponents(GlDisclosureDropdownItem)
+      .filter((w) => w.text() === 'Delete')
+      .at(0);
 
   describe('default behaviour', () => {
     beforeEach(() => {
@@ -59,6 +72,10 @@ describe('PanelsBase', () => {
 
     it('should call the data source', () => {
       expect(dataSources.cube_analytics).toHaveBeenCalled();
+    });
+
+    it('should not render actions dropdown', () => {
+      expect(findPanelActionsDropdown().exists()).toBe(false);
     });
   });
 
@@ -274,6 +291,23 @@ describe('PanelsBase', () => {
 
     it('should not render the title', () => {
       expect(findPanelTitle().exists()).toBe(false);
+    });
+  });
+
+  describe('when editing', () => {
+    beforeEach(() => {
+      createWrapper({ editing: true }, mountExtended);
+    });
+
+    it('should render actions dropdown', () => {
+      expect(findPanelActionsDropdown().exists()).toBe(true);
+    });
+
+    it('emits "delete" event when clicking delete', async () => {
+      findDeleteButton().find('button').trigger('click');
+      await nextTick();
+
+      expect(wrapper.emitted('delete')).toHaveLength(1);
     });
   });
 });

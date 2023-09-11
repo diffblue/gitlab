@@ -3,6 +3,7 @@ import { GridStack } from 'gridstack';
 import * as Sentry from '@sentry/browser';
 import { GlButton, GlFormInput, GlEmptyState, GlFormGroup, GlLink } from '@gitlab/ui';
 import { createAlert } from '~/alert';
+import { cloneWithoutReferences } from '~/lib/utils/common_utils';
 import { loadCSSFile } from '~/lib/utils/css_utils';
 import { slugify } from '~/lib/utils/text_utility';
 import { s__ } from '~/locale';
@@ -20,7 +21,7 @@ import {
   DASHBOARD_DOCUMENTATION_LINKS,
 } from './constants';
 import VisualizationSelector from './dashboard_editor/visualization_selector.vue';
-import { filtersToQueryParams } from './utils';
+import { filtersToQueryParams, getUniquePanelId } from './utils';
 
 export default {
   name: 'CustomizableDashboard',
@@ -90,8 +91,14 @@ export default {
     },
   },
   data() {
+    const dashboard = cloneWithoutReferences(this.initialDashboard);
+    dashboard.panels = dashboard.panels.map((panel) => ({
+      ...panel,
+      id: getUniquePanelId(),
+    }));
+
     return {
-      dashboard: JSON.parse(JSON.stringify(this.initialDashboard)),
+      dashboard,
       grid: undefined,
       cssLoaded: false,
       mounted: true,
@@ -229,12 +236,10 @@ export default {
         });
       }
     },
-    registerNewGridPanel(panelIndex) {
-      const domId = this.panelDomId(panelIndex);
+    registerNewGridPanel(panelId) {
+      this.grid.makeWidget(`#${panelId}`);
 
-      this.grid.makeWidget(`#${domId}`);
-
-      document.getElementById(domId)?.scrollIntoView({ behavior: 'smooth' });
+      document.getElementById(panelId)?.scrollIntoView({ behavior: 'smooth' });
     },
     getGridAttribute(panel, attribute) {
       const { gridAttributes = {} } = panel;
@@ -247,7 +252,13 @@ export default {
 
       // Wait for the panels to render
       await this.$nextTick();
-      this.registerNewGridPanel(this.dashboard.panels.length - 1);
+      this.registerNewGridPanel(panel.id);
+    },
+    async deletePanel(panel) {
+      const panelIndex = this.dashboard.panels.indexOf(panel);
+      this.dashboard.panels.splice(panelIndex, 1);
+
+      this.grid.removeWidget(document.getElementById(panel.id), false);
     },
     convertToGridAttributes(gridStackProperties) {
       return {
@@ -296,7 +307,7 @@ export default {
       this.editing = false;
     },
     updatePanelWithGridStackItem(item) {
-      const updatedPanel = this.dashboard.panels.at(Number(item.id));
+      const updatedPanel = this.dashboard.panels.find((panel) => panel.id === item.id);
       if (updatedPanel) {
         updatedPanel.gridAttributes = this.convertToGridAttributes(item);
       }
@@ -308,9 +319,6 @@ export default {
         startDate,
         endDate,
       };
-    },
-    panelDomId(id) {
-      return `panel-${id}`;
     },
   },
   HISTORY_REPLACE_UPDATE_METHOD,
@@ -414,10 +422,10 @@ export default {
           />
           <div v-show="!showEmptyState" data-testid="gridstack-grid" class="grid-stack">
             <div
-              v-for="(panel, index) in dashboard.panels"
-              :id="panelDomId(index)"
-              :key="index"
-              :gs-id="index"
+              v-for="panel in dashboard.panels"
+              :id="panel.id"
+              :key="panel.id"
+              :gs-id="panel.id"
               :gs-x="getGridAttribute(panel, 'xPos')"
               :gs-y="getGridAttribute(panel, 'yPos')"
               :gs-h="getGridAttribute(panel, 'height')"
@@ -435,6 +443,8 @@ export default {
                 :visualization="panel.visualization"
                 :query-overrides="panel.queryOverrides || undefined"
                 :filters="filters"
+                :editing="editing"
+                @delete="deletePanel(panel)"
               />
             </div>
           </div>

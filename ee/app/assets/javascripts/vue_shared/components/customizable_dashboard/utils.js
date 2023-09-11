@@ -1,4 +1,5 @@
 import isEmpty from 'lodash/isEmpty';
+import uniqueId from 'lodash/uniqueId';
 import productAnalyticsDashboardFragment from 'ee/analytics/analytics_dashboards/graphql/fragments/product_analytics_dashboard.fragment.graphql';
 import {
   TYPENAME_PRODUCT_ANALYTICS_DASHBOARD,
@@ -75,6 +76,8 @@ export const availableVisualizationsValidator = (obj) => {
   );
 };
 
+export const getUniquePanelId = () => uniqueId('panel-');
+
 /**
  * Maps a full hydrated dashboard (including GraphQL __typenames, and full visualization definitions) into a slimmed down version that complies with the dashboard schema definition
  */
@@ -83,7 +86,7 @@ export const getDashboardConfig = (hydratedDashboard) => {
   return {
     ...dashboardRest,
     panels: hydratedDashboard.panels.map((panel) => {
-      const { __typename: panelTypename, ...panelRest } = panel;
+      const { __typename: panelTypename, id, ...panelRest } = panel;
       return {
         ...panelRest,
         visualization: panel.visualization.slug,
