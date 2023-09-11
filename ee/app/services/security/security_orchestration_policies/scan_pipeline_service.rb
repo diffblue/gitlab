@@ -18,7 +18,8 @@ module Security
 
       def execute(actions)
         actions = actions.select do |action|
-          valid_scan_type?(action[:scan]) && pipeline_scan_type?(action[:scan].to_s)
+          (valid_scan_type?(action[:scan]) && pipeline_scan_type?(action[:scan].to_s)) ||
+            custom_scan?(action)
         end
 
         on_demand_scan_actions, other_actions = actions.partition do |action|
@@ -49,6 +50,10 @@ module Security
         Security::ScanExecutionPolicy.valid_scan_type?(scan_type)
       end
 
+      def custom_scan?(action)
+        compliance_pipeline_in_policies_enabled? && action[:ci_configuration].present? && action[:scan] == 'custom'
+      end
+
       def prepare_on_demand_policy_configuration(actions)
         return {} if actions.blank?
 
@@ -58,6 +63,8 @@ module Security
       end
 
       def prepare_policy_configuration(action, index)
+        return unless valid_scan_type?(action[:scan]) || custom_scan?(action)
+
         action_variables = action[:variables].to_h.stringify_keys
 
         ::Security::SecurityOrchestrationPolicies::CiConfigurationService
@@ -68,6 +75,10 @@ module Security
 
       def scan_variables(action)
         base_variables[action[:scan].to_sym].to_h
+      end
+
+      def compliance_pipeline_in_policies_enabled?
+        Feature.enabled?(:compliance_pipeline_in_policies, project)
       end
     end
   end

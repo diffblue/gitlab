@@ -221,6 +221,59 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
 
         it_behaves_like 'removes rules which disable jobs'
       end
+
+      context 'when scan type is custom', :aggregate_failures do
+        let(:action) { { scan: 'custom', ci_configuration: ci_configuration } }
+
+        let(:ci_configuration) do
+          <<~CI_CONFIG
+          image: busybox:latest
+          compliance:
+            stage: build
+            script:
+              - echo "Defined in security policy"
+          CI_CONFIG
+        end
+
+        it {
+          is_expected.to eq(
+            {
+              compliance: {
+                script: [
+                  "echo \"Defined in security policy\""
+                ],
+                stage: "build"
+              },
+              image: "busybox:latest"
+            }
+          )
+        }
+
+        context 'with invalid ci_configuration' do
+          let(:ci_configuration) do
+            <<~CI_CONFIG
+            image: busybox:latest
+            compliance:
+              stage: build
+              script:
+                - echo "Defined in security policy"
+              sdfsdfsdfsdf
+            CI_CONFIG
+          end
+
+          let(:expected_ci_config) do
+            {
+              'security-policy-ci-0': {
+                'script' => "echo \"Error parsing security policy CI configuration: (<unknown>): could "\
+                            "not find expected ':' while scanning a simple key at line 6 column 3\" && false",
+                'allow_failure' => true
+              }
+            }
+          end
+
+          it { is_expected.to eq(expected_ci_config) }
+        end
+      end
     end
 
     context 'when action is invalid' do

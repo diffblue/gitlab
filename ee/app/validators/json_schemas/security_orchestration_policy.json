@@ -180,9 +180,6 @@
             "description": "Specifies a list of scans that should be enforced in this policy.",
             "additionalItems": false,
             "items": {
-              "required": [
-                "scan"
-              ],
               "type": "object",
               "properties": {
                 "scan": {
@@ -194,7 +191,8 @@
                     "cluster_image_scanning",
                     "sast",
                     "dependency_scanning",
-                    "sast_iac"
+                    "sast_iac",
+                    "custom"
                   ],
                   "type": "string"
                 },
@@ -227,9 +225,27 @@
                     "minLength": 1,
                     "type": "string"
                   }
+                },
+                "ci_configuration": {
+                  "type": "string"
                 }
               },
               "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "scan": {
+                        "const": "custom"
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "ci_configuration"
+                    ],
+                    "maxProperties": 2
+                  }
+                },
                 {
                   "if": {
                     "properties": {

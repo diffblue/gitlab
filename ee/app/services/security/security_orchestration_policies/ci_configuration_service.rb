@@ -16,12 +16,25 @@ module Security
         case action[:scan]
         when *SCAN_TEMPLATES.keys
           pipeline_configuration(action, ci_variables, index)
+        when 'custom'
+          custom_pipeline_configuration(action, index)
         else
           error_script('Invalid Scan type', action, index)
         end
       end
 
       private
+
+      def custom_pipeline_configuration(action, index)
+        Gitlab::Ci::Config.new(action[:ci_configuration]).to_hash
+      rescue Gitlab::Ci::Config::ConfigError => e
+        {
+          generate_job_name_with_index('security_policy_ci', index) => {
+            'script' => "echo \"Error parsing security policy CI configuration: #{e.message}\" && false",
+            'allow_failure' => true
+          }
+        }
+      end
 
       def scan_template(scan_type)
         template = ::TemplateFinder.build(:gitlab_ci_ymls, nil, name: SCAN_TEMPLATES[scan_type]).execute
