@@ -4,7 +4,7 @@ module AppSec
   module Fuzzing
     module API
       class ScanProfile
-        NAMES = %w(Quick-10 Medium-20 Medium-50 Long-100).freeze
+        NAMES = %w[Quick-10 Medium-20 Medium-50 Long-100].freeze
 
         DESCRIPTIONS = {
           'Quick-10' => 'Fuzzing 10 times per parameter',

@@ -76,7 +76,7 @@ module EE
         end
       end
 
-      EE_VALID_SETTING_PANELS = %w(advanced_search templates security_and_compliance namespace_storage).freeze
+      EE_VALID_SETTING_PANELS = %w[advanced_search templates security_and_compliance namespace_storage].freeze
 
       EE_VALID_SETTING_PANELS.each do |action|
         define_method(action) { perform_update if submitted? }

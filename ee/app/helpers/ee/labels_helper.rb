@@ -25,7 +25,7 @@ module EE
     def wrap_label_html(label_html, small:, label:)
       return super unless label.scoped_label?
 
-      wrapper_classes = %w(gl-label gl-label-scoped)
+      wrapper_classes = %w[gl-label gl-label-scoped]
       wrapper_classes << 'gl-label-sm' if small
 
       border_width = small ? '1px' : '2px'

@@ -9,7 +9,7 @@ class Geo::ProjectRegistry < Geo::BaseRegistry
   MODEL_CLASS = ::Project
   MODEL_FOREIGN_KEY = :project_id
 
-  REGISTRY_TYPES = %i{repository wiki}.freeze
+  REGISTRY_TYPES = %i[repository wiki].freeze
 
   sha_attribute :repository_verification_checksum_sha
   sha_attribute :repository_verification_checksum_mismatched

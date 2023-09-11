@@ -26,7 +26,7 @@ class StorageShard
   end
 
   def self.allowed_params
-    %i(name).freeze
+    %i[name].freeze
   end
 
   def self.build_digest

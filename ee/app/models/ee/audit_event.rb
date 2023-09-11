@@ -71,7 +71,7 @@ module EE
     end
 
     def entity_is_group_or_project?
-      %w(Group Project).include?(entity_type)
+      %w[Group Project].include?(entity_type)
     end
 
     private

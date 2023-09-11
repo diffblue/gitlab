@@ -59,7 +59,7 @@ module Groups
     end
 
     def deploy_access_level_attributes
-      %i(id _destroy group_id)
+      %i[id _destroy group_id]
     end
 
     def authorize_admin_protected_environment!

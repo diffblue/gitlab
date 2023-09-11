@@ -59,8 +59,8 @@ module EE
         attr_reader :controller_name, :action_name
 
         CONTROLLER_AND_ACTIONS_TO_REDIRECT = {
-          'git_http' => %w{git_receive_pack},
-          'lfs_locks_api' => %w{create unlock verify}
+          'git_http' => %w[git_receive_pack],
+          'lfs_locks_api' => %w[create unlock verify]
         }.freeze
 
         def initialize(project, controller_name, action_name, service)

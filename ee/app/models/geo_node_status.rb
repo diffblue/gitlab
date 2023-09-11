@@ -77,7 +77,7 @@ class GeoNodeStatus < ApplicationRecord
     Geo::SecondaryUsageData::PAYLOAD_COUNT_FIELDS
   end
 
-  RESOURCE_STATUS_FIELDS = (%w(
+  RESOURCE_STATUS_FIELDS = (%w[
     repository_verification_enabled
     repositories_replication_enabled
     repositories_synced_count
@@ -93,7 +93,7 @@ class GeoNodeStatus < ApplicationRecord
     repositories_retrying_verification_count
     projects_count
     container_repositories_replication_enabled
-  ) + replicator_class_status_fields + usage_data_fields).freeze
+  ] + replicator_class_status_fields + usage_data_fields).freeze
 
   # Why are disabled classes included? See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/38959#note_402656534
   def self.replicator_class_prometheus_metrics

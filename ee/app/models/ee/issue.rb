@@ -10,7 +10,7 @@ module EE
       WEIGHT_ALL = 'Everything'
       WEIGHT_ANY = 'Any'
       WEIGHT_NONE = 'None'
-      ELASTICSEARCH_PERMISSION_TRACKED_FIELDS = %w(assignee_ids author_id confidential).freeze
+      ELASTICSEARCH_PERMISSION_TRACKED_FIELDS = %w[assignee_ids author_id confidential].freeze
 
       include Elastic::ApplicationVersionedSearch
       include UsageStatistics

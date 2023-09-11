@@ -61,7 +61,7 @@ class Projects::ProtectedEnvironmentsController < Projects::ApplicationControlle
   end
 
   def deploy_access_level_attributes
-    %i(access_level id user_id _destroy group_id)
+    %i[access_level id user_id _destroy group_id]
   end
 
   def search_params

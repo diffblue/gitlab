@@ -79,8 +79,8 @@ module EE
             class: 'gl-display-flex gl-align-items-center gl-white-space-nowrap'
           )
         ),
-        tags: %w(a img),
-        attributes: %w(target href src loading rel class width height)
+        tags: %w[a img],
+        attributes: %w[target href src loading rel class width height]
       )
 
       [icon, link].join.html_safe

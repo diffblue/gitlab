@@ -60,7 +60,7 @@ class SoftwareLicensePolicy < ApplicationRecord
   delegate :name, :spdx_identifier, to: :software_license
 
   def self.approval_status_values
-    %w(allowed denied)
+    %w[allowed denied]
   end
 
   def approval_status

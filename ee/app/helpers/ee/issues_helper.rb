@@ -7,7 +7,7 @@ module EE
     def issue_in_subepic?(issue, epic_id)
       # This helper is used if a list of issues are filtered by epic id
       return false if epic_id.blank?
-      return false if %w(any none).include?(epic_id)
+      return false if %w[any none].include?(epic_id)
       return false if issue.epic_issue.nil?
 
       # An issue is member of a subepic when its epic id is different

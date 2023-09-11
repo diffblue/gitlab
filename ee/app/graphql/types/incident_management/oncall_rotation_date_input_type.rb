@@ -15,7 +15,7 @@ module Types
                 description: 'Time component of the date in 24hr HH:MM format.'
 
       DATE_FORMAT = %r[^\d{4}-[0123]\d-\d{2}$]
-      TIME_FORMAT = %r[^(0\d|1\d|2[0-3]):[0-5]\d$]
+      TIME_FORMAT = %r{^(0\d|1\d|2[0-3]):[0-5]\d$}
 
       def prepare
         raise Gitlab::Graphql::Errors::ArgumentError, 'Date given is invalid' unless DATE_FORMAT.match?(date)

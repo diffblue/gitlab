@@ -55,19 +55,19 @@ module Jira
     end
 
     def by_project
-      %[project = "#{escape_quotes(jira_project_key)}"]
+      %(project = "#{escape_quotes(jira_project_key)}")
     end
 
     def by_labels
       return if labels.blank?
 
-      labels.map { |label| %[labels = "#{escape_quotes(label)}"] }.join(' AND ')
+      labels.map { |label| %(labels = "#{escape_quotes(label)}") }.join(' AND ')
     end
 
     def by_status
       return if status.blank?
 
-      %[status = "#{escape_quotes(status)}"]
+      %(status = "#{escape_quotes(status)}")
     end
 
     def order_by
@@ -77,13 +77,13 @@ module Jira
     def by_reporter
       return if reporter.blank?
 
-      %[reporter = "#{escape_quotes(reporter)}"]
+      %(reporter = "#{escape_quotes(reporter)}")
     end
 
     def by_assignee
       return if assignee.blank?
 
-      %[assignee = "#{escape_quotes(assignee)}"]
+      %(assignee = "#{escape_quotes(assignee)}")
     end
 
     def by_open_and_closed
@@ -91,9 +91,9 @@ module Jira
 
       case state
       when 'opened'
-        %q[statusCategory != Done]
+        %q(statusCategory != Done)
       when 'closed'
-        %q[statusCategory = Done]
+        %q(statusCategory = Done)
       end
     end
 
@@ -101,7 +101,7 @@ module Jira
       return if vulnerability_ids.blank?
 
       vulnerability_ids
-        .map { |vulnerability_id| %[description ~ "/-/security/vulnerabilities/#{escape_quotes(vulnerability_id.to_s)}"] }
+        .map { |vulnerability_id| %(description ~ "/-/security/vulnerabilities/#{escape_quotes(vulnerability_id.to_s)}") }
         .join(' OR ')
         .then { |query| "(#{query})" }
     end
@@ -110,7 +110,7 @@ module Jira
       return if issue_ids.blank?
 
       issue_ids
-        .map { |issue_id| %[id = #{escape_quotes(issue_id.to_s)}] }
+        .map { |issue_id| %(id = #{escape_quotes(issue_id.to_s)}) }
         .join(' OR ')
         .then { |query| "(#{query})" }
     end

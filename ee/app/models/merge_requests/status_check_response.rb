@@ -11,7 +11,7 @@ module MergeRequests
     belongs_to :merge_request
     belongs_to :external_status_check, class_name: 'MergeRequests::ExternalStatusCheck'
 
-    enum status: %w(passed failed)
+    enum status: %w[passed failed]
 
     validates :merge_request, presence: true
     validates :external_status_check, presence: true

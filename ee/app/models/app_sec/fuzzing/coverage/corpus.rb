@@ -6,7 +6,7 @@ module AppSec
       class Corpus < ApplicationRecord
         self.table_name = 'coverage_fuzzing_corpuses'
 
-        ACCEPTED_FORMATS = %w(.zip).freeze
+        ACCEPTED_FORMATS = %w[.zip].freeze
 
         belongs_to :package, class_name: 'Packages::Package'
         belongs_to :user, optional: true

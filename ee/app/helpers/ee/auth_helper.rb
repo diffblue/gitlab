@@ -4,10 +4,10 @@ module EE
   module AuthHelper
     extend ::Gitlab::Utils::Override
 
-    PROVIDERS_WITH_ICONS = %w(
+    PROVIDERS_WITH_ICONS = %w[
       kerberos
-    ).freeze
-    GROUP_LEVEL_PROVIDERS = %i(group_saml).freeze
+    ].freeze
+    GROUP_LEVEL_PROVIDERS = %i[group_saml].freeze
 
     override :display_providers_on_profile?
     def display_providers_on_profile?

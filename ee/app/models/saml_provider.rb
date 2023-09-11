@@ -2,13 +2,13 @@
 
 class SamlProvider < ApplicationRecord
   include IgnorableColumns
-  USER_ATTRIBUTES_LOCKED_FOR_MANAGED_ACCOUNTS = %i(email public_email commit_email notification_email).freeze
+  USER_ATTRIBUTES_LOCKED_FOR_MANAGED_ACCOUNTS = %i[email public_email commit_email notification_email].freeze
 
   belongs_to :group
   has_many :identities
 
   validates :group, presence: true, top_level_group: true
-  validates :sso_url, presence: true, addressable_url: { schemes: %w(https), ascii_only: true }
+  validates :sso_url, presence: true, addressable_url: { schemes: %w[https], ascii_only: true }
   validates :certificate_fingerprint, presence: true, certificate_fingerprint: true
   validates :default_membership_role, presence: true
   validate :git_check_enforced_allowed
@@ -27,7 +27,7 @@ class SamlProvider < ApplicationRecord
     defaults.to_h.merge(
       idp_cert_fingerprint: certificate_fingerprint,
       idp_sso_target_url: sso_url,
-      attribute_statements: { nickname: %w(username nickname) }
+      attribute_statements: { nickname: %w[username nickname] }
     )
   end
 

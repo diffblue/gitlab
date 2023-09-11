@@ -14,7 +14,7 @@ module EE
 
     class_methods do
       def issuable_attrs
-        (super + %i(epic)).freeze
+        (super + %i[epic]).freeze
       end
     end
 

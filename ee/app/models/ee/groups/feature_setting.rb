@@ -5,7 +5,7 @@ module EE
     module FeatureSetting
       extend ActiveSupport::Concern
 
-      EE_FEATURES = %i(wiki).freeze
+      EE_FEATURES = %i[wiki].freeze
 
       prepended do
         set_available_features(EE_FEATURES)

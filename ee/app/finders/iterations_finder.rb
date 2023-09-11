@@ -16,7 +16,7 @@ class IterationsFinder
   include TimeFrameFilter
   include UpdatedAtFilter
 
-  SEARCHABLE_FIELDS = %i(title cadence_title).freeze
+  SEARCHABLE_FIELDS = %i[title cadence_title].freeze
 
   attr_reader :params, :current_user
 
