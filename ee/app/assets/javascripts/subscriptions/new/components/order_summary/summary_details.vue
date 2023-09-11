@@ -54,14 +54,14 @@ export default {
 <template>
   <div>
     <div class="gl-display-flex gl-justify-content-space-between gl-font-weight-bold gl-mb-3">
-      <div data-testid="selected-plan" data-qa-selector="selected_plan">
+      <div data-testid="selected-plan">
         {{ sprintf($options.i18n.selectedPlanText, { selectedPlanText }) }}
         <span v-if="usersPresent" data-testid="number-of-users">{{
           sprintf($options.i18n.numberOfUsers, { numberOfUsers })
         }}</span>
       </div>
       <gl-loading-icon v-if="isInvoicePreviewLoading" inline class="gl-my-auto gl-ml-3" />
-      <div v-else class="gl-ml-3" data-testid="amount" data-qa-selector="total">
+      <div v-else class="gl-ml-3" data-testid="amount">
         {{ formatAmount(totalExVat, showAmount) }}
       </div>
     </div>
@@ -131,7 +131,7 @@ export default {
     <div class="gl-display-flex gl-justify-content-space-between gl-font-lg gl-font-weight-bold">
       <div>{{ $options.i18n.total }}</div>
       <gl-loading-icon v-if="isInvoicePreviewLoading" inline class="gl-my-auto" />
-      <div v-else data-testid="total-amount" data-qa-selector="total_amount">
+      <div v-else data-testid="total-amount">
         {{ formatAmount(totalAmount, showAmount) }}
       </div>
     </div>
