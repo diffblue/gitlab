@@ -63,8 +63,6 @@ module SubscriptionsHelper
   end
 
   def subscription_available_plans
-    return plans_data unless ::Feature.enabled?(:hide_deprecated_billing_plans)
-
     plans_data.reject { |plan_data| plan_data[:deprecated] || plan_data[:hide_card] }
   end
 

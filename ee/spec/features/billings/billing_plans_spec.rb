@@ -21,7 +21,6 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :bi
     stub_application_setting(check_namespace_plan: true)
 
     stub_feature_flags(show_billing_eoa_banner: true)
-    stub_feature_flags(hide_deprecated_billing_plans: false)
 
     stub_billing_plans(nil)
     stub_billing_plans(namespace.id, plan.name, plans_data.to_json)
@@ -197,8 +196,17 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :bi
 
     context 'on bronze plan' do
       let(:plan) { bronze_plan }
-
+      let(:premium_plan_data) { plans_data.find { |plan_data| plan_data[:id] == 'premium-external-id' } }
       let!(:subscription) { create(:gitlab_subscription, namespace: namespace, hosted_plan: plan, seats: 15) }
+
+      before do
+        stub_eoa_eligibility_request(namespace.id, true, premium_plan_data[:id])
+      end
+
+      it_behaves_like 'plan with header'
+      it_behaves_like 'downgradable plan'
+      it_behaves_like 'can not contact sales'
+      it_behaves_like 'plan with subscription table'
 
       it 'shows the EoA bronze banner that can be dismissed permanently', :js do
         travel_to(Date.parse(EE::Users::CalloutsHelper::EOA_BRONZE_PLAN_END_DATE) - 1.day) do
@@ -216,64 +224,44 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :bi
         end
       end
 
-      it_behaves_like 'plan with header'
-      it_behaves_like 'downgradable plan'
-      it_behaves_like 'upgradable plan'
-      it_behaves_like 'can not contact sales'
-      it_behaves_like 'plan with subscription table'
+      it 'displays the free upgrade' do
+        visit page_path
 
-      context 'when hide_deprecated_billing_plans is active' do
-        let(:premium_plan_data) { plans_data.find { |plan_data| plan_data[:id] == 'premium-external-id' } }
+        within '.card-badge' do
+          expect(page).to have_text('Free upgrade!')
+        end
+      end
+
+      context 'with an active deprecated plan' do
+        let(:legacy_plan) { plans_data.find { |plan_data| plan_data[:id] == 'bronze-external-id' } }
+        let(:expected_card_header) { "#{legacy_plan[:name]} (Legacy)" }
+
+        it 'renders the plan card marked as Legacy' do
+          visit page_path
+          page.within("[data-testid='billing-plans']") do
+            panels = page.all('.card')
+            expect(panels.length).to eq(plans_data.length)
+
+            panel_with_legacy_plan = page.find("[data-testid='plan-card-#{legacy_plan[:code]}']")
+
+            expect(panel_with_legacy_plan.find('.card-header')).to have_content(expected_card_header)
+            expect(panel_with_legacy_plan.find('.card-body')).to have_link('frequently asked questions')
+          end
+        end
+      end
+
+      context 'with more than 25 users' do
+        let!(:subscription) { create(:gitlab_subscription, namespace: namespace, hosted_plan: plan, seats: 30) }
 
         before do
-          stub_feature_flags(hide_deprecated_billing_plans: true)
-          stub_eoa_eligibility_request(namespace.id, true, premium_plan_data[:id])
+          stub_eoa_eligibility_request(namespace.id, false, premium_plan_data[:id])
         end
 
-        it 'displays the free upgrade' do
+        it 'displays the sales assisted offer' do
           visit page_path
 
           within '.card-badge' do
-            expect(page).to have_text('Free upgrade!')
-          end
-        end
-
-        context 'with an active deprecated plan' do
-          let(:legacy_plan) { plans_data.find { |plan_data| plan_data[:id] == 'bronze-external-id' } }
-          let(:expected_card_header) { "#{legacy_plan[:name]} (Legacy)" }
-
-          before do
-            stub_feature_flags(hide_deprecated_billing_plans: true)
-
-            visit page_path
-          end
-
-          it 'renders the plan card marked as Legacy' do
-            page.within("[data-testid='billing-plans']") do
-              panels = page.all('.card')
-              expect(panels.length).to eq(plans_data.length)
-
-              panel_with_legacy_plan = page.find("[data-testid='plan-card-#{legacy_plan[:code]}']")
-
-              expect(panel_with_legacy_plan.find('.card-header')).to have_content(expected_card_header)
-              expect(panel_with_legacy_plan.find('.card-body')).to have_link('frequently asked questions')
-            end
-          end
-        end
-
-        context 'with more than 25 users' do
-          let!(:subscription) { create(:gitlab_subscription, namespace: namespace, hosted_plan: plan, seats: 30) }
-
-          before do
-            stub_eoa_eligibility_request(namespace.id, false, premium_plan_data[:id])
-          end
-
-          it 'displays the sales assisted offer' do
-            visit page_path
-
-            within '.card-badge' do
-              expect(page).to have_text('Upgrade offers available!')
-            end
+            expect(page).to have_text('Upgrade offers available!')
           end
         end
       end
@@ -351,7 +339,6 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :bi
 
       it_behaves_like 'plan with header'
       it_behaves_like 'downgradable plan'
-      it_behaves_like 'upgradable plan'
       it_behaves_like 'can not contact sales'
     end
 

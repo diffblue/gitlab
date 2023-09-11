@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SubscriptionsHelper do
+RSpec.describe SubscriptionsHelper, feature_category: :billing_and_payments do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:free_plan) do
@@ -24,7 +24,6 @@ RSpec.describe SubscriptionsHelper do
   end
 
   before do
-    stub_feature_flags(hide_deprecated_billing_plans: false)
     allow(helper).to receive(:params).and_return(plan_id: 'bronze_id', namespace_id: nil)
     allow_next_instance_of(GitlabSubscriptions::FetchSubscriptionPlansService) do |instance|
       allow(instance).to receive(:execute).and_return(raw_plan_data)
@@ -79,37 +78,6 @@ RSpec.describe SubscriptionsHelper do
       end
     end
 
-    context 'when bronze_plan is deprecated' do
-      let(:bronze_plan) do
-        {
-          "id" => "bronze_id",
-          "name" => "Bronze Plan",
-          "deprecated" => true,
-          "free" => false,
-          "code" => "bronze",
-          "price_per_year" => 48.0
-        }
-      end
-
-      it { is_expected.to include(available_plans: '[{"id":"bronze_id","code":"bronze","price_per_year":48.0,"deprecated":true,"name":"Bronze Plan"}]') }
-    end
-
-    context 'when a plan is eligible to use a promo code' do
-      let(:bronze_plan) do
-        {
-          "id" => "bronze_id",
-          "name" => "Bronze Plan",
-          "deprecated" => true,
-          "free" => false,
-          "code" => "bronze",
-          "price_per_year" => 48.0,
-          "eligible_to_use_promo_code": true
-        }
-      end
-
-      it { is_expected.to include(available_plans: '[{"id":"bronze_id","code":"bronze","price_per_year":48.0,"eligible_to_use_promo_code":true,"deprecated":true,"name":"Bronze Plan"}]') }
-    end
-
     context 'when bronze_plan has hide_card attribute set to true' do
       let(:bronze_plan) do
         {
@@ -123,17 +91,7 @@ RSpec.describe SubscriptionsHelper do
         }
       end
 
-      context 'and is set to hide_deprecated_billing_plans true' do
-        before do
-          stub_feature_flags(hide_deprecated_billing_plans: true)
-        end
-
-        it { is_expected.not_to include(available_plans: "[{\"id\":\"bronze_id\",\"code\":\"bronze\",\"price_per_year\":48.0,\"deprecated\":false,\"name\":\"Bronze Plan\",\"hide_card\":true}]") }
-      end
-
-      context 'and is set to false' do
-        it { is_expected.to include(available_plans: "[{\"id\":\"bronze_id\",\"code\":\"bronze\",\"price_per_year\":48.0,\"deprecated\":false,\"name\":\"Bronze Plan\",\"hide_card\":true}]") }
-      end
+      it { is_expected.not_to include(available_plans: "[{\"id\":\"bronze_id\",\"code\":\"bronze\",\"price_per_year\":48.0,\"deprecated\":false,\"name\":\"Bronze Plan\",\"hide_card\":true}]") }
     end
   end
 
