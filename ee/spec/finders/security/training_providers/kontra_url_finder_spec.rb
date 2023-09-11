@@ -19,10 +19,10 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder do
 
       before do
         synchronous_reactive_cache(finder)
-        stub_request(:get, "http://test.host/test")
+        stub_request(:get, dummy_url)
           .with(
             headers: {
-              'Authorization' => 'Bearer sbdMsxcgW2Xs75Q2uHc9FhUCZSEV3fSg'
+              'Authorization' => "Bearer #{described_class::BEARER_TOKEN}"
             })
           .and_raise(SocketError)
       end
@@ -35,10 +35,10 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder do
     context 'when response is 404' do
       before do
         synchronous_reactive_cache(finder)
-        stub_request(:get, "http://test.host/test")
+        stub_request(:get, dummy_url)
           .with(
             headers: {
-              'Authorization' => 'Bearer sbdMsxcgW2Xs75Q2uHc9FhUCZSEV3fSg'
+              'Authorization' => "Bearer #{described_class::BEARER_TOKEN}"
             })
           .to_return(status: 404, body: '{"error":"Exercise not found"}', headers: { 'Content-Type' => 'application/json' })
       end
@@ -53,10 +53,10 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder do
 
       before do
         synchronous_reactive_cache(finder)
-        stub_request(:get, "http://test.host/test")
+        stub_request(:get, dummy_url)
           .with(
             headers: {
-              'Authorization' => 'Bearer sbdMsxcgW2Xs75Q2uHc9FhUCZSEV3fSg'
+              'Authorization' => "Bearer #{described_class::BEARER_TOKEN}"
             })
           .to_return(status: 200, body: response.to_json, headers: { 'Content-Type' => 'application/json' })
       end

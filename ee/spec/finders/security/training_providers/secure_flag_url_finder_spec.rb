@@ -21,7 +21,7 @@ RSpec.describe Security::TrainingProviders::SecureFlagUrlFinder, feature_categor
 
       before do
         synchronous_reactive_cache(finder)
-        stub_request(:get, "http://test.host/test").and_raise(SocketError)
+        stub_request(:get, dummy_url).and_raise(SocketError)
       end
 
       it 'returns nil' do
@@ -32,7 +32,7 @@ RSpec.describe Security::TrainingProviders::SecureFlagUrlFinder, feature_categor
     context 'when response is 404' do
       before do
         synchronous_reactive_cache(finder)
-        stub_request(:get, "http://test.host/test")
+        stub_request(:get, dummy_url)
           .to_return(status: 404, body: '', headers: { 'Content-Type' => 'application/json' })
       end
 
@@ -46,7 +46,7 @@ RSpec.describe Security::TrainingProviders::SecureFlagUrlFinder, feature_categor
 
       before do
         synchronous_reactive_cache(finder)
-        stub_request(:get, "http://test.host/test")
+        stub_request(:get, dummy_url)
           .to_return(status: 200, body: response.to_json, headers: { 'Content-Type' => 'application/json' })
       end
 
