@@ -18,10 +18,10 @@ advanced search provides faster search response times and [improved search featu
 
 Advanced search works with the following versions of Elasticsearch.
 
-| GitLab version        | Elasticsearch version    |
-|-----------------------|--------------------------|
-| GitLab 15.0 and later | Elasticsearch 7.x to 8.x |
-| GitLab 14.0 to 14.10  | Elasticsearch 6.8 to 7.x |
+| GitLab version        | Elasticsearch version       |
+|-----------------------|-----------------------------|
+| GitLab 15.0 and later | Elasticsearch 7.x and later |
+| GitLab 14.0 to 14.10  | Elasticsearch 6.8 to 7.x    |
 
 Advanced search follows the [Elasticsearch end-of-life policy](https://www.elastic.co/support/eol).
 When we change Elasticsearch supported versions in GitLab, we announce them in [deprecation notes](https://about.gitlab.com/handbook/marketing/blog/release-posts/#deprecations) in monthly release posts
@@ -70,9 +70,10 @@ The search index updates after you:
 
 You don't have to change the GitLab configuration when you upgrade Elasticsearch.
 
-You should pause indexing during an Elasticsearch upgrade so changes can still be tracked. When the Elasticsearch cluster is fully upgraded and active, [resume indexing](#unpause-indexing).
+You should pause indexing during an Elasticsearch upgrade so changes can still be tracked.
+When the Elasticsearch cluster is fully upgraded and active, [resume indexing](#unpause-indexing).
 
-To Upgrade from GitLab 14.10 to 15.0, you must use Elasticsearch 7.x.
+When you upgrade to GitLab 15.0 and later, you must use Elasticsearch 7.x and later.
 
 ## Elasticsearch repository indexer
 
