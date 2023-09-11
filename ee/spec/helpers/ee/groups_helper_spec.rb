@@ -289,6 +289,18 @@ RSpec.describe GroupsHelper do
     end
   end
 
+  describe '#code_suggestions_usage_app_data' do
+    subject(:code_suggestions_usage_app_data) { helper.code_suggestions_usage_app_data(group) }
+
+    let(:data) do
+      {
+        full_path: group.full_path
+      }
+    end
+
+    it { is_expected.to eql({ full_path: group.full_path }) }
+  end
+
   describe '#show_code_suggestions_tab?' do
     describe 'when enable_hamilton_in_usage_quotas_ui is enabled' do
       where(:has_free_or_no_subscription?, :gitlab_com?, :result) do

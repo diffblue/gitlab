@@ -6,14 +6,11 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
-  codeSuggestionsAssignedDescriptionText,
-  codeSuggestionsInfoLink,
-  codeSuggestionsInfoText,
-  codeSuggestionsIntroDescriptionText,
+  codeSuggestionsDescriptionLink,
   codeSuggestionsLearnMoreLink,
-  learnMoreText,
-} from 'ee/usage_quotas/seats/constants';
-import CodeSuggestionsUsageStatisticsCard from 'ee/usage_quotas/seats/components/code_suggestions_usage_statistics_card.vue';
+} from 'ee/usage_quotas/code_suggestions/constants';
+import { learnMoreText } from 'ee/usage_quotas/seats/constants';
+import CodeSuggestionsUsageStatisticsCard from 'ee/usage_quotas/code_suggestions/components/code_suggestions_usage_statistics_card.vue';
 import UsageStatistics from 'ee/usage_quotas/components/usage_statistics.vue';
 import { assignedAddonData, noAssignedAddonData, noPurchasedAddonData } from '../mock_data';
 
@@ -33,7 +30,8 @@ describe('CodeSuggestionsUsageStatisticsCard', () => {
 
   const findCodeSuggestionsDescription = () => wrapper.findByTestId('code-suggestions-description');
   const findCodeSuggestionsInfo = () => wrapper.findByTestId('code-suggestions-info');
-  const findCodeSuggestionsInfoLink = () => wrapper.findByTestId('code-suggestions-info-link');
+  const findCodeSuggestionsDescriptionLink = () =>
+    wrapper.findByTestId('code-suggestions-description-link');
   const findLearnMoreButton = () => wrapper.findByTestId('learn-more');
   const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
   const findUsageStatistics = () => wrapper.findComponent(UsageStatistics);
@@ -78,7 +76,7 @@ describe('CodeSuggestionsUsageStatisticsCard', () => {
     });
 
     it('does not render the description', () => {
-      expect(findCodeSuggestionsDescription().exists()).toBe(false);
+      expect(findCodeSuggestionsInfo().exists()).toBe(false);
     });
 
     it('does not render the info text', () => {
@@ -92,15 +90,19 @@ describe('CodeSuggestionsUsageStatisticsCard', () => {
     });
 
     it('renders the description text', () => {
-      expect(findCodeSuggestionsDescription().text()).toBe(codeSuggestionsAssignedDescriptionText);
+      expect(findCodeSuggestionsDescription().text()).toMatchInterpolatedText(
+        `Enhance your coding experience with intelligent recommendations. Code Suggestions uses generative AI to suggest code while you're developing.`,
+      );
     });
 
     it('renders the info text', () => {
-      expect(findCodeSuggestionsInfo().text()).toMatchInterpolatedText(codeSuggestionsInfoText);
+      expect(findCodeSuggestionsInfo().text()).toBe('Code Suggestions add-on assigned');
     });
 
-    it('renders the info link', () => {
-      expect(findCodeSuggestionsInfoLink().attributes('href')).toBe(codeSuggestionsInfoLink);
+    it('renders the description link', () => {
+      expect(findCodeSuggestionsDescriptionLink().attributes('href')).toBe(
+        codeSuggestionsDescriptionLink,
+      );
     });
 
     it('passes the correct props to <usage-statistics>', () => {
@@ -118,7 +120,7 @@ describe('CodeSuggestionsUsageStatisticsCard', () => {
 
       it('renders the description text', () => {
         expect(findCodeSuggestionsDescription().text()).toBe(
-          codeSuggestionsAssignedDescriptionText,
+          "Enhance your coding experience with intelligent recommendations. Code Suggestions uses generative AI to suggest code while you're developing.",
         );
       });
 
@@ -142,15 +144,19 @@ describe('CodeSuggestionsUsageStatisticsCard', () => {
     });
 
     it('renders the description text', () => {
-      expect(findCodeSuggestionsDescription().text()).toBe(codeSuggestionsIntroDescriptionText);
+      expect(findCodeSuggestionsDescription().text()).toBe(
+        "Enhance your coding experience with intelligent recommendations. Code Suggestions uses generative AI to suggest code while you're developing.",
+      );
     });
 
     it('renders the info text', () => {
-      expect(findCodeSuggestionsInfo().text()).toMatchInterpolatedText(codeSuggestionsInfoText);
+      expect(findCodeSuggestionsInfo().text()).toBe(`Introducing the Code Suggestions add-on`);
     });
 
-    it('renders the info link', () => {
-      expect(findCodeSuggestionsInfoLink().attributes('href')).toBe(codeSuggestionsInfoLink);
+    it('renders the description link', () => {
+      expect(findCodeSuggestionsDescriptionLink().attributes('href')).toBe(
+        codeSuggestionsDescriptionLink,
+      );
     });
 
     describe(`with <usage-statistics>`, () => {

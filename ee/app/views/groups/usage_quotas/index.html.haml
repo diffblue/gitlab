@@ -47,7 +47,7 @@
       #js-seat-usage-app{ data: group_seats_usage_quota_app_data(@group) }
     - if show_code_suggestions_tab?(@group)
       .tab-pane#code-suggestions-usage-tab
-        #js-code-suggestions-usage-app
+        #js-code-suggestions-usage-app{ data: code_suggestions_usage_app_data(@group) }
     .tab-pane#pipelines-quota-tab
       #js-pipeline-usage-app{ data: pipeline_usage_app_data(@group) }
     .tab-pane#storage-quota-tab
