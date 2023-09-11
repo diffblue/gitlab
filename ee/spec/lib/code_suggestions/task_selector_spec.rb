@@ -67,6 +67,16 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
       it 'only takes the last example in to account' do
         expect(subject).to be_an_instance_of(CodeSuggestions::Tasks::CodeGeneration::FromComment)
       end
+
+      context 'when prefix is too long' do
+        before do
+          stub_const('CodeSuggestions::TaskSelector::PREFIX_MAX_SIZE', 10)
+        end
+
+        it 'does not parse prefix and uses completion' do
+          expect(subject).to be_an_instance_of(CodeSuggestions::Tasks::CodeCompletion)
+        end
+      end
     end
 
     context 'when the last comment is a code suggestion' do

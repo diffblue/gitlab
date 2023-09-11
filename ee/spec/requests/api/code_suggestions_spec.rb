@@ -319,7 +319,12 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
         context 'when the task is code generation' do
           let(:current_user) { create(:user) }
           let(:instruction) { 'A function that outputs the first 20 fibonacci numbers' }
-          let(:prefix) { "def is_even(n: int) -># Gitlab Duo Generate: #{instruction}" }
+          let(:prefix) do
+            <<~PREFIX
+              def is_even(n: int) ->
+              # Gitlab Duo Generate: #{instruction}
+            PREFIX
+          end
 
           let(:prompt) do
             <<~PROMPT
