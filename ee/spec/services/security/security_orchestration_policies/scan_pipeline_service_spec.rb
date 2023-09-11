@@ -121,5 +121,33 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
 
       it_behaves_like 'creates scan jobs', pipeline_scan_job_templates: %w[Jobs/Secret-Detection]
     end
+
+    context 'with custom scan type' do
+      let(:actions) do
+        [
+          { scan: 'custom', ci_configuration: ci_configuration }
+        ]
+      end
+
+      let(:ci_configuration) do
+        <<~CI_CONFIG
+        image: busybox:latest
+        compliance:
+          stage: build
+          script:
+            - echo "Defined in security policy"
+        CI_CONFIG
+      end
+
+      it { is_expected.to eq({ pipeline_scan: { image: "busybox:latest", compliance: { stage: "build", script: ["echo \"Defined in security policy\""] } }, on_demand: {} }) }
+
+      context 'with the compliance_pipeline_in_policies feature disabled' do
+        before do
+          stub_feature_flags(compliance_pipeline_in_policies: false)
+        end
+
+        it { is_expected.to eq({ pipeline_scan: {}, on_demand: {} }) }
+      end
+    end
   end
 end
