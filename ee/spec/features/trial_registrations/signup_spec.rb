@@ -39,9 +39,7 @@ RSpec.describe 'Trial Sign Up', :saas, feature_category: :purchase do
         let(:signup_path) { new_trial_registration_path }
         let(:user_email) { new_user.email }
         let(:fill_and_submit_signup_form) do
-          fill_signup_form(new_user)
-
-          click_button 'Continue'
+          fill_in_sign_up_form(new_user, 'Continue')
         end
       end
     end
@@ -53,9 +51,8 @@ RSpec.describe 'Trial Sign Up', :saas, feature_category: :purchase do
 
       it 'creates the user' do
         visit new_trial_registration_path
-        fill_signup_form(new_user)
 
-        expect { click_button 'Continue' }.to change { User.count }
+        expect { fill_in_sign_up_form(new_user, 'Continue') }.to change { User.count }
       end
 
       context 'when reCAPTCHA verification fails' do
@@ -67,20 +64,11 @@ RSpec.describe 'Trial Sign Up', :saas, feature_category: :purchase do
 
         it 'does not create the user' do
           visit new_trial_registration_path
-          fill_signup_form(new_user)
 
-          expect { click_button 'Continue' }.not_to change { User.count }
+          expect { fill_in_sign_up_form(new_user, 'Continue') }.not_to change { User.count }
           expect(page).to have_content(_('There was an error with the reCAPTCHA. Please solve the reCAPTCHA again.'))
         end
       end
-    end
-
-    def fill_signup_form(user)
-      fill_in 'new_user_first_name', with: user.first_name
-      fill_in 'new_user_last_name', with: user.last_name
-      fill_in 'new_user_username', with: user.username
-      fill_in 'new_user_email', with: user.email
-      fill_in 'new_user_password', with: user.password
     end
   end
 end

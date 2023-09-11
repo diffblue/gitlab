@@ -81,15 +81,7 @@ RSpec.describe 'Email Confirmation', feature_category: :instance_resiliency do
   def sign_up
     visit new_user_registration_path
 
-    fill_in 'new_user_username', with: new_user.username
-    fill_in 'new_user_email', with: new_user.email
-    fill_in 'new_user_first_name', with: new_user.first_name
-    fill_in 'new_user_last_name', with: new_user.last_name
-    fill_in 'new_user_password', with: new_user.password
-
-    wait_for_all_requests
-
-    perform_enqueued_jobs { click_button _('Register') }
+    perform_enqueued_jobs { fill_in_sign_up_form(new_user) }
   end
 
   def sign_in
