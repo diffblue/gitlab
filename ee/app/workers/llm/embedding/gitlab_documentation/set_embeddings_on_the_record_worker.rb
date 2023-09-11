@@ -7,6 +7,8 @@ module Llm
         include ApplicationWorker
         include Gitlab::ExclusiveLeaseHelpers
 
+        TRACKING_CONTEXT = { action: 'documentation_embedding' }.freeze
+
         idempotent!
         data_consistency :delayed
         feature_category :duo_chat
@@ -23,7 +25,7 @@ module Llm
           record = ::Embedding::Vertex::GitlabDocumentation.find_by_id(id)
           return unless record
 
-          client = ::Gitlab::Llm::VertexAi::Client.new(nil)
+          client = ::Gitlab::Llm::VertexAi::Client.new(nil, tracking_context: TRACKING_CONTEXT)
 
           result = client.text_embeddings(content: record.content)
 

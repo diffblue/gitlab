@@ -124,7 +124,7 @@ module Gitlab
 
           logger.debug(message: "Received response from Vertex", response: response)
 
-          content = response.parsed_response.with_indifferent_access.dig("predictions", 0, "candidates", 0, "content")
+          content = Gitlab::Llm::VertexAi::ResponseModifiers::Predictions.new(response).response_body
           track_response_size(token_size(content))
 
           response
