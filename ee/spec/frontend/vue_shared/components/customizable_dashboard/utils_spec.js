@@ -159,7 +159,6 @@ describe('getDashboardConfig', () => {
             height: 3,
             width: 3,
           },
-          id: 1,
           queryOverrides: null,
           title: 'Test A',
           visualization: 'cube_line_chart',
@@ -169,7 +168,6 @@ describe('getDashboardConfig', () => {
             height: 4,
             width: 2,
           },
-          id: 2,
           queryOverrides: {
             limit: 200,
           },
@@ -224,7 +222,6 @@ describe('updateApolloCache', () => {
           panels: expect.objectContaining({
             nodes: expect.arrayContaining([
               expect.objectContaining({
-                id: 1,
                 visualization: expect.objectContaining({
                   type: 'LineChart',
                   slug: 'cube_line_chart',
@@ -232,7 +229,6 @@ describe('updateApolloCache', () => {
                 }),
               }),
               expect.objectContaining({
-                id: 2,
                 visualization: expect.objectContaining({
                   type: 'LineChart',
                   slug: 'cube_line_chart',

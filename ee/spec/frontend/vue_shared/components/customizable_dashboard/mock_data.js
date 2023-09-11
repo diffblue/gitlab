@@ -31,14 +31,12 @@ export const dashboard = {
   userDefined: true,
   panels: [
     {
-      id: 1,
       title: __('Test A'),
       gridAttributes: { width: 3, height: 3 },
       visualization: cubeLineChart,
       queryOverrides: null,
     },
     {
-      id: 2,
       title: __('Test B'),
       gridAttributes: { width: 2, height: 4 },
       visualization: cubeLineChart,
@@ -73,7 +71,6 @@ export const builtinDashboard = {
   title: 'Analytics Overview',
   panels: [
     {
-      id: 1,
       title: __('Test A'),
       gridAttributes: { width: 3, height: 3 },
       visualization: cubeLineChart,

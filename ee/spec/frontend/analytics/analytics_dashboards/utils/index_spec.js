@@ -6,7 +6,10 @@ describe('Analytics dashboard utils', () => {
     it('returns the expected object', () => {
       const visualization = TEST_VISUALIZATION();
       expect(utils.createNewVisualizationPanel(visualization)).toMatchObject({
-        visualization,
+        visualization: {
+          ...visualization,
+          errors: null,
+        },
         title: 'Test visualization',
         gridAttributes: {
           width: 4,

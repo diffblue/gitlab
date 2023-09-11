@@ -1,18 +1,29 @@
 <script>
 import * as Sentry from '@sentry/browser';
-import { GlIcon, GlLink, GlLoadingIcon, GlPopover, GlSprintf, GlButton } from '@gitlab/ui';
+import {
+  GlDisclosureDropdown,
+  GlIcon,
+  GlLink,
+  GlLoadingIcon,
+  GlPopover,
+  GlSprintf,
+  GlButton,
+  GlDisclosureDropdownItem,
+} from '@gitlab/ui';
 import uniqueId from 'lodash/uniqueId';
 import isString from 'lodash/isString';
 import dataSources from 'ee/analytics/analytics_dashboards/data_sources';
 import { isEmptyPanelData } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import TooltipOnTruncate from '~/vue_shared/components/tooltip_on_truncate/tooltip_on_truncate.vue';
 import { HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 import { PANEL_POPOVER_DELAY, PANEL_TROUBLESHOOTING_URL } from './constants';
 
 export default {
   name: 'AnalyticsDashboardPanel',
   components: {
+    GlDisclosureDropdownItem,
+    GlDisclosureDropdown,
     GlIcon,
     GlLink,
     GlLoadingIcon,
@@ -52,6 +63,11 @@ export default {
       required: false,
       default: () => ({}),
     },
+    editing: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     const validationErrors = this.visualization?.errors;
@@ -63,6 +79,13 @@ export default {
       data: null,
       loading: false,
       popoverId: uniqueId('panel-error-popover-'),
+      dropdownItems: [
+        {
+          text: __('Delete'),
+          action: () => this.$emit('delete'),
+          icon: 'remove',
+        },
+      ],
     };
   },
   computed: {
@@ -154,22 +177,45 @@ export default {
 <template>
   <div
     :id="popoverId"
-    class="grid-stack-item-content gl-border gl-rounded-small gl-p-4 gl-display-flex gl-flex-direction-column gl-bg-white"
+    class="grid-stack-item-content gl-border gl-rounded-small gl-p-4 gl-display-flex gl-flex-direction-column gl-bg-white gl-overflow-visible!"
     :class="{
       'gl-border-t-2 gl-border-t-solid gl-border-t-red-500': showErrorState,
     }"
   >
-    <tooltip-on-truncate
-      v-if="title"
-      :title="title"
-      placement="top"
-      boundary="viewport"
-      class="gl-pb-3 gl-text-truncate"
+    <div class="gl-display-flex gl-align-items-flex-start gl-justify-content-space-between">
+      <tooltip-on-truncate
+        v-if="title"
+        :title="title"
+        placement="top"
+        boundary="viewport"
+        class="gl-pb-3 gl-text-truncate"
+      >
+        <gl-icon v-if="showErrorState" name="warning" class="gl-text-red-500 gl-mr-1" />
+        <strong class="gl-text-gray-700">{{ title }}</strong>
+      </tooltip-on-truncate>
+      <gl-disclosure-dropdown
+        v-if="editing"
+        :items="dropdownItems"
+        icon="ellipsis_v"
+        :toggle-text="__('Actions')"
+        text-sr-only
+        no-caret
+        placement="right"
+        fluid-width
+        toggle-class="gl-ml-1"
+        category="tertiary"
+      >
+        <template #list-item="{ item }">
+          <span :data-testId="`panel-action-${item.testId}`">
+            <gl-icon :name="item.icon" /> {{ item.text }}</span
+          >
+        </template>
+      </gl-disclosure-dropdown>
+    </div>
+    <div
+      class="gl-overflow-x-hidden gl-overflow-y-auto gl-h-full"
+      :class="{ 'gl--flex-center': loading }"
     >
-      <gl-icon v-if="showErrorState" name="warning" class="gl-text-red-500 gl-mr-1" />
-      <strong class="gl-text-gray-700">{{ title }}</strong>
-    </tooltip-on-truncate>
-    <div class="gl-overflow-y-auto gl-h-full" :class="{ 'gl--flex-center': loading }">
       <gl-loading-icon v-if="loading" size="lg" />
 
       <div v-else-if="showEmptyState" class="gl-text-secondary">
