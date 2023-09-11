@@ -95,8 +95,8 @@ module EE
                      inverse_of: :feedbacks
 
           def self.match_on_finding_uuid_or_security_finding_or_project_fingerprint
-            where('EXISTS (SELECT 1 FROM vulnerability_occurrences WHERE vulnerability_occurrences.uuid =
-                vulnerability_feedback.finding_uuid::varchar)')
+            where('EXISTS (SELECT 1 FROM vulnerability_occurrences WHERE vulnerability_occurrences.uuid::uuid =
+                vulnerability_feedback.finding_uuid::uuid)')
               .or(where('EXISTS (SELECT 1 FROM vulnerability_occurrences WHERE
               vulnerability_occurrences.project_fingerprint = vulnerability_feedback.project_fingerprint::bytea)'))
               .or(where('EXISTS (SELECT 1 FROM security_findings WHERE security_findings.uuid =
